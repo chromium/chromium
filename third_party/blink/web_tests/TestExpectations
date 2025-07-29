@@ -2840,6 +2840,31 @@ crbug.com/433565190 external/wpt/css/css-counter-styles/trad-chinese-formal/coun
 
 crbug.com/433687466 external/wpt/webrtc/RTCDataChannel-worker-GC.html [ Failure ]
 
+# [0729/035620.675:FATAL:ird_party\blink\renderer\bindings\modules\v8\v8_digital_credential_creation_options.h:43] DCHECK failed: hasRequests().
+external/wpt/digital-credentials/create.tentative.https.html [ Crash Timeout ]
+
+# UUID in URL dumped to `*-expected.txt`
+external/wpt/html/syntax/speculative-parsing/generated/page-load/script-src-event-handler.html [ Failure ]
+
+# Possibly flaky byte count in `*-expected.txt`
+external/wpt/fetch/fetch-later/quota/max-payload.tentative.https.window.html [ Failure ]
+
+external/wpt/svg/styling/image-sizing-min-content.tentative.svg [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-calc-size.tentative.svg [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-fit-content.tentative.svg [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-max-content.tentative.svg [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-min-content.tentative.svg [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-stretch.tentative.svg [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-viewport-units-with-ICB.tentative.html [ Failure ]
+external/wpt/svg/styling/nested-svg-sizing-viewport-units.tentative.svg [ Failure ]
+
+external/wpt/fetch/fetch-later/quota/cross-origin-iframe/max-payload.tentative.https.window.html [ Timeout ]
+external/wpt/fetch/fetch-later/quota/cross-origin-iframe/oversized-payload.tentative.https.window.html [ Timeout ]
+external/wpt/fetch/fetch-later/quota/same-origin-iframe/accumulated-oversized-payload.tentative.https.window.html [ Timeout ]
+external/wpt/fetch/fetch-later/quota/same-origin-iframe/max-payload.tentative.https.window.html [ Timeout ]
+external/wpt/fetch/fetch-later/quota/same-origin-iframe/multiple-iframes.tentative.https.window.html [ Timeout ]
+external/wpt/fetch/fetch-later/quota/same-origin-iframe/oversized-payload.tentative.https.window.html [ Timeout ]
+
 # ====== New tests from wpt-importer added here ======
 crbug.com/433297073 external/wpt/css/filter-effects/fecolormatrix-display-p3.html [ Failure ]
 crbug.com/433324167 external/wpt/html/canvas/element/text/2d.text.writingmode.html [ Failure ]
@@ -9479,7 +9504,6 @@ crbug.com/417479566 [ Mac ] external/wpt/css/css-transitions/transitioncancel-00
 crbug.com/417921517 [ Win11-arm64 ] external/wpt/css/css-ruby/ruby-text-combine-upright-002a.html [ Failure Pass ]
 
 # Gardener 2025-05-19
-crbug.com/418345234 [ Win ] external/wpt/fetch/fetch-later/quota/max-payload.tentative.https.window.html [ Failure ]
 crbug.com/418572857 external/wpt/background-fetch/fetch.https.window.html [ Failure Pass Timeout ]
 crbug.com/418362694 [ Linux ] external/wpt/geolocation/enabled-by-permission-policy-attribute-redirect-on-load.https.sub.html [ Crash Timeout ]
 

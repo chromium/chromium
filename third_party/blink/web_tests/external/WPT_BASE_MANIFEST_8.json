@@ -1176,6 +1176,13 @@
       ]
      ],
      "flexbox": {
+      "auto-height-flex-item-in-multicol-crash.html": [
+       "82dec303cc1196c375355c5d4738fe34018e7119",
+       [
+        null,
+        {}
+       ]
+      ],
       "button-in-multicol-crash.html": [
        "30e373542a6975127232d07232cfe8fc2ccf4800",
        [
@@ -6038,6 +6045,13 @@
      ],
      "empty-render-target-crash.html": [
       "38c32b1efb870059b286bde904ff84de68351fc3",
+      [
+       null,
+       {}
+      ]
+     ],
+     "first-line-reparent-crash.html": [
+      "7149d770f07de38e53102dfb9c9c51b700feee8b",
       [
        null,
        {}
@@ -27409,6 +27423,23 @@
       {}
      ]
     ]
+   },
+   "content-security-policy": {
+    "generic": {
+     "image-document-ignores-csp.html": [
+      "a3f6f64854d98d40c8c405831d6f3f9656fdf34d",
+      [
+       null,
+       [
+        [
+         "/content-security-policy/generic/image-document-ignores-csp-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ]
+    }
    },
    "contenteditable": {
     "synthetic-height.html": [
@@ -63385,6 +63416,19 @@
         {}
        ]
       ],
+      "border-spacing-095.html": [
+       "8e5c8f55ccaeb749894a63970ac349cfbce98d53",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square.xht",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "border-spacing-applies-to-016.xht": [
        "0536763244237b77645937fe30e4898f1efcbfb5",
        [
@@ -76318,6 +76362,19 @@
        {}
       ]
      ],
+     "pseudo-element-implicit-anchor.html": [
+      "a7192670cc1a7e604eb13da817ff3d1f9c5ed4db",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square-only.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "sticky-anchor-position-invalid.html": [
       "d1efeed5f29263fe3a16d60cbdaf9d2c26357ce5",
       [
@@ -76398,6 +76455,32 @@
      ],
      "transform-006.tentative.html": [
       "22390d6d0f6c7270b19cf2253144a68389537d9f",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-007.tentative.html": [
+      "77216bfe2657ba9fb77639ef4924a9f76ebe8108",
+      [
+       null,
+       [
+        [
+         "/css/reference/ref-filled-green-100px-square.xht",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "transform-008.tentative.html": [
+      "ffbedaabbb8095eda6aef25f85a4698ea6a8ed73",
       [
        null,
        [
@@ -119691,6 +119774,47 @@
        {}
       ]
      ],
+     "alignment": {
+      "flex-align-baseline-column-rtl-direction.html": [
+       "3be57a2b34bf4c68f0041b874fbfdcecd797a20a",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-align-baseline-column-vert-lr-rtl-wrap-reverse.html": [
+       "767c129b057b75defe26f3fce7d52b2eb3f7aa68",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "flex-align-baseline-column-vert-rl-rtl-wrap-reverse.html": [
+       "9608301aa1a2c6cd444edee072d95f236583ca3d",
+       [
+        null,
+        [
+         [
+          "/css/reference/ref-filled-green-100px-square-only.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ]
+     },
      "anonymous-block.html": [
       "915cca757d73cc711bc3cb47e7539bb4e3e49554",
       [
@@ -137249,6 +137373,32 @@
         {}
        ]
       ],
+      "grid-abspos-staticpos-align-self-flex-end-large-border-padding.html": [
+       "c9359c8e1c5b7b33807f83c02e7edbc1cd68f9f1",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/abspos/grid-abspos-staticpos-align-self-flex-end-large-border-padding-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-abspos-staticpos-align-self-flex-end.html": [
+       "54c772e60873118e346c04cb2b6dfec908f6b73d",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/abspos/grid-abspos-staticpos-align-self-flex-end-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "grid-abspos-staticpos-align-self-img-001.html": [
        "cb5906603b35912cf2e649b1fa0a049d801ec236",
        [
@@ -137438,6 +137588,32 @@
         [
          [
           "/css/css-grid/abspos/grid-abspos-staticpos-align-self-safe-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-abspos-staticpos-align-self-self-end-large-border-padding.html": [
+       "1478bbbe3adc0345fa55ef4acc00aec87d8788b4",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/abspos/grid-abspos-staticpos-align-self-self-end-large-border-padding-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
+      "grid-abspos-staticpos-align-self-self-end.html": [
+       "2cd256077ece2edc5339bccf2d83859fa2743de9",
+       [
+        null,
+        [
+         [
+          "/css/css-grid/abspos/grid-abspos-staticpos-align-self-self-end-ref.html",
           "=="
          ]
         ],
@@ -218699,6 +218875,19 @@
         {}
        ]
       ],
+      "pre-001.html": [
+       "0e3e1e38c7293303d7cf07c0e64facfa76ba966d",
+       [
+        null,
+        [
+         [
+          "/css/css-text/white-space/reference/pre-001-ref.html",
+          "=="
+         ]
+        ],
+        {}
+       ]
+      ],
       "pre-float-001.html": [
        "8dd08d80992e6d6310a6697f84c2533d399c8e5e",
        [
@@ -257679,7 +257868,7 @@
       ]
      ],
      "column-span-during-transition-doesnt-skip.html": [
-      "67e6b5d5d0008ac08cb23214ed291c1375f9e236",
+      "81d4f93eccbd6d37d8f231f4e73b58993343218b",
       [
        null,
        [
@@ -257688,7 +257877,23 @@
          "=="
         ]
        ],
-       {}
+       {
+        "fuzzy": [
+         [
+          null,
+          [
+           [
+            0,
+            1
+           ],
+           [
+            0,
+            100000
+           ]
+          ]
+         ]
+        ]
+       }
       ]
      ],
      "content-smaller-than-box-size.html": [
@@ -259945,6 +260150,35 @@
             [
              0,
              515
+            ]
+           ]
+          ]
+         ]
+        }
+       ]
+      ],
+      "group-children-sizing-with-border-props.html": [
+       "a3b35d83cf5686823387f3340b20fde9c98d865c",
+       [
+        null,
+        [
+         [
+          "/css/css-view-transitions/nested/group-children-sizing-with-border-props-ref.html",
+          "=="
+         ]
+        ],
+        {
+         "fuzzy": [
+          [
+           null,
+           [
+            [
+             0,
+             70
+            ],
+            [
+             0,
+             500
             ]
            ]
           ]
@@ -319980,6 +320214,19 @@
        {}
       ]
      ],
+     "image-sizing-min-content.tentative.svg": [
+      "fc3f493750494af0552a0786664012d1f9223852",
+      [
+       null,
+       [
+        [
+         "/svg/styling/image-sizing-min-content-expected.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "invalidation": {
       "nth-child-of-class.svg": [
        "a91f421337ceeaade2072cee54b29b6eeeda6a01",
@@ -320008,6 +320255,188 @@
        ]
       ]
      },
+     "nested-svg-sizing-auto.tentative.svg": [
+      "21ebe5bf6929b11e1d4e07a13a02b04bfebe5c96",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-calc-size.tentative.svg": [
+      "1517f897b4904299a6db867ab71b41be17e49b52",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-calc.tentative.svg": [
+      "ba409e5c7ee79ea8d5965a5e5f4f635194fd942b",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-expected.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-ems.tentative.svg": [
+      "59574e6ec5ca046482a36b9c4c55b979ac295fc8",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-expected.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-fit-content.tentative.svg": [
+      "02678cdb978142074be939104ea2bf507e56b469",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-inherit.tentative.svg": [
+      "871ef77d9f6b134ece4ab692f47cadbd09565c12",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-initial.tentative.svg": [
+      "65c65244bee1ef7a0fd87fc1714b3522e36e997e",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-max-content.tentative.svg": [
+      "7650e4055046c5174533eea6b86976d39abfe38b",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-min-content.tentative.svg": [
+      "871b66a816b4b20a45415208972dd18183a21cc4",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-percent.tentative.svg": [
+      "150e409305a48e5db1a8e93be972a867c3e338e8",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-expected.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-rems.tentative.svg": [
+      "44a5cb6001dda3439da22d64ce8682a5a4a736d2",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-expected.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-stretch.tentative.svg": [
+      "f6fb436631bd7f556da108198da6d729f197f138",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-full-circle-ref.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-viewport-units-with-ICB.tentative.html": [
+      "a53911f39959d9e2ab6b3675b693b828d50bf31c",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-viewport-units-with-ICB-expected.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "nested-svg-sizing-viewport-units.tentative.svg": [
+      "387e97cb185f264b716c00b5d255dae2424370da",
+      [
+       null,
+       [
+        [
+         "/svg/styling/nested-svg-sizing-expected.svg",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "nested-svg-sizing-with-use.svg": [
       "5f3c4eed49024530cf05e0f832877974aa2b9d20",
       [
@@ -329278,6 +329707,10 @@
       "5c580273dcfc94eff137a0ae65314bebc9b7b5c0",
       []
      ],
+     "image-document-ignores-csp-ref.html": [
+      "e0747fd6c2810ccd771c5e33795d8c46ba56ff6c",
+      []
+     ],
      "negativeTests.js": [
       "44b4d7f683d8fb674a3c2b5d22eb8ea9d7b31ada",
       []
@@ -330342,6 +330775,14 @@
       "2fa1e0ac0663a65deae6602621521cc2844b93de",
       []
      ],
+     "pass3.png": [
+      "2fa1e0ac0663a65deae6602621521cc2844b93de",
+      []
+     ],
+     "pass3.png.headers": [
+      "6581fd425ed9da6b6273d1eefb84ea9ac9ac6e53",
+      []
+     ],
      "ping.js": [
       "750ae45f969491ea29eaa47c85f96f97d94b415f",
       []
@@ -330527,16 +330968,8 @@
      "e3f78621264b6d32d7c8baeba34ba0e245d83458",
      []
     ],
-    "META.yml": [
-     "4bbc6311bdceece7580ba9c38344081e0b4aba57",
-     []
-    ],
     "OWNERS": [
      "7e45685dea195172d1b10a4c12f4cf196cd7e227",
-     []
-    ],
-    "README.md": [
-     "b8a1d0a6098492b615dfae8a1e5e44ade8a2f3db",
      []
     ],
     "cookieListItem_attributes.https.any-expected.txt": [
@@ -330573,40 +331006,6 @@
     ],
     "cookieStore_set_arguments.https.any.serviceworker-expected.txt": [
      "ad6cdda02b6ce10df09a3774ab7e8e38af20e001",
-     []
-    ],
-    "resources": {
-     "always_changing_sw.sub.js": [
-      "9fdf99848fa50316e275cd6636a5755270a9bb1e",
-      []
-     ],
-     "cookie-test-helpers.js": [
-      "82ca135f88e423440c3c3fd2bb02df4ed39aa436",
-      []
-     ],
-     "cookie_helper.py": [
-      "71dd8b82ee7eb50054455724bc4c018b22f20949",
-      []
-     ],
-     "domain_parsing-child.sub.https.html": [
-      "96a063990710b60105a1cb665f48a7c7449e1fe1",
-      []
-     ],
-     "empty_sw.js": [
-      "2b0ae226121503789d63d405670becb09e51b833",
-      []
-     ],
-     "helper_iframe.sub.html": [
-      "d5cae23d160ef8ac5a57820eee1d8239ad637532",
-      []
-     ],
-     "helpers.js": [
-      "8d5dddef6577fc534a68c9e8415854e4c64901fd",
-      []
-     ]
-    },
-    "serviceworker_cookieStore_cross_origin.js": [
-     "fa1c4084fd45f1334a24d658d8c881e17291c915",
      []
     ]
    },
@@ -330999,6 +331398,50 @@
       []
      ]
     }
+   },
+   "cookiestore": {
+    "META.yml": [
+     "a1d0ed48c87d9a2399674991726a5185aa9ebb41",
+     []
+    ],
+    "README.md": [
+     "d767a7b46811811f39c43598fb0848d828a69ec8",
+     []
+    ],
+    "resources": {
+     "always_changing_sw.sub.js": [
+      "9fdf99848fa50316e275cd6636a5755270a9bb1e",
+      []
+     ],
+     "cookie-test-helpers.js": [
+      "82ca135f88e423440c3c3fd2bb02df4ed39aa436",
+      []
+     ],
+     "cookie_helper.py": [
+      "71dd8b82ee7eb50054455724bc4c018b22f20949",
+      []
+     ],
+     "domain_parsing-child.sub.https.html": [
+      "96a063990710b60105a1cb665f48a7c7449e1fe1",
+      []
+     ],
+     "empty_sw.js": [
+      "2b0ae226121503789d63d405670becb09e51b833",
+      []
+     ],
+     "helper_iframe.sub.html": [
+      "d5cae23d160ef8ac5a57820eee1d8239ad637532",
+      []
+     ],
+     "helpers.js": [
+      "8d5dddef6577fc534a68c9e8415854e4c64901fd",
+      []
+     ]
+    },
+    "serviceworker_cookieStore_cross_origin.js": [
+     "fa1c4084fd45f1334a24d658d8c881e17291c915",
+     []
+    ]
    },
    "core-aam": {
     "DIR_METADATA": [
@@ -356099,6 +356542,14 @@
        "868717bc53ba75e1d6244fbaccddcf178c8c14da",
        []
       ],
+      "grid-abspos-staticpos-align-self-flex-end-large-border-padding-ref.html": [
+       "7f2a5ad8377f9948d7640673eb76cfac3edfa3cd",
+       []
+      ],
+      "grid-abspos-staticpos-align-self-flex-end-ref.html": [
+       "868717bc53ba75e1d6244fbaccddcf178c8c14da",
+       []
+      ],
       "grid-abspos-staticpos-align-self-img-001-ref.html": [
        "06d9d366127609b22f599fd87528693e37c8e6f4",
        []
@@ -356157,6 +356608,14 @@
       ],
       "grid-abspos-staticpos-align-self-safe-001-ref.html": [
        "5e7fd9f9a9bb52235d9bca30dec9297011dfa06c",
+       []
+      ],
+      "grid-abspos-staticpos-align-self-self-end-large-border-padding-ref.html": [
+       "7f2a5ad8377f9948d7640673eb76cfac3edfa3cd",
+       []
+      ],
+      "grid-abspos-staticpos-align-self-self-end-ref.html": [
+       "868717bc53ba75e1d6244fbaccddcf178c8c14da",
        []
       ],
       "grid-abspos-staticpos-align-self-vertWM-001-ref.html": [
@@ -373180,6 +373639,10 @@
         "644dfc4b025e62babeddd3575af5ffee40c77e26",
         []
        ],
+       "pre-001-ref.html": [
+        "e950bbbc4960c650cd08b2532e6b0a3309ca5ffb",
+        []
+       ],
        "pre-float-001-ref.html": [
         "9753cb37b641f3f25d1045f3149875deffb1613c",
         []
@@ -374199,6 +374662,10 @@
      "parsing": {
       "WEB_FEATURES.yml": [
        "bc8409c24dd3ea29cd8ed34d071e9e1102860b30",
+       []
+      ],
+      "text-decoration-valid-expected.txt": [
+       "bbee844876a0b5172e9048f0ce46fb59027dcf9f",
        []
       ],
       "text-emphasis-position-valid-expected.txt": [
@@ -376761,7 +377228,7 @@
       []
      ],
      "historical-expected.txt": [
-      "5be521fe5b91040b720c73bb5f53378cafaa4a5e",
+      "72454f2c80a85ed6b4c314f59f606efa5c782604",
       []
      ],
      "idlharness-expected.txt": [
@@ -379973,6 +380440,10 @@
      "nested": {
       "group-children-sizing-ref.html": [
        "4f994bd03f67c7e73b03bb58b8eec220cb7720c5",
+       []
+      ],
+      "group-children-sizing-with-border-props-ref.html": [
+       "c914fa25218ae99cb628293587b8be08c51b670f",
        []
       ],
       "group-children-sizing-with-border-ref.html": [
@@ -386378,10 +386849,6 @@
      []
     ],
     "reactions": {
-     "Document-expected.txt": [
-      "b68f94ced2d69f8f7e65754999337c3417c1e959",
-      []
-     ],
      "WEB_FEATURES.yml": [
       "fe4958dd49c703e6dd71cb9720aa70b36e49427c",
       []
@@ -386432,6 +386899,10 @@
       "c5c25e44659658b4c8a1d0cc590dea2ecb21725d",
       []
      ],
+     "Document-importNode-cross-document.window-expected.txt": [
+      "359c67a9ea664f54c3f73cd84d33df572f64bf15",
+      []
+     ],
      "Document-importNode-expected.txt": [
       "1818c226c6a223040cf7cf19188b8b3efc79e0fd",
       []
@@ -386460,8 +386931,16 @@
       "c8486615c1e03c1b70d9f22ddbfe2f95b617fd0a",
       []
      ],
+     "adoption.window-expected.txt": [
+      "834b0d87d9d5194b91d870022f96dd17e16217c0",
+      []
+     ],
      "constructor-reentry-with-different-definition-expected.txt": [
       "ae9069c20b4051efd1526ef1c11eb6ac65ef1c0e",
+      []
+     ],
+     "global.window-expected.txt": [
+      "c848fee3437a828116e0674791b3785fb0983e0e",
       []
      ],
      "initial-about-blank.window-expected.txt": [
@@ -386477,11 +386956,15 @@
       []
      ],
      "scoped-registry-define-upgrade-criteria-expected.txt": [
-      "7d8ba836721be543c4e55e161afa9c8b51266d51",
+      "4b5efd5f89d859df165215ed0999b645cdf5d580",
       []
      ],
      "scoped-registry-define-upgrade-order-expected.txt": [
       "6eeb8c105f184e80a5d4649f6f83f32ca80a76f3",
+      []
+     ],
+     "scoped-registry-initialize-expected.txt": [
+      "1818c226c6a223040cf7cf19188b8b3efc79e0fd",
       []
      ],
      "scoped-registry-registry-define-get-etc-expected.txt": [
@@ -386511,10 +386994,6 @@
       []
      ]
     },
-    "scoped-registry-initialize-expected.txt": [
-     "1818c226c6a223040cf7cf19188b8b3efc79e0fd",
-     []
-    ],
     "state": {
      "META.yml": [
       "df335b339e1324d8c36939df30c8506efa6aae0a",
@@ -390645,7 +391124,7 @@
       []
      ],
      "setmediakeys-to-multiple-video-elements.js": [
-      "4c7faef69d0e8b8501b53be6050cf3b028909fdb",
+      "843d37e7a52d34d874f31dbe432df3e7fa6580f6",
       []
      ],
      "setmediakeys.js": [
@@ -393786,7 +394265,7 @@
        []
       ],
       "fetch-later.html": [
-       "955f815d940bf853a9c84a367bf2023d9738e1a0",
+       "b295be116c731c5ceec2d222ecd999fc5342d5c6",
        []
       ],
       "get_beacon.py": [
@@ -396661,7 +397140,7 @@
       []
      ],
      "FileSystemBaseHandle-buckets.js": [
-      "9654755148a871e8af19a16aab93208eaa24e6e8",
+      "c67cb1de64960dc144c49e15c9b0e8bb603dbbee",
       []
      ],
      "FileSystemBaseHandle-getUniqueId.js": [
@@ -402431,7 +402910,7 @@
         []
        ],
        "path-objects.yaml": [
-        "cf218829598c1ee4275ceefd025974590fbe1cd8",
+        "ccb3d79b93a44d36fec6abebc9a95621c2913b6c",
         []
        ],
        "pixel-manipulation.yaml": [
@@ -414300,6 +414779,10 @@
           "7decc7bc6035e60e6613e55cbb4dafef0b68dab9",
           []
          ],
+         "script-src-event-handler-framed.sub.html": [
+          "7b9e0edeb979e8d04c583d9b3080c388ddab1e17",
+          []
+         ],
          "script-src-framed.sub.html": [
           "baab01075022601ed258866a0b98a6d07129f5fb",
           []
@@ -414324,8 +414807,12 @@
           "08609b1c12a0c79fc0fb8f260777b91fff85eec7",
           []
          ],
+         "script-src-unsupported-language-framed.sub.html": [
+          "62b2c4c017b49ac2dc7e01bc1382a2cc9b10aa39",
+          []
+         ],
          "script-src-unsupported-type-framed.sub.html": [
-          "1f38560ee152a61623667b2be9057296d05453c6",
+          "78e71941b358cc231b3190cdbf4aab4548611a88",
           []
          ],
          "svg-image-href-framed.sub.html": [
@@ -414580,7 +415067,7 @@
          []
         ],
         "script-src-unsupported-type-nonspeculative.sub.html": [
-         "94098b5c77539d7d49d4cb4c3ced4cea3a98ff68",
+         "dc8343c382406383b25ce8e41d2bad8ab7085a1f",
          []
         ],
         "svg-image-href-nonspeculative.sub.html": [
@@ -414653,7 +415140,7 @@
       },
       "tools": {
        "generate.py": [
-        "f0db885814b8997cd80ff34121132607d7e71c17",
+        "b3b577d9e1069b1dd2140f2a2499d51fa4947ff1",
         []
        ]
       }
@@ -417439,8 +417926,8 @@
      "177c5b9f11d4e1dd48ebb407529a4e567d030f1a",
      []
     ],
-    "cookie-store.idl": [
-     "8a000cac0b262de89a1c265755d8a5aeb2985271",
+    "cookiestore.idl": [
+     "ecb277756cc89869423f91e7f7d57b19789b1114",
      []
     ],
     "crash-reporting.idl": [
@@ -427284,7 +427771,7 @@
      []
     ],
     "testharness.js": [
-     "b5847ed406ae5af7f8493df3adbee90e318b8ebc",
+     "f495b62458ba75b8021c9f62ccadc4e0f4eaa3c9",
      []
     ],
     "testharness.js.headers": [
@@ -427949,12 +428436,16 @@
      "cc41cd292b6c7f76c9201b129edf70dd79fea592",
      []
     ],
+    "authentication-invalid-payment-entity-logo.https-expected.txt": [
+     "4a77d491724b68bd3b73837e72868a59fdced10b",
+     []
+    ],
     "authentication-requires-user-activation.https-expected.txt": [
      "19b11cfe3c365baf22b767ce7784ea17a4a0fbe8",
      []
     ],
     "constructor-validate-payment-method-data.https-expected.txt": [
-     "0d94a62de0bee382bc52a48aa1883558e21bce16",
+     "2b79dec23319043a1c262fdeac43e8581412cdca",
      []
     ],
     "resources": {
@@ -433697,7 +434188,11 @@
        "ddfd51eed1f2403e2c6a964cee6a307c0d3838fb",
        []
       ]
-     }
+     },
+     "svg-get-bounding-client-rect-in-non-rendered-elements-expected.txt": [
+      "b74a8cd873b81a7668293ae63b0026537d36c2b9",
+      []
+     ]
     },
     "historical-expected.txt": [
      "9117938a1a631191a3c33ddf42bb6ac4b79a9cc2",
@@ -434582,6 +435077,10 @@
       "85aedd9c41369de3c93db94c13b755505d364138",
       []
      ],
+     "image-sizing-min-content-expected.svg": [
+      "9e9b69901f3772eac2049d292008e2c18197c582",
+      []
+     ],
      "invalidation": {
       "nth-child-of-class-ref.svg": [
        "780bb9f3f68551d37dac298dfff7cf1ac55597ab",
@@ -434590,6 +435089,14 @@
      },
      "nested-svg-sizing-expected.svg": [
       "a8fa5211842b3a351660e047626517aeafe960b5",
+      []
+     ],
+     "nested-svg-sizing-full-circle-ref.svg": [
+      "f35ab0d4e2f8fa9fbc5d44ae5f6d83e71c684fc1",
+      []
+     ],
+     "nested-svg-sizing-viewport-units-with-ICB-expected.html": [
+      "4f3762c520665c3a0fdb2673091eb4db8a133942",
       []
      ],
      "nested-svg-sizing-with-use-expected.svg": [
@@ -436977,7 +437484,7 @@
         []
        ],
        "testharness.js": [
-        "7c1ded21d0e266612d49cfe9eef89c24f704cf84",
+        "ff96f572077231d2e5949b08473ea9a3e3ea7a24",
         []
        ],
        "testharnessreport.js": [
@@ -440304,6 +440811,12 @@
         "b7458377ab0f792dbf46c839099650d52978339e",
         []
        ],
+       "add_data_collector": {
+        "__init__.py": [
+         "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
+         []
+        ]
+       },
        "add_intercept": {
         "__init__.py": [
          "e69de29bb2d1d6434b8b29ae775ad8c2e48c5391",
@@ -472896,7 +473409,7 @@
      ]
     },
     "getRandomValues.any.js": [
-     "574134eb76dcd8ea059c531c88841477736fbed6",
+     "aecd38efd60bac63a28673241039d2743e5b911f",
      [
       "WebCryptoAPI/getRandomValues.any.html",
       {}
@@ -474531,7 +475044,7 @@
       ]
      ],
      "detector.https.window.js": [
-      "f52064696f33bdf1fdcc4d4cec56a24eaa35be6b",
+      "0ccbe8955d3721416acaca62043d451f0acd5719",
       [
        "ai/language_detection/detector.https.window.html",
        {
@@ -475252,7 +475765,7 @@
       ]
      ],
      "translator.optional.https.window.js": [
-      "1b2519cf2f0ed9c8b030fa1b2c6c79b000621478",
+      "ceb7846bf3695dc9c2ff5c0037f026cc0235d139",
       [
        "ai/translator/translator.optional.https.window.html",
        {
@@ -476231,7 +476744,7 @@
      ]
     ],
     "fetch.https.window.js": [
-     "1756a0e6e3fc3259bd26dd37d43e890ae0e9a7b0",
+     "6a2f6ee6711a0f1f8e1bbe9c74be18082e2b3f1d",
      [
       "background-fetch/fetch.https.window.html",
       {
@@ -496081,1191 +496594,6 @@
      ]
     ]
    },
-   "cookie-store": {
-    "change_eventhandler_for_already_expired.https.window.js": [
-     "f3bbe0ea560974e9486941384e75a58d2d6a4637",
-     [
-      "cookie-store/change_eventhandler_for_already_expired.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Test that setting an already-expired cookie does not trigger an event."
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "change_eventhandler_for_document_cookie.https.window.js": [
-     "1937ebdae35942840dc3b641b5907f334048f3fb",
-     [
-      "cookie-store/change_eventhandler_for_document_cookie.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Observing 'change' events in document when cookies set via document.cookie"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.js": [
-     "8517995acfe746bbff09243597d6d319e3af1bc2",
-     [
-      "cookie-store/change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Observing 'change' events in document when cookies set via Set-Cookie header"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "change_eventhandler_for_no_change.https.window.js": [
-     "5f9c2927433fc408c70c005789dc0bcc34d46caa",
-     [
-      "cookie-store/change_eventhandler_for_no_change.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Test that setting a duplicate cookie does not fire a second event."
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "change_eventhandler_for_no_name_and_no_value.https.window.js": [
-     "4498caf59689cc3da875d1c56937f6d2a235cb5d",
-     [
-      "cookie-store/change_eventhandler_for_no_name_and_no_value.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Observing 'change' events in document when modifications API is called with blank arguments"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "change_eventhandler_for_no_name_equals_in_value.https.window.js": [
-     "13d721786c9a140b05ed5291c6096c894053f78b",
-     [
-      "cookie-store/change_eventhandler_for_no_name_equals_in_value.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Observing 'change' events in document when setting a cookie value containing \"=\""
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "change_eventhandler_for_no_name_multiple_values.https.window.js": [
-     "60c6c16518ae767d2dab68e62af8967b9890072b",
-     [
-      "cookie-store/change_eventhandler_for_no_name_multiple_values.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Observing 'change' events in document when modifications API is called multiple times with a blank name"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieListItem_attributes.https.any.js": [
-     "b42a745d3e4e1a9f4c8a0c6e7d9c04c02f8d1340",
-     [
-      "cookie-store/cookieListItem_attributes.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieListItem attributes"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieListItem_attributes.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieListItem attributes"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStoreManager_getSubscriptions_empty.https.any.js": [
-     "8cfd732f304509582ff8c9be97e8e90e6c06e8ed",
-     [
-      "cookie-store/cookieStoreManager_getSubscriptions_empty.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: ServiceWorker without cookie change subscriptions"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStoreManager_getSubscriptions_empty.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: ServiceWorker without cookie change subscriptions"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStoreManager_getSubscriptions_multiple.https.any.js": [
-     "9e153d03aae798371d4c28649de7126f18aefe76",
-     [
-      "cookie-store/cookieStoreManager_getSubscriptions_multiple.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: ServiceWorker with multiple cookie change subscriptions"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStoreManager_getSubscriptions_multiple.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: ServiceWorker with multiple cookie change subscriptions"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStoreManager_getSubscriptions_single.https.any.js": [
-     "98ec19df3f1881666a48f2f920000c3a11b67f82",
-     [
-      "cookie-store/cookieStoreManager_getSubscriptions_single.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: ServiceWorker with one cookie change subscription"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStoreManager_getSubscriptions_single.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: ServiceWorker with one cookie change subscription"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_delete.sub.https.html": [
-     "8cdfae6776dd88183479f7c1378be814f8c66105",
-     [
-      null,
-      {}
-     ]
-    ],
-    "cookieStore_delete_arguments.https.any.js": [
-     "27b54f5a8dcdbe25230b04a101ca0fb0b3c9851d",
-     [
-      "cookie-store/cookieStore_delete_arguments.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.delete() arguments"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_delete_arguments.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.delete() arguments"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_delete_basic.https.any.js": [
-     "08a1fac5afe1ed5c2713e60674fadc3d0be7e620",
-     [
-      "cookie-store/cookieStore_delete_basic.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.delete() return type"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_delete_basic.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.delete() return type"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_event_arguments.https.window.js": [
-     "bcb698eeb0d6ce760033ba628120ebf7772a1084",
-     [
-      "cookie-store/cookieStore_event_arguments.https.window.html",
-      {}
-     ]
-    ],
-    "cookieStore_event_basic.https.window.js": [
-     "c0075d6adcdd9a3438dfd3df622bf35883bf4110",
-     [
-      "cookie-store/cookieStore_event_basic.https.window.html",
-      {}
-     ]
-    ],
-    "cookieStore_event_delete.https.window.js": [
-     "d0fee1ab1d03cd3835f3b9e5828d4aef7eb45710",
-     [
-      "cookie-store/cookieStore_event_delete.https.window.html",
-      {}
-     ]
-    ],
-    "cookieStore_event_overwrite.https.window.js": [
-     "427e7dcbb7ce0ff1627a2f45a2a407d1c0189dc3",
-     [
-      "cookie-store/cookieStore_event_overwrite.https.window.html",
-      {}
-     ]
-    ],
-    "cookieStore_getAll_arguments.https.any.js": [
-     "868246f606f4ace75f807eef584d263114778f4b",
-     [
-      "cookie-store/cookieStore_getAll_arguments.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.getAll() arguments"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_getAll_arguments.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.getAll() arguments"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_getAll_multiple.https.any.js": [
-     "10dcacbd688d6c23364e3e8e1b946196cd0b4387",
-     [
-      "cookie-store/cookieStore_getAll_multiple.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.getAll() with multiple cookies"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_getAll_multiple.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.getAll() with multiple cookies"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_getAll_set_basic.https.any.js": [
-     "dee78e1867c7e0be04e779b4bfd949250540c289",
-     [
-      "cookie-store/cookieStore_getAll_set_basic.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.getAll()"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_getAll_set_basic.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.getAll()"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_getAll_set_creation_url.https.any.js": [
-     "d09c4aad4f87712afd70faf8111ee21f88d5f1a8",
-     [
-      "cookie-store/cookieStore_getAll_set_creation_url.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.set()/getAll() with Document URL changing"
-        ],
-        [
-         "global",
-         "window"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_get_arguments.https.any.js": [
-     "d6ea0edef6a3d4e0cc69d4455d6672ddd433deda",
-     [
-      "cookie-store/cookieStore_get_arguments.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.get() arguments"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_get_arguments.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.get() arguments"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_get_delete_basic.https.any.js": [
-     "9337669afd5b61d821e9945bd2f3299d8afb8bad",
-     [
-      "cookie-store/cookieStore_get_delete_basic.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.delete()"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_get_delete_basic.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.delete()"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_get_set_across_frames.https.html": [
-     "f7c737b422e559107bb210d0cea9267829e10ba7",
-     [
-      null,
-      {}
-     ]
-    ],
-    "cookieStore_get_set_across_origins.sub.https.html": [
-     "004e37630ac76016846b7a33633f583242b23a55",
-     [
-      null,
-      {}
-     ]
-    ],
-    "cookieStore_get_set_basic.https.any.js": [
-     "127f758f5f0b8154dccc74f2b6e81d3b0d2562a9",
-     [
-      "cookie-store/cookieStore_get_set_basic.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.get()"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_get_set_basic.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.get()"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_get_set_creation_url.https.any.js": [
-     "71f8108095f0e78518f73f5086eb0d2d4dee1253",
-     [
-      "cookie-store/cookieStore_get_set_creation_url.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.set()/get() with Document URL changing"
-        ],
-        [
-         "global",
-         "window"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_get_set_creation_url.sub.https.html": [
-     "216885298a58829d64653d7e1947fe3e6ec52012",
-     [
-      null,
-      {}
-     ]
-    ],
-    "cookieStore_get_set_ordering.https.any.js": [
-     "fe564e55fc4a6d9111a1be35888a750d5ccba9ac",
-     [
-      "cookie-store/cookieStore_get_set_ordering.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Cookie ordering"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_get_set_ordering.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: Cookie ordering"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_in_detached_frame.https.html": [
-     "cd2bd79e686cd9b31b9252412e9e9a069cd779be",
-     [
-      null,
-      {}
-     ]
-    ],
-    "cookieStore_opaque_origin.https.html": [
-     "94a13fe63f9acbb369c448c5e339286f1d6ebf4b",
-     [
-      null,
-      {}
-     ]
-    ],
-    "cookieStore_set_arguments.https.any.js": [
-     "37744cb7c88d05edf6b6126aed9f3f09daf112a7",
-     [
-      "cookie-store/cookieStore_set_arguments.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.set() arguments"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_set_arguments.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.set() arguments"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_set_domain_parsing.sub.https.html": [
-     "4326e2a2d0256a528beb382b02bb2c9eee50c55f",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "cookieStore_set_domain_parsing.tentative.sub.https.html": [
-     "b7af61e3979c5ac7f8983bbd0adbf87da61a6950",
-     [
-      null,
-      {
-       "testdriver": true
-      }
-     ]
-    ],
-    "cookieStore_set_limit.https.any.js": [
-     "0bd9ceec08d55308fba01e46270d6b16e0b35043",
-     [
-      "cookie-store/cookieStore_set_limit.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.delete() return type"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_set_limit.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.delete() return type"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_special_names.https.any.js": [
-     "36761b4493995e1bc41d56068b95b745b4cea3c5",
-     [
-      "cookie-store/cookieStore_special_names.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.set()/get()/delete() for cookies with special names"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_special_names.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.set()/get()/delete() for cookies with special names"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_subscribe_arguments.https.any.js": [
-     "ca5f55d645be5188177eeb0b03a51a175a7f9e64",
-     [
-      "cookie-store/cookieStore_subscribe_arguments.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.subscribe() arguments"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/cookieStore_subscribe_arguments.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookieStore.subscribe() arguments"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "cookieStore_subscriptions_empty.https.window.js": [
-     "907a34b4de6632f5e91adbcd606839a92eead320",
-     [
-      "cookie-store/cookieStore_subscriptions_empty.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "encoding.https.any.js": [
-     "f5d2ca15e717a0837f1e08031ab682db5aa965ea",
-     [
-      "cookie-store/encoding.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookie encoding"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ],
-     [
-      "cookie-store/encoding.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookie encoding"
-        ],
-        [
-         "global",
-         "window,serviceworker"
-        ],
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "httponly_cookies.https.window.js": [
-     "836f47da3f6e0f8f2c89445d1b2fbdfdf9ddc9e6",
-     [
-      "cookie-store/httponly_cookies.https.window.html",
-      {
-       "script_metadata": [
-        [
-         "script",
-         "resources/cookie-test-helpers.js"
-        ]
-       ]
-      }
-     ]
-    ],
-    "idlharness.https.any.js": [
-     "6312f3c4ba3a1525df8955a5a7b7ddab4485a90a",
-     [
-      "cookie-store/idlharness.https.any.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ],
-     [
-      "cookie-store/idlharness.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ],
-     [
-      "cookie-store/idlharness.https.any.sharedworker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ],
-     [
-      "cookie-store/idlharness.https.any.worker.html",
-      {
-       "script_metadata": [
-        [
-         "global",
-         "window,worker"
-        ],
-        [
-         "timeout",
-         "long"
-        ],
-        [
-         "script",
-         "/resources/WebIDLParser.js"
-        ],
-        [
-         "script",
-         "/resources/idlharness.js"
-        ],
-        [
-         "script",
-         "/service-workers/service-worker/resources/test-helpers.sub.js"
-        ]
-       ],
-       "timeout": "long"
-      }
-     ]
-    ],
-    "serviceworker_cookieStore_cross_origin.https.sub.html": [
-     "6879c5da926384b2be6969b5585c8e2a75539f75",
-     [
-      null,
-      {}
-     ]
-    ],
-    "serviceworker_cookieStore_subscriptions_reset.https.html": [
-     "a1124e9220150ea48e016d805ead1f210a247a25",
-     [
-      null,
-      {}
-     ]
-    ],
-    "serviceworker_cookiechange_eventhandler_already_expired.https.any.js": [
-     "c40fdbeb6f108db1ea6e100c833a03c3fedbfc19",
-     [
-      "cookie-store/serviceworker_cookiechange_eventhandler_already_expired.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookiechange event in ServiceWorker with already-expired cookie."
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "serviceworker_cookiechange_eventhandler_mismatched_subscription.https.any.js": [
-     "30d8d70940dae248b3b5cba030056daac78b32a6",
-     [
-      "cookie-store/serviceworker_cookiechange_eventhandler_mismatched_subscription.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookiechange event in ServiceWorker with mismatched subscription"
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.js": [
-     "ef7cadf4c9e6553192c84610dd1d1692dd7248f6",
-     [
-      "cookie-store/serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookiechange event in ServiceWorker with multiple subscriptions"
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "serviceworker_cookiechange_eventhandler_no_change.https.any.js": [
-     "fb2e2db7381fea7cbd3463576e126e1581a32d97",
-     [
-      "cookie-store/serviceworker_cookiechange_eventhandler_no_change.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookiechange event in ServiceWorker with already-expired cookie."
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.js": [
-     "f8b1c1b7aa96f13ec40df6dfdfef2c605c447468",
-     [
-      "cookie-store/serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookiechange event in ServiceWorker with overlapping subscriptions"
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "serviceworker_cookiechange_eventhandler_single_subscription.https.any.js": [
-     "3ccb4b303d90165eed0f7830ac1faed56ee29bba",
-     [
-      "cookie-store/serviceworker_cookiechange_eventhandler_single_subscription.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: cookiechange event in ServiceWorker with single subscription"
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ],
-    "serviceworker_oncookiechange_eventhandler_single_subscription.https.any.js": [
-     "8def2440897b931c2af4402654a92ca89c34ea98",
-     [
-      "cookie-store/serviceworker_oncookiechange_eventhandler_single_subscription.https.any.serviceworker.html",
-      {
-       "script_metadata": [
-        [
-         "title",
-         "Cookie Store API: oncookiechange event in ServiceWorker with single subscription"
-        ],
-        [
-         "global",
-         "serviceworker"
-        ]
-       ]
-      }
-     ]
-    ]
-   },
    "cookies": {
     "attributes": {
      "attributes-ctl.sub.html": [
@@ -497474,7 +496802,7 @@
       ]
      ],
      "scheme-bound-cookies.https.html": [
-      "e7f1158fe1d3768a967be1b69bd55e5e368dd8a0",
+      "f738d61e9f51866bbc269e5a52585167a73a032e",
       [
        null,
        {}
@@ -497982,6 +497310,1191 @@
       ]
      ]
     }
+   },
+   "cookiestore": {
+    "change_eventhandler_for_already_expired.https.window.js": [
+     "f3bbe0ea560974e9486941384e75a58d2d6a4637",
+     [
+      "cookiestore/change_eventhandler_for_already_expired.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Test that setting an already-expired cookie does not trigger an event."
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "change_eventhandler_for_document_cookie.https.window.js": [
+     "1937ebdae35942840dc3b641b5907f334048f3fb",
+     [
+      "cookiestore/change_eventhandler_for_document_cookie.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Observing 'change' events in document when cookies set via document.cookie"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.js": [
+     "8517995acfe746bbff09243597d6d319e3af1bc2",
+     [
+      "cookiestore/change_eventhandler_for_http_cookie_and_set_cookie_headers.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Observing 'change' events in document when cookies set via Set-Cookie header"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "change_eventhandler_for_no_change.https.window.js": [
+     "5f9c2927433fc408c70c005789dc0bcc34d46caa",
+     [
+      "cookiestore/change_eventhandler_for_no_change.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Test that setting a duplicate cookie does not fire a second event."
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "change_eventhandler_for_no_name_and_no_value.https.window.js": [
+     "4498caf59689cc3da875d1c56937f6d2a235cb5d",
+     [
+      "cookiestore/change_eventhandler_for_no_name_and_no_value.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Observing 'change' events in document when modifications API is called with blank arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "change_eventhandler_for_no_name_equals_in_value.https.window.js": [
+     "13d721786c9a140b05ed5291c6096c894053f78b",
+     [
+      "cookiestore/change_eventhandler_for_no_name_equals_in_value.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Observing 'change' events in document when setting a cookie value containing \"=\""
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "change_eventhandler_for_no_name_multiple_values.https.window.js": [
+     "60c6c16518ae767d2dab68e62af8967b9890072b",
+     [
+      "cookiestore/change_eventhandler_for_no_name_multiple_values.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Observing 'change' events in document when modifications API is called multiple times with a blank name"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieListItem_attributes.https.any.js": [
+     "b42a745d3e4e1a9f4c8a0c6e7d9c04c02f8d1340",
+     [
+      "cookiestore/cookieListItem_attributes.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieListItem attributes"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieListItem_attributes.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieListItem attributes"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStoreManager_getSubscriptions_empty.https.any.js": [
+     "8cfd732f304509582ff8c9be97e8e90e6c06e8ed",
+     [
+      "cookiestore/cookieStoreManager_getSubscriptions_empty.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: ServiceWorker without cookie change subscriptions"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStoreManager_getSubscriptions_empty.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: ServiceWorker without cookie change subscriptions"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStoreManager_getSubscriptions_multiple.https.any.js": [
+     "e2538013c93220ec79c08bee4d79c07a0b342620",
+     [
+      "cookiestore/cookieStoreManager_getSubscriptions_multiple.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: ServiceWorker with multiple cookie change subscriptions"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStoreManager_getSubscriptions_multiple.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: ServiceWorker with multiple cookie change subscriptions"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStoreManager_getSubscriptions_single.https.any.js": [
+     "4f1053266043636e7ed2c004f2942ae3fac9164b",
+     [
+      "cookiestore/cookieStoreManager_getSubscriptions_single.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: ServiceWorker with one cookie change subscription"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStoreManager_getSubscriptions_single.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: ServiceWorker with one cookie change subscription"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_delete.sub.https.html": [
+     "150b768a558cc780c615416d9f422996d2d4f57f",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookieStore_delete_arguments.https.any.js": [
+     "27b54f5a8dcdbe25230b04a101ca0fb0b3c9851d",
+     [
+      "cookiestore/cookieStore_delete_arguments.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.delete() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_delete_arguments.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.delete() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_delete_basic.https.any.js": [
+     "08a1fac5afe1ed5c2713e60674fadc3d0be7e620",
+     [
+      "cookiestore/cookieStore_delete_basic.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.delete() return type"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_delete_basic.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.delete() return type"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_event_arguments.https.window.js": [
+     "bcb698eeb0d6ce760033ba628120ebf7772a1084",
+     [
+      "cookiestore/cookieStore_event_arguments.https.window.html",
+      {}
+     ]
+    ],
+    "cookieStore_event_basic.https.window.js": [
+     "c0075d6adcdd9a3438dfd3df622bf35883bf4110",
+     [
+      "cookiestore/cookieStore_event_basic.https.window.html",
+      {}
+     ]
+    ],
+    "cookieStore_event_delete.https.window.js": [
+     "d0fee1ab1d03cd3835f3b9e5828d4aef7eb45710",
+     [
+      "cookiestore/cookieStore_event_delete.https.window.html",
+      {}
+     ]
+    ],
+    "cookieStore_event_overwrite.https.window.js": [
+     "427e7dcbb7ce0ff1627a2f45a2a407d1c0189dc3",
+     [
+      "cookiestore/cookieStore_event_overwrite.https.window.html",
+      {}
+     ]
+    ],
+    "cookieStore_getAll_arguments.https.any.js": [
+     "868246f606f4ace75f807eef584d263114778f4b",
+     [
+      "cookiestore/cookieStore_getAll_arguments.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.getAll() arguments"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_getAll_arguments.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.getAll() arguments"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_getAll_multiple.https.any.js": [
+     "10dcacbd688d6c23364e3e8e1b946196cd0b4387",
+     [
+      "cookiestore/cookieStore_getAll_multiple.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.getAll() with multiple cookies"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_getAll_multiple.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.getAll() with multiple cookies"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_getAll_set_basic.https.any.js": [
+     "dee78e1867c7e0be04e779b4bfd949250540c289",
+     [
+      "cookiestore/cookieStore_getAll_set_basic.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.getAll()"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_getAll_set_basic.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.getAll()"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_getAll_set_creation_url.https.any.js": [
+     "d09c4aad4f87712afd70faf8111ee21f88d5f1a8",
+     [
+      "cookiestore/cookieStore_getAll_set_creation_url.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set()/getAll() with Document URL changing"
+        ],
+        [
+         "global",
+         "window"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_get_arguments.https.any.js": [
+     "d6ea0edef6a3d4e0cc69d4455d6672ddd433deda",
+     [
+      "cookiestore/cookieStore_get_arguments.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.get() arguments"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_get_arguments.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.get() arguments"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_get_delete_basic.https.any.js": [
+     "9337669afd5b61d821e9945bd2f3299d8afb8bad",
+     [
+      "cookiestore/cookieStore_get_delete_basic.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.delete()"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_get_delete_basic.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.delete()"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_get_set_across_frames.https.html": [
+     "5537f52c04bfe422a77248c5a8dc2154b95453da",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookieStore_get_set_across_origins.sub.https.html": [
+     "665e781ef9edab4218288bf34e4482c0c4399627",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookieStore_get_set_basic.https.any.js": [
+     "127f758f5f0b8154dccc74f2b6e81d3b0d2562a9",
+     [
+      "cookiestore/cookieStore_get_set_basic.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.get()"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_get_set_basic.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Interaction between cookieStore.set() and cookieStore.get()"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_get_set_creation_url.https.any.js": [
+     "71f8108095f0e78518f73f5086eb0d2d4dee1253",
+     [
+      "cookiestore/cookieStore_get_set_creation_url.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set()/get() with Document URL changing"
+        ],
+        [
+         "global",
+         "window"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_get_set_creation_url.sub.https.html": [
+     "d5ef7917ef990e0e01b1501ad0b9dae7be386a63",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookieStore_get_set_ordering.https.any.js": [
+     "fe564e55fc4a6d9111a1be35888a750d5ccba9ac",
+     [
+      "cookiestore/cookieStore_get_set_ordering.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Cookie ordering"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_get_set_ordering.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: Cookie ordering"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_in_detached_frame.https.html": [
+     "3acfc99820fe7ed0af4b37835905ef6986e81a77",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookieStore_opaque_origin.https.html": [
+     "649b486394164280b05333abb36789c3e4f5f418",
+     [
+      null,
+      {}
+     ]
+    ],
+    "cookieStore_set_arguments.https.any.js": [
+     "ce715b7f6c0fec061e4322fc18d32ebcdbddc490",
+     [
+      "cookiestore/cookieStore_set_arguments.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_set_arguments.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set() arguments"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_set_domain_parsing.sub.https.html": [
+     "4326e2a2d0256a528beb382b02bb2c9eee50c55f",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "cookieStore_set_domain_parsing.tentative.sub.https.html": [
+     "0f91e74256ff9df8fae48ea5e66f1005a31048bf",
+     [
+      null,
+      {
+       "testdriver": true
+      }
+     ]
+    ],
+    "cookieStore_set_limit.https.any.js": [
+     "0bd9ceec08d55308fba01e46270d6b16e0b35043",
+     [
+      "cookiestore/cookieStore_set_limit.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.delete() return type"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_set_limit.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.delete() return type"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_special_names.https.any.js": [
+     "36761b4493995e1bc41d56068b95b745b4cea3c5",
+     [
+      "cookiestore/cookieStore_special_names.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set()/get()/delete() for cookies with special names"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_special_names.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.set()/get()/delete() for cookies with special names"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_subscribe_arguments.https.any.js": [
+     "451ba36a373ebf7ace94353323b80046584578b9",
+     [
+      "cookiestore/cookieStore_subscribe_arguments.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.subscribe() arguments"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/cookieStore_subscribe_arguments.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookieStore.subscribe() arguments"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "cookieStore_subscriptions_empty.https.window.js": [
+     "907a34b4de6632f5e91adbcd606839a92eead320",
+     [
+      "cookiestore/cookieStore_subscriptions_empty.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "encoding.https.any.js": [
+     "f5d2ca15e717a0837f1e08031ab682db5aa965ea",
+     [
+      "cookiestore/encoding.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookie encoding"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ],
+     [
+      "cookiestore/encoding.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookie encoding"
+        ],
+        [
+         "global",
+         "window,serviceworker"
+        ],
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "httponly_cookies.https.window.js": [
+     "836f47da3f6e0f8f2c89445d1b2fbdfdf9ddc9e6",
+     [
+      "cookiestore/httponly_cookies.https.window.html",
+      {
+       "script_metadata": [
+        [
+         "script",
+         "resources/cookie-test-helpers.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "idlharness.https.any.js": [
+     "2ffa714420bfc11161f2c59dc54b568e43afd214",
+     [
+      "cookiestore/idlharness.https.any.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "cookiestore/idlharness.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "cookiestore/idlharness.https.any.sharedworker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ],
+     [
+      "cookiestore/idlharness.https.any.worker.html",
+      {
+       "script_metadata": [
+        [
+         "global",
+         "window,worker"
+        ],
+        [
+         "timeout",
+         "long"
+        ],
+        [
+         "script",
+         "/resources/WebIDLParser.js"
+        ],
+        [
+         "script",
+         "/resources/idlharness.js"
+        ],
+        [
+         "script",
+         "/service-workers/service-worker/resources/test-helpers.sub.js"
+        ]
+       ],
+       "timeout": "long"
+      }
+     ]
+    ],
+    "serviceworker_cookieStore_cross_origin.https.sub.html": [
+     "beaa867aafa2b70733ff4adcc8a8093158b5caaa",
+     [
+      null,
+      {}
+     ]
+    ],
+    "serviceworker_cookieStore_subscriptions_reset.https.html": [
+     "695430c8fce15f6cc5e81bf45e0261ca1e36cf6b",
+     [
+      null,
+      {}
+     ]
+    ],
+    "serviceworker_cookiechange_eventhandler_already_expired.https.any.js": [
+     "4ccf245e1ca583cbd47361fcfed5994916a6dae2",
+     [
+      "cookiestore/serviceworker_cookiechange_eventhandler_already_expired.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookiechange event in ServiceWorker with already-expired cookie."
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serviceworker_cookiechange_eventhandler_mismatched_subscription.https.any.js": [
+     "1dfd6a2177c1875e1dc6bfc39e0bd00823d44d34",
+     [
+      "cookiestore/serviceworker_cookiechange_eventhandler_mismatched_subscription.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookiechange event in ServiceWorker with mismatched subscription"
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.js": [
+     "bc7199e7d366640a5d2765642f27cf825c5d082c",
+     [
+      "cookiestore/serviceworker_cookiechange_eventhandler_multiple_subscriptions.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookiechange event in ServiceWorker with multiple subscriptions"
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serviceworker_cookiechange_eventhandler_no_change.https.any.js": [
+     "fbbeeda4031c67b3d1a905cca27829e7486aef12",
+     [
+      "cookiestore/serviceworker_cookiechange_eventhandler_no_change.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookiechange event in ServiceWorker with already-expired cookie."
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.js": [
+     "9ed65c73a816b7f0036dbf587f276c687d8498d4",
+     [
+      "cookiestore/serviceworker_cookiechange_eventhandler_overlapping_subscriptions.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookiechange event in ServiceWorker with overlapping subscriptions"
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serviceworker_cookiechange_eventhandler_single_subscription.https.any.js": [
+     "a9db40dd544904fe99e0a92083918c889746be98",
+     [
+      "cookiestore/serviceworker_cookiechange_eventhandler_single_subscription.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: cookiechange event in ServiceWorker with single subscription"
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ],
+    "serviceworker_oncookiechange_eventhandler_single_subscription.https.any.js": [
+     "24b91706cb3c22766b5a269e2bff667f9f18320c",
+     [
+      "cookiestore/serviceworker_oncookiechange_eventhandler_single_subscription.https.any.serviceworker.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Cookie Store API: oncookiechange event in ServiceWorker with single subscription"
+        ],
+        [
+         "global",
+         "serviceworker"
+        ]
+       ]
+      }
+     ]
+    ]
    },
    "cors": {
     "304.htm": [
@@ -500903,7 +501416,7 @@
       ]
      ],
      "anchor-position-multicol-002.html": [
-      "6ca4c22d8cd1e4f86a2d06e1a32460b16b7c756b",
+      "287b5521fce53ac52d67c4bbefa9644eb8496f48",
       [
        null,
        {}
@@ -501558,7 +502071,7 @@
       ]
      ],
      "position-area-computed.html": [
-      "0acc853eb9048cab3d5c2a5e10082ffa489abe59",
+      "8e1800644867ef06146a4d001a0bed5fe13a7324",
       [
        null,
        {}
@@ -501586,7 +502099,7 @@
       ]
      ],
      "position-area-parsing.html": [
-      "e6de6d7e2696266c02c41919a10c136ce621e90d",
+      "c8d7687cc88d4904b5626a17eddeb1bf06051c50",
       [
        null,
        {}
@@ -501922,7 +502435,7 @@
       ]
      ],
      "try-tactic-position-area.html": [
-      "e050dbccef2b5679229c8df8ba02535e989ed23e",
+      "ab5d95f2fe9c3ccf1533ab4c4e912540a5edde3c",
       [
        null,
        {}
@@ -508570,7 +509083,7 @@
        ]
       ],
       "flex-abspos-staticpos-align-self-006.html": [
-       "3c03636b35ea5e3bcec9a3fa0075205647e6bb91",
+       "c36a6d1574773ad37cae8efe14c91e8764042425",
        [
         null,
         {}
@@ -524462,6 +524975,13 @@
         {}
        ]
       ],
+      "resnap-on-overflowing-snap-area.html": [
+       "e0af5f315874f0558f0138bddfe57c2116d29ff4",
+       [
+        null,
+        {}
+       ]
+      ],
       "resnap-on-reconstructing-frame.html": [
        "d046608815aff119e443a17594a4947bea2ce587",
        [
@@ -538303,6 +538823,15 @@
        ]
       ]
      },
+     "nested": {
+      "group-children-animations.html": [
+       "d4c3aa77818d676246a2796372687a3313c13c62",
+       [
+        null,
+        {}
+       ]
+      ]
+     },
      "no-crash-set-exception.html": [
       "b57fce0d73f27878efe733877201f05df9239bf0",
       [
@@ -541216,6 +541745,13 @@
        {}
       ]
      ],
+     "offsetParent-fixed.html": [
+      "a2c4255a77729066fedc1ba21101cb123a396380",
+      [
+       null,
+       {}
+      ]
+     ],
      "offsetParent_element_test.html": [
       "dc2f8e91f1dcbd4ef6f21c1b920765cbc0bad1f5",
       [
@@ -542490,6 +543026,13 @@
     "mediaqueries": {
      "aspect-ratio-serialization.html": [
       "cce35592885f29eafd2c5c1b94a0da173217fc2a",
+      [
+       null,
+       {}
+      ]
+     ],
+     "at-custom-media-cssom.html": [
+      "1b018592c3fe7f11129550aa20e9f8322e9d3ee9",
       [
        null,
        {}
@@ -546399,7 +546942,7 @@
      ]
     ],
     "create.tentative.https.html": [
-     "3e17d5b0853b38b36cb640ee665a12c398eb4ed3",
+     "67630d1426b6b370609ec6ae970c6db33cb18e34",
      [
       null,
       {
@@ -546449,7 +546992,7 @@
      ]
     ],
     "get.tentative.https.html": [
-     "7c1e6631da7cebe849958bb92201348c150c8c0d",
+     "1549bba673b2f4ea86d48ef670155212823bff42",
      [
       null,
       {
@@ -572999,11 +573542,12 @@
      ]
     ],
     "fedcm-disconnect.sub.https.html": [
-     "04fcd272dcf261a19cf71abb049e41c8b41abbbf",
+     "a80ed48534ae33d027595f7b2a392693c781cea2",
      [
       null,
       {
-       "testdriver": true
+       "testdriver": true,
+       "timeout": "long"
       }
      ]
     ],
@@ -584783,7 +585327,7 @@
      },
      "quota": {
       "accumulated-oversized-payload.tentative.https.window.js": [
-       "6439b392e2a0230a3ff819e4e80b42341dc0c389",
+       "143546ff72340ebbae34e6b598a6348d044f8482",
        [
         "fetch/fetch-later/quota/accumulated-oversized-payload.tentative.https.window.html",
         {
@@ -584981,7 +585525,7 @@
        ]
       ],
       "max-payload.tentative.https.window.js": [
-       "8457060797ac2d140c85af6c657f79389288c356",
+       "aa797f135571ed417d21b5fbcd4a235bac6358aa",
        [
         "fetch/fetch-later/quota/max-payload.tentative.https.window.html",
         {
@@ -585033,7 +585577,7 @@
        ]
       ],
       "oversized-payload.tentative.https.window.js": [
-       "0036d040d8e201d8d621c6615e4e7c49daf45fff",
+       "740f17ea24ade1073c4e0507fb9134ae8715f57b",
        [
         "fetch/fetch-later/quota/oversized-payload.tentative.https.window.html",
         {
@@ -615576,6 +616120,31 @@
         {}
        ]
       ],
+      "origin.tentative.any.js": [
+       "fbdb067873200891b00807b9dbf6f279ad940fc9",
+       [
+        "html/browsers/origin/origin.tentative.any.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Origin"
+          ]
+         ]
+        }
+       ],
+       [
+        "html/browsers/origin/origin.tentative.any.worker.html",
+        {
+         "script_metadata": [
+          [
+           "title",
+           "Origin"
+          ]
+         ]
+        }
+       ]
+      ],
       "relaxing-the-same-origin-restriction": {
        "document_domain.html": [
         "d3af35c6d7ac50de4fd8942066875d52229634f2",
@@ -621773,6 +622342,20 @@
          {}
         ]
        ],
+       "2d.path.clip.winding.evenodd.1.html": [
+        "a1922011e4ac937605a42e0b14a0de63b05ded73",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.clip.winding.evenodd.2.html": [
+        "e5aeba44b008e76000af1db74a756becf27ecadc",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.path.closePath.empty.html": [
         "837f5a76dc9701748f4d485c102cc93f6d410ce9",
         [
@@ -621831,6 +622414,20 @@
        ],
        "2d.path.fill.winding.add.html": [
         "96ed680ff45834a6063db82969af6eb968a549e8",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.fill.winding.evenodd.1.html": [
+        "d030b93239c310a76a1423fe13c1adcf9fe399ce",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.fill.winding.evenodd.2.html": [
+        "4553f29d1e4b245fe231eeeb75973b5eba69c15d",
         [
          null,
          {}
@@ -633367,6 +633964,34 @@
          {}
         ]
        ],
+       "2d.path.clip.winding.evenodd.1.html": [
+        "4cf680f62f2b6328d838929f64ebe50729b5b270",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.clip.winding.evenodd.1.worker.js": [
+        "da772ea73d00beb9ae3332e4bf9d19fda68fdd70",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.clip.winding.evenodd.1.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.clip.winding.evenodd.2.html": [
+        "6d47707e5ec00a8a9302c3a2caea1e9e8f25350b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.clip.winding.evenodd.2.worker.js": [
+        "23f626e7d7293c7559baa66793264685876e7c0d",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.clip.winding.evenodd.2.worker.html",
+         {}
+        ]
+       ],
        "2d.path.closePath.empty.html": [
         "a14a036b253d90462d5f4d1881a0d947b869c5dd",
         [
@@ -633490,6 +634115,34 @@
         "cdbfc7f3a495c85bf3f0f2e64513eb050156c125",
         [
          "html/canvas/offscreen/path-objects/2d.path.fill.winding.add.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.fill.winding.evenodd.1.html": [
+        "fc839c9f58b19a4be7a0e43fe661799902ee257e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.fill.winding.evenodd.1.worker.js": [
+        "64e1aa1099370dc955bf79e0f05642a53609b2c9",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.fill.winding.evenodd.1.worker.html",
+         {}
+        ]
+       ],
+       "2d.path.fill.winding.evenodd.2.html": [
+        "acb70538fd946bd7a6bbb561eae0e93724161b8b",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.path.fill.winding.evenodd.2.worker.js": [
+        "1a69f4639d0c8b9a67d3e6b16fd764ea7e5f6683",
+        [
+         "html/canvas/offscreen/path-objects/2d.path.fill.winding.evenodd.2.worker.html",
          {}
         ]
        ],
@@ -667283,6 +667936,13 @@
           {}
          ]
         ],
+        "script-src-event-handler.sub.html": [
+         "346660511ee77f105a54a1126266d0db4787008a",
+         [
+          null,
+          {}
+         ]
+        ],
         "script-src-integrity.tentative.sub.html": [
          "6f66636d7673387854f5c2053bad92bd0207aae8",
          [
@@ -667297,7 +667957,7 @@
           {}
          ]
         ],
-        "script-src-nomodule.tentative.sub.html": [
+        "script-src-nomodule.sub.html": [
          "3f61dba8d41926994c8ad8e7937ba855dbe1eddd",
          [
           null,
@@ -667318,8 +667978,15 @@
           {}
          ]
         ],
-        "script-src-unsupported-type.tentative.sub.html": [
-         "1eaa56494dbe866a75b5f36b4d1046e3a4ac2447",
+        "script-src-unsupported-language.sub.html": [
+         "e418c0e1edd8fea62752fe38c4db608153d2ad29",
+         [
+          null,
+          {}
+         ]
+        ],
+        "script-src-unsupported-type.sub.html": [
+         "665e7abb02d30c3b911e49228b7c214051c341fb",
          [
           null,
           {}
@@ -667705,6 +668372,13 @@
           {}
          ]
         ],
+        "script-src-event-handler.html": [
+         "6bb89bd463c7b3565352242f96d6b98c4b7bac47",
+         [
+          null,
+          {}
+         ]
+        ],
         "script-src-integrity.tentative.html": [
          "42719e994a4774d8e2c1ed28b70714ecef6df1b4",
          [
@@ -667719,7 +668393,7 @@
           {}
          ]
         ],
-        "script-src-nomodule.tentative.html": [
+        "script-src-nomodule.html": [
          "20ca80222eb0c6b100c57b6dacfbba0bd62f8c97",
          [
           null,
@@ -667740,7 +668414,14 @@
           {}
          ]
         ],
-        "script-src-unsupported-type.tentative.html": [
+        "script-src-unsupported-language.html": [
+         "60f50eb34d6e6beaf2496f0ed090d18f79ea1931",
+         [
+          null,
+          {}
+         ]
+        ],
+        "script-src-unsupported-type.html": [
          "c7c5b483a4eba8b08e0e8ee634cd04409ddf2c10",
          [
           null,
@@ -679181,7 +679862,7 @@
      ]
     ],
     "mediasource-appendbuffer-quota-exceeded.html": [
-     "c90d8448c508feed3ba676a3e7afdae5121264f8",
+     "470ee7211f8919d298d5e0c1a1dd9165a0b02a3b",
      [
       null,
       {
@@ -681312,7 +681993,7 @@
      ]
     ],
     "MediaStreamTrack-getCapabilities.https.html": [
-     "7d600c0e1b97c905cbeb172d0aae0a33ed961c9e",
+     "cc7d5cdff171ef50bf307d67945b963686a46fb8",
      [
       null,
       {
@@ -711673,6 +712354,16 @@
       }
      ]
     ],
+    "getdisplaymedia-restrictOwnAudio.https.html": [
+     "b4915dea9694505fe90b5f934ad39102be223944",
+     [
+      null,
+      {
+       "testdriver": true,
+       "timeout": "long"
+      }
+     ]
+    ],
     "getdisplaymedia-settings.https.html": [
      "afd8339d9919d8cabd4aaca03b4a43b792b7481d",
      [
@@ -711684,7 +712375,7 @@
      ]
     ],
     "getdisplaymedia.https.html": [
-     "4a7c655335161afdeaf398a4e6225598de325ce9",
+     "0051e4c5a0453a0f0b986235b9bb519668020673",
      [
       null,
       {
@@ -719503,7 +720194,7 @@
      ]
     },
     "offsetParent-across-shadow-boundaries.html": [
-     "5491e2121336d1b59ef69198fd048a22acc80d46",
+     "44bbc0771d47e05a46fc2910acdd5ec6e525d2d5",
      [
       null,
       {}
@@ -722018,6 +722709,15 @@
         }
        ]
       ],
+      "late-url-change.html": [
+       "fbd0465bedfde6138144eede1365448f366d8bad",
+       [
+        null,
+        {
+         "testdriver": true
+        }
+       ]
+      ],
       "lcp-unbuffered.html": [
        "1df6bd11d0fb67ac9463ae3a0cdc3fb1cbf9e4f8",
        [
@@ -723361,7 +724061,7 @@
       ]
      ],
      "cookies.https.html": [
-      "2f02197fb5b191b782f45fc1f4d9f47ff6853286",
+      "3965284f8b9de8ec596edc9b997f07135f2319b8",
       [
        null,
        {
@@ -725266,7 +725966,7 @@
    "storage": {
     "buckets": {
      "bucket-quota-indexeddb.tentative.https.any.js": [
-      "ee9202777e7ec55faee0b89f4c656f7a76c05e83",
+      "9dc345579d3b26586bb1826fa20feaca367aaf0c",
       [
        "storage/buckets/bucket-quota-indexeddb.tentative.https.any.html",
        {
@@ -763881,7 +764581,7 @@
        ]
       ],
       "biquad-basic.html": [
-       "441e98a251187c3cc600299681306d29df11e618",
+       "4f86474935af68838e4826f1eb0d4e3a5d92c740",
        [
         null,
         {}
@@ -789446,7 +790146,7 @@
       ]
      ],
      "tensor.https.any.js": [
-      "ea2cedb3f6dad0f2424be21cf942539de24ae410",
+      "4b6a4ab8e7ff2c78b420b97047c31dc7695cfe4a",
       [
        "webnn/conformance_tests/tensor.https.any.html?cpu",
        {
@@ -791738,7 +792438,7 @@
       ]
      ],
      "constant.https.any.js": [
-      "f9e34ea94ec1a31cdf999c810e9f3f616f971654",
+      "420fd9d23d89f0cb19ae5ca6472f3d26adaa0221",
       [
        "webnn/validation_tests/constant.https.any.html?cpu",
        {
@@ -821778,7 +822478,7 @@
      ]
     ],
     "storage_local_setitem_quotaexceedederr.window.js": [
-     "fff7d6444a039e4fbc9795c5fbab823c80b170de",
+     "f2f3c4d6887542cc90dd0ca312080c8d23857e60",
      [
       "webstorage/storage_local_setitem_quotaexceedederr.window.html",
       {}
@@ -821799,7 +822499,7 @@
      ]
     ],
     "storage_session_setitem_quotaexceedederr.window.js": [
-     "42a895470efa628b47c83b4df963d635beb45646",
+     "693c98d29f99fd9e65f202244206fe0f224618e9",
      [
       "webstorage/storage_session_setitem_quotaexceedederr.window.html",
       {}
@@ -847330,6 +848030,15 @@
        }
       },
       "network": {
+       "add_data_collector": {
+        "invalid.py": [
+         "aa6a19e3241668b093c8ce99866ebeb4a74012ba",
+         [
+          null,
+          {}
+         ]
+        ]
+       },
        "add_intercept": {
         "add_intercept.py": [
          "c073e1cc3260f08d3b781102dfcdcd54804f60ce",

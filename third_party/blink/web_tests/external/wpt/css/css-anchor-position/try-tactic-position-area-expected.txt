@@ -1,0 +1,76 @@
+This is a testharness.js-based test.
+Found 36 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] flip-inline, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-inline, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-inline, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-inline, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-block, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-block, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-block, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-block, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-block flip-inline, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-block flip-inline, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-block flip-inline, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-block flip-inline, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-start, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-start, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-start, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-start, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-block flip-start, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-block flip-start, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-block flip-start, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-block flip-start, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-inline flip-start, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-inline flip-start, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-inline flip-start, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-inline flip-start, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-block flip-inline flip-start, position-area:block-start inline-start, ltr horizontal-tb
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] flip-block flip-inline flip-start, position-area:block-end inline-start, ltr horizontal-tb
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] flip-block flip-inline flip-start, position-area:block-end inline-end, ltr horizontal-tb
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] flip-block flip-inline flip-start, position-area:block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] flip-block flip-inline, position-area:span-block-start span-inline-start, ltr horizontal-tb
+  assert_equals: expected "span-end" but got "span-block-end span-inline-end"
+[FAIL] flip-block flip-inline, position-area:self-block-start self-inline-start, ltr horizontal-tb
+  assert_equals: expected "self-end" but got "self-block-end self-inline-end"
+[FAIL] flip-block flip-inline, position-area:span-self-block-start span-self-inline-start, ltr horizontal-tb
+  assert_equals: expected "span-self-end" but got "span-self-block-end span-self-inline-end"
+[FAIL] flip-block, position-area:start span-all, ltr horizontal-tb
+  assert_equals: expected "block-end" but got "end span-all"
+[FAIL] flip-block, position-area:span-all start, ltr horizontal-tb
+  assert_equals: expected "inline-start" but got "span-all start"
+[FAIL] flip-inline, position-area:span-all start, ltr horizontal-tb
+  assert_equals: expected "inline-end" but got "span-all end"
+[FAIL] flip-start, position-area:span-all start, ltr horizontal-tb
+  assert_equals: expected "block-start" but got "start span-all"
+[FAIL] flip-start, position-area:span-block-start inline-end, ltr horizontal-tb
+  assert_equals: expected "end span-start" but got "block-end span-inline-start"
+Harness: the test ran to completion.
+

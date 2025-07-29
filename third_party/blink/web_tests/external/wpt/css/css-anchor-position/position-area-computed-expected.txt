@@ -1,0 +1,228 @@
+This is a testharness.js-based test.
+Found 112 FAIL, 0 TIMEOUT, 0 NOTRUN.
+[FAIL] Property position-area value 'block-start inline-start'
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] Property position-area value 'inline-start block-start'
+  assert_equals: expected "start" but got "block-start inline-start"
+[FAIL] Property position-area value 'block-start inline-end'
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] Property position-area value 'inline-end block-start'
+  assert_equals: expected "start end" but got "block-start inline-end"
+[FAIL] Property position-area value 'block-start span-inline-start'
+  assert_equals: expected "start span-start" but got "block-start span-inline-start"
+[FAIL] Property position-area value 'span-inline-start block-start'
+  assert_equals: expected "start span-start" but got "block-start span-inline-start"
+[FAIL] Property position-area value 'block-start span-inline-end'
+  assert_equals: expected "start span-end" but got "block-start span-inline-end"
+[FAIL] Property position-area value 'span-inline-end block-start'
+  assert_equals: expected "start span-end" but got "block-start span-inline-end"
+[FAIL] Property position-area value 'block-end inline-start'
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] Property position-area value 'inline-start block-end'
+  assert_equals: expected "end start" but got "block-end inline-start"
+[FAIL] Property position-area value 'block-end inline-end'
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] Property position-area value 'inline-end block-end'
+  assert_equals: expected "end" but got "block-end inline-end"
+[FAIL] Property position-area value 'block-end span-inline-start'
+  assert_equals: expected "end span-start" but got "block-end span-inline-start"
+[FAIL] Property position-area value 'span-inline-start block-end'
+  assert_equals: expected "end span-start" but got "block-end span-inline-start"
+[FAIL] Property position-area value 'block-end span-inline-end'
+  assert_equals: expected "end span-end" but got "block-end span-inline-end"
+[FAIL] Property position-area value 'span-inline-end block-end'
+  assert_equals: expected "end span-end" but got "block-end span-inline-end"
+[FAIL] Property position-area value 'span-block-start inline-start'
+  assert_equals: expected "span-start start" but got "span-block-start inline-start"
+[FAIL] Property position-area value 'inline-start span-block-start'
+  assert_equals: expected "span-start start" but got "span-block-start inline-start"
+[FAIL] Property position-area value 'span-block-start inline-end'
+  assert_equals: expected "span-start end" but got "span-block-start inline-end"
+[FAIL] Property position-area value 'inline-end span-block-start'
+  assert_equals: expected "span-start end" but got "span-block-start inline-end"
+[FAIL] Property position-area value 'span-block-start span-inline-start'
+  assert_equals: expected "span-start" but got "span-block-start span-inline-start"
+[FAIL] Property position-area value 'span-inline-start span-block-start'
+  assert_equals: expected "span-start" but got "span-block-start span-inline-start"
+[FAIL] Property position-area value 'span-block-start span-inline-end'
+  assert_equals: expected "span-start span-end" but got "span-block-start span-inline-end"
+[FAIL] Property position-area value 'span-inline-end span-block-start'
+  assert_equals: expected "span-start span-end" but got "span-block-start span-inline-end"
+[FAIL] Property position-area value 'span-block-end inline-start'
+  assert_equals: expected "span-end start" but got "span-block-end inline-start"
+[FAIL] Property position-area value 'inline-start span-block-end'
+  assert_equals: expected "span-end start" but got "span-block-end inline-start"
+[FAIL] Property position-area value 'span-block-end inline-end'
+  assert_equals: expected "span-end end" but got "span-block-end inline-end"
+[FAIL] Property position-area value 'inline-end span-block-end'
+  assert_equals: expected "span-end end" but got "span-block-end inline-end"
+[FAIL] Property position-area value 'span-block-end span-inline-start'
+  assert_equals: expected "span-end span-start" but got "span-block-end span-inline-start"
+[FAIL] Property position-area value 'span-inline-start span-block-end'
+  assert_equals: expected "span-end span-start" but got "span-block-end span-inline-start"
+[FAIL] Property position-area value 'span-block-end span-inline-end'
+  assert_equals: expected "span-end" but got "span-block-end span-inline-end"
+[FAIL] Property position-area value 'span-inline-end span-block-end'
+  assert_equals: expected "span-end" but got "span-block-end span-inline-end"
+[FAIL] Property position-area value 'block-start center'
+  assert_equals: expected "start center" but got "block-start center"
+[FAIL] Property position-area value 'center block-start'
+  assert_equals: expected "start center" but got "block-start center"
+[FAIL] Property position-area value 'block-end center'
+  assert_equals: expected "end center" but got "block-end center"
+[FAIL] Property position-area value 'center block-end'
+  assert_equals: expected "end center" but got "block-end center"
+[FAIL] Property position-area value 'span-block-start center'
+  assert_equals: expected "span-start center" but got "span-block-start center"
+[FAIL] Property position-area value 'center span-block-start'
+  assert_equals: expected "span-start center" but got "span-block-start center"
+[FAIL] Property position-area value 'span-block-end center'
+  assert_equals: expected "span-end center" but got "span-block-end center"
+[FAIL] Property position-area value 'center span-block-end'
+  assert_equals: expected "span-end center" but got "span-block-end center"
+[FAIL] Property position-area value 'inline-start center'
+  assert_equals: expected "center start" but got "center inline-start"
+[FAIL] Property position-area value 'center inline-start'
+  assert_equals: expected "center start" but got "center inline-start"
+[FAIL] Property position-area value 'inline-end center'
+  assert_equals: expected "center end" but got "center inline-end"
+[FAIL] Property position-area value 'center inline-end'
+  assert_equals: expected "center end" but got "center inline-end"
+[FAIL] Property position-area value 'span-inline-start center'
+  assert_equals: expected "center span-start" but got "center span-inline-start"
+[FAIL] Property position-area value 'center span-inline-start'
+  assert_equals: expected "center span-start" but got "center span-inline-start"
+[FAIL] Property position-area value 'span-inline-end center'
+  assert_equals: expected "center span-end" but got "center span-inline-end"
+[FAIL] Property position-area value 'center span-inline-end'
+  assert_equals: expected "center span-end" but got "center span-inline-end"
+[FAIL] Property position-area value 'self-block-start self-inline-start'
+  assert_equals: expected "self-start" but got "self-block-start self-inline-start"
+[FAIL] Property position-area value 'self-inline-start self-block-start'
+  assert_equals: expected "self-start" but got "self-block-start self-inline-start"
+[FAIL] Property position-area value 'self-block-start self-inline-end'
+  assert_equals: expected "self-start self-end" but got "self-block-start self-inline-end"
+[FAIL] Property position-area value 'self-inline-end self-block-start'
+  assert_equals: expected "self-start self-end" but got "self-block-start self-inline-end"
+[FAIL] Property position-area value 'self-block-start span-self-inline-start'
+  assert_equals: expected "self-start span-self-start" but got "self-block-start span-self-inline-start"
+[FAIL] Property position-area value 'span-self-inline-start self-block-start'
+  assert_equals: expected "self-start span-self-start" but got "self-block-start span-self-inline-start"
+[FAIL] Property position-area value 'self-block-start span-self-inline-end'
+  assert_equals: expected "self-start span-self-end" but got "self-block-start span-self-inline-end"
+[FAIL] Property position-area value 'span-self-inline-end self-block-start'
+  assert_equals: expected "self-start span-self-end" but got "self-block-start span-self-inline-end"
+[FAIL] Property position-area value 'self-block-end self-inline-start'
+  assert_equals: expected "self-end self-start" but got "self-block-end self-inline-start"
+[FAIL] Property position-area value 'self-inline-start self-block-end'
+  assert_equals: expected "self-end self-start" but got "self-block-end self-inline-start"
+[FAIL] Property position-area value 'self-block-end self-inline-end'
+  assert_equals: expected "self-end" but got "self-block-end self-inline-end"
+[FAIL] Property position-area value 'self-inline-end self-block-end'
+  assert_equals: expected "self-end" but got "self-block-end self-inline-end"
+[FAIL] Property position-area value 'self-block-end span-self-inline-start'
+  assert_equals: expected "self-end span-self-start" but got "self-block-end span-self-inline-start"
+[FAIL] Property position-area value 'span-self-inline-start self-block-end'
+  assert_equals: expected "self-end span-self-start" but got "self-block-end span-self-inline-start"
+[FAIL] Property position-area value 'self-block-end span-self-inline-end'
+  assert_equals: expected "self-end span-self-end" but got "self-block-end span-self-inline-end"
+[FAIL] Property position-area value 'span-self-inline-end self-block-end'
+  assert_equals: expected "self-end span-self-end" but got "self-block-end span-self-inline-end"
+[FAIL] Property position-area value 'span-self-block-start self-inline-start'
+  assert_equals: expected "span-self-start self-start" but got "span-self-block-start self-inline-start"
+[FAIL] Property position-area value 'self-inline-start span-self-block-start'
+  assert_equals: expected "span-self-start self-start" but got "span-self-block-start self-inline-start"
+[FAIL] Property position-area value 'span-self-block-start self-inline-end'
+  assert_equals: expected "span-self-start self-end" but got "span-self-block-start self-inline-end"
+[FAIL] Property position-area value 'self-inline-end span-self-block-start'
+  assert_equals: expected "span-self-start self-end" but got "span-self-block-start self-inline-end"
+[FAIL] Property position-area value 'span-self-block-start span-self-inline-start'
+  assert_equals: expected "span-self-start" but got "span-self-block-start span-self-inline-start"
+[FAIL] Property position-area value 'span-self-inline-start span-self-block-start'
+  assert_equals: expected "span-self-start" but got "span-self-block-start span-self-inline-start"
+[FAIL] Property position-area value 'span-self-block-start span-self-inline-end'
+  assert_equals: expected "span-self-start span-self-end" but got "span-self-block-start span-self-inline-end"
+[FAIL] Property position-area value 'span-self-inline-end span-self-block-start'
+  assert_equals: expected "span-self-start span-self-end" but got "span-self-block-start span-self-inline-end"
+[FAIL] Property position-area value 'span-self-block-end self-inline-start'
+  assert_equals: expected "span-self-end self-start" but got "span-self-block-end self-inline-start"
+[FAIL] Property position-area value 'self-inline-start span-self-block-end'
+  assert_equals: expected "span-self-end self-start" but got "span-self-block-end self-inline-start"
+[FAIL] Property position-area value 'span-self-block-end self-inline-end'
+  assert_equals: expected "span-self-end self-end" but got "span-self-block-end self-inline-end"
+[FAIL] Property position-area value 'self-inline-end span-self-block-end'
+  assert_equals: expected "span-self-end self-end" but got "span-self-block-end self-inline-end"
+[FAIL] Property position-area value 'span-self-block-end span-self-inline-start'
+  assert_equals: expected "span-self-end span-self-start" but got "span-self-block-end span-self-inline-start"
+[FAIL] Property position-area value 'span-self-inline-start span-self-block-end'
+  assert_equals: expected "span-self-end span-self-start" but got "span-self-block-end span-self-inline-start"
+[FAIL] Property position-area value 'span-self-block-end span-self-inline-end'
+  assert_equals: expected "span-self-end" but got "span-self-block-end span-self-inline-end"
+[FAIL] Property position-area value 'span-self-inline-end span-self-block-end'
+  assert_equals: expected "span-self-end" but got "span-self-block-end span-self-inline-end"
+[FAIL] Property position-area value 'self-block-start center'
+  assert_equals: expected "self-start center" but got "self-block-start center"
+[FAIL] Property position-area value 'center self-block-start'
+  assert_equals: expected "self-start center" but got "self-block-start center"
+[FAIL] Property position-area value 'self-block-end center'
+  assert_equals: expected "self-end center" but got "self-block-end center"
+[FAIL] Property position-area value 'center self-block-end'
+  assert_equals: expected "self-end center" but got "self-block-end center"
+[FAIL] Property position-area value 'span-self-block-start center'
+  assert_equals: expected "span-self-start center" but got "span-self-block-start center"
+[FAIL] Property position-area value 'center span-self-block-start'
+  assert_equals: expected "span-self-start center" but got "span-self-block-start center"
+[FAIL] Property position-area value 'span-self-block-end center'
+  assert_equals: expected "span-self-end center" but got "span-self-block-end center"
+[FAIL] Property position-area value 'center span-self-block-end'
+  assert_equals: expected "span-self-end center" but got "span-self-block-end center"
+[FAIL] Property position-area value 'self-inline-start center'
+  assert_equals: expected "center self-start" but got "center self-inline-start"
+[FAIL] Property position-area value 'center self-inline-start'
+  assert_equals: expected "center self-start" but got "center self-inline-start"
+[FAIL] Property position-area value 'self-inline-end center'
+  assert_equals: expected "center self-end" but got "center self-inline-end"
+[FAIL] Property position-area value 'center self-inline-end'
+  assert_equals: expected "center self-end" but got "center self-inline-end"
+[FAIL] Property position-area value 'span-self-inline-start center'
+  assert_equals: expected "center span-self-start" but got "center span-self-inline-start"
+[FAIL] Property position-area value 'center span-self-inline-start'
+  assert_equals: expected "center span-self-start" but got "center span-self-inline-start"
+[FAIL] Property position-area value 'span-self-inline-end center'
+  assert_equals: expected "center span-self-end" but got "center span-self-inline-end"
+[FAIL] Property position-area value 'center span-self-inline-end'
+  assert_equals: expected "center span-self-end" but got "center span-self-inline-end"
+[FAIL] Property position-area value 'start span-all'
+  assert_equals: expected "block-start" but got "start span-all"
+[FAIL] Property position-area value 'span-all start'
+  assert_equals: expected "inline-start" but got "span-all start"
+[FAIL] Property position-area value 'end span-all'
+  assert_equals: expected "block-end" but got "end span-all"
+[FAIL] Property position-area value 'span-all end'
+  assert_equals: expected "inline-end" but got "span-all end"
+[FAIL] Property position-area value 'span-start span-all'
+  assert_equals: expected "span-block-start" but got "span-start span-all"
+[FAIL] Property position-area value 'span-all span-start'
+  assert_equals: expected "span-inline-start" but got "span-all span-start"
+[FAIL] Property position-area value 'span-end span-all'
+  assert_equals: expected "span-block-end" but got "span-end span-all"
+[FAIL] Property position-area value 'span-all span-end'
+  assert_equals: expected "span-inline-end" but got "span-all span-end"
+[FAIL] Property position-area value 'self-start span-all'
+  assert_equals: expected "self-block-start" but got "self-start span-all"
+[FAIL] Property position-area value 'span-all self-start'
+  assert_equals: expected "self-inline-start" but got "span-all self-start"
+[FAIL] Property position-area value 'self-end span-all'
+  assert_equals: expected "self-block-end" but got "self-end span-all"
+[FAIL] Property position-area value 'span-all self-end'
+  assert_equals: expected "self-inline-end" but got "span-all self-end"
+[FAIL] Property position-area value 'span-self-start span-all'
+  assert_equals: expected "span-self-block-start" but got "span-self-start span-all"
+[FAIL] Property position-area value 'span-all span-self-start'
+  assert_equals: expected "span-self-inline-start" but got "span-all span-self-start"
+[FAIL] Property position-area value 'span-self-end span-all'
+  assert_equals: expected "span-self-block-end" but got "span-self-end span-all"
+[FAIL] Property position-area value 'span-all span-self-end'
+  assert_equals: expected "span-self-inline-end" but got "span-all span-self-end"
+Harness: the test ran to completion.
+
