@@ -630,11 +630,6 @@ Browser::Browser(const CreateParams& params)
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
       window_has_shown_(false),
       user_title_(params.user_title) {
-  // TODO(crbug.com/431668289): Move this call to BrowserWindowFeatures when it
-  // becomes the owner of BrowserCommandController.
-  command_controller_ =
-      std::make_unique<chrome::BrowserCommandController>(this);
-
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
         params.profile->GetOriginalProfile(),
@@ -714,11 +709,6 @@ Browser::~Browser() {
   // TODO(crbug.com/40887606): This DCHECK doesn't always pass.
   // TODO(crbug.com/40064092): convert this to CHECK.
   DCHECK(tab_strip_model_->empty());
-
-  // Destroy the BrowserCommandController before removing the browser, so that
-  // it doesn't act on any notifications that are sent as a result of removing
-  // the browser.
-  command_controller_.reset();
 
   // Destroy ExclusiveAccessManager, which depends on `window_` which may be
   // destroyed by RemoveBrowser().
@@ -1420,13 +1410,13 @@ void Browser::WindowFullscreenStateChanged() {
       ->exclusive_access_manager()
       ->fullscreen_controller()
       ->WindowFullscreenStateChanged();
-  command_controller_->FullscreenStateChanged();
+  GetCommandController()->FullscreenStateChanged();
   BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kToggleFullscreen);
 }
 
 void Browser::FullscreenTopUIStateChanged() {
-  command_controller_->FullscreenStateChanged();
+  GetCommandController()->FullscreenStateChanged();
   BookmarkBarController::From(this)->UpdateBookmarkBarState(
       BookmarkBarController::StateChangeReason::kToolbarOptionChange);
 }
@@ -1436,7 +1426,7 @@ void Browser::OnFindBarVisibilityChanged() {
     window()->UpdatePageActionIcon(PageActionIconType::kFind);
   }
 
-  command_controller_->FindBarVisibilityChanged();
+  GetCommandController()->FindBarVisibilityChanged();
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -2090,7 +2080,7 @@ void Browser::NavigationStateChanged(WebContents* source,
   // state messages while destructing during browser tear-down. Ironically we
   // can't use IsShuttingDown() because by this point the browser is entirely
   // removed from the browser list.
-  if (!command_controller_) {
+  if (is_delete_scheduled_) {
     return;
   }
 
@@ -2106,7 +2096,7 @@ void Browser::NavigationStateChanged(WebContents* source,
   if (changed_flags &
       (content::INVALIDATE_TYPE_URL | content::INVALIDATE_TYPE_LOAD |
        content::INVALIDATE_TYPE_TAB)) {
-    command_controller_->TabStateChanged();
+    GetCommandController()->TabStateChanged();
   }
 
   if (app_controller_) {
@@ -2965,7 +2955,7 @@ void Browser::OnZoomChanged(
   if (data.web_contents == tab_strip_model_->GetActiveWebContents()) {
     window_->ZoomChangedForActiveTab(data.can_show_bubble);
     // Change the zoom commands state based on the zoom state
-    command_controller_->ZoomStateChanged();
+    GetCommandController()->ZoomStateChanged();
   }
 }
 
@@ -3149,10 +3139,13 @@ void Browser::OnActiveTabChanged(WebContents* old_contents,
   UpdateToolbar((reason & CHANGE_REASON_REPLACED) == 0);
 
   // Update reload/stop state.
-  command_controller_->LoadingStateChanged(new_contents->IsLoading(), true);
+  chrome::BrowserCommandController* const browser_command_controller =
+      GetCommandController();
+  browser_command_controller->LoadingStateChanged(new_contents->IsLoading(),
+                                                  true);
 
   // Update commands to reflect current state.
-  command_controller_->TabStateChanged();
+  browser_command_controller->TabStateChanged();
 
   // Reset the status bubble.
   std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
@@ -3419,6 +3412,10 @@ std::vector<StatusBubble*> Browser::GetStatusBubbles() {
   }
 }
 
+chrome::BrowserCommandController* Browser::GetCommandController() {
+  return GetFeatures().browser_command_controller();
+}
+
 ///////////////////////////////////////////////////////////////////////////////
 // Browser, Session restore functions (private):
 
@@ -3596,7 +3593,7 @@ void Browser::UpdateWindowForLoadingStateChanged(content::WebContents* source,
   WebContents* selected_contents = tab_strip_model_->GetActiveWebContents();
   if (source == selected_contents) {
     bool is_loading = source->IsLoading() && should_show_loading_ui;
-    command_controller_->LoadingStateChanged(is_loading, false);
+    GetCommandController()->LoadingStateChanged(is_loading, false);
 
     std::vector<StatusBubble*> status_bubbles = GetStatusBubbles();
     if (status_bubbles.size() > 0) {

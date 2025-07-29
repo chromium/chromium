@@ -466,8 +466,9 @@ class Browser : public TabStripModelObserver,
 
   BrowserActions* browser_actions() { return GetActions(); }
 
+  // TODO(crbug.com/434734349): Remove this method once callsites are migrated.
   chrome::BrowserCommandController* command_controller() {
-    return command_controller_.get();
+    return GetCommandController();
   }
 
   SessionID session_id() const { return session_id_; }
@@ -862,11 +863,8 @@ class Browser : public TabStripModelObserver,
   friend class ExclusiveAccessTest;
   friend class FullscreenControllerInteractiveTest;
   FRIEND_TEST_ALL_PREFIXES(AppModeTest, EnableAppModeTest);
-  FRIEND_TEST_ALL_PREFIXES(BrowserCommandControllerTest,
-                           IsReservedCommandOrKeyIsApp);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastIncognito);
   FRIEND_TEST_ALL_PREFIXES(BrowserCloseTest, LastRegular);
-  FRIEND_TEST_ALL_PREFIXES(BrowserCommandControllerTest, AppFullScreen);
   FRIEND_TEST_ALL_PREFIXES(BrowserTest, OpenAppWindowLikeNtp);
   FRIEND_TEST_ALL_PREFIXES(BrowserTest, AppIdSwitch);
   FRIEND_TEST_ALL_PREFIXES(ExclusiveAccessBubbleWindowControllerTest,
@@ -1127,6 +1125,8 @@ class Browser : public TabStripModelObserver,
   // TODO(beng): remove this.
   std::vector<StatusBubble*> GetStatusBubbles();
 
+  chrome::BrowserCommandController* GetCommandController();
+
   // Session restore functions ////////////////////////////////////////////////
 
   // Notifies the history database of the index for all tabs whose index is
@@ -1350,8 +1350,6 @@ class Browser : public TabStripModelObserver,
   // This must be initialized before |command_controller_| to ensure the correct
   // set of commands are enabled.
   const std::unique_ptr<web_app::AppBrowserController> app_controller_;
-
-  std::unique_ptr<chrome::BrowserCommandController> command_controller_;
 
   // True if the browser window has been shown at least once.
   bool window_has_shown_;

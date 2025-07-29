@@ -143,9 +143,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 
   browser_actions_ = std::make_unique<BrowserActions>(browser);
 
-  // TODO(crbug.com/431668289): Add BrowserCommandController initialization here
-  // once its ownership is moved to BrowserWindowFeatures, to maintain its old
-  // initialization order relative to BrowserActions.
+  browser_command_controller_ =
+      std::make_unique<chrome::BrowserCommandController>(browser);
 
   browser_actions_->InitializeBrowserActions();
 
@@ -293,8 +292,8 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   extension_browser_window_helper_ =
       std::make_unique<extensions::ExtensionBrowserWindowHelper>(
-          browser->GetBrowserForMigrationOnly()->command_controller(),
-          browser->GetTabStripModel(), browser->GetProfile());
+          browser_command_controller_.get(), browser->GetTabStripModel(),
+          browser->GetProfile());
 #endif
 
   if (breadcrumbs::IsEnabled(g_browser_process->local_state())) {
@@ -356,7 +355,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
         location_bar = browser_view->GetLocationBarView();
       }
       lens_overlay_entry_point_controller_->Initialize(
-          browser, browser->command_controller(), location_bar);
+          browser, browser_command_controller_.get(), location_bar);
     }
 
     auto* experiment_manager =

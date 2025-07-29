@@ -23,6 +23,7 @@
 
 class Browser;
 class BrowserWindow;
+class BrowserWindowInterface;
 class Profile;
 
 namespace input {
@@ -38,7 +39,7 @@ class BrowserCommandController : public CommandUpdater,
                                  public TabStripModelObserver,
                                  public sessions::TabRestoreServiceObserver {
  public:
-  explicit BrowserCommandController(Browser* browser);
+  explicit BrowserCommandController(BrowserWindowInterface* bwi);
 
   BrowserCommandController(const BrowserCommandController&) = delete;
   BrowserCommandController& operator=(const BrowserCommandController&) = delete;
@@ -231,13 +232,13 @@ class BrowserCommandController : public CommandUpdater,
                                      actions::ActionId action_id,
                                      bool enabled);
 
-  inline BrowserWindow* window();
-  inline Profile* profile();
+  BrowserWindow* window();
+  Profile* profile();
 
   const raw_ptr<Browser> browser_;
 
   // The CommandUpdaterImpl that manages the browser window commands.
-  CommandUpdaterImpl command_updater_;
+  CommandUpdaterImpl command_updater_{nullptr};
 
   PrefChangeRegistrar profile_pref_registrar_;
   PrefChangeRegistrar local_pref_registrar_;

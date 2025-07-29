@@ -47,6 +47,7 @@
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/bubble_anchor_util.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
@@ -213,8 +214,10 @@ void InvokeAction(actions::ActionId id, actions::ActionItem* scope) {
 ///////////////////////////////////////////////////////////////////////////////
 // BrowserCommandController, public:
 
-BrowserCommandController::BrowserCommandController(Browser* browser)
-    : browser_(browser), command_updater_(nullptr) {
+// TODO(crbug.com/434734349): Implement dependency injection for this class to
+// allow removing the Browser dependency.
+BrowserCommandController::BrowserCommandController(BrowserWindowInterface* bwi)
+    : browser_(bwi->GetBrowserForMigrationOnly()) {
   browser_->tab_strip_model()->AddObserver(this);
   PrefService* local_state = g_browser_process->local_state();
   if (local_state) {
@@ -316,7 +319,6 @@ BrowserCommandController::~BrowserCommandController() {
   profile_pref_registrar_.RemoveAll();
   local_pref_registrar_.RemoveAll();
   glic_enabling_subscription_.reset();
-  browser_->tab_strip_model()->RemoveObserver(this);
 }
 
 bool BrowserCommandController::IsReservedCommandOrKey(
@@ -2212,16 +2214,8 @@ void BrowserCommandController::UpdateCommandsForTabStripStateChanged() {
 
 actions::ActionItem* BrowserCommandController::FindAction(
     actions::ActionId action_id) {
-  // TODO(crbug.com/431668289): Remove the BrowserWindowFeatures/BrowserActions
-  // nullchecks once BrowserCommandController's ownership is moved to
-  // BrowserWindowFeatures.
-  BrowserWindowFeatures* const browser_window_features =
-      browser_->browser_window_features();
-  BrowserActions* const browser_actions =
-      browser_window_features ? browser_window_features->browser_actions()
-                              : nullptr;
   actions::ActionItem* const root_action_item =
-      browser_actions ? browser_actions->root_action_item() : nullptr;
+      browser_->GetActions()->root_action_item();
 
   // If there is no root action item then ActionManager falls back to the
   // root_action_parent_ which might contain actions from other browser windows.

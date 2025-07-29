@@ -100,6 +100,10 @@ class TabDeclutterController;
 class VerticalTabStripStateController;
 }  // namespace tabs
 
+namespace chrome {
+class BrowserCommandController;
+}  // namespace chrome
+
 namespace commerce {
 class ProductSpecificationsEntryPointController;
 }  // namespace commerce
@@ -177,6 +181,10 @@ class BrowserWindowFeatures {
 
   // Public accessors for features:
   BrowserActions* browser_actions() { return browser_actions_.get(); }
+
+  chrome::BrowserCommandController* browser_command_controller() {
+    return browser_command_controller_.get();
+  }
 
   extensions::Mv2DisabledDialogController*
   mv2_disabled_dialog_controller_for_testing() {
@@ -421,6 +429,8 @@ class BrowserWindowFeatures {
   // std::unique_ptr<FooFeature> foo_feature_;
 
   std::unique_ptr<BrowserActions> browser_actions_;
+
+  std::unique_ptr<chrome::BrowserCommandController> browser_command_controller_;
 
   std::unique_ptr<BookmarkBarController> bookmark_bar_controller_;
 
