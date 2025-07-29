@@ -27,14 +27,12 @@ public final class CastSettingsManager {
 
     private final ContentResolver mContentResolver;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    ContentObserver mDeviceNameObserver;
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    ContentObserver mIsDeviceProvisionedObserver;
+    @VisibleForTesting ContentObserver mDeviceNameObserver;
+    @VisibleForTesting ContentObserver mIsDeviceProvisionedObserver;
 
     /**
-     * Can be implemented to receive notifications from a CastSettingsManager instance when
-     * settings have changed.
+     * Can be implemented to receive notifications from a CastSettingsManager instance when settings
+     * have changed.
      */
     public static class OnSettingChangedListener {
         public void onCastEnabledChanged(boolean enabled) {}
