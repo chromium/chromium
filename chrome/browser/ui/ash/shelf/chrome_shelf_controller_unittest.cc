@@ -4083,12 +4083,7 @@ TEST_F(MultiProfileMultiBrowserShelfLayoutChromeShelfControllerTest,
     EXPECT_EQ(1, model_->item_count());
 
     SwitchActiveUserByAccountId(account_id());
-    // The following expectation does not work in current impl. It was working
-    // before because MultiProfileSupport is not attached to user associated
-    // with profile() hence not actually handling windows for the user. It is a
-    // real bug. See http://crbug.com/693634.
-    //
-    // EXPECT_EQ(2, model_->item_count());
+    EXPECT_EQ(2, model_->item_count());
 
     v2_app_1.window()->Show(extensions::AppWindow::SHOW_ACTIVE);
     EXPECT_EQ(2, model_->item_count());
