@@ -33,6 +33,9 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
       const OpenXrExtensionEnumeration* extension_enum);
   ~OpenXrGraphicsBindingOpenGLES() override;
 
+  // Initialize the GL configurations, making this ready to use.
+  bool InitializeGl();
+
   // OpenXrGraphicsBinding
   bool Initialize(XrInstance instance, XrSystemId system) override;
   const void* GetSessionCreateInfo() const override;
@@ -56,12 +59,14 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
                          const gpu::SyncToken& sync_token,
                          const gfx::RectF& left,
                          const gfx::RectF& right) override;
+  gfx::Size GetMaxTextureSize() override;
 
  private:
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
   void ResizeSharedBuffer(OpenXrSwapchainInfo& swap_chain_info,
                           gpu::SharedImageInterface* sii);
 
+  bool gl_initialized_ = false;
   bool initialized_ = false;
   bool using_shared_images_ = false;
   XrGraphicsBindingOpenGLESAndroidKHR binding_{

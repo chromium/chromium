@@ -40,25 +40,30 @@ mojom::XREye GetEyeFromIndex(int i) {
 
 OpenXrViewProperties::OpenXrViewProperties(
     XrViewConfigurationView xr_properties,
-    uint32_t view_count)
-    : xr_properties_(xr_properties), view_count_(view_count) {}
+    uint32_t view_count,
+    gfx::Size max_texture_size)
+    : xr_properties_(xr_properties),
+      view_count_(view_count),
+      max_texture_size_(max_texture_size) {
+  DVLOG(1) << __func__ << " view_count_" << view_count_
+           << " maxImageRectWidth=" << xr_properties_.maxImageRectWidth
+           << " maxImageRectHeight=" << xr_properties_.maxImageRectHeight
+           << " recommendedImageRectWidth="
+           << xr_properties_.recommendedImageRectWidth
+           << " recommendedImageRectHeight="
+           << xr_properties_.recommendedImageRectHeight;
+}
 OpenXrViewProperties::~OpenXrViewProperties() = default;
 
 uint32_t OpenXrViewProperties::Width() const {
-  if constexpr (BUILDFLAG(IS_ANDROID)) {
-    // TODO(crbug.com/40948737): Devise a more robust way of calculating
-    // the max size and per view width. (e.g. (viewWidth/totalWidth) *
-    // maxWidth).
-    constexpr uint32_t kMaxImageWidth = 4096;
-    return std::min(xr_properties_.recommendedImageRectWidth,
-                    kMaxImageWidth / view_count_);
-  }
-
-  return xr_properties_.recommendedImageRectWidth;
+  return std::min(
+      xr_properties_.recommendedImageRectWidth,
+      static_cast<uint32_t>(max_texture_size_.width()) / view_count_);
 }
 
 uint32_t OpenXrViewProperties::Height() const {
-  return xr_properties_.recommendedImageRectHeight;
+  return std::min(static_cast<uint32_t>(max_texture_size_.height()),
+                  xr_properties_.recommendedImageRectHeight);
 }
 
 uint32_t OpenXrViewProperties::RecommendedSwapchainSampleCount() const {
@@ -100,20 +105,24 @@ OpenXrViewConfiguration::OpenXrViewConfiguration(XrViewConfigurationType type,
     view_properties[i] = kViewConfigurationView;
   }
 
-  Initialize(type, std::move(view_properties));
+  // We do n-wide textures, so each view can fill the full height, but we need
+  // n*dimensions for width.
+  Initialize(type, std::move(view_properties),
+             gfx::Size(/*width=*/dimension * num_views, /*height=*/dimension));
   SetActive(active);
 }
 
 void OpenXrViewConfiguration::Initialize(
     XrViewConfigurationType type,
-    std::vector<XrViewConfigurationView> properties) {
+    std::vector<XrViewConfigurationView> properties,
+    gfx::Size max_texture_size) {
   DCHECK(!initialized_);
   DCHECK(!properties.empty());
 
   type_ = type;
   active_ = false;
   viewport_ = gfx::Rect();
-  SetProperties(std::move(properties));
+  SetProperties(std::move(properties), max_texture_size);
   local_from_view_.resize(properties_.size(), kDefaultView);
   projection_views_.resize(properties_.size());
 
@@ -156,17 +165,19 @@ const std::vector<OpenXrViewProperties>& OpenXrViewConfiguration::Properties()
 }
 
 void OpenXrViewConfiguration::SetProperties(
-    std::vector<XrViewConfigurationView> properties) {
+    std::vector<XrViewConfigurationView> properties,
+    gfx::Size max_texture_size) {
   // The number of views in a view configuration should not change throughout
   // the lifetime of the OpenXR instance.
   CHECK(properties_.empty() || properties.size() == properties_.size());
   uint32_t size = properties.size();
   properties_.clear();
   properties_.reserve(size);
-  std::ranges::transform(properties, std::back_inserter(properties_),
-                         [size](const XrViewConfigurationView& view) {
-                           return OpenXrViewProperties(view, size);
-                         });
+  std::ranges::transform(
+      properties, std::back_inserter(properties_),
+      [size, max_texture_size](const XrViewConfigurationView& view) {
+        return OpenXrViewProperties(view, size, max_texture_size);
+      });
 }
 
 const std::vector<XrView>& OpenXrViewConfiguration::Views() const {

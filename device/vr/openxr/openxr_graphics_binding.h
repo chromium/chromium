@@ -129,6 +129,13 @@ class OpenXrGraphicsBinding {
   // performed as necessary.
   void SetTransferSize(const gfx::Size& transfer_size);
 
+  // Returns the maximum texture size allowed to be created with the current
+  // graphics binding. Textures larger than this size may be truncated during
+  // cross-process transportation of the textures and result in one viewport
+  // being rendered on over half of the texture, which can lead to uncomfortable
+  // rendering artifacts.
+  virtual gfx::Size GetMaxTextureSize() = 0;
+
   // Acquire and activate a Swapchain image from the OpenXr system. This is the
   // swapchain image that will be in use for the next render.
   XrResult ActivateSwapchainImage(XrSwapchain color_swapchain,

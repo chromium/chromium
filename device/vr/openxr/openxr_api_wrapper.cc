@@ -316,7 +316,8 @@ XrResult OpenXrApiWrapper::InitializeViewConfig(
     OpenXrViewConfiguration& view_config) {
   std::vector<XrViewConfigurationView> view_properties;
   RETURN_IF_XR_FAILED(GetPropertiesForViewConfig(type, view_properties));
-  view_config.Initialize(type, std::move(view_properties));
+  view_config.Initialize(type, std::move(view_properties),
+                         graphics_binding_->GetMaxTextureSize());
 
   return XR_SUCCESS;
 }
@@ -1072,7 +1073,8 @@ XrResult OpenXrApiWrapper::UpdateSecondaryViewConfigStates(
         std::vector<XrViewConfigurationView> view_properties;
         RETURN_IF_XR_FAILED(GetPropertiesForViewConfig(
             state.viewConfigurationType, view_properties));
-        view_config.SetProperties(std::move(view_properties));
+        view_config.SetProperties(std::move(view_properties),
+                                  graphics_binding_->GetMaxTextureSize());
       }
     }
   }

@@ -54,26 +54,9 @@ OpenXrGraphicsBindingOpenGLES::~OpenXrGraphicsBindingOpenGLES() {
   }
 }
 
-bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
-                                               XrSystemId system) {
-  if (initialized_) {
+bool OpenXrGraphicsBindingOpenGLES::InitializeGl() {
+  if (gl_initialized_) {
     return true;
-  }
-
-  PFN_xrGetOpenGLESGraphicsRequirementsKHR get_graphics_requirements_fn{
-      nullptr};
-  if (XR_FAILED(xrGetInstanceProcAddr(
-          instance, "xrGetOpenGLESGraphicsRequirementsKHR",
-          (PFN_xrVoidFunction*)(&get_graphics_requirements_fn)))) {
-    return false;
-  }
-
-  // TODO(alcooper): Validate/set version based on the output here.
-  XrGraphicsRequirementsOpenGLESKHR graphics_requirements = {
-      XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
-  if (XR_FAILED(get_graphics_requirements_fn(instance, system,
-                                             &graphics_requirements))) {
-    return false;
   }
 
   // None of the other runtimes support ANGLE, so we disable it too for now.
@@ -137,6 +120,33 @@ bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
   binding_.context = egl_context_->GetHandle();
 
   renderer_ = std::make_unique<XrRenderer>();
+
+  gl_initialized_ = true;
+  return true;
+}
+
+bool OpenXrGraphicsBindingOpenGLES::Initialize(XrInstance instance,
+                                               XrSystemId system) {
+  CHECK(gl_initialized_);
+  if (initialized_) {
+    return true;
+  }
+
+  PFN_xrGetOpenGLESGraphicsRequirementsKHR get_graphics_requirements_fn{
+      nullptr};
+  if (XR_FAILED(xrGetInstanceProcAddr(
+          instance, "xrGetOpenGLESGraphicsRequirementsKHR",
+          (PFN_xrVoidFunction*)(&get_graphics_requirements_fn)))) {
+    return false;
+  }
+
+  // TODO(alcooper): Validate/set version based on the output here.
+  XrGraphicsRequirementsOpenGLESKHR graphics_requirements = {
+      XR_TYPE_GRAPHICS_REQUIREMENTS_OPENGL_ES_KHR};
+  if (XR_FAILED(get_graphics_requirements_fn(instance, system,
+                                             &graphics_requirements))) {
+    return false;
+  }
 
   initialized_ = true;
   return true;
@@ -440,6 +450,14 @@ bool OpenXrGraphicsBindingOpenGLES::SetOverlayTexture(
   CHECK(texture.type == gfx::ANDROID_HARDWARE_BUFFER);
   overlay_handle_ = std::move(texture);
   return true;
+}
+
+gfx::Size OpenXrGraphicsBindingOpenGLES::GetMaxTextureSize() {
+  CHECK(gl_initialized_);
+  int max_texture_size;
+  glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
+  DVLOG(1) << __func__ << " Max size=" << max_texture_size;
+  return {max_texture_size, max_texture_size};
 }
 
 }  // namespace device

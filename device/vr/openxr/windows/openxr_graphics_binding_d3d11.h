@@ -53,6 +53,7 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                          const gpu::SyncToken& sync_token,
                          const gfx::RectF& left,
                          const gfx::RectF& right) override;
+  gfx::Size GetMaxTextureSize() override;
 
  private:
   void OnSwapchainImageSizeChanged() override;

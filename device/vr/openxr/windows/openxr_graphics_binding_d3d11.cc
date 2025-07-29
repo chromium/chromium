@@ -394,4 +394,9 @@ bool OpenXrGraphicsBindingD3D11::SetOverlayTexture(
       right);
 }
 
+gfx::Size OpenXrGraphicsBindingD3D11::GetMaxTextureSize() {
+  return {D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION,
+          D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION};
+}
+
 }  // namespace device

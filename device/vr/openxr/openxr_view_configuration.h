@@ -52,7 +52,8 @@ mojom::XREye GetEyeFromIndex(int i);
 class OpenXrViewProperties {
  public:
   OpenXrViewProperties(XrViewConfigurationView xr_properties,
-                       uint32_t view_count);
+                       uint32_t view_count,
+                       gfx::Size max_texture_size);
   ~OpenXrViewProperties();
 
   uint32_t Width() const;
@@ -67,9 +68,10 @@ class OpenXrViewProperties {
  private:
   XrViewConfigurationView xr_properties_;
 
-  // Unused on some platforms, but leaving in to simplify the usage and not
-  // introduce per-platform constructors or a factory method.
-  [[maybe_unused]] uint32_t view_count_;
+  // Because our textures are created as single side-by-side textures, this
+  // information helps us determine our max width/height.
+  uint32_t view_count_;
+  gfx::Size max_texture_size_;
 };
 
 // Stores information about an OpenXR view configuration that is available in
@@ -90,7 +92,8 @@ class OpenXrViewConfiguration {
   ~OpenXrViewConfiguration();
 
   void Initialize(XrViewConfigurationType type,
-                  std::vector<XrViewConfigurationView> properties);
+                  std::vector<XrViewConfigurationView> properties,
+                  gfx::Size max_texture_size);
   bool Initialized() const;
 
   XrViewConfigurationType Type() const;
@@ -102,7 +105,8 @@ class OpenXrViewConfiguration {
   void SetViewport(uint32_t x, uint32_t y, uint32_t width, uint32_t height);
 
   const std::vector<OpenXrViewProperties>& Properties() const;
-  void SetProperties(std::vector<XrViewConfigurationView> properties);
+  void SetProperties(std::vector<XrViewConfigurationView> properties,
+                     gfx::Size max_texture_size);
 
   const std::vector<XrView>& Views() const;
   void SetViews(std::vector<XrView> views);
