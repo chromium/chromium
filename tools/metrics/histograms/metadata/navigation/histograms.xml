@@ -2780,7 +2780,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.URLLoader.HasClientHintsControllerDelegate"
-    enum="Boolean" expires_after="2025-10-26">
+    enum="Boolean" expires_after="2026-01-25">
   <owner>yyanagisawa@chromium.org</owner>
   <owner>chrome-loading@google.com</owner>
   <summary>
@@ -2987,7 +2987,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Navigation.{Stage}ToCompositorCreation" units="ms"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
   <summary>

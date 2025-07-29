@@ -2006,7 +2006,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.CpuUsageMilliPercent" units="1/1000ths of %"
-    expires_after="2025-11-22">
+    expires_after="2026-01-25">
   <owner>yich@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -2026,7 +2026,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.PeakTotalRssMemoryKb" units="KB"
-    expires_after="2025-11-22">
+    expires_after="2026-01-25">
   <owner>yich@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -2036,7 +2036,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.PeakTotalSwapMemoryKb" units="KB"
-    expires_after="2025-11-22">
+    expires_after="2026-01-25">
   <owner>yich@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -2046,7 +2046,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.TotalMallocMemoryKb" units="KB"
-    expires_after="2025-11-22">
+    expires_after="2026-01-25">
   <owner>yich@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -2055,7 +2055,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.TotalRssMemoryKb" units="KB"
-    expires_after="2025-11-22">
+    expires_after="2026-01-25">
   <owner>yich@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -2065,7 +2065,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Odml.TotalSwapMemoryKb" units="KB"
-    expires_after="2025-11-22">
+    expires_after="2026-01-25">
   <owner>yich@google.com</owner>
   <owner>cros-odml-foundations-eng@google.com</owner>
   <summary>
@@ -3087,7 +3087,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.{GSC}.FlashLog" enum="Cr50FlashLogs"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>apronin@chromium.org</owner>
   <owner>vbendeb@chromium.org</owner>
   <owner>cros-hwsec+uma@google.com</owner>

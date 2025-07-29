@@ -111,7 +111,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.AdaptiveToolbarButton.Shown"
-    enum="AdaptiveToolbarButtonVariant" expires_after="2025-09-25">
+    enum="AdaptiveToolbarButtonVariant" expires_after="2026-01-25">
   <owner>jinsukkiim@google.com</owner>
   <owner>clank-app-team@google.com</owner>
   <summary>
@@ -671,7 +671,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="CustomTabs.PageNavigation.ErrorCode" enum="NetErrorCodes"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>jinsukkim@chromium.org</owner>
   <owner>chrome-connective-tissue@google.com</owner>
   <summary>

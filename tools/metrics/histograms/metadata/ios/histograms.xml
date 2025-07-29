@@ -2647,7 +2647,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.Module.Disabled" enum="IOSMagicStackModuleType"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>Records when a module was disabled.</summary>
@@ -3190,7 +3190,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MultiWindow.OpenInNewWindow" enum="WindowActivityOrigin"
-    expires_after="2025-11-09">
+    expires_after="2026-01-25">
   <owner>marq@chromium.org</owner>
   <owner>fedegermi@google.com</owner>
   <summary>
@@ -3263,7 +3263,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notifications.SafetyCheck.Interaction"
-    enum="IOSSafetyCheckNotificationType" expires_after="2025-11-23">
+    enum="IOSSafetyCheckNotificationType" expires_after="2026-01-25">
   <owner>bwwilliams@google.com</owner>
   <owner>scottyoder@google.com</owner>
   <owner>bling-pandamonium@google.com</owner>
@@ -3341,7 +3341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.Notifications.Tips.Proactive.{Event}"
-    enum="IOSTipsNotificationType" expires_after="2025-11-23">
+    enum="IOSTipsNotificationType" expires_after="2026-01-25">
   <owner>scottyoder@google.com</owner>
   <owner>bling-gsu-pod@google.com</owner>
   <summary>Logs when a Proactive Tips notification {Event}.</summary>
@@ -4505,7 +4505,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Distiller.Latency" units="ms"
-    expires_after="2025-11-24">
+    expires_after="2026-01-25">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -4550,7 +4550,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.ReaderMode.Heuristic.Latency" units="ms"
-    expires_after="2025-11-24">
+    expires_after="2026-01-25">
   <owner>fernandex@google.com</owner>
   <owner>bling-squid-squad@google.com</owner>
   <summary>
@@ -6349,7 +6349,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="ManualFallback.VisibleSuggestions.ExpandIcon.OpenPaymentMethods"
-    units="Suggestions" expires_after="2025-10-26">
+    units="Suggestions" expires_after="2026-01-25">
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <summary>

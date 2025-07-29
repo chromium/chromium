@@ -605,7 +605,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Autoplay" enum="AutoplaySource"
-    expires_after="2025-11-25">
+    expires_after="2026-01-25">
   <owner>evliu@google.com</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -613,7 +613,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.DetectedMissingCallbacks"
-    enum="BooleanMissingCallbacks" expires_after="2025-11-23">
+    enum="BooleanMissingCallbacks" expires_after="2026-01-25">
   <owner>guidou@chromium.org</owner>
   <owner>olka@chromium.org</owner>
   <owner>webrtc-audio-uma@google.com</owner>
@@ -887,7 +887,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Audio.Capture.Win.InitError" enum="Hresult"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>olka@chromium.org</owner>
   <owner>tommi@chromium.org</owner>
   <owner>guidou@chromium.org</owner>
@@ -6405,7 +6405,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay" enum="AutoplaySource"
-    expires_after="2025-11-25">
+    expires_after="2026-01-25">
   <owner>evliu@google.com</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -6416,7 +6416,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.BecomesVisible"
-    enum="Boolean" expires_after="2025-11-25">
+    enum="Boolean" expires_after="2026-01-25">
   <owner>evliu@google.com</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -6430,7 +6430,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.PlayMethod.OffscreenDuration"
-    units="ms" expires_after="2025-11-25">
+    units="ms" expires_after="2026-01-25">
   <owner>evliu@google.com</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>
@@ -6441,7 +6441,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.Video.Autoplay.Muted.UnmuteAction" enum="BooleanSuccess"
-    expires_after="2025-11-25">
+    expires_after="2026-01-25">
   <owner>evliu@google.com</owner>
   <owner>dalecurtis@chromium.org</owner>
   <owner>media-dev-uma@chromium.org</owner>

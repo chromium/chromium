@@ -110,7 +110,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="Bubble.{BubbleName}.CloseReason" enum="WidgetClosedReason"
-    expires_after="2025-11-16">
+    expires_after="2026-01-25">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
   <owner>temao@chromium.org</owner>
@@ -122,7 +122,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.CreateToPresentationTime" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-01-25">
   <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
@@ -137,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.CreateToVisibleTime" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-01-25">
   <owner>temao@chromium.org</owner>
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Bubble.{BubbleName}.TimeVisible" units="ms"
-    expires_after="2025-11-16">
+    expires_after="2026-01-25">
   <owner>yuhengh@chromium.org</owner>
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
@@ -611,7 +611,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.TopChrome.Preload.Reason" enum="WebUIPreloadReason"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>kerenzhu@chromium.org</owner>
   <owner>tluk@chromium.org</owner>
   <owner>robliao@chromium.org</owner>
@@ -621,7 +621,7 @@ features through Chrome Labs. -->
 </histogram>
 
 <histogram name="WebUI.TopChrome.Preload.Result" enum="WebUIPreloadResult"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>kerenzhu@chromium.org</owner>
   <owner>dayeung@chromium.org</owner>
   <owner>elainechien@chromium.org</owner>

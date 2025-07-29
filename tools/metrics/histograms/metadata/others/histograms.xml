@@ -3402,7 +3402,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.Calls" enum="ComponentUpdaterCalls"
-    expires_after="2025-11-20">
+    expires_after="2026-01-25">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
@@ -3425,21 +3425,21 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteError"
-    enum="UpdateClientErrors" expires_after="2025-11-20">
+    enum="UpdateClientErrors" expires_after="2026-01-25">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteResult" enum="BooleanError"
-    expires_after="2025-11-20">
+    expires_after="2026-01-25">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>The result of an install or an update check.</summary>
 </histogram>
 
 <histogram name="ComponentUpdater.UpdateCompleteTime" units="ms"
-    expires_after="2025-11-20">
+    expires_after="2026-01-25">
   <owner>sorin@chromium.org</owner>
   <owner>src/components/component_updater/OWNERS</owner>
   <summary>
@@ -7964,7 +7964,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Read.Number" units="count"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of read entries in reading list.</summary>
@@ -7980,7 +7980,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ReadingList.Unread.Number" units="count"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>gambard@chromium.org</owner>
   <owner>bling-team@google.com</owner>
   <summary>Number of unread entries in reading list.</summary>
@@ -8499,7 +8499,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 </histogram>
 
 <histogram name="Servicification.Startup3" enum="ServicificationStartupMode"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>hanxi@chromium.org</owner>
   <owner>yfriedman@chromium.org</owner>
   <owner>hnakashima@chromium.org</owner>
@@ -9803,7 +9803,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpdateClient.Component.UpdateCheckResult"
-    enum="UpdateClientUpdateCheckResult" expires_after="2025-11-20">
+    enum="UpdateClientUpdateCheckResult" expires_after="2026-01-25">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9814,7 +9814,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpdateClient.Component.Updated" enum="Boolean"
-    expires_after="2025-11-20">
+    expires_after="2026-01-25">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9822,7 +9822,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpdateClient.CrxDownloader.DownloadCompleteSuccess"
-    enum="Boolean" expires_after="2025-11-20">
+    enum="Boolean" expires_after="2026-01-25">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>
@@ -9849,7 +9849,7 @@ should be kept until we use this API.  -->
 </histogram>
 
 <histogram name="UpdateClient.UnzipTime{AppID}" units="ms"
-    expires_after="2025-11-20">
+    expires_after="2026-01-25">
   <owner>noahrose@google.com</owner>
   <owner>sorin@chromium.org</owner>
   <owner>waffles@chromium.org</owner>

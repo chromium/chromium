@@ -250,7 +250,7 @@ Regular profiles start at bucket 1. Incognito profiles count towards the origina
 </histogram>
 
 <histogram name="Settings.Cookies.TrackingProtectionRedirect"
-    enum="BooleanRedirected" expires_after="2025-11-20">
+    enum="BooleanRedirected" expires_after="2026-01-25">
   <owner>mjenn@google.com</owner>
   <owner>koilos@google.com</owner>
   <summary>

@@ -1684,7 +1684,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="OptimizationGuide.PageContentAnnotations.GoogleSearchMetadataExtracted"
-    enum="Boolean" expires_after="2025-11-23">
+    enum="Boolean" expires_after="2026-01-25">
   <owner>sophiechang@chromium.org</owner>
   <owner>chrome-intelligence-core@google.com</owner>
   <summary>

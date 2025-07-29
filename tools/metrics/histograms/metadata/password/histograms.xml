@@ -627,7 +627,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.AddCredentialFromSettings.UserAction2"
-    enum="AddCredentialFromSettingsUserInteractions" expires_after="2025-11-23">
+    enum="AddCredentialFromSettingsUserInteractions" expires_after="2026-01-25">
   <owner>vidhanj@google.com</owner>
   <summary>
     Records the user actions performed when a new credential is added from
@@ -1742,7 +1742,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PasswordManager.FirstWaitForUsernameReason"
-    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2025-11-23">
+    enum="PasswordManagerFirstWaitForUsernameReason" expires_after="2026-01-25">
   <owner>kazinova@google.com</owner>
   <owner>battre@chromium.org</owner>
   <summary>
@@ -3228,7 +3228,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 
 <histogram name="PasswordManager.PasswordSharingIOS.UserAction"
     enum="PasswordManager.PasswordSharingIOSUserAction"
-    expires_after="2025-11-25">
+    expires_after="2026-01-25">
   <owner>rgod@google.com</owner>
   <owner>mamir@chromium.org</owner>
   <summary>
@@ -3660,7 +3660,7 @@ useful for Chirp alerts (go/crca-alerts). -->
 <histogram
     name="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
     enum="PasswordManager.ProcessIncomingPasswordSharingInvitationResult"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>mamir@chromium.org</owner>
   <owner>rushans@google.com</owner>
   <component>1457410</component>

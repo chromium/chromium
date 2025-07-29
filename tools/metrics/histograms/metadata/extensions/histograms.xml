@@ -4865,7 +4865,7 @@ This is emitted for two scenarios when a worker may be unregistered:
 </histogram>
 
 <histogram name="Extensions.ZeroStatePromo.IphActionChromeWebStoreLink"
-    enum="WebStoreLinkClicked" expires_after="2025-09-27">
+    enum="WebStoreLinkClicked" expires_after="2026-01-25">
   <owner>uwyiming@chromium.org</owner>
   <owner>cws-consumer-team@google.com</owner>
   <summary>

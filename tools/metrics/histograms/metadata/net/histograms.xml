@@ -4134,7 +4134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Net.QuicConnection.ServerAllowsActiveMigrationForMultiPort"
-    enum="BooleanEnabled" expires_after="2025-11-25">
+    enum="BooleanEnabled" expires_after="2026-01-25">
   <owner>renjietang@chromium.org</owner>
   <owner>src/net/OWNERS</owner>
   <summary>
@@ -6952,7 +6952,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Net.SessionCreate.GoogleSearch.Preconnect2.{ProtocolType}.IsSessionReused"
-    enum="Boolean" expires_after="2025-11-23">
+    enum="Boolean" expires_after="2026-01-25">
   <owner>suzukikeita@chromium.org</owner>
   <owner>blink-network-stack@google.com</owner>
   <summary>

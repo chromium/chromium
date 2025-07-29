@@ -1330,7 +1330,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.Dlp.ActiveFileEventsCount" units="entries"
-    expires_after="2025-10-05">
+    expires_after="2026-01-25">
   <owner>accorsi@google.com</owner>
   <owner>chromeos-dlp@google.com</owner>
   <summary>
@@ -2291,7 +2291,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.EventBasedLogUpload.{EventLogUploadType}"
-    enum="EnterpriseEventBasedLogUploadResult" expires_after="2025-11-25">
+    enum="EnterpriseEventBasedLogUploadResult" expires_after="2026-01-25">
   <owner>iremuguz@google.com</owner>
   <owner>chromeos-commercial-supportability@google.com</owner>
   <summary>
@@ -2344,7 +2344,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.FileAnalysisRequest.PrintedPageSize" units="KB"
-    expires_after="2025-11-20">
+    expires_after="2026-01-25">
   <owner>eliashomsi@google.com</owner>
   <owner>nancylanxiao@google.com</owner>
   <owner>cbe-cep-eng@google.com</owner>
@@ -4067,7 +4067,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="EnterpriseCheck.IsRunningOnManagedProfileDuration" units="ms"
-    expires_after="2025-11-01">
+    expires_after="2026-01-25">
   <owner>nafisabedin@google.com</owner>
   <improvement direction="LOWER_IS_BETTER"/>
   <summary>

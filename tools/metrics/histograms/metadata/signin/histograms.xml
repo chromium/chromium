@@ -463,7 +463,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountManagementType"
-    enum="AccountManagedStatusFinderOutcome" expires_after="2025-11-25">
+    enum="AccountManagedStatusFinderOutcome" expires_after="2026-01-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -477,7 +477,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountManagementTypesSummary"
-    enum="AccountManagementTypesSummary" expires_after="2025-11-25">
+    enum="AccountManagementTypesSummary" expires_after="2026-01-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -510,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Signin.AccountProfileStartupState2"
-    enum="AccountProfileStartupState" expires_after="2025-11-01">
+    enum="AccountProfileStartupState" expires_after="2026-01-25">
   <owner>jood@google.com</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1839,7 +1839,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSAccountsOnDeviceManagementTypesHadUnknownTypes"
-    enum="BooleanPresent" expires_after="2025-11-25">
+    enum="BooleanPresent" expires_after="2026-01-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1850,7 +1850,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSAccountsOnDeviceManagementTypesSummary{DeviceType}"
-    enum="AccountManagementTypesSummary" expires_after="2025-11-25">
+    enum="AccountManagementTypesSummary" expires_after="2026-01-25">
   <owner>msarda@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-team@google.com</owner>
@@ -1896,7 +1896,7 @@ prefs when the profile is loaded.  -->
 </histogram>
 
 <histogram name="Signin.IOSChangeProfileReason" enum="IOSChangeProfileReason"
-    expires_after="2025-11-25">
+    expires_after="2026-01-25">
   <owner>jlebel@chromium.org</owner>
   <owner>treib@chromium.org</owner>
   <owner>chrome-signin-mobile-team@google.com</owner>
@@ -2541,7 +2541,7 @@ should be kept to monitor/debug signin Multilogin issues-->
 
 <histogram
     name="Signin.Reconciler.RejectedRequestsDueToThrottler.{RequestType}"
-    units="requests" expires_after="2025-11-23">
+    units="requests" expires_after="2026-01-25">
   <owner>droger@chromium.org</owner>
   <owner>msarda@chromium.org</owner>
   <owner>msalama@chromium.org</owner>

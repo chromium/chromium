@@ -129,7 +129,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Notifications.Android.ImageMemorySizeInKB" units="KB"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>peilinwang@google.com</owner>
   <owner>clank-performance-team@google.com</owner>
   <summary>

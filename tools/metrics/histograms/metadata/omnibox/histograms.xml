@@ -1575,7 +1575,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.KeywordCount{KeywordType}" units="count"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>mahmadi@chromium.org</owner>
   <owner>chrome-desktop-search@google.com</owner>
   <summary>
@@ -2391,7 +2391,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
 </histogram>
 
 <histogram name="Omnibox.SearchPrefetch.DuplicateSearchTermsAge" units="ms"
-    expires_after="2025-11-23">
+    expires_after="2026-01-25">
   <owner>lingqi@chromium.org</owner>
   <owner>nhiroki@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
