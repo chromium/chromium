@@ -64,6 +64,7 @@
 #include "content/public/test/web_contents_tester.h"
 #include "extensions/buildflags/buildflags.h"
 #include "google_apis/gaia/gaia_id.h"
+#include "net/base/filename_util.h"
 #include "net/base/mime_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -2655,6 +2656,36 @@ TEST_F(DownloadTargetDeterminerTest, TransientDownloadResumption) {
       1);
   histogram_tester.ExpectTotalCount(kTransientPathGenerationHistogram, 1);
   histogram_tester.ExpectTotalCount(kTransientPathValidationHistogram, 1);
+}
+
+TEST_F(DownloadTargetDeterminerTest, TargetSameAsSource) {
+  const base::FilePath::CharType kInitialPath[] =
+      FILE_PATH_LITERAL("download.txt");
+  base::FilePath expected_path = GetPathInDownloadDir(kInitialPath);
+  GURL file_url = net::FilePathToFileURL(expected_path);
+
+  const DownloadTestCase kTestCase = {
+      AUTOMATIC,
+      download::DOWNLOAD_DANGER_TYPE_NOT_DANGEROUS,
+      DownloadFileType::NOT_DANGEROUS,
+      file_url.spec().c_str(),
+      "text/plain",
+      FILE_PATH_LITERAL(""),
+      FILE_PATH_LITERAL(""),
+      DownloadItem::TARGET_DISPOSITION_OVERWRITE,
+      EXPECT_EMPTY};
+
+  const DownloadTestCase& test_case = kTestCase;
+  std::unique_ptr<download::MockDownloadItem> item =
+      CreateActiveDownloadItem(0, test_case);
+
+  EXPECT_CALL(*delegate(),
+              ReserveVirtualPath_(_, expected_path, false,
+                                  DownloadPathReservationTracker::UNIQUIFY, _))
+      .WillOnce(WithArg<4>(ScheduleCallback2(
+          download::PathValidationResult::SAME_AS_SOURCE, expected_path)));
+
+  RunTestCase(test_case, expected_path, item.get());
 }
 
 #if BUILDFLAG(IS_WIN)

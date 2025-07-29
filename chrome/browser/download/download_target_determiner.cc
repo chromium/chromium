@@ -500,10 +500,13 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
         return;
       case download::PathValidationResult::SUCCESS:
       case download::PathValidationResult::SUCCESS_RESOLVED_CONFLICT:
-      case download::PathValidationResult::SAME_AS_SOURCE:
         DCHECK(virtual_path_ == path ||
                conflict_action_ == DownloadPathReservationTracker::UNIQUIFY);
         break;
+      case download::PathValidationResult::SAME_AS_SOURCE:
+        ScheduleCallbackAndDeleteSelf(
+            download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE);
+        return;
       case download::PathValidationResult::COUNT:
         NOTREACHED();
     }
@@ -512,8 +515,12 @@ void DownloadTargetDeterminer::ReserveVirtualPathDone(
 
     switch (result) {
       case download::PathValidationResult::SUCCESS:
-      case download::PathValidationResult::SAME_AS_SOURCE:
         break;
+
+      case download::PathValidationResult::SAME_AS_SOURCE:
+        ScheduleCallbackAndDeleteSelf(
+            download::DOWNLOAD_INTERRUPT_REASON_FILE_SAME_AS_SOURCE);
+        return;
 
       // TODO(crbug.com/40863725): This should trigger a duplicate download
       // prompt.
