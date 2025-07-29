@@ -171,13 +171,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="KeyboardAccessory.AccessoryActionSelected"
-    enum="AccessoryAction" expires_after="2025-12-14">
+<histogram name="KeyboardAccessory.AccessoryActionSelected2"
+    enum="AccessoryAction" expires_after="2026-02-04">
   <owner>friedrichh@chromium.org</owner>
   <owner>ioanap@chromium.org</owner>
   <summary>
     Android only. Records whenever users select an action in the accessory bar
-    or one of its sheets.
+    or one of its sheets. Actions include autofill suggestions from bar and
+    accessory sheets.
   </summary>
 </histogram>
 

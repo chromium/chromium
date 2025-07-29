@@ -189,6 +189,8 @@ class ManualFillingComponentBridge {
             callback =
                     (field) -> {
                         assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                        ManualFillingMetricsRecorder.recordActionSelected(
+                                AccessoryAction.AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET);
                         ManualFillingMetricsRecorder.recordSuggestionSelected(
                                 sheetType, suggestionType);
                         ManualFillingComponentBridgeJni.get()
@@ -219,6 +221,8 @@ class ManualFillingComponentBridge {
         Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingMetricsRecorder.recordActionSelected(
+                            AccessoryAction.AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET);
                     ManualFillingMetricsRecorder.recordSuggestionSelected(
                             sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
@@ -274,6 +278,8 @@ class ManualFillingComponentBridge {
         Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingMetricsRecorder.recordActionSelected(
+                            AccessoryAction.AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET);
                     ManualFillingMetricsRecorder.recordSuggestionSelected(
                             sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
@@ -333,6 +339,8 @@ class ManualFillingComponentBridge {
         Callback<UserInfoField> callback =
                 (field) -> {
                     assert mNativeView != 0 : "Controller was destroyed but the bridge wasn't!";
+                    ManualFillingMetricsRecorder.recordActionSelected(
+                            AccessoryAction.AUTOFILL_SUGGESTION_FROM_ACCESSORY_SHEET);
                     ManualFillingMetricsRecorder.recordSuggestionSelected(
                             sheetType, suggestionType);
                     ManualFillingComponentBridgeJni.get()
