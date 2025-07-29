@@ -1481,9 +1481,6 @@ void GlicWindowControllerImpl::SetWindowState(State new_state) {
   state_ = new_state;
 
   // Inform UI components of glic panel open/close.
-  // TODO(crbug.com/431015299): Instead of piping events through the
-  // ActorUiStateManager, consider calling the Toast and TaskIcon code directly
-  // on state change.
   if (features::kGlicActorUiToast.Get()) {
     Browser* last_active_browser = BrowserList::GetInstance()->GetLastActive();
     actor::ActorKeyedService::Get(profile_)
