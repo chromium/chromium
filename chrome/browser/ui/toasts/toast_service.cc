@@ -106,8 +106,8 @@ void ToastService::RegisterToasts(
   // updated.
   toast_registry_->RegisterToast(
       ToastId::kNonMilestoneUpdate,
-      ToastSpecification::Builder(kLinkChromeRefreshIcon,
-                                  IDS_LINK_COPIED_TOAST_BODY)
+      ToastSpecification::Builder(kBrowserLogoIcon,
+                                  IDS_NON_MILESTONE_UPDATE_TOAST_BODY)
           .AddGlobalScoped()
           .Build());
 
