@@ -36,6 +36,7 @@
 #include "base/timer/hi_res_timer_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "components/viz/common/features.h"
 #include "components/viz/service/gl/gpu_log_message_manager.h"
 #include "components/viz/service/main/viz_main_impl.h"
 #include "content/child/child_process.h"
@@ -62,6 +63,7 @@
 #include "gpu/ipc/service/gpu_init.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "media/gpu/buildflags.h"
+#include "mojo/public/cpp/bindings/direct_receiver.h"
 #include "mojo/public/cpp/bindings/interface_endpoint_client.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "services/tracing/public/cpp/perfetto/perfetto_traced_process.h"
@@ -581,6 +583,12 @@ bool StartSandboxAndroid(gpu::GpuWatchdogThread* watchdog_thread) {
 bool StartSandboxWindows(const sandbox::SandboxInterfaceInfo* sandbox_info) {
   TRACE_EVENT("gpu,startup", "Lower token");
 
+  // Set up DirectReceiver before the sandbox is enabled.
+  if (features::IsVizDirectCompositorThreadIpcNonRootEnabled()) {
+    // This pre-initializes a transport to be used for direct receiver since a
+    // feature that will use it is enabled.
+    mojo::CreateDirectReceiverTransportBeforeSandbox();
+  }
   // For Windows, if the target_services interface is not zero, the process
   // is sandboxed and we must call LowerToken() before rendering untrusted
   // content.

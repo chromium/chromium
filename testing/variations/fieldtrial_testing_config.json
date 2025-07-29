@@ -26024,6 +26024,21 @@
             ]
         }
     ],
+    "VizDirectCompositorThreadIpcNonRootWindows": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "VizDirectCompositorThreadIpcNonRoot"
+                    ]
+                }
+            ]
+        }
+    ],
     "VulkanV2": [
         {
             "platforms": [
