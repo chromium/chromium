@@ -13,6 +13,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.Mockito.doNothing;
@@ -86,6 +87,13 @@ public class IpProtectionSettingsFragmentTest {
         when(mDelegate.isIpProtectionEnabled()).thenReturn(true);
 
         launchTrackingProtectionSettings();
+
+        assertEquals(
+                mFragment
+                        .getContext()
+                        .getString(
+                                R.string.incognito_tracking_protections_ip_protection_page_title),
+                mFragment.getPageTitle().get());
 
         onView(allOf(withText(PREF_TOGGLE_LABEL), hasSibling(withText(PREF_TOGGLE_SUBLABEL))))
                 .check(matches(isDisplayed()));
