@@ -20,9 +20,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/test/task_environment.h"
-#include "base/test/test_mock_time_task_runner.h"
 #include "components/affiliations/core/browser/affiliation_utils.h"
 #include "components/affiliations/core/browser/mock_affiliation_service.h"
 #include "services/network/test/test_shared_url_loader_factory.h"
@@ -136,12 +134,7 @@ class AffiliatedMatchHelperTest : public testing::Test {
   AffiliatedMatchHelperTest() = default;
 
  protected:
-  void RunUntilIdle() {
-    // TODO(gab): Add support for base::RunLoop().RunUntilIdle() in scope of
-    // ScopedMockTimeMessageLoopTaskRunner and use it instead of this helper
-    // method.
-    mock_time_task_runner_->RunUntilIdle();
-  }
+  void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   MockAffiliationService* mock_affiliation_service() {
     return mock_affiliation_service_.get();
@@ -165,8 +158,8 @@ class AffiliatedMatchHelperTest : public testing::Test {
     RunUntilIdle();
   }
 
-  base::test::SingleThreadTaskEnvironment task_environment_;
-  base::ScopedMockTimeMessageLoopTaskRunner mock_time_task_runner_;
+  base::test::SingleThreadTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
   std::unique_ptr<MockAffiliationService> mock_affiliation_service_;
   std::unique_ptr<AffiliatedMatchHelper> match_helper_;
