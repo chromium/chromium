@@ -18,7 +18,10 @@
 #include "content/public/browser/isolated_web_apps_policy.h"
 #include "content/public/common/content_features.h"
 
+namespace web_app {
+
 namespace {
+
 BASE_FEATURE(kIsolatedWebAppsOpenedTabsCounterServiceNotification,
              "IsolatedWebAppsOpenedTabsCounterServiceNotification",
              base::FEATURE_ENABLED_BY_DEFAULT);
@@ -63,3 +66,5 @@ std::unique_ptr<KeyedService> IsolatedWebAppsOpenedTabsCounterServiceFactory::
   return std::make_unique<IsolatedWebAppsOpenedTabsCounterService>(
       Profile::FromBrowserContext(browser_context));
 }
+
+}  // namespace web_app

@@ -22,17 +22,27 @@
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/window_management/isolated_web_apps_opened_tabs_counter_service_delegate.h"
+#include "chrome/browser/web_applications/locks/app_lock.h"
+#include "chrome/browser/web_applications/web_app_command_scheduler.h"
 #include "chrome/browser/web_applications/web_app_filter.h"
+#include "chrome/browser/web_applications/web_app_management_type.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/webapps/common/web_app_id.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
 
+namespace web_app {
+
 namespace {
+
+constexpr int kMaxNotificationShowCount = 3;
 
 constexpr std::string_view
     kIsolatedWebAppsOpenedTabsCounterNotificationPattern =
@@ -51,9 +61,39 @@ std::string GetNotificationIdForApp(const webapps::AppId& app_id) {
 
 }  // namespace
 
+bool ShouldShowNotificationForWindowOpen(const web_app::WebApp& web_app) {
+  if (!web_app.isolation_data()) {
+    return false;
+  }
+
+  const bool is_managed =
+      web_app.GetSources().HasAny({web_app::WebAppManagement::kKiosk,
+                                   web_app::WebAppManagement::kIwaShimlessRma,
+                                   web_app::WebAppManagement::kIwaPolicy});
+  if (is_managed) {
+    return false;
+  }
+  if (const auto& state =
+          web_app.isolation_data()->opened_tabs_counter_notification_state()) {
+    return !state->acknowledged() &&
+           (state->times_shown() < kMaxNotificationShowCount);
+  }
+
+  return true;
+}
+
 IsolatedWebAppsOpenedTabsCounterService::
     IsolatedWebAppsOpenedTabsCounterService(Profile* profile)
     : profile_(*profile) {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+
+  provider->on_registry_ready().Post(
+      FROM_HERE,
+      base::BindOnce(
+          &IsolatedWebAppsOpenedTabsCounterService::RetrieveNotificationStates,
+          weak_ptr_factory_.GetWeakPtr()));
+
   for (Browser* browser : *BrowserList::GetInstance()) {
     if (browser->profile() == profile) {
       browser->tab_strip_model()->AddObserver(this);
@@ -62,13 +102,38 @@ IsolatedWebAppsOpenedTabsCounterService::
   browser_list_observation_.Observe(BrowserList::GetInstance());
 }
 
+void IsolatedWebAppsOpenedTabsCounterService::RetrieveNotificationStates() {
+  web_app::WebAppProvider* provider =
+      web_app::WebAppProvider::GetForWebApps(profile());
+
+  provider->scheduler().ScheduleCallback(
+      "RetrieveIwaNotificationStates", web_app::AllAppsLockDescription(),
+      base::BindOnce(&IsolatedWebAppsOpenedTabsCounterService::
+                         OnAllAppsLockAcquiredForStateRetrieval,
+                     weak_ptr_factory_.GetWeakPtr()),
+      /*on_complete=*/base::DoNothing());
+}
+
+void IsolatedWebAppsOpenedTabsCounterService::
+    OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
+                                           base::Value::Dict& debug_value) {
+  for (const webapps::AppId& app_id : lock.registrar().GetAppIds()) {
+    const web_app::WebApp* web_app = lock.registrar().GetAppById(app_id);
+    if (web_app && ShouldShowNotificationForWindowOpen(*web_app)) {
+      if (const auto& state = web_app->isolation_data()
+                                  ->opened_tabs_counter_notification_state()) {
+        notification_states_cache_.emplace(app_id, *state);
+      }
+    }
+  }
+}
+
 IsolatedWebAppsOpenedTabsCounterService::
     ~IsolatedWebAppsOpenedTabsCounterService() = default;
 
 void IsolatedWebAppsOpenedTabsCounterService::Shutdown() {
   for (const auto& [app_id, _] : app_tab_counts_) {
-    NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
-        NotificationHandler::Type::TRANSIENT, GetNotificationIdForApp(app_id));
+    CloseNotification(app_id);
   }
 
   app_tab_counts_.clear();
@@ -117,6 +182,18 @@ void IsolatedWebAppsOpenedTabsCounterService::HandleOpenerCountIfTracked(
     content::WebContents* contents) {
   ASSIGN_OR_RETURN(webapps::AppId opener_app_id,
                    MaybeGetOpenerIsolatedWebAppId(contents), [] {});
+
+  if (!base::Contains(notification_states_cache_, opener_app_id)) {
+    const web_app::WebApp* web_app =
+        web_app::WebAppProvider::GetForWebApps(profile())
+            ->registrar_unsafe()
+            .GetAppById(opener_app_id);
+
+    CHECK(web_app);
+    if (!ShouldShowNotificationForWindowOpen(*web_app)) {
+      return;
+    }
+  }
 
   if (base::Contains(opened_by_app_map_, contents)) {
     return;
@@ -189,24 +266,59 @@ void IsolatedWebAppsOpenedTabsCounterService::DecrementTabCountForApp(
 
 void IsolatedWebAppsOpenedTabsCounterService::
     UpdateOrRemoveNotificationForOpener(const webapps::AppId& app_id) {
-  NotificationState& notification_state = notification_states_[app_id];
+  auto tab_count_it = app_tab_counts_.find(app_id);
+  int tab_count =
+      (tab_count_it == app_tab_counts_.end()) ? 0 : tab_count_it->second;
 
-  auto it = app_tab_counts_.find(app_id);
-  if (it == app_tab_counts_.end() || it->second <= 1) {
-    if (notification_state.is_active) {
-      notification_state.is_active = false;
+  auto notification_state_it = notification_states_cache_.find(app_id);
+
+  if (notification_state_it == notification_states_cache_.end()) {
+    notification_state_it =
+        notification_states_cache_
+            .emplace(app_id, IsolationData::OpenedTabsCounterNotificationState(
+                                 /*acknowledged=*/false,
+                                 /*times_shown=*/0))
+            .first;
+  }
+  auto& notification_state = notification_state_it->second;
+
+  // Conditions to close or suppress the notification:
+  // 1. Not enough tabs are open.
+  // 2. Notification has been shown the maximum number of times.
+  // 3. User has permanently dismissed it.
+  if (tab_count <= 1 ||
+      notification_state.times_shown() >= kMaxNotificationShowCount ||
+      notification_state.acknowledged()) {
+    if (apps_with_active_notifications_.contains(app_id)) {
       CloseNotification(app_id);
+      PersistNotificationState(app_id);
     }
     return;
   }
-  notification_state.is_active = true;
-  CreateAndDisplayNotification(app_id, it->second);
+
+  if (!apps_with_active_notifications_.contains(app_id)) {
+    notification_state = IsolationData::OpenedTabsCounterNotificationState(
+        notification_state.acknowledged(),
+        notification_state.times_shown() + 1);
+    apps_with_active_notifications_.insert(app_id);
+  }
+
+  CreateAndDisplayNotification(app_id, tab_count);
+  PersistNotificationState(app_id);
 }
 
 void IsolatedWebAppsOpenedTabsCounterService::OnNotificationAcknowledged(
     const webapps::AppId& app_id) {
-  NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
-      NotificationHandler::Type::TRANSIENT, GetNotificationIdForApp(app_id));
+  auto it = notification_states_cache_.find(app_id);
+  int times_shown =
+      (it != notification_states_cache_.end()) ? it->second.times_shown() : 0;
+
+  notification_states_cache_.insert_or_assign(
+      app_id, IsolationData::OpenedTabsCounterNotificationState(
+                  /*acknowledged=*/true, times_shown));
+
+  CloseNotification(app_id);
+  PersistNotificationState(app_id);
 }
 
 void IsolatedWebAppsOpenedTabsCounterService::CreateAndDisplayNotification(
@@ -247,7 +359,8 @@ void IsolatedWebAppsOpenedTabsCounterService::CreateAndDisplayNotification(
 
   message_center::Notification notification(
       message_center::NOTIFICATION_TYPE_SIMPLE, GetNotificationIdForApp(app_id),
-      title, message, /*icon=*/ui::ImageModel(),
+      title, message,
+      /*icon=*/ui::ImageModel(),
       /*display_source=*/std::u16string(), /*origin_url=*/GURL(),
       /*notifier_id=*/
       message_center::NotifierId(message_center::NotifierType::APPLICATION,
@@ -255,7 +368,8 @@ void IsolatedWebAppsOpenedTabsCounterService::CreateAndDisplayNotification(
       /*optional_fields=*/rich_data, delegate);
 
   NotificationDisplayServiceFactory::GetForProfile(profile())->Display(
-      NotificationHandler::Type::TRANSIENT, notification, /*metadata=*/nullptr);
+      NotificationHandler::Type::TRANSIENT, notification,
+      /*metadata=*/nullptr);
 }
 
 void IsolatedWebAppsOpenedTabsCounterService::CloseAllWebContentsOpenedByApp(
@@ -274,8 +388,47 @@ void IsolatedWebAppsOpenedTabsCounterService::CloseAllWebContentsOpenedByApp(
   }
 }
 
+void IsolatedWebAppsOpenedTabsCounterService::PersistNotificationState(
+    const webapps::AppId& app_id) {
+  auto it = notification_states_cache_.find(app_id);
+  if (it == notification_states_cache_.end()) {
+    return;
+  }
+  const web_app::IsolationData::OpenedTabsCounterNotificationState
+      current_notification_state = it->second;
+
+  web_app::WebAppProvider::GetForWebApps(profile())
+      ->scheduler()
+      .ScheduleCallback(
+          "IsolatedWebAppsOpenedTabsCounterService::PersistNotificationState",
+          web_app::AppLockDescription(app_id),
+          base::BindOnce(
+              [](const webapps::AppId& app_id,
+                 const web_app::IsolationData::
+                     OpenedTabsCounterNotificationState&
+                         current_notification_state,
+                 web_app::AppLock& lock, base::Value::Dict& debug_value) {
+                web_app::ScopedRegistryUpdate update =
+                    lock.sync_bridge().BeginUpdate();
+
+                web_app::WebApp* web_app = update->UpdateApp(app_id);
+                CHECK(web_app && web_app->isolation_data().has_value());
+                web_app->SetIsolationData(
+                    web_app::IsolationData::Builder(*web_app->isolation_data())
+                        .SetOpenedTabsCounterNotificationState(
+                            current_notification_state)
+                        .Build());
+              },
+              app_id, current_notification_state),
+          base::DoNothing());
+}
+
 void IsolatedWebAppsOpenedTabsCounterService::CloseNotification(
     const webapps::AppId& app_id) {
+  apps_with_active_notifications_.erase(app_id);
+
   NotificationDisplayServiceFactory::GetForProfile(profile())->Close(
       NotificationHandler::Type::TRANSIENT, GetNotificationIdForApp(app_id));
 }
+
+}  // namespace web_app

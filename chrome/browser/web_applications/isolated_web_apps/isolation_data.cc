@@ -34,13 +34,17 @@ IsolationData::IsolationData(
     std::optional<PendingUpdateInfo> pending_update_info,
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
     std::optional<GURL> update_manifest_url,
-    std::optional<UpdateChannel> update_channel)
+    std::optional<UpdateChannel> update_channel,
+    std::optional<OpenedTabsCounterNotificationState>
+        opened_tabs_counter_notification_state)
     : location_(std::move(location)),
       version_(std::move(version)),
       controlled_frame_partitions_(std::move(controlled_frame_partitions)),
       pending_update_info_(std::move(pending_update_info)),
       integrity_block_data_(std::move(integrity_block_data)),
       update_manifest_url_(std::move(update_manifest_url)),
+      opened_tabs_counter_notification_state_(
+          std::move(opened_tabs_counter_notification_state)),
       update_channel_(std::move(update_channel)) {
   CHECK(!update_manifest_url_.has_value() || update_manifest_url_->is_valid(),
         base::NotFatalUntil::M138);
@@ -64,8 +68,13 @@ base::Value IsolationData::AsDebugValue() const {
                                           : base::Value())
           .Set("integrity_block_data",
                integrity_block_data_ ? integrity_block_data_->AsDebugValue()
-                                     : base::Value());
-
+                                     : base::Value())
+          .Set("opened_tabs_counter_notification_state",
+               opened_tabs_counter_notification_state_
+                   ? base::Value(
+                         opened_tabs_counter_notification_state_->GetState()
+                             .DebugString())
+                   : base::Value());
   if (update_manifest_url_) {
     debug_dict.Set("update_manifest_url", update_manifest_url_->spec());
   }
@@ -99,6 +108,26 @@ base::Value IsolationData::PendingUpdateInfo::AsDebugValue() const {
           .Set("integrity_block_data",
                integrity_block_data ? integrity_block_data->AsDebugValue()
                                     : base::Value()));
+}
+
+IsolationData::OpenedTabsCounterNotificationState::
+    OpenedTabsCounterNotificationState(
+        proto::IsolationData::OpenedTabsCounterNotificationState state)
+    : proto_state_(std::move(state)) {
+  CHECK(proto_state_.has_acknowledged());
+  CHECK(proto_state_.has_times_shown());
+}
+
+IsolationData::OpenedTabsCounterNotificationState::
+    OpenedTabsCounterNotificationState(bool acknowledged,
+                                       uint32_t times_shown) {
+  proto_state_.set_acknowledged(acknowledged);
+  proto_state_.set_times_shown(times_shown);
+}
+
+const proto::IsolationData::OpenedTabsCounterNotificationState&
+IsolationData::OpenedTabsCounterNotificationState::GetState() const {
+  return proto_state_;
 }
 
 IsolationData::Builder::Builder(IsolatedWebAppStorageLocation location,
@@ -147,6 +176,20 @@ IsolationData::Builder&& IsolationData::Builder::SetPendingUpdateInfo(
     IsolationData::PendingUpdateInfo pending_update_info) && {
   CHECK_EQ(pending_update_info.location.dev_mode(), location_.dev_mode());
   pending_update_info_ = std::move(pending_update_info);
+  return std::move(*this);
+}
+
+IsolationData::Builder&
+IsolationData::Builder::SetOpenedTabsCounterNotificationState(
+    IsolationData::OpenedTabsCounterNotificationState notification_state) & {
+  opened_tabs_counter_notification_state_ = std::move(notification_state);
+  return *this;
+}
+
+IsolationData::Builder&&
+IsolationData::Builder::SetOpenedTabsCounterNotificationState(
+    IsolationData::OpenedTabsCounterNotificationState notification_state) && {
+  opened_tabs_counter_notification_state_ = std::move(notification_state);
   return std::move(*this);
 }
 
@@ -227,7 +270,8 @@ IsolationData IsolationData::Builder::Build() && {
       std::move(location_), std::move(version_),
       std::move(controlled_frame_partitions_), std::move(pending_update_info_),
       std::move(integrity_block_data_), std::move(update_manifest_url_),
-      std::move(update_channel_));
+      std::move(update_channel_),
+      std::move(opened_tabs_counter_notification_state_));
 }
 
 }  // namespace web_app

@@ -1050,7 +1050,7 @@ void ChromeBrowserMainExtraPartsProfiles::
   MicrosoftAuthServiceFactory::GetInstance();
 #endif
 #if !BUILDFLAG(IS_ANDROID) && defined(USE_AURA)
-  IsolatedWebAppsOpenedTabsCounterServiceFactory::GetInstance();
+  web_app::IsolatedWebAppsOpenedTabsCounterServiceFactory::GetInstance();
 #endif
   NavigationPredictorKeyedServiceFactory::GetInstance();
 #if BUILDFLAG(CHROME_ROOT_STORE_CERT_MANAGEMENT_UI)

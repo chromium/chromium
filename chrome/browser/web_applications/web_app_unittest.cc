@@ -391,6 +391,7 @@ TEST(WebAppTest, IsolationDataDebugValue) {
         },
         "version": "1.0.0",
         "controlled_frame_partitions (on-disk)": [],
+        "opened_tabs_counter_notification_state": null,
         "pending_update_info": null,
         "integrity_block_data": null
       })|")
@@ -445,6 +446,7 @@ TEST(WebAppTest, IsolationDataPendingUpdateInfoDebugValue) {
         },
         "version": "1.0.0",
         "controlled_frame_partitions (on-disk)": [],
+        "opened_tabs_counter_notification_state": null,
         "pending_update_info": {
           "isolated_web_app_location": {
             "unowned_bundle": {

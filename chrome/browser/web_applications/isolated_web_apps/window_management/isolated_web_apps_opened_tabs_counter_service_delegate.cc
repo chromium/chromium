@@ -15,6 +15,8 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 
+namespace web_app {
+
 namespace {
 
 constexpr int kSettingsButtonIndex = 0;
@@ -70,3 +72,5 @@ void IsolatedWebAppsOpenedTabsCounterServiceDelegate::Close(bool by_user) {
     notification_acknowledged_callback_.Run(app_id_);
   }
 }
+
+}  // namespace web_app

@@ -12,6 +12,8 @@
 
 class Profile;
 
+namespace web_app {
+
 class IsolatedWebAppsOpenedTabsCounterServiceDelegate
     : public message_center::NotificationDelegate {
  public:
@@ -49,5 +51,7 @@ class IsolatedWebAppsOpenedTabsCounterServiceDelegate
   IsolatedWebAppsOpenedTabsCounterService::CloseNotificationCallback
       close_notification_callback_;
 };
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_DELEGATE_H_

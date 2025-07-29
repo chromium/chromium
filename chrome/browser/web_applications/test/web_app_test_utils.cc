@@ -1143,6 +1143,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
       idb.SetUpdateManifestUrl(GURL("https://update-manifest.com"));
       idb.SetUpdateChannel(UpdateChannel::default_channel());
     }
+    if (random.next_bool()) {
+      proto::IsolationData::OpenedTabsCounterNotificationState proto_state;
+      proto_state.set_acknowledged(random.next_bool());
+      proto_state.set_times_shown(random.next_uint(3));
+      idb.SetOpenedTabsCounterNotificationState(
+          IsolationData::OpenedTabsCounterNotificationState(
+              std::move(proto_state)));
+    }
     app->SetIsolationData(std::move(idb).Build());
   }
 

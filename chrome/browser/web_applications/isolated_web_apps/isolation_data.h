@@ -43,6 +43,37 @@ class IsolationData {
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data;
   };
 
+  class OpenedTabsCounterNotificationState {
+   public:
+    explicit OpenedTabsCounterNotificationState(
+        proto::IsolationData_OpenedTabsCounterNotificationState state);
+    OpenedTabsCounterNotificationState(bool acknowledged, uint32_t times_shown);
+
+    ~OpenedTabsCounterNotificationState() = default;
+    OpenedTabsCounterNotificationState(
+        const OpenedTabsCounterNotificationState&) = default;
+    OpenedTabsCounterNotificationState& operator=(
+        const OpenedTabsCounterNotificationState&) = default;
+    OpenedTabsCounterNotificationState(OpenedTabsCounterNotificationState&&) =
+        default;
+    OpenedTabsCounterNotificationState& operator=(
+        OpenedTabsCounterNotificationState&&) = default;
+
+    bool operator==(const OpenedTabsCounterNotificationState& other) const {
+      return proto_state_.SerializeAsString() ==
+             other.proto_state_.SerializeAsString();
+    }
+
+    bool acknowledged() const { return proto_state_.acknowledged(); }
+    uint32_t times_shown() const { return proto_state_.times_shown(); }
+
+    const proto::IsolationData::OpenedTabsCounterNotificationState& GetState()
+        const;
+
+   private:
+    proto::IsolationData::OpenedTabsCounterNotificationState proto_state_;
+  };
+
   ~IsolationData();
   IsolationData(const IsolationData&);
   IsolationData& operator=(const IsolationData&);
@@ -76,6 +107,11 @@ class IsolationData {
     return update_channel_;
   }
 
+  const std::optional<OpenedTabsCounterNotificationState>&
+  opened_tabs_counter_notification_state() const {
+    return opened_tabs_counter_notification_state_;
+  }
+
  private:
   IsolationData(
       IsolatedWebAppStorageLocation location,
@@ -84,7 +120,9 @@ class IsolationData {
       std::optional<PendingUpdateInfo> pending_update_info,
       std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data,
       std::optional<GURL> update_manifest_url,
-      std::optional<UpdateChannel> update_channel);
+      std::optional<UpdateChannel> update_channel,
+      std::optional<OpenedTabsCounterNotificationState>
+          opened_tabs_counter_notification_state);
 
   IsolatedWebAppStorageLocation location_;
   base::Version version_;
@@ -109,6 +147,10 @@ class IsolationData {
   // blank. For unmanaged installs this will likely need to have a counterpart
   // in PendingUpdateInfo.
   std::optional<GURL> update_manifest_url_;
+
+  std::optional<OpenedTabsCounterNotificationState>
+      opened_tabs_counter_notification_state_;
+
   std::optional<UpdateChannel> update_channel_;
 
  public:
@@ -135,6 +177,11 @@ class IsolationData {
         IsolationData::PendingUpdateInfo pending_update_info) &;
     Builder&& SetPendingUpdateInfo(
         IsolationData::PendingUpdateInfo pending_update_info) &&;
+
+    Builder& SetOpenedTabsCounterNotificationState(
+        OpenedTabsCounterNotificationState notification_state) &;
+    Builder&& SetOpenedTabsCounterNotificationState(
+        OpenedTabsCounterNotificationState notification_state) &&;
 
     Builder& ClearPendingUpdateInfo() &;
     Builder&& ClearPendingUpdateInfo() &&;
@@ -175,6 +222,8 @@ class IsolationData {
     std::optional<IsolationData::PendingUpdateInfo> pending_update_info_;
     std::optional<IsolatedWebAppIntegrityBlockData> integrity_block_data_;
     std::optional<GURL> update_manifest_url_;
+    std::optional<OpenedTabsCounterNotificationState>
+        opened_tabs_counter_notification_state_;
     std::optional<UpdateChannel> update_channel_;
   };
 };

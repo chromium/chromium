@@ -1,4 +1,3 @@
-
 // Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
@@ -17,8 +16,12 @@
 #include "chrome/browser/ui/browser_list_observer.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
+#include "chrome/browser/web_applications/isolated_web_apps/isolation_data.h"
+#include "chrome/browser/web_applications/locks/all_apps_lock.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/webapps/common/web_app_id.h"
+
+namespace web_app {
 
 // Isolated Web Apps (IWAs) are granted the "Pop-ups and Redirects"
 // content setting permission by default upon installation. As a result,
@@ -67,9 +70,9 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService,
       IsolatedWebAppsOpenedTabsCounterServiceBrowserTest,
       ClickCloseWindowsButtonClosesChildWindowsAndNotification);
 
-  struct NotificationState {
-    bool is_active = false;
-  };
+  void RetrieveNotificationStates();
+  void OnAllAppsLockAcquiredForStateRetrieval(web_app::AllAppsLock& lock,
+                                              base::Value::Dict& debug_value);
 
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
@@ -94,17 +97,29 @@ class IsolatedWebAppsOpenedTabsCounterService : public KeyedService,
                                     int current_window_count);
   void CloseAllWebContentsOpenedByApp(const webapps::AppId& app_id);
 
+  void PersistNotificationState(const webapps::AppId& app_id);
+
   Profile* profile() { return &profile_.get(); }
 
   const raw_ref<Profile> profile_;
   base::flat_map<webapps::AppId, int> app_tab_counts_;
+
   base::flat_map<content::WebContents*, webapps::AppId> opened_by_app_map_;
-  std::map<webapps::AppId, NotificationState> notification_states_;
+  // These are loaded in `RetrieveNotificationStates` method, and saved as an
+  // in-memory cache. After modifying, `PersistNotificationState` should always
+  // be called.
+  std::map<webapps::AppId,
+           web_app::IsolationData::OpenedTabsCounterNotificationState>
+      notification_states_cache_;
+
+  base::flat_set<webapps::AppId> apps_with_active_notifications_;
 
   base::ScopedObservation<BrowserList, BrowserListObserver>
       browser_list_observation_{this};
   base::WeakPtrFactory<IsolatedWebAppsOpenedTabsCounterService>
       weak_ptr_factory_{this};
 };
+
+}  // namespace web_app
 
 #endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_WINDOW_MANAGEMENT_ISOLATED_WEB_APPS_OPENED_TABS_COUNTER_SERVICE_H_

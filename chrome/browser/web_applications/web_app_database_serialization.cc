@@ -1303,10 +1303,13 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
       }
       isolation_data_builder.SetUpdateChannel(std::move(*update_channel));
     }
-
+    if (proto.isolation_data().has_opened_tabs_counter_notification_state()) {
+      isolation_data_builder.SetOpenedTabsCounterNotificationState(
+          IsolationData::OpenedTabsCounterNotificationState(
+              proto.isolation_data().opened_tabs_counter_notification_state()));
+    }
     web_app->SetIsolationData(std::move(isolation_data_builder).Build());
   }
-
   if (proto.has_user_link_capturing_preference()) {
     web_app->SetLinkCapturingUserPreference(
         proto.user_link_capturing_preference());
@@ -1844,7 +1847,6 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
       auto* mutable_pending_update_info =
           mutable_data->mutable_pending_update_info();
 
-      // Add this check:
       CHECK_EQ(isolation_data.location().dev_mode(),
                pending_update_info.location.dev_mode(),
                base::NotFatalUntil::M138)
@@ -1859,6 +1861,12 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
         *mutable_pending_update_info->mutable_integrity_block_data() =
             pending_update_info.integrity_block_data->ToProto();
       }
+    }
+
+    if (const auto& notification_state =
+            isolation_data.opened_tabs_counter_notification_state()) {
+      *mutable_data->mutable_opened_tabs_counter_notification_state() =
+          notification_state->GetState();
     }
 
     if (isolation_data.integrity_block_data()) {
