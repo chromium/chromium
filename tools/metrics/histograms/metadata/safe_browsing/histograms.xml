@@ -3960,7 +3960,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.WebView.UserOptInKnown.FirstLoad" enum="Boolean"
-    expires_after="2024-12-18">
+    expires_after="2026-07-28">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3969,7 +3969,8 @@ failing to fetch the updates which puts users' security at risk. -->
     consent is known (but not necessarily whether the consent is positive or
     negative), and a value of &quot;false&quot; means we are still waiting for a
     result callback. This histogram is recorded exactly once, during the first
-    URL load in WebView.
+    URL load in WebView. Warning: this histogram was expired from 2024-12-18 to
+    2025-07-29; data may be missing.
   </summary>
 </histogram>
 

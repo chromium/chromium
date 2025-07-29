@@ -7242,7 +7242,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Android.WebView.isDebuggable" enum="DebuggingEnabled"
-    expires_after="2025-05-18">
+    expires_after="2026-07-25">
   <owner>ntfschr@chromium.org</owner>
   <owner>thomasbull@chromium.org</owner>
   <owner>torne@chromium.org</owner>
@@ -7251,7 +7251,8 @@ chromium-metrics-reviews@google.com.
     Records the number of times the WebView is debuggable or not debuggable, if
     it is debuggable then also how it has been set set, whether it is from the
     app or from the OS or from calling setWebContentsDebuggingEnabled(true).
-    This is logged each time the MetricsService uploads metrics.
+    This is logged each time the MetricsService uploads metrics. Warning: this
+    histogram was expired from 2025-05-18 to 2025-07-25; data may be missing.
   </summary>
 </histogram>
 
@@ -8678,7 +8679,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="Android.WebView.Startup.NonblockingServiceConnectionDelay.{ServiceName}"
-    units="ms" expires_after="2023-09-01">
+    units="ms" expires_after="2026-07-28">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -8687,7 +8688,8 @@ chromium-metrics-reviews@google.com.
     how long it takes for nonembedded service connections to be established and
     capture any regressions in this. In the case when a service connection is
     dropped and then reconnected by the system, the histogram is only recorded
-    for the first connection.
+    for the first connection. Warning: this histogram was expired from
+    2023-09-01 to 2025-07-29; data may be missing.
   </summary>
   <token key="ServiceName">
     <variant name="MetricsBridgeService"/>
