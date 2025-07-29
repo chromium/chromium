@@ -4470,10 +4470,6 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
       GetOperand(gather.input_operand_id).descriptor));
   CHECK(context_properties_.data_type_limits.gather_indices.Supports(
       GetOperand(gather.indices_operand_id).descriptor));
-  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
-                   SerializeInputTensorInfo(gather.indices_operand_id));
-  const TensorIndex indices_tensor_index =
-      CastGatherIndices(indices_tensor_info);
 
   // The WebNN axis option is uint32 data type, but TFLite axis needs int32
   // type, so the axis need to be validated here to not overflow.
@@ -4496,6 +4492,22 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
       fuse_dequantize
           ? quantized_output->index
           : SerializeOutputTensorInfo(gather.output_operand_id).index;
+
+  ASSIGN_OR_RETURN(const TensorInfo& indices_tensor_info,
+                   SerializeInputTensorInfo(gather.indices_operand_id));
+  TensorIndex indices_tensor_index;
+  if (indices_tensor_info.data_type == ::tflite::TensorType_UINT32 ||
+      indices_tensor_info.data_type == ::tflite::TensorType_INT64) {
+    ASSIGN_OR_RETURN(indices_tensor_index,
+                     SerializeGatherIndices<int64_t>(
+                         indices_tensor_info, input_tensor_info, gather.axis));
+  } else {
+    CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
+    ASSIGN_OR_RETURN(indices_tensor_index,
+                     SerializeGatherIndices<int32_t>(
+                         indices_tensor_info, input_tensor_info, gather.axis));
+  }
+
   const OperatorCodeIndex operator_code_index =
       GetOperatorCodeIndex(::tflite::BuiltinOperator_GATHER);
   const std::array<TensorIndex, 2> op_inputs = {input_tensor_info.index,
@@ -4509,9 +4521,10 @@ auto GraphBuilderTflite::SerializeGather(const mojom::Gather& gather)
 }
 
 template <typename DataType>
-auto GraphBuilderTflite::SerializeGatherNDIndices(
+auto GraphBuilderTflite::SerializeGatherIndices(
     const TensorInfo& indices_tensor_info,
-    const TensorInfo& input_tensor_info)
+    const TensorInfo& input_tensor_info,
+    std::optional<uint32_t> gather_axis)
     -> base::expected<TensorIndex, std::string> {
   // The values in `indices` are computed at runtime, so they can exceed the
   // boundary of the `axis` dimension of input. If unchecked, such indices will
@@ -4519,19 +4532,32 @@ auto GraphBuilderTflite::SerializeGatherNDIndices(
   // to be in range of `-N` (inclusive) to `N` (exclusive), where `N =
   // input.dimensions[axis]`, but TFLite doesn't support the negative index
   // (index from the end of the `axis` dimension).
-  // TODO(crbug.com/373192621): Support negative indices to avoid the runtime
-  // error.
   const size_t indices_rank = indices_tensor_info.dimensions.size();
-  const size_t indices_nd = indices_tensor_info.dimensions[indices_rank - 1];
-  if (indices_nd == input_tensor_info.dimensions.size()) {
-    return base::unexpected(
-        "TFLite doesn't support to gather input into one dimension.");
-  }
+  const int32_t indices_nd =
+      gather_axis ? 1 : indices_tensor_info.dimensions[indices_rank - 1];
   base::FixedArray<DataType> min_values(indices_nd);
   base::FixedArray<DataType> max_values(indices_nd);
-  for (size_t axis = 0; axis < indices_nd; ++axis) {
-    min_values[axis] = -(input_tensor_info.dimensions[axis]);
-    max_values[axis] = input_tensor_info.dimensions[axis] - 1;
+  TensorIndex axis_boundary_tensor_index;
+  if (gather_axis) {
+    // Gather operation.
+    const DataType axis_boundary = input_tensor_info.dimensions[*gather_axis];
+    min_values[0] = -axis_boundary;
+    max_values[0] = axis_boundary - 1;
+    axis_boundary_tensor_index = SerializeTensorWithBuffer<DataType>(
+        /*buffer=*/std::array<DataType, 1>{axis_boundary},
+        /*dimensions=*/{});
+  } else {
+    // GatherND operation.
+    base::FixedArray<DataType> axes_boundary(indices_nd);
+    for (int32_t axis = 0; axis < indices_nd; ++axis) {
+      const DataType axis_boundary = input_tensor_info.dimensions[axis];
+      min_values[axis] = -axis_boundary;
+      max_values[axis] = axis_boundary - 1;
+      axes_boundary[axis] = axis_boundary;
+    }
+    axis_boundary_tensor_index = SerializeTensorWithBuffer<DataType>(
+        /*buffer=*/axes_boundary,
+        /*dimensions=*/{indices_nd});
   }
   TensorIndex indices_tensor_index = CastGatherIndices(indices_tensor_info);
   ::tflite::TensorType cast_tensor_type =
@@ -4545,7 +4571,28 @@ auto GraphBuilderTflite::SerializeGatherNDIndices(
                  indices_tensor_info.dimensions),
       clamp_tensor_index, min_values, max_values));
 
-  return clamp_tensor_index;
+  // Shift negative indices to positive by the subgraph `where(lesser(indices,
+  // constant(0)), indices, add(indices, constant(input.dimensions[axis])))`.
+  TensorIndex lesser_tensor_index = SerializeTemporaryTensor(
+      indices_tensor_info.dimensions, ::tflite::TensorType_BOOL);
+  const TensorIndex zero_value_tensor_index =
+      SerializeTensorWithBuffer<DataType>(
+          /*buffer=*/std::array<DataType, 1>{0},
+          /*dimensions=*/{});
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_LESS, clamp_tensor_index,
+      zero_value_tensor_index, lesser_tensor_index));
+  TensorIndex add_tensor_index = SerializeTemporaryTensor(
+      indices_tensor_info.dimensions, cast_tensor_type);
+  operators_.emplace_back(SerializeBinaryOperation(
+      ::tflite::BuiltinOperator_ADD, clamp_tensor_index,
+      axis_boundary_tensor_index, add_tensor_index));
+  TensorIndex where_tensor_index = SerializeTemporaryTensor(
+      indices_tensor_info.dimensions, cast_tensor_type);
+  operators_.emplace_back(
+      SerializeWhereOperation(lesser_tensor_index, add_tensor_index,
+                              clamp_tensor_index, where_tensor_index));
+  return where_tensor_index;
 }
 
 auto GraphBuilderTflite::SerializeGatherNDOperation(
@@ -4655,13 +4702,13 @@ auto GraphBuilderTflite::SerializeGatherND(const mojom::GatherND& gather_nd)
   if (indices_tensor_info.data_type == ::tflite::TensorType_UINT32 ||
       indices_tensor_info.data_type == ::tflite::TensorType_INT64) {
     ASSIGN_OR_RETURN(indices_tensor_index,
-                     SerializeGatherNDIndices<int64_t>(indices_tensor_info,
-                                                       input_tensor_info));
+                     SerializeGatherIndices<int64_t>(indices_tensor_info,
+                                                     input_tensor_info));
   } else {
     CHECK_EQ(indices_tensor_info.data_type, ::tflite::TensorType_INT32);
     ASSIGN_OR_RETURN(indices_tensor_index,
-                     SerializeGatherNDIndices<int32_t>(indices_tensor_info,
-                                                       input_tensor_info));
+                     SerializeGatherIndices<int32_t>(indices_tensor_info,
+                                                     input_tensor_info));
   }
 
   const TensorIndex output_tensor_index =

@@ -285,9 +285,10 @@ class GraphBuilderTflite final {
 
   // Serialize gather_nd indices tensor.
   template <typename DataType>
-  base::expected<TensorIndex, std::string> SerializeGatherNDIndices(
+  base::expected<TensorIndex, std::string> SerializeGatherIndices(
       const TensorInfo& indices_tensor_info,
-      const TensorInfo& input_tensor_info);
+      const TensorInfo& input_tensor_info,
+      std::optional<uint32_t> gather_axis = std::nullopt);
   TensorIndex CastGatherIndices(const TensorInfo& indices_tensor_info);
 
   // This function is called by `SerializeGatherND` to serialize WebNN
