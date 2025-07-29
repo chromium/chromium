@@ -1663,58 +1663,55 @@ bool Element::InterestLost(Element& target) {
 
 void Element::DefaultEventHandler(Event& event) {
   if (RuntimeEnabledFeatures::HTMLInterestForAttributeEnabled(
-          GetDocument().GetExecutionContext())) {
-    if (InterestForElement() || GetInterestInvoker() ||
-        GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
-      // Handle new `interestfor` activation via mouse, keyboard, or long-
-      // press.
-      String type = event.type();
-      if (auto* mouse_event = DynamicTo<MouseEvent>(event)) {
-        if (!mouse_event->FromTouch()) {
-          if (type == event_type_names::kMouseover) {
-            HandleInterestForHoverOrFocus(InterestSource::kHover);
-          }
-          if (type == event_type_names::kMouseout) {
-            HandleInterestForHoverOrFocus(InterestSource::kDeHover);
-          }
-        }
-      }
-      if (auto* focus_event = DynamicTo<FocusEvent>(event)) {
-        if (!focus_event->sourceCapabilities() ||
-            !focus_event->sourceCapabilities()->firesTouchEvents()) {
-          if (type == event_type_names::kFocusin) {
-            HandleInterestForHoverOrFocus(InterestSource::kFocus);
-          }
-          if (type == event_type_names::kFocusout) {
-            HandleInterestForHoverOrFocus(InterestSource::kBlur);
-          }
-        }
-      }
-      if (IsA<GestureEvent>(event) &&
-          type == event_type_names::kGesturelongpress) {
-        // Delays don't apply to long-press, since the "long press" has a
-        // built-in delay. Just show interest immediately in this case. This
-        // follows the same path used by context-menu activations on link
-        // elements.
-        // TODO(crbug.com/364669918): Touchscreen / long-press still needs a
-        // unit test.
-        ShowInterestNow();
+          GetDocument().GetExecutionContext()) &&
+      (InterestForElement() || GetInterestInvoker() ||
+       GetInterestState() != InterestState::kNoInterest)) [[unlikely]] {
+    // Handle new `interestfor` activation via mouse, keyboard, or long-
+    // press.
+    String type = event.type();
+    if (auto* mouse_event = DynamicTo<MouseEvent>(event);
+        mouse_event && !mouse_event->FromTouch()) {
+      if (type == event_type_names::kMouseover) {
+        HandleInterestForHoverOrFocus(InterestSource::kHover);
+      } else if (type == event_type_names::kMouseout) {
+        HandleInterestForHoverOrFocus(InterestSource::kDeHover);
       }
     }
-    if (GetInterestState() != InterestState::kNoInterest) [[unlikely]] {
+    if (auto* focus_event = DynamicTo<FocusEvent>(event);
+        focus_event &&
+        (!focus_event->sourceCapabilities() ||
+         !focus_event->sourceCapabilities()->firesTouchEvents())) {
+      if (type == event_type_names::kFocusin) {
+        HandleInterestForHoverOrFocus(InterestSource::kFocus);
+      } else if (type == event_type_names::kFocusout) {
+        HandleInterestForHoverOrFocus(InterestSource::kBlur);
+      }
+    }
+
+    if (IsA<GestureEvent>(event) &&
+        type == event_type_names::kGesturelongpress) {
+      // Delays don't apply to long-press, since the "long press" has a
+      // built-in delay. Just show interest immediately in this case. This
+      // follows the same path used by context-menu activations on link
+      // elements.
+      // TODO(crbug.com/364669918): Touchscreen / long-press still needs a
+      // unit test.
+      ShowInterestNow();
+    }
+
+    if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
+        keyboard_event && event.type() == event_type_names::kKeydown &&
+        GetInterestState() != InterestState::kNoInterest) {
       // Handle `interestfor` "activation" hotkey, and ESC key to lose
       // interest.
-      if (auto* keyboard_event = DynamicTo<KeyboardEvent>(event);
-          keyboard_event && event.type() == event_type_names::kKeydown) {
-        const int modifiers = keyboard_event->GetModifiers() &
-                              blink::WebInputEvent::kKeyModifiers;
-        auto* target = GetInvokerData()->ActiveInterestTarget();
-        DCHECK_EQ(InterestForElement(), target);
-        if (keyboard_event->key() == keywords::kEscape && !modifiers) {
-          if (GainOrLoseInterest(this, target, InterestState::kNoInterest)) {
-            event.SetDefaultHandled();
-            return;
-          }
+      const int modifiers =
+          keyboard_event->GetModifiers() & blink::WebInputEvent::kKeyModifiers;
+      auto* target = GetInvokerData()->ActiveInterestTarget();
+      DCHECK_EQ(InterestForElement(), target);
+      if (keyboard_event->key() == keywords::kEscape && !modifiers) {
+        if (GainOrLoseInterest(this, target, InterestState::kNoInterest)) {
+          event.SetDefaultHandled();
+          return;
         }
       }
     }

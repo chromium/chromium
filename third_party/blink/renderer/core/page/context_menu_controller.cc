@@ -504,8 +504,11 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     data.alt_text = html_element->AltText().Utf8();
   }
 
-  if (source_type == kMenuSourceLongPress ||
-      source_type == kMenuSourceLongTap) {
+  const bool from_touch = source_type == kMenuSourceTouch ||
+                          source_type == kMenuSourceLongPress ||
+                          source_type == kMenuSourceLongTap;
+
+  if (from_touch) {
     for (Node* node = result.InnerNode(); node; node = node->parentNode()) {
       if (HTMLElement* element = DynamicTo<HTMLElement>(node);
           element && element->InterestForElement()) {
@@ -822,9 +825,6 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
 
   SetAutofillData(result.InnerNode(), data);
 
-  const bool from_touch = source_type == kMenuSourceTouch ||
-                          source_type == kMenuSourceLongPress ||
-                          source_type == kMenuSourceLongTap;
   if (from_touch && !ShouldShowContextMenuFromTouch(data))
     return false;
 
