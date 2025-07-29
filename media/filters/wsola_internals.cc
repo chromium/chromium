@@ -11,13 +11,17 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstdint>
 #include <cstring>
 #include <limits>
 #include <memory>
 #include <numbers>
 
 #include "base/check_op.h"
+#include "base/containers/auto_spanification_helper.h"
+#include "base/containers/span.h"
 #include "base/cpu.h"
+#include "base/numerics/safe_conversions.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
 
@@ -57,20 +61,20 @@ void MultiChannelDotProduct_SSE(const AudioBus* a,
                                 int num_frames,
                                 float* dot_product) {
   // SIMD optimized variants can provide a massive speedup to this operation.
-  const int rem = num_frames % 4;
-  const int last_index = num_frames - rem;
+  const size_t rem = base::checked_cast<size_t>(num_frames) % 4;
+  const size_t last_index = num_frames - rem;
   const int channels = a->channels();
   for (int ch = 0; ch < channels; ++ch) {
-    const float* a_src =
-        a->channel_span(ch).subspan(static_cast<size_t>(frame_offset_a)).data();
-    const float* b_src =
-        b->channel_span(ch).subspan(static_cast<size_t>(frame_offset_b)).data();
+    base::span<const float> a_src =
+        a->channel_span(ch).subspan(static_cast<size_t>(frame_offset_a));
+    base::span<const float> b_src =
+        b->channel_span(ch).subspan(static_cast<size_t>(frame_offset_b));
 
     // First sum all components.
     __m128 m_sum = _mm_setzero_ps();
-    for (int s = 0; s < last_index; s += 4) {
+    for (size_t s = 0; s < last_index; s += 4) {
       m_sum = _mm_add_ps(
-          m_sum, _mm_mul_ps(_mm_loadu_ps(a_src + s), _mm_loadu_ps(b_src + s)));
+          m_sum, _mm_mul_ps(_mm_loadu_ps(&a_src[s]), _mm_loadu_ps(&b_src[s])));
     }
 
     // Reduce to a single float for this channel. Sadly, SSE1,2 doesn't have a
@@ -91,7 +95,7 @@ void MultiChannelDotProduct_SSE(const AudioBus* a,
   for (int k = 0; k < a->channels(); ++k) {
     const float* ch_a = a->channel(k) + frame_offset_a;
     const float* ch_b = b->channel(k) + frame_offset_b;
-    for (int n = 0; n < rem; ++n) {
+    for (size_t n = 0; n < rem; ++n) {
       dot_product[k] += *ch_a++ * *ch_b++;
     }
   }
@@ -251,7 +255,7 @@ void MultiChannelMovingBlockEnergies(const AudioBus* input,
   int channels = input->channels();
 
   for (int k = 0; k < input->channels(); ++k) {
-    const float* input_channel = input->channel_span(k).data();
+    base::span<const float> input_channel = input->channel_span(k);
 
     energy[k] = 0;
 
@@ -260,12 +264,14 @@ void MultiChannelMovingBlockEnergies(const AudioBus* input,
       energy[k] += input_channel[m] * input_channel[m];
     }
 
-    const float* slide_out = input_channel;
-    const float* slide_in = input_channel + frames_per_block;
+    auto slide_out = input_channel.begin();
+    auto slide_in =
+        input_channel.subspan(base::checked_cast<size_t>(frames_per_block))
+            .begin();
     for (int n = 1; n < num_blocks; ++n, ++slide_in, ++slide_out) {
       energy[k + n * channels] = energy[k + (n - 1) * channels] -
-                                 *slide_out * *slide_out +
-                                 *slide_in * *slide_in;
+                                 (*slide_out) * (*slide_out) +
+                                 (*slide_in) * (*slide_in);
     }
   }
 }

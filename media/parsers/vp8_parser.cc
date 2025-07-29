@@ -12,6 +12,7 @@
 
 #include "media/parsers/vp8_parser.h"
 
+#include <array>
 #include <cstring>
 
 #include "base/check_op.h"
@@ -703,17 +704,17 @@ const uint8_t kDefaultCoeffProbs[kNumBlockTypes][kNumCoeffBands]
   },
 };
 
-const uint8_t kMVUpdateProbs[kNumMVContexts][kNumMVProbs] =
-{
-  {
-    237, 246, 253, 253, 254, 254, 254, 254, 254,
-    254, 254, 254, 254, 254, 250, 250, 252, 254, 254,
-  },
-  {
-    231, 243, 245, 253, 254, 254, 254, 254, 254,
-    254, 254, 254, 254, 254, 251, 251, 254, 254, 254,
-  },
-};
+const std::array<std::array<const uint8_t, kNumMVProbs>, kNumMVContexts>
+    kMVUpdateProbs = {{
+        {
+            237, 246, 253, 253, 254, 254, 254, 254, 254, 254,
+            254, 254, 254, 254, 250, 250, 252, 254, 254,
+        },
+        {
+            231, 243, 245, 253, 254, 254, 254, 254, 254, 254,
+            254, 254, 254, 254, 251, 251, 254, 254, 254,
+        },
+    }};
 
 const uint8_t kDefaultMVProbs[kNumMVContexts][kNumMVProbs] = {
   {

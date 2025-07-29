@@ -14,6 +14,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"

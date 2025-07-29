@@ -12,6 +12,7 @@
 #include <algorithm>
 #include <cmath>
 
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -524,7 +525,8 @@ bool AudioRendererAlgorithm::RunOneWsolaIteration(double playback_rate) {
     if (!channel_mask_[k])
       continue;
 
-    const float* const ch_opt_frame = optimal_block_->channel_span(k).data();
+    const base::span<const float> ch_opt_frame =
+        optimal_block_->channel_span(k);
     float* ch_output =
         wsola_output_->channel_span(k).data() + num_complete_frames_;
     for (int n = 0; n < ola_hop_size_; ++n) {
@@ -534,7 +536,7 @@ bool AudioRendererAlgorithm::RunOneWsolaIteration(double playback_rate) {
 
     // Copy the second half to the output.
     memcpy(&ch_output[ola_hop_size_], &ch_opt_frame[ola_hop_size_],
-           sizeof(*ch_opt_frame) * ola_hop_size_);
+           sizeof(ch_opt_frame[0]) * ola_hop_size_);
   }
 
   num_complete_frames_ += ola_hop_size_;
@@ -583,8 +585,10 @@ int AudioRendererAlgorithm::WriteCompletedFramesTo(
   for (int k = 0; k < channels_; ++k) {
     if (!channel_mask_[k])
       continue;
-    float* ch = wsola_output_->channel_span(k).data();
-    memmove(ch, &ch[rendered_frames], sizeof(*ch) * frames_to_move);
+    base::span<float> ch = wsola_output_->channel_span(k);
+    memmove(ch.data(),
+            ch.subspan(base::checked_cast<size_t>(rendered_frames)).data(),
+            sizeof(ch[0]) * frames_to_move);
   }
   num_complete_frames_ -= rendered_frames;
   return rendered_frames;
@@ -639,8 +643,8 @@ void AudioRendererAlgorithm::GetOptimalBlock() {
     for (int k = 0; k < channels_; ++k) {
       if (!channel_mask_[k])
         continue;
-      float* ch_opt = optimal_block_->channel_span(k).data();
-      const float* const ch_target = target_block_->channel_span(k).data();
+      base::span<float> ch_opt = optimal_block_->channel_span(k);
+      const base::span<const float> ch_target = target_block_->channel_span(k);
       for (int n = 0; n < ola_window_size_; ++n) {
         ch_opt[n] = ch_opt[n] * transition_window_[n] +
                     ch_target[n] * transition_window_[ola_window_size_ + n];

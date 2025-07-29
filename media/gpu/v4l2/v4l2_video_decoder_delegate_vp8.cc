@@ -178,7 +178,7 @@ bool V4L2VideoDecoderDelegateVP8::SubmitDecode(
   v4l2_frame_hdr.num_dct_parts = frame_hdr->num_of_dct_partitions;
 
   static_assert(std::extent<decltype(v4l2_frame_hdr.dct_part_sizes)>() ==
-                    std::extent<decltype(frame_hdr->dct_partition_sizes)>(),
+                    std::tuple_size<decltype(frame_hdr->dct_partition_sizes)>(),
                 "DCT partition size arrays must have equal number of elements");
   for (size_t i = 0; i < frame_hdr->num_of_dct_partitions &&
                      i < std::size(v4l2_frame_hdr.dct_part_sizes);

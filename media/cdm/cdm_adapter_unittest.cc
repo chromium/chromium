@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <string_view>
+
 #ifdef UNSAFE_BUFFERS_BUILD
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
-#include "media/cdm/cdm_adapter.h"
 
 #include <stdint.h>
 
@@ -16,6 +16,7 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
@@ -29,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/cdm/api/content_decryption_module.h"
+#include "media/cdm/cdm_adapter.h"
 #include "media/cdm/cdm_module.h"
 #include "media/cdm/external_clear_key_test_helper.h"
 #include "media/cdm/library_cdm/cdm_host_proxy.h"
@@ -107,7 +109,7 @@ const auto kKeyId = std::to_array<uint8_t>({
     0x10,
 });
 
-const char kKeyIdAsJWK[] = "{\"kids\": [\"AQIDBAUGBwgJCgsMDQ4PEA\"]}";
+const std::string_view kKeyIdAsJWK = "{\"kids\": [\"AQIDBAUGBwgJCgsMDQ4PEA\"]}";
 
 const auto kKeyIdAsPssh = std::to_array<uint8_t>({
     0x00, 0x00, 0x00, 0x34,                          // size = 52
@@ -454,9 +456,7 @@ TEST_P(CdmAdapterTestWithClearKeyCdm, CreateWebmSession) {
 TEST_P(CdmAdapterTestWithClearKeyCdm, CreateKeyIdsSession) {
   InitializeAndExpect(SUCCESS);
 
-  // Don't include the trailing /0 from the string in the data passed in.
-  std::vector<uint8_t> key_id(kKeyIdAsJWK,
-                              kKeyIdAsJWK + std::size(kKeyIdAsJWK) - 1);
+  std::vector<uint8_t> key_id(kKeyIdAsJWK.begin(), kKeyIdAsJWK.end());
   CreateSessionAndExpect(EmeInitDataType::KEYIDS, key_id, SUCCESS);
 }
 

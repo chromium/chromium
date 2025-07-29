@@ -1155,7 +1155,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     // This is copying the dependent slice data that we do not parse below.
     size_t skip_amount = offsetof(H265SliceHeader, slice_type);
     // TODO(crbug.com/40285824): Find more graceful way to copy a part of the
-    // scturct
+    // struct
     UNSAFE_TODO(memcpy(reinterpret_cast<uint8_t*>(shdr) + skip_amount,
                        reinterpret_cast<uint8_t*>(prior_shdr) + skip_amount,
                        sizeof(H265SliceHeader) - skip_amount));
@@ -1443,7 +1443,7 @@ H265Parser::Result H265Parser::ParseSliceHeader(const H265NALU& nalu,
     size_t block_end = offsetof(H265SliceHeader, slice_sao_luma_flag);
 
     // TODO(crbug.com/40285824): Find more graceful way to compare a part of the
-    // scturct
+    // struct
     UNSAFE_TODO(TRUE_OR_RETURN(
         !memcmp(reinterpret_cast<uint8_t*>(shdr) + block_start,
                 reinterpret_cast<uint8_t*>(prior_shdr) + block_start,

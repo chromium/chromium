@@ -232,8 +232,14 @@ static bool g_verify_host_files_result = false;
 
 // Makes sure files and corresponding signature files are readable but not
 // writable.
-bool VerifyCdmHost_0(const cdm::HostFile* host_files, uint32_t num_files) {
-  LOG(WARNING) << __func__ << ": " << num_files;
+bool VerifyCdmHost_0(base::span<const cdm::HostFile> host_files,
+                     uint32_t spanification_suspected_redundant_num_files) {
+  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
+  // redundant in M143.
+  CHECK(spanification_suspected_redundant_num_files == host_files.size(),
+        base::NotFatalUntil::M143);
+  LOG(WARNING) << __func__ << ": "
+               << spanification_suspected_redundant_num_files;
 
   // We should always have the CDM and at least one common file.
   // The common CDM host file (e.g. chrome) might not exist since we are running
@@ -243,14 +249,15 @@ bool VerifyCdmHost_0(const cdm::HostFile* host_files, uint32_t num_files) {
   // We should always have the CDM.
   const int kNumCdmFiles = 1;
 
-  if (num_files < kMinNumHostFiles) {
-    LOG(ERROR) << "Too few host files: " << num_files;
+  if (spanification_suspected_redundant_num_files < kMinNumHostFiles) {
+    LOG(ERROR) << "Too few host files: "
+               << spanification_suspected_redundant_num_files;
     g_verify_host_files_result = false;
     return true;
   }
 
   int num_opened_files = 0;
-  for (uint32_t i = 0; i < num_files; ++i) {
+  for (uint32_t i = 0; i < spanification_suspected_redundant_num_files; ++i) {
     const int kBytesToRead = 10;
     std::vector<char> buffer(kBytesToRead);
 

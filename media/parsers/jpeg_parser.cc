@@ -204,9 +204,9 @@ static bool ParseSOF(base::span<const uint8_t> buffer,
 
 // |q_table| is already initialized to 0 in ParseJpegPicture.
 static bool ParseDQT(base::span<const uint8_t> buffer,
-                     JpegQuantizationTable* q_table) {
+                     base::span<JpegQuantizationTable> q_table) {
   // Spec B.2.4.1 Quantization table-specification syntax
-  DCHECK(q_table);
+  DCHECK(!q_table.empty());
   auto reader = base::SpanReader(buffer);
   while (reader.remaining() > 0u) {
     uint8_t precision_and_table_id;
@@ -238,11 +238,11 @@ static bool ParseDQT(base::span<const uint8_t> buffer,
 
 // |dc_table| and |ac_table| are already initialized to 0 in ParseJpegPicture.
 static bool ParseDHT(base::span<const uint8_t> buffer,
-                     JpegHuffmanTable* dc_table,
-                     JpegHuffmanTable* ac_table) {
+                     base::span<JpegHuffmanTable> dc_table,
+                     base::span<JpegHuffmanTable> ac_table) {
   // Spec B.2.4.2 Huffman table-specification syntax
-  DCHECK(dc_table);
-  DCHECK(ac_table);
+  DCHECK(!dc_table.empty());
+  DCHECK(!ac_table.empty());
   auto reader = base::SpanReader(buffer);
   while (reader.remaining() > 0u) {
     uint8_t table_class_and_id;
