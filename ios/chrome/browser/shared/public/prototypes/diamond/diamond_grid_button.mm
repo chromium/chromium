@@ -39,6 +39,9 @@ constexpr CGFloat kFontSize = 11;
 }
 
 - (void)setup {
+  // The app starts in the TabGrid.
+  [self didEnterTabGrid];
+
   NSNotificationCenter* notificationCenter =
       [NSNotificationCenter defaultCenter];
   [notificationCenter addObserver:self

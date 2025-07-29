@@ -364,6 +364,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
         startDispatchingToTarget:[self bookmarksCoordinator]
                      forProtocol:@protocol(BookmarksCommands)];
   }
+
+  if (IsDiamondPrototypeEnabled()) {
+    _appBar.incognitoBrowser = incognitoBrowser;
+  }
 }
 
 - (void)stopChildCoordinatorsWithCompletion:(ProceduralBlock)completion {
@@ -568,6 +572,20 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   __weak TabGridCoordinator* weakSelf = self;
 
   if (IsDiamondPrototypeEnabled()) {
+    Browser* browser =
+        incognito ? _incognitoBrowser.get() : self.regularBrowser;
+    // Don't open the TabGrid if there is no web state. It can happen at
+    // startup.
+    if (browser && browser->GetWebStateList()->count() == 0) {
+      TabGridViewController* baseViewController = self.baseViewController;
+      [baseViewController contentWillAppearAnimated:NO];
+      [baseViewController contentDidAppear];
+      if (completion) {
+        completion();
+      }
+      return;
+    }
+
     [[NSNotificationCenter defaultCenter]
         postNotificationName:kDiamondLeaveTabGridNotification
                       object:nil];

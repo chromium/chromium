@@ -175,6 +175,7 @@
 #import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
+#import "ios/chrome/browser/shared/public/prototypes/diamond/utils.h"
 #import "ios/chrome/browser/shared/ui/util/snackbar_util.h"
 #import "ios/chrome/browser/shared/ui/util/top_view_controller.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -2118,6 +2119,26 @@ using UserFeedbackDataCallback =
     }
   }
 
+  if (IsDiamondPrototypeEnabled()) {
+    if (!command.URL.is_valid() || IsUrlNtp(command.URL)) {
+      if (command.inIncognito !=
+          (self.currentInterface == self.incognitoInterface)) {
+        [self setCurrentInterfaceForMode:command.inIncognito
+                                             ? ApplicationMode::INCOGNITO
+                                             : ApplicationMode::NORMAL];
+      }
+      dispatch_after(
+          dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.1 * NSEC_PER_SEC)),
+          dispatch_get_main_queue(), ^{
+            DiamondPrototypeStartNewTab(
+                self.mainCoordinator.tabGridActive, command.inIncognito,
+                self.mainInterface.browser, self.incognitoInterface.browser,
+                self.mainCoordinator.activeViewController);
+          });
+      return;
+    }
+  }
+
   UrlLoadParams params =
       UrlLoadParams::InNewTab(command.URL, command.virtualURL);
   params.SetInBackground(command.inBackground);
@@ -3420,6 +3441,10 @@ using UserFeedbackDataCallback =
 }
 
 - (BOOL)shouldOpenNTPTabOnActivationOfBrowser:(Browser*)browser {
+  if (IsDiamondPrototypeEnabled()) {
+    return NO;
+  }
+
   // Check if there are pending actions that would result in opening a new tab.
   // In that case, it is not useful to open another tab.
   for (NSUserActivity* activity in self.sceneState.connectionOptions
