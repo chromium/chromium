@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
@@ -43,6 +44,9 @@ constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
 auto& kImageInputWidth = PermissionsAiv4Encoder::kImageInputWidth;
 auto& kImageInputHeight = PermissionsAiv4Encoder::kImageInputHeight;
+
+constexpr char kModelExecutionTimeoutHistogram[] =
+    "Permissions.AIv4.ModelExecutionTimeout";
 
 class PermissionsAiv4EncoderFake : public PermissionsAiv4Encoder {
  public:
@@ -88,6 +92,37 @@ class PermissionsAiv4EncoderFake : public PermissionsAiv4Encoder {
   }
 };
 
+class PermissionsAiv4HandlerMock : public PermissionsAiv4Handler {
+ public:
+  PermissionsAiv4HandlerMock(
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      RequestType request_type,
+      std::unique_ptr<PermissionsAiv4Encoder> model_executor)
+      : PermissionsAiv4Handler(model_provider,
+                               optimization_target,
+                               request_type,
+                               std::move(model_executor)) {}
+
+  // This is a mock implementation of ExecuteModelWithInput that does not
+  // schedule the real model execution but captures the callback. This gives the
+  // test control over the duration of the model execution and can be used to
+  // simulate the model execution being stuck (or simply too long).
+  void ExecuteModelWithInput(
+      ExecutionCallback callback,
+      const PermissionsAiv4Encoder::ModelInput& input) override {
+    callback_ = std::move(callback);
+  }
+
+  void ReleaseCallback(PermissionRequestRelevance relevance) {
+    EXPECT_TRUE(callback_);
+    std::move(callback_).Run(relevance);
+  }
+
+ private:
+  ExecutionCallback callback_;
+};
+
 class Aiv4HandlerTestBase : public testing::Test {
  public:
   Aiv4HandlerTestBase() = default;
@@ -105,8 +140,6 @@ class Aiv4HandlerTestBase : public testing::Test {
         model_provider_.get(),
         /*optimization_target=*/kOptTargetNotification,
         /*request_type=*/RequestType::kNotifications,
-        task_environment_.GetMainThreadTaskRunner(),
-        task_environment_.GetMainThreadTaskRunner(),
         std::move(notification_encoder_mock));
   }
 
@@ -133,13 +166,20 @@ class Aiv4HandlerTestBase : public testing::Test {
     return notification_model_handler_.get();
   }
 
+  optimization_guide::TestOptimizationGuideModelProvider* GetModelProvider() {
+    return model_provider_.get();
+  }
+
+  base::test::TaskEnvironment& task_environment() { return task_environment_; }
+
  protected:
   raw_ptr<PermissionsAiv4EncoderFake> notification_encoder_mock_;
   std::unique_ptr<PermissionsAiv4Handler> notification_model_handler_;
 
   std::unique_ptr<optimization_guide::TestOptimizationGuideModelProvider>
       model_provider_;
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 };
 
 class Aiv4HandlerTest : public Aiv4HandlerTestBase {};
@@ -233,6 +273,68 @@ TEST_F(Aiv4HandlerTest, BitmapGetsCopiedToTensor) {
                              "dummy");
   EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
   EXPECT_TRUE(flag);
+}
+
+// This test verifies the timeout behavior of the permission model handler.
+// The timeout is triggered when the model execution takes longer than the
+// timeout threshold. Additionally, this test verifies that the model handler
+// prevents concurrent executions after the timeout is triggered and before the
+// first execution is completed.
+TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
+  base::HistogramTester histograms;
+
+  auto geolocation_encoder_mock =
+      std::make_unique<PermissionsAiv4EncoderFake>(RequestType::kGeolocation);
+  std::unique_ptr<PermissionsAiv4HandlerMock> model_handler_mock =
+      std::make_unique<PermissionsAiv4HandlerMock>(
+          GetModelProvider(),
+          /*optimization_target=*/kOptTargetNotification,
+          /*request_type=*/RequestType::kNotifications,
+          std::move(geolocation_encoder_mock));
+
+  // Because of `PermissionsAiv3EncoderFake` the first execution will be hold
+  // until manually released. In this case we release the callback before we
+  // try to execute the model again.
+  ModelCallbackFuture future1;
+  // The image size is arbitrary and does not affect the test.
+  auto snapshot1 =
+      test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
+  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1), "dummy");
+
+  task_environment().FastForwardBy(
+      base::Seconds(PermissionsAiv4Handler::kModelExecutionTimeout + 1));
+
+  // Because the execution took longer than the timeout, the execution should
+  // return `std::nullopt` result even without manually releasing the callback.
+  EXPECT_EQ(future1.Take(), std::nullopt);
+
+  // The second execution should return an empty response because the model is
+  // still busy with the first execution.
+  ModelCallbackFuture future2;
+  // The image size is arbitrary and does not affect the test.
+  auto snapshot2 =
+      test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
+  model_handler_mock->ExecuteModel(future2.GetCallback(), std::move(snapshot2), "dummy");
+
+  EXPECT_EQ(future2.Take(), std::nullopt);
+
+  // This will resets the flags that prevent concurrent executions. `kVeryLow`
+  // will not be returned because the callback was released after the timeout.
+  model_handler_mock->ReleaseCallback(PermissionRequestRelevance::kVeryLow);
+
+  ModelCallbackFuture future3;
+  // The image size is arbitrary and does not affect the test.
+  auto snapshot3 =
+      test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
+  model_handler_mock->ExecuteModel(future3.GetCallback(), std::move(snapshot3), "dummy");
+
+  // Because all flags are reset, the execution will not timeout and the
+  // correct relevance will be returned.
+  model_handler_mock->ReleaseCallback(PermissionRequestRelevance::kVeryLow);
+
+  EXPECT_EQ(future3.Take(), PermissionRequestRelevance::kVeryLow);
+
+  histograms.ExpectBucketCount(kModelExecutionTimeoutHistogram, true, 1u);
 }
 
 }  // namespace
