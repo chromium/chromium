@@ -45,9 +45,3 @@ src:*{/,\\}third_party{/,\\}nearby{/,\\}*
 src:*{/,\\}third_party{/,\\}*
 # v8's build system isn't amenable to fixes: https://crbug.com/408259026
 src:*{/,\\}v8{/,\\}*
-
-[thread-safety]
-# TODO(crbug.com/430317494): Various third-party suppressions to unblock the libc++ roll.
-# They can each be removed when they are patched and rolled.
-src:*{/,\\}third_party{/,\\}angle{/,\\}*
-src:*{/,\\}third_party{/,\\}gemmlowp{/,\\}*

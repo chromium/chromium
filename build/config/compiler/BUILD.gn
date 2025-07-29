@@ -2362,17 +2362,14 @@ config("chromium_code") {
       "-Wno-gnu-statement-expression",
       "-Wno-gnu-zero-variadic-macro-arguments",
       "-Wno-zero-length-array",
+
+      # Thread safety analysis. See base/thread_annotations.h and
+      # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
+      "-Wthread-safety",
     ]
 
     if (is_chromeos) {
       cflags += [ "-Wno-gnu-offsetof-extensions" ]
-    } else {
-      # TODO (430317494): disabled on chromeos to unblock a libc++ roll.
-      # Re-enable once all patches associated with this bug have landed.
-      # Also remove the flag from build/nocompile.gni when doing so.
-      # Thread safety analysis. See base/thread_annotations.h and
-      # https://clang.llvm.org/docs/ThreadSafetyAnalysis.html
-      cflags += [ "-Wthread-safety" ]
     }
     if (is_ios) {
       cflags += [ "-Wno-gnu-case-range" ]
