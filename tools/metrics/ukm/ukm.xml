@@ -2281,6 +2281,59 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Autofill.AmountExtractionComplete" singular="true">
+  <owner>jamessun@google.com</owner>
+  <owner>longsheng@google.com</owner>
+  <summary>
+    Records the result of the amount extraction process. This process is to
+    search for the final checkout amount from the merchants' checkout page and
+    respond to the browser process. This event starts from the moment amount
+    extraction is initiated in the browser process to when a response is
+    received. Logged when the search is finished.
+  </summary>
+  <metric name="FailureLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the amount extraction is
+      triggered to when an empty result of the search is returned to the browser
+      process.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="Result" enum="AmountExtractionResult">
+    <summary>
+      An enum that records the result of the amount extraction: success, failure
+      or timeout.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+  <metric name="SuccessLatencyInMillis">
+    <summary>
+      Records duration in milliseconds from when the amount extraction is
+      triggered to when a non-empty result of the search is returned to the
+      browser process.
+    </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
+  </metric>
+</event>
+
 <event name="Autofill.CardUploadDecision">
   <owner>sebsg@chromium.org</owner>
   <metric name="UploadDecision">
