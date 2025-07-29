@@ -65,6 +65,27 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DiskCache.MoveCacheToRestartCache.Windows"
+    enum="BooleanSuccess" expires_after="2025-12-28">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Record whether disk_cache::MoveCache() succeeded or not to RestartCache on
+    Windows. This is recorded on each call of MoveFileEx() to RestartCache. When
+    MoveFileEx() returns true, true is recorded.
+  </summary>
+</histogram>
+
+<histogram name="DiskCache.MoveCacheToRestartCacheError.Windows"
+    enum="WinGetLastError" expires_after="2025-12-28">
+  <owner>chikamune@chromium.org</owner>
+  <owner>chrome-loading@google.com</owner>
+  <summary>
+    Record the Windows GetLastError after a failure of disk_cache::MoveCache().
+    This is recorded on each failure of MoveFileEx() to RestartCache.
+  </summary>
+</histogram>
+
 </histograms>
 
 </histogram-configuration>
