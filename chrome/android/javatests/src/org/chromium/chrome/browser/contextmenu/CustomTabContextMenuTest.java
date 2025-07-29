@@ -23,6 +23,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.customtabs.CustomTabActivityTestRule;
@@ -95,6 +96,7 @@ public class CustomTabContextMenuTest {
     @Test
     @SmallTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
+    @DisabledTest(message = "crbug.com/434924638")
     public void testCustomItemPresent_WhenFeatureEnabled() throws TimeoutException {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
@@ -117,6 +119,7 @@ public class CustomTabContextMenuTest {
     @Test
     @SmallTest
     @DisableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
+    @DisabledTest(message = "crbug.com/434924638")
     public void testCustomItemNotPresent_WhenFeatureDisabled() throws TimeoutException {
         Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
 
