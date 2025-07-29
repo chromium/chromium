@@ -2129,7 +2129,7 @@ Unknown properties are collapsed to zero. -->
   <int value="5" label="EB Garamond"/>
   <int value="6" label="STIX Two Text"/>
   <int value="7" label="Andika"/>
-  <int value="8" label="Atkinson Hyperlegible"/>
+  <int value="8" label="Atkinson Hyperlegible Next"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything_util.cc:ReadAnythingFont) -->

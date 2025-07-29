@@ -1647,7 +1647,7 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_THAT(model().supported_fonts(),
               ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
                           "Lexend Deca", "EB Garamond", "STIX Two Text",
-                          "Andika", "Atkinson Hyperlegible"));
+                          "Andika", "Atkinson Hyperlegible Next"));
 }
 
 TEST_F(ReadAnythingAppModelTest,
@@ -1657,7 +1657,7 @@ TEST_F(ReadAnythingAppModelTest,
   EXPECT_THAT(model().supported_fonts(),
               ElementsAre("Poppins", "Sans-serif", "Serif", "Comic Neue",
                           "Lexend Deca", "EB Garamond", "STIX Two Text",
-                          "Andika", "Atkinson Hyperlegible"));
+                          "Andika", "Atkinson Hyperlegible Next"));
 
   // Bulgarian
   model().SetBaseLanguageCode("bg");
@@ -1669,6 +1669,11 @@ TEST_F(ReadAnythingAppModelTest,
   model().SetBaseLanguageCode("hi");
   EXPECT_THAT(model().supported_fonts(),
               ElementsAre("Poppins", "Sans-serif", "Serif"));
+
+  // Welsh
+  model().SetBaseLanguageCode("cy");
+  EXPECT_THAT(model().supported_fonts(),
+              ElementsAre("Sans-serif", "Serif", "Atkinson Hyperlegible Next"));
 }
 
 TEST_F(ReadAnythingAppModelTest, PdfEvents_SetRequiresDistillation) {

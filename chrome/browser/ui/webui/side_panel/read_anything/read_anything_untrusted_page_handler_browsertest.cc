@@ -475,7 +475,7 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
 }
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnFontChange) {
-  const char kFont1[] = "Atkinson Hyperlegible";
+  const char kFont1[] = "Atkinson Hyperlegible Next";
   const char kFont2[] = "Arial";
   handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
       page_.BindAndGetRemote(), test_web_ui_.get());
