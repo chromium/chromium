@@ -96,6 +96,10 @@ bool WebNode::LessThan(const WebNode& n) const {
   return private_.Get() < n.private_.Get();
 }
 
+bool WebNode::Contains(const WebNode* n) const {
+  return private_->contains(n->private_.Get());
+}
+
 WebNode WebNode::ParentNode() const {
   return WebNode(const_cast<ContainerNode*>(private_->parentNode()));
 }

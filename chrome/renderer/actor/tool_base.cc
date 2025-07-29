@@ -85,21 +85,15 @@ ToolBase::ValidateAndResolveTarget() const {
 
 base::expected<ToolBase::ResolvedTarget, mojom::ActionResultPtr>
 ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
-  if (!observed_target_ || !observed_target_->node_attribute->geometry) {
+  if (!observed_target_ || !observed_target_->node_attribute->dom_node_id) {
     return resolved_target;
   }
 
   const blink::WebNode& target_node = resolved_target.node;
-  if (target_node.IsNull() || target_node.ParentNode().IsNull()) {
-    return base::unexpected(
-        MakeResult(mojom::ActionResultCode::kObservedTargetElementDestroyed,
-                   "The element from observation does not exist anymore."));
-  }
 
   // For coordinate target, check the observed node matches the live DOM hit
   // test target.
-  if (target_->is_coordinate() &&
-      observed_target_->node_attribute->dom_node_id) {
+  if (target_->is_coordinate()) {
     if (target_node.GetDomNodeId() !=
         *observed_target_->node_attribute->dom_node_id) {
       journal_->Log(
@@ -114,10 +108,42 @@ ToolBase::ValidateTimeOfUse(const ResolvedTarget& resolved_target) const {
                      "The element at the target location is not the same as "
                      "the one observed."));
     }
-  }
+  } else {
+    CHECK(target_->is_dom_node_id());
+    // Check that the interaction point will actually hit
+    // on the intended element, i.e. centre point of node is not occluded.
+    const blink::WebHitTestResult hit_test_result =
+        frame_->GetWebFrame()->FrameWidget()->HitTestResultAt(
+            resolved_target.point);
+    const blink::WebElement hit_element = hit_test_result.GetElement();
+    // The action target from APC is not as granular as the live DOM hit test.
+    if (target_node.Contains(&hit_element)) {
+      journal_->Log(
+          task_id_, "TimeOfUseValidation",
+          base::StrCat({"Observed Target Node:",
+                        base::NumberToString(
+                            *observed_target_->node_attribute->dom_node_id),
+                        " Hit Test Node:",
+                        base::NumberToString(target_node.GetDomNodeId())}));
+      // TODO(crbug.com/418280472): return error after retry for failed task is
+      // landed.
+    }
 
-  // TODO(crbug.com/420690132): Implement time of use check for DOM node id
-  // target after retry for failed task is landed.
+    // Check that the interaction point is inside the observed target bounding
+    // box.
+    const gfx::Rect observed_bounds =
+        observed_target_->node_attribute->geometry->outer_bounding_box;
+    if (!observed_bounds.Contains(gfx::ToFlooredPoint(resolved_target.point))) {
+      journal_->Log(
+          task_id_, "TimeOfUseValidation",
+          base::StrCat(
+              {"Target interaction point:",
+               base::ToString(gfx::ToFlooredPoint(resolved_target.point)),
+               " Observed bounding box:", base::ToString(observed_bounds)}));
+      // TODO(crbug.com/418280472): return error after retry for failed task is
+      // landed.
+    }
+  }
 
   return resolved_target;
 }
