@@ -2669,10 +2669,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                                         new int[][] {
                                             {FieldType.CREDIT_CARD_NAME_FULL},
                                             {FieldType.CREDIT_CARD_NUMBER},
-                                            {
-                                                FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
-                                                FieldType.CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-                                            },
+                                            {FieldType.CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR},
                                             {FieldType.CREDIT_CARD_VERIFICATION_CODE}
                                         }));
 
@@ -2736,7 +2733,7 @@ public class AwAutofillTest extends AwParameterizedTest {
                 "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
                 viewStructure.getChild(2).getHtmlInfo().getAttribute("computed-autofill-hints"));
         assertEquals(
-                "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR",
+                "CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR",
                 viewStructure
                         .getChild(2)
                         .getHtmlInfo()
