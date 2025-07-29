@@ -754,6 +754,11 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetContextFromFocusedTab(
       glic::mojom::GetTabContextOptionsPtr options,
       GetContextFromFocusedTabCallback callback) override {
+    if (ShouldDoApiActivationGating()) {
+      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+          "permission denied: window not showing"));
+      return;
+    }
     auto* tab = glic_sharing_manager_->GetFocusedTabData().focus();
     auto tab_handle = tab ? tab->GetHandle() : tabs::TabHandle::Null();
     glic_sharing_manager_->GetContextFromTab(tab_handle, *options,
@@ -763,7 +768,12 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   void GetContextFromTab(int32_t tab_id,
                          glic::mojom::GetTabContextOptionsPtr options,
                          GetContextFromTabCallback callback) override {
-    // Activation gating is handled in this function.
+    if (ShouldDoApiActivationGating()) {
+      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+          "permission denied: window not showing"));
+      return;
+    }
+    // Extra activation gating is done in this function.
     glic_sharing_manager_->GetContextFromTab(tabs::TabHandle(tab_id), *options,
                                              std::move(callback));
   }

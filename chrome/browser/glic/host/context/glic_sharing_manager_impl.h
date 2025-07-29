@@ -120,9 +120,6 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   // The profile for which to manage sharing.
   raw_ptr<Profile> profile_;
 
-  // The Glic window controller.
-  raw_ref<GlicWindowController> window_controller_;
-
   // Enables providing sharing-related-related input to metrics.
   raw_ptr<GlicMetrics> metrics_;
 };

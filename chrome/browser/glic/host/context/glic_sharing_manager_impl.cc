@@ -23,10 +23,9 @@ GlicSharingManagerImpl::GlicSharingManagerImpl(
     Host* host,
     GlicMetrics* metrics)
     : focused_browser_manager_(window_controller),
-      focused_tab_manager_(window_controller, &focused_browser_manager_),
+      focused_tab_manager_(&focused_browser_manager_),
       pinned_tab_manager_(profile),
       profile_(profile),
-      window_controller_(*window_controller),
       metrics_(metrics) {}
 
 GlicSharingManagerImpl::~GlicSharingManagerImpl() = default;
@@ -154,7 +153,6 @@ void GlicSharingManagerImpl::GetContextFromTab(
     tabs::TabHandle tab_handle,
     const mojom::GetTabContextOptions& options,
     base::OnceCallback<void(mojom::GetContextResultPtr)> callback) {
-
   auto* tab = tab_handle.Get();
   if (!tab) {
     std::move(callback).Run(
@@ -163,18 +161,11 @@ void GlicSharingManagerImpl::GetContextFromTab(
   }
 
   const bool is_pinned = pinned_tab_manager_.IsTabPinned(tab_handle);
-
-  if (!is_pinned) {
-    if (!window_controller_->IsShowing()) {
-      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-          "permission denied: window not showing"));
-      return;
-    }
-    if (!profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
-      std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
-          "permission denied: context permission not enabled"));
-      return;
-    }
+  if (!is_pinned &&
+      !profile_->GetPrefs()->GetBoolean(prefs::kGlicTabContextEnabled)) {
+    std::move(callback).Run(mojom::GetContextResult::NewErrorReason(
+        "permission denied: context permission not enabled"));
+    return;
   }
 
   const bool is_focused = focused_tab_manager_.IsTabFocused(tab_handle);

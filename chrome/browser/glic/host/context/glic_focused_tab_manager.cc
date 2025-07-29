@@ -11,7 +11,6 @@
 #include "chrome/browser/glic/host/context/glic_focused_browser_manager.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
-#include "chrome/browser/glic/widget/glic_window_controller.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -45,10 +44,8 @@ bool IsWeakPtrSame(const base::WeakPtr<T>& a, const base::WeakPtr<T>& b) {
 }  // namespace
 
 GlicFocusedTabManager::GlicFocusedTabManager(
-    GlicWindowController* window_controller,
     GlicFocusedBrowserManager* focused_browser_manager)
-    : window_controller_(*window_controller),
-      focused_browser_manager_(focused_browser_manager) {
+    : focused_browser_manager_(focused_browser_manager) {
   focused_browser_subscription_ =
       focused_browser_manager_->AddFocusedBrowserChangedCallback(
           base::BindRepeating(&GlicFocusedTabManager::OnFocusedBrowserChanged,

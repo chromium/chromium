@@ -38,8 +38,8 @@ class GlicFocusedBrowserManager;
 class GlicFocusedTabManager : public content::WebContentsObserver,
                               public TabStripModelObserver {
  public:
-  GlicFocusedTabManager(GlicWindowController* window_controller,
-                        GlicFocusedBrowserManager* focused_browser_manager);
+  explicit GlicFocusedTabManager(
+      GlicFocusedBrowserManager* focused_browser_manager);
   ~GlicFocusedTabManager() override;
 
   GlicFocusedTabManager(const GlicFocusedTabManager&) = delete;
@@ -220,9 +220,6 @@ class GlicFocusedTabManager : public content::WebContentsObserver,
   // List of callbacks to be notified when focused tab data changed.
   base::RepeatingCallbackList<void(const glic::mojom::TabData*)>
       focused_data_callback_list_;
-
-  // The Glic window controller.
-  raw_ref<GlicWindowController> window_controller_;
 
   // Manages which browser window is considered "focused".
   raw_ptr<GlicFocusedBrowserManager> focused_browser_manager_;
