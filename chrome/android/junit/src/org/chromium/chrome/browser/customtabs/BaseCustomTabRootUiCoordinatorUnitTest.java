@@ -61,6 +61,7 @@ import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabContro
 import org.chromium.chrome.browser.customtabs.features.minimizedcustomtab.CustomTabMinimizeDelegate;
 import org.chromium.chrome.browser.customtabs.features.toolbar.BrowserServicesThemeColorProvider;
 import org.chromium.chrome.browser.customtabs.features.toolbar.CustomTabToolbarCoordinator;
+import org.chromium.chrome.browser.ephemeraltab.EphemeralTabCoordinator;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
@@ -115,6 +116,8 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
     @Mock private ObservableSupplier<BookmarkModel> mBookmarkModelSupplier;
     @Mock private ObservableSupplier<TabBookmarker> mTabBookmarkerSupplier;
     @Mock private ObservableSupplier<TabModelSelector> mTabModelSelectorSupplier;
+
+    @Mock private ObservableSupplierImpl<EphemeralTabCoordinator> mEphemeralTabCoordinatorSupplier;
     @Mock private BrowserControlsManager mBrowserControlsManager;
 
     @Mock
@@ -209,6 +212,7 @@ public final class BaseCustomTabRootUiCoordinatorUnitTest {
                         mIsInOverviewModeSupplier,
                         mAppMenuDelegate,
                         mStatusBarColorProvider,
+                        mEphemeralTabCoordinatorSupplier,
                         mIntentRequestTracker,
                         mCustomTabToolbarCoordinator,
                         mIntentDataProvider,

@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 android_library("java") {
   sources = [
     "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabCoordinator.java",
+    "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabCoordinatorSupplier.java",
     "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabMediator.java",
     "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabObserver.java",
     "java/src/org/chromium/chrome/browser/ephemeraltab/EphemeralTabSheetContent.java",

@@ -144,6 +144,7 @@ public class EphemeralTabCoordinator implements View.OnLayoutChangeListener {
             String title,
             Profile profile,
             boolean canPromoteToNewTab) {
+        assert !isOpened() : "Avoid making new requests when an ephemeral tab is showing.";
         mUrl = url;
         mFullPageUrl = fullPageUrl;
         mCanPromoteToNewTab = canPromoteToNewTab;
