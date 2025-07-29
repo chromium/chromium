@@ -51,9 +51,4 @@ class ConstructTraits {
 
 }  // namespace blink
 
-// TODO(crbug.com/422768753): Remove this `using` directive.
-namespace WTF {
-using blink::ConstructTraits;
-}  // namespace WTF
-
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_CONSTRUCT_TRAITS_H_

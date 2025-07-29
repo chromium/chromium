@@ -53,6 +53,7 @@ component("wtf") {
     "bit_field.h",
     "bloom_filter.h",
     "casting.h",
+    "construct_traits.h",
     "container_annotations.h",
     "cross_thread_copier.cc",
     "cross_thread_copier.h",
