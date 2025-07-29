@@ -1882,8 +1882,7 @@ BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
 BackForwardCacheCanStoreTreeResult::BackForwardCacheCanStoreTreeResult(
     bool is_same_origin,
     const GURL& url)
-    : document_result_(BackForwardCacheCanStoreDocumentResult()),
-      is_same_origin_(is_same_origin),
+    : is_same_origin_(is_same_origin),
       is_root_outermost_main_frame_(true),
       id_(""),
       name_(""),
