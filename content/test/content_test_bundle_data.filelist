@@ -4755,6 +4755,8 @@ data/accessibility/html/list-item-nested-div-expected-blink.txt
 data/accessibility/html/list-item-nested-div-expected-uia-win.txt
 data/accessibility/html/list-item-nested-div-expected-win.txt
 data/accessibility/html/list-item-nested-div.html
+data/accessibility/html/list-item-shadow-dom-line-navigation-expected-blink.txt
+data/accessibility/html/list-item-shadow-dom-line-navigation.html
 data/accessibility/html/list-marker-styles-expected-blink.txt
 data/accessibility/html/list-marker-styles.html
 data/accessibility/html/list-markers-expected-android-assist-data.txt

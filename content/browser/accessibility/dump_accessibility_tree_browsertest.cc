@@ -3368,6 +3368,11 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest, AccessibilityListItemLevel) {
 }
 
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
+                       AccessibilityListItemShadowDomLineNavigation) {
+  RunHtmlTest(FILE_PATH_LITERAL("list-item-shadow-dom-line-navigation.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityTreeTest,
                        AccessibilityListItemNestedDiv) {
   RunHtmlTest(FILE_PATH_LITERAL("list-item-nested-div.html"));
 }
