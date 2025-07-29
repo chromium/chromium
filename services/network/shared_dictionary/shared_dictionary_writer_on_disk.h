@@ -14,7 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/disk_cache/disk_cache.h"
@@ -66,8 +66,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryWriterOnDisk
 
   const base::UnguessableToken token_;
   FinishCallback callback_;
-  base::WeakPtr<SharedDictionaryDiskCache> disk_cahe_;
-  std::unique_ptr<crypto::SecureHash> secure_hash_;
+  base::WeakPtr<SharedDictionaryDiskCache> disk_cache_;
+  crypto::hash::Hasher hash_{crypto::hash::kSha256};
 
   size_t total_size_ = 0;
   size_t written_size_ = 0;

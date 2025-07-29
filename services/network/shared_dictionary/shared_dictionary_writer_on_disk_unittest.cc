@@ -11,7 +11,7 @@
 #include "base/test/bind.h"
 #include "base/test/test_file_util.h"
 #include "build/build_config.h"
-#include "crypto/secure_hash.h"
+#include "crypto/hash.h"
 #include "net/base/hash_value.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -35,15 +35,6 @@ enum class CreateBackendResultType {
   kAsyncSuccess,
   kAsyncFailure,
 };
-
-net::SHA256HashValue GetHash(const std::string& data) {
-  std::unique_ptr<crypto::SecureHash> secure_hash =
-      crypto::SecureHash::Create(crypto::SecureHash::SHA256);
-  secure_hash->Update(data.c_str(), data.size());
-  net::SHA256HashValue sha256;
-  secure_hash->Finish(sha256);
-  return sha256;
-}
 
 class FakeSharedDictionaryDiskCache : public SharedDictionaryDiskCache {
  public:
@@ -189,7 +180,7 @@ void SharedDictionaryWriterOnDiskTest::RunSimpleWriteTest(
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
                           result);
                 EXPECT_EQ(kTestData.size(), size);
-                EXPECT_EQ(GetHash(kTestData), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData), hash);
                 finish_callback_called = true;
               }),
           disk_cache->GetWeakPtr());
@@ -493,7 +484,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWrite) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
                           result);
                 EXPECT_EQ(kTestData1.size() + kTestData2.size(), size);
-                EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }),
           disk_cache->GetWeakPtr());
@@ -567,7 +558,7 @@ TEST_F(SharedDictionaryWriterOnDiskTest, MultipleWriteSyncWrite) {
                 EXPECT_EQ(SharedDictionaryWriterOnDisk::Result::kSuccess,
                           result);
                 EXPECT_EQ(kTestData1.size() + kTestData2.size(), size);
-                EXPECT_EQ(GetHash(kTestData1 + kTestData2), hash);
+                EXPECT_EQ(crypto::hash::Sha256(kTestData1 + kTestData2), hash);
                 finish_callback_called = true;
               }),
           disk_cache->GetWeakPtr());

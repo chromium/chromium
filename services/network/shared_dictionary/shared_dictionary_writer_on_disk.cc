@@ -16,11 +16,8 @@ namespace network {
 SharedDictionaryWriterOnDisk::SharedDictionaryWriterOnDisk(
     const base::UnguessableToken& token,
     FinishCallback callback,
-    base::WeakPtr<SharedDictionaryDiskCache> disk_cahe)
-    : token_(token),
-      callback_(std::move(callback)),
-      disk_cahe_(disk_cahe),
-      secure_hash_(crypto::SecureHash::Create(crypto::SecureHash::SHA256)) {}
+    base::WeakPtr<SharedDictionaryDiskCache> disk_cache)
+    : token_(token), callback_(std::move(callback)), disk_cache_(disk_cache) {}
 
 SharedDictionaryWriterOnDisk::~SharedDictionaryWriterOnDisk() {
   if (callback_) {
@@ -31,11 +28,11 @@ SharedDictionaryWriterOnDisk::~SharedDictionaryWriterOnDisk() {
 void SharedDictionaryWriterOnDisk::Initialize() {
   DCHECK_EQ(State::kBeforeInitialize, state_);
   state_ = State::kInitializing;
-  DCHECK(disk_cahe_);
+  DCHECK(disk_cache_);
   // Binding `this` to keep `this` alive until callback will be called.
   auto split_callback = base::SplitOnceCallback(
       base::BindOnce(&SharedDictionaryWriterOnDisk::OnEntry, this));
-  disk_cache::EntryResult result = disk_cahe_->OpenOrCreateEntry(
+  disk_cache::EntryResult result = disk_cache_->OpenOrCreateEntry(
       token_.ToString(), /*create=*/true, std::move(split_callback.first));
   if (result.net_error() != net::ERR_IO_PENDING) {
     std::move(split_callback.second).Run(std::move(result));
@@ -56,7 +53,7 @@ void SharedDictionaryWriterOnDisk::Append(base::span<const uint8_t> data) {
   }
 
   total_size_ = checked_total_size.ValueOrDie();
-  secure_hash_->Update(data);
+  hash_.Update(data);
   switch (state_) {
     case State::kBeforeInitialize:
       NOTREACHED();
@@ -172,7 +169,7 @@ void SharedDictionaryWriterOnDisk::MaybeFinish() {
   entry_.reset();
   DCHECK_EQ(written_size_, total_size_);
   net::SHA256HashValue sha256;
-  secure_hash_->Finish(sha256);
+  hash_.Finish(sha256);
   std::move(callback_).Run(Result::kSuccess, total_size_, sha256);
 }
 
