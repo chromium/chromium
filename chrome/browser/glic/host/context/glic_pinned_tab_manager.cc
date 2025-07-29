@@ -255,7 +255,6 @@ bool GlicPinnedTabManager::PinTabs(
     // Tab might be unloaded (e.g. discarded, restored from history). We reload
     // it now (and prevent it from being discarded elsewhere), so it can have
     // its context pulled.
-    // TODO(crbug.com/422767952): prevent pinned tabs from being discarded.
     if (tab->GetContents()) {
       if (tab->GetContents()->WasDiscarded()) {
         tab->GetContents()->GetController().SetNeedsReload();
