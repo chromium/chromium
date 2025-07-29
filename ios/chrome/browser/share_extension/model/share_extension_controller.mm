@@ -21,6 +21,7 @@
 #import "google_apis/gaia/gaia_id.h"
 #import "ios/chrome/browser/share_extension/model/bookmark_adder.h"
 #import "ios/chrome/browser/share_extension/model/parsed_share_extension_entry.h"
+#import "ios/chrome/browser/share_extension/model/reading_list_adder.h"
 #import "ios/chrome/browser/share_extension/model/share_extension_utils.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/profile/features.h"
@@ -74,13 +75,30 @@ ShareExtensionSource SourceIDFromSource(NSString* source) {
   return UNKNOWN_SOURCE;
 }
 
-void OnProfileLoaded(std::unique_ptr<BookmarkAdder> adder,
+template <typename T>
+void OnProfileLoaded(std::unique_ptr<T> adder,
                      ScopedProfileKeepAliveIOS keep_alive) {
-  BookmarkAdder* adder_ptr = adder.get();
+  T* adder_ptr = adder.get();
   adder_ptr->OnProfileLoaded(
       std::move(keep_alive),
-      base::BindOnce([](std::unique_ptr<BookmarkAdder> adder) {},
-                     std::move(adder)));
+      base::BindOnce([](std::unique_ptr<T> adder) {}, std::move(adder)));
+}
+
+template <typename Adder, typename... Args>
+void AddDataToProfileByGaiaID(NSString* gaiaID, Args&&... args) {
+  std::optional<std::string> profileName =
+      GetApplicationContext()
+          ->GetAccountProfileMapper()
+          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+
+  if (profileName.has_value()) {
+    ProfileManagerIOS* profileManager =
+        GetApplicationContext()->GetProfileManager();
+    auto adder = std::make_unique<Adder>(std::forward<Args>(args)...);
+    profileManager->LoadProfileAsync(
+        *profileName,
+        base::BindOnce(&OnProfileLoaded<Adder>, std::move(adder)));
+  }
 }
 
 }  // namespace
@@ -329,13 +347,46 @@ void OnProfileLoaded(std::unique_ptr<BookmarkAdder> adder,
                   completion:(ProceduralBlock)completion {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
 
-  if (entryType == app_group::BOOKMARK_ITEM) {
-    [self addBookmarkToProfileByGaiaID:gaiaID
-                                   URL:entryURL
-                         bookmarkTitle:entryTitle];
+  switch (entryType) {
+    case app_group::BOOKMARK_ITEM: {
+      LogHistogramReceivedItem(BOOKMARK_ENTRY);
+      [self addBookmarkToProfileByGaiaID:gaiaID
+                                     URL:entryURL
+                           bookmarkTitle:entryTitle];
+      break;
+    }
+    case app_group::READING_LIST_ITEM: {
+      LogHistogramReceivedItem(READINGLIST_ENTRY);
+      [self addReadingListToProfileByGaiaID:gaiaID
+                                        URL:entryURL
+                           readingListTitle:entryTitle];
+      break;
+    }
+    case app_group::OPEN_IN_CHROME_ITEM: {
+      LogHistogramReceivedItem(OPEN_IN_CHROME_ENTRY);
+      break;
+    }
+    case app_group::OPEN_IN_CHROME_INCOGNITO_ITEM: {
+      LogHistogramReceivedItem(OPEN_IN_CHROME_INCOGNITO_ENTRY);
+      break;
+    }
+    case app_group::IMAGE_SEARCH_ITEM: {
+      LogHistogramReceivedItem(IMAGE_SEARCH_ENTRY);
+      break;
+    }
+    case app_group::TEXT_SEARCH_ITEM: {
+      LogHistogramReceivedItem(TEXT_SEARCH_ENTRY);
+      break;
+    }
+    case app_group::INCOGNITO_IMAGE_SEARCH_ITEM: {
+      LogHistogramReceivedItem(INCOGNITO_IMAGE_SEARCH_ENTRY);
+      break;
+    }
+    case app_group::INCOGNITO_TEXT_SEARCH_ITEM: {
+      LogHistogramReceivedItem(INCOGNITO_TEXT_SEARCH_ENTRY);
+      break;
+    }
   }
-
-  // TODO(crbug.com/40260909): Handle adding the URL to reading list
 
   if (completion) {
     completion();
@@ -346,20 +397,49 @@ void OnProfileLoaded(std::unique_ptr<BookmarkAdder> adder,
                                  URL:(NSURL*)URL
                        bookmarkTitle:(NSString*)bookmarkTitle {
   DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
-  std::optional<std::string> profileName =
-      GetApplicationContext()
-          ->GetAccountProfileMapper()
-          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+  AddDataToProfileByGaiaID<BookmarkAdder>(
+      gaiaID, net::GURLWithNSURL(URL), base::SysNSStringToUTF8(bookmarkTitle));
+  //  std::optional<std::string> profileName =
+  //      GetApplicationContext()
+  //          ->GetAccountProfileMapper()
+  //          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+  //
+  //  if (profileName.has_value()) {
+  //    std::string title = base::SysNSStringToUTF8(bookmarkTitle);
+  //    ProfileManagerIOS* profileManager =
+  //        GetApplicationContext()->GetProfileManager();
+  //    std::unique_ptr<BookmarkAdder> adder = std::make_unique<BookmarkAdder>(
+  //        net::GURLWithNSURL(URL), std::move(title));
+  //    profileManager->LoadProfileAsync(
+  //        *profileName,
+  //        base::BindOnce(&OnProfileLoaded<BookmarkAdder>, std::move(adder)));
+  //  }
+}
 
-  if (profileName.has_value()) {
-    std::string title = base::SysNSStringToUTF8(bookmarkTitle);
-    ProfileManagerIOS* profileManager =
-        GetApplicationContext()->GetProfileManager();
-    std::unique_ptr<BookmarkAdder> adder = std::make_unique<BookmarkAdder>(
-        net::GURLWithNSURL(URL), std::move(title));
-    profileManager->LoadProfileAsync(
-        *profileName, base::BindOnce(&OnProfileLoaded, std::move(adder)));
-  }
+- (void)addReadingListToProfileByGaiaID:(NSString*)gaiaID
+                                    URL:(NSURL*)URL
+                       readingListTitle:(NSString*)readingListTitle {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(_sequenceChecker);
+  AddDataToProfileByGaiaID<ReadingListAdder>(
+      gaiaID, net::GURLWithNSURL(URL),
+      base::SysNSStringToUTF8(readingListTitle));
+  //  std::optional<std::string> profileName =
+  //      GetApplicationContext()
+  //          ->GetAccountProfileMapper()
+  //          ->FindProfileNameForGaiaID(GaiaId(gaiaID));
+  //
+  //  if (profileName.has_value()) {
+  //    std::string title = base::SysNSStringToUTF8(readingListTitle);
+  //    ProfileManagerIOS* profileManager =
+  //        GetApplicationContext()->GetProfileManager();
+  //    std::unique_ptr<ReadingListAdder> adder =
+  //        std::make_unique<ReadingListAdder>(net::GURLWithNSURL(URL), title,
+  //                                           profileManager);
+  //    profileManager->LoadProfileAsync(
+  //        *profileName,
+  //        base::BindOnce(&OnProfileLoaded<ReadingListAdder>,
+  //        std::move(adder)));
+  //  }
 }
 
 @end

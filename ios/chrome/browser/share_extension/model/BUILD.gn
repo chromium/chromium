@@ -36,6 +36,7 @@ source_set("controller") {
   ]
   deps = [
     ":bookmark_adder",
+    ":reading_list_adder",
     ":utils",
     "//base",
     "//google_apis",
@@ -76,6 +77,27 @@ source_set("bookmark_adder") {
     "//base",
     "//components/bookmarks/browser",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/shared/model/application_context",
+    "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/shared/model/profile:features",
+    "//ios/chrome/browser/shared/public/features:system_flags",
+    "//ios/chrome/common/app_group",
+    "//url",
+  ]
+}
+
+source_set("reading_list_adder") {
+  sources = [
+    "reading_list_adder.h",
+    "reading_list_adder.mm",
+  ]
+  deps = [
+    ":utils",
+    "//base",
+    "//components/bookmarks/browser",
+    "//components/reading_list/core",
+    "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/reading_list/model",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/shared/model/profile:features",

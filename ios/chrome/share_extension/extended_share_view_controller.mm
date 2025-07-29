@@ -822,6 +822,7 @@ const NSUInteger kSearchCharacterLimit = 1000;
   __weak ExtendedShareViewController* weakSelf = self;
   [self queueActionItemURL:_shareURL
                      title:_shareTitle
+                    gaiaID:gaiaID
                     action:app_group::READING_LIST_ITEM
                     cancel:NO
                 completion:^{
