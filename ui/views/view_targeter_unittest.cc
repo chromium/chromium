@@ -40,6 +40,15 @@ class TestingView : public View, public ViewTargeterDelegate {
   bool TestDoesIntersectRect(const View* target, const gfx::Rect& rect) const {
     return DoesIntersectRect(target, rect);
   }
+
+  bool OnMousePressed(const ui::MouseEvent& event) override {
+    ++mouse_press_count_;
+    return false;
+  }
+  int mouse_press_count() const { return mouse_press_count_; }
+
+ private:
+  int mouse_press_count_ = 0;
 };
 
 BEGIN_METADATA(TestingView)
@@ -651,6 +660,48 @@ TEST_F(ViewTargeterTest, FavorChildContainingHitBounds) {
   ui::GestureEvent tap = CreateTestGestureEvent(details);
 
   EXPECT_EQ(child, targeter->FindTargetForEvent(root_view, &tap));
+}
+
+TEST_F(ViewTargeterTest, DisabledViewShouldBlockEvents) {
+  auto widget = std::make_unique<Widget>();
+  Widget::InitParams init_params = CreateParams(
+      Widget::InitParams::CLIENT_OWNS_WIDGET, Widget::InitParams::TYPE_POPUP);
+  init_params.bounds = gfx::Rect(0, 0, 200, 200);
+  widget->Init(std::move(init_params));
+
+  View* content = widget->SetContentsView(std::make_unique<View>());
+  content->SetBounds(0, 0, 50, 50);
+  View* child_enabled = content->AddChildView(std::make_unique<View>());
+  TestingView* child_disabled =
+      content->AddChildView(std::make_unique<TestingView>());
+  child_disabled->SetEnabled(false);
+
+  const gfx::Rect child_bounds(2, 2, 50, 50);
+  // Disabled child fully overlaps enabled child.
+  child_enabled->SetBoundsRect(child_bounds);
+  child_disabled->SetBoundsRect(child_bounds);
+
+  internal::RootView* root_view =
+      static_cast<internal::RootView*>(widget->GetRootView());
+  auto* targeter = static_cast<views::ViewTargeter*>(root_view->targeter());
+
+  gfx::Rect event_bounds = child_disabled->bounds();
+  event_bounds.ClampToCenteredSize({10, 10});
+  const views::View* target_view =
+      targeter->TargetForRect(root_view, event_bounds);
+  // Overrlapped (by disabled view) child view should not be target for event.
+  EXPECT_NE(child_enabled, target_view);
+  // Parent view should not be target for event.
+  EXPECT_NE(content, target_view);
+
+  // Disabled view should be target for event.
+  EXPECT_EQ(child_disabled, target_view);
+
+  ui::MouseEvent event(ui::EventType::kMousePressed, gfx::Point(10, 10),
+                       gfx::Point(10, 10), ui::EventTimeForNow(), 0, 0);
+  child_disabled->OnEvent(&event);
+  // Disabled view should ignore events.
+  EXPECT_EQ(0, child_disabled->mouse_press_count());
 }
 
 }  // namespace test

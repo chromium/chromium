@@ -1122,17 +1122,22 @@ TEST_F(ViewAXPlatformNodeDelegateTest, TreeNavigationWithIgnoredViews) {
 }
 
 TEST_F(ViewAXPlatformNodeDelegateTest, SetIsEnabled) {
-  // Initially, the button should be enabled.
+  // Initially, the button and label should be enabled.
   EXPECT_TRUE(button_accessibility()->GetIsEnabled());
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
+  EXPECT_TRUE(label_accessibility()->GetIsEnabled());
 
   button_->SetEnabled(false);
   EXPECT_FALSE(button_accessibility()->GetIsEnabled());
   EXPECT_FALSE(button_accessibility()->IsAccessibilityFocusable());
+  // child label should be disabled for accessibility, as child of disabled
+  // button.
+  EXPECT_FALSE(label_accessibility()->GetIsEnabled());
 
   button_->SetEnabled(true);
   EXPECT_TRUE(button_accessibility()->GetIsEnabled());
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
+  EXPECT_TRUE(label_accessibility()->GetIsEnabled());
 
   // `ViewAccessibility::SetIsEnabled` should have priority over
   // `View::SetEnabled`.
@@ -1147,6 +1152,8 @@ TEST_F(ViewAXPlatformNodeDelegateTest, SetIsEnabled) {
   EXPECT_TRUE(button_accessibility()->GetIsEnabled());
   EXPECT_TRUE(button_accessibility()->IsAccessibilityFocusable());
 
+  // Restore button original state.
+  button_->SetEnabled(true);
   // Initially, the label should be enabled. It should never be focusable
   // because it is not an interactive control like the button.
   EXPECT_TRUE(label_accessibility()->GetIsEnabled());

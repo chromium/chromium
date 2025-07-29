@@ -6785,6 +6785,29 @@ TEST_F(ViewTest, TestEnabledChangedCallback) {
   EXPECT_FALSE(test_view->GetEnabled());
 }
 
+TEST_F(ViewTest, TestEnabledInViewsSubtreeChangedCallback) {
+  auto test_view = std::make_unique<View>();
+  auto* test_child = test_view->AddChildView(std::make_unique<View>());
+  int enabled_vs_changed_count = 0;
+  auto callback = base::BindRepeating(
+      [](int* enabled_vs_changed_count) { ++(*enabled_vs_changed_count); },
+      &enabled_vs_changed_count);
+  auto subscription_1 =
+      test_view->AddEnabledInViewsSubtreeChangedCallback(callback);
+  auto subscription_2 =
+      test_child->AddEnabledInViewsSubtreeChangedCallback(callback);
+  test_view->SetEnabled(false);
+  EXPECT_EQ(2, enabled_vs_changed_count);
+
+  EXPECT_FALSE(test_view->GetEnabled());
+  EXPECT_FALSE(test_view->GetEnabledInViewsSubtree());
+
+  // The child view should save its enabled state, but should be in disabled
+  // visual state.
+  EXPECT_TRUE(test_child->GetEnabled());
+  EXPECT_FALSE(test_child->GetEnabledInViewsSubtree());
+}
+
 TEST_F(ViewTest, TestVisibleChangedCallback) {
   auto test_view = std::make_unique<View>();
   bool visibility_changed = false;
