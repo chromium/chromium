@@ -852,7 +852,6 @@ test("android_webview_unittests") {
     "../browser/ip_protection/aw_ip_protection_core_host_unittest.cc",
     "../browser/lifecycle/aw_contents_lifecycle_notifier_unittest.cc",
     "../browser/metrics/android_metrics_provider_unittest.cc",
-    "../browser/metrics/android_metrics_service_client_unittest.cc",
     "../browser/metrics/aw_component_metrics_provider_delegate_unittests.cc",
     "../browser/metrics/aw_metrics_filtering_status_metrics_provider_unittests.cc",
     "../browser/metrics/aw_metrics_service_client_sample_rate_unittest.cc",
