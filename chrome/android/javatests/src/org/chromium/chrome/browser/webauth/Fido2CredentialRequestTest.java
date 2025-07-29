@@ -310,6 +310,19 @@ public class Fido2CredentialRequestTest {
             mSuccessCallback = successCallback;
         }
 
+        @Override
+        public void invokePasskeyCacheGetCredentials(
+                AuthenticationContextProvider authenticationContextProvider,
+                String relyingParty,
+                OnSuccessListener<List<WebauthnCredentialDetails>> successListener,
+                OnFailureListener failureListener) {
+            if (mInvokeCallbackImmediately) {
+                successListener.onSuccess(mReturnedCredentialDetails);
+                return;
+            }
+            mSuccessCallback = successListener;
+        }
+
         public void setReturnedCredentialDetails(List<WebauthnCredentialDetails> details) {
             mReturnedCredentialDetails = details;
         }
