@@ -633,7 +633,7 @@ message IframeData {
 
 // The data for a frame in the web page. This is the common data structure for
 // both the root frame and embedded iframes.
-// Next ID: 11
+// Next ID: 12
 message FrameData {
   // The security origin of the frame.
   SecurityOrigin security_origin = 1 [features = { field_presence: EXPLICIT }];
@@ -663,15 +663,12 @@ message FrameData {
   // The set of tools supported by this Document.
   repeated ScriptTool script_tools = 9;
 
-  // The set of responses from tools executed in this Document since the last
-  // time page content was requested.
-  //
-  // TODO(khushalsagar): Ideally this should be on ActionsResult, it's not
-  // necessary to fetch an APC just to get the result of an invocation. Make
-  // the switch once all consumers are migrated to use ActionsResult.
-  repeated ScriptToolResponse script_tool_responses = 10;
+  // The results of executing script tools.
+  // TODO(khushalsagar): Remove this field once all consumers move to using
+  // the field in ActionsResult.
+  repeated ScriptToolResult script_tool_results = 11;
 
-  reserved 7;
+  reserved 7, 10;
 }
 
 // The interaction information for the frame. This is for interactions that
@@ -782,15 +779,16 @@ message ScriptToolAnnotations {
   bool read_only = 1 [features = { field_presence: EXPLICIT }];
 }
 
-message ScriptToolResponse {
-  // The tool which was executed in the last request.
-  ScriptTool source_tool = 1 [features = { field_presence: EXPLICIT }];
-
-  // The set of arguments provided in the execution request.
-  string input_arguments = 2 [features = { field_presence: EXPLICIT }];
+// Result of executing a script tool.
+// Next ID: 3
+// TODO(khushalsagar): Move this to actions_data.proto.
+message ScriptToolResult {
+  // The index of the ScriptToolAction in the Actions proto. This is used to
+  // match the result to the corresponding action.
+  int32 index_of_script_tool_action = 1 [features = { field_presence: EXPLICIT }];
 
   // The result from executing the tool, if the execution was successful.
-  string result = 3 [features = { field_presence: EXPLICIT }];
+  string result = 2 [features = { field_presence: EXPLICIT }];
 }
 
 message TableRowData {
@@ -1866,7 +1864,7 @@ enum ContentAttributeType {
 }
 
 // The reason why a node is clickable.
-// Next ID: 11
+// Next ID: 12
 enum ClickabilityReason {
   // The node is a native form control.
   CLICKABILITY_REASON_CLICKABLE_CONTROL = 0;
@@ -1906,6 +1904,10 @@ enum ClickabilityReason {
 
   // The node has the tabIndex attribute set to a valid value.
   CLICKABILITY_REASON_TAB_INDEX = 10;
+
+  // The node has autocomplete, as indicated by the same-named attribute or
+  // aria-autocomplete.
+  CLICKABILITY_REASON_AUTOCOMPLETE = 11;
 }
 
 // Next ID: 5
