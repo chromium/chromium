@@ -29,7 +29,7 @@ namespace payments {
 struct SecurePaymentConfirmationCredential;
 
 // Web data service to read/write data in WebAppManifestSectionTable and
-// PaymentMethodManifestTable.
+// WebPaymentsTable.
 class PaymentManifestWebDataService : public WebDataServiceBase,
                                       public WebDataServiceConsumer {
  public:

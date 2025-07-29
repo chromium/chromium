@@ -10,8 +10,8 @@
 #include "base/location.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
-#include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
+#include "components/payments/content/web_payments_table.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_database_service.h"
@@ -59,8 +59,8 @@ WebDatabase::State PaymentManifestWebDataService::AddPaymentMethodManifestImpl(
     const std::string& payment_method,
     const std::vector<std::string>& app_package_names,
     WebDatabase* db) {
-  if (PaymentMethodManifestTable::FromWebDatabase(db)->AddManifest(
-          payment_method, app_package_names)) {
+  if (WebPaymentsTable::FromWebDatabase(db)->AddManifest(payment_method,
+                                                         app_package_names)) {
     return WebDatabase::COMMIT_NEEDED;
   }
 
@@ -109,8 +109,7 @@ PaymentManifestWebDataService::GetPaymentMethodManifestImpl(
   RemoveExpiredData(db);
   return std::make_unique<WDResult<std::vector<std::string>>>(
       PAYMENT_METHOD_MANIFEST,
-      PaymentMethodManifestTable::FromWebDatabase(db)->GetManifest(
-          payment_method));
+      WebPaymentsTable::FromWebDatabase(db)->GetManifest(payment_method));
 }
 
 WebDataServiceBase::Handle
@@ -131,7 +130,7 @@ PaymentManifestWebDataService::AddSecurePaymentConfirmationCredentialImpl(
     std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     WebDatabase* db) {
   return std::make_unique<WDResult<bool>>(
-      BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
+      BOOL_RESULT, WebPaymentsTable::FromWebDatabase(db)
                        ->AddSecurePaymentConfirmationCredential(*credential));
 }
 
@@ -157,7 +156,7 @@ PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentialsImpl(
   return std::make_unique<WDResult<
       std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>>>(
       SECURE_PAYMENT_CONFIRMATION,
-      PaymentMethodManifestTable::FromWebDatabase(db)
+      WebPaymentsTable::FromWebDatabase(db)
           ->GetSecurePaymentConfirmationCredentials(
               std::move(credential_ids), std::move(relying_party_id)));
 }
@@ -183,10 +182,9 @@ PaymentManifestWebDataService::SetBrowserBoundKeyImpl(
     std::vector<uint8_t> browser_bound_key_id,
     WebDatabase* db) {
   return std::make_unique<WDResult<bool>>(
-      BOOL_RESULT,
-      PaymentMethodManifestTable::FromWebDatabase(db)->SetBrowserBoundKey(
-          std::move(credential_id), std::move(relying_party_id),
-          std::move(browser_bound_key_id)));
+      BOOL_RESULT, WebPaymentsTable::FromWebDatabase(db)->SetBrowserBoundKey(
+                       std::move(credential_id), std::move(relying_party_id),
+                       std::move(browser_bound_key_id)));
 }
 
 WebDataServiceBase::Handle PaymentManifestWebDataService::GetBrowserBoundKey(
@@ -208,7 +206,7 @@ PaymentManifestWebDataService::GetBrowserBoundKeyImpl(
     WebDatabase* db) {
   return std::make_unique<WDResult<std::optional<std::vector<uint8_t>>>>(
       BROWSER_BOUND_KEY,
-      PaymentMethodManifestTable::FromWebDatabase(db)->GetBrowserBoundKey(
+      WebPaymentsTable::FromWebDatabase(db)->GetBrowserBoundKey(
           std::move(credential_id), std::move(relying_party_id)));
 }
 
@@ -226,8 +224,7 @@ std::unique_ptr<WDTypedResult>
 PaymentManifestWebDataService::GetAllBrowserBoundKeysImpl(WebDatabase* db) {
   return std::make_unique<WDResult<std::vector<BrowserBoundKeyMetadata>>>(
       BROWSER_BOUND_KEY_METADATA,
-      PaymentMethodManifestTable::FromWebDatabase(db)
-          ->GetAllBrowserBoundKeys());
+      WebPaymentsTable::FromWebDatabase(db)->GetAllBrowserBoundKeys());
 }
 
 void PaymentManifestWebDataService::DeleteBrowserBoundKeys(
@@ -244,7 +241,7 @@ WebDatabase::State PaymentManifestWebDataService::DeleteBrowserBoundKeysImpl(
     std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId> passkeys,
     base::OnceClosure callback,
     WebDatabase* db) {
-  if (PaymentMethodManifestTable::FromWebDatabase(db)->DeleteBrowserBoundKeys(
+  if (WebPaymentsTable::FromWebDatabase(db)->DeleteBrowserBoundKeys(
           std::move(passkeys))) {
     std::move(callback).Run();
     return WebDatabase::State::COMMIT_NEEDED;
@@ -273,7 +270,7 @@ PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentialsImpl(
     base::Time end,
     WebDatabase* db) {
   return std::make_unique<WDResult<bool>>(
-      BOOL_RESULT, PaymentMethodManifestTable::FromWebDatabase(db)
+      BOOL_RESULT, WebPaymentsTable::FromWebDatabase(db)
                        ->ClearSecurePaymentConfirmationCredentials(begin, end));
 }
 
@@ -288,8 +285,8 @@ void PaymentManifestWebDataService::OnWebDataServiceRequestDone(
 }
 
 void PaymentManifestWebDataService::RemoveExpiredData(WebDatabase* db) {
-  PaymentMethodManifestTable::FromWebDatabase(db)->RemoveExpiredData();
   WebAppManifestSectionTable::FromWebDatabase(db)->RemoveExpiredData();
+  WebPaymentsTable::FromWebDatabase(db)->RemoveExpiredData();
 }
 
 }  // namespace payments

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_method_manifest_table.h"
+#include "components/payments/content/web_payments_table.h"
 
 #include <time.h>
 
@@ -24,7 +24,7 @@ namespace {
 // Data valid duration in seconds.
 const time_t PAYMENT_METHOD_MANIFEST_VALID_TIME_IN_SECONDS = 90 * 24 * 60 * 60;
 
-WebDatabaseTable::TypeKey GetPaymentMethodManifestKey() {
+WebDatabaseTable::TypeKey GetWebPaymentsKey() {
   // We just need a unique constant. Use the address of a static that
   // COMDAT folding won't touch in an optimizing linker.
   static int table_key = 0;
@@ -33,21 +33,19 @@ WebDatabaseTable::TypeKey GetPaymentMethodManifestKey() {
 
 }  // namespace
 
-PaymentMethodManifestTable::PaymentMethodManifestTable() = default;
+WebPaymentsTable::WebPaymentsTable() = default;
 
-PaymentMethodManifestTable::~PaymentMethodManifestTable() = default;
+WebPaymentsTable::~WebPaymentsTable() = default;
 
-PaymentMethodManifestTable* PaymentMethodManifestTable::FromWebDatabase(
-    WebDatabase* db) {
-  return static_cast<PaymentMethodManifestTable*>(
-      db->GetTable(GetPaymentMethodManifestKey()));
+WebPaymentsTable* WebPaymentsTable::FromWebDatabase(WebDatabase* db) {
+  return static_cast<WebPaymentsTable*>(db->GetTable(GetWebPaymentsKey()));
 }
 
-WebDatabaseTable::TypeKey PaymentMethodManifestTable::GetTypeKey() const {
-  return GetPaymentMethodManifestKey();
+WebDatabaseTable::TypeKey WebPaymentsTable::GetTypeKey() const {
+  return GetWebPaymentsKey();
 }
 
-bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
+bool WebPaymentsTable::CreateTablesIfNecessary() {
   if (!db()->Execute("CREATE TABLE IF NOT EXISTS payment_method_manifest ( "
                      "expire_date INTEGER NOT NULL DEFAULT 0, "
                      "method_name VARCHAR, "
@@ -110,13 +108,12 @@ bool PaymentMethodManifestTable::CreateTablesIfNecessary() {
   return true;
 }
 
-bool PaymentMethodManifestTable::MigrateToVersion(
-    int version,
-    bool* update_compatible_version) {
+bool WebPaymentsTable::MigrateToVersion(int version,
+                                        bool* update_compatible_version) {
   return true;
 }
 
-void PaymentMethodManifestTable::RemoveExpiredData() {
+void WebPaymentsTable::RemoveExpiredData() {
   const base::Time now_date_in_seconds = base::Time::NowFromSystemTime();
   sql::Statement s(db()->GetUniqueStatement(
       "DELETE FROM payment_method_manifest WHERE expire_date < ?"));
@@ -124,7 +121,7 @@ void PaymentMethodManifestTable::RemoveExpiredData() {
   s.Run();
 }
 
-bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationCredentials(
+bool WebPaymentsTable::ClearSecurePaymentConfirmationCredentials(
     base::Time begin,
     base::Time end) {
   // TODO(crbug.com/384959121): Clear browser bound key identifiers along with
@@ -137,18 +134,20 @@ bool PaymentMethodManifestTable::ClearSecurePaymentConfirmationCredentials(
   return s.Run();
 }
 
-bool PaymentMethodManifestTable::AddManifest(
+bool WebPaymentsTable::AddManifest(
     const std::string& payment_method,
     const std::vector<std::string>& web_app_ids) {
   sql::Transaction transaction(db());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   sql::Statement s1(db()->GetUniqueStatement(
       "DELETE FROM payment_method_manifest WHERE method_name=?"));
   s1.BindString(0, payment_method);
-  if (!s1.Run())
+  if (!s1.Run()) {
     return false;
+  }
 
   sql::Statement s2(
       db()->GetUniqueStatement("INSERT INTO payment_method_manifest "
@@ -162,18 +161,20 @@ bool PaymentMethodManifestTable::AddManifest(
     s2.BindTime(index++, expire_date);
     s2.BindString(index++, payment_method);
     s2.BindString(index, id);
-    if (!s2.Run())
+    if (!s2.Run()) {
       return false;
+    }
     s2.Reset(true);
   }
 
-  if (!transaction.Commit())
+  if (!transaction.Commit()) {
     return false;
+  }
 
   return true;
 }
 
-std::vector<std::string> PaymentMethodManifestTable::GetManifest(
+std::vector<std::string> WebPaymentsTable::GetManifest(
     const std::string& payment_method) {
   std::vector<std::string> web_app_ids;
   sql::Statement s(
@@ -189,14 +190,16 @@ std::vector<std::string> PaymentMethodManifestTable::GetManifest(
   return web_app_ids;
 }
 
-bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
+bool WebPaymentsTable::AddSecurePaymentConfirmationCredential(
     const SecurePaymentConfirmationCredential& credential) {
-  if (!credential.IsValidNewCredential())
+  if (!credential.IsValidNewCredential()) {
     return false;
+  }
 
   sql::Transaction transaction(db());
-  if (!transaction.Begin())
+  if (!transaction.Begin()) {
     return false;
+  }
 
   {
     // Check for credential identifier reuse by a different relying party.
@@ -208,8 +211,9 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
     int index = 0;
     s0.BindBlob(index++, credential.credential_id);
     s0.BindString(index++, credential.relying_party_id);
-    if (s0.Step())
+    if (s0.Step()) {
       return false;
+    }
   }
 
   {
@@ -218,8 +222,9 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
         "WHERE credential_id=?"));
     s1.BindBlob(0, credential.credential_id);
 
-    if (!s1.Run())
+    if (!s1.Run()) {
       return false;
+    }
   }
 
   {
@@ -233,8 +238,9 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
     s2.BindString(index++, credential.relying_party_id);
     s2.BindBlob(index++, credential.user_id);
 
-    if (!s2.Run())
+    if (!s2.Run()) {
       return false;
+    }
   }
 
   {
@@ -250,18 +256,20 @@ bool PaymentMethodManifestTable::AddSecurePaymentConfirmationCredential(
     s3.BindBlob(index++, std::vector<uint8_t>());
     s3.BindTime(index++, base::Time::Now());
 
-    if (!s3.Run())
+    if (!s3.Run()) {
       return false;
+    }
   }
 
-  if (!transaction.Commit())
+  if (!transaction.Commit()) {
     return false;
+  }
 
   return true;
 }
 
 std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>>
-PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
+WebPaymentsTable::GetSecurePaymentConfirmationCredentials(
     std::vector<std::vector<uint8_t>> credential_ids,
     const std::string& relying_party_id) {
   std::vector<std::unique_ptr<SecurePaymentConfirmationCredential>> credentials;
@@ -274,14 +282,16 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
   // std::move()'d into the credential below.
   for (auto& credential_id : credential_ids) {
     s.Reset(true);
-    if (credential_id.empty())
+    if (credential_id.empty()) {
       continue;
+    }
 
     s.BindBlob(0, credential_id);
     s.BindString(1, relying_party_id);
 
-    if (!s.Step())
+    if (!s.Step()) {
       continue;
+    }
 
     auto credential = std::make_unique<SecurePaymentConfirmationCredential>();
     credential->credential_id = std::move(credential_id);
@@ -290,8 +300,9 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
     credential->relying_party_id = s.ColumnString(index++);
     s.ColumnBlobAsVector(index++, &(credential->user_id));
 
-    if (!credential->IsValid())
+    if (!credential->IsValid()) {
       continue;
+    }
 
     credentials.push_back(std::move(credential));
   }
@@ -299,7 +310,7 @@ PaymentMethodManifestTable::GetSecurePaymentConfirmationCredentials(
   return credentials;
 }
 
-bool PaymentMethodManifestTable::SetBrowserBoundKey(
+bool WebPaymentsTable::SetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string_view relying_party_id,
     std::vector<uint8_t> browser_bound_key_id) {
@@ -318,8 +329,7 @@ bool PaymentMethodManifestTable::SetBrowserBoundKey(
   return s.Run();
 }
 
-std::optional<std::vector<uint8_t>>
-PaymentMethodManifestTable::GetBrowserBoundKey(
+std::optional<std::vector<uint8_t>> WebPaymentsTable::GetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string_view relying_party_id) {
   sql::Statement s(db()->GetUniqueStatement(
@@ -341,7 +351,7 @@ PaymentMethodManifestTable::GetBrowserBoundKey(
 }
 
 std::vector<BrowserBoundKeyMetadata>
-PaymentMethodManifestTable::GetAllBrowserBoundKeys() {
+WebPaymentsTable::GetAllBrowserBoundKeys() {
   sql::Statement s(db()->GetUniqueStatement(
       "SELECT relying_party_id, credential_id, browser_bound_key_id "
       "FROM secure_payment_confirmation_browser_bound_key"));
@@ -355,7 +365,7 @@ PaymentMethodManifestTable::GetAllBrowserBoundKeys() {
   return browser_bound_keys;
 }
 
-bool PaymentMethodManifestTable::DeleteBrowserBoundKeys(
+bool WebPaymentsTable::DeleteBrowserBoundKeys(
     std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>
         passkeys) {
   for (auto& passkey : passkeys) {
@@ -371,15 +381,15 @@ bool PaymentMethodManifestTable::DeleteBrowserBoundKeys(
   return true;
 }
 
-bool PaymentMethodManifestTable::ExecuteForTest(const base::cstring_view sql) {
+bool WebPaymentsTable::ExecuteForTest(const base::cstring_view sql) {
   return db()->Execute(sql);
 }
 
-bool PaymentMethodManifestTable::RazeForTest() {
+bool WebPaymentsTable::RazeForTest() {
   return db()->Raze();
 }
 
-bool PaymentMethodManifestTable::DoesColumnExistForTest(
+bool WebPaymentsTable::DoesColumnExistForTest(
     const base::cstring_view table_name,
     const base::cstring_view column_name) {
   return db()->DoesColumnExist(table_name, column_name);

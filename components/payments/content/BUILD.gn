@@ -158,14 +158,14 @@ static_library("utils") {
     "manifest_verifier.h",
     "payment_manifest_web_data_service.cc",
     "payment_manifest_web_data_service.h",
-    "payment_method_manifest_table.cc",
-    "payment_method_manifest_table.h",
     "service_worker_payment_app_finder.cc",
     "service_worker_payment_app_finder.h",
     "ssl_validity_checker.cc",
     "ssl_validity_checker.h",
     "web_app_manifest_section_table.cc",
     "web_app_manifest_section_table.h",
+    "web_payments_table.cc",
+    "web_payments_table.h",
   ]
 
   deps = [
@@ -246,7 +246,6 @@ source_set("payment_content_unit_tests") {
     "mock_secure_payment_confirmation_credential_finder.h",
     "payment_event_response_util_unittest.cc",
     "payment_manifest_web_data_service_unittest.cc",
-    "payment_method_manifest_table_unittest.cc",
     "secure_payment_confirmation_app_factory_unittest.cc",
     "secure_payment_confirmation_app_unittest.cc",
     "secure_payment_confirmation_credential_finder_unittest.cc",
@@ -255,6 +254,7 @@ source_set("payment_content_unit_tests") {
     "secure_payment_confirmation_service_unittest.cc",
     "service_worker_payment_app_finder_unittest.cc",
     "web_app_manifest_section_table_unittest.cc",
+    "web_payments_table_unittest.cc",
   ]
 
   if (!is_android) {

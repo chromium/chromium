@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_METHOD_MANIFEST_TABLE_H_
-#define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_METHOD_MANIFEST_TABLE_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_TABLE_H_
+#define COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_TABLE_H_
 
 #include <memory>
 #include <optional>
@@ -61,17 +61,16 @@ struct SecurePaymentConfirmationCredential;
 //   credential_id         The WebAuthn credential identifier blob.
 //   relying_party_id      The relying party identifier string.
 //   browser_bound_key_id  The identifier of the browser bound key.
-class PaymentMethodManifestTable : public WebDatabaseTable {
+class WebPaymentsTable : public WebDatabaseTable {
  public:
-  PaymentMethodManifestTable();
-  ~PaymentMethodManifestTable() override;
+  WebPaymentsTable();
+  ~WebPaymentsTable() override;
 
-  PaymentMethodManifestTable(const PaymentMethodManifestTable& other) = delete;
-  PaymentMethodManifestTable& operator=(
-      const PaymentMethodManifestTable& other) = delete;
+  WebPaymentsTable(const WebPaymentsTable& other) = delete;
+  WebPaymentsTable& operator=(const WebPaymentsTable& other) = delete;
 
-  // Retrieves the PaymentMethodManifestTable* owned by `db`.
-  static PaymentMethodManifestTable* FromWebDatabase(WebDatabase* db);
+  // Retrieves the WebPaymentsTable* owned by `db`.
+  static WebPaymentsTable* FromWebDatabase(WebDatabase* db);
 
   // WebDatabaseTable:
   WebDatabaseTable::TypeKey GetTypeKey() const override;
@@ -171,4 +170,4 @@ class PaymentMethodManifestTable : public WebDatabaseTable {
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_PAYMENT_METHOD_MANIFEST_TABLE_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_TABLE_H_

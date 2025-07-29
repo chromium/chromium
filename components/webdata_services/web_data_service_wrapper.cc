@@ -43,8 +43,8 @@
 
 #if BUILDFLAG(USE_BLINK)
 #include "components/payments/content/payment_manifest_web_data_service.h"
-#include "components/payments/content/payment_method_manifest_table.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
+#include "components/payments/content/web_payments_table.h"
 #endif
 
 namespace {
@@ -150,9 +150,8 @@ WebDataServiceWrapper::WebDataServiceWrapper(
   profile_database_->AddTable(std::make_unique<TokenServiceTable>());
 #if BUILDFLAG(USE_BLINK)
   profile_database_->AddTable(
-      std::make_unique<payments::PaymentMethodManifestTable>());
-  profile_database_->AddTable(
       std::make_unique<payments::WebAppManifestSectionTable>());
+  profile_database_->AddTable(std::make_unique<payments::WebPaymentsTable>());
 #endif
   profile_database_->AddTable(
       std::make_unique<plus_addresses::PlusAddressTable>());

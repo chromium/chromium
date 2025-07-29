@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_method_manifest_table.h"
+#include "components/payments/content/web_payments_table.h"
 
 #include <stdint.h>
 
@@ -70,22 +70,20 @@ void ExpectOneValidCredential(
   EXPECT_EQ(user_id, credentials.back()->user_id);
 }
 
-class PaymentMethodManifestTableTest : public testing::Test {
+class WebPaymentsTableTest : public testing::Test {
  public:
-  PaymentMethodManifestTableTest() = default;
-  ~PaymentMethodManifestTableTest() override = default;
+  WebPaymentsTableTest() = default;
+  ~WebPaymentsTableTest() override = default;
 
-  PaymentMethodManifestTableTest(const PaymentMethodManifestTableTest& other) =
-      delete;
-  PaymentMethodManifestTableTest& operator=(
-      const PaymentMethodManifestTableTest& other) = delete;
+  WebPaymentsTableTest(const WebPaymentsTableTest& other) = delete;
+  WebPaymentsTableTest& operator=(const WebPaymentsTableTest& other) = delete;
 
  protected:
   void SetUp() override {
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
     file_ = temp_dir_.GetPath().AppendASCII("TestWebDatabase");
 
-    table_ = std::make_unique<PaymentMethodManifestTable>();
+    table_ = std::make_unique<WebPaymentsTable>();
     db_ = std::make_unique<WebDatabase>();
     db_->AddTable(table_.get());
     ASSERT_EQ(sql::INIT_OK, db_->Init(file_));
@@ -93,87 +91,78 @@ class PaymentMethodManifestTableTest : public testing::Test {
 
   base::FilePath file_;
   base::ScopedTempDir temp_dir_;
-  std::unique_ptr<PaymentMethodManifestTable> table_;
+  std::unique_ptr<WebPaymentsTable> table_;
   std::unique_ptr<WebDatabase> db_;
 };
 
-TEST_F(PaymentMethodManifestTableTest, GetNonExistManifest) {
-  PaymentMethodManifestTable* payment_method_manifest_table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, GetNonExistManifest) {
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
   std::vector<std::string> web_app_ids =
-      payment_method_manifest_table->GetManifest("https://bobpay.test");
+      web_payments_table->GetManifest("https://bobpay.test");
   ASSERT_TRUE(web_app_ids.empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddAndGetSingleManifest) {
-  PaymentMethodManifestTable* payment_method_manifest_table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, AddAndGetSingleManifest) {
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
 
   std::string method_name("https://bobpay.test");
   std::vector<std::string> web_app_ids = {"com.bobpay"};
-  ASSERT_TRUE(
-      payment_method_manifest_table->AddManifest(method_name, web_app_ids));
+  ASSERT_TRUE(web_payments_table->AddManifest(method_name, web_app_ids));
 
   std::vector<std::string> retrieved_web_app_ids =
-      payment_method_manifest_table->GetManifest(method_name);
+      web_payments_table->GetManifest(method_name);
   ASSERT_EQ(web_app_ids.size(), retrieved_web_app_ids.size());
   ASSERT_EQ(web_app_ids[0], retrieved_web_app_ids[0]);
 
   web_app_ids.emplace_back("com.alicepay");
-  ASSERT_TRUE(
-      payment_method_manifest_table->AddManifest(method_name, web_app_ids));
+  ASSERT_TRUE(web_payments_table->AddManifest(method_name, web_app_ids));
 
   retrieved_web_app_ids =
-      payment_method_manifest_table->GetManifest("https://bobpay.test");
+      web_payments_table->GetManifest("https://bobpay.test");
   ASSERT_EQ(web_app_ids.size(), retrieved_web_app_ids.size());
   ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[0]));
   ASSERT_TRUE(base::Contains(retrieved_web_app_ids, web_app_ids[1]));
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddAndGetMultipleManifest) {
-  PaymentMethodManifestTable* payment_method_manifest_table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, AddAndGetMultipleManifest) {
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
 
   std::string method_name_1("https://bobpay.test");
   std::string method_name_2("https://alicepay.test");
   std::vector<std::string> web_app_ids = {"com.bobpay"};
-  ASSERT_TRUE(
-      payment_method_manifest_table->AddManifest(method_name_1, web_app_ids));
-  ASSERT_TRUE(
-      payment_method_manifest_table->AddManifest(method_name_2, web_app_ids));
+  ASSERT_TRUE(web_payments_table->AddManifest(method_name_1, web_app_ids));
+  ASSERT_TRUE(web_payments_table->AddManifest(method_name_2, web_app_ids));
 
   std::vector<std::string> bobpay_web_app_ids =
-      payment_method_manifest_table->GetManifest(method_name_1);
+      web_payments_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), bobpay_web_app_ids.size());
   ASSERT_EQ(web_app_ids[0], bobpay_web_app_ids[0]);
 
   std::vector<std::string> alicepay_web_app_ids =
-      payment_method_manifest_table->GetManifest(method_name_2);
+      web_payments_table->GetManifest(method_name_2);
   ASSERT_EQ(web_app_ids.size(), alicepay_web_app_ids.size());
   ASSERT_EQ(web_app_ids[0], alicepay_web_app_ids[0]);
 
   web_app_ids.emplace_back("com.alicepay");
-  ASSERT_TRUE(
-      payment_method_manifest_table->AddManifest(method_name_1, web_app_ids));
-  ASSERT_TRUE(
-      payment_method_manifest_table->AddManifest(method_name_2, web_app_ids));
+  ASSERT_TRUE(web_payments_table->AddManifest(method_name_1, web_app_ids));
+  ASSERT_TRUE(web_payments_table->AddManifest(method_name_2, web_app_ids));
 
-  bobpay_web_app_ids =
-      payment_method_manifest_table->GetManifest(method_name_1);
+  bobpay_web_app_ids = web_payments_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), bobpay_web_app_ids.size());
   ASSERT_TRUE(base::Contains(bobpay_web_app_ids, web_app_ids[0]));
   ASSERT_TRUE(base::Contains(bobpay_web_app_ids, web_app_ids[1]));
 
-  alicepay_web_app_ids =
-      payment_method_manifest_table->GetManifest(method_name_1);
+  alicepay_web_app_ids = web_payments_table->GetManifest(method_name_1);
   ASSERT_EQ(web_app_ids.size(), alicepay_web_app_ids.size());
   ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[0]));
   ASSERT_TRUE(base::Contains(alicepay_web_app_ids, web_app_ids[1]));
 }
 
-TEST_F(PaymentMethodManifestTableTest, GetNonExistingCredential) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, GetNonExistingCredential) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table
                   ->GetSecurePaymentConfirmationCredentials(
@@ -190,9 +179,8 @@ TEST_F(PaymentMethodManifestTableTest, GetNonExistingCredential) {
                   .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidCredential) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, AddAndGetOneValidCredential) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
 
   std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
@@ -218,9 +206,8 @@ TEST_F(PaymentMethodManifestTableTest, AddAndGetOneValidCredential) {
                   .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, AddingInvalidCredentialReturnsFalse) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, AddingInvalidCredentialReturnsFalse) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
 
   // An empty credential.
   EXPECT_FALSE(table->AddSecurePaymentConfirmationCredential(
@@ -240,9 +227,8 @@ TEST_F(PaymentMethodManifestTableTest, AddingInvalidCredentialReturnsFalse) {
                                           /*user_id=*/{})));
 }
 
-TEST_F(PaymentMethodManifestTableTest, UpdatingCredentialReturnsTrue) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, UpdatingCredentialReturnsTrue) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
@@ -260,10 +246,9 @@ TEST_F(PaymentMethodManifestTableTest, UpdatingCredentialReturnsTrue) {
                            std::move(credentials));
 }
 
-TEST_F(PaymentMethodManifestTableTest,
+TEST_F(WebPaymentsTableTest,
        DifferentRelyingPartiesCannotUseSameCredentialIdentifier) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
                                           "relying-party-1.example",
@@ -285,9 +270,8 @@ TEST_F(PaymentMethodManifestTableTest,
                   .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, RelyingPartyCanHaveMultipleCredentials) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
@@ -338,10 +322,8 @@ TEST_F(PaymentMethodManifestTableTest, RelyingPartyCanHaveMultipleCredentials) {
   EXPECT_EQ(expected_user_id, credentials.back()->user_id);
 }
 
-TEST_F(PaymentMethodManifestTableTest,
-       SameRelyingPartyAndUserIdOverwritesCredential) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, SameRelyingPartyAndUserIdOverwritesCredential) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
 
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
@@ -384,9 +366,8 @@ TEST_F(PaymentMethodManifestTableTest,
   EXPECT_EQ(expected_user_id, credentials.front()->user_id);
 }
 
-TEST_F(PaymentMethodManifestTableTest, ClearCredentials) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, ClearCredentials) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
@@ -411,10 +392,8 @@ TEST_F(PaymentMethodManifestTableTest, ClearCredentials) {
                   .empty());
 }
 
-TEST_F(PaymentMethodManifestTableTest,
-       ClearCredentials_NotDeleteOutOfTimeRange) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, ClearCredentials_NotDeleteOutOfTimeRange) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   EXPECT_TRUE(table->AddSecurePaymentConfirmationCredential(
       SecurePaymentConfirmationCredential(CreateCredentialId(/*first_byte=*/0),
@@ -438,30 +417,29 @@ TEST_F(PaymentMethodManifestTableTest,
                     .size());
 }
 
-TEST_F(PaymentMethodManifestTableTest,
-       CredentialTableAddDateCreatedAndUserIdColumn) {
-  PaymentMethodManifestTable* payment_method_manifest_table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
-  EXPECT_TRUE(payment_method_manifest_table->RazeForTest());
-  EXPECT_TRUE(payment_method_manifest_table->ExecuteForTest(
+TEST_F(WebPaymentsTableTest, CredentialTableAddDateCreatedAndUserIdColumn) {
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(web_payments_table->RazeForTest());
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(
       "CREATE TABLE IF NOT EXISTS secure_payment_confirmation_instrument ( "
       "credential_id BLOB NOT NULL PRIMARY KEY, "
       "relying_party_id VARCHAR NOT NULL, "
       "label VARCHAR NOT NULL, "
       "icon BLOB NOT NULL)"));
-  EXPECT_FALSE(payment_method_manifest_table->DoesColumnExistForTest(
+  EXPECT_FALSE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "date_created"));
-  EXPECT_FALSE(payment_method_manifest_table->DoesColumnExistForTest(
+  EXPECT_FALSE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "user_id"));
-  EXPECT_TRUE(payment_method_manifest_table->CreateTablesIfNecessary());
-  EXPECT_TRUE(payment_method_manifest_table->DoesColumnExistForTest(
+  EXPECT_TRUE(web_payments_table->CreateTablesIfNecessary());
+  EXPECT_TRUE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "date_created"));
-  EXPECT_TRUE(payment_method_manifest_table->DoesColumnExistForTest(
+  EXPECT_TRUE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "user_id"));
 }
 
 // Test migrating an existing credential table that didn't have the user ID.
-TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
+TEST_F(WebPaymentsTableTest, CredentialTableUserIdMigration) {
   SecurePaymentConfirmationCredential valid_legacy_credential(
       CreateCredentialId(/*first_byte=*/0), "relying-party.example", {});
   EXPECT_TRUE(valid_legacy_credential.IsValid());
@@ -472,11 +450,11 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
   EXPECT_TRUE(valid_new_credential.IsValid());
   EXPECT_TRUE(valid_new_credential.IsValidNewCredential());
 
-  PaymentMethodManifestTable* payment_method_manifest_table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
-  EXPECT_TRUE(payment_method_manifest_table->RazeForTest());
+  WebPaymentsTable* web_payments_table =
+      WebPaymentsTable::FromWebDatabase(db_.get());
+  EXPECT_TRUE(web_payments_table->RazeForTest());
   // Create the SPC table as it would have been prior to storing the user ID.
-  EXPECT_TRUE(payment_method_manifest_table->ExecuteForTest(
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(
       "CREATE TABLE IF NOT EXISTS secure_payment_confirmation_instrument ( "
       "credential_id BLOB NOT NULL PRIMARY KEY, "
       "relying_party_id VARCHAR NOT NULL, "
@@ -485,7 +463,7 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
       "date_created INTEGER NOT NULL DEFAULT 0)"));
 
   // Insert the legacy credential.
-  EXPECT_TRUE(payment_method_manifest_table->ExecuteForTest(
+  EXPECT_TRUE(web_payments_table->ExecuteForTest(
       ("INSERT INTO secure_payment_confirmation_instrument "
        "(credential_id, relying_party_id, label, icon, date_created) "
        "VALUES ("
@@ -497,14 +475,13 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
            base::Time::Now().ToDeltaSinceWindowsEpoch().InMicroseconds()) +
        ")")));
 
-  EXPECT_FALSE(payment_method_manifest_table->DoesColumnExistForTest(
+  EXPECT_FALSE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "user_id"));
-  EXPECT_TRUE(payment_method_manifest_table->CreateTablesIfNecessary());
-  EXPECT_TRUE(payment_method_manifest_table->DoesColumnExistForTest(
+  EXPECT_TRUE(web_payments_table->CreateTablesIfNecessary());
+  EXPECT_TRUE(web_payments_table->DoesColumnExistForTest(
       "secure_payment_confirmation_instrument", "user_id"));
 
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   EXPECT_TRUE(
       table->AddSecurePaymentConfirmationCredential(valid_new_credential));
 
@@ -519,9 +496,8 @@ TEST_F(PaymentMethodManifestTableTest, CredentialTableUserIdMigration) {
 
 // Tests that a browser bound key can be added and retrieved using the
 // credential id and relying party id.
-TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKey) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, SetBrowserBoundKey) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
@@ -536,9 +512,8 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKey) {
 
 // Tests that no result is returned for a credential id and relying party id
 // that do not exist in the table.
-TEST_F(PaymentMethodManifestTableTest, GetBrowserBoundKeyWhenNotFound) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, GetBrowserBoundKeyWhenNotFound) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
 
@@ -550,9 +525,8 @@ TEST_F(PaymentMethodManifestTableTest, GetBrowserBoundKeyWhenNotFound) {
 
 // Tests that no result is returned when either the credential id or relying
 // party id arguments were empty.
-TEST_F(PaymentMethodManifestTableTest, GetBrowserBoundKeyWhenEmptyArguments) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, GetBrowserBoundKeyWhenEmptyArguments) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
 
@@ -564,9 +538,8 @@ TEST_F(PaymentMethodManifestTableTest, GetBrowserBoundKeyWhenEmptyArguments) {
 
 // Tests that no entry is stored when empty credential id, relying party id, or
 // browser bound key id are provided.
-TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenEmptyArguments) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenEmptyArguments) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
   std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
@@ -587,9 +560,8 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenEmptyArguments) {
 
 // Tests that two browser bound key ids can be set for two different relying
 // party ids and the same credential id.
-TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenSameCredentialId) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenSameCredentialId) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id_1("relying-party-1.example");
   std::string relying_party_id_2("relying-party-2.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
@@ -611,9 +583,8 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenSameCredentialId) {
 
 // Test that two browser bound key ids can be set for two different credential
 // ids and the same relying party.
-TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenSameRelyingParty) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenSameRelyingParty) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id_1({0x01, 0x02, 0x03, 0x04});
   std::vector<uint8_t> credential_id_2({0x11, 0x12, 0x13, 0x14});
@@ -635,9 +606,8 @@ TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenSameRelyingParty) {
 
 // Tests that setting another browser bound key id for the same credential id
 // and relying party id does not replace the first browser bound key id.
-TEST_F(PaymentMethodManifestTableTest, SetBrowserBoundKeyWhenDuplicateEntry) {
-  PaymentMethodManifestTable* table =
-      PaymentMethodManifestTable::FromWebDatabase(db_.get());
+TEST_F(WebPaymentsTableTest, SetBrowserBoundKeyWhenDuplicateEntry) {
+  WebPaymentsTable* table = WebPaymentsTable::FromWebDatabase(db_.get());
   std::string relying_party_id("relying-party.example");
   std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
   std::vector<uint8_t> browser_bound_key_id_1({0x11, 0x12, 0x13, 0x14});

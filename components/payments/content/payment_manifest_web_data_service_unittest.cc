@@ -10,7 +10,7 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_timeouts.h"
 #include "components/os_crypt/async/browser/test_utils.h"
-#include "components/payments/content/payment_method_manifest_table.h"
+#include "components/payments/content/web_payments_table.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -62,8 +62,7 @@ class PaymentManifestWebDataServiceTest : public ::testing::Test {
         base::FilePath(WebDatabase::kInMemoryPath),
         /*ui_task_runner=*/task_runner,
         /*db_task_runner=*/task_runner);
-    web_database_service_->AddTable(
-        std::make_unique<PaymentMethodManifestTable>());
+    web_database_service_->AddTable(std::make_unique<WebPaymentsTable>());
     web_database_service_->LoadDatabase(os_crypt_.get());
     payment_manifest_web_data_service_ =
         base::MakeRefCounted<PaymentManifestWebDataService>(
