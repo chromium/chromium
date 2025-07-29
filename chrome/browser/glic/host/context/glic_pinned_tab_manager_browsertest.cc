@@ -223,4 +223,63 @@ IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest,
           HasTitle("Advanced Goldfish Obedience Training")));
 }
 
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, PinTabs) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future;
+  auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
+      pin_status_future.GetRepeatingCallback());
+
+  // Pin a tab and verify it was pinned.
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
+
+
+  // Check that the callback was called with pinned=true.
+  {
+    auto [result_interface, result_pinned] = pin_status_future.Get();
+    EXPECT_EQ(tab_interface, result_interface);
+    EXPECT_TRUE(result_pinned);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(GlicPinnedTabManagerBrowserTest, unpinTabs) {
+  CreateAndAddTab("/why-cats-are-liquid");
+
+  TabStripModel* tab_strip_model = browser()->tab_strip_model();
+  tabs::TabInterface* tab_interface =
+      tabs::TabInterface::GetFromContents(tab_strip_model->GetWebContentsAt(1));
+  ASSERT_TRUE(tab_interface);
+  const tabs::TabHandle tab_handle = tab_interface->GetHandle();
+
+  // Pin a tab and verify it was pinned.
+  EXPECT_TRUE(pinned_tab_manager_->PinTabs({tab_handle}));
+  EXPECT_TRUE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(1u, pinned_tab_manager_->GetNumPinnedTabs());
+
+
+  base::test::TestFuture<tabs::TabInterface*, bool> pin_status_future;
+  auto subscription = pinned_tab_manager_->AddTabPinningStatusChangedCallback(
+      pin_status_future.GetRepeatingCallback());
+
+  // Unpin the tab and verify it was unpinned.
+  EXPECT_TRUE(pinned_tab_manager_->UnpinTabs({tab_handle}));
+  EXPECT_FALSE(pinned_tab_manager_->IsTabPinned(tab_handle));
+  EXPECT_EQ(0u, pinned_tab_manager_->GetNumPinnedTabs());
+
+  // Check that the callback was called with pinned=false.
+  {
+    auto [result_interface, result_pinned] = pin_status_future.Get();
+    EXPECT_EQ(tab_interface, result_interface);
+    EXPECT_FALSE(result_pinned);
+  }
+}
+
 }  // namespace glic
