@@ -8,54 +8,46 @@
 #include "base/notreached.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/command_buffer/client/client_shared_image.h"
-#include "media/base/format_utils.h"
+#include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video/video_capture_buffer_handle.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
 
 GpuMemoryBufferTrackerCros::GpuMemoryBufferTrackerCros() = default;
+
 GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 
 bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
                                       const mojom::PlaneStridesPtr& strides) {
-  // JPEG capture buffer is backed by R8 pixel buffer.
-  if (format == PIXEL_FORMAT_MJPEG) {
-    shared_image_ = buffer_factory_.CreateSharedImage(
-        dimensions, viz::SinglePlaneFormat::kR_8,
-        gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE);
-    return !!shared_image_;
-  }
-
-  std::optional<viz::SharedImageFormat> si_format =
-      VideoPixelFormatToSharedImageFormat(format);
-  if (!si_format) {
+  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
+  if (!gfx_format) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
   }
   // There's no consumer information here to determine the precise buffer usage,
   // so we try the usage flag that covers all use cases.
-  shared_image_ = buffer_factory_.CreateSharedImage(
-      dimensions, *si_format,
-      gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE);
-  return !!shared_image_;
+  // JPEG capture buffer is backed by R8 pixel buffer.
+  const gfx::BufferUsage usage =
+      *gfx_format == gfx::BufferFormat::R_8
+          ? gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE
+          : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
+
+  shared_image_ =
+      buffer_factory_.CreateSharedImage(dimensions, *gfx_format, usage);
+  return shared_image_ ? true : false;
 }
 
 bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  std::optional<viz::SharedImageFormat> si_format =
-      VideoPixelFormatToSharedImageFormat(format);
-  if (!si_format) {
-    if (format == PIXEL_FORMAT_MJPEG) {
-      si_format = viz::SinglePlaneFormat::kR_8;
-    } else {
-      return false;
-    }
+  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
+  if (!gfx_format) {
+    return false;
   }
-  return (*si_format == shared_image_->format() &&
+  return (viz::GetSharedImageFormat(*gfx_format) == shared_image_->format() &&
           dimensions == shared_image_->size());
 }
 
