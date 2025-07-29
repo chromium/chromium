@@ -33,6 +33,7 @@
 #include "base/strings/string_view_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/build_config.h"
@@ -958,11 +959,6 @@ TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
   base::test::ScopedFeatureList features;
   features.InitAndEnableFeature(features::kUseDnsHttpsSvcb);
 
-  // SpawnedTestServer does not support ECH, while EmbeddedTestServer does not
-  // support WebSockets (https://crbug.com/1281277). Until that is fixed, test
-  // ECH by configuring a non-WebSockets HTTPS server. The WebSockets handshake
-  // will fail, but getting that far tests that ECH worked.
-
   // Configure a test server that speaks ECH.
   static constexpr char kRealName[] = "secret.example";
   static constexpr char kPublicName[] = "public.example";
@@ -974,14 +970,20 @@ TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
       MakeTestEchKeys(kPublicName, /*max_name_len=*/128, &ech_config_list);
   ASSERT_TRUE(ssl_server_config.ech_keys);
 
+  // Only complete the handshake if ECH was actually used.
+  ssl_server_config.client_hello_callback_for_testing =
+      base::BindLambdaForTesting(
+          [&](const SSL_CLIENT_HELLO* client_hello) -> bool {
+            return SSL_ech_accepted(client_hello->ssl);
+          });
+
   EmbeddedTestServer test_server(EmbeddedTestServer::TYPE_HTTPS);
   test_server.SetSSLConfig(server_cert_config, ssl_server_config);
+  test_server::InstallDefaultWebSocketHandlers(&test_server);
   ASSERT_TRUE(test_server.Start());
 
-  GURL https_url = test_server.GetURL(kRealName, "/");
-  GURL::Replacements replacements;
-  replacements.SetSchemeStr(url::kWssScheme);
-  GURL wss_url = https_url.ReplaceComponents(replacements);
+  GURL wss_url =
+      test_server::GetWebSocketURL(test_server, kRealName, kEchoServer);
 
   auto host_resolver = std::make_unique<MockHostResolver>();
   MockHostResolverBase::RuleResolver::RuleKey resolve_key;
@@ -999,10 +1001,11 @@ TEST_F(WebSocketEndToEndTest, EncryptedClientHello) {
       MockHostResolverBase::RuleResolver::RuleResult(std::vector{result}));
   context_builder_->set_host_resolver(std::move(host_resolver));
 
-  EXPECT_FALSE(ConnectAndWait(wss_url));
-  EXPECT_EQ("Error during WebSocket handshake: Unexpected response code: 404",
-            event_interface_->failure_message());
-}
-}  // namespace
+  EXPECT_TRUE(ConnectAndWait(wss_url));
 
+  // Expect request to have reached the server using the upgraded URL.
+  EXPECT_EQ(event_interface_->response()->url, wss_url);
+}
+
+}  // namespace
 }  // namespace net
