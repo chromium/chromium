@@ -38,6 +38,9 @@ enum class EditorBlockedReason {
   kBlockedBySetting,
   // Blocked because the text is too long.
   kBlockedByTextLength,
+  // Blocked because the selection is invalid. E.g., selection causes the utf
+  // conversion to fail.
+  kBlockedByInvalidSelection,
   // Blocked because the focused text input residing in a url found in the
   // url denylist.
   kBlockedByUrl,

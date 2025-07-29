@@ -257,11 +257,10 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
   EditorPanelManagerDelegateForTesting editor_panel_manager_delegate(
       EditorOpportunityMode::kRewrite,
       chromeos::editor_menu::EditorConsentStatus::kApproved,
-      {
-          EditorBlockedReason::kBlockedByApp,
-          EditorBlockedReason::kBlockedByInputMethod,
-          EditorBlockedReason::kBlockedBySetting,
-      });
+      {EditorBlockedReason::kBlockedByApp,
+       EditorBlockedReason::kBlockedByInputMethod,
+       EditorBlockedReason::kBlockedBySetting,
+       EditorBlockedReason::kBlockedByInvalidSelection});
   EditorPanelManagerImpl manager(&editor_panel_manager_delegate);
   base::HistogramTester histogram_tester;
 
@@ -279,7 +278,10 @@ TEST_F(EditorPanelManagerTest, LogMetricsInBlockedMode) {
                                      EditorStates::kBlockedByInputMethod, 1);
   histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
                                      EditorStates::kBlockedBySetting, 1);
-  histogram_tester.ExpectTotalCount("InputMethod.Manta.Orca.States.Rewrite", 5);
+  histogram_tester.ExpectBucketCount("InputMethod.Manta.Orca.States.Rewrite",
+                                     EditorStates::kBlockedByInvalidSelection,
+                                     1);
+  histogram_tester.ExpectTotalCount("InputMethod.Manta.Orca.States.Rewrite", 6);
 }
 
 TEST_F(EditorPanelManagerTest, LogMetricWhenPromoCardIsExplicitlyDismissed) {

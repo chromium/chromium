@@ -190,6 +190,8 @@ EditorStates ToEditorStatesMetric(EditorBlockedReason reason) {
       return EditorStates::kBlockedByUnknownCapability;
     case EditorBlockedReason::kBlockedByUnsupportedCapability:
       return EditorStates::kBlockedByUnsupportedCapability;
+    case EditorBlockedReason::kBlockedByInvalidSelection:
+      return EditorStates::kBlockedByInvalidSelection;
   }
 }
 

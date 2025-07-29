@@ -380,6 +380,10 @@ std::vector<EditorBlockedReason> EditorSwitch::GetBlockedReasons() const {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedBySetting);
   }
 
+  if (!context_->is_selection_valid()) {
+    blocked_reasons.push_back(EditorBlockedReason::kBlockedByInvalidSelection);
+  }
+
   if (!IsTriggerableFromTextLength(context_->selected_text_length())) {
     blocked_reasons.push_back(EditorBlockedReason::kBlockedByTextLength);
   }
@@ -440,6 +444,7 @@ bool EditorSwitch::CanBeTriggered() const {
                  chromeos::editor_menu::EditorEnterprisePolicy::kDisallowed) &&
          // user pref value
          profile_->GetPrefs()->GetBoolean(prefs::kOrcaEnabled) &&
+         context_->is_selection_valid() &&
          context_->selected_text_length() <= kTextLengthMaxLimit &&
          (!base::FeatureList::IsEnabled(features::kOrcaOnlyInEnglishLocales) ||
           IsSystemInEnglishLanguage());
