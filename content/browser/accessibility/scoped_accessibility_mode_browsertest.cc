@@ -31,6 +31,7 @@
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/ax_mode_observer.h"
 #include "ui/accessibility/platform/ax_platform.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace content {
 

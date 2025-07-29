@@ -191,7 +191,6 @@
 #include "ui/accessibility/platform/ax_platform_tree_manager.h"
 #include "ui/accessibility/platform/ax_platform_tree_manager_delegate.h"
 #include "ui/accessibility/platform/ax_unique_id.h"
-#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/page_transition_types.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -248,6 +247,10 @@ namespace network {
 struct ResourceRequest;
 class ResourceRequestBody;
 }  // namespace network
+
+namespace ui {
+class BrowserAccessibilityManager;
+}
 
 namespace ukm {
 class UkmRecorder;

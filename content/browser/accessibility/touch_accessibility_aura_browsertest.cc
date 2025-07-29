@@ -21,6 +21,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/events/event.h"

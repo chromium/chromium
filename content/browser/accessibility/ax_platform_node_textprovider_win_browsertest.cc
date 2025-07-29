@@ -30,6 +30,7 @@
 #include "ui/accessibility/platform/ax_platform_node_textrangeprovider_win.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
 #include "ui/accessibility/platform/browser_accessibility_com_win.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 using Microsoft::WRL::ComPtr;
 

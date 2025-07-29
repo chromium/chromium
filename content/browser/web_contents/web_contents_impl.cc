@@ -210,6 +210,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_tree_combiner.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 #include "ui/base/ime/mojom/virtual_keyboard_types.mojom.h"
 #include "ui/base/mojom/window_show_state.mojom.h"
 #include "ui/base/pointer/pointer_device.h"

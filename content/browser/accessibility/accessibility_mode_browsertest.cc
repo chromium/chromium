@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 namespace content {
 

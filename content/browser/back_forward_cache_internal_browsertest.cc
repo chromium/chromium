@@ -49,6 +49,7 @@
 #include "ui/accessibility/ax_location_and_scroll_updates.h"
 #include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/platform/browser_accessibility.h"
+#include "ui/accessibility/platform/browser_accessibility_manager.h"
 
 // This file contains back/forward-cache tests that test or use internal
 // features, e.g. cache-flushing, crashes, verifying proxies and other
