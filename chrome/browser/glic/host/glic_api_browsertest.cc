@@ -1526,6 +1526,17 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPinTabs) {
   ExecuteJsTest();
 }
 
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testUnpinTabsWhileClosing) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPinTabsWithTwoTabs) {
+  RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
+  ExecuteJsTest();
+  browser()->tab_strip_model()->SelectPreviousTab();
+  ContinueJsTest();
+}
+
 // TODO(b/431837630): Make this work on mac.
 #if BUILDFLAG(IS_MAC)
 #define MAYBE_testFetchInactiveTabScreenshot \

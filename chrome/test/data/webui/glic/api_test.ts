@@ -1033,16 +1033,68 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
-  async testPinTabs() {
-    // Pin the focused tab and verify it's sent.
-    assertTrue(!!this.host.pinTabs);
-    assertTrue(!!this.host.getPinnedTabs);
+  // Helper function to pin the focused tab. Asserts the tab is pinned, and
+  // returns the tab ID.
+  async pinFocusedTab(): Promise<string> {
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
     const focus = this.host.getFocusedTabStateV2?.().getCurrentValue();
     const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
     await this.host.pinTabs([tabId]);
     const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
     await pinnedTabsUpdates.waitFor(
-        (tabs) => tabs.length === 1 && tabs[0]?.tabId === tabId);
+        (tabs) => tabs.some(t => t.tabId === tabId));
+    return tabId;
+  }
+
+  async testPinTabs() {
+    // Pin the focused tab and verify it's sent.
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
+    await this.pinFocusedTab();
+
+    // Unpin and verify the pinned tab list is updated.
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    const tabId = checkDefined((await pinnedTabsUpdates.next())[0]?.tabId);
+    assertEquals(true, await this.host.unpinTabs([tabId]));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
+  }
+
+  async testUnpinTabsWhileClosing() {
+    assertDefined(this.host.closePanel);
+    const tabId = await this.pinFocusedTab();
+    const {promise, resolve} = Promise.withResolvers<boolean>();
+    this.client.onNotifyPanelWasClosed = () => {
+      this.host.unpinTabs!([tabId]).then(resolve);
+    };
+    await this.host.closePanel();
+    assertTrue(await promise);
+  }
+
+  async testPinTabsWithTwoTabs() {
+    // Pin the focused tab and verify it's sent.
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.unpinTabs);
+    assertDefined(this.host.getFocusedTabStateV2);
+
+    const tabId = await this.pinFocusedTab();
+
+    // Focus the next tab.
+    await this.advanceToNextStep();
+
+    // Wait for focus to change and pin the focused tab.
+    await observeSequence(this.host.getFocusedTabStateV2())
+        .waitFor((f) => !!f.hasFocus && f.hasFocus.tabData.tabId !== tabId);
+    const tabId2 = await this.pinFocusedTab();
+
+    // Wait until we see two pinned tabs.
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
+
+    assertEquals(true, await this.host.unpinTabs([tabId, tabId2]));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
   // Helper for `testFetchInactiveTabScreenshot` and
@@ -1600,6 +1652,12 @@ type ComparableValue = boolean|string|number|undefined|null;
 function assertTrue(x: boolean, message?: string): asserts x {
   if (!x) {
     throw new Error(`assertTrue failed: '${x}' is not true. ${message ?? ''}`);
+  }
+}
+
+function assertDefined<T>(x: T|undefined, message?: string): asserts x {
+  if (x === undefined) {
+    throw new Error(`assertDefined failed. ${message ?? ''}`);
   }
 }
 

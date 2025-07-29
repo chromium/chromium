@@ -810,10 +810,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
 
   void UnpinTabs(const std::vector<int32_t>& tab_ids,
                  UnpinTabsCallback callback) override {
-    if (ShouldDoApiActivationGating()) {
-      std::move(callback).Run(false);
-      return;
-    }
     std::vector<tabs::TabHandle> tab_handles;
     for (auto tab_id : tab_ids) {
       tab_handles.push_back(tabs::TabHandle(tab_id));
