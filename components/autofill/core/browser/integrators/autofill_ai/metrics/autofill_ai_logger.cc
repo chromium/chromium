@@ -4,6 +4,7 @@
 
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 
+#include <algorithm>
 #include <memory>
 #include <optional>
 #include <string_view>
@@ -28,6 +29,22 @@ constexpr std::string_view funnel_histogram_prefix = "Autofill.Ai.Funnel.";
 constexpr std::string_view key_metric_histogram_prefix =
     "Autofill.Ai.KeyMetrics.";
 
+// LINT.IfChange(HistogramSuffixForEntityType)
+std::string_view HistogramSuffixForEntityType(EntityType type) {
+  switch (type.name()) {
+    case EntityTypeName::kDriversLicense:
+      return "DriversLicense";
+    case EntityTypeName::kNationalIdCard:
+      return "NationalIdCard";
+    case EntityTypeName::kPassport:
+      return "Passport";
+    case EntityTypeName::kVehicle:
+      return "Vehicle";
+  }
+  NOTREACHED();
+}
+// LINT.ThenChange(//tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAiEntityType)
+
 void LogFunnelMetric(std::string_view funnel_metric_name,
                      bool submission_state,
                      bool metric_value) {
@@ -43,14 +60,9 @@ void LogFunnelMetric(std::string_view funnel_metric_name,
 void LogKeyMetric(std::string_view key_metric_name,
                   std::string_view entity_type,
                   bool metric_value) {
-  const std::string generic_histogram_name =
-      base::StrCat({key_metric_histogram_prefix, key_metric_name});
-  base::UmaHistogramBoolean(generic_histogram_name, metric_value);
-  if (!entity_type.empty()) {
-    const std::string entity_specific_histogram =
-        base::StrCat({generic_histogram_name, ".", entity_type});
-    base::UmaHistogramBoolean(entity_specific_histogram, metric_value);
-  }
+  const std::string histogram_name = base::StrCat(
+      {key_metric_histogram_prefix, key_metric_name, ".", entity_type});
+  base::UmaHistogramBoolean(histogram_name, metric_value);
 }
 
 }  // namespace
@@ -122,120 +134,119 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
                                          ukm::SourceId ukm_source_id,
                                          bool submission_state,
                                          bool opt_in_status) {
+  const DenseSet<EntityType> relevant_entities =
+      GetRelevantEntityTypesForFields(form.fields());
+  if (relevant_entities.empty()) {
+    return;
+  }
   std::map<EntityType, FunnelState> states = form_states_[form.global_id()];
-  const FunnelState funnel_state{
-      .is_eligible = std::ranges::any_of(states,
-                                         [&](const auto& type_and_state) {
-                                           const auto& [type, state] =
-                                               type_and_state;
-                                           return state.is_eligible;
-                                         }),
-      .has_data_to_fill = std::ranges::any_of(states,
-                                              [&](const auto& type_and_state) {
-                                                const auto& [type, state] =
-                                                    type_and_state;
-                                                return state.has_data_to_fill;
-                                              }),
-      .suggestions_shown = std::ranges::any_of(states,
-                                               [&](const auto& type_and_state) {
-                                                 const auto& [type, state] =
-                                                     type_and_state;
-                                                 return state.suggestions_shown;
-                                               }),
-      .did_fill_suggestions =
-          std::ranges::any_of(states,
-                              [&](const auto& type_and_state) {
-                                const auto& [type, state] = type_and_state;
-                                return state.did_fill_suggestions;
-                              }),
-      .edited_autofilled_field =
-          std::ranges::any_of(states, [&](const auto& type_and_state) {
-            const auto& [type, state] = type_and_state;
-            return state.edited_autofilled_field;
-          })};
   if (submission_state) {
     using enum AutofillAiOptInStatus;
     base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status",
                                   opt_in_status ? kOptedIn : kOptedOut);
     // TODO(crbug.com/408380915): Remove after M141.
     base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
-    ukm_logger_.LogKeyMetrics(
-        ukm_source_id, form,
-        /*data_to_fill_available=*/funnel_state.has_data_to_fill,
-        /*suggestions_shown=*/funnel_state.suggestions_shown,
-        /*suggestion_filled=*/funnel_state.did_fill_suggestions,
-        /*edited_autofilled_field=*/funnel_state.edited_autofilled_field,
-        /*opt_in_status=*/opt_in_status);
+
+    const bool has_data_to_fill =
+        std::ranges::any_of(states, [&](const auto& type_and_state) {
+          const auto& [type, state] = type_and_state;
+          return state.has_data_to_fill;
+        });
+    const bool suggestions_shown =
+        std::ranges::any_of(states, [&](const auto& type_and_state) {
+          const auto& [type, state] = type_and_state;
+          return state.suggestions_shown;
+        });
+    const bool did_fill_suggestions =
+        std::ranges::any_of(states, [&](const auto& type_and_state) {
+          const auto& [type, state] = type_and_state;
+          return state.did_fill_suggestions;
+        });
+    const bool edited_autofilled_field =
+        std::ranges::any_of(states, [&](const auto& type_and_state) {
+          const auto& [type, state] = type_and_state;
+          return state.edited_autofilled_field;
+        });
+    ukm_logger_.LogKeyMetrics(ukm_source_id, form, has_data_to_fill,
+                              suggestions_shown, did_fill_suggestions,
+                              edited_autofilled_field, opt_in_status);
     if (opt_in_status) {
-      RecordKeyMetrics(form, funnel_state);
+      RecordKeyMetrics(relevant_entities, states);
     }
   }
-  RecordFunnelMetrics(funnel_state, submission_state);
-  RecordNumberOfFieldsFilled(form, funnel_state, opt_in_status);
+  RecordFunnelMetrics(states, relevant_entities, submission_state);
+  RecordNumberOfFieldsFilled(form, states, opt_in_status);
 }
 
-void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,
-                                           bool submission_state) const {
-  LogFunnelMetric("Eligibility", submission_state, funnel_state.is_eligible);
-  if (!funnel_state.is_eligible) {
-    return;
-  }
-  LogFunnelMetric("ReadinessAfterEligibility", submission_state,
-                  funnel_state.has_data_to_fill);
-  if (!funnel_state.has_data_to_fill) {
-    return;
-  }
-  LogFunnelMetric("SuggestionAfterReadiness", submission_state,
-                  funnel_state.suggestions_shown);
-  if (!funnel_state.suggestions_shown) {
-    return;
-  }
-  LogFunnelMetric("FillAfterSuggestion", submission_state,
-                  funnel_state.did_fill_suggestions);
-  if (!funnel_state.did_fill_suggestions) {
-    return;
-  }
-  LogFunnelMetric("CorrectionAfterFill", submission_state,
-                  funnel_state.edited_autofilled_field);
-}
-
-void AutofillAiLogger::RecordKeyMetrics(const FormStructure& form,
-                                        const FunnelState& funnel_state) const {
-  const std::string_view entity_type = [&] {
-    for (const auto& [section, entities_and_fields] :
-         DetermineAttributeTypes(form.fields())) {
-      for (const auto& [entity, fields_and_types] : entities_and_fields) {
-        switch (entity.name()) {
-          case EntityTypeName::kDriversLicense:
-            return "DriversLicense";
-          case EntityTypeName::kNationalIdCard:
-            return "NationalIdCard";
-          case EntityTypeName::kPassport:
-            return "Passport";
-          case EntityTypeName::kVehicle:
-            return "Vehicle";
-        }
-      }
+void AutofillAiLogger::RecordFunnelMetrics(
+    const std::map<EntityType, FunnelState>& states,
+    DenseSet<EntityType> relevant_entities,
+    bool submission_state) const {
+  for (EntityType entity_type : relevant_entities) {
+    const std::string_view type_str = HistogramSuffixForEntityType(entity_type);
+    base::UmaHistogramEnumeration(
+        base::StrCat({"Autofill.Ai.Funnel.",
+                      submission_state ? "Submitted" : "Abandoned",
+                      ".Eligibility2"}),
+        entity_type.name());
+    base::UmaHistogramEnumeration("Autofill.Ai.Funnel.Aggregate.Eligibility2",
+                                  entity_type.name());
+    auto it = states.find(entity_type);
+    if (it == states.end()) {
+      continue;
     }
-    return "";
-  }();
+    const FunnelState& funnel_state = it->second;
+    LogFunnelMetric(base::StrCat({"ReadinessAfterEligibility.", type_str}),
+                    submission_state, funnel_state.has_data_to_fill);
+    if (!funnel_state.has_data_to_fill) {
+      continue;
+    }
+    LogFunnelMetric(base::StrCat({"SuggestionAfterReadiness.", type_str}),
+                    submission_state, funnel_state.suggestions_shown);
+    if (!funnel_state.suggestions_shown) {
+      continue;
+    }
+    LogFunnelMetric(base::StrCat({"FillAfterSuggestion.", type_str}),
+                    submission_state, funnel_state.did_fill_suggestions);
+    if (!funnel_state.did_fill_suggestions) {
+      continue;
+    }
+    LogFunnelMetric(base::StrCat({"CorrectionAfterFill.", type_str}),
+                    submission_state, funnel_state.edited_autofilled_field);
+  }
+}
 
-  LogKeyMetric("FillingReadiness", entity_type, funnel_state.has_data_to_fill);
-  LogKeyMetric("FillingAssistance", entity_type,
-               funnel_state.did_fill_suggestions);
-  if (funnel_state.suggestions_shown) {
-    LogKeyMetric("FillingAcceptance", entity_type,
+void AutofillAiLogger::RecordKeyMetrics(
+    DenseSet<EntityType> relevant_entities,
+    const std::map<EntityType, FunnelState>& states) const {
+  for (EntityType entity_type : relevant_entities) {
+    auto it = states.find(entity_type);
+    if (it == states.end()) {
+      // This means that the form mutated in a way such that it used to have
+      // fields fillable with a certain `EntityType` and it now does not. Those
+      // cases are gracefully ignored and not logged.
+      continue;
+    }
+    const FunnelState& funnel_state = it->second;
+    const std::string_view type_str = HistogramSuffixForEntityType(entity_type);
+    LogKeyMetric("FillingReadiness", type_str, funnel_state.has_data_to_fill);
+    LogKeyMetric("FillingAssistance", type_str,
                  funnel_state.did_fill_suggestions);
-  }
-  if (funnel_state.did_fill_suggestions) {
-    LogKeyMetric("FillingCorrectness", entity_type,
-                 !funnel_state.edited_autofilled_field);
+    if (funnel_state.suggestions_shown) {
+      LogKeyMetric("FillingAcceptance", type_str,
+                   funnel_state.did_fill_suggestions);
+    }
+    if (funnel_state.did_fill_suggestions) {
+      LogKeyMetric("FillingCorrectness", type_str,
+                   !funnel_state.edited_autofilled_field);
+    }
   }
 }
 
-void AutofillAiLogger::RecordNumberOfFieldsFilled(const FormStructure& form,
-                                                  const FunnelState& state,
-                                                  bool opt_in_status) const {
+void AutofillAiLogger::RecordNumberOfFieldsFilled(
+    const FormStructure& form,
+    const std::map<EntityType, FunnelState>& states,
+    bool opt_in_status) const {
   const int num_filled_fields = std::ranges::count_if(
       form, [&](const std::unique_ptr<AutofillField>& field) {
         switch (field->filling_product()) {
@@ -257,6 +268,11 @@ void AutofillAiLogger::RecordNumberOfFieldsFilled(const FormStructure& form,
             return false;
         }
       });
+  const bool has_data_to_fill =
+      std::ranges::any_of(states, [&](const auto& type_and_state) {
+        const auto& [type, state] = type_and_state;
+        return state.has_data_to_fill;
+      });
   const int num_autofill_ai_filled_fields = std::ranges::count(
       form, FillingProduct::kAutofillAi, &AutofillField::filling_product);
   const std::string total_opt_in_histogram_name =
@@ -264,7 +280,7 @@ void AutofillAiLogger::RecordNumberOfFieldsFilled(const FormStructure& form,
                     opt_in_status ? "OptedIn" : "OptedOut"});
   const std::string total_readiness_histogram_name =
       base::StrCat({"Autofill.Ai.NumberOfFilledFields.Total.",
-                    state.has_data_to_fill ? "HasDataToFill" : "NoDataToFill"});
+                    has_data_to_fill ? "HasDataToFill" : "NoDataToFill"});
   base::UmaHistogramCounts100(total_opt_in_histogram_name, num_filled_fields);
   base::UmaHistogramCounts100(total_readiness_histogram_name,
                               num_filled_fields);
@@ -274,7 +290,7 @@ void AutofillAiLogger::RecordNumberOfFieldsFilled(const FormStructure& form,
         "Autofill.Ai.NumberOfFilledFields.AutofillAi.OptedIn",
         num_autofill_ai_filled_fields);
   }
-  if (state.has_data_to_fill) {
+  if (has_data_to_fill) {
     base::UmaHistogramCounts100(
         "Autofill.Ai.NumberOfFilledFields.AutofillAi.HasDataToFill",
         num_autofill_ai_filled_fields);

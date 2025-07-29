@@ -5,8 +5,10 @@
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_logger.h"
 
 #include <memory>
+#include <optional>
 #include <tuple>
 
+#include "base/notreached.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -15,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type_names.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/filling/filling_product.h"
 #include "components/autofill/core/browser/form_structure.h"
@@ -223,7 +226,7 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 class AutofillAiFunnelMetricsTest
     : public BaseAutofillAiTest,
       public testing::WithParamInterface<std::tuple<bool, EntityType, int>> {
-  static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s";
+  static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s%s";
 
  public:
   AutofillAiFunnelMetricsTest() = default;
@@ -278,10 +281,16 @@ class AutofillAiFunnelMetricsTest
 
     // Expect that the aggregate and appropriate submission-specific histograms
     // record the correct values.
-    histogram_tester.ExpectUniqueSample(GetEligibilityHistogram(),
-                                        is_form_eligible(), 1);
-    histogram_tester.ExpectUniqueSample(GetEligibilityHistogram(submitted()),
-                                        is_form_eligible(), 1);
+    if (is_form_eligible()) {
+      histogram_tester.ExpectUniqueSample(GetEligibilityHistogram(),
+                                          entity_type().name(), 1);
+      histogram_tester.ExpectUniqueSample(GetEligibilityHistogram(submitted()),
+                                          entity_type().name(), 1);
+    } else {
+      histogram_tester.ExpectTotalCount(GetEligibilityHistogram(), 0);
+      histogram_tester.ExpectTotalCount(GetEligibilityHistogram(submitted()),
+                                        0);
+    }
 
     if (is_form_eligible()) {
       histogram_tester.ExpectUniqueSample(
@@ -335,38 +344,60 @@ class AutofillAiFunnelMetricsTest
   }
 
  private:
+  std::string_view GetEntityTypeAsString() {
+    switch (entity_type().name()) {
+      case EntityTypeName::kPassport:
+        return "Passport";
+      case EntityTypeName::kDriversLicense:
+        return "DriversLicense";
+      case EntityTypeName::kVehicle:
+        return "Vehicle";
+      case EntityTypeName::kNationalIdCard:
+        return "NationalIdCard";
+    }
+    NOTREACHED();
+  }
+
   std::string GetFunnelHistogram(std::string_view funnel_state,
-                                 std::optional<bool> submitted) {
+                                 std::optional<bool> submitted,
+                                 std::optional<std::string_view> entity_type) {
     std::string_view submission_state = "Aggregate";
     if (submitted) {
       submission_state = *submitted ? "Submitted" : "Abandoned";
     }
-    return base::StringPrintf(kFunnelUmaMask, submission_state, funnel_state);
+    return base::StringPrintf(
+        kFunnelUmaMask, submission_state, funnel_state,
+        entity_type ? std::string(".") + std::string(*entity_type) : "");
   }
 
   std::string GetEligibilityHistogram(
       std::optional<bool> submitted = std::nullopt) {
-    return GetFunnelHistogram("Eligibility", submitted);
+    return GetFunnelHistogram("Eligibility2", submitted,
+                              /*entity_type=*/std::nullopt);
   }
 
   std::string GetReadinessAfterEligibilityHistogram(
       std::optional<bool> submitted = std::nullopt) {
-    return GetFunnelHistogram("ReadinessAfterEligibility", submitted);
+    return GetFunnelHistogram("ReadinessAfterEligibility", submitted,
+                              GetEntityTypeAsString());
   }
 
   std::string GetSuggestionAfterReadinessHistogram(
       std::optional<bool> submitted = std::nullopt) {
-    return GetFunnelHistogram("SuggestionAfterReadiness", submitted);
+    return GetFunnelHistogram("SuggestionAfterReadiness", submitted,
+                              GetEntityTypeAsString());
   }
 
   std::string GetFillAfterSuggestionHistogram(
       std::optional<bool> submitted = std::nullopt) {
-    return GetFunnelHistogram("FillAfterSuggestion", submitted);
+    return GetFunnelHistogram("FillAfterSuggestion", submitted,
+                              GetEntityTypeAsString());
   }
 
   std::string GetCorrectionAfterFillHistogram(
       std::optional<bool> submitted = std::nullopt) {
-    return GetFunnelHistogram("CorrectionAfterFill", submitted);
+    return GetFunnelHistogram("CorrectionAfterFill", submitted,
+                              GetEntityTypeAsString());
   }
 };
 
@@ -420,9 +451,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingReadiness) {
     manager().OnFormSeen(*passport_form);
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*passport_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingReadiness", 0, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingReadiness.Passport", 0, 1);
   }
@@ -432,9 +460,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingReadiness) {
     manager().OnFormSeen(*passport_form);
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*passport_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingReadiness", 1, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingReadiness.Passport", 1, 1);
   }
@@ -446,9 +471,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAssistance) {
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*vehicle_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingAssistance", 0, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAssistance.Vehicle", 0, 1);
   }
@@ -462,9 +484,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAssistance) {
                                   /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*vehicle_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingAssistance", 1, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAssistance.Vehicle", 1, 1);
   }
@@ -480,9 +499,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAcceptance) {
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*drivers_license_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingAcceptance", 0, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense", 0, 1);
   }
@@ -494,9 +510,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAcceptance) {
                                   /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*drivers_license_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingAcceptance", 1, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense", 1, 1);
   }
@@ -515,9 +528,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingCorrectness) {
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*passport_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingCorrectness", 1, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingCorrectness.Passport", 1, 1);
   }
@@ -526,9 +536,6 @@ TEST_F(AutofillAiKeyMetricsTest, FillingCorrectness) {
                                       /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*passport_form, /*ukm_source_id=*/{});
-
-    histogram_tester.ExpectUniqueSample(
-        "Autofill.Ai.KeyMetrics.FillingCorrectness", 0, 1);
     histogram_tester.ExpectUniqueSample(
         "Autofill.Ai.KeyMetrics.FillingCorrectness.Passport", 0, 1);
   }

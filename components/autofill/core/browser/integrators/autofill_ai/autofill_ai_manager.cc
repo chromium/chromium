@@ -251,10 +251,8 @@ void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
 
 bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
-  if (!GetRelevantEntityTypesForFields(form.fields()).empty()) {
-    logger_.RecordFormMetrics(form, ukm_source_id, /*submission_state=*/true,
-                              GetAutofillAiOptInStatus(*client_));
-  }
+  logger_.RecordFormMetrics(form, ukm_source_id, /*submission_state=*/true,
+                            GetAutofillAiOptInStatus(*client_));
   return MaybeImportForm(form);
 }
 

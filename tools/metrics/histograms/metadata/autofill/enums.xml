@@ -155,6 +155,17 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAiEntityType) -->
+
+<enum name="AutofillAiEntityType">
+  <int value="0" label="Passport"/>
+  <int value="1" label="Driver's License"/>
+  <int value="2" label="Vehicle Information"/>
+  <int value="3" label="National ID Card"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/data_model/autofill_ai/entity_type.cc:EntityType) -->
+
 <enum name="AutofillAiModelExecutionStatus">
   <int value="0"
       label="One or more field indices returned by the model are out of

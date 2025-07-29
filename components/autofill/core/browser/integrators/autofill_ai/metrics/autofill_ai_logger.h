@@ -76,13 +76,15 @@ class AutofillAiLogger {
     bool edited_autofilled_field = false;
   };
 
-  void RecordFunnelMetrics(const FunnelState& funnel_state,
+  void RecordFunnelMetrics(const std::map<EntityType, FunnelState>& states,
+                           DenseSet<EntityType> relevant_entities,
                            bool submission_state) const;
-  void RecordKeyMetrics(const FormStructure& form,
-                        const FunnelState& funnel_state) const;
-  void RecordNumberOfFieldsFilled(const FormStructure& form,
-                                  const FunnelState& state,
-                                  bool opt_in_status) const;
+  void RecordKeyMetrics(DenseSet<EntityType> relevant_entities,
+                        const std::map<EntityType, FunnelState>& states) const;
+  void RecordNumberOfFieldsFilled(
+      const FormStructure& form,
+      const std::map<EntityType, FunnelState>& states,
+      bool opt_in_status) const;
 
   // Records the funnel state for each form and entity type separately. See the
   // documentation of `FunnelState` for more information about what is recorded.
