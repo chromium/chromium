@@ -46,7 +46,7 @@ class BasicSeqLockTestThread : public base::PlatformThread::Delegate {
 
     for (unsigned i = 0; i < 1000; ++i) {
       TestData copy;
-      base::subtle::Atomic32 version;
+      int32_t version;
       do {
         version = seqlock_->ReadBegin();
         OneWriterSeqLock::AtomicReaderMemcpy(&copy, data_.get(),
@@ -84,7 +84,7 @@ class MaxRetriesSeqLockTestThread : public base::PlatformThread::Delegate {
     }
 
     for (unsigned i = 0; i < 10; ++i) {
-      base::subtle::Atomic32 version;
+      int32_t version;
       version = seqlock_->ReadBegin(100);
 
       EXPECT_NE(version & 1, 0);

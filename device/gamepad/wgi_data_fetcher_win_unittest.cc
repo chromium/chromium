@@ -288,8 +288,8 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
   // the buffer is not in a consistent state, so we also require that the value
   // is even before continuing.
   void WaitForData(const GamepadHardwareBuffer* buffer) {
-    const base::subtle::Atomic32 initial_version = buffer->seqlock.ReadBegin();
-    base::subtle::Atomic32 current_version;
+    const int32_t initial_version = buffer->seqlock.ReadBegin();
+    int32_t current_version;
     do {
       base::PlatformThread::Sleep(base::Milliseconds(10));
       current_version = buffer->seqlock.ReadBegin();
@@ -307,7 +307,7 @@ class WgiDataFetcherWinTest : public DeviceServiceTestBase {
   void ReadGamepadHardwareBuffer(const GamepadHardwareBuffer* buffer,
                                  Gamepads* output) {
     memset(output, 0, sizeof(Gamepads));
-    base::subtle::Atomic32 version;
+    int32_t version;
     do {
       version = buffer->seqlock.ReadBegin();
       memcpy(output, &buffer->data, sizeof(Gamepads));
