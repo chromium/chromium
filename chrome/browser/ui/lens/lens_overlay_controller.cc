@@ -1283,6 +1283,17 @@ class LensOverlayController::UnderlyingWebContentsObserver
       lens_overlay_controller_->NotifyPageContentUpdated();
       return;
     }
+
+    // If back to page feature is enabled and the page changes, only the overlay
+    // needs to be hidden, possibly leaving the side panel open. The search
+    // controller will handle whether the side panel should stay open or the
+    // entire session should terminate.
+    if (lens::features::IsLensOverlayBackToPageEnabled()) {
+      lens_overlay_controller_->lens_search_controller_->HideOverlay(
+          lens::LensOverlayDismissalSource::kPageChanged);
+      return;
+    }
+
     lens_overlay_controller_->lens_search_controller_->CloseLensSync(
         lens::LensOverlayDismissalSource::kPageChanged);
   }
