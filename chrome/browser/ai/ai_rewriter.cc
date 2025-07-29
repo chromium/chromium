@@ -7,6 +7,7 @@
 #include "base/functional/bind.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_utils.h"
 #include "components/language/core/common/locale_util.h"
@@ -14,6 +15,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "third_party/blink/public/common/features_generated.h"
 #include "third_party/blink/public/mojom/ai/model_streaming_responder.mojom.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 
@@ -100,8 +102,10 @@ AIRewriter::ToProtoOptions(
   proto_options->set_output_format(ToProtoFormat(options->format));
   proto_options->set_output_length(ToProtoLength(options->length));
   if (options->output_language && !options->output_language->code.empty()) {
-    proto_options->set_output_language(
-        language::ExtractBaseLanguage(options->output_language->code));
+    // Writer expects the language's display name to use within English prose.
+    std::u16string name = l10n_util::GetDisplayNameForLocaleWithoutCountry(
+        options->output_language->code, "en", /*is_for_ui=*/false);
+    proto_options->set_output_language(base::UTF16ToUTF8(name));
   }
   return proto_options;
 }
