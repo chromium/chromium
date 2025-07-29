@@ -32,10 +32,15 @@ import io.grpc.stub.StreamObserver;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.base.version_info.VersionInfo;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
+import org.chromium.chrome.browser.profiles.ProfileManager;
 
 import java.io.IOException;
 import java.util.HashMap;
@@ -176,6 +181,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
 
         private final Map<ByteString, ImportResults> mPendingImports = new HashMap<>();
 
+        // Must only be created and used on the UI thread.
+        @Nullable DataImporterBridge mBridge;
+
         @Override
         public void handshake(
                 TargetHandshakeRequest request,
@@ -256,7 +264,18 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             }
             switch (fileType) {
                 case BROWSER_FILE_TYPE_BOOKMARKS:
+                    // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership to
+                    // the native side.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT, () -> importBookmarksOnUiThread(pfd.detachFd()));
+                    break;
                 case BROWSER_FILE_TYPE_READING_LIST:
+                    // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership to
+                    // the native side.
+                    PostTask.postTask(
+                            TaskTraits.UI_DEFAULT,
+                            () -> importReadingListOnUiThread(pfd.detachFd()));
+                    break;
                 case BROWSER_FILE_TYPE_BROWSING_HISTORY:
                     // TODO(crbug.com/430254294): Hook up to the actual import logic (i.e. to
                     // StablePortabilityDataImporter from components/user_data_importer/) via JNI.
@@ -317,6 +336,55 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
 
             // This import session is completed; clean up the corresponding stats.
             mPendingImports.remove(sessionId);
+
+            // If this was the last (most likely, only) import session ongoing, the bridge isn't
+            // needed anymore
+            if (mPendingImports.isEmpty()) {
+                PostTask.postTask(TaskTraits.UI_DEFAULT, this::destroyBridgeOnUiThread);
+            }
+        }
+
+        private void prepareForImport() {
+            ThreadUtils.assertOnUiThread();
+
+            // The browser must be initialized before accessing ProfileManager or calling into
+            // native.
+            ChromeBrowserInitializer browserInitializer = ChromeBrowserInitializer.getInstance();
+            if (!browserInitializer.isFullBrowserInitialized()) {
+                ChromeBrowserInitializer.getInstance().handleSynchronousStartup();
+            }
+            assert ProfileManager.isInitialized();
+
+            if (mBridge == null) {
+                mBridge = new DataImporterBridge(ProfileManager.getLastUsedRegularProfile());
+            }
+        }
+
+        private void importBookmarksOnUiThread(int ownedFd) {
+            ThreadUtils.assertOnUiThread();
+
+            prepareForImport();
+            assert mBridge != null;
+
+            mBridge.importBookmarks(ownedFd);
+        }
+
+        private void importReadingListOnUiThread(int ownedFd) {
+            ThreadUtils.assertOnUiThread();
+
+            prepareForImport();
+            assert mBridge != null;
+
+            mBridge.importReadingList(ownedFd);
+        }
+
+        private void destroyBridgeOnUiThread() {
+            ThreadUtils.assertOnUiThread();
+
+            if (mBridge != null) {
+                mBridge.destroy();
+                mBridge = null;
+            }
         }
     }
 }

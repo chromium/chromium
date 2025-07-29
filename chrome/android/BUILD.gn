@@ -3144,6 +3144,7 @@ if (_is_default_toolchain) {
       "java/src/org/chromium/chrome/browser/customtabs/CustomTabsOpenTimeRecorder.java",
       "java/src/org/chromium/chrome/browser/customtabs/content/WebAppLaunchHandler.java",
       "java/src/org/chromium/chrome/browser/customtabs/features/TabInteractionRecorder.java",
+      "java/src/org/chromium/chrome/browser/data_import/DataImporterBridge.java",
       "java/src/org/chromium/chrome/browser/datareduction/DataSaverOSSetting.java",
       "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothChooserAndroidDelegate.java",
       "java/src/org/chromium/chrome/browser/device_dialog/ChromeBluetoothScanningPromptAndroidDelegate.java",
