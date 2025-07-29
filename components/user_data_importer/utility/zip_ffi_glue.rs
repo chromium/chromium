@@ -584,41 +584,74 @@ struct ZipFileArchive {
 }
 
 impl ZipFileArchive {
-    fn get_file_size_bytes(&mut self, file_type: ffi::FileType) -> u64 {
-        let mut total_file_size_bytes: u64 = 0;
+    // Iterates over files archived in `self` and return results of `f` for the
+    // first file where `f` returns `Some` rather than `None`.
+    fn find_and_map_file<F, R>(&mut self, mut f: F) -> Option<R>
+    where
+        F: FnMut(zip::read::ZipFile<std::fs::File>, &Path) -> Option<R>,
+    {
         for i in 0..self.archive.len() {
-            let Ok(file) = self.archive.by_index(i) else {
-                continue;
-            };
-            let Some(outpath) = file.enclosed_name() else {
-                continue;
-            };
-
-            // Read the first file matching the requested type found within the zip file.
-            if has_extension(&outpath.as_path(), file_type) {
-                if file_type == ffi::FileType::Bookmarks || file_type == ffi::FileType::Passwords {
-                    // There can only be one bookmark or password file, so return immediately.
-                    return file.size();
-                } else {
-                    // Verify the data type in the JSON file.
-                    let file_size_bytes = file.size();
-                    let stream_reader = ZipEntryBufReader::new(file);
-                    if file_type == ffi::FileType::SafariHistory {
-                        if is_history_file(stream_reader) {
-                            // There could be multiple history files, so keep going.
-                            total_file_size_bytes += file_size_bytes;
-                        }
-                    } else if file_type == ffi::FileType::PaymentCards {
-                        if is_payment_cards_file(stream_reader) {
-                            // There can only be one payment cards file, so return immediately.
-                            return file_size_bytes;
-                        }
+            if let Ok(file) = self.archive.by_index(i) {
+                if let Some(outpath) = file.enclosed_name() {
+                    if let Some(r) = f(file, &outpath) {
+                        return Some(r);
                     }
                 }
             }
         }
+        None
+    }
 
-        total_file_size_bytes
+    // Iterates over all files archived in `self` and accumulates a single result by
+    // applying `f`.
+    fn fold_files<F, B>(&mut self, init: B, mut f: F) -> B
+    where
+        F: FnMut(B, zip::read::ZipFile<std::fs::File>, &Path) -> B,
+    {
+        let mut acc = init;
+        for i in 0..self.archive.len() {
+            if let Ok(file) = self.archive.by_index(i) {
+                if let Some(outpath) = file.enclosed_name() {
+                    acc = f(acc, file, &outpath);
+                }
+            }
+        }
+        acc
+    }
+
+    fn get_file_size_bytes(&mut self, file_type: ffi::FileType) -> u64 {
+        // Since there can be multiple history files, we need to sum the sizes of all of
+        // them.
+        if file_type == ffi::FileType::SafariHistory {
+            return self.fold_files(0u64, |mut total_file_size_bytes, file, outpath| {
+                if has_extension(outpath, file_type) {
+                    let file_size_bytes = file.size();
+                    let stream_reader = ZipEntryBufReader::new(file);
+                    if is_history_file(stream_reader) {
+                        total_file_size_bytes += file_size_bytes;
+                    }
+                }
+                total_file_size_bytes
+            });
+        }
+
+        // All other types are find operations with a size check after file
+        // selection.
+        let size = self.find_and_map_file(|file, outpath| {
+            if has_extension(outpath, file_type) {
+                if file_type == ffi::FileType::Bookmarks || file_type == ffi::FileType::Passwords {
+                    return Some(file.size());
+                } else if file_type == ffi::FileType::PaymentCards {
+                    let file_size = file.size();
+                    if is_payment_cards_file(ZipEntryBufReader::new(file)) {
+                        return Some(file_size);
+                    }
+                }
+            }
+            None
+        });
+
+        size.unwrap_or(0)
     }
 
     fn unzip(
@@ -632,32 +665,24 @@ impl ZipFileArchive {
             return false;
         }
 
-        for i in 0..self.archive.len() {
-            let Ok(mut file) = self.archive.by_index(i) else {
-                continue;
-            };
-            let Some(outpath) = file.enclosed_name() else {
-                continue;
-            };
-            if !has_extension(&outpath.as_path(), file_type) {
-                continue;
+        let result = self.find_and_map_file(|mut file, outpath| {
+            if has_extension(outpath, file_type) {
+                // Read the first file matching the requested type found within the zip file.
+                let mut file_contents = String::new();
+                if file.read_to_string(&mut file_contents).is_err() {
+                    return Some(false);
+                };
+
+                // Copy the contents of the file to the output.
+                if file_contents.len() > 0 {
+                    output_bytes.as_mut().reserve(file_contents.len());
+                    output_bytes.as_mut().push_str(&file_contents);
+                }
+                return Some(true);
             }
-
-            // Read the first file matching the requested type found within the zip file.
-            let mut file_contents = String::new();
-            let Ok(_) = file.read_to_string(&mut file_contents) else {
-                return false;
-            };
-
-            // Copy the contents of the file to the output.
-            if file_contents.len() > 0 {
-                output_bytes.as_mut().reserve(file_contents.len());
-                output_bytes.as_mut().push_str(&file_contents);
-            }
-            return true;
-        }
-
-        false
+            None
+        });
+        result.unwrap_or(false)
     }
 
     fn parse_safari_history(
@@ -666,15 +691,8 @@ impl ZipFileArchive {
         history_size_threshold: usize,
     ) {
         let mut history = CxxVector::<ffi::SafariHistoryEntry>::new();
-        for i in 0..self.archive.len() {
-            let Ok(file) = self.archive.by_index(i) else {
-                continue;
-            };
-            let Some(outpath) = file.enclosed_name() else {
-                continue;
-            };
-
-            if has_extension(&outpath.as_path(), ffi::FileType::SafariHistory) {
+        self.fold_files((), |(), file, outpath| {
+            if has_extension(outpath, ffi::FileType::SafariHistory) {
                 let stream_reader = ZipEntryBufReader::new(file);
                 parse_history_file(stream_reader, |history_item| {
                     history.as_mut().unwrap().push(history_item.into());
@@ -690,7 +708,7 @@ impl ZipFileArchive {
                     }
                 });
             }
-        }
+        });
 
         history_callback
             .as_mut()
@@ -702,24 +720,17 @@ impl ZipFileArchive {
         self: &mut ZipFileArchive,
         mut payment_cards: Pin<&mut CxxVector<ffi::PaymentCardEntry>>,
     ) -> bool {
-        for i in 0..self.archive.len() {
-            let Ok(file) = self.archive.by_index(i) else {
-                continue;
-            };
-            let Some(outpath) = file.enclosed_name() else {
-                continue;
-            };
-
-            if has_extension(&outpath.as_path(), ffi::FileType::PaymentCards) {
+        let result = self.find_and_map_file(|file, outpath| {
+            if has_extension(outpath, ffi::FileType::PaymentCards) {
                 let stream_reader = ZipEntryBufReader::new(file);
                 if parse_payment_cards_file(stream_reader, |payment_card_item| {
                     payment_cards.as_mut().push(payment_card_item.into());
                 }) {
-                    return true;
+                    return Some(true);
                 }
             }
-        }
-
-        false
+            None
+        });
+        result.unwrap_or(false)
     }
 }
