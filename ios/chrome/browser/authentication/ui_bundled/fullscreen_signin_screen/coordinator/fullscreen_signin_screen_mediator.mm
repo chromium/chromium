@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/policy/model/policy_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 #import "ios/chrome/browser/signin/model/system_identity.h"
 #import "ios/chrome/browser/sync/model/enterprise_utils.h"
 
@@ -47,6 +48,7 @@ enum class SigninScreenState {
 
 @interface FullscreenSigninScreenMediator () <
     AuthenticationFlowDelegate,
+    AuthenticationServiceObserving,
     IdentityManagerObserverBridgeDelegate> {
 }
 
@@ -80,6 +82,10 @@ enum class SigninScreenState {
   SigninScreenState _screenState;
   ChangeProfileContinuationProvider _changeProfileContinuationProvider;
   BOOL _signinInProgress;
+
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
 - (instancetype)
@@ -110,6 +116,9 @@ enum class SigninScreenState {
     _accountManagerService = accountManagerService;
     _authenticationService = authenticationService;
     _identityManager = identityManager;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
     _identityManagerObserver =
         std::make_unique<signin::IdentityManagerObserverBridge>(
             _identityManager, self);
@@ -163,6 +172,7 @@ enum class SigninScreenState {
 - (void)disconnect {
   _consumer = nil;
   _delegate = nil;
+  _authServiceObserverBridge.reset();
   _accountManagerService = nullptr;
   _authenticationService = nullptr;
   _identityManager = nullptr;
@@ -405,6 +415,17 @@ enum class SigninScreenState {
   CoreAccountInfo primaryAccount =
       _identityManager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
   CHECK(primaryAccount.IsEmpty(), base::NotFatalUntil::M145);
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (_authenticationService->GetServiceStatus() !=
+      AuthenticationService::ServiceStatus::SigninForcedByPolicy) {
+    // Signin is now disabled, so the consistency default account must be
+    // stopped.
+    [self.delegate fullscreenSigninScreenMediatorSigninIsNotForced:self];
+  }
 }
 
 @end

@@ -13,6 +13,10 @@
 - (void)fullscreenSigninScreenMediatorDidFinishSignin:
     (FullscreenSigninScreenMediator*)mediator;
 
+// Let the coordinator know that sign-in is not forced anymore.
+- (void)fullscreenSigninScreenMediatorSigninIsNotForced:
+    (FullscreenSigninScreenMediator*)mediator;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_AUTHENTICATION_UI_BUNDLED_FULLSCREEN_SIGNIN_SCREEN_COORDINATOR_FULLSCREEN_SIGNIN_SCREEN_MEDIATOR_DELEGATE_H_

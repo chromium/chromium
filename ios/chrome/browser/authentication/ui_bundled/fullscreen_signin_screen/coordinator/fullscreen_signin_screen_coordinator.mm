@@ -273,6 +273,12 @@
   [self finishPresentingWithSignIn:YES];
 }
 
+- (void)fullscreenSigninScreenMediatorSigninIsNotForced:
+    (FullscreenSigninScreenMediator*)mediator {
+  CHECK_EQ(mediator, self.mediator, base::NotFatalUntil::M141);
+  [self finishPresentingWithSignIn:NO];
+}
+
 #pragma mark - IdentityChooserCoordinatorDelegate
 
 - (void)identityChooserCoordinatorDidClose:
