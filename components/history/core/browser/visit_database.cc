@@ -117,6 +117,7 @@ VisitSource VisitSourceFromInt(int value) {
     case SOURCE_FIREFOX_IMPORTED:
     case SOURCE_IE_IMPORTED:
     case SOURCE_SAFARI_IMPORTED:
+    case SOURCE_ACTOR:
       return converted;
   }
   // In cases of database corruption, SOURCE_BROWSED is a safe default value.
