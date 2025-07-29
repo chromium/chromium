@@ -182,6 +182,11 @@ export class BidiParser implements BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetForcedColorsModeThemeOverrideParams(
+    params: unknown,
+  ): Emulation.SetForcedColorsModeThemeOverrideParameters {
+    return Parser.Emulation.parseSetForcedColorsModeThemeOverrideParams(params);
+  }
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters {
@@ -266,8 +271,15 @@ export class BidiParser implements BidiCommandParameterParser {
   ): Network.RemoveInterceptParameters {
     return Parser.Network.parseRemoveInterceptParameters(params);
   }
-  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters {
-    return Parser.Network.parseSetCacheBehavior(params);
+  parseSetCacheBehaviorParams(
+    params: unknown,
+  ): Network.SetCacheBehaviorParameters {
+    return Parser.Network.parseSetCacheBehaviorParameters(params);
+  }
+  parseSetExtraHeadersParams(
+    params: unknown,
+  ): Network.SetExtraHeadersParameters {
+    return Parser.Network.parseSetExtraHeadersParameters(params);
   }
   // keep-sorted end
 

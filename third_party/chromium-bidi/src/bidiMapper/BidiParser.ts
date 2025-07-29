@@ -119,6 +119,9 @@ export interface BidiCommandParameterParser {
 
   // Emulation module
   // keep-sorted start block=yes
+  parseSetForcedColorsModeThemeOverrideParams(
+    params: unknown,
+  ): Emulation.SetForcedColorsModeThemeOverrideParameters;
   parseSetGeolocationOverrideParams(
     params: unknown,
   ): Emulation.SetGeolocationOverrideParameters;
@@ -174,7 +177,12 @@ export interface BidiCommandParameterParser {
   parseRemoveInterceptParams(
     params: unknown,
   ): Network.RemoveInterceptParameters;
-  parseSetCacheBehavior(params: unknown): Network.SetCacheBehaviorParameters;
+  parseSetCacheBehaviorParams(
+    params: unknown,
+  ): Network.SetCacheBehaviorParameters;
+  parseSetExtraHeadersParams(
+    params: unknown,
+  ): Network.SetExtraHeadersParameters;
   // keep-sorted end block=yes
 
   // Script module

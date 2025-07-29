@@ -1213,12 +1213,38 @@ export namespace BrowsingContext {
 }
 export const EmulationCommandSchema = z.lazy(() =>
   z.union([
+    Emulation.SetForcedColorsModeThemeOverrideSchema,
     Emulation.SetGeolocationOverrideSchema,
     Emulation.SetLocaleOverrideSchema,
     Emulation.SetScreenOrientationOverrideSchema,
     Emulation.SetTimezoneOverrideSchema,
   ]),
 );
+export namespace Emulation {
+  export const SetForcedColorsModeThemeOverrideSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('emulation.setForcedColorsModeThemeOverride'),
+      params: Emulation.SetForcedColorsModeThemeOverrideParametersSchema,
+    }),
+  );
+}
+export namespace Emulation {
+  export const SetForcedColorsModeThemeOverrideParametersSchema = z.lazy(() =>
+    z.object({
+      theme: z.union([Emulation.ForcedColorsModeThemeSchema, z.null()]),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
+    }),
+  );
+}
+export namespace Emulation {
+  export const ForcedColorsModeThemeSchema = z.lazy(() =>
+    z.enum(['light', 'dark']),
+  );
+}
 export namespace Emulation {
   export const SetGeolocationOverrideSchema = z.lazy(() =>
     z.object({
@@ -1373,6 +1399,7 @@ export const NetworkCommandSchema = z.lazy(() =>
     Network.RemoveDataCollectorSchema,
     Network.RemoveInterceptSchema,
     Network.SetCacheBehaviorSchema,
+    Network.SetExtraHeadersSchema,
   ]),
 );
 export const NetworkEventSchema = z.lazy(() =>
@@ -1863,6 +1890,26 @@ export namespace Network {
         .array(BrowsingContext.BrowsingContextSchema)
         .min(1)
         .optional(),
+    }),
+  );
+}
+export namespace Network {
+  export const SetExtraHeadersSchema = z.lazy(() =>
+    z.object({
+      method: z.literal('network.setExtraHeaders'),
+      params: Network.SetExtraHeadersParametersSchema,
+    }),
+  );
+}
+export namespace Network {
+  export const SetExtraHeadersParametersSchema = z.lazy(() =>
+    z.object({
+      headers: z.array(Network.HeaderSchema).min(1),
+      contexts: z
+        .array(BrowsingContext.BrowsingContextSchema)
+        .min(1)
+        .optional(),
+      userContexts: z.array(Browser.UserContextSchema).min(1).optional(),
     }),
   );
 }

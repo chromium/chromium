@@ -314,6 +314,13 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
 
       // Emulation module
       // keep-sorted start block=yes
+      case 'emulation.setForcedColorsModeThemeOverride':
+        this.#parser.parseSetForcedColorsModeThemeOverrideParams(
+          command.params,
+        );
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
+        );
       case 'emulation.setGeolocationOverride':
         return await this.#emulationProcessor.setGeolocationOverride(
           this.#parser.parseSetGeolocationOverrideParams(command.params),
@@ -396,7 +403,12 @@ export class CommandProcessor extends EventEmitter<CommandProcessorEventsMap> {
         );
       case 'network.setCacheBehavior':
         return await this.#networkProcessor.setCacheBehavior(
-          this.#parser.parseSetCacheBehavior(command.params),
+          this.#parser.parseSetCacheBehaviorParams(command.params),
+        );
+      case 'network.setExtraHeaders':
+        this.#parser.parseSetExtraHeadersParams(command.params);
+        throw new UnknownErrorException(
+          `Method ${command.method} is not implemented.`,
         );
       // keep-sorted end
 

@@ -975,10 +975,33 @@ export namespace BrowsingContext {
   };
 }
 export type EmulationCommand =
+  | Emulation.SetForcedColorsModeThemeOverride
   | Emulation.SetGeolocationOverride
   | Emulation.SetLocaleOverride
   | Emulation.SetScreenOrientationOverride
   | Emulation.SetTimezoneOverride;
+export namespace Emulation {
+  export type SetForcedColorsModeThemeOverride = {
+    method: 'emulation.setForcedColorsModeThemeOverride';
+    params: Emulation.SetForcedColorsModeThemeOverrideParameters;
+  };
+}
+export namespace Emulation {
+  export type SetForcedColorsModeThemeOverrideParameters = {
+    theme: Emulation.ForcedColorsModeTheme | null;
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
+  };
+}
+export namespace Emulation {
+  export const enum ForcedColorsModeTheme {
+    Light = 'light',
+    Dark = 'dark',
+  }
+}
 export namespace Emulation {
   export type SetGeolocationOverride = {
     method: 'emulation.setGeolocationOverride';
@@ -1125,7 +1148,8 @@ export type NetworkCommand =
   | Network.ProvideResponse
   | Network.RemoveDataCollector
   | Network.RemoveIntercept
-  | Network.SetCacheBehavior;
+  | Network.SetCacheBehavior
+  | Network.SetExtraHeaders;
 export type NetworkEvent =
   | Network.AuthRequired
   | Network.BeforeRequestSent
@@ -1525,6 +1549,22 @@ export namespace Network {
       BrowsingContext.BrowsingContext,
       ...BrowsingContext.BrowsingContext[],
     ];
+  };
+}
+export namespace Network {
+  export type SetExtraHeaders = {
+    method: 'network.setExtraHeaders';
+    params: Network.SetExtraHeadersParameters;
+  };
+}
+export namespace Network {
+  export type SetExtraHeadersParameters = {
+    headers: [Network.Header, ...Network.Header[]];
+    contexts?: [
+      BrowsingContext.BrowsingContext,
+      ...BrowsingContext.BrowsingContext[],
+    ];
+    userContexts?: [Browser.UserContext, ...Browser.UserContext[]];
   };
 }
 export type ScriptEvent =
