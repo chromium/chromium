@@ -544,25 +544,22 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
     return nullptr;
   }
 
-  SkBitmap bitmap;
-  if (!bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
+  const auto format = viz::SharedImageFormat::N32Format();
+  sk_sp<SkData> dst_buffer = TryAllocateSkDataForBitmap(format, Size());
+  if (!dst_buffer) {
     return nullptr;
-  const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-      size_, viz::SharedImageFormat::N32Format());
-  ReadBackFramebuffer(
-      base::span<uint8_t>(reinterpret_cast<uint8_t*>(bitmap.getPixels()),
-                          buffer_size),
-      viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
-      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
+  }
 
-  auto sk_image = SkImages::RasterFromBitmap(bitmap);
+  auto pixels = base::span<uint8_t>(
+      static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
+  ReadBackFramebuffer(pixels, format, kPremul_SkAlphaType,
+                      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
 
-  // GL Framebuffer is bottom-left origin by default and the
-  // mesa_framebuffer_flip_y extension doesn't affect glReadPixels, so
-  // `ReadFramebufferIntoBitmapPixels` always returns bottom left images.
-  return sk_image ? UnacceleratedStaticBitmapImage::Create(
-                        sk_image, ImageOrientationEnum::kOriginBottomLeft)
-                  : nullptr;
+  return StaticBitmapImage::Create(
+      std::move(dst_buffer),
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        ToClosestSkColorType(format), kPremul_SkAlphaType),
+      ImageOrientationEnum::kOriginBottomLeft);
 }
 
 scoped_refptr<gpu::ClientSharedImage>
