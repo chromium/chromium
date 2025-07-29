@@ -18,7 +18,7 @@ class NtpPromoRegistry {
   NtpPromoRegistry& operator=(const NtpPromoRegistry&) = delete;
 
   // Returns a list of registered NtpPromoIdentifiers.
-  std::vector<NtpPromoIdentifier> GetNtpPromoIdentifiers() const;
+  const std::vector<NtpPromoIdentifier>& GetNtpPromoIdentifiers() const;
 
   // Gets the requested NtpPromoSpecification from the registry, or nullptr
   // if the promo is not registered.
@@ -33,7 +33,10 @@ class NtpPromoRegistry {
  private:
   using Registry = std::map<NtpPromoIdentifier, NtpPromoSpecification>;
 
-  Registry ntp_promo_registry_;
+  // Keep both a map of ID to specification, and a vector of IDs. This gives
+  // easy lookups while preserving promo registration order.
+  Registry registry_;
+  std::vector<NtpPromoIdentifier> identifiers_;
 };
 
 }  // namespace user_education

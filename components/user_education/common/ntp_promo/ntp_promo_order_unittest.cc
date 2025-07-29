@@ -83,12 +83,13 @@ TEST_F(NtpPromoOrderTest, PendingNoPromo) {
   EXPECT_THAT(Pending(), testing::IsEmpty());
 }
 
-// The promo registry orders by key; ensure this is preserved.
+// The promo registry maintains registration order. Ensure this is preserved,
+// in the absence of other ordering criteria.
 TEST_F(NtpPromoOrderTest, PendingStableOrder) {
   RegisterPromo("c", {}, 0, 0, base::Time());
   RegisterPromo("b", {}, 0, 0, base::Time());
   RegisterPromo("a", {}, 0, 0, base::Time());
-  EXPECT_THAT(Pending(), ElementsAre("a", "b", "c"));
+  EXPECT_THAT(Pending(), ElementsAre("c", "b", "a"));
 }
 
 TEST_F(NtpPromoOrderTest, PendingCircularDependency) {
