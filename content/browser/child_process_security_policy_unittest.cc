@@ -3292,7 +3292,8 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
                    /*is_process_used=*/false,
                    ProcessLock::CreateAllowAnySite(
                        StoragePartitionConfig::CreateDefault(&context),
-                       WebExposedIsolationInfo::CreateNonIsolated()));
+                       WebExposedIsolationInfo::CreateNonIsolated(),
+                       /*cross_origin_isolation_key=*/std::nullopt));
 
     EXPECT_TRUE(foo_instance->HasSite());
     if (ShouldUseDefaultSiteInstanceGroup()) {
@@ -3305,7 +3306,8 @@ TEST_P(ChildProcessSecurityPolicyTest, NoBrowsingInstanceIDs_UnlockedProcess) {
                 SiteInfo::CreateForDefaultSiteInstance(
                     foo_instance->GetIsolationContext(),
                     StoragePartitionConfig::CreateDefault(&context),
-                    WebExposedIsolationInfo::CreateNonIsolated()));
+                    WebExposedIsolationInfo::CreateNonIsolated(),
+                    /*cross_origin_isolation_key=*/std::nullopt));
     }
     EXPECT_FALSE(foo_instance->RequiresDedicatedProcess());
   }
@@ -3341,7 +3343,8 @@ TEST_P(ChildProcessSecurityPolicyTest, CannotLockUsedProcessToSite) {
                  /*is_process_used=*/false,
                  ProcessLock::CreateAllowAnySite(
                      StoragePartitionConfig::CreateDefault(&context),
-                     WebExposedIsolationInfo::CreateNonIsolated()));
+                     WebExposedIsolationInfo::CreateNonIsolated(),
+                     /*cross_origin_isolation_key=*/std::nullopt));
   EXPECT_TRUE(p->GetProcessLock(kRendererID).allows_any_site());
   EXPECT_FALSE(p->GetProcessLock(kRendererID).is_locked_to_site());
 

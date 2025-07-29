@@ -14,12 +14,21 @@ namespace content {
 // static
 ProcessLock ProcessLock::CreateAllowAnySite(
     const StoragePartitionConfig& storage_partition_config,
-    const WebExposedIsolationInfo& web_exposed_isolation_info) {
+    const WebExposedIsolationInfo& web_exposed_isolation_info,
+    const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+        cross_origin_isolation_key) {
   WebExposedIsolationLevel web_exposed_isolation_level =
       SiteInfo::ComputeWebExposedIsolationLevelForEmptySite(
           web_exposed_isolation_info);
 
+  AgentClusterKey agent_cluster_key =
+      cross_origin_isolation_key.has_value()
+          ? AgentClusterKey::CreateWithCrossOriginIsolationKey(
+                url::Origin(), cross_origin_isolation_key.value())
+          : AgentClusterKey::CreateSiteKeyed(GURL());
+
   return ProcessLock(SiteInfo(
+      agent_cluster_key,
       /*site_url=*/GURL(), /*process_lock_url=*/GURL(),
       /*requires_origin_keyed_process=*/false,
       /*requires_origin_keyed_process_by_default=*/false,
@@ -28,7 +37,7 @@ ProcessLock ProcessLock::CreateAllowAnySite(
       web_exposed_isolation_level, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false, std::nullopt));
+      /*is_pdf=*/false, /*is_fenced=*/false));
 }
 
 // static
@@ -124,16 +133,8 @@ bool ProcessLock::IsCompatibleWithWebExposedIsolation(
   // We should refactor how COI status is set in the renderer process, so that
   // unused RenderProcessHosts are not assigned a COI status. This will allow
   // them to be reused regardless of the COI status of the navigation.
-  std::optional<AgentClusterKey::CrossOriginIsolationKey> this_coi_key =
-      site_info_->agent_cluster_key()
-          ? site_info_->agent_cluster_key()->GetCrossOriginIsolationKey()
-          : std::nullopt;
-  std::optional<AgentClusterKey::CrossOriginIsolationKey> other_coi_key =
-      site_info.agent_cluster_key()
-          ? site_info.agent_cluster_key()->GetCrossOriginIsolationKey()
-          : std::nullopt;
-
-  return this_coi_key == other_coi_key;
+  return site_info_->agent_cluster_key().GetCrossOriginIsolationKey() ==
+         site_info.agent_cluster_key().GetCrossOriginIsolationKey();
 }
 
 bool ProcessLock::operator==(const ProcessLock& rhs) const {

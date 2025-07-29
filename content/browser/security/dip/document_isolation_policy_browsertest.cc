@@ -1029,7 +1029,7 @@ IN_PROC_BROWSER_TEST_P(DocumentIsolationPolicyBrowserTest, DipOriginKeyed) {
   // requires_origin_keyed_process() will return true.
   EXPECT_EQ(SiteIsolationPolicy::AreOriginKeyedProcessesEnabledByDefault(),
             current_si->GetSiteInfo().requires_origin_keyed_process());
-  EXPECT_TRUE(current_si->GetSiteInfo().agent_cluster_key()->IsOriginKeyed());
+  EXPECT_TRUE(current_si->GetSiteInfo().agent_cluster_key().IsOriginKeyed());
 }
 
 // Tests that main frame navigations are correctly assigned cross-origin

@@ -10823,16 +10823,12 @@ NavigationRequest::ComputeCrossOriginIsolationKey() {
   // differences. To avoid this, we return the current CrossOriginIsolationKey
   // if the navigation is same-origin.
   if (!policy_container_builder_->HasComputedPolicies()) {
-    if (origin.IsSameOriginWith(frame_tree_node_->current_origin()) &&
-        frame_tree_node_->current_frame_host()
-            ->GetSiteInstance()
-            ->GetSiteInfo()
-            .agent_cluster_key()) {
+    if (origin.IsSameOriginWith(frame_tree_node_->current_origin())) {
       return frame_tree_node_->current_frame_host()
           ->GetSiteInstance()
           ->GetSiteInfo()
           .agent_cluster_key()
-          ->GetCrossOriginIsolationKey();
+          .GetCrossOriginIsolationKey();
     }
     return std::nullopt;
   }

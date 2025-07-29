@@ -51,16 +51,21 @@ class CONTENT_EXPORT SiteInfo {
   // frames is enabled, error pages inside fenced frames will be isolated from
   // embedders.
   //
-  // `web_exposed_isolation_info` describes the isolation state of the error
-  // page. Top-level error pages use a non-isolated WebExposedIsolationInfo,
-  // while subframes and embedded content (including fenced frames, protals,
-  // etc.) inherit this value from their embedder.
+  // `web_exposed_isolation_info` and `cross_origin_isolation_key` describe the
+  // isolation state of the error page. Top-level error pages use a non-isolated
+  // WebExposedIsolationInfo and CrossOriginIsolationKey, while subframes and
+  // embedded content (including fenced frames, protals, etc.) will inherit the
+  // WebExposedIsolationInfo value from their embedder and may inherit the
+  // CrossOriginIsolationKey (depending on whether cross-origin isolation was
+  // enabled by COOP+COEP or DIP).
   static SiteInfo CreateForErrorPage(
       const StoragePartitionConfig storage_partition_config,
       bool is_guest,
       bool is_fenced,
       const WebExposedIsolationInfo& web_exposed_isolation_info,
-      WebExposedIsolationLevel web_exposed_isolation_level);
+      WebExposedIsolationLevel web_exposed_isolation_level,
+      const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+          cross_origin_isolation_key);
 
   // Helper to create a SiteInfo for default SiteInstances.  Default
   // SiteInstances are used for non-isolated sites on platforms without strict
@@ -70,7 +75,9 @@ class CONTENT_EXPORT SiteInfo {
   static SiteInfo CreateForDefaultSiteInstance(
       const IsolationContext& isolation_context,
       const StoragePartitionConfig storage_partition_config,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
+      const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+          cross_origin_isolation_key);
 
   // Helper to create a SiteInfo for a <webview> guest.  This helper can be
   // used for a new guest associated with a specific StoragePartitionConfig
@@ -179,7 +186,8 @@ class CONTENT_EXPORT SiteInfo {
   // SiteInfos, to help ensure all creation sites are updated accordingly when
   // new values are added. The private function MakeSecurityPrincipalKey()
   // should be updated accordingly.
-  SiteInfo(const GURL& site_url,
+  SiteInfo(const AgentClusterKey& agent_cluster_key,
+           const GURL& site_url,
            const GURL& process_lock_url,
            bool requires_origin_keyed_process,
            bool requires_origin_keyed_process_by_default,
@@ -193,9 +201,7 @@ class CONTENT_EXPORT SiteInfo {
            bool is_jit_disabled,
            bool are_v8_optimizations_disabled,
            bool is_pdf,
-           bool is_fenced,
-           const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
-               cross_origin_isolation_key);
+           bool is_fenced);
   SiteInfo() = delete;
   SiteInfo(const SiteInfo& rhs);
   ~SiteInfo();
@@ -226,7 +232,7 @@ class CONTENT_EXPORT SiteInfo {
   const GURL& site_url() const { return site_url_; }
 
   // Returns the AgentClusterKey of the execution contexts within this SiteInfo.
-  const std::optional<AgentClusterKey>& agent_cluster_key() const {
+  const AgentClusterKey& agent_cluster_key() const {
     return agent_cluster_key_;
   }
 
@@ -422,22 +428,24 @@ class CONTENT_EXPORT SiteInfo {
   GURL site_url_;
 
   // The AgentClusterKey for the execution context. This represents the
-  // isolation requested through the use of Document-Isolation-Policy. The
-  // AgentClusterKey is currently optional and only computed when a navigation
-  // has a Document-Isolation-policy header. It should eventually be made
-  // non-optional once we compute it properly on each navigation. When this
-  // happens, it will replace site_url_ and web_exposed_isolation_info_.
-  // TODO(crbug.com/342365078): Origin-Agent-Cluster should also use the
-  // AgentClusterKey to represent the isolation it requests.
+  // set of contexts that has synchronous access to each other and must be
+  // placed in the same process. Currently, it duplicates part of the
+  // information stored in the SiteInfo (such as requires_origin_keyed_process_
+  // and process_lock_url_). We plan to refactor SiteInfo so that the
+  // AgentClusterKey eventually replaces the duplicated members.
+  // TODO(crbug.com/342365078): Refactor the Origin-Agent-Cluster code to take
+  // advantage of AgentClusterKeys.
   // TODO(crbug.com/342365083): Documents crossOriginIsolated through the use of
   // COOP and COEP should also use the AgentClusterKey instead of
   // WebExposedIsolationInfo.
-  std::optional<AgentClusterKey> agent_cluster_key_;
+  AgentClusterKey agent_cluster_key_;
 
   // The URL to use when locking a process to this SiteInstance's site via
   // SetProcessLock(). This is the same as |site_url_| except for cases
   // involving effective URLs, such as hosted apps.  In those cases, this URL is
   // a site URL that is computed without the use of effective URLs.
+  // TODO(crbug.com/342572253): Now that we have AgentClusterKeys for all
+  // navigation, this is redundant with the AgentClusterKey. Remove it.
   GURL process_lock_url_;
 
   // Indicates whether this SiteInfo is specific to a single origin and requires
@@ -445,6 +453,8 @@ class CONTENT_EXPORT SiteInfo {
   // origin. Only used for OriginAgentCluster header opt-ins. In contrast, the
   // site-level URLs that are typically used in SiteInfo include subdomains, as
   // do command-line isolated origins.
+  // TODO(crbug.com/342365078): Now that we have AgentClusterKeys for all
+  // navigation, this is redundant with the AgentClusterKey. Remove it.
   bool requires_origin_keyed_process_ = false;
 
   // When true, indicates that `requires_origin_keyed_process_` is true because

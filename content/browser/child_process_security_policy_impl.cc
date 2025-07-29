@@ -1008,7 +1008,8 @@ void ChildProcessSecurityPolicyImpl::AddForTesting(
               child_id, /*is_process_used=*/false,
               ProcessLock::CreateAllowAnySite(
                   StoragePartitionConfig::CreateDefault(browser_context),
-                  WebExposedIsolationInfo::CreateNonIsolated()));
+                  WebExposedIsolationInfo::CreateNonIsolated(),
+                  /*cross_origin_isolation_key=*/std::nullopt));
 }
 
 void ChildProcessSecurityPolicyImpl::Remove(int child_id) {
@@ -2195,9 +2196,7 @@ bool ChildProcessSecurityPolicyImpl::PerformJailAndCitadelChecks(
                 .WithUniqueSandboxId(actual_process_lock.unique_sandbox_id())
                 .WithCrossOriginIsolationKey(
                     actual_process_lock.agent_cluster_key()
-                        ? actual_process_lock.agent_cluster_key()
-                              ->GetCrossOriginIsolationKey()
-                        : std::nullopt)));
+                        .GetCrossOriginIsolationKey())));
 
     if (actual_process_lock.is_locked_to_site()) {
       // Jail-style enforcement - a process with a lock can only access data

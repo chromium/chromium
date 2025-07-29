@@ -41,6 +41,8 @@ AgentClusterKey AgentClusterKey::CreateWithCrossOriginIsolationKey(
   return AgentClusterKey(origin, isolation_key);
 }
 
+AgentClusterKey::AgentClusterKey() : key_(GURL()) {}
+
 AgentClusterKey::AgentClusterKey(const AgentClusterKey& other) = default;
 
 AgentClusterKey::~AgentClusterKey() = default;
@@ -66,6 +68,14 @@ const url::Origin& AgentClusterKey::GetOrigin() const {
 const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
 AgentClusterKey::GetCrossOriginIsolationKey() const {
   return isolation_key_;
+}
+
+bool AgentClusterKey::IsCrossOriginIsolated() const {
+  if (!isolation_key_.has_value()) {
+    return false;
+  }
+  return isolation_key_->cross_origin_isolation_mode ==
+         CrossOriginIsolationMode::kConcrete;
 }
 
 bool AgentClusterKey::operator==(const AgentClusterKey& b) const = default;

@@ -59,9 +59,6 @@ class CONTENT_EXPORT AgentClusterKey {
     CrossOriginIsolationMode cross_origin_isolation_mode;
   };
 
-  // Note: CreateSiteKeyed and CreateOriginKeyed are currently only used in
-  // tests. Eventually, we will refactor the Origin-Agent-Cluster code so that
-  // all navigations receive an AgentClusterKey. See crbug.com/342365078.
   // Following the deprecation of document.domain by default (a.k.a.
   // Origin-Agent-Cluster by default), AgentClusterKeys should be origin keyed
   // unless the document sends a "Origin-Agent-Cluster: ?0" header. However,
@@ -76,6 +73,12 @@ class CONTENT_EXPORT AgentClusterKey {
       const url::Origin& origin,
       const AgentClusterKey::CrossOriginIsolationKey& isolation_key);
 
+  // The default constructor will create an AgentClusterKey site-keyed to the
+  // empty URL.
+  // TODO(crbug.com/342366372): Once SiteInstanceGroup has launched for all
+  // SiteInstances, the default constructor should return an origin-keyed
+  // AgentClusterKey with an empty origin.
+  AgentClusterKey();
   AgentClusterKey(const AgentClusterKey& other);
   ~AgentClusterKey();
 
@@ -95,6 +98,9 @@ class CONTENT_EXPORT AgentClusterKey {
   const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
   GetCrossOriginIsolationKey() const;
 
+  // Returns true if the AgentClusterKey is cross-origin isolated.
+  bool IsCrossOriginIsolated() const;
+
   bool operator==(const AgentClusterKey& b) const;
 
   // Needed for tie comparisons in SiteInfo.
@@ -105,7 +111,23 @@ class CONTENT_EXPORT AgentClusterKey {
                   const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
                       isolation_key);
 
-  // The key used for the agent cluster. By default, this is a site URL.
+  // The origin or site URL that all execution contexts in the agent cluster
+  // must share. By default, this is a site URL and the agent cluster is
+  // site-keyed. The agent cluster can also be origin-keyed, in which case
+  // execution contexts in the agent cluster must share the same origin, as
+  // opposed to the site URL.
+  //
+  // For example, execution contexts with origin "https://example.com" and
+  // "https://subdomain.example.com" can be placed in the same site-keyed agent
+  // cluster with site URL key "https://example.com". But an execution context
+  // with origin "https://subdomain.example.com" cannot be placed in
+  // origin-keyed agent cluster with origin key "https://example.com" (because
+  // it is not same-origin with the origin key of the agent cluster).
+  //
+  // When used in ProcessLocks, in the case of an unlocked AllowAnySite process,
+  // the key_ will be an empty GURL in non-cross-origin isolated cases. For
+  // cross-origin isolated cases, it will be an empty origin (along with the
+  // appropriate cross-origin isolation key).
   std::variant<GURL, url::Origin> key_;
 
   // This is used by DocumentIsolationPolicy to isolate the document in an agent

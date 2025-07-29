@@ -140,6 +140,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   ProcessLock ProcessLockFromUrl(const std::string& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     return ProcessLock::FromSiteInfo(SiteInfo(
+        AgentClusterKey::CreateSiteKeyed(GURL(url)),
         /*site_url=*/GURL(url),
         /*process_lock_url=*/GURL(url),
         /*requires_origin_keyed_process=*/false,
@@ -150,8 +151,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-        /*is_pdf=*/false, /*is_fenced=*/false,
-        /*cross_origin_isolation_key=*/std::nullopt));
+        /*is_pdf=*/false, /*is_fenced=*/false));
   }
 
   WebContentsImpl* web_contents() const {
@@ -165,10 +165,14 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
   // for strict origin isolation.
   // Note: do not use this for opt-in origin isolation, as it won't set
   // requires_origin_keyed_process to true.
+  // TODO(crbug.com/433443082): Update this helper to create origin-keyed
+  // AgentClusterKeys once origin-keyed AgentClusterKeys are created in contexts
+  // other than when requires_origin_keyed_process is true.
   ProcessLock GetStrictProcessLock(const GURL& url) {
     BrowserContext* browser_context = web_contents()->GetBrowserContext();
     GURL origin_url = url::Origin::Create(url).GetURL();
     return ProcessLock::FromSiteInfo(SiteInfo(
+        AgentClusterKey::CreateSiteKeyed(origin_url),
         /*site_url=*/origin_url,
         /*process_lock_url=*/origin_url,
         /*requires_origin_keyed_process=*/false,
@@ -179,8 +183,7 @@ class IsolatedOriginTestBase : public ContentBrowserTest {
         WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
         /*does_site_request_dedicated_process_for_coop=*/false,
         /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-        /*is_pdf=*/false, /*is_fenced=*/false,
-        /*cross_origin_isolation_key=*/std::nullopt));
+        /*is_pdf=*/false, /*is_fenced=*/false));
   }
 
  protected:
@@ -1695,6 +1698,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
   GURL origin_url = url::Origin::Create(isolated_suborigin_url).GetURL();
   BrowserContext* browser_context = web_contents()->GetBrowserContext();
   auto expected_isolated_suborigin_lock = ProcessLock::FromSiteInfo(SiteInfo(
+      AgentClusterKey::CreateOriginKeyed(url::Origin::Create(origin_url)),
       /*site_url=*/origin_url,
       /*process_lock_url=*/origin_url,
       /*requires_origin_keyed_process=*/true,
@@ -1705,8 +1709,7 @@ IN_PROC_BROWSER_TEST_F(OriginIsolationOptInHeaderTest,
       WebExposedIsolationLevel::kNotIsolated, /*is_guest=*/false,
       /*does_site_request_dedicated_process_for_coop=*/false,
       /*is_jit_disabled=*/false, /*are_v8_optimizations_disabled=*/false,
-      /*is_pdf=*/false, /*is_fenced=*/false,
-      /*cross_origin_isolation_key=*/std::nullopt));
+      /*is_pdf=*/false, /*is_fenced=*/false));
   EXPECT_TRUE(NavigateToURL(shell(), test_url));
   EXPECT_EQ(2u, CollectAllRenderFrameHosts(shell()->web_contents()).size());
 

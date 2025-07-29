@@ -45,11 +45,13 @@ class CONTENT_EXPORT ProcessLock {
   // Create a lock that that represents a process that is associated with at
   // least one SiteInstance, but is not locked to a specific site. Any request
   // that wants to commit in this process must have a StoragePartitionConfig
-  // and web-exposed isolation information (COOP/COEP, for example) that
-  // match the values used to create this lock.
+  // and cross-origin isolation and web-exposed isolation information
+  // (COOP/COEP, for example) that match the values used to create this lock.
   static ProcessLock CreateAllowAnySite(
       const StoragePartitionConfig& storage_partition_config,
-      const WebExposedIsolationInfo& web_exposed_isolation_info);
+      const WebExposedIsolationInfo& web_exposed_isolation_info,
+      const std::optional<AgentClusterKey::CrossOriginIsolationKey>&
+          cross_origin_isolation_key);
 
   // Create a lock for a specific UrlInfo. This method can be called from both
   // the UI and IO threads. Locks created with the same parameters must always
@@ -107,9 +109,9 @@ class CONTENT_EXPORT ProcessLock {
   }
 
   // Returns the AgentClusterKey shared by agents allowed in this ProcessLock.
-  std::optional<AgentClusterKey> agent_cluster_key() const {
+  const AgentClusterKey agent_cluster_key() const {
     return site_info_.has_value() ? site_info_->agent_cluster_key()
-                                  : std::nullopt;
+                                  : AgentClusterKey();
   }
 
   // Returns whether this ProcessLock is specific to an origin rather than

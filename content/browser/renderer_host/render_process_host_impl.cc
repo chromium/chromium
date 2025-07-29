@@ -3253,10 +3253,9 @@ void RenderProcessHostImpl::NotifyRendererOfLockedStateUpdate() {
   bool is_cross_origin_isolated = process_lock.GetWebExposedIsolationLevel() >=
                                   WebExposedIsolationLevel::kIsolated;
   is_cross_origin_isolated |=
-      process_lock.agent_cluster_key() &&
-      process_lock.agent_cluster_key()->GetCrossOriginIsolationKey() &&
+      process_lock.agent_cluster_key().GetCrossOriginIsolationKey() &&
       process_lock.agent_cluster_key()
-              ->GetCrossOriginIsolationKey()
+              .GetCrossOriginIsolationKey()
               ->cross_origin_isolation_mode ==
           CrossOriginIsolationMode::kConcrete;
   GetRendererInterface()->SetIsCrossOriginIsolated(is_cross_origin_isolated);
