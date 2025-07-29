@@ -38,6 +38,13 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Discover Feed Bottom Sheet"/>
 </enum>
 
+<enum name="ComposeboxFileValidationError">
+  <int value="0" label="No error"/>
+  <int value="1" label="Too many files uploaded"/>
+  <int value="2" label="File is empty"/>
+  <int value="3" label="File size is too large"/>
+</enum>
+
 <enum name="Entry">
   <summary/>
   <int value="0" label="App Menu"/>

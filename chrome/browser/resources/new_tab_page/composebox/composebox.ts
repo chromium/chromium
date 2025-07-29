@@ -51,6 +51,17 @@ const FILE_VALIDATION_ERRORS_MAP = new Map<FileUploadErrorType, string>([
   ],
 ]);
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+const enum ComposeboxFileValidationError {
+  NONE = 0,
+  TOO_MANY_FILES = 1,
+  FILE_EMPTY = 2,
+  FILE_SIZE_TOO_LARGE = 3,
+  MAX_VALUE = FILE_SIZE_TOO_LARGE,
+}
+
+
 export class ComposeboxElement extends I18nMixinLit
 (CrLitElement) {
   static get is() {
@@ -251,16 +262,23 @@ export class ComposeboxElement extends I18nMixinLit
     const files = input.files;
     if (!files || files.length === 0 ||
         this.files_.size >= this.maxFileCount_) {
+      this.recordFileValidationMetric_(
+          ComposeboxFileValidationError.TOO_MANY_FILES);
       return;
     }
 
     for (const file of files) {
       if (file.size === 0 || file.size > this.maxFileSize_) {
         this.showErrorScrim_ = true;
-        this.errorMessage_ = file.size === 0 ?
+        const fileIsEmpty = file.size === 0;
+        this.errorMessage_ = fileIsEmpty ?
             this.i18n('composeboxFileUploadInvalidEmptySize') :
             this.i18n('composeboxFileUploadInvalidTooLarge');
         input.value = '';
+        fileIsEmpty ? this.recordFileValidationMetric_(
+                          ComposeboxFileValidationError.FILE_EMPTY) :
+                      this.recordFileValidationMetric_(
+                          ComposeboxFileValidationError.FILE_SIZE_TOO_LARGE);
         return;
       } else {
         const fileBuffer = await file.arrayBuffer();
@@ -290,6 +308,7 @@ export class ComposeboxElement extends I18nMixinLit
 
         const announcer = getAnnouncerInstance();
         announcer.announce(this.i18n('composeboxFileUploadStartedText'));
+        this.recordFileValidationMetric_(ComposeboxFileValidationError.NONE);
       }
     }
     // Clear the file input.
@@ -347,6 +366,13 @@ export class ComposeboxElement extends I18nMixinLit
         this.$.input.value.trim(), (e as MouseEvent).button || 0, e.altKey,
         e.ctrlKey, e.metaKey, e.shiftKey);
     this.submitting_ = true;
+  }
+
+  private recordFileValidationMetric_(
+      enumValue: ComposeboxFileValidationError) {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', enumValue,
+        ComposeboxFileValidationError.MAX_VALUE + 1);
   }
 }
 
