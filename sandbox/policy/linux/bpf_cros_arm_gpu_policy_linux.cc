@@ -26,9 +26,9 @@ using sandbox::bpf_dsl::ResultExpr;
 namespace sandbox {
 namespace policy {
 
-CrosArmGpuProcessPolicy::CrosArmGpuProcessPolicy(bool allow_mremap,
+CrosArmGpuProcessPolicy::CrosArmGpuProcessPolicy(MremapPolicy mremap_policy,
                                                  bool allow_shmat)
-    : GpuProcessPolicy(allow_mremap)
+    : GpuProcessPolicy(mremap_policy)
 #if defined(__arm__) || defined(__aarch64__)
       ,
       allow_shmat_(allow_shmat)

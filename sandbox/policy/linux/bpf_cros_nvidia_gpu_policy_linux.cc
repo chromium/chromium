@@ -20,8 +20,9 @@ using sandbox::bpf_dsl::ResultExpr;
 
 namespace sandbox::policy {
 
-CrosNvidiaGpuProcessPolicy::CrosNvidiaGpuProcessPolicy(bool allow_mremap)
-    : GpuProcessPolicy(allow_mremap) {}
+CrosNvidiaGpuProcessPolicy::CrosNvidiaGpuProcessPolicy(
+    MremapPolicy mremap_policy)
+    : GpuProcessPolicy(mremap_policy) {}
 
 CrosNvidiaGpuProcessPolicy::~CrosNvidiaGpuProcessPolicy() = default;
 

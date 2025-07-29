@@ -34,8 +34,8 @@ using sandbox::syscall_broker::BrokerProcess;
 namespace sandbox {
 namespace policy {
 
-GpuProcessPolicy::GpuProcessPolicy(bool allow_mremap)
-    : allow_mremap_(allow_mremap) {}
+GpuProcessPolicy::GpuProcessPolicy(MremapPolicy mremap_policy)
+    : mremap_policy_(mremap_policy) {}
 
 GpuProcessPolicy::~GpuProcessPolicy() {}
 
@@ -91,7 +91,7 @@ ResultExpr GpuProcessPolicy::EvaluateSyscall(int sysno) const {
       return Allow();
     // XNNPACK needs mremap when building weight caches.
     case __NR_mremap:
-      if (allow_mremap_) {
+      if (mremap_policy_ == MremapPolicy::kAllow) {
         return RestrictMremapFlagsForODML();
       }
       break;
