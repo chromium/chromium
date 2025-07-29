@@ -351,7 +351,7 @@ export class MenuManager {
         // Title messages are intentionally missing for some keyboard shortcuts.
         if (!(command in COMMANDS_WITH_NO_MSG_ID) &&
             !MenuManager.disableMissingMsgsErrorsForTesting) {
-          console.error('No localization for: ' + command);
+          console.log('No localization for: ' + command);
         }
         binding.title = '';
         continue;
