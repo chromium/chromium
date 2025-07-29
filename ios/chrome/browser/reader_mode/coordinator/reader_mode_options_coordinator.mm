@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
 namespace {
@@ -43,6 +44,8 @@ NSString* const kReaderModeOptionsViewControllerCustomDetentIdentifier =
   _mediator = [[ReaderModeOptionsMediator alloc]
       initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
                     webStateList:self.browser->GetWebStateList()];
+  _mediator.readerModeHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ReaderModeCommands);
   _viewController.mutator = _mediator;
   _viewController.controlsView.mutator = _mediator;
   _mediator.consumer = _viewController.controlsView;

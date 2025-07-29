@@ -31,34 +31,24 @@ constexpr base::TimeDelta kShowReaderModeChipAnimatedDelay =
 
 ReaderModeBrowserAgent::~ReaderModeBrowserAgent() = default;
 
-void ReaderModeBrowserAgent::SetReaderModeHandler(
-    id<ReaderModeCommands> reader_mode_handler) {
-  reader_mode_handler_ = reader_mode_handler;
-}
-
-void ReaderModeBrowserAgent::SetReaderModeChipHandler(
-    id<ReaderModeChipCommands> reader_mode_chip_handler) {
-  reader_mode_chip_handler_ = reader_mode_chip_handler;
-}
-
-void ReaderModeBrowserAgent::SetSnackbarHandler(
-    id<SnackbarCommands> snackbar_handler) {
-  snackbar_handler_ = snackbar_handler;
+void ReaderModeBrowserAgent::SetDelegate(
+    id<ReaderModeBrowserAgentDelegate> delegate) {
+  delegate_ = delegate;
 }
 
 #pragma mark - Private
 
-ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser,
-                                               WebStateList* web_state_list)
+ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser)
     : BrowserUserData(browser) {
-  web_state_list_scoped_observation_.Observe(web_state_list);
+  web_state_list_scoped_observation_.Observe(browser->GetWebStateList());
 }
 
 void ReaderModeBrowserAgent::ShowReaderModeUI(bool animated) {
-  [reader_mode_handler_ showReaderMode];
+  [delegate_ showReaderModeContentFromBrowserAgent:this];
 
-  __weak __typeof(reader_mode_chip_handler_) weak_reader_mode_chip_handler =
-      reader_mode_chip_handler_;
+  __weak id<ReaderModeChipCommands> weak_reader_mode_chip_handler =
+      HandlerForProtocol(browser_->GetCommandDispatcher(),
+                         ReaderModeChipCommands);
   auto show_reader_mode_chip = base::BindOnce(^{
     [weak_reader_mode_chip_handler showReaderModeChip];
   });
@@ -74,8 +64,11 @@ void ReaderModeBrowserAgent::ShowReaderModeUI(bool animated) {
 }
 
 void ReaderModeBrowserAgent::HideReaderModeUI() {
-  [reader_mode_chip_handler_ hideReaderModeChip];
-  [reader_mode_handler_ hideReaderMode];
+  id<ReaderModeChipCommands> reader_mode_chip_handler = HandlerForProtocol(
+      browser_->GetCommandDispatcher(), ReaderModeChipCommands);
+  [reader_mode_chip_handler hideReaderModeChip];
+  [delegate_ hideReaderModeContentFromBrowserAgent:this];
+
   UpdateHandlersOnActiveWebState();
 }
 
@@ -156,7 +149,9 @@ void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
 void ReaderModeBrowserAgent::ReaderModeDistillationFailed(
     ReaderModeTabHelper* tab_helper) {
   // Show distillation failure snackbar.
-  [snackbar_handler_
+  id<SnackbarCommands> snackbar_handler =
+      static_cast<id<SnackbarCommands>>(browser_->GetCommandDispatcher());
+  [snackbar_handler
       showSnackbarWithMessage:l10n_util::GetNSString(
                                   IDS_IOS_READER_MODE_SNACKBAR_FAILURE_MESSAGE)
                    buttonText:l10n_util::GetNSString(IDS_DONE)

@@ -307,7 +307,7 @@ using base::UserMetricsAction;
         HandlerForProtocol(dispatcher, BrowserCoordinatorCommands);
     mediator.findInPageHandler =
         HandlerForProtocol(dispatcher, FindInPageCommands);
-    if (IsReaderModeSnackbarEnabled()) {
+    if (IsReaderModeAvailable()) {
       mediator.readerModeHandler =
           HandlerForProtocol(dispatcher, ReaderModeCommands);
     }

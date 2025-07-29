@@ -106,11 +106,14 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
   AppLauncherBrowserAgent::CreateForBrowser(browser);
   OmniboxPositionBrowserAgent::CreateForBrowser(browser);
 
-  // Only create the FullscreenBrowserAgent for regular and incognito
-  // Browser (since the other Browser do not present the WebStates,
-  // and may not create the tab helpers which would lead to crashes).
+  // Only create the FullscreenBrowserAgent and ReaderModeBrowserAgent for
+  // regular and incognito Browser (since the other Browser do not present the
+  // WebStates, and may not create the tab helpers which would lead to crashes).
   if (!browser_is_inactive && !browser_is_temporary) {
     FullscreenController::CreateForBrowser(browser);
+    if (IsReaderModeAvailable()) {
+      ReaderModeBrowserAgent::CreateForBrowser(browser);
+    }
   }
 
   // LensBrowserAgent must be created before WebNavigationBrowserAgent.
@@ -149,11 +152,6 @@ void AttachBrowserAgentsForActiveBrowser(Browser* browser) {
 
   WebStateListMetricsBrowserAgent::CreateForBrowser(
       browser, SessionMetrics::FromProfile(browser->GetProfile()));
-
-  if (IsReaderModeAvailable()) {
-    ReaderModeBrowserAgent::CreateForBrowser(browser,
-                                             browser->GetWebStateList());
-  }
 
   // Normal profiles are the only ones to get tab usage recorder.
   if (!browser_is_off_record) {

@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_mutator.h"
+#import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
 
 class WebStateList;
 
@@ -21,6 +22,8 @@ class DistilledPagePrefs;
 @interface ReaderModeOptionsMediator : NSObject <ReaderModeOptionsMutator>
 
 @property(nonatomic, weak) id<ReaderModeOptionsConsumer> consumer;
+
+@property(nonatomic, weak) id<ReaderModeCommands> readerModeHandler;
 
 // Initializer.
 - (instancetype)initWithDistilledPagePrefs:

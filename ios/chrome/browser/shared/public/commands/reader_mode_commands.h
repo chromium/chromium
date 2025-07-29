@@ -7,11 +7,13 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/reader_mode/model/constants.h"
+
 // Commands protocol to show/hide the Reader mode UI.
 @protocol ReaderModeCommands <NSObject>
 
 // Shows the Reader mode UI.
-- (void)showReaderMode;
+- (void)showReaderModeFromAccessPoint:(ReaderModeAccessPoint)accessPoint;
 
 // Hides the Reader mode UI.
 - (void)hideReaderMode;

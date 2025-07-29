@@ -29,6 +29,8 @@ const char kReaderModeCustomizationHistogram[] = "IOS.ReaderMode.Customization";
 
 const char kReaderModeTimeSpentHistogram[] = "IOS.ReaderMode.TimeSpent";
 
+const char kReaderModeAccessPointHistogram[] = "IOS.ReaderMode.AccessPoint";
+
 NSString* GetReaderModeSymbolName() {
   if (@available(iOS 18, *)) {
     return kReaderModeSymbolPostIOS18;

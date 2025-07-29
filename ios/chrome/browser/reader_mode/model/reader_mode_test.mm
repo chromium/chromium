@@ -54,12 +54,13 @@ std::unique_ptr<web::FakeWebState> ReaderModeTest::CreateWebState() {
   return web_state;
 }
 
-void ReaderModeTest::EnableReaderMode(web::WebState* web_state) {
-  ReaderModeTabHelper::FromWebState(web_state)->SetActive(true);
+void ReaderModeTest::EnableReaderMode(web::WebState* web_state,
+                                      ReaderModeAccessPoint access_point) {
+  ReaderModeTabHelper::FromWebState(web_state)->ActivateReader(access_point);
 }
 
 void ReaderModeTest::DisableReaderMode(web::WebState* web_state) {
-  ReaderModeTabHelper::FromWebState(web_state)->SetActive(false);
+  ReaderModeTabHelper::FromWebState(web_state)->DeactivateReader();
 }
 
 void ReaderModeTest::LoadWebpage(web::FakeWebState* web_state,

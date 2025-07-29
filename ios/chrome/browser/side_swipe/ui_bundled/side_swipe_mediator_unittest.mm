@@ -191,7 +191,8 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabledForReaderMode) {
   SetReaderModeState(fake_web_state.get(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "content");
   LoadWebpage(fake_web_state.get(), test_url);
-  EnableReaderMode(fake_web_state.get());
+  EnableReaderMode(fake_web_state.get(),
+                   ReaderModeAccessPoint::kContextualChip);
   WaitForReaderModeContentReady();
 
   [side_swipe_mediator_

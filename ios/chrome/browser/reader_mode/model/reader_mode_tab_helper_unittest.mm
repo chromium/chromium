@@ -266,19 +266,20 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
   // Initially, no observer methods should be called.
   WaitForReaderModeContentReady();
 
-  // When SetActive(true) is called and distillation completes,
+  // When ActivateReader() is called and distillation completes,
   // ReaderModeWebStateDidLoadContent should be called.
   EXPECT_CALL(mock_observer,
               ReaderModeWebStateDidLoadContent(reader_mode_tab_helper()));
-  reader_mode_tab_helper()->SetActive(true);
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   WaitForReaderModeContentReady();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
-  // When SetActive(false) is called,
+  // When DeactivateReader() is called,
   // ReaderModeWebStateWillBecomeUnavailable should be called.
   EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(
                                  reader_mode_tab_helper()));
-  reader_mode_tab_helper()->SetActive(false);
+  reader_mode_tab_helper()->DeactivateReader();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 
@@ -316,13 +317,18 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
   // Initially, no observer methods should be called.
   WaitForReaderModeContentReady();
 
-  // When SetActive(true) is called and distillation fails,
+  // When ActivateReader() is called and distillation fails,
   // ReaderModeDistillationFailed should be called.
   EXPECT_CALL(mock_observer,
               ReaderModeDistillationFailed(reader_mode_tab_helper()));
-  reader_mode_tab_helper()->SetActive(true);
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   WaitForReaderModeContentReady();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
+
+  // Access point metric should still be triggered on distillation failure.
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeAccessPointHistogram),
+              BucketsAre(Bucket(ReaderModeAccessPoint::kContextualChip, 1)));
 }
 
 // Tests that the WebViewProxy is updated when reader mode is toggled.
@@ -348,7 +354,8 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
 
   EXPECT_CALL(mock_observer,
               ReaderModeWebStateDidLoadContent(reader_mode_tab_helper()));
-  reader_mode_tab_helper()->SetActive(true);
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   WaitForReaderModeContentReady();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
@@ -358,7 +365,7 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
 
   EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(
                                  reader_mode_tab_helper()));
-  reader_mode_tab_helper()->SetActive(false);
+  reader_mode_tab_helper()->DeactivateReader();
   EXPECT_EQ(original_proxy, web_view_proxy_tab_helper->GetWebViewProxy());
 }
 
@@ -376,7 +383,8 @@ TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
   // Initially, no observer methods should be called.
   WaitForReaderModeContentReady();
 
-  reader_mode_tab_helper()->SetActive(true);
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   WaitForReaderModeContentReady();
   web::WebState* reader_mode_web_state =
       reader_mode_tab_helper()->GetReaderModeWebState();
@@ -398,9 +406,10 @@ TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
   // Initially, no observer methods should be called.
   WaitForReaderModeContentReady();
 
-  // When SetActive(true) is called and distillation completes,
+  // When ActivateReader() is called and distillation completes,
   // ReaderModeWebStateDidBecomeAvailable should be called.
-  reader_mode_tab_helper()->SetActive(true);
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   WaitForReaderModeContentReady();
 
   // The metrics for the navigation are recorded.
@@ -430,10 +439,10 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
   // Move past the custom heuristic page load time.
   WaitForReaderModeContentReady();
 
-  // When SetActive(true) is called and distillation completes,
-  // ReaderModeWebStateDidBecomeAvailable should be called. The cancelation
-  // should trigger immediately.
-  reader_mode_tab_helper()->SetActive(true);
+  // When ActivateReader() is called and distillation completes,
+  // ReaderModeWebStateDidBecomeAvailable should be called.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   task_environment()->RunUntilIdle();
 
   // The time out is recorded.
@@ -462,10 +471,10 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationCompletedAfterTimeout) {
   // Move past the custom heuristic page load time.
   WaitForReaderModeContentReady();
 
-  // When SetActive(true) is called and distillation completes,
-  // ReaderModeWebStateDidBecomeAvailable should be called. The cancelation
-  // should trigger immediately.
-  reader_mode_tab_helper()->SetActive(true);
+  // When ActivateReader() is called and distillation completes,
+  // ReaderModeWebStateDidBecomeAvailable should be called.
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   task_environment()->RunUntilIdle();
 
   // The completion is recorded.
@@ -575,13 +584,16 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
 
   // The user explicitly requests distillation independent of the Reader Mode
   // eligibility.
-  reader_mode_tab_helper()->SetActive(true);
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
   task_environment()->RunUntilIdle();
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
               BucketsAre(Bucket(ReaderModeState::kDistillationCompleted, 1)));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeAccessPointHistogram),
+              BucketsAre(Bucket(ReaderModeAccessPoint::kContextualChip, 1)));
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeDistillerLatencyHistogram),
       BucketsAre(Bucket(0, 1)));

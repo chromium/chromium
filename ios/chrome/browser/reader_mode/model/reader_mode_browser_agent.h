@@ -6,6 +6,7 @@
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_
 
 #import "base/scoped_observation.h"
+#import "ios/chrome/browser/reader_mode/model/reader_mode_browser_agent_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser/browser_user_data.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
@@ -29,18 +30,13 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
 
   ~ReaderModeBrowserAgent() override;
 
-  // Sets the Reader mode UI handlers.
-  void SetReaderModeHandler(id<ReaderModeCommands> reader_mode_handler);
-  void SetReaderModeChipHandler(
-      id<ReaderModeChipCommands> reader_mode_chip_handler);
-  // Sets the snackbar handler.
-  void SetSnackbarHandler(id<SnackbarCommands> snackbar_handler);
+  // Sets the `delegate_`.
+  void SetDelegate(id<ReaderModeBrowserAgentDelegate> delegate);
 
  private:
   friend class BrowserUserData<ReaderModeBrowserAgent>;
 
-  explicit ReaderModeBrowserAgent(Browser* browser,
-                                  WebStateList* web_state_list);
+  explicit ReaderModeBrowserAgent(Browser* browser);
 
   // Show/hide the Reader mode UI.
   void ShowReaderModeUI(bool animated);
@@ -67,9 +63,8 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   base::ScopedObservation<WebStateList, WebStateListObserver>
       web_state_list_scoped_observation_{this};
 
-  __weak id<ReaderModeCommands> reader_mode_handler_ = nil;
-  __weak id<ReaderModeChipCommands> reader_mode_chip_handler_ = nil;
-  __weak id<SnackbarCommands> snackbar_handler_ = nil;
+  // The delegate for this agent.
+  id<ReaderModeBrowserAgentDelegate> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_H_

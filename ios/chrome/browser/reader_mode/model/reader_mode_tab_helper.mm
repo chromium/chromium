@@ -79,7 +79,7 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
 }
 
 ReaderModeTabHelper::~ReaderModeTabHelper() {
-  SetActive(false);
+  DeactivateReader();
   for (auto& observer : observers_) {
     observer.ReaderModeTabHelperDestroyed(this);
   }
@@ -97,20 +97,26 @@ bool ReaderModeTabHelper::IsActive() const {
   return active_;
 }
 
-void ReaderModeTabHelper::SetActive(bool active) {
-  if (active_ == active) {
+void ReaderModeTabHelper::ActivateReader(ReaderModeAccessPoint access_point) {
+  if (active_) {
     return;
   }
-  active_ = active;
-  if (active) {
-    // If Reader mode is being activated, create the secondary WebState where
-    // the content will be rendered and start distillation.
-    CreateReaderModeWebState();
-  } else {
-    // If Reader mode is being deactivated, destroy the secondary WebState and
-    // ensure the Reader mode UI is dismissed.
-    DestroyReaderModeWebState();
+  active_ = true;
+  metrics_helper_.RecordReaderDistillerTriggered(access_point);
+
+  // If Reader mode is being activated, create the secondary WebState where
+  // the content will be rendered and start distillation.
+  CreateReaderModeWebState();
+}
+
+void ReaderModeTabHelper::DeactivateReader() {
+  if (!active_) {
+    return;
   }
+  active_ = false;
+  // If Reader mode is being deactivated, destroy the secondary WebState and
+  // ensure the Reader mode UI is dismissed.
+  DestroyReaderModeWebState();
 }
 
 web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
@@ -181,7 +187,7 @@ void ReaderModeTabHelper::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   if (!navigation_context->IsSameDocument() ||
       navigation_context->HasUserGesture()) {
-    SetActive(false);
+    DeactivateReader();
   }
 
   SetLastCommittedUrl(web_state->GetLastCommittedURL());
@@ -189,7 +195,7 @@ void ReaderModeTabHelper::DidFinishNavigation(
 
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
-  SetActive(false);
+  DeactivateReader();
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
@@ -350,7 +356,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
           ->LoadContent(page_url, content_data);
     } else {
       // If the page could not be distilled, deactivate Reader mode in this tab.
-      SetActive(false);
+      DeactivateReader();
       for (auto& observer : observers_) {
         observer.ReaderModeDistillationFailed(this);
       }
@@ -359,8 +365,6 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 }
 
 void ReaderModeTabHelper::CreateReaderModeWebState() {
-  metrics_helper_.RecordReaderDistillerTriggered();
-
   web::WebState::CreateParams create_params = web::WebState::CreateParams(
       ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
           ->GetOffTheRecordProfile());
@@ -431,7 +435,7 @@ void ReaderModeTabHelper::CallLastCommittedUrlEligibilityCallbacks(
 
 void ReaderModeTabHelper::CancelDistillation() {
   metrics_helper_.RecordReaderDistillerTimedOut();
-  SetActive(false);
+  DeactivateReader();
   for (auto& observer : observers_) {
     observer.ReaderModeDistillationFailed(this);
   }

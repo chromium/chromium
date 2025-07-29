@@ -74,10 +74,7 @@
 }
 
 - (void)hideReaderMode {
-  web::WebState* webState = _webStateList->GetActiveWebState();
-  if (webState) {
-    ReaderModeTabHelper::FromWebState(webState)->SetActive(false);
-  }
+  [self.readerModeHandler hideReaderMode];
 }
 
 #pragma mark - Public

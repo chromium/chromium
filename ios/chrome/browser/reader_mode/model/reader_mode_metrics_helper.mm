@@ -115,9 +115,11 @@ void ReaderModeMetricsHelper::RecordReaderHeuristicCompleted(
   }
 }
 
-void ReaderModeMetricsHelper::RecordReaderDistillerTriggered() {
+void ReaderModeMetricsHelper::RecordReaderDistillerTriggered(
+    ReaderModeAccessPoint access_point) {
   distiller_timer_ = std::make_unique<base::ElapsedTimer>();
   last_reader_mode_state_ = ReaderModeState::kDistillationStarted;
+  base::UmaHistogramEnumeration(kReaderModeAccessPointHistogram, access_point);
 }
 
 void ReaderModeMetricsHelper::RecordReaderDistillerTimedOut() {

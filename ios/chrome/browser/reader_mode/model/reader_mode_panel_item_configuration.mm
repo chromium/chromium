@@ -29,7 +29,8 @@ void ActivateReaderModeInWebState(base::WeakPtr<web::WebState> web_state) {
   ReaderModeTabHelper* reader_mode_tab_helper =
       ReaderModeTabHelper::FromWebState(web_state.get());
   if (reader_mode_tab_helper) {
-    reader_mode_tab_helper->SetActive(true);
+    reader_mode_tab_helper->ActivateReader(
+        ReaderModeAccessPoint::kContextualChip);
   }
 }
 

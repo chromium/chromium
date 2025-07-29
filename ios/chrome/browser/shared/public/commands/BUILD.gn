@@ -107,6 +107,7 @@ source_set("commands") {
     "//ios/chrome/browser/authentication/ui_bundled/signin:constants",
     "//ios/chrome/browser/browsing_data/model:util",
     "//ios/chrome/browser/lens_overlay/model:entrypoint",
+    "//ios/chrome/browser/reader_mode/model:constants",
     "//ios/chrome/browser/shared/ui/util:url_with_title",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid:tab_grid_paging",
     "//ios/public/provider/chrome/browser/user_feedback:user_feedback_api",

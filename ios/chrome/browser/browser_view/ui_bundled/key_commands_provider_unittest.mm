@@ -1069,7 +1069,7 @@ TEST_F(KeyCommandsProviderTest, TestReadingMode) {
   EXPECT_TRUE(CanPerform(@"keyCommand_addToReadingList"));
   EXPECT_TRUE(CanPerform(@"keyCommand_addToBookmarks"));
 
-  tab_helper->SetActive(true);
+  tab_helper->ActivateReader(ReaderModeAccessPoint::kAIHub);
   EXPECT_FALSE(CanPerform(@"keyCommand_addToReadingList"));
   EXPECT_FALSE(CanPerform(@"keyCommand_addToBookmarks"));
 }

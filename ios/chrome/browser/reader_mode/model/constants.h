@@ -92,6 +92,17 @@ enum class ReaderModeFontFamily {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeFontFamily)
 
+// Recorded for IOS.ReaderMode.AccessPoint. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(ReaderModeAccessPoint)
+enum class ReaderModeAccessPoint {
+  kContextualChip = 0,
+  kToolsMenu = 1,
+  kAIHub = 2,
+  kMaxValue = kAIHub,
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeAccessPoint)
+
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
 // interference with the JavaScript execution.
@@ -128,6 +139,9 @@ extern const char kReaderModeCustomizationHistogram[];
 
 // Histogram name for time spent in Reader Mode.
 extern const char kReaderModeTimeSpentHistogram[];
+
+// Histogram name for Reader Mode access point for starting distillation.
+extern const char kReaderModeAccessPointHistogram[];
 
 // Returns the Reader mode symbol name.
 NSString* GetReaderModeSymbolName();

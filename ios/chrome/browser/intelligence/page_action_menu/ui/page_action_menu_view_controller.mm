@@ -368,9 +368,20 @@ const CGFloat kLargeButtonImagePadding = 8;
   RecordAIHubAction(IOSAIHubAction::kReaderMode);
   PageActionMenuViewController* __weak weakSelf = self;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
-    weakSelf.readerModeActive ? [weakSelf.readerModeHandler hideReaderMode]
-                              : [weakSelf.readerModeHandler showReaderMode];
+    [weakSelf toggleReaderModeVisibility];
   }];
+}
+
+#pragma mark - Private
+
+// Toggles the visibility of the Reading mode UI on the current page.
+- (void)toggleReaderModeVisibility {
+  if (self.readerModeActive) {
+    [self.readerModeHandler hideReaderMode];
+  } else {
+    [self.readerModeHandler
+        showReaderModeFromAccessPoint:ReaderModeAccessPoint::kAIHub];
+  }
 }
 
 @end

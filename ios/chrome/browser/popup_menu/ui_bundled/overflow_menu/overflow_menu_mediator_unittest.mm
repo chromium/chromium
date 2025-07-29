@@ -325,7 +325,11 @@ class OverflowMenuMediatorTest : public PlatformTest {
           web_state_, DistillerServiceFactory::GetForProfile(profile_.get()));
       tab_helper = ReaderModeTabHelper::FromWebState(web_state_);
     }
-    tab_helper->SetActive(active);
+    if (active) {
+      tab_helper->ActivateReader(ReaderModeAccessPoint::kToolsMenu);
+    } else {
+      tab_helper->DeactivateReader();
+    }
   }
 
   void InsertNewWebState(int index) {

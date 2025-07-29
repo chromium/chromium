@@ -8,6 +8,7 @@ source_set("model") {
   sources = [
     "reader_mode_browser_agent.h",
     "reader_mode_browser_agent.mm",
+    "reader_mode_browser_agent_delegate.h",
     "reader_mode_content_delegate.h",
     "reader_mode_content_tab_helper.h",
     "reader_mode_content_tab_helper.mm",
