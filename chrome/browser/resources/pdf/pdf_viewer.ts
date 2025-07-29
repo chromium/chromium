@@ -441,6 +441,11 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     chrome.pdfViewerPrivate.onShouldUpdateViewport.addListener(
         this.handleMaybeUpdateViewport_.bind(this));
 
+    // <if expr="enable_pdf_save_to_drive">
+    chrome.pdfViewerPrivate.onSaveToDriveProgress.addListener(
+        this.handleSaveToDriveProgress_.bind(this));
+    // </if>
+
     this.embedded_ = this.browserApi!.getStreamInfo().embedded;
 
     if (this.pdfOopifEnabled && !this.embedded_) {
@@ -1181,6 +1186,18 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       void {
     this.navigator_!.navigate(url, disposition);
   }
+
+
+  // <if expr="enable_pdf_save_to_drive">
+  private handleSaveToDriveProgress_(
+      streamUrl: string,
+      _progress: chrome.pdfViewerPrivate.SaveToDriveProgress) {
+    if (streamUrl !== this.browserApi!.getStreamInfo().streamUrl) {
+      return;
+    }
+    // TODO(crbug.com/424208776): Implement the progress update.
+  }
+  // </if>
 
   /** Handles updating viewport params based on the `newUrl` provided. */
   private handleMaybeUpdateViewport_(newUrl: string) {

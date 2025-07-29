@@ -15,6 +15,54 @@ namespace pdfViewerPrivate {
     SEARCHIFIED
   };
 
+  // Enumeration of save to drive error types. Must match `SaveToDriveErrorType`
+  // in tools/typescript/definitions/pdf_viewer_private.d.ts.
+  enum SaveToDriveErrorType {
+    NO_ERROR,
+    UNKNOWN_ERROR,
+    QUOTA_EXCEEDED,
+    OFFLINE,
+    OAUTH_ERROR,
+    ACCOUNT_CHOOSER_CANCELED,
+    PARENT_FOLDER_SELECTION_FAILED
+  };
+
+  // Enumeration of save to drive status. Must match `SaveToDriveStatus` in
+  // tools/typescript/definitions/pdf_viewer_private.d.ts.
+  enum SaveToDriveStatus {
+    NOT_STARTED,
+    INITIATED,
+    ACCOUNT_CHOOSER_SHOWN,
+    ACCOUNT_SELECTED,
+    ACCOUNT_ADD_SELECTED,
+    ACCOUNT_ADDED,
+    FETCH_OAUTH,
+    FETCH_PARENT_FOLDER,
+    UPLOAD_STARTED,
+    UPLOAD_IN_PROGRESS,
+    UPLOAD_COMPLETED,
+    UPLOAD_RETRIED,
+    UPLOAD_FAILED
+  };
+
+  // Progress of a save to drive request.
+  dictionary SaveToDriveProgress {
+    // The status of the upload.
+    SaveToDriveStatus status;
+
+    // The error type of the upload.
+    SaveToDriveErrorType errorType;
+
+    // The ID of the drive item that was uploaded.
+    DOMString? driveItemId;
+
+    // The total size of the file in bytes.
+    long? fileSizeBytes;
+
+    // The number of bytes that have been uploaded.
+    long? uploadedBytes;
+  };
+
   // Nearly identical to mimeHandlerPrivate.StreamInfo, but without a mime type
   // nor a response header field. Those fields are unused by the PDF viewer.
   dictionary StreamInfo {
@@ -82,6 +130,13 @@ namespace pdfViewerPrivate {
     // Fired when the browser wants the listener to perform a save.
     // `streamUrl`: Unique ID for the instance that should perform the save.
     static void onSave(DOMString streamUrl);
+
+    // Fired when the browser wants the listener to update the save to drive
+    // progress.
+    // `streamUrl`: Unique ID for the instance that should perform the save.
+    // `progress`: The progress of the save to drive.
+    static void onSaveToDriveProgress(DOMString streamUrl,
+                                      SaveToDriveProgress progress);
 
     // Fired when the browser wants the listener to update the viewport based on
     // a different PDF URL.
