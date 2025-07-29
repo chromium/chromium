@@ -2,6 +2,10 @@
 # more tests are supported on the platform.
 -FormAutofillUtilsTest.InferLabelForElementTest
 -FrameMetadataObserverBrowserTest.LateObserver
+-FrameMetadataObserverBrowserTest.MetaTags
+-FrameMetadataObserverBrowserTest.MetaTagsLateObserver
+-FrameMetadataObserverBrowserTest.MetaTagsNameMismatch
+-FrameMetadataObserverBrowserTest.NoMetaTags
 -FrameMetadataObserverBrowserTest.NoPaidContent
 -FrameMetadataObserverBrowserTest.PaidContent
 -InnerTextBrowserTest.Basic
