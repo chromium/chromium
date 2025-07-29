@@ -4347,7 +4347,7 @@ IN_PROC_BROWSER_TEST_P(ExtensionWebRequestApiTestWithContextType,
   EXPECT_TRUE(ready_listener.WaitUntilSatisfied());
 
   // Now we should be able to intercept the incognito request.
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(PlatformOpenURLOffTheRecord(profile(), url));
   result = ExecuteScriptAndReturnString(extension_id, profile(), kScript);
   ASSERT_TRUE(result);
   EXPECT_EQ(base::StringPrintf("[\"%s\"]", url_origin.c_str()), *result);
