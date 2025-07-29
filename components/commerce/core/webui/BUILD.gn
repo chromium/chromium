@@ -27,8 +27,8 @@ source_set("webui") {
     "//components/commerce/core:shopping_service",
     "//components/commerce/core:utils",
     "//components/feature_engagement/public",
-    "//components/history/core/browser:browser",
-    "//components/optimization_guide/core:core",
+    "//components/history/core/browser",
+    "//components/optimization_guide/core",
     "//components/payments/core:currency_formatter",
     "//components/power_bookmarks/core",
     "//components/prefs",
@@ -66,7 +66,7 @@ source_set("unit_tests") {
     "//mojo/public/cpp/bindings",
     "//services/metrics/public/cpp:ukm_builders",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
