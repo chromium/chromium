@@ -74,6 +74,7 @@
   --cr-button-background-color: var(--ntp-composebox-background-color);
   --cr-button-border-color: var(--color-new-tab-page-composebox-font);
   --cr-button-text-color: var(--color-new-tab-page-composebox-font);
+  font-size: 14px;
 }
 
 #composebox {
