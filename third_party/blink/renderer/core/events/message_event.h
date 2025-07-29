@@ -57,17 +57,17 @@ class CORE_EXPORT MessageEvent final : public Event {
  public:
   static MessageEvent* Create() { return MakeGarbageCollected<MessageEvent>(); }
   static MessageEvent* Create(GCedMessagePortArray* ports,
-                              const String& origin = String(),
-                              const String& last_event_id = String(),
-                              EventTarget* source = nullptr) {
+                              const String& origin,
+                              const String& last_event_id,
+                              EventTarget* source) {
     return MakeGarbageCollected<MessageEvent>(origin, last_event_id, source,
                                               ports);
   }
   static MessageEvent* Create(GCedMessagePortArray* ports,
                               scoped_refptr<SerializedScriptValue> data,
-                              const String& origin = String(),
-                              const String& last_event_id = String(),
-                              EventTarget* source = nullptr) {
+                              const String& origin,
+                              const String& last_event_id,
+                              EventTarget* source) {
     return MakeGarbageCollected<MessageEvent>(
         std::move(data), origin, last_event_id, source, ports, nullptr);
   }
@@ -80,12 +80,11 @@ class CORE_EXPORT MessageEvent final : public Event {
   static MessageEvent* Create(
       Vector<MessagePortChannel> channels,
       scoped_refptr<SerializedScriptValue> data,
-      const String& origin = String(),
-      const String& last_event_id = String(),
-      EventTarget* source = nullptr,
-      UserActivation* user_activation = nullptr,
-      mojom::blink::DelegatedCapability delegated_capability =
-          mojom::blink::DelegatedCapability::kNone) {
+      const String& origin,
+      const String& last_event_id,
+      EventTarget* source,
+      UserActivation* user_activation,
+      mojom::blink::DelegatedCapability delegated_capability) {
     return MakeGarbageCollected<MessageEvent>(
         std::move(data), origin, last_event_id, source, std::move(channels),
         user_activation, delegated_capability);
