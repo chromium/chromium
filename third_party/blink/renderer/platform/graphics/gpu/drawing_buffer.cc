@@ -535,14 +535,6 @@ DrawingBuffer::CheckForDestructionAndChangeAndResolveIfNeeded(
   return kContentsResolvedIfNeeded;
 }
 
-scoped_refptr<StaticBitmapImage>
-DrawingBuffer::GetN32UnacceleratedStaticBitmapImage() {
-  const auto format = viz::SharedImageFormat::N32Format();
-  return GetUnacceleratedStaticBitmapImage(
-      kBackBuffer, format, kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin,
-      /*override_color_space=*/true);
-}
-
 scoped_refptr<gpu::ClientSharedImage>
 DrawingBuffer::ExportSharedImageFromBackBuffer(
     gpu::SyncToken& sync_token,

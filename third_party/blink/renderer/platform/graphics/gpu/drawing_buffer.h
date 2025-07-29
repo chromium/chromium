@@ -262,11 +262,6 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   scoped_refptr<StaticBitmapImage> TransferToStaticBitmapImage();
 
   // Returns a UnacceleratedStaticBitmapImage backed by a bitmap that will have
-  // a copy of the contents of the back buffer. Resulting image will have N32
-  // format and will have bottom-left orination and premultiplied alpha.
-  scoped_refptr<StaticBitmapImage> GetN32UnacceleratedStaticBitmapImage();
-
-  // Returns a UnacceleratedStaticBitmapImage backed by a bitmap that will have
   // a copy of the contents of the `source_buffer`. Resulting image will have
   // N32 format and will have top-left orination and alpha type that matches
   // `requested_alpha_type` of the drawing buffer.

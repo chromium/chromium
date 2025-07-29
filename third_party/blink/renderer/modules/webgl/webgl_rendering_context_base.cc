@@ -2172,7 +2172,10 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   // As the resource provider is not accelerated, we don't need an accelerated
   // image.
   scoped_refptr<StaticBitmapImage> image =
-      GetDrawingBuffer()->GetN32UnacceleratedStaticBitmapImage();
+      GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(
+          kBackBuffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
+          kBottomLeft_GrSurfaceOrigin,
+          /*override_color_space=*/true);
 
   if (!image || !image->PaintImageForCurrentFrame())
     return false;
