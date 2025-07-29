@@ -1,7 +1,14 @@
+<!-- Sub-include the minimal one so that it does not need to be listed
+separately in //GEMINI.md. -->
 @./common.minimal.md
 
 # Workflow Tips
 
+<!--
+Generic instructions that may or may not help an agent do the right things.
+We should aim to move text from here into common.minimal.md upon
+discovering scenarios where the text helps (and document them).
+-->
 
 ## General Workflow:
 
