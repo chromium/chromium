@@ -386,7 +386,6 @@ bool HTMLCanvasElement::PrepareTransferableResource(
   if (RenderingContext()->did_print_in_current_task() || IsPrinting()) {
     reason = FlushReason::kCanvasPushFrameWhilePrinting;
   }
-  RenderingContext()->GetResourceProviderForCanvas2D()->FlushCanvas(reason);
 
   scoped_refptr<CanvasResource> frame =
       RenderingContext()->PaintRenderingResultsToResource(kBackBuffer, reason);
