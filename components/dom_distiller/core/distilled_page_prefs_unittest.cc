@@ -102,11 +102,11 @@ TEST_F(DistilledPagePrefsTest, TestingOnChangeThemeIsBeingCalled) {
   distilled_page_prefs_->AddObserver(&obs);
   EXPECT_EQ(mojom::Theme::kLight, obs.GetTheme());
 
-  distilled_page_prefs_->SetTheme(mojom::Theme::kSepia);
+  distilled_page_prefs_->SetUserPrefTheme(mojom::Theme::kSepia);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
 
-  distilled_page_prefs_->SetTheme(mojom::Theme::kDark);
+  distilled_page_prefs_->SetUserPrefTheme(mojom::Theme::kDark);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::Theme::kDark, obs.GetTheme());
 
@@ -119,14 +119,14 @@ TEST_F(DistilledPagePrefsTest, TestingMultipleObserversTheme) {
   TestingObserver obs2;
   distilled_page_prefs_->AddObserver(&obs2);
 
-  distilled_page_prefs_->SetTheme(mojom::Theme::kSepia);
+  distilled_page_prefs_->SetUserPrefTheme(mojom::Theme::kSepia);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
   EXPECT_EQ(mojom::Theme::kSepia, obs2.GetTheme());
 
   distilled_page_prefs_->RemoveObserver(&obs);
 
-  distilled_page_prefs_->SetTheme(mojom::Theme::kLight);
+  distilled_page_prefs_->SetUserPrefTheme(mojom::Theme::kLight);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(mojom::Theme::kSepia, obs.GetTheme());
   EXPECT_EQ(mojom::Theme::kLight, obs2.GetTheme());

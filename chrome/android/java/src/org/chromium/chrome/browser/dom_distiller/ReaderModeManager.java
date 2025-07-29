@@ -43,6 +43,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.BrowserControlsManagerSupplier;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
+import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
+import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.Tab.LoadUrlResult;
@@ -50,6 +53,7 @@ import org.chromium.chrome.browser.tab.TabHidingType;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
+import org.chromium.components.dom_distiller.core.DistilledPagePrefs;
 import org.chromium.components.dom_distiller.core.DomDistillerFeatures;
 import org.chromium.components.dom_distiller.core.DomDistillerUrlUtils;
 import org.chromium.components.messages.DismissReason;
@@ -68,6 +72,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.dom_distiller.mojom.Theme;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.util.ColorUtils;
@@ -83,7 +88,8 @@ import java.util.LinkedHashSet;
  * loading.
  */
 @NullMarked
-public class ReaderModeManager extends EmptyTabObserver implements UserData {
+public class ReaderModeManager extends EmptyTabObserver
+        implements UserData, NightModeStateProvider.Observer {
     /** Possible states that the distiller can be in on a web page. */
     @IntDef({
         DistillationStatus.POSSIBLE,
@@ -183,11 +189,17 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
     // current navigation.
     private boolean mHasBeenNotifiedOfCpa;
 
+    // Used to keep track of the browser theme.
+    private final NightModeStateProvider mNightModeStateProvider;
+
     ReaderModeManager(Tab tab, Supplier<@Nullable MessageDispatcher> messageDispatcherSupplier) {
         super();
         mTab = tab;
         mTab.addObserver(this);
         mMessageDispatcherSupplier = messageDispatcherSupplier;
+
+        mNightModeStateProvider = GlobalNightModeStateProviderHolder.getInstance();
+        mNightModeStateProvider.addObserver(this);
     }
 
     /**
@@ -209,8 +221,19 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         mHasBeenNotifiedOfCpa = false;
         mIsReaderModeButtonShowingOnToolbar = false;
         mIsDestroyed = true;
+        mNightModeStateProvider.removeObserver(this);
     }
 
+    // NightModeStateProvider.Observer implementation.
+    @Override
+    public void onNightModeStateChanged() {
+        // Update the browser theme stored within DistilledPagePrefs.
+        WebContents webContents = mTab.getWebContents();
+        if (webContents == null) return;
+        setDefaultThemeAsBrowserTheme(webContents);
+    }
+
+    // TabObserver implementation.
     @Override
     public void onLoadUrl(Tab tab, LoadUrlParams params, LoadUrlResult loadUrlResult) {
         // If a distiller URL was loaded and this is a custom tab, add a navigation
@@ -360,6 +383,7 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
 
         if (tab.getWebContents() != null) {
             mWebContentsObserver = createWebContentsObserver();
+            setDefaultThemeAsBrowserTheme(tab.getWebContents());
             if (DomDistillerUrlUtils.isDistilledPage(tab.getUrl())) {
                 mDistillationStatus = DistillationStatus.STARTED;
                 mReaderModePageUrl = tab.getUrl();
@@ -664,6 +688,20 @@ public class ReaderModeManager extends EmptyTabObserver implements UserData {
         }
 
         DomDistillerTabUtils.distillCurrentPageAndView(webContents);
+    }
+
+    /**
+     * Ensure DistilledPagePrefs is updated with the theme of the browser. It will default to the
+     * browser theme if user has has not explicitly set a reader mode theme.
+     */
+    private void setDefaultThemeAsBrowserTheme(WebContents webContents) {
+        DistilledPagePrefs distilledPagePrefs =
+                DomDistillerServiceFactory.getForProfile(Profile.fromWebContents(webContents))
+                        .getDistilledPagePrefs();
+
+        @Theme.EnumType
+        int theme = mNightModeStateProvider.isInNightMode() ? Theme.DARK : Theme.LIGHT;
+        distilledPagePrefs.setDefaultTheme(theme);
     }
 
     private @Nullable BrowserControlsManager getBrowserControlsManager() {

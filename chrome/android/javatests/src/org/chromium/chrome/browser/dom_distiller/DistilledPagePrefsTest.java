@@ -54,7 +54,7 @@ public class DistilledPagePrefsTest {
     @After
     public void tearDown() {
         // Set back to default theme
-        setTheme(Theme.LIGHT);
+        setUserPrefTheme(Theme.LIGHT);
     }
 
     private void getDistilledPagePrefs() {
@@ -72,15 +72,15 @@ public class DistilledPagePrefsTest {
     @SmallTest
     @UiThreadTest
     @Feature({"DomDistiller"})
-    public void testGetAndSetTheme() {
+    public void testGetAndSetUserPrefTheme() {
         // Check the default theme.
         Assert.assertEquals(Theme.LIGHT, mDistilledPagePrefs.getTheme());
         // Check that theme can be correctly set.
-        setTheme(Theme.DARK);
+        setUserPrefTheme(Theme.DARK);
         Assert.assertEquals(Theme.DARK, mDistilledPagePrefs.getTheme());
-        setTheme(Theme.LIGHT);
+        setUserPrefTheme(Theme.LIGHT);
         Assert.assertEquals(Theme.LIGHT, mDistilledPagePrefs.getTheme());
-        setTheme(Theme.SEPIA);
+        setUserPrefTheme(Theme.SEPIA);
         Assert.assertEquals(Theme.SEPIA, mDistilledPagePrefs.getTheme());
     }
 
@@ -92,7 +92,7 @@ public class DistilledPagePrefsTest {
         addObserver(testObserver);
 
         Assert.assertEquals(Theme.LIGHT, testObserver.getTheme());
-        setTheme(Theme.DARK);
+        setUserPrefTheme(Theme.DARK);
         // Check that testObserver's theme has been updated,
         Assert.assertEquals(Theme.DARK, testObserver.getThemeAfterWaiting());
         removeObserver(testObserver);
@@ -107,12 +107,12 @@ public class DistilledPagePrefsTest {
         TestingObserver testObserverTwo = new TestingObserver();
         addObserver(testObserverTwo);
 
-        setTheme(Theme.SEPIA);
+        setUserPrefTheme(Theme.SEPIA);
         Assert.assertEquals(Theme.SEPIA, testObserverOne.getThemeAfterWaiting());
         Assert.assertEquals(Theme.SEPIA, testObserverTwo.getThemeAfterWaiting());
         removeObserver(testObserverOne);
 
-        setTheme(Theme.DARK);
+        setUserPrefTheme(Theme.DARK);
         // Check that testObserverOne's theme is not changed but testObserverTwo's is.
         Assert.assertEquals(Theme.DARK, testObserverTwo.getThemeAfterWaiting());
         // There is no simple way to safely wait for something not to happen unless we force a timed
@@ -310,8 +310,8 @@ public class DistilledPagePrefsTest {
         ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setFontFamily(font));
     }
 
-    private void setTheme(final int theme) {
-        ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setTheme(theme));
+    private void setUserPrefTheme(final int theme) {
+        ThreadUtils.runOnUiThreadBlocking(() -> mDistilledPagePrefs.setUserPrefTheme(theme));
     }
 
     private void setFontScaling(final float scaling) {

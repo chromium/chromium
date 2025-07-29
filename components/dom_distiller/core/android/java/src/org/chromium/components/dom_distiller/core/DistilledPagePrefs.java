@@ -115,9 +115,13 @@ public class DistilledPagePrefs {
         return DistilledPagePrefsJni.get().getFontFamily(mDistilledPagePrefsAndroid);
     }
 
-    public void setTheme(int theme) {
+    public void setUserPrefTheme(int theme) {
         Theme.validate(theme);
-        DistilledPagePrefsJni.get().setTheme(mDistilledPagePrefsAndroid, theme);
+        DistilledPagePrefsJni.get().setUserPrefTheme(mDistilledPagePrefsAndroid, theme);
+    }
+
+    public void setDefaultTheme(int theme) {
+        DistilledPagePrefsJni.get().setDefaultTheme(mDistilledPagePrefsAndroid, theme);
     }
 
     public int getTheme() {
@@ -140,7 +144,9 @@ public class DistilledPagePrefs {
 
         int getFontFamily(long nativeDistilledPagePrefsAndroid);
 
-        void setTheme(long nativeDistilledPagePrefsAndroid, int theme);
+        void setUserPrefTheme(long nativeDistilledPagePrefsAndroid, int theme);
+
+        void setDefaultTheme(long nativeDistilledPagePrefsAndroid, int theme);
 
         int getTheme(long nativeDistilledPagePrefsAndroid);
 

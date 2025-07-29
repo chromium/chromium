@@ -28,8 +28,8 @@ class DistilledPagePrefsAndroid {
   void SetFontFamily(JNIEnv* env,
                      jint font_family);
   jint GetFontFamily(JNIEnv* env);
-  void SetTheme(JNIEnv* env,
-                jint theme);
+  void SetUserPrefTheme(JNIEnv* env, jint theme);
+  void SetDefaultTheme(JNIEnv* env, jint theme);
   jint GetTheme(JNIEnv* env);
   void SetFontScaling(JNIEnv* env,
                       jfloat scaling);

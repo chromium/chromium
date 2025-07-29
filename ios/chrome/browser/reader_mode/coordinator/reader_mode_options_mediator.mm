@@ -70,7 +70,7 @@
 }
 
 - (void)setTheme:(dom_distiller::mojom::Theme)theme {
-  _distilledPagePrefs->SetTheme(theme);
+  _distilledPagePrefs->SetUserPrefTheme(theme);
 }
 
 - (void)hideReaderMode {

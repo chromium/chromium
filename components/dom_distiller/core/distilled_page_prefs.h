@@ -41,8 +41,14 @@ class DistilledPagePrefs {
   mojom::FontFamily GetFontFamily();
 
   // Sets the user's preference for the theme of distilled pages.
-  void SetTheme(mojom::Theme new_theme);
-  // Returns the user's preference for the theme of distilled pages.
+  void SetUserPrefTheme(mojom::Theme new_theme);
+
+  // Sets default theme, used when user's preference for theme is not set.
+  void SetDefaultTheme(mojom::Theme default_theme);
+
+  // Returns the theme for distilled pages. If user's preference for the theme
+  // is set, it will return the user's preference for the theme. Otherwise, it
+  // will return the value of default_theme_.
   mojom::Theme GetTheme();
 
   // Sets the user's preference for the font size scaling of distilled pages.
@@ -64,6 +70,8 @@ class DistilledPagePrefs {
   raw_ptr<PrefService> pref_service_;
   PrefChangeRegistrar pref_change_registrar_;
   base::ObserverList<Observer> observers_;
+
+  std::optional<mojom::Theme> default_theme_;
 
   base::WeakPtrFactory<DistilledPagePrefs> weak_ptr_factory_{this};
 };

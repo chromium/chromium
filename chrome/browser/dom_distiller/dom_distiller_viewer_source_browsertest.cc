@@ -513,7 +513,7 @@ void DomDistillerViewerSourceBrowserTest::PrefTest(bool is_error_page) {
           ->GetDistilledPagePrefs();
 
   // Test theme.
-  distilled_page_prefs->SetTheme(mojom::Theme::kDark);
+  distilled_page_prefs->SetUserPrefTheme(mojom::Theme::kDark);
   base::RunLoop().RunUntilIdle();
   ExpectBodyHasThemeAndFont(contents, "dark", "sans-serif");
 
@@ -558,7 +558,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerViewerSourceBrowserTest, PrefPersist) {
 
   // Set preference.
   const double kScale = 1.23;
-  distilled_page_prefs->SetTheme(mojom::Theme::kDark);
+  distilled_page_prefs->SetUserPrefTheme(mojom::Theme::kDark);
   distilled_page_prefs->SetFontFamily(mojom::FontFamily::kMonospace);
   distilled_page_prefs->SetFontScaling(kScale);
 

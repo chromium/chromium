@@ -144,7 +144,7 @@ TEST_F(ReaderModeMetricsHelperTest, OnFontScaleChanged) {
 TEST_F(ReaderModeMetricsHelperTest, OnThemeChanged) {
   histogram_tester_.ExpectTotalCount(kReaderModeCustomizationHistogram, 0);
 
-  distilled_page_prefs_->SetTheme(dom_distiller::mojom::Theme::kDark);
+  distilled_page_prefs_->SetUserPrefTheme(dom_distiller::mojom::Theme::kDark);
 
   EXPECT_THAT(
       histogram_tester_.GetAllSamples(kReaderModeCustomizationHistogram),

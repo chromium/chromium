@@ -29,7 +29,8 @@ void DistillerJavaScriptServiceImpl::HandleStoreThemePref(mojom::Theme theme) {
     return;
   }
 
-  distiller_service_weak_ptr_.get()->GetDistilledPagePrefs()->SetTheme(theme);
+  distiller_service_weak_ptr_.get()->GetDistilledPagePrefs()->SetUserPrefTheme(
+      theme);
 }
 
 void DistillerJavaScriptServiceImpl::HandleStoreFontFamilyPref(

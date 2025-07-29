@@ -48,7 +48,7 @@ public class DistilledPagePrefsView extends LinearLayout
     private static final int VIEW_LAYOUT = R.layout.distilled_page_prefs_view;
 
     // Buttons for color mode.
-    private final Map<Integer /* Theme */, RadioButton> mColorModeButtons;
+    private final Map<Integer/* Theme= */ , RadioButton> mColorModeButtons;
 
     private final NumberFormat mPercentageFormatter;
 
@@ -74,7 +74,7 @@ public class DistilledPagePrefsView extends LinearLayout
      */
     public DistilledPagePrefsView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        mColorModeButtons = new HashMap<Integer /* Theme */, RadioButton>();
+        mColorModeButtons = new HashMap<Integer/* Theme= */ , RadioButton>();
         mPercentageFormatter = NumberFormat.getPercentInstance(Locale.getDefault());
     }
 
@@ -265,7 +265,7 @@ public class DistilledPagePrefsView extends LinearLayout
                     @Override
                     public void onClick(View v) {
                         RecordUserAction.record("DomDistiller.Android.ThemeChanged");
-                        mDistilledPagePrefs.setTheme(theme);
+                        mDistilledPagePrefs.setUserPrefTheme(theme);
                     }
                 });
         return button;

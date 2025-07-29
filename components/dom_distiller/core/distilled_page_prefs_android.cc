@@ -34,9 +34,12 @@ jint DistilledPagePrefsAndroid::GetFontFamily(JNIEnv* env) {
   return (int)distilled_page_prefs_->GetFontFamily();
 }
 
-void DistilledPagePrefsAndroid::SetTheme(JNIEnv* env,
-                                         jint theme) {
-  distilled_page_prefs_->SetTheme(static_cast<mojom::Theme>(theme));
+void DistilledPagePrefsAndroid::SetUserPrefTheme(JNIEnv* env, jint theme) {
+  distilled_page_prefs_->SetUserPrefTheme(static_cast<mojom::Theme>(theme));
+}
+
+void DistilledPagePrefsAndroid::SetDefaultTheme(JNIEnv* env, jint theme) {
+  distilled_page_prefs_->SetDefaultTheme(static_cast<mojom::Theme>(theme));
 }
 
 jint DistilledPagePrefsAndroid::GetTheme(JNIEnv* env) {

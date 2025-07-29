@@ -75,22 +75,33 @@ mojom::FontFamily DistilledPagePrefs::GetFontFamily() {
   return mojom::FontFamily::kSansSerif;
 }
 
-void DistilledPagePrefs::SetTheme(mojom::Theme new_theme) {
+void DistilledPagePrefs::SetUserPrefTheme(mojom::Theme new_theme) {
   pref_service_->SetInteger(prefs::kTheme, static_cast<int32_t>(new_theme));
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
                                 weak_ptr_factory_.GetWeakPtr()));
 }
 
+void DistilledPagePrefs::SetDefaultTheme(mojom::Theme default_theme) {
+  default_theme_ = default_theme;
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&DistilledPagePrefs::NotifyOnChangeTheme,
+                                weak_ptr_factory_.GetWeakPtr()));
+}
+
 mojom::Theme DistilledPagePrefs::GetTheme() {
-  auto theme =
-      static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme));
+  mojom::Theme theme;
+  if (pref_service_->FindPreference(prefs::kTheme)->HasUserSetting()) {
+    theme = static_cast<mojom::Theme>(pref_service_->GetInteger(prefs::kTheme));
+  } else {
+    theme = default_theme_.value_or(mojom::Theme::kLight);
+  }
   if (mojom::IsKnownEnumValue(theme))
     return theme;
 
   // Persisted data was incorrect, trying to clean it up by storing the
   // default.
-  SetTheme(mojom::Theme::kLight);
+  SetUserPrefTheme(mojom::Theme::kLight);
   return mojom::Theme::kLight;
 }
 
