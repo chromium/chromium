@@ -43,12 +43,13 @@ constexpr base::TimeDelta kBatchUploadAvatarButtonOverrideTextDuration =
 // point. E.g. Bookmarks promo card entry point will force
 // `syncer::DataType::BOOKMARKS` to be the first data type shown (and not
 // repeated afterwards).
-const std::array<syncer::DataType, 5> kBatchUploadAvailableTypesOrder{
+const std::array<syncer::DataType, 6> kBatchUploadAvailableTypesOrder{
     // clang-format off
     syncer::DataType::PASSWORDS,
     syncer::DataType::BOOKMARKS,
     syncer::DataType::READING_LIST,
     syncer::DataType::CONTACT_INFO,
+    syncer::DataType::EXTENSIONS,
     syncer::DataType::THEMES,
     // clang-format on
 };

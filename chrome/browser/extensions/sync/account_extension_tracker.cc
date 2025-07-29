@@ -326,9 +326,12 @@ bool AccountExtensionTracker::CanUploadAsAccountExtension(
     return false;
   }
 
-  // An extension is eligible to be uploaded if it's syncable and is a local
-  // extension (i.e. it's not currently syncing).
-  return GetAccountExtensionType(extension.id()) ==
+  // An extension is eligible to be uploaded if it:
+  // - is an extension, not a Chrome App/hosted app etc
+  // - is syncable
+  // - is a local extension (i.e. it's not currently syncing)
+  return extension.is_extension() &&
+         GetAccountExtensionType(extension.id()) ==
              AccountExtensionType::kLocal &&
          sync_util::ShouldSync(profile_, &extension);
 }

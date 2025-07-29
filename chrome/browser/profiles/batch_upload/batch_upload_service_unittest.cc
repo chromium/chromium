@@ -169,13 +169,14 @@ TEST_F(BatchUploadServiceTest, GetLocalDataDescriptionsForAvailableTypes) {
   test_helper().SetLocalDataDescriptionForAllAvailableTypes();
 
   // Lists the requested types.
-  EXPECT_CALL(sync_service_mock(),
-              GetLocalDataDescriptions(
-                  syncer::DataTypeSet{
-                      syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
-                      syncer::DataType::READING_LIST,
-                      syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
-                  _))
+  EXPECT_CALL(
+      sync_service_mock(),
+      GetLocalDataDescriptions(
+          syncer::DataTypeSet{
+              syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+              syncer::DataType::READING_LIST, syncer::DataType::CONTACT_INFO,
+              syncer::DataType::EXTENSIONS, syncer::DataType::THEMES},
+          _))
       .Times(1);
 
   base::MockCallback<base::OnceCallback<void(
@@ -192,6 +193,8 @@ TEST_F(BatchUploadServiceTest, GetLocalDataDescriptionsForAvailableTypes) {
            test_helper().GetReturnDescription(syncer::READING_LIST)},
           {syncer::CONTACT_INFO,
            test_helper().GetReturnDescription(syncer::CONTACT_INFO)},
+          {syncer::EXTENSIONS,
+           test_helper().GetReturnDescription(syncer::EXTENSIONS)},
           {syncer::THEMES, test_helper().GetReturnDescription(syncer::THEMES)},
       };
   EXPECT_CALL(result_callback, Run(expected_description_map));
@@ -206,19 +209,21 @@ TEST_F(BatchUploadServiceTest, LocalDataForAllAvailableTypesMainOrder) {
   test_helper().SetLocalDataDescriptionForAllAvailableTypes();
 
   // Lists the requested types.
-  EXPECT_CALL(sync_service_mock(),
-              GetLocalDataDescriptions(
-                  syncer::DataTypeSet{
-                      syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
-                      syncer::DataType::READING_LIST,
-                      syncer::DataType::CONTACT_INFO, syncer::DataType::THEMES},
-                  _));
+  EXPECT_CALL(
+      sync_service_mock(),
+      GetLocalDataDescriptions(
+          syncer::DataTypeSet{
+              syncer::DataType::PASSWORDS, syncer::DataType::BOOKMARKS,
+              syncer::DataType::READING_LIST, syncer::DataType::CONTACT_INFO,
+              syncer::EXTENSIONS, syncer::DataType::THEMES},
+          _));
   // Order is tested.
   std::vector<syncer::LocalDataDescription> expected_descriptions{
       test_helper().GetReturnDescription(syncer::PASSWORDS),
       test_helper().GetReturnDescription(syncer::BOOKMARKS),
       test_helper().GetReturnDescription(syncer::READING_LIST),
       test_helper().GetReturnDescription(syncer::CONTACT_INFO),
+      test_helper().GetReturnDescription(syncer::EXTENSIONS),
       test_helper().GetReturnDescription(syncer::THEMES),
   };
   EXPECT_CALL(delegate_mock(),

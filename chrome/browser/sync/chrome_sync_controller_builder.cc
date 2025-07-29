@@ -36,6 +36,7 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS_CORE)
 #include "chrome/browser/extensions/api/storage/settings_sync_util.h"  // nogncheck
+#include "chrome/browser/extensions/sync/extension_local_data_batch_uploader.h"  // nogncheck
 #include "chrome/browser/extensions/sync/extension_sync_service.h"  // nogncheck
 #include "chrome/browser/sync/glue/extension_data_type_controller.h"
 #include "chrome/browser/sync/glue/extension_setting_data_type_controller.h"
@@ -201,7 +202,9 @@ ChromeSyncControllerBuilder::Build(syncer::SyncService* sync_service) {
               extension_sync_service_.value()->AsWeakPtr(), dump_stack,
               browser_sync::ExtensionDataTypeController::DelegateMode::
                   kTransportModeWithSingleModel,
-              extension_system_profile_.value()));
+              extension_system_profile_.value(),
+              std::make_unique<extensions::ExtensionLocalDataBatchUploader>(
+                  extension_system_profile_.value())));
 
       controllers.push_back(
           std::make_unique<browser_sync::ExtensionSettingDataTypeController>(

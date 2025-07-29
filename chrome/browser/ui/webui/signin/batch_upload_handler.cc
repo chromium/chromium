@@ -19,6 +19,7 @@
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
+#include "url/url_constants.h"
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/device_reauth/chrome_device_authenticator_factory.h"
@@ -82,6 +83,12 @@ GURL ComputeIconUrl(const syncer::LocalDataItemModel::Icon& icon) {
 
   if (const GURL* page_url =
           std::get_if<syncer::LocalDataItemModel::PageUrlIcon>(&icon)) {
+    // Icons that have the data:// scheme can be used as-is (e.g. base64 icons
+    // for extensions).
+    if (page_url->SchemeIs(url::kDataScheme)) {
+      return *page_url;
+    }
+
     // Add the http:// scheme if a scheme is not already present.
     GURL::Replacements replace_scheme;
     replace_scheme.SetSchemeStr(url::kHttpScheme);
@@ -300,6 +307,8 @@ int BatchUploadHandler::GetTypeSectionTitleId(syncer::DataType type) {
       return IDS_BATCH_UPLOAD_SECTION_TITLE_READING_LIST;
     case syncer::DataType::CONTACT_INFO:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_ADDRESSES;
+    case syncer::DataType::EXTENSIONS:
+      return IDS_BATCH_UPLOAD_SECTION_TITLE_EXTENSIONS;
     case syncer::DataType::THEMES:
       return IDS_BATCH_UPLOAD_SECTION_TITLE_THEMES_WITH_DESCRIPTION;
     default:

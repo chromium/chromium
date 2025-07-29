@@ -12,6 +12,7 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/sync/base/data_type.h"
+#include "components/sync/base/features.h"
 #include "components/sync/service/local_data_description.h"
 #include "extensions/browser/icon_util.h"
 #include "extensions/browser/image_loader.h"
@@ -68,14 +69,15 @@ ExtensionLocalDataBatchUploader::~ExtensionLocalDataBatchUploader() = default;
 
 void ExtensionLocalDataBatchUploader::GetLocalDataDescription(
     base::OnceCallback<void(syncer::LocalDataDescription)> callback) {
-  if (!sync_util::IsSyncingExtensionsInTransportMode(profile_)) {
+  if (!sync_util::IsSyncingExtensionsInTransportMode(profile_) ||
+      !base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     std::move(callback).Run(syncer::LocalDataDescription());
     return;
   }
 
   std::vector<const Extension*> uploadable_extensions =
       AccountExtensionTracker::Get(profile_)->GetUploadableLocalExtensions();
-
   if (uploadable_extensions.empty()) {
     std::move(callback).Run(syncer::LocalDataDescription());
     return;
@@ -129,7 +131,9 @@ void ExtensionLocalDataBatchUploader::TriggerLocalDataMigrationForItemsInternal(
       identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
   CHECK(!account_info.IsEmpty());
 
-  if (!sync_util::IsSyncingExtensionsInTransportMode(profile_)) {
+  if (!sync_util::IsSyncingExtensionsInTransportMode(profile_) ||
+      !base::FeatureList::IsEnabled(
+          syncer::kReplaceSyncPromosWithSignInPromos)) {
     return;
   }
 
