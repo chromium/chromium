@@ -834,7 +834,11 @@ void HTMLCanvasElement::PostFinalizeFrame(FlushReason reason) {
     context_->ClearMarkedCanvasDirty();
   }
 
-  if (LowLatencyEnabled()) {
+  // Note: LowLatencyEnabled() could be true for any context type as it just
+  // checks whether the `desynchronized` attribute is set on the context, but
+  // only WebGL and Canvas2D have specific flows for low latency (for other
+  // context types, setting the attribute is a no-op).
+  if (LowLatencyEnabled() && (IsWebGL() || IsRenderingContext2D())) {
     bool resource_is_paintable =
         IsRenderingContext2D()
             ? RenderingContext()->IsCanvas2DResourceProviderValid()
