@@ -40,7 +40,7 @@ class PLATFORM_EXPORT FastSharedBufferReader final {
       base::span<uint8_t> buffer) const;
 
   // Wraps SegmentReader::GetSomeData().
-  size_t GetSomeData(const uint8_t*& some_data, size_t data_position) const;
+  base::span<const uint8_t> GetSomeData(size_t data_position) const;
 
   // Returns a byte at `data_position`.
   // Caller must ensure there are enough bytes in `data_`.

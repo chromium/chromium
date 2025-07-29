@@ -58,12 +58,10 @@ base::span<const uint8_t> FastSharedBufferReader::GetConsecutiveData(
   return buffer.first(length);
 }
 
-// TODO(kelsen): Change to return a span instead of using an output parameter.
-size_t FastSharedBufferReader::GetSomeData(const uint8_t*& some_data,
-                                           size_t data_position) const {
+base::span<const uint8_t> FastSharedBufferReader::GetSomeData(
+    size_t data_position) const {
   GetSomeDataInternal(data_position);
-  some_data = segment_.data();
-  return segment_.size();
+  return segment_;
 }
 
 void FastSharedBufferReader::GetSomeDataInternal(size_t data_position) const {

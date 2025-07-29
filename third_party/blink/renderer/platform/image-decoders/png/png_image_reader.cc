@@ -551,19 +551,17 @@ bool PNGImageReader::Parse(SegmentReader& data, ParseQuery query) {
 wtf_size_t PNGImageReader::ProcessData(const FastSharedBufferReader& reader,
                                        wtf_size_t offset,
                                        wtf_size_t length) {
-  const uint8_t* segment;
   wtf_size_t total_processed_bytes = 0;
   while (reader.size() > offset) {
-    size_t segment_length = reader.GetSomeData(segment, offset);
-    if (length > 0 && segment_length + total_processed_bytes > length) {
-      segment_length = length - total_processed_bytes;
+    base::span<const uint8_t> segment = reader.GetSomeData(offset);
+    if (length > 0 && segment.size() > length - total_processed_bytes) {
+      segment = segment.first(length - total_processed_bytes);
     }
 
-    png_process_data(png_, info_,
-                     reinterpret_cast<png_byte*>(const_cast<uint8_t*>(segment)),
-                     segment_length);
-    offset += segment_length;
-    total_processed_bytes += segment_length;
+    png_process_data(png_, info_, const_cast<uint8_t*>(segment.data()),
+                     segment.size());
+    offset += segment.size();
+    total_processed_bytes += segment.size();
     if (total_processed_bytes == length) {
       return length;
     }
