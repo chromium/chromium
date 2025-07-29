@@ -4,6 +4,8 @@
 # found in the LICENSE file.
 """Unittests for run.py."""
 
+import contextlib
+import io
 import json
 import mock
 import os
@@ -83,11 +85,10 @@ class UnitTest(unittest.TestCase):
     runner.parse_args(cmd)
     self.assertTrue(runner.args.repeat == 2)
 
-  def test_parse_args_iossim_platform_version(self):
-    """
-    iossim, platforma and version should all be set.
-    missing iossim
-    """
+  # Don't try to set any defaults.
+  @mock.patch('xcode_util.is_local_run', return_value=False)
+  def test_parse_args_iossim_platform_version(self, _):
+    """iossim, platform and version should all be set together."""
     test_cases = [
         {
             'error':
@@ -141,10 +142,99 @@ class UnitTest(unittest.TestCase):
 
     runner = run.Runner()
     for test_case in test_cases:
-      with self.assertRaises(SystemExit) as ctx:
-        runner.parse_args(test_case['cmd'])
-        self.assertTrue(re.match('must specify all or none of *', ctx.message))
-        self.assertEqual(ctx.exception.code, test_case['error'])
+      stderr_buf = io.StringIO()
+      with contextlib.redirect_stderr(stderr_buf):
+        with self.assertRaises(SystemExit) as ctx:
+          runner.parse_args(test_case['cmd'])
+      self.assertEqual(ctx.exception.code, test_case['error'])
+      self.assertRegex(stderr_buf.getvalue(), 'must specify all or none of .*')
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  def test_parse_args_default_xcode_build_version(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('123abc', runner.args.xcode_build_version)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch('xcode_util.version', return_value=('20.0', '123abc'))
+  def test_parse_args_default_xcode_build_version_override(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+        '--xcode-build-version',
+        'efefef',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('efefef', runner.args.xcode_build_version)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch(
+      'iossim_util.get_simulator_list',
+      return_value={
+          'runtimes': [{
+              'version':
+                  '20.0',
+              'supportedDeviceTypes': [{
+                  'productFamily': 'iPhone',
+                  'name': 'iPhone 20',
+              }, {
+                  'productFamily': 'iPhone',
+                  'name': 'iPhone 20 Pro',
+              }, {
+                  'productFamily': 'iPad',
+                  'name': 'iPad 10',
+              }],
+          }],
+      })
+  def test_parse_args_default_simulator_params(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+        '--xcode-build-version',
+        '123abc',
+        '--iossim',
+        'path/to/iossim',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('20.0', runner.args.version)
+    self.assertEqual('iPhone 20 Pro', runner.args.platform)
+
+  @mock.patch('xcode_util.is_local_run', return_value=True)
+  @mock.patch(
+      'iossim_util.get_simulator_list',
+      return_value={
+          'runtimes': [{
+              'version':
+                  '19.0',
+              'supportedDeviceTypes': [{
+                  'productFamily': 'iPhone',
+                  'name': 'iPhone 19',
+              }],
+          }],
+      })
+  def test_parse_args_default_simulator_params_override(self, *_mocks):
+    cmd = [
+        '--out-dir',
+        'some/dir',
+        '--xcode-build-version',
+        '123abc',
+        '--xcodebuild-sim-runner',
+        '--version',
+        '20.0',
+        '--platform',
+        'iPad 20',
+    ]
+    runner = run.Runner()
+    runner.parse_args(cmd)
+    self.assertEqual('20.0', runner.args.version)
+    self.assertEqual('iPad 20', runner.args.platform)
 
   def test_parse_args_xcode_parallelization_requirements(self):
     """
