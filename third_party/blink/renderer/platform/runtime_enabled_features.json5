@@ -4954,7 +4954,7 @@
       // https://issues.chromium.org/issues/408018828
       // https://github.com/whatwg/html/issues/9111
       name: "ToggleEventSource",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "TopicsAPI",
