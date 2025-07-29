@@ -608,9 +608,12 @@ foreach(_target_type,
                 ":mac_no_default_new_delete_symbols",
                 "//build/config/compiler:exceptions",
                 "//build/config/compiler:rtti",
-              ]) != []) {
-        # Exceptions and RTTI flags are incompatible with libc++ modules build.
-        # So disable modules build for such targets.
+              ]) != [] ||
+          filter_include(configs,
+                         [ "//build/config/compiler:no_exceptions" ]) == []) {
+        # Exceptions (i.e. if the 'no_exceptions' config is not used) and RTTI
+        # flags are incompatible with libc++ modules build. So disable modules
+        # build for such targets.
         use_libcxx_modules = false
       }
 
@@ -737,9 +740,12 @@ foreach(_target_type,
                 ":mac_no_default_new_delete_symbols",
                 "//build/config/compiler:exceptions",
                 "//build/config/compiler:rtti",
-              ]) != []) {
-        # Exceptions and RTTI flags are incompatible with libc++ modules build.
-        # So disable modules build for such targets.
+              ]) != [] ||
+          filter_include(configs,
+                         [ "//build/config/compiler:no_exceptions" ]) == []) {
+        # Exceptions (i.e. if the 'no_exceptions' config is not used) and RTTI
+        # flags are incompatible with libc++ modules build. So disable modules
+        # build for such targets.
         use_libcxx_modules = false
       }
 
