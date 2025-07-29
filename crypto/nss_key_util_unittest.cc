@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/nss_key_util.h"
 
 #include <keyhi.h>
@@ -15,6 +10,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -61,7 +57,8 @@ TEST_F(NSSKeyUtilTest, FindNSSKeyFromPublicKeyInfo) {
 
   ScopedSECItem item(SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   ASSERT_TRUE(item);
-  std::vector<uint8_t> public_key_der(item->data, item->data + item->len);
+  std::vector<uint8_t> public_key_der(item->data,
+                                      UNSAFE_TODO(item->data + item->len));
 
   ScopedSECKEYPrivateKey private_key2 =
       FindNSSKeyFromPublicKeyInfo(public_key_der);
@@ -79,7 +76,8 @@ TEST_F(NSSKeyUtilTest, FailedFindNSSKeyFromPublicKeyInfo) {
 
   ScopedSECItem item(SECKEY_EncodeDERSubjectPublicKeyInfo(public_key.get()));
   ASSERT_TRUE(item);
-  std::vector<uint8_t> public_key_der(item->data, item->data + item->len);
+  std::vector<uint8_t> public_key_der(item->data,
+                                      UNSAFE_TODO(item->data + item->len));
 
   // Remove the keys from the DB, and make sure we can't find them again.
   PK11_DestroyTokenObject(private_key->pkcs11Slot, private_key->pkcs11ID);

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/rsa_private_key.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/bn.h"
@@ -66,7 +62,7 @@ bool RSAPrivateKey::ExportPrivateKey(std::vector<uint8_t>* output) const {
       !CBB_finish(cbb.get(), &der, &der_len)) {
     return false;
   }
-  output->assign(der, der + der_len);
+  output->assign(der, UNSAFE_TODO(der + der_len));
   OPENSSL_free(der);
   return true;
 }
@@ -81,7 +77,7 @@ bool RSAPrivateKey::ExportPublicKey(std::vector<uint8_t>* output) const {
       !CBB_finish(cbb.get(), &der, &der_len)) {
     return false;
   }
-  output->assign(der, der + der_len);
+  output->assign(der, UNSAFE_TODO(der + der_len));
   OPENSSL_free(der);
   return true;
 }

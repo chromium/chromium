@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "crypto/secure_hash.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/types/fixed_array.h"
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -127,14 +123,17 @@ TEST_P(SecureHashTest, TestClone) {
   ctx2->Update(input2.data(), input2.size());
   ctx2->Finish(output2.data(), output2.size());
 
-  EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_));
-  EXPECT_EQ(0, memcmp(output1.data(), expected_hash_of_input_1_and_2.data(),
-                      hash_length_));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_)));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output1.data(), expected_hash_of_input_1_and_2.data(),
+                          hash_length_)));
 
   // Finish() ctx3, which should produce the hash of input1.
   ctx3->Finish(output3.data(), output3.size());
-  EXPECT_EQ(
-      0, memcmp(output3.data(), expected_hash_of_input_1.data(), hash_length_));
+  UNSAFE_TODO(EXPECT_EQ(
+      0,
+      memcmp(output3.data(), expected_hash_of_input_1.data(), hash_length_)));
 }
 
 TEST_P(SecureHashTest, TestLength) {
@@ -165,7 +164,8 @@ TEST_P(SecureHashTest, Equality) {
   ctx2->Finish(output2.data(), output2.size());
 
   // The hash should be the same.
-  EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(output1.data(), output2.data(), hash_length_)));
 }
 
 INSTANTIATE_TEST_SUITE_P(

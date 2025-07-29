@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/hmac.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <string>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/strings/string_number_conversions.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -92,7 +88,8 @@ TEST(HMACTest, HmacSafeBrowsingResponseTest) {
   unsigned char calculated_hmac[kSHA1DigestSize];
 
   EXPECT_TRUE(hmac.Sign(message_data, calculated_hmac, kSHA1DigestSize));
-  EXPECT_EQ(0, memcmp(kReceivedHmac, calculated_hmac, kSHA1DigestSize));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(kReceivedHmac, calculated_hmac, kSHA1DigestSize)));
 }
 
 // Test cases from RFC 2202 section 3
@@ -166,7 +163,7 @@ TEST(HMACTest, RFC2202TestCases) {
     std::string data_string(cases[i].data, cases[i].data_len);
     unsigned char digest[kSHA1DigestSize];
     EXPECT_TRUE(hmac.Sign(data_string, digest, kSHA1DigestSize));
-    EXPECT_EQ(0, memcmp(cases[i].digest, digest, kSHA1DigestSize));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(cases[i].digest, digest, kSHA1DigestSize)));
   }
 }
 
@@ -174,7 +171,7 @@ TEST(HMACTest, RFC2202TestCases) {
 TEST(HMACTest, RFC4231TestCase6) {
   unsigned char key[131];
   for (size_t i = 0; i < sizeof(key); ++i)
-    key[i] = 0xaa;
+    UNSAFE_TODO(key[i]) = 0xaa;
 
   std::string data = "Test Using Larger Than Block-Size Key - Hash Key First";
   ASSERT_EQ(54U, data.size());
@@ -192,7 +189,8 @@ TEST(HMACTest, RFC4231TestCase6) {
 
   EXPECT_EQ(kSHA256DigestSize, hmac.DigestLength());
   EXPECT_TRUE(hmac.Sign(data, calculated_hmac, kSHA256DigestSize));
-  EXPECT_EQ(0, memcmp(kKnownHMACSHA256, calculated_hmac, kSHA256DigestSize));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kKnownHMACSHA256, calculated_hmac, kSHA256DigestSize)));
 }
 
 // Based on NSS's FIPS HMAC power-up self-test.
@@ -233,7 +231,8 @@ TEST(HMACTest, NSSFIPSPowerUpSelfTest) {
 
   EXPECT_EQ(kSHA1DigestSize, hmac.DigestLength());
   EXPECT_TRUE(hmac.Sign(message_data, calculated_hmac, kSHA1DigestSize));
-  EXPECT_EQ(0, memcmp(kKnownHMACSHA1, calculated_hmac, kSHA1DigestSize));
+  UNSAFE_TODO(
+      EXPECT_EQ(0, memcmp(kKnownHMACSHA1, calculated_hmac, kSHA1DigestSize)));
   EXPECT_TRUE(hmac.Verify(
       message_data,
       std::string_view(reinterpret_cast<const char*>(kKnownHMACSHA1),
@@ -248,7 +247,8 @@ TEST(HMACTest, NSSFIPSPowerUpSelfTest) {
   unsigned char calculated_hmac2[kSHA256DigestSize];
 
   EXPECT_TRUE(hmac2.Sign(message_data, calculated_hmac2, kSHA256DigestSize));
-  EXPECT_EQ(0, memcmp(kKnownHMACSHA256, calculated_hmac2, kSHA256DigestSize));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kKnownHMACSHA256, calculated_hmac2, kSHA256DigestSize)));
 }
 
 TEST(HMACTest, HMACObjectReuse) {
@@ -261,7 +261,8 @@ TEST(HMACTest, HMACObjectReuse) {
                             kSimpleHmacCases[i].data_len);
     unsigned char digest[kSHA1DigestSize];
     EXPECT_TRUE(hmac.Sign(data_string, digest, kSHA1DigestSize));
-    EXPECT_EQ(0, memcmp(kSimpleHmacCases[i].digest, digest, kSHA1DigestSize));
+    UNSAFE_TODO(EXPECT_EQ(
+        0, memcmp(kSimpleHmacCases[i].digest, digest, kSHA1DigestSize)));
   }
 }
 
@@ -302,7 +303,7 @@ TEST(HMACTest, EmptyKey) {
 
   unsigned char digest[kSHA1DigestSize];
   EXPECT_TRUE(hmac.Sign(data, digest, kSHA1DigestSize));
-  EXPECT_EQ(0, memcmp(kExpectedDigest, digest, kSHA1DigestSize));
+  UNSAFE_TODO(EXPECT_EQ(0, memcmp(kExpectedDigest, digest, kSHA1DigestSize)));
 
   EXPECT_TRUE(
       hmac.Verify(data, std::string_view(kExpectedDigest, kSHA1DigestSize)));
@@ -312,7 +313,7 @@ TEST(HMACTest, TooLong) {
   // See RFC4231, section 4.7.
   unsigned char key[131];
   for (size_t i = 0; i < sizeof(key); ++i)
-    key[i] = 0xaa;
+    UNSAFE_TODO(key[i]) = 0xaa;
 
   std::string data = "Test Using Larger Than Block-Size Key - Hash Key First";
   static uint8_t kKnownHMACSHA256[] = {
@@ -328,11 +329,11 @@ TEST(HMACTest, TooLong) {
   EXPECT_FALSE(hmac.Sign(data, calculated_hmac, sizeof(calculated_hmac)));
 
   // Attempting to verify too large of an HMAC is an error.
-  memcpy(calculated_hmac, kKnownHMACSHA256, kSHA256DigestSize);
+  UNSAFE_TODO(memcpy(calculated_hmac, kKnownHMACSHA256, kSHA256DigestSize));
   calculated_hmac[kSHA256DigestSize] = 0;
-  EXPECT_FALSE(hmac.VerifyTruncated(
-      data,
-      std::string(calculated_hmac, calculated_hmac + sizeof(calculated_hmac))));
+  UNSAFE_TODO(EXPECT_FALSE(hmac.VerifyTruncated(
+      data, std::string(calculated_hmac,
+                        calculated_hmac + sizeof(calculated_hmac)))));
 }
 
 TEST(HMACTest, Bytes) {
@@ -351,16 +352,17 @@ TEST(HMACTest, Bytes) {
 
   uint8_t calculated_hmac[kSHA256DigestSize];
   ASSERT_TRUE(hmac.Sign(data, calculated_hmac));
-  EXPECT_EQ(0, memcmp(kKnownHMACSHA256, calculated_hmac, kSHA256DigestSize));
+  UNSAFE_TODO(EXPECT_EQ(
+      0, memcmp(kKnownHMACSHA256, calculated_hmac, kSHA256DigestSize)));
 
   EXPECT_TRUE(hmac.Verify(data, calculated_hmac));
-  EXPECT_TRUE(hmac.VerifyTruncated(
-      data, base::span(calculated_hmac, kSHA256DigestSize / 2)));
+  UNSAFE_TODO(EXPECT_TRUE(hmac.VerifyTruncated(
+      data, base::span(calculated_hmac, kSHA256DigestSize / 2))));
 
   data[0]++;
   EXPECT_FALSE(hmac.Verify(data, calculated_hmac));
-  EXPECT_FALSE(hmac.VerifyTruncated(
-      data, base::span(calculated_hmac, kSHA256DigestSize / 2)));
+  UNSAFE_TODO(EXPECT_FALSE(hmac.VerifyTruncated(
+      data, base::span(calculated_hmac, kSHA256DigestSize / 2))));
 }
 
 TEST(HMACTest, OneShotSha1) {

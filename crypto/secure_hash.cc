@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "crypto/secure_hash.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
 #include "base/pickle.h"
@@ -27,7 +23,7 @@ class SecureHashSHA256 : public SecureHash {
   SecureHashSHA256() { SHA256_Init(&ctx_); }
 
   SecureHashSHA256(const SecureHashSHA256& other) {
-    memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
+    UNSAFE_TODO(memcpy(&ctx_, &other.ctx_, sizeof(ctx_)));
   }
 
   ~SecureHashSHA256() override {
@@ -59,7 +55,7 @@ class SecureHashSHA512 : public SecureHash {
   SecureHashSHA512() { SHA512_Init(&ctx_); }
 
   SecureHashSHA512(const SecureHashSHA512& other) {
-    memcpy(&ctx_, &other.ctx_, sizeof(ctx_));
+    UNSAFE_TODO(memcpy(&ctx_, &other.ctx_, sizeof(ctx_)));
   }
 
   ~SecureHashSHA512() override { OPENSSL_cleanse(&ctx_, sizeof(ctx_)); }

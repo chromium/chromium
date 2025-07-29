@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "crypto/hmac.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/stl_util.h"
 #include "crypto/openssl_util.h"
@@ -50,14 +46,15 @@ bool HMAC::Init(const unsigned char* key, size_t key_length) {
   // Init must not be called more than once on the same HMAC object.
   DCHECK(!initialized_);
   initialized_ = true;
-  key_.assign(key, key + key_length);
+  key_.assign(key, UNSAFE_TODO(key + key_length));
   return true;
 }
 
 bool HMAC::Sign(std::string_view data,
                 unsigned char* digest,
                 size_t digest_length) const {
-  return Sign(base::as_byte_span(data), base::span(digest, digest_length));
+  return Sign(base::as_byte_span(data),
+              UNSAFE_TODO(base::span(digest, digest_length)));
 }
 
 bool HMAC::Sign(base::span<const uint8_t> data,
