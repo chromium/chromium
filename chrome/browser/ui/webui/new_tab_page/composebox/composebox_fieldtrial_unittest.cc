@@ -75,7 +75,7 @@ TEST_F(NtpComposeboxFieldTrialTest,
   EXPECT_THAT(image_upload.mime_types_allowed(), "image/*");
 
   auto attachment_upload = config.composebox().attachment_upload();
-  EXPECT_EQ(attachment_upload.max_size_bytes(), 2000000);
+  EXPECT_EQ(attachment_upload.max_size_bytes(), 200000000);
   EXPECT_THAT(attachment_upload.mime_types_allowed(), ".pdf,application/pdf");
 
   EXPECT_EQ(composebox.max_num_files(), 1);
