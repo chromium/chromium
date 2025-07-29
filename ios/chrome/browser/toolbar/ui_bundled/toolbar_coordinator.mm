@@ -393,7 +393,8 @@
 
   CGFloat height =
       self.primaryToolbarViewController.view.intrinsicContentSize.height;
-  if (CanShowTabStrip(self.traitEnvironment)) {
+  if (!IsSplitToolbarMode(self.traitEnvironment) ||
+      CanShowTabStrip(self.traitEnvironment)) {
     // When the adaptive toolbar is unsplit or the tab strip is visible, add a
     // margin.
     height += kTopToolbarUnsplitMargin;
