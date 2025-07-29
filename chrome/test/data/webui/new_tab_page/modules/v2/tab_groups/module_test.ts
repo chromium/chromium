@@ -32,11 +32,6 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
     return module;
   }
 
-  test('no module created if no tab groups data', async () => {
-    const module = await createModule([]);
-    assertEquals(null, module);
-  });
-
   test('create module', async () => {
     // Arrange.
     const tabGroups: TabGroup[] = [
@@ -208,5 +203,37 @@ suite('NewTabPageModulesTabGroupsModuleTest', () => {
 
     const overflowText = overflowCells[0]!.textContent!.trim();
     assertEquals('99+', overflowText);
+  });
+
+  test('show zero state card when there are no tab groups', async () => {
+    // Arrange.
+    const module = await createModule([]);
+
+    // Assert.
+    // The module must still exist without tab groups data.
+    assertTrue(!!module);
+    assertTrue(
+        isVisible(module.shadowRoot.querySelector('ntp-module-header-v2')));
+
+    // The zero-state container should be present and visible.
+    const zeroStateContainer =
+        module.shadowRoot.querySelector('#zeroTabGroupsContainer');
+    assertTrue(!!zeroStateContainer);
+    assertTrue(isVisible(zeroStateContainer));
+
+    // Tab group rows should be absent.
+    const tabGroupContainers =
+        module.shadowRoot.querySelectorAll('.tab-group-container');
+    assertEquals(0, tabGroupContainers.length);
+
+    // Verify strings.
+    assertEquals(
+        'Stay organized with tab groups',
+        zeroStateContainer.querySelector(
+                              '#zeroTabGroupsTitle')!.textContent!.trim());
+    assertEquals(
+        'You can group tabs to keep related pages together and saved across your devices',
+        zeroStateContainer.querySelector(
+                              '#zeroTabGroupsText')!.textContent!.trim());
   });
 });

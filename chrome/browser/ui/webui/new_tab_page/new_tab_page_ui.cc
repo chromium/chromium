@@ -464,7 +464,12 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
        IDS_NTP_MICROSOFT_AUTHENTICATION_SUBHEADING},
       {"modulesMicrosoftAuthSignIn",
        IDS_NTP_MICROSOFT_AUTHENTICATION_SIGN_IN_BUTTON_TEXT},
+      {"modulesTabGroupsCreateNewTabGroup", IDS_CREATE_NEW_TAB_GROUP},
       {"modulesTabGroupsTitle", IDS_NTP_MODULES_TAB_GROUPS_TITLE},
+      {"modulesTabGroupsZeroStateTitle",
+       IDS_NTP_MODULES_TAB_GROUPS_ZERO_STATE_TITLE},
+      {"modulesTabGroupsZeroStateText",
+       IDS_NTP_MODULES_TAB_GROUPS_ZERO_STATE_TEXT},
 
       // Middle slot promo.
       {"undoDismissPromoButtonToast", IDS_NTP_UNDO_DISMISS_PROMO_BUTTON_TOAST},

@@ -15,6 +15,7 @@ build_webui("build") {
   icons_html_files = [
     "modules/v2/icons.html",
     "modules/v2/most_relevant_tab_resumption/icons.html",
+    "modules/v2/tab_groups/icons.html",
     "ntp_promo/ntp_promo_icons.html",
   ]
 

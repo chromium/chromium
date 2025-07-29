@@ -5,18 +5,48 @@
         '', 'modulesMoreActions', 'modulesTabGroupsTitle')}">
 </ntp-module-header-v2>
 <div id="tabGroups">
-  ${this.getTabGroups_().map(item => html`
-    <div class="tab-group-container">
-      <div id="hoverLayer"></div>
-      <a class="tab-group">
-        <ntp-icon-container class="icon-container"
-            .faviconUrls="${this.getFaviconUrls_(item.faviconUrls)}"
-            .totalTabCount="${item.totalTabCount}">
-        </ntp-icon-container>
-        <div class="tab-group-info">
-          <div class="tab-group-title">${item.title}</div>
+  ${this.shouldShowZeroStateCard_() ? html`
+    <div id="zeroTabGroupsContainer" class="tab-groups">
+      <div id="zeroTabGroupsImageContainer">
+        <div id="imagePlaceholder"></div>
+      </div>
+      <div id="zeroTabGroupsContentContainer">
+        <div id="zeroTabGroupsTextContainer">
+          <div id="zeroTabGroupsTitle">
+            ${this.i18n('modulesTabGroupsZeroStateTitle')}
+          </div>
+          <div id="zeroTabGroupsText">
+            ${this.i18n('modulesTabGroupsZeroStateText')}
+          </div>
         </div>
-      </a>
+        <div id="createNewTabGroup">
+          <cr-button id="createNewTabGroupButton">
+            <cr-icon id="createNewTabGroupButtonIcon"
+                icon="tab_groups:create_new_tab_group" slot="prefix-icon">
+            </cr-icon>
+            <div id="createNewTabGroupButtonText">
+              ${this.i18n('modulesTabGroupsCreateNewTabGroup')}
+            </div>
+          </cr-button>
+        </div>
+      </div>
     </div>
-  `)}
+  `: html`
+    <div id="tabGroupsContainer">
+      ${this.getTabGroups_().map(item => html`
+        <div class="tab-group-container">
+          <div id="hoverLayer"></div>
+          <a class="tab-group">
+            <ntp-icon-container class="icon-container"
+                .faviconUrls="${this.getFaviconUrls_(item.faviconUrls)}"
+                .totalTabCount="${item.totalTabCount}">
+            </ntp-icon-container>
+            <div class="tab-group-info">
+              <div class="tab-group-title">${item.title}</div>
+            </div>
+          </a>
+        </div>
+      `)}
+    </div>
+  `}
 </div>

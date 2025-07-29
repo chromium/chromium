@@ -72,6 +72,8 @@ void TabGroupsPageHandler::GetTabGroups(GetTabGroupsCallback callback) {
                      {"https://www.google.com", "https://www.youtube.com",
                       "https://www.wikipedia.org", "https://maps.google.com"},
                      199));
+  } else if (data_type_param.find("Fake Zero State") != std::string::npos) {
+    // No-op: the zero state card only appears when there's no data.
   }
 
   std::move(callback).Run(std::move(tab_groups_mojom));

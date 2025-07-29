@@ -2444,9 +2444,13 @@ const FeatureEntry::FeatureVariation kNtpSharepointModuleVariations[] = {
 
 const FeatureEntry::FeatureParam kNtpTabGroupsModuleFakeData[] = {
     {ntp_features::kNtpTabGroupsModuleDataParam, "Fake Data"}};
+const FeatureEntry::FeatureParam kNtpTabGroupsModuleFakeZeroState[] = {
+    {ntp_features::kNtpTabGroupsModuleDataParam, "Fake Zero State"}};
 
 const FeatureEntry::FeatureVariation kNtpTabGroupsModuleVariations[] = {
     {"- Fake Data", kNtpTabGroupsModuleFakeData,
+     std::size(kNtpTabGroupsModuleFakeData), nullptr},
+    {"- Fake Zero State", kNtpTabGroupsModuleFakeZeroState,
      std::size(kNtpTabGroupsModuleFakeData), nullptr},
 };
 

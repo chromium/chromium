@@ -91,3 +91,15 @@ TEST_F(TabGroupsPageHandlerTest, GetFakeTabGroups) {
   EXPECT_EQ(4u, group4->favicon_urls.size());
   EXPECT_EQ(199, group4->total_tab_count);
 }
+
+TEST_F(TabGroupsPageHandlerTest, GetFakeZeroStateTabGroups) {
+  // Enable the feature and set the parameter to "Fake Zero State".
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      ntp_features::kNtpTabGroupsModule,
+      {{ntp_features::kNtpTabGroupsModuleDataParam, "Fake Zero State"}});
+
+  auto tab_groups_mojom = RunGetTabGroups();
+
+  EXPECT_TRUE(tab_groups_mojom.empty());
+}
