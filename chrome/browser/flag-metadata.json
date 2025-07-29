@@ -871,11 +871,6 @@
     "expiry_milestone": 145
   },
   {
-    "name": "autofill-enable-show-save-card-securely-message",
-    "owners": [ "qihuizhao@google.com"],
-    "expiry_milestone": 145
-  },
-  {
     "name": "autofill-enable-support-for-home-and-work",
     "owners": ["vidhanj@google.com", "jsobiech@google.com"],
     "expiry_milestone": 145

@@ -88,8 +88,6 @@ BASE_DECLARE_FEATURE(kAutofillEnableSaveAndFill);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSeparatePixPreferenceItem);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableShowSaveCardSecurelyMessage);
-COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts);
 #endif
 

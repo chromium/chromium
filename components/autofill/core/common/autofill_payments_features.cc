@@ -231,12 +231,6 @@ BASE_FEATURE(kAutofillEnableSeparatePixPreferenceItem,
              "AutofillEnableSeparatePixPreferenceItem",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// When enabled, save card securely message be displayed on upload card
-// UI message.
-BASE_FEATURE(kAutofillEnableShowSaveCardSecurelyMessage,
-             "AutofillEnableShowSaveCardSecurelyMessage",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, Pix bank accounts are synced from Chrome Sync backend and
 // stored in the local db.
 BASE_FEATURE(kAutofillEnableSyncingOfPixBankAccounts,

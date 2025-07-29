@@ -224,17 +224,9 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
         save_card_icon_description_text = l10n_util::GetStringUTF16(
             IDS_AUTOFILL_GOOGLE_PAY_LOGO_ACCESSIBLE_NAME);
         save_card_prompt_title_id =
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableShowSaveCardSecurelyMessage)
-                ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY
-                : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_V3;
-        description_text =
-            base::FeatureList::IsEnabled(
-                features::kAutofillEnableShowSaveCardSecurelyMessage)
-                ? l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY)
-                : l10n_util::GetStringUTF16(
-                      IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_UPLOAD);
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_TO_CLOUD_SECURITY;
+        description_text = l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY);
       } else {
         save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
         save_card_prompt_title_id =

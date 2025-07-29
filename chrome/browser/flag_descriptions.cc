@@ -886,12 +886,6 @@ const char kAutofillEnableSeparatePixPreferenceItemDescription[] =
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
-const char kAutofillEnableShowSaveCardSecurelyMessageName[] =
-    "Enable updated credit card upload UI messaging";
-const char kAutofillEnableShowSaveCardSecurelyMessageDescription[] =
-    "When enabled, credit card upload messaging will match what is "
-    "shown on Desktop.";
-
 const char kAutofillEnableSyncingOfPixBankAccountsName[] =
     "Sync Pix bank accounts from Google Payments";
 const char kAutofillEnableSyncingOfPixBankAccountsDescription[] =

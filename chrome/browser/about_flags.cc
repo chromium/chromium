@@ -12481,13 +12481,6 @@ const FeatureEntry kFeatureEntries[] = {
          "AutofillVcnEnrollStrikeExpiryTime")},
 
 #if BUILDFLAG(IS_ANDROID)
-    {"autofill-enable-show-save-card-securely-message",
-     flag_descriptions::kAutofillEnableShowSaveCardSecurelyMessageName,
-     flag_descriptions::kAutofillEnableShowSaveCardSecurelyMessageDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(
-         autofill::features::kAutofillEnableShowSaveCardSecurelyMessage)},
-
     {"background-compact", flag_descriptions::kBackgroundCompactMessageName,
      flag_descriptions::kBackgroundCompactDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(base::android::kShouldFreezeSelf)},
