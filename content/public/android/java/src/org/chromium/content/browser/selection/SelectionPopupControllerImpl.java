@@ -1422,7 +1422,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
      * @return true if the menu item action is allowed. Otherwise, the menu item should be removed
      *     from the menu.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public boolean isSelectActionModeAllowed(int actionModeItem) {
         boolean isAllowedByClient = (mAllowedMenuItems & actionModeItem) != 0;
         if (actionModeItem == MENU_ITEM_SHARE) {

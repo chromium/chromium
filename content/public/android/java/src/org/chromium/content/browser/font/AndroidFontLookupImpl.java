@@ -53,14 +53,14 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
     private static final String TAG = "AndroidFontLookup";
     private static final String READ_ONLY_MODE = "r";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static final String MATCH_LOCAL_FONT_BY_UNIQUE_NAME_HISTOGRAM =
             "Android.FontLookup.MatchLocalFontByUniqueName.Time";
 
     static final String FETCH_ALL_FONT_FILES_HISTOGRAM =
             "Android.FontLookup.FetchAllFontFiles.Time";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static final String GMS_FONT_REQUEST_HISTOGRAM = "Android.FontLookup.GmsFontRequest.Time";
 
     private static final String GOOGLE_SANS_REGULAR = "google sans regular";
@@ -98,7 +98,7 @@ public class AndroidFontLookupImpl implements AndroidFontLookup {
         this(appContext, new FontsContractWrapper(), createFullFontNameToQueryMap());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     AndroidFontLookupImpl(
             Context appContext,
             FontsContractWrapper fontsContract,

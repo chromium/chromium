@@ -69,7 +69,7 @@ public class ContentUiEventHandler implements UserData {
         mEventDelegate = delegate;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     protected boolean onGenericMotionEvent(MotionEvent event) {
         if (Gamepad.from(mWebContents).onGenericMotionEvent(event)) return true;
