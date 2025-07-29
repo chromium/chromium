@@ -64,7 +64,7 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       const override;
 
  private:
-  const raw_ptr<WaylandConnection, AcrossTasksDanglingUntriaged> connection_;
+  const raw_ptr<WaylandConnection> connection_;
   const raw_ptr<WaylandBufferManagerGpu, AcrossTasksDanglingUntriaged>
       buffer_manager_;
   std::unique_ptr<GLOzone> egl_implementation_;

@@ -122,9 +122,9 @@ class WaylandTestBase {
 
   ::testing::NiceMock<MockWaylandPlatformWindowDelegate> delegate_;
   std::unique_ptr<ScopedKeyboardLayoutEngine> scoped_keyboard_layout_engine_;
-  std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
   std::unique_ptr<WaylandBufferManagerGpu> buffer_manager_gpu_;
   std::unique_ptr<WaylandConnection> connection_;
+  std::unique_ptr<WaylandSurfaceFactory> surface_factory_;
   std::unique_ptr<WaylandScreen> screen_;
   std::unique_ptr<WaylandWindow> window_;
   gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
