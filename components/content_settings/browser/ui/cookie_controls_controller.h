@@ -24,6 +24,7 @@
 #include "components/ip_protection/common/ip_protection_status_observer.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/privacy_sandbox/tracking_protection_settings.h"
+#include "components/privacy_sandbox/tracking_protection_settings_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 
 namespace content {
@@ -37,7 +38,8 @@ class CookieControlsObserver;
 
 // Handles the tab specific state for cookie controls.
 class CookieControlsController final
-    : content_settings::CookieSettings::Observer {
+    : content_settings::CookieSettings::Observer,
+      privacy_sandbox::TrackingProtectionSettingsObserver {
  public:
   CookieControlsController(
       scoped_refptr<content_settings::CookieSettings> cookie_settings,
@@ -179,6 +181,9 @@ class CookieControlsController final
       bool block_third_party_cookies) override;
   void OnCookieSettingChanged() override;
 
+  void OnIpProtectionEnabledChanged() override;
+  void OnFpProtectionEnabledChanged() override;
+
   Status GetStatus(content::WebContents* web_contents);
 
   CookieControlsEnforcement GetEnforcementForThirdPartyCookieBlocking(
@@ -244,6 +249,10 @@ class CookieControlsController final
   base::ScopedObservation<content_settings::CookieSettings,
                           content_settings::CookieSettings::Observer>
       cookie_observation_{this};
+
+  base::ScopedObservation<privacy_sandbox::TrackingProtectionSettings,
+                          privacy_sandbox::TrackingProtectionSettingsObserver>
+      tracking_protection_settings_observation_{this};
 
   bool should_reload_ = false;
   bool user_changed_ub_state_ = false;

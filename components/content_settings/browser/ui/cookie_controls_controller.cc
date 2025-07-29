@@ -128,6 +128,8 @@ CookieControlsController::CookieControlsController(
   CHECK(cookie_settings_);
   CHECK(tracking_protection_settings_);
   cookie_observation_.Observe(cookie_settings_.get());
+  tracking_protection_settings_observation_.Observe(
+      tracking_protection_settings);
 }
 
 CookieControlsController::Status::Status(
@@ -537,6 +539,20 @@ void CookieControlsController::OnCookieSettingChanged() {
   }
 }
 
+void CookieControlsController::OnIpProtectionEnabledChanged() {
+  // TODO(crbug.com/434953880): Add tests for this logic.
+  if (GetWebContents()) {
+    UpdateUserBypass();
+  }
+}
+
+void CookieControlsController::OnFpProtectionEnabledChanged() {
+  // TODO(crbug.com/434953880): Add tests for this logic.
+  if (GetWebContents()) {
+    UpdateUserBypass();
+  }
+}
+
 content::WebContents* CookieControlsController::GetWebContents() const {
   if (!tab_observer_) {
     return nullptr;
@@ -706,6 +722,7 @@ CookieControlsController::TabObserver::~TabObserver() = default;
 void CookieControlsController::TabObserver::WebContentsDestroyed() {
   fpf_observation_.Reset();
   ip_protection_observation_.Reset();
+  cookie_controls_->tracking_protection_settings_observation_.Reset();
 }
 
 void CookieControlsController::TabObserver::OnSiteDataAccessed(
