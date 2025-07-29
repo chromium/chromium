@@ -259,6 +259,7 @@ class CORE_EXPORT InspectorDOMAgent final
       std::optional<protocol::DOM::PhysicalAxes> physical_axes,
       std::optional<protocol::DOM::LogicalAxes> logical_axes,
       std::optional<bool> queries_scroll_state,
+      std::optional<bool> queries_anchored,
       std::optional<int>* container_node_id) override;
   protocol::Response getQueryingDescendantsForContainer(
       int node_id,

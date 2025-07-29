@@ -17,6 +17,9 @@
   const scrollStateContainerQuerySelectorResponse = await dp.DOM.querySelector({nodeId: documentNodeId, selector: '#scroll-state-container' });
   const scrollStateContainerNodeId = scrollStateContainerQuerySelectorResponse.result.nodeId;
 
+  const anchoredContainerQuerySelectorResponse = await dp.DOM.querySelector({nodeId: documentNodeId, selector: '#anchored-container' });
+  const anchoredContainerNodeId = anchoredContainerQuerySelectorResponse.result.nodeId;
+
   const unnamedContainerQuerySelectorResponse = await dp.DOM.querySelector({nodeId: documentNodeId, selector: '#unnamed-container' });
   const unnamedContainerNodeId = unnamedContainerQuerySelectorResponse.result.nodeId;
 
@@ -76,6 +79,14 @@
   testRunner.log(scrollStateContainerResponse);
   testRunner.log('Is the returned container the expected scroll-state container?');
   testRunner.log(scrollStateContainerResponse.result.nodeId === scrollStateContainerNodeId);
+
+  const anchoredContainerResponse = await dp.DOM.getContainerForNode({
+    nodeId: itemNodeId,
+    queriesAnchored: true,
+  });
+  testRunner.log(anchoredContainerResponse);
+  testRunner.log('Is the returned container the expected anchored container?');
+  testRunner.log(anchoredContainerResponse.result.nodeId === anchoredContainerNodeId);
 
   // Dynamically add a closer inline-size container to .item and check if this
   // new container can be returned right away.

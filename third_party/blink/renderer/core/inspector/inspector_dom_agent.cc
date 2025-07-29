@@ -1839,6 +1839,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
     std::optional<protocol::DOM::PhysicalAxes> physical_axes,
     std::optional<protocol::DOM::LogicalAxes> logical_axes,
     std::optional<bool> queries_scroll_state,
+    std::optional<bool> queries_anchored,
     std::optional<int>* container_node_id) {
   Element* element = nullptr;
   protocol::Response response = AssertElement(node_id, element);
@@ -1877,7 +1878,7 @@ protocol::Response InspectorDOMAgent::getContainerForNode(
       element,
       ContainerSelector(AtomicString(container_name.value_or(g_null_atom)),
                         physical, logical, queries_scroll_state.value_or(false),
-                        /* anchored_query */ false),
+                        queries_anchored.value_or(false)),
       nullptr /* selector_tree_scope */);
   if (container)
     *container_node_id = PushNodePathToFrontend(container);

@@ -3342,6 +3342,9 @@ InspectorCSSAgent::BuildContainerQueryObject(CSSContainerRule* rule) {
   if (rule->Selector().SelectsScrollStateContainers()) {
     container_query_object->setQueriesScrollState(true);
   }
+  if (rule->Selector().SelectsAnchoredContainers()) {
+    container_query_object->setQueriesAnchored(true);
+  }
   return container_query_object;
 }
 

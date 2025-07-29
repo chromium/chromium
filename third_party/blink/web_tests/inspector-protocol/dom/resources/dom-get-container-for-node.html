@@ -15,6 +15,10 @@
   container-type: scroll-state;
 }
 
+#anchored-container {
+  container-type: anchored;
+}
+
 #unnamed-container {
   container-type: inline-size;
   width: 50px;
@@ -40,10 +44,12 @@
 <div id="named-container">
   <div id="block-size-container">
     <div id="scroll-state-container">
-      <div id="unnamed-container">
-        <div id="dynamic-container">
-          <div id="style-container">
-            <div class="item"></div>
+      <div id="anchored-container">
+        <div id="unnamed-container">
+          <div id="dynamic-container">
+            <div id="style-container">
+              <div class="item"></div>
+            </div>
           </div>
         </div>
       </div>

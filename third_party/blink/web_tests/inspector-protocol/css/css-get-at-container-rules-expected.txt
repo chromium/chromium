@@ -1,0 +1,29 @@
+Verify that nested @container rules reported with the correct values.
+[
+    [0] : {
+        queriesAnchored : true
+        range : {
+            endColumn : 33
+            endLine : 1
+            startColumn : 11
+            startLine : 1
+        }
+        styleSheetId : <string>
+        text : not anchored(fallback)
+    }
+]
+[
+    [0] : {
+        logicalAxes : Inline
+        queriesScrollState : true
+        range : {
+            endColumn : 69
+            endLine : 4
+            startColumn : 11
+            startLine : 4
+        }
+        styleSheetId : <string>
+        text : not (scroll-state(scrollable) and (inline-size > 10000px))
+    }
+]
+
