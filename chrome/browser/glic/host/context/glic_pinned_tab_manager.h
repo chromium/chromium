@@ -89,6 +89,9 @@ class GlicPinnedTabManager : public TabStripModelObserver {
   // Visible for testing.
   virtual bool IsBrowserValidForSharing(BrowserWindowInterface* browser_window);
 
+  // Visible for testing.
+  virtual bool IsValidForSharing(content::WebContents* web_contents);
+
  private:
   class UpdateThrottler;
 

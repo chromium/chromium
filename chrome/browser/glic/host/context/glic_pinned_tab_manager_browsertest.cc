@@ -103,6 +103,10 @@ class GlicPinnedTabManagerWithOverrides : public GlicPinnedTabManager {
               IsBrowserValidForSharing,
               (BrowserWindowInterface*),
               (override));
+  MOCK_METHOD(bool,
+              IsValidForSharing,
+              (content::WebContents*),
+              (override));
 };
 
 class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
@@ -121,6 +125,9 @@ class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
         browser()->profile());
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
+        .WillByDefault(Return(true));
+    // TODO(mcrouse): Add tests for invalid candidates once testing harness for sharing manager is enabled.
+    ON_CALL(*pinned_tab_manager_, IsValidForSharing(_))
         .WillByDefault(Return(true));
   }
 

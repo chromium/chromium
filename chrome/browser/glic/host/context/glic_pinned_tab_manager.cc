@@ -398,6 +398,9 @@ GlicPinnedTabManager::GetUnsortedPinCandidates() {
       if (!web_contents->GetController().GetLastCommittedEntry()) {
         continue;
       }
+      if (!IsValidForSharing(web_contents)) {
+        continue;
+      }
       candidates.push_back(web_contents);
     }
   }
@@ -456,6 +459,11 @@ void GlicPinnedTabManager::OnTabWillClose(tabs::TabHandle tab_handle) {
 bool GlicPinnedTabManager::IsBrowserValidForSharing(
     BrowserWindowInterface* browser_window) {
   return IsBrowserValidForSharingInProfile(browser_window, profile_);
+}
+
+bool GlicPinnedTabManager::IsValidForSharing(
+    content::WebContents* web_contents) {
+  return IsTabValidForSharing(web_contents);
 }
 
 }  // namespace glic
