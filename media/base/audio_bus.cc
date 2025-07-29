@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/audio_bus.h"
 
 #include <stddef.h>
@@ -13,7 +18,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/ptr_util.h"
@@ -81,13 +85,12 @@ AudioBus::AudioBus(int channels, int frames)
 }
 
 AudioBus::AudioBus(int channels, int frames, float* data)
-    : AudioBus(channels,
-               frames,
-               // Per interface contract, `data` must have a size of at least
-               // CalculateMemorySizeInternal().
-               UNSAFE_TODO(base::span(
-                   data,
-                   CalculateMemorySizeInternal(channels, frames)))) {}
+    : AudioBus(
+          channels,
+          frames,
+          // Per interface contract, `data` must have a size of at least
+          // CalculateMemorySizeInternal().
+          base::span(data, CalculateMemorySizeInternal(channels, frames))) {}
 
 AudioBus::AudioBus(int channels, int frames, base::span<float> data)
     : frames_(base::checked_cast<size_t>(frames)) {

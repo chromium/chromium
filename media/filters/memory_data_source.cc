@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
 #include "media/filters/memory_data_source.h"
 
 #include <algorithm>
 
 #include "base/check.h"
-#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 
 namespace media {
@@ -40,8 +44,7 @@ void MemoryDataSource::Read(int64_t position,
 
   if (clamped_size > 0) {
     DCHECK(data);
-    UNSAFE_TODO(memcpy(data, data_ + base::checked_cast<size_t>(position),
-                       clamped_size));
+    memcpy(data, data_ + base::checked_cast<size_t>(position), clamped_size);
   }
 
   std::move(read_cb).Run(clamped_size);

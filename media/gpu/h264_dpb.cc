@@ -2,15 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/h264_dpb.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
 #include <string.h>
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "media/gpu/h264_dpb.h"
 
 namespace media {
 
@@ -45,7 +48,7 @@ H264Picture::H264Picture()
       long_term_reference_flag(false),
       adaptive_ref_pic_marking_mode_flag(false),
       dpb_position(0) {
-  UNSAFE_TODO(memset(&ref_pic_marking, 0, sizeof(ref_pic_marking)));
+  memset(&ref_pic_marking, 0, sizeof(ref_pic_marking));
 }
 
 H264Picture::~H264Picture() = default;

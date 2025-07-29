@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/gpu/vaapi/test/h264_vaapi_wrapper.h"
 
 #include <va/va.h>
@@ -10,7 +15,6 @@
 #include <array>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/trace_event/trace_event.h"
 #include "media/gpu/macros.h"
@@ -65,7 +69,7 @@ unsigned int GetFormatForProfile(const VAProfile& profile) {
 }
 
 void InitVAPicture(VAPictureH264* va_pic) {
-  UNSAFE_TODO(memset(va_pic, 0, sizeof(*va_pic)));
+  memset(va_pic, 0, sizeof(*va_pic));
   va_pic->picture_id = VA_INVALID_ID;
   va_pic->flags = VA_PICTURE_H264_INVALID;
 }
@@ -141,7 +145,7 @@ void H264VaapiWrapper::SubmitFrameMetadata(
     const H264Picture::Vector& ref_pic_listb1,
     scoped_refptr<H264Picture> pic) {
   VAPictureParameterBufferH264 pic_param;
-  UNSAFE_TODO(memset(&pic_param, 0, sizeof(pic_param)));
+  memset(&pic_param, 0, sizeof(pic_param));
 
 #define FROM_SPS_TO_PP(a) pic_param.a = sps->a
 #define FROM_SPS_TO_PP2(a, b) pic_param.b = sps->a
@@ -201,41 +205,40 @@ void H264VaapiWrapper::SubmitFrameMetadata(
 
   // Init reference pictures' array.
   for (int i = 0; i < 16; ++i)
-    InitVAPicture(&UNSAFE_TODO(pic_param.ReferenceFrames[i]));
+    InitVAPicture(&pic_param.ReferenceFrames[i]);
 
   // And fill it with our reference frames.
   for (size_t i = 0; i < ref_pic_listp0.size(); i++) {
-    FillVAPicture(UNSAFE_TODO(pic_param.ReferenceFrames + i),
-                  ref_pic_listp0[i]);
+    FillVAPicture(pic_param.ReferenceFrames + i, ref_pic_listp0[i]);
   }
 
   pic_param.num_ref_frames = sps->max_num_ref_frames;
 
   VAIQMatrixBufferH264 iq_matrix_buf;
-  UNSAFE_TODO(memset(&iq_matrix_buf, 0, sizeof(iq_matrix_buf)));
+  memset(&iq_matrix_buf, 0, sizeof(iq_matrix_buf));
 
   if (pps->pic_scaling_matrix_present_flag) {
     for (int i = 0; i < 6; ++i) {
       for (int j = 0; j < 16; ++j)
-        UNSAFE_TODO(iq_matrix_buf.ScalingList4x4[i][kZigzagScan4x4[j]]) =
+        iq_matrix_buf.ScalingList4x4[i][kZigzagScan4x4[j]] =
             pps->scaling_list4x4[i][j];
     }
 
     for (int i = 0; i < 2; ++i) {
       for (int j = 0; j < 64; ++j)
-        UNSAFE_TODO(iq_matrix_buf.ScalingList8x8[i][kZigzagScan8x8[j]]) =
+        iq_matrix_buf.ScalingList8x8[i][kZigzagScan8x8[j]] =
             pps->scaling_list8x8[i][j];
     }
   } else {
     for (int i = 0; i < 6; ++i) {
       for (int j = 0; j < 16; ++j)
-        UNSAFE_TODO(iq_matrix_buf.ScalingList4x4[i][kZigzagScan4x4[j]]) =
+        iq_matrix_buf.ScalingList4x4[i][kZigzagScan4x4[j]] =
             sps->scaling_list4x4[i][j];
     }
 
     for (int i = 0; i < 2; ++i) {
       for (int j = 0; j < 64; ++j)
-        UNSAFE_TODO(iq_matrix_buf.ScalingList8x8[i][kZigzagScan8x8[j]]) =
+        iq_matrix_buf.ScalingList8x8[i][kZigzagScan8x8[j]] =
             sps->scaling_list8x8[i][j];
     }
   }
@@ -263,7 +266,7 @@ void H264VaapiWrapper::SubmitSlice(
     size_t size,
     const std::vector<SubsampleEntry>& subsamples) {
   VASliceParameterBufferH264 slice_param;
-  UNSAFE_TODO(memset(&slice_param, 0, sizeof(slice_param)));
+  memset(&slice_param, 0, sizeof(slice_param));
 
   slice_param.slice_data_size = slice_hdr->nalu_size;
   slice_param.slice_data_offset = 0;
@@ -296,30 +299,30 @@ void H264VaapiWrapper::SubmitSlice(
     SHDRToSP(chroma_weight_l1_flag);
 
     for (int i = 0; i <= slice_param.num_ref_idx_l0_active_minus1; ++i) {
-      UNSAFE_TODO(slice_param.luma_weight_l0[i]) =
+      slice_param.luma_weight_l0[i] =
           slice_hdr->pred_weight_table_l0.luma_weight[i];
-      UNSAFE_TODO(slice_param.luma_offset_l0[i]) =
+      slice_param.luma_offset_l0[i] =
           slice_hdr->pred_weight_table_l0.luma_offset[i];
 
       for (int j = 0; j < 2; ++j) {
-        UNSAFE_TODO(slice_param.chroma_weight_l0[i][j]) =
+        slice_param.chroma_weight_l0[i][j] =
             slice_hdr->pred_weight_table_l0.chroma_weight[i][j];
-        UNSAFE_TODO(slice_param.chroma_offset_l0[i][j]) =
+        slice_param.chroma_offset_l0[i][j] =
             slice_hdr->pred_weight_table_l0.chroma_offset[i][j];
       }
     }
 
     if (slice_hdr->IsBSlice()) {
       for (int i = 0; i <= slice_param.num_ref_idx_l1_active_minus1; ++i) {
-        UNSAFE_TODO(slice_param.luma_weight_l1[i]) =
+        slice_param.luma_weight_l1[i] =
             slice_hdr->pred_weight_table_l1.luma_weight[i];
-        UNSAFE_TODO(slice_param.luma_offset_l1[i]) =
+        slice_param.luma_offset_l1[i] =
             slice_hdr->pred_weight_table_l1.luma_offset[i];
 
         for (int j = 0; j < 2; ++j) {
-          UNSAFE_TODO(slice_param.chroma_weight_l1[i][j]) =
+          slice_param.chroma_weight_l1[i][j] =
               slice_hdr->pred_weight_table_l1.chroma_weight[i][j];
-          UNSAFE_TODO(slice_param.chroma_offset_l1[i][j]) =
+          slice_param.chroma_offset_l1[i][j] =
               slice_hdr->pred_weight_table_l1.chroma_offset[i][j];
         }
       }
@@ -331,25 +334,25 @@ void H264VaapiWrapper::SubmitSlice(
       "Invalid RefPicList sizes");
 
   for (size_t i = 0; i < std::size(slice_param.RefPicList0); ++i) {
-    InitVAPicture(&UNSAFE_TODO(slice_param.RefPicList0[i]));
-    InitVAPicture(&UNSAFE_TODO(slice_param.RefPicList1[i]));
+    InitVAPicture(&slice_param.RefPicList0[i]);
+    InitVAPicture(&slice_param.RefPicList1[i]);
   }
 
   for (size_t i = 0;
        i < ref_pic_list0.size() && i < std::size(slice_param.RefPicList0);
        ++i) {
     if (ref_pic_list0[i])
-      FillVAPicture(&UNSAFE_TODO(slice_param.RefPicList0[i]), ref_pic_list0[i]);
+      FillVAPicture(&slice_param.RefPicList0[i], ref_pic_list0[i]);
   }
   for (size_t i = 0;
        i < ref_pic_list1.size() && i < std::size(slice_param.RefPicList1);
        ++i) {
     if (ref_pic_list1[i])
-      FillVAPicture(&UNSAFE_TODO(slice_param.RefPicList1[i]), ref_pic_list1[i]);
+      FillVAPicture(&slice_param.RefPicList1[i], ref_pic_list1[i]);
   }
 
   pic->slice_data_buffers.emplace_back(std::make_unique<uint8_t[]>(size));
-  UNSAFE_TODO(memcpy(pic->slice_data_buffers.back().get(), data, size));
+  memcpy(pic->slice_data_buffers.back().get(), data, size);
 
   VABufferID buffer_id;
   VAStatus va_res = vaCreateBuffer(

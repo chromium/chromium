@@ -2,12 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/filters/in_memory_url_protocol.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "media/ffmpeg/ffmpeg_common.h"
+#include "media/filters/in_memory_url_protocol.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -19,7 +22,7 @@ TEST(InMemoryUrlProtocolTest, ReadFromLargeBuffer) {
 
   uint8_t out[sizeof(kData)];
   EXPECT_EQ(4, protocol.Read(sizeof(out), out));
-  UNSAFE_TODO(EXPECT_EQ(0, memcmp(out, kData.data(), sizeof(out))));
+  EXPECT_EQ(0, memcmp(out, kData.data(), sizeof(out)));
 }
 
 TEST(InMemoryUrlProtocolTest, ReadWithNegativeSize) {

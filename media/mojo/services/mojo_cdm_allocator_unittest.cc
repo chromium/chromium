@@ -2,19 +2,22 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/mojo/services/mojo_cdm_allocator.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
 
 #include <stddef.h>
 #include <stdint.h>
 
 #include <cstring>
 
-#include "base/compiler_specific.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "media/base/video_frame.h"
 #include "media/cdm/api/content_decryption_module.h"
 #include "media/cdm/cdm_helpers.h"
+#include "media/mojo/services/mojo_cdm_allocator.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/geometry/size.h"
 
@@ -69,7 +72,7 @@ TEST_F(MojoCdmAllocatorTest, ReuseCdmBuffer) {
     // Create a mapping and write some test data.
     auto& mapping = GetRegion(buffer).mapping;
     // Note: deliberately using sizeof() to include the null terminator.
-    UNSAFE_TODO(memcpy(mapping.memory(), kTestData, sizeof(kTestData)));
+    memcpy(mapping.memory(), kTestData, sizeof(kTestData));
   }
   buffer->Destroy();
 

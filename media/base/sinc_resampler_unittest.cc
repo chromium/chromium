@@ -2,18 +2,21 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/base/sinc_resampler.h"
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
 
 #include <memory>
 #include <numbers>
 
-#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "media/base/sinc_resampler.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -30,14 +33,14 @@ class MockSource {
 };
 
 ACTION(ClearBuffer) {
-  UNSAFE_TODO(memset(arg1, 0, arg0 * sizeof(float)));
+  memset(arg1, 0, arg0 * sizeof(float));
 }
 
 ACTION(FillBuffer) {
   // Value chosen arbitrarily such that SincResampler resamples it to something
   // easily representable on all platforms; e.g., using kSampleRateRatio this
   // becomes 1.81219.
-  UNSAFE_TODO(memset(arg1, 64, arg0 * sizeof(float)));
+  memset(arg1, 64, arg0 * sizeof(float));
 }
 
 // Test requesting multiples of ChunkSize() frames results in the proper number
@@ -185,11 +188,11 @@ TEST(SincResamplerTest, Convolve) {
 
   // Test Convolve() w/ unaligned input pointer.
   result = resampler.Convolve_C(
-      resampler.KernelSize(), UNSAFE_TODO(resampler.kernel_storage_.get() + 1),
+      resampler.KernelSize(), resampler.kernel_storage_.get() + 1,
       resampler.kernel_storage_.get(), resampler.kernel_storage_.get(),
       kKernelInterpolationFactor);
   result2 = resampler.convolve_proc_(
-      resampler.KernelSize(), UNSAFE_TODO(resampler.kernel_storage_.get() + 1),
+      resampler.KernelSize(), resampler.kernel_storage_.get() + 1,
       resampler.kernel_storage_.get(), resampler.kernel_storage_.get(),
       kKernelInterpolationFactor);
   EXPECT_NEAR(result2, result, kEpsilon);
@@ -222,13 +225,13 @@ class SinusoidalLinearChirpSource {
     for (int i = 0; i < frames; ++i, ++current_index_) {
       // Filter out frequencies higher than Nyquist.
       if (Frequency(current_index_) > 0.5 * sample_rate_) {
-        UNSAFE_TODO(destination[i]) = 0;
+        destination[i] = 0;
       } else {
         // Calculate time in seconds.
         double t = static_cast<double>(current_index_) / sample_rate_;
 
         // Sinusoidal linear chirp.
-        UNSAFE_TODO(destination[i]) =
+        destination[i] =
             sin(2 * std::numbers::pi * (kMinFrequency * t + (k_ / 2) * t * t));
       }
     }
@@ -295,16 +298,14 @@ TEST_P(SincResamplerTest, Resample) {
   // Force an update to the sample rate ratio to ensure dynamic sample rate
   // changes are working correctly.
   auto kernel = base::HeapArray<float>::Uninit(kernel_storage_size);
-  UNSAFE_TODO(memcpy(kernel.data(), resampler.get_kernel_for_testing(),
-                     kernel_storage_size_in_bytes));
+  memcpy(kernel.data(), resampler.get_kernel_for_testing(),
+         kernel_storage_size_in_bytes);
   resampler.SetRatio(std::numbers::pi);
-  UNSAFE_TODO(
-      ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
-                          kernel_storage_size_in_bytes)));
+  ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                      kernel_storage_size_in_bytes));
   resampler.SetRatio(io_ratio);
-  UNSAFE_TODO(
-      ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
-                          kernel_storage_size_in_bytes)));
+  ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                      kernel_storage_size_in_bytes));
 
   // TODO(dalecurtis): If we switch to AVX/SSE optimization, we'll need to
   // allocate these on 32-byte boundaries and ensure they're sized % 32 bytes.
@@ -392,16 +393,14 @@ TEST_P(SincResamplerTest, Resample_SmallKernel) {
   // Force an update to the sample rate ratio to ensure dynamic sample rate
   // changes are working correctly.
   auto kernel = base::HeapArray<float>::Uninit(kernel_storage_size);
-  UNSAFE_TODO(memcpy(kernel.data(), resampler.get_kernel_for_testing(),
-                     kernel_storage_size_in_bytes));
+  memcpy(kernel.data(), resampler.get_kernel_for_testing(),
+         kernel_storage_size_in_bytes);
   resampler.SetRatio(std::numbers::pi);
-  UNSAFE_TODO(
-      ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
-                          kernel_storage_size_in_bytes)));
+  ASSERT_NE(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                      kernel_storage_size_in_bytes));
   resampler.SetRatio(io_ratio);
-  UNSAFE_TODO(
-      ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
-                          kernel_storage_size_in_bytes)));
+  ASSERT_EQ(0, memcmp(kernel.data(), resampler.get_kernel_for_testing(),
+                      kernel_storage_size_in_bytes));
 
   // TODO(dalecurtis): If we switch to AVX/SSE optimization, we'll need to
   // allocate these on 32-byte boundaries and ensure they're sized % 32 bytes.

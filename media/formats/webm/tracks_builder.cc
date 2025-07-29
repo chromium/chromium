@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/webm/tracks_builder.h"
 
 #include <cstring>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "media/formats/webm/webm_constants.h"
 
 namespace media {
@@ -76,7 +80,7 @@ static void SerializeInt(uint8_t** buf_ptr,
   int& buf_size = *buf_size_ptr;
 
   for (int idx = 1; idx <= size; ++idx) {
-    *UNSAFE_TODO(buf++) = static_cast<uint8_t>(value >> ((size - idx) * 8));
+    *buf++ = static_cast<uint8_t>(value >> ((size - idx) * 8));
     --buf_size;
   }
 }
@@ -146,8 +150,8 @@ static void WriteStringElement(uint8_t** buf_ptr,
   const uint64_t size = value.length();
   WriteUInt(&buf, &buf_size, size);
 
-  UNSAFE_TODO(memcpy(buf, value.data(), size));
-  UNSAFE_TODO(buf += size);
+  memcpy(buf, value.data(), size);
+  buf += size;
   buf_size -= size;
 }
 

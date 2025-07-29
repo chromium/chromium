@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/location.h"
@@ -16,6 +15,11 @@
 #include "media/base/audio_bus.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/41494069): Update these tests once AudioBus is spanified..
+#pragma allow_unsafe_buffers
+#endif
 
 namespace media {
 
@@ -41,8 +45,7 @@ void VerifyAudioBuffer(scoped_refptr<AudioBuffer> buffer,
     const size_t kSpanSize = sizeof(float) * static_cast<size_t>(number_frames);
     base::span<const uint8_t> input_span(base::as_byte_span(
         base::allow_nonunique_obj, expected_data->channel_span(ch)));
-    base::span<uint8_t> UNSAFE_TODO(
-        output_span(buffer->channel_data()[ch], kSpanSize));
+    base::span<uint8_t> output_span(buffer->channel_data()[ch], kSpanSize);
     EXPECT_EQ(input_span, output_span);
   }
 }
@@ -153,8 +156,7 @@ TEST_F(LimitingAudioQueueTest, Clear_DropsPendingInputs) {
         const float* channel_data =
             reinterpret_cast<const float*>(buffer->channel_data()[0]);
         for (int i = 0; i < buffer->frame_count(); ++i) {
-          has_values_from_first_buffer |=
-              UNSAFE_TODO(channel_data[i]) == kGuardValue;
+          has_values_from_first_buffer |= channel_data[i] == kGuardValue;
         }
         second_bufer_emitted = true;
       }));
@@ -200,7 +202,7 @@ TEST_F(LimitingAudioQueueTest, Limiting_CompressesGain) {
       const float* channel_data =
           reinterpret_cast<const float*>(buffer->channel_data()[ch]);
       for (int i = 0; i < kBufferSize; ++i) {
-        has_out_of_range_value |= std::abs(UNSAFE_TODO(channel_data[i])) > 1.0f;
+        has_out_of_range_value |= std::abs(channel_data[i]) > 1.0f;
       }
     }
 

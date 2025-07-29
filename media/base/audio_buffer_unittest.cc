@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/audio_buffer.h"
 
 #include <stdint.h>
@@ -9,7 +14,6 @@
 #include <limits>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/gtest_util.h"
 #include "base/time/time.h"
@@ -46,8 +50,7 @@ class TestExternalMemory : public media::AudioBuffer::ExternalMemory {
  public:
   explicit TestExternalMemory(std::vector<uint8_t> contents)
       : contents_(std::move(contents)) {
-    span_ =
-        UNSAFE_TODO(base::span<uint8_t>(contents_.data(), contents_.size()));
+    span_ = base::span<uint8_t>(contents_.data(), contents_.size());
   }
 
  private:
@@ -226,7 +229,7 @@ TEST(AudioBufferTest, CopyFromAudioBus) {
         audio_buffer_from_bus->channel_data()[ch]);
 
     for (int i = 0; i < kFrameCount; ++i)
-      UNSAFE_TODO(EXPECT_EQ(buffer_data[i], bus_data[i]));
+      EXPECT_EQ(buffer_data[i], bus_data[i]);
   }
 }
 
@@ -305,7 +308,7 @@ TEST(AudioBufferTest, WrapExternalMemory) {
   test_data.insert(test_data.end(), kFrameCount, 1);
   test_data.insert(test_data.end(), kFrameCount, 2);
   uint8_t* first_channel_ptr = test_data.data();
-  uint8_t* second_channel_ptr = UNSAFE_TODO(test_data.data() + kFrameCount);
+  uint8_t* second_channel_ptr = test_data.data() + kFrameCount;
 
   auto external_memory =
       std::make_unique<TestExternalMemory>(std::move(test_data));
@@ -672,7 +675,7 @@ TEST(AudioBufferTest, EmptyBuffer) {
   // Set some data to confirm the overwrite.
   std::vector<float*> wrapped_channels = WrapChannelsAsVector(bus.get());
   for (float* wrapped_channel : wrapped_channels)
-    UNSAFE_TODO(memset(wrapped_channel, 123, frames * sizeof(float)));
+    memset(wrapped_channel, 123, frames * sizeof(float));
 }
 
 TEST(AudioBufferTest, TrimEmptyBuffer) {
@@ -815,7 +818,7 @@ TEST(AudioBufferTest, AudioBufferMemoryPool) {
 
   // Mark pool for destruction and ensure buffer is still valid.
   pool = nullptr;
-  UNSAFE_TODO(memset(b2->channel_data()[0], 0, b2->frame_count()));
+  memset(b2->channel_data()[0], 0, b2->frame_count());
 
   // Destruct final frame after pool; hope nothing explodes.
   b2 = nullptr;
@@ -888,7 +891,7 @@ TEST(AudioBufferTest, AudioBufferMemoryPoolPlanar) {
 
   // Mark pool for destruction and ensure buffer is still valid.
   pool = nullptr;
-  UNSAFE_TODO(memset(b1->channel_data()[0], 0, b1->frame_count()));
+  memset(b1->channel_data()[0], 0, b1->frame_count());
 
   // Destruct final frame after pool; hope nothing explodes.
   b1 = nullptr;

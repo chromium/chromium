@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/ffmpeg_audio_decoder.h"
 
 #include <stdint.h>
@@ -9,7 +14,6 @@
 #include <functional>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/task/bind_post_task.h"
@@ -458,7 +462,7 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
   if (number_of_planes <= AV_NUM_DATA_POINTERS) {
     DCHECK_EQ(frame->extended_data, frame->data);
     for (int i = 0; i < number_of_planes; ++i)
-      UNSAFE_TODO(frame->data[i]) = buffer->channel_data()[i];
+      frame->data[i] = buffer->channel_data()[i];
   } else {
     // There are more channels than can fit into data[], so allocate
     // extended_data[] and fill appropriately.
@@ -466,10 +470,9 @@ int FFmpegAudioDecoder::GetAudioBuffer(struct AVCodecContext* s,
         av_malloc(number_of_planes * sizeof(*frame->extended_data)));
     int i = 0;
     for (; i < AV_NUM_DATA_POINTERS; ++i)
-      UNSAFE_TODO(frame->extended_data[i]) = UNSAFE_TODO(frame->data[i]) =
-          buffer->channel_data()[i];
+      frame->extended_data[i] = frame->data[i] = buffer->channel_data()[i];
     for (; i < number_of_planes; ++i)
-      UNSAFE_TODO(frame->extended_data[i]) = buffer->channel_data()[i];
+      frame->extended_data[i] = buffer->channel_data()[i];
   }
 
   // Now create an AVBufferRef for the data just allocated. It will own the

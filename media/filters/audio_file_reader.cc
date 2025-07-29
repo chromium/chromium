@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/audio_file_reader.h"
 
 #include <stddef.h>
@@ -10,7 +15,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
@@ -68,7 +72,7 @@ bool AudioFileReader::OpenDemuxer() {
   codec_context_.reset();
   bool found_stream = false;
   for (size_t i = 0; i < format_context->nb_streams; ++i) {
-    if (UNSAFE_TODO(format_context->streams[i])->codecpar->codec_type ==
+    if (format_context->streams[i]->codecpar->codec_type ==
         AVMEDIA_TYPE_AUDIO) {
       stream_index_ = i;
       found_stream = true;
@@ -80,8 +84,8 @@ bool AudioFileReader::OpenDemuxer() {
     return false;
 
   // Get the codec context.
-  codec_context_ = AVStreamToAVCodecContext(
-      UNSAFE_TODO(format_context->streams[stream_index_]));
+  codec_context_ =
+      AVStreamToAVCodecContext(format_context->streams[stream_index_]);
   if (!codec_context_)
     return false;
 
@@ -228,11 +232,10 @@ bool AudioFileReader::ReadPacket(AVPacket* output_packet) {
 
     // MP3 packets may be zero-padded according to ffmpeg, so trim until we
     // have the packet.
-    uint8_t* packet_end =
-        UNSAFE_TODO(output_packet->data + output_packet->size);
+    uint8_t* packet_end = output_packet->data + output_packet->size;
     uint8_t* header_start = output_packet->data;
     while (header_start < packet_end && !*header_start) {
-      UNSAFE_TODO(++header_start);
+      ++header_start;
     }
 
     if (packet_end - header_start < MPEG1AudioStreamParser::kHeaderSize ||
@@ -276,7 +279,7 @@ bool AudioFileReader::OnNewFrame(
   // adjust the duration downward by however much exists before zero.
   if (audio_codec_ == AudioCodec::kAAC && frame->duration) {
     const base::TimeDelta pkt_duration = ConvertFromTimeBase(
-        UNSAFE_TODO(glue_->format_context()->streams[stream_index_])->time_base,
+        glue_->format_context()->streams[stream_index_]->time_base,
         frame->duration + std::min(static_cast<int64_t>(0), frame->pts));
     const base::TimeDelta frame_duration =
         base::Seconds(frames_read / static_cast<double>(sample_rate_));
@@ -305,9 +308,9 @@ bool AudioFileReader::OnNewFrame(
         reinterpret_cast<float*>(frame->data[0]), frames_read);
   } else if (codec_context_->sample_fmt == AV_SAMPLE_FMT_FLTP) {
     for (int ch = 0; ch < audio_bus->channels(); ++ch) {
-      audio_bus->channel_span(ch).copy_from_nonoverlapping(UNSAFE_TODO(
+      audio_bus->channel_span(ch).copy_from_nonoverlapping(
           base::span(reinterpret_cast<float*>(frame->extended_data[ch]),
-                     static_cast<size_t>(frames_read))));
+                     static_cast<size_t>(frames_read)));
     }
   } else {
     int bytes_per_sample = av_get_bytes_per_sample(codec_context_->sample_fmt);
@@ -349,7 +352,7 @@ bool AudioFileReader::SeekForTesting(base::TimeDelta seek_time) {
 }
 
 const AVStream* AudioFileReader::GetAVStreamForTesting() const {
-  return UNSAFE_TODO(glue_->format_context()->streams[stream_index_]);
+  return glue_->format_context()->streams[stream_index_];
 }
 
 }  // namespace media

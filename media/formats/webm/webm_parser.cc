@@ -9,6 +9,11 @@
 // WebM Container Guidelines is at https://www.webmproject.org/docs/container/
 // WebM Encryption spec is at: https://www.webmproject.org/docs/webm-encryption/
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/webm/webm_parser.h"
 
 #include <stddef.h>
@@ -20,7 +25,6 @@
 #include <limits>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -501,7 +505,7 @@ static int ParseWebMElementHeaderField(const uint8_t* buf,
   int bytes_used = 1;
 
   for (int i = 0; i < extra_bytes; ++i) {
-    ch = UNSAFE_TODO(buf[bytes_used++]);
+    ch = buf[bytes_used++];
     all_ones &= (ch == 0xff);
     *num = (*num << 8) | ch;
   }
@@ -540,7 +544,7 @@ int WebMParseElementHeader(const uint8_t* buf,
   *id = static_cast<int>(tmp);
 
   int num_size_bytes = ParseWebMElementHeaderField(
-      UNSAFE_TODO(buf + num_id_bytes), size - num_id_bytes, 8, true, &tmp);
+      buf + num_id_bytes, size - num_id_bytes, 8, true, &tmp);
 
   if (num_size_bytes <= 0) {
     return num_size_bytes;
@@ -605,7 +609,7 @@ static int ParseUInt(const uint8_t* buf,
   // Read in the big-endian integer.
   uint64_t value = 0;
   for (int i = 0; i < size; ++i) {
-    value = (value << 8) | UNSAFE_TODO(buf[i]);
+    value = (value << 8) | buf[i];
   }
 
   // We use int64_t in place of uint64_t everywhere for convenience.  See this
@@ -635,7 +639,7 @@ static int ParseFloat(const uint8_t* buf,
   // Read the bytes from big-endian form into a native endian integer.
   int64_t tmp = 0;
   for (int i = 0; i < size; ++i) {
-    tmp = (tmp << 8) | UNSAFE_TODO(buf[i]);
+    tmp = (tmp << 8) | buf[i];
   }
 
   // Use a union to convert the integer bit pattern into a floating point
@@ -676,8 +680,7 @@ static int ParseString(const uint8_t* buf,
                        int size,
                        int id,
                        WebMParserClient* client) {
-  const uint8_t* end =
-      static_cast<const uint8_t*>(UNSAFE_TODO(memchr(buf, '\0', size)));
+  const uint8_t* end = static_cast<const uint8_t*>(memchr(buf, '\0', size));
   int length = (end != nullptr) ? static_cast<int>(end - buf) : size;
   std::string str(reinterpret_cast<const char*>(buf), length);
   return client->OnString(id, str) ? size : -1;
@@ -823,7 +826,7 @@ int WebMListParser::Parse(const uint8_t* buf, int size) {
 
       case INSIDE_LIST: {
         int header_size = result;
-        const uint8_t* element_data = UNSAFE_TODO(cur + header_size);
+        const uint8_t* element_data = cur + header_size;
         int element_data_size = cur_size - header_size;
 
         if (element_size < element_data_size) {
@@ -852,7 +855,7 @@ int WebMListParser::Parse(const uint8_t* buf, int size) {
         break;
     }
 
-    UNSAFE_TODO(cur += result);
+    cur += result;
     cur_size -= result;
     bytes_parsed += result;
   }

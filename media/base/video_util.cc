@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/base/video_util.h"
 
 #include <array>
@@ -9,7 +14,6 @@
 
 #include "base/bits.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/notreached.h"
@@ -47,27 +51,24 @@ void FillRegionOutsideVisibleRect(uint8_t* data,
                                   const gfx::Size& visible_size) {
   if (visible_size.IsEmpty()) {
     if (!coded_size.IsEmpty())
-      UNSAFE_TODO(memset(data, 0, coded_size.height() * stride));
+      memset(data, 0, coded_size.height() * stride);
     return;
   }
 
   const int coded_width = coded_size.width();
   if (visible_size.width() < coded_width) {
     const int pad_length = coded_width - visible_size.width();
-    uint8_t* dst = UNSAFE_TODO(data + visible_size.width());
-    for (int i = 0; i < visible_size.height();
-         ++i, UNSAFE_TODO(dst += stride)) {
-      UNSAFE_TODO(memset(dst, *(dst - 1), pad_length));
-    }
+    uint8_t* dst = data + visible_size.width();
+    for (int i = 0; i < visible_size.height(); ++i, dst += stride)
+      memset(dst, *(dst - 1), pad_length);
   }
 
   if (visible_size.height() < coded_size.height()) {
-    uint8_t* dst = UNSAFE_TODO(data + visible_size.height() * stride);
-    uint8_t* src = UNSAFE_TODO(dst - stride);
+    uint8_t* dst = data + visible_size.height() * stride;
+    uint8_t* src = dst - stride;
     for (int i = visible_size.height(); i < coded_size.height();
-         ++i, UNSAFE_TODO(dst += stride)) {
-      UNSAFE_TODO(memcpy(dst, src, coded_width));
-    }
+         ++i, dst += stride)
+      memcpy(dst, src, coded_width);
   }
 }
 
@@ -115,7 +116,7 @@ void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
 
   if (view_area_in_bytes.y() > 0) {
     libyuv::SetPlane(ptr, stride, row_bytes, view_area_in_bytes.y(), fill_byte);
-    UNSAFE_TODO(ptr += stride * view_area_in_bytes.y());
+    ptr += stride * view_area_in_bytes.y();
   }
 
   if (view_area_in_bytes.width() < row_bytes) {
@@ -124,13 +125,13 @@ void LetterboxPlane(const gfx::Rect& view_area_in_bytes,
                        view_area_in_bytes.height(), fill_byte);
     }
     if (view_area_in_bytes.right() < row_bytes) {
-      libyuv::SetPlane(UNSAFE_TODO(ptr + view_area_in_bytes.right()), stride,
+      libyuv::SetPlane(ptr + view_area_in_bytes.right(), stride,
                        row_bytes - view_area_in_bytes.right(),
                        view_area_in_bytes.height(), fill_byte);
     }
   }
 
-  UNSAFE_TODO(ptr += stride * view_area_in_bytes.height());
+  ptr += stride * view_area_in_bytes.height();
 
   if (view_area_in_bytes.bottom() < rows) {
     libyuv::SetPlane(ptr, stride, row_bytes, rows - view_area_in_bytes.bottom(),
@@ -350,21 +351,21 @@ void RotatePlaneByPixels(const uint8_t* src,
       if (flip_vert) {
         // Rotation 180.
         dest_row_step = -width;
-        UNSAFE_TODO(dest += height * width - 1);
+        dest += height * width - 1;
       } else {
-        UNSAFE_TODO(dest += width - 1);
+        dest += width - 1;
       }
     } else {
       if (flip_vert) {
         // Fast copy by rows.
-        UNSAFE_TODO(dest += width * (height - 1));
+        dest += width * (height - 1);
         for (int row = 0; row < height; ++row) {
-          UNSAFE_TODO(memcpy(dest, src, width));
-          UNSAFE_TODO(src += width);
-          UNSAFE_TODO(dest -= width);
+          memcpy(dest, src, width);
+          src += width;
+          dest -= width;
         }
       } else {
-        UNSAFE_TODO(memcpy(dest, src, width * height));
+        memcpy(dest, src, width * height);
       }
       return;
     }
@@ -372,11 +373,11 @@ void RotatePlaneByPixels(const uint8_t* src,
     int offset;
     if (width > height) {
       offset = (width - height) / 2;
-      UNSAFE_TODO(src += offset);
+      src += offset;
       num_rows = num_cols = height;
     } else {
       offset = (height - width) / 2;
-      UNSAFE_TODO(src += width * offset);
+      src += width * offset;
       num_rows = num_cols = width;
     }
 
@@ -384,18 +385,18 @@ void RotatePlaneByPixels(const uint8_t* src,
     dest_row_step = (flip_horiz ? 1 : -1);
     if (flip_horiz) {
       if (flip_vert) {
-        UNSAFE_TODO(dest += (width > height ? width * (height - 1) + offset
-                                            : width * (height - offset - 1)));
+        dest += (width > height ? width * (height - 1) + offset :
+                                  width * (height - offset - 1));
       } else {
-        UNSAFE_TODO(dest += (width > height ? offset : width * offset));
+        dest += (width > height ? offset : width * offset);
       }
     } else {
       if (flip_vert) {
-        UNSAFE_TODO(dest += (width > height ? width * height - offset - 1
-                                            : width * (height - offset) - 1));
+        dest += (width > height ?  width * height - offset - 1 :
+                                   width * (height - offset) - 1);
       } else {
-        UNSAFE_TODO(dest += (width > height ? width - offset - 1
-                                            : width * (offset + 1) - 1));
+        dest += (width > height ? width - offset - 1 :
+                                  width * (offset + 1) - 1);
       }
     }
   } else {
@@ -407,11 +408,11 @@ void RotatePlaneByPixels(const uint8_t* src,
     const uint8_t* src_ptr = src;
     uint8_t* dest_ptr = dest;
     for (int col = 0; col < num_cols; ++col) {
-      *dest_ptr = *UNSAFE_TODO(src_ptr++);
-      UNSAFE_TODO(dest_ptr += dest_col_step);
+      *dest_ptr = *src_ptr++;
+      dest_ptr += dest_col_step;
     }
-    UNSAFE_TODO(src += src_stride);
-    UNSAFE_TODO(dest += dest_row_step);
+    src += src_stride;
+    dest += dest_row_step;
   }
 }
 

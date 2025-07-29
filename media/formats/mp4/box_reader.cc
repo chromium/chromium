@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/formats/mp4/box_reader.h"
 
 #include <stddef.h>
@@ -10,7 +15,6 @@
 #include <algorithm>
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "base/numerics/byte_conversions.h"
 #include "media/formats/mp4/box_definitions.h"
 
@@ -227,7 +231,7 @@ bool BoxReader::ScanChildren() {
 
 bool BoxReader::ReadDisplayMatrix(DisplayMatrix matrix) {
   for (int i = 0; i < kDisplayMatrixDimension; i++) {
-    if (!Read4s(&UNSAFE_TODO(matrix[i]))) {
+    if (!Read4s(&matrix[i])) {
       return false;
     }
   }

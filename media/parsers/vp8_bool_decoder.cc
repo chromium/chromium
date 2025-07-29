@@ -3,6 +3,11 @@
 // found in the LICENSE file.
 //
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 /*
  * Copyright (c) 2010, The WebM Project authors. All rights reserved.
  *
@@ -48,7 +53,6 @@
 #include <array>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 
 namespace media {
@@ -90,7 +94,7 @@ bool Vp8BoolDecoder::Initialize(const uint8_t* data, size_t size) {
     return false;
   user_buffer_start_ = data;
   user_buffer_ = data;
-  user_buffer_end_ = UNSAFE_TODO(data + size);
+  user_buffer_end_ = data + size;
   value_ = 0;
   count_ = -8;
   range_ = 255;

@@ -2,12 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/midi/midi_message_queue.h"
 
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace midi {
@@ -60,7 +64,7 @@ template <typename T, size_t N>
         << ", actual: " << ::testing::PrintToString(actual);
   }
   for (size_t i = 0; i < N; ++i) {
-    if (UNSAFE_TODO(expected[i]) != actual[i]) {
+    if (expected[i] != actual[i]) {
       return ::testing::AssertionFailure()
           << "expected: " << ::testing::PrintToString(expected)
           << ", actual: " << ::testing::PrintToString(actual);

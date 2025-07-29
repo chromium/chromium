@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/cdm/library_cdm/clear_key_cdm/ffmpeg_cdm_audio_decoder.h"
 
 #include <stddef.h>
@@ -9,7 +14,6 @@
 #include <algorithm>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
@@ -81,10 +85,9 @@ void CdmAudioDecoderConfigToAVCodecContext(
     codec_context->extradata_size = config.extra_data_size;
     codec_context->extradata = reinterpret_cast<uint8_t*>(
         av_malloc(config.extra_data_size + AV_INPUT_BUFFER_PADDING_SIZE));
-    UNSAFE_TODO(memcpy(codec_context->extradata, config.extra_data,
-                       config.extra_data_size));
-    UNSAFE_TODO(memset(codec_context->extradata + config.extra_data_size, '\0',
-                       AV_INPUT_BUFFER_PADDING_SIZE));
+    memcpy(codec_context->extradata, config.extra_data, config.extra_data_size);
+    memset(codec_context->extradata + config.extra_data_size, '\0',
+           AV_INPUT_BUFFER_PADDING_SIZE);
   } else {
     codec_context->extradata = nullptr;
     codec_context->extradata_size = 0;
@@ -120,16 +123,16 @@ void CopySamples(cdm::AudioFormat cdm_format,
     case cdm::kAudioFormatS16:
     case cdm::kAudioFormatS32:
     case cdm::kAudioFormatF32:
-      UNSAFE_TODO(memcpy(output_buffer, av_frame.data[0], decoded_audio_size));
+      memcpy(output_buffer, av_frame.data[0], decoded_audio_size);
       break;
     case cdm::kAudioFormatPlanarS16:
     case cdm::kAudioFormatPlanarF32: {
       const int decoded_size_per_channel =
           decoded_audio_size / av_frame.ch_layout.nb_channels;
       for (int i = 0; i < av_frame.ch_layout.nb_channels; ++i) {
-        UNSAFE_TODO(memcpy(output_buffer, av_frame.extended_data[i],
-                           decoded_size_per_channel));
-        UNSAFE_TODO(output_buffer += decoded_size_per_channel);
+        memcpy(output_buffer, av_frame.extended_data[i],
+               decoded_size_per_channel);
+        output_buffer += decoded_size_per_channel;
       }
       break;
     }
@@ -282,9 +285,9 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
   uint8_t* output_buffer = decoded_frames->FrameBuffer()->Data();
   SerializeInt64(output_timestamp_helper_->GetTimestamp().InMicroseconds(),
                  output_buffer);
-  UNSAFE_TODO(output_buffer += sizeof(int64_t));
+  output_buffer += sizeof(int64_t);
   SerializeInt64(total_size, output_buffer);
-  UNSAFE_TODO(output_buffer += sizeof(int64_t));
+  output_buffer += sizeof(int64_t);
   output_timestamp_helper_->AddFrames(total_size / bytes_per_frame_);
 
   for (auto& frame : audio_frames) {
@@ -311,7 +314,7 @@ cdm::Status FFmpegCdmAudioDecoder::DecodeBuffer(
         << "Decoder didn't output full frames";
 
     CopySamples(cdm_format, decoded_audio_size, *frame, output_buffer);
-    UNSAFE_TODO(output_buffer += decoded_audio_size);
+    output_buffer += decoded_audio_size;
   }
 
   return cdm::kSuccess;
@@ -341,7 +344,7 @@ void FFmpegCdmAudioDecoder::ReleaseFFmpegResources() {
 }
 
 void FFmpegCdmAudioDecoder::SerializeInt64(int64_t value, uint8_t* dest) {
-  UNSAFE_TODO(memcpy(dest, &value, sizeof(value)));
+  memcpy(dest, &value, sizeof(value));
 }
 
 }  // namespace media

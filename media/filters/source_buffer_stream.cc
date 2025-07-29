@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/filters/source_buffer_stream.h"
 
 #include <algorithm>
@@ -10,7 +15,6 @@
 #include <sstream>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/trace_event/trace_event.h"
 #include "media/base/demuxer_memory_limit.h"
@@ -338,7 +342,7 @@ void SourceBufferStream::Append(const BufferQueue& buffers) {
       } else if (itr != buffers.begin()) {
         // Copy the first key frame and everything after it into
         // |trimmed_buffers|.
-        UNSAFE_TODO(trimmed_buffers.assign(itr, buffers.end()));
+        trimmed_buffers.assign(itr, buffers.end());
         buffers_for_new_range = &trimmed_buffers;
       }
 

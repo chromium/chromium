@@ -2,6 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "media/capabilities/bucket_utility.h"
 
 #include <algorithm>
@@ -10,7 +15,6 @@
 #include <iterator>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 
 namespace {
 
@@ -74,9 +78,9 @@ gfx::Size GetSizeBucket(const gfx::Size& raw_size) {
 
   // If no bucket is larger than the raw dimension, just use the last bucket.
   if (width_bound == std::end(kSizeBuckets))
-    UNSAFE_TODO(--width_bound);
+    --width_bound;
   if (height_bound == std::end(kSizeBuckets))
-    UNSAFE_TODO(--height_bound);
+    --height_bound;
 
   return gfx::Size(*width_bound, *height_bound);
 }
@@ -91,14 +95,14 @@ int GetFpsBucket(double raw_fps) {
 
   // If no bucket is larger than |rounded_fps|, just used the last bucket;
   if (upper_bound == std::end(kFrameRateBuckets))
-    return *(UNSAFE_TODO(upper_bound - 1));
+    return *(upper_bound - 1);
 
   // Return early if its the first bucket.
   if (upper_bound == std::begin(kFrameRateBuckets))
     return *upper_bound;
 
   int higher_bucket = *upper_bound;
-  int previous_bucket = *(UNSAFE_TODO(upper_bound - 1));
+  int previous_bucket = *(upper_bound - 1);
   if (std::abs(previous_bucket - rounded_fps) <
       std::abs(higher_bucket - rounded_fps)) {
     return previous_bucket;
