@@ -80,11 +80,6 @@ base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
   base::FilePath locale_file_path =
       GetResourcesPakFilePath(@"locale", mac_locale);
 
-  if (HasSharedInstance() && GetSharedInstance().delegate_) {
-    locale_file_path = GetSharedInstance().delegate_->GetPathForLocalePack(
-        locale_file_path, app_locale);
-  }
-
   // Don't try to load from paths that are not absolute.
   return locale_file_path.IsAbsolute() ? locale_file_path : base::FilePath();
 }

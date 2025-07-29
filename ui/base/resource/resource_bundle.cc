@@ -500,16 +500,6 @@ base::FilePath ResourceBundle::GetLocaleFilePath(std::string_view app_locale) {
         base::StrCat({app_locale, kPakFileExtension}));
   }
 
-  // Note: The delegate GetPathForLocalePack() override is currently only used
-  // by CastResourceDelegate, which does not call this function prior to
-  // initializing the ResourceBundle. This called earlier than that by the
-  // variations code which also has a CHECK that an inconsistent value does not
-  // get returned via VariationsService::EnsureLocaleEquals().
-  if (HasSharedInstance() && GetSharedInstance().delegate_) {
-    locale_file_path = GetSharedInstance().delegate_->GetPathForLocalePack(
-        locale_file_path, app_locale);
-  }
-
   // Don't try to load from paths that are not absolute.
   return locale_file_path.IsAbsolute() ? locale_file_path : base::FilePath();
 }

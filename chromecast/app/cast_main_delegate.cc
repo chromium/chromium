@@ -10,6 +10,8 @@
 #include <variant>
 #include <vector>
 
+#include "base/base_paths.h"
+#include "base/check.h"
 #include "base/command_line.h"
 #include "base/cpu.h"
 #include "base/debug/leak_annotations.h"
@@ -38,6 +40,7 @@
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/common/content_switches.h"
 #include "ui/base/resource/resource_bundle.h"
+#include "ui/base/ui_base_paths.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/apk_assets.h"
@@ -324,6 +327,15 @@ void CastMainDelegate::InitializeResourceBundle() {
 #endif  // BUILDFLAG(IS_ANDROID)
 
   resource_delegate_.reset(new CastResourceDelegate());
+
+  // Override ui::DIR_LOCALES to point to the chromecast_locales directory.
+  CHECK(base::PathService::OverrideAndCreateIfNeeded(
+      ui::DIR_LOCALES,
+      base::PathService::CheckedGet(base::DIR_ASSETS)
+          .Append(FILE_PATH_LITERAL("chromecast_locales")),
+      /*is_absolute=*/true,
+      /*create=*/false));
+
   // TODO(gunsch): Use LOAD_COMMON_RESOURCES once ResourceBundle no longer
   // hardcodes resource file names.
   ui::ResourceBundle::InitSharedInstanceWithLocale(

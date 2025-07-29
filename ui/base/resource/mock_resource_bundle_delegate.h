@@ -24,10 +24,6 @@ class MockResourceBundleDelegate : public ResourceBundle::Delegate {
               (const base::FilePath& pack_path,
                ResourceScaleFactor scale_factor),
               (override));
-  MOCK_METHOD(base::FilePath,
-              GetPathForLocalePack,
-              (const base::FilePath& pack_path, std::string_view locale),
-              (override));
   MOCK_METHOD(gfx::Image, GetImageNamed, (int resource_id), (override));
   MOCK_METHOD(gfx::Image, GetNativeImageNamed, (int resource_id), (override));
   MOCK_METHOD(bool, HasDataResource, (int resource_id), (const override));

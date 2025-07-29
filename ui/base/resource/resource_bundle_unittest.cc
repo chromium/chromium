@@ -222,34 +222,6 @@ TEST_F(ResourceBundleTest, DelegateGetPathForResourcePack) {
   resource_bundle->AddDataPackFromPath(pack_path, pack_scale_factor);
 }
 
-TEST_F(ResourceBundleTest, DelegateGetPathForLocalePack) {
-  ResourceBundle::SharedInstanceSwapperForTesting resource_bundle_swapper;
-  ResourceBundle::InitSharedInstance(&delegate_);
-
-  std::string locale = "en-US";
-
-  // Cancel the load.
-  EXPECT_CALL(delegate_, GetPathForLocalePack(_, _))
-      .WillRepeatedly(Return(base::FilePath()))
-      .RetiresOnSaturation();
-
-  EXPECT_FALSE(ResourceBundle::LocaleDataPakExists(
-      locale, ResourceBundle::Gender::kDefault));
-  EXPECT_EQ("", ResourceBundle::GetSharedInstance().LoadLocaleResources(
-                    locale, /*crash_on_failure=*/false));
-
-  // Allow the load to proceed.
-  EXPECT_CALL(delegate_, GetPathForLocalePack(_, _))
-      .WillRepeatedly(ReturnArg<0>());
-
-  EXPECT_TRUE(ResourceBundle::LocaleDataPakExists(
-      locale, ResourceBundle::Gender::kDefault));
-  EXPECT_EQ(locale, ResourceBundle::GetSharedInstance().LoadLocaleResources(
-                        locale, /*crash_on_failure=*/false));
-
-  ResourceBundle::CleanupSharedInstance();
-}
-
 TEST_F(ResourceBundleTest, DelegateGetImageNamed) {
   ResourceBundle* resource_bundle = CreateResourceBundle(&delegate_);
   gfx::Image empty_image = resource_bundle->GetEmptyImage();

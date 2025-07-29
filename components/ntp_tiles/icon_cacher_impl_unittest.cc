@@ -155,8 +155,6 @@ class IconCacherTestPopularSites : public IconCacherTestBase {
   void SetUp() override {
     ON_CALL(mock_resource_delegate_, GetPathForResourcePack(_, _))
         .WillByDefault(ReturnArg<0>());
-    ON_CALL(mock_resource_delegate_, GetPathForLocalePack(_, _))
-        .WillByDefault(ReturnArg<0>());
   }
 
   PopularSites::Site site_;
