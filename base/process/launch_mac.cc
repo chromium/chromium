@@ -449,11 +449,7 @@ bool GetAppOutputAndError(const CommandLine& cl, std::string* output) {
 bool GetAppOutputWithExitCode(const CommandLine& cl,
                               std::string* output,
                               int* exit_code) {
-  GetAppOutputOptions options;
-  options.output = output;
-  bool rv = GetAppOutputInternal(cl.argv(), &options);
-  *exit_code = options.exit_code;
-  return rv;
+  return GetAppOutputWithExitCode(cl.argv(), output, exit_code);
 }
 
 bool GetAppOutput(const std::vector<std::string>& argv, std::string* output) {
@@ -470,6 +466,16 @@ bool GetAppOutputAndError(const std::vector<std::string>& argv,
   options.output = output;
   return GetAppOutputInternal(argv, &options) &&
          options.exit_code == EXIT_SUCCESS;
+}
+
+bool GetAppOutputWithExitCode(const std::vector<std::string>& argv,
+                              std::string* output,
+                              int* exit_code) {
+  GetAppOutputOptions options;
+  options.output = output;
+  bool rv = GetAppOutputInternal(argv, &options);
+  *exit_code = options.exit_code;
+  return rv;
 }
 
 void RaiseProcessToHighPriority() {

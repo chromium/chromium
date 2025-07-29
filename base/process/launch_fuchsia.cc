@@ -303,6 +303,12 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
   return GetAppOutputInternal(cl, false, output, exit_code);
 }
 
+bool GetAppOutputWithExitCode(const std::vector<std::string>& argv,
+                              std::string* output,
+                              int* exit_code) {
+  return GetAppOutputWithExitCode(CommandLine(argv), output, exit_code);
+}
+
 void RaiseProcessToHighPriority() {
   // Fuchsia doesn't provide an API to change process priority.
 }

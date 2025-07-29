@@ -716,6 +716,13 @@ bool GetAppOutputWithExitCode(const CommandLine& cl,
                               exit_code);
 }
 
+bool GetAppOutputWithExitCode(const std::vector<std::string>& argv,
+                              std::string* output,
+                              int* exit_code) {
+  // Run |execve()| with the current environment.
+  return GetAppOutputInternal(argv, nullptr, false, output, true, exit_code);
+}
+
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_AIX)
 namespace {
 

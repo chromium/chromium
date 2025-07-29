@@ -498,6 +498,11 @@ BASE_EXPORT bool GetAppOutput(const std::vector<std::string>& argv,
 // stderr.
 BASE_EXPORT bool GetAppOutputAndError(const std::vector<std::string>& argv,
                                       std::string* output);
+
+// Like the POSIX-specific GetAppOutput above, but also includes the exit code.
+BASE_EXPORT bool GetAppOutputWithExitCode(const std::vector<std::string>& argv,
+                                          std::string* output,
+                                          int* exit_code);
 #endif  // BUILDFLAG(IS_WIN)
 
 // If supported on the platform, and the user has sufficent rights, increase
