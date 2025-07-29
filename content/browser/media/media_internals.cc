@@ -393,7 +393,7 @@ static bool ConvertEventToUpdate(int render_process_id,
 
   base::Value::Dict dict;
   dict.Set("renderer", render_process_id);
-  dict.Set("player", event.id);
+  dict.Set("player", static_cast<int>(event.id.value()));
 
   // TODO(dalecurtis): This is technically not correct.  TimeTicks "can't" be
   // converted to to a human readable time format.  See base/time/time.h.
@@ -667,7 +667,7 @@ void MediaInternals::SaveEvent(int process_id,
   if (saved_events.size() > media::MediaLog::kLogLimit) {
     // Remove all events for a given player as soon as we have to remove a
     // single event for that player to avoid showing incomplete players.
-    const int id_to_remove = saved_events.front().id;
+    const media::MediaPlayerLoggingID id_to_remove = saved_events.front().id;
     std::erase_if(saved_events, [&](const media::MediaLogRecord& event) {
       return event.id == id_to_remove;
     });

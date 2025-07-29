@@ -153,7 +153,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   // Session unique ID which maps to a given WebMediaPlayerImpl instances. Used
   // to coordinate multiply logged events with a singly logged metric.
-  const MediaPlayerLoggingID player_id_;
+  const uint64_t player_id_;
 
   // Are UKM reports for the main frame or for a subframe?
   const bool is_top_frame_;

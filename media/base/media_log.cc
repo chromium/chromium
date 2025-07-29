@@ -131,7 +131,7 @@ std::unique_ptr<MediaLogRecord> MediaLog::CreateRecord(
   auto record = std::make_unique<MediaLogRecord>();
   // Record IDs are populated by event handlers before they are sent to various
   // log viewers, such as the media-internals page, or devtools.
-  record->id = 0;
+  record->id = MediaPlayerLoggingID(0);
   record->type = type;
   record->time = base::TimeTicks::Now();
   return record;

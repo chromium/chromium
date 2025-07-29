@@ -77,7 +77,7 @@ class InspectorMediaEventHandlerTest : public testing::Test {
   template <media::MediaLogEvent T>
   media::MediaLogRecord CreateEvent() {
     media::MediaLogRecord event;
-    event.id = 0;
+    event.id = media::MediaPlayerLoggingID(0);
     event.type = media::MediaLogRecord::Type::kMediaEventTriggered;
     event.time = base::TimeTicks();
     event.params.Set("event", media::MediaLogEventTypeSupport<T>::TypeName());
@@ -87,7 +87,7 @@ class InspectorMediaEventHandlerTest : public testing::Test {
   media::MediaLogRecord CreatePropChange(
       std::vector<std::pair<std::string, std::string>> props) {
     media::MediaLogRecord event;
-    event.id = 0;
+    event.id = media::MediaPlayerLoggingID(0);
     event.type = media::MediaLogRecord::Type::kMediaPropertyChange;
     event.time = base::TimeTicks();
     for (auto p : props) {
@@ -98,7 +98,7 @@ class InspectorMediaEventHandlerTest : public testing::Test {
 
   media::MediaLogRecord CreateMessage(std::string msg) {
     media::MediaLogRecord event;
-    event.id = 0;
+    event.id = media::MediaPlayerLoggingID(0);
     event.type = media::MediaLogRecord::Type::kMessage;
     event.time = base::TimeTicks();
     event.params.Set("warning", msg);
@@ -107,7 +107,7 @@ class InspectorMediaEventHandlerTest : public testing::Test {
 
   media::MediaLogRecord CreateError(int errorcode) {
     media::MediaLogRecord error;
-    error.id = 0;
+    error.id = media::MediaPlayerLoggingID(0);
     error.type = media::MediaLogRecord::Type::kMediaStatus;
     error.time = base::TimeTicks();
     error.params.Set(media::StatusConstants::kCodeKey, errorcode);

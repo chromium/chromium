@@ -9,6 +9,7 @@
 
 #include "base/time/time.h"
 #include "base/values.h"
+#include "media/base/media_player_logging_id.h"
 
 namespace media {
 
@@ -51,7 +52,7 @@ struct MediaLogRecord {
     kMaxValue = kMediaStatus,
   };
 
-  int32_t id;
+  MediaPlayerLoggingID id;
   Type type;
   base::Value::Dict params;
   base::TimeTicks time;

@@ -569,11 +569,11 @@ class PLATFORM_EXPORT WebMediaPlayerImpl
   void ReportMemoryUsage();
   void FinishMemoryUsageReport(int64_t demuxer_memory_usage);
 
-  void OnMainThreadMemoryDump(media::MediaPlayerLoggingID id,
+  void OnMainThreadMemoryDump(media::MediaPlayerLoggingID player_id,
                               const base::trace_event::MemoryDumpArgs& args,
                               base::trace_event::ProcessMemoryDump* pmd);
   static void OnMediaThreadMemoryDump(
-      media::MediaPlayerLoggingID id,
+      media::MediaPlayerLoggingID player_id,
       media::Demuxer* demuxer,
       const base::trace_event::MemoryDumpArgs& args,
       base::trace_event::ProcessMemoryDump* pmd);

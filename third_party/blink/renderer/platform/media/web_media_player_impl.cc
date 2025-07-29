@@ -136,6 +136,12 @@ struct CrossThreadCopier<media::VideoTransformation>
   STATIC_ONLY(CrossThreadCopier);
 };
 
+template <>
+struct CrossThreadCopier<media::MediaPlayerLoggingID>
+    : public CrossThreadCopierPassThrough<media::MediaPlayerLoggingID> {
+  STATIC_ONLY(CrossThreadCopier);
+};
+
 namespace {
 
 enum SplitHistogramTypes {
@@ -319,13 +325,13 @@ std::string SanitizeUserStringProperty(WebString value) {
 }
 
 void CreateAllocation(base::trace_event::ProcessMemoryDump* pmd,
-                      int32_t id,
+                      media::MediaPlayerLoggingID id,
                       const char* name,
                       int64_t bytes) {
   if (bytes <= 0)
     return;
-  auto full_name =
-      base::StringPrintf("media/webmediaplayer/%s/player_0x%x", name, id);
+  auto full_name = base::StringPrintf("media/webmediaplayer/%s/player_0x%lx",
+                                      name, id.value());
   auto* dump = pmd->CreateAllocatorDump(full_name);
 
   dump->AddScalar(base::trace_event::MemoryAllocatorDump::kNameSize,
@@ -3456,12 +3462,12 @@ void WebMediaPlayerImpl::FinishMemoryUsageReport(int64_t demuxer_memory_usage) {
 }
 
 void WebMediaPlayerImpl::OnMainThreadMemoryDump(
-    media::MediaPlayerLoggingID id,
+    media::MediaPlayerLoggingID player_id,
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   const auto stats = GetPipelineStatistics();
-  auto player_node_name =
-      base::StringPrintf("media/webmediaplayer/player_0x%x", id);
+  auto player_node_name = base::StringPrintf(
+      "media/webmediaplayer/player_0x%lx", player_id.value());
   auto* player_node = pmd->CreateAllocatorDump(player_node_name);
   player_node->AddScalar(
       base::trace_event::MemoryAllocatorDump::kNameObjectCount,
@@ -3476,25 +3482,25 @@ void WebMediaPlayerImpl::OnMainThreadMemoryDump(
     player_node->AddString("player_state", "", player_state);
   }
 
-  CreateAllocation(pmd, id, "audio", stats.audio_memory_usage);
-  CreateAllocation(pmd, id, "video", stats.video_memory_usage);
+  CreateAllocation(pmd, player_id, "audio", stats.audio_memory_usage);
+  CreateAllocation(pmd, player_id, "video", stats.video_memory_usage);
 
   if (demuxer_manager_->HasDataSource()) {
-    CreateAllocation(pmd, id, "data_source",
+    CreateAllocation(pmd, player_id, "data_source",
                      demuxer_manager_->GetDataSourceMemoryUsage());
   }
 }
 
 // static
 void WebMediaPlayerImpl::OnMediaThreadMemoryDump(
-    media::MediaPlayerLoggingID id,
+    media::MediaPlayerLoggingID player_id,
     Demuxer* demuxer,
     const base::trace_event::MemoryDumpArgs& args,
     base::trace_event::ProcessMemoryDump* pmd) {
   if (!demuxer)
     return;
 
-  CreateAllocation(pmd, id, "demuxer", demuxer->GetMemoryUsage());
+  CreateAllocation(pmd, player_id, "demuxer", demuxer->GetMemoryUsage());
 }
 
 void WebMediaPlayerImpl::ScheduleIdlePauseTimer() {

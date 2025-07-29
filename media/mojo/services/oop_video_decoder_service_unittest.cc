@@ -830,7 +830,7 @@ TEST_F(OOPVideoDecoderServiceTest,
   ASSERT_TRUE(auxiliary_endpoints->mock_media_log);
 
   MediaLogRecord media_log_record_to_send;
-  media_log_record_to_send.id = 2;
+  media_log_record_to_send.id = MediaPlayerLoggingID(2);
   media_log_record_to_send.type = MediaLogRecord::Type::kMediaStatus;
   media_log_record_to_send.params.Set("Test", "Value");
   media_log_record_to_send.time = base::TimeTicks::Now();

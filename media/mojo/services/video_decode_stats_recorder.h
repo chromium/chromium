@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "media/base/media_player_logging_id.h"
 #include "media/base/video_codecs.h"
 #include "media/learning/common/value.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -28,7 +27,7 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
                            ukm::SourceId source_id,
                            learning::FeatureValue origin,
                            bool is_top_frame,
-                           MediaPlayerLoggingID player_id);
+                           uint64_t player_id);
 
   VideoDecodeStatsRecorder(const VideoDecodeStatsRecorder&) = delete;
   VideoDecodeStatsRecorder& operator=(const VideoDecodeStatsRecorder&) = delete;
