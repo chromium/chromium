@@ -35,8 +35,6 @@ using ::testing::_;
 constexpr char kMaskedDomainListProto[] = "masked_domain_list.MaskedDomainList";
 constexpr char kUpdateSuccessHistogram[] =
     "NetworkService.IpProtection.ProxyAllowList.UpdateSuccess";
-constexpr char kUpdateProcessTimeHistogram[] =
-    "NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime";
 constexpr char kFlatbufferBuildTimeHistogram[] =
     "NetworkService.IpProtection.ProxyAllowList.FlatbufferBuildTime";
 constexpr char kMdlSizeHistogram[] = "NetworkService.MaskedDomainList.Size2";
@@ -103,10 +101,9 @@ TEST_F(MaskedDomainListComponentInstallerTest, FeatureEnabled_NoFileExists) {
                    ->IsPopulated());
 }
 
-TEST_F(MaskedDomainListComponentInstallerTest, OnMaskedDomainListReadyProto) {
-  scoped_feature_list_.InitWithFeatures(
-      {network::features::kMaskedDomainList},
-      {network::features::kMaskedDomainListFlatbufferImpl});
+TEST_F(MaskedDomainListComponentInstallerTest, OnMaskedDomainListReady) {
+  scoped_feature_list_.InitAndEnableFeature(
+      network::features::kMaskedDomainList);
 
   OnMaskedDomainListReady(base::Version(), FakeMdl());
   EXPECT_TRUE(base::test::RunUntil([&] {
@@ -115,27 +112,6 @@ TEST_F(MaskedDomainListComponentInstallerTest, OnMaskedDomainListReadyProto) {
         ->IsPopulated();
   }));
   histogram_tester_.ExpectTotalCount(kUpdateSuccessHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kUpdateProcessTimeHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kFlatbufferBuildTimeHistogram, 0);
-  histogram_tester_.ExpectTotalCount(kMdlSizeHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kDiskUsageHistogram, 0);
-}
-
-TEST_F(MaskedDomainListComponentInstallerTest,
-       OnMaskedDomainListReadyFlatbuffer) {
-  scoped_feature_list_.InitWithFeatures(
-      {network::features::kMaskedDomainList,
-       network::features::kMaskedDomainListFlatbufferImpl},
-      {});
-
-  OnMaskedDomainListReady(base::Version(), FakeMdl());
-  EXPECT_TRUE(base::test::RunUntil([&] {
-    return network::NetworkService::GetNetworkServiceForTesting()
-        ->masked_domain_list_manager()
-        ->IsPopulated();
-  }));
-  histogram_tester_.ExpectTotalCount(kUpdateSuccessHistogram, 1);
-  histogram_tester_.ExpectTotalCount(kUpdateProcessTimeHistogram, 0);
   histogram_tester_.ExpectTotalCount(kFlatbufferBuildTimeHistogram, 1);
   histogram_tester_.ExpectTotalCount(kMdlSizeHistogram, 1);
   // Both MDLs get measured, so two records.

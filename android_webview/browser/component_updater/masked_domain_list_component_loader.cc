@@ -25,8 +25,10 @@
 namespace {
 void UpdateMaskedDomainList(mojo_base::ProtoWrapper mdl,
                             const std::vector<std::string>& exclusion_list) {
-  content::GetNetworkService()->UpdateMaskedDomainList(std::move(mdl),
-                                                       exclusion_list);
+  // TODO(crbug.com/422115607): Add support for Flatbuffers
+  DLOG(ERROR)
+      << "Could not load MDL into Network Service because support for "
+         "building MDL Flatbuffer files is not yet implemented on WebView";
 }
 }  // namespace
 
@@ -56,7 +58,7 @@ void LoadMaskedDomainListComponent(ComponentLoaderPolicyVector& policies) {
                   base::BindOnce(&UpdateMaskedDomainList,
                                  std::move(mdl.value())));
             } else {
-              LOG(ERROR) << "Could not read Masked Domain List file";
+              DLOG(ERROR) << "Could not read Masked Domain List file";
             }
           })));
 }

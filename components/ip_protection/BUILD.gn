@@ -30,7 +30,6 @@ source_set("unit_tests") {
     "//components/ip_protection/common:probabilistic_reveal_token_registry_unittest",
     "//components/ip_protection/common:probabilistic_reveal_token_test_consumer_unittest",
     "//components/ip_protection/common:probabilistic_reveal_token_test_issuer_unittest",
-    "//components/ip_protection/common:url_matcher_with_bypass_unittest",
 
     # Select UMA as the implementation of `ip_protection::Telemetry()`.
     "//components/ip_protection/common:ip_protection_telemetry_uma",

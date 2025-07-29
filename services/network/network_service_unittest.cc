@@ -178,80 +178,6 @@ TEST_F(NetworkServiceTest, CreateContextWithoutChannelID) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST_F(NetworkServiceTest, CreateContextWithMaskedDomainListProxyConfig) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {net::features::kEnableIpProtectionProxy},
-      {network::features::kMaskedDomainListFlatbufferImpl});
-
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-  service()->UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper(mdl),
-      /*exclusion_list=*/std::vector<std::string>());
-  task_environment()->RunUntilIdle();
-
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  mojo::Remote<mojom::NetworkContext> network_context;
-  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
-                                  std::move(params));
-
-  // TODO(aakallam): verify that the allow list is used
-
-  network_context.reset();
-  // Make sure the NetworkContext is destroyed.
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(NetworkServiceTest,
-       CreateContextWithCustomProxyConfig_MdlConfigIsNotUsed) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {net::features::kEnableIpProtectionProxy},
-      {network::features::kMaskedDomainListFlatbufferImpl});
-
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-  service()->UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper(mdl),
-      /*exclusion_list=*/std::vector<std::string>());
-  task_environment()->RunUntilIdle();
-
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  params->initial_custom_proxy_config =
-      network::mojom::CustomProxyConfig::New();
-  mojo::Remote<mojom::NetworkContext> network_context;
-  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
-                                  std::move(params));
-
-  // TODO(aakallam): verify that the allow list isn't used
-
-  network_context.reset();
-  // Make sure the NetworkContext is destroyed.
-  base::RunLoop().RunUntilIdle();
-}
-
-TEST_F(NetworkServiceTest, CreateContextWithoutMaskedDomainListData) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitAndEnableFeature(
-      net::features::kEnableIpProtectionProxy);
-
-  mojom::NetworkContextParamsPtr params = CreateContextParams();
-  mojo::Remote<mojom::NetworkContext> network_context;
-  service()->CreateNetworkContext(network_context.BindNewPipeAndPassReceiver(),
-                                  std::move(params));
-
-  // TODO(aakallam): verify that the allow list isn't used
-
-  network_context.reset();
-  // Make sure the NetworkContext is destroyed.
-  base::RunLoop().RunUntilIdle();
-}
-
 TEST_F(NetworkServiceTest, AuthDefaultParams) {
   mojo::Remote<mojom::NetworkContext> network_context_remote;
   NetworkContext network_context(
@@ -1108,25 +1034,6 @@ TEST_F(NetworkServiceTest, DisableCTEnforcement) {
   EXPECT_TRUE(transport_security_state->is_ct_emergency_disabled_for_testing());
 }
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
-
-TEST_F(NetworkServiceTest, SetMaskedDomainList) {
-  base::test::ScopedFeatureList scoped_feature_list_;
-  scoped_feature_list_.InitWithFeatures(
-      {net::features::kEnableIpProtectionProxy,
-       network::features::kMaskedDomainList},
-      {network::features::kMaskedDomainListFlatbufferImpl});
-
-  masked_domain_list::MaskedDomainList mdl;
-  auto* resourceOwner = mdl.add_resource_owners();
-  resourceOwner->set_owner_name("foo");
-  resourceOwner->add_owned_resources()->set_domain("example.com");
-
-  service()->UpdateMaskedDomainList(
-      mojo_base::ProtoWrapper(mdl),
-      /*exclusion_list=*/std::vector<std::string>());
-
-  EXPECT_TRUE(service()->masked_domain_list_manager()->IsPopulated());
-}
 
 class TestCookieEncryptionProvider : public mojom::CookieEncryptionProvider {
  public:

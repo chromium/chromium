@@ -26,7 +26,6 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_telemetry.h"
 #include "components/ip_protection/common/masked_domain_list.h"
-#include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/features.h"
 #include "net/base/schemeful_site.h"
@@ -39,11 +38,6 @@ namespace {
 using ::masked_domain_list::Resource;
 using ::masked_domain_list::ResourceOwner;
 using ::network::mojom::IpProtectionProxyBypassPolicy;
-
-bool UseFlatbuffer() {
-  return base::FeatureList::IsEnabled(
-      network::features::kMaskedDomainListFlatbufferImpl);
-}
 
 bool RestrictTopLevelSiteSchemes(
     const net::NetworkAnonymizationKey& network_anonymization_key,
@@ -81,17 +75,7 @@ bool MaskedDomainListManager::IsEnabled() const {
 }
 
 bool MaskedDomainListManager::IsPopulated() const {
-  if (UseFlatbuffer()) {
-    return default_mdl_ && regular_browsing_mdl_;
-  }
-  return url_matcher_with_bypass_.IsPopulated();
-}
-
-size_t MaskedDomainListManager::EstimateMemoryUsage() const {
-  if (UseFlatbuffer()) {
-    return 0;
-  }
-  return base::trace_event::EstimateMemoryUsage(url_matcher_with_bypass_);
+  return default_mdl_ && regular_browsing_mdl_;
 }
 
 bool MaskedDomainListManager::Matches(
@@ -101,141 +85,51 @@ bool MaskedDomainListManager::Matches(
   std::optional<net::SchemefulSite> top_frame_site =
       network_anonymization_key.GetTopFrameSite();
 
-  if (UseFlatbuffer()) {
-    MaskedDomainList* mdl = mdl_type == MdlType::kIncognito
-                                ? default_mdl_.get()
-                                : regular_browsing_mdl_.get();
-    // If the MDL is not initialized yet, or initialization failed, nothing
-    // matches. In this situation, `IsPopulated()` would have returned false,
-    // so this serves as a backup check.
-    if (!mdl) {
-      return false;
-    }
-    std::string request_domain = request_url.host();
-    if (request_domain.size() > 0 && request_domain.back() == '.') {
-      request_domain = request_domain.substr(0, request_domain.length() - 1);
-    }
-
-    if (proxy_bypass_policy_ == IpProtectionProxyBypassPolicy::kNone) {
-      // For the kNone policy, all owned resources are considered a match.
-      return mdl->IsOwnedResource(request_domain);
-    }
-
-    std::string top_frame_domain;
-    if (top_frame_site.has_value()) {
-      const GURL& top_frame_url = top_frame_site->GetURL();
-      top_frame_domain = top_frame_url.host();
-      if (top_frame_domain.size() > 0 && top_frame_domain.back() == '.') {
-        top_frame_domain =
-            top_frame_domain.substr(0, top_frame_domain.length() - 1);
-      }
-
-      if (RestrictTopLevelSiteSchemes(network_anonymization_key,
-                                      top_frame_site)) {
-        return false;
-      }
-    } else {
-      // If there is no top frame, that is never a match.
-      return false;
-    }
-
-    return mdl->Matches(request_domain, top_frame_domain);
+  MaskedDomainList* mdl = mdl_type == MdlType::kIncognito
+                              ? default_mdl_.get()
+                              : regular_browsing_mdl_.get();
+  // If the MDL is not initialized yet, or initialization failed, nothing
+  // matches. In this situation, `IsPopulated()` would have returned false,
+  // so this serves as a backup check.
+  if (!mdl) {
+    return false;
+  }
+  std::string request_domain = request_url.host();
+  if (request_domain.size() > 0 && request_domain.back() == '.') {
+    request_domain = request_domain.substr(0, request_domain.length() - 1);
   }
 
-  // Normalize `request_url` and `top_frame_site` URLs by removing any
-  // trailing dot from their hosts if present.
-  GURL sanitized_request_url;
-  const GURL& request_url_ref =
-      SanitizeURLIfNeeded(request_url, sanitized_request_url);
+  if (proxy_bypass_policy_ == IpProtectionProxyBypassPolicy::kNone) {
+    // For the kNone policy, all owned resources are considered a match.
+    return mdl->IsOwnedResource(request_domain);
+  }
 
+  std::string top_frame_domain;
   if (top_frame_site.has_value()) {
-    GURL sanitized_top_frame_url;
     const GURL& top_frame_url = top_frame_site->GetURL();
-    const GURL& top_frame_url_ref =
-        SanitizeURLIfNeeded(top_frame_url, sanitized_top_frame_url);
-    if (top_frame_url_ref != top_frame_url) {
-      top_frame_site = net::SchemefulSite(sanitized_top_frame_url);
+    top_frame_domain = top_frame_url.host();
+    if (top_frame_domain.size() > 0 && top_frame_domain.back() == '.') {
+      top_frame_domain =
+          top_frame_domain.substr(0, top_frame_domain.length() - 1);
     }
+
+    if (RestrictTopLevelSiteSchemes(network_anonymization_key,
+                                    top_frame_site)) {
+      return false;
+    }
+  } else {
+    // If there is no top frame, that is never a match.
+    return false;
   }
 
-  UrlMatcherWithBypassResult match_result;
-  switch (proxy_bypass_policy_) {
-    case IpProtectionProxyBypassPolicy::kNone:
-    case IpProtectionProxyBypassPolicy::kExclusionList:
-      match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site, mdl_type,
-          /*skip_bypass_check=*/true);
-      break;
-    case IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame:
-      if (!top_frame_site.has_value()) {
-        VLOG(3) << "MDLM::Matches(" << request_url_ref
-                << ", empty top_frame_site) - false";
-        return false;
-      }
-      VLOG(3) << "MDLM::Matches(" << request_url_ref << ", "
-              << top_frame_site.value() << ")";
-
-      // Bypass the proxy for same-site requests.
-      net::SchemefulSite request_site(request_url_ref);
-      if (top_frame_site.has_value() && top_frame_site == request_site) {
-        return false;
-      }
-
-      if (RestrictTopLevelSiteSchemes(network_anonymization_key,
-                                      top_frame_site)) {
-        return false;
-      }
-
-      // If the NAK is transient (has a nonce and/or top_frame_origin is
-      // opaque), we should skip the first party check and match only on the
-      // request_url.
-      match_result = url_matcher_with_bypass_.Matches(
-          request_url_ref, top_frame_site, mdl_type,
-          network_anonymization_key.IsTransient());
-      break;
-  }
-
-  return match_result == UrlMatcherWithBypassResult::kMatchAndNoBypass;
+  return mdl->Matches(request_domain, top_frame_domain);
 }
 
 void MaskedDomainListManager::UpdateMaskedDomainList(
-    const masked_domain_list::MaskedDomainList& mdl,
-    const std::vector<std::string>& exclusion_list) {
-  // Browser should only call this method when flatbuffer is disabled.
-  CHECK(!UseFlatbuffer());
-
-  RecordCreationTime();
-
-  // Clear the existing matchers.
-  url_matcher_with_bypass_.Clear();
-
-  // Only construct the exclusion set if the policy is kExclusionList.
-  const std::unordered_set<std::string> exclusion_set =
-      proxy_bypass_policy_ == IpProtectionProxyBypassPolicy::kExclusionList
-          ? std::unordered_set<std::string>(exclusion_list.begin(),
-                                            exclusion_list.end())
-          : std::unordered_set<std::string>();
-
-  for (const ResourceOwner& owner : mdl.resource_owners()) {
-    // Only create a bypass matcher if the policy is
-    // kFirstPartyToTopLevelFrame.
-    url_matcher_with_bypass_.AddRules(
-        owner, exclusion_set,
-        /*create_bypass_matcher=*/proxy_bypass_policy_ ==
-            IpProtectionProxyBypassPolicy::kFirstPartyToTopLevelFrame);
-  }
-
-  Telemetry().MdlEstimatedMemoryUsage(EstimateMemoryUsage());
-}
-
-void MaskedDomainListManager::UpdateMaskedDomainListFlatbuffer(
     base::File default_file,
     uint64_t default_file_size,
     base::File regular_browsing_file,
     uint64_t regular_browsing_file_size) {
-  // Browser should only call this Mojo method when flatbuffer is enabled.
-  CHECK(UseFlatbuffer());
-
   // Flatbuffer implementation is not compatible with the exclusion-list
   // policy.
   CHECK_NE(proxy_bypass_policy_, IpProtectionProxyBypassPolicy::kExclusionList);
@@ -253,42 +147,40 @@ void MaskedDomainListManager::UpdateMaskedDomainListFlatbuffer(
 }
 
 void MaskedDomainListManager::UpdateMaskedDomainListForTesting(
-    const masked_domain_list::MaskedDomainList& mdl,
-    const std::vector<std::string>& exclusion_list) {
-  if (UseFlatbuffer()) {
-    // Flatbuffer implementation does not support the deprecated
-    // `exclusion_list`.
-    DCHECK(exclusion_list.empty());
-
-    // If the MDL is empty, don't try to create Flatbuffers for it.
-    if (mdl.ByteSizeLong() == 0) {
-      default_mdl_ = nullptr;
-      regular_browsing_mdl_ = nullptr;
-      return;
-    }
-
-    base::FilePath default_mdl_file_path;
-    base::CreateTemporaryFile(&default_mdl_file_path);
-    base::FilePath regular_browsing_mdl_file_path;
-    base::CreateTemporaryFile(&regular_browsing_mdl_file_path);
-    CHECK(ip_protection::MaskedDomainList::BuildFromProto(
-        mdl, default_mdl_file_path, regular_browsing_mdl_file_path));
-
-    base::File default_mdl_file(default_mdl_file_path,
-                                base::File::Flags::FLAG_OPEN |
-                                    base::File::Flags::FLAG_READ |
-                                    base::File::Flags::FLAG_DELETE_ON_CLOSE);
-    base::File regular_browsing_mdl_file(
-        regular_browsing_mdl_file_path,
-        base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ |
-            base::File::Flags::FLAG_DELETE_ON_CLOSE);
-    UpdateMaskedDomainListFlatbuffer(default_mdl_file.Duplicate(),
-                                     default_mdl_file.GetLength(),
-                                     regular_browsing_mdl_file.Duplicate(),
-                                     regular_browsing_mdl_file.GetLength());
-  } else {
-    UpdateMaskedDomainList(mdl, exclusion_list);
+    const masked_domain_list::MaskedDomainList& mdl) {
+  // If the MDL is empty, don't try to create Flatbuffers for it.
+  if (mdl.ByteSizeLong() == 0) {
+    default_mdl_ = nullptr;
+    regular_browsing_mdl_ = nullptr;
+    return;
   }
+
+  base::FilePath default_mdl_file_path;
+  base::CreateTemporaryFile(&default_mdl_file_path);
+  base::FilePath regular_browsing_mdl_file_path;
+  base::CreateTemporaryFile(&regular_browsing_mdl_file_path);
+  CHECK(ip_protection::MaskedDomainList::BuildFromProto(
+      mdl, default_mdl_file_path, regular_browsing_mdl_file_path));
+
+  base::File default_mdl_file(default_mdl_file_path,
+                              base::File::Flags::FLAG_OPEN |
+                                  base::File::Flags::FLAG_READ |
+                                  base::File::Flags::FLAG_DELETE_ON_CLOSE);
+  base::File regular_browsing_mdl_file(
+      regular_browsing_mdl_file_path,
+      base::File::Flags::FLAG_OPEN | base::File::Flags::FLAG_READ |
+          base::File::Flags::FLAG_DELETE_ON_CLOSE);
+
+  if (!default_mdl_file.IsValid() || !regular_browsing_mdl_file.IsValid()) {
+    DLOG(ERROR) << "Could not open the MDL flatbuffer files";
+    return;
+  }
+
+  uint64_t default_file_size = default_mdl_file.GetLength();
+  uint64_t regular_browsing_file_size = regular_browsing_mdl_file.GetLength();
+  UpdateMaskedDomainList(std::move(default_mdl_file), default_file_size,
+                         std::move(regular_browsing_mdl_file),
+                         regular_browsing_file_size);
 }
 
 void MaskedDomainListManager::RecordCreationTime() {

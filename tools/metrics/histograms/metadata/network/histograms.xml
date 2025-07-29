@@ -5384,19 +5384,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateProcessTime"
-    units="ms" expires_after="2026-01-07">
-  <owner>aakallam@chromium.org</owner>
-  <owner>abhijithnair@chromium.org</owner>
-  <owner>src/components/ip_protection/OWNERS</owner>
-  <summary>
-    Records the time it takes to update the MaskedDomainListManager with the
-    contents of the Masked Domain List after the Network Service receives an
-    update from Component Updater. This is only measured for the
-    UrlMatcherWithBypass implementation.
-  </summary>
-</histogram>
-
 <histogram name="NetworkService.IpProtection.ProxyAllowList.UpdateSuccess"
     enum="BooleanSuccess" expires_after="2026-01-07">
   <owner>aakallam@chromium.org</owner>

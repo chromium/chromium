@@ -8,7 +8,6 @@
 #include <optional>
 #include <string>
 #include <utility>
-#include <vector>
 
 #include "base/feature_list.h"
 #include "base/files/file.h"
@@ -44,11 +43,6 @@ constexpr base::FilePath::CharType kDefaultMdlFileName[] =
 constexpr base::FilePath::CharType kRegularBrowsingMdlFileName[] =
     FILE_PATH_LITERAL("Regular Browsing MDL");
 
-bool UseFlatbuffer() {
-  return base::FeatureList::IsEnabled(
-      network::features::kMaskedDomainListFlatbufferImpl);
-}
-
 struct BuildFlatbufferResult {
   base::File default_mdl_file;
   uint64_t default_mdl_size = 0;
@@ -56,7 +50,7 @@ struct BuildFlatbufferResult {
   uint64_t regular_browsing_mdl_size = 0;
 };
 
-void BuildFlatbuffer(
+void BuildFlatbufferAndSendToNetworkService(
     std::optional<mojo_base::ProtoWrapper> masked_domain_list) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
@@ -139,7 +133,7 @@ void BuildFlatbuffer(
       // Call to the network service on the main thread.
       base::BindOnce([](std::optional<BuildFlatbufferResult> result) {
         if (result.has_value()) {
-          content::GetNetworkService()->UpdateMaskedDomainListFlatbuffer(
+          content::GetNetworkService()->UpdateMaskedDomainList(
               std::move(result->default_mdl_file), result->default_mdl_size,
               std::move(result->regular_browsing_mdl_file),
               result->regular_browsing_mdl_size);
@@ -158,14 +152,7 @@ void OnMaskedDomainListReady(
       masked_domain_list.has_value());
   if (masked_domain_list.has_value()) {
     VLOG(1) << "Received Masked Domain List";
-
-    if (UseFlatbuffer()) {
-      BuildFlatbuffer(std::move(masked_domain_list));
-    } else {
-      content::GetNetworkService()->UpdateMaskedDomainList(
-          std::move(masked_domain_list).value(),
-          /*exclusion_list=*/std::vector<std::string>());
-    }
+    BuildFlatbufferAndSendToNetworkService(std::move(masked_domain_list));
   } else {
     VLOG(1) << "Could not read Masked Domain List file";
   }

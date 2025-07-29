@@ -10,13 +10,10 @@
 #include <map>
 #include <optional>
 #include <set>
-#include <string>
-#include <vector>
 
 #include "base/files/file.h"
 #include "base/time/time.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
-#include "components/ip_protection/common/url_matcher_with_bypass.h"
 #include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/network_context.mojom.h"
@@ -61,23 +58,14 @@ class MaskedDomainListManager {
                const net::NetworkAnonymizationKey& network_anonymization_key,
                MdlType mdl_type) const;
 
-  // Use the Masked Domain List and exclusion list to generate the allow list
-  // and the 1P bypass rules.
-  void UpdateMaskedDomainList(const masked_domain_list::MaskedDomainList& mdl,
-                              const std::vector<std::string>& exclusion_list);
-  void UpdateMaskedDomainListFlatbuffer(base::File default_file,
-                                        uint64_t default_file_size,
-                                        base::File regular_browsing_file,
-                                        uint64_t regular_browsing_file_size);
+  void UpdateMaskedDomainList(base::File default_file,
+                              uint64_t default_file_size,
+                              base::File regular_browsing_file,
+                              uint64_t regular_browsing_file_size);
 
-  // Use the Masked Domain List and exclusion list to generate the allow list
-  // and the 1P bypass rules.
-  // The `exclusion_list` field is deprecated and will be removed when the
-  // non-Flatbuffer implementation is removed. Similar functionality will be
-  // introduced as part of crbug.com/420956725.
+  // Builds Flatbuffer files for testing.
   void UpdateMaskedDomainListForTesting(
-      const masked_domain_list::MaskedDomainList& mdl,
-      const std::vector<std::string>& exclusion_list = {});
+      const masked_domain_list::MaskedDomainList& mdl);
 
  private:
   void RecordCreationTime();
@@ -93,9 +81,6 @@ class MaskedDomainListManager {
 
   // Policy that determines which domains are bypassed from IP Protection.
   network::mojom::IpProtectionProxyBypassPolicy proxy_bypass_policy_;
-
-  // Contains match rules from the Masked Domain List.
-  UrlMatcherWithBypass url_matcher_with_bypass_;
 
   // If UpdateMaskedDomainList has not yet been called, stores the time at which
   // the manager was created. The first call to `RecordCreationTime` clears

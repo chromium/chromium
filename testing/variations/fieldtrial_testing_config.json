@@ -13231,21 +13231,6 @@
             ]
         }
     ],
-    "IPProtectionMdlImplAndroid": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "enabled",
-                    "enable_features": [
-                        "MaskedDomainListFlatbufferImpl"
-                    ]
-                }
-            ]
-        }
-    ],
     "IPProtectionPhase0": [
         {
             "platforms": [
