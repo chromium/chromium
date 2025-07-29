@@ -4953,10 +4953,6 @@ const char kDynamicSafeAreaInsetsOnScrollDescription[] =
     "controls scrolls. "
     "Requires DynamicSafeAreaInsets to also be enabled.";
 
-const char kCSSSafeAreaMaxInsetName[] = "CSSSafeAreaMaxInset";
-const char kCSSSafeAreaMaxInsetDescription[] =
-    "Enables CSS engine support for the env(safe-area-max-inset-*) variables.";
-
 const char kEducationalTipDefaultBrowserPromoCardName[] =
     "Educational Tip Default Browser Promo Card";
 const char kEducationalTipDefaultBrowserPromoCardDescription[] =
