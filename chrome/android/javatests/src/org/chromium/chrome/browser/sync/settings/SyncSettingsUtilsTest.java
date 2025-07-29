@@ -135,10 +135,7 @@ public class SyncSettingsUtilsTest {
     @SmallTest
     public void testGetSyncError_unrecoverableError() {
         Mockito.when(mSyncService.hasSyncConsent()).thenReturn(true);
-        Mockito.when(mSyncService.getAuthError())
-                .thenReturn(
-                        new GoogleServiceAuthError(
-                                GoogleServiceAuthErrorState.SERVICE_UNAVAILABLE));
+        Mockito.when(mSyncService.hasUnrecoverableError()).thenReturn(true);
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

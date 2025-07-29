@@ -584,8 +584,7 @@ public class SyncSettingsUtils {
         SyncService syncService = SyncServiceFactory.getForProfile(profile);
         assert syncService != null;
 
-        if (syncService.getAuthError().getState()
-                == GoogleServiceAuthErrorState.INVALID_GAIA_CREDENTIALS) {
+        if (syncService.getAuthError().getState() != GoogleServiceAuthErrorState.NONE) {
             return SyncError.AUTH_ERROR;
         }
 
@@ -593,8 +592,7 @@ public class SyncSettingsUtils {
             return SyncError.CLIENT_OUT_OF_DATE;
         }
 
-        if (syncService.getAuthError().getState() != GoogleServiceAuthErrorState.NONE
-                || syncService.hasUnrecoverableError()) {
+        if (syncService.hasUnrecoverableError()) {
             return SyncError.OTHER_ERRORS;
         }
 

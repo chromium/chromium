@@ -249,8 +249,7 @@ public class IdentityErrorCardPreferenceTest {
     @Test
     @LargeTest
     public void testIdentityErrorCardNotShownForUnrecoverableErrors() throws Exception {
-        mFakeSyncServiceImpl.setAuthError(
-                new GoogleServiceAuthError(GoogleServiceAuthErrorState.CONNECTION_FAILED));
+        mFakeSyncServiceImpl.setHasUnrecoverableError(true);
         mSigninTestRule.addTestAccountThenSignin();
 
         mSettingsActivityTestRule.startSettingsActivity();
