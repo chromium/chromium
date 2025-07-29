@@ -482,7 +482,8 @@ void SigninViewController::ShowModalHistorySyncOptInDialog() {
   CloseModalSignin();
   dialog_ = std::make_unique<SigninModalDialogImpl>(
       SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(
-          browser_->GetBrowserForMigrationOnly()),
+          browser_->GetBrowserForMigrationOnly(),
+          HistorySyncOptinLaunchContext::kModal),
       GetOnModalDialogClosedCallback());
 }
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

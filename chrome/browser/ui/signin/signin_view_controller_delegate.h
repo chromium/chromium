@@ -10,6 +10,7 @@
 #include "base/observer_list_types.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/ui/webui/signin/signin_utils.h"
 #include "components/signin/public/base/signin_buildflags.h"
 
@@ -53,7 +54,8 @@ class SigninViewControllerDelegate {
   // displays the modal history sync opt in dialog. The returned object should
   // delete itself when the window it's managing is closed.
   static SigninViewControllerDelegate* CreateSyncHistoryOptInDelegate(
-      Browser* browser);
+      Browser* browser,
+      HistorySyncOptinLaunchContext launch_context);
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
   // Returns a platform-specific SigninViewControllerDelegate instance that

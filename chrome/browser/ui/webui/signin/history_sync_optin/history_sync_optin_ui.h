@@ -9,6 +9,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin.mojom.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
@@ -35,6 +36,10 @@ class HistorySyncOptinUI
     : public ui::MojoWebUIController,
       public history_sync_optin::mojom::PageHandlerFactory {
  public:
+  static GURL AppendHistorySyncOptinQueryParams(
+      const GURL& url,
+      HistorySyncOptinLaunchContext launch_context);
+
   explicit HistorySyncOptinUI(content::WebUI* web_ui);
   ~HistorySyncOptinUI() override;
 

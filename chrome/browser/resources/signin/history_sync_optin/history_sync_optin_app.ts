@@ -13,6 +13,7 @@ import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
 import {HistorySyncOptInBrowserProxyImpl} from './browser_proxy.js';
 import type {HistorySyncOptInBrowserProxy} from './browser_proxy.js';
 import type {AccountInfo} from './history_sync_optin.mojom-webui.js';
+import {LaunchContext} from './history_sync_optin.mojom-webui.js';
 import {getCss} from './history_sync_optin_app.css.js';
 import {getHtml} from './history_sync_optin_app.html.js';
 
@@ -34,11 +35,18 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
   static override get properties() {
     return {
       accountImageSrc_: {type: String},
+      isModal_: {
+        type: Boolean,
+        reflect: true,
+      },
     };
   }
 
   protected accessor accountImageSrc_: string =
       loadTimeData.getString('accountPictureUrl');
+  protected launchContext_: LaunchContext =
+      loadTimeData.getInteger('launchContext') as LaunchContext;
+  protected accessor isModal_: boolean = this.isLaunchContext_(LaunchContext.kModal);
   private historySyncOptInBrowserProxy_: HistorySyncOptInBrowserProxy =
       HistorySyncOptInBrowserProxyImpl.getInstance();
   private onAccountInfoDataReceivedListenerId_: number|null = null;
@@ -68,6 +76,10 @@ export class HistorySyncOptinAppElement extends HistorySyncOptinAppElementBase {
 
   protected onAccept_() {
     this.historySyncOptInBrowserProxy_.handler.accept();
+  }
+
+  protected isLaunchContext_(launchContext: LaunchContext): boolean {
+    return this.launchContext_ === launchContext;
   }
 
   private handleAccountInfoChanged_(accountInfo: AccountInfo) {

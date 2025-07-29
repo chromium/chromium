@@ -6,6 +6,12 @@ module history_sync_optin.mojom;
 
 import "url/mojom/url.mojom";
 
+// Different display modes supported by the history sync optin screen.
+enum LaunchContext {
+  kWindow,
+  kModal,
+};
+
 struct AccountInfo {
   url.mojom.Url account_image_src;
 };

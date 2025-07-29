@@ -140,12 +140,16 @@ SigninViewControllerDelegateViews::CreateSyncConfirmationWebView(
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
 std::unique_ptr<views::WebView>
 SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
-    Browser* browser) {
+    Browser* browser,
+    HistorySyncOptinLaunchContext launch_context) {
   GURL url = GURL(chrome::kChromeUIHistorySyncOptinURL);
   // The the actual dialog's height will be set dynamically based on its
   // contents, so the initial height does not matter.
   auto web_view =
-      CreateDialogWebView(browser, url, /*dialog_height=*/0, kModalDialogWidth,
+      CreateDialogWebView(browser,
+                          HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
+                              url, launch_context),
+                          /*dialog_height=*/0, kModalDialogWidth,
                           InitializeSigninWebDialogUI(false));
   CHECK(web_view);
   HistorySyncOptinUI* web_ui = web_view->GetWebContents()
@@ -533,9 +537,12 @@ SigninViewControllerDelegate::CreateSyncConfirmationDelegate(
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // static
 SigninViewControllerDelegate*
-SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(Browser* browser) {
+SigninViewControllerDelegate::CreateSyncHistoryOptInDelegate(
+    Browser* browser,
+    HistorySyncOptinLaunchContext launch_context) {
   auto content_view =
-      SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(browser);
+      SigninViewControllerDelegateViews::CreateHistorySyncOptInWebView(
+          browser, launch_context);
   return new SigninViewControllerDelegateViews(
       std::move(content_view), browser, ui::mojom::ModalType::kWindow,
       /*wait_for_size=*/true, /*should_show_close_button=*/false,

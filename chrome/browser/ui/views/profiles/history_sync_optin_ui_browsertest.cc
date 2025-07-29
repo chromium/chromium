@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ui/webui/signin/history_sync_optin/history_sync_optin_ui.h"
+
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
 #include "chrome/browser/ui/browser.h"
@@ -10,6 +12,7 @@
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/profiles/profiles_pixel_test_utils.h"
+#include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/signin/public/base/signin_switches.h"
@@ -54,7 +57,9 @@ class HistorySyncOptinUIDialogPixelTest
     DCHECK(browser());
 
     SignInWithAccount();
-    auto target_url = GURL(chrome::kChromeUIHistorySyncOptinURL);
+    auto target_url = HistorySyncOptinUI::AppendHistorySyncOptinQueryParams(
+        GURL(chrome::kChromeUIHistorySyncOptinURL),
+        HistorySyncOptinLaunchContext::kModal);
     content::TestNavigationObserver observer(target_url);
     observer.StartWatchingNewWebContents();
 
