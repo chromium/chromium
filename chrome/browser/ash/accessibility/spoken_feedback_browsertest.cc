@@ -254,12 +254,15 @@ void LoggedInSpokenFeedbackTest::StablizeChromeVoxState() {
   sm()->ExpectSpeech("Click me");
 }
 
-// TODO(crbug.com/388867840): Add manifest v3 variant when migration is
-// complete.
 INSTANTIATE_TEST_SUITE_P(
     ManifestV2,
     LoggedInSpokenFeedbackTest,
     ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kTwo)));
+
+INSTANTIATE_TEST_SUITE_P(
+    ManifestV3,
+    LoggedInSpokenFeedbackTest,
+    ::testing::Values(SpokenFeedbackTestConfig(ManifestVersion::kThree)));
 
 // Flaky test, crbug.com/1081563
 IN_PROC_BROWSER_TEST_P(LoggedInSpokenFeedbackTest, DISABLED_AddBookmark) {
