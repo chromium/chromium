@@ -145,7 +145,63 @@ float AveragePower(const media::AudioBus& buffer) {
 }
 #endif  // AUDIO_POWER_MONITORING
 
+constexpr base::TimeDelta kMinDelay = base::Milliseconds(1);
+constexpr base::TimeDelta kMaxDelay = base::Milliseconds(1000);
+constexpr int kBucketCount = 50;
+
+void LogNoAudioServiceAECDelay(base::TimeDelta delay) {
+  UMA_HISTOGRAM_CUSTOM_TIMES(
+      "Media.Audio.InputController.Delay.NoAudioServiceAEC", delay, kMinDelay,
+      kMaxDelay, kBucketCount);
+}
+
+void LogChromeWideAECDelay(base::TimeDelta delay) {
+  UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.InputController.Delay.ChromeWideAEC",
+                             delay, kMinDelay, kMaxDelay, kBucketCount);
+}
+
+void LogLoopbackAECDelay(base::TimeDelta delay) {
+  UMA_HISTOGRAM_CUSTOM_TIMES("Media.Audio.InputController.Delay.LoopbackAEC",
+                             delay, kMinDelay, kMaxDelay, kBucketCount);
+}
+
 }  // namespace
+
+// A helper class to report capture delay UMA stats from the InputController.
+class InputController::DelayReporter {
+ public:
+  using OnReportCallback = base::RepeatingCallback<void(base::TimeDelta)>;
+
+  explicit DelayReporter(
+      const ReferenceSignalProvider* reference_signal_provider)
+      : report_cb_(GetOnReportCallback(reference_signal_provider)) {}
+
+  DelayReporter(const DelayReporter&) = delete;
+  DelayReporter& operator=(const DelayReporter&) = delete;
+
+  // Calculates and records the capture delay to a UMA histogram based on the
+  // active AEC type.
+  void ReportDelay(base::TimeTicks audio_capture_time) {
+    report_cb_.Run(base::TimeTicks::Now() - audio_capture_time);
+  }
+
+ private:
+  // Determine which callback to use when reporting the delay UMA.
+  static OnReportCallback GetOnReportCallback(
+      const ReferenceSignalProvider* reference_signal_provider) {
+    if (!reference_signal_provider) {
+      return base::BindRepeating(&LogNoAudioServiceAECDelay);
+    }
+    // Map kOutputDeviceMixer -> kChromeWideAEC, kLoopbackReference ->
+    // kLoopbackAEC.
+    return reference_signal_provider->GetType() ==
+                   ReferenceSignalProvider::Type::kOutputDeviceMixer
+               ? base::BindRepeating(&LogChromeWideAECDelay)
+               : base::BindRepeating(&LogLoopbackAECDelay);
+  }
+
+  const OnReportCallback report_cb_;
+};
 
 // This class implements the AudioInputCallback interface in place of the
 // InputController (AIC), so that
@@ -219,7 +275,9 @@ InputController::InputController(
       event_handler_(event_handler),
       stream_(nullptr),
       sync_writer_(sync_writer),
-      type_(type) {
+      type_(type),
+      delay_reporter_(
+          std::make_unique<DelayReporter>(reference_signal_provider.get())) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(event_handler_);
   DCHECK(sync_writer_);
@@ -745,6 +803,7 @@ void InputController::OnData(const media::AudioBus* source,
   } else
 #endif
   {
+    delay_reporter_->ReportDelay(capture_time);
     sync_writer_->Write(source, volume, capture_time, glitch_info);
   }
 
@@ -767,6 +826,7 @@ void InputController::DeliverProcessedAudio(
     base::TimeTicks audio_capture_time,
     std::optional<double> new_volume,
     const media::AudioGlitchInfo& glitch_info) {
+  delay_reporter_->ReportDelay(audio_capture_time);
   // When processing is performed in the audio service, the consumer is not
   // expected to use the input volume and keypress information.
   sync_writer_->Write(&audio_bus, /*volume=*/1.0, audio_capture_time,

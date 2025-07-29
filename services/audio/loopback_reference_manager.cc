@@ -292,6 +292,10 @@ class LoopbackReferenceProvider : public ReferenceSignalProvider {
   LoopbackReferenceProvider(base::WeakPtr<LoopbackReferenceManagerCore> core)
       : core_(core) {}
 
+  ReferenceSignalProvider::Type GetType() const final {
+    return ReferenceSignalProvider::Type::kLoopbackReference;
+  }
+
   ReferenceOpenOutcome StartListening(ReferenceOutput::Listener* listener,
                                       const std::string& device_id) final {
     DCHECK_CALLED_ON_VALID_SEQUENCE(owning_sequence_);

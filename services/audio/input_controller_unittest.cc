@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "input_controller.h"
@@ -56,6 +57,12 @@ const int kSamplesPerPacket = kSampleRate / 100;
 constexpr base::TimeDelta kOnMutePollInterval = base::Milliseconds(1000);
 
 using ReferenceOpenOutcome = ReferenceSignalProvider::ReferenceOpenOutcome;
+
+// Struct to hold the parameters for UMA delay tests.
+struct DelayUmaTestData {
+  ReferenceSignalProvider::Type provider_type;
+  const char* expected_uma_name;
+};
 
 }  // namespace
 
@@ -181,12 +188,15 @@ TEST_F(InputControllerTest, CreateAndCloseWithoutRecording) {
 // Test a normal call sequence of create, record and close.
 // Note: Must use system time as MOCK_TIME does not support the threads created
 // by the FakeAudioInputStream. The callbacks to sync_writer_.Write() are on
-// that thread, and thus we must use SYSTEM_TIME.
+// that thread, and thus we must use SYSTEM_TIME. Also verifies that the
+// NoAudioServiceAEC UMA is logged when InputController is created without a
+// ReferenceSignalProvider.
 TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
   EXPECT_CALL(event_handler_, OnCreated(_));
   CreateAudioController();
   ASSERT_TRUE(controller_.get());
 
+  base::HistogramTester histogram_tester;
   base::RunLoop loop;
 
   {
@@ -204,6 +214,8 @@ TEST_F(SystemTimeInputControllerTest, CreateRecordAndClose) {
 
   EXPECT_CALL(sync_writer_, Close());
   controller_->Close();
+  histogram_tester.ExpectTotalCount(
+      "Media.Audio.InputController.Delay.NoAudioServiceAEC", 10);
 
   task_environment_.RunUntilIdle();
 }
@@ -345,10 +357,12 @@ class MockReferenceSignalProvider : public ReferenceSignalProvider {
   MockReferenceSignalProvider() = default;
   ~MockReferenceSignalProvider() override = default;
 
-  MOCK_METHOD2(StartListening,
-               ReferenceOpenOutcome(ReferenceOutput::Listener*,
-                                    const std::string&));
-  MOCK_METHOD1(StopListening, void(ReferenceOutput::Listener*));
+  MOCK_METHOD(Type, GetType, (), (const, override));
+  MOCK_METHOD(ReferenceOpenOutcome,
+              StartListening,
+              (ReferenceOutput::Listener*, const std::string&),
+              (override));
+  MOCK_METHOD(void, StopListening, (ReferenceOutput::Listener*), (override));
 };
 
 template <base::test::TaskEnvironment::TimeSource TimeSource =
@@ -704,6 +718,99 @@ TEST_F(InputControllerTestWithReferenceSignalProvider, ReferenceStreamError) {
 
   controller_->Close();
 }
+
+class ParameterizedInputControllerUmaDelayTest
+    : public SystemTimeInputControllerTestWithReferenceSignalProvider,
+      public ::testing::WithParamInterface<DelayUmaTestData> {};
+
+// Test a normal call sequence of create, record and close when audio processing
+// is enabled but also verify that capture delays are recorded correctly using
+// two different UMA names where the name depends on the type returned by the
+// ReferenceSignalProvider.
+// Based on
+// SystemTimeInputControllerTestWithReferenceSignalProvider.CreateRecordAndClose.
+TEST_P(ParameterizedInputControllerUmaDelayTest, CreateRecordAndClose) {
+  const DelayUmaTestData& param = GetParam();
+
+  EXPECT_CALL(event_handler_, OnCreated(_));
+  // Use the provider_type from the parameter.
+  EXPECT_CALL(*reference_signal_provider_, GetType())
+      .WillOnce(testing::Return(param.provider_type));
+  EXPECT_CALL(*reference_signal_provider_, StartListening(_, _)).Times(1);
+  EXPECT_CALL(*reference_signal_provider_, StopListening(_)).Times(1);
+  SetupProcessingConfig(AudioProcessingType::kWithPlayoutReference);
+  CreateAudioController();
+
+  bool data_processed_by_fifo = false;
+
+  // Test that the fifo is enabled.
+  auto main_sequence = base::SequencedTaskRunner::GetCurrentDefault();
+  auto verify_data_processed = [&data_processed_by_fifo, main_sequence]() {
+    // Data should be processed on its own thread.
+    EXPECT_FALSE(main_sequence->RunsTasksInCurrentSequence());
+
+    data_processed_by_fifo = true;
+  };
+
+  helper_->AttachOnProcessedCallback(
+      base::BindLambdaForTesting(verify_data_processed));
+
+  ASSERT_TRUE(controller_.get());
+
+  base::HistogramTester histogram_tester;
+  base::RunLoop loop;
+
+  {
+    // Wait for Write() to be called ten times.
+    testing::InSequence s;
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _)).Times(Exactly(9));
+    EXPECT_CALL(sync_writer_, Write(NotNull(), _, _, _))
+        .Times(AtLeast(1))
+        .WillOnce(InvokeWithoutArgs([&]() { loop.Quit(); }));
+  }
+  controller_->Record();
+
+  // InputController should offload processing to its own thread if the
+  // processing FIFO is enabled.
+  EXPECT_TRUE(helper_->IsUsingProcessingThread());
+
+  loop.Run();
+
+  testing::Mock::VerifyAndClearExpectations(&sync_writer_);
+
+  EXPECT_CALL(sync_writer_, Close());
+  controller_->Close();
+
+  // Use the expected_uma_name from the parameter.
+  histogram_tester.ExpectTotalCount(param.expected_uma_name, 10);
+
+  // The processing thread should be stopped after controller has closed.
+  EXPECT_FALSE(helper_->IsUsingProcessingThread());
+
+  EXPECT_TRUE(data_processed_by_fifo);
+}
+
+// Instantiate the UMA test suite with the two scenarios.
+INSTANTIATE_TEST_SUITE_P(
+    AECTypeDelayUMAs,
+    ParameterizedInputControllerUmaDelayTest,
+    ::testing::Values(
+        DelayUmaTestData{ReferenceSignalProvider::Type::kOutputDeviceMixer,
+                         "Media.Audio.InputController.Delay.ChromeWideAEC"},
+        DelayUmaTestData{ReferenceSignalProvider::Type::kLoopbackReference,
+                         "Media.Audio.InputController.Delay.LoopbackAEC"}),
+    // Provide a human-readable name for each test instance.
+    [](const testing::TestParamInfo<
+        ParameterizedInputControllerUmaDelayTest::ParamType>& info) {
+      switch (info.param.provider_type) {
+        case ReferenceSignalProvider::Type::kOutputDeviceMixer:
+          return "ChromeWideAEC";
+        case ReferenceSignalProvider::Type::kLoopbackReference:
+          return "LoopbackAEC";
+        default:
+          return "UnknownAEC";
+      }
+    });
 
 template <>
 void InputControllerTestWithReferenceSignalProvider::TestReferenceOpenError(

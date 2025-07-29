@@ -40,8 +40,8 @@ struct AudioGlitchInfo;
 namespace audio {
 class AudioProcessorHandler;
 class AudioCallback;
-class ReferenceSignalProvider;
 class OutputTapper;
+class ReferenceSignalProvider;
 
 #if BUILDFLAG(CHROME_WIDE_ECHO_CANCELLATION)
 class ProcessingAudioFifo;
@@ -223,6 +223,7 @@ class InputController final {
   void SetOutputDeviceForAec(const std::string& output_device_id);
 
  private:
+  class DelayReporter;
   friend class InputControllerTestHelper;
 
   // Used to log the result of capture startup.
@@ -334,6 +335,9 @@ class InputController final {
   const raw_ptr<SyncWriter> sync_writer_;
 
   StreamType type_;
+
+  // Helper class to report capture delay UMA stats.
+  std::unique_ptr<DelayReporter> delay_reporter_;
 
   double max_volume_ = 0.0;
 

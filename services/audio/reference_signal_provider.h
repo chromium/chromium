@@ -42,7 +42,14 @@ class ReferenceSignalProvider {
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/media/enums.xml)
 
+  enum class Type {
+    kOutputDeviceMixer,
+    kLoopbackReference,
+  };
+
   virtual ~ReferenceSignalProvider() = default;
+
+  virtual Type GetType() const = 0;
 
   // Starts listening to `device_id`'s output. Can be called multiple times
   // without calling StopListening(); each new call will replace which device

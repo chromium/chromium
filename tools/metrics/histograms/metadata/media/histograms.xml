@@ -1018,6 +1018,22 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.InputController.Delay.{AECType}" units="ms"
+    expires_after="2026-07-23">
+  <owner>henrika@chromium.org</owner>
+  <owner>fhernqvist@google.com</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Reports the audio delays seen by the audio::InputController::OnData()
+    callback for a source of type {AECType}.
+  </summary>
+  <token key="AECType">
+    <variant name="ChromeWideAEC"/>
+    <variant name="LoopbackAEC"/>
+    <variant name="NoAudioServiceAEC"/>
+  </token>
+</histogram>
+
 <histogram name="Media.Audio.InputStartupSuccessMac{MacAudioInputVariants}"
     enum="BooleanSuccess" expires_after="2026-01-18">
   <owner>henrika@chromium.org</owner>
