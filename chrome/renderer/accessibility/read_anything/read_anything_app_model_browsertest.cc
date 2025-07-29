@@ -1998,3 +1998,56 @@ TEST_F(ReadAnythingAppModelTest, SelectionNodesContainedInDistilledContent) {
   // The new method should return true.
   EXPECT_TRUE(model().SelectionNodesContainedInDistilledContent());
 }
+
+TEST_F(ReadAnythingAppModelTest,
+       AccessibilityEventReceived_ChildTreeFound_RequiresDistillation) {
+  // Create a parent tree and a child tree.
+  ui::AXTreeID parent_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  ui::AXTreeUpdate parent_update;
+  test::SetUpdateTreeID(&parent_update, parent_tree_id);
+  ui::AXNodeData root_node;
+  root_node.id = 1;
+  ui::AXNodeData child_host_node;
+  child_host_node.id = 2;
+  root_node.child_ids = {child_host_node.id};
+
+  ui::AXTreeID child_tree_id = ui::AXTreeID::CreateNewAXTreeID();
+  child_host_node.AddChildTreeId(child_tree_id);
+  parent_update.root_id = root_node.id;
+  parent_update.nodes = {root_node, child_host_node};
+
+  ui::AXNodeData child_root;
+  child_root.id = 10;
+
+  // Send an update for the child.
+  ui::AXTreeUpdate early_child_update;
+  test::SetUpdateTreeID(&early_child_update, child_tree_id);
+  early_child_update.root_id = child_root.id;
+  early_child_update.nodes = {child_root};
+  early_child_update.tree_data.parent_tree_id = parent_tree_id;
+  AccessibilityEventReceived({early_child_update});
+
+  // Send event for parent tree to create it in the model.
+  AccessibilityEventReceived({parent_update});
+
+  // Set parent tree as active tree.
+  model().SetRootTreeId(parent_tree_id);
+  EXPECT_EQ(model().active_tree_id(), parent_tree_id);
+
+  // Enable child tree usage. This will populate child_tree_ids_.
+  model().AllowChildTreeForActiveTree(true);
+
+  // Create an update for the child tree.
+  ui::AXTreeUpdate child_update;
+  test::SetUpdateTreeID(&child_update, child_tree_id);
+  child_update.root_id = child_root.id;
+  child_update.nodes = {child_root};
+  child_update.tree_data.parent_tree_id = parent_tree_id;
+
+  // Send event for child tree.
+  AccessibilityEventReceived({child_update});
+
+  // Assert requires_distillation is true and the active tree has changed.
+  EXPECT_TRUE(model().requires_distillation());
+  EXPECT_EQ(model().active_tree_id(), child_tree_id);
+}

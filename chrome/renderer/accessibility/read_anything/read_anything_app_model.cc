@@ -583,6 +583,13 @@ void ReadAnythingAppModel::AccessibilityEventReceived(
       // matches one of the possible child ids, set the active tree to this tree
       // so that it can be distilled.
       SetActiveTreeId(tree_id);
+
+      // Ensure that requires_distillation_ is set to true whenever there's a
+      // match for a child id. Otherwise, depending on how accessibility events
+      // for the child tree are received, the content won't be distilled
+      // because ReadAnythingAppController doesn't receive a signal that
+      // distillation should be attempted again.
+      requires_distillation_ = true;
     }
   }
 
