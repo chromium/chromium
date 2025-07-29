@@ -8258,12 +8258,6 @@ static_library("browser") {
   }
 
   if (enable_extensions_core) {
-    sources +=
-        [ "supervised_user/supervised_user_extensions_metrics_recorder.cc" ]
-    deps += [ "//chrome/browser/supervised_user" ]
-  }
-
-  if (enable_extensions) {
     sources += [
       "supervised_user/extension_icon_loader.cc",
       "supervised_user/extension_icon_loader.h",
@@ -8271,10 +8265,18 @@ static_library("browser") {
       "supervised_user/supervised_user_extensions_delegate_impl.h",
       "supervised_user/supervised_user_extensions_manager.cc",
       "supervised_user/supervised_user_extensions_manager.h",
+      "supervised_user/supervised_user_extensions_metrics_recorder.cc",
     ]
-
     deps += [
+      "//chrome/browser/supervised_user",
       "//chrome/browser/ui/extensions",
+    ]
+  }
+
+  if (enable_extensions) {
+    deps += [
+      # TODO(crbug.com/402488726): Support supervised user UI on desktop
+      # Android.
       "//chrome/browser/ui/supervised_user",
 
       # TODO(crbug.com/420905611): Remove this circular dependency when:

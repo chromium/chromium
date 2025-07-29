@@ -42,6 +42,8 @@ enum class SupervisedUserExtensionParentApprovalEntryPoint : int {
 
 namespace extensions {
 
+// Interface for the supervised user extensions delegate. The interface has
+// stub implementations so it can be used in test code.
 class SupervisedUserExtensionsDelegate {
  public:
   // Result of the extension approval flow.
@@ -55,17 +57,18 @@ class SupervisedUserExtensionsDelegate {
   using ExtensionApprovalDoneCallback =
       base::OnceCallback<void(ExtensionApprovalResult)>;
 
+  SupervisedUserExtensionsDelegate() = default;
   virtual ~SupervisedUserExtensionsDelegate() = default;
 
   // Updates registration of management policy provider for supervised users.
-  virtual void UpdateManagementPolicyRegistration() = 0;
+  virtual void UpdateManagementPolicyRegistration();
 
   // Returns true if the primary account is a supervised child.
-  virtual bool IsChild() const = 0;
+  virtual bool IsChild() const;
 
   // Returns true if the parent has already approved the `extension`.
   virtual bool IsExtensionAllowedByParent(
-      const extensions::Extension& extension) const = 0;
+      const extensions::Extension& extension) const;
 
   // If the current user is a child, the child user has a custodian/parent, and
   // the parent has enabled the "Permissions for sites, apps and extensions"
@@ -82,7 +85,7 @@ class SupervisedUserExtensionsDelegate {
       const gfx::ImageSkia& icon,
       SupervisedUserExtensionParentApprovalEntryPoint
           extension_approval_entry_point,
-      ExtensionApprovalDoneCallback extension_approval_callback) = 0;
+      ExtensionApprovalDoneCallback extension_approval_callback);
 
   // Similar to RequestToAddExtensionOrShowError except for enabling already
   // installed extensions. The icon is fetched from local resources.
@@ -91,27 +94,26 @@ class SupervisedUserExtensionsDelegate {
       content::WebContents* web_contents,
       SupervisedUserExtensionParentApprovalEntryPoint
           extension_approval_entry_point,
-      ExtensionApprovalDoneCallback extension_approval_callback) = 0;
+      ExtensionApprovalDoneCallback extension_approval_callback);
 
   // Returns true if the primary account represents a supervised child account
   // who may install extensions with parent permission.
-  virtual bool CanInstallExtensions() const = 0;
+  virtual bool CanInstallExtensions() const;
 
   // Updates the set of approved extensions to add approval for `extension`.
-  virtual void AddExtensionApproval(const extensions::Extension& extension) = 0;
+  virtual void AddExtensionApproval(const extensions::Extension& extension);
 
   // Checks if the given `extension` escalated permissions and records the
   // corresponding metrics.
   virtual void MaybeRecordPermissionsIncreaseMetrics(
-      const extensions::Extension& extension) = 0;
+      const extensions::Extension& extension);
 
   // Updates the set of approved extensions to remove approval for `extension`.
-  virtual void RemoveExtensionApproval(
-      const extensions::Extension& extension) = 0;
+  virtual void RemoveExtensionApproval(const extensions::Extension& extension);
 
   // Records when an extension has been enabled or disabled by parental
   // controls.
-  virtual void RecordExtensionEnablementUmaMetrics(bool enabled) const = 0;
+  virtual void RecordExtensionEnablementUmaMetrics(bool enabled) const;
 };
 
 }  // namespace extensions

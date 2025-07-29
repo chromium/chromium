@@ -4,7 +4,10 @@
 
 #include "chrome/browser/extensions/api/chrome_extensions_api_client.h"
 
+#include <memory>
+
 #include "base/notimplemented.h"
+#include "extensions/browser/supervised_user_extensions_delegate.h"
 #include "extensions/buildflags/buildflags.h"
 
 // TODO(crbug.com/417770773): This file contains stubs for the parts of
@@ -36,8 +39,8 @@ std::unique_ptr<SupervisedUserExtensionsDelegate>
 ChromeExtensionsAPIClient::CreateSupervisedUserExtensionsDelegate(
     content::BrowserContext* browser_context) const {
   // TODO(crbug.com/402488726): Support supervised users on desktop Android.
-  NOTIMPLEMENTED();
-  return nullptr;
+  // This is a stub implementation that always blocks installs.
+  return std::make_unique<SupervisedUserExtensionsDelegate>();
 }
 
 std::unique_ptr<DisplayInfoProvider>

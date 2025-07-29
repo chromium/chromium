@@ -21,6 +21,7 @@ source_set("extensions") {
   if (enable_extensions_core) {
     sources += [
       "extension_install_ui.h",
+      "extensions_dialogs.h",
       "extensions_menu_core_controller.h",
     ]
 
@@ -31,7 +32,12 @@ source_set("extensions") {
     if (is_win || is_mac || is_linux || is_chromeos) {
       sources += [ "extension_install_ui_desktop.h" ]
     }
-    public_deps += [ "//base" ]
+    public_deps += [
+      "//base",
+      "//extensions/common",
+      "//ui/base:types",
+      "//ui/base/mojom:ui_base_types",
+    ]
   }
 
   if (enable_extensions) {
@@ -48,7 +54,6 @@ source_set("extensions") {
       "extension_settings_overridden_dialog.h",
       "extension_side_panel_utils.h",
       "extensions_container.h",
-      "extensions_dialogs.h",
       "extensions_overrides/simple_overrides.h",
       "hosted_app_browser_controller.h",
       "icon_with_badge_image_source.h",
