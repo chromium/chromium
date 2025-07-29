@@ -96,7 +96,7 @@ async def test_browser_create_user_context_legacy_proxy(
 @pytest.mark.parametrize('no_proxy', [True, False])
 async def test_browser_create_user_context_proxy(websocket, http_proxy_server,
                                                  no_proxy):
-    example_url = "http://example.com/"
+    example_url = "http://httpbin.org/get"
 
     user_context = await execute_command(
         websocket, {
@@ -106,7 +106,7 @@ async def test_browser_create_user_context_proxy(websocket, http_proxy_server,
                     "proxyType": "manual",
                     "httpProxy": http_proxy_server.url(),
                     **({
-                        'noProxy': ['example.com']
+                        'noProxy': ['httpbin.org']
                     } if no_proxy else {})
                 }
             }

@@ -26,7 +26,12 @@ class HttpProxyServer():
         self._process = Popen(["node", "tools/http-proxy.mjs"],
                               stdout=PIPE,
                               shell=False)
-        self._url = self._process.stdout.read1().decode("utf-8").strip()
+        # Wait for the proxy to start.
+        node_output_line = self._process.stdout.readline().decode(
+            "utf-8").strip()
+        # Assert the prefix is present before removing it.
+        assert node_output_line.startswith("Listening on ")
+        self._url = node_output_line.removeprefix("Listening on ").strip()
 
     def stop(self):
         """

@@ -48,6 +48,8 @@ const proxyServer = http
 
     originalRequest.pipe(proxyRequest, {end: true});
   })
-  .listen();
-
-log(`${process.argv[2] || 'localhost'}:${proxyServer.address().port}`);
+  .listen(() => {
+    log(
+      `Listening on ${process.argv[2] || 'localhost'}:${proxyServer.address().port}`,
+    );
+  });
