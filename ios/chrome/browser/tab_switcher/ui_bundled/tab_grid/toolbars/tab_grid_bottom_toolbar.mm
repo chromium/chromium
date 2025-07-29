@@ -248,8 +248,14 @@ CGFloat CompactButtonHorizontalPadding() {
   UIButton* button;
 #if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   if (@available(iOS 26, *)) {
-    UIButtonConfiguration* buttonConfiguration =
-        [UIButtonConfiguration prominentGlassButtonConfiguration];
+    UIButtonConfiguration* buttonConfiguration;
+    if ([UIButtonConfiguration
+            respondsToSelector:@selector(prominentGlassButtonConfiguration)]) {
+      buttonConfiguration =
+          [UIButtonConfiguration prominentGlassButtonConfiguration];
+    } else {
+      buttonConfiguration = [UIButtonConfiguration glassButtonConfiguration];
+    }
     buttonConfiguration.title = title;
     buttonConfiguration.image = image;
     button = [UIButton buttonWithConfiguration:buttonConfiguration
