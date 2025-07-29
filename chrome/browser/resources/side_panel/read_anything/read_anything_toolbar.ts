@@ -364,6 +364,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
       return loadTimeData.getString('voiceHighlightLabel');
   }
 
+  protected getFormattedSpeechRate_(): string {
+    const includeSuffix = this.speechRate_ % 1 === 0;
+    return includeSuffix ?
+        loadTimeData.getStringF(
+            'voiceSpeedOptionTitle', this.speechRate_.toLocaleString()) :
+        this.speechRate_.toLocaleString();
+  }
+
   // Loading the fonts stylesheet can take a while, especially with slow
   // Internet connections. Since we don't want this to block the rest of
   // Reading Mode from loading, we load this stylesheet asynchronously

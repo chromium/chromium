@@ -57,15 +57,14 @@ export function getHtml(this: ReadAnythingToolbarElement) {
         </cr-icon-button>
       </span>
     </span>
-    <cr-icon-button class="toolbar-button" id="rate"
+    <cr-button class="toolbar-button" id="rate"
         tabindex="${this.getRateTabIndex_()}"
         aria-label="${this.getVoiceSpeedLabel_()}"
         title="$i18n{voiceSpeedLabel}"
         aria-haspopup="menu"
-        iron-icon="voice-rate:${this.speechRate_}"
-        suppress-rtl-flip
         @click="${this.onShowRateMenuClick_}">
-    </cr-icon-button>
+        ${this.getFormattedSpeechRate_()}
+    </cr-button>
     <cr-icon-button class="toolbar-button" id="voice-selection" tabindex="-1"
         aria-label="$i18n{voiceSelectionLabel}"
         title="$i18n{voiceSelectionLabel}"
