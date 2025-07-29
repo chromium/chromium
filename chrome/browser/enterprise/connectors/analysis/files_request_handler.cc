@@ -151,7 +151,7 @@ void FilesRequestHandler::ReportWarningBypass(
     size_t index = warning.first;
 
     ReportAnalysisConnectorWarningBypass(
-        profile_, url_, url_, source_, destination_,
+        profile_, *content_analysis_info_, source_, destination_,
         paths_[index].AsUTF8Unsafe(), file_info_[index].sha256,
         file_info_[index].mime_type, AccessPointToTriggerString(access_point_),
         content_transfer_method_, file_info_[index].size,

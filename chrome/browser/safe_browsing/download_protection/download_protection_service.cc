@@ -519,6 +519,7 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
   if (scan_result &&
       item->GetDangerType() ==
           download::DOWNLOAD_DANGER_TYPE_SENSITIVE_CONTENT_WARNING) {
+    enterprise_connectors::DownloadContentAreaUserProvider info(*item);
     for (const auto& metadata : scan_result->file_metadata) {
       for (const auto& result : metadata.scan_response.results()) {
         if (result.tag() != "dlp")
@@ -528,7 +529,8 @@ void DownloadProtectionService::OnDangerousDownloadOpened(
             item->GetURL(), item->GetTabUrl(), "", "", metadata.filename,
             metadata.sha256, metadata.mime_type,
             enterprise_connectors::kFileDownloadDataTransferEventTrigger,
-            metadata.scan_response.request_token(), "", referrer_chain, result,
+            metadata.scan_response.request_token(), "",
+            info.GetContentAreaAccountEmail(), referrer_chain, result,
             metadata.size,
             /*user_justification=*/std::nullopt);
 

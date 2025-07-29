@@ -212,8 +212,7 @@ void MaybeReportDeepScanningVerdict(
 
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
-    const GURL& url,
-    const GURL& tab_url,
+    const enterprise_connectors::ContentAnalysisInfo& content_analysis_info,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,
@@ -237,9 +236,11 @@ void ReportAnalysisConnectorWarningBypass(
       continue;
 
     router->OnAnalysisConnectorWarningBypassed(
-        url, tab_url, source, destination, file_name, download_digest_sha256,
-        mime_type, trigger, response.request_token(), content_transfer_method,
-        referrer_chain, result, content_size, user_justification);
+        GURL(content_analysis_info.url()), content_analysis_info.tab_url(),
+        source, destination, file_name, download_digest_sha256, mime_type,
+        trigger, response.request_token(), content_transfer_method,
+        content_analysis_info.GetContentAreaAccountEmail(), referrer_chain,
+        result, content_size, user_justification);
   }
 }
 

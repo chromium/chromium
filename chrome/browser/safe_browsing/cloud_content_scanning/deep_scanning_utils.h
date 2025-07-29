@@ -52,8 +52,7 @@ void MaybeReportDeepScanningVerdict(
 // base::HexEncode.
 void ReportAnalysisConnectorWarningBypass(
     Profile* profile,
-    const GURL& url,
-    const GURL& tab_url,
+    const enterprise_connectors::ContentAnalysisInfo& content_analysis_info,
     const std::string& source,
     const std::string& destination,
     const std::string& file_name,

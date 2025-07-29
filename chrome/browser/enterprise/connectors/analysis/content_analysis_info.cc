@@ -9,12 +9,14 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/download/public/common/download_item.h"
 #include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/enterprise/connectors/core/reporting_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "content/public/browser/download_item_utils.h"
 #include "net/base/url_util.h"
 #include "third_party/re2/src/re2/re2.h"
 
@@ -134,5 +136,61 @@ ContentAreaUserProvider::frame_url_chain() const {
 ContentAreaUserProvider::ContentAreaUserProvider(signin::IdentityManager* im,
                                                  const GURL& tab_url)
     : im_(im), tab_url_(tab_url) {}
+
+DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
+    const download::DownloadItem& download_item)
+    : url_(download_item.GetURL()),
+      tab_url_(download_item.GetTabUrl()),
+      im_(IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
+          content::DownloadItemUtils::GetBrowserContext(&download_item)))) {}
+
+std::string DownloadContentAreaUserProvider::url() const {
+  return url_.spec();
+}
+
+const GURL& DownloadContentAreaUserProvider::tab_url() const {
+  return tab_url_;
+}
+
+signin::IdentityManager* DownloadContentAreaUserProvider::identity_manager()
+    const {
+  return im_;
+}
+
+const enterprise_connectors::AnalysisSettings&
+DownloadContentAreaUserProvider::settings() const {
+  NOTREACHED();
+}
+
+int DownloadContentAreaUserProvider::user_action_requests_count() const {
+  NOTREACHED();
+}
+
+std::string DownloadContentAreaUserProvider::tab_title() const {
+  NOTREACHED();
+}
+
+std::string DownloadContentAreaUserProvider::user_action_id() const {
+  NOTREACHED();
+}
+
+std::string DownloadContentAreaUserProvider::email() const {
+  NOTREACHED();
+}
+
+enterprise_connectors::ContentAnalysisRequest::Reason
+DownloadContentAreaUserProvider::reason() const {
+  NOTREACHED();
+}
+
+google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+DownloadContentAreaUserProvider::referrer_chain() const {
+  NOTREACHED();
+}
+
+google::protobuf::RepeatedPtrField<std::string>
+DownloadContentAreaUserProvider::frame_url_chain() const {
+  NOTREACHED();
+}
 
 }  // namespace enterprise_connectors

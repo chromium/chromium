@@ -100,8 +100,7 @@ PagePrintRequestHandler::PagePrintRequestHandler(
 void PagePrintRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      profile_, GURL(content_analysis_info_->url()),
-      content_analysis_info_->tab_url(), /*source*/ "",
+      profile_, *content_analysis_info_, /*source*/ "",
       /*destination*/ printer_name_, content_analysis_info_->tab_title(),
       /*sha256*/ std::string(),
       /*mime_type*/ std::string(), kPagePrintDataTransferEventTrigger,

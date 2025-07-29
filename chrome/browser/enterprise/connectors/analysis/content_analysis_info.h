@@ -11,6 +11,10 @@
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "content/public/browser/clipboard_types.h"
 
+namespace download {
+class DownloadItem;
+}  // namespace download
+
 namespace enterprise_connectors {
 
 // Implementation of `ContentAnalysisInfoBase` for chrome/ platforms.
@@ -29,8 +33,10 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
   std::string GetContentAreaAccountEmail() const;
 };
 
-// Simple implementation of `ContentAnalysisInfo` meant to be used for
-// `GetContentAreaAccountEmail` only
+// Simple implementation of `ContentAnalysisInfo` meant to obtain the value
+// returned by `GetContentAreaAccountEmail`. This class shouldn't expose
+// non-static methods unless every other override required to support it are
+// implemented.
 class ContentAreaUserProvider : public ContentAnalysisInfo {
  public:
   static std::string GetUser(Profile* profile, const GURL& tab_url);
@@ -55,6 +61,36 @@ class ContentAreaUserProvider : public ContentAnalysisInfo {
 
   raw_ptr<signin::IdentityManager> im_;
   raw_ref<const GURL> tab_url_;
+};
+
+// Download-specific implementation of `ContentAnalysisInfo`. This is meant to
+// be used only for reporting, so only public fields should be called.
+class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
+ public:
+  explicit DownloadContentAreaUserProvider(
+      const download::DownloadItem& download_item);
+
+  // ContentAnalysisInfo:
+  std::string url() const override;
+  const GURL& tab_url() const override;
+  signin::IdentityManager* identity_manager() const override;
+
+ private:
+  // ContentAnalysisInfo:
+  const AnalysisSettings& settings() const override;
+  int user_action_requests_count() const override;
+  std::string tab_title() const override;
+  std::string user_action_id() const override;
+  std::string email() const override;
+  ContentAnalysisRequest::Reason reason() const override;
+  google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>
+  referrer_chain() const override;
+  google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
+      const override;
+
+  GURL url_;
+  GURL tab_url_;
+  raw_ptr<signin::IdentityManager> im_;
 };
 
 }  // namespace enterprise_connectors

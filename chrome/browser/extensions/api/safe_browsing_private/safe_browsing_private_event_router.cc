@@ -351,6 +351,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
     const std::string& trigger,
     const std::string& scan_id,
     const std::string& content_transfer_method,
+    const std::string& active_user_email,
     const safe_browsing::ReferrerChain& referrer_chain,
     const enterprise_connectors::ContentAnalysisResponse::Result& result,
     const int64_t content_size,
@@ -394,12 +395,9 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
   if (base::FeatureList::IsEnabled(safe_browsing::kEnhancedFieldsForSecOps)) {
     enterprise_connectors::AddReferrerChainToEvent(referrer_chain, event);
   }
-  std::string content_area_account_email =
-      enterprise_connectors::ContentAreaUserProvider::GetUser(
-          Profile::FromBrowserContext(context_), tab_url);
-  if (!content_area_account_email.empty()) {
+  if (!active_user_email.empty()) {
     event.Set(enterprise_connectors::kKeyWebAppSignedInAccount,
-              content_area_account_email);
+              active_user_email);
   }
 
   AddAnalysisConnectorVerdictToEvent(result, event);
@@ -408,7 +406,7 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
       enterprise_connectors::kKeySensitiveDataEvent,
       std::move(settings.value()), std::move(event));
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
-  }
+}
 
 void SafeBrowsingPrivateEventRouter::OnDangerousDownloadWarningBypassed(
     const GURL& url,

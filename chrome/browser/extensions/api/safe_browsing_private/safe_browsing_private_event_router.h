@@ -135,6 +135,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& trigger,
       const std::string& scan_id,
       const std::string& content_transfer_method,
+      const std::string& active_user_email,
       const safe_browsing::ReferrerChain& referrer_chain,
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,

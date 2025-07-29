@@ -89,7 +89,7 @@ ClipboardRequestHandler::ClipboardRequestHandler(
 void ClipboardRequestHandler::ReportWarningBypass(
     std::optional<std::u16string> user_justification) {
   ReportAnalysisConnectorWarningBypass(
-      profile_, /*url*/ url_, /*tab_url*/ url_,
+      profile_, *content_analysis_info_,
       /*source*/
       data_controls::ReportingService::GetClipboardSourceString(
           clipboard_source_),

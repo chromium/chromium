@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/simple_download_manager_coordinator_factory.h"
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -154,19 +155,19 @@ void ReportAnalysisConnectorWarningBypassed(download::DownloadItem* download) {
       static_cast<enterprise_connectors::ScanResult*>(
           download->GetUserData(enterprise_connectors::ScanResult::kKey));
 
+  enterprise_connectors::DownloadContentAreaUserProvider info(*download);
   if (stored_result) {
     for (const auto& metadata : stored_result->file_metadata) {
       ReportAnalysisConnectorWarningBypass(
-          profile, download->GetURL(), download->GetTabUrl(), "", "",
-          metadata.filename, metadata.sha256, metadata.mime_type,
+          profile, info, "", "", metadata.filename, metadata.sha256,
+          metadata.mime_type,
           enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
           metadata.size, referrer_chain, metadata.scan_response,
           stored_result->user_justification);
     }
   } else {
     ReportAnalysisConnectorWarningBypass(
-        profile, download->GetURL(), download->GetTabUrl(), "", "",
-        download->GetTargetFilePath().AsUTF8Unsafe(),
+        profile, info, "", "", download->GetTargetFilePath().AsUTF8Unsafe(),
         base::HexEncode(download->GetHash()), download->GetMimeType(),
         enterprise_connectors::kFileDownloadDataTransferEventTrigger, "",
         download->GetTotalBytes(), referrer_chain,
