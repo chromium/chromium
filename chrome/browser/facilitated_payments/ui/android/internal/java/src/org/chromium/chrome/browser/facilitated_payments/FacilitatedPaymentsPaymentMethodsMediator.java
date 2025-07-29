@@ -184,13 +184,12 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 screenItems.add(new ListItem(PAYMENT_APP, model));
             }
         }
-
-        screenItems.add(buildEwalletAdditionalInfo(ewallets));
+        screenItems.add(buildPaymentLinkAdditionalInfo(ewallets, apps));
 
         maybeShowContinueButton(screenItems, EWALLET);
 
-        screenItems.add(0, buildEwalletHeader(mContext, ewallets));
-        screenItems.add(buildEwalletFooter(ewallets));
+        screenItems.add(0, buildPaymentLinkHeader(mContext, ewallets, apps));
+        screenItems.add(buildPaymentLinkFooter(ewallets, apps));
 
         mModel.set(SURVIVES_NAVIGATION, false);
         mModel.set(VISIBLE_STATE, SHOWN);
@@ -275,7 +274,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     @VisibleForTesting
-    ListItem buildEwalletHeader(Context context, List<Ewallet> ewallets) {
+    ListItem buildPaymentLinkHeader(
+            Context context, List<Ewallet> ewallets, List<ResolveInfo> apps) {
         // This will contain the shared ewallet name if all eWallets have the same name;
         // otherwise, it will contain `null`.
         Optional<String> sharedEwalletName = Optional.of(ewallets.get(0).getEwalletName());
@@ -337,7 +337,7 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                         .build());
     }
 
-    private ListItem buildEwalletFooter(List<Ewallet> ewallets) {
+    private ListItem buildPaymentLinkFooter(List<Ewallet> ewallets, List<ResolveInfo> apps) {
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.FOOTER,
                 new PropertyModel.Builder(FooterProperties.ALL_KEYS)
@@ -345,7 +345,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                 FooterProperties.SHOW_PAYMENT_METHOD_SETTINGS_CALLBACK,
                                 () ->
                                         this.onManagePaymentMethodsOptionSelected(
-                                                getEwalletFopSelectorUserActionHistogram(ewallets)))
+                                                getNonCardPaymentMethodsFopSelectorUserActionHistogram(
+                                                        ewallets, apps)))
                         .build());
     }
 
@@ -368,7 +369,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
     }
 
     @VisibleForTesting
-    ListItem buildEwalletAdditionalInfo(List<Ewallet> ewallets) {
+    ListItem buildPaymentLinkAdditionalInfo(List<Ewallet> ewallets, List<ResolveInfo> apps) {
+
         return new ListItem(
                 FacilitatedPaymentsPaymentMethodsProperties.ItemType.ADDITIONAL_INFO,
                 new PropertyModel.Builder(AdditionalInfoProperties.ALL_KEYS)
@@ -386,7 +388,8 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                                         startSettings(FINANCIAL_ACCOUNTS);
                                     }
                                     recordHistogramOnTurnOffPaymentPromptLinkClicked(
-                                            getEwalletFopSelectorUserActionHistogram(ewallets));
+                                            getNonCardPaymentMethodsFopSelectorUserActionHistogram(
+                                                    ewallets, apps));
                                 })
                         .build());
     }
@@ -484,7 +487,9 @@ class FacilitatedPaymentsPaymentMethodsMediator {
                 FopSelectorAction.MAX_VALUE);
     }
 
-    private String getEwalletFopSelectorUserActionHistogram(List<Ewallet> ewallets) {
+    // TODO(crbug.com/433617327): unusedApps will be used in a later patch to update the histogram.
+    private String getNonCardPaymentMethodsFopSelectorUserActionHistogram(
+            List<Ewallet> ewallets, List<ResolveInfo> unusedApps) {
         if (ewallets.size() == 1) {
             if (ewallets.get(0).getIsFidoEnrolled()) {
                 return EWALLET_FOP_SELECTOR_USER_ACTION_HISTOGRAM + "SingleBoundEwallet";

@@ -397,8 +397,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(
-                                    mMediator.buildEwalletHeader(
-                                            mActivityTestRule.getActivity(), List.of(EWALLET_1)));
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(EWALLET_1),
+                                            List.of()));
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
 
@@ -419,8 +421,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(
-                                    mMediator.buildEwalletHeader(
-                                            mActivityTestRule.getActivity(), List.of(EWALLET_3)));
+                                    mMediator.buildPaymentLinkHeader(
+                                            mActivityTestRule.getActivity(),
+                                            List.of(EWALLET_3),
+                                            List.of()));
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
 
@@ -443,9 +447,10 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
                             .add(
-                                    mMediator.buildEwalletHeader(
+                                    mMediator.buildPaymentLinkHeader(
                                             mActivityTestRule.getActivity(),
-                                            List.of(EWALLET_3, EWALLET_4)));
+                                            List.of(EWALLET_3, EWALLET_4),
+                                            List.of()));
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
 
@@ -485,7 +490,9 @@ public final class FacilitatedPaymentsPaymentMethodsViewTest {
                     mModel.set(SCREEN, FOP_SELECTOR);
                     mModel.get(SCREEN_VIEW_MODEL)
                             .get(SCREEN_ITEMS)
-                            .add(mMediator.buildEwalletAdditionalInfo(List.of(EWALLET_1)));
+                            .add(
+                                    mMediator.buildPaymentLinkAdditionalInfo(
+                                            List.of(EWALLET_1), List.of()));
                     mModel.set(VISIBLE_STATE, SHOWN);
                 });
         BottomSheetTestSupport.waitForOpen(mBottomSheetController);
