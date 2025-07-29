@@ -318,8 +318,10 @@ source_set("unit_tests") {
     "//ash/webui/boca_ui",
     "//ash/webui/boca_ui:constants",
     "//base/test:test_support",
+    "//chrome/browser",
     "//chrome/browser/ui",
     "//chrome/browser/ui/tabs:tab_strip",
+    "//chrome/test:test_support",
     "//chromeos/ash/components/browser_context_helper:test_support",
     "//testing/gtest",
 
