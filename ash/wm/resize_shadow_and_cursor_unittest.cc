@@ -513,8 +513,7 @@ class ResizeShadowWithRoundedWindowsTest : public ResizeShadowAndCursorTest {
 
   void SetUp() override {
     scoped_feature_list_.InitWithFeatures(
-        {chromeos::features::kRoundedWindows,
-         chromeos::features::kFeatureManagementRoundedWindows},
+        {chromeos::features::kFeatureManagementRoundedWindows},
         /*disabled_features=*/{});
     ResizeShadowAndCursorTest::SetUp();
   }
