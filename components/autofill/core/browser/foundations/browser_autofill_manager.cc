@@ -1167,10 +1167,13 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // needed.
   suggestion_generators_.clear();
   // TODO(crbug.com/409962888): Populate `suggestion_generators_` here.
-  suggestion_generators_.emplace_back(
+  suggestion_generators_.push_back(
       std::make_unique<IbanSuggestionGenerator>());
-  suggestion_generators_.emplace_back(
+  suggestion_generators_.push_back(
       std::make_unique<MerchantPromoCodeSuggestionGenerator>());
+  suggestion_generators_.push_back(
+      std::make_unique<AutocompleteSuggestionGenerator>(
+          client().GetAutocompleteHistoryManager()->GetProfileDatabase()));
 
   SuggestionsContext context = BuildSuggestionsContext(
       form, form_structure, field, autofill_field, trigger_source);

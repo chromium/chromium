@@ -92,6 +92,10 @@ class AutocompleteHistoryManager : public KeyedService {
   void OnAutofillCleanupReturned(WebDataServiceBase::Handle current_handle,
       std::unique_ptr<WDTypedResult> result);
 
+  scoped_refptr<AutofillWebDataService> GetProfileDatabase() {
+    return profile_database_;
+  }
+
  private:
   friend class AutocompleteHistoryManagerTest;
 
