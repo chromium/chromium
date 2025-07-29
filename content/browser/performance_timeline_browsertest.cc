@@ -432,7 +432,8 @@ IN_PROC_BROWSER_TEST_F(
     // Navigate back.
     ASSERT_TRUE(HistoryGoBack(web_contents()));
   }
-  auto result = GetBackForwardCacheRestorationEntriesByObserver().ExtractList();
+  auto result =
+      GetBackForwardCacheRestorationEntriesByObserver().TakeValue().TakeList();
   CheckEntries(std::move(result[0]).TakeList(), initial_navigation_id);
   CheckEntries(std::move(result[1]).TakeList(), initial_navigation_id);
 
@@ -502,7 +503,8 @@ IN_PROC_BROWSER_TEST_F(PerformanceEventTimingBrowserTest,
   // entries should be the size of the buffer.
   auto entry_cnt_and_dropped_entry_cnt =
       EvalJs(web_contents(), " getEntriesCntAndDroppedEntriesCnt()")
-          .ExtractList();
+          .TakeValue()
+          .TakeList();
 
   int num_event_entres = entry_cnt_and_dropped_entry_cnt[0].GetInt();
   EXPECT_EQ(num_event_entres, buffer_size);

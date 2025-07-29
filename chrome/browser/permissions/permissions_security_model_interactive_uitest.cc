@@ -1615,7 +1615,7 @@ IN_PROC_BROWSER_TEST_F(PermissionRequestWithPrerendererTest,
   content::EvalJsResult results =
       content::EvalJs(prerender_render_frame_host, "eventsSeen");
   std::vector<std::string> eventsSeen;
-  base::Value::List results_list = results.ExtractList();
+  const base::Value::List& results_list = results.ExtractList();
   for (const auto& result : results_list) {
     eventsSeen.push_back(result.GetString());
   }

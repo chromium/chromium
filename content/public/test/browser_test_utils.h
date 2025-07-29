@@ -870,7 +870,9 @@ class EvalJsResult {
                           testing::VariantWith<std::string>(m));
   }
 
-  // Extract a result value of the requested type, or die trying.
+  // Extract a result value of the requested type, or die trying. Note that
+  // non-trivial values are not copied; use `TakeValue()` or
+  // `ExtractFoo().Clone()` if you need ownership of the result value.
   //
   // If there was an error, or if returned value is of a different type, these
   // will fail with a CHECK. Use Extract methods only when accessing the
@@ -880,7 +882,7 @@ class EvalJsResult {
   [[nodiscard]] int ExtractInt() const;
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
-  [[nodiscard]] base::Value::List ExtractList() const;
+  [[nodiscard]] const base::Value::List& ExtractList() const;
   [[nodiscard]] const base::Value::Dict& ExtractDict() const;
   [[nodiscard]] const std::string& ExtractError() const;
 

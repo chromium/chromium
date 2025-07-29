@@ -377,7 +377,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          "accessHandle.close();"
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
@@ -416,7 +416,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          "accessHandle.close();"
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::SizeIs(3));
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          "accessHandle.close();"
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("modified"));
@@ -464,7 +464,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserveWithFlagBrowserTest,
          SET_CHANGE_TIMEOUT
       R"(`);)";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::IsEmpty());
 }
 
@@ -598,7 +598,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFile) {
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
   if (GetTestFileSystemType() == TestFileSystemType::kLocal) {
     histogram_tester.ExpectUniqueSample(kAttemptToObserveSymlinkHistogram,
@@ -619,7 +619,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveFileRename) {
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
   // The `relativePathComponents` should be an empty array, since the change
   // occurred on the path corresponding to the handle passed to `observe()`.
@@ -643,7 +643,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest, ObserveDirectory) {
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
 
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
 
@@ -773,7 +773,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::IsEmpty());
 }
 
@@ -807,7 +807,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::IsEmpty());
 }
 
@@ -832,7 +832,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 }
 #endif  // !BUILDFLAG(IS_MAC)
@@ -853,7 +853,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Linux or ChromeOS, the change type can be "modified" if the swap file is
@@ -908,7 +908,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   // The `relativePathComponents` should be an empty array, since the change
   // occurred on the path corresponding to the handle passed to `observe()`.
@@ -1010,7 +1010,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   EXPECT_THAT(*records.front().GetDict().FindList("relativePathComponents"),
               testing::SizeIs(1));
@@ -1043,7 +1043,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("moved"));
@@ -1078,7 +1078,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("appeared"));
@@ -1108,7 +1108,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("disappeared"));
@@ -1139,7 +1139,7 @@ IN_PROC_BROWSER_TEST_P(
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("disappeared"));
@@ -1174,7 +1174,7 @@ IN_PROC_BROWSER_TEST_P(
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::Not(testing::IsEmpty()));
   auto& record_dict = records.front().GetDict();
   EXPECT_THAT(*record_dict.FindString("type"), testing::StrEq("appeared"));
@@ -1217,7 +1217,7 @@ IN_PROC_BROWSER_TEST_P(FileSystemAccessObserverBrowserTest,
   // clang-format on
 
   // Expect one modified event upon closing the writable.
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::SizeIs(1));
   auto& record_dict = records.front().GetDict();
 #if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
@@ -1402,7 +1402,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::Not(testing::IsEmpty()));
 
   // Navigate back and restore `initial_rfh` as the primary main frame.
@@ -1417,7 +1417,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  records = EvalJs(shell(), script).ExtractList();
+  records = EvalJs(shell(), script).TakeValue().TakeList();
   EXPECT_THAT(records, testing::SizeIs(1));
   EXPECT_THAT(*records.front().GetDict().FindString("type"),
               testing::StrEq("unknown"));
@@ -1461,7 +1461,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessObserverWithBFCacheBrowserTest,
          SET_CHANGE_TIMEOUT
       "})()";
   // clang-format on
-  auto records = EvalJs(shell(), script).ExtractList();
+  auto records = EvalJs(shell(), script).TakeValue().TakeList();
   ASSERT_THAT(records, testing::IsEmpty());
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS) &&

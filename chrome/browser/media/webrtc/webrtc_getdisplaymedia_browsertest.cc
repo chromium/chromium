@@ -1935,7 +1935,7 @@ class CaptureSessionDetails {
     content::EvalJsResult js_result = content::EvalJs(
         capturing_tab_->GetPrimaryMainFrame(), "getSupportedZoomLevels();");
 
-    base::Value::List list = js_result.ExtractList();
+    const base::Value::List& list = js_result.ExtractList();
     EXPECT_GE(list.size(), 1u);
     if (list.size() == 1u) {
       // Reserved for an error.

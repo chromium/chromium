@@ -556,7 +556,7 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, TypeTool_IncrementalTyping) {
       EvalJs(web_contents(), "input_event_log.join(',')"));
 
   base::Value::List timestamps =
-      EvalJs(web_contents(), "input_event_log_times").ExtractList();
+      EvalJs(web_contents(), "input_event_log_times").TakeValue().TakeList();
 
   // There are 3 events per character (keydown, input, keyup).
   ASSERT_EQ(timestamps.size(), typed_string.length() * 3);

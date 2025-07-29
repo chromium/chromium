@@ -153,7 +153,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_LargestContentfulPaint) {
     content::EvalJsResult result = EvalJs(web_contents(), test_name[i]);
     EXPECT_TRUE(result.is_ok());
 
-    const auto list = result.ExtractList();
+    const auto& list = result.ExtractList();
     EXPECT_EQ(1u, list.size());
     ASSERT_TRUE(list[0].is_dict());
 

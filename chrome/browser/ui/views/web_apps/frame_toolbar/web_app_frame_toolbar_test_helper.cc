@@ -198,7 +198,7 @@ base::Value::List WebAppFrameToolbarTestHelper::GetXYWidthHeightListValue(
     const std::string& rect_value_list,
     const std::string& rect_var_name) {
   EXPECT_TRUE(ExecJs(web_contents->GetPrimaryMainFrame(), rect_value_list));
-  return EvalJs(web_contents, rect_var_name).ExtractList();
+  return EvalJs(web_contents, rect_var_name).TakeValue().TakeList();
 }
 
 gfx::Rect WebAppFrameToolbarTestHelper::GetXYWidthHeightRect(

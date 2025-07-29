@@ -812,11 +812,10 @@ class ClipboardHistoryPasteTypeBrowserTest
  private:
   // Returns all valid data formats for the last paste.
   base::Value::List GetLastPaste() {
-    auto result =
-        content::EvalJs(web_contents_.get(),
-                        "(function() { return window.getLastPaste(); })();");
-    EXPECT_TRUE(result.is_ok());
-    return result.ExtractList();
+    return content::EvalJs(web_contents_.get(),
+                           "(function() { return window.getLastPaste(); })();")
+        .TakeValue()
+        .TakeList();
   }
 
   raw_ptr<content::WebContents, DanglingUntriaged> web_contents_ = nullptr;
@@ -1651,7 +1650,7 @@ IN_PROC_BROWSER_TEST_F(ClipboardHistoryRefreshAshBrowserTest,
   // Get the textfield center in the the web contents coordinates.
   auto result = content::EvalJs(web_contents, "getTextfieldCenterOnPage();");
   ASSERT_TRUE(result.is_ok());
-  auto center_as_list = result.ExtractList();
+  const auto& center_as_list = result.ExtractList();
   ASSERT_EQ(center_as_list.size(), 2u);
 
   // Calculate the textfield center in the screen coordinates. Then right click

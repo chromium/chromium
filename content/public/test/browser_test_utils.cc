@@ -1661,14 +1661,14 @@ double EvalJsResult::ExtractDouble() const {
   return value()->GetDouble();
 }
 
-base::Value::List EvalJsResult::ExtractList() const {
+const base::Value::List& EvalJsResult::ExtractList() const {
   CHECK(is_ok())
       << "Can't ExtractList() because the script encountered a problem: "
       << *error();
   CHECK(value()->is_list())
       << "Can't ExtractList() because script result: " << *value()
       << "is not a list.";
-  return value()->GetList().Clone();
+  return value()->GetList();
 }
 
 const base::Value::Dict& EvalJsResult::ExtractDict() const {

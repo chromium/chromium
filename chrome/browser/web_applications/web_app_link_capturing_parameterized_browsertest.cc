@@ -626,7 +626,8 @@ base::Value::Dict WebContentsToJson(const Browser& browser,
       web_contents.GetPrimaryMainFrame(),
       "'launchParamsTargetUrls' in window ? launchParamsTargetUrls : []");
   EXPECT_THAT(launchParamsResults, content::EvalJsResult::IsOk());
-  base::Value::List launchParamsTargetUrls = launchParamsResults.ExtractList();
+  const base::Value::List& launchParamsTargetUrls =
+      launchParamsResults.ExtractList();
   if (!launchParamsTargetUrls.empty()) {
     for (const base::Value& url : launchParamsTargetUrls) {
       dict.EnsureList("launchParams")

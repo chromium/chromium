@@ -522,7 +522,7 @@ IN_PROC_BROWSER_TEST_F(FileHandlerDialogBrowserTest, OpenFileTaskFromDialog) {
     if (!eval_result.is_ok()) {
       return false;
     }
-    observed_app_ids = eval_result.ExtractList();
+    observed_app_ids = std::move(eval_result).TakeValue().TakeList();
     return !observed_app_ids.empty();
   }));
 

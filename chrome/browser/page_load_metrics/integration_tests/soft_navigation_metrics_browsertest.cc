@@ -386,7 +386,9 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LargestContentfulPaint) {
   if (GetParam()) {
     soft_nav_lcp_list = EvalJs(web_contents()->GetPrimaryMainFrame(),
                                "GetSoftNavigationLCPEntries()")
-                            .ExtractList();
+                            .TakeValue()
+                            .TakeList();
+    EXPECT_EQ(soft_nav_lcp_list.size(), 2ul);
   }
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));
@@ -622,7 +624,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LayoutShift) {
   // Retrieve web exposed values of the layout shift that happens before any
   // soft navigation happens.
   base::Value::List entry_records_list =
-      EvalJs(web_contents(), "GetLayoutShift()").ExtractList();
+      EvalJs(web_contents(), "GetLayoutShift()").TakeValue().TakeList();
 
   // Verify that the entry_records_list has 1 or 2 records. There could be 2
   // layout shift entries emitted for the initial triggerLayoutShift() call.
@@ -655,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LayoutShift) {
   double soft_nav_1_cls;
   if (GetParam()) {
     auto soft_nav_1_entry_records_list =
-        EvalJs(web_contents(), "GetLayoutShift(1)").ExtractList();
+        EvalJs(web_contents(), "GetLayoutShift(1)").TakeValue().TakeList();
 
     // Verify that there is 1 layout shift entry after soft nav 1.
     EXPECT_EQ(soft_nav_1_entry_records_list.size(), 1u);
@@ -685,7 +687,7 @@ IN_PROC_BROWSER_TEST_P(SoftNavigationTest, DISABLED_LayoutShift) {
   double soft_nav_2_cls;
   if (GetParam()) {
     auto soft_nav_2_entry_records_list =
-        EvalJs(web_contents(), "GetLayoutShift(2)").ExtractList();
+        EvalJs(web_contents(), "GetLayoutShift(2)").TakeValue().TakeList();
 
     // Verify that there is 1 layout shift entry after soft nav 1.
     EXPECT_EQ(soft_nav_2_entry_records_list.size(), 1u);

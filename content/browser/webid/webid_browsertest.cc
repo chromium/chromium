@@ -2026,8 +2026,9 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, IssueVCs) {
   ASSERT_TRUE(ExecJs(shell(), "var aud = '" + BaseRpUrl() + "';"));
 
   // Verify the SD-JWT+KB.
-  EXPECT_THAT(EvalJs(shell(), "main(token, key, aud, '12345')").ExtractList(),
-              testing::UnorderedElementsAre("Sam"));
+  EXPECT_THAT(
+      EvalJs(shell(), "main(token, key, aud, '12345')").TakeValue().TakeList(),
+      testing::UnorderedElementsAre("Sam"));
 }
 
 IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
@@ -2119,7 +2120,8 @@ IN_PROC_BROWSER_TEST_F(WebIdDelegationBrowserTest, ConditionalMediation) {
   // Verify the SD-JWT+KB.
   EXPECT_THAT(
       EvalJs(shell(), "(async () => main(await token, key, aud, '12345'))()")
-          .ExtractList(),
+          .TakeValue()
+          .TakeList(),
       testing::UnorderedElementsAre("Sam"));
 }
 

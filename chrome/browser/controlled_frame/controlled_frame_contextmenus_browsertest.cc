@@ -451,9 +451,10 @@ document.onClickedHandler = function(info) {
   SimulateClickContextMenuItem(controlled_frame);
 
   EXPECT_EQ(content::EvalJs(app_frame, "document.globalOnClickedCount"), 1);
-  EXPECT_THAT(
-      content::EvalJs(app_frame, "document.clickedMenuItemId").ExtractList(),
-      Each(Eq(kItemID)));
+  EXPECT_THAT(content::EvalJs(app_frame, "document.clickedMenuItemId")
+                  .TakeValue()
+                  .TakeList(),
+              Each(Eq(kItemID)));
 
   auto remove_handler_script = content::JsReplace(
       R"(

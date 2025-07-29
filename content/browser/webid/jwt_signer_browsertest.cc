@@ -107,7 +107,7 @@ IN_PROC_BROWSER_TEST_F(JwtSignerBrowserTest, VerifyWithWebCrypto) {
   )";
 
   // Verify the SD-JWT+KB.
-  EXPECT_THAT(EvalJs(shell(), verify).ExtractList(),
+  EXPECT_THAT(EvalJs(shell(), verify).TakeValue().TakeList(),
               testing::UnorderedElementsAre("Sam"));
 }
 

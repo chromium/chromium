@@ -1001,7 +1001,8 @@ class OnDeviceTranslationProgressMonitorBrowserTest
                             await self.createTranslatorPromise;
                             return self.progressEvents;
                           })())")
-                                           .ExtractList();
+                                           .TakeValue()
+                                           .TakeList();
 
     ASSERT_EQ(actual_updates.size(), expected_updates.size());
     for (size_t i = 0; i < actual_updates.size(); i++) {

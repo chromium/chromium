@@ -3230,7 +3230,7 @@ void WebAppIntegrationTestDriver::CheckFilesLoadedInSite(
       }
 
       base::Value::List test_content_list =
-          EvalJs(web_contents, "launchFinishedPromise").ExtractList();
+          EvalJs(web_contents, "launchFinishedPromise").TakeValue().TakeList();
       for (const auto& test_content : test_content_list) {
         if (base::EndsWith(url_str, kFooHandler)) {
           found_foo_files.push_back(test_content.GetString());
