@@ -1791,7 +1791,7 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
   return StaticBitmapImage::Create(
       std::move(dst_buffer),
       SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        ToClosestSkColorType(format), kUnpremul_SkAlphaType,
+                        ToClosestSkColorType(format), requested_alpha_type_,
                         color_space_.ToSkColorSpace()));
 }
 
