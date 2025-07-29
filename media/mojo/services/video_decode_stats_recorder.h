@@ -11,6 +11,7 @@
 #include "media/learning/common/value.h"
 #include "media/mojo/mojom/media_types.mojom.h"
 #include "media/mojo/mojom/video_decode_stats_recorder.mojom.h"
+#include "media/mojo/services/media_metrics_provider.h"
 #include "media/mojo/services/media_mojo_export.h"
 #include "media/mojo/services/video_decode_perf_history.h"
 
@@ -27,7 +28,7 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
                            ukm::SourceId source_id,
                            learning::FeatureValue origin,
                            bool is_top_frame,
-                           uint64_t player_id);
+                           MediaPlayerUkmId player_id);
 
   VideoDecodeStatsRecorder(const VideoDecodeStatsRecorder&) = delete;
   VideoDecodeStatsRecorder& operator=(const VideoDecodeStatsRecorder&) = delete;
@@ -47,7 +48,7 @@ class MEDIA_MOJO_EXPORT VideoDecodeStatsRecorder
   const ukm::SourceId source_id_;
   const learning::FeatureValue origin_;
   const bool is_top_frame_;
-  const MediaPlayerLoggingID player_id_;
+  const MediaPlayerUkmId player_id_;
 
   mojom::PredictionFeatures features_;
   mojom::PredictionTargets targets_;

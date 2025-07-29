@@ -61,7 +61,7 @@ class VideoDecodeStatsRecorderTest : public ::testing::Test {
     recorder_ = std::make_unique<VideoDecodeStatsRecorder>(
         base::BindRepeating(&VideoDecodeStatsRecorderTest::PrintSavePerfRecord,
                             base::Unretained(this)),
-        source_id, origin, is_top_frame, player_id);
+        source_id, origin, is_top_frame, MediaPlayerUkmId(player_id));
   }
 
   void PrintSavePerfRecord(ukm::SourceId source_id,

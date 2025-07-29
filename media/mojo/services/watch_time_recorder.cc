@@ -68,7 +68,7 @@ WatchTimeRecorder::WatchTimeRecorder(
     mojom::PlaybackPropertiesPtr properties,
     ukm::SourceId source_id,
     bool is_top_frame,
-    uint64_t player_id)
+    MediaPlayerUkmId player_id)
     : auto_pip_reason_cb_(std::move(auto_pip_reason_cb)),
       properties_(std::move(properties)),
       source_id_(source_id),
@@ -342,7 +342,7 @@ void WatchTimeRecorder::RecordUkmPlaybackData() {
     builder.SetIsTopFrame(is_top_frame_);
     builder.SetIsBackground(properties_->is_background);
     builder.SetIsMuted(properties_->is_muted);
-    builder.SetPlayerID(player_id_);
+    builder.SetPlayerID(player_id_.value());
     if (clamped_duration_ms.has_value())
       builder.SetDuration(*clamped_duration_ms);
 

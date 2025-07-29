@@ -11,9 +11,9 @@
 #include <string>
 
 #include "base/time/time.h"
+#include "base/types/id_type.h"
 #include "media/base/container_names.h"
 #include "media/base/demuxer.h"
-#include "media/base/media_player_logging_id.h"
 #include "media/base/picture_in_picture_events_info.h"
 #include "media/base/pipeline_status.h"
 #include "media/base/renderer_factory_selector.h"
@@ -28,6 +28,11 @@
 #include "url/gurl.h"
 
 namespace media {
+
+// alias the name for readability
+using MediaPlayerUkmId = base::IdTypeU64<class MediaPlayerUkmIDTag>;
+
+MEDIA_MOJO_EXPORT MediaPlayerUkmId GetNextMediaPlayerUkmId();
 
 class VideoDecodePerfHistory;
 
@@ -153,7 +158,7 @@ class MEDIA_MOJO_EXPORT MediaMetricsProvider
 
   // Session unique ID which maps to a given WebMediaPlayerImpl instances. Used
   // to coordinate multiply logged events with a singly logged metric.
-  const uint64_t player_id_;
+  const MediaPlayerUkmId player_id_;
 
   // Are UKM reports for the main frame or for a subframe?
   const bool is_top_frame_;

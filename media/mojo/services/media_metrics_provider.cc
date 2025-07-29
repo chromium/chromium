@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/atomic_sequence_num.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -34,9 +35,20 @@
 
 namespace media {
 
+namespace {
+
+// A count of all MediaPlayers created in the current process. Used to generate
+// unique IDs for the purpose of tracking UKMs.
+static base::AtomicSequenceNumber g_next_player_id;
+
+}  // namespace
+
+MediaPlayerUkmId GetNextMediaPlayerUkmId() {
+  return MediaPlayerUkmId(g_next_player_id.GetNext());
+}
+
 constexpr char kInvalidInitialize[] = "Initialize() was not called correctly.";
 
-static uint64_t g_player_id = 0;
 
 MediaMetricsProvider::PipelineInfo::PipelineInfo(bool is_incognito)
     : is_incognito(is_incognito) {}
@@ -52,7 +64,7 @@ MediaMetricsProvider::MediaMetricsProvider(
     GetLearningSessionCallback learning_session_cb,
     IsShuttingDownCallback is_shutting_down_cb,
     PictureInPictureEventsInfo::AutoPipReasonCallback auto_pip_reason_cb)
-    : player_id_(g_player_id++),
+    : player_id_(GetNextMediaPlayerUkmId()),
       is_top_frame_(is_top_frame == FrameStatus::kTopFrame),
       source_id_(source_id),
       origin_(origin),
@@ -78,7 +90,7 @@ MediaMetricsProvider::~MediaMetricsProvider() {
     return;
 
   ukm::builders::Media_WebMediaPlayerState builder(source_id_);
-  builder.SetPlayerID(player_id_);
+  builder.SetPlayerID(player_id_.value());
   builder.SetIsTopFrame(is_top_frame_);
   builder.SetIsEME(uma_info_.is_eme);
   builder.SetIsMSE(media_info_->is_mse);
