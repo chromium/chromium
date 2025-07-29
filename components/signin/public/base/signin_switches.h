@@ -251,6 +251,14 @@ BASE_DECLARE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu);
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker);
 // LINT.ThenChange(//chrome/browser/signin/signin_hats_util.cc)
+
+// Controls the duration for which the launch of an identity survey is delayed.
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kChromeIdentitySurveyLaunchWithDelay);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kChromeIdentitySurveyLaunchWithDelayDuration);
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)

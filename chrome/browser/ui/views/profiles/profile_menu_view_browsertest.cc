@@ -17,6 +17,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -24,6 +25,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/with_feature_override.h"
 #include "base/threading/thread_restrictions.h"
+#include "base/time/time.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
@@ -1671,12 +1673,19 @@ class ProfileMenuHatsSurveyTest : public ProfileMenuViewTestBase,
                                   public InProcessBrowserTest {
  public:
   ProfileMenuHatsSurveyTest() {
-    feature_list_.InitWithFeatures(
+    feature_list_.InitWithFeaturesAndParameters(
         /*enabled_features=*/
-        {switches::kChromeIdentitySurveySwitchProfileFromProfileMenu,
-         switches::kChromeIdentitySurveyProfileMenuDismissed},
+        {{switches::kChromeIdentitySurveySwitchProfileFromProfileMenu, {}},
+         {switches::kChromeIdentitySurveyProfileMenuDismissed, {}},
+         {switches::kChromeIdentitySurveyLaunchWithDelay,
+          {{switches::kChromeIdentitySurveyLaunchWithDelayDuration.name,
+            base::NumberToString(kLaunchDelayDuration.InMilliseconds()) +
+                "ms"}}}},
         /*disabled_features=*/{});
   }
+
+  static constexpr base::TimeDelta kLaunchDelayDuration =
+      base::Milliseconds(5000);
 
  private:
   base::test::ScopedFeatureList feature_list_;
@@ -1710,10 +1719,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   Browser::Create(Browser::CreateParams(other_profile, /*user_gesture=*/true));
 
   // The survey should be launched for the other profile after switching.
-  EXPECT_CALL(
-      *other_profile_hats_service,
-      LaunchSurvey(kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu, _, _,
-                   _, _, _, _));
+  EXPECT_CALL(*other_profile_hats_service,
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerIdentitySwitchProfileFromProfileMenu,
+                  kLaunchDelayDuration.InMilliseconds(), _, _));
 
   // Open the profile menu and select the other profile.
   SetTargetBrowser(browser());
@@ -1740,9 +1749,9 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
       HatsServiceFactory::GetInstance()->SetTestingFactoryAndUse(
           GetProfile(), base::BindRepeating(&BuildMockHatsService)));
 
-  EXPECT_CALL(*hats_service,
-              LaunchSurvey(kHatsSurveyTriggerIdentityProfileMenuDismissed, _, _,
-                           _, _, _, _));
+  EXPECT_CALL(*hats_service, LaunchDelayedSurvey(
+                                 kHatsSurveyTriggerIdentityProfileMenuDismissed,
+                                 kLaunchDelayDuration.InMilliseconds(), _, _));
 
   // Open the profile menu.
   SetTargetBrowser(browser());
@@ -1771,8 +1780,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuHatsSurveyTest,
   // Attempt to select every actionable item in the menu.
   for (const auto& selected_item : kActionableItems_WithAnotherProfile) {
     EXPECT_CALL(*hats_service,
-                LaunchSurvey(kHatsSurveyTriggerIdentityProfileMenuDismissed, _,
-                             _, _, _, _, _))
+                LaunchDelayedSurvey(
+                    kHatsSurveyTriggerIdentityProfileMenuDismissed, _, _, _))
         .Times(0);
 
     SetTargetBrowser(browser());

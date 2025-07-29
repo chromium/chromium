@@ -5,6 +5,7 @@
 #include "components/signin/public/base/signin_switches.h"
 
 #include "base/feature_list.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 
@@ -335,6 +336,16 @@ BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfileMenu,
 BASE_FEATURE(kChromeIdentitySurveySwitchProfileFromProfilePicker,
              "ChromeIdentitySurveySwitchProfileFromProfilePicker",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeIdentitySurveyLaunchWithDelay,
+             "ChromeIdentitySurveyLaunchWithDelay",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kChromeIdentitySurveyLaunchWithDelayDuration,
+                   &kChromeIdentitySurveyLaunchWithDelay,
+                   "launch_delay_duration",
+                   base::Milliseconds(3000));
 
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 

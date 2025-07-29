@@ -85,6 +85,7 @@ bool IsFeatureEnabledForSigninHatsTrigger(const std::string& trigger) {
 void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
                                       Profile* profile,
                                       bool defer_if_no_browser) {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
   if (!profile || !IsFeatureEnabledForSigninHatsTrigger(trigger)) {
     return;
   }
@@ -94,14 +95,12 @@ void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
   if (!browser) {
     // An active browser is needed to launch the survey.
     if (defer_if_no_browser) {
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
-      // For the listed platforms, if no browser is active, defer the survey
-      // launch until a browser becomes available.
+      // If no browser is active, defer the survey launch until a browser
+      // becomes available.
       // TODO(crbug.com/427971911): Fix test crashes due to the dangling
       // pointer.
       new profiles::BrowserAddedForProfileObserver(
           profile, base::BindOnce(&LaunchSigninHatsSurveyForBrowser, trigger));
-#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
     }
     return;
   }
@@ -114,7 +113,10 @@ void LaunchSigninHatsSurveyForProfile(const std::string& trigger,
   }
 
   // TODO(crbug.com/427971911): add product-specific data.
-  hats_service->LaunchSurvey(trigger);
+  hats_service->LaunchDelayedSurvey(
+      trigger, switches::kChromeIdentitySurveyLaunchWithDelayDuration.Get()
+                   .InMilliseconds());
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 }
 
 }  // namespace signin

@@ -2043,8 +2043,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
 
   EXPECT_CALL(
       *hats_service,
-      LaunchSurvey(kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, _,
-                   _, _, _, _, _))
+      LaunchDelayedSurvey(
+          kHatsSurveyTriggerIdentitySwitchProfileFromProfilePicker, _, _, _))
       .Times(2);
 
   // Open the picker.

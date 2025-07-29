@@ -132,12 +132,12 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
                        HatsSurveyLaunchedOnSignin) {
   // Expect the HaTS service to launch the password bubble sign-in survey.
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _,
-                           _, _, _, _));
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerIdentityPasswordBubbleSignin, _, _, _));
   // Expect that the surveys for other access point will NOT be launched.
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(Not(kHatsSurveyTriggerIdentityPasswordBubbleSignin),
-                           _, _, _, _, _, _))
+              LaunchDelayedSurvey(
+                  Not(kHatsSurveyTriggerIdentityPasswordBubbleSignin), _, _, _))
       .Times(0);
 
   // Simulate a user signing in via the password bubble, which should trigger
@@ -179,10 +179,10 @@ IN_PROC_BROWSER_TEST_F(ChromeSigninClientHatsSurveyBrowserTest,
   // Expect the HaTS service to launch the first run sign-in survey.
   EXPECT_CALL(
       *mock_hats_service(),
-      LaunchSurvey(kHatsSurveyTriggerIdentityFirstRunSignin, _, _, _, _, _, _));
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentityFirstRunSignin, _, _, _));
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(Not(kHatsSurveyTriggerIdentityFirstRunSignin), _, _,
-                           _, _, _, _))
+              LaunchDelayedSurvey(Not(kHatsSurveyTriggerIdentityFirstRunSignin),
+                                  _, _, _))
       .Times(0);
 
   // Create a new browser for the signed-in profile, which should now trigger

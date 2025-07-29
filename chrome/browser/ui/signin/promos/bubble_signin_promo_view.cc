@@ -8,7 +8,6 @@
 #include <utility>
 
 #include "base/check.h"
-#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
@@ -18,12 +17,11 @@
 #include "chrome/browser/signin/account_consistency_mode_manager.h"
 #include "chrome/browser/signin/chrome_signin_pref_names.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_hats_util.h"
 #include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
-#include "chrome/browser/ui/hats/hats_service.h"
-#include "chrome/browser/ui/hats/hats_service_factory.h"
 #include "chrome/browser/ui/hats/survey_config.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_delegate.h"
 #include "chrome/browser/ui/signin/promos/bubble_signin_promo_signin_button_view.h"
@@ -34,7 +32,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_prefs.h"
-#include "components/signin/public/base/signin_switches.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
@@ -369,17 +366,8 @@ void BubbleSignInPromoView::OnWidgetDestroying(views::Widget* widget) {
   }
 
   // Launch a HaTS survey if the user actively dismissed the promo.
-  if (base::FeatureList::IsEnabled(
-          switches::kChromeIdentitySurveySigninPromoBubbleDismissed)) {
-    HatsService* hats_service =
-        HatsServiceFactory::GetForProfile(profile,
-                                          /*create_if_necessary=*/true);
-    if (hats_service) {
-      // TODO(crbug.com/427971911): add product-specific data.
-      hats_service->LaunchSurvey(
-          kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed);
-    }
-  }
+  signin::LaunchSigninHatsSurveyForProfile(
+      kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed, profile);
 
   base::UmaHistogramEnumeration(
       base::StrCat({"Signin.SignInPromo.Dismissed", dismiss_action}),

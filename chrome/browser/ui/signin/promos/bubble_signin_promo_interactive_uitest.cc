@@ -699,9 +699,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Verify that the HaTS service launches a survey when the user actively
   // dismisses the sign-in promo bubble with the escape key.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-                           _, _, _, _, _, _));
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+                          _, _, _));
 
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();
@@ -738,9 +739,10 @@ IN_PROC_BROWSER_TEST_F(BubbleSignInPromoInteractiveUITest,
 
   // Verify that the HaTS service launches a survey when the user actively
   // dismisses the sign-in promo bubble with the close button.
-  EXPECT_CALL(*mock_hats_service_,
-              LaunchSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
-                           _, _, _, _, _, _));
+  EXPECT_CALL(
+      *mock_hats_service_,
+      LaunchDelayedSurvey(kHatsSurveyTriggerIdentitySigninPromoBubbleDismissed,
+                          _, _, _));
 
   // Trigger the address save bubble.
   AutofillProfile address = autofill::test::GetFullProfile();

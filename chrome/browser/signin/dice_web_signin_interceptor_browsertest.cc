@@ -650,8 +650,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   ASSERT_FALSE(IsChromeSignedIn());
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _,
-                           _, _, _, _, _));
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerIdentityDiceWebSigninAccepted, _, _, _));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kAccepted);
   EXPECT_TRUE(IsChromeSignedIn());
@@ -669,8 +669,8 @@ IN_PROC_BROWSER_TEST_F(DiceWebSigninInterceptorWithHatsSurveyBrowserTest,
   ASSERT_FALSE(IsChromeSignedIn());
 
   EXPECT_CALL(*mock_hats_service(),
-              LaunchSurvey(kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _,
-                           _, _, _, _, _));
+              LaunchDelayedSurvey(
+                  kHatsSurveyTriggerIdentityDiceWebSigninDeclined, _, _, _));
   ShowAndCompleteSigninBubbleWithResult(account_info,
                                         SigninInterceptionResult::kDeclined);
   EXPECT_FALSE(IsChromeSignedIn());
