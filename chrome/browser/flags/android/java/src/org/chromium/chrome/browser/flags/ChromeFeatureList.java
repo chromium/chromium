@@ -398,6 +398,8 @@ public abstract class ChromeFeatureList {
             "EnableClipboardDataControlsAndroid";
     public static final String ENABLE_DISCOUNT_INFO_API = "EnableDiscountInfoApi";
     public static final String ENABLE_EXCLUSIVE_ACCESS_MANAGER = "EnableExclusiveAccessManager";
+    public static final String ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID =
+            "EnableFullscreenToAnyScreenAndroid";
     public static final String FACILITATED_PAYMENTS_ENABLE_A2A_PAYMENT =
             "FacilitatedPaymentsEnableA2APayment";
     public static final String ENABLE_SAVE_PACKAGE_FOR_OFF_THE_RECORD =
@@ -873,6 +875,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ENABLE_DISCOUNT_INFO_API, false, true);
     public static final CachedFlag sEnableExclusiveAccessManager =
             newCachedFlag(ENABLE_EXCLUSIVE_ACCESS_MANAGER, false);
+    public static final CachedFlag sEnableFullscreenToAnyScreenAndroid =
+            newCachedFlag(ENABLE_FULLSCREEN_TO_ANY_SCREEN_ANDROID, false);
     public static final CachedFlag sEnableXAxisActivityTransition =
             newCachedFlag(ENABLE_X_AXIS_ACTIVITY_TRANSITION, false);
     public static final CachedFlag sFloatingSnackbar = newCachedFlag(FLOATING_SNACKBAR, true);
@@ -1118,6 +1122,7 @@ public abstract class ChromeFeatureList {
                     sEducationalTipModule,
                     sEnableDiscountInfoApi,
                     sEnableExclusiveAccessManager,
+                    sEnableFullscreenToAnyScreenAndroid,
                     sEnableXAxisActivityTransition,
                     sFloatingSnackbar,
                     sForceTranslucentNotificationTrampoline,

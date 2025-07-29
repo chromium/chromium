@@ -989,6 +989,11 @@ extern const char kMirrorBackForwardGesturesInRTLDescription[];
 extern const char kEnableFencedFramesDeveloperModeName[];
 extern const char kEnableFencedFramesDeveloperModeDescription[];
 
+#if BUILDFLAG(IS_ANDROID)
+extern const char kEnableFullscreenToAnyScreenAndroidName[];
+extern const char kEnableFullscreenToAnyScreenAndroidDescription[];
+#endif
+
 extern const char kEnableGamepadMultitouchName[];
 extern const char kEnableGamepadMultitouchDescription[];
 

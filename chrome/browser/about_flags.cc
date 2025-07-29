@@ -13032,11 +13032,18 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-    {kWebiumFlag,
-     flag_descriptions::kWebiumName,
+    {kWebiumFlag, flag_descriptions::kWebiumName,
      flag_descriptions::kWebiumDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kWebium)},
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_ANDROID)
+    {"enable-fullscreen-to-any-screen-android",
+     flag_descriptions::kEnableFullscreenToAnyScreenAndroidName,
+     flag_descriptions::kEnableFullscreenToAnyScreenAndroidDescription,
+     kOsAndroid,
+     FEATURE_VALUE_TYPE(features::kEnableFullscreenToAnyScreenAndroid)},
+#endif  // BUILDFLAG(IS_ANDROID)
 
     // Add new entries above this line.
 

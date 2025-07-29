@@ -586,6 +586,16 @@ const char kEnableDrDcDescription[] =
     "(raster, webgl, video) "
     " continues using the gpu main thread.";
 
+#if BUILDFLAG(IS_ANDROID)
+const char kEnableFullscreenToAnyScreenAndroidName[] =
+    "Enables use of the screen parameter for requestFullscreen.";
+const char kEnableFullscreenToAnyScreenAndroidDescription[] =
+    "When enabled the user can request an HTML element to be expanded to "
+    "full screen on another screen using the Element.requestFullscreen web "
+    "API. This enables usage of the screen parameter in the "
+    "Element.requestFullscreen web API.";
+#endif
+
 const char kTextBasedAudioDescriptionName[] = "Enable audio descriptions.";
 const char kTextBasedAudioDescriptionDescription[] =
     "When enabled, HTML5 video elements with a 'descriptions' WebVTT track "

@@ -150,6 +150,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kContextMenuEmptySpace,
     &features::kDisplayEdgeToEdgeFullscreen,
     &features::kEnableExclusiveAccessManager,
+    &features::kEnableFullscreenToAnyScreenAndroid,
     &features::kHttpsFirstBalancedMode,
     &features::kNetworkServiceInProcess,
     &features::kElasticOverscroll,

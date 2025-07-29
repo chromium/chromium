@@ -297,6 +297,13 @@ BASE_FEATURE(kEnableExclusiveAccessManager,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
+// Enables Fullscreen to Screen on Android platform
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kEnableFullscreenToAnyScreenAndroid,
+             "EnableFullscreenToAnyScreenAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Controls whether Chrome Apps are supported. See https://crbug.com/1221251.
 // If the feature is disabled, Chrome Apps continue to work. If enabled, Chrome

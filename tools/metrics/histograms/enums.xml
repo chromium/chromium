@@ -11663,6 +11663,7 @@ from previous Chrome versions.
   <int value="-898653891" label="UseClientGmbInterface:disabled"/>
   <int value="-898594349" label="ash-enable-stable-overview-order"/>
   <int value="-898499262" label="ImprovedA2HS:enabled"/>
+  <int value="-898406388" label="EnableFullscreenToScreen:disabled"/>
   <int value="-898344488"
       label="AndroidTabDeclutterAutoDeleteKillSwitch:enabled"/>
   <int value="-898005938" label="disable-pinch-virtual-viewport"/>
@@ -17290,6 +17291,7 @@ from previous Chrome versions.
   <int value="1185669166" label="AlwaysAbandonScheduledTask:disabled"/>
   <int value="1186484930"
       label="AutofillEnableLogFormEventsToAllParsedFormTypes:disabled"/>
+  <int value="1186830151" label="EnableFullscreenToAnyScreenAndroid:enabled"/>
   <int value="1187103825" label="OmniboxSuggestionsWrapAround:enabled"/>
   <int value="1187692916" label="TheoraVideoCodec:enabled"/>
   <int value="1187868655" label="FloatingWorkspaceV2:disabled"/>
@@ -17864,6 +17866,7 @@ from previous Chrome versions.
   <int value="1382727025" label="SeparateLocalAndAccountThemes:disabled"/>
   <int value="1382972493" label="AndroidSurfaceColorUpdate:enabled"/>
   <int value="1383197819" label="IncognitoScreenshot:enabled"/>
+  <int value="1383319785" label="EnableFullscreenToScreen:enabled"/>
   <int value="1383526461" label="QuickAnswersRichUi:enabled"/>
   <int value="1383591631" label="enable-gesture-typing"/>
   <int value="1384102751" label="AutofillParseIBANFields:enabled"/>
@@ -18351,6 +18354,7 @@ from previous Chrome versions.
   <int value="1553417445" label="RefreshFeedOnRestart:disabled"/>
   <int value="1553422694" label="EnablePalmOnMaxTouchMajor:enabled"/>
   <int value="1553430984" label="Projector:enabled"/>
+  <int value="1553588488" label="EnableFullscreenToAnyScreenAndroid:disabled"/>
   <int value="1553667664" label="CoralFeature:enabled"/>
   <int value="1553777815" label="enable-search-prefetch-service"/>
   <int value="1555578029" label="TabStripGroupContextMenuAndroid:disabled"/>
