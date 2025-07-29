@@ -192,16 +192,20 @@ AutofillAiManager::AutofillAiManager(AutofillClient* client,
 
 AutofillAiManager::~AutofillAiManager() = default;
 
-void AutofillAiManager::OnSuggestionsShown(const FormStructure& form,
-                                           const AutofillField& field,
-                                           ukm::SourceId ukm_source_id) {
-  logger_.OnSuggestionsShown(form, field, ukm_source_id);
+void AutofillAiManager::OnSuggestionsShown(
+    const FormStructure& form,
+    const AutofillField& field,
+    DenseSet<EntityType> suggested_entity_types,
+    ukm::SourceId ukm_source_id) {
+  logger_.OnSuggestionsShown(form, field, suggested_entity_types,
+                             ukm_source_id);
 }
 
 void AutofillAiManager::OnFormSeen(const FormStructure& form) {
-  bool is_eligible = AreFieldsRelevantForAutofillAi(form.fields());
-  logger_.OnFormEligibilityAvailable(form.global_id(), is_eligible);
-  if (!is_eligible) {
+  const DenseSet<EntityType> relevant_entities =
+      GetRelevantEntityTypesForFields(form.fields());
+  logger_.OnFormEligibilityAvailable(form.global_id(), relevant_entities);
+  if (relevant_entities.empty()) {
     return;
   }
 
@@ -209,13 +213,15 @@ void AutofillAiManager::OnFormSeen(const FormStructure& form) {
   if (!entity_manager) {
     return;
   }
-  if (entity_manager->GetEntityInstances().empty()) {
+
+  auto entities_to_fill = DenseSet<EntityType>(
+      entity_manager->GetEntityInstances(), &EntityInstance::type);
+  entities_to_fill.intersect(relevant_entities);
+  if (entities_to_fill.empty()) {
     return;
   }
-  // TODO(crbug.com/389629573): We should check whether any of `entities`
-  // can actually fill a field in the `form`, not only whether entities
-  // exist.
-  logger_.OnFormHasDataToFill(form.global_id());
+
+  logger_.OnFormHasDataToFill(form.global_id(), entities_to_fill);
 }
 
 void AutofillAiManager::OnDidFillSuggestion(
@@ -224,7 +230,8 @@ void AutofillAiManager::OnDidFillSuggestion(
     const AutofillField& trigger_field,
     base::span<const AutofillField* const> filled_fields,
     ukm::SourceId ukm_source_id) {
-  logger_.OnDidFillSuggestion(form, trigger_field, ukm_source_id);
+  logger_.OnDidFillSuggestion(form, trigger_field, entity.type(),
+                              ukm_source_id);
   for (const AutofillField* const field : filled_fields) {
     logger_.OnDidFillField(form, CHECK_DEREF(field), entity.type(),
                            ukm_source_id);
@@ -244,7 +251,7 @@ void AutofillAiManager::OnEditedAutofilledField(const FormStructure& form,
 
 bool AutofillAiManager::OnFormSubmitted(const FormStructure& form,
                                         ukm::SourceId ukm_source_id) {
-  if (AreFieldsRelevantForAutofillAi(form.fields())) {
+  if (!GetRelevantEntityTypesForFields(form.fields()).empty()) {
     logger_.RecordFormMetrics(form, ukm_source_id, /*submission_state=*/true,
                               GetAutofillAiOptInStatus(*client_));
   }

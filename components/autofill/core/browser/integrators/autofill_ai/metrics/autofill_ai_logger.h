@@ -8,6 +8,7 @@
 #include <map>
 
 #include "base/memory/raw_ref.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/integrators/autofill_ai/metrics/autofill_ai_ukm_logger.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -24,13 +25,17 @@ class AutofillAiLogger {
   AutofillAiLogger& operator=(const AutofillAiLogger&) = delete;
   ~AutofillAiLogger();
 
-  void OnFormEligibilityAvailable(FormGlobalId form_id, bool is_eligible);
-  void OnFormHasDataToFill(FormGlobalId form_id);
+  void OnFormEligibilityAvailable(FormGlobalId form_id,
+                                  DenseSet<EntityType> relevant_entities);
+  void OnFormHasDataToFill(FormGlobalId form_id,
+                           DenseSet<EntityType> entities_to_fill);
   void OnSuggestionsShown(const FormStructure& form,
                           const AutofillField& field,
+                          DenseSet<EntityType> suggested_entity_types,
                           ukm::SourceId ukm_source_id);
   void OnDidFillSuggestion(const FormStructure& form,
                            const AutofillField& field,
+                           EntityType entity_type,
                            ukm::SourceId ukm_source_id);
   void OnEditedAutofilledField(const FormStructure& form,
                                const AutofillField& field,
@@ -79,9 +84,9 @@ class AutofillAiLogger {
                                   const FunnelState& state,
                                   bool opt_in_status) const;
 
-  // Records the funnel state of each form. See the documentation of
-  // `FunnelState` for more information about what is recorded.
-  std::map<FormGlobalId, FunnelState> form_states_;
+  // Records the funnel state for each form and entity type separately. See the
+  // documentation of `FunnelState` for more information about what is recorded.
+  std::map<FormGlobalId, std::map<EntityType, FunnelState>> form_states_;
 
   // Records the last filled `EntityType` for each field. This information is
   // currently unavailable in `AutofillField`, because

@@ -12,6 +12,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/common/dense_set.h"
 
 namespace autofill {
 
@@ -70,9 +71,9 @@ base::flat_map<
 DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND);
 
-// Returns whether any of the `fields` have a non-empty AutofillAI
-// AttributeType.
-[[nodiscard]] bool AreFieldsRelevantForAutofillAi(
+// Returns the entity types for which at least one of `fields` have a
+// corresponding AttributeType.
+[[nodiscard]] DenseSet<EntityType> GetRelevantEntityTypesForFields(
     base::span<const std::unique_ptr<AutofillField>> fields);
 
 }  // namespace autofill

@@ -68,6 +68,7 @@
 #include "components/autofill/core/browser/crowdsourcing/determine_possible_field_types.h"
 #include "components/autofill/core/browser/crowdsourcing/votes_uploader.h"
 #include "components/autofill/core/browser/data_manager/addresses/address_data_manager.h"
+#include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #include "components/autofill/core/browser/data_manager/personal_data_manager.h"
 #include "components/autofill/core/browser/data_manager/valuables/valuables_data_manager.h"
@@ -2172,9 +2173,20 @@ void BrowserAutofillManager::DidShowSuggestions(
                             return GetFillingProductFromSuggestionType(type) ==
                                    FillingProduct::kAutofillAi;
                           })) {
-    ai_manager->OnSuggestionsShown(CHECK_DEREF(form_structure),
-                                   CHECK_DEREF(autofill_field),
-                                   driver().GetPageUkmSourceId());
+    DenseSet<EntityType> suggested_entity_types;
+    for (const Suggestion& suggestion : suggestions) {
+      if (const auto* payload =
+              std::get_if<Suggestion::AutofillAiPayload>(&suggestion.payload)) {
+        if (base::optional_ref<const EntityInstance> entity =
+                client().GetEntityDataManager()->GetEntityInstance(
+                    payload->guid)) {
+          suggested_entity_types.insert(entity->type());
+        }
+      }
+    }
+    ai_manager->OnSuggestionsShown(
+        CHECK_DEREF(form_structure), CHECK_DEREF(autofill_field),
+        suggested_entity_types, driver().GetPageUkmSourceId());
   }
 
   // Notify the BNPL manager about suggestion shown if the current shown

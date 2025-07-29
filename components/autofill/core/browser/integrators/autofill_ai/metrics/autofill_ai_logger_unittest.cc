@@ -48,6 +48,10 @@ using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
+constexpr auto kVehicle = EntityType(EntityTypeName::kVehicle);
+constexpr auto kDriversLicense = EntityType(EntityTypeName::kDriversLicense);
+constexpr auto kPassport = EntityType(EntityTypeName::kPassport);
+
 constexpr char kDefaultUrl[] = "https://example.com";
 constexpr char16_t kDefaultPassportNumber[] = u"123";
 constexpr char16_t kDefaultLicensePlate[] = u"XC-12-34";
@@ -361,7 +365,8 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   manager().OnFormSeen(*form);
 
   if (user_saw_suggestions()) {
-    manager().OnSuggestionsShown(*form, *form->field(0), /*ukm_source_id=*/{});
+    manager().OnSuggestionsShown(*form, *form->field(0), {kPassport},
+                                 /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
     manager().OnDidFillSuggestion(passport, *form, *form->field(0),
@@ -421,6 +426,7 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAssistance) {
   }
   {
     manager().OnSuggestionsShown(*vehicle_form, *vehicle_form->field(0),
+                                 {kVehicle},
                                  /*ukm_source_id=*/{});
     manager().OnDidFillSuggestion(test::GetVehicleEntityInstance(),
                                   *vehicle_form, *vehicle_form->field(0),
@@ -440,9 +446,9 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAcceptance) {
   std::unique_ptr<FormStructure> drivers_license_form =
       CreateDriversLicenseForm();
   manager().OnFormSeen(*drivers_license_form);
-  manager().OnSuggestionsShown(*drivers_license_form,
-                               *drivers_license_form->field(0),
-                               /*ukm_source_id=*/{});
+  manager().OnSuggestionsShown(
+      *drivers_license_form, *drivers_license_form->field(0), {kDriversLicense},
+      /*ukm_source_id=*/{});
   {
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*drivers_license_form, /*ukm_source_id=*/{});
@@ -472,10 +478,11 @@ TEST_F(AutofillAiKeyMetricsTest, FillingCorrectness) {
   std::unique_ptr<FormStructure> passport_form = CreatePassportForm();
   manager().OnFormSeen(*passport_form);
   manager().OnSuggestionsShown(*passport_form, *passport_form->field(0),
+                               {kPassport},
                                /*ukm_source_id=*/{});
   manager().OnDidFillSuggestion(test::GetPassportEntityInstance(),
                                 *passport_form, *passport_form->field(0),
-                                /*filled_fields=*/{},
+                                /*filled_fields=*/{passport_form->field(0)},
                                 /*ukm_source_id=*/{});
   {
     base::HistogramTester histogram_tester;
@@ -602,6 +609,7 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
 
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  {kPassport},
                                                   /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 1u);
   ExpectCorrectMqlsFieldEventLogging(
@@ -609,6 +617,7 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
       AutofillAiUkmLogger::EventType::kSuggestionShown, /*event_order=*/0);
 
   test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
+                                                   kPassport,
                                                    /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 2u);
   ExpectCorrectMqlsFieldEventLogging(
@@ -635,8 +644,10 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   std::unique_ptr<FormStructure> form = CreatePassportForm();
 
-  test_api(manager()).logger().OnFormHasDataToFill(form->global_id());
-  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+  test_api(manager()).logger().OnFormHasDataToFill(form->global_id(),
+                                                   {kPassport});
+  test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(1),
+                                                  {kPassport},
                                                   /*ukm_source_id=*/{});
   form->field(0)->set_is_autofilled(true);
   form->field(0)->set_filling_product(FillingProduct::kAddress);
@@ -645,16 +656,19 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   form->field(2)->set_is_autofilled(true);
   form->field(2)->set_filling_product(FillingProduct::kAutocomplete);
 
-  test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
+  test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(1),
+                                                   kPassport,
                                                    /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnDidFillField(*form, *form->field(1), kPassport,
+                                              /*ukm_source_id=*/{});
 
-  test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
+  test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(1),
                                                        /*ukm_source_id=*/{});
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submission_state=*/true,
                                                  /*opt_in_status=*/true);
-  ASSERT_EQ(mqls_logs().size(), 4u);
+  ASSERT_EQ(mqls_logs().size(), 5u);
   const optimization_guide::proto::AutofillAiKeyMetrics& mqls_key_metrics =
       GetKeyMetricsLogs();
 
@@ -703,6 +717,7 @@ TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsIfDisabledByEnterprisePolicy) {
 
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  {kPassport},
                                                   /*ukm_source_id=*/{});
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submitted_state=*/true,
@@ -716,6 +731,7 @@ TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsWhenOffTheRecord) {
 
   std::unique_ptr<FormStructure> form = CreateEligibleForm();
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
+                                                  {kPassport},
                                                   /*ukm_source_id=*/{});
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submitted_state=*/true,

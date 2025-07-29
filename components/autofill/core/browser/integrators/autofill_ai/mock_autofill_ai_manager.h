@@ -36,7 +36,10 @@ class MockAutofillAiManager : public AutofillAiManager {
               (const override));
   MOCK_METHOD(void,
               OnSuggestionsShown,
-              (const FormStructure&, const AutofillField&, ukm::SourceId),
+              (const FormStructure&,
+               const AutofillField&,
+               DenseSet<EntityType> suggested_entity_types,
+               ukm::SourceId),
               (override));
   MOCK_METHOD(void, OnFormSeen, (const FormStructure&), (override));
   MOCK_METHOD(void,

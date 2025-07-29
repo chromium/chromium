@@ -59,27 +59,39 @@ AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
     : ukm_logger_(client) {}
 AutofillAiLogger::~AutofillAiLogger() = default;
 
-void AutofillAiLogger::OnFormEligibilityAvailable(FormGlobalId form_id,
-                                                  bool is_eligible) {
-  form_states_[form_id].is_eligible = is_eligible;
+void AutofillAiLogger::OnFormEligibilityAvailable(
+    FormGlobalId form_id,
+    DenseSet<EntityType> relevant_entities) {
+  for (EntityType entity_type : relevant_entities) {
+    form_states_[form_id][entity_type].is_eligible = true;
+  }
 }
 
-void AutofillAiLogger::OnFormHasDataToFill(FormGlobalId form_id) {
-  form_states_[form_id].has_data_to_fill = true;
+void AutofillAiLogger::OnFormHasDataToFill(
+    FormGlobalId form_id,
+    DenseSet<EntityType> entities_to_fill) {
+  for (EntityType entity_type : entities_to_fill) {
+    form_states_[form_id][entity_type].has_data_to_fill = true;
+  }
 }
 
-void AutofillAiLogger::OnSuggestionsShown(const FormStructure& form,
-                                          const AutofillField& field,
-                                          ukm::SourceId ukm_source_id) {
-  form_states_[form.global_id()].suggestions_shown = true;
+void AutofillAiLogger::OnSuggestionsShown(
+    const FormStructure& form,
+    const AutofillField& field,
+    DenseSet<EntityType> suggested_entity_types,
+    ukm::SourceId ukm_source_id) {
+  for (EntityType type : suggested_entity_types) {
+    form_states_[form.global_id()][type].suggestions_shown = true;
+  }
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kSuggestionShown);
 }
 
 void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
                                            const AutofillField& field,
+                                           EntityType entity_type,
                                            ukm::SourceId ukm_source_id) {
-  form_states_[form.global_id()].did_fill_suggestions = true;
+  form_states_[form.global_id()][entity_type].did_fill_suggestions = true;
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
 }
@@ -87,7 +99,11 @@ void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
 void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
                                                const AutofillField& field,
                                                ukm::SourceId ukm_source_id) {
-  form_states_[form.global_id()].edited_autofilled_field = true;
+  if (auto it = last_filled_entity_.find(field.global_id());
+      it != last_filled_entity_.end()) {
+    EntityType entity_type = it->second;
+    form_states_[form.global_id()][entity_type].edited_autofilled_field = true;
+  }
   ukm_logger_.LogFieldEvent(
       ukm_source_id, form, field,
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
@@ -106,7 +122,37 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
                                          ukm::SourceId ukm_source_id,
                                          bool submission_state,
                                          bool opt_in_status) {
-  FunnelState state = form_states_[form.global_id()];
+  std::map<EntityType, FunnelState> states = form_states_[form.global_id()];
+  const FunnelState funnel_state{
+      .is_eligible = std::ranges::any_of(states,
+                                         [&](const auto& type_and_state) {
+                                           const auto& [type, state] =
+                                               type_and_state;
+                                           return state.is_eligible;
+                                         }),
+      .has_data_to_fill = std::ranges::any_of(states,
+                                              [&](const auto& type_and_state) {
+                                                const auto& [type, state] =
+                                                    type_and_state;
+                                                return state.has_data_to_fill;
+                                              }),
+      .suggestions_shown = std::ranges::any_of(states,
+                                               [&](const auto& type_and_state) {
+                                                 const auto& [type, state] =
+                                                     type_and_state;
+                                                 return state.suggestions_shown;
+                                               }),
+      .did_fill_suggestions =
+          std::ranges::any_of(states,
+                              [&](const auto& type_and_state) {
+                                const auto& [type, state] = type_and_state;
+                                return state.did_fill_suggestions;
+                              }),
+      .edited_autofilled_field =
+          std::ranges::any_of(states, [&](const auto& type_and_state) {
+            const auto& [type, state] = type_and_state;
+            return state.edited_autofilled_field;
+          })};
   if (submission_state) {
     using enum AutofillAiOptInStatus;
     base::UmaHistogramEnumeration("Autofill.Ai.OptIn.Status",
@@ -114,17 +160,18 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
     // TODO(crbug.com/408380915): Remove after M141.
     base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
     ukm_logger_.LogKeyMetrics(
-        ukm_source_id, form, /*data_to_fill_available=*/state.has_data_to_fill,
-        /*suggestions_shown=*/state.suggestions_shown,
-        /*suggestion_filled=*/state.did_fill_suggestions,
-        /*edited_autofilled_field=*/state.edited_autofilled_field,
+        ukm_source_id, form,
+        /*data_to_fill_available=*/funnel_state.has_data_to_fill,
+        /*suggestions_shown=*/funnel_state.suggestions_shown,
+        /*suggestion_filled=*/funnel_state.did_fill_suggestions,
+        /*edited_autofilled_field=*/funnel_state.edited_autofilled_field,
         /*opt_in_status=*/opt_in_status);
     if (opt_in_status) {
-      RecordKeyMetrics(form, state);
+      RecordKeyMetrics(form, funnel_state);
     }
   }
-  RecordFunnelMetrics(state, submission_state);
-  RecordNumberOfFieldsFilled(form, state, opt_in_status);
+  RecordFunnelMetrics(funnel_state, submission_state);
+  RecordNumberOfFieldsFilled(form, funnel_state, opt_in_status);
 }
 
 void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,

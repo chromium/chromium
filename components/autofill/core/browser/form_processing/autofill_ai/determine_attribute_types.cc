@@ -298,10 +298,15 @@ SectionMap DetermineAttributeTypes(
   return r;
 }
 
-bool AreFieldsRelevantForAutofillAi(
+DenseSet<EntityType> GetRelevantEntityTypesForFields(
     base::span<const std::unique_ptr<AutofillField>> fields) {
-  return !std::ranges::all_of(GetAttributeTypes(fields),
-                              &DenseSet<AttributeType>::empty);
+  DenseSet<EntityType> entity_types;
+  for (const DenseSet<AttributeType>& attributes : GetAttributeTypes(fields)) {
+    for (AttributeType attribute : attributes) {
+      entity_types.insert(attribute.entity_type());
+    }
+  }
+  return entity_types;
 }
 
 }  // namespace autofill
