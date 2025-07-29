@@ -54,10 +54,9 @@ std::vector<AutofillFieldWithAttributeType> RationalizeAttributeTypesForTesting(
     std::vector<AutofillFieldWithAttributeType> fields,
     EntityType entity_of_interest);
 
-// Returns whether `fields` are valid for AutofillAi. This is true when for any
-// given section found in the fields, the respective AutofillAi attribute types
-// satisfies any entity requirements.
-[[nodiscard]] bool AreFieldsRelevantForAutofillAi(
+// Returns the entity types for which at least one of `fields` have a
+// corresponding AttributeType.
+[[nodiscard]] DenseSet<EntityType> GetRelevantEntityTypesForFields(
     base::span<const std::unique_ptr<AutofillField>> fields);
 
 }  // namespace autofill

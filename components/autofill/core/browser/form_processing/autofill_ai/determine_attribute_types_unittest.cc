@@ -107,7 +107,6 @@ TEST_F(DetermineAttributeTypesTest, IsEmptyInUnrelatedForm) {
   EXPECT_THAT(DetermineAttributeTypes(fields, Section(), kPassKey), IsEmpty());
   EXPECT_THAT(DetermineAttributeTypes(fields, Section(), kPassport, kPassKey),
               IsEmpty());
-  EXPECT_TRUE(GetRelevantEntityTypesForFields(fields).empty());
 }
 
 // Tests that DetermineAttributeTypes() processes `*_TAG` correctly if
@@ -156,9 +155,6 @@ TEST_F(DetermineAttributeTypesTest, LegacyBehavior) {
           Pair(section, UnorderedElementsAre(
                             Pair(kVehicle, vehicle_matcher),
                             Pair(kDriversLicense, drivers_license_matcher)))));
-
-  EXPECT_EQ(GetRelevantEntityTypesForFields(fields),
-            (DenseSet<EntityType>{kVehicle, kDriversLicense}));
 }
 
 // Tests that DetermineAttributeTypes() assigns static types correctly.

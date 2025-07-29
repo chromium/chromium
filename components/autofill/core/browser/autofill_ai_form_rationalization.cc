@@ -89,18 +89,19 @@ RationalizeAttributeTypesForTesting(  // IN-TEST
   return RationalizeAttributeTypes(fields, entity_of_interest);
 }
 
-bool AreFieldsRelevantForAutofillAi(
+DenseSet<EntityType> GetRelevantEntityTypesForFields(
     base::span<const std::unique_ptr<AutofillField>> fields) {
+  DenseSet<EntityType> entity_types;
   for (const auto& [section, entity_map] :
        RationalizeAndDetermineAttributeTypes(fields)) {
     for (const auto& [entity_type, autofill_field_with_attribute_types] :
          entity_map) {
       if (!autofill_field_with_attribute_types.empty()) {
-        return true;
+        entity_types.insert(entity_type);
       }
     }
   }
-  return false;
+  return entity_types;
 }
 
 }  // namespace autofill

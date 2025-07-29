@@ -97,11 +97,6 @@ DetermineAttributeTypes(base::span<const std::unique_ptr<AutofillField>> fields
                             LIFETIME_BOUND,
                         DetermineAttributeTypesPassKey pass_key);
 
-// Returns the entity types for which at least one of `fields` have a
-// corresponding AttributeType.
-[[nodiscard]] DenseSet<EntityType> GetRelevantEntityTypesForFields(
-    base::span<const std::unique_ptr<AutofillField>> fields);
-
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_FORM_PROCESSING_AUTOFILL_AI_DETERMINE_ATTRIBUTE_TYPES_H_

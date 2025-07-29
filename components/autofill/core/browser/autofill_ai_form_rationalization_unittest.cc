@@ -46,11 +46,6 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
   return fields;
 }
 
-std::vector<std::unique_ptr<AutofillField>> CreateFields(
-    const DenseSet<AttributeType>& attribute_types) {
-  return CreateFields(
-      base::ToVector(attribute_types, &AttributeType::field_type));
-}
 auto IsAutofillFieldWithType(
     const AutofillFieldWithAttributeType& autofill_field_with_type) {
   return AllOf(Field(&AutofillFieldWithAttributeType::field,
@@ -128,77 +123,40 @@ TEST_F(AutofillAiFormRationalizationTest, EntitiesAreRationalized) {
   }
 }
 
-// Tests that a set of fields that do not contain any AutofillAi field is not
-// relevant for AutofillAi.
+// Tests that a set of fields that do not contain any AutofillAi field does not
+// contain relevant entities.
 TEST_F(
     AutofillAiFormRationalizationTest,
-    AreFieldsRelevantForAutofillAi_ReturnsFalseWhenNoAutofillAiFieldIsPresent) {
-  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
-      {NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3});
+    GetRelevantEntitiesForFormsAi_ReturnsEmptyWhenNoAutofillAiFieldIsPresent) {
+  std::vector<std::unique_ptr<AutofillField>> fields =
+      CreateFields({PASSPORT_ISSUING_COUNTRY, ADDRESS_HOME_LINE1,
+                    ADDRESS_HOME_LINE2, ADDRESS_HOME_LINE3});
 
-  EXPECT_FALSE(AreFieldsRelevantForAutofillAi(fields));
+  EXPECT_TRUE(GetRelevantEntityTypesForFields(fields).empty());
 }
 
-// Tests that a set of fields that is not a superset of some of the EntityType's
-// required fields set is not relevant for AutofillAi, even if some of these
-// fields are AutofillAi fields.
+// Tests that a set of fields that match entities required fields has such
+// entities as being relevant.
 TEST_F(
     AutofillAiFormRationalizationTest,
-    AreFieldsRelevantForAutofillAi_ReturnsFalseWhenRequiredAutofillAiFieldsAreNotPresent) {
-  for (EntityType entity_type : DenseSet<EntityType>::all()) {
-    if (!entity_type.enabled()) {
-      continue;
-    }
-    // Check that a set of fields that do not match any
-    // entity requirement is not relevant for AutofillAi.
-    DenseSet<AttributeType> attributes_that_do_not_match_requirements =
-        entity_type.attributes();
-    for (DenseSet<AttributeType> required_fields :
-         entity_type.required_fields()) {
-      attributes_that_do_not_match_requirements.erase_all(required_fields);
-    }
-    SCOPED_TRACE(testing::Message()
-                 << "entity=" << entity_type << ", "
-                 << "required fields="
-                 << GetEntityAttributesStringRepresentation(
-                        attributes_that_do_not_match_requirements));
-    EXPECT_FALSE(AreFieldsRelevantForAutofillAi(
-        CreateFields(attributes_that_do_not_match_requirements)))
-        << "Expected fields not to be relevant for AutofillAi as they do not "
-           "match any requirement";
-  }
+    GetRelevantEntitiesForFormsAi_ReturnsEntitiesWhenAutofillAiFieldsMatchRequirements) {
+  std::vector<std::unique_ptr<AutofillField>> fields =
+      CreateFields({VEHICLE_MAKE, VEHICLE_MODEL, NAME_FIRST, VEHICLE_OWNER_TAG,
+                    NAME_MIDDLE, NAME_LAST, DRIVERS_LICENSE_NAME_TAG,
+                    DRIVERS_LICENSE_NUMBER, DRIVERS_LICENSE_EXPIRATION_DATE});
+  EXPECT_EQ(
+      GetRelevantEntityTypesForFields(fields),
+      (DenseSet<EntityType>{EntityType(EntityTypeName::kVehicle),
+                            EntityType(EntityTypeName::kDriversLicense)}));
 }
 
-// Tests that a set of fields that match an entity required fields are
-// relevant for AutofillAi.
-TEST_F(
-    AutofillAiFormRationalizationTest,
-    AreFieldsRelevantForAutofillAi_ReturnsTrueWhenRequiredAutofillAiFieldsArePresent) {
-  for (EntityType entity_type : DenseSet<EntityType>::all()) {
-    if (!entity_type.enabled()) {
-      continue;
-    }
-    // Check that if a set of required fields is present, the fields are
-    // relevant for AutofillAi. Note that there is an exception if a set
-    // contains only name fields, as they are required but not sufficient
-    // (AutofillAi requires more than a single name field, regardless of the
-    // entity).
-    for (DenseSet<AttributeType> rt : entity_type.required_fields()) {
-      SCOPED_TRACE(testing::Message()
-                   << "entity=" << entity_type << " "
-                   << "required fields="
-                   << GetEntityAttributesStringRepresentation(rt));
-      if (rt.size() == 1 &&
-          (*rt.begin()).data_type() == AttributeType::DataType::kName) {
-        EXPECT_FALSE(AreFieldsRelevantForAutofillAi(CreateFields(rt)))
-            << "Expected fields not to be relevant for AutofillAi since its a "
-               "single name field";
-      } else {
-        EXPECT_TRUE(AreFieldsRelevantForAutofillAi(CreateFields(rt)))
-            << "Expected fields to be relevant for AutofillAi";
-      }
-    }
-  }
+// Tests that name fields only do not lead to relevant entities even when they
+// are party of entities requirements.
+TEST_F(AutofillAiFormRationalizationTest,
+       GetRelevantEntitiesForFormsAi_ReturnsEmptyWhenOnlyNameFieldsArePresent) {
+  std::vector<std::unique_ptr<AutofillField>> fields =
+      CreateFields({PASSPORT_NAME_TAG});
+  EXPECT_TRUE(GetRelevantEntityTypesForFields(fields).empty());
 }
 
 }  // namespace
