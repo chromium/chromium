@@ -10,6 +10,9 @@
 #include "base/win/access_token.h"
 
 #include <windows.h>
+#include <winternl.h>
+
+#include <authz.h>
 
 #include <memory>
 #include <utility>
@@ -23,6 +26,75 @@
 namespace base::win {
 
 namespace {
+
+// These are the NT versions of the AUTHZ_SECURITY_ATTRIBUTE* defines in authz.h
+// and CLAIM_SECURITY_ATTRIBUTE* in winnt.h. We must use the TOKEN_ versions
+// here as they use UNICODE_STRING instead of PWSTR. Where possible,
+// static_asserts verify that the structures match the definitions from other
+// header files and will fail if they ever changed, but the TOKEN_ versions are
+// used here for self-consistency.
+typedef struct _TOKEN_SECURITY_ATTRIBUTE_V1 {
+  UNICODE_STRING Name;
+  USHORT ValueType;
+  USHORT Reserved;
+  ULONG Flags;
+  ULONG ValueCount;
+  PLONG64 pInt64;
+} TOKEN_SECURITY_ATTRIBUTE_V1, *PTOKEN_SECURITY_ATTRIBUTE_V1;
+
+#define TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 1
+static_assert(TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1 ==
+              AUTHZ_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1);
+
+typedef struct _TOKEN_SECURITY_ATTRIBUTES_INFORMATION {
+  USHORT Version;
+  USHORT Reserved;
+  ULONG AttributeCount;
+  PTOKEN_SECURITY_ATTRIBUTE_V1 pAttributeV1;
+} TOKEN_SECURITY_ATTRIBUTES_INFORMATION,
+    *PTOKEN_SECURITY_ATTRIBUTES_INFORMATION;
+
+static_assert(sizeof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION) ==
+              sizeof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION));
+static_assert(offsetof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION, Version) ==
+              offsetof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION, Version));
+static_assert(offsetof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION, AttributeCount) ==
+              offsetof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION, AttributeCount));
+static_assert(offsetof(TOKEN_SECURITY_ATTRIBUTES_INFORMATION, pAttributeV1) ==
+              offsetof(AUTHZ_SECURITY_ATTRIBUTES_INFORMATION,
+                       Attribute.pAttributeV1));
+
+typedef enum _TOKEN_SECURITY_ATTRIBUTE_OPERATION {
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_NONE,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_REPLACE_ALL,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_ADD,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_DELETE,
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION_REPLACE
+} TOKEN_SECURITY_ATTRIBUTE_OPERATION,
+    *PTOKEN_SECURITY_ATTRIBUTE_OPERATION;
+
+// Only Add is used.
+static_assert(int{TOKEN_SECURITY_ATTRIBUTE_OPERATION_ADD} ==
+              int{AUTHZ_SECURITY_ATTRIBUTE_OPERATION_ADD});
+
+// This structure is not reflected anywhere in Windows headers.
+typedef struct _TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION {
+  PTOKEN_SECURITY_ATTRIBUTES_INFORMATION Attributes;
+  PTOKEN_SECURITY_ATTRIBUTE_OPERATION Operations;
+} TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION,
+    *PTOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION;
+
+#define TOKEN_SECURITY_ATTRIBUTE_TYPE_INT64 0x01
+static_assert(TOKEN_SECURITY_ATTRIBUTE_TYPE_INT64 ==
+              AUTHZ_SECURITY_ATTRIBUTE_TYPE_INT64);
+
+#define TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE 0x0001
+static_assert(TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE ==
+              AUTHZ_SECURITY_ATTRIBUTE_NON_INHERITABLE);
+
+#define TOKEN_SECURITY_ATTRIBUTE_MANDATORY 0x0020
+static_assert(TOKEN_SECURITY_ATTRIBUTE_MANDATORY ==
+              CLAIM_SECURITY_ATTRIBUTE_MANDATORY);
 
 // The SECURITY_IMPERSONATION_LEVEL type is an enum and therefore can't be
 // forward declared in windows_types.h. Ensure our separate definition matches
@@ -213,6 +285,7 @@ std::optional<DWORD> AdjustPrivilege(const ScopedHandle& token,
   }
   return attributes;
 }
+
 }  // namespace
 
 bool AccessToken::Group::IsIntegrity() const {
@@ -657,6 +730,35 @@ bool AccessToken::RemoveAllPrivileges() {
       token_.get(), /*DisableAllPrivileges=*/FALSE, token_privileges,
       static_cast<DWORD>(privileges_buffer->size()),
       /*PreviousState=*/nullptr, /*ReturnLength=*/nullptr);
+}
+
+bool AccessToken::AddSecurityAttribute(const std::wstring& name, bool inherit) {
+  TOKEN_SECURITY_ATTRIBUTE_V1 attr = {};
+
+  attr.Flags = TOKEN_SECURITY_ATTRIBUTE_MANDATORY;
+  if (!inherit) {
+    attr.Flags |= TOKEN_SECURITY_ATTRIBUTE_NON_INHERITABLE;
+  }
+
+  ::RtlInitUnicodeString(&attr.Name, name.c_str());
+  LONG64 value = 0;
+  attr.ValueCount = 1;
+  attr.ValueType = TOKEN_SECURITY_ATTRIBUTE_TYPE_INT64;
+  attr.pInt64 = &value;
+
+  TOKEN_SECURITY_ATTRIBUTES_INFORMATION attrs = {};
+  attrs.Version = TOKEN_SECURITY_ATTRIBUTES_INFORMATION_VERSION_V1;
+  attrs.AttributeCount = 1;
+  attrs.pAttributeV1 = &attr;
+
+  TOKEN_SECURITY_ATTRIBUTE_OPERATION op =
+      TOKEN_SECURITY_ATTRIBUTE_OPERATION_ADD;
+
+  TOKEN_SECURITY_ATTRIBUTES_AND_OPERATION_INFORMATION info = {};
+  info.Attributes = &attrs;
+  info.Operations = &op;
+
+  return Set(token_, TokenSecurityAttributes, info);
 }
 
 bool AccessToken::is_valid() const {

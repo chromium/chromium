@@ -317,6 +317,15 @@ class BASE_EXPORT AccessToken {
   // The token must be opened with TOKEN_ADJUST_PRIVILEGES access.
   bool RemoveAllPrivileges();
 
+  // Add a security attribute by name to the token.
+  // |name| the name of the attribute to add.
+  // The security attribute is added with a single 64-bit integer value. The
+  // purpose of this is to add a marker attribute for the purposes of access
+  // checking rather than for general use.
+  // The token must be opened with TOKEN_ADJUST_DEFAULT access. The caller must
+  // have SeTcbPrivilege enabled to successfully add the attribute.
+  bool AddSecurityAttribute(const std::wstring& name, bool inherit);
+
   // Indicates if the AccessToken object is valid.
   bool is_valid() const;
 
