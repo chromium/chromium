@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+#import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -34,15 +35,22 @@ constexpr CGFloat kShadowRadius = 13;
 constexpr float kShadowOpacity = 0.12;
 
 // Properties of the alert view.
-constexpr CGFloat kCornerRadius = 14;
+constexpr CGFloat kLegacyCornerRadius = 14;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+constexpr CGFloat kCornerRadius = 34;
+#endif
 constexpr CGFloat kAlertWidth = 270;
 constexpr CGFloat kAlertWidthAccessibility = 402;
 constexpr CGFloat kTextFieldCornerRadius = 5;
 constexpr CGFloat kMinimumHeight = 30;
 constexpr CGFloat kMinimumMargin = 4;
 
-// Inset at the top of the alert. Is always present.
+// Inset of the alert content.
 constexpr CGFloat kAlertMarginTop = 22;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+constexpr CGFloat kAlertMarginBottom = 16;
+#endif
+
 // Space before the actions and everything else.
 constexpr CGFloat kAlertActionsSpacing = 12;
 
@@ -50,7 +58,9 @@ constexpr CGFloat kAlertActionsSpacing = 12;
 constexpr CGFloat kTitleInsetLeading = 20;
 constexpr CGFloat kTitleInsetBottom = 9;
 constexpr CGFloat kTitleInsetTrailing = 20;
-
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+constexpr CGFloat kTitleHorizontalInset = 30;
+#endif
 constexpr CGFloat kSpinnerInsetTop = 12;
 constexpr CGFloat kSpinnerInsetBottom = 14;
 
@@ -59,6 +69,9 @@ constexpr CGFloat kConfirmationSymbolPointSize = 22;
 constexpr CGFloat kMessageInsetLeading = 20;
 constexpr CGFloat kMessageInsetBottom = 6;
 constexpr CGFloat kMessageInsetTrailing = 20;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+constexpr CGFloat kMessageHorizontalInset = 30;
+#endif
 
 constexpr CGFloat kLottieImageAspectRatio = 105.0f / 270.0f;
 
@@ -66,6 +79,13 @@ constexpr CGFloat kButtonInsetTop = 13;
 constexpr CGFloat kButtonInsetLeading = 20;
 constexpr CGFloat kButtonInsetBottom = 13;
 constexpr CGFloat kButtonInsetTrailing = 20;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+constexpr CGFloat kButtonHorizontalInnerInset = 12;
+constexpr CGFloat kButtonVerticalInnerInset = 15.5;
+constexpr CGFloat kButtonHorizontalInset = 16;
+constexpr CGFloat kButtonCornerRadius = 24;
+constexpr CGFloat kButtonStackViewSpacing = 6;
+#endif
 
 constexpr CGFloat kTextfieldStackInsetTop = 12;
 constexpr CGFloat kTextfieldStackInsetLeading = 12;
@@ -133,6 +153,11 @@ void PositionContentViewInParentView(UIView* contentView, UIView* parentView) {
 // Adds a grey line with a thickness of 1px to `stackView`, used to create a
 // separator that visually separates different elements.
 void AddSeparatorToStackView(UIStackView* stackView) {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    return;
+  }
+#endif
   UIView* separator = [[UIView alloc] init];
   separator.backgroundColor = [UIColor colorNamed:kSeparatorColor];
   separator.translatesAutoresizingMaskIntoConstraints = NO;
@@ -150,8 +175,14 @@ void AddSeparatorToStackView(UIStackView* stackView) {
   }
 }
 
+// Returns the color for the given button `style` and `enabled` state.
 UIColor* ColorForActionStyle(UIAlertActionStyle style, BOOL enabled) {
   UIColor* enabledStateDefaultColor = [UIColor colorNamed:kBlueColor];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    enabledStateDefaultColor = [UIColor colorNamed:kTextPrimaryColor];
+  }
+#endif
   UIColor* enabledStateDestructiveColor = [UIColor colorNamed:kRedColor];
   UIColor* disabledStateColor = [UIColor lightGrayColor];
 
@@ -169,6 +200,26 @@ UIColor* ColorForActionStyle(UIAlertActionStyle style, BOOL enabled) {
   }
 }
 
+// Returns the background color for the given button `state`.
+UIColor* BackgroundColorForState(UIControlState state) {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    switch (state) {
+      case UIControlStateNormal:
+        return UIColor.tertiarySystemFillColor;
+      case UIControlStateHighlighted:
+      case UIControlStateFocused:
+      case UIControlStateSelected:
+        return UIColor.quaternarySystemFillColor;
+      case UIControlStateApplication:
+      case UIControlStateReserved:
+        break;
+    }
+  }
+#endif
+  return UIColor.clearColor;
+}
+
 // Update the button foreground color depending on its state.
 void UpdateButtonColorDependingOnEnabledState(UIAlertActionStyle style,
                                               UIButton* button) {
@@ -178,15 +229,21 @@ void UpdateButtonColorDependingOnEnabledState(UIAlertActionStyle style,
   }
 
   UIColor* color = ColorForActionStyle(style, button.enabled);
-  if (![configuration.baseForegroundColor isEqual:color]) {
+  UIColor* backgroundColor = BackgroundColorForState(button.state);
+  if (![configuration.baseForegroundColor isEqual:color] ||
+      ![configuration.background.backgroundColor isEqual:backgroundColor]) {
     configuration = [configuration copy];
     configuration.baseForegroundColor = color;
+    UIBackgroundConfiguration* backgroundConfiguration =
+        configuration.background;
+    backgroundConfiguration.backgroundColor = backgroundColor;
+    configuration.background = backgroundConfiguration;
     button.configuration = configuration;
   }
 }
 
-// Returns a GrayHighlightButton to be added to the alert for `action`.
-GrayHighlightButton* GetButtonForAction(AlertAction* action) {
+// Returns a button to be added to the alert for `action` for ios 18 or lower.
+UIButton* GetLegacyButtonForAction(AlertAction* action) {
   UIFont* font = nil;
 
   if (action.style == UIAlertActionStyleCancel) {
@@ -195,11 +252,12 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
   }
 
-  UIButtonConfiguration* buttonConfiguration =
-      [UIButtonConfiguration plainButtonConfiguration];
+  UIButtonConfiguration* buttonConfiguration;
+  buttonConfiguration = [UIButtonConfiguration plainButtonConfiguration];
   buttonConfiguration.contentInsets =
       NSDirectionalEdgeInsetsMake(kButtonInsetTop, kButtonInsetLeading,
                                   kButtonInsetBottom, kButtonInsetTrailing);
+
   NSDictionary* attributes = @{NSFontAttributeName : font};
   NSAttributedString* title =
       [[NSAttributedString alloc] initWithString:action.title
@@ -208,9 +266,8 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   buttonConfiguration.baseForegroundColor =
       ColorForActionStyle(action.style, action.enabled);
 
-  GrayHighlightButton* button =
-      [GrayHighlightButton buttonWithConfiguration:buttonConfiguration
-                                     primaryAction:nil];
+  UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                         primaryAction:nil];
 
   button.contentHorizontalAlignment = UIControlContentHorizontalAlignmentCenter;
   button.translatesAutoresizingMaskIntoConstraints = NO;
@@ -224,6 +281,51 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   };
 
   return button;
+}
+
+// Returns a button to be added to the alert for `action`.
+UIButton* GetButtonForAction(AlertAction* action) {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+    UIButtonConfiguration* buttonConfiguration =
+        [UIButtonConfiguration plainButtonConfiguration];
+    buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
+        kButtonVerticalInnerInset, kButtonHorizontalInnerInset,
+        kButtonVerticalInnerInset, kButtonHorizontalInnerInset);
+    buttonConfiguration.background.cornerRadius = kButtonCornerRadius;
+    buttonConfiguration.baseForegroundColor =
+        ColorForActionStyle(action.style, action.enabled);
+
+    NSDictionary* attributes = @{NSFontAttributeName : font};
+    NSAttributedString* title =
+        [[NSAttributedString alloc] initWithString:action.title
+                                        attributes:attributes];
+    buttonConfiguration.attributedTitle = title;
+
+    UIButton* button = [UIButton buttonWithConfiguration:buttonConfiguration
+                                           primaryAction:nil];
+    button.pointerInteractionEnabled = YES;
+    button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
+    button.contentHorizontalAlignment =
+        UIControlContentHorizontalAlignmentCenter;
+    button.translatesAutoresizingMaskIntoConstraints = NO;
+
+    button.tag = action.uniqueIdentifier;
+    button.enabled = action.enabled;
+
+    UIAlertActionStyle style = action.style;
+    button.configurationUpdateHandler = ^(UIButton* updatedButton) {
+      UpdateButtonColorDependingOnEnabledState(style, updatedButton);
+    };
+    return button;
+
+  } else {
+#endif
+    return GetLegacyButtonForAction(action);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
 }
 
 }  // namespace
@@ -301,17 +403,6 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
 #pragma mark - Public
 
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateBorderColorOnTraitChange:previousTraitCollection];
-}
-#endif
-
 - (void)loadView {
   [super loadView];
   self.view.backgroundColor = [UIColor colorNamed:kScrimBackgroundColor];
@@ -324,19 +415,7 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   self.tapRecognizer.delegate = self;
   [self.view addGestureRecognizer:self.tapRecognizer];
 
-  self.contentView = [[UIView alloc] init];
-  self.contentView.accessibilityIdentifier = self.alertAccessibilityIdentifier;
-  self.contentView.clipsToBounds = YES;
-  self.contentView.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
-  self.contentView.layer.cornerRadius = kCornerRadius;
-  self.contentView.layer.shadowOffset =
-      CGSizeMake(kShadowOffsetX, kShadowOffsetY);
-  self.contentView.layer.shadowRadius = kShadowRadius;
-  self.contentView.layer.shadowOpacity = kShadowOpacity;
-  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
-  [self.view addSubview:self.contentView];
-
+  [self configureContentView];
   self.swipeRecognizer = [[UISwipeGestureRecognizer alloc]
       initWithTarget:self
               action:@selector(dismissKeyboard)];
@@ -385,6 +464,12 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
   NSDirectionalEdgeInsets stackViewInsets =
       NSDirectionalEdgeInsetsMake(kAlertMarginTop, 0, 0, 0);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    stackViewInsets =
+        NSDirectionalEdgeInsetsMake(kAlertMarginTop, 0, kAlertMarginBottom, 0);
+  }
+#endif
   AddSameConstraintsWithInsets(stackView, scrollView, stackViewInsets);
 
   if (self.title.length) {
@@ -394,8 +479,14 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     titleLabel.adjustsFontForContentSizeCategory = YES;
     titleLabel.textAlignment = NSTextAlignmentCenter;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      titleLabel.textAlignment = NSTextAlignmentNatural;
+    }
+#endif
     titleLabel.text = self.title;
     titleLabel.translatesAutoresizingMaskIntoConstraints = NO;
+    titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
     [stackView addArrangedSubview:titleLabel];
     [stackView setCustomSpacing:self.shouldShowActivityIndicator
                                     ? kTitleInsetBottom + kSpinnerInsetTop
@@ -404,6 +495,12 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
 
     NSDirectionalEdgeInsets titleInsets = NSDirectionalEdgeInsetsMake(
         0, kTitleInsetLeading, 0, kTitleInsetTrailing);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      titleInsets = NSDirectionalEdgeInsetsMake(0, kTitleHorizontalInset, 0,
+                                                kTitleHorizontalInset);
+    }
+#endif
     AddSameConstraintsToSidesWithInsets(
         titleLabel, self.contentView,
         LayoutSides::kTrailing | LayoutSides::kLeading, titleInsets);
@@ -459,13 +556,25 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
         [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
     messageLabel.adjustsFontForContentSizeCategory = YES;
     messageLabel.textAlignment = NSTextAlignmentCenter;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      messageLabel.textAlignment = NSTextAlignmentNatural;
+    }
+#endif
     messageLabel.text = self.message;
+    messageLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
     messageLabel.translatesAutoresizingMaskIntoConstraints = NO;
     [stackView addArrangedSubview:messageLabel];
     [stackView setCustomSpacing:kMessageInsetBottom afterView:messageLabel];
 
     NSDirectionalEdgeInsets messageInsets = NSDirectionalEdgeInsetsMake(
         0, kMessageInsetLeading, 0, kMessageInsetTrailing);
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      messageInsets = NSDirectionalEdgeInsetsMake(0, kMessageHorizontalInset, 0,
+                                                  kMessageHorizontalInset);
+    }
+#endif
     AddSameConstraintsToSidesWithInsets(
         messageLabel, self.contentView,
         LayoutSides::kTrailing | LayoutSides::kLeading, messageInsets);
@@ -519,8 +628,19 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     UIStackView* buttonStackView = [self createButtonStackView];
     buttonStackView.tag = kButtonStackViewTag;
     [stackView addArrangedSubview:buttonStackView];
-    AddSameConstraintsToSides(buttonStackView, self.contentView,
-                              LayoutSides::kTrailing | LayoutSides::kLeading);
+
+    NSDirectionalEdgeInsets buttonStackHorizontalInsets =
+        NSDirectionalEdgeInsetsZero;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+    if (@available(iOS 26, *)) {
+      buttonStackHorizontalInsets = NSDirectionalEdgeInsetsMake(
+          0, kButtonHorizontalInset, 0, kButtonHorizontalInset);
+    }
+#endif
+    AddSameConstraintsToSidesWithInsets(
+        buttonStackView, self.contentView,
+        LayoutSides::kLeading | LayoutSides::kTrailing,
+        buttonStackHorizontalInsets);
   }
 
   [[NSNotificationCenter defaultCenter]
@@ -535,23 +655,21 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
              name:UIKeyboardWillHideNotification
            object:nil];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
-      UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
-      UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
-      UITraitUserInterfaceLevel.class
-    ]);
-    __weak __typeof(self) weakSelf = self;
-    UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
-                                     UITraitCollection* previousCollection) {
-      [weakSelf updateBorderColorOnTraitChange:previousCollection];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
+  NSArray<UITrait>* traits = TraitCollectionSetForTraits(@[
+    UITraitUserInterfaceIdiom.class, UITraitUserInterfaceStyle.class,
+    UITraitDisplayGamut.class, UITraitAccessibilityContrast.class,
+    UITraitUserInterfaceLevel.class
+  ]);
+  __weak __typeof(self) weakSelf = self;
+  UITraitChangeHandler handler = ^(id<UITraitEnvironment> traitEnvironment,
+                                   UITraitCollection* previousCollection) {
+    [weakSelf updateBorderColorOnTraitChange:previousCollection];
+  };
+  [self registerForTraitChanges:traits withHandler:handler];
 
-    traits = TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
-    [self registerForTraitChanges:traits
-                       withAction:@selector(selectImageForCurrentStyle)];
-  }
+  traits = TraitCollectionSetForTraits(@[ UITraitUserInterfaceStyle.class ]);
+  [self registerForTraitChanges:traits
+                     withAction:@selector(selectImageForCurrentStyle)];
 }
 
 #pragma mark - Getters
@@ -874,15 +992,19 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
   buttons.axis = UILayoutConstraintAxisVertical;
   buttons.translatesAutoresizingMaskIntoConstraints = NO;
   buttons.alignment = UIStackViewAlignmentCenter;
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    buttons.spacing = kButtonStackViewSpacing;
+  }
+#endif
   for (NSArray<AlertAction*>* rowOfActions in self.actions) {
     DCHECK_GT([rowOfActions count], 0U);
     AddSeparatorToStackView(buttons);
     // Calculate the axis for the sub-stackview.
     CGFloat maxWidth = 0;
-    NSMutableArray<GrayHighlightButton*>* rowOfButtons =
-        [[NSMutableArray alloc] init];
+    NSMutableArray<UIButton*>* rowOfButtons = [[NSMutableArray alloc] init];
     for (AlertAction* action in rowOfActions) {
-      GrayHighlightButton* button = GetButtonForAction(action);
+      UIButton* button = GetButtonForAction(action);
       if (self.actionButtonsAreInitiallyDisabled) {
         button.enabled = NO;
         [self performSelector:@selector(updateButtonEnabledState:)
@@ -906,9 +1028,9 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     UIStackView* rowOfButtonStackView = [[UIStackView alloc] init];
     rowOfButtonStackView.axis = axis;
     rowOfButtonStackView.alignment = UIStackViewAlignmentCenter;
-    GrayHighlightButton* firstButton = [rowOfButtons firstObject];
-    GrayHighlightButton* lastButton = [rowOfButtons lastObject];
-    for (GrayHighlightButton* button in rowOfButtons) {
+    UIButton* firstButton = [rowOfButtons firstObject];
+    UIButton* lastButton = [rowOfButtons lastObject];
+    for (UIButton* button in rowOfButtons) {
       [rowOfButtonStackView addArrangedSubview:button];
       if (button != lastButton) {
         AddSeparatorToStackView(rowOfButtonStackView);
@@ -961,6 +1083,52 @@ GrayHighlightButton* GetButtonForAction(AlertAction* action) {
     self.textFieldStackHolder.layer.borderColor =
         [UIColor colorNamed:kSeparatorColor].CGColor;
   }
+}
+
+// Configures the contentView and add it to the view hierarchy for ios 18 or
+// lower.
+- (void)configureContentViewLegacy {
+  self.contentView = [[UIView alloc] init];
+  self.contentView.backgroundColor =
+      [UIColor colorNamed:kSecondaryBackgroundColor];
+  self.contentView.layer.shadowOffset =
+      CGSizeMake(kShadowOffsetX, kShadowOffsetY);
+  self.contentView.layer.shadowRadius = kShadowRadius;
+  self.contentView.layer.shadowOpacity = kShadowOpacity;
+  self.contentView.layer.cornerRadius = kLegacyCornerRadius;
+  [self.view addSubview:self.contentView];
+
+  self.contentView.accessibilityIdentifier = self.alertAccessibilityIdentifier;
+  self.contentView.clipsToBounds = YES;
+  self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+}
+
+// Configures the contentView and add it to the view hierarchy.
+- (void)configureContentView {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26, *)) {
+    UIGlassEffect* glassEffect = [[UIGlassEffect alloc] init];
+    glassEffect.interactive = NO;
+    UIVisualEffectView* backgroundView =
+        [[UIVisualEffectView alloc] initWithEffect:glassEffect];
+    backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+    [self.view addSubview:backgroundView];
+    backgroundView.cornerConfiguration = [UICornerConfiguration
+        capsuleConfigurationWithMaximumRadius:kCornerRadius];
+    self.contentView = backgroundView.contentView;
+    AddSameConstraints(self.contentView, backgroundView);
+
+    self.contentView.accessibilityIdentifier =
+        self.alertAccessibilityIdentifier;
+    self.contentView.clipsToBounds = YES;
+    self.contentView.translatesAutoresizingMaskIntoConstraints = NO;
+
+  } else {
+#endif
+    return [self configureContentViewLegacy];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  }
+#endif
 }
 
 @end
