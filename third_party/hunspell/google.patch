@@ -194,7 +194,7 @@ index 5d35540..80ce539 100644
    }
  
 diff --git a/src/hunspell/affixmgr.hxx b/src/hunspell/affixmgr.hxx
-index 0fc22a3..529077c 100644
+index 84caed1..bbc2948 100644
 --- a/src/hunspell/affixmgr.hxx
 +++ b/src/hunspell/affixmgr.hxx
 @@ -89,6 +89,40 @@
@@ -731,7 +731,7 @@ index a9ae8e0..0cb8dd8 100644
    return !aliasf.empty();
  }
 diff --git a/src/hunspell/hashmgr.hxx b/src/hunspell/hashmgr.hxx
-index 792b2f1..8590ee3 100644
+index 9e0975a..9ddf70f 100644
 --- a/src/hunspell/hashmgr.hxx
 +++ b/src/hunspell/hashmgr.hxx
 @@ -79,6 +79,13 @@
@@ -857,7 +857,7 @@ index 2b896fb..f3fa34b 100644
  
  #define ROTATE(v, q) \
 diff --git a/src/hunspell/hunspell.cxx b/src/hunspell/hunspell.cxx
-index 51e0937..c4a29fc 100644
+index 2bb1b94..271fa55 100644
 --- a/src/hunspell/hunspell.cxx
 +++ b/src/hunspell/hunspell.cxx
 @@ -77,21 +77,30 @@
@@ -909,7 +909,7 @@ index 51e0937..c4a29fc 100644
    std::string affixpath;
 +#endif
    std::string encoding;
-   struct cs_info* csconv;
+   const struct cs_info* csconv;
    int langnum;
 @@ -140,6 +151,11 @@ private:
    int complexprefixes;
@@ -1082,7 +1082,7 @@ index 51e0937..c4a29fc 100644
  int Hunspell_spell(Hunhandle* pHunspell, const char* word) {
    return reinterpret_cast<HunspellImpl*>(pHunspell)->spell(word);
 diff --git a/src/hunspell/hunspell.hxx b/src/hunspell/hunspell.hxx
-index 142017f..513c70c 100644
+index 267a745..49d3731 100644
 --- a/src/hunspell/hunspell.hxx
 +++ b/src/hunspell/hunspell.hxx
 @@ -76,6 +76,11 @@
@@ -1172,7 +1172,7 @@ index e3462b9..cd66ee3 100644
  
  #include <string>
 diff --git a/src/hunspell/suggestmgr.cxx b/src/hunspell/suggestmgr.cxx
-index 5f480f9..ebffdf1 100644
+index 82b53d2..57c81a4 100644
 --- a/src/hunspell/suggestmgr.cxx
 +++ b/src/hunspell/suggestmgr.cxx
 @@ -84,7 +84,112 @@ const w_char W_VLINE = {'\0', '|'};
@@ -1356,7 +1356,7 @@ index 5f480f9..ebffdf1 100644
      for (j = 1; j <= n; j++) {
        if (((utf8) && (su[i - 1] == su2[j - 1])) ||
 diff --git a/src/hunspell/suggestmgr.hxx b/src/hunspell/suggestmgr.hxx
-index 7fa1a6b..369d6e3 100644
+index 0f8bcc5..b0184ff 100644
 --- a/src/hunspell/suggestmgr.hxx
 +++ b/src/hunspell/suggestmgr.hxx
 @@ -112,7 +112,11 @@ class SuggestMgr {

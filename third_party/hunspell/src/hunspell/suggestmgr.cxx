@@ -1257,13 +1257,13 @@ namespace
   class ngsuggest_guard
   {
     bool m_nonbmp;
-    cs_info* m_origconv;
+    const cs_info* m_origconv;
     int* m_utf8;
-    cs_info** m_csconv;
+    const cs_info** m_csconv;
 
     public:
 
-    ngsuggest_guard(bool nonbmp, cs_info* origconv, int* utf8, cs_info** csconv)
+    ngsuggest_guard(bool nonbmp, const cs_info* origconv, int* utf8, const cs_info** csconv)
       : m_nonbmp(nonbmp)
       , m_origconv(origconv)
       , m_utf8(utf8)
@@ -1328,7 +1328,7 @@ void SuggestMgr::ngsuggest(std::vector<std::string>& wlst,
 
   // set character based ngram suggestion for words with non-BMP Unicode
   // characters
-  struct cs_info* origconv = csconv;
+  const struct cs_info* origconv = csconv;
   if (n == -1) {
     utf8 = 0;  // XXX not state-free
     if (!csconv)
