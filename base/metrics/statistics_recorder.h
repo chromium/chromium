@@ -22,7 +22,6 @@
 #include "base/base_export.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_base.h"
@@ -320,8 +319,11 @@ class BASE_EXPORT StatisticsRecorder {
   }
 
  private:
-  static Lock& GetLock() { return lock_.Get(); }
-  static void AssertLockHeld() { lock_.Get().AssertAcquired(); }
+  // Global lock for internal synchronization.
+  // Note: Care must be taken to not read or write anything to persistent memory
+  // while holding this lock, as that could cause a file I/O stall.
+  static Lock& GetLock();
+  static void AssertLockHeld();
 
   // Returns the histogram registered with |hash|, if there is one. Returns
   // nullptr otherwise.
@@ -400,11 +402,6 @@ class BASE_EXPORT StatisticsRecorder {
 
   // Previous global recorder that existed when this one was created.
   raw_ptr<StatisticsRecorder> previous_ = nullptr;
-
-  // Global lock for internal synchronization.
-  // Note: Care must be taken to not read or write anything to persistent memory
-  // while holding this lock, as that could cause a file I/O stall.
-  static LazyInstance<Lock>::Leaky lock_;
 
   // Current global recorder. This recorder is used by static methods. When a
   // new global recorder is created by CreateTemporaryForTesting(), then the

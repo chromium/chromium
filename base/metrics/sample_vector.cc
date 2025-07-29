@@ -14,11 +14,11 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/debug/leak_annotations.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_span.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
@@ -438,14 +438,14 @@ void SampleVectorBase::MoveSingleSampleToCounts() {
 }
 
 void SampleVectorBase::MountCountsStorageAndMoveSingleSample() {
-  // There are many SampleVector objects and the lock is needed very
-  // infrequently (just when advancing from single-sample to multi-sample) so
-  // define a single, global lock that all can use. This lock only prevents
-  // concurrent entry into the code below; access and updates to |counts_data_|
-  // still requires atomic operations.
-  static LazyInstance<Lock>::Leaky counts_lock = LAZY_INSTANCE_INITIALIZER;
   if (counts_data_.load(std::memory_order_relaxed) == nullptr) {
-    AutoLock lock(counts_lock.Get());
+    // There are many SampleVector objects and the lock is needed very
+    // infrequently (just when advancing from single-sample to multi-sample) so
+    // define a single, global lock that all can use. This lock only prevents
+    // concurrent entry into the code below; access and updates to
+    // |counts_data_| still requires atomic operations.
+    static base::NoDestructor<Lock> counts_lock;
+    AutoLock lock(*counts_lock);
     if (counts_data_.load(std::memory_order_relaxed) == nullptr) {
       // Create the actual counts storage while the above lock is acquired.
       span<HistogramBase::Count32> counts = CreateCountsStorageWhileLocked();

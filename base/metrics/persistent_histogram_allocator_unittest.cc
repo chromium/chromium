@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
+#include "base/debug/leak_annotations.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"

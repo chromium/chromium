@@ -19,6 +19,7 @@
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/persistent_histogram_allocator.h"
 #include "base/metrics/record_histogram_checker.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/values.h"
@@ -33,9 +34,6 @@ bool HistogramNameLesser(const base::HistogramBase* a,
 }
 
 }  // namespace
-
-// static
-LazyInstance<Lock>::Leaky StatisticsRecorder::lock_ = LAZY_INSTANCE_INITIALIZER;
 
 // static
 StatisticsRecorder* StatisticsRecorder::top_ = nullptr;
@@ -315,6 +313,17 @@ void StatisticsRecorder::PrepareDeltas(
 void StatisticsRecorder::InitLogOnShutdown() {
   const AutoLock auto_lock(GetLock());
   InitLogOnShutdownWhileLocked();
+}
+
+// static
+Lock& StatisticsRecorder::GetLock() {
+  static base::NoDestructor<Lock> lock;
+  return *lock;
+}
+
+// static
+void StatisticsRecorder::AssertLockHeld() {
+  GetLock().AssertAcquired();
 }
 
 HistogramBase* StatisticsRecorder::FindHistogramByHashInternal(
