@@ -139,10 +139,10 @@ export function getHtml(this: ReadAnythingToolbarElement) {
     </cr-icon-button>
   `)}
   <cr-icon-button id="more" tabindex="-1" aria-label="$i18n{moreOptionsLabel}"
+      class="hidden"
       title="$i18n{moreOptionsLabel}"
       aria-haspopup="menu"
       iron-icon="cr:more-vert"
-      hidden
       @click="${this.onMoreOptionsClick_}">
   </cr-icon-button>
 

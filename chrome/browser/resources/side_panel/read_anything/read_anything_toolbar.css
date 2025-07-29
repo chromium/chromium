@@ -56,6 +56,17 @@
   margin: 0px;
 }
 
+/* Separate CSS classes are needed instead of setting the style directly so
+ * that when forced colors are active, the color menu isn't reshown through
+ * the code used to manage toolbar overflows. */
+.hidden {
+  display: none;
+}
+
+.visibility-hidden {
+  visibility: hidden;
+}
+
 .granularity-container-when-active-true {
   display: flex;
   flex-direction: row;

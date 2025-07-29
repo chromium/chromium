@@ -262,15 +262,14 @@ export class ReadAnythingToolbarElement extends ReadAnythingToolbarElementBase {
 
   private hideElement_(element: HTMLElement, keepSpace: boolean) {
     if (keepSpace) {
-      element.style.visibility = 'hidden';
+      element.classList.add('visibility-hidden');
     } else {
-      element.style.display = 'none';
+      element.classList.add('hidden');
     }
   }
 
   private showElement_(element: HTMLElement) {
-    element.style.visibility = 'visible';
-    element.style.display = 'inline-block';
+    element.classList.remove('hidden', 'visibility-hidden');
   }
 
 
