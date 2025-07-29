@@ -21,7 +21,7 @@ bool LoadFromFile(base::FilePath file_path,
   DCHECK(!file_path.empty());
   // Reset to empty to ensure IsValid() is false if reading fails.
   *name_table_region = base::MappedReadOnlyRegion();
-  std::vector<char> file_contents;
+  std::vector<uint8_t> file_contents;
   {
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
@@ -34,14 +34,12 @@ bool LoadFromFile(base::FilePath file_path,
 
     file_contents.resize(table_cache_file.GetLength());
 
-    if (UNSAFE_TODO(table_cache_file.Read(0, file_contents.data(),
-                                          file_contents.size())) <= 0) {
+    if (table_cache_file.Read(0, file_contents).value_or(0) == 0) {
       return false;
     }
   }
 
-  base::Pickle pickle =
-      base::Pickle::WithUnownedBuffer(base::as_byte_span(file_contents));
+  base::Pickle pickle = base::Pickle::WithUnownedBuffer(file_contents);
   base::PickleIterator pickle_iterator(pickle);
 
   uint32_t checksum = 0;
@@ -99,8 +97,7 @@ bool PersistToFile(const base::MappedReadOnlyRegion& name_table_region,
     base::ScopedBlockingCall scoped_blocking_call(
         FROM_HERE, base::BlockingType::MAY_BLOCK);
 
-    if (UNSAFE_TODO(table_cache_file.Write(0, pickle.data_as_char(),
-                                           pickle.size())) == -1) {
+    if (!table_cache_file.Write(0, pickle)) {
       table_cache_file.SetLength(0);
       return false;
     }
