@@ -1,3 +1,9 @@
+<html>
+  <head>
+    <!-- Disable extra network request for /favicon.ico -->
+    <link rel="icon" href="data:,">
+  </head>
+<body>
 <script>
   const params = new URLSearchParams(location.search);
   const start_worker_manually = params.has('start_worker_manually');
@@ -21,3 +27,5 @@
     start_worker();
   }
 </script>
+</body>
+</html>

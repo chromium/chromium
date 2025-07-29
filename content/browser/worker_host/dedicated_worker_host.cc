@@ -446,10 +446,18 @@ void DedicatedWorkerHost::DidStartScriptLoad(
       worker_client_security_state_->is_web_secure_context =
           network::IsUrlPotentiallyTrustworthy(result->final_response_url) &&
           creator_client_security_state_->is_web_secure_context;
+      // Deprecation trial status allowing LNA requests on non-http
+      bool allow_non_secure_local_network_access =
+          ancestor_render_frame_host->policy_container_host() &&
+          ancestor_render_frame_host->policy_container_host()
+              ->policies()
+              .allow_non_secure_local_network_access;
+
       worker_client_security_state_->private_network_request_policy =
           DerivePrivateNetworkRequestPolicy(
               worker_client_security_state_->ip_address_space,
               worker_client_security_state_->is_web_secure_context,
+              allow_non_secure_local_network_access,
               PrivateNetworkRequestContext::kWorker);
     } else {
       // Preserve incorrect functionality if PNA is not enabled.

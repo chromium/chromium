@@ -3985,6 +3985,7 @@ void RenderFrameHostImpl::InitializePolicyContainerHost(
             network::mojom::ReferrerPolicy::kDefault,
             IsFencedFrameRoot() ? network::mojom::IPAddressSpace::kPublic
                                 : network::mojom::IPAddressSpace::kUnknown,
+            /*allow_non_secure_local_network_access=*/false,
             /*is_web_secure_context=*/false,
             std::vector<network::mojom::ContentSecurityPolicyPtr>(),
             parent_policies.cross_origin_opener_policy,
@@ -14710,10 +14711,15 @@ network::mojom::ClientSecurityStatePtr
 RenderFrameHostImpl::BuildClientSecurityStateForWorkers() const {
   auto client_security_state = BuildClientSecurityState();
 
+  bool allow_non_secure_local_network_access =
+      policy_container_host_ &&
+      policy_container_host_->policies().allow_non_secure_local_network_access;
+
   client_security_state->private_network_request_policy =
       DerivePrivateNetworkRequestPolicy(
           client_security_state->ip_address_space,
           client_security_state->is_web_secure_context,
+          allow_non_secure_local_network_access,
           PrivateNetworkRequestContext::kWorker);
 
   return client_security_state;

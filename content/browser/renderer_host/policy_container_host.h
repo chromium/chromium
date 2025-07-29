@@ -38,6 +38,7 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   PolicyContainerPolicies(
       network::mojom::ReferrerPolicy referrer_policy,
       network::mojom::IPAddressSpace ip_address_space,
+      bool allow_non_secure_local_network_access,
       bool is_web_secure_context,
       std::vector<network::mojom::ContentSecurityPolicyPtr>
           content_security_policies,
@@ -99,6 +100,14 @@ struct CONTENT_EXPORT PolicyContainerPolicies {
   // it is inherited following the general rules of the PolicyContainerHost.
   network::mojom::IPAddressSpace ip_address_space =
       network::mojom::IPAddressSpace::kUnknown;
+
+  // Whether non-secure contexts are allowed to issue Local Network Access
+  // requests.  Even if allowed, they are still bound by permission
+  // requirements.
+  //
+  // Only relevant if network::features::kLocalNetworkAccessChecks is enabled
+  // and blocking.
+  bool allow_non_secure_local_network_access = false;
 
   // Whether the document is a secure context.
   //

@@ -219,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, IframeAcceptPermission) {
               content::EvalJsResult::IsOk());
   ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
 
-  // Check that the child iframe failed to fetch.
+  // Check that the child iframe was successfully fetched.
   EXPECT_TRUE(nav_manager.was_successful());
 }
 
@@ -523,4 +523,57 @@ IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
                 web_contents(),
                 content::JsReplace("fetch($1).then(response => response.ok)",
                                    https_server().GetURL("b.com", kLnaPath))));
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest, DeprecationTrialIframe) {
+  content::DeprecationTrialURLLoaderInterceptor interceptor;
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  // Deprecation trial allows LNA on non-secure contexts (with permission
+  // grant).
+  ASSERT_TRUE(
+      content::NavigateToURL(web_contents(), interceptor.EnabledHttpUrl()));
+  EXPECT_EQ(feature_histogram_tester.GetCount(
+                WebFeature::
+                    kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial),
+            1);
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL iframe_url = https_server().GetURL("b.com", kLnaPath);
+  content::TestNavigationManager nav_manager(web_contents(), iframe_url);
+  std::string_view script_template = R"(
+    const child = document.createElement("iframe");
+    child.src = $1;
+    document.body.appendChild(child);
+  )";
+  EXPECT_THAT(content::EvalJs(web_contents(),
+                              content::JsReplace(script_template, iframe_url)),
+              content::EvalJsResult::IsOk());
+  ASSERT_TRUE(nav_manager.WaitForNavigationFinished());
+
+  // Check that the child iframe was successfully fetched.
+  EXPECT_TRUE(nav_manager.was_successful());
+}
+
+IN_PROC_BROWSER_TEST_F(LocalNetworkAccessBrowserTest,
+                       DeprecationTrialDedicatedWorker) {
+  content::DeprecationTrialURLLoaderInterceptor interceptor;
+  WebFeatureHistogramTester feature_histogram_tester;
+
+  ASSERT_TRUE(content::NavigateToURL(web_contents(),
+                                     interceptor.EnabledHttpWorkerUrl()));
+
+  // Enable auto-accept of LNA permission request.
+  bubble_factory()->set_response_type(
+      permissions::PermissionRequestManager::AutoResponseType::ACCEPT_ALL);
+
+  GURL fetch_url = https_server().GetURL("b.com", kLnaPath);
+  std::string_view script_template = "fetch_from_worker($1);";
+  // URL fetched, body is just the header that's set.
+  EXPECT_EQ("Access-Control-Allow-Origin: *",
+            content::EvalJs(web_contents(),
+                            content::JsReplace(script_template, fetch_url)));
 }

@@ -94,6 +94,7 @@ TEST(PolicyContainerPoliciesTest, CloneIsEqual) {
   PolicyContainerPolicies policies(
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kUnknown,
+      /*allow_non_secure_local_network_access=*/true,
       /*is_web_secure_context=*/true, std::move(csps), coop, coep,
       std::move(dip), ip, network::IntegrityPolicy(), sandbox_flags,
       /*is_credentialless=*/true,

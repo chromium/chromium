@@ -107,6 +107,12 @@ void NavigationPolicyContainerBuilder::SetIPAddressSpace(
   delivered_policies_.ip_address_space = address_space;
 }
 
+void NavigationPolicyContainerBuilder::
+    SetLocalNetworkAccessNonSecureContextAllowed(bool allowed) {
+  DCHECK(!HasComputedPolicies());
+  delivered_policies_.allow_non_secure_local_network_access = allowed;
+}
+
 void NavigationPolicyContainerBuilder::SetIsOriginPotentiallyTrustworthy(
     bool value) {
   DCHECK(!HasComputedPolicies());

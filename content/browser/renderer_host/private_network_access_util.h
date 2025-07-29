@@ -28,13 +28,19 @@ enum class PrivateNetworkRequestContext {
 // `ip_address_space` identifies the IP address space of the request client.
 // `is_web_secure_context` specifies whether the request client is a secure
 // context or not.
-// `private_network_request_context` specifies what this request is about. For
-// example, requests made from workers can have different policies from normal
-// subresource requests.
+// `allow_on_non_secure_context` specifies whether we allow local network
+// requests on non-secure contexts. Note: this only applies to local network
+// access requests, not private network access requests, and having this be true
+// means that while we still allow the requests, they still need to pass
+// permissions checks.
+// `private_network_request_context` specifies what this
+// request is about. For example, requests made from workers can have different
+// policies from normal subresource requests.
 network::mojom::PrivateNetworkRequestPolicy CONTENT_EXPORT
 DerivePrivateNetworkRequestPolicy(
     network::mojom::IPAddressSpace ip_address_space,
     bool is_web_secure_context,
+    bool allow_on_non_secure_context,
     PrivateNetworkRequestContext private_network_request_context);
 
 // Convenience overload to directly compute this from the client's `policies`.

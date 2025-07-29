@@ -113,6 +113,12 @@ class CONTENT_EXPORT NavigationPolicyContainerBuilder {
   // This must be called before `ComputePolicies()`.
   void SetIPAddressSpace(network::mojom::IPAddressSpace address_space);
 
+  // Sets whether the origin is allowed to issue Local Network Access requests
+  // even if it is not a secure context. If not set, this defaults to false.
+  //
+  // If set, this must be called before `ComputePolicies()`.
+  void SetLocalNetworkAccessNonSecureContextAllowed(bool allowed);
+
   // Sets whether the origin of the document being navigated to is
   // potentially-trustworthy, as defined in:
   // https://w3c.github.io/webappsec-secure-contexts/#is-origin-trustworthy.

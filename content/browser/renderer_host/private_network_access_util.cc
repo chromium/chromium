@@ -73,9 +73,10 @@ Policy DerivePolicyForNonSecureContext(
     // LNA blocks all local network access requests coming from non-secure
     // contexts.
     // See: https://wicg.github.io/local-network-access/
-    return network::features::kLocalNetworkAccessChecksWarn.Get()
-               ? Policy::kPermissionWarn
-               : Policy::kBlock;
+    if (network::features::kLocalNetworkAccessChecksWarn.Get()) {
+      return Policy::kPermissionWarn;
+    }
+    return Policy::kBlock;
   }
 
   switch (ip_address_space) {
@@ -166,6 +167,7 @@ Policy ApplyFeatureStateToPolicy(FeatureState feature_state, Policy policy) {
 Policy DerivePrivateNetworkRequestPolicy(
     AddressSpace ip_address_space,
     bool is_web_secure_context,
+    bool allow_on_non_secure_context,
     RequestContext private_network_request_context) {
   // Disable PNA checks entirely when running with `--disable-web-security`.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -179,8 +181,11 @@ Policy DerivePrivateNetworkRequestPolicy(
   FeatureState feature_state =
       FeatureStateForContext(private_network_request_context);
 
+  // For LNA, if allow_on_non_secure_context is true, derive the policy as if it
+  // is a secure context.
   Policy policy =
-      is_web_secure_context
+      is_web_secure_context || (local_network_access_checks_enabled &&
+                                allow_on_non_secure_context)
           ? DerivePolicyForSecureContext(ip_address_space,
                                          local_network_access_checks_enabled)
           : DerivePolicyForNonSecureContext(
@@ -196,9 +201,10 @@ Policy DerivePrivateNetworkRequestPolicy(
 Policy DerivePrivateNetworkRequestPolicy(
     const PolicyContainerPolicies& policies,
     RequestContext private_network_request_context) {
-  return DerivePrivateNetworkRequestPolicy(policies.ip_address_space,
-                                           policies.is_web_secure_context,
-                                           private_network_request_context);
+  return DerivePrivateNetworkRequestPolicy(
+      policies.ip_address_space, policies.is_web_secure_context,
+      policies.allow_non_secure_local_network_access,
+      private_network_request_context);
 }
 
 network::mojom::ClientSecurityStatePtr DeriveClientSecurityState(
