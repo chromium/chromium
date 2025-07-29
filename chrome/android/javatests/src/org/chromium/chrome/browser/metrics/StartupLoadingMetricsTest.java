@@ -365,8 +365,8 @@ public class StartupLoadingMetricsTest {
     public void testFromExternalAppRecorded() throws Exception {
         runAndWaitForPageLoadMetricsRecorded(
                 () ->
-                        mTabbedActivityTestRule.startMainActivityFromExternalApp(
-                                getTestPage(), null));
+                        mTabbedActivityTestRule.startMainActivityFromIntent(
+                                new Intent(Intent.ACTION_VIEW), getTestPage()));
         assertMainIntentLaunchColdStartHistogramRecorded(0);
         assertHistogramsRecordedWithForegroundStart(1, TABBED_SUFFIX);
 

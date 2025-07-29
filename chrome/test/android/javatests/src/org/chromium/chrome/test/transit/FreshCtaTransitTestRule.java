@@ -122,6 +122,22 @@ public class FreshCtaTransitTestRule extends BaseCtaTransitTestRule implements T
     }
 
     /**
+     * Start the test by launching Chrome with a given Intent and url expecting to show a webpage.
+     *
+     * @param intent the Intent to launch Chrome with
+     * @param url the URL to add to the Intent
+     */
+    public WebPageStation startWithIntentPlusUrlAtWebPage(Intent intent, String url) {
+        return ChromeTabbedActivityEntryPoints.startWithIntentPlusUrlTo(
+                        mActivityTestRule, intent, url)
+                .arriveAt(
+                        WebPageStation.newBuilder()
+                                .withEntryPoint()
+                                .withExpectedUrlSubstring(url)
+                                .build());
+    }
+
+    /**
      * Start the test in an NTP.
      *
      * @return the active entry {@link RegularNewTabPageStation}

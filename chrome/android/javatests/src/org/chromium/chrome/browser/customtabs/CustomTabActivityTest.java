@@ -108,6 +108,7 @@ import org.chromium.base.shared_preferences.SharedPreferencesManager;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.base.test.transit.Triggers;
 import org.chromium.base.test.util.ApplicationTestUtils;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -128,7 +129,6 @@ import org.chromium.base.test.util.UserActionTester;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
-import org.chromium.chrome.browser.TabsOpenedFromExternalAppTest;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
@@ -176,6 +176,7 @@ import org.chromium.chrome.test.OverrideContextWrapperTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.ReferrerCondition;
 import org.chromium.chrome.test.util.ActivityTestUtils;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
@@ -1886,8 +1887,7 @@ public class CustomTabActivityTest {
         CriteriaHelper.pollInstrumentationThread(
                 new ElementContentCriteria(tab, "visibility", "hidden"), 2000, 200);
         // The Referrer is correctly set.
-        CriteriaHelper.pollInstrumentationThread(
-                new TabsOpenedFromExternalAppTest.ReferrerCriteria(tab, referrer), 2000, 200);
+        Triggers.noopTo().waitFor(new ReferrerCondition(() -> tab, referrer));
     }
 
     /**
@@ -1908,8 +1908,7 @@ public class CustomTabActivityTest {
         CriteriaHelper.pollInstrumentationThread(
                 new ElementContentCriteria(tab, "visibility", "visible"), 2000, 200);
         // The Referrer is correctly set.
-        CriteriaHelper.pollInstrumentationThread(
-                new TabsOpenedFromExternalAppTest.ReferrerCriteria(tab, launchReferrer), 2000, 200);
+        Triggers.noopTo().waitFor(new ReferrerCondition(() -> tab, launchReferrer));
     }
 
     /** Tests that a client can set a referrer, without speculating. */
@@ -1922,8 +1921,7 @@ public class CustomTabActivityTest {
 
         Tab tab = getActivity().getActivityTab();
         // The Referrer is correctly set.
-        CriteriaHelper.pollInstrumentationThread(
-                new TabsOpenedFromExternalAppTest.ReferrerCriteria(tab, referrerUrl), 2000, 200);
+        Triggers.noopTo().waitFor(new ReferrerCondition(() -> tab, referrerUrl));
     }
 
     @Test
