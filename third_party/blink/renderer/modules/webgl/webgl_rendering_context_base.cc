@@ -1950,8 +1950,10 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                                           /*export_only_if_update=*/false);
   }
 
+  // CanvasResourceProviderBitmap returns null from ProduceCanvasResource(), so
+  // there is no point in using one here.
   auto* resource_provider = PaintRenderingResultsToResourceProvider(
-      source_buffer, /*use_bitmap_provider=*/true);
+      source_buffer, /*use_bitmap_provider=*/false);
   if (resource_provider) {
     return resource_provider->ProduceCanvasResource(reason);
   }
