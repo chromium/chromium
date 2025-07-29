@@ -238,6 +238,21 @@ TEST_F(AIWriterTest, CanCreateUnIsLanguagesSupported) {
   GetAIManagerInterface()->CanCreateWriter(std::move(options), callback.Get());
 }
 
+TEST_F(AIWriterTest, ToProtoOptionsLanguagesSupported) {
+  // Writer proto expects base language display names in English.
+  std::vector<std::pair<std::string, std::string>> languages = {
+      {"en", "English"},  {"en-us", "English"},  {"en-uk", "English"},
+      {"es", "Spanish"},  {"es-sp", "Spanish"},  {"es-mx", "Spanish"},
+      {"ja", "Japanese"}, {"ja-jp", "Japanese"}, {"ja-foo", "Japanese"},
+  };
+  blink::mojom::AIWriterCreateOptionsPtr options = GetDefaultOptions();
+  for (const auto& language : languages) {
+    options->output_language = AILanguageCode::New(language.first);
+    const auto proto_options = AIWriter::ToProtoOptions(options);
+    EXPECT_EQ(proto_options->output_language(), language.second);
+  }
+}
+
 TEST_F(AIWriterTest, CreateWriterNoService) {
   SetupNullOptimizationGuideKeyedService();
   MockCreateWriterClient mock_create_writer_client;

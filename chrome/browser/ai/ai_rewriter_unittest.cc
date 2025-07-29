@@ -477,6 +477,21 @@ TEST_F(AIRewriterTest, CanCreateUnIsLanguagesSupported) {
                                              callback.Get());
 }
 
+TEST_F(AIRewriterTest, ToProtoOptionsLanguagesSupported) {
+  // Rewriter proto expects base language display names in English.
+  std::vector<std::pair<std::string, std::string>> languages = {
+      {"en", "English"},  {"en-us", "English"},  {"en-uk", "English"},
+      {"es", "Spanish"},  {"es-sp", "Spanish"},  {"es-mx", "Spanish"},
+      {"ja", "Japanese"}, {"ja-jp", "Japanese"}, {"ja-foo", "Japanese"},
+  };
+  blink::mojom::AIRewriterCreateOptionsPtr options = GetDefaultOptions();
+  for (const auto& language : languages) {
+    options->output_language = AILanguageCode::New(language.first);
+    const auto proto_options = AIRewriter::ToProtoOptions(options);
+    EXPECT_EQ(proto_options->output_language(), language.second);
+  }
+}
+
 TEST_F(AIRewriterTest, RewriteDefault) {
   SetupMockOptimizationGuideKeyedService();
   SetupMockSession();
