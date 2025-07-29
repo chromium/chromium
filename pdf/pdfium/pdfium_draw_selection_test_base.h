@@ -63,6 +63,13 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
                           int page_index,
                           const gfx::Size& expected_visible_page_size);
 
+  // Draws the caret, but also attempts to draw the selection, even though they
+  // are mutually exclusive. Then verifies the page is white in the same manner
+  // as `DrawAndExpectBlank()`.
+  void DrawCaretAndExpectBlank(PDFiumEngine& engine,
+                               int page_index,
+                               const gfx::Size& expected_visible_page_size);
+
   void SetSelection(PDFiumEngine& engine,
                     uint32_t start_page_index,
                     uint32_t start_char_index,
@@ -87,6 +94,13 @@ class PDFiumDrawSelectionTestBase : public PDFiumTestBase {
                           std::string_view expected_png_filename,
                           bool use_platform_suffix,
                           bool draw_caret);
+
+  // Tests the rendering is blank after drawing selections, highlights, and
+  // optionally carets if `draw_caret` is true.
+  void TestDrawBlank(PDFiumEngine& engine,
+                     int page_index,
+                     const gfx::Size& expected_visible_page_size,
+                     bool draw_caret);
 };
 
 }  // namespace chrome_pdf

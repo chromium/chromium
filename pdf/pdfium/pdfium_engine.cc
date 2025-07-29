@@ -1014,17 +1014,6 @@ void PDFiumEngine::FinishLoadingDocument() {
   }
 
   client_->DocumentLoadComplete();
-
-  // TODO(crbug.com/427242881): Figure out when to enter caret browsing mode.
-  // For now, just enter it after the document loads.
-  if (features::kPdfInk2TextHighlighting.Get() && !client_->IsPrintPreview() &&
-      !pages_.empty() && pages_[0]->GetCharCount()) {
-    // TODO(crbug.com/427242881): Determine the starting position of the caret.
-    caret_ = std::make_unique<PdfCaret>(this, PageCharacterIndex(0, 0));
-
-    // TODO(crbug.com/427778119): Set caret blink interval.
-    caret_->SetVisibility(true);
-  }
 }
 
 void PDFiumEngine::UnsupportedFeature(const std::string& feature) {
@@ -1095,6 +1084,24 @@ void PDFiumEngine::SearchForFragment(
                  character_to_start_searching_from,
                  last_character_index_to_search, page_to_search, page_to_search,
                  std::move(add_result_callback));
+}
+
+void PDFiumEngine::SetCaretBrowsingEnabled(bool enabled) {
+  if (!features::kPdfInk2TextHighlighting.Get() || client_->IsPrintPreview() ||
+      pages_.empty() || pages_[0]->GetCharCount() == 0) {
+    return;
+  }
+
+  if (!caret_) {
+    if (!enabled) {
+      return;
+    }
+    // TODO(crbug.com/427242881): Determine the starting position of the caret.
+    caret_ = std::make_unique<PdfCaret>(this, PageCharacterIndex(0, 0));
+  }
+
+  // TODO(crbug.com/427778119): Set caret blink interval.
+  caret_->SetVisibility(enabled);
 }
 
 void PDFiumEngine::ClearTextSelection() {

@@ -82,14 +82,16 @@ void PDFiumDrawSelectionTestBase::DrawAndExpectBlank(
     PDFiumEngine& engine,
     int page_index,
     const gfx::Size& expected_visible_page_size) {
-  const gfx::Rect visible_page_rect =
-      GetVisiblePageContentsRect(engine, page_index);
-  ASSERT_FALSE(visible_page_rect.IsEmpty());
-  EXPECT_EQ(expected_visible_page_size, visible_page_rect.size());
+  TestDrawBlank(engine, page_index, expected_visible_page_size,
+                /*draw_caret=*/false);
+}
 
-  SkBitmap page_bitmap =
-      Draw(engine, page_index, visible_page_rect, /*draw_caret=*/false);
-  EXPECT_TRUE(IsBitmapBlank(page_bitmap));
+void PDFiumDrawSelectionTestBase::DrawCaretAndExpectBlank(
+    PDFiumEngine& engine,
+    int page_index,
+    const gfx::Size& expected_visible_page_size) {
+  TestDrawBlank(engine, page_index, expected_visible_page_size,
+                /*draw_caret=*/true);
 }
 
 void PDFiumDrawSelectionTestBase::SetSelection(PDFiumEngine& engine,
@@ -154,6 +156,21 @@ void PDFiumDrawSelectionTestBase::DrawAndCompareImpl(
   base::FilePath expectation_path = GetReferenceFilePath(
       sub_directory, expected_png_filename, use_platform_suffix);
   EXPECT_TRUE(MatchesPngFile(page_bitmap.asImage().get(), expectation_path));
+}
+
+void PDFiumDrawSelectionTestBase::TestDrawBlank(
+    PDFiumEngine& engine,
+    int page_index,
+    const gfx::Size& expected_visible_page_size,
+    bool draw_caret) {
+  const gfx::Rect visible_page_rect =
+      GetVisiblePageContentsRect(engine, page_index);
+  ASSERT_FALSE(visible_page_rect.IsEmpty());
+  EXPECT_EQ(expected_visible_page_size, visible_page_rect.size());
+
+  SkBitmap page_bitmap =
+      Draw(engine, page_index, visible_page_rect, draw_caret);
+  EXPECT_TRUE(IsBitmapBlank(page_bitmap));
 }
 
 }  // namespace chrome_pdf
