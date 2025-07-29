@@ -35,6 +35,7 @@
 #include "base/time/time_delta_from_string.h"
 #include "build/build_config.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/input/features.h"
 #include "components/input/input_constants.h"
 #include "components/url_formatter/url_formatter.h"
 #include "components/viz/common/features.h"
@@ -153,8 +154,9 @@ media::AudioParameters GetAudioHardwareParams() {
   blink::WebLocalFrame* const web_frame =
       blink::WebLocalFrame::FrameForCurrentContext();
   RenderFrame* const render_frame = RenderFrame::FromWebFrame(web_frame);
-  if (!render_frame)
+  if (!render_frame) {
     return media::AudioParameters::UnavailableDeviceParams();
+  }
 
   return blink::AudioDeviceFactory::GetInstance()
       ->GetOutputDeviceInfo(render_frame->GetWebFrame()->GetLocalFrameToken(),
@@ -341,16 +343,18 @@ void RendererBlinkPlatformImpl::AddOrUpdateVisitedLinkSalt(
 blink::WebString RendererBlinkPlatformImpl::UserAgent() {
   auto* render_thread = RenderThreadImpl::current();
   // RenderThreadImpl is null in some tests.
-  if (!render_thread)
+  if (!render_thread) {
     return WebString();
+  }
   return render_thread->GetUserAgent();
 }
 
 blink::UserAgentMetadata RendererBlinkPlatformImpl::UserAgentMetadata() {
   auto* render_thread = RenderThreadImpl::current();
   // RenderThreadImpl is null in some tests.
-  if (!render_thread)
+  if (!render_thread) {
     return blink::UserAgentMetadata();
+  }
   return render_thread->GetUserAgentMetadata();
 }
 
@@ -411,12 +415,14 @@ void RendererBlinkPlatformImpl::SuddenTerminationChanged(bool enabled) {
     DCHECK_GT(sudden_termination_disables_, 0);
     sudden_termination_disables_ =
         std::max(sudden_termination_disables_ - 1, 0);
-    if (sudden_termination_disables_ != 0)
+    if (sudden_termination_disables_ != 0) {
       return;
+    }
   } else {
     sudden_termination_disables_++;
-    if (sudden_termination_disables_ != 1)
+    if (sudden_termination_disables_ != 1) {
       return;
+    }
   }
 
   RenderThreadImpl* thread = RenderThreadImpl::current();
@@ -506,7 +512,7 @@ unsigned RendererBlinkPlatformImpl::AudioHardwareOutputChannels() {
 }
 
 base::TimeDelta RendererBlinkPlatformImpl::GetHungRendererDelay() {
-  return input::kHungRendererDelay;
+  return input::features::kRendererHangWatcherDelay.Get();
 }
 
 std::unique_ptr<WebAudioDevice> RendererBlinkPlatformImpl::CreateAudioDevice(
@@ -576,8 +582,9 @@ RendererBlinkPlatformImpl::GetWebRtcMaxCaptureFrameRate() {
           switches::kWebRtcMaxCaptureFramerate);
   if (!max_fps_str.empty()) {
     double value;
-    if (base::StringToDouble(max_fps_str, &value) && value >= 0.0)
+    if (base::StringToDouble(max_fps_str, &value) && value >= 0.0) {
       return value;
+    }
   }
   return std::nullopt;
 }
@@ -618,8 +625,9 @@ media::MediaPermission* RendererBlinkPlatformImpl::GetWebRTCMediaPermission(
 
   media::MediaPermission* media_permission = nullptr;
   RenderFrameImpl* render_frame = RenderFrameImpl::FromWebFrame(web_frame);
-  if (render_frame)
+  if (render_frame) {
     media_permission = render_frame->GetMediaPermission();
+  }
   DCHECK(media_permission);
   return media_permission;
 }
@@ -636,8 +644,9 @@ void RendererBlinkPlatformImpl::GetWebRTCRendererPreferences(
   DCHECK(allow_mdns_obfuscation);
 
   auto* render_frame = RenderFrameImpl::FromWebFrame(web_frame);
-  if (!render_frame)
+  if (!render_frame) {
     return;
+  }
 
   GURL gurl = url::Origin(web_frame->Top()->GetSecurityOrigin()).GetURL();
 
@@ -781,8 +790,9 @@ RendererBlinkPlatformImpl::CreateSharedOffscreenGraphicsContext3DProvider() {
 
   scoped_refptr<viz::ContextProviderCommandBuffer> provider =
       thread->SharedMainThreadContextProvider();
-  if (!provider)
+  if (!provider) {
     return nullptr;
+  }
 
   scoped_refptr<gpu::GpuChannelHost> host = thread->EstablishGpuChannelSync();
   // This shouldn't normally fail because we just got |provider|. But the
@@ -790,8 +800,9 @@ RendererBlinkPlatformImpl::CreateSharedOffscreenGraphicsContext3DProvider() {
   // this happens after getting |provider|. In the case that this GpuChannelHost
   // is not the same one backing |provider|, the context behind the |provider|
   // will be already lost/dead on arrival.
-  if (!host)
+  if (!host) {
     return nullptr;
+  }
 
   return std::make_unique<WebGraphicsContext3DProviderImpl>(
       std::move(provider));
@@ -987,9 +998,10 @@ std::unique_ptr<media::MediaLog> RendererBlinkPlatformImpl::GetMediaLog(
   // For chrome://media-internals.
   // This should only be created in the main Window context, and not from
   // a worker context.
-  if (!is_on_worker)
+  if (!is_on_worker) {
     handlers.push_back(std::make_unique<RenderMediaEventHandler>(
         media::GetNextMediaPlayerLoggingID()));
+  }
 
   // For devtools' media tab.
   handlers.push_back(
@@ -1013,8 +1025,9 @@ void RendererBlinkPlatformImpl::AddCreateRemoteChildrenEvent(
 media::GpuVideoAcceleratorFactories*
 RendererBlinkPlatformImpl::GetGpuFactories() {
   auto* render_thread = RenderThreadImpl::current();
-  if (!render_thread)
+  if (!render_thread) {
     return nullptr;
+  }
 
   return render_thread->GetGpuFactories();
 }
@@ -1022,8 +1035,9 @@ RendererBlinkPlatformImpl::GetGpuFactories() {
 scoped_refptr<base::SequencedTaskRunner>
 RendererBlinkPlatformImpl::MediaThreadTaskRunner() {
   auto* render_thread = RenderThreadImpl::current();
-  if (!render_thread)
+  if (!render_thread) {
     return nullptr;
+  }
 
   return render_thread->GetMediaSequencedTaskRunner();
 }
@@ -1040,16 +1054,18 @@ RendererBlinkPlatformImpl::GetMediaDecoderFactory() {
 void RendererBlinkPlatformImpl::SetRenderingColorSpace(
     const gfx::ColorSpace& color_space) {
   auto* render_thread = RenderThreadImpl::current();
-  if (!render_thread)
+  if (!render_thread) {
     return;
+  }
 
   render_thread->SetRenderingColorSpace(color_space);
 }
 
 gfx::ColorSpace RendererBlinkPlatformImpl::GetRenderingColorSpace() const {
   auto* render_thread = RenderThreadImpl::current();
-  if (!render_thread)
+  if (!render_thread) {
     return {};
+  }
 
   return render_thread->GetRenderingColorSpace();
 }

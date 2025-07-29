@@ -45,6 +45,7 @@
 #include "cc/trees/browser_controls_params.h"
 #include "cc/trees/render_frame_metadata.h"
 #include "components/input/dispatch_to_renderer_callback.h"
+#include "components/input/features.h"
 #include "components/input/input_constants.h"
 #include "components/input/input_router_config_helper.h"
 #include "components/input/native_web_keyboard_event.h"
@@ -2465,8 +2466,9 @@ void RenderWidgetHostImpl::OnInputEventAckTimeout(
 
   // If a widget's visibility changed mid-input sequence handling and an ack
   // later times out, defer marking the renderer unresponsive until the widget
-  // has been shown for at least `kHungRendererDelay`.
-  if ((ack_timeout_ts - latest_shown_time_) < input::kHungRendererDelay) {
+  // has been shown for at least `kRendererHangWatcherDelay`.
+  if ((ack_timeout_ts - latest_shown_time_) <
+      input::features::kRendererHangWatcherDelay.Get()) {
     return;
   }
 

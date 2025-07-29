@@ -5,6 +5,7 @@
 #include "components/input/features.h"
 
 #include "base/feature_list.h"
+#include "components/input/input_constants.h"
 
 namespace input::features {
 
@@ -38,5 +39,17 @@ BASE_FEATURE(kScrollBubblingFix,
 BASE_FEATURE(kUseFirstCoalescedFrameAsFlingGenerationTimestamp,
              "UseFirstCoalescedFrameAsFlingGenerationTimestamp",
              base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Flag guard for renderer hang watcher \ hang monitor.
+BASE_FEATURE(kRendererHangWatcher,
+             "RendererHangWatcher",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(
+    base::TimeDelta,
+    kRendererHangWatcherDelay,
+    &kRendererHangWatcher,
+    "delay",
+    input::kHungRendererDelay  // Default value in input_constants.h
+);
 
 }  // namespace input::features
