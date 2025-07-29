@@ -8,13 +8,14 @@
 #import <UIKit/UIKit.h>
 
 @class NewTabPageColorPalette;
+enum class SearchEngineLogoState;
 @class SearchEngineLogoMediator;
 
 // Handles updates to the NTP header.
 @protocol NewTabPageHeaderConsumer <NSObject>
 
 // Whether the Google logo or doodle is being shown.
-- (void)setLogoIsShowing:(BOOL)logoIsShowing;
+- (void)setSearchEngineLogoState:(SearchEngineLogoState)logoState;
 
 // Exposes view and methods to drive the doodle.
 // TODO(crbug.com/423883582): The mediator should not be passed to the

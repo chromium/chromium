@@ -7,10 +7,12 @@
 
 #import <UIKit/UIKit.h>
 
+enum class SearchEngineLogoState;
+
 @protocol SearchEngineLogoConsumer <NSObject>
 
 // Notifies observer that the display state of the doodle has changed.
-- (void)doodleDisplayStateChanged:(BOOL)showingDoodle;
+- (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState;
 
 @end
 

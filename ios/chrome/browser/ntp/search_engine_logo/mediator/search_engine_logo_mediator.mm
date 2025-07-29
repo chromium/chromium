@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_container_view.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -36,10 +37,6 @@
 // The container view used to display the Google logo or doodle.
 @property(strong, nonatomic, readonly)
     SearchEngineLogoContainerView* containerView;
-
-// Whether or not the doodle is being displayed.
-@property(nonatomic, readwrite, assign, getter=isShowingDoodle)
-    BOOL showingDoodle;
 
 // Shows the doodle UIImageView with a fade animation.
 - (void)updateLogo:(const search_provider_logos::Logo*)logo
@@ -98,9 +95,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   std::unique_ptr<image_fetcher::IOSImageDataFetcherWrapper> _imageFetcher;
 }
 
-@synthesize showingLogo = _showingLogo;
 @synthesize containerView = _containerView;
-@synthesize showingDoodle = _showingDoodle;
 
 - (instancetype)initWithBrowser:(Browser*)browser
                        webState:(web::WebState*)webState {
@@ -110,7 +105,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
     _browser = browser;
     _profile = _browser->GetProfile();
     _webState = webState;
-    _showingLogo = YES;
+    _logoState = SearchEngineLogoState::kLogo;
   }
   return self;
 }
@@ -126,12 +121,12 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   return self.containerView;
 }
 
-- (void)setShowingLogo:(BOOL)showingLogo {
-  if (_showingLogo == showingLogo) {
+- (void)setLogoState:(SearchEngineLogoState)state {
+  if (_logoState == state) {
     return;
   }
-  _showingLogo = showingLogo;
-  self.view.hidden = !_showingLogo;
+  _logoState = state;
+  self.view.hidden = (_logoState == SearchEngineLogoState::kNone);
 }
 
 - (void)fetchDoodle {
@@ -148,10 +143,6 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
   callbacks.on_fresh_decoded_logo_available =
       base::BindOnce(&OnLogoAvailable, weakSelf);
   logoService->GetLogo(std::move(callbacks), false);
-}
-
-- (void)setShowingDoodle:(BOOL)showingDoodle {
-  _showingDoodle = showingDoodle;
 }
 
 - (void)setWebState:(web::WebState*)webState {
@@ -271,12 +262,23 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 
   // Animate this view seperately in case the doodle has updated multiple times.
   // This can happen when a particular doodle cycles thru multiple images.
+  SearchEngineLogoState logoState = SearchEngineLogoState::kNone;
+  switch (logo->metadata.type) {
+    case search_provider_logos::LogoType::SIMPLE:
+      logoState = SearchEngineLogoState::kLogo;
+      break;
+    case search_provider_logos::LogoType::ANIMATED:
+    case search_provider_logos::LogoType::INTERACTIVE:
+      logoState = SearchEngineLogoState::kDoodle;
+      break;
+  }
   __weak __typeof(self) weakSelf = self;
-  [self.containerView setDoodleImage:doodle
-                            animated:animate
-                          animations:^{
-                            [weakSelf doodleAppearanceAnimationDidFinish];
-                          }];
+  [self.containerView
+      setDoodleImage:doodle
+            animated:animate
+          animations:^{
+            [weakSelf doodleAppearanceAnimationDidFinish:logoState];
+          }];
 
   _onClickUrl = logo->metadata.on_click_url;
 
@@ -298,9 +300,9 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
 }
 
 // Called when the doodle's appearance animation completes.
-- (void)doodleAppearanceAnimationDidFinish {
-  self.showingDoodle = YES;
-  [self.consumer doodleDisplayStateChanged:YES];
+- (void)doodleAppearanceAnimationDidFinish:(SearchEngineLogoState)logoState {
+  self.logoState = logoState;
+  [self.consumer searchEngineLogoStateDidChange:logoState];
 }
 
 // Attempts to fetch an animated GIF for the doodle.

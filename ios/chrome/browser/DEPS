@@ -185,6 +185,7 @@ include_rules = [
   "+ios/chrome/browser/google/model",
   "+ios/chrome/browser/metrics/model",
   "+ios/chrome/browser/ntp/search_engine_logo/mediator",
+  "+ios/chrome/browser/ntp/search_engine_logo/ui",
   "+ios/chrome/browser/url_loading/model",
 
   # Shared dependencies.

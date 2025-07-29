@@ -8,6 +8,7 @@
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_coordinates.h"
 #import "ios/chrome/browser/home_customization/model/home_customization_background_photo_framing_mutator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
@@ -157,7 +158,6 @@ const CGFloat kCenterStackSpacing = 4.0;
     // Get logo view and configure it.
     UIView* logoView = _searchEngineLogoMediator.view;
     logoView.translatesAutoresizingMaskIntoConstraints = NO;
-    _searchEngineLogoMediator.showingLogo = YES;
     _searchEngineLogoMediator.usesMonochromeLogo = YES;
     logoView.tintColor = [UIColor colorNamed:kSolidWhiteColor];
     [topSection addArrangedSubview:logoView];

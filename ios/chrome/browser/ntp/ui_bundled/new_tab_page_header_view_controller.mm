@@ -24,6 +24,7 @@
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/mediator/search_engine_logo_mediator.h"
 #import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_consumer.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_constants.h"
@@ -106,9 +107,6 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 @property(nonatomic, strong) NSLayoutConstraint* fakeOmniboxTopMarginConstraint;
 @property(nonatomic, strong) NSLayoutConstraint* headerViewHeightConstraint;
 
-// Whether the Google logo or doodle is being shown.
-@property(nonatomic, assign) BOOL logoIsShowing;
-
 // Whether or not the user is signed in.
 @property(nonatomic, assign) BOOL isSignedIn;
 
@@ -141,6 +139,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   // backing this logo.
   __weak UIImage* _dseLogo;
   SearchEngineLogoMediator* _searchEngineLogoMediator;
+  SearchEngineLogoState _searchEngineLogoState;
 }
 
 - (instancetype)initWithUseNewBadgeForLensButton:(BOOL)useNewBadgeForLensButton
@@ -275,7 +274,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   if (self.isShowing) {
     [self.headerView updateTabGroupIndicatorAvailabilityWithOffset:offset];
     CGFloat progress =
-        self.logoIsShowing || !CanShowTabStrip(self)
+        (_searchEngineLogoState != SearchEngineLogoState::kNone) ||
+                !CanShowTabStrip(self)
             ? [self.headerView searchFieldProgressForOffset:offset]
             // RxR with no logo hides the fakebox, so always show the omnibox.
             : 1;
@@ -317,9 +317,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 }
 
 - (CGFloat)headerHeight {
-  return content_suggestions::HeightForLogoHeader(
-      self.logoIsShowing, _searchEngineLogoMediator.isShowingDoodle,
-      self.traitCollection);
+  return content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
+                                                  self.traitCollection);
 }
 
 - (void)viewDidLoad {
@@ -712,27 +711,25 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 // shows fakebox if the logo is visible and hides otherwise
 - (void)updateFakeboxDisplay {
   self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(
-          _searchEngineLogoMediator.showingLogo,
-          _searchEngineLogoMediator.isShowingDoodle, self.traitCollection);
+      content_suggestions::DoodleTopMargin(_searchEngineLogoState,
+                                           self.traitCollection);
   [self.doodleHeightConstraint
-      setConstant:content_suggestions::DoodleHeight(
-                      _searchEngineLogoMediator.showingLogo,
-                      _searchEngineLogoMediator.isShowingDoodle,
-                      self.traitCollection)];
-  self.fakeOmnibox.hidden = CanShowTabStrip(self) && !self.logoIsShowing;
+      setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
+                                                    self.traitCollection)];
+  self.fakeOmnibox.hidden =
+      CanShowTabStrip(self) &&
+      (_searchEngineLogoState != SearchEngineLogoState::kNone);
   [self.headerView layoutIfNeeded];
   self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(
-          self.logoIsShowing, _searchEngineLogoMediator.isShowingDoodle,
-          self.traitCollection);
+      content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
+                                               self.traitCollection);
 }
 
 // If Google is not the default search engine, hides the logo, doodle and
 // fakebox. Makes them appear if Google is set as default.
 - (void)updateLogoAndFakeboxDisplay {
-  if (_searchEngineLogoMediator.showingLogo != self.logoIsShowing) {
-    _searchEngineLogoMediator.showingLogo = self.logoIsShowing;
+  if (_searchEngineLogoMediator.logoState != _searchEngineLogoState) {
+    _searchEngineLogoMediator.logoState = _searchEngineLogoState;
     [self updateFakeboxDisplay];
   }
 }
@@ -754,13 +751,11 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
   self.doodleTopMarginConstraint = [logoView.topAnchor
       constraintEqualToAnchor:headerView.topAnchor
                      constant:content_suggestions::DoodleTopMargin(
-                                  _searchEngineLogoMediator.showingLogo,
-                                  _searchEngineLogoMediator.isShowingDoodle,
+                                  _searchEngineLogoState,
                                   self.traitCollection)];
   self.doodleHeightConstraint = [logoView.heightAnchor
       constraintEqualToConstant:content_suggestions::DoodleHeight(
-                                    _searchEngineLogoMediator.showingLogo,
-                                    _searchEngineLogoMediator.isShowingDoodle,
+                                    _searchEngineLogoState,
                                     self.traitCollection)];
   self.fakeOmniboxHeightConstraint = [fakeOmnibox.heightAnchor
       constraintEqualToConstant:content_suggestions::FakeOmniboxHeight()];
@@ -851,19 +846,17 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 #pragma mark - SearchEngineLogoConsumer
 
-- (void)doodleDisplayStateChanged:(BOOL)doodleShowing {
+- (void)searchEngineLogoStateDidChange:(SearchEngineLogoState)logoState {
+  _searchEngineLogoState = logoState;
   [self.doodleHeightConstraint
-      setConstant:content_suggestions::DoodleHeight(
-                      _searchEngineLogoMediator.showingLogo, doodleShowing,
-                      self.traitCollection)];
+      setConstant:content_suggestions::DoodleHeight(_searchEngineLogoState,
+                                                    self.traitCollection)];
   self.doodleTopMarginConstraint.constant =
-      content_suggestions::DoodleTopMargin(
-          _searchEngineLogoMediator.showingLogo,
-          _searchEngineLogoMediator.isShowingDoodle, self.traitCollection);
+      content_suggestions::DoodleTopMargin(_searchEngineLogoState,
+                                           self.traitCollection);
   self.headerViewHeightConstraint.constant =
-      content_suggestions::HeightForLogoHeader(
-          self.logoIsShowing, _searchEngineLogoMediator.isShowingDoodle,
-          self.traitCollection);
+      content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
+                                               self.traitCollection);
   // Trigger relayout so that it immediately returns the updated content height
   // for the NTP to update content inset.
   [self.view setNeedsLayout];
@@ -873,8 +866,8 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
 
 #pragma mark - NewTabPageHeaderConsumer
 
-- (void)setLogoIsShowing:(BOOL)logoIsShowing {
-  _logoIsShowing = logoIsShowing;
+- (void)setSearchEngineLogoState:(SearchEngineLogoState)logoState {
+  _searchEngineLogoState = logoState;
   [self updateLogoAndFakeboxDisplay];
 }
 

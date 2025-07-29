@@ -10,6 +10,7 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/location_bar/ui_bundled/location_bar_constants.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -155,36 +156,32 @@ namespace content_suggestions {
 const CGFloat kHintTextScale = 0.15;
 const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 
-CGFloat DoodleHeight(BOOL logo_is_showing,
-                     BOOL doodle_is_showing,
+CGFloat DoodleHeight(SearchEngineLogoState logo_state,
                      UITraitCollection* trait_collection) {
   // For users with non-Google default search engine, there is no doodle.
-  if (!IsRegularXRegularSizeClass(trait_collection) && !logo_is_showing) {
-    return 0;
+  if (logo_state == SearchEngineLogoState::kNone) {
+    return IsRegularXRegularSizeClass(trait_collection)
+               ? kGoogleSearchDoodleHeight
+               : 0;
   }
-
-  if (logo_is_showing) {
-    if (doodle_is_showing ||
-        (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
-      return kGoogleSearchDoodleShrunkHeight;
-    } else if (ShouldEnlargeLogoAndFakebox()) {
-      return kLargeFakeboxGoogleSearchLogoHeight;
-    } else {
-      return kGoogleSearchLogoHeight;
-    }
+  if ((logo_state == SearchEngineLogoState::kDoodle) ||
+      (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET)) {
+    return kGoogleSearchDoodleShrunkHeight;
   }
-
-  return kGoogleSearchDoodleHeight;
+  if (ShouldEnlargeLogoAndFakebox()) {
+    return kLargeFakeboxGoogleSearchLogoHeight;
+  }
+  return kGoogleSearchLogoHeight;
 }
 
-CGFloat DoodleTopMargin(BOOL logo_is_showing,
-                        BOOL doodle_is_showing,
+CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
                         UITraitCollection* trait_collection) {
   if (IsRegularXRegularSizeClass(trait_collection)) {
     return kDoodleTopMarginRegularXRegular;
   }
   CGFloat top_inset = 0;
-  if (logo_is_showing && !doodle_is_showing && ShouldEnlargeLogoAndFakebox()) {
+  if ((logo_state == SearchEngineLogoState::kLogo) &&
+      ShouldEnlargeLogoAndFakebox()) {
     // Shrink the top inset so that the enlarged logo has the same bottom
     // positioning as the regular logo.
     top_inset = kGoogleSearchLogoHeight - kLargeFakeboxGoogleSearchLogoHeight;
@@ -256,19 +253,17 @@ CGFloat FakeToolbarHeight() {
       [UIApplication sharedApplication].preferredContentSizeCategory);
 }
 
-CGFloat HeightForLogoHeader(BOOL logo_is_showing,
-                            BOOL doodle_is_showing,
+CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
                             UITraitCollection* trait_collection) {
-  CGFloat header_height =
-      DoodleTopMargin(logo_is_showing, doodle_is_showing, trait_collection) +
-      DoodleHeight(logo_is_showing, doodle_is_showing, trait_collection) +
-      SearchFieldTopMargin() + FakeOmniboxHeight() +
-      ntp_header::kScrolledToTopOmniboxBottomMargin +
-      ceil(HeaderSeparatorHeight());
+  CGFloat header_height = DoodleTopMargin(logo_state, trait_collection) +
+                          DoodleHeight(logo_state, trait_collection) +
+                          SearchFieldTopMargin() + FakeOmniboxHeight() +
+                          ntp_header::kScrolledToTopOmniboxBottomMargin +
+                          ceil(HeaderSeparatorHeight());
   if (!IsRegularXRegularSizeClass(trait_collection)) {
     return header_height;
   }
-  if (!logo_is_showing) {
+  if (logo_state == SearchEngineLogoState::kNone) {
     // Returns sufficient vertical space for the Identity Disc to be
     // displayed.
     return ntp_home::kIdentityAvatarDimension +

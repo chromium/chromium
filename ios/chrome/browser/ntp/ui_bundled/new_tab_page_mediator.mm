@@ -38,6 +38,7 @@
 #import "ios/chrome/browser/metrics/model/new_tab_page_uma.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_state.h"
 #import "ios/chrome/browser/ntp/model/new_tab_page_tab_helper.h"
+#import "ios/chrome/browser/ntp/search_engine_logo/ui/search_engine_logo_state.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_constants.h"
 #import "ios/chrome/browser/ntp/shared/metrics/feed_metrics_recorder.h"
 #import "ios/chrome/browser/ntp/shared/metrics/new_tab_page_metrics_constants.h"
@@ -275,8 +276,11 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
 - (void)setUp {
   self.templateURLService->Load();
   [self updateModuleVisibilityForConsumer];
-  [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
-                                            self.templateURLService)];
+  SearchEngineLogoState logoState =
+      search::DefaultSearchProviderIsGoogle(self.templateURLService)
+          ? SearchEngineLogoState::kLogo
+          : SearchEngineLogoState::kNone;
+  [self.headerConsumer setSearchEngineLogoState:logoState];
   [self.headerConsumer
       setVoiceSearchIsEnabled:ios::provider::IsVoiceSearchEnabled()];
 
@@ -459,8 +463,11 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   _defaultSearchEngine = updatedDefaultSearchEngine;
   // AIM availability must be updated before default search engine.
   [self updateAIMAvailability];
-  [self.headerConsumer setLogoIsShowing:search::DefaultSearchProviderIsGoogle(
-                                            self.templateURLService)];
+  SearchEngineLogoState logoState =
+      search::DefaultSearchProviderIsGoogle(self.templateURLService)
+          ? SearchEngineLogoState::kLogo
+          : SearchEngineLogoState::kNone;
+  [self.headerConsumer setSearchEngineLogoState:logoState];
   [self.feedControlDelegate updateFeedForDefaultSearchEngineChanged];
 
   NSString* dseName =

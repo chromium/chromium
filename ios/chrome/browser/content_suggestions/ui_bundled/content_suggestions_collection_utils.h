@@ -7,6 +7,8 @@
 
 #import <UIKit/UIKit.h>
 
+enum class SearchEngineLogoState;
+
 namespace content_suggestions {
 
 extern const CGFloat kHintTextScale;
@@ -14,20 +16,13 @@ extern const CGFloat kHintTextScale;
 // Bottom margin for the Return to Recent Tab tile.
 extern const CGFloat kReturnToRecentTabSectionBottomMargin;
 
-// Returns the proper height for the doodle. `logo_is_showing` is YES if showing
-// the Google logo. `doodle_is_showing` is YES if the doodle is showing. The
+// Returns the proper height for the doodle, based on `logo_state`. The
 // SizeClass of the `trait_collection` of the view displaying the doodle is used
 // in the computation.
-// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
-// into an enum.
-CGFloat DoodleHeight(BOOL logo_is_showing,
-                     BOOL doodle_is_showing,
+CGFloat DoodleHeight(SearchEngineLogoState logo_state,
                      UITraitCollection* trait_collection);
 // Returns the proper margin to the top of the header for the doodle.
-// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
-// into an enum.
-CGFloat DoodleTopMargin(BOOL logo_is_showing,
-                        BOOL doodle_is_showing,
+CGFloat DoodleTopMargin(SearchEngineLogoState logo_state,
                         UITraitCollection* trait_collection);
 // Returns the height of the separator line below the omnibox.
 CGFloat HeaderSeparatorHeight();
@@ -43,13 +38,8 @@ CGFloat FakeToolbarHeight();
 // The SizeClass of the `traitCollection` of the view displaying the search
 // field is used in the computation.
 CGFloat SearchFieldWidth(CGFloat width, UITraitCollection* trait_collection);
-// Returns the expected height of the header. `logo_is_showing` is YES if
-// showing the Google logo. `doodle_is_showing` is YES if the doodle is being
-// shown.
-// TODO(crbug.com/396119930): Group `logo_is_showing` and `doodle_is_showing`
-// into an enum.
-CGFloat HeightForLogoHeader(BOOL logo_is_showing,
-                            BOOL doodle_is_showing,
+// Returns the expected height of the header, based on `logo_state`.
+CGFloat HeightForLogoHeader(SearchEngineLogoState logo_state,
                             UITraitCollection* trait_collection);
 // Returns the bottom padding for the header. This represents the spacing
 // between the fake omnibox and the content suggestions tiles.
