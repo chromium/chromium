@@ -99,9 +99,6 @@ suite('SiteSettingsPage', function() {
     assertEquals(
         'c', defaultSettingLabel(ContentSetting.DEFAULT, 'a', 'b', 'c'));
     assertEquals('c', defaultSettingLabel(ContentSetting.ASK, 'a', 'b', 'c'));
-    assertEquals(
-        'c',
-        defaultSettingLabel(ContentSetting.IMPORTANT_CONTENT, 'a', 'b', 'c'));
   });
 
   test('CookiesLinkRowSublabel', async function() {

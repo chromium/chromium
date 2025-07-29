@@ -223,8 +223,6 @@ const char* ContentSettingToString(ContentSetting setting) {
       return "Ask";
     case CONTENT_SETTING_SESSION_ONLY:
       return "SessionOnly";
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
-      return "DetectImportantContent";
     case CONTENT_SETTING_DEFAULT:
     case CONTENT_SETTING_NUM_SETTINGS:
       NOTREACHED();

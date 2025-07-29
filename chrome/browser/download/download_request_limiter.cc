@@ -60,7 +60,6 @@ DownloadRequestLimiter::DownloadStatus GetDownloadStatusFromSetting(
       return DownloadRequestLimiter::PROMPT_BEFORE_DOWNLOAD;
     case CONTENT_SETTING_SESSION_ONLY:
     case CONTENT_SETTING_NUM_SETTINGS:
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
       NOTREACHED();
   }
   NOTREACHED();

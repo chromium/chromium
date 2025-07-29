@@ -17,6 +17,7 @@
 #include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
+#include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/content_settings/core/common/pref_names.h"
@@ -266,8 +267,8 @@ TEST_F(PolicyProviderTest, InvalidManagedDefaultContentSetting) {
   PolicyProvider provider(prefs);
 
   prefs->SetManagedPref(
-      prefs::kManagedDefaultCookiesSetting,
-      std::make_unique<base::Value>(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
+      prefs::kManagedDefaultJavaScriptSetting,
+      std::make_unique<base::Value>(CONTENT_SETTING_SESSION_ONLY));
 
   // The setting provided in the cookies pref is not valid for cookies. It
   // should be ignored.

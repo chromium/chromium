@@ -81,7 +81,6 @@ export enum ContentSetting {
   BLOCK = 'block',
   ASK = 'ask',
   SESSION_ONLY = 'session_only',
-  IMPORTANT_CONTENT = 'detect_important_content',
 }
 
 /**

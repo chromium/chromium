@@ -221,7 +221,6 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       case CONTENT_SETTING_ASK:
         return PermissionStatus::ASK;
       case CONTENT_SETTING_SESSION_ONLY:
-      case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
       case CONTENT_SETTING_NUM_SETTINGS:
         NOTREACHED();
     }

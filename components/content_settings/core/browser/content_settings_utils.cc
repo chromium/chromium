@@ -39,7 +39,6 @@ const auto kContentSettingsStringMapping =
         {CONTENT_SETTING_BLOCK, "block"},
         {CONTENT_SETTING_ASK, "ask"},
         {CONTENT_SETTING_SESSION_ONLY, "session_only"},
-        {CONTENT_SETTING_DETECT_IMPORTANT_CONTENT, "detect_important_content"},
     });
 static_assert(std::size(kContentSettingsStringMapping) ==
                   CONTENT_SETTING_NUM_SETTINGS,
@@ -48,15 +47,12 @@ static_assert(std::size(kContentSettingsStringMapping) ==
 
 // Content settings sorted from most to least permissive. The order is chosen
 // to check if a permission grants more rights than another. This is intuitive
-// for ALLOW, ASK and BLOCK. SESSION_ONLY and DETECT_IMPORTANT_CONTENT are never
-// used in the same setting so their respective order is not important but both
-// belong between ALLOW and ASK. DEFAULT should never be used and is therefore
-// not part of this array.
+// for ALLOW, ASK and BLOCK. SESSION_ONLY belongs between ALLOW and ASK.
+// DEFAULT should never be used and is therefore not part of this array.
 const ContentSetting kContentSettingOrder[] = {
     // clang-format off
     CONTENT_SETTING_ALLOW,
     CONTENT_SETTING_SESSION_ONLY,
-    CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
     CONTENT_SETTING_ASK,
     CONTENT_SETTING_BLOCK
     // clang-format on

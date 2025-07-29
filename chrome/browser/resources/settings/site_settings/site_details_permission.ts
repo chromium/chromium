@@ -293,8 +293,7 @@ export class SiteDetailsPermissionElement extends
       return '';
     }
 
-    if (defaultSetting === ContentSetting.ASK ||
-        defaultSetting === ContentSetting.IMPORTANT_CONTENT) {
+    if (defaultSetting === ContentSetting.ASK) {
       return this.i18n('siteSettingsActionAskDefault');
     } else if (defaultSetting === ContentSetting.ALLOW) {
       if (this.useCustomSoundLabels_(category) && useAutomaticLabel) {

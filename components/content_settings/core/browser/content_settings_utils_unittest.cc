@@ -31,7 +31,6 @@ constexpr auto kContentSettingNames = std::to_array<const char *>({
   "block",
   "ask",
   "session_only",
-  "detect_important_content",
 });
 // clang-format on
 
@@ -94,8 +93,6 @@ TEST(ContentSettingsUtilsTest, ContentSettingsStringMap) {
 TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK));
   EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK));
-  EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ALLOW,
-                               CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
   EXPECT_TRUE(
       IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_SESSION_ONLY));
 
@@ -104,16 +101,9 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   EXPECT_TRUE(
       IsMorePermissive(CONTENT_SETTING_SESSION_ONLY, CONTENT_SETTING_BLOCK));
 
-  EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-                               CONTENT_SETTING_ASK));
-  EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-                               CONTENT_SETTING_BLOCK));
-
   EXPECT_TRUE(IsMorePermissive(CONTENT_SETTING_ASK, CONTENT_SETTING_BLOCK));
 
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ALLOW));
-  EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_BLOCK,
-                                CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
   EXPECT_FALSE(
       IsMorePermissive(CONTENT_SETTING_BLOCK, CONTENT_SETTING_SESSION_ONLY));
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_BLOCK, CONTENT_SETTING_ASK));
@@ -121,13 +111,9 @@ TEST(ContentSettingsUtilsTest, IsMorePermissive) {
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_ASK, CONTENT_SETTING_ALLOW));
   EXPECT_FALSE(
       IsMorePermissive(CONTENT_SETTING_ASK, CONTENT_SETTING_SESSION_ONLY));
-  EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_ASK,
-                                CONTENT_SETTING_DETECT_IMPORTANT_CONTENT));
 
   EXPECT_FALSE(
       IsMorePermissive(CONTENT_SETTING_SESSION_ONLY, CONTENT_SETTING_ALLOW));
-  EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_DETECT_IMPORTANT_CONTENT,
-                                CONTENT_SETTING_ALLOW));
 
   EXPECT_FALSE(IsMorePermissive(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ALLOW));
 

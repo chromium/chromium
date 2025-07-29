@@ -267,9 +267,6 @@
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to ask by the user.">
       Ask
     </message>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_USER" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button was explicitly set to detect important content by the user.">
-      Detect
-    </message>
 
     <message name="IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is allow.">
       Allow (default)
@@ -288,9 +285,6 @@
       Mute (default)
     </message>
     </if>
-    <message name="IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_DEFAULT" desc="The Page Info popup contains several buttons for opening dropdown menus and changing site permissions. This is the text of such a button if the permission controlled by the button is set to the default setting and the default settings is detect important content.">
-      Detect (default)
-    </message>
 
     <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that resets the setting to the default setting which is allow.">
       Use global default (Allow)
@@ -301,9 +295,6 @@
     <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is ask.">
       Use global default (Ask)
     </message>
-    <message name="IDS_PAGE_INFO_MENU_ITEM_DEFAULT_DETECT_IMPORTANT_CONTENT" desc="The text of the menu item of a permissions menu on the Page Info UI that reset the setting to the default setting which is detect important content.">
-      Use global default (Detect)
-    </message>
 
     <message name="IDS_PAGE_INFO_MENU_ITEM_ALLOW" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to allow.">
       Always allow on this site
@@ -313,9 +304,6 @@
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ASK" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to ask.">
       Always ask on this site
-    </message>
-     <message name="IDS_PAGE_INFO_MENU_ITEM_DETECT_IMPORTANT_CONTENT" desc="The text of the menu item of a permissions menu on the Page Info UI that sets the setting to detect important content.">
-      Always detect important content on this site
     </message>
     <message name="IDS_PAGE_INFO_MENU_ITEM_ADS_BLOCK" desc="The text of the menu item of a permissions menu on the Page Info UI for the ads permission in Block mode">
       Block on this site

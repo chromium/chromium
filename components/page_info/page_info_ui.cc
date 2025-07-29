@@ -65,7 +65,6 @@ const int kPermissionButtonTextIDPolicyManaged[] = {
     IDS_PAGE_INFO_PERMISSION_ALLOWED_BY_POLICY,
     IDS_PAGE_INFO_PERMISSION_BLOCKED_BY_POLICY,
     IDS_PAGE_INFO_PERMISSION_ASK_BY_POLICY,
-    kInvalidResourceID,
     kInvalidResourceID};
 static_assert(std::size(kPermissionButtonTextIDPolicyManaged) ==
                   CONTENT_SETTING_NUM_SETTINGS,
@@ -78,7 +77,6 @@ const int kPermissionButtonTextIDExtensionManaged[] = {
     IDS_PAGE_INFO_PERMISSION_ALLOWED_BY_EXTENSION,
     IDS_PAGE_INFO_PERMISSION_BLOCKED_BY_EXTENSION,
     IDS_PAGE_INFO_PERMISSION_ASK_BY_EXTENSION,
-    kInvalidResourceID,
     kInvalidResourceID};
 static_assert(std::size(kPermissionButtonTextIDExtensionManaged) ==
                   CONTENT_SETTING_NUM_SETTINGS,
@@ -88,12 +86,9 @@ static_assert(std::size(kPermissionButtonTextIDExtensionManaged) ==
 // The resource IDs for the strings that are displayed on the permissions
 // button if the permission setting is managed by the user.
 const int kPermissionButtonTextIDUserManaged[] = {
-    kInvalidResourceID,
-    IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER,
+    kInvalidResourceID, IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER,
     IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_USER,
-    IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER,
-    kInvalidResourceID,
-    IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_USER};
+    IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_USER, kInvalidResourceID};
 static_assert(std::size(kPermissionButtonTextIDUserManaged) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDUserManaged array size is incorrect");
@@ -101,12 +96,9 @@ static_assert(std::size(kPermissionButtonTextIDUserManaged) ==
 // The resource IDs for the strings that are displayed on the permissions
 // button if the permission setting is the global default setting.
 const int kPermissionButtonTextIDDefaultSetting[] = {
-    kInvalidResourceID,
-    IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT,
+    kInvalidResourceID, IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT,
     IDS_PAGE_INFO_BUTTON_TEXT_BLOCKED_BY_DEFAULT,
-    IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT,
-    kInvalidResourceID,
-    IDS_PAGE_INFO_BUTTON_TEXT_DETECT_IMPORTANT_CONTENT_BY_DEFAULT};
+    IDS_PAGE_INFO_BUTTON_TEXT_ASK_BY_DEFAULT, kInvalidResourceID};
 static_assert(std::size(kPermissionButtonTextIDDefaultSetting) ==
                   CONTENT_SETTING_NUM_SETTINGS,
               "kPermissionButtonTextIDDefaultSetting array size is incorrect");
@@ -118,7 +110,6 @@ const int kSoundPermissionButtonTextIDUserManaged[] = {
     kInvalidResourceID,
     IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_USER,
     IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_USER,
-    kInvalidResourceID,
     kInvalidResourceID,
     kInvalidResourceID};
 static_assert(
@@ -133,7 +124,6 @@ const int kSoundPermissionButtonTextIDDefaultSetting[] = {
     kInvalidResourceID,
     IDS_PAGE_INFO_BUTTON_TEXT_ALLOWED_BY_DEFAULT,
     IDS_PAGE_INFO_BUTTON_TEXT_MUTED_BY_DEFAULT,
-    kInvalidResourceID,
     kInvalidResourceID,
     kInvalidResourceID};
 static_assert(
@@ -293,19 +283,13 @@ CreateSecurityDescriptionForSafetyTip(
   return security_description;
 }
 
-// Gets the actual setting for a ContentSettingsType, taking into account what
-// the default setting value is and whether Html5ByDefault is enabled.
+// Gets the actual setting for a ContentSettingsType.
 ContentSetting GetEffectiveSetting(ContentSettingsType type,
                                    ContentSetting setting,
                                    ContentSetting default_setting) {
   ContentSetting effective_setting = setting;
   if (effective_setting == CONTENT_SETTING_DEFAULT)
     effective_setting = default_setting;
-
-  // Display the UI string for ASK instead of DETECT for Flash.
-  // TODO(tommycli): Just migrate the actual content setting to ASK.
-  if (effective_setting == CONTENT_SETTING_DETECT_IMPORTANT_CONTENT)
-    effective_setting = CONTENT_SETTING_ASK;
 
   return effective_setting;
 }

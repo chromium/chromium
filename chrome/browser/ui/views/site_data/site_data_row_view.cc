@@ -75,7 +75,6 @@ std::u16string GetSettingStateString(ContentSetting setting,
     }
     case CONTENT_SETTING_DEFAULT:
     case CONTENT_SETTING_ASK:
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
     case CONTENT_SETTING_NUM_SETTINGS:
       // Not supported settings for cookies.
       NOTREACHED();

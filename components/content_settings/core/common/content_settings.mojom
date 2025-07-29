@@ -56,7 +56,6 @@ enum ContentSetting {
   BLOCK,
   ASK,
   SESSION_ONLY,
-  DETECT_IMPORTANT_CONTENT,
 };
 
 // This mirrors the C++ type in content_settings_metadata.h.

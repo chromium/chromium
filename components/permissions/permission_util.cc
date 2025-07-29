@@ -604,7 +604,6 @@ blink::mojom::PermissionStatus PermissionUtil::ContentSettingToPermissionStatus(
     case CONTENT_SETTING_ASK:
       return blink::mojom::PermissionStatus::ASK;
     case CONTENT_SETTING_SESSION_ONLY:
-    case CONTENT_SETTING_DETECT_IMPORTANT_CONTENT:
     case CONTENT_SETTING_DEFAULT:
     case CONTENT_SETTING_NUM_SETTINGS:
       break;

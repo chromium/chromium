@@ -284,7 +284,6 @@ chromium-metrics-reviews@google.com.
   <suffix name="AllowThirdParty" label="All third parties allowed on a domain"/>
   <suffix name="Ask" label="Ask"/>
   <suffix name="Block" label="Block"/>
-  <suffix name="DetectImportantContent" label="Detect important content"/>
   <suffix name="DomainWildcardAllowThirdParty"
       label="Third-party cookies allowed for a site group using a domain
              wildcard"/>
