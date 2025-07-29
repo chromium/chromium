@@ -54,11 +54,6 @@ class COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return status.exists_in_cache;
   }
 
-  static bool exists_in_memory_cache(
-      const network::URLLoaderCompletionStatus& status) {
-    return status.exists_in_memory_cache;
-  }
-
   static const base::TimeTicks& completion_time(
       const network::URLLoaderCompletionStatus& status) {
     return status.completion_time;

@@ -57,9 +57,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE) URLLoaderCompletionStatus {
   // cache.
   bool exists_in_cache = false;
 
-  // A copy of the data requested exists in the in-memory cache.
-  bool exists_in_memory_cache = false;
-
   // Time the request completed.
   base::TimeTicks completion_time;
 

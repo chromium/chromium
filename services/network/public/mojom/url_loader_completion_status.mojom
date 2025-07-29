@@ -30,9 +30,6 @@ struct URLLoaderCompletionStatus {
   // to represent what this field actually means.
   bool exists_in_cache = false;
 
-  // A copy of the data requested exists in the in-memory cache.
-  bool exists_in_memory_cache = false;
-
   // Time the request completed.
   mojo_base.mojom.TimeTicks completion_time;
 

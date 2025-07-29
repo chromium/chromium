@@ -204,9 +204,9 @@ MATCHER(URLLoaderCompletionStatusIsOk, "URLLoaderCompletionStatus is ok") {
   // `ssl_info` is omitted as it lacks an equality operator and it's not worth
   // implementing one just for this test.
   return equals(&S::error_code) && equals(&S::extended_error_code) &&
-         equals(&S::exists_in_cache) && equals(&S::exists_in_memory_cache) &&
-         equals(&S::encoded_data_length) && equals(&S::encoded_body_length) &&
-         equals(&S::decoded_body_length) && equals(&S::cors_error_status) &&
+         equals(&S::exists_in_cache) && equals(&S::encoded_data_length) &&
+         equals(&S::encoded_body_length) && equals(&S::decoded_body_length) &&
+         equals(&S::cors_error_status) &&
          equals(&S::private_network_access_preflight_result) &&
          equals(&S::trust_token_operation_status) &&
          equals(&S::blocked_by_response_reason) &&
