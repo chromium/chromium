@@ -258,7 +258,6 @@ all the folders to exclude, right-clicking on them, selecting
       <file path="$PROJECT_DIR$/src/url" />
       <file path="$PROJECT_DIR$/src/v8" />
       <file path="$PROJECT_DIR$/src/venv" />
-      <file path="$PROJECT_DIR$/src/weblayer" />
     </excludeRoots>
   </component>
 ```

@@ -36,7 +36,7 @@ been put in place for Android WebView apps. This is not allowed, because:
 * There are non-security concerns: It does not comply with the spirit of an open
   web platform which should be equally available on all user agents.
 
-In order to support WebView, WebLayer, and CCT, APIs exist in Chrome to
+In order to support WebView and CCT, APIs exist in Chrome to
 establish web message channels between the embedding application and web page.
 These exist only to support these "embedding the web" scenarios, which are often
 used to build site- or purpose-specific browsers. General browser features
