@@ -13,6 +13,7 @@
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
@@ -81,7 +82,8 @@ bool HasJavascriptMimeType(const Response* response) {
 void ValidateRequestForPut(const Request* request,
                            ExceptionState& exception_state) {
   const KURL& url = request->url();
-  if (!url.ProtocolIsInHTTPFamily()) {
+  if (!url.ProtocolIsInHTTPFamily() &&
+      !CommonSchemeRegistry::IsIsolatedAppScheme(url.Protocol().Ascii())) {
     exception_state.ThrowTypeError(
         StrCat({"Request scheme '", url.Protocol(), "' is unsupported"}));
     return;

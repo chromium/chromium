@@ -15,6 +15,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
@@ -1024,7 +1025,8 @@ IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserCookieTest, Cookies) {
 class IsolatedWebAppBrowserServiceWorkerTest
     : public IsolatedWebAppBrowserTest {
  protected:
-  int64_t InstallIsolatedWebAppAndWaitForServiceWorker() {
+  int64_t InstallIsolatedWebAppAndWaitForServiceWorker(
+      const std::string& service_worker_path) {
     std::unique_ptr<ScopedBundledIsolatedWebApp> app =
         IsolatedWebAppBuilder(ManifestBuilder())
             .AddHtml("/register_service_worker.html", "ABA")
@@ -1034,8 +1036,7 @@ class IsolatedWebAppBrowserServiceWorkerTest
             .AddFileFromDisk(
                 "/register_service_worker.js",
                 "web_apps/simple_isolated_app/register_service_worker.js")
-            .AddFileFromDisk("/service_worker.js",
-                             "web_apps/simple_isolated_app/service_worker.js")
+            .AddFileFromDisk("/service_worker.js", service_worker_path)
             .BuildBundle();
     app->TrustSigningKey();
     IsolatedWebAppUrlInfo url_info = app->InstallChecked(profile());
@@ -1077,10 +1078,20 @@ class IsolatedWebAppBrowserServiceWorkerTest
 
 IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserServiceWorkerTest,
                        ServiceWorkerPartitioned) {
-  InstallIsolatedWebAppAndWaitForServiceWorker();
+  InstallIsolatedWebAppAndWaitForServiceWorker(
+      /*service_worker_path=*/"web_apps/simple_isolated_app/service_worker.js");
   test::CheckServiceWorkerStatus(
       app_url(), storage_partition_,
       content::ServiceWorkerCapability::SERVICE_WORKER_WITH_FETCH_HANDLER);
+}
+
+IN_PROC_BROWSER_TEST_F(IsolatedWebAppBrowserServiceWorkerTest, CacheTest) {
+  InstallIsolatedWebAppAndWaitForServiceWorker(
+      /*service_worker_path=*/
+      "web_apps/simple_isolated_app/cached_service_worker.js");
+  test::CheckServiceWorkerStatus(
+      app_url(), storage_partition_,
+      content::ServiceWorkerCapability::SERVICE_WORKER_NO_FETCH_HANDLER);
 }
 
 class IsolatedWebAppBrowserServiceWorkerPushTest
@@ -1146,7 +1157,9 @@ IN_PROC_BROWSER_TEST_F(
     IsolatedWebAppBrowserServiceWorkerPushTest,
     ServiceWorkerPartitionedWhenWakingUpDueToPushNotification) {
   int64_t service_worker_version_id =
-      InstallIsolatedWebAppAndWaitForServiceWorker();
+      InstallIsolatedWebAppAndWaitForServiceWorker(
+          /*service_worker_path=*/
+          "web_apps/simple_isolated_app/service_worker.js");
 
   // Request and confirm permission to show notifications.
   auto* permission_request_manager =

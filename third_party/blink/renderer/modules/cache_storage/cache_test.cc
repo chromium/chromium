@@ -17,6 +17,7 @@
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/scheme_registry.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
 #include "third_party/blink/public/platform/scheduler/test/renderer_scheduler_test_support.h"
 #include "third_party/blink/public/platform/web_url_response.h"
@@ -773,6 +774,55 @@ TEST_F(CacheStorageTest, Add) {
   fetcher->SetResponse(response);
 
   Vector<mojom::blink::BatchOperationPtr> expected_put_operations(size_t(1));
+  {
+    mojom::blink::BatchOperationPtr put_operation =
+        mojom::blink::BatchOperation::New();
+
+    put_operation->operation_type = mojom::blink::OperationType::kPut;
+    put_operation->request = request->CreateFetchAPIRequest();
+    put_operation->response =
+        response->PopulateFetchAPIResponse(request->url());
+    expected_put_operations[0] = std::move(put_operation);
+  }
+  test_cache()->SetExpectedBatchOperations(&expected_put_operations);
+
+  auto add_result = cache->add(GetScriptState(), RequestToRequestInfo(request),
+                               exception_state);
+
+  EXPECT_EQ(kNotImplementedString, GetRejectString(add_result));
+  EXPECT_EQ(1u, fetcher->FetchCount());
+  EXPECT_EQ("dispatchBatch",
+            test_cache()->GetAndClearLastErrorWebCacheMethodCalled());
+}
+
+TEST_F(CacheStorageTest, AddIsolatedApp) {
+  CommonSchemeRegistry::RegisterURLSchemeAsIsolatedApp("isolated-app");
+  ScriptState::Scope scope(GetScriptState());
+  NonThrowableExceptionState exception_state;
+  auto* fetcher = MakeGarbageCollected<ScopedFetcherForTests>();
+  const String url =
+      "isolated-app://"
+      "aerugqztij5biqquuk3mfwpsaibuegaqcitgfchwuosuofdjabzqaaic/";
+  const String content_type = "text/plain";
+  const String content = "hello cache";
+
+  Cache* cache =
+      CreateCache(fetcher, std::make_unique<NotImplementedErrorCache>());
+
+  fetcher->SetExpectedFetchUrl(&url);
+
+  Request* request = NewRequestFromUrl(url);
+  Response* response =
+      Response::Create(GetScriptState(),
+                       BodyStreamBuffer::Create(
+                           GetScriptState(),
+                           MakeGarbageCollected<FormDataBytesConsumer>(content),
+                           nullptr, /*cached_metadata_handler=*/nullptr),
+                       content_type, ResponseInit::Create(), exception_state);
+  fetcher->SetResponse(response);
+
+  Vector<mojom::blink::BatchOperationPtr> expected_put_operations(
+      static_cast<size_t>(1));
   {
     mojom::blink::BatchOperationPtr put_operation =
         mojom::blink::BatchOperation::New();
