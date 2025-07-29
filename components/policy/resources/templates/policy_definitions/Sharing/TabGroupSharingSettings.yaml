@@ -12,9 +12,9 @@ owners:
 supported_on:
 - android:140-
 - chrome.*:140-
+- ios:140-
 future_on:
 - chrome_os
-- ios
 features:
   cloud_only: true
   dynamic_refresh: true
