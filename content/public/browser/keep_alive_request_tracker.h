@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/functional/callback.h"
-#include "base/state_transitions.h"
 #include "content/common/content_export.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 
@@ -87,10 +86,12 @@ class CONTENT_EXPORT KeepAliveRequestTracker {
     // The browser-side loader completes loading the request.
     kLoaderCompleted = 11,
 
-    kMaxValue = kLoaderCompleted,
+    // The browser-side loader has retried the request from the beginning.
+    kRequestRetried = 12,
+
+    kMaxValue = kRequestRetried,
   };
   // LINT.ThenChange(//tools/metrics/histograms/enums.xml:FetchKeepAliveRequestStage)
-  friend base::StateTransitions<RequestStageType>;
   friend std::ostream& operator<<(std::ostream&, const RequestStageType&);
 
   // RequestStage stores the stage-related info.
@@ -129,6 +130,9 @@ class CONTENT_EXPORT KeepAliveRequestTracker {
   uint32_t GetNumRedirects() const;
   void IncreaseNumRedirects();
 
+  uint32_t GetNumRetries() const;
+  void IncreaseNumRetries();
+
  private:
   RequestType request_type_;
 
@@ -140,6 +144,10 @@ class CONTENT_EXPORT KeepAliveRequestTracker {
   // Records the number of redrects the tracked fetch keepalive request has
   // experienced so far.
   uint32_t num_redirects_ = 0;
+
+  // Records the number of retries the tracked fetch keepalive request has
+  // experienced so far.
+  uint32_t num_retries_ = 0;
 };
 
 }  // namespace content

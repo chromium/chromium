@@ -80,132 +80,6 @@ void KeepAliveRequestTracker::AdvanceToNextStage(
     const RequestStageType& next_stage_type,
     std::optional<network::URLLoaderCompletionStatus> next_stage_status) {
   RequestStage next_stage(next_stage_type, next_stage_status);
-#if DCHECK_IS_ON()
-  static const base::NoDestructor<base::StateTransitions<RequestStageType>>
-      transitions(base::StateTransitions<RequestStageType>({
-          {RequestStageType::kLoaderCreated,
-           {
-               RequestStageType::kRequestStarted,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kBrowserShutdown,
-           }},
-          {RequestStageType::kRequestStarted,
-           {
-               RequestStageType::kFirstRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kFirstRedirectReceived,
-           {
-               RequestStageType::kSecondRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kSecondRedirectReceived,
-           {
-               RequestStageType::kThirdOrLaterRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kThirdOrLaterRedirectReceived,
-           {
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kResponseReceived,
-           {
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kRequestFailed,
-           {
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kLoaderDisconnectedFromRenderer,
-           {
-               RequestStageType::kRequestStarted,
-               RequestStageType::kFirstRedirectReceived,
-               RequestStageType::kSecondRedirectReceived,
-               RequestStageType::kThirdOrLaterRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kRequestCancelledByRenderer,
-           {
-               RequestStageType::kRequestStarted,
-               RequestStageType::kFirstRedirectReceived,
-               RequestStageType::kSecondRedirectReceived,
-               RequestStageType::kThirdOrLaterRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kRequestCancelledAfterTimeLimit,
-           {
-               RequestStageType::kRequestStarted,
-               RequestStageType::kFirstRedirectReceived,
-               RequestStageType::kSecondRedirectReceived,
-               RequestStageType::kThirdOrLaterRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kBrowserShutdown,
-               RequestStageType::kLoaderCompleted,
-           }},
-          {RequestStageType::kBrowserShutdown,
-           {
-               RequestStageType::kRequestStarted,
-               RequestStageType::kFirstRedirectReceived,
-               RequestStageType::kSecondRedirectReceived,
-               RequestStageType::kThirdOrLaterRedirectReceived,
-               RequestStageType::kResponseReceived,
-               RequestStageType::kRequestFailed,
-               RequestStageType::kLoaderDisconnectedFromRenderer,
-               RequestStageType::kRequestCancelledByRenderer,
-               RequestStageType::kRequestCancelledAfterTimeLimit,
-               RequestStageType::kLoaderCompleted,
-           }},
-      }));
-
-  DCHECK_STATE_TRANSITION(transitions, current_stage_.type, next_stage.type);
-#endif  // DCHECK_IS_ON()
   // kLoaderCreated is the initial stage set in ctor.
   CHECK_NE(next_stage.type, RequestStageType::kLoaderCreated);
 
@@ -244,6 +118,9 @@ void KeepAliveRequestTracker::AdvanceToNextStage(
       CHECK(!next_stage.status.has_value());
       break;
     case RequestStageType::kLoaderCompleted:
+      CHECK(next_stage.status.has_value());
+      break;
+    case RequestStageType::kRequestRetried:
       CHECK(next_stage.status.has_value());
       break;
   }
@@ -286,6 +163,14 @@ uint32_t KeepAliveRequestTracker::GetNumRedirects() const {
 
 void KeepAliveRequestTracker::IncreaseNumRedirects() {
   ++num_redirects_;
+}
+
+uint32_t KeepAliveRequestTracker::GetNumRetries() const {
+  return num_retries_;
+}
+
+void KeepAliveRequestTracker::IncreaseNumRetries() {
+  ++num_retries_;
 }
 
 }  // namespace content

@@ -44,6 +44,7 @@ const std::set<std::string>& GetTimeDeltaMetricNames() {
       "TimeDelta.LoaderDisconnectedFromRenderer",
       "TimeDelta.BrowserShutdown",
       "TimeDelta.LoaderCompleted",
+      "TimeDelta.RequestRetried",
       "TimeDelta.EventLogged",
   });
   return *names;
@@ -292,6 +293,7 @@ KeepAliveRequestUkmMatcher::CommonUkm::CommonUkm(
     KeepAliveRequestTracker::RequestType request_type,
     size_t category_id,
     size_t num_redirects,
+    size_t num_retries,
     bool is_context_detached,
     KeepAliveRequestTracker::RequestStageType end_stage,
     std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage,
@@ -299,10 +301,13 @@ KeepAliveRequestUkmMatcher::CommonUkm::CommonUkm(
     std::optional<int64_t> failed_error_code,
     std::optional<int64_t> failed_extended_error_code,
     std::optional<int64_t> completed_error_code,
-    std::optional<int64_t> completed_extended_error_code)
+    std::optional<int64_t> completed_extended_error_code,
+    std::optional<int64_t> retried_error_code,
+    std::optional<int64_t> retried_extended_error_code)
     : request_type(request_type),
       category_id(category_id),
       num_redirects(num_redirects),
+      num_retries(num_retries),
       is_context_detached(is_context_detached),
       end_stage(end_stage),
       previous_stage(previous_stage),
@@ -310,7 +315,9 @@ KeepAliveRequestUkmMatcher::CommonUkm::CommonUkm(
       failed_error_code(failed_error_code),
       failed_extended_error_code(failed_extended_error_code),
       completed_error_code(completed_error_code),
-      completed_extended_error_code(completed_extended_error_code) {}
+      completed_extended_error_code(completed_extended_error_code),
+      retried_error_code(retried_error_code),
+      retried_extended_error_code(retried_extended_error_code) {}
 
 KeepAliveRequestUkmMatcher::CommonUkm::CommonUkm(const CommonUkm& other) =
     default;
@@ -333,6 +340,7 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
     KeepAliveRequestTracker::RequestType request_type,
     size_t category_id,
     size_t num_redirects,
+    size_t num_retries,
     bool is_context_detached,
     KeepAliveRequestTracker::RequestStageType end_stage,
     std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage,
@@ -340,7 +348,9 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
     std::optional<int64_t> failed_error_code,
     std::optional<int64_t> failed_extended_error_code,
     std::optional<int64_t> completed_error_code,
-    std::optional<int64_t> completed_extended_error_code) {
+    std::optional<int64_t> completed_extended_error_code,
+    std::optional<int64_t> retried_error_code,
+    std::optional<int64_t> retried_extended_error_code) {
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "Id.Low"));
   EXPECT_TRUE(ukm_recorder().EntryHasMetric(entry, "Id.High"));
   if (keepalive_token.has_value()) {
@@ -355,6 +365,8 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
   ukm_recorder().ExpectEntryMetric(entry, "Category", category_id);
   ukm_recorder().ExpectEntryMetric(entry, "NumRedirects",
                                    static_cast<int64_t>(num_redirects));
+  ukm_recorder().ExpectEntryMetric(entry, "NumRetries",
+                                   static_cast<int64_t>(num_retries));
   ukm_recorder().ExpectEntryMetric(entry, "IsContextDetached",
                                    static_cast<int64_t>(is_context_detached));
   ukm_recorder().ExpectEntryMetric(entry, "EndStage",
@@ -401,12 +413,30 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
     EXPECT_FALSE(ukm_recorder().EntryHasMetric(
         entry, "LoaderCompleted.ExtendedErrorCode"));
   }
+
+  if (retried_error_code.has_value()) {
+    ukm_recorder().ExpectEntryMetric(entry, "RequestRetried.ErrorCode",
+                                     static_cast<int64_t>(*retried_error_code));
+  } else {
+    EXPECT_FALSE(
+        ukm_recorder().EntryHasMetric(entry, "RequestRetried.ErrorCode"));
+  }
+
+  if (retried_extended_error_code.has_value()) {
+    ukm_recorder().ExpectEntryMetric(
+        entry, "RequestRetried.ExtendedErrorCode",
+        static_cast<int64_t>(*retried_extended_error_code));
+  } else {
+    EXPECT_FALSE(ukm_recorder().EntryHasMetric(
+        entry, "RequestRetried.ExtendedErrorCode"));
+  }
 }
 
 void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
     KeepAliveRequestTracker::RequestType request_type,
     size_t category_id,
     size_t num_redirects,
+    size_t num_retries,
     bool is_context_detached,
     KeepAliveRequestTracker::RequestStageType end_stage,
     std::optional<KeepAliveRequestTracker::RequestStageType> previous_stage,
@@ -414,13 +444,16 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkm(
     std::optional<int64_t> failed_error_code,
     std::optional<int64_t> failed_extended_error_code,
     std::optional<int64_t> completed_error_code,
-    std::optional<int64_t> completed_extended_error_code) {
+    std::optional<int64_t> completed_extended_error_code,
+    std::optional<int64_t> retried_error_code,
+    std::optional<int64_t> retried_extended_error_code) {
   const ukm::mojom::UkmEntry* entry = GetUkmEntry();
-  ExpectCommonUkm(entry, request_type, category_id, num_redirects,
+  ExpectCommonUkm(entry, request_type, category_id, num_redirects, num_retries,
                   is_context_detached, end_stage, previous_stage,
                   keepalive_token, failed_error_code,
                   failed_extended_error_code, completed_error_code,
-                  completed_extended_error_code);
+                  completed_extended_error_code, retried_error_code,
+                  retried_extended_error_code);
 }
 
 void KeepAliveRequestUkmMatcher::ExpectCommonUkms(
@@ -434,10 +467,11 @@ void KeepAliveRequestUkmMatcher::ExpectCommonUkms(
   for (size_t i = 0; i < entries.size(); ++i) {
     ExpectCommonUkm(
         entries[i], ukms[i].request_type, ukms[i].category_id,
-        ukms[i].num_redirects, ukms[i].is_context_detached, ukms[i].end_stage,
-        ukms[i].previous_stage, ukms[i].keepalive_token,
+        ukms[i].num_redirects, ukms[i].num_retries, ukms[i].is_context_detached,
+        ukms[i].end_stage, ukms[i].previous_stage, ukms[i].keepalive_token,
         ukms[i].failed_error_code, ukms[i].failed_extended_error_code,
-        ukms[i].completed_error_code, ukms[i].completed_extended_error_code);
+        ukms[i].completed_error_code, ukms[i].completed_extended_error_code,
+        ukms[i].retried_error_code, ukms[i].retried_extended_error_code);
   }
 }
 
