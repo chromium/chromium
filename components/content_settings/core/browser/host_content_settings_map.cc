@@ -245,7 +245,7 @@ void CheckContentTypeRegistration(ContentSettingsType content_type) {
             content_settings_uma_util::ContentSettingTypeToHistogramValue(
                 content_type)));
 
-    NOTREACHED();
+    NOTREACHED() << "not a valid content setting: " << content_type;
   }
 }
 
@@ -265,7 +265,7 @@ void CheckPermissionTypeRegistration(ContentSettingsType content_type) {
             content_settings_uma_util::ContentSettingTypeToHistogramValue(
                 content_type)));
 
-    NOTREACHED();
+    NOTREACHED() << "not a valid permission setting: " << content_type;
   }
 }
 
@@ -416,6 +416,7 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
 ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
     ContentSettingsType content_type,
     ProviderType* provider_id) const {
+  CheckContentTypeRegistration(content_type);
   ProviderType provider_type = ProviderType::kNone;
   ContentSetting content_setting =
       GetDefaultContentSettingInternal(content_type, &provider_type);
