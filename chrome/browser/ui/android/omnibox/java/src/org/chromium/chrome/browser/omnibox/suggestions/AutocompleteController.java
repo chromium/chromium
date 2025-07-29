@@ -18,6 +18,7 @@ import org.chromium.chrome.browser.omnibox.suggestions.action.OmniboxAnswerActio
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionHandler.VoiceResult;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.AutocompleteResult.VerificationPoint;
@@ -106,8 +107,7 @@ public class AutocompleteController {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void start(
             GURL url,
-            int pageClassification,
-            String text,
+            AutocompleteInput input,
             int cursorPosition,
             boolean preventInlineAutocomplete) {
         if (mNativeController == 0) return;
@@ -115,14 +115,14 @@ public class AutocompleteController {
         AutocompleteControllerJni.get()
                 .start(
                         mNativeController,
-                        text,
+                        input.getUserText(),
                         cursorPosition,
                         null,
                         url.getSpec(),
-                        pageClassification,
+                        input.getPageClassification(),
                         preventInlineAutocomplete,
                         OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
-                        OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
+                        input.allowExactKeywordMatch(),
                         true);
     }
 

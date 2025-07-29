@@ -15,6 +15,7 @@ import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.Page
 public class AutocompleteInput {
     private int mPageClassification;
     private String mUserText;
+    private boolean mAllowExactKeywordMatch;
 
     public AutocompleteInput() {
         reset();
@@ -32,7 +33,22 @@ public class AutocompleteInput {
 
     /** Set the text as currently typed by the User. */
     public void setUserText(String text) {
+        boolean oldTextUsesKeywordActivator =
+                !TextUtils.isEmpty(mUserText) && TextUtils.indexOf(mUserText, ' ') > 0;
+        boolean newTextUsesKeywordActivator =
+                !TextUtils.isEmpty(text) && TextUtils.indexOf(text, ' ') > 0;
+
+        // Allow engaging Keyword mode only if the user input introduces first space.
+        mAllowExactKeywordMatch |= !oldTextUsesKeywordActivator && newTextUsesKeywordActivator;
+        // Suppress Keyword mode when reverting back to the url.
+        mAllowExactKeywordMatch &= !(oldTextUsesKeywordActivator && !newTextUsesKeywordActivator);
+
         mUserText = text;
+    }
+
+    /** Returns whether exact keyword match is allowed with current input. */
+    public boolean allowExactKeywordMatch() {
+        return mAllowExactKeywordMatch;
     }
 
     /** Returns the text as currently typed by the User. */
@@ -69,5 +85,6 @@ public class AutocompleteInput {
     @Initializer
     public void reset() {
         mUserText = "";
+        mAllowExactKeywordMatch = false;
     }
 }

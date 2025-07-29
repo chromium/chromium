@@ -846,6 +846,7 @@ class AutocompleteMediator
         mListPropertyModel.set(SuggestionListProperties.LIST_IS_FINAL, false);
 
         mAutocompleteInput.setUserText(textWithoutAutocomplete);
+
         boolean isInZeroPrefixContext = mAutocompleteInput.isInZeroPrefixContext();
         mIgnoreOmniboxItemSelection = true;
         cancelAutocompleteRequests();
@@ -882,8 +883,7 @@ class AutocompleteMediator
                                 a ->
                                         a.start(
                                                 currentUrl,
-                                                mAutocompleteInput.getPageClassification(),
-                                                textWithoutAutocomplete,
+                                                mAutocompleteInput,
                                                 cursorPosition,
                                                 preventAutocomplete));
                     },
@@ -1164,14 +1164,10 @@ class AutocompleteMediator
     /** Trigger autocomplete for the given query. */
     void startAutocompleteForQuery(String query) {
         stopAutocomplete(false);
+        mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
+        mAutocompleteInput.setUserText(query);
         mAutocomplete.ifPresent(
-                a ->
-                        a.start(
-                                mDataProvider.getCurrentGurl(),
-                                mDataProvider.getPageClassification(false),
-                                query,
-                                -1,
-                                false));
+                a -> a.start(mDataProvider.getCurrentGurl(), mAutocompleteInput, -1, false));
     }
 
     /**
