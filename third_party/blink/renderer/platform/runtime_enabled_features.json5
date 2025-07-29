@@ -799,6 +799,12 @@
       status: "test",
     },
     {
+      // Remove the restriction that drawElement can only draw immediate
+      // children of the canvas, and allow drawing canvas descendants.
+      name: "CanvasDrawElementInSubtree",
+      depends_on: ["CanvasDrawElement"],
+    },
+    {
       name: "CanvasFloatingPoint",
       status: "stable",
     },

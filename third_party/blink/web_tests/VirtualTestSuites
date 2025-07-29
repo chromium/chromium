@@ -192,6 +192,23 @@
     ],
     "expires": "Sep 1, 2024"
   },
+  {
+    "prefix": "canvas-draw-element-in-subtree",
+    "owners": [
+      "pdr@chromium.org",
+      "paint-dev@chromium.org"
+    ],
+    "platforms": [
+      "Linux",
+      "Mac",
+      "Win"
+    ],
+    "bases": [],
+    "args": [
+      "--enable-blink-features=CanvasDrawElementInSubtree"
+    ],
+    "expires": "Jan 15, 2026"
+  },
   "---------------------------- Close watchers -------------------------------",
   "TODO(https://crbug.com/1495208): These cannot be run in the normal web ",
   "platform tests environment because of",
