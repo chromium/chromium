@@ -2493,6 +2493,11 @@ extern const char kWebBluetoothDescription[];
 extern const char kWebBluetoothNewPermissionsBackendName[];
 extern const char kWebBluetoothNewPermissionsBackendDescription[];
 
+#if !BUILDFLAG(IS_ANDROID)
+extern const char kWebiumName[];
+extern const char kWebiumDescription[];
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 extern const char kWebOtpBackendName[];
 extern const char kWebOtpBackendDescription[];
 extern const char kWebOtpBackendSmsVerification[];

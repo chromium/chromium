@@ -4325,6 +4325,11 @@ const char kWebBluetoothNewPermissionsBackendDescription[] =
     "persistent storage of device permissions and Web Bluetooth features such "
     "as BluetoothDevice.watchAdvertisements() and Bluetooth.getDevices()";
 
+#if !BUILDFLAG(IS_ANDROID)
+const char kWebiumName[] = "Webium";
+const char kWebiumDescription[] = "Webium Prototype Browser.";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 const char kWebOtpBackendName[] = "Web OTP";
 const char kWebOtpBackendDescription[] =
     "Enables Web OTP API that uses the specified backend.";

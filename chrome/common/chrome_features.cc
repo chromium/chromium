@@ -1900,6 +1900,10 @@ BASE_FEATURE(kWebAppManifestPolicyAppIdentityUpdate,
              "WebAppManifestPolicyAppIdentityUpdate",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if !BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kWebium, "Webium", base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Restricts the WebUI scripts able to use the generated code cache according to
 // embedder-specified heuristics.
 BASE_FEATURE(kRestrictedWebUICodeCache,

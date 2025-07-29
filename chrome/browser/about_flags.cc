@@ -4796,6 +4796,10 @@ const FeatureEntry::FeatureVariation
          std::size(kAndroidTabDeclutterAutoDeleteTesting), nullptr}};
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+constexpr char kWebiumFlag[] = "webium";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // RECORDING USER METRICS FOR FLAGS:
 // -----------------------------------------------------------------------------
 // The first line of the entry is the internal name.
@@ -13027,6 +13031,13 @@ const FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillAndroidDesktopSuppressAccessoryOnEmpty)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if !BUILDFLAG(IS_ANDROID)
+    {kWebiumFlag,
+     flag_descriptions::kWebiumName,
+     flag_descriptions::kWebiumDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kWebium)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum
@@ -13255,6 +13266,15 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
            channel != version_info::Channel::UNKNOWN;
   }
 #endif  // BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
+  // Only show Webium flag for Canary channel and developer builds.
+  if (!strcmp(kWebiumFlag, entry.internal_name)) {
+    return chrome::GetChannel() != version_info::Channel::CANARY &&
+           version_info::IsOfficialBuild();
+  }
+#endif  // !BUILDFLAG(IS_ANDROID)
+
   if (flags::IsFlagExpired(storage, entry.internal_name)) {
     return true;
   }
