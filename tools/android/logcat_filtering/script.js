@@ -58,32 +58,26 @@ nextExceptionButton.addEventListener('click', jumpToNextException);
 
 nextTestButton.addEventListener('click', jumpToNextTest);
 
-dropdownHeaderProcess.addEventListener('click', () => {
-  if (dropdownListProcess.style.display === 'block') {
-    dropdownListProcess.style.display = 'none';
-  } else {
-    dropdownListProcess.style.display = 'block';
-  }
+dropdownHeaderProcess.addEventListener('click', (event) => {
+  // Prevent this click from propagating to the document
+  event.stopPropagation();
+  toggleDropdown(dropdownListProcess);
 });
 
 dropdownListProcess.addEventListener('click', handleProcessFilterOptionClick);
 
-dropdownHeaderTag.addEventListener('click', () => {
-  if (dropdownListTag.style.display === 'block') {
-    dropdownListTag.style.display = 'none';
-  } else {
-    dropdownListTag.style.display = 'block';
-  }
+dropdownHeaderTag.addEventListener('click', (event) => {
+  // Prevent this click from propagating to the document
+  event.stopPropagation();
+  toggleDropdown(dropdownListTag);
 });
 
 dropdownListTag.addEventListener('click', handleTagFilterOptionClick);
 
-dropdownHeaderPriority.addEventListener('click', () => {
-  if (dropdownListPriority.style.display === 'block') {
-    dropdownListPriority.style.display = 'none';
-  } else {
-    dropdownListPriority.style.display = 'block';
-  }
+dropdownHeaderPriority.addEventListener('click', (event) => {
+  // Prevent this click from propagating to the document
+  event.stopPropagation();
+  toggleDropdown(dropdownListPriority);
 });
 
 dropdownListPriority.addEventListener('click', handlePriorityFilterOptionClick);
@@ -112,6 +106,18 @@ toggleDarkModeCheckbox.addEventListener('change', () => {
     document.body.classList.add('light-mode');
     document.body.classList.remove('dark-mode');
   }
+});
+
+// Global click listener to close dropdowns when clicking outside
+document.addEventListener('click', (event) => {
+  document.querySelectorAll('.dropdown-list').forEach(dropdown => {
+    // Check if the clicked element is *not* inside the current dropdown, and
+    // *not* the header of the current dropdown.
+    if (!dropdown.contains(event.target) &&
+      !dropdown.previousElementSibling.contains(event.target)) {
+      dropdown.style.display = 'none';
+    }
+  });
 });
 
 // Global variables:
@@ -197,6 +203,24 @@ const resizeObserver = new ResizeObserver(entries => {
 });
 
 resizeObserver.observe(controls);
+
+/**
+ * Toggles the display of a given dropdown list.
+ * @param {HTMLElement} dropdownList The dropdown list element to toggle.
+ */
+function toggleDropdown(dropdownList) {
+  if (dropdownList.style.display === 'block') {
+    dropdownList.style.display = 'none';
+  } else {
+    // Close other dropdowns before opening a new one
+    document.querySelectorAll('.dropdown-list').forEach(list => {
+      if (list !== dropdownList) {
+        list.style.display = 'none';
+      }
+    });
+    dropdownList.style.display = 'block';
+  }
+}
 
 /**
  * This function is called when the user clicks on the file upload button.
