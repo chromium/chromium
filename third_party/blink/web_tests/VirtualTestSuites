@@ -2943,7 +2943,7 @@
     "args": [
       "--enable-features=SanitizerAPI"
     ],
-    "expires": "Jul 18, 2025",
+    "expires": "Jan 18, 2026",
     "owners": [
       "vogelheim@google.com"
     ],
