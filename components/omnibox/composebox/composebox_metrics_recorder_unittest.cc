@@ -15,8 +15,8 @@ const char kComposeboxSessionDurationTotal[] =
     "Test.Composebox.Session.Duration.Total";
 const char kComposeboxSessionAbandonedDuration[] =
     "Test.Composebox.Session.Duration.Abandoned";
-const char kComposeboxSessionDurationCompleted[] =
-    "Test.Composebox.Session.Duration.Completed";
+const char kComposeboxSessionDurationQuerySubmitted[] =
+    "Test.Composebox.Session.Duration.QuerySubmitted";
 const char kComposeboxQuerySubmissionTime[] =
     "Test.Composebox.Query.Time.ToSubmission";
 const char kComposeboxFileUploadAttemptPdf[] =
@@ -36,6 +36,10 @@ const char kComposeboxFileUploadFailure[] =
     "Test.Composebox.Session.File.Browser.UploadFailureCount.";
 const char kComposeboxFileValidationErrorTypes[] =
     "Test.Composebox.Session.File.Browser.ValidationFailureCount.";
+const char kComposeboxQueryTextLength[] = "Test.Composebox.Query.TextLength";
+const char kComposeboxQueryFileCount[] = "Test.Composebox.Query.FileCount";
+const char kComposeboxQueryModality[] = "Test.Composebox.Query.Modality";
+const char kComposeboxQueryCount[] = "Test.Composebox.Session.QueryCount";
 }  // namespace
 
 class ComposeboxMetricsRecorderTest : public testing::Test {
@@ -84,12 +88,13 @@ TEST_F(ComposeboxMetricsRecorderTest, SessionCompleted) {
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   DestructMetricsRecorder();
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationCompleted, 1);
+  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationQuerySubmitted,
+                                      1);
   histogram_tester().ExpectTotalCount(kComposeboxSessionDurationTotal, 1);
   histogram_tester().ExpectTotalCount(kComposeboxQuerySubmissionTime, 1);
   // Check session duration times.
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationCompleted,
-                                            base::Seconds(10), 1);
+  histogram_tester().ExpectUniqueTimeSample(
+      kComposeboxSessionDurationQuerySubmitted, base::Seconds(10), 1);
   histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationTotal,
                                             base::Seconds(10), 1);
   // Check query submission time.
@@ -102,6 +107,7 @@ TEST_F(ComposeboxMetricsRecorderTest, MultiQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
   task_environment().FastForwardBy(base::Seconds(30));
   metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
+  metrics().RecordQueryMetrics(/*text_length=*/100, /*file_count=*/1);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
   // Mimic the session remaining open when the AIM page is opened in another
@@ -110,20 +116,68 @@ TEST_F(ComposeboxMetricsRecorderTest, MultiQuerySubmissionSession) {
   metrics().NotifySessionStateChanged(SessionState::kQuerySubmitted);
   metrics().NotifySessionStateChanged(SessionState::kNavigationOccurred);
 
-  DestructMetricsRecorder();
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationCompleted, 2);
-  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationTotal, 2);
+  metrics().NotifySessionStateChanged(SessionState::kSessionAbandoned);
+  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationQuerySubmitted,
+                                      1);
+  histogram_tester().ExpectTotalCount(kComposeboxSessionDurationTotal, 1);
   histogram_tester().ExpectTotalCount(kComposeboxQuerySubmissionTime, 2);
   // Check session duration times.
-  histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationCompleted,
-                                            base::Seconds(90), 2);
+  histogram_tester().ExpectUniqueTimeSample(
+      kComposeboxSessionDurationQuerySubmitted, base::Seconds(90), 1);
   histogram_tester().ExpectUniqueTimeSample(kComposeboxSessionDurationTotal,
-                                            base::Seconds(90), 2);
+                                            base::Seconds(90), 1);
   // Check query submission times.
   histogram_tester().ExpectTimeBucketCount(kComposeboxQuerySubmissionTime,
                                            base::Seconds(30), 1);
   histogram_tester().ExpectTimeBucketCount(kComposeboxQuerySubmissionTime,
                                            base::Seconds(90), 1);
+  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, 1, 1);
+  histogram_tester().ExpectBucketCount(kComposeboxQueryCount, 2, 1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, TextOnlyQuerySubmissionSession) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  int text_length = 1000;
+  int file_count = 0;
+  metrics().RecordQueryMetrics(text_length, file_count);
+
+  histogram_tester().ExpectBucketCount(kComposeboxQueryTextLength, text_length,
+                                       1);
+  histogram_tester().ExpectBucketCount(
+      kComposeboxQueryModality, NtpComposeboxMultimodalState::kTextOnly, 1);
+  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, file_count,
+                                       1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, FileOnlyQuerySubmissionSession) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  int text_length = 0;
+  int file_count = 2;
+  metrics().RecordQueryMetrics(text_length, file_count);
+
+  histogram_tester().ExpectBucketCount(kComposeboxQueryTextLength, text_length,
+                                       1);
+  histogram_tester().ExpectBucketCount(
+      kComposeboxQueryModality, NtpComposeboxMultimodalState::kFileOnly, 1);
+  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, file_count,
+                                       1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, MultimodalQuerySubmissionSession) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  int text_length = 1000;
+  int file_count = 1;
+  metrics().RecordQueryMetrics(text_length, file_count);
+
+  histogram_tester().ExpectBucketCount(kComposeboxQueryTextLength, text_length,
+                                       1);
+  histogram_tester().ExpectBucketCount(
+      kComposeboxQueryModality, NtpComposeboxMultimodalState::kTextAndFile, 1);
+  histogram_tester().ExpectBucketCount(kComposeboxQueryFileCount, file_count,
+                                       1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, FileUploadSuccess) {
