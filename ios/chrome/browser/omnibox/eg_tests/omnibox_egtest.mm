@@ -13,6 +13,7 @@
 #import "build/build_config.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/strings/grit/components_strings.h"
+#import "ios/chrome/browser/browser_container/ui_bundled/edit_menu_app_interface.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/ntp_home_constant.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_app_interface.h"
 #import "ios/chrome/browser/omnibox/eg_tests/omnibox_earl_grey.h"
@@ -358,16 +359,28 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_longPress()];
 
+  NSError* error = nil;
+  [[EarlGrey
+      selectElementWithMatcher:[EditMenuAppInterface editMenuNextButtonMatcher]]
+      assertWithMatcher:grey_sufficientlyVisible()
+                  error:&error];
+  if (error == nil) {
+    // Tap the forward button if it's visible. It depends on the device size.
+    [[EarlGrey selectElementWithMatcher:[EditMenuAppInterface
+                                            editMenuNextButtonMatcher]]
+        performAction:grey_tap()];
+  }
+
   // Wait for UIMenuController to appear or timeout after 2 seconds.
   GREYCondition* SearchTextButtonIsDisplayed = [GREYCondition
       conditionWithName:@"Search Copied Text button display condition"
                   block:^BOOL {
-                    NSError* error = nil;
+                    NSError* e = nil;
                     [[EarlGrey
                         selectElementWithMatcher:SearchCopiedTextButton()]
                         assertWithMatcher:grey_notNil()
-                                    error:&error];
-                    return error == nil;
+                                    error:&e];
+                    return e == nil;
                   }];
   GREYAssertTrue([SearchTextButtonIsDisplayed
                      waitWithTimeout:kWaitForUIElementTimeout.InSecondsF()],
