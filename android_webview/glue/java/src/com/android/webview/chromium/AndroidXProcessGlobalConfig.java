@@ -31,7 +31,7 @@ public final class AndroidXProcessGlobalConfig {
     private String mDataDirectoryBasePath;
     private String mCacheDirectoryBasePath;
     private Boolean mPartitionedCookiesEnabled;
-    private Integer mUiThreadStartupMode = -1;
+    private Integer mUiThreadStartupMode = ProcessGlobalConfigConstants.DEFAULT_UI_THREAD_STARTUP;
     private static AndroidXProcessGlobalConfig sGlobalConfig;
 
     private AndroidXProcessGlobalConfig(@NonNull Map<String, Object> configMap) {

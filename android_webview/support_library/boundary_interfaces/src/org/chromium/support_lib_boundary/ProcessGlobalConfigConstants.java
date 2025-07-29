@@ -69,27 +69,27 @@ public final class ProcessGlobalConfigConstants {
      * <p>The UI thread may or may not be blocked during browser startup, depending on WebView's
      * internal implementation.
      */
-    public static final int UI_THREAD_STARTUP_MODE_DEFAULT = -1;
+    public static final int DEFAULT_UI_THREAD_STARTUP = -1;
 
     /** The UI thread is blocked completely during browser startup. */
-    public static final int UI_THREAD_STARTUP_MODE_SYNC = 0;
+    public static final int SYNC_UI_THREAD_STARTUP = 0;
 
     /**
      * The UI thread is not blocked completely during browser startup. However, we still have
      * long-running tasks that might trigger ANRs.
      */
-    public static final int UI_THREAD_STARTUP_MODE_ASYNC_ONE = 1;
+    public static final int LONG_TASKS_ASYNC_UI_THREAD_STARTUP = 1;
 
     /**
      * The UI thread is not blocked completely during browser startup. However, we still have
      * long-running tasks that might trigger ANRs. The difference between this and {@link
      * ASYNC_UI_STARTUP_MODE_ONE} is that the long-running tasks are shorter.
      */
-    public static final int UI_THREAD_STARTUP_MODE_ASYNC_TWO = 2;
+    public static final int SHORTER_TASKS_ASYNC_UI_THREAD_STARTUP = 2;
 
     /**
      * The UI thread is not blocked completely during browser startup. There are no long-running
      * tasks that might trigger ANRs.
      */
-    public static final int UI_THREAD_STARTUP_MODE_ASYNC_THREE = 3;
+    public static final int SHORT_TASKS_ASYNC_UI_THREAD_STARTUP = 3;
 }

@@ -633,31 +633,31 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private void setupStartupTaskExperiments(AndroidXProcessGlobalConfig androidXConfig) {
         switch (androidXConfig.getUiThreadStartupMode()) {
-            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT:
+            case ProcessGlobalConfigConstants.DEFAULT_UI_THREAD_STARTUP:
                 setStartupTaskExperimentValues(
                         shouldEnableStartupTasksExperiment(),
                         shouldEnableStartupTasksExperimentP2(),
                         shouldEnableStartupTasksYieldToNativeExperiment());
                 return;
-            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_SYNC:
+            case ProcessGlobalConfigConstants.SYNC_UI_THREAD_STARTUP:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ false,
                         /* enableYieldToNative= */ false);
                 return;
-            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_ONE:
+            case ProcessGlobalConfigConstants.LONG_TASKS_ASYNC_UI_THREAD_STARTUP:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ true,
                         /* enablePhase2= */ false,
                         /* enableYieldToNative= */ false);
                 return;
-            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_TWO:
+            case ProcessGlobalConfigConstants.SHORTER_TASKS_ASYNC_UI_THREAD_STARTUP:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ true,
                         /* enableYieldToNative= */ false);
                 return;
-            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_THREE:
+            case ProcessGlobalConfigConstants.SHORT_TASKS_ASYNC_UI_THREAD_STARTUP:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ false,
