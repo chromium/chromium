@@ -577,6 +577,10 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
         mIsAutoDisableAccessibilityCandidate = isAutoDisableAccessibilityCandidate;
     }
 
+    public void setThrottleDelayForTesting(Map<Integer, Integer> eventThrottleDelays) {
+        mEventDispatcher.setEventThrottleDelays(eventThrottleDelays);
+    }
+
     public boolean hasAnyPendingTimersForTesting() {
         return mAutoDisableAccessibilityHandler.hasPendingTimer();
     }

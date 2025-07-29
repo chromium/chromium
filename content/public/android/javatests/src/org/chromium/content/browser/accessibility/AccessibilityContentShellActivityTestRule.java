@@ -36,6 +36,8 @@ import org.chromium.ui.accessibility.AccessibilityState;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
@@ -133,6 +135,11 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 });
 
         mWcax = getWebContentsAccessibility();
+
+        // Empty map to imply no throttle delay for events.
+        Map<Integer, Integer> TestingThrottleDelays = new HashMap<>();
+        mWcax.setThrottleDelayForTesting(TestingThrottleDelays);
+
         mNodeProvider = getAccessibilityNodeProvider();
 
         mTracker = new AccessibilityActionAndEventTracker(shouldFilterTrivialEvents);
