@@ -132,7 +132,7 @@ class MultiContentsViewDropTargetControllerTest : public testing::Test {
 // Tests that the start drop target is shown when a drag reaches enters the
 // "drop area" and a valid url is being dragged.
 TEST_F(MultiContentsViewDropTargetControllerTest,
-       OnWebContentsDragUpdate_ShowStartDropTarget) {
+       OnWebContentsDragUpdate_ShowAndHideStartDropTarget) {
   DragURLTo(kDragPointForStartDropTargetShow);
   EXPECT_FALSE(drop_target_view().GetVisible());
 
@@ -141,6 +141,11 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   ASSERT_TRUE(drop_target_view().side().has_value());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
+
+  // Move the drag back to the center to hide the drop target.
+  DragURLTo(kDragPointForHiddenTargets);
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
 // Tests that the end drop target is shown when a drag reaches enters the
@@ -323,7 +328,7 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
 
 // Tests that the drag updated event is handled correctly for a single tab.
 TEST_F(MultiContentsViewDropTargetControllerTest,
-       OnTabDragUpdated_ShowsTargetWhenDraggingSingleTab) {
+       OnTabDragUpdated_ShowsAndHidesTargetWhenDraggingSingleTab) {
   MockTabDragController mock_tab_drag_controller;
   DragSessionData session_data;
   MockTabSlotView tab1;
@@ -346,6 +351,13 @@ TEST_F(MultiContentsViewDropTargetControllerTest,
   EXPECT_TRUE(drop_target_view().GetVisible());
   EXPECT_EQ(drop_target_view().side().value(),
             MultiContentsDropTargetView::DropSide::START);
+
+  // Move the drag back to the center to hide the drop target.
+  controller().OnTabDragUpdated(
+      mock_tab_drag_controller,
+      gfx::ToRoundedPoint(kDragPointForHiddenTargets));
+  FastForward();
+  EXPECT_FALSE(drop_target_view().GetVisible());
 }
 
 // Tests that the drop target is hidden when the drag exits the view.

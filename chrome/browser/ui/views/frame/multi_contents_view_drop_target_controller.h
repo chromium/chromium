@@ -62,7 +62,7 @@ class MultiContentsViewDropTargetController final : public TabDragDelegate {
 
   // Updates the timers for a drag at the given point.
   // Assumes the dragged data is droppable (e.g. tab or link).
-  bool HandleDragUpdate(const gfx::PointF& point_in_view);
+  void HandleDragUpdate(const gfx::PointF& point_in_view);
 
   // Starts or updates a running timer to show `target_to_show`.
   void StartOrUpdateDropTargetTimer(

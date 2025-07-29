@@ -42,9 +42,7 @@ void MultiContentsViewDropTargetController::OnTabDragUpdated(
 
   const gfx::Point point_in_parent = views::View::ConvertPointFromScreen(
       &drop_target_parent_view_.get(), point_in_screen);
-  if (!HandleDragUpdate(gfx::PointF(point_in_parent))) {
-    drop_target_view_->Hide();
-  }
+  HandleDragUpdate(gfx::PointF(point_in_parent));
 }
 
 void MultiContentsViewDropTargetController::OnTabDragEntered() {}
@@ -104,7 +102,7 @@ void MultiContentsViewDropTargetController::OnWebContentsDragEnded() {
   drop_target_view_->Hide();
 }
 
-bool MultiContentsViewDropTargetController::HandleDragUpdate(
+void MultiContentsViewDropTargetController::HandleDragUpdate(
     const gfx::PointF& point_in_view) {
   CHECK_LE(0, point_in_view.x());
   CHECK_LE(point_in_view.x(), drop_target_parent_view_->width());
@@ -116,15 +114,16 @@ bool MultiContentsViewDropTargetController::HandleDragUpdate(
     StartOrUpdateDropTargetTimer(
         is_rtl ? MultiContentsDropTargetView::DropSide::START
                : MultiContentsDropTargetView::DropSide::END);
-    return true;
+    return;
   } else if (point_in_view.x() <= drop_entry_point_width) {
     StartOrUpdateDropTargetTimer(
         is_rtl ? MultiContentsDropTargetView::DropSide::END
                : MultiContentsDropTargetView::DropSide::START);
-    return true;
+    return;
   }
   ResetDropTargetTimer();
-  return false;
+  drop_target_view_->Hide();
+  return;
 }
 
 void MultiContentsViewDropTargetController::StartOrUpdateDropTargetTimer(
