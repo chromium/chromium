@@ -76,6 +76,9 @@ void AwFieldTrials::RegisterFeatureOverrides(base::FeatureList* feature_list) {
   // HDR does not support webview yet. See crbug.com/1493153 for an explanation.
   aw_feature_overrides.DisableFeature(ui::kAndroidHDR);
 
+  // Disable launch_handler on WebView.
+  aw_feature_overrides.DisableFeature(::features::kAndroidWebAppLaunchHandler);
+
   // Disable Reducing User Agent minor version on WebView.
   aw_feature_overrides.DisableFeature(
       blink::features::kReduceUserAgentMinorVersion);

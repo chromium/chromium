@@ -1060,12 +1060,12 @@
     "AndroidWebAppLaunchHandler": [
         {
             "platforms": [
-                "android"
+                "android_webview"
             ],
             "experiments": [
                 {
-                    "name": "Enabled",
-                    "enable_features": [
+                    "name": "Disabled",
+                    "disable_features": [
                         "AndroidWebAppLaunchHandler"
                     ]
                 }

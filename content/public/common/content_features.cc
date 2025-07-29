@@ -1501,7 +1501,7 @@ BASE_FEATURE(kAndroidOpenPdfInline,
 // A feature to enable launch handler and file handler api for Chrome on Android
 BASE_FEATURE(kAndroidWebAppLaunchHandler,
              "AndroidWebAppLaunchHandler",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Allows the use of "Smart Zoom", an alternative form of page zoom, and
 // enables the associated UI.

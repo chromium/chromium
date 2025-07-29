@@ -5329,7 +5329,7 @@
     },
     {
       name: "WebAppLaunchQueue",
-      status: {"Android": "test", "default": "stable"},
+      status: "stable",
       base_feature: "none",
     },
     {
