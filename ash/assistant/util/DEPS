@@ -11,9 +11,3 @@ include_rules = [
   "+ui/views",
   "+url",
 ]
-
-specific_include_rules = {
-  "deep_link_util_unittest\.cc": [
-    "+ash/test/ash_test_base.h",
-  ],
-}

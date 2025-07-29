@@ -31,19 +31,6 @@
     </cr-link-row>
   </template>
 
-  <!-- Google Assistant -->
-  <template is="dom-if" if="[[isAssistantAllowed_]]">
-    <cr-link-row
-        id="assistantRow"
-        start-icon="os-settings:assistant"
-        class="hr"
-        label="$i18n{searchGoogleAssistant}"
-        sub-label="[[getAssistantEnabledDisabledLabel_(
-            prefs.settings.voice_interaction.enabled.value)]]"
-        on-click="onGoogleAssistantClick_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-  </template>
   <settings-toggle-button id="contentRecommendationsToggle"
       class="hr"
       icon="os-settings:content-recommend"

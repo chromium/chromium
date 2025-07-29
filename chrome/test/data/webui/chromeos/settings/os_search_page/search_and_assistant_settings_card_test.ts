@@ -41,7 +41,6 @@ suite('<search-and-assistant-settings-card>', () => {
 
   setup(() => {
     loadTimeData.overrideValues({
-      isAssistantAllowed: false,
       isQuickAnswersSupported: false,
     });
   });
@@ -1112,38 +1111,10 @@ suite('<search-and-assistant-settings-card>', () => {
     });
   });
 
-  suite('when Assistant settings are available', () => {
-    setup(() => {
-      loadTimeData.overrideValues({isAssistantAllowed: true});
-    });
-
-    test('Assistant row should be visible', () => {
-      createSearchAndAssistantCard();
-      const assistantRow =
-          searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-              '#assistantRow');
-      assertTrue(isVisible(assistantRow));
-    });
-  });
-
-  suite('when Assistant settings are not available', () => {
-    test('Assistant row should not be stamped', () => {
-      createSearchAndAssistantCard();
-      const assistantRow =
-          searchAndAssistantSettingsCard.shadowRoot!.querySelector(
-              '#assistantRow');
-      assertNull(assistantRow);
-    });
-  });
-
   const subpageTriggerData: SubpageTriggerData[] = [
     {
       triggerSelector: '#searchRow',
       routeName: 'SEARCH_SUBPAGE',
-    },
-    {
-      triggerSelector: '#assistantRow',
-      routeName: 'GOOGLE_ASSISTANT',
     },
   ];
   subpageTriggerData.forEach(({triggerSelector, routeName}) => {

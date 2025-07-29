@@ -87,10 +87,6 @@ export function isSanitizeAllowed(): boolean {
 }
 
 // Search page
-export function isAssistantAllowed(): boolean {
-  return loadTimeData.getBoolean('isAssistantAllowed');
-}
-
 export function isQuickAnswersSupported(): boolean {
   return loadTimeData.getBoolean('isQuickAnswersSupported');
 }

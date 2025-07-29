@@ -23,7 +23,7 @@ import {assert} from 'chrome://resources/js/assert.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {DeepLinkingMixin} from '../common/deep_linking_mixin.js';
-import {isAssistantAllowed, isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isScannerSettingsToggleVisible} from '../common/load_time_booleans.js';
+import {isLobsterSettingsToggleVisible, isMagicBoostFeatureEnabled, isMagicBoostNoticeBannerVisible, isQuickAnswersSupported, isScannerSettingsToggleVisible} from '../common/load_time_booleans.js';
 import {RouteOriginMixin} from '../common/route_origin_mixin.js';
 import type {PrefsState} from '../common/types.js';
 import {Setting} from '../mojom-webui/setting.mojom-webui.js';
@@ -119,14 +119,6 @@ export class SearchAndAssistantSettingsCardElement extends
         readOnly: true,
         value: () => [ENTERPRISE_POLICY_DISALLOWED],
       },
-
-      /** Can be disallowed due to flag, policy, locale, etc. */
-      isAssistantAllowed_: {
-        type: Boolean,
-        value: () => {
-          return isAssistantAllowed();
-        },
-      },
     };
   }
 
@@ -144,7 +136,6 @@ export class SearchAndAssistantSettingsCardElement extends
   ]);
 
   private readonly enterprisePolicyToggleUncheckedValues_: number[];
-  private isAssistantAllowed_: boolean;
   private isHmrAllowedByEnterprisePolicy_: boolean;
   private isHmwAllowedByEnterprisePolicy_: boolean;
   private isLobsterAllowedByEnterprisePolicy_: boolean;
@@ -166,7 +157,6 @@ export class SearchAndAssistantSettingsCardElement extends
     super.ready();
 
     this.addFocusConfig(routes.SEARCH_SUBPAGE, '#searchRow');
-    this.addFocusConfig(routes.GOOGLE_ASSISTANT, '#assistantRow');
   }
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route): void {
@@ -183,18 +173,6 @@ export class SearchAndAssistantSettingsCardElement extends
   private onSearchClick_(): void {
     assert(this.isQuickAnswersSupported_);
     Router.getInstance().navigateTo(routes.SEARCH_SUBPAGE);
-  }
-
-  private onGoogleAssistantClick_(): void {
-    assert(this.isAssistantAllowed_);
-    Router.getInstance().navigateTo(routes.GOOGLE_ASSISTANT);
-  }
-
-  private getAssistantEnabledDisabledLabel_(isAssistantEnabled: boolean):
-      string {
-    return this.i18n(
-        isAssistantEnabled ? 'searchGoogleAssistantEnabled' :
-                             'searchGoogleAssistantDisabled');
   }
 
   private isEnterprisePolicyAllowed_(value: number): boolean {

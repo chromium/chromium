@@ -104,8 +104,8 @@ enum Subpage {
   // 506 was used for kWallpaperImages. Do not reuse.
   // 507 was used for kDarkMode. Do not reuse.
 
-  // Search and Assistant section.
-  kAssistant = 600,
+  // Search section.
+  // 600 was used for kAssistant. Do not reuse.
   kSearch = 601,
 
   // Apps section.
@@ -255,8 +255,7 @@ const string kCustomizePenButtonsSubpagePath =
 // Personalization section.
 const string kPersonalizationSectionPath = "personalization";
 
-// Search and Assistant section.
-const string kAssistantSubpagePath = "googleAssistant";
+// Search section.
 const string kSearchSubpagePath = "osSearch/search";
 
 // Apps section.

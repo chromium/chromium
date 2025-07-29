@@ -680,8 +680,6 @@ export class OsSearchResultRowElement extends OsSearchResultRowElementBase {
         return 'os-settings:apps-parental-controls';
       case SearchResultIcon.kAppsGrid:
         return 'os-settings:apps';
-      case SearchResultIcon.kAssistant:
-        return 'os-settings:assistant';
       case SearchResultIcon.kAudio:
         return 'os-settings:device-audio';
       case SearchResultIcon.kAuthKey:

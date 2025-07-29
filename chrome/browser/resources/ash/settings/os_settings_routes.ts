@@ -180,7 +180,6 @@ export interface OsSettingsRoutes extends MinimumRoutes {
   DISPLAY: Route;
   EXTERNAL_STORAGE_PREFERENCES: Route;
   FINGERPRINT: Route;
-  GOOGLE_ASSISTANT: Route;
   GOOGLE_DRIVE: Route;
   GRAPHICS_TABLET: Route;
   HOTSPOT_DETAIL: Route;
@@ -581,12 +580,9 @@ export function createRoutes(): OsSettingsRoutes {
         Subpage.kAppLanguages);
   }
 
-  // Search and Assistant subpages.
+  // Search subpages.
   r.SEARCH_SUBPAGE = createSubpage(
       r.SYSTEM_PREFERENCES, routesMojom.SEARCH_SUBPAGE_PATH, Subpage.kSearch);
-  r.GOOGLE_ASSISTANT = createSubpage(
-      r.SYSTEM_PREFERENCES, routesMojom.ASSISTANT_SUBPAGE_PATH,
-      Subpage.kAssistant);
 
   // Storage and power subpages.
   r.STORAGE = createSubpage(

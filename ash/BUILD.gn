@@ -3805,7 +3805,6 @@ test("ash_unittests") {
     "app_menu/notification_menu_controller_unittest.cc",
     "app_menu/notification_menu_view_unittest.cc",
     "app_menu/notification_overflow_view_unittest.cc",
-    "assistant/util/deep_link_util_unittest.cc",
     "assistant/util/resource_util_unittest.cc",
     "auth/test/active_session_auth_controller_unittest.cc",
     "auth/test/active_session_auth_metrics_recorder_unittest.cc",
