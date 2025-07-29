@@ -720,10 +720,11 @@ class ShowPopupInterceptor
     run_loop_.Quit();
   }
 
-  void DidCreatePopupWidget(RenderWidgetHostImpl* render_widget_host) {
+  void DidCreatePopupWidget(RenderWidgetHost* render_widget_host) {
     process_id_ = render_widget_host->GetProcess()->GetDeprecatedID();
     routing_id_ = render_widget_host->GetRoutingID();
-    std::ignore = render_widget_host->popup_widget_host_receiver_for_testing()
+    std::ignore = static_cast<RenderWidgetHostImpl*>(render_widget_host)
+                      ->popup_widget_host_receiver_for_testing()
                       .SwapImplForTesting(this);
   }
 

@@ -6504,9 +6504,9 @@ class NewPopupWidgetCreatedObserver {
   void ResumeShowPopupWidget() { show_interceptor_->ResumeShowPopupWidget(); }
 
  private:
-  void DidCreatePopupWidget(RenderWidgetHostImpl* widget) {
+  void DidCreatePopupWidget(RenderWidgetHost* widget) {
     show_interceptor_ = std::make_unique<ShowCreatedPopupWidgetInterceptor>(
-        widget, std::move(test_callback_));
+        static_cast<RenderWidgetHostImpl*>(widget), std::move(test_callback_));
   }
 
   CreateNewPopupWidgetInterceptor create_new_popup_widget_interceptor_;
