@@ -143,8 +143,6 @@ const CGFloat kMenuCornerRadius = 20;
   _readerModeOptionsViewController.mutator = _readerModeOptionsMediator;
   _readerModeOptionsViewController.controlsView.mutator =
       _readerModeOptionsMediator;
-  _readerModeOptionsMediator.consumer =
-      _readerModeOptionsViewController.controlsView;
   [_navigationController pushViewController:_readerModeOptionsViewController
                                    animated:YES];
 }
@@ -168,6 +166,10 @@ const CGFloat kMenuCornerRadius = 20;
     // just popped. In any case, `_readerModeOptionsViewController` can be set
     // to nil so it can be freed.
     _readerModeOptionsViewController = nil;
+    _readerModeOptionsMediator.consumer = _viewController;
+  } else {
+    _readerModeOptionsMediator.consumer =
+        _readerModeOptionsViewController.controlsView;
   }
   // Invalidate detents.
   [navigationController.sheetPresentationController animateChanges:^{

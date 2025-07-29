@@ -77,6 +77,9 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 // Whether reader mode is currently active.
 @property(nonatomic, assign) BOOL readerModeActive;
 
+// Label of the Reader mode options button. Lazily created.
+@property(nonatomic, strong) UILabel* readerModeOptionsButtonSubtitleLabel;
+
 @end
 
 @implementation PageActionMenuViewController {
@@ -185,6 +188,40 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
          kMenuTopPadding + bottomPaddingAboveSafeArea;
 }
 
+#pragma mark - ReaderModeOptionsConsumer
+
+- (void)setSelectedFontFamily:(dom_distiller::mojom::FontFamily)fontFamily {
+  std::u16string fontFamilyString;
+  switch (fontFamily) {
+    case dom_distiller::mojom::FontFamily::kSansSerif:
+      fontFamilyString = l10n_util::GetStringUTF16(
+          IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SANS_SERIF_LABEL);
+      break;
+    case dom_distiller::mojom::FontFamily::kSerif:
+      fontFamilyString = l10n_util::GetStringUTF16(
+          IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL);
+      break;
+    case dom_distiller::mojom::FontFamily::kMonospace:
+      fontFamilyString = l10n_util::GetStringUTF16(
+          IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_MONOSPACE_LABEL);
+      break;
+  }
+  self.readerModeOptionsButtonSubtitleLabel.text = l10n_util::GetNSStringF(
+      IDS_IOS_AI_HUB_READER_MODE_OPTIONS_FONT_LABEL, fontFamilyString);
+}
+
+- (void)setSelectedTheme:(dom_distiller::mojom::Theme)theme {
+  // Nothing to do.
+}
+
+- (void)setDecreaseFontSizeButtonEnabled:(BOOL)enabled {
+  // Nothing to do.
+}
+
+- (void)setIncreaseFontSizeButtonEnabled:(BOOL)enabled {
+  // Nothing to do.
+}
+
 #pragma mark - Private
 
 // Dismisses the page action menu.
@@ -275,17 +312,9 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
                                               UIFontWeightRegular);
   titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
-  UILabel* subtitleLabel = [[UILabel alloc] init];
-  // TODO(crbug.com/432213672): Replace this hard-coded string with a localized
-  // string which displays the currently selected font.
-  NSString* fontName = l10n_util::GetNSString(
-      IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL);
-  subtitleLabel.text = [NSString stringWithFormat:@"Font: %@", fontName];
-  subtitleLabel.font =
-      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
-  subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
-  UIStackView* labelStack = [[UIStackView alloc]
-      initWithArrangedSubviews:@[ titleLabel, subtitleLabel ]];
+  UIStackView* labelStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+    titleLabel, self.readerModeOptionsButtonSubtitleLabel
+  ]];
   labelStack.axis = UILayoutConstraintAxisVertical;
   labelStack.alignment = UIStackViewAlignmentLeading;
   [buttonContentStack addArrangedSubview:labelStack];
@@ -320,6 +349,20 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   AddSizeConstraints(trailingIcon, trailingIcon.intrinsicContentSize);
 
   return button;
+}
+
+- (UILabel*)readerModeOptionsButtonSubtitleLabel {
+  if (_readerModeOptionsButtonSubtitleLabel) {
+    return _readerModeOptionsButtonSubtitleLabel;
+  }
+
+  UILabel* label = [[UILabel alloc] init];
+  label.font =
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
+  label.textColor = [UIColor colorNamed:kTextSecondaryColor];
+
+  _readerModeOptionsButtonSubtitleLabel = label;
+  return _readerModeOptionsButtonSubtitleLabel;
 }
 
 // Creates the button to hide Reader mode.
