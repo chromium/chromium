@@ -299,7 +299,7 @@
 //! [macro]: crate::json
 //! [`serde-json-core`]: https://github.com/rust-embedded-community/serde-json-core
 
-#![doc(html_root_url = "https://docs.rs/serde_json/1.0.140")]
+#![doc(html_root_url = "https://docs.rs/serde_json/1.0.141")]
 // Ignored clippy lints
 #![allow(
     clippy::collapsible_else_if,
@@ -366,6 +366,7 @@
 #![deny(missing_docs)]
 #![no_std]
 #![cfg_attr(docsrs, feature(doc_cfg))]
+#![allow(unknown_lints, mismatched_lifetime_syntaxes)]
 
 #[cfg(not(any(feature = "std", feature = "alloc")))]
 compile_error! {

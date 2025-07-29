@@ -984,7 +984,7 @@ fn push_wtf8_codepoint(n: u32, scratch: &mut Vec<u8>) {
     scratch.reserve(4);
 
     // SAFETY: After the `reserve` call, `scratch` has at least 4 bytes of
-    // allocated but unintialized memory after its last initialized byte, which
+    // allocated but uninitialized memory after its last initialized byte, which
     // is where `ptr` points. All reachable match arms write `encoded_len` bytes
     // to that region and update the length accordingly, and `encoded_len` is
     // always <= 4.
