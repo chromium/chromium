@@ -11,6 +11,7 @@
 #include "base/containers/flat_set.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/values.h"
 #include "components/optimization_guide/core/delivery/model_info.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
@@ -31,11 +32,13 @@ class FakeBaseModelAsset {
     proto::OnDeviceModelExecutionConfig config;
     std::string version = "0.0.1";
     uint32_t cache_weight = 0;
-    int supported_performance_hint =
+    proto::OnDeviceModelPerformanceHint supported_performance_hint =
         proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);
+  explicit FakeBaseModelAsset(
+      std::vector<proto::OnDeviceModelPerformanceHint> hints);
   explicit FakeBaseModelAsset(
       proto::OnDeviceModelValidationConfig&& validation_config);
   ~FakeBaseModelAsset();
@@ -55,7 +58,7 @@ class FakeBaseModelAsset {
 
  private:
   std::string version_;
-  int supported_performance_hint_;
+  base::Value::List supported_performance_hints_;
   base::ScopedTempDir temp_dir_;
 };
 

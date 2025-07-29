@@ -757,13 +757,5 @@ OptimizationGuideKeyedService::GetPossibleOnDeviceCapabilities() const {
   if (!optimization_guide_global_state_) {
     return {};
   }
-  auto& manager = optimization_guide_global_state_->component_state_manager();
-  on_device_model::Capabilities capabilities;
-  if (manager.SupportsImageInput()) {
-    capabilities.Put(on_device_model::CapabilityFlags::kImageInput);
-  }
-  if (manager.SupportsAudioInput()) {
-    capabilities.Put(on_device_model::CapabilityFlags::kAudioInput);
-  }
-  return capabilities;
+  return optimization_guide_global_state_->GetPossibleOnDeviceCapabilities();
 }

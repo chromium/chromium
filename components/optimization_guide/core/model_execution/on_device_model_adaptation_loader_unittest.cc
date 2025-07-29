@@ -6,6 +6,7 @@
 
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/functional/callback_helpers.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -14,6 +15,7 @@
 #include "components/optimization_guide/core/delivery/test_model_info_builder.h"
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
+#include "components/optimization_guide/core/model_execution/model_broker_state.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
 #include "components/optimization_guide/core/model_execution/model_execution_prefs.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
@@ -126,14 +128,16 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
     model_execution::prefs::RegisterLocalStatePrefs(local_state_.registry());
     UpdatePerformanceClassPref(&local_state_,
                                OnDeviceModelPerformanceClass::kHigh);
+    model_broker_state_.Init();
 
-    on_device_component_state_manager_.get()->OnDeviceEligibleFeatureUsed(
+    model_broker_state_.component_state_manager().OnDeviceEligibleFeatureUsed(
         ModelBasedCapabilityKey::kTest);
     task_environment_.RunUntilIdle();
 
     adaptation_loader_ = std::make_unique<OnDeviceModelAdaptationLoader>(
         ModelBasedCapabilityKey::kTest, &model_provider_,
-        on_device_component_state_manager_.get()->GetWeakPtr(), &local_state_,
+        model_broker_state_.component_state_manager().GetWeakPtr(),
+        &local_state_,
         base::BindRepeating(
             &OnDeviceModelAdaptationLoaderTest::OnModelAdaptationLoaded,
             base::Unretained(this)));
@@ -145,7 +149,7 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   }
 
   void SetBaseModelStateChanged(const FakeBaseModelAsset& base_model_asset) {
-    on_device_component_state_manager_.SetReady(base_model_asset);
+    base_model_asset.SetReadyIn(model_broker_state_.component_state_manager());
   }
 
   void SendAdaptationModelUpdated(
@@ -171,8 +175,9 @@ class OnDeviceModelAdaptationLoaderTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   TestingPrefServiceSimple local_state_;
   base::ScopedTempDir temp_dir_;
-  TestOnDeviceModelComponentStateManager on_device_component_state_manager_{
-      &local_state_};
+  TestComponentState test_component_state_;
+  ModelBrokerState model_broker_state_{
+      &local_state_, test_component_state_.CreateDelegate(), base::DoNothing()};
   FakeOptimizationGuideModelProvider model_provider_;
   std::unique_ptr<OnDeviceModelAdaptationLoader> adaptation_loader_;
   MaybeAdaptationMetadata adaptation_metadata_{

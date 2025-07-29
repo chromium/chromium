@@ -13,6 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -167,9 +168,8 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
     model_execution::prefs::RegisterLocalStatePrefs(pref_service_.registry());
 
     // Fake the requirements to install the model.
-    pref_service_.SetInteger(
-        model_execution::prefs::localstate::kOnDevicePerformanceClass,
-        base::to_underlying(OnDeviceModelPerformanceClass::kHigh));
+    UpdatePerformanceClassPref(&pref_service_,
+                               OnDeviceModelPerformanceClass::kVeryHigh);
     model_execution::prefs::RecordFeatureUsage(
         &pref_service_, ModelBasedCapabilityKey::kCompose);
   }
@@ -187,7 +187,7 @@ class OnDeviceModelServiceControllerTest : public testing::Test {
                                 component_state_.CreateDelegate(),
                                 fake_launcher_.LaunchFn());
     model_broker_state_->Init();
-    task_environment_.FastForwardBy(base::Seconds(1));
+    component_state_.WaitForRegistration();
     if (params.base_model) {
       params.base_model->SetReadyIn(
           model_broker_state_->component_state_manager());
@@ -605,6 +605,9 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelAdaptationAndBaseModelSuccess) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        SessionCreationFailsWhenExecutionNotEnabled) {
+  // Mark another feature used so registration still happens.
+  model_execution::prefs::RecordFeatureUsage(
+      &pref_service_, ModelBasedCapabilityKey::kPromptApi);
   base::test::ScopedFeatureList feature_list;
   feature_list.InitWithFeatures(
       {}, {features::kOptimizationGuideComposeOnDeviceEval});
@@ -2037,8 +2040,16 @@ TEST_F(OnDeviceModelServiceControllerTest, DisconnectsWhenIdle) {
 
 TEST_F(OnDeviceModelServiceControllerTest,
        ShutsDownServiceAfterPerformanceCheck) {
-  Initialize(standard_assets_);
   base::HistogramTester histogram_tester;
+  pref_service_.SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+      "0.0.0.1");
+  model_broker_state_.emplace(&pref_service_, component_state_.CreateDelegate(),
+                              fake_launcher_.LaunchFn());
+  model_broker_state_->Init();
+  EXPECT_FALSE(model_broker_state_->performance_classifier()
+                   .IsPerformanceClassAvailable());
+  fake_launcher_.clear_did_launch_service();
   base::RunLoop run_loop;
   model_broker_state_->performance_classifier().EnsurePerformanceClassAvailable(
       run_loop.QuitClosure());
@@ -2046,8 +2057,9 @@ TEST_F(OnDeviceModelServiceControllerTest,
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
       OnDeviceModelPerformanceClass::kVeryHigh, 1);
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(fake_launcher_.is_service_running());
+  EXPECT_TRUE(fake_launcher_.did_launch_service());
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return !fake_launcher_.is_service_running(); }));
 }
 
 TEST_F(OnDeviceModelServiceControllerTest, RedactedField) {
@@ -3161,68 +3173,6 @@ TEST_F(OnDeviceModelServiceControllerTest, ModelValidationFailsOnCrash) {
       OnDeviceModelValidationResult::kServiceCrash, 1);
 }
 
-TEST_F(OnDeviceModelServiceControllerTest,
-       PerformanceCheckDoesNotInterruptModelValidation) {
-  fake_settings_.set_execute_delay(base::Seconds(10));
-
-  FakeBaseModelAsset base_model(WillPassValidationConfig());
-  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
-
-  base::HistogramTester histogram_tester;
-  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
-  task_environment_.RunUntilIdle();
-
-  base::RunLoop run_loop;
-  model_broker_state_->performance_classifier().EnsurePerformanceClassAvailable(
-      run_loop.QuitClosure());
-  run_loop.Run();
-  task_environment_.RunUntilIdle();
-
-  // Performance check sh;ould not shut down service.
-  EXPECT_TRUE(fake_launcher_.is_service_running());
-  histogram_tester.ExpectTotalCount(
-      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult", 0);
-
-  task_environment_.FastForwardBy(base::Seconds(10) + base::Milliseconds(1));
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(fake_launcher_.is_service_running());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
-      OnDeviceModelValidationResult::kSuccess, 1);
-}
-
-TEST_F(OnDeviceModelServiceControllerTest,
-       ModelValidationDoesNotInterruptPerformanceCheck) {
-  fake_settings_.set_estimated_performance_delay(base::Seconds(10));
-  fake_settings_.set_execute_delay(base::Seconds(1));
-
-  FakeBaseModelAsset base_model(WillPassValidationConfig());
-  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
-
-  base::HistogramTester histogram_tester;
-  Initialize({.base_model = &base_model, .adaptations = {&compose_asset}});
-  task_environment_.RunUntilIdle();
-
-  base::RunLoop run_loop;
-  model_broker_state_->performance_classifier().EnsurePerformanceClassAvailable(
-      run_loop.QuitClosure());
-
-  task_environment_.FastForwardBy(base::Seconds(1) + base::Milliseconds(1));
-  task_environment_.RunUntilIdle();
-  // Still connected since the performance estimator is running.
-  EXPECT_TRUE(fake_launcher_.is_service_running());
-
-  histogram_tester.ExpectUniqueSample(
-      "OptimizationGuide.ModelExecution.OnDeviceModelValidationResult",
-      OnDeviceModelValidationResult::kSuccess, 1);
-
-  EXPECT_FALSE(run_loop.AnyQuitCalled());
-  run_loop.Run();
-  task_environment_.RunUntilIdle();
-  EXPECT_FALSE(fake_launcher_.is_service_running());
-}
-
 TEST_F(OnDeviceModelServiceControllerTest, SendsPerformanceHint) {
   FakeBaseModelAsset base_model(
       {.supported_performance_hint =
@@ -3718,6 +3668,10 @@ TEST_F(OnDeviceModelServiceControllerTest,
   base::HistogramTester histogram_tester;
   mojo::PendingReceiver<mojom::ModelBroker> pending_broker;
 
+  pref_service_.SetString(
+      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
+      "0.0.0.1");
+
   ModelBrokerClient broker_client(
       pending_broker.InitWithNewPipeAndPassRemote(),
       CreateSessionArgs(logger_.GetWeakPtr(), FailOnRemoteFallback()));
@@ -3727,10 +3681,11 @@ TEST_F(OnDeviceModelServiceControllerTest,
   broker_client.CreateSession(mojom::ModelBasedCapabilityKey::kCompose,
                               std::nullopt, session_future.GetCallback());
 
-  Initialize(standard_assets_);
+  model_broker_state_.emplace(&pref_service_, component_state_.CreateDelegate(),
+                              fake_launcher_.LaunchFn());
+  model_broker_state_->Init();
   controller().BindBroker(std::move(pending_broker));
-
-  ASSERT_TRUE(session_future.Take());
+  component_state_.WaitForRegistration();
   histogram_tester.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelPerformanceClass",
       OnDeviceModelPerformanceClass::kVeryHigh, 1);

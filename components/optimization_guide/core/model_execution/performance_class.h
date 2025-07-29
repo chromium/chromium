@@ -7,8 +7,8 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
-#include "components/optimization_guide/core/model_execution/on_device_model_component.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
+#include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
 #include "components/prefs/pref_service.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom-shared.h"
@@ -42,17 +42,16 @@ std::string SyntheticTrialGroupForPerformanceClass(
 class PerformanceClassifier final {
  public:
   PerformanceClassifier(
-      base::SafeRef<OnDeviceModelComponentStateManager>
-          on_device_component_state_manager,
+      PrefService* local_state,
       base::SafeRef<on_device_model::ServiceClient> service_client);
   ~PerformanceClassifier();
 
   base::SafeRef<PerformanceClassifier> GetSafeRef() {
     return weak_ptr_factory_.GetSafeRef();
   }
-  base::WeakPtr<PerformanceClassifier> GetWeakPtr() {
-    return weak_ptr_factory_.GetWeakPtr();
-  }
+
+  // Do deferred initialization, like reading prefs / checking features.
+  void Init();
 
   // Ensures the performance class will be up to date and available when
   // `complete` runs.
@@ -63,25 +62,50 @@ class PerformanceClassifier final {
   // available.
   bool ListenForPerformanceClassAvailable(base::OnceClosure available);
 
+  // Schedules a call to EnsurePerformanceClassAvailable after a delay.
+  void ScheduleEvaluation();
+
+  // Whether the performance class has been determined yet.
+  bool IsPerformanceClassAvailable() const {
+    return performance_class_state_ == PerformanceClassState::kComplete;
+  }
+
+  // The below methods all require PerformanceClassAvailable and may give a
+  // stale value otherwise.
+
+  // Returns the latest performance class.
+  OnDeviceModelPerformanceClass GetPerformanceClass() const;
+  // Returns true if this device can run any foundational model.
+  bool IsDeviceCapable() const;
+  // Returns true if this device can run any GPU foundational model.
+  bool IsDeviceGPUCapable() const;
+  // Returns true if this is determined to be a low tier device.
+  bool IsLowTierDevice() const;
+  // Returns true if the device supports image input.
+  bool SupportsImageInput() const;
+  // Returns true if the device supports audio input.
+  bool SupportsAudioInput() const;
+  // Returns a list of performance hints this device supports in priority order,
+  // with highest priority first.
+  std::vector<proto::OnDeviceModelPerformanceHint> GetPossibleHints() const;
+
+  on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const;
+
  private:
-  // Called when performance class has finished updating.
-  void PerformanceClassUpdated(OnDeviceModelPerformanceClass perf_class);
+  // Called when performance class has finished evaluating.
+  void PerformanceClassEvaluated(OnDeviceModelPerformanceClass perf_class);
 
-  // Notify observers that the performance class is available.
-  void NotifyPerformanceClassAvailable();
-
-  base::SafeRef<OnDeviceModelComponentStateManager>
-      on_device_component_state_manager_;
+  raw_ptr<PrefService> local_state_;
 
   base::SafeRef<on_device_model::ServiceClient> service_client_;
 
   enum class PerformanceClassState {
-    kNotSet,
+    kNotStarted,
     kComputing,
     kComplete,
   };
   PerformanceClassState performance_class_state_ =
-      PerformanceClassState::kNotSet;
+      PerformanceClassState::kNotStarted;
 
   // Callbacks waiting for performance class to finish computing.
   base::OnceClosureList performance_class_callbacks_;

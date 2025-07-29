@@ -118,18 +118,7 @@ OptimizationGuideGlobalState::OptimizationGuideGlobalState()
       .ListenForPerformanceClassAvailable(
           base::BindOnce(&ChromeOnDeviceModelServiceController::
                              RegisterPerformanceClassSyntheticTrial));
-  if ((base::FeatureList::IsEnabled(
-           optimization_guide::features::kLogOnDeviceMetricsOnStartup) ||
-       optimization_guide::features::IsOnDeviceExecutionEnabled()) &&
-      component_state_manager().NeedsPerformanceClassUpdate()) {
-    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &PerformanceClassifier::EnsurePerformanceClassAvailable,
-            model_broker_state_.performance_classifier().GetWeakPtr(),
-            base::DoNothing()),
-        optimization_guide::features::GetOnDeviceStartupMetricDelay());
-  }
+  model_broker_state_.performance_classifier().ScheduleEvaluation();
 }
 OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
 

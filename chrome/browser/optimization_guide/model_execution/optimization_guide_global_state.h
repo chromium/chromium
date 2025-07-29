@@ -52,6 +52,10 @@ class OptimizationGuideGlobalState final
         .EnsurePerformanceClassAvailable(std::move(complete));
   }
 
+  on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const {
+    return model_broker_state_.GetPossibleOnDeviceCapabilities();
+  }
+
  private:
   friend base::RefCounted<OptimizationGuideGlobalState>;
   OptimizationGuideGlobalState();

@@ -45,6 +45,9 @@ struct FakeOnDeviceServiceSettings final {
   // The delay before running the GetDevicePerformanceInfo() response callback.
   base::TimeDelta estimated_performance_delay;
 
+  mojom::PerformanceClass performance_class =
+      mojom::PerformanceClass::kVeryHigh;
+
   // If non-empty, used as the output from Execute().
   std::vector<std::string> model_execute_result;
 

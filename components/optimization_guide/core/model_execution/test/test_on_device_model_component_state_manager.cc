@@ -28,8 +28,12 @@ class TestComponentState::DelegateImpl
       base::WeakPtr<OnDeviceModelComponentStateManager> state_manager,
       bool is_already_installing) override {
     if (state_) {
-      state_->installer_registered_ = true;
+      state_->registered_manager_ = state_manager;
+      if (state_->installed_asset_) {
+        state_->installed_asset_->SetReadyIn(*state_manager);
+      }
     }
+    state_manager->InstallerRegistered();
   }
   void Uninstall(base::WeakPtr<OnDeviceModelComponentStateManager>
                      state_manager) override {
@@ -48,7 +52,6 @@ class TestComponentState::DelegateImpl
   }
 
  private:
-  friend class TestOnDeviceModelComponentStateManager;
   base::WeakPtr<TestComponentState> state_;
 };
 
@@ -60,48 +63,11 @@ TestComponentState::CreateDelegate() {
   return std::make_unique<DelegateImpl>(weak_ptr_factory_.GetWeakPtr());
 }
 
-TestOnDeviceModelComponentStateManager::TestOnDeviceModelComponentStateManager(
-    PrefService* local_state)
-    : local_state_(local_state),
-      state_(std::make_unique<TestComponentState>()) {}
-
-TestOnDeviceModelComponentStateManager::
-    ~TestOnDeviceModelComponentStateManager() {
-  Reset();
-}
-
-base::WeakPtr<OnDeviceModelComponentStateManager>
-TestOnDeviceModelComponentStateManager::get() {
-  // Note that we create the instance lazily to allow tests time to register
-  // prefs.
-  if (!manager_) {
-    manager_ = std::make_unique<OnDeviceModelComponentStateManager>(
-        local_state_, state_->CreateDelegate());
+void TestComponentState::Install(std::unique_ptr<FakeBaseModelAsset> asset) {
+  installed_asset_ = std::move(asset);
+  if (registered_manager_) {
+    installed_asset_->SetReadyIn(*registered_manager_);
   }
-  return manager_->GetWeakPtr();
-}
-
-void TestOnDeviceModelComponentStateManager::Reset() {
-  manager_ = nullptr;
-  state_ = std::make_unique<TestComponentState>();
-}
-
-bool TestOnDeviceModelComponentStateManager::IsInstallerRegistered() const {
-  return state_->installer_registered();
-}
-
-bool TestOnDeviceModelComponentStateManager::WasComponentUninstalled() const {
-  return state_->uninstall_called();
-}
-
-void TestOnDeviceModelComponentStateManager::SetFreeDiskSpace(
-    int64_t free_space_bytes) {
-  state_->SetFreeDiskSpace(free_space_bytes);
-}
-
-void TestOnDeviceModelComponentStateManager::SetReady(
-    const FakeBaseModelAsset& asset) {
-  asset.SetReadyIn(*get());
 }
 
 }  // namespace optimization_guide

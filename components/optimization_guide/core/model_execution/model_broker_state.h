@@ -40,6 +40,10 @@ class ModelBrokerState {
     return *service_controller_;
   }
 
+  on_device_model::Capabilities GetPossibleOnDeviceCapabilities() const {
+    return performance_classifier_.GetPossibleOnDeviceCapabilities();
+  }
+
   // Executes initialization steps. This is normally called immediately on
   // construction, but can be called later to allow tests to register
   // preferences and other state.
@@ -52,8 +56,8 @@ class ModelBrokerState {
  private:
   raw_ptr<PrefService> local_state_;
   on_device_model::ServiceClient service_client_;
-  OnDeviceModelComponentStateManager component_state_manager_;
   PerformanceClassifier performance_classifier_;
+  OnDeviceModelComponentStateManager component_state_manager_;
   std::unique_ptr<OnDeviceModelServiceController> service_controller_;
 };
 

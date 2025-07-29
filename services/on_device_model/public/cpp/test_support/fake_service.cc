@@ -454,7 +454,7 @@ void FakeOnDeviceModelService::LoadTextSafetyModel(
 void FakeOnDeviceModelService::GetDevicePerformanceInfo(
     GetDevicePerformanceInfoCallback callback) {
   auto result = mojom::DevicePerformanceInfo::New();
-  result->performance_class = mojom::PerformanceClass::kVeryHigh;
+  result->performance_class = settings_->performance_class;
   base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, base::BindOnce(std::move(callback), std::move(result)),
       settings_->estimated_performance_delay);

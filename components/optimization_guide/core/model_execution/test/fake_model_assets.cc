@@ -25,10 +25,19 @@ namespace optimization_guide {
 FakeBaseModelAsset::FakeBaseModelAsset()
     : FakeBaseModelAsset(FakeBaseModelAsset::Content{}) {}
 FakeBaseModelAsset::FakeBaseModelAsset(Content&& content)
-    : version_(content.version),
-      supported_performance_hint_(content.supported_performance_hint) {
+    : version_(content.version) {
   CHECK(temp_dir_.CreateUniqueTempDir());
+  supported_performance_hints_.Append(content.supported_performance_hint);
   Write(std::move(content));
+}
+FakeBaseModelAsset::FakeBaseModelAsset(
+    std::vector<proto::OnDeviceModelPerformanceHint> hints)
+    : version_("0.0.1") {
+  CHECK(temp_dir_.CreateUniqueTempDir());
+  for (auto hint : hints) {
+    supported_performance_hints_.Append(hint);
+  }
+  Write({});
 }
 FakeBaseModelAsset::FakeBaseModelAsset(
     proto::OnDeviceModelValidationConfig&& validation_config)
@@ -51,12 +60,11 @@ void FakeBaseModelAsset::Write(Content&& content) {
 
 base::Value::Dict FakeBaseModelAsset::Manifest() const {
   return base::Value::Dict().Set(
-      "BaseModelSpec",
-      base::Value::Dict()
-          .Set("version", "0.0.1")
-          .Set("name", "Test")
-          .Set("supported_performance_hints",
-               base::Value::List().Append(supported_performance_hint_)));
+      "BaseModelSpec", base::Value::Dict()
+                           .Set("version", "0.0.1")
+                           .Set("name", "Test")
+                           .Set("supported_performance_hints",
+                                supported_performance_hints_.Clone()));
 }
 
 void FakeBaseModelAsset::SetReadyIn(

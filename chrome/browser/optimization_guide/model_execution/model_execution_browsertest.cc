@@ -33,6 +33,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/model_execution/test/fake_model_assets.h"
 #include "components/optimization_guide/core/model_execution/test/feature_config_builder.h"
 #include "components/optimization_guide/core/model_quality/model_execution_logging_wrappers.h"
@@ -460,6 +461,11 @@ class ModelExecutionEnabledBrowserTest : public ModelExecutionBrowserTestBase {
         {});
   }
 
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
+    UpdatePerformanceClassPref(local_state,
+                               OnDeviceModelPerformanceClass::kServiceCrash);
+  }
+
   OptimizationGuideKeyedService* GetOptGuideKeyedService() {
     return OptimizationGuideKeyedServiceFactory::GetForProfile(
         browser()->profile());
@@ -696,9 +702,14 @@ class OnDeviceModelExecutionEnabledBrowserTest
     return OptimizationGuideGlobalState::CreateOrGet().get();
   }
 
-  void SetUpGlobalAssets() {
+  void SetUpLocalStatePrefService(PrefService* local_state) override {
     model_execution::prefs::RecordFeatureUsage(
-        g_browser_process->local_state(), ModelBasedCapabilityKey::kCompose);
+        local_state, ModelBasedCapabilityKey::kCompose);
+    UpdatePerformanceClassPref(local_state,
+                               OnDeviceModelPerformanceClass::kVeryHigh);
+  }
+
+  void SetUpGlobalAssets() {
     base_model_asset_.SetReadyIn(broker_state()->component_state_manager());
   }
 
@@ -708,7 +719,7 @@ class OnDeviceModelExecutionEnabledBrowserTest
   }
 
  private:
-  optimization_guide::FakeBaseModelAsset base_model_asset_;
+  FakeBaseModelAsset base_model_asset_;
   FakeAdaptationAsset compose_asset_{{
       .config =
           []() {
