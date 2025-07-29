@@ -15,17 +15,13 @@ Shared `GEMINI.md` prompts. See [`//agents/prompts/README.md`].
 
 [`//agents/prompts/README.md`]: /agents/prompts/README.md
 
-### MCPs (Model Context Protocols)
+### Extensions & MCP Servers
 
-Chrome-approved MCP servers. See [`//agents/mcp/README.md`].
+Chrome-approved extensions & MCP servers. See [`//agents/extensions/README.md`].
 
-Use `agents/mcp/install.py` to list and configure available servers.
+Use `agents/extensions/install.py` to list and configure available servers.
 
-[`//agents/mcp/README.md`]: /agents/mcp/README.md
-
-### Extensions
-
-Similar to `mcp`, but not a server.
+[`//agents/extensions/README.md`]: /agents/extensions/README.md
 
 ## Contributing
 
