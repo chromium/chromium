@@ -11,6 +11,7 @@
 #include <set>
 #include <vector>
 
+#include "base/files/file_path.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
@@ -40,6 +41,24 @@ class SqlEntryImpl;
 // yet implemented, returning `net::ERR_NOT_IMPLEMENTED`.
 class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
  public:
+  // An enumeration of errors that can occur during the fake index file check.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(FakeIndexFileError)
+  enum class FakeIndexFileError {
+    kOkNew = 0,
+    kOkExisting = 1,
+    kCreateFileFailed = 2,
+    kWriteFileFailed = 3,
+    kWrongFileSize = 4,
+    kOpenFileFailed = 5,
+    kReadFileFailed = 6,
+    kWrongMagicNumber = 7,
+    kMaxValue = kWrongMagicNumber,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheFakeIndexFileError)
+
   SqlBackendImpl(const base::FilePath& path,
                  int64_t max_bytes,
                  net::CacheType cache_type);
@@ -49,7 +68,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
 
   ~SqlBackendImpl() override;
 
-  // Finishes initialization. Always asynchronous.
+  // Initializes the backend, which includes initializing the persistent store
+  // and checking for a fake index file. These two operations are performed in
+  // parallel.
   void Init(CompletionOnceCallback callback);
 
   // Backend interface.
@@ -188,6 +209,9 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     std::optional<scoped_refptr<net::GrowableIOBuffer>> head;
     std::optional<int64_t> body_end;
   };
+
+  void OnInitialized(CompletionOnceCallback callback,
+                     const std::vector<bool>& results);
 
   SqlEntryImpl* GetActiveEntry(const CacheEntryKey& key);
 
@@ -361,6 +385,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
   // operation to ensure it has sole access to the cache during cleanup.
   void HandleDeleteDoomedEntriesOperation(
       std::unique_ptr<ExclusiveOperationCoordinator::OperationHandle> handle);
+
+  const base::FilePath path_;
 
   // Task runner for all background SQLite operations.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

@@ -4,6 +4,8 @@
 
 #include "net/disk_cache/sql/sql_backend_impl.h"
 
+#include "base/containers/span.h"
+#include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
 #include "base/memory/scoped_refptr.h"
@@ -12,6 +14,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_file_util.h"
 #include "base/test/test_future.h"
 #include "net/base/io_buffer.h"
 #include "net/base/test_completion_callback.h"
@@ -30,6 +33,7 @@ namespace {
 
 using testing::ElementsAre;
 using testing::Pair;
+using FakeIndexFileError = SqlBackendImpl::FakeIndexFileError;
 
 // Default max cache size for tests, 10 MB.
 inline constexpr int64_t kDefaultMaxBytes = 10 * 1024 * 1024;
@@ -73,6 +77,11 @@ class SqlBackendImplTest : public testing::Test {
   void SetUp() override { ASSERT_TRUE(temp_dir_.CreateUniqueTempDir()); }
 
  protected:
+  std::unique_ptr<SqlBackendImpl> CreateBackend() {
+    return std::make_unique<SqlBackendImpl>(
+        temp_dir_.GetPath(), kDefaultMaxBytes, net::CacheType::DISK_CACHE);
+  }
+
   std::unique_ptr<SqlBackendImpl> CreateBackendAndInit(
       int64_t max_bytes = kDefaultMaxBytes) {
     auto backend = std::make_unique<SqlBackendImpl>(
@@ -88,6 +97,105 @@ class SqlBackendImplTest : public testing::Test {
 
   base::ScopedTempDir temp_dir_;
 };
+
+TEST_F(SqlBackendImplTest, InitWithNoFakeIndexFile) {
+  base::HistogramTester histogram_tester;
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::OK);
+  histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                      FakeIndexFileError::kOkNew, 1);
+
+  base::FilePath file_path =
+      temp_dir_.GetPath().Append(kSqlBackendFakeIndexFileName);
+  const std::optional<int64_t> file_size = base::GetFileSize(file_path);
+  ASSERT_TRUE(file_size.has_value());
+  EXPECT_EQ(*file_size, sizeof(kSqlBackendFakeIndexMagicNumber));
+  int64_t magic_number_from_file;
+  ASSERT_TRUE(base::ReadFile(file_path,
+                             base::byte_span_from_ref(magic_number_from_file)));
+  EXPECT_EQ(magic_number_from_file, kSqlBackendFakeIndexMagicNumber);
+}
+
+TEST_F(SqlBackendImplTest, InitWithFakeIndexFile) {
+  base::HistogramTester histogram_tester;
+  base::FilePath file_path =
+      temp_dir_.GetPath().Append(kSqlBackendFakeIndexFileName);
+  ASSERT_TRUE(base::WriteFile(
+      file_path, base::byte_span_from_ref(kSqlBackendFakeIndexMagicNumber)));
+
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::OK);
+  histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                      FakeIndexFileError::kOkExisting, 1);
+}
+
+TEST_F(SqlBackendImplTest, InitWithCorruptedFakeIndexFile) {
+  base::HistogramTester histogram_tester;
+  base::FilePath file_path =
+      temp_dir_.GetPath().Append(kSqlBackendFakeIndexFileName);
+  const int64_t kWrongMagicNumber = 0xDEADBEEFDEADBEEF;
+  ASSERT_TRUE(
+      base::WriteFile(file_path, base::byte_span_from_ref(kWrongMagicNumber)));
+
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+  histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                      FakeIndexFileError::kWrongMagicNumber, 1);
+}
+
+TEST_F(SqlBackendImplTest, InitWithWrongSizeFakeIndexFile) {
+  base::HistogramTester histogram_tester;
+  base::FilePath file_path =
+      temp_dir_.GetPath().Append(kSqlBackendFakeIndexFileName);
+  const int32_t kWrongMagicNumber = 0xDEADBEEF;
+  ASSERT_TRUE(
+      base::WriteFile(file_path, base::byte_span_from_ref(kWrongMagicNumber)));
+
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+  histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                      FakeIndexFileError::kWrongFileSize, 1);
+}
+
+TEST_F(SqlBackendImplTest, InitWithOpenFileFailed) {
+  base::HistogramTester histogram_tester;
+  base::FilePath file_path =
+      temp_dir_.GetPath().Append(kSqlBackendFakeIndexFileName);
+  ASSERT_TRUE(base::WriteFile(
+      file_path, base::byte_span_from_ref(kSqlBackendFakeIndexMagicNumber)));
+  base::FilePermissionRestorer permission_restorer(file_path);
+  // Make the file unreadable.
+  ASSERT_TRUE(base::MakeFileUnreadable(file_path));
+
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+  histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                      FakeIndexFileError::kOpenFileFailed, 1);
+}
+
+TEST_F(SqlBackendImplTest, InitWithCreateFileFailed) {
+  base::HistogramTester histogram_tester;
+  base::FilePermissionRestorer permission_restorer(temp_dir_.GetPath());
+  // Make the directory unwrittable.
+  ASSERT_TRUE(base::MakeFileUnwritable(temp_dir_.GetPath()));
+
+  auto backend = CreateBackend();
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+  histogram_tester.ExpectUniqueSample("Net.SqlDiskCache.FakeIndexFileError",
+                                      FakeIndexFileError::kCreateFileFailed, 1);
+}
 
 TEST_F(SqlBackendImplTest, MaxFileSizeSmallMax) {
   const int64_t kMaxBytes = 10 * 1024 * 1024;

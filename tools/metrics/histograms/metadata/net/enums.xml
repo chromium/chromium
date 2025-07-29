@@ -2920,6 +2920,21 @@ Called by update_net_trust_anchors.py.-->
   <int value="3" label="imported from socket"/>
 </enum>
 
+<!-- LINT.IfChange(SqlDiskCacheFakeIndexFileError) -->
+
+<enum name="SqlDiskCacheFakeIndexFileError">
+  <int value="0" label="OkNew"/>
+  <int value="1" label="OkExisting"/>
+  <int value="2" label="CreateFileFailed"/>
+  <int value="3" label="WriteFileFailed"/>
+  <int value="4" label="WrongFileSize"/>
+  <int value="5" label="OpenFileFailed"/>
+  <int value="6" label="ReadFileFailed"/>
+  <int value="7" label="WrongMagicNumber"/>
+</enum>
+
+<!-- LINT.ThenChange(//net/disk_cache/sql/sql_backend_impl.h:FakeIndexFileError) -->
+
 <!-- LINT.IfChange(SqlDiskCacheStoreError) -->
 
 <enum name="SqlDiskCacheStoreError">

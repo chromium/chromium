@@ -32,6 +32,17 @@ inline constexpr std::string_view kSqlBackendMetaTableKeyTotalSize =
 inline constexpr base::FilePath::CharType kSqlBackendDatabaseFileName[] =
     FILE_PATH_LITERAL("sqldb");
 
+// The name of the fake index file. This file is created to signal the presence
+// of the SQL backend and to prevent other backends from trying to use the same
+// directory.
+inline constexpr base::FilePath::CharType kSqlBackendFakeIndexFileName[] =
+    FILE_PATH_LITERAL("index");
+
+// The magic number for the fake index file. This is "SQLCache" in
+// little-endian.
+inline constexpr uint64_t kSqlBackendFakeIndexMagicNumber =
+    UINT64_C(0x65686361434c5153);
+
 // The oldest database schema version that the current code can read.
 // A database with a version older than this will be razed as it's considered
 // obsolete and the code no longer supports migrating from it.

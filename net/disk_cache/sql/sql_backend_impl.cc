@@ -9,9 +9,14 @@
 
 #include "base/barrier_callback.h"
 #include "base/containers/flat_set.h"
+#include "base/containers/span.h"
+#include "base/files/file.h"
+#include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notimplemented.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/task_runner.h"
@@ -25,6 +30,49 @@
 
 namespace disk_cache {
 namespace {
+
+using FakeIndexFileError = SqlBackendImpl::FakeIndexFileError;
+
+// Checks the fake index file, creating it if it doesn't exist. Returns an
+// error code if the file is corrupted or cannot be created.
+FakeIndexFileError CheckFakeIndexFileInternal(const base::FilePath& path) {
+  const base::FilePath file_path = path.Append(kSqlBackendFakeIndexFileName);
+  const std::optional<int64_t> file_size = base::GetFileSize(file_path);
+  if (file_size.has_value()) {
+    if (file_size != sizeof(kSqlBackendFakeIndexMagicNumber)) {
+      return FakeIndexFileError::kWrongFileSize;
+    }
+    base::File file(file_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
+    if (!file.IsValid()) {
+      return FakeIndexFileError::kOpenFileFailed;
+    }
+    uint64_t magic_number = 0;
+    if (!file.ReadAndCheck(0, base::byte_span_from_ref(magic_number))) {
+      return FakeIndexFileError::kReadFileFailed;
+    }
+    if (magic_number != kSqlBackendFakeIndexMagicNumber) {
+      return FakeIndexFileError::kWrongMagicNumber;
+    }
+    return FakeIndexFileError::kOkExisting;
+  }
+  base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+  if (!file.IsValid()) {
+    return FakeIndexFileError::kCreateFileFailed;
+  }
+  if (!file.WriteAndCheck(
+          0, base::byte_span_from_ref(kSqlBackendFakeIndexMagicNumber))) {
+    return FakeIndexFileError::kWriteFileFailed;
+  }
+  return FakeIndexFileError::kOkNew;
+}
+
+// Checks the fake index file and records a histogram of the result.
+bool CheckFakeIndexFile(const base::FilePath& path) {
+  FakeIndexFileError error = CheckFakeIndexFileInternal(path);
+  base::UmaHistogramEnumeration("Net.SqlDiskCache.FakeIndexFileError", error);
+  return error == FakeIndexFileError::kOkNew ||
+         error == FakeIndexFileError::kOkExisting;
+}
 
 // A helper to handle methods that may complete synchronously.
 //
@@ -219,6 +267,7 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
                                int64_t max_bytes,
                                net::CacheType cache_type)
     : Backend(cache_type),
+      path_(path),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
            base::TaskShutdownBehavior::BLOCK_SHUTDOWN})),
@@ -227,28 +276,41 @@ SqlBackendImpl::SqlBackendImpl(const base::FilePath& path,
                                         GetCacheType(),
                                         background_task_runner_)) {
   DVLOG(1) << "SqlBackendImpl::SqlBackendImpl " << path;
-
-  // Schedule a one-time task to clean up doomed entries from previous sessions.
-  // This runs after a delay to avoid impacting startup performance.
-  base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&SqlBackendImpl::TriggerDeleteDoomedEntries,
-                     weak_factory_.GetWeakPtr()),
-      kSqlBackendDeleteDoomedEntriesDelay);
 }
 
 SqlBackendImpl::~SqlBackendImpl() = default;
 
 void SqlBackendImpl::Init(CompletionOnceCallback callback) {
-  // Initialize the underlying persistent store. The callback will be run with
-  // net::OK on success, or net::ERR_FAILED on failure.
-  store_->Initialize(base::BindOnce(
-      [](CompletionOnceCallback callback, SqlPersistentStore::Error result) {
-        return std::move(callback).Run(result == SqlPersistentStore::Error::kOk
-                                           ? net::OK
-                                           : net::ERR_FAILED);
-      },
-      std::move(callback)));
+  auto barrier_callback = base::BarrierCallback<bool>(
+      2, base::BindOnce(&SqlBackendImpl::OnInitialized,
+                        weak_factory_.GetWeakPtr(), std::move(callback)));
+
+  store_->Initialize(base::BindOnce([](SqlPersistentStore::Error result) {
+                       return result == SqlPersistentStore::Error::kOk;
+                     }).Then(barrier_callback));
+
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::MayBlock(), base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
+      base::BindOnce(&CheckFakeIndexFile, path_),
+      base::OnceCallback<void(bool)>(barrier_callback));
+}
+
+void SqlBackendImpl::OnInitialized(CompletionOnceCallback callback,
+                                   const std::vector<bool>& results) {
+  const bool success = std::all_of(results.begin(), results.end(),
+                                   [](bool result) { return result; });
+  if (success) {
+    // Schedule a one-time task to clean up doomed entries from previous
+    // sessions. This runs after a delay to avoid impacting startup performance.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&SqlBackendImpl::TriggerDeleteDoomedEntries,
+                       weak_factory_.GetWeakPtr()),
+        kSqlBackendDeleteDoomedEntriesDelay);
+  }
+  std::move(callback).Run(success ? net::OK : net::ERR_FAILED);
 }
 
 int64_t SqlBackendImpl::MaxFileSize() const {

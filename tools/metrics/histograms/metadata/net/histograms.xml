@@ -7610,6 +7610,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Net.SqlDiskCache.FakeIndexFileError"
+    enum="SqlDiskCacheFakeIndexFileError" expires_after="2025-09-09">
+  <owner>horo@chromium.org</owner>
+  <owner>src/net/OWNERS</owner>
+  <summary>
+    Records the error status that can occur during the fake index file check of
+    the SQL-based disk cache. This check is performed during the cache
+    initialization.
+  </summary>
+</histogram>
+
 <histogram name="Net.SqlDiskCache.NormalOperationDelay" units="microseconds"
     expires_after="2025-09-09">
   <owner>horo@chromium.org</owner>
