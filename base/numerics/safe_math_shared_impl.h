@@ -11,7 +11,6 @@
 #include <type_traits>
 
 #include "base/numerics/safe_conversions.h"
-#include "build/build_config.h"
 
 #if defined(__asmjs__) || defined(__wasm__)
 // Optimized safe math instructions are incompatible with asmjs.

@@ -13,10 +13,9 @@
 #include <type_traits>
 
 #include "base/numerics/basic_ops_impl.h"
-#include "build/build_config.h"
 
 // Chromium only builds and runs on Little Endian machines.
-static_assert(ARCH_CPU_LITTLE_ENDIAN);
+static_assert(std::endian::native == std::endian::little);
 
 namespace base {
 
