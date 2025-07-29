@@ -95,7 +95,9 @@ void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
 
 void AutofillAiLogger::OnDidFillField(const FormStructure& form,
                                       const AutofillField& field,
+                                      EntityType entity_type,
                                       ukm::SourceId ukm_source_id) {
+  last_filled_entity_.insert({field.global_id(), entity_type});
   ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }

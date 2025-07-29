@@ -37,6 +37,7 @@ class AutofillAiLogger {
                                ukm::SourceId ukm_source_id);
   void OnDidFillField(const FormStructure& form,
                       const AutofillField& field,
+                      EntityType entity_type,
                       ukm::SourceId ukm_source_id);
 
   // Function that records the contents of `form_states` for `form` into
@@ -81,6 +82,14 @@ class AutofillAiLogger {
   // Records the funnel state of each form. See the documentation of
   // `FunnelState` for more information about what is recorded.
   std::map<FormGlobalId, FunnelState> form_states_;
+
+  // Records the last filled `EntityType` for each field. This information is
+  // currently unavailable in `AutofillField`, because
+  // `AutofillField::filling_product_` isn't accurate enough when it comes to
+  // AutofillAi entities, which are all aggregated into
+  // `FillingProduct::kAutofillAi`.
+  // TODO(crbug.com/432650464): Update this state on Undo operations.
+  std::map<FieldGlobalId, EntityType> last_filled_entity_;
 
   AutofillAiUkmLogger ukm_logger_;
 };

@@ -347,36 +347,6 @@ INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
                          testing::Combine(testing::Bool(),
                                           testing::Values(0, 1, 2, 3, 4, 5)));
 
-// Tests that appropriate calls in `AutofillAiLogger`
-// result in correct metric logging.
-TEST_P(AutofillAiFunnelMetricsTest, Logger) {
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
-
-  test_api(manager()).logger().OnFormEligibilityAvailable(form->global_id(),
-                                                          is_form_eligible());
-
-  if (user_has_data()) {
-    test_api(manager()).logger().OnFormHasDataToFill(form->global_id());
-  }
-  if (user_saw_suggestions()) {
-    test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
-                                                    /*ukm_source_id=*/{});
-  }
-  if (user_filled_suggestion()) {
-    test_api(manager()).logger().OnDidFillSuggestion(*form, *form->field(0),
-                                                     /*ukm_source_id=*/{});
-  }
-  if (user_corrected_filling()) {
-    test_api(manager()).logger().OnEditedAutofilledField(*form, *form->field(0),
-                                                         /*ukm_source_id=*/{});
-  }
-
-  base::HistogramTester histogram_tester;
-  test_api(manager()).logger().RecordFormMetrics(
-      *form, /*ukm_source_id=*/{}, submitted(), /*opt_in_status=*/true);
-  ExpectCorrectFunnelRecording(histogram_tester);
-}
-
 // Tests that appropriate calls in `AutofillAiManager`
 // result in correct metric logging.
 TEST_P(AutofillAiFunnelMetricsTest, Manager) {
@@ -394,7 +364,7 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
     manager().OnSuggestionsShown(*form, *form->field(0), /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
-    manager().OnDidFillSuggestion(passport.guid(), *form, *form->field(0),
+    manager().OnDidFillSuggestion(passport, *form, *form->field(0),
                                   {form->field(0)},
                                   /*ukm_source_id=*/{});
   }
@@ -452,8 +422,9 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAssistance) {
   {
     manager().OnSuggestionsShown(*vehicle_form, *vehicle_form->field(0),
                                  /*ukm_source_id=*/{});
-    manager().OnDidFillSuggestion(/*guid=*/{}, *vehicle_form,
-                                  *vehicle_form->field(0), /*filled_fields=*/{},
+    manager().OnDidFillSuggestion(test::GetVehicleEntityInstance(),
+                                  *vehicle_form, *vehicle_form->field(0),
+                                  /*filled_fields=*/{},
                                   /*ukm_source_id=*/{});
     base::HistogramTester histogram_tester;
     manager().OnFormSubmitted(*vehicle_form, /*ukm_source_id=*/{});
@@ -482,7 +453,8 @@ TEST_F(AutofillAiKeyMetricsTest, FillingAcceptance) {
         "Autofill.Ai.KeyMetrics.FillingAcceptance.DriversLicense", 0, 1);
   }
   {
-    manager().OnDidFillSuggestion(/*guid=*/{}, *drivers_license_form,
+    manager().OnDidFillSuggestion(test::GetDriversLicenseEntityInstance(),
+                                  *drivers_license_form,
                                   *drivers_license_form->field(0),
                                   /*filled_fields=*/{},
                                   /*ukm_source_id=*/{});
@@ -501,8 +473,9 @@ TEST_F(AutofillAiKeyMetricsTest, FillingCorrectness) {
   manager().OnFormSeen(*passport_form);
   manager().OnSuggestionsShown(*passport_form, *passport_form->field(0),
                                /*ukm_source_id=*/{});
-  manager().OnDidFillSuggestion(/*guid=*/{}, *passport_form,
-                                *passport_form->field(0), /*filled_fields=*/{},
+  manager().OnDidFillSuggestion(test::GetPassportEntityInstance(),
+                                *passport_form, *passport_form->field(0),
+                                /*filled_fields=*/{},
                                 /*ukm_source_id=*/{});
   {
     base::HistogramTester histogram_tester;
@@ -642,8 +615,9 @@ TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
       GetLastFieldEventLogs(), *form, *form->field(0),
       AutofillAiUkmLogger::EventType::kSuggestionFilled, /*event_order=*/1);
 
-  test_api(manager()).logger().OnDidFillField(*form, *form->field(0),
-                                              /*ukm_source_id=*/{});
+  test_api(manager()).logger().OnDidFillField(
+      *form, *form->field(0), EntityType(EntityTypeName::kPassport),
+      /*ukm_source_id=*/{});
   ASSERT_EQ(mqls_logs().size(), 3u);
   ExpectCorrectMqlsFieldEventLogging(
       GetLastFieldEventLogs(), *form, *form->field(0),

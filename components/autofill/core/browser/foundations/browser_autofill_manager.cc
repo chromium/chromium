@@ -2623,8 +2623,8 @@ void BrowserAutofillManager::OnDidFillOrPreviewForm(
           [&](const EntityInstance* entity) {
             if (AutofillAiManager* ai_manager =
                     client().GetAutofillAiManager()) {
-              ai_manager->OnDidFillSuggestion(entity->guid(), form,
-                                              trigger_field, safe_filled_fields,
+              ai_manager->OnDidFillSuggestion(*entity, form, trigger_field,
+                                              safe_filled_fields,
                                               driver().GetPageUkmSourceId());
             }
           },

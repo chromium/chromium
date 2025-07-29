@@ -70,7 +70,7 @@ class AutofillAiManager {
                                   ukm::SourceId ukm_source_id);
   virtual void OnFormSeen(const FormStructure& form);
   virtual void OnDidFillSuggestion(
-      const base::Uuid& guid,
+      const EntityInstance& entity,
       const FormStructure& form,
       const AutofillField& field,
       base::span<const AutofillField* const> filled_fields,
