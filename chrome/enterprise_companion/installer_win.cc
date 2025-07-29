@@ -47,17 +47,13 @@ bool WaitForFileWritable(const base::FilePath& path) {
   base::TimeTicks next_logging_time = base::TimeTicks::Now() + kLoggingInterval;
   base::TimeTicks deadline = base::TimeTicks::Now() + kMaxWait;
   while (base::TimeTicks::Now() < deadline) {
-    if ([&path] {
-          if (!base::PathExists(path)) {
-            return true;
-          }
-          // Consider any failure to open the file to mean that it's in use and
-          // shouldn't be replaced.
-          return base::File(path, base::File::FLAG_OPEN |
-                                      base::File::FLAG_WRITE |
-                                      base::File::FLAG_WIN_EXCLUSIVE_WRITE)
-              .IsValid();
-        }()) {
+    // The file is writeable if it can be opened for exclusive write access or
+    // if it does not exist.
+    if (base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                  base::File::FLAG_WIN_SHARE_DELETE);
+        file.IsValid() ||
+        file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
       return true;
     }
     if (next_logging_time < base::TimeTicks::Now()) {
