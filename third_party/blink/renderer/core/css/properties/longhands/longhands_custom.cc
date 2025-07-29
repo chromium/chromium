@@ -6334,7 +6334,7 @@ const CSSValue* LetterSpacing::CSSValueFromComputedStyleInternal(
     bool allow_visited_style,
     CSSValuePhase value_phase) const {
   if (RuntimeEnabledFeatures::CSSLetterAndWordSpacingPercentageEnabled()) {
-    const Length& spacing = style.SpecifiedLetterSpacing();
+    const Length& spacing = style.ComputedLetterSpacing();
     if (spacing.IsFixed()) {
       if (spacing.IsZero()) {
         return CSSIdentifierValue::Create(CSSValueID::kNormal);

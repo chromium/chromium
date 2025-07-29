@@ -332,7 +332,7 @@ bool LengthPropertyFunctions::GetLength(const CSSProperty& property,
       success = true;
       break;
     case CSSPropertyID::kLetterSpacing:
-      // TODO(crbug.com/327740939): Change to |style.SpecifiedLetterSpacing()|
+      // TODO(crbug.com/327740939): Change to |style.ComputedLetterSpacing()|
       result = Length::Fixed(style.LetterSpacing());
       success = true;
       break;

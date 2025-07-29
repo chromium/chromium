@@ -319,10 +319,7 @@ class PLATFORM_EXPORT FontDescription {
   const Length& ComputedWordSpacing() const { return word_spacing_; }
 
   float LetterSpacing() const;
-  // TODO(crbug.com/327740939): Rename this like word spacing because
-  // `Specified` is a term that normally refers to specified styles which could
-  // be a relative length.
-  const Length& SpecifiedLetterSpacing() const { return letter_spacing_; }
+  const Length& ComputedLetterSpacing() const { return letter_spacing_; }
 
   FontOrientation Orientation() const {
     return static_cast<FontOrientation>(fields_.orientation_);

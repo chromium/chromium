@@ -906,11 +906,8 @@ class ComputedStyle final : public ComputedStyleBase {
 
   // letter-spacing
   float LetterSpacing() const { return GetFontDescription().LetterSpacing(); }
-  // TODO(crbug.com/327740939): Rename this like word spacing because
-  // `Specified` is a term that normally refers to specified styles which could
-  // be a relative length.
-  const Length& SpecifiedLetterSpacing() const {
-    return GetFontDescription().SpecifiedLetterSpacing();
+  const Length& ComputedLetterSpacing() const {
+    return GetFontDescription().ComputedLetterSpacing();
   }
 
   // word-spacing

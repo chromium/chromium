@@ -3809,7 +3809,7 @@
       field_group: "inherited",
       field_template: "<length>",
       default_value: "Length::Fixed()",
-      getter: "SpecifiedLetterSpacing",
+      getter: "ComputedLetterSpacing",
       converter: "ConvertSpacing",
       computed_style_custom_functions: ["getter"],
       typedom_types: ["Keyword", "Length", "Percentage"],
