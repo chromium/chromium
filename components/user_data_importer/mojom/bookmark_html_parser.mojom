@@ -1,0 +1,52 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module user_data_importer.mojom;
+
+import "mojo/public/mojom/base/string16.mojom";
+import "mojo/public/mojom/base/time.mojom";
+import "sandbox/policy/mojom/sandbox.mojom";
+import "url/mojom/url.mojom";
+
+// Corresponds to user_data_importer::ImportedBookmarkEntry.
+struct ImportedBookmarkEntry {
+  bool is_folder;
+  url.mojom.Url url;
+  array<mojo_base.mojom.String16> path;
+  mojo_base.mojom.String16 title;
+  mojo_base.mojom.Time creation_time;
+  mojo_base.mojom.Time? last_visit_time;
+  bool in_toolbar;
+};
+
+// Corresponds to user_data_importer::SearchEngineInfo.
+struct SearchEngineInfo {
+  mojo_base.mojom.String16 display_name;
+  mojo_base.mojom.String16 keyword;
+  mojo_base.mojom.String16 url;
+};
+
+// Corresponds to favicon_base::FaviconUsageData.
+struct FaviconUsageData {
+  url.mojom.Url favicon_url;
+  array<uint8> png_data;
+  array<url.mojom.Url> urls;
+};
+
+// Corresponds to BookmarkParser::ParsedBookmarks.
+struct ParsedBookmarks {
+  array<ImportedBookmarkEntry> bookmarks;
+  array<ImportedBookmarkEntry> reading_list;
+  array<SearchEngineInfo> search_engines;
+  array<FaviconUsageData> favicons;
+};
+
+// Interface for parsing the contents of a HTML bookmark file in a sandboxed
+// process. Tries to recover as much data from `raw_html` as possible, even if
+// the entire html is not valid or in the expected format. If the entire input
+// is not valid, it returns an empty `result`.
+[ServiceSandbox=sandbox.mojom.Sandbox.kService] interface BookmarkHtmlParser {
+  // Parses the `raw_html` and returns the parsed bookmarks.
+  Parse(string raw_html) => (ParsedBookmarks result);
+};
