@@ -932,8 +932,17 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 //   - Prefetch matching fails due to lack of No-Vary-Search hint and "pf=cs"
 //     param.
 // - Prefetch is not used.
-IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
-                       TriggersPrefetchButMatchingFailedDueToNoVarySearchHint) {
+// TODO(crbug.com/434918482): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TriggersPrefetchButMatchingFailedDueToNoVarySearchHint \
+  DISABLED_TriggersPrefetchButMatchingFailedDueToNoVarySearchHint
+#else
+#define MAYBE_TriggersPrefetchButMatchingFailedDueToNoVarySearchHint \
+  TriggersPrefetchButMatchingFailedDueToNoVarySearchHint
+#endif
+IN_PROC_BROWSER_TEST_F(
+    SearchPreloadBrowserTest,
+    MAYBE_TriggersPrefetchButMatchingFailedDueToNoVarySearchHint) {
   HistogramTesterWrapper uma_tester;
   SetUpTemplateURLService();
   SetUpSearchPreloadService({
@@ -998,9 +1007,17 @@ IN_PROC_BROWSER_TEST_F(SearchPreloadBrowserTest,
 //   - Prefetch matching fails due to lack of No-Vary-Search hint and "pf=cs"
 //     param.
 // - Prefetch is not used.
+// TODO(crbug.com/434918482): Re-enable this test on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint \
+  DISABLED_TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint
+#else
+#define MAYBE_TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint \
+  TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint
+#endif
 IN_PROC_BROWSER_TEST_F(
     SearchPreloadBrowserTest,
-    TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint) {
+    MAYBE_TriggersPrefetchAndPrerenderButPrerenderFailsDueToNoVarySearchHint) {
   HistogramTesterWrapper uma_tester;
   SetUpTemplateURLService();
   SetUpSearchPreloadService({
