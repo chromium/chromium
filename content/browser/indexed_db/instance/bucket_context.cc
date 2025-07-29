@@ -871,6 +871,7 @@ std::string BucketContext::SanitizeErrorMessage(const std::string& message) {
 // static
 base::AutoReset<std::optional<bool>>
 BucketContext::OverrideShouldUseSqliteForTesting(bool use_sqlite) {
+  CHECK(!g_should_use_sqlite_for_testing.has_value());
   base::AutoReset<std::optional<bool>> scoped_override(
       &g_should_use_sqlite_for_testing, use_sqlite);
   return scoped_override;

@@ -21,6 +21,7 @@
 #include "base/rand_util.h"
 #include "base/run_loop.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/sequenced_task_runner.h"
@@ -43,6 +44,7 @@
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
 #include "content/browser/browser_main_loop.h"
 #include "content/browser/indexed_db/indexed_db_leveldb_coding.h"
+#include "content/browser/indexed_db/instance/bucket_context.h"
 #include "content/browser/indexed_db/instance/leveldb/cleanup_scheduler.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/browser_context.h"
@@ -74,6 +76,18 @@
 #include "url/gurl.h"
 #include "url/origin.h"
 
+// These macros are used to temporarily disable specific tests for the SQLite
+// backing store.
+// TODO(crbug.com/419272072): Remove after implementing the missing pieces.
+#define DISABLED_FOR_SQLITE_PENDING_FAILURE_INJECTION() \
+  if (using_sqlite_) {                                  \
+    return;                                             \
+  }
+#define DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING() \
+  if (using_sqlite_) {                                \
+    return;                                           \
+  }
+
 using storage::QuotaManager;
 using storage::mojom::FailClass;
 using storage::mojom::FailMethod;
@@ -82,14 +96,19 @@ namespace content::indexed_db {
 
 namespace {
 
-// This browser test is aimed towards exercising the IndexedDB bindings and
-// the actual implementation that lives in the browser side.
-class IndexedDBBrowserTest : public ContentBrowserTest {
+// Abstract base class that provides common functionality. Tests should use one
+// of the concrete derived classes.
+class IndexedDBBrowserTestBase : public ContentBrowserTest {
  public:
-  IndexedDBBrowserTest() = default;
+  // Derived test classes should specify whether their tests will run on the
+  // SQLite backing store or LevelDB.
+  explicit IndexedDBBrowserTestBase(bool use_sqlite)
+      : using_sqlite_(use_sqlite),
+        sqlite_override_(
+            BucketContext::OverrideShouldUseSqliteForTesting(use_sqlite)) {}
 
-  IndexedDBBrowserTest(const IndexedDBBrowserTest&) = delete;
-  IndexedDBBrowserTest& operator=(const IndexedDBBrowserTest&) = delete;
+  IndexedDBBrowserTestBase(const IndexedDBBrowserTestBase&) = delete;
+  IndexedDBBrowserTestBase& operator=(const IndexedDBBrowserTestBase&) = delete;
 
   void SetUpOnMainThread() override {
     // Some tests need more space than the default used for browser tests.
@@ -197,7 +216,7 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
                            scoped_refptr<QuotaManager> qm) {
     if (!BrowserThread::CurrentlyOn(BrowserThread::IO)) {
       GetIOThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&IndexedDBBrowserTest::SetTempQuota,
+          FROM_HERE, base::BindOnce(&IndexedDBBrowserTestBase::SetTempQuota,
                                     per_host_quota_kilobytes, qm));
       return;
     }
@@ -273,13 +292,34 @@ class IndexedDBBrowserTest : public ContentBrowserTest {
   }
 
  protected:
+  bool using_sqlite_ = false;
+  base::AutoReset<std::optional<bool>> sqlite_override_;
   mojo::Remote<storage::mojom::MockFailureInjector> failure_injector_;
 };
 
-class IndexedDBIncognitoTest : public IndexedDBBrowserTest,
-                               public ::testing::WithParamInterface<bool> {
+// This browser test is aimed towards exercising the IndexedDB bindings and
+// the actual implementation that lives in the browser side.
+// The tests are parametrized to run with both the LevelDB (param = false) and
+// SQLite (param = true) backing stores.
+class IndexedDBBrowserTest : public IndexedDBBrowserTestBase,
+                             public ::testing::WithParamInterface<bool> {
  public:
-  IndexedDBIncognitoTest() = default;
+  IndexedDBBrowserTest()
+      : IndexedDBBrowserTestBase(/*use_sqlite=*/GetParam()) {}
+};
+
+// Tests that are applicable only to the LevelDB backing store.
+class IndexedDBLevelDBOnlyTest : public IndexedDBBrowserTestBase {
+ public:
+  IndexedDBLevelDBOnlyTest() : IndexedDBBrowserTestBase(/*use_sqlite=*/false) {}
+};
+
+class IndexedDBIncognitoTest
+    : public IndexedDBBrowserTestBase,
+      public ::testing::WithParamInterface<std::tuple<bool, bool>> {
+ public:
+  IndexedDBIncognitoTest()
+      : IndexedDBBrowserTestBase(/*use_sqlite=*/std::get<0>(GetParam())) {}
 
   void SetUpMockFailureInjector() override {
     if (IsIncognito()) {
@@ -287,16 +327,16 @@ class IndexedDBIncognitoTest : public IndexedDBBrowserTest,
       GetControlTest(shell_)->BindMockFailureSingletonForTesting(
           failure_injector_.BindNewPipeAndPassReceiver());
     } else {
-      IndexedDBBrowserTest::SetUpMockFailureInjector();
+      IndexedDBBrowserTestBase::SetUpMockFailureInjector();
     }
   }
 
   void TearDownOnMainThread() override {
     shell_ = nullptr;
-    IndexedDBBrowserTest::TearDownOnMainThread();
+    IndexedDBBrowserTestBase::TearDownOnMainThread();
   }
 
-  bool IsIncognito() { return GetParam(); }
+  bool IsIncognito() { return std::get<1>(GetParam()); }
 
  protected:
   raw_ptr<Shell> shell_ = nullptr;
@@ -306,27 +346,27 @@ IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, CursorTest) {
   SimpleTest(GetTestUrl("indexeddb", "cursor_test.html"), shell_);
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CursorPrefetch) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, CursorPrefetch) {
   SimpleTest(GetTestUrl("indexeddb", "cursor_prefetch.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, IndexTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, IndexTest) {
   SimpleTest(GetTestUrl("indexeddb", "index_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, KeyPathTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, KeyPathTest) {
   SimpleTest(GetTestUrl("indexeddb", "key_path_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, TransactionGetTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, TransactionGetTest) {
   SimpleTest(GetTestUrl("indexeddb", "transaction_get_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, KeyTypesTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, KeyTypesTest) {
   SimpleTest(GetTestUrl("indexeddb", "key_types_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ObjectStoreTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ObjectStoreTest) {
   base::HistogramTester tester;
 
   tester.ExpectTotalCount("WebCore.IndexedDB.RequestDuration2.Open", 0);
@@ -399,46 +439,46 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ObjectStoreTest) {
       "WebCore.IndexedDB.Transaction.VersionChange.TimeActive2", 2);
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DatabaseTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DatabaseTest) {
   SimpleTest(GetTestUrl("indexeddb", "database_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, TransactionTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, TransactionTest) {
   SimpleTest(GetTestUrl("indexeddb", "transaction_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CallbackAccounting) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, CallbackAccounting) {
   SimpleTest(GetTestUrl("indexeddb", "callback_accounting.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DoesntHangTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DoesntHangTest) {
   SimpleTest(GetTestUrl("indexeddb", "transaction_run_forever.html"));
   CrashTab(shell()->web_contents());
   SimpleTest(GetTestUrl("indexeddb", "transaction_not_blocked.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug84933Test) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug84933Test) {
   const GURL url = GetTestUrl("indexeddb", "bug_84933.html");
 
   // Just navigate to the URL. Test will crash if it fails.
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug106883Test) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug106883Test) {
   const GURL url = GetTestUrl("indexeddb", "bug_106883.html");
 
   // Just navigate to the URL. Test will crash if it fails.
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug109187Test) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug109187Test) {
   const GURL url = GetTestUrl("indexeddb", "bug_109187.html");
 
   // Just navigate to the URL. Test will crash if it fails.
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug941965Test) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, Bug941965Test) {
   // Double-open an incognito window to test that saving & reading a blob from
   // indexeddb works.
   Shell* incognito_browser = CreateOffTheRecordBrowser();
@@ -453,7 +493,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, Bug941965Test) {
   incognito_browser->Close();
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, SchedulingPriority) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, SchedulingPriority) {
   // This test page just opens a connection.
   const GURL url = GetTestUrl("indexeddb", "simple_test.html");
   NavigateToURLBlockUntilNavigationsComplete(shell(), url, 1);
@@ -515,11 +555,13 @@ class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithLowQuota, QuotaTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithLowQuota, QuotaTest) {
+  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   SimpleTest(GetTestUrl("indexeddb", "quota_test.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithLowQuota, QuotaTestWithCommit) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithLowQuota, QuotaTestWithCommit) {
+  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   SimpleTest(GetTestUrl("indexeddb", "bug_1203335.html"));
 }
 
@@ -538,17 +580,17 @@ class IndexedDBBrowserTestWithGCExposed : public IndexedDBBrowserTest {
   }
 };
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed,
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed,
                        DatabaseCallbacksTest) {
   SimpleTest(GetTestUrl("indexeddb", "database_callbacks_first.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed, Bug346955148Test) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, Bug346955148Test) {
   SimpleTest(GetTestUrl("indexeddb", "bug_346955148.html"));
 }
 
 // Regression test for crbug.com/392376370
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed, NestedBlob) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, NestedBlob) {
   SimpleTest(GetTestUrl("indexeddb", "nested_blob.html"));
 }
 
@@ -595,7 +637,8 @@ static void CopyLevelDBToProfile(
 #endif
 }
 
-class IndexedDBBrowserTestWithPreexistingLevelDB : public IndexedDBBrowserTest {
+class IndexedDBBrowserTestWithPreexistingLevelDB
+    : public IndexedDBLevelDBOnlyTest {
  public:
   IndexedDBBrowserTestWithPreexistingLevelDB() = default;
 
@@ -686,7 +729,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithVersion987654SSVData,
   EXPECT_NE(original_size, new_size);
 }
 
-class IndexedDBBrowserTestsWithCleanupScheduler : public IndexedDBBrowserTest {
+class IndexedDBBrowserTestsWithCleanupScheduler
+    : public IndexedDBLevelDBOnlyTest {
  public:
   IndexedDBBrowserTestsWithCleanupScheduler() {
     scoped_feature_list_.InitAndEnableFeature(
@@ -800,7 +844,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithCrbug899446Noai, StableTest) {
   SimpleTest(kTestUrl);
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
+IN_PROC_BROWSER_TEST_F(IndexedDBLevelDBOnlyTest, LevelDBLogFileTest) {
   // Any page that opens an IndexedDB will work here.
   SimpleTest(GetTestUrl("indexeddb", "database_test.html"));
   base::FilePath leveldb_dir(FILE_PATH_LITERAL("file__0.indexeddb.leveldb"));
@@ -824,7 +868,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LevelDBLogFileTest) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
+  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   SetQuota(5);
   const GURL kTestUrl = GetTestUrl("indexeddb", "fill_quota.html");
   SimpleTest(kTestUrl);
@@ -832,7 +877,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
   SimpleTest(GetTestUrl("indexeddb", "delete_over_quota.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, EmptyBlob) {
   // First delete all IDB's for the test storage_key
   const GURL kTestUrl = GetTestUrl("indexeddb", "empty_blob.html");
   const blink::StorageKey kTestStorageKey =
@@ -855,11 +900,13 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, EmptyBlob) {
 #endif
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
+  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
+  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_4mb_blob.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
@@ -881,7 +928,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
 //   4. the page reads the same blob, reusing the IndexedDBDataItemReader
 //   5. the blob reference is dropped and GC'd again
 //   6. don't crash
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_and_read_blob.html");
   SimpleTest(kTestUrl);
   DeleteBucketData(
@@ -901,7 +948,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
   }
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
+  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   const GURL test_url = GetTestUrl("indexeddb", "fill_up_5k.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));
@@ -916,7 +964,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
   EXPECT_EQ(0, RequestUsage(browser));
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DiskFullOnCommit) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DiskFullOnCommit) {
+  DISABLED_FOR_SQLITE_PENDING_FAILURE_INJECTION();
   // Ignore several preceding transactions:
   // * The test calls deleteDatabase() which opens the backing store:
   //   #1: Transaction::Commit - initial "versionchange" transaction
@@ -979,7 +1028,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
     const storage::BucketLocator& bucket_locator,
     const std::string& path,
-    IndexedDBBrowserTest* test,
+    IndexedDBBrowserTestBase* test,
     const net::test_server::HttpRequest& request) {
   std::string request_path;
   if (path.find(s_corrupt_db_test_prefix) == std::string::npos)
@@ -1000,10 +1049,10 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     VLOG(0) << "Requested to corrupt IndexedDB: " << request_query;
 
     // BindControlTest must be called on the same sequence that
-    // IndexedDBBrowserTest lives on.
+    // IndexedDBBrowserTestBase lives on.
     mojo::Remote<storage::mojom::IndexedDBControlTest> control_test;
     task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&IndexedDBBrowserTest::BindControlTest,
+        FROM_HERE, base::BindOnce(&IndexedDBBrowserTestBase::BindControlTest,
                                   base::Unretained(test), nullptr,
                                   control_test.BindNewPipeAndPassReceiver()));
 
@@ -1104,7 +1153,7 @@ std::unique_ptr<net::test_server::HttpResponse> CorruptDBRequestHandler(
     DCHECK_GE(call_num, 1);
 
     task_runner->PostTask(
-        FROM_HERE, base::BindOnce(&IndexedDBBrowserTest::FailOperation,
+        FROM_HERE, base::BindOnce(&IndexedDBBrowserTestBase::FailOperation,
                                   base::Unretained(test), failure_class,
                                   failure_method, instance_num, call_num));
 
@@ -1122,7 +1171,6 @@ const char s_indexeddb_test_prefix[] = "/indexeddb/test/";
 
 std::unique_ptr<net::test_server::HttpResponse> StaticFileRequestHandler(
     const std::string& path,
-    IndexedDBBrowserTest* test,
     const net::test_server::HttpRequest& request) {
   if (path.find(s_indexeddb_test_prefix) == std::string::npos)
     return nullptr;
@@ -1131,12 +1179,14 @@ std::unique_ptr<net::test_server::HttpResponse> StaticFileRequestHandler(
   return ServePath(request_path);
 }
 
+// TODO(crbug.com/419272072): Adapt this test suite to also work with the SQLite
+// backing store.
 // See TODO in CorruptDBRequestHandler.  Windows does not support nested
 // message loops on the IO thread, so run this test on other platforms.
 // iOS runs into difficulty with the nested IO message loop as well.
 #if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
 class IndexedDBBrowserTestWithCorruption
-    : public IndexedDBBrowserTest,
+    : public IndexedDBLevelDBOnlyTest,
       public ::testing::WithParamInterface<const char*> {};
 
 INSTANTIATE_TEST_SUITE_P(/* no prefix */,
@@ -1188,7 +1238,7 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithCorruption,
 #endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_IOS)
 
 // TODO: http://crbug.com/510520, flaky on all platforms
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
+IN_PROC_BROWSER_TEST_F(IndexedDBLevelDBOnlyTest,
                        DISABLED_DeleteCompactsBackingStore) {
   const GURL kTestUrl = GetTestUrl("indexeddb", "delete_compact.html");
   const blink::StorageKey kTestStorageKey =
@@ -1225,7 +1275,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest,
 // to IndexedDB.  Regression test for crbug.com/369670458
 // Unfortunately this can't use SimpleTest because it requires user activation,
 // which is provided by `ExecJs()`.
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeSlicedFile) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, LargeSlicedFile) {
   // Generate test file.
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::ScopedTempDir temp_dir;
@@ -1258,13 +1308,13 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeSlicedFile) {
 // Complex multi-step (converted from pyauto) tests begin here.
 
 // Verify null key path persists after restarting browser.
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, PRE_NullKeyPathPersistence) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, PRE_NullKeyPathPersistence) {
   NavigateAndWaitForTitle(shell(), "bug_90635.html", "#part1",
                           "pass - first run");
 }
 
 // Verify null key path persists after restarting browser.
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NullKeyPathPersistence) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, NullKeyPathPersistence) {
   NavigateAndWaitForTitle(shell(), "bug_90635.html", "#part2",
                           "pass - second run");
 }
@@ -1277,8 +1327,8 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, NullKeyPathPersistence) {
 #define MAYBE_ConnectionsClosedOnTabClose ConnectionsClosedOnTabClose
 #endif
 // Verify that open DB connections are closed when a tab is destroyed.
-IN_PROC_BROWSER_TEST_F(
-    IndexedDBBrowserTest, MAYBE_ConnectionsClosedOnTabClose) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest,
+                       MAYBE_ConnectionsClosedOnTabClose) {
   NavigateAndWaitForTitle(shell(), "version_change_blocked.html", "#tab1",
                           "setVersion(2) complete");
 
@@ -1299,7 +1349,7 @@ IN_PROC_BROWSER_TEST_F(
 
 // Verify that a "close" event is fired at database connections when
 // the backing store is deleted.
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ForceCloseEventTest) {
   constexpr char kFilename[] = "force_close_event.html";
   NavigateAndWaitForTitle(shell(), kFilename, nullptr, "connection ready");
   DeleteBucketData(blink::StorageKey::CreateFirstParty(
@@ -1310,18 +1360,21 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ForceCloseEventTest) {
   EXPECT_EQ(expected_title16, title_watcher.WaitAndGetTitle());
 }
 
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, ShutdownWithRequests) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, ShutdownWithRequests) {
   SimpleTest(GetTestUrl("indexeddb", "shutdown_with_requests.html"));
 }
 
 // Regression test for https://crbug.com/429974682
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, DeleteOpenUse) {
+IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteOpenUse) {
   SimpleTest(GetTestUrl("indexeddb", "delete_open_use.html"));
 }
 
 // Verifies that a "NotFound" DOMException is thrown on reading a large value
 // when the underlying blob file has been deleted but the record is not.
-IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
+// TODO(crbug.com/419264073): Adapt this test to run the second part (expecting
+// the right error when an "external" file is missing) on SQLite too if LevelDB
+// blob-files are migrated as-is.
+IN_PROC_BROWSER_TEST_F(IndexedDBLevelDBOnlyTest, LargeValueReadBlobMissing) {
   base::HistogramTester histogram_tester;
 
   // First write a large value that gets wrapped in a blob.
@@ -1377,7 +1430,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTest, LargeValueReadBlobMissing) {
 // The blob key corruption test runs in a separate class to avoid corrupting
 // an IDB store that other tests use.
 // This test is for https://crbug.com/1039446.
-typedef IndexedDBBrowserTest IndexedDBBrowserTestBlobKeyCorruption;
+typedef IndexedDBLevelDBOnlyTest IndexedDBBrowserTestBlobKeyCorruption;
 
 // Verify the blob key corruption state recovery:
 // - Create a file that should be the 'first' blob file.
@@ -1387,8 +1440,8 @@ typedef IndexedDBBrowserTest IndexedDBBrowserTestBlobKeyCorruption;
 IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
   ASSERT_TRUE(embedded_test_server()->Started() ||
               embedded_test_server()->InitializeAndListen());
-  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
-      &StaticFileRequestHandler, s_indexeddb_test_prefix, this));
+  embedded_test_server()->RegisterRequestHandler(
+      base::BindRepeating(&StaticFileRequestHandler, s_indexeddb_test_prefix));
   embedded_test_server()->StartAcceptingConnections();
 
   // Set up the IndexedDB instance so it contains our reference data.
@@ -1435,22 +1488,53 @@ IN_PROC_BROWSER_TEST_F(IndexedDBBrowserTestBlobKeyCorruption, LifecycleTest) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityStrict) {
+  DISABLED_FOR_SQLITE_PENDING_FAILURE_INJECTION();
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
   SimpleTest(GetTestUrl("indexeddb", "bucket_durability_strict.html"), shell_);
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityRelaxed) {
+  DISABLED_FOR_SQLITE_PENDING_FAILURE_INJECTION();
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
   SimpleTest(GetTestUrl("indexeddb", "bucket_durability_relaxed.html"), shell_);
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBIncognitoTest, BucketDurabilityOverride) {
+  DISABLED_FOR_SQLITE_PENDING_FAILURE_INJECTION();
   FailOperation(FailClass::LEVELDB_TRANSACTION, FailMethod::COMMIT_SYNC, 2, 1);
   SimpleTest(GetTestUrl("indexeddb", "bucket_durability_override.html"),
              shell_);
 }
 
-INSTANTIATE_TEST_SUITE_P(All, IndexedDBIncognitoTest, testing::Bool());
+constexpr auto GetBackingStoreTestCaseName =
+    [](const testing::TestParamInfo<bool>& info) {
+      return info.param ? "WithSqlite" : "WithLevelDb";
+    };
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndexedDBBrowserTest,
+                         testing::Bool(),
+                         GetBackingStoreTestCaseName);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndexedDBBrowserTestWithLowQuota,
+                         testing::Bool(),
+                         GetBackingStoreTestCaseName);
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IndexedDBBrowserTestWithGCExposed,
+                         testing::Bool(),
+                         GetBackingStoreTestCaseName);
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    IndexedDBIncognitoTest,
+    testing::Combine(testing::Bool(), testing::Bool()),
+    [](const testing::TestParamInfo<std::tuple<bool, bool>>& info) {
+      return base::StrCat(
+          {std::get<0>(info.param) ? "WithSqlite" : "WithLevelDb", "_",
+           std::get<1>(info.param) ? "Incognito" : "Regular"});
+    });
 
 }  // namespace
 }  // namespace content::indexed_db
