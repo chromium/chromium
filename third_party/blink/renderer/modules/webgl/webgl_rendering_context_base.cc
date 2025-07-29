@@ -1667,7 +1667,8 @@ bool WebGLRenderingContextBase::PushFrameWithCopy() {
   // (b) we successfully produced that content.
   bool resource_provider_was_updated = false;
   auto* resource_provider = PaintRenderingResultsToResourceProvider(
-      kBackBuffer, &resource_provider_was_updated);
+      kBackBuffer, /*use_bitmap_provider=*/true,
+      &resource_provider_was_updated);
   if (resource_provider && resource_provider_was_updated) {
     const int width = GetDrawingBuffer()->Size().width();
     const int height = GetDrawingBuffer()->Size().height();
@@ -1934,8 +1935,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToSnapshot(
     return resource ? resource->Bitmap() : nullptr;
   }
 
-  CanvasResourceProvider* provider =
-      PaintRenderingResultsToResourceProvider(source_buffer);
+  CanvasResourceProvider* provider = PaintRenderingResultsToResourceProvider(
+      source_buffer, /*use_bitmap_provider=*/true);
 
   return provider ? provider->Snapshot(reason) : nullptr;
 }
@@ -1949,8 +1950,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
                                           /*export_only_if_update=*/false);
   }
 
-  auto* resource_provider =
-      PaintRenderingResultsToResourceProvider(source_buffer);
+  auto* resource_provider = PaintRenderingResultsToResourceProvider(
+      source_buffer, /*use_bitmap_provider=*/true);
   if (resource_provider) {
     return resource_provider->ProduceCanvasResource(reason);
   }
@@ -1958,7 +1959,8 @@ WebGLRenderingContextBase::PaintRenderingResultsToResource(
 }
 
 std::unique_ptr<CanvasResourceProvider>
-WebGLRenderingContextBase::CreateCanvasResourceProvider() {
+WebGLRenderingContextBase::CreateCanvasResourceProvider(
+    bool use_bitmap_provider) {
   base::WeakPtr<CanvasResourceDispatcher> dispatcher =
       Host()->GetOrCreateResourceDispatcher()
           ? Host()->GetOrCreateResourceDispatcher()->GetWeakPtr()
@@ -2012,7 +2014,7 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
             Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
             SharedGpuContext::SharedImageInterfaceProvider(), Host());
   }
-  if (!provider) {
+  if (!provider && use_bitmap_provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
         Host()->Size(), format, alpha_type, color_space, kShouldInitialize,
         Host());
@@ -2022,11 +2024,12 @@ WebGLRenderingContextBase::CreateCanvasResourceProvider() {
 }
 
 CanvasResourceProvider*
-WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
+WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider(
+    bool use_bitmap_provider) {
   auto* provider = resource_provider_.get();
   if (!provider && !did_fail_to_create_resource_provider_) {
     if (Host()->IsValidImageSize()) {
-      resource_provider_ = CreateCanvasResourceProvider();
+      resource_provider_ = CreateCanvasResourceProvider(use_bitmap_provider);
       Host()->UpdateMemoryUsage();
       provider = resource_provider_.get();
     }
@@ -2039,12 +2042,23 @@ WebGLRenderingContextBase::GetOrCreateCanvasResourceProvider() {
                                     provider->GetType());
     }
   }
+  if (provider &&
+      provider->GetType() ==
+          CanvasResourceProvider::ResourceProviderType::kBitmap &&
+      !use_bitmap_provider) {
+    // In addition to not *creating* a CRPBitmap if `use_bitmap_provider` is
+    // false, ensure that we don't return a cached CRPBitmap that was created
+    // previously in a call from a callsite that still uses CRPBitmap.
+    return nullptr;
+  }
+
   return provider;
 }
 
 CanvasResourceProvider*
 WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
     SourceDrawingBuffer source_buffer,
+    bool use_bitmap_provider,
     bool* resource_provider_was_updated /*=nullptr*/) {
   CHECK(!CanUseDrawingBufferSIWithoutCopyForLowLatency());
 
@@ -2077,7 +2091,7 @@ WebGLRenderingContextBase::PaintRenderingResultsToResourceProvider(
   must_paint_to_canvas_ = false;
 
   CanvasResourceProvider* resource_provider =
-      GetOrCreateCanvasResourceProvider();
+      GetOrCreateCanvasResourceProvider(use_bitmap_provider);
   if (!resource_provider)
     return nullptr;
 

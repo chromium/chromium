@@ -712,7 +712,8 @@ class MODULES_EXPORT WebGLRenderingContextBase
   bool CanUseDrawingBufferSIWithoutCopyForLowLatency();
   void PageVisibilityChanged() override;
   void SizeChanged() override;
-  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider();
+  std::unique_ptr<CanvasResourceProvider> CreateCanvasResourceProvider(
+      bool use_bitmap_provider);
   scoped_refptr<StaticBitmapImage> PaintRenderingResultsToSnapshot(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
@@ -1959,9 +1960,11 @@ class MODULES_EXPORT WebGLRenderingContextBase
       SourceDrawingBuffer source_buffer,
       bool export_only_if_update);
 
-  CanvasResourceProvider* GetOrCreateCanvasResourceProvider();
+  CanvasResourceProvider* GetOrCreateCanvasResourceProvider(
+      bool use_bitmap_provider);
   CanvasResourceProvider* PaintRenderingResultsToResourceProvider(
       SourceDrawingBuffer source_buffer,
+      bool use_bitmap_provider,
       bool* resource_provider_was_updated = nullptr);
   void TexImageHelperMediaVideoFrame(
       TexImageParams,
