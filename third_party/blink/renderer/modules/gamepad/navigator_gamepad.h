@@ -121,7 +121,7 @@ class MODULES_EXPORT NavigatorGamepad final
 
   // Together the following keep track of the nextTouchId per Gamepad
   using TouchIdMap =
-      WTF::HashMap<uint32_t, uint32_t, WTF::IntWithZeroKeyHashTraits<uint32_t>>;
+      HashMap<uint32_t, uint32_t, IntWithZeroKeyHashTraits<uint32_t>>;
 
   std::array<TouchIdMap, device::Gamepads::kItemsLengthCap> touch_id_map_;
   std::array<uint32_t, device::Gamepads::kItemsLengthCap> next_touch_id_;

@@ -154,7 +154,7 @@ class CORE_EXPORT ScriptedIdleTaskController
 
   static bool IsValidCallbackId(int id) {
     using Traits = HashTraits<CallbackId>;
-    return !WTF::IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
+    return !IsHashTraitsEmptyOrDeletedValue<Traits, CallbackId>(id);
   }
 
   // Not owned.

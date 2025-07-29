@@ -50,10 +50,10 @@ struct IdentifiableTokenKey {
 // A helper that defines the hash function and the invalid 'empty value' that
 // HashMap should use internally.
 struct IdentifiableTokenKeyHashTraits
-    : WTF::SimpleClassHashTraits<IdentifiableTokenKey> {
+    : SimpleClassHashTraits<IdentifiableTokenKey> {
   static unsigned GetHash(const IdentifiableTokenKey& key) {
-    return WTF::GetHash(key.token.ToUkmMetricValue()) ^
-           WTF::GetHash((key.is_deleted_value << 1) + key.is_empty_value);
+    return blink::GetHash(key.token.ToUkmMetricValue()) ^
+           blink::GetHash((key.is_deleted_value << 1) + key.is_empty_value);
   }
   static const bool kEmptyValueIsZero = false;
   static IdentifiableTokenKey EmptyValue() { return IdentifiableTokenKey(); }

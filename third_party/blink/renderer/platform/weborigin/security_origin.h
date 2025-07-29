@@ -410,7 +410,7 @@ class PLATFORM_EXPORT SecurityOrigin : public RefCounted<SecurityOrigin> {
  private:
   // Various serialisation and test routines that need direct nonce access.
   friend struct mojo::UrlOriginAdapter;
-  friend struct WTF::HashTraits<scoped_refptr<const SecurityOrigin>>;
+  friend struct HashTraits<scoped_refptr<const SecurityOrigin>>;
   friend class SecurityOriginTest;
 
   // For calling GetNonceForSerialization().

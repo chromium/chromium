@@ -1318,7 +1318,7 @@ void FragmentPaintPropertyTreeBuilder::UpdateIndividualTransform(
                                 style.Preserves3D() &&
                                 !state.rendering_context_id;
         if (new_rendering_context) {
-          state.rendering_context_id = WTF::GetHash(&object_);
+          state.rendering_context_id = GetHash(&object_);
         }
 
         // TODO(crbug.com/1185254): Make this work correctly for block

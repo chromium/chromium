@@ -12,7 +12,7 @@
 namespace blink {
 
 using InspectorIndexMap =
-    HashMap<unsigned, unsigned, WTF::IntWithZeroKeyHashTraits<unsigned>>;
+    HashMap<unsigned, unsigned, IntWithZeroKeyHashTraits<unsigned>>;
 
 // A general-purpose comparator between 2 arrays for the inspector
 class CORE_EXPORT InspectorDiff {

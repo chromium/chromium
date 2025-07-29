@@ -91,7 +91,7 @@ struct FallbackListCompositeKey {
 };
 
 struct FallbackListCompositeKeyTraits
-    : WTF::SimpleClassHashTraits<FallbackListCompositeKey> {
+    : SimpleClassHashTraits<FallbackListCompositeKey> {
   static unsigned GetHash(const FallbackListCompositeKey& key) {
     return key.GetHash();
   }

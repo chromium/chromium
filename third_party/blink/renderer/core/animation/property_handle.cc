@@ -27,7 +27,7 @@ unsigned PropertyHandle::GetHash() const {
     case kHandleCSSProperty:
       return static_cast<int>(css_property_->PropertyID());
     case kHandleCSSCustomProperty:
-      return WTF::GetHash(property_name_);
+      return blink::GetHash(property_name_);
     default:
       NOTREACHED();
   }

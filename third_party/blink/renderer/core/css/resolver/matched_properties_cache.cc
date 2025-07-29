@@ -51,14 +51,14 @@ static unsigned ComputeMatchedPropertiesHash(const MatchResult& result) {
   DCHECK(!std::any_of(hashes.begin(), hashes.end(),
                       [](const MatchedPropertiesHash& hash) {
                         return hash.hash ==
-                               WTF::HashTraits<unsigned>::DeletedValue();
+                               HashTraits<unsigned>::DeletedValue();
                       }))
       << "This should have been checked in AddMatchedProperties()";
   unsigned hash = StringHasher::HashMemory(base::as_byte_span(hashes));
 
   // See CSSPropertyValueSet::ComputeHash() for asserts that this is safe.
-  if (hash == WTF::HashTraits<unsigned>::EmptyValue() ||
-      hash == WTF::HashTraits<unsigned>::DeletedValue()) {
+  if (hash == HashTraits<unsigned>::EmptyValue() ||
+      hash == HashTraits<unsigned>::DeletedValue()) {
     hash ^= 0x80000000;
   }
 

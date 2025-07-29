@@ -130,17 +130,17 @@ class CORE_EXPORT CSSPropertyValueSet
   // Can never return HashTraits<unsigned>::EmptyValue() (it is used
   // internally).
   unsigned GetHash() const {
-    if (hash_ == WTF::HashTraits<unsigned>::EmptyValue()) {
+    if (hash_ == HashTraits<unsigned>::EmptyValue()) {
       hash_ = ComputeHash();
     }
     return hash_;
   }
   unsigned GetExistingHash() const {
-    DCHECK_NE(hash_, WTF::HashTraits<unsigned>::EmptyValue());
+    DCHECK_NE(hash_, HashTraits<unsigned>::EmptyValue());
     return hash_;
   }
   bool ModifiedSinceHashing() const {
-    return hash_ == WTF::HashTraits<unsigned>::DeletedValue();
+    return hash_ == HashTraits<unsigned>::DeletedValue();
   }
 
   bool Equals(const CSSPropertyValueSet& other) {
@@ -204,7 +204,7 @@ class CORE_EXPORT CSSPropertyValueSet
 
   // EmptyValue() means “not computed yet”. DeletedValue() means “invalid”
   // (see GetHash()).
-  mutable unsigned hash_ = WTF::HashTraits<unsigned>::EmptyValue();
+  mutable unsigned hash_ = HashTraits<unsigned>::EmptyValue();
 
   friend class PropertySetCSSStyleDeclaration;
 };
@@ -396,8 +396,8 @@ class CORE_EXPORT MutableCSSPropertyValueSet : public CSSPropertyValueSet {
   CSSPropertyValue* FindCSSPropertyWithName(const CSSPropertyName&);
 
   void InvalidateHashIfComputed() {
-    if (hash_ != WTF::HashTraits<unsigned>::EmptyValue()) {
-      hash_ = WTF::HashTraits<unsigned>::DeletedValue();
+    if (hash_ != HashTraits<unsigned>::EmptyValue()) {
+      hash_ = HashTraits<unsigned>::DeletedValue();
     }
   }
 

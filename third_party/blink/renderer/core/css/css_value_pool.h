@@ -66,7 +66,7 @@ class CORE_EXPORT CSSValuePool final : public GarbageCollected<CSSValuePool> {
 
   // Special keys for deleted and empty values. Use white and transparent as
   // they're common colors and worth having an early-out for.
-  struct ColorHashTraitsForCSSValuePool : WTF::GenericHashTraits<Color> {
+  struct ColorHashTraitsForCSSValuePool : GenericHashTraits<Color> {
     STATIC_ONLY(ColorHashTraitsForCSSValuePool);
     static unsigned GetHash(const Color& key) { return key.GetHash(); }
     static Color EmptyValue() { return Color::kTransparent; }

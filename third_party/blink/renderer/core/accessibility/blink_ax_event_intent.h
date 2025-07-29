@@ -109,7 +109,7 @@ class CORE_EXPORT BlinkAXEventIntent final {
 };
 
 struct CORE_EXPORT BlinkAXEventIntentHashTraits
-    : WTF::SimpleClassHashTraits<BlinkAXEventIntent> {
+    : SimpleClassHashTraits<BlinkAXEventIntent> {
   // Computes the hash of a BlinkAXEventIntent instance.
   static unsigned GetHash(const BlinkAXEventIntent& key);
   // Zeroed memory cannot be used for BlinkAXEventIntent.

@@ -1075,7 +1075,7 @@ AXObject* AXObjectCacheImpl::Get(const LayoutObject* layout_object,
     return nullptr;
   }
   AXID ax_id = it_id->value;
-  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
+  DCHECK(!IsHashTraitsDeletedValue<HashTraits<AXID>>(ax_id));
 
   auto it_result = objects_.find(ax_id);
   AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
@@ -1185,7 +1185,7 @@ AXObject* AXObjectCacheImpl::Get(AbstractInlineTextBox* inline_text_box) const {
       it_ax != inline_text_box_object_mapping_.end() ? it_ax->value : 0;
   if (!ax_id)
     return nullptr;
-  DCHECK(!WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<AXID>>(ax_id));
+  DCHECK(!IsHashTraitsEmptyOrDeletedValue<HashTraits<AXID>>(ax_id));
 
   auto it_result = objects_.find(ax_id);
   AXObject* result = it_result != objects_.end() ? it_result->value : nullptr;
@@ -2083,7 +2083,7 @@ AXID AXObjectCacheImpl::GenerateAXID() const {
     }
   } while (has_axid_generator_looped_ && objects_.Contains(obj_id));
 
-  DCHECK(!WTF::IsHashTraitsEmptyOrDeletedValue<HashTraits<AXID>>(obj_id));
+  DCHECK(!IsHashTraitsEmptyOrDeletedValue<HashTraits<AXID>>(obj_id));
 
   last_used_id = obj_id;
 
@@ -2114,7 +2114,7 @@ AXID AXObjectCacheImpl::AssociateAXID(AXObject* obj, AXID use_axid) {
 }
 
 void AXObjectCacheImpl::RemoveReferencesToAXID(AXID obj_id) {
-  DCHECK(!WTF::IsHashTraitsDeletedValue<HashTraits<AXID>>(obj_id));
+  DCHECK(!IsHashTraitsDeletedValue<HashTraits<AXID>>(obj_id));
 
   // Clear AXIDs from maps. Note: do not need to erase id from
   // changed_bounds_ids_, a set which is cleared each time

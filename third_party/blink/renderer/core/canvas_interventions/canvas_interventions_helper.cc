@@ -93,7 +93,7 @@ String GetDomainFromSecurityOrigin(const SecurityOrigin* security_origin) {
   if (precursor_origin->IsOpaque()) {
     return String::Format(
         "opaque || %u",
-        WTF::GetHash(scoped_refptr<const SecurityOrigin>(precursor_origin)));
+        GetHash(scoped_refptr<const SecurityOrigin>(precursor_origin)));
   }
   // RegistrableDomain() returns null in a couple of cases, such as URLs with IP
   // addresses. In these cases we can safely return the host.

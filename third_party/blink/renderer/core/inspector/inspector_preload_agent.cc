@@ -60,7 +60,7 @@ bool operator==(const PreloadingAttemptKey& a, const PreloadingAttemptKey& b) {
 }
 
 struct PreloadingAttemptKeyHashTraits
-    : WTF::GenericHashTraits<PreloadingAttemptKey> {
+    : GenericHashTraits<PreloadingAttemptKey> {
   static unsigned GetHash(const PreloadingAttemptKey& key) {
     unsigned hash = blink::GetHash(key.action);
     hash = HashInts(hash, blink::GetHash(key.url));

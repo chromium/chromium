@@ -251,7 +251,7 @@ class PLATFORM_EXPORT KURL {
   void WriteIntoTrace(perfetto::TracedValue context) const;
 
  private:
-  friend struct WTF::HashTraits<blink::KURL>;
+  friend struct HashTraits<KURL>;
 
   void Init(const KURL& base,
             const String& relative,

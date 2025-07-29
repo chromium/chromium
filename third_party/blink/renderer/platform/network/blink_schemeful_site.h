@@ -76,7 +76,7 @@ class PLATFORM_EXPORT BlinkSchemefulSite {
   bool IsOpaque() const { return site_as_origin_->IsOpaque(); }
 
  private:
-  friend struct WTF::HashTraits<BlinkSchemefulSite>;
+  friend struct HashTraits<BlinkSchemefulSite>;
 
   // IPC serialization code needs to access internal origin.
   friend struct mojo::StructTraits<network::mojom::SchemefulSiteDataView,

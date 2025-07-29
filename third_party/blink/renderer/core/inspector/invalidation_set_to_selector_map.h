@@ -41,8 +41,7 @@ class CORE_EXPORT InvalidationSetToSelectorMap final
     const StyleSheetContents* GetStyleSheetContents() const;
 
    private:
-    friend struct WTF::HashTraits<
-        blink::InvalidationSetToSelectorMap::IndexedSelector>;
+    friend struct HashTraits<InvalidationSetToSelectorMap::IndexedSelector>;
     Member<StyleRule> style_rule_;
     unsigned selector_index_;
   };
