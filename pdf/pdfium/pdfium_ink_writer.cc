@@ -167,11 +167,10 @@ void SetBrushPropertiesForPath(const ink::Brush& brush, FPDF_PAGEOBJECT path) {
 
 }  // namespace
 
-std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_DOCUMENT document,
-                                               FPDF_PAGE page,
+std::vector<FPDF_PAGEOBJECT> WriteStrokeToPage(FPDF_PAGE page,
                                                const ink::Stroke& stroke) {
   std::vector<FPDF_PAGEOBJECT> results;
-  if (!document || !page) {
+  if (!page) {
     return results;
   }
 

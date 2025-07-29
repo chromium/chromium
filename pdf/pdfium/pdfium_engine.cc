@@ -4595,8 +4595,7 @@ void PDFiumEngine::ApplyStroke(int page_index,
   FPDF_PAGE page = pdfium_page->GetPage();
   CHECK(page);
 
-  std::vector<FPDF_PAGEOBJECT> page_objects =
-      WriteStrokeToPage(doc(), page, stroke);
+  std::vector<FPDF_PAGEOBJECT> page_objects = WriteStrokeToPage(page, stroke);
   CHECK(!page_objects.empty());
   ink_stroked_pages_needing_regeneration_.insert(page_index);
 
