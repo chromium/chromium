@@ -455,6 +455,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   bodyTextView.backgroundColor = [UIColor clearColor];
   bodyTextView.scrollEnabled = NO;
   bodyTextView.editable = NO;
+  bodyTextView.textDragInteraction.enabled = NO;
   bodyTextView.delegate = self;
   bodyTextView.textContainerInset = UIEdgeInsetsZero;
   bodyTextView.textContainer.lineFragmentPadding = 0;
@@ -472,8 +473,8 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
   footNoteTextView.backgroundColor = [UIColor clearColor];
   footNoteTextView.scrollEnabled = NO;
   footNoteTextView.editable = NO;
+  footNoteTextView.textDragInteraction.enabled = NO;
   footNoteTextView.delegate = self;
-
   footNoteTextView.textContainerInset = UIEdgeInsetsZero;
   footNoteTextView.linkTextAttributes =
       @{NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]};
@@ -527,7 +528,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     primaryActionForTextItem:(UITextItem*)textItem
                defaultAction:(UIAction*)defaultAction {
   if (!textItem.link) {
-    return defaultAction;
+    return nil;
   }
   if ([textItem.link.absoluteString isEqualToString:kFirstFootnoteLinkAction]) {
     __weak __typeof(self) weakSelf = self;
@@ -574,6 +575,17 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
     }];
   }
   return defaultAction;
+}
+
+// If the text item is a link, return nil to prevent the long-press context menu
+// from appearing.
+- (UIMenu*)textView:(UITextView*)textView
+    menuConfigurationForTextItem:(UITextItem*)textItem
+                     defaultMenu:(UIMenu*)defaultMenu {
+  if (textItem.link) {
+    return nil;
+  }
+  return defaultMenu;
 }
 
 @end
