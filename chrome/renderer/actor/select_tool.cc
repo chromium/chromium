@@ -55,6 +55,11 @@ void SelectTool::Execute(ToolFinishedCallback callback) {
   WebString value = validated_result.value().option_value;
   select.SetValue(value, /*send_events=*/true);
 
+  // If the select tool makes the selection in a popup widget (e.g., a dropdown
+  // menu), de-focus so the popup is hidden. An visible popup could occlude
+  // the contents underneath it.
+  select.Blur();
+
   // Check if the set value is now the current value in the <select>
   if (select.Value() != value) {
     std::move(callback).Run(

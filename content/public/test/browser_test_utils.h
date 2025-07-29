@@ -2618,6 +2618,9 @@ std::optional<int> GetDOMNodeIdFromSubframe(
 // call.
 [[nodiscard]] bool WaitForDOMContentLoaded(RenderFrameHost* rfh);
 
+// Returns a list of the `RenderWidgetHost` for popups in the `web_contents`.
+std::vector<RenderWidgetHost*> GetPopupWidgets(WebContents* web_contents);
+
 // One-shot helper that listens for creation of a new popup widget.
 class CreateNewPopupWidgetInterceptor
     : public blink::mojom::LocalFrameHostInterceptorForTesting {
@@ -2716,6 +2719,24 @@ class ShowPopupWidgetWaiter
   int32_t routing_id_ = IPC::mojom::kRoutingIdNone;
   int32_t process_id_ = 0;
   const raw_ptr<RenderFrameHost> frame_host_;
+};
+
+// Intercepts `RequestClosePopup()` method. By default `RequestClosePopup()`
+// discards the message. Individual test should override `RequestClosePopup()`
+// to customize the behavior.
+class RequestCloseWidgetInterceptor
+    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
+ public:
+  explicit RequestCloseWidgetInterceptor(RenderWidgetHost* render_widget_host);
+  ~RequestCloseWidgetInterceptor() override;
+
+  // `blink::mojom::PopupWidgetHostInterceptorForTesting`:
+  blink::mojom::PopupWidgetHost* GetForwardingInterface() override;
+  void RequestClosePopup() override;
+
+ private:
+  mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>
+      swapped_impl_;
 };
 
 }  // namespace content

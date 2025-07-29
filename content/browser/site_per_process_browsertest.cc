@@ -6413,31 +6413,6 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_EQ(3u, Shell::windows().size());
 }
 
-// Intercepts calls to PopupWidgetHost's RequestClosePopup mojo method, and
-// discards it. The caller has to guarantee that `render_widget_host` lives at
-// least as long as RequestCloseWidgetInterceptor.
-class RequestCloseWidgetInterceptor
-    : public blink::mojom::PopupWidgetHostInterceptorForTesting {
- public:
-  explicit RequestCloseWidgetInterceptor(
-      RenderWidgetHostImpl* render_widget_host)
-      : swapped_impl_(
-            render_widget_host->popup_widget_host_receiver_for_testing(),
-            this) {}
-
-  ~RequestCloseWidgetInterceptor() override = default;
-
-  blink::mojom::PopupWidgetHost* GetForwardingInterface() override {
-    return swapped_impl_.old_impl();
-  }
-
-  void RequestClosePopup() override {}
-
- private:
-  mojo::test::ScopedSwapImplForTesting<blink::mojom::PopupWidgetHost>
-      swapped_impl_;
-};
-
 // Intercepts calls to PopupWidgetHost's ShowPopup mojo method, and
 // invokes the provided callback. The caller has to guarantee that
 // `render_widget_host` lives at least as long as
