@@ -15,7 +15,7 @@
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
-#include "chrome/browser/optimization_guide/model_execution/chrome_model_broker_state.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
@@ -690,10 +690,10 @@ class OnDeviceModelExecutionEnabledBrowserTest
         {});
   }
 
-  ChromeModelBrokerState* broker_state() {
+  OptimizationGuideGlobalState* broker_state() {
     // Ensure keyed service is created, which should create and hold state.
     GetOptimizationGuideKeyedService();
-    return ChromeModelBrokerState::CreateOrGet().get();
+    return OptimizationGuideGlobalState::CreateOrGet().get();
   }
 
   void SetUpGlobalAssets() {

@@ -172,7 +172,7 @@ class PredictionModelStoreBrowserTestBase : public InProcessBrowserTest {
   }
 
   base::FilePath GetModelStoreBaseDir() {
-    return optimization_guide::ChromeModelBrokerState::CreateOrGet()
+    return optimization_guide::OptimizationGuideGlobalState::CreateOrGet()
         ->prediction_model_store()
         .GetBaseStoreDirForTesting();
   }

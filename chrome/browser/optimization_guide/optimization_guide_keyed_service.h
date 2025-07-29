@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
-#include "chrome/browser/optimization_guide/model_execution/chrome_model_broker_state.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/profiles/profile_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
@@ -320,7 +320,7 @@ class OptimizationGuideKeyedService
 
   optimization_guide::OnDeviceModelComponentStateManager*
   GetComponentManager() {
-    return &chrome_model_broker_state_->component_state_manager();
+    return &optimization_guide_global_state_->component_state_manager();
   }
 
   optimization_guide::ModelExecutionManager* GetModelExecutionManager() {
@@ -392,8 +392,8 @@ class OptimizationGuideKeyedService
   raw_ptr<OptimizationGuideLogger> optimization_guide_logger_;
 
   // Keep a reference to this so it stays alive.
-  scoped_refptr<optimization_guide::ChromeModelBrokerState>
-      chrome_model_broker_state_;
+  scoped_refptr<optimization_guide::OptimizationGuideGlobalState>
+      optimization_guide_global_state_;
 
   // The tab URL provider to use for fetching information for the user's active
   // tabs. Will be null if the user is off the record.

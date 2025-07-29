@@ -29,7 +29,7 @@
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/chrome_model_quality_logs_uploader_service.h"
 #include "chrome/browser/optimization_guide/chrome_prediction_model_store.h"
-#include "chrome/browser/optimization_guide/model_execution/chrome_model_broker_state.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
@@ -176,14 +176,14 @@ void OptimizationGuideKeyedService::BindModelBroker(
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     return;
   }
-  chrome_model_broker_state_->service_controller().BindBroker(
+  optimization_guide_global_state_->service_controller().BindBroker(
       std::move(receiver));
 }
 
 std::unique_ptr<optimization_guide::ModelBrokerClient>
 OptimizationGuideKeyedService::CreateModelBrokerClient() {
   mojo::PendingRemote<optimization_guide::mojom::ModelBroker> remote;
-  chrome_model_broker_state_->service_controller().BindBroker(
+  optimization_guide_global_state_->service_controller().BindBroker(
       remote.InitWithNewPipeAndPassReceiver());
   return std::make_unique<optimization_guide::ModelBrokerClient>(
       std::move(remote), optimization_guide::CreateSessionArgs(
@@ -268,8 +268,8 @@ void OptimizationGuideKeyedService::Initialize() {
             : nullptr;
     hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
   }
-  chrome_model_broker_state_ =
-      optimization_guide::ChromeModelBrokerState::CreateOrGet();
+  optimization_guide_global_state_ =
+      optimization_guide::OptimizationGuideGlobalState::CreateOrGet();
 
   optimization_guide_logger_ = OptimizationGuideLogger::GetInstance();
   DCHECK(optimization_guide_logger_);
@@ -281,7 +281,7 @@ void OptimizationGuideKeyedService::Initialize() {
       optimization_guide_logger_.get());
 
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
-      &chrome_model_broker_state_->prediction_model_store(),
+      &optimization_guide_global_state_->prediction_model_store(),
       g_browser_process->shared_url_loader_factory(),
       g_browser_process->local_state(),
       g_browser_process->GetApplicationLocale(),
@@ -348,9 +348,9 @@ void OptimizationGuideKeyedService::InitializeModelExecution(Profile* profile) {
   if (base::FeatureList::IsEnabled(
           optimization_guide::features::kOptimizationGuideOnDeviceModel)) {
     service_controller =
-        chrome_model_broker_state_->service_controller().GetWeakPtr();
+        optimization_guide_global_state_->service_controller().GetWeakPtr();
     on_device_asset_manager_ =
-        chrome_model_broker_state_->CreateAssetManager(this);
+        optimization_guide_global_state_->CreateAssetManager(this);
   }
 
   model_execution_manager_ =
@@ -498,10 +498,10 @@ void OptimizationGuideKeyedService::ExecuteModel(
 void OptimizationGuideKeyedService::AddOnDeviceModelAvailabilityChangeObserver(
     optimization_guide::ModelBasedCapabilityKey feature,
     optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-  if (!chrome_model_broker_state_) {
+  if (!optimization_guide_global_state_) {
     return;
   }
-  chrome_model_broker_state_->service_controller()
+  optimization_guide_global_state_->service_controller()
       .AddOnDeviceModelAvailabilityChangeObserver(feature, observer);
 }
 
@@ -509,10 +509,10 @@ void OptimizationGuideKeyedService::
     RemoveOnDeviceModelAvailabilityChangeObserver(
         optimization_guide::ModelBasedCapabilityKey feature,
         optimization_guide::OnDeviceModelAvailabilityObserver* observer) {
-  if (!chrome_model_broker_state_) {
+  if (!optimization_guide_global_state_) {
     return;
   }
-  chrome_model_broker_state_->service_controller()
+  optimization_guide_global_state_->service_controller()
       .RemoveOnDeviceModelAvailabilityChangeObserver(feature, observer);
 }
 
@@ -733,7 +733,7 @@ OptimizationGuideKeyedService::GetFeatureMetadata(
 
 void OptimizationGuideKeyedService::EnsurePerformanceClassAvailable(
     base::OnceClosure complete) {
-  chrome_model_broker_state_->EnsurePerformanceClassAvailable(
+  optimization_guide_global_state_->EnsurePerformanceClassAvailable(
       std::move(complete));
 }
 
@@ -754,10 +754,10 @@ void OptimizationGuideKeyedService::FinishGetOnDeviceModelEligibility(
 
 on_device_model::Capabilities
 OptimizationGuideKeyedService::GetPossibleOnDeviceCapabilities() const {
-  if (!chrome_model_broker_state_) {
+  if (!optimization_guide_global_state_) {
     return {};
   }
-  auto& manager = chrome_model_broker_state_->component_state_manager();
+  auto& manager = optimization_guide_global_state_->component_state_manager();
   on_device_model::Capabilities capabilities;
   if (manager.SupportsImageInput()) {
     capabilities.Put(on_device_model::CapabilityFlags::kImageInput);

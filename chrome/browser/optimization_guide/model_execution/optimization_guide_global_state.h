@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_MODEL_BROKER_STATE_H_
-#define CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_MODEL_BROKER_STATE_H_
+#ifndef CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_OPTIMIZATION_GUIDE_GLOBAL_STATE_H_
+#define CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_OPTIMIZATION_GUIDE_GLOBAL_STATE_H_
 
 #include <memory>
 
@@ -17,16 +17,17 @@
 
 namespace optimization_guide {
 
-// This holds the ModelBrokerState shared between profiles.
-// Since it holds raw_ptr to local state prefs, it must not outlive the
+// This holds the ModelBrokerState and other common objects shared between
+// profiles. Since some of the membersit hold raw_ptr to browser process level
+// objects, such as local state prefs, profile manager, it must not outlive the
 // browser process, so each profile holds a ref to it in
 // OptimizationGuideKeyedService to keep it alive until all profiles are
 // destroyed.
-class ChromeModelBrokerState final
-    : public base::RefCounted<ChromeModelBrokerState> {
+class OptimizationGuideGlobalState final
+    : public base::RefCounted<OptimizationGuideGlobalState> {
  public:
   // Retrieves or creates the instance.
-  static scoped_refptr<ChromeModelBrokerState> CreateOrGet();
+  static scoped_refptr<OptimizationGuideGlobalState> CreateOrGet();
 
   OnDeviceModelComponentStateManager& component_state_manager() {
     return model_broker_state_.component_state_manager();
@@ -52,21 +53,21 @@ class ChromeModelBrokerState final
   }
 
  private:
-  friend base::RefCounted<ChromeModelBrokerState>;
-  ChromeModelBrokerState();
-  ~ChromeModelBrokerState();
+  friend base::RefCounted<OptimizationGuideGlobalState>;
+  OptimizationGuideGlobalState();
+  ~OptimizationGuideGlobalState();
 
   ModelBrokerState model_broker_state_;
 
   ChromePredictionModelStore prediction_model_store_;
 
-  base::WeakPtrFactory<ChromeModelBrokerState> weak_ptr_factory_{this};
+  base::WeakPtrFactory<OptimizationGuideGlobalState> weak_ptr_factory_{this};
 };
 
 // Chrome uses a single shared instance of ModelBrokerState.
 // This retrieves it, or creates it if it doesn't exist yet.
-ChromeModelBrokerState& GetOrCreateChromeModelBrokerState();
+OptimizationGuideGlobalState& GetOrCreateChromeModelBrokerState();
 
 }  // namespace optimization_guide
 
-#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_CHROME_MODEL_BROKER_STATE_H_
+#endif  // CHROME_BROWSER_OPTIMIZATION_GUIDE_MODEL_EXECUTION_OPTIMIZATION_GUIDE_GLOBAL_STATE_H_

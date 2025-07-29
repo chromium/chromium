@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/optimization_guide/model_execution/chrome_model_broker_state.h"
+#include "chrome/browser/optimization_guide/model_execution/optimization_guide_global_state.h"
 
 #include <memory>
 
@@ -75,8 +75,8 @@ class OnDeviceModelComponentStateManagerDelegate
   }
 };
 
-base::WeakPtr<ChromeModelBrokerState>& GetInstance() {
-  static base::NoDestructor<base::WeakPtr<ChromeModelBrokerState>> instance;
+base::WeakPtr<OptimizationGuideGlobalState>& GetInstance() {
+  static base::NoDestructor<base::WeakPtr<OptimizationGuideGlobalState>> instance;
   return *instance.get();
 }
 
@@ -108,7 +108,7 @@ class ChromeOnDeviceModelServiceController final {
   }
 };
 
-ChromeModelBrokerState::ChromeModelBrokerState()
+OptimizationGuideGlobalState::OptimizationGuideGlobalState()
     : model_broker_state_(
           g_browser_process->local_state(),
           std::make_unique<OnDeviceModelComponentStateManagerDelegate>(),
@@ -131,16 +131,16 @@ ChromeModelBrokerState::ChromeModelBrokerState()
         optimization_guide::features::GetOnDeviceStartupMetricDelay());
   }
 }
-ChromeModelBrokerState::~ChromeModelBrokerState() = default;
+OptimizationGuideGlobalState::~OptimizationGuideGlobalState() = default;
 
-scoped_refptr<ChromeModelBrokerState> ChromeModelBrokerState::CreateOrGet() {
-  base::WeakPtr<ChromeModelBrokerState>& instance = GetInstance();
+scoped_refptr<OptimizationGuideGlobalState> OptimizationGuideGlobalState::CreateOrGet() {
+  base::WeakPtr<OptimizationGuideGlobalState>& instance = GetInstance();
   if (!instance) {
-    auto new_instance = base::WrapRefCounted(new ChromeModelBrokerState());
+    auto new_instance = base::WrapRefCounted(new OptimizationGuideGlobalState());
     instance = new_instance->weak_ptr_factory_.GetWeakPtr();
     return new_instance;
   }
-  return scoped_refptr<ChromeModelBrokerState>(instance.get());
+  return scoped_refptr<OptimizationGuideGlobalState>(instance.get());
 }
 
 }  // namespace optimization_guide
