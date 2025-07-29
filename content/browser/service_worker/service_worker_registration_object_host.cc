@@ -153,6 +153,7 @@ void ServiceWorkerRegistrationObjectHost::Unregister(
   context_->UnregisterServiceWorker(
       registration_->scope(), registration_->key(),
       /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kUnregister,
       base::BindOnce(
           &ServiceWorkerRegistrationObjectHost::UnregistrationComplete,
           weak_ptr_factory_.GetWeakPtr(), std::move(callback)));

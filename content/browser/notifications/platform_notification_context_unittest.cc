@@ -645,7 +645,7 @@ TEST_F(PlatformNotificationContextTest, ServiceWorkerUnregistered) {
   // Now drop the Service Worker registration which owns that notification.
   embedded_worker_test_helper->context()->UnregisterServiceWorker(
       origin, key,
-      /*is_immediate=*/false,
+      /*is_immediate=*/false, ServiceWorkerRegistration::DeleteInitiator::kTest,
       base::BindOnce(
           &PlatformNotificationContextTest::DidUnregisterServiceWorker,
           base::Unretained(this), &unregister_status));

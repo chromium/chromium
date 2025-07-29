@@ -649,9 +649,11 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImpl(
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
-                                     /*is_immediate=*/false,
-                                     std::move(callback));
+  context()->UnregisterServiceWorker(
+      net::SimplifyUrlForRequest(scope), key,
+      /*is_immediate=*/false,
+      ServiceWorkerRegistration::DeleteInitiator::kContentPublicApi,
+      std::move(callback));
 }
 
 void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(
@@ -659,16 +661,17 @@ void ServiceWorkerContextWrapper::UnregisterServiceWorkerImmediatelyImpl(
     const blink::StorageKey& key,
     StatusCodeCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   if (!context_core_) {
     GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   blink::ServiceWorkerStatusCode::kErrorAbort));
     return;
   }
-  context()->UnregisterServiceWorker(net::SimplifyUrlForRequest(scope), key,
-                                     /*is_immediate=*/true,
-                                     std::move(callback));
+  context()->UnregisterServiceWorker(
+      net::SimplifyUrlForRequest(scope), key,
+      /*is_immediate=*/true,
+      ServiceWorkerRegistration::DeleteInitiator::kContentPublicApi,
+      std::move(callback));
 }
 
 ServiceWorkerExternalRequestResult

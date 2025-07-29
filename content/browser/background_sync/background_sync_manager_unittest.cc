@@ -561,6 +561,7 @@ class BackgroundSyncManagerTest
     helper_->context()->UnregisterServiceWorker(
         scope, blink::StorageKey::CreateFirstParty(url::Origin::Create(scope)),
         /*is_immediate=*/false,
+        ServiceWorkerRegistration::DeleteInitiator::kTest,
         base::BindOnce(&UnregisterServiceWorkerCallback, &called));
     base::RunLoop().RunUntilIdle();
     EXPECT_TRUE(called);

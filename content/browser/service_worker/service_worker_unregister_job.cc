@@ -22,8 +22,13 @@ ServiceWorkerUnregisterJob::ServiceWorkerUnregisterJob(
     ServiceWorkerContextCore* context,
     const GURL& scope,
     const blink::StorageKey& key,
-    bool is_immediate)
-    : context_(context), scope_(scope), key_(key), is_immediate_(is_immediate) {
+    bool is_immediate,
+    ServiceWorkerRegistration::DeleteInitiator initiator)
+    : context_(context),
+      scope_(scope),
+      key_(key),
+      is_immediate_(is_immediate),
+      initiator_(initiator) {
   DCHECK(context_);
 }
 
@@ -75,10 +80,11 @@ void ServiceWorkerUnregisterJob::OnRegistrationFound(
 
   ResolvePromise(registration->id(), blink::ServiceWorkerStatusCode::kOk);
 
-  if (is_immediate_)
-    registration->DeleteAndClearImmediately();
-  else
-    registration->DeleteAndClearWhenReady();
+  if (is_immediate_) {
+    registration->DeleteAndClearImmediately(initiator_);
+  } else {
+    registration->DeleteAndClearWhenReady(initiator_);
+  }
 
   Complete(registration->id(), blink::ServiceWorkerStatusCode::kOk);
 }

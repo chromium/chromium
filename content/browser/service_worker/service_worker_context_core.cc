@@ -213,6 +213,7 @@ class ClearAllServiceWorkersHelper
       context->UnregisterServiceWorker(
           registration_info.scope, registration_info.key,
           /*is_immediate=*/false,
+          ServiceWorkerRegistration::DeleteInitiator::kDeleteForStorageKey,
           base::BindOnce(&ClearAllServiceWorkersHelper::OnResult, this));
     }
   }
@@ -600,6 +601,7 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
     const GURL& scope,
     const blink::StorageKey& key,
     bool is_immediate,
+    ServiceWorkerRegistration::DeleteInitiator initiator,
     UnregistrationCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
@@ -612,7 +614,7 @@ void ServiceWorkerContextCore::UnregisterServiceWorker(
   }
 
   job_coordinator_->Unregister(
-      scope, key, is_immediate,
+      scope, key, is_immediate, initiator,
       base::BindOnce(&ServiceWorkerContextCore::UnregistrationComplete,
                      AsWeakPtr(), scope, key, std::move(callback)));
 }
@@ -645,7 +647,8 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
           registry().GetUninstallingRegistrationsForStorageKey(key);
   for (const auto& uninstalling_registration : uninstalling_registrations) {
     job_coordinator_->Abort(uninstalling_registration->scope(), key);
-    uninstalling_registration->DeleteAndClearImmediately();
+    uninstalling_registration->DeleteAndClearImmediately(
+        ServiceWorkerRegistration::DeleteInitiator::kDeleteForStorageKey);
   }
 
   if (registrations.empty()) {
@@ -688,8 +691,10 @@ void ServiceWorkerContextCore::DidGetRegistrationsForDeleteForStorageKey(
       }
     }
     job_coordinator_->Abort(registration->scope(), key);
-    UnregisterServiceWorker(registration->scope(), key, /*is_immediate=*/true,
-                            barrier);
+    UnregisterServiceWorker(
+        registration->scope(), key, /*is_immediate=*/true,
+        ServiceWorkerRegistration::DeleteInitiator::kDeleteForStorageKey,
+        barrier);
   }
 }
 

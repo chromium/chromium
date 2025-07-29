@@ -6,9 +6,12 @@
 
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/service_worker/service_worker_client.h"
@@ -354,7 +357,8 @@ void ServiceWorkerRegistration::ClaimClients() {
   }
 }
 
-void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
+void ServiceWorkerRegistration::DeleteAndClearWhenReady(
+    DeleteInitiator initiator) {
   DCHECK(context_);
   if (is_deleted()) {
     // We already deleted and are waiting to clear, or the registration is
@@ -363,18 +367,20 @@ void ServiceWorkerRegistration::DeleteAndClearWhenReady() {
   }
 
   context_->registry().DeleteRegistration(
-      this, base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
+      this, base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this,
+                           initiator));
 
   if (!active_version() || !active_version()->HasControllee())
     Clear();
 }
 
-void ServiceWorkerRegistration::DeleteAndClearImmediately() {
+void ServiceWorkerRegistration::DeleteAndClearImmediately(
+    DeleteInitiator initiator) {
   DCHECK(context_);
   if (!is_deleted()) {
     context_->registry().DeleteRegistration(
-        this,
-        base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this));
+        this, base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, this,
+                             initiator));
   }
 
   if (is_uninstalling())
@@ -614,8 +620,8 @@ void ServiceWorkerRegistration::ForceDelete() {
   // Delete the registration and its state from storage.
   if (status() == Status::kIntact) {
     context_->registry().DeleteRegistration(
-        this,
-        base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished, protect));
+        this, base::BindOnce(&ServiceWorkerRegistration::OnDeleteFinished,
+                             protect, DeleteInitiator::kForceDelete));
   }
   DCHECK(is_uninstalling());
   context_->registry().NotifyDoneUninstallingRegistration(this,
@@ -718,7 +724,41 @@ void ServiceWorkerRegistration::OnActivateEventFinished(
 }
 
 void ServiceWorkerRegistration::OnDeleteFinished(
+    DeleteInitiator initiator,
     blink::ServiceWorkerStatusCode status) {
+  base::UmaHistogramEnumeration("ServiceWorker.Registration.Delete.Initiator",
+                                initiator);
+
+  const char* initiator_string = nullptr;
+  switch (initiator) {
+    case DeleteInitiator::kUnregister:
+      initiator_string = ".ByUnregister";
+      break;
+    case DeleteInitiator::kDeleteForStorageKey:
+      initiator_string = ".ByDeleteForStorageKey";
+      break;
+    case DeleteInitiator::kForceDelete:
+      initiator_string = ".ByForceDelete";
+      break;
+    case DeleteInitiator::kRegistrationFailure:
+      initiator_string = ".ByRegistrationFailure";
+      break;
+    case DeleteInitiator::kContentPublicApi:
+      initiator_string = ".ByContentPublicApi";
+      break;
+    case DeleteInitiator::kWebUI:
+      initiator_string = ".ByWebUI";
+      break;
+    case DeleteInitiator::kTest:
+      initiator_string = ".ByTest";
+      CHECK_IS_TEST();
+      break;
+  }
+  base::UmaHistogramEnumeration(
+      base::StrCat(
+          {"ServiceWorker.Registration.Delete.Result", initiator_string}),
+      status);
+
   for (auto& listener : listeners_)
     listener.OnRegistrationDeleted(this);
 }

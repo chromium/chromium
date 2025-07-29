@@ -1346,6 +1346,50 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.Registration.Delete.Initiator"
+    enum="ServiceWorkerRegistrationDeleteInitiator" expires_after="2026-01-25">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The initiator of a service worker registration deletion. This is recorded
+    when a deletion is triggered.
+  </summary>
+</histogram>
+
+<histogram name="ServiceWorker.Registration.Delete.Result.{DeleteInitiator}"
+    enum="ServiceWorkerStatusCode" expires_after="2026-01-23">
+  <owner>yyanagisawa@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    The result of deleting a service worker registration. This is recorded when
+    the deletion from the database is complete. The histogram is broken down by
+    the initiator of the deletion.
+  </summary>
+  <token key="DeleteInitiator">
+    <variant name="ByContentPublicApi"
+        summary="Triggered via the public C++ API
+                 (ServiceWorkerContext::UnregisterServiceWorker and
+                 ServiceWorkerContext::UnregisterServiceWorkerImmediately),
+                 typically by extensions or DevTools."/>
+    <variant name="ByDeleteForStorageKey"
+        summary="Triggered by clearing site data."/>
+    <variant name="ByForceDelete"
+        summary="Triggered by an emergency force-delete mechanism (e.g., when
+                 the script can't be read from the disk)."/>
+    <variant name="ByRegistrationFailure"
+        summary="Triggered by a registration failure (e.g., when a
+                 resurrected uninstalling registration fails to be
+                 re-registered)."/>
+    <variant name="ByTest" summary="Triggered from a test."/>
+    <variant name="ByUnregister"
+        summary="Triggered by an explicit call to
+                 navigator.serviceWorker.unregister()."/>
+    <variant name="ByWebUI"
+        summary="Triggered by a user action on the
+                 chrome://serviceworker-internals page."/>
+  </token>
+</histogram>
+
 <histogram name="ServiceWorker.RouterEvaluator.ConditionDepth" units="count"
     expires_after="2025-12-14">
   <owner>yyanagisawa@chromium.org</owner>
