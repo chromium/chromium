@@ -41,7 +41,7 @@ interface FrePageHandler {
   // entered the error state.
   ExceededTimeoutError();
 
-  // Signal to the fre controller that the web ui framework has completed
+  // Signal to the fre controller that the WebUI framework has completed
   // loading and the remote web content is about to start loading in the
   // webview. This is used to record timing metrics.
   LogWebUiLoadComplete();

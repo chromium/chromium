@@ -8,8 +8,8 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/glic/fre/glic_fre.mojom.h"
 #include "chrome/browser/glic/host/auth_controller.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
@@ -183,17 +183,17 @@ class GlicFreController {
   base::RepeatingCallbackList<void(mojom::FreWebUiState)>
       webui_state_callback_list_;
 
-  // The timestamp when the FRE window is requested to be shown.
-  base::TimeTicks show_start_time_;
+  // Tracks elapsed time between the request for the FRE to show to the time it
+  // is fully loaded and showing.
+  std::optional<base::ElapsedTimer> presentation_timer_;
 
-  // The timestamp when the FRE widget creation starts.
-  base::TimeTicks widget_creation_start_time_;
+  // Tracks elapsed time between the start of the WebUI framework loading and
+  // the moment it's fully loaded. This ends right before the web client begins loading.
+  std::optional<base::ElapsedTimer> webui_framework_load_timer_;
 
-  // The timestamp when the FRE WebUI loading starts.
-  base::TimeTicks webui_load_start_time_;
-
-  // The timestamp when the FRE web content loading starts.
-  base::TimeTicks web_client_load_start_time_;
+  // Tracks elapsed time between the start of the web client loading and the
+  // moment it's fully loaded.
+  std::optional<base::ElapsedTimer> web_client_load_timer_;
 
   base::WeakPtrFactory<GlicFreController> weak_ptr_factory_{this};
 };
