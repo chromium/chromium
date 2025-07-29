@@ -51,9 +51,9 @@ void StablePortabilityDataImporter::
 }
 
 StablePortabilityDataImporter::StablePortabilityDataImporter(
-    history::HistoryService& history_service,
-    bookmarks::BookmarkModel& bookmark_model,
-    ReadingListModel& reading_list_model,
+    history::HistoryService* history_service,
+    bookmarks::BookmarkModel* bookmark_model,
+    ReadingListModel* reading_list_model,
     scoped_refptr<ContentBookmarkParser> bookmark_parser)
     : history_service_(history_service),
       bookmark_model_(bookmark_model),

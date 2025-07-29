@@ -51,7 +51,8 @@ class StablePortabilityDataImporterTest : public testing::Test {
         base::DefaultClock::GetInstance());
 
     importer_ = std::make_unique<StablePortabilityDataImporter>(
-        *history_service_, *bookmark_model_, *reading_list_model_,
+        history_service_.get(), bookmark_model_.get(),
+        reading_list_model_.get(),
         base::MakeRefCounted<ContentBookmarkParser>());
   }
 

@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_STABLE_PORTABILITY_DATA_IMPORTER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_CONTENT_STABLE_PORTABILITY_DATA_IMPORTER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
@@ -39,10 +40,13 @@ class StablePortabilityDataImporter {
   // bookmarks, reading list items, or urls (for history import).
   using ImportCallback = base::OnceCallback<void(int)>;
 
+  // `history_service`, `bookmark_model`, and `reading_list_model` may be null,
+  // but if non-null must outlive this class. `bookmark_parser` must not be
+  // null.
   StablePortabilityDataImporter(
-      history::HistoryService& history_service,
-      bookmarks::BookmarkModel& bookmark_model,
-      ReadingListModel& reading_list_model,
+      history::HistoryService* history_service,
+      bookmarks::BookmarkModel* bookmark_model,
+      ReadingListModel* reading_list_model,
       scoped_refptr<ContentBookmarkParser> bookmark_parser);
   ~StablePortabilityDataImporter();
 
@@ -138,13 +142,13 @@ class StablePortabilityDataImporter {
   void PostCallback(auto callback, auto results);
 
   // Service used to import history URLs.
-  const raw_ref<history::HistoryService> history_service_;
+  const raw_ptr<history::HistoryService> history_service_;
 
   // Service used to import bookmarks.
-  const raw_ref<bookmarks::BookmarkModel> bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Service used to import reading list items.
-  const raw_ref<ReadingListModel> reading_list_model_;
+  const raw_ptr<ReadingListModel> reading_list_model_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 
