@@ -300,12 +300,9 @@ template("mixed_test") {
 
           fuzzer_args_joined = string_join(" ", _fuzzer_args)
 
-          NEWLINE = "$0x0A"
-
-          contents =
-              "const char* kFuzzerArgs = \"${fuzzer_args_joined}\";" + NEWLINE +
-              "const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";" +
-              NEWLINE
+          contents = "const char* kFuzzerArgs = \"${fuzzer_args_joined}\";
+const char* kFuzzerBinary = \"${_fuzzer_binary_name}\";
+"
         }
 
         _additional_fuzz_deps = []
