@@ -101,6 +101,17 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                  const SortedSizesPx& icon_sizes,
                  ReadIconsCallback callback);
 
+  // Reads the bitmaps for the trusted icon for an app of sizes specified in
+  // `icon_sizes`. Returns empty map in `callback` if an IO error happens.
+  // The `purpose_for_fallback` information is used as a fallback to read the
+  // icon bitmaps obtained from the manifest, mimicking the behavior of
+  // ReadIcons().
+  void ReadTrustedIconsWithFallbackToManifestIcons(
+      const webapps::AppId& app_id,
+      const SortedSizesPx& icon_sizes,
+      IconPurpose purpose_for_fallback,
+      ReadIconsCallback callback);
+
   // Mimics WebAppShortcutsMenuItemInfo but stores timestamps instead of icons
   // for os integration.
   using ShortcutMenuIconTimes =
