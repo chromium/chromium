@@ -99,7 +99,8 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
   if (pending_navigation_handle_id_ &&
       navigation_handle->GetNavigationId() == *pending_navigation_handle_id_) {
     journal().Log(
-        url_, task_id(), "NavigateTool::DidFinishNavigation",
+        url_, task_id(), mojom::JournalTrack::kActor,
+        "NavigateTool::DidFinishNavigation",
         absl::StrFormat("id[%d]", navigation_handle->GetNavigationId()));
     auto result =
         navigation_handle->HasCommitted() && !navigation_handle->IsErrorPage()
@@ -114,7 +115,8 @@ void NavigateTool::DidFinishNavigation(NavigationHandle* navigation_handle) {
 }
 
 void NavigateTool::NavigationHandleCallback(NavigationHandle& handle) {
-  journal().Log(url_, task_id(), "NavigateTool::NavigationHandleCallback",
+  journal().Log(url_, task_id(), mojom::JournalTrack::kActor,
+                "NavigateTool::NavigationHandleCallback",
                 absl::StrFormat("id[%d]", handle.GetNavigationId()));
   pending_navigation_handle_id_ = handle.GetNavigationId();
 }

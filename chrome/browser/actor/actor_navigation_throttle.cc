@@ -86,13 +86,14 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   AggregatedJournal& journal = GetJournal();
 
   if (!is_redirection && !initiator_origin) {
-    journal.Log(navigation_url, task_id_, "NavThrottle",
-                "Proceed: not triggered by page");
+    journal.Log(navigation_url, task_id_, mojom::JournalTrack::kActor,
+                "NavThrottle", "Proceed: not triggered by page");
     return content::NavigationThrottle::PROCEED;
   }
 
   if (initiator_origin && initiator_origin->IsSameOriginWith(navigation_url)) {
-    journal.Log(navigation_url, task_id_, "NavThrottle",
+    journal.Log(navigation_url, task_id_, mojom::JournalTrack::kActor,
+                "NavThrottle",
                 is_redirection ? "Proceed: same origin redirect"
                                : "Proceed: same origin navigation");
     // This isn't needed for correctness. We know that if the actor triggered a
@@ -102,7 +103,7 @@ ActorNavigationThrottle::WillStartOrRedirectRequest(bool is_redirection) {
   }
 
   auto journal_entry = journal.CreatePendingAsyncEntry(
-      navigation_url, task_id_, "NavThrottle",
+      navigation_url, task_id_, mojom::JournalTrack::kActor, "NavThrottle",
       is_redirection ? "Defer: check redirect safety"
                      : "Defer: check navigation safety");
 

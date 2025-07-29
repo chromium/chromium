@@ -49,7 +49,7 @@ class AggregatedJournal {
     PendingAsyncEntry(base::PassKey<AggregatedJournal>,
                       base::SafeRef<AggregatedJournal> journal,
                       TaskId task_id,
-                      uint64_t trace_id,
+                      mojom::JournalTrack track,
                       std::string_view event_name);
     ~PendingAsyncEntry();
 
@@ -66,7 +66,7 @@ class AggregatedJournal {
     bool terminated_ = false;
     base::SafeRef<AggregatedJournal> journal_;
     TaskId task_id_;
-    uint64_t trace_id_;
+    mojom::JournalTrack track_;
     std::string event_name_;
   };
 
@@ -86,12 +86,14 @@ class AggregatedJournal {
   std::unique_ptr<PendingAsyncEntry> CreatePendingAsyncEntry(
       const GURL& url,
       TaskId task_id,
+      mojom::JournalTrack track,
       std::string_view event_name,
       std::string_view details);
 
   // Log an instant event.
   void Log(const GURL& url,
            TaskId task_id,
+           mojom::JournalTrack track,
            std::string_view event_name,
            std::string_view details);
 
@@ -114,14 +116,13 @@ class AggregatedJournal {
   base::SafeRef<AggregatedJournal> GetSafeRef();
   void AddEndEvent(base::PassKey<AggregatedJournal>,
                    TaskId task_id,
-                   uint64_t trace_id,
+                   mojom::JournalTrack track,
                    const std::string& event_name,
                    std::string_view details);
 
  private:
   void AddEntry(std::unique_ptr<Entry>);
 
-  uint64_t next_trace_id_;
   base::ObserverList<Observer> observers_;
   EntryBuffer entries_;
   base::WeakPtrFactory<AggregatedJournal> weak_ptr_factory_{this};

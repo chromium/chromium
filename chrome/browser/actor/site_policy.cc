@@ -59,7 +59,11 @@ class DecisionWrapper {
                   DecisionCallback callback)
       : callback_(std::move(callback)),
         journal_entry_(
-            journal.CreatePendingAsyncEntry(url, task_id, event_name, "")) {}
+            journal.CreatePendingAsyncEntry(url,
+                                            task_id,
+                                            mojom::JournalTrack::kActor,
+                                            event_name,
+                                            "")) {}
 
   void Reject(std::string_view reason) {
     journal_entry_->EndEntry(reason);

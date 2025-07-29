@@ -265,7 +265,8 @@ ExperimentalActorExecuteActionFunction::Run() {
       actor::ActorKeyedServiceFactory::GetActorKeyedService(browser_context());
 
   actor_service->GetJournal().Log(
-      GURL(), actor::TaskId(action.task_id()), "ExperimentalActorExecutAction",
+      GURL(), actor::TaskId(action.task_id()),
+      actor::mojom::JournalTrack::kActor, "ExperimentalActorExecutAction",
       absl::StrFormat("Proto: %s", actor::ToBase64(action)));
 
   // BuildToolRequest looks for tab_ids on the individual action structs since
@@ -399,7 +400,8 @@ ExperimentalActorPerformActionsFunction::Run() {
 
   auto* actor_service = actor::ActorKeyedService::Get(browser_context());
   actor_service->GetJournal().Log(
-      GURL(), actor::TaskId(actions.task_id()), "ExperimentalActorExecutAction",
+      GURL(), actor::TaskId(actions.task_id()),
+      actor::mojom::JournalTrack::kActor, "ExperimentalActorExecutAction",
       absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
 
   actor::TaskId task_id(actions.task_id());

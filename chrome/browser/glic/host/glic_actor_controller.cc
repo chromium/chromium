@@ -118,13 +118,6 @@ BASE_FEATURE(kGlicProvideObservationOnActionFailure,
 
 }  // namespace
 
-// A wrapper class around actor::AggregatedJournal::PendingAsyncEntry for
-// dependency purposes.
-class GlicActorController::OngoingRequest {
- public:
-  std::unique_ptr<actor::AggregatedJournal::PendingAsyncEntry> journal_entry_;
-};
-
 GlicActorController::GlicActorController(Profile* profile) : profile_(profile) {
   CHECK(profile_);
   actor::ExecutionEngine::RegisterWithProfile(profile_);
@@ -140,7 +133,8 @@ void GlicActorController::Act(
   CHECK(actor_service);
 
   actor_service->GetJournal().Log(
-      GURL(), TaskId(action.task_id()), "GlicActInFocusedTab",
+      GURL(), TaskId(action.task_id()), actor::mojom::JournalTrack::kActor,
+      "GlicActInFocusedTab",
       absl::StrFormat("Proto: %s", actor::ToBase64(action)));
 
   actor::BuildToolRequestResult result =
@@ -148,7 +142,8 @@ void GlicActorController::Act(
 
   if (!result.has_value()) {
     actor::ActorKeyedService::Get(profile_)->GetJournal().Log(
-        /*url=*/GURL(), actor::TaskId(), "ActImpl",
+        /*url=*/GURL(), actor::TaskId(), actor::mojom::JournalTrack::kActor,
+        "ActImpl",
         absl::StrFormat("Invalid BrowserAction proto[%d]", result.error()));
     PostTaskForActCallback(
         std::move(callback),
@@ -179,7 +174,8 @@ void GlicActorController::Act(
 
     if (!will_observe_tab) {
       actor_service->GetJournal().Log(
-          /*url=*/GURL(), task->id(), "[Warning] No observable tab",
+          /*url=*/GURL(), task->id(), actor::mojom::JournalTrack::kActor,
+          "[Warning] No observable tab",
           "Action will end without an observable tab, adding active tab.");
 
       // Get the most recently active browser for this profile.
@@ -246,38 +242,6 @@ void GlicActorController::ResumeTask(
                          std::move(callback));
 }
 
-void GlicActorController::OnUserInputSubmitted() {
-  current_request_ = std::make_unique<OngoingRequest>();
-  current_request_->journal_entry_ =
-      actor::ActorKeyedService::Get(profile_.get())
-          ->GetJournal()
-          .CreatePendingAsyncEntry(/*url=*/GURL::EmptyGURL(), actor::TaskId(),
-                                   "Request", /*details=*/"User Input");
-}
-
-void GlicActorController::OnRequestStarted() {
-  auto& journal = actor::ActorKeyedService::Get(profile_.get())->GetJournal();
-
-  if (!current_request_) {
-    current_request_ = std::make_unique<OngoingRequest>();
-    current_request_->journal_entry_ = journal.CreatePendingAsyncEntry(
-        /*url=*/GURL::EmptyGURL(), actor::TaskId(), "Request",
-        /*details=*/"Multi-turn");
-  } else {
-    journal.Log(/*url=*/GURL(), actor::TaskId(), "Request", "Request Started");
-  }
-}
-
-void GlicActorController::OnResponseStarted() {
-  actor::ActorKeyedService::Get(profile_.get())
-      ->GetJournal()
-      .Log(/*url=*/GURL(), actor::TaskId(), "Request", "Response Started");
-}
-
-void GlicActorController::OnResponseStopped() {
-  current_request_.reset();
-}
-
 void GlicActorController::OnActionFinished(
     actor::TaskId task_id,
     const mojom::GetTabContextOptions& options,
@@ -298,7 +262,7 @@ void GlicActorController::OnActionFinished(
   actor::AggregatedJournal& journal =
       actor::ActorKeyedService::Get(profile_)->GetJournal();
   if (task->GetTabs().size() != 1) {
-    journal.Log(GURL::EmptyGURL(), task_id,
+    journal.Log(GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
                 "[Warning] Unexpected number of tabs",
                 absl::StrFormat("Expect 1 observable tab but have [%d]",
                                 task->GetTabs().size()));
@@ -314,7 +278,7 @@ void GlicActorController::OnActionFinished(
   if (tab) {
     const GURL& url = tab->GetContents()->GetLastCommittedURL();
     auto journal_entry = journal.CreatePendingAsyncEntry(
-        url, task_id, "FetchPageContext",
+        url, task_id, actor::mojom::JournalTrack::kActor, "FetchPageContext",
         "TabHandle:" + base::ToString(tab->GetHandle()));
 
     FetchPageContext(tab, *ActionableOptions(options),
@@ -323,7 +287,8 @@ void GlicActorController::OnActionFinished(
                                     std::move(callback),
                                     task->GetExecutionEngine()->GetWeakPtr()));
   } else {
-    journal.Log(GURL::EmptyGURL(), task_id, "FetchPageContext", "Tab is gone");
+    journal.Log(GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
+                "FetchPageContext", "Tab is gone");
     PostTaskForActCallback(std::move(callback),
                            mojom::ActInFocusedTabErrorReason::kTargetNotFound);
   }

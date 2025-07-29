@@ -656,10 +656,6 @@ class HostMessageHandler implements HostMessageHandlerInterface {
     this.handler.onUserInputSubmitted(request.mode);
   }
 
-  glicBrowserOnRequestStarted(): void {
-    this.handler.onRequestStarted();
-  }
-
   glicBrowserOnResponseStarted(): void {
     this.handler.onResponseStarted();
   }

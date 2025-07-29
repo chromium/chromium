@@ -267,7 +267,8 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
     return MakeResult(mojom::ActionResultCode::kTabWentAway);
   }
 
-  journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",
+  journal().Log(JournalURL(), task_id(), mojom::JournalTrack::kActor,
+                "TimeOfUseValidation",
                 "TabHandle:" + base::ToString(tab->GetHandle()));
 
   RenderFrameHost* frame =
@@ -282,8 +283,8 @@ mojom::ActionResultPtr PageTool::TimeOfUseValidation(
       last_observation, request_->GetTarget());
 
   if (!observed_target_node_info_) {
-    journal().Log(JournalURL(), task_id(), "TimeOfUseValidation",
-                  "No observed target found in APC.");
+    journal().Log(JournalURL(), task_id(), mojom::JournalTrack::kActor,
+                  "TimeOfUseValidation", "No observed target found in APC.");
   }
 
   // Perform validation for coordinate based target only.

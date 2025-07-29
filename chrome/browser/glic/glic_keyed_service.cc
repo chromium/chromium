@@ -387,7 +387,8 @@ void GlicKeyedService::PerformActions(
 
   auto* actor_service = actor::ActorKeyedService::Get(profile_);
   actor_service->GetJournal().Log(
-      GURL(), actor::TaskId(actions.task_id()), "GlicPerformActions",
+      GURL(), actor::TaskId(actions.task_id()),
+      actor::mojom::JournalTrack::kActor, "GlicPerformActions",
       absl::StrFormat("Proto: %s", actor::ToBase64(actions)));
 
   if (!actions.has_task_id()) {
@@ -401,7 +402,8 @@ void GlicKeyedService::PerformActions(
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
   if (!requests.has_value()) {
     actor_service->GetJournal().Log(
-        GURL::EmptyGURL(), task_id, "Act Failed",
+        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
+        "Act Failed",
         absl::StrFormat("Failed to convert proto::Actions[%d] to ToolRequest",
                         requests.error()));
     optimization_guide::proto::ActionsResult response =
@@ -460,33 +462,6 @@ void GlicKeyedService::ResumeActorTask(
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
   CHECK(actor_controller_);
   actor_controller_->ResumeTask(task_id, context_options, std::move(callback));
-}
-
-void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
-  metrics_->OnUserInputSubmitted(mode);
-  if (actor_controller_) {
-    actor_controller_->OnUserInputSubmitted();
-  }
-}
-
-void GlicKeyedService::OnRequestStarted() {
-  if (actor_controller_) {
-    actor_controller_->OnRequestStarted();
-  }
-}
-
-void GlicKeyedService::OnResponseStarted() {
-  metrics_->OnResponseStarted();
-  if (actor_controller_) {
-    actor_controller_->OnResponseStarted();
-  }
-}
-
-void GlicKeyedService::OnResponseStopped() {
-  metrics_->OnResponseStopped();
-  if (actor_controller_) {
-    actor_controller_->OnResponseStopped();
-  }
 }
 
 void GlicKeyedService::CaptureScreenshot(

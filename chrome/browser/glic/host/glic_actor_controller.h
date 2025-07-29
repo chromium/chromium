@@ -47,13 +47,6 @@ class GlicActorController {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
-  // These may not be necessarily generate actor tasks, but they are
-  // useful for recording in the ActorJournal.
-  void OnUserInputSubmitted();
-  void OnRequestStarted();
-  void OnResponseStarted();
-  void OnResponseStopped();
-
   // TODO(crbug.com/418280472): This temporarily gates providing observations
   // after action failure, to avoid confusing the client before it's updated.
   static bool ProvideObservationOnActionFailureEnabled();
@@ -72,10 +65,7 @@ class GlicActorController {
   base::WeakPtr<const GlicActorController> GetWeakPtr() const;
   base::WeakPtr<GlicActorController> GetWeakPtr();
 
-  class OngoingRequest;
-
   raw_ptr<Profile> profile_;
-  std::unique_ptr<OngoingRequest> current_request_;
   base::WeakPtrFactory<GlicActorController> weak_ptr_factory_{this};
 };
 

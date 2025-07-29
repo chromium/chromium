@@ -351,6 +351,12 @@ enum JournalEntryType {
   kInstant,
 };
 
+// The track to log the journal entry on.
+enum JournalTrack {
+  kFrontEnd,
+  kActor,
+};
+
 // Represents a journal entry. This should only be used for logging and
 // debugging. It should not be used to make logic decisions since a
 // compromised renderer could lie about events (such as mismatched
@@ -362,9 +368,8 @@ struct JournalEntry {
   // The task ID associated with this entry.
   int32 task_id;
 
-  // Unique identifier for entry. Begin/End types
-  // should use the same id.
-  uint64 id;
+  // The track the event should occur on.
+  JournalTrack track;
 
   // The time the event occurred at.
   mojo_base.mojom.Time timestamp;

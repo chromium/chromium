@@ -266,7 +266,6 @@ export declare interface HostRequestTypes {
       mode: number,
     },
   };
-  glicBrowserOnRequestStarted: {};
   glicBrowserOnResponseStarted: {};
   glicBrowserOnResponseStopped: {};
   glicBrowserOnSessionTerminated: {};
@@ -512,7 +511,6 @@ type HostRequestEnumNamesType = {
     JournalRecordFeedback: 0,
     OnUserInputSubmitted: 0,
     OnResponseRated: 0,
-    OnRequestStarted: 0,
     OnResponseStarted: 0,
     OnResponseStopped: 0,
     OnSessionTerminated: 0,

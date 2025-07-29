@@ -326,7 +326,8 @@ class JournalHandler {
 
     active_journal_events_[event_async_id] =
         actor_keyed_service_->GetJournal().CreatePendingAsyncEntry(
-            /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id), event, details);
+            /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id),
+            actor::mojom::JournalTrack::kFrontEnd, event, details);
   }
 
   void LogEndAsyncEvent(uint64_t event_async_id, const std::string& details) {
@@ -341,7 +342,8 @@ class JournalHandler {
                        const std::string& event,
                        const std::string& details) {
     actor_keyed_service_->GetJournal().Log(
-        /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id), event, details);
+        /*url=*/GURL::EmptyGURL(), actor::TaskId(task_id),
+        actor::mojom::JournalTrack::kFrontEnd, event, details);
   }
 
   void Clear() {
@@ -1065,14 +1067,16 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
-    glic_service_->OnUserInputSubmitted(mode);
+    glic_service_->metrics()->OnUserInputSubmitted(mode);
   }
 
-  void OnRequestStarted() override { glic_service_->OnRequestStarted(); }
+  void OnResponseStarted() override {
+    glic_service_->metrics()->OnResponseStarted();
+  }
 
-  void OnResponseStarted() override { glic_service_->OnResponseStarted(); }
-
-  void OnResponseStopped() override { glic_service_->OnResponseStopped(); }
+  void OnResponseStopped() override {
+    glic_service_->metrics()->OnResponseStopped();
+  }
 
   void OnSessionTerminated() override {
     glic_service_->metrics()->OnSessionTerminated();

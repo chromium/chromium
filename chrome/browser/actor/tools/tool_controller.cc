@@ -49,7 +49,8 @@ ToolController::~ToolController() = default;
 
 void ToolController::SetState(State state) {
   journal_->Log(active_state_ ? active_state_->tool->JournalURL() : GURL(),
-                task_->id(), "ToolControllerStateChange",
+                task_->id(), mojom::JournalTrack::kActor,
+                "ToolControllerStateChange",
                 absl::StrFormat("State: %s -> %s", StateToString(state_),
                                 StateToString(state)));
 #if DCHECK_IS_ON()
@@ -110,6 +111,7 @@ void ToolController::CreateToolAndValidate(
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);
     journal_->Log(request.GetURLForJournal(), task_->id(),
+                  mojom::JournalTrack::kActor,
                   "ToolController CreateToolAndValidate Failed",
                   create_result.result->message);
     PostResponseTask(std::move(result_callback),
@@ -121,8 +123,8 @@ void ToolController::CreateToolAndValidate(
   CHECK(tool);
 
   auto journal_event = journal_->CreatePendingAsyncEntry(
-      tool->JournalURL(), task_->id(), tool->JournalEvent(),
-      tool->DebugString());
+      tool->JournalURL(), task_->id(), mojom::JournalTrack::kActor,
+      tool->JournalEvent(), tool->DebugString());
   active_state_.emplace(std::move(tool), std::move(result_callback),
                         std::move(journal_event), last_observation);
 
@@ -161,7 +163,8 @@ void ToolController::Invoke(ResultCallback result_callback) {
       active_state_->tool->TimeOfUseValidation(active_state_->last_observation);
   if (!IsOk(*toctou_result)) {
     journal_->Log(active_state_->tool->JournalURL(), task_->id(),
-                  "TOCTOU Check Failed", ToDebugString(*toctou_result));
+                  mojom::JournalTrack::kActor, "TOCTOU Check Failed",
+                  ToDebugString(*toctou_result));
     CompleteToolRequest(std::move(toctou_result));
     return;
   }

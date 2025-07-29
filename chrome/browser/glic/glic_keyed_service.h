@@ -172,11 +172,6 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
-  void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
-  void OnRequestStarted();
-  void OnResponseStarted();
-  void OnResponseStopped();
-
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 
