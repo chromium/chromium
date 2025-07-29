@@ -419,8 +419,6 @@ export class SearchboxElement extends SearchboxElementBase {
     });
     this.dropdownIsVisible = hasPrimaryMatches;
 
-    this.$.input.focus();
-
     const firstMatch = hasMatches ? this.result_.matches[0] : null;
     if (firstMatch && firstMatch.allowedToBeDefaultMatch) {
       // Select the default match and update the input.
