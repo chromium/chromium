@@ -1,0 +1,11 @@
+module foo;
+
+struct Thingy {
+  string foo;
+};
+
+interface Bar {
+    Method() => result<bool, int32>;
+    Method2() => result<Thingy, int32>;
+    Method3() => result<array<Thingy>, int32>;
+};
