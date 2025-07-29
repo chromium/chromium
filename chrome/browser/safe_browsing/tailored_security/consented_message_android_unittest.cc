@@ -292,4 +292,47 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
       "SafeBrowsing.SyncedEsbDialogEnabledMessageOutcome", 0);
 }
 
+class TestTailoredSecurityConsentedModal
+    : public TailoredSecurityConsentedModalAndroid {
+ public:
+  using TailoredSecurityConsentedModalAndroid::
+      TailoredSecurityConsentedModalAndroid;
+
+  // Set a callback to be run when the WebContents is destroyed.
+  void SetWebContentsDestroyedClosure(base::OnceClosure closure) {
+    web_contents_destroyed_closure_ = std::move(closure);
+  }
+
+  // Override the observer method to run the callback.
+  void WebContentsDestroyed() override {
+    // Call the original base class implementation first.
+    TailoredSecurityConsentedModalAndroid::WebContentsDestroyed();
+    // Run test-specific callback to signal the RunLoop.
+    if (web_contents_destroyed_closure_) {
+      std::move(web_contents_destroyed_closure_).Run();
+    }
+  }
+
+ private:
+  base::OnceClosure web_contents_destroyed_closure_;
+};
+
+TEST_F(TailoredSecurityConsentedModalAndroidTest,
+       WebContentsDestroyedNullifiesPointer) {
+  base::RunLoop run_loop;
+
+  auto modal = std::make_unique<TestTailoredSecurityConsentedModal>(
+      web_contents_.get(), /*enable=*/true, base::DoNothing(),
+      /*is_requested_by_synced_esb=*/false);
+
+  modal->SetWebContentsDestroyedClosure(run_loop.QuitClosure());
+  // Destroy the WebContents, which will trigger the notification.
+  web_contents_.reset();
+
+  // Run the loop. This will block until the QuitClosure is called from
+  // within WebContentsDestroyed().
+  run_loop.Run();
+  EXPECT_EQ(nullptr, modal->web_contents_);
+}
+
 }  // namespace safe_browsing
