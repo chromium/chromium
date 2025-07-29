@@ -7651,22 +7651,6 @@
     "expiry_milestone": 130
   },
   {
-    "name": "page-info-hide-site-settings",
-    "owners": [
-      "zsalata@google.com",
-      "olesiamarukhno@google.com"
-    ],
-    "expiry_milestone": 119
-  },
-  {
-    "name": "page-info-history-desktop",
-    "owners": [
-      "dullweber@chromium.org",
-      "olesiamarukhno@google.com"
-    ],
-    "expiry_milestone": 112
-  },
-  {
     "name": "page-visibility-page-content-annotations",
     "owners": [ "sophiechang@chromium.org", "mcrouse@chromium.org", "chrome-intelligence-core@google.com"],
     "expiry_milestone": 130

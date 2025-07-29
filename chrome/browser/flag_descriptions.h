@@ -1828,12 +1828,6 @@ extern const char kPageImageServiceOptimizationGuideSalientImagesDescription[];
 extern const char kPageImageServiceSuggestPoweredImagesName[];
 extern const char kPageImageServiceSuggestPoweredImagesDescription[];
 
-extern const char kPageInfoHideSiteSettingsName[];
-extern const char kPageInfoHideSiteSettingsDescription[];
-
-extern const char kPageInfoHistoryDesktopName[];
-extern const char kPageInfoHistoryDesktopDescription[];
-
 extern const char kPageVisibilityPageContentAnnotationsName[];
 extern const char kPageVisibilityPageContentAnnotationsDescription[];
 

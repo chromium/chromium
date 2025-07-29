@@ -8911,20 +8911,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDoubleBufferCompositingDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kDoubleBufferCompositing)},
 
-#if !BUILDFLAG(IS_ANDROID)
-    {"page-info-hide-site-settings",
-     flag_descriptions::kPageInfoHideSiteSettingsName,
-     flag_descriptions::kPageInfoHideSiteSettingsDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoHideSiteSettings)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
-#if !BUILDFLAG(IS_ANDROID)
-    {"page-info-history-desktop",
-     flag_descriptions::kPageInfoHistoryDesktopName,
-     flag_descriptions::kPageInfoHistoryDesktopDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(page_info::kPageInfoHistoryDesktop)},
-#endif  // !BUILDFLAG(IS_ANDROID)
-
     {"act-features", flag_descriptions::kActFeaturesName,
      flag_descriptions::kActFeaturesDescription, kOsDesktop | kOsAndroid,
      MULTI_VALUE_TYPE(kActFeaturesChoices)},
