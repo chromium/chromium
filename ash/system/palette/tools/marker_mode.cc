@@ -79,14 +79,4 @@ const gfx::VectorIcon& MarkerMode::GetPaletteIcon() const {
   return kPaletteTrayIconProjectorIcon;
 }
 
-// TODO(b/339834202): Consider changing to base class's OnViewClicked() calling
-// a overridable function.
-void MarkerMode::OnViewClicked(views::View* sender) {
-  Shell::Get()
-      ->annotator_controller()
-      ->annotation_source_watcher()
-      ->NotifyMarkerClicked(GetRootWindow());
-  CommonPaletteTool::OnViewClicked(sender);
-}
-
 }  // namespace ash

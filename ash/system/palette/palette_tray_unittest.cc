@@ -7,6 +7,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/annotator/annotation_source_watcher.h"
+#include "ash/annotator/annotation_tray.h"
+#include "ash/annotator/annotator_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/projector/model/projector_session_impl.h"
@@ -24,6 +28,7 @@
 #include "ash/system/status_area_widget_test_helper.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test_shell_delegate.h"
+#include "ash/webui/annotator/test/mock_annotator_client.h"
 #include "base/command_line.h"
 #include "base/files/safe_base_name.h"
 #include "base/memory/ptr_util.h"
@@ -826,6 +831,76 @@ TEST_F(PaletteTrayTestWithProjector,
   // Verify palette tray is visible when Projector session ends.
   projector_session_->Stop();
   EXPECT_TRUE(palette_tray_->GetVisible());
+}
+
+class PaletteTrayTestWithAnnotator : public PaletteTrayTest {
+ public:
+  PaletteTrayTestWithAnnotator() {
+    scoped_feature_list_.InitAndEnableFeature(ash::features::kAnnotatorMode);
+  }
+
+  PaletteTrayTestWithAnnotator(const PaletteTrayTestWithAnnotator&) = delete;
+  PaletteTrayTestWithAnnotator& operator=(const PaletteTrayTestWithAnnotator&) =
+      delete;
+
+  ~PaletteTrayTestWithAnnotator() override = default;
+
+  // AshTestBase:
+  void SetUp() override {
+    PaletteTrayTest::SetUp();
+    annotator_controller()->SetToolClient(&annotator_client_);
+  }
+
+  AnnotatorController* annotator_controller() {
+    return Shell::Get()->annotator_controller();
+  }
+
+  AnnotationTray* annotation_tray() {
+    return Shell::GetPrimaryRootWindowController()
+        ->GetStatusAreaWidget()
+        ->annotation_tray();
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  MockAnnotatorClient annotator_client_;
+};
+
+// Verify that the palette tray behavior in marker mode.
+TEST_F(PaletteTrayTestWithAnnotator,
+       PaletteTrayChangesVisibilityOnAnnotatorChanges) {
+  active_user_pref_service()->SetBoolean(prefs::kEnableStylusTools, true);
+  local_state()->SetBoolean(prefs::kHasSeenStylus, true);
+
+  // Activate laser tool and verify the palette is visible
+  test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::LASER_POINTER);
+  EXPECT_TRUE(palette_tray_->GetVisible());
+  EXPECT_EQ(
+      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
+      PaletteToolId::LASER_POINTER);
+
+  // Activate marker tool.
+  test_api_->palette_tool_manager()->ActivateTool(PaletteToolId::MARKER_MODE);
+  // Simulate activating marker in the controller.
+  annotator_controller()->OnCanvasInitialized(true);
+  annotator_controller()->EnableAnnotatorTool();
+
+  // Verify annotation tray is shown, palette tray is hidden, and the active
+  // tool is marker mode.
+  EXPECT_FALSE(palette_tray_->GetVisible());
+  EXPECT_EQ(
+      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
+      PaletteToolId::MARKER_MODE);
+  EXPECT_TRUE(annotation_tray()->visible_preferred());
+
+  // Disable annotator. Verify annotation tray is hidden, palette tray is shown
+  // and the active tool is none.
+  annotator_controller()->DisableAnnotator();
+  EXPECT_FALSE(annotation_tray()->visible_preferred());
+  EXPECT_TRUE(palette_tray_->GetVisible());
+  EXPECT_EQ(
+      test_api_->palette_tool_manager()->GetActiveTool(PaletteGroup::MODE),
+      PaletteToolId::NONE);
 }
 
 }  // namespace ash

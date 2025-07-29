@@ -378,10 +378,13 @@ void PaletteTray::OnShellInitialized() {
       Shell::Get()->projector_controller();
   projector_session_observation_.Observe(
       projector_controller->projector_session());
+  annotator_controller_observation_.Observe(
+      Shell::Get()->annotator_controller());
 }
 
 void PaletteTray::OnShellDestroying() {
   projector_session_observation_.Reset();
+  annotator_controller_observation_.Reset();
 }
 
 void PaletteTray::OnDidApplyDisplayChanges() {
@@ -498,10 +501,25 @@ void PaletteTray::HidePaletteImmediately() {
 
 void PaletteTray::OnProjectorSessionActiveStateChanged(bool active) {
   is_palette_visibility_paused_ = active;
+  // If the projector session is active, the palette tray should be disabled and
+  // hidden.
   if (active) {
     DeactivateActiveTool();
     SetVisiblePreferred(false);
   } else {
+    UpdateIconVisibility();
+  }
+}
+
+void PaletteTray::OnAnnotatorStateChanged(bool enabled) {
+  if (enabled) {
+    // If the annotator is enabled, hide the palette tray. The marker remains
+    // the active tool.
+    SetVisiblePreferred(false);
+  } else {
+    // Once the annotator gets disabled, deactivate the active tool and show the
+    // tray again.
+    DeactivateActiveTool();
     UpdateIconVisibility();
   }
 }

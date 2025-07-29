@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "ash/annotator/annotator_controller.h"
 #include "ash/ash_export.h"
 #include "ash/public/cpp/projector/projector_session.h"
 #include "ash/public/cpp/session/session_observer.h"
@@ -54,14 +55,15 @@ class TrayBubbleWrapper;
 // class also controls the lifetime for all of the tools available in the
 // palette. PaletteTray has one instance per-display. It is only made visible if
 // the display has stylus hardware.
-class ASH_EXPORT PaletteTray : public TrayBackgroundView,
+class ASH_EXPORT PaletteTray : public AnnotatorController::AnnotatorObserver,
+                               public display::DisplayManagerObserver,
+                               public PaletteToolManager::Delegate,
+                               public ProjectorSessionObserver,
                                public SessionObserver,
                                public ShelfObserver,
                                public ShellObserver,
-                               public display::DisplayManagerObserver,
-                               public PaletteToolManager::Delegate,
-                               public ui::InputDeviceEventObserver,
-                               public ProjectorSessionObserver {
+                               public TrayBackgroundView,
+                               public ui::InputDeviceEventObserver {
   METADATA_HEADER(PaletteTray, TrayBackgroundView)
 
  public:
@@ -118,6 +120,9 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   // ProjectorSessionObserver:
   void OnProjectorSessionActiveStateChanged(bool active) override;
+
+  // AnnotatorObserver:
+  void OnAnnotatorStateChanged(bool enabled) override;
 
  private:
   friend class PaletteTrayTestApi;
@@ -211,6 +216,8 @@ class ASH_EXPORT PaletteTray : public TrayBackgroundView,
 
   base::ScopedObservation<ProjectorSession, ProjectorSessionObserver>
       projector_session_observation_{this};
+  base::ScopedObservation<AnnotatorController, AnnotatorObserver>
+      annotator_controller_observation_{this};
 
   ScopedSessionObserver scoped_session_observer_;
 

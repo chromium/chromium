@@ -36,14 +36,12 @@ AnnotationSourceWatcher::~AnnotationSourceWatcher() {
   capture_mode_controller_ = nullptr;
 }
 
-void AnnotationSourceWatcher::NotifyMarkerClicked(aura::Window* current_root) {
-  // TODO(b/342104047): implement functionality
-}
 void AnnotationSourceWatcher::NotifyMarkerEnabled(aura::Window* current_root) {
-  // TODO(b/342104047): implement functionality
+  annotator_controller_->RegisterView(current_root);
+  annotator_controller_->CreateAnnotationOverlayForMarkerMode(current_root);
 }
 void AnnotationSourceWatcher::NotifyMarkerDisabled() {
-  // TODO(b/342104047): implement functionality
+  annotator_controller_->DisableAnnotator();
 }
 
 void AnnotationSourceWatcher::OnRecordingStarted(aura::Window* current_root) {

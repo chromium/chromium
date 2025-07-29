@@ -36,7 +36,6 @@ class MarkerMode : public CommonPaletteTool {
 
   // CommonPaletteTool:
   const gfx::VectorIcon& GetPaletteIcon() const override;
-  void OnViewClicked(views::View* sender) override;
 };
 
 }  // namespace ash
