@@ -2008,8 +2008,6 @@ bool SwapChainPresenter::PresentDCOMPSurface(DCLayerOverlayParams& params,
   // in Media Foundation scaling the full video to the clipped region,
   // instead of allowing clipping to a portion of the video.
 
-  // This may trigger if we forgot to call `FinishPresentToSwapChain`.
-  CHECK(!pending_dcomp_surface_rect_in_window_);
   pending_dcomp_surface_rect_in_window_ = mapped_rect;
   content_size_ = mapped_rect.size();
 
