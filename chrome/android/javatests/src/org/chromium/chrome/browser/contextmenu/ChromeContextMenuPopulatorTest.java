@@ -1917,6 +1917,18 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_Link() throws PendingIntent.CanceledException {
+        var linkHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ChromeContextMenuPopulator
+                                        .getContextualCustomActionTypeSelectedHistogramForTesting(),
+                                ChromeContextMenuPopulator.ContextualCustomActionType.LINK)
+                        .expectIntRecord(
+                                ChromeContextMenuPopulator
+                                        .getCustomActionTypeDisplayedHistogramForTesting(),
+                                ChromeContextMenuPopulator.ContextualCustomActionType.LINK)
+                        .build();
+
         FirstRunStatus.setFirstRunFlowComplete(true);
         final int linkActionId = 101;
         final String linkDescription = "Custom Link Action";
@@ -1955,11 +1967,6 @@ public class ChromeContextMenuPopulatorTest {
                 "Custom item ID should be == the starting ID",
                 customItemId == ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting());
 
-        var linkHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        ChromeContextMenuPopulator
-                                .getContextualCustomActionTypeSelectedHistogramForTesting(),
-                        ChromeContextMenuPopulator.ContextualCustomActionType.LINK);
         assertTrue(
                 "Clicking custom link item should be handled.",
                 mPopulator.onItemSelected(
@@ -1998,6 +2005,18 @@ public class ChromeContextMenuPopulatorTest {
     @UiThreadTest
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_Image() throws PendingIntent.CanceledException {
+        var imageHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ChromeContextMenuPopulator
+                                        .getContextualCustomActionTypeSelectedHistogramForTesting(),
+                                ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE)
+                        .expectIntRecord(
+                                ChromeContextMenuPopulator
+                                        .getCustomActionTypeDisplayedHistogramForTesting(),
+                                ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE)
+                        .build();
+
         FirstRunStatus.setFirstRunFlowComplete(true);
         final int imageActionId = 202;
         final String imageDescription = "Custom Image Action";
@@ -2065,11 +2084,6 @@ public class ChromeContextMenuPopulatorTest {
                 "Custom item ID should be == the starting ID",
                 customItemId == ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting());
 
-        var imageHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        ChromeContextMenuPopulator
-                                .getContextualCustomActionTypeSelectedHistogramForTesting(),
-                        ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE);
         assertTrue(
                 "Clicking custom image item should be handled.",
                 mPopulator.onItemSelected(
@@ -2121,6 +2135,18 @@ public class ChromeContextMenuPopulatorTest {
     @EnableFeatures(ChromeFeatureList.CCT_CONTEXTUAL_MENU_ITEMS)
     public void testCustomContentActions_ImageLink_DoesNotSetPageUri()
             throws PendingIntent.CanceledException {
+        var imageHistogramWatcher =
+                HistogramWatcher.newBuilder()
+                        .expectIntRecord(
+                                ChromeContextMenuPopulator
+                                        .getContextualCustomActionTypeSelectedHistogramForTesting(),
+                                ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE)
+                        .expectIntRecord(
+                                ChromeContextMenuPopulator
+                                        .getCustomActionTypeDisplayedHistogramForTesting(),
+                                ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE)
+                        .build();
+
         FirstRunStatus.setFirstRunFlowComplete(true);
         final int imageActionId = 202;
         final String imageDescription = "Custom Image Action";
@@ -2188,11 +2214,6 @@ public class ChromeContextMenuPopulatorTest {
                 "Custom item ID should be == the starting ID",
                 customItemId == ChromeContextMenuPopulator.getCustomMenuItemIdStartForTesting());
 
-        var imageHistogramWatcher =
-                HistogramWatcher.newSingleRecordWatcher(
-                        ChromeContextMenuPopulator
-                                .getContextualCustomActionTypeSelectedHistogramForTesting(),
-                        ChromeContextMenuPopulator.ContextualCustomActionType.IMAGE);
         assertTrue(
                 "Clicking custom image item should be handled.",
                 mPopulator.onItemSelected(

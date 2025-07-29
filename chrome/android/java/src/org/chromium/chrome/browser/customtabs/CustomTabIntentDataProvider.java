@@ -199,6 +199,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
     static final String EXTRA_OPEN_IN_BROWSER_BUTTON_ALLOWED =
             "androidx.browser.customtabs.extra.OPEN_IN_BROWSER_BUTTON_ALLOWED";
 
+    static final String EXTRA_CUSTOM_CONTENT_ACTIONS =
+            "androidx.browser.customtabs.extra.CUSTOM_CONTENT_ACTIONS";
+
     @IntDef({
         CustomTabsButtonState.BUTTON_STATE_OFF,
         CustomTabsButtonState.BUTTON_STATE_ON,
@@ -1214,6 +1217,9 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         if (IntentUtils.safeHasExtra(
                 intent, TrustedWebActivityIntentBuilder.EXTRA_FILE_HANDLING_DATA)) {
             featureUsage.log(CustomTabsFeature.EXTRA_FILE_HANDLERS);
+        }
+        if (IntentUtils.safeHasExtra(intent, EXTRA_CUSTOM_CONTENT_ACTIONS)) {
+            featureUsage.log(CustomTabsFeature.EXTRA_CUSTOM_CONTENT_ACTIONS);
         }
     }
 

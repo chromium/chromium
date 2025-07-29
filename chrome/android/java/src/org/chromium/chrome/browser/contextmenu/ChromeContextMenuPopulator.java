@@ -112,6 +112,8 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
             1512; // Random id to avoid possible collisions.
     private static final int MAX_CUSTOM_MENU_ITEMS = 4;
     private static final String TAG = "CCMenuPopulator";
+    private static final String UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_DISPLAYED =
+            "CustomTabs.ContextMenu.DisplayedContextualCustomActionType";
     private static final String UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_SELECTED =
             "CustomTabs.ContextMenu.SelectedContextualCustomActionType";
     private final Context mContext;
@@ -483,12 +485,20 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
                 if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()
                         && mMode == ContextMenuMode.CUSTOM_TAB) {
+                    boolean displayedAction = false;
                     for (CustomContentAction action : mCustomContentActions) {
                         if (action.getTargetType() == CustomTabsIntent.CONTENT_TARGET_TYPE_LINK) {
+                            displayedAction = true;
                             mCustomActionMap.put(nextCustomMenuItemId, action);
                             linkGroup.add(createCustomListItem(action, nextCustomMenuItemId));
                             nextCustomMenuItemId++;
                         }
+                    }
+                    if (displayedAction) {
+                        RecordHistogram.recordEnumeratedHistogram(
+                                UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_DISPLAYED,
+                                ContextualCustomActionType.LINK,
+                                ContextualCustomActionType.COUNT);
                     }
                 }
                 if (!mParams.isImage()
@@ -560,12 +570,20 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
             if (ChromeFeatureList.sCctContextualMenuItems.isEnabled()
                     && mMode == ContextMenuMode.CUSTOM_TAB) {
+                boolean displayedAction = false;
                 for (CustomContentAction action : mCustomContentActions) {
                     if (action.getTargetType() == CustomTabsIntent.CONTENT_TARGET_TYPE_IMAGE) {
+                        displayedAction = true;
                         mCustomActionMap.put(nextCustomMenuItemId, action);
                         imageGroup.add(createCustomListItem(action, nextCustomMenuItemId));
                         nextCustomMenuItemId++;
                     }
+                }
+                if (displayedAction) {
+                    RecordHistogram.recordEnumeratedHistogram(
+                            UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_DISPLAYED,
+                            ContextualCustomActionType.IMAGE,
+                            ContextualCustomActionType.COUNT);
                 }
             }
 
@@ -1489,6 +1507,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
 
     public static int getCustomMenuItemIdStartForTesting() {
         return CUSTOM_MENU_ITEM_ID_START;
+    }
+
+    public static String getCustomActionTypeDisplayedHistogramForTesting() {
+        return UMA_CONTEXTUAL_CUSTOM_ACTION_TYPE_DISPLAYED;
     }
 
     public static String getContextualCustomActionTypeSelectedHistogramForTesting() {

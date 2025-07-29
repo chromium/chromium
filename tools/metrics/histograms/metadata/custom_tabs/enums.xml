@@ -151,6 +151,8 @@ chromium-metrics-reviews@google.com.
              EXTRA_OPEN_IN_BROWSER_STATE"/>
   <int value="64" label="Launch Handler API usage EXTRA_LAUNCH_HANDLER"/>
   <int value="65" label="File Handlers API usage EXTRA_FILE_HANDLERS"/>
+  <int value="66"
+      label="Custom context menu items EXTRA_CUSTOM_CONTENT_ACTIONS"/>
 </enum>
 
 <!--LINT.ThenChange(//chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsFeatureUsage.java:CustomTabsFeature) -->
