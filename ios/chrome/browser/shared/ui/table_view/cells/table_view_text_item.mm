@@ -93,6 +93,9 @@
 
     // Set and activate constraints.
     [NSLayoutConstraint activateConstraints:@[
+      [self.contentView.heightAnchor
+          constraintGreaterThanOrEqualToConstant:kChromeTableViewCellHeight],
+
       // Title Label Constraints.
       [_textLabel.leadingAnchor
           constraintEqualToAnchor:self.contentView.leadingAnchor
