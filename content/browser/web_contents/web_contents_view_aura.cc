@@ -1530,8 +1530,12 @@ aura::client::DragUpdateInfo WebContentsViewAura::OnDragUpdated(
 }
 
 void WebContentsViewAura::OnDragExited() {
-  if (web_contents_->ShouldIgnoreInputEvents())
+  if (web_contents_->ShouldIgnoreInputEvents()) {
+    // Don't compute the results of exiting, but clean up the flag to avoid
+    // hanging the renderer process. See crbug.com/434130454.
+    drag_in_progress_ = false;
     return;
+  }
   CompleteDragExit();
 }
 
@@ -1614,7 +1618,7 @@ void WebContentsViewAura::PerformDropCallback(
     std::unique_ptr<ui::OSExchangeData> data,
     base::WeakPtr<RenderWidgetHostViewBase> target,
     std::optional<gfx::PointF> transformed_pt) {
-  // Exit callback to make sure |drag_in_pregress_| is flipped on exit and
+  // Exit callback to make sure |drag_in_progress_| is flipped on exit and
   // |end_drag_runner_| is run after OnGotVirtualFilesAsTempFiles finishes.
   base::ScopedClosureRunner drop_exit_cleanup(base::BindOnce(
       &WebContentsViewAura::OnDropExit, weak_ptr_factory_.GetWeakPtr(),
