@@ -105,22 +105,6 @@ class UpdateManifest {
    private:
     friend bool operator==(const VersionEntry& a, const VersionEntry& b);
 
-    static base::expected<base::Version, std::monostate>
-    ParseAndValidateVersion(
-        base::optional_ref<const base::Value> version_value);
-
-    static base::expected<GURL, std::monostate> ParseAndValidateSrc(
-        base::optional_ref<const base::Value> src_value,
-        const GURL& update_manifest_url);
-
-    // Parses the `channels` field value of a version entry and either returns a
-    // set of channels on success or an error on failure. If `channels` is not
-    // set (i.e., `channels_value` is `std::nullopt`), then a set containing
-    // just the "default" channel is returned.
-    static base::expected<base::flat_set<UpdateChannel>, std::monostate>
-    ParseAndValidateChannels(
-        base::optional_ref<const base::Value> channels_value);
-
     GURL src_;
     base::Version version_;
     base::flat_set<UpdateChannel> channels_;

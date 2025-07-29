@@ -140,8 +140,6 @@ source_set("web_applications") {
     "isolated_web_apps/isolated_web_app_update_manager.h",
     "isolated_web_apps/isolated_web_app_url_info.cc",
     "isolated_web_apps/isolated_web_app_url_info.h",
-    "isolated_web_apps/isolated_web_app_version.cc",
-    "isolated_web_apps/isolated_web_app_version.h",
     "isolated_web_apps/isolation_data.cc",
     "isolated_web_apps/isolation_data.h",
     "isolated_web_apps/jobs/get_isolated_web_app_size_job.cc",

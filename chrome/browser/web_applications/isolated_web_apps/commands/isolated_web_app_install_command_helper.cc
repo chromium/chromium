@@ -31,7 +31,6 @@
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_integrity_block_data.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_trust_checker.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_url_info.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
 #include "chrome/browser/web_applications/isolated_web_apps/pending_install_info.h"
 #include "chrome/browser/web_applications/jobs/manifest_to_web_app_install_info_job.h"
 #include "chrome/browser/web_applications/web_app_icon_operations.h"
@@ -47,6 +46,7 @@
 #include "components/webapps/isolated_web_apps/iwa_key_distribution_info_provider.h"
 #include "components/webapps/isolated_web_apps/reading/response_reader_factory.h"
 #include "components/webapps/isolated_web_apps/reading/validator.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/source.h"
 #include "components/webapps/isolated_web_apps/types/storage_location.h"
 #include "content/public/browser/browser_context.h"
@@ -571,20 +571,22 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndGetVersion(
   }
 
   ASSIGN_OR_RETURN(
-      auto version, ParseIwaVersion(version_string),
-      [&](auto error) -> base::expected<base::Version, std::string> {
-        return base::unexpected(base::StrCat(
+      web_app::IwaVersion iwa_version,
+      web_app::IwaVersion::Create(version_string),
+      [version_string](web_app::IwaVersion::IwaVersionParseError error) {
+        return base::StrCat(
             {"Failed to parse `version` from the manifest: It must be in the "
              "form `x.y.z`, where `x`, `y`, and `z` are numbers without "
              "leading zeros. Detailed error: ",
-             IwaVersionParseErrorToString(error), " Got: ", version_string}));
+             web_app::IwaVersion::GetErrorString(error),
+             ". Got: ", version_string});
       });
 
-  if (expected_version.has_value() && *expected_version != version) {
+  if (expected_version.has_value() && *expected_version != *iwa_version) {
     return base::unexpected(
         "Expected version (" + expected_version->GetString() +
         ") does not match the version provided in the manifest (" +
-        version.GetString() + ")");
+        iwa_version->GetString() + ")");
   }
 
   std::string encoded_id = manifest.id.path();
@@ -610,9 +612,7 @@ IsolatedWebAppInstallCommandHelper::ValidateManifestAndGetVersion(
                       manifest.scope.possibly_invalid_spec(),
                       ", origin: ", origin.Serialize()}));
   }
-
-  CHECK(version.IsValid());
-  return version;
+  return *iwa_version;
 }
 
 void IsolatedWebAppInstallCommandHelper::

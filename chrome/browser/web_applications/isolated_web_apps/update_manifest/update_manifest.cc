@@ -22,7 +22,7 @@
 #include "base/types/optional_util.h"
 #include "base/values.h"
 #include "base/version.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_version.h"
+#include "components/webapps/isolated_web_apps/types/iwa_version.h"
 #include "components/webapps/isolated_web_apps/types/update_channel.h"
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 
@@ -88,6 +88,76 @@ ParseChannels(const base::Value::Dict& channels) {
         *channel, UpdateManifest::ChannelMetadata(*channel, display_name));
   }
   return channels_metadata;
+}
+
+base::expected<IwaVersion, std::monostate> ParseAndValidateVersion(
+    base::optional_ref<const base::Value> version_value) {
+  if (!version_value.has_value() || !version_value->is_string()) {
+    return base::unexpected(std::monostate());
+  }
+
+  return IwaVersion::Create(version_value->GetString())
+      .transform_error([](IwaVersion::IwaVersionParseError error) {
+        return std::monostate();
+      });
+}
+
+base::expected<GURL, std::monostate> ParseAndValidateSrc(
+    base::optional_ref<const base::Value> src_value,
+    const GURL& update_manifest_url) {
+  if (!src_value.has_value() || !src_value->is_string()) {
+    return base::unexpected(std::monostate());
+  }
+
+  GURL src = update_manifest_url.Resolve(src_value->GetString());
+  if (!src.is_valid() || src == update_manifest_url) {
+    return base::unexpected(std::monostate());
+  }
+  if (!src.SchemeIsHTTPOrHTTPS() ||
+      !network::IsUrlPotentiallyTrustworthy(src)) {
+    // Only https: and http: URLs are supported as the src URL. Also, they need
+    // to be "potentially trustworthy", which includes https:, localhost, and
+    // origins configured as trustworthy via enterprise policy. The separate
+    // check for the scheme is crucial, as file:// and some other URLs are
+    // "potentially trustworthy".
+    return base::unexpected(std::monostate());
+  }
+
+  return src;
+}
+
+// Parses the `channels` field value of a version entry and either returns a
+// set of channels on success or an error on failure. If `channels` is not
+// set (i.e., `channels_value` is `std::nullopt`), then a set containing
+// just the "default" channel is returned.
+// static
+base::expected<base::flat_set<UpdateChannel>, std::monostate>
+ParseAndValidateChannels(base::optional_ref<const base::Value> channels_value) {
+  if (!channels_value.has_value()) {
+    // If the "channels" field is not present in the version entry of the Update
+    // Manifest, we treat it as if it was present and contained a single
+    // "default" channel.
+    return base::flat_set<UpdateChannel>{UpdateChannel::default_channel()};
+  }
+
+  if (!channels_value->is_list()) {
+    return base::unexpected(std::monostate());
+  }
+
+  std::vector<UpdateChannel> channels;
+  for (const auto& channel_value : channels_value->GetList()) {
+    const std::string* channel_name_string = channel_value.GetIfString();
+    if (!channel_name_string) {
+      return base::unexpected(std::monostate());
+    }
+    auto channel = UpdateChannel::Create(*channel_name_string);
+    if (!channel.has_value()) {
+      return base::unexpected(std::monostate());
+    }
+    channels.emplace_back(*channel);
+  }
+
+  return channels;
 }
 
 }  // namespace
@@ -191,7 +261,7 @@ UpdateManifest::VersionEntry::ParseFromJson(
   ASSIGN_OR_RETURN(auto channels,
                    ParseAndValidateChannels(
                        version_entry_dict.Find(kUpdateManifestChannelsKey)));
-  return VersionEntry(std::move(src), std::move(version), std::move(channels));
+  return VersionEntry(std::move(src), std::move(*version), std::move(channels));
 }
 
 UpdateManifest::ChannelMetadata::ChannelMetadata(
@@ -246,76 +316,6 @@ base::Version UpdateManifest::VersionEntry::version() const {
 const base::flat_set<UpdateChannel>& UpdateManifest::VersionEntry::channels()
     const {
   return channels_;
-}
-
-// static
-base::expected<base::Version, std::monostate>
-UpdateManifest::VersionEntry::ParseAndValidateVersion(
-    base::optional_ref<const base::Value> version_value) {
-  if (!version_value.has_value() || !version_value->is_string()) {
-    return base::unexpected(std::monostate());
-  }
-
-  return ParseIwaVersion(version_value->GetString()).transform_error([](auto) {
-    return std::monostate();
-  });
-}
-
-// static
-base::expected<GURL, std::monostate>
-UpdateManifest::VersionEntry::ParseAndValidateSrc(
-    base::optional_ref<const base::Value> src_value,
-    const GURL& update_manifest_url) {
-  if (!src_value.has_value() || !src_value->is_string()) {
-    return base::unexpected(std::monostate());
-  }
-
-  GURL src = update_manifest_url.Resolve(src_value->GetString());
-  if (!src.is_valid() || src == update_manifest_url) {
-    return base::unexpected(std::monostate());
-  }
-  if (!src.SchemeIsHTTPOrHTTPS() ||
-      !network::IsUrlPotentiallyTrustworthy(src)) {
-    // Only https: and http: URLs are supported as the src URL. Also, they need
-    // to be "potentially trustworthy", which includes https:, localhost, and
-    // origins configured as trustworthy via enterprise policy. The separate
-    // check for the scheme is crucial, as file:// and some other URLs are
-    // "potentially trustworthy".
-    return base::unexpected(std::monostate());
-  }
-
-  return src;
-}
-
-// static
-base::expected<base::flat_set<UpdateChannel>, std::monostate>
-UpdateManifest::VersionEntry::ParseAndValidateChannels(
-    base::optional_ref<const base::Value> channels_value) {
-  if (!channels_value.has_value()) {
-    // If the "channels" field is not present in the version entry of the Update
-    // Manifest, we treat it as if it was present and contained a single
-    // "default" channel.
-    return base::flat_set<UpdateChannel>{UpdateChannel::default_channel()};
-  }
-
-  if (!channels_value->is_list()) {
-    return base::unexpected(std::monostate());
-  }
-
-  std::vector<UpdateChannel> channels;
-  for (const auto& channel_value : channels_value->GetList()) {
-    const std::string* channel_name_string = channel_value.GetIfString();
-    if (!channel_name_string) {
-      return base::unexpected(std::monostate());
-    }
-    auto channel = UpdateChannel::Create(*channel_name_string);
-    if (!channel.has_value()) {
-      return base::unexpected(std::monostate());
-    }
-    channels.emplace_back(*channel);
-  }
-
-  return channels;
 }
 
 bool operator==(const UpdateManifest::VersionEntry& lhs,
