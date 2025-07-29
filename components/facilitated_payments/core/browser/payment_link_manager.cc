@@ -398,9 +398,16 @@ void PaymentLinkManager::ShowPaymentLinkPrompt(
     base::span<const autofill::Ewallet> ewallet_suggestions,
     std::unique_ptr<FacilitatedPaymentsAppInfoList> app_suggestions,
     base::OnceCallback<void(int64_t)> on_ewallet_account_selected) {
-  if (ewallet_suggestions.size() == 0 &&
-      (app_suggestions == nullptr || app_suggestions->Size() == 0)) {
+  const bool is_payment_app_available =
+      app_suggestions != nullptr && app_suggestions->Size() > 0;
+
+  if (ewallet_suggestions.size() == 0 && !is_payment_app_available) {
     return;
+  }
+
+  if (is_payment_app_available) {
+    client_->GetPaymentsDataManager()->SetFacilitatedPaymentsA2ATriggeredOnce(
+        true);
   }
 
   ui_state_ = UiState::kFopSelector;

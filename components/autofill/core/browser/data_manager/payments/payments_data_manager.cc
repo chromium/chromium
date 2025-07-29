@@ -2042,6 +2042,10 @@ bool PaymentsDataManager::IsFacilitatedPaymentsEwalletUserPrefEnabled() const {
   return prefs::IsFacilitatedPaymentsEwalletEnabled(pref_service_);
 }
 
+void PaymentsDataManager::SetFacilitatedPaymentsA2ATriggeredOnce(bool enabled) {
+  prefs::SetFacilitatedPaymentsA2ATriggeredOnce(pref_service_, enabled);
+}
+
 bool PaymentsDataManager::HasPendingPaymentQueries() const {
   return pending_creditcards_query_ != 0 ||
          pending_server_creditcards_query_ != 0 ||

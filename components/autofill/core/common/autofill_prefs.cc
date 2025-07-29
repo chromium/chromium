@@ -334,6 +334,12 @@ bool IsFacilitatedPaymentsPixAccountLinkingEnabled(const PrefService* prefs) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+void SetFacilitatedPaymentsA2ATriggeredOnce(PrefService* prefs, bool value) {
+#if BUILDFLAG(IS_ANDROID)
+  prefs->SetBoolean(kFacilitatedPaymentsA2ATriggeredOnce, value);
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 void SetAutofillBnplEnabled(PrefService* prefs, bool value) {

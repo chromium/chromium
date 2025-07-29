@@ -240,6 +240,8 @@ void SetFacilitatedPaymentsPixAccountLinking(PrefService* prefs, bool value);
 
 bool IsFacilitatedPaymentsPixAccountLinkingEnabled(const PrefService* prefs);
 
+void SetFacilitatedPaymentsA2ATriggeredOnce(PrefService* prefs, bool value);
+
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
 void SetAutofillBnplEnabled(PrefService* prefs, bool value);

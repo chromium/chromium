@@ -520,6 +520,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the value of the FacilitatedPaymentsEwallet user pref.
   bool IsFacilitatedPaymentsEwalletUserPrefEnabled() const;
 
+  // Sets the FacilitatedPaymentsA2ATriggeredOnce user pref value to `enabled`.
+  void SetFacilitatedPaymentsA2ATriggeredOnce(bool enabled);
+
   // Whether server cards or IBANs are enabled and should be suggested to the
   // user.
   virtual bool ShouldSuggestServerPaymentMethods() const;

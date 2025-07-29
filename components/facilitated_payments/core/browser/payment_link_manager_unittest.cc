@@ -1697,4 +1697,24 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
       supported_payment_link, page_url, ukm::UkmRecorder::GetNewSourceID());
 }
 
+// Test when A2A payment prompt is shown, set
+// FacilitatedPaymentsA2ATriggeredOnce pref to `true` is invoked;
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       A2APaymentPromptShown_A2ATriggeredOncePrefSet) {
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  EXPECT_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillOnce(testing::Return(2));
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  EXPECT_TRUE(pref_service_.get()->GetBoolean(
+      autofill::prefs::kFacilitatedPaymentsA2ATriggeredOnce));
+}
+
 }  // namespace payments::facilitated
