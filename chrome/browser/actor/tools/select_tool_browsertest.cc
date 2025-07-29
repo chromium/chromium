@@ -10,7 +10,6 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
-#include "ui/gfx/geometry/point_conversions.h"
 
 using base::test::TestFuture;
 using content::EvalJs;
@@ -380,55 +379,6 @@ IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectTool_ListboxOptionSelected) {
 
   EXPECT_EQ(GetSelectElementCurrentValue(web_contents(), listbox_select_id),
             "delta");
-}
-
-class RequestCloseWidgetWaiter : public content::RequestCloseWidgetInterceptor {
- public:
-  explicit RequestCloseWidgetWaiter(
-      content::RenderWidgetHost* render_widget_host)
-      : content::RequestCloseWidgetInterceptor(render_widget_host) {}
-  ~RequestCloseWidgetWaiter() override = default;
-
-  // `content::RequestCloseWidgetInterceptor`:
-  void RequestClosePopup() override { run_loop_.Quit(); }
-
-  void Wait() { run_loop_.Run(); }
-
- private:
-  base::RunLoop run_loop_;
-};
-
-// Test that if the select tool closes the dropdown menu after it makes the
-// selection.
-IN_PROC_BROWSER_TEST_F(ActorToolsTest, SelectToolCloseDropDownMenu) {
-  const GURL url = embedded_test_server()->GetURL("/actor/select_tool.html");
-  ASSERT_TRUE(content::NavigateToURL(web_contents(), url));
-
-  // Click on the dropdown menu.
-  content::ShowPopupWidgetWaiter new_popup_waiter(
-      web_contents(), web_contents()->GetPrimaryMainFrame());
-  SimulateEndOfPaintHoldingOnPrimaryMainFrame(web_contents());
-  content::SimulateMouseClickAt(
-      web_contents(), /*modifiers=*/0, blink::WebMouseEvent::Button::kLeft,
-      gfx::ToFlooredPoint(
-          GetCenterCoordinatesOfElementWithId(web_contents(), "plainSelect")));
-  new_popup_waiter.Wait();
-  ASSERT_FALSE(new_popup_waiter.last_initial_rect().IsEmpty());
-
-  std::vector<content::RenderWidgetHost*> popup_widgets =
-      GetPopupWidgets(web_contents());
-  ASSERT_EQ(popup_widgets.size(), 1u);
-
-  // Select. Assert that the popup is closed as a result of the selection.
-  RequestCloseWidgetWaiter waiter(popup_widgets[0]);
-  const int32_t plain_select_dom_node_id =
-      GetDOMNodeId(*main_frame(), "#plainSelect").value();
-  std::unique_ptr<ToolRequest> action =
-      MakeSelectRequest(*main_frame(), plain_select_dom_node_id, "beta");
-  TestFuture<mojom::ActionResultPtr, std::optional<size_t>> result;
-  actor_task().Act(ToRequestList(action), result.GetCallback());
-  waiter.Wait();
-  ExpectOkResult(result);
 }
 
 }  // namespace

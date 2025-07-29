@@ -139,10 +139,6 @@ void WebElement::Focus() {
   return Unwrap<Element>()->Focus();
 }
 
-void WebElement::Blur() {
-  return Unwrap<Element>()->blur();
-}
-
 bool WebElement::WritingSuggestions() const {
   const auto* html_element =
       blink::DynamicTo<HTMLElement>(ConstUnwrap<Element>());

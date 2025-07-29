@@ -86,8 +86,6 @@ class BLINK_EXPORT WebElement : public WebNode {
 
   void Focus();
 
-  void Blur();
-
   // Returns true if the element's computed writing suggestions value is true.
   // https://html.spec.whatwg.org/#writing-suggestions:computed-writing-suggestions-value
   bool WritingSuggestions() const;
