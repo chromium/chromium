@@ -149,12 +149,17 @@ void CrossProcessFrameConnector::RenderProcessGone() {
     // "display:none"), since in that case the user wouldn't see a sad frame
     // anyway. Prerendering subframes do not enter this code since
     // RenderFrameHostImpl immediately cancels prerender if a render process
-    // exits.
+    // exits. We only mark the tab for reload for active subframes to exclude
+    // cases like crashed frames in the back/forward cache.
     bool did_mark_for_reload = false;
     if (current_child_rfh->delegate()->GetVisibility() != Visibility::VISIBLE &&
         visibility_ != blink::mojom::FrameVisibility::kNotRendered &&
         base::FeatureList::IsEnabled(
-            features::kReloadHiddenTabsWithCrashedSubframes)) {
+            features::kReloadHiddenTabsWithCrashedSubframes) && (
+              !base::FeatureList::IsEnabled(
+                  features::kReloadHiddenTabsWithActiveCrashedSubframes) ||
+              current_child_rfh->IsActive()
+            )) {
       frame_proxy_in_parent_renderer_->frame_tree_node()
           ->frame_tree()
           .controller()

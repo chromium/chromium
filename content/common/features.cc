@@ -478,6 +478,15 @@ BASE_FEATURE(kReloadHiddenTabsWithCrashedSubframes,
 #endif
 );
 
+// ReloadHiddenTabsWithCrashedSubframes feature reloads the WebContents
+// regardless of the crashed frame's state. This feature restricts the reload
+// to only happen for active subframes.
+// This is a bug fix but being launched as a feature to see the impact.
+// This will be removed once this is launched.
+BASE_FEATURE(kReloadHiddenTabsWithActiveCrashedSubframes,
+             "ReloadHiddenTabsWithActiveCrashedSubframes",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 #if BUILDFLAG(IS_ANDROID)
 // If enabled, then orientation lock won't claim to work on anything but phone
 // form factors.  Tablets already do unpredictable things, such as letterboxing

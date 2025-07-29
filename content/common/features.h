@@ -132,6 +132,7 @@ enum class ProgressiveAccessibilityMode {
 CONTENT_EXPORT BASE_DECLARE_FEATURE_PARAM(ProgressiveAccessibilityMode,
                                           kProgressiveAccessibilityModeParam);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kReloadHiddenTabsWithCrashedSubframes);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kReloadHiddenTabsWithActiveCrashedSubframes);
 #if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kRestrictOrientationLockToPhones);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kContinueGestureOnLosingFocus);

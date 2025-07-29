@@ -4478,4 +4478,62 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestWithFencedFrames,
                     FROM_HERE);
 }
 
+class BackForwardCacheBrowserTestReloadHiddenTabsWithActiveCrashedSubframes
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+    EnableFeatureAndSetParams(features::kReloadHiddenTabsWithCrashedSubframes, "", "");
+    EnableFeatureAndSetParams(features::kReloadHiddenTabsWithActiveCrashedSubframes, "", "");
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+  }
+};
+
+// Test that a subframe renderer process crash does not cause a reload if the
+// subframe is in back-forward cache.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTestReloadHiddenTabsWithActiveCrashedSubframes,
+                       ReloadHiddenTabWithCrashedSubframe_BFCached) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A(B).
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_a = current_frame_host();
+  RenderFrameHostImpl* rfh_b = rfh_a->child_at(0)->current_frame_host();
+  RenderProcessHost* process_b = rfh_b->GetProcess();
+
+  // 2) Navigate to C. A(B) is in BFCache.
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // 3) Hide the tab.
+  web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+  web_contents()->UpdateWebContentsVisibility(Visibility::HIDDEN);
+  EXPECT_EQ(Visibility::HIDDEN, web_contents()->GetVisibility());
+
+  // 4) Crash process B.
+  RenderProcessHostWatcher crash_observer(
+      process_b, RenderProcessHostWatcher::WATCH_FOR_PROCESS_EXIT);
+  process_b->Shutdown(0);
+  crash_observer.Wait();
+  EXPECT_FALSE(rfh_b->IsRenderFrameLive());
+
+  // 5) The tab should not be marked for reload, because the crashed subframe
+  // was in a BFCached page, which is not considered "active".
+  EXPECT_FALSE(web_contents()->GetController().NeedsReload());
+
+  // 6) Show the tab again but no reload should happen.
+  {
+    base::HistogramTester histograms;
+    web_contents()->UpdateWebContentsVisibility(Visibility::VISIBLE);
+    EXPECT_TRUE(WaitForLoadStop(web_contents()));
+    histograms.ExpectUniqueSample(
+        "Navigation.LoadIfNecessaryType",
+        NavigationControllerImpl::NeedsReloadType::kCrashedSubframe, 0);
+  }
+}
+
 }  // namespace content
