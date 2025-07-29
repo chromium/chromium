@@ -2174,8 +2174,7 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   scoped_refptr<StaticBitmapImage> image =
       GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(
           kBackBuffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
-          kBottomLeft_GrSurfaceOrigin,
-          /*override_color_space=*/true);
+          kBottomLeft_GrSurfaceOrigin);
 
   if (!image || !image->PaintImageForCurrentFrame())
     return false;

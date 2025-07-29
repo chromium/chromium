@@ -1756,8 +1756,7 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
   }
 
   return GetUnacceleratedStaticBitmapImage(
-      source_buffer, format, requested_alpha_type_, kTopLeft_GrSurfaceOrigin,
-      /*override_color_space=*/false);
+      source_buffer, format, requested_alpha_type_, kTopLeft_GrSurfaceOrigin);
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -1765,8 +1764,7 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(
     SourceDrawingBuffer source_buffer,
     viz::SharedImageFormat format,
     SkAlphaType alpha_type,
-    GrSurfaceOrigin origin,
-    bool override_color_space) {
+    GrSurfaceOrigin origin) {
   ScopedStateRestorer scoped_state_restorer(this);
 
   sk_sp<SkData> dst_buffer = TryAllocateSkDataForBitmap(format, Size());
@@ -1779,10 +1777,9 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(
 
   return StaticBitmapImage::Create(
       std::move(dst_buffer),
-      SkImageInfo::Make(
-          SkISize::Make(Size().width(), Size().height()),
-          ToClosestSkColorType(format), alpha_type,
-          override_color_space ? nullptr : color_space_.ToSkColorSpace()),
+      SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
+                        ToClosestSkColorType(format), alpha_type,
+                        color_space_.ToSkColorSpace()),
       origin == kTopLeft_GrSurfaceOrigin
           ? ImageOrientationEnum::kOriginTopLeft
           : ImageOrientationEnum::kOriginBottomLeft);

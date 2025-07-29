@@ -272,15 +272,11 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // a copy of the contents of the `source_buffer`. This is only meant to be
   // used for unaccelerated canvases as for accelerated contexts there are
   // better ways to get a copy of the internal contents. If
-  // `override_color_space` is set to true, resulting image will not have color
-  // space tagged. This is temporary to match historical behaviour of some code
-  // path.
   scoped_refptr<StaticBitmapImage> GetUnacceleratedStaticBitmapImage(
       SourceDrawingBuffer source_buffer,
       viz::SharedImageFormat format,
       SkAlphaType alpha_type,
-      GrSurfaceOrigin origin,
-      bool override_color_space);
+      GrSurfaceOrigin origin);
 
   // `src_rect` is always in top-left coordinate space.
   bool CopyToPlatformTexture(gpu::gles2::GLES2Interface*,
