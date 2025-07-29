@@ -74,8 +74,7 @@ bool ContentSettingsInfo::Delegate::IsValid(
   return info_->IsSettingValid(*content_setting);
 }
 
-std::optional<PermissionSetting>
-ContentSettingsInfo::Delegate::InheritInIncognito(
+PermissionSetting ContentSettingsInfo::Delegate::InheritInIncognito(
     const PermissionSetting& setting) const {
   ContentSetting content_setting = std::get<ContentSetting>(setting);
   switch (info_->incognito_behavior()) {

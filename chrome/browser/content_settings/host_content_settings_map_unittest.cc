@@ -29,6 +29,7 @@
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/client_hints/common/client_hints.h"
+#include "components/content_settings/core/browser/content_settings_info.h"
 #include "components/content_settings/core/browser/content_settings_mock_observer.h"
 #include "components/content_settings/core/browser/content_settings_pref_provider.h"
 #include "components/content_settings/core/browser/content_settings_registry.h"
@@ -905,6 +906,40 @@ TEST_F(HostContentSettingsMapTest, IncognitoInheritPopups) {
       CONTENT_SETTING_ALLOW,
       otr_map->GetContentSetting(host, host, ContentSettingsType::POPUPS));
 }
+
+// The tested setting is only registered for desktop.
+#if !BUILDFLAG(IS_ANDROID)
+TEST_F(HostContentSettingsMapTest, IncognitoDontInherit) {
+  TestingProfile profile;
+  Profile* otr_profile =
+      profile.GetPrimaryOTRProfile(/*create_if_needed=*/true);
+  auto* map = HostContentSettingsMapFactory::GetForProfile(&profile);
+  auto* otr_map = HostContentSettingsMapFactory::GetForProfile(otr_profile);
+
+  GURL url("http://example.com/");
+  ContentSettingsType type = ContentSettingsType::DISPLAY_MEDIA_SYSTEM_AUDIO;
+
+  auto* info =
+      content_settings::ContentSettingsRegistry::GetInstance()->Get(type);
+  ASSERT_EQ(content_settings::ContentSettingsInfo::DONT_INHERIT_IN_INCOGNITO,
+            info->incognito_behavior());
+  ASSERT_EQ(content_settings::WebsiteSettingsInfo::INHERIT_IN_INCOGNITO,
+            info->website_settings_info()->incognito_behavior());
+
+  // These settings should not be inherited to incognito mode.
+  map->SetContentSettingDefaultScope(url, url, type, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map->GetContentSetting(url, url, type));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, map->GetDefaultContentSetting(type));
+
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, otr_map->GetContentSetting(url, url, type));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, otr_map->GetDefaultContentSetting(type));
+
+  // Changes to the default should not apply to incognito mode either.
+  map->SetDefaultContentSetting(type, CONTENT_SETTING_ALLOW);
+  EXPECT_EQ(CONTENT_SETTING_ALLOW, map->GetDefaultContentSetting(type));
+  EXPECT_EQ(CONTENT_SETTING_BLOCK, otr_map->GetDefaultContentSetting(type));
+}
+#endif
 
 TEST_F(HostContentSettingsMapTest, IncognitoPartialInheritPref) {
   // Permissions marked INHERIT_IF_LESS_PERMISSIVE in

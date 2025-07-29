@@ -35,7 +35,7 @@ bool GeolocationSettingDelegate::IsValid(
 
 // Returns a setting to inherit to incognito mode. Return nullopt if the setting
 // should not be inherited.
-std::optional<PermissionSetting> GeolocationSettingDelegate::InheritInIncognito(
+PermissionSetting GeolocationSettingDelegate::InheritInIncognito(
     const PermissionSetting& setting) const {
   GeolocationSetting geo_setting = std::get<GeolocationSetting>(setting);
 

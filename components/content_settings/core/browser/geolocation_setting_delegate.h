@@ -18,7 +18,7 @@ class GeolocationSettingDelegate
  public:
   bool IsValid(const PermissionSetting& setting) const override;
 
-  std::optional<PermissionSetting> InheritInIncognito(
+  PermissionSetting InheritInIncognito(
       const PermissionSetting& setting) const override;
 
   bool IsAnyPermissionAllowed(PermissionSetting setting) const override;

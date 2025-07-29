@@ -88,7 +88,7 @@ TEST_F(GeolocationSettingDelegateTest, VerifyCoalescingEphemeralState) {
 
   {
     auto coalesced = std::get<GeolocationSetting>(
-        *delegate().InheritInIncognito(GeolocationSetting(
+        delegate().InheritInIncognito(GeolocationSetting(
             PermissionOption::kAllowed, PermissionOption::kAsk)));
     EXPECT_EQ(coalesced, GeolocationSetting(PermissionOption::kAsk,
                                             PermissionOption::kAsk));
@@ -108,7 +108,7 @@ TEST_F(GeolocationSettingDelegateTest, VerifyCoalescingEphemeralState) {
 
 TEST_F(GeolocationSettingDelegateTest, VerifyOnlyBlocksInheritedToIncognito) {
   {
-    auto derived = std::get<GeolocationSetting>(*delegate().InheritInIncognito(
+    auto derived = std::get<GeolocationSetting>(delegate().InheritInIncognito(
         GeolocationSetting(PermissionOption::kAsk, PermissionOption::kAsk)));
 
     EXPECT_EQ(derived, GeolocationSetting(PermissionOption::kAsk,
@@ -117,7 +117,7 @@ TEST_F(GeolocationSettingDelegateTest, VerifyOnlyBlocksInheritedToIncognito) {
 
   {
     auto derived = std::get<GeolocationSetting>(
-        *delegate().InheritInIncognito(GeolocationSetting(
+        delegate().InheritInIncognito(GeolocationSetting(
             PermissionOption::kAllowed, PermissionOption::kAsk)));
 
     EXPECT_EQ(derived, GeolocationSetting(PermissionOption::kAsk,
@@ -126,7 +126,7 @@ TEST_F(GeolocationSettingDelegateTest, VerifyOnlyBlocksInheritedToIncognito) {
 
   {
     auto derived = std::get<GeolocationSetting>(
-        *delegate().InheritInIncognito(GeolocationSetting(
+        delegate().InheritInIncognito(GeolocationSetting(
             PermissionOption::kAllowed, PermissionOption::kAllowed)));
 
     EXPECT_EQ(derived, GeolocationSetting(PermissionOption::kAsk,
@@ -134,7 +134,7 @@ TEST_F(GeolocationSettingDelegateTest, VerifyOnlyBlocksInheritedToIncognito) {
   }
 
   {
-    auto derived = std::get<GeolocationSetting>(*delegate().InheritInIncognito(
+    auto derived = std::get<GeolocationSetting>(delegate().InheritInIncognito(
         GeolocationSetting(PermissionOption::kDenied, PermissionOption::kAsk)));
 
     EXPECT_EQ(derived, GeolocationSetting(PermissionOption::kDenied,
@@ -143,7 +143,7 @@ TEST_F(GeolocationSettingDelegateTest, VerifyOnlyBlocksInheritedToIncognito) {
 
   {
     auto derived = std::get<GeolocationSetting>(
-        *delegate().InheritInIncognito(GeolocationSetting(
+        delegate().InheritInIncognito(GeolocationSetting(
             PermissionOption::kDenied, PermissionOption::kDenied)));
     EXPECT_EQ(derived,
 

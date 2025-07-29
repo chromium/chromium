@@ -121,9 +121,7 @@ base::Value ProcessIncognitoInheritanceBehavior(
     if (setting) {
       auto inherited_setting =
           permission_info->delegate().InheritInIncognito(setting.value());
-      if (inherited_setting) {
-        return permission_info->delegate().ToValue(inherited_setting.value());
-      }
+      return permission_info->delegate().ToValue(inherited_setting);
     }
     return base::Value();
   }

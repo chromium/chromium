@@ -32,9 +32,8 @@ class PermissionSettingsInfo {
     // Return whether the setting is valid.
     virtual bool IsValid(const PermissionSetting& setting) const = 0;
 
-    // Returns a setting to inherit to incognito mode. Return nullopt if the
-    // setting should not be inherited.
-    virtual std::optional<PermissionSetting> InheritInIncognito(
+    // Returns a setting to inherit to incognito mode.
+    virtual PermissionSetting InheritInIncognito(
         const PermissionSetting& setting) const = 0;
 
     // Returns if at least some of the permission setting is allowed. Used e.g.
