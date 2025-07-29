@@ -748,6 +748,10 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
 // Returns the footer message.
 - (NSString*)footerMessage {
   CHECK([_userEmail length] > 0);
+  if (_isHomeAndWorkProfile) {
+    return l10n_util::GetNSStringF(IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER,
+                                   base::SysNSStringToUTF16(_userEmail));
+  }
   return _moveToAccountFromSettings
              ? @""
              : l10n_util::GetNSStringF(

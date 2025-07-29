@@ -587,6 +587,9 @@
     <message name="IDS_IOS_AUTOFILL_SAVE_ADDRESS_IN_ACCOUNT_FOOTER" desc="Footer text shown in the save modal for saving a new address profile or migrating it in the Google Account">
       You can use saved addresses across Google products. This address will be saved in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
     </message>
+    <message name="IDS_IOS_AUTOFILL_HOME_WORK_PROFILE_FOOTER" desc="Footer text shown in the settings when home and work profile details are shown">
+      Info from your Google Account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph> can help you fill forms faster in Chrome
+    </message>
   </if>
   <!-- Used on Desktop: -->
   <if expr="not is_android and not is_ios">
