@@ -7,6 +7,7 @@
 
 #include "build/build_config.h"
 #include "net/base/net_export.h"
+#include "net/disk_cache/buildflags.h"
 
 namespace disk_cache {
 
@@ -25,6 +26,11 @@ NET_EXPORT bool InSimpleBackendExperimentGroup();
 
 // True if assigned to the "blockfile" disk cache backend group.
 NET_EXPORT bool InBlockfileBackendExperimentGroup();
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+// True if assigned to the "sql" disk cache backend group.
+NET_EXPORT bool InSqlBackendExperimentGroup();
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 }  // namespace disk_cache
 

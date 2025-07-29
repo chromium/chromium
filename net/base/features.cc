@@ -10,6 +10,7 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "net/base/cronet_buildflags.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/net_buildflags.h"
 
 #if BUILDFLAG(IS_WIN)
@@ -719,11 +720,15 @@ BASE_FEATURE(kDiskCacheBackendExperiment,
              base::FEATURE_DISABLED_BY_DEFAULT);
 constexpr base::FeatureParam<DiskCacheBackend>::Option
     kDiskCacheBackendOptions[] = {
+        {DiskCacheBackend::kDefault, "default"},
         {DiskCacheBackend::kSimple, "simple"},
         {DiskCacheBackend::kBlockfile, "blockfile"},
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+        {DiskCacheBackend::kSql, "sql"},
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 };
 const base::FeatureParam<DiskCacheBackend> kDiskCacheBackendParam{
-    &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kBlockfile,
+    &kDiskCacheBackendExperiment, "backend", DiskCacheBackend::kDefault,
     &kDiskCacheBackendOptions};
 
 BASE_FEATURE(kIgnoreHSTSForLocalhost,

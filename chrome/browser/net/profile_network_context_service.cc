@@ -23,6 +23,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/string_view_util.h"
@@ -85,6 +86,7 @@
 #include "net/base/features.h"
 #include "net/cert/asn1_util.h"
 #include "net/disk_cache/backend_experiment.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/http/http_auth_preferences.h"
 #include "net/http/http_util.h"
 #include "net/net_buildflags.h"
@@ -405,6 +407,85 @@ bool NeedsIpProtection(const IpProtectionCoreHost* ipp_core_host,
                        const Profile& profile) {
   return ipp_core_host && (profile.IsIncognitoProfile() ||
                            !net::features::kIpPrivacyOnlyInIncognito.Get());
+}
+
+constexpr std::string_view kDiskCacheExperimentNameSeparator = " ";
+constexpr std::string_view kDiskCacheExperimentNameNone = "None";
+// The date and prefix for the disk cache backend experiment.
+#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250725-DiskCache-"
+constexpr std::string_view kDiskCacheExperimentNameDefault =
+    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Default";
+constexpr std::string_view kDiskCacheExperimentNameSimple =
+    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Simple";
+constexpr std::string_view kDiskCacheExperimentNameBlockfile =
+    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Blockfile";
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+constexpr std::string_view kDiskCacheExperimentNameSql =
+    DISK_CACHE_EXPERIMENT_DATE_PREFIX "Sql";
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+
+std::string_view GetDiskCacheBackendExperimentString() {
+  if (!disk_cache::InBackendExperiment()) {
+    return "";
+  }
+  switch (net::features::kDiskCacheBackendParam.Get()) {
+    case net::features::DiskCacheBackend::kDefault:
+      return kDiskCacheExperimentNameDefault;
+    case net::features::DiskCacheBackend::kSimple:
+      return kDiskCacheExperimentNameSimple;
+    case net::features::DiskCacheBackend::kBlockfile:
+      return kDiskCacheExperimentNameBlockfile;
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+    case net::features::DiskCacheBackend::kSql:
+      return kDiskCacheExperimentNameSql;
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+  }
+  NOTREACHED();
+}
+
+bool GetHttpCacheBackendResetParam(PrefService* local_state) {
+  // Get the field trial groups.  If the server cannot be reached, then
+  // this corresponds to "None" for each experiment.
+  base::FieldTrial* isolation_key_field_trial =
+      base::FeatureList::GetFieldTrial(
+          net::features::kSplitCacheByNetworkIsolationKey);
+  base::FieldTrial* credentials_field_trial = base::FeatureList::GetFieldTrial(
+      net::features::kSplitCacheByIncludeCredentials);
+
+  std::vector<std::string_view> experiment_parts;
+  // SplitCacheByNetworkIsolationKey experiment:
+  experiment_parts.push_back(isolation_key_field_trial
+                                 ? isolation_key_field_trial->group_name()
+                                 : kDiskCacheExperimentNameNone);
+  // This used to be used for keying on main frame only vs main frame +
+  // innermost frame, but the feature was removed, and now it's always
+  // keyed on both.
+  experiment_parts.push_back(kDiskCacheExperimentNameNone);
+  // This used to be for keying on scheme + eTLD+1 vs origin, but the trial
+  // was removed, and now it's always keyed on eTLD+1. Still keeping a
+  // third "None" to avoid resetting the disk cache.
+  experiment_parts.push_back(kDiskCacheExperimentNameNone);
+  // SplitCacheByIncludeCredentials experiment:
+  experiment_parts.push_back(credentials_field_trial
+                                 ? credentials_field_trial->group_name()
+                                 : kDiskCacheExperimentNameNone);
+
+  // Add the disk cache backend experiment group if active.
+  std::string_view backend_experiment = GetDiskCacheBackendExperimentString();
+  if (!backend_experiment.empty()) {
+    experiment_parts.push_back(backend_experiment);
+  }
+
+  const std::string current_field_trial_status =
+      base::JoinString(experiment_parts, kDiskCacheExperimentNameSeparator);
+
+  const std::string previous_field_trial_status =
+      local_state->GetString(kHttpCacheFinchExperimentGroups);
+  local_state->SetString(kHttpCacheFinchExperimentGroups,
+                         current_field_trial_status);
+
+  return !previous_field_trial_status.empty() &&
+         current_field_trial_status != previous_field_trial_status;
 }
 
 }  // namespace
@@ -1227,44 +1308,6 @@ ProfileNetworkContextService::CreateClientCertStore() {
 #else
 #error Unknown platform.
 #endif
-}
-
-bool GetHttpCacheBackendResetParam(PrefService* local_state) {
-  // Get the field trial groups.  If the server cannot be reached, then
-  // this corresponds to "None" for each experiment.
-  base::FieldTrial* field_trial = base::FeatureList::GetFieldTrial(
-      net::features::kSplitCacheByNetworkIsolationKey);
-  std::string current_field_trial_status =
-      (field_trial ? field_trial->group_name() : "None");
-  // This used to be used for keying on main frame only vs main frame +
-  // innermost frame, but the feature was removed, and now it's always keyed on
-  // both.
-  current_field_trial_status += " None";
-  // This used to be for keying on scheme + eTLD+1 vs origin, but the trial was
-  // removed, and now it's always keyed on eTLD+1. Still keeping a third "None"
-  // to avoid resetting the disk cache.
-  current_field_trial_status += " None ";
-
-  field_trial = base::FeatureList::GetFieldTrial(
-      net::features::kSplitCacheByIncludeCredentials);
-  current_field_trial_status +=
-      (field_trial ? field_trial->group_name() : "None");
-
-  if (disk_cache::InBackendExperiment()) {
-    if (disk_cache::InSimpleBackendExperimentGroup()) {
-      current_field_trial_status += " 20241007-DiskCache-Simple";
-    } else {
-      current_field_trial_status += " 20241007-DiskCache-Blockfile";
-    }
-  }
-
-  std::string previous_field_trial_status =
-      local_state->GetString(kHttpCacheFinchExperimentGroups);
-  local_state->SetString(kHttpCacheFinchExperimentGroups,
-                         current_field_trial_status);
-
-  return !previous_field_trial_status.empty() &&
-         current_field_trial_status != previous_field_trial_status;
 }
 
 void ProfileNetworkContextService::ConfigureNetworkContextParamsInternal(

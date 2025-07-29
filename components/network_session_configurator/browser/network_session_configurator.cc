@@ -28,6 +28,7 @@
 #include "net/base/features.h"
 #include "net/base/host_mapping_rules.h"
 #include "net/disk_cache/backend_experiment.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
 #include "net/quic/quic_context.h"
@@ -831,13 +832,25 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
 }
 
 net::URLRequestContextBuilder::HttpCacheParams::Type ChooseCacheType() {
-  if constexpr (disk_cache::IsSimpleBackendEnabledByDefaultPlatform()) {
-    return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
+  if (base::FeatureList::IsEnabled(
+          net::features::kDiskCacheBackendExperiment)) {
+    switch (net::features::kDiskCacheBackendParam.Get()) {
+      case net::features::DiskCacheBackend::kDefault:
+        break;
+      case net::features::DiskCacheBackend::kSimple:
+        return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
+      case net::features::DiskCacheBackend::kBlockfile:
+        return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+      case net::features::DiskCacheBackend::kSql:
+        return net::URLRequestContextBuilder::HttpCacheParams::
+            DISK_EXPERIMENTAL_SQL;
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+    }
   }
-  if (disk_cache::InSimpleBackendExperimentGroup()) {
-    return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
-  }
-  return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
+  return disk_cache::IsSimpleBackendEnabledByDefaultPlatform()
+             ? net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE
+             : net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;
 }
 
 }  // namespace network_session_configurator

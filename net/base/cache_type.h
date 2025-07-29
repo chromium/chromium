@@ -5,6 +5,8 @@
 #ifndef NET_BASE_CACHE_TYPE_H_
 #define NET_BASE_CACHE_TYPE_H_
 
+#include "net/disk_cache/buildflags.h"
+
 namespace net {
 
 // The types of caches that can be created.
@@ -29,7 +31,10 @@ enum CacheType {
 enum BackendType {
   CACHE_BACKEND_DEFAULT,
   CACHE_BACKEND_BLOCKFILE,  // The |BackendImpl|.
-  CACHE_BACKEND_SIMPLE  // The |SimpleBackendImpl|.
+  CACHE_BACKEND_SIMPLE,     // The |SimpleBackendImpl|.
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  CACHE_BACKEND_EXPERIMENTAL_SQL,
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 };
 
 }  // namespace net

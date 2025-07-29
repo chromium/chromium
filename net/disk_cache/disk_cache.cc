@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "net/disk_cache/disk_cache.h"
+
 #include <utility>
 
 #include "base/barrier_closure.h"
@@ -16,16 +18,22 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/blockfile/backend_impl.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/disk_cache/memory/mem_backend_impl.h"
 #include "net/disk_cache/simple/simple_backend_impl.h"
 #include "net/disk_cache/simple/simple_file_enumerator.h"
 #include "net/disk_cache/simple/simple_util.h"
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+#include "net/disk_cache/sql/sql_backend_impl.h"
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 namespace {
 
@@ -151,6 +159,18 @@ void CacheCreator::Run() {
         base::BindOnce(&CacheCreator::OnIOComplete, base::Unretained(this)));
     return;
   }
+
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+  if (backend_type_ == net::CACHE_BACKEND_EXPERIMENTAL_SQL) {
+    auto sql_cache =
+        std::make_unique<disk_cache::SqlBackendImpl>(path_, max_bytes_, type_);
+    auto* sql_cache_ptr = sql_cache.get();
+    created_cache_ = std::move(sql_cache);
+    sql_cache_ptr->Init(
+        base::BindOnce(&CacheCreator::OnIOComplete, base::Unretained(this)));
+    return;
+  }
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
 
 // Avoid references to blockfile functions on Android to reduce binary size.
 #if BUILDFLAG(IS_ANDROID)

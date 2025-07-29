@@ -57,6 +57,7 @@
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #include "net/base/features.h"
 #include "net/cookies/cookie_util.h"
+#include "net/disk_cache/backend_experiment.h"
 #include "net/disk_cache/disk_cache.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_response_headers.h"
@@ -308,8 +309,23 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
 }
 
 #if BUILDFLAG(IS_ANDROID)
-IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserTest,
+class NetworkServiceBrowserSimpleCacheTest : public NetworkServiceBrowserTest {
+ public:
+  NetworkServiceBrowserSimpleCacheTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        net::features::kDiskCacheBackendExperiment, {{"backend", "simple"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// `HttpCacheWrittenToDiskOnApplicationStateChange` test tests the behavior
+// specific to SimpleCache, so it is extracted to a dedicated test class that
+// enables DiskCacheBackendExperiment with simple backend.
+IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserSimpleCacheTest,
                        HttpCacheWrittenToDiskOnApplicationStateChange) {
+  ASSERT_TRUE(disk_cache::InSimpleBackendExperimentGroup());
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   // Create network context with cache pointing to the temp cache dir.

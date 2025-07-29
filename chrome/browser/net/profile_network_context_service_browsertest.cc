@@ -69,6 +69,7 @@
 #include "mojo/public/cpp/system/data_pipe_utils.h"
 #include "net/base/features.h"
 #include "net/base/load_flags.h"
+#include "net/disk_cache/buildflags.h"
 #include "net/disk_cache/cache_util.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/http/http_auth_preferences.h"
@@ -417,19 +418,33 @@ class ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest
 
   const char* GetBackendParamValue() {
     switch (GetParam()) {
+      case net::features::DiskCacheBackend::kDefault:
+        return "default";
       case net::features::DiskCacheBackend::kSimple:
         return "simple";
       case net::features::DiskCacheBackend::kBlockfile:
         return "blockfile";
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+      case net::features::DiskCacheBackend::kSql:
+        return "sql";
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     }
   }
 
   const char* GetExperimentString() {
+// The date and prefix for the disk cache backend experiment.
+#define DISK_CACHE_EXPERIMENT_DATE_PREFIX "20250725-DiskCache-"
     switch (GetParam()) {
+      case net::features::DiskCacheBackend::kDefault:
+        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Default";
       case net::features::DiskCacheBackend::kSimple:
-        return "20241007-DiskCache-Simple";
+        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Simple";
       case net::features::DiskCacheBackend::kBlockfile:
-        return "20241007-DiskCache-Blockfile";
+        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Blockfile";
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+      case net::features::DiskCacheBackend::kSql:
+        return DISK_CACHE_EXPERIMENT_DATE_PREFIX "Sql";
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
     }
   }
 
@@ -478,7 +493,12 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ProfileNetworkContextServiceDiskCacheBackendExperimentBrowserTest,
     testing::ValuesIn({net::features::DiskCacheBackend::kSimple,
-                       net::features::DiskCacheBackend::kBlockfile}));
+                       net::features::DiskCacheBackend::kBlockfile
+#if BUILDFLAG(ENABLE_DISK_CACHE_SQL_BACKEND)
+                       ,
+                       net::features::DiskCacheBackend::kSql
+#endif  // ENABLE_DISK_CACHE_SQL_BACKEND
+    }));
 
 class AmbientAuthenticationTestWithPolicy : public policy::PolicyTest {
  public:
