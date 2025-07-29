@@ -10,6 +10,7 @@
 #import "base/memory/raw_ptr.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
+class BwgService;
 @protocol ReaderModeConsumer;
 
 // Mediator for the Reader mode UI.
@@ -17,8 +18,14 @@
 
 @property(nonatomic, weak) id<ReaderModeConsumer> consumer;
 
-// Initializes the mediator for the given `webStateList`.
-- (instancetype)initWithWebStateList:(raw_ptr<WebStateList>)webStateList;
+// Designated initializer. `webStateList` must not be null.
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                          BWGService:(BwgService*)BWGService
+    NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_UNAVAILABLE;
+
+// Returns whether BWG is available for the active WebState.
+- (BOOL)BWGAvailableForWebState;
 
 // Disconnects the mediator from the model layer.
 - (void)disconnect;

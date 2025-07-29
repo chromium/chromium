@@ -12,7 +12,8 @@ enum class IOSAIHubAction {
   kReaderMode = 1,
   kGemini = 2,
   kDismiss = 3,
-  kMaxValue = kDismiss,
+  kReaderModeOptions = 4,
+  kMaxValue = kReaderModeOptions,
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/ios/enums.xml:IOSAIHubAction)
 

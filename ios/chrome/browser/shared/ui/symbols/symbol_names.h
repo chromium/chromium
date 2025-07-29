@@ -222,6 +222,7 @@ extern NSString* const kChevronDownSymbol;
 extern NSString* const kChevronUpSymbol;
 extern NSString* const kChevronBackwardSymbol;
 extern NSString* const kChevronForwardSymbol;
+extern NSString* const kChevronRightSymbol;
 extern NSString* const kChevronUpDown;
 extern NSString* const kChevronDownCircleFill;
 extern NSString* const kGlobeAmericasSymbol;

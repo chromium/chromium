@@ -230,6 +230,7 @@ NSString* const kChevronDownSymbol = @"chevron.down";
 NSString* const kChevronUpSymbol = @"chevron.up";
 NSString* const kChevronBackwardSymbol = @"chevron.backward";
 NSString* const kChevronForwardSymbol = @"chevron.forward";
+NSString* const kChevronRightSymbol = @"chevron.right";
 NSString* const kChevronUpDown = @"chevron.up.chevron.down";
 NSString* const kChevronDownCircleFill = @"chevron.down.circle.fill";
 NSString* const kGlobeAmericasSymbol = @"globe.americas.fill";

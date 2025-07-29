@@ -277,7 +277,10 @@
         Search screen
       </message>
       <message name="IDS_IOS_AI_HUB_READER_MODE_LABEL" desc="The button label for the Reader mode entry point of the AI hub.">
-        Reader mode
+        Reading mode
+      </message>
+      <message name="IDS_IOS_AI_HUB_READER_MODE_OPTIONS_BUTTON_TITLE" desc="Title of a button to customise Reader mode options from the AI hub.">
+        Open Reading mode options
       </message>
       <message name="IDS_IOS_AI_PROTOTYPING_CALENDAR_HEADER" translateable="false" desc="The title for the enhanced calendar page of the AI prototyping menu [Length: unlimited].">
         Enhanced Calendar

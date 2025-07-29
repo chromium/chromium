@@ -11,6 +11,9 @@ source_set("coordinator") {
   ]
   deps = [
     ":options",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/ui",
     "//ios/chrome/browser/reader_mode/ui:constants",
@@ -39,7 +42,10 @@ source_set("chip") {
 }
 
 source_set("options") {
-  visibility = [ ":coordinator" ]
+  visibility = [
+    ":coordinator",
+    "//ios/chrome/browser/intelligence/page_action_menu/coordinator",
+  ]
   sources = [
     "reader_mode_options_coordinator.h",
     "reader_mode_options_coordinator.mm",

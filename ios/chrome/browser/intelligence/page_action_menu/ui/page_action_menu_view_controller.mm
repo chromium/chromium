@@ -6,8 +6,10 @@
 
 #import "build/branding_buildflags.h"
 #import "ios/chrome/browser/intelligence/bwg/utils/bwg_constants.h"
+#import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller_delegate.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_constants.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/utils/ai_hub_metrics.h"
+#import "ios/chrome/browser/reader_mode/model/constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/public/commands/bwg_commands.h"
 #import "ios/chrome/browser/shared/public/commands/lens_overlay_commands.h"
@@ -53,6 +55,21 @@ const CGFloat kButtonsCornerRadius = 16;
 // The padding between the image and text of the large button.
 const CGFloat kLargeButtonImagePadding = 8;
 
+// The corner radius for the reader mode icon.
+const CGFloat kReaderModeIconCornerRadius = 6;
+
+// The spacing for the reader mode content stack.
+const CGFloat kReaderModeContentStackSpacing = 12;
+
+// The size of the reader mode icon container.
+const CGFloat kReaderModeIconContainerSize = 32;
+
+// The horizontal padding for the reader mode content stack.
+const CGFloat kReaderModeContentStackHorizontalPadding = 16;
+
+// The vertical padding for the reader mode content stack.
+const CGFloat kReaderModeContentStackVerticalPadding = 10;
+
 }  // namespace
 
 @interface PageActionMenuViewController ()
@@ -94,15 +111,31 @@ const CGFloat kLargeButtonImagePadding = 8;
   _contentStackView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.view addSubview:_contentStackView];
 
+  if (self.readerModeActive) {
+    UIView* readerModeActiveSection = [self createReaderModeActiveSection];
+    [_contentStackView addArrangedSubview:readerModeActiveSection];
+    [_contentStackView setCustomSpacing:kStackViewMargins
+                              afterView:readerModeActiveSection];
+
+    // Divider
+    UIView* divider = [[UIView alloc] init];
+    divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+    divider.translatesAutoresizingMaskIntoConstraints = NO;
+    [divider.heightAnchor constraintEqualToConstant:1].active = YES;
+    [_contentStackView addArrangedSubview:divider];
+    [_contentStackView setCustomSpacing:kStackViewMargins afterView:divider];
+  }
+
   // Horizontal stack view for the 2 side-by-side buttons.
   UIStackView* buttonsStackView = [self createSmallButtonsStackView];
   [_contentStackView addArrangedSubview:buttonsStackView];
   [_contentStackView setCustomSpacing:kStackViewMargins
                             afterView:buttonsStackView];
 
-  // If Reader Mode is enabled, we use a 3-button UI. Otherwise, we just show
-  // the `buttonsStackView`.
-  if (IsReaderModeAvailable()) {
+  // If Reader Mode is available but inactive, we use a 3-button UI. Otherwise,
+  // we just show the `buttonsStackView`, with an additional Reader mode section
+  // (above) if Reader mode is available and active.
+  if (IsReaderModeAvailable() && !self.readerModeActive) {
     // Adds the large Gemini entry point button.
     UIButton* BWGButton = [self createBWGButton];
     [_contentStackView addArrangedSubview:BWGButton];
@@ -177,6 +210,153 @@ const CGFloat kLargeButtonImagePadding = 8;
   self.navigationItem.rightBarButtonItem = dismissButton;
 }
 
+// Creates a stack view with Reader mode buttons when it is active.
+- (UIView*)createReaderModeActiveSection {
+  UIStackView* horizontalStackView = [[UIStackView alloc] init];
+  horizontalStackView.axis = UILayoutConstraintAxisHorizontal;
+  horizontalStackView.alignment = UIStackViewAlignmentFill;
+  horizontalStackView.distribution = UIStackViewDistributionFill;
+  horizontalStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  horizontalStackView.clipsToBounds = YES;
+  horizontalStackView.backgroundColor =
+      [[UIColor colorNamed:kPrimaryBackgroundColor]
+          colorWithAlphaComponent:kSmallButtonOpacity];
+  horizontalStackView.layer.cornerRadius = kButtonsCornerRadius;
+
+  // Leading button shows Reader mode options.
+  UIButton* readerModeOptionsButton = [self createReaderModeOptionsButton];
+
+  // Trailing button hides Reader mode.
+  UIButton* hideReaderModeButton = [self createHideReaderModeButton];
+
+  // Divider
+  UIView* divider = [[UIView alloc] init];
+  divider.backgroundColor = [UIColor colorNamed:kSeparatorColor];
+  divider.translatesAutoresizingMaskIntoConstraints = NO;
+
+  [horizontalStackView addArrangedSubview:readerModeOptionsButton];
+  [horizontalStackView addArrangedSubview:divider];
+  [horizontalStackView addArrangedSubview:hideReaderModeButton];
+
+  [NSLayoutConstraint activateConstraints:@[
+    [divider.widthAnchor constraintEqualToConstant:1],
+    [horizontalStackView.heightAnchor
+        constraintGreaterThanOrEqualToConstant:kSmallButtonHeight],
+  ]];
+
+  return horizontalStackView;
+}
+
+// Creates the Reader mode options button.
+- (UIButton*)createReaderModeOptionsButton {
+  UIStackView* buttonContentStack = [[UIStackView alloc] init];
+  buttonContentStack.translatesAutoresizingMaskIntoConstraints = NO;
+  buttonContentStack.axis = UILayoutConstraintAxisHorizontal;
+  buttonContentStack.alignment = UIStackViewAlignmentCenter;
+  buttonContentStack.spacing = kReaderModeContentStackSpacing;
+  buttonContentStack.userInteractionEnabled = NO;
+
+  // Add leading icon.
+  UIView* leadingIconContainer = [[UIView alloc] init];
+  leadingIconContainer.translatesAutoresizingMaskIntoConstraints = NO;
+  leadingIconContainer.backgroundColor = [UIColor colorNamed:kBlueHaloColor];
+  leadingIconContainer.layer.cornerRadius = kReaderModeIconCornerRadius;
+  UIImageView* leadingIcon = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(GetReaderModeSymbolName(),
+                                               kSmallButtonIconSize)];
+  leadingIcon.translatesAutoresizingMaskIntoConstraints = NO;
+  leadingIcon.tintColor = [UIColor colorNamed:kBlue600Color];
+  [leadingIconContainer addSubview:leadingIcon];
+  [buttonContentStack addArrangedSubview:leadingIconContainer];
+
+  // Add stack with title and subtitle.
+  UILabel* titleLabel = [[UILabel alloc] init];
+  titleLabel.text = l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_LABEL);
+  titleLabel.font = PreferredFontForTextStyle(UIFontTextStyleSubheadline,
+                                              UIFontWeightRegular);
+  titleLabel.textColor = [UIColor colorNamed:kTextPrimaryColor];
+  UILabel* subtitleLabel = [[UILabel alloc] init];
+  // TODO(crbug.com/432213672): Replace this hard-coded string with a localized
+  // string which displays the currently selected font.
+  NSString* fontName = l10n_util::GetNSString(
+      IDS_IOS_READER_MODE_OPTIONS_FONT_FAMILY_SERIF_LABEL);
+  subtitleLabel.text = [NSString stringWithFormat:@"Font: %@", fontName];
+  subtitleLabel.font =
+      PreferredFontForTextStyle(UIFontTextStyleFootnote, UIFontWeightRegular);
+  subtitleLabel.textColor = [UIColor colorNamed:kTextSecondaryColor];
+  UIStackView* labelStack = [[UIStackView alloc]
+      initWithArrangedSubviews:@[ titleLabel, subtitleLabel ]];
+  labelStack.axis = UILayoutConstraintAxisVertical;
+  labelStack.alignment = UIStackViewAlignmentLeading;
+  [buttonContentStack addArrangedSubview:labelStack];
+
+  // Add trailing icon.
+  UIImageView* trailingIcon = [[UIImageView alloc]
+      initWithImage:DefaultSymbolWithPointSize(kChevronRightSymbol,
+                                               kSmallButtonIconSize)];
+  trailingIcon.translatesAutoresizingMaskIntoConstraints = NO;
+  trailingIcon.tintColor = [UIColor colorNamed:kTextSecondaryColor];
+  [buttonContentStack addArrangedSubview:trailingIcon];
+
+  // Create button with `buttonContentStack` as content.
+  UIButton* button = [UIButton buttonWithType:UIButtonTypeCustom];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  button.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_OPTIONS_BUTTON_TITLE);
+  [button addTarget:self
+                action:@selector(handleReaderModeOptionsTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+  [button addSubview:buttonContentStack];
+
+  // Add constraints.
+  AddSquareConstraints(leadingIconContainer, kReaderModeIconContainerSize);
+  AddSameCenterConstraints(leadingIcon, leadingIconContainer);
+  AddSameConstraintsWithInsets(
+      buttonContentStack, button,
+      NSDirectionalEdgeInsetsMake(kReaderModeContentStackVerticalPadding,
+                                  kReaderModeContentStackHorizontalPadding,
+                                  kReaderModeContentStackVerticalPadding,
+                                  kReaderModeContentStackHorizontalPadding));
+  AddSizeConstraints(trailingIcon, trailingIcon.intrinsicContentSize);
+
+  return button;
+}
+
+// Creates the button to hide Reader mode.
+- (UIButton*)createHideReaderModeButton {
+  UIButtonConfiguration* configuration =
+      [UIButtonConfiguration plainButtonConfiguration];
+  UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
+      preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
+      fontDescriptorWithSymbolicTraits:UIFontDescriptorTraitBold];
+  UIFont* fontAttribute = [UIFont fontWithDescriptor:boldDescriptor size:0.0];
+  NSDictionary* attributes = @{
+    NSFontAttributeName : fontAttribute,
+    NSForegroundColorAttributeName : [UIColor colorNamed:kBlue600Color]
+  };
+  NSMutableAttributedString* attributedTitle =
+      [[NSMutableAttributedString alloc]
+          initWithString:l10n_util::GetNSString(
+                             IDS_IOS_READER_MODE_OPTIONS_HIDE_BUTTON_LABEL)
+              attributes:attributes];
+  configuration.attributedTitle = attributedTitle;
+
+  UIButton* button = [UIButton buttonWithConfiguration:configuration
+                                         primaryAction:nil];
+  button.translatesAutoresizingMaskIntoConstraints = NO;
+  [button addTarget:self
+                action:@selector(handleReaderModeTapped:)
+      forControlEvents:UIControlEventTouchUpInside];
+
+  [button
+      setContentCompressionResistancePriority:UILayoutPriorityRequired
+                                      forAxis:UILayoutConstraintAxisHorizontal];
+  [button setContentHuggingPriority:UILayoutPriorityRequired
+                            forAxis:UILayoutConstraintAxisHorizontal];
+
+  return button;
+}
+
 // Creates a horizontal stack view for the side-by-side small buttons.
 - (UIStackView*)createSmallButtonsStackView {
   // Create the stack view.
@@ -199,18 +379,12 @@ const CGFloat kLargeButtonImagePadding = 8;
        forControlEvents:UIControlEventTouchUpInside];
   [stackView addArrangedSubview:lensButton];
 
-  if (IsReaderModeAvailable()) {
-    UIImage* readerModeImage =
-        _readerModeActive
-            ? DefaultSymbolWithPointSize(kHideActionSymbol,
-                                         kSmallButtonIconSize)
-            : DefaultSymbolWithPointSize(kReaderModeSymbolPostIOS18,
-                                         kSmallButtonIconSize);
+  if (IsReaderModeAvailable() && !self.readerModeActive) {
+    UIImage* readerModeImage = DefaultSymbolWithPointSize(
+        GetReaderModeSymbolName(), kSmallButtonIconSize);
 
     NSString* readerModeLabelText =
-        _readerModeActive
-            ? l10n_util::GetNSString(IDS_IOS_AI_HUB_HIDE_READER_MODE_LABEL)
-            : l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_LABEL);
+        l10n_util::GetNSString(IDS_IOS_AI_HUB_READER_MODE_LABEL);
 
     UIButton* readerModeButton =
         [self createSmallButtonWithIcon:readerModeImage
@@ -370,6 +544,12 @@ const CGFloat kLargeButtonImagePadding = 8;
   [self.pageActionMenuHandler dismissPageActionMenuWithCompletion:^{
     [weakSelf toggleReaderModeVisibility];
   }];
+}
+
+// Navigates to the Reader mode options.
+- (void)handleReaderModeOptionsTapped:(UIButton*)button {
+  RecordAIHubAction(IOSAIHubAction::kReaderModeOptions);
+  [self.delegate viewControllerDidTapReaderModeOptionsButton:self];
 }
 
 #pragma mark - Private

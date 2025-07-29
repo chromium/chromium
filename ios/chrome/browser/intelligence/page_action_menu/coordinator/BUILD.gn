@@ -12,6 +12,7 @@ source_set("coordinator") {
   deps = [
     "//components/prefs",
     "//components/signin/public/identity_manager",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
     "//ios/chrome/browser/intelligence/bwg/model",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
@@ -19,8 +20,10 @@ source_set("coordinator") {
     "//ios/chrome/browser/intelligence/page_action_menu/utils",
     "//ios/chrome/browser/intelligence/proto_wrappers",
     "//ios/chrome/browser/lens_overlay/coordinator:lens_overlay_availability",
+    "//ios/chrome/browser/reader_mode/coordinator:options",
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/model:features",
+    "//ios/chrome/browser/reader_mode/ui:options",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

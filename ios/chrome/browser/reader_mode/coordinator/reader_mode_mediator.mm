@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
 
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
@@ -14,16 +16,19 @@
 
 @implementation ReaderModeMediator {
   raw_ptr<WebStateList> _webStateList;
+  raw_ptr<BwgService> _BWGService;
   std::unique_ptr<WebStateListObserverBridge> _webStateListObserverBridge;
 }
 
 #pragma mark - Initialization
 
-- (instancetype)initWithWebStateList:(raw_ptr<WebStateList>)webStateList {
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList
+                          BWGService:(BwgService*)BWGService {
   self = [super init];
   if (self) {
     CHECK(webStateList);
     _webStateList = webStateList;
+    _BWGService = BWGService;
     _webStateListObserverBridge =
         std::make_unique<WebStateListObserverBridge>(self);
     _webStateList->AddObserver(_webStateListObserverBridge.get());
@@ -57,12 +62,24 @@
 
 #pragma mark - Public
 
+- (BOOL)BWGAvailableForWebState {
+  if (!_BWGService) {
+    return NO;
+  }
+  web::WebState* activeWebState = _webStateList->GetActiveWebState();
+  if (!activeWebState) {
+    return NO;
+  }
+  return _BWGService->IsBwgAvailableForWebState(activeWebState);
+}
+
 - (void)disconnect {
   if (_webStateList) {
     _webStateList->RemoveObserver(_webStateListObserverBridge.get());
     _webStateListObserverBridge.reset();
     _webStateList = nullptr;
   }
+  _BWGService = nullptr;
 }
 
 #pragma mark - Private

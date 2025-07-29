@@ -4,12 +4,16 @@
 
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
 
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_options_coordinator.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_view_controller.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/page_action_menu_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_options_commands.h"
 
 @interface ReaderModeCoordinator () <ReaderModeOptionsCommands>
@@ -29,8 +33,11 @@
 
 - (void)start {
   _viewController = [[ReaderModeViewController alloc] init];
+  ProfileIOS* profile = self.browser->GetProfile();
+  BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
   _mediator = [[ReaderModeMediator alloc]
-      initWithWebStateList:self.browser->GetWebStateList()];
+      initWithWebStateList:self.browser->GetWebStateList()
+                BWGService:BWGService];
   _mediator.consumer = _viewController;
   [self.baseViewController addChildViewController:_viewController];
   [_viewController didMoveToParentViewController:self.baseViewController];
@@ -57,6 +64,14 @@
 #pragma mark - ReaderModeOptionsCommands
 
 - (void)showReaderModeOptions {
+  if ([_mediator BWGAvailableForWebState]) {
+    id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+    // The flow when Page Action is available is to show the Page action menu.
+    // The user will have to tap RM options button again from there.
+    [pageActionMenuHandler showPageActionMenu];
+    return;
+  }
   if (_optionsCoordinator) {
     // If the Reader mode options UI is already presented then there is nothing
     // to do.
@@ -69,6 +84,12 @@
 }
 
 - (void)hideReaderModeOptions {
+  if ([_mediator BWGAvailableForWebState]) {
+    id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+    [pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
+    return;
+  }
   if (!_optionsCoordinator) {
     // If the Reader mode options UI is already dismissed then there is nothing
     // to do.
