@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -340,13 +341,14 @@ const CGFloat kSymbolSize = 22;
   return item;
 }
 
-- (TableViewTextItem*)editCellButtonItem {
-  TableViewTextItem* item = [[TableViewTextItem alloc]
+- (TableViewDetailTextItem*)editCellButtonItem {
+  TableViewDetailTextItem* item = [[TableViewDetailTextItem alloc]
       initWithType:AutofillProfileDetailsItemTypeEdit];
   item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS_CELL);
   item.textColor = [UIColor colorNamed:kBlueColor];
   item.accessibilityIdentifier = kAutofillEditButtonCellId;
   item.accessibilityTraits |= UIAccessibilityTraitButton;
+  item.accessorySymbol = TableViewDetailTextCellAccessorySymbolExternalLink;
   return item;
 }
 
