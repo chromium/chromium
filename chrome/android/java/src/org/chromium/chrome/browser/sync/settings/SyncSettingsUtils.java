@@ -140,6 +140,10 @@ public class SyncSettingsUtils {
             return SyncError.SYNC_SETUP_INCOMPLETE;
         }
 
+        if (syncService.hasUnrecoverableError()) {
+            return SyncError.OTHER_ERRORS;
+        }
+
         return getCommonError(profile);
     }
 
@@ -570,13 +574,7 @@ public class SyncSettingsUtils {
             return SyncError.NO_ERROR;
         }
 
-        @SyncError int error = getCommonError(profile);
-        // Do not show identity error for unrecoverable errors, since they are not actionable.
-        // TODO(crbug.com/40944114): Remove these unused values after sync-to-signin transition.
-        if (error == SyncError.OTHER_ERRORS) {
-            return SyncError.NO_ERROR;
-        }
-        return error;
+        return getCommonError(profile);
     }
 
     /** Returns the errors common to both getSyncError() and getIdentityError(). */
@@ -590,10 +588,6 @@ public class SyncSettingsUtils {
 
         if (syncService.requiresClientUpgrade()) {
             return SyncError.CLIENT_OUT_OF_DATE;
-        }
-
-        if (syncService.hasUnrecoverableError()) {
-            return SyncError.OTHER_ERRORS;
         }
 
         if (syncService.isEngineInitialized()
