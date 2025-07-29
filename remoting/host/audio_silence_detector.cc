@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/audio_silence_detector.h"
 
 #include <stdlib.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 
 namespace remoting {
 
@@ -50,7 +46,7 @@ bool AudioSilenceDetector::IsSilence(const int16_t* samples, size_t frames) {
   // case for threshold_==0), but it's not worth worrying about because the
   // amount of data it processes is relatively small.
   for (int i = 0; i < samples_count; ++i) {
-    if (abs(samples[i]) > threshold_) {
+    if (abs(UNSAFE_TODO(samples[i])) > threshold_) {
       silent_packet = false;
       break;
     }

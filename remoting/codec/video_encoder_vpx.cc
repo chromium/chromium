@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/video_encoder_vpx.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -162,7 +158,7 @@ void CreateImage(bool use_i444,
   DCHECK(!*out_image);
 
   std::unique_ptr<vpx_image_t> image(new vpx_image_t());
-  memset(image.get(), 0, sizeof(vpx_image_t));
+  UNSAFE_TODO(memset(image.get(), 0, sizeof(vpx_image_t)));
 
   // libvpx seems to require both to be assigned.
   image->d_w = size.width();
@@ -203,15 +199,15 @@ void CreateImage(bool use_i444,
   auto image_buffer = base::HeapArray<uint8_t>::Uninit(buffer_size);
 
   // Reset image value to 128 so we just need to fill in the y plane.
-  memset(image_buffer.data(), 128, buffer_size);
+  UNSAFE_TODO(memset(image_buffer.data(), 128, buffer_size));
 
   // Fill in the information for |image_|.
   unsigned char* uchar_buffer =
       reinterpret_cast<unsigned char*>(image_buffer.data());
 
   image->planes[0] = uchar_buffer;
-  image->planes[1] = image->planes[0] + y_stride * y_rows;
-  image->planes[2] = image->planes[1] + uv_stride * uv_rows;
+  image->planes[1] = UNSAFE_TODO(image->planes[0] + y_stride * y_rows);
+  image->planes[2] = UNSAFE_TODO(image->planes[1] + uv_stride * uv_rows);
   image->stride[0] = y_stride;
   image->stride[1] = uv_stride;
   image->stride[2] = uv_stride;
@@ -454,9 +450,10 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
         int rgb_offset =
             rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int yuv_offset = uv_stride * rect.top() + rect.left();
-        libyuv::ARGBToI444(rgb_data + rgb_offset, rgb_stride,
-                           y_data + yuv_offset, y_stride, u_data + yuv_offset,
-                           uv_stride, v_data + yuv_offset, uv_stride,
+        libyuv::ARGBToI444(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + yuv_offset), y_stride,
+                           UNSAFE_TODO(u_data + yuv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + yuv_offset), uv_stride,
                            rect.width(), rect.height());
       }
       break;
@@ -468,10 +465,11 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
             rgb_stride * rect.top() + rect.left() * kBytesPerRgbPixel;
         int y_offset = y_stride * rect.top() + rect.left();
         int uv_offset = uv_stride * rect.top() / 2 + rect.left() / 2;
-        libyuv::ARGBToI420(rgb_data + rgb_offset, rgb_stride, y_data + y_offset,
-                           y_stride, u_data + uv_offset, uv_stride,
-                           v_data + uv_offset, uv_stride, rect.width(),
-                           rect.height());
+        libyuv::ARGBToI420(UNSAFE_TODO(rgb_data + rgb_offset), rgb_stride,
+                           UNSAFE_TODO(y_data + y_offset), y_stride,
+                           UNSAFE_TODO(u_data + uv_offset), uv_stride,
+                           UNSAFE_TODO(v_data + uv_offset), uv_stride,
+                           rect.width(), rect.height());
       }
       break;
     default:
@@ -482,8 +480,8 @@ void VideoEncoderVpx::PrepareImage(const webrtc::DesktopFrame& frame,
 void VideoEncoderVpx::SetActiveMapFromRegion(
     const webrtc::DesktopRegion& updated_region) {
   // Clear active map first.
-  memset(active_map_.data(), 0,
-         active_map_size_.width() * active_map_size_.height());
+  UNSAFE_TODO(memset(active_map_.data(), 0,
+                     active_map_size_.width() * active_map_size_.height()));
 
   // Mark updated areas active.
   for (webrtc::DesktopRegion::Iterator r(updated_region); !r.IsAtEnd();
@@ -496,12 +494,13 @@ void VideoEncoderVpx::SetActiveMapFromRegion(
     DCHECK_LT(right, active_map_size_.width());
     DCHECK_LT(bottom, active_map_size_.height());
 
-    uint8_t* map = active_map_.data() + top * active_map_size_.width();
+    uint8_t* map =
+        UNSAFE_TODO(active_map_.data() + top * active_map_size_.width());
     for (int y = top; y <= bottom; ++y) {
       for (int x = left; x <= right; ++x) {
-        map[x] = 1;
+        UNSAFE_TODO(map[x]) = 1;
       }
-      map += active_map_size_.width();
+      UNSAFE_TODO(map += active_map_size_.width());
     }
   }
 }

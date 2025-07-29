@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/pam_authorization_factory_posix.h"
 
 #include <security/pam_appl.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/environment.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -189,7 +185,7 @@ int PamAuthorizer::PamConversation(int num_messages,
   // of returning a response, we consider it to be an error if we're asked
   // for one and abort. Informational and error messages are logged.
   for (int i = 0; i < num_messages; ++i) {
-    const struct pam_message* message = messages[i];
+    const struct pam_message* message = UNSAFE_TODO(messages[i]);
     switch (message->msg_style) {
       case PAM_ERROR_MSG:
         LOG(ERROR) << "PAM conversation error message: " << message->msg;

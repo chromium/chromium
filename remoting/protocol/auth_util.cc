@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/auth_util.h"
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/string_util.h"
 #include "crypto/hmac.h"
@@ -37,7 +33,7 @@ std::string GetSharedSecretHash(const std::string& tag,
     LOG(FATAL) << "HMAC::Sign failed";
   }
 
-  return std::string(out_bytes, out_bytes + sizeof(out_bytes));
+  return std::string(out_bytes, UNSAFE_TODO(out_bytes + sizeof(out_bytes)));
 }
 
 // static
@@ -63,7 +59,7 @@ std::string GetAuthBytes(net::SSLSocket* socket,
     NOTREACHED() << "HMAC::Sign failed";
   }
 
-  return std::string(out_bytes, out_bytes + kAuthDigestLength);
+  return std::string(out_bytes, UNSAFE_TODO(out_bytes + kAuthDigestLength));
 }
 
 }  // namespace remoting::protocol

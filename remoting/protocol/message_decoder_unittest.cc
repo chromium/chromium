@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/message_decoder.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/strings/string_number_conversions.h"
 #include "remoting/proto/event.pb.h"
@@ -49,7 +45,7 @@ static void PrepareData(uint8_t** buffer, int* size) {
 
   *size = encoded_data.length();
   *buffer = new uint8_t[*size];
-  memcpy(*buffer, encoded_data.c_str(), *size);
+  UNSAFE_TODO(memcpy(*buffer, encoded_data.c_str(), *size));
 }
 
 void SimulateReadSequence(base::span<const int> read_sequence,
@@ -84,7 +80,7 @@ void SimulateReadSequence(base::span<const int> read_sequence,
 
     // And then prepare an IOBuffer for feeding it.
     auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(read);
-    memcpy(buffer->data(), test_data + pos, read);
+    UNSAFE_TODO(memcpy(buffer->data(), test_data + pos, read));
     decoder.AddData(buffer, read);
     while (true) {
       std::unique_ptr<CompoundBuffer> message(decoder.GetNextMessage());

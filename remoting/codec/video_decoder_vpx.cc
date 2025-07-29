@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/video_decoder_vpx.h"
 
 #include <math.h>
 #include <stdint.h>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "remoting/base/util.h"
@@ -67,11 +63,11 @@ void RenderRect(vpx_image_t* image,
 
   int y_offset = rect.top() * image->stride[0] + rect.left();
   uint8_t* image_data_ptr = frame->GetFrameDataAtPos(rect.top_left());
-  yuv_to_rgb_function(image->planes[0] + y_offset, image->stride[0],
-                      image->planes[1] + u_offset, image->stride[1],
-                      image->planes[2] + v_offset, image->stride[2],
-                      image_data_ptr, frame->stride(), rect.width(),
-                      rect.height());
+  yuv_to_rgb_function(
+      UNSAFE_TODO(image->planes[0] + y_offset), image->stride[0],
+      UNSAFE_TODO(image->planes[1] + u_offset), image->stride[1],
+      UNSAFE_TODO(image->planes[2] + v_offset), image->stride[2],
+      image_data_ptr, frame->stride(), rect.width(), rect.height());
 }
 
 }  // namespace

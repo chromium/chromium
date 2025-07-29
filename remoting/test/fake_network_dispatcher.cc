@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/test/fake_network_dispatcher.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -28,7 +24,7 @@ FakeNetworkDispatcher::~FakeNetworkDispatcher() {
 
 webrtc::IPAddress FakeNetworkDispatcher::AllocateAddress() {
   in6_addr addr;
-  memset(&addr, 0, sizeof(addr));
+  UNSAFE_TODO(memset(&addr, 0, sizeof(addr)));
 
   // fc00::/7 is reserved for unique local addresses.
   addr.s6_addr[0] = 0xfc;
@@ -36,7 +32,7 @@ webrtc::IPAddress FakeNetworkDispatcher::AllocateAddress() {
   // Copy |allocated_address_| to the end of |addr|.
   ++allocated_address_;
   for (size_t i = 0; i < sizeof(allocated_address_); ++i) {
-    addr.s6_addr[15 - i] = (allocated_address_ >> (8 * i)) & 0xff;
+    UNSAFE_TODO(addr.s6_addr[15 - i]) = (allocated_address_ >> (8 * i)) & 0xff;
   }
 
   return webrtc::IPAddress(addr);

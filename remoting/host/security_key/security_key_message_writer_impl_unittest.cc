@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/security_key/security_key_message_writer_impl.h"
 
 #include <cstdint>
 #include <memory>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
@@ -71,16 +67,17 @@ SecurityKeyMessageWriterImplTest::~SecurityKeyMessageWriterImplTest() = default;
 std::string SecurityKeyMessageWriterImplTest::ReadMessage(
     int payload_length_bytes) {
   std::string message_header(SecurityKeyMessage::kHeaderSizeBytes, '\0');
-  read_file_.ReadAtCurrentPos(std::data(message_header),
-                              SecurityKeyMessage::kHeaderSizeBytes);
+  UNSAFE_TODO(read_file_.ReadAtCurrentPos(
+      std::data(message_header), SecurityKeyMessage::kHeaderSizeBytes));
 
   std::string message_type(SecurityKeyMessage::kMessageTypeSizeBytes, '\0');
-  read_file_.ReadAtCurrentPos(std::data(message_type),
-                              SecurityKeyMessage::kMessageTypeSizeBytes);
+  UNSAFE_TODO(read_file_.ReadAtCurrentPos(
+      std::data(message_type), SecurityKeyMessage::kMessageTypeSizeBytes));
 
   std::string message_data(payload_length_bytes, '\0');
   if (payload_length_bytes) {
-    read_file_.ReadAtCurrentPos(std::data(message_data), payload_length_bytes);
+    UNSAFE_TODO(read_file_.ReadAtCurrentPos(std::data(message_data),
+                                            payload_length_bytes));
   }
 
   return message_header + message_type + message_data;
@@ -144,7 +141,7 @@ void SecurityKeyMessageWriterImplTest::WriteMessageToOutput(
   // Destroy the writer and verify the other end of the pipe is clean.
   writer_.reset();
   char unused;
-  ASSERT_LE(read_file_.ReadAtCurrentPos(&unused, 1), 0);
+  UNSAFE_TODO(ASSERT_LE(read_file_.ReadAtCurrentPos(&unused, 1), 0));
 }
 
 TEST_F(SecurityKeyMessageWriterImplTest, WriteMessageWithoutPayload) {
@@ -173,14 +170,15 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
   for (int i = 0; i < total_messages_to_write; i++) {
     // Retrieve and verify the message header.
     int length;
-    ASSERT_EQ(SecurityKeyMessage::kHeaderSizeBytes,
-              read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4));
+    UNSAFE_TODO(ASSERT_EQ(
+        SecurityKeyMessage::kHeaderSizeBytes,
+        read_file_.ReadAtCurrentPos(reinterpret_cast<char*>(&length), 4)));
     ASSERT_EQ(SecurityKeyMessage::kMessageTypeSizeBytes, length);
 
     // Retrieve and verify the message type.
     std::string message_type(length, '\0');
-    int bytes_read =
-        read_file_.ReadAtCurrentPos(std::data(message_type), length);
+    int bytes_read = UNSAFE_TODO(
+        read_file_.ReadAtCurrentPos(std::data(message_type), length));
     ASSERT_EQ(length, bytes_read);
 
     SecurityKeyMessageType type =
@@ -195,7 +193,7 @@ TEST_F(SecurityKeyMessageWriterImplTest, WriteMultipleMessages) {
   // Destroy the writer and verify the other end of the pipe is clean.
   writer_.reset();
   char unused;
-  ASSERT_LE(read_file_.ReadAtCurrentPos(&unused, 1), 0);
+  UNSAFE_TODO(ASSERT_LE(read_file_.ReadAtCurrentPos(&unused, 1), 0));
 }
 
 TEST_F(SecurityKeyMessageWriterImplTest, EnsureWriteFailsWhenPipeClosed) {

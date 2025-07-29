@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/protocol/channel_socket_adapter.h"
 
 #include <limits>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/logging.h"
 #include "net/base/io_buffer.h"
@@ -155,7 +151,8 @@ void TransportChannelSocketAdapter::OnNewPacket(
       data_size = read_buffer_size_;
     }
 
-    memcpy(read_buffer_->data(), packet.payload().data(), data_size);
+    UNSAFE_TODO(
+        memcpy(read_buffer_->data(), packet.payload().data(), data_size));
 
     net::CompletionRepeatingCallback callback = read_callback_;
     read_callback_.Reset();

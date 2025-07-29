@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/fake_datagram_socket.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -108,13 +104,15 @@ int FakeDatagramSocket::DoSend(const scoped_refptr<net::IOBuffer>& buf,
   }
 
   written_packets_.push_back(std::string());
-  written_packets_.back().assign(buf->data(), buf->data() + buf_len);
+  written_packets_.back().assign(buf->data(),
+                                 UNSAFE_TODO(buf->data() + buf_len));
 
   if (peer_socket_.get()) {
     task_runner_->PostTask(
         FROM_HERE,
-        base::BindOnce(&FakeDatagramSocket::AppendInputPacket, peer_socket_,
-                       std::string(buf->data(), buf->data() + buf_len)));
+        base::BindOnce(
+            &FakeDatagramSocket::AppendInputPacket, peer_socket_,
+            std::string(buf->data(), UNSAFE_TODO(buf->data() + buf_len))));
   }
 
   return buf_len;
@@ -124,7 +122,8 @@ int FakeDatagramSocket::CopyReadData(const scoped_refptr<net::IOBuffer>& buf,
                                      int buf_len) {
   int size =
       std::min(buf_len, static_cast<int>(input_packets_[input_pos_].size()));
-  memcpy(buf->data(), &(*input_packets_[input_pos_].begin()), size);
+  UNSAFE_TODO(
+      memcpy(buf->data(), &(*input_packets_[input_pos_].begin()), size));
   ++input_pos_;
   return size;
 }

@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/audio_volume_filter.h"
+
+#include "base/compiler_specific.h"
 
 namespace remoting {
 
@@ -36,7 +33,8 @@ bool AudioVolumeFilter::Apply(int16_t* data, size_t frames) {
   const int sample_count = frames * silence_detector_.channels();
   const int32_t level_int = static_cast<int32_t>(level * 65536);
   for (int i = 0; i < sample_count; i++) {
-    data[i] = (static_cast<int32_t>(data[i]) * level_int) >> 16;
+    UNSAFE_TODO(data[i]) =
+        (static_cast<int32_t>(UNSAFE_TODO(data[i])) * level_int) >> 16;
   }
 
   return true;

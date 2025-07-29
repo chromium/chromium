@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/mouse_shape_pump.h"
 
 #include <stdint.h>
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -91,10 +87,10 @@ void MouseShapePump::OnMouseCursor(webrtc::MouseCursor* cursor) {
       uint8_t* current_row = cursor->image()->data();
       for (int y = 0; y < cursor->image()->size().height(); ++y) {
         cursor_proto->mutable_data()->append(
-            current_row,
-            current_row + cursor->image()->size().width() *
-                              webrtc::DesktopFrame::kBytesPerPixel);
-        current_row += cursor->image()->stride();
+            current_row, UNSAFE_TODO(current_row +
+                                     cursor->image()->size().width() *
+                                         webrtc::DesktopFrame::kBytesPerPixel));
+        UNSAFE_TODO(current_row += cursor->image()->stride());
       }
     } else {
       cursor_proto->set_width(0);

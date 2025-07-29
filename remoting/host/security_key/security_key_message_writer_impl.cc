@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/security_key/security_key_message_writer_impl.h"
 
 #include <cstdint>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "remoting/host/security_key/security_key_message.h"
 
@@ -73,7 +69,8 @@ bool SecurityKeyMessageWriterImpl::WriteBytesToOutput(const char* message,
   DCHECK(message);
   DCHECK_GT(bytes_to_write, 0);
 
-  int result = output_stream_.WriteAtCurrentPos(message, bytes_to_write);
+  int result =
+      UNSAFE_TODO(output_stream_.WriteAtCurrentPos(message, bytes_to_write));
   if (result != bytes_to_write) {
     LOG(ERROR) << "Failed to write all bytes to output stream.  bytes written: "
                << result << ", file error: "

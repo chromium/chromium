@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/pseudotcp_adapter.h"
 
 #include <memory>
@@ -94,7 +89,7 @@ class FakeSocket : public P2PDatagramSocket {
 
     if (!read_callback_.is_null()) {
       int size = std::min(read_buffer_size_, static_cast<int>(data.size()));
-      memcpy(read_buffer_->data(), &data[0], data.size());
+      UNSAFE_TODO(memcpy(read_buffer_->data(), &data[0], data.size()));
       net::CompletionRepeatingCallback cb = read_callback_;
       read_callback_.Reset();
       read_buffer_.reset();
@@ -123,7 +118,8 @@ class FakeSocket : public P2PDatagramSocket {
       scoped_refptr<net::IOBuffer> buffer(buf);
       int size =
           std::min(static_cast<int>(incoming_packets_.front().size()), buf_len);
-      memcpy(buffer->data(), &*incoming_packets_.front().begin(), size);
+      UNSAFE_TODO(
+          memcpy(buffer->data(), &*incoming_packets_.front().begin(), size));
       incoming_packets_.pop_front();
       return size;
     } else {
@@ -143,7 +139,8 @@ class FakeSocket : public P2PDatagramSocket {
           FROM_HERE,
           base::BindOnce(&FakeSocket::AppendInputPacket,
                          base::Unretained(peer_socket_),
-                         std::vector<char>(buf->data(), buf->data() + buf_len)),
+                         std::vector<char>(buf->data(),
+                                           UNSAFE_TODO(buf->data() + buf_len))),
           base::Milliseconds(latency_ms_));
     }
 
@@ -211,7 +208,7 @@ class TCPChannelTester : public base::RefCountedThreadSafe<TCPChannelTester> {
     output_buffer_ = base::MakeRefCounted<net::DrainableIOBuffer>(
         base::MakeRefCounted<net::IOBufferWithSize>(kTestDataSize),
         kTestDataSize);
-    memset(output_buffer_->data(), 123, kTestDataSize);
+    UNSAFE_TODO(memset(output_buffer_->data(), 123, kTestDataSize));
 
     input_buffer_ = base::MakeRefCounted<net::GrowableIOBuffer>();
     // Always keep kMessageSize bytes available at the end of the input buffer.

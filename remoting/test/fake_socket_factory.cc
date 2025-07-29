@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/test/fake_socket_factory.h"
 
 #include <algorithm>
@@ -16,6 +11,7 @@
 #include <numbers>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
@@ -131,7 +127,7 @@ int FakeUdpSocket::SendTo(const void* data,
                           const webrtc::SocketAddress& address,
                           const webrtc::AsyncSocketPacketOptions& options) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(data_size);
-  memcpy(buffer->data(), data, data_size);
+  UNSAFE_TODO(memcpy(buffer->data(), data, data_size));
   base::TimeTicks now = base::TimeTicks::Now();
   webrtc::ApplyPacketOptions(
       webrtc::ArrayView<uint8_t>(buffer->bytes(), data_size),

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/test/video_frame_writer.h"
 
 #include <stdint.h>
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/i18n/time_formatting.h"
@@ -131,10 +127,10 @@ void VideoFrameWriter::ShiftPixelColor(webrtc::DesktopFrame* frame,
                                        int x,
                                        int y,
                                        int shift_amount) {
-  uint8_t* frame_pos = frame->data() + y * frame->stride() +
-                       x * webrtc::DesktopFrame::kBytesPerPixel;
-  frame_pos[2] = frame_pos[2] + shift_amount;
-  frame_pos[1] = frame_pos[1] + shift_amount;
+  uint8_t* frame_pos = UNSAFE_TODO(frame->data() + y * frame->stride() +
+                                   x * webrtc::DesktopFrame::kBytesPerPixel);
+  UNSAFE_TODO(frame_pos[2]) = UNSAFE_TODO(frame_pos[2]) + shift_amount;
+  UNSAFE_TODO(frame_pos[1]) = UNSAFE_TODO(frame_pos[1]) + shift_amount;
   frame_pos[0] = frame_pos[0] + shift_amount;
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/audio_encoder_opus.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <numbers>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "remoting/codec/audio_decoder_opus.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -152,11 +148,11 @@ class OpusAudioEncoderTest : public testing::Test {
             decoder_->Decode(std::move(encoded));
         EXPECT_EQ(kDefaultSamplingRate, decoded->sampling_rate());
         for (int i = 0; i < decoded->data_size(); ++i) {
-          const int16_t* data =
-              reinterpret_cast<const int16_t*>(decoded->data(i).data());
+          const int16_t* data = UNSAFE_TODO(
+              reinterpret_cast<const int16_t*>(decoded->data(i).data()));
           received_data.insert(
               received_data.end(), data,
-              data + decoded->data(i).size() / sizeof(int16_t));
+              UNSAFE_TODO(data + decoded->data(i).size() / sizeof(int16_t)));
         }
       }
     }

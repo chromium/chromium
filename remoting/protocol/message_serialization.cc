@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/protocol/message_serialization.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "net/base/io_buffer.h"
 #include "third_party/webrtc/rtc_base/byte_order.h"
 
@@ -25,7 +21,8 @@ scoped_refptr<net::IOBufferWithSize> SerializeAndFrameMessage(
   scoped_refptr<net::IOBufferWithSize> buffer =
       base::MakeRefCounted<net::IOBufferWithSize>(size);
   webrtc::SetBE32(buffer->data(), msg.GetCachedSize());
-  msg.SerializeWithCachedSizesToArray(buffer->bytes() + kExtraBytes);
+  msg.SerializeWithCachedSizesToArray(
+      UNSAFE_TODO(buffer->bytes() + kExtraBytes));
   return buffer;
 }
 

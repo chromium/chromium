@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/codec/audio_encoder_opus.h"
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/time/time.h"
@@ -132,7 +128,8 @@ void AudioEncoderOpus::FetchBytesToResample(int resampler_frame_delay,
   DCHECK_LE(audio_bus->frames(), samples_left);
   static_assert(kBytesPerSample == 2, "FromInterleaved expects 2 bytes.");
   audio_bus->FromInterleaved<media::SignedInt16SampleTypeTraits>(
-      reinterpret_cast<const int16_t*>(resampling_data_ + resampling_data_pos_),
+      reinterpret_cast<const int16_t*>(
+          UNSAFE_TODO(resampling_data_ + resampling_data_pos_)),
       audio_bus->frames());
   resampling_data_pos_ += audio_bus->frames() * kBytesPerSample * channels_;
   DCHECK_LE(resampling_data_pos_, static_cast<int>(resampling_data_size_));
@@ -155,7 +152,7 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
 
   int samples_in_packet = packet->data(0).size() / kBytesPerSample / channels_;
   const int16_t* next_sample =
-      reinterpret_cast<const int16_t*>(packet->data(0).data());
+      UNSAFE_TODO(reinterpret_cast<const int16_t*>(packet->data(0).data()));
 
   // Create a new packet of encoded data.
   std::unique_ptr<AudioPacket> encoded_packet(new AudioPacket());
@@ -174,8 +171,9 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
     if (leftover_samples_ > 0) {
       pcm_buffer = leftover_buffer_.get();
       int samples_to_copy = samples_wanted - leftover_samples_;
-      memcpy(leftover_buffer_.get() + leftover_samples_ * channels_,
-             next_sample, samples_to_copy * kBytesPerSample * channels_);
+      UNSAFE_TODO(memcpy(leftover_buffer_.get() + leftover_samples_ * channels_,
+                         next_sample,
+                         samples_to_copy * kBytesPerSample * channels_));
     } else {
       pcm_buffer = next_sample;
     }
@@ -218,21 +216,22 @@ std::unique_ptr<AudioPacket> AudioEncoderOpus::Encode(
     if (samples_consumed >= leftover_samples_) {
       samples_consumed -= leftover_samples_;
       leftover_samples_ = 0;
-      next_sample += samples_consumed * channels_;
+      UNSAFE_TODO(next_sample += samples_consumed * channels_);
       samples_in_packet -= samples_consumed;
     } else {
       leftover_samples_ -= samples_consumed;
-      memmove(leftover_buffer_.get(),
-              leftover_buffer_.get() + samples_consumed * channels_,
-              leftover_samples_ * channels_ * kBytesPerSample);
+      UNSAFE_TODO(memmove(leftover_buffer_.get(),
+                          leftover_buffer_.get() + samples_consumed * channels_,
+                          leftover_samples_ * channels_ * kBytesPerSample));
     }
   }
 
   // Store the leftover samples.
   if (samples_in_packet > 0) {
     DCHECK_LE(leftover_samples_ + samples_in_packet, leftover_buffer_size_);
-    memmove(leftover_buffer_.get() + leftover_samples_ * channels_, next_sample,
-            samples_in_packet * kBytesPerSample * channels_);
+    UNSAFE_TODO(memmove(leftover_buffer_.get() + leftover_samples_ * channels_,
+                        next_sample,
+                        samples_in_packet * kBytesPerSample * channels_));
     leftover_samples_ += samples_in_packet;
   }
 

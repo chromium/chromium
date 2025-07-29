@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/protocol/chromium_socket_factory.h"
 
 #include <stddef.h>
@@ -15,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
@@ -153,7 +149,7 @@ UdpPacketSocket::PendingPacket::PendingPacket(
     : data(base::MakeRefCounted<net::IOBufferWithSize>(buffer_size)),
       address(address),
       options(options) {
-  memcpy(data->data(), buffer, buffer_size);
+  UNSAFE_TODO(memcpy(data->data(), buffer, buffer_size));
 }
 
 UdpPacketSocket::UdpPacketSocket() {

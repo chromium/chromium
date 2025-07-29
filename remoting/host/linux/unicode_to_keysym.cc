@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/host/linux/unicode_to_keysym.h"
 
 #include <algorithm>
 #include <array>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "ui/gfx/x/keysyms/keysyms.h"
 
@@ -826,7 +822,7 @@ std::vector<uint32_t> GetKeySymsForUnicode(uint32_t unicode) {
                                           unicode, &CompareCodePair);
   while (pair != map_end && pair->unicode == unicode) {
     keysyms.push_back(pair->keysym);
-    ++pair;
+    UNSAFE_TODO(++pair);
   }
 
   keysyms.push_back(0x01000000 | unicode);

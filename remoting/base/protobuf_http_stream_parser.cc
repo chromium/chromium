@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/base/protobuf_http_stream_parser.h"
 
 #include <string.h>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -52,7 +48,7 @@ void ProtobufHttpStreamParser::Append(std::string_view data) {
   }
 
   DCHECK_GE(read_buffer_->RemainingCapacity(), static_cast<int>(data.size()));
-  memcpy(read_buffer_->data(), data.data(), data.size());
+  UNSAFE_TODO(memcpy(read_buffer_->data(), data.data(), data.size()));
   read_buffer_->set_offset(read_buffer_->offset() + data.size());
 
   ParseStreamIfAvailable();

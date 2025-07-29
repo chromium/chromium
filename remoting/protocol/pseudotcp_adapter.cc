@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "remoting/protocol/pseudotcp_adapter.h"
 
 #include <stddef.h>
@@ -374,7 +369,7 @@ IPseudoTcpNotify::WriteResult PseudoTcpAdapter::Core::TcpWritePacket(
   }
 
   auto write_buffer = base::MakeRefCounted<net::IOBufferWithSize>(len);
-  memcpy(write_buffer->data(), buffer, len);
+  UNSAFE_TODO(memcpy(write_buffer->data(), buffer, len));
 
   // Our underlying socket is datagram-oriented, which means it should either
   // send exactly as many bytes as we requested, or fail.

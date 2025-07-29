@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "remoting/base/compound_buffer.h"
 
 #include <algorithm>
 #include <functional>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "net/base/io_buffer.h"
 
 namespace remoting {
@@ -87,13 +83,13 @@ void CompoundBuffer::Prepend(const CompoundBuffer& buffer) {
 }
 void CompoundBuffer::AppendCopyOf(const char* data, int size) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
-  memcpy(buffer->data(), data, size);
+  UNSAFE_TODO(memcpy(buffer->data(), data, size));
   Append(std::move(buffer), size);
 }
 
 void CompoundBuffer::PrependCopyOf(const char* data, int size) {
   auto buffer = base::MakeRefCounted<net::IOBufferWithSize>(size);
-  memcpy(buffer->data(), data, size);
+  UNSAFE_TODO(memcpy(buffer->data(), data, size));
   Prepend(std::move(buffer), size);
 }
 
@@ -111,7 +107,7 @@ void CompoundBuffer::CropFront(int bytes) {
     chunks_.pop_front();
   }
   if (!chunks_.empty() && bytes > 0) {
-    chunks_.front().start += bytes;
+    UNSAFE_TODO(chunks_.front().start += bytes);
     chunks_.front().size -= bytes;
     DCHECK_GT(chunks_.front().size, 0);
     bytes = 0;
@@ -157,7 +153,7 @@ void CompoundBuffer::CopyTo(char* data, int size) const {
   for (DataChunkList::const_iterator it = chunks_.begin();
        it != chunks_.end() && pos < size; ++it) {
     int bytes_to_copy = std::min(size - pos, it->size);
-    memcpy(data + pos, it->start, bytes_to_copy);
+    UNSAFE_TODO(memcpy(data + pos, it->start, bytes_to_copy));
     pos += bytes_to_copy;
   }
 }
@@ -187,7 +183,7 @@ void CompoundBuffer::CopyFrom(const CompoundBuffer& source,
       DCHECK_LE(0, relative_start);
       DCHECK_LT(relative_start, relative_end);
       DCHECK_LE(relative_end, it->size);
-      Append(it->buffer.get(), it->start + relative_start,
+      Append(it->buffer.get(), UNSAFE_TODO(it->start + relative_start),
              relative_end - relative_start);
     }
 
@@ -218,7 +214,7 @@ bool CompoundBufferInputStream::Next(const void** data, int* size) {
     // Reply with the number of bytes remaining in the current buffer.
     const CompoundBuffer::DataChunk& chunk = buffer_->chunks_[current_chunk_];
     int read_size = chunk.size - current_chunk_position_;
-    *data = chunk.start + current_chunk_position_;
+    *data = UNSAFE_TODO(chunk.start + current_chunk_position_);
     *size = read_size;
 
     // Adjust position.
