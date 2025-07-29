@@ -54,12 +54,12 @@ std::unique_ptr<HttpResponse> HandleBasicAuth(
 
   if (auth_header == request.headers.end() ||
       auth_header->second != expected_auth_header) {
-    DVLOG(1) << "Authorization failed or header missing. For Proxy: "
-             << std::boolalpha << is_proxy_auth;
+    VLOG(1) << "Authorization failed or header missing. For Proxy: "
+            << std::boolalpha << is_proxy_auth;
     return CreateUnauthorizedResponse(is_proxy_auth);
   }
 
-  DVLOG(3) << "Authorization successful. For Proxy: " << is_proxy_auth;
+  VLOG(3) << "Authorization successful. For Proxy: " << is_proxy_auth;
   return nullptr;
 }
 

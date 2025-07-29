@@ -36,8 +36,8 @@ std::unique_ptr<HttpResponse> MakeErrorResponse(HttpStatusCode code,
   auto error_response = std::make_unique<BasicHttpResponse>();
   error_response->set_code(code);
   error_response->set_content(content);
-  DVLOG(3) << "Error response created. Code: " << static_cast<int>(code)
-           << ", Content: " << content;
+  VLOG(3) << "Error response created. Code: " << static_cast<int>(code)
+          << ", Content: " << content;
   return error_response;
 }
 
@@ -47,7 +47,7 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
     EmbeddedTestServer* server,
     const HttpRequest& request,
     HttpConnection* connection) {
-  DVLOG(3) << "Handling WebSocket upgrade for path: " << handle_path;
+  VLOG(3) << "Handling WebSocket upgrade for path: " << handle_path;
 
   std::string_view request_path = StripQuery(request.relative_url);
 
@@ -66,14 +66,14 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
 
   auto host_header = request.headers.find("Host");
   if (host_header == request.headers.end()) {
-    DVLOG(1) << "Host header is missing.";
+    VLOG(1) << "Host header is missing.";
     return base::unexpected(MakeErrorResponse(HttpStatusCode::HTTP_BAD_REQUEST,
                                               "Host header is missing."));
   }
 
   HostPortPair host_port = HostPortPair::FromString(host_header->second);
   if (!IsCanonicalizedHostCompliant(host_port.host())) {
-    DVLOG(1) << "Host header is invalid: " << host_port.host();
+    VLOG(1) << "Host header is invalid: " << host_port.host();
     return base::unexpected(MakeErrorResponse(HttpStatusCode::HTTP_BAD_REQUEST,
                                               "Host header is invalid."));
   }
@@ -81,8 +81,8 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
   auto upgrade_header = request.headers.find("Upgrade");
   if (upgrade_header == request.headers.end() ||
       !base::EqualsCaseInsensitiveASCII(upgrade_header->second, "websocket")) {
-    DVLOG(1) << "Upgrade header is missing or invalid: "
-             << upgrade_header->second;
+    VLOG(1) << "Upgrade header is missing or invalid: "
+            << upgrade_header->second;
     return base::unexpected(
         MakeErrorResponse(HttpStatusCode::HTTP_BAD_REQUEST,
                           "Upgrade header is missing or invalid."));
@@ -90,7 +90,7 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
 
   auto connection_header = request.headers.find("Connection");
   if (connection_header == request.headers.end()) {
-    DVLOG(1) << "Connection header is missing.";
+    VLOG(1) << "Connection header is missing.";
     return base::unexpected(MakeErrorResponse(HttpStatusCode::HTTP_BAD_REQUEST,
                                               "Connection header is missing."));
   }
@@ -101,8 +101,8 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
   if (!std::ranges::any_of(tokens, [](std::string_view token) {
         return base::EqualsCaseInsensitiveASCII(token, "Upgrade");
       })) {
-    DVLOG(1) << "Connection header does not contain 'Upgrade'. Tokens: "
-             << connection_header->second;
+    VLOG(1) << "Connection header does not contain 'Upgrade'. Tokens: "
+            << connection_header->second;
     return base::unexpected(
         MakeErrorResponse(HttpStatusCode::HTTP_BAD_REQUEST,
                           "Connection header does not contain 'Upgrade'."));
@@ -111,15 +111,15 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
   auto websocket_version_header = request.headers.find("Sec-WebSocket-Version");
   if (websocket_version_header == request.headers.end() ||
       websocket_version_header->second != "13") {
-    DVLOG(1) << "Invalid or missing Sec-WebSocket-Version: "
-             << websocket_version_header->second;
+    VLOG(1) << "Invalid or missing Sec-WebSocket-Version: "
+            << websocket_version_header->second;
     return base::unexpected(MakeErrorResponse(
         HttpStatusCode::HTTP_BAD_REQUEST, "Sec-WebSocket-Version must be 13."));
   }
 
   auto sec_websocket_key_iter = request.headers.find("Sec-WebSocket-Key");
   if (sec_websocket_key_iter == request.headers.end()) {
-    DVLOG(1) << "Sec-WebSocket-Key header is missing.";
+    VLOG(1) << "Sec-WebSocket-Key header is missing.";
     return base::unexpected(
         MakeErrorResponse(HttpStatusCode::HTTP_BAD_REQUEST,
                           "Sec-WebSocket-Key header is missing."));
@@ -127,7 +127,7 @@ EmbeddedTestServer::UpgradeResultOrHttpResponse HandleWebSocketUpgrade(
 
   auto decoded = base::Base64Decode(sec_websocket_key_iter->second);
   if (!decoded || decoded->size() != 16) {
-    DVLOG(1) << "Sec-WebSocket-Key is invalid or has incorrect length.";
+    VLOG(1) << "Sec-WebSocket-Key is invalid or has incorrect length.";
     return base::unexpected(MakeErrorResponse(
         HttpStatusCode::HTTP_BAD_REQUEST,
         "Sec-WebSocket-Key is invalid or has incorrect length."));

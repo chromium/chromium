@@ -51,13 +51,13 @@ HttpRequestParser::~HttpRequestParser() = default;
 
 void HttpRequestParser::ProcessChunk(std::string_view data) {
   buffer_.append(data);
-  DCHECK_LE(buffer_.size() + data.size(), kRequestSizeLimit) <<
-      "The HTTP request is too large.";
+  CHECK_LE(buffer_.size() + data.size(), kRequestSizeLimit)
+      << "The HTTP request is too large.";
 }
 
 std::string HttpRequestParser::ShiftLine() {
   size_t eoln_position = buffer_.find("\r\n", buffer_position_);
-  DCHECK_NE(std::string::npos, eoln_position);
+  CHECK_NE(std::string::npos, eoln_position);
   const int line_length = eoln_position - buffer_position_;
   std::string result = buffer_.substr(buffer_position_, line_length);
   buffer_position_ += line_length + 2;
@@ -65,7 +65,7 @@ std::string HttpRequestParser::ShiftLine() {
 }
 
 HttpRequestParser::ParseResult HttpRequestParser::ParseRequest() {
-  DCHECK_NE(STATE_ACCEPTED, state_);
+  CHECK_NE(STATE_ACCEPTED, state_);
   // Parse the request from beginning. However, entire request may not be
   // available in the buffer.
   if (state_ == STATE_HEADERS) {
@@ -94,7 +94,7 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
     http_request_->all_headers += header_line + "\r\n";
     std::vector<std::string> header_line_tokens = base::SplitString(
         header_line, " ", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
-    DCHECK_EQ(3u, header_line_tokens.size());
+    CHECK_EQ(3u, header_line_tokens.size());
     // Method.
     http_request_->method_string = header_line_tokens[0];
     http_request_->method = GetMethodType(http_request_->method_string);
@@ -151,7 +151,7 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseHeaders() {
       } else {
         // New header.
         size_t delimiter_pos = header_line.find(":");
-        DCHECK_NE(std::string::npos, delimiter_pos) << "Syntax error.";
+        CHECK_NE(std::string::npos, delimiter_pos) << "Syntax error.";
         header_name = Trim(header_line.substr(0, delimiter_pos));
         std::string header_value = Trim(header_line.substr(
             delimiter_pos + 1,
@@ -236,7 +236,7 @@ HttpRequestParser::ParseResult HttpRequestParser::ParseContent() {
 }
 
 std::unique_ptr<HttpRequest> HttpRequestParser::GetRequest() {
-  DCHECK_EQ(STATE_ACCEPTED, state_);
+  CHECK_EQ(STATE_ACCEPTED, state_);
   std::unique_ptr<HttpRequest> result = std::move(http_request_);
 
   // Prepare for parsing a new request.

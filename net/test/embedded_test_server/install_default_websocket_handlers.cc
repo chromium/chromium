@@ -50,8 +50,8 @@ GURL ToWebSocketUrl(const GURL& url) {
 
 GURL GetWebSocketURL(const EmbeddedTestServer& server,
                      std::string_view relative_url) {
-  DCHECK(server.Started()) << "Server must be started to get WebSocket URL";
-  DCHECK(relative_url.starts_with("/")) << "Relative URL should start with '/'";
+  CHECK(server.Started()) << "Server must be started to get WebSocket URL";
+  CHECK(relative_url.starts_with("/")) << "Relative URL should start with '/'";
 
   GURL base_url = server.base_url().Resolve(relative_url);
   return ToWebSocketUrl(base_url);
@@ -60,8 +60,8 @@ GURL GetWebSocketURL(const EmbeddedTestServer& server,
 GURL GetWebSocketURL(const EmbeddedTestServer& server,
                      std::string_view hostname,
                      std::string_view relative_url) {
-  DCHECK(server.Started()) << "Server must be started to get WebSocket URL";
-  DCHECK(relative_url.starts_with("/")) << "Relative URL should start with '/'";
+  CHECK(server.Started()) << "Server must be started to get WebSocket URL";
+  CHECK(relative_url.starts_with("/")) << "Relative URL should start with '/'";
 
   GURL local_url = GetWebSocketURL(server, relative_url);
   GURL::Replacements replacements;

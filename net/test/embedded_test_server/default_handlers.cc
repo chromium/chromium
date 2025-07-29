@@ -849,7 +849,7 @@ std::unique_ptr<HttpResponse> HandleExabyteResponse(
 
 // /gzip-body?<body>
 // Returns a response with a gzipped body of "<body>". Attempts to allocate
-// enough memory to contain the body, but DCHECKs if that fails.
+// enough memory to contain the body, but CHECKs if that fails.
 std::unique_ptr<HttpResponse> HandleGzipBody(const HttpRequest& request) {
   std::string uncompressed_body = request.GetURL().query();
   auto compressed_body = CompressGzip(uncompressed_body);
@@ -927,7 +927,7 @@ class DelayedChunkedHttpResponse : public HttpResponse {
   }
 
   void SendNextChunk() {
-    DCHECK_GT(remaining_chunks_, 0);
+    CHECK_GT(remaining_chunks_, 0);
     remaining_chunks_--;
 
     delegate_->SendContents(

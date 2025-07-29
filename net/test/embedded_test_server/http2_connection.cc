@@ -242,7 +242,7 @@ bool Http2Connection::HandleData(int rv) {
   }
 
   // Any frames and data sources will be queued up and sent all at once below
-  DCHECK(!processing_responses_);
+  CHECK(!processing_responses_);
   processing_responses_ = true;
   while (!ready_streams_.empty()) {
     StreamId stream_id = ready_streams_.front();
@@ -310,8 +310,8 @@ bool Http2Connection::SendDataFrame(StreamId stream_id,
 }
 
 void Http2Connection::SendInternal() {
-  DCHECK(socket_);
-  DCHECK(write_buf_);
+  CHECK(socket_);
+  CHECK(write_buf_);
   while (write_buf_->BytesRemaining() > 0) {
     int rv = socket_->Write(write_buf_.get(), write_buf_->BytesRemaining(),
                             base::BindOnce(&Http2Connection::OnSendInternalDone,
@@ -331,7 +331,7 @@ void Http2Connection::SendInternal() {
 }
 
 void Http2Connection::OnSendInternalDone(int rv) {
-  DCHECK(write_buf_);
+  CHECK(write_buf_);
   if (rv < 0) {
     embedded_test_server_->RemoveConnection(this);
     write_buf_ = nullptr;
@@ -385,7 +385,7 @@ bool Http2Connection::OnEndHeadersForStream(
   request->has_content = false;
 
   SSLInfo ssl_info;
-  DCHECK(socket_->GetSSLInfo(&ssl_info));
+  CHECK(socket_->GetSSLInfo(&ssl_info));
   request->ssl_info = ssl_info;
   request_map_[stream_id] = std::move(request);
 

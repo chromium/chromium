@@ -199,7 +199,7 @@ std::unique_ptr<HttpResponse> HandleFileRequest(
   }
 
   // Trim the first byte ('/').
-  DCHECK(relative_path.starts_with("/"));
+  CHECK(relative_path.starts_with("/"));
   std::string request_path = relative_path.substr(1);
   base::FilePath file_path(server_root.AppendASCII(request_path));
   std::string file_contents;
