@@ -1069,6 +1069,11 @@ const char kBorealisZinkGlDriverDescription[] =
     "recommended GL apps only or for all GL apps. Defaults to recommended.";
 
 #if BUILDFLAG(IS_ANDROID)
+
+const char kAndroidSettingsContainmentName[] = "Android Settings Containment";
+const char kAndroidSettingsContainmentDescription[] =
+    "Enables the Android Settings Containment feature.";
+
 const char kCCTResetTimeoutEnabledName[] = "CCT Reset Timeout Enabled";
 const char kCCTResetTimeoutEnabledDescription[] =
     "Enables the reset timeout for CCTs. This flag allows embedder to "

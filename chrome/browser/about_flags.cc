@@ -7874,6 +7874,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSettingsSingleActivityDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kSettingsSingleActivity)},
 
+    {"android-settings-containment",
+     flag_descriptions::kAndroidSettingsContainmentName,
+     flag_descriptions::kAndroidSettingsContainmentDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidSettingsContainment)},
+
     {"enable-search-resumption-module",
      flag_descriptions::kSearchResumptionModuleAndroidName,
      flag_descriptions::kSearchResumptionModuleAndroidDescription, kOsAndroid,
