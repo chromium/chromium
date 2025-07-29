@@ -19,6 +19,7 @@ Sometimes, however, there is a need to make features conditionally available. Th
     * **WindowMetrics#getBounds()** - bounds of app's window in screen coordinates (accounts for multi-window mode). Use this API to get window bounds.
     * **[DisplayUtil](https://source.chromium.org/chromium/chromium/src/+/main:ui/android/java/src/org/chromium/ui/display/DisplayUtil.java)#getCurrentSmallestScreenWidth()** - Uses Android's WindowManager#getMaximumWindowMetrics() to determine display width associated with the context provided.
     * **Configuration#screenWidthDp or screenHeightDp** - For Android V+, it is the same as WindowMetrics. Otherwise, differs from WindowMetrics by not including window insets in measurement. Rounded to the nearest dp rather than px. In multiple-screen scenarios, the width measurement can span screens.
+      * Note: Configuration#smallestScreenWidthDp is overridden to display width for all activities that extend [ChromeBaseAppCompatActivity](https://source.chromium.org/chromium/chromium/src/+/main:chrome/android/java/src/org/chromium/chrome/browser/ChromeBaseAppCompatActivity.java)
 * **Windowing mode:**
   * Split screen or floating windows: Android's Activity#isInMultiWindowMode returns true for split screen and free form window
   * Desktop windowing mode: no API, not recommended for conditionally enabling features.

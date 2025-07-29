@@ -6113,6 +6113,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kToolbarPhoneAnimationRefactorDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kToolbarPhoneAnimationRefactor)},
 
+    {"form-factor-use-window-metrics",
+     flag_descriptions::kFormFactorUseMaxWindowMetricsName,
+     flag_descriptions::kFormFactorUseMaxWindowMetricsDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(ui::kFormFactorUseMaxWindowMetrics)},
+
     {"toolbar-tablet-resize-refactor",
      flag_descriptions::kToolbarTabletResizeRefactorName,
      flag_descriptions::kToolbarTabletResizeRefactorDescription, kOsAndroid,

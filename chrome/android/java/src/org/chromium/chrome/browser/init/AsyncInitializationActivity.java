@@ -26,6 +26,7 @@ import org.chromium.base.SysUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.library_loader.LoaderErrors;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.base.library_loader.ProcessInitException;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.build.BuildConfig;
@@ -148,6 +149,7 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
         super.applyOverrides(baseContext, overrideConfig);
+         if (!UiAndroidFeatureList.sFormFactorUseMaxWindowMetrics.isEnabled()) {
 
         // We override the smallestScreenWidthDp here for two reasons:
         // 1. To prevent multi-window from hiding the tabstrip when on a tablet.
@@ -157,6 +159,8 @@ public abstract class AsyncInitializationActivity extends ChromeBaseAppCompatAct
         overrideConfig.smallestScreenWidthDp =
                 DisplayUtil.getCurrentSmallestScreenWidth(baseContext);
         return true;
+        }
+        return false;
     }
 
     @Override

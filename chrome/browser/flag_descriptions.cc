@@ -4073,6 +4073,14 @@ const char kToolbarPhoneAnimationRefactorDescription[] =
     "Enables the refactored animation code path in Android for the toolbar "
     "phone class.";
 
+const char kFormFactorUseMaxWindowMetricsName[] =
+    "Switch to Window Metrics API for form factor detection";
+const char kFormFactorUseMaxWindowMetricsDescription[] =
+    "Current form-factor check uses Configuration.smallestScreenWidthDp, which "
+    "returns window width on newer OS versions. This flag enables using the "
+    "max window metrics to determine display metrics irrespective of window "
+    "size.";
+
 const char kToolbarTabletResizeRefactorName[] =
     "Toolbar Tablet Resize Refactor";
 const char kToolbarTabletResizeRefactorDescription[] =

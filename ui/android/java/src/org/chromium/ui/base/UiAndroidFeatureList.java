@@ -41,6 +41,15 @@ public class UiAndroidFeatureList {
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
 
+    public static final CachedFlag sFormFactorUseMaxWindowMetrics =
+            newCachedFlag(
+                    UiAndroidFeatures.FORM_FACTOR_USE_MAX_WINDOW_METRICS,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ false);
+
     public static final List<CachedFlag> sFlagsCachedUiAndroid =
-            List.of(sAndroidWindowOcclusion, sAndroidWindowManagementWebApi);
+            List.of(
+                    sAndroidWindowOcclusion,
+                    sAndroidWindowManagementWebApi,
+                    sFormFactorUseMaxWindowMetrics);
 }

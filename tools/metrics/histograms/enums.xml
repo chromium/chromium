@@ -10794,6 +10794,7 @@ from previous Chrome versions.
   <int value="-1221040370" label="OsSettingsAppBadgingToggle:enabled"/>
   <int value="-1220675698" label="OmniboxDeferredKeyboardPopup:enabled"/>
   <int value="-1219547098" label="SearchWebInSidePanel:disabled"/>
+  <int value="-1219199728" label="FormFactorUseMaxWindowMetrics:disabled"/>
   <int value="-1218608640" label="disable-offline-load-stale-cache"/>
   <int value="-1218110631"
       label="NtpMostRelevantTabResumptionModuleFallbackToHost:enabled"/>
@@ -18987,6 +18988,7 @@ from previous Chrome versions.
   <int value="1785093465" label="enable-document-passive-event-listeners"/>
   <int value="1785274337"
       label="AutofillEnableOfferNotificationCrossTabTracking:disabled"/>
+  <int value="1785343459" label="FormFactorUseMaxWindowMetrics:enabled"/>
   <int value="1785884719" label="TabGroupHome:enabled"/>
   <int value="1785914867"
       label="DeprecateOldKeyboardShortcutsAccelerator:disabled"/>

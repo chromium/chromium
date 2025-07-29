@@ -2266,6 +2266,9 @@ extern const char kTabletTabStripAnimationDescription[];
 extern const char kToolbarPhoneAnimationRefactorName[];
 extern const char kToolbarPhoneAnimationRefactorDescription[];
 
+extern const char kFormFactorUseMaxWindowMetricsName[];
+extern const char kFormFactorUseMaxWindowMetricsDescription[];
+
 extern const char kToolbarTabletResizeRefactorName[];
 extern const char kToolbarTabletResizeRefactorDescription[];
 

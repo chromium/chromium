@@ -40,6 +40,9 @@ UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDeprecatedExternalPickerFunction);
 // Whether photo picker should be disabled for video capture.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kDisablePhotoPickerForVideoCapture);
 
+// Whether devices should use max window metrics for form factor check.
+UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kFormFactorUseMaxWindowMetrics);
+
 // Flip the back/forward direction of navigation gestures when the UI language
 // is an RTL language.
 UI_ANDROID_EXPORT BASE_DECLARE_FEATURE(kMirrorBackForwardGesturesInRTL);

@@ -64,6 +64,7 @@ import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
@@ -417,10 +418,22 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
      */
     @CallSuper
     protected boolean applyOverrides(Context baseContext, Configuration overrideConfig) {
+        boolean isSmallestScreenWidthDpOverridden = false;
+        if (UiAndroidFeatureList.sFormFactorUseMaxWindowMetrics.isEnabled()) {
+            // We override the smallestScreenWidthDp here for two reasons:
+            // 1. To prevent multi-window from hiding the tabstrip when on a tablet.
+            // 2. To ensure mIsTablet only needs to be set once. Since the override lasts for the
+            // life of the activity, it will never change via onConfigurationUpdated().
+            // See crbug.com/588838, crbug.com/662338, crbug.com/780593.
+            overrideConfig.smallestScreenWidthDp =
+                    DisplayUtil.getCurrentSmallestScreenWidth(baseContext);
+            isSmallestScreenWidthDpOverridden = true;
+        }
         applyOverridesForAutomotive(baseContext, overrideConfig);
         applyOverridesForXr(baseContext, overrideConfig);
-        return NightModeUtils.applyOverridesForNightMode(
-                getNightModeStateProvider(), overrideConfig);
+        return isSmallestScreenWidthDpOverridden
+                || NightModeUtils.applyOverridesForNightMode(
+                        getNightModeStateProvider(), overrideConfig);
     }
 
     @VisibleForTesting
