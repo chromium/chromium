@@ -16,9 +16,27 @@
 namespace actor::ui {
 using ::tabs::TabInterface;
 
-ActorUiTabController::ActorUiTabController(TabInterface& tab,
-                                           ActorKeyedService* actor_service)
-    : tab_(tab), actor_keyed_service_(actor_service) {
+ActorUiTabController::ActorUiTabController(
+    tabs::TabInterface& tab,
+    ActorKeyedService* actor_service,
+    std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller,
+    std::unique_ptr<HandoffButtonController> handoff_button_controller)
+    : tab_(tab),
+      actor_keyed_service_(actor_service),
+      actor_overlay_view_controller_(std::move(actor_overlay_view_controller)),
+      handoff_button_controller_(std::move(handoff_button_controller)) {
+  // Explicitly initialize UI component controllers if a nullptr is provided.
+  if (!handoff_button_controller_) {
+    handoff_button_controller_ =
+        std::make_unique<HandoffButtonController>(*tab_);
+  }
+  if (!actor_overlay_view_controller_) {
+    // TODO: change ActorOverlayViewController constructor to take a
+    // TabInterface&
+    actor_overlay_view_controller_ =
+        std::make_unique<ActorOverlayViewController>(&tab_.get());
+  }
+
   CHECK(actor_keyed_service_);
   if (features::kGlicActorUiOverlay.Get()) {
     tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
@@ -49,13 +67,13 @@ void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
 void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
                                            TabInterface::DetachReason reason) {
   if (features::kGlicActorUiOverlay.Get()) {
-    GetActorOverlayViewController()->NullifyWebView();
+    actor_overlay_view_controller_->NullifyWebView();
   }
 }
 
 void ActorUiTabController::OnTabDidInsert(TabInterface* tab) {
   if (features::kGlicActorUiOverlay.Get()) {
-    GetActorOverlayViewController()->SetWindowController(
+    actor_overlay_view_controller_->SetWindowController(
         tab->GetBrowserWindowInterface()
             ->GetFeatures()
             .actor_overlay_window_controller());
@@ -88,19 +106,18 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
   if (features::kGlicActorUiOverlay.Get()) {
     // TODO(crbug.com/425952887): Simplify the is_visible logic to a helper
     // function that both UI components can use.
-    GetActorOverlayViewController()->UpdateState(
+    actor_overlay_view_controller_->UpdateState(
         current_ui_tab_state_.actor_overlay,
         current_tab_active_status_ &&
             current_ui_tab_state_.actor_overlay.is_active);
   }
 
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
-  if (features::kGlicActorUiHandoffButton.Get() &&
-      GetHandoffButtonController()) {
+  if (features::kGlicActorUiHandoffButton.Get() && handoff_button_controller_) {
     // TODO(crbug.com/433568221): Update the visibility logic when ActorOverlay
     // is integrated into the Tab Controller (For now it's set to true when the
     // tab is active).
-    GetHandoffButtonController()->UpdateState(
+    handoff_button_controller_->UpdateState(
         current_ui_tab_state_.handoff_button, current_tab_active_status_);
   }
 
@@ -136,7 +153,7 @@ void ActorUiTabController::SetActorTaskResume() {
 void ActorUiTabController::BindActorOverlay(
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
   if (features::kGlicActorUiOverlay.Get()) {
-    GetActorOverlayViewController()->BindOverlay(std::move(receiver));
+    actor_overlay_view_controller_->BindOverlay(std::move(receiver));
   }
 }
 
@@ -145,27 +162,9 @@ void ActorUiTabController::SetHandoffButtonVisibility(bool is_visible) {
     return;
   }
   bool should_be_visible = is_visible && current_tab_active_status_;
-  GetHandoffButtonController()->UpdateState(
-      current_ui_tab_state_.handoff_button, should_be_visible);
+  handoff_button_controller_->UpdateState(current_ui_tab_state_.handoff_button,
+                                          should_be_visible);
   VLOG(4) << "Handoff button turned " << (should_be_visible ? "ON" : "OFF");
-}
-
-HandoffButtonController* ActorUiTabController::GetHandoffButtonController() {
-  if (!handoff_button_controller_) {
-    handoff_button_controller_ =
-        std::make_unique<HandoffButtonController>(*tab_);
-  }
-
-  return handoff_button_controller_.get();
-}
-
-ActorOverlayViewController*
-ActorUiTabController::GetActorOverlayViewController() {
-  if (!actor_overlay_view_controller_) {
-    actor_overlay_view_controller_ =
-        std::make_unique<ActorOverlayViewController>(&*tab_);
-  }
-  return actor_overlay_view_controller_.get();
 }
 
 base::WeakPtr<ActorUiTabControllerInterface>

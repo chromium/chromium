@@ -23,7 +23,11 @@ namespace actor::ui {
 class ActorUiTabController : public ActorUiTabControllerInterface {
  public:
   ActorUiTabController(tabs::TabInterface& tab,
-                       ActorKeyedService* actor_service);
+                       ActorKeyedService* actor_service,
+                       std::unique_ptr<ActorOverlayViewController>
+                           actor_overlay_view_controller = nullptr,
+                       std::unique_ptr<HandoffButtonController>
+                           handoff_button_controller = nullptr);
   ~ActorUiTabController() override;
 
   // ActorUiTabControllerInterface:
@@ -43,19 +47,11 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void BindActorOverlay(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
 
- protected:
-  // The Handoff Button controller for this tab.
-  std::unique_ptr<HandoffButtonController> handoff_button_controller_;
-
  private:
   // Called to propagate a UiTabState and tab status change to UI controllers.
   void UpdateState(const UiTabState& ui_tab_state,
                    bool tab_active_status,
                    UiResultCallback callback);
-  // Gets a new or existing handoff button controller for this tab.
-  HandoffButtonController* GetHandoffButtonController();
-  // Get a new or existing Actor Overlay View Controller for this tab.
-  ActorOverlayViewController* GetActorOverlayViewController();
   // Tab subscriptions:
   // Called when the tab is detached.
   void OnTabWillDetach(tabs::TabInterface* tab,
@@ -63,13 +59,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Called when the tab is inserted.
   void OnTabDidInsert(tabs::TabInterface* tab);
 
-  // Holds subscriptions for TabInterface callbacks.
-  std::vector<base::CallbackListSubscription> tab_subscriptions_;
-
-  // Owns this class via TabModel.
-  const raw_ref<tabs::TabInterface> tab_;
-
-  // The current ui tab state.
+  // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
       .actor_overlay = ActorOverlayState(),
       .handoff_button = HandoffButtonState(),
@@ -79,8 +69,17 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // The last active task id actuating on this tab.
   TaskId active_task_id_;
 
+  // Owns this class via TabModel.
+  const raw_ref<tabs::TabInterface> tab_;
+  // Holds subscriptions for TabInterface callbacks.
+  std::vector<base::CallbackListSubscription> tab_subscriptions_;
+  // The Actor Keyed Service for the associated profile.
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
+
+  // The Actor Overlay View controller for this tab.
   std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller_;
+  // The Handoff Button controller for this tab.
+  std::unique_ptr<HandoffButtonController> handoff_button_controller_;
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };
