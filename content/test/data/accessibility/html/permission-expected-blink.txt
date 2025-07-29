@@ -4,15 +4,21 @@ rootWebArea focusable
 ++++++button focusable name='Use camera'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
+++++++++++++image
+++++++++++genericContainer ignored
 ++++++++++++staticText name='Use camera'
 ++++++++++++++inlineTextBox name='Use camera'
 ++++++button focusable name='Use microphone'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored
+++++++++++++image
+++++++++++genericContainer ignored
 ++++++++++++staticText name='Use microphone'
 ++++++++++++++inlineTextBox name='Use microphone'
 ++++++button focusable name='Use microphone and camera'
 ++++++++genericContainer ignored
+++++++++++genericContainer ignored
+++++++++++++image
 ++++++++++genericContainer ignored
 ++++++++++++staticText name='Use microphone and camera'
 ++++++++++++++inlineTextBox name='Use microphone and camera'
