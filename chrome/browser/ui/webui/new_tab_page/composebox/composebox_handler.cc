@@ -97,6 +97,8 @@ void ComposeboxHandler::AddFile(
   }
 
   std::move(callback).Run(file_info_metadata->file_token_);
+  metrics_recorder_->RecordFileSizeMetric(file_info_metadata->mime_type_,
+                                          file_bytes.size());
   query_controller_->StartFileUploadFlow(std::move(file_info_metadata),
                                          std::move(file_data),
                                          std::move(image_options));

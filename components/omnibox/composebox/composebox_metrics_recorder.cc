@@ -26,6 +26,7 @@ const char kComposeboxQueryTextLength[] = "Composebox.Query.TextLength";
 const char kComposeboxQueryFileCount[] = "Composebox.Query.FileCount";
 const char kComposeboxQueryModality[] = "Composebox.Query.Modality";
 const char kComposeboxQueryCount[] = "Composebox.Session.QueryCount";
+const char kComposeboxFileSizePerType[] = "Composebox.File.Size.";
 }  // namespace
 
 SessionMetrics::SessionMetrics() = default;
@@ -115,6 +116,14 @@ void ComposeboxMetricsRecorder::RecordQueryMetrics(int text_length,
       metric_category_name_ + kComposeboxQueryModality, multimodal_state);
   base::UmaHistogramCounts100(metric_category_name_ + kComposeboxQueryFileCount,
                               file_count);
+}
+
+void ComposeboxMetricsRecorder::RecordFileSizeMetric(lens::MimeType mime_type,
+                                                     uint64_t file_size_bytes) {
+  base::UmaHistogramCounts10M(metric_category_name_ +
+                                  kComposeboxFileSizePerType +
+                                  MimeTypeToString(mime_type),
+                              file_size_bytes);
 }
 
 void ComposeboxMetricsRecorder::NotifySessionStarted() {

@@ -40,6 +40,7 @@ const char kComposeboxQueryTextLength[] = "Test.Composebox.Query.TextLength";
 const char kComposeboxQueryFileCount[] = "Test.Composebox.Query.FileCount";
 const char kComposeboxQueryModality[] = "Test.Composebox.Query.Modality";
 const char kComposeboxQueryCount[] = "Test.Composebox.Session.QueryCount";
+const char kComposeboxFileSizePdf[] = "Test.Composebox.File.Size.Pdf";
 }  // namespace
 
 class ComposeboxMetricsRecorderTest : public testing::Test {
@@ -225,6 +226,8 @@ TEST_F(ComposeboxMetricsRecorderTest, FileValidationError) {
   task_environment().FastForwardBy(base::Seconds(30));
   // Simulate file validation error.
   lens::MimeType file_mime_type = lens::MimeType::kPdf;
+  uint64_t file_size = 1000000;
+  metrics().RecordFileSizeMetric(file_mime_type, file_size);
   FileUploadStatus upload_status = FileUploadStatus::kProcessing;
   metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
                                       std::nullopt);
@@ -243,6 +246,7 @@ TEST_F(ComposeboxMetricsRecorderTest, FileValidationError) {
   histogram_tester().ExpectBucketCount(kComposeboxFileUploadAttemptPdf, 2, 1);
   histogram_tester().ExpectBucketCount(
       kComposeboxFileValidationBrowserErrorForPdf, 2, 1);
+  histogram_tester().ExpectBucketCount(kComposeboxFileSizePdf, file_size, 1);
 }
 
 TEST_F(ComposeboxMetricsRecorderTest, MultiFileUpload) {
