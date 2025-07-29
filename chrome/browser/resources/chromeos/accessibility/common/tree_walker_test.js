@@ -60,7 +60,7 @@ AccessibilityExtensionAutomationTreeWalkerTest =
 TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'MAYBE_Forward',
     function() {
-      chrome.automation.getDesktop(this.newCallback(function(d) {
+      chrome.automation.getDesktop(this.newCallback(async function(d) {
         const resultList = [];
         this.flattenTree(d, resultList);
         let it = new AutomationTreeWalker(d, 'forward');
@@ -70,6 +70,10 @@ TEST_F(
         assertEquals(null, it.next().node);
 
         for (let j = 0; j < resultList.length; j++) {
+          // This is needed because this iteration could take more than 30s on
+          // MSAN bots.
+          await keepServiceWorkerAlive();
+
           it = new AutomationTreeWalker(resultList[j], 'forward');
           const start = it.node;
           let cur = it.next().node;
@@ -91,7 +95,7 @@ TEST_F(
 TEST_F(
     'AccessibilityExtensionAutomationTreeWalkerTest', 'MAYBE_Backward',
     function() {
-      chrome.automation.getDesktop(this.newCallback(function(d) {
+      chrome.automation.getDesktop(this.newCallback(async function(d) {
         const resultList = [];
         this.flattenTree(d, resultList);
         let it = new AutomationTreeWalker(
@@ -101,6 +105,10 @@ TEST_F(
         }
 
         for (let j = resultList.length - 1; j >= 0; j--) {
+          // This is needed because this iteration could take more than 30s on
+          // MSAN bots.
+          await keepServiceWorkerAlive();
+
           it = new AutomationTreeWalker(resultList[j], 'backward');
           const start = it.node;
           let cur = it.next().node;
