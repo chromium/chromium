@@ -92,24 +92,10 @@ MATCHER_P(SkippingUnsupportedStream, stream_type, "") {
                std::string(stream_type) + " track");
 }
 
-const auto kEncryptedMediaInitData = std::to_array<uint8_t>({
-    0x30,
-    0x31,
-    0x32,
-    0x33,
-    0x34,
-    0x35,
-    0x36,
-    0x37,
-    0x38,
-    0x39,
-    0x30,
-    0x31,
-    0x32,
-    0x33,
-    0x34,
-    0x35,
-});
+const uint8_t kEncryptedMediaInitData[] = {
+    0x30, 0x31, 0x32, 0x33, 0x34, 0x35, 0x36, 0x37,
+    0x38, 0x39, 0x30, 0x31, 0x32, 0x33, 0x34, 0x35,
+};
 
 static void EosOnReadDone(bool* got_eos_buffer,
                           base::OnceClosure quit_closure,
@@ -531,13 +517,12 @@ TEST_F(FFmpegDemuxerTest, Initialize_Track_Disabled) {
 #endif
 
 TEST_F(FFmpegDemuxerTest, Initialize_Encrypted) {
-  EXPECT_CALL(*this, OnEncryptedMediaInitData(
-                         EmeInitDataType::WEBM,
-                         std::vector<uint8_t>(
-                             kEncryptedMediaInitData.data(),
-                             base::span(kEncryptedMediaInitData)
-                                 .subspan(std::size(kEncryptedMediaInitData))
-                                 .data())))
+  EXPECT_CALL(*this,
+              OnEncryptedMediaInitData(
+                  EmeInitDataType::WEBM,
+                  std::vector<uint8_t>(kEncryptedMediaInitData,
+                                       kEncryptedMediaInitData +
+                                           std::size(kEncryptedMediaInitData))))
       .Times(Exactly(2));
 
   CreateDemuxer("bear-320x240-av_enc-av.webm");

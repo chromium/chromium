@@ -6,11 +6,9 @@
 // TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
 #pragma allow_unsafe_buffers
 #endif
-
 #include "media/capture/video/linux/v4l2_capture_delegate_gpu_helper.h"
 
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "gpu/command_buffer/client/test_shared_image_interface.h"
@@ -209,7 +207,10 @@ TEST_F(V4l2CaptureDelegateGpuHelperTest,
 
   if (sample) {
     // corrupt the sample data
-    std::fill(sample->begin(), sample->end(), 0xff);
+    uint8_t* data = sample->data();
+    for (size_t i = 0; i < 0xff && i < sample->size(); i++) {
+      data[i] = 0xff;
+    }
   }
 
   EXPECT_CALL(client, ReserveOutputBuffer)

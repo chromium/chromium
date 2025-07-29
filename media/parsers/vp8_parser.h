@@ -11,8 +11,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <array>
-
 #include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/parsers/vp8_bool_decoder.h"
@@ -33,7 +31,7 @@ struct Vp8SegmentationHeader {
   bool update_segment_feature_data;
   SegmentFeatureMode segment_feature_mode;
 
-  std::array<int8_t, kMaxMBSegments> quantizer_update_value;
+  int8_t quantizer_update_value[kMaxMBSegments];
   int8_t lf_update_value[kMaxMBSegments];
   static const int kDefaultSegmentProb = 255;
   uint8_t segment_prob[kNumMBFeatureTreeProbs];
@@ -157,7 +155,7 @@ struct MEDIA_EXPORT Vp8FrameHeader {
   raw_ptr<const uint8_t, AllowPtrArithmetic | DanglingUntriaged> data = nullptr;
   size_t frame_size = 0;
 
-  std::array<size_t, kMaxDCTPartitions> dct_partition_sizes = {};
+  size_t dct_partition_sizes[kMaxDCTPartitions] = {};
   // Offset in bytes from data.
   off_t first_part_offset = 0;
   // Offset in bits from first_part_offset.

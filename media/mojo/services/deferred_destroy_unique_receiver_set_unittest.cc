@@ -10,12 +10,9 @@
 #include "media/mojo/services/deferred_destroy_unique_receiver_set.h"
 
 #include <array>
-#include <cstdint>
 #include <memory>
 #include <utility>
 
-#include "base/containers/span.h"
-#include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "mojo/public/interfaces/bindings/tests/ping_service.test-mojom.h"
@@ -72,15 +69,12 @@ class DeferredDestroyUniqueReceiverSetTest : public testing::Test {
 };
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, Destructor) {
-  std::array<mojo::PendingRemote<PingService>, 2> ping;
+  mojo::PendingRemote<PingService> ping[2];
   auto receivers =
       std::make_unique<DeferredDestroyUniqueReceiverSet<PingService>>();
 
   for (int i = 0; i < 2; ++i)
-    AddDeferredDestroyReceiver(
-        receivers.get(), base::span<mojo::PendingRemote<PingService>>(ping)
-                             .subspan(base::checked_cast<size_t>(i))
-                             .data());
+    AddDeferredDestroyReceiver(receivers.get(), ping + i);
   EXPECT_EQ(2, DeferredDestroyPingImpl::instance_count);
 
   receivers.reset();
@@ -88,16 +82,13 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, Destructor) {
 }
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, ConnectionError) {
-  std::array<mojo::PendingRemote<PingService>, 4> ping;
+  mojo::PendingRemote<PingService> ping[4];
   std::array<DeferredDestroyPingImpl*, 4> impl;
   auto receivers =
       std::make_unique<DeferredDestroyUniqueReceiverSet<PingService>>();
 
   for (int i = 0; i < 4; ++i)
-    impl[i] = AddDeferredDestroyReceiver(
-        receivers.get(), base::span<mojo::PendingRemote<PingService>>(ping)
-                             .subspan(base::checked_cast<size_t>(i))
-                             .data());
+    impl[i] = AddDeferredDestroyReceiver(receivers.get(), ping + i);
   EXPECT_EQ(4, DeferredDestroyPingImpl::instance_count);
 
   // Destroy deferred after disconnection until set_can_destroy()..
@@ -127,15 +118,12 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, ConnectionError) {
 }
 
 TEST_F(DeferredDestroyUniqueReceiverSetTest, CloseAllReceivers) {
-  std::array<mojo::PendingRemote<PingService>, 3> ping;
+  mojo::PendingRemote<PingService> ping[3];
   std::array<DeferredDestroyPingImpl*, 3> impl;
   DeferredDestroyUniqueReceiverSet<PingService> receivers;
 
   for (int i = 0; i < 2; ++i)
-    impl[i] = AddDeferredDestroyReceiver(
-        &receivers, base::span<mojo::PendingRemote<PingService>>(ping)
-                        .subspan(base::checked_cast<size_t>(i))
-                        .data());
+    impl[i] = AddDeferredDestroyReceiver(&receivers, ping + i);
   EXPECT_EQ(2, DeferredDestroyPingImpl::instance_count);
   EXPECT_FALSE(receivers.empty());
 
@@ -145,9 +133,7 @@ TEST_F(DeferredDestroyUniqueReceiverSetTest, CloseAllReceivers) {
 
   // After CloseAllReceivers, new added receivers can still be deferred
   // destroyed.
-  impl[2] = AddDeferredDestroyReceiver(
-      &receivers,
-      base::span<mojo::PendingRemote<PingService>>(ping).subspan(2u).data());
+  impl[2] = AddDeferredDestroyReceiver(&receivers, ping + 2);
   EXPECT_EQ(1, DeferredDestroyPingImpl::instance_count);
 
   ping[2].reset();

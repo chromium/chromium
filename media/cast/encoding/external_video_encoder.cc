@@ -16,7 +16,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -934,8 +933,8 @@ std::optional<double> QuantizerEstimator::EstimateForKeyFrame(
   // Estimate a quantizer value depending on the difference data in the
   // histogram and return it.
   const int num_samples = (size.width() - 1) * rows_in_subset;
-  return ToQuantizerEstimate(
-      ComputeEntropyFromHistogram(histogram, histogram.size(), num_samples));
+  return ToQuantizerEstimate(ComputeEntropyFromHistogram(
+      histogram.data(), histogram.size(), num_samples));
 }
 
 std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
@@ -980,8 +979,8 @@ std::optional<double> QuantizerEstimator::EstimateForDeltaFrame(
   // Estimate a quantizer value depending on the difference data in the
   // histogram and return it.
   const int num_samples = size.width() * rows_in_subset;
-  return ToQuantizerEstimate(
-      ComputeEntropyFromHistogram(histogram, histogram.size(), num_samples));
+  return ToQuantizerEstimate(ComputeEntropyFromHistogram(
+      histogram.data(), histogram.size(), num_samples));
 }
 
 // static
@@ -992,18 +991,12 @@ bool QuantizerEstimator::CanExamineFrame(const VideoFrame& frame) {
 }
 
 // static
-double QuantizerEstimator::ComputeEntropyFromHistogram(
-    base::span<const int> histogram,
-    size_t spanification_suspected_redundant_histogram_size,
-    int num_samples) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_histogram_size == histogram.size(),
-        base::NotFatalUntil::M143);
+double QuantizerEstimator::ComputeEntropyFromHistogram(const int* histogram,
+                                                       size_t histogram_size,
+                                                       int num_samples) {
   DCHECK_LT(0, num_samples);
   double entropy = 0.0;
-  for (size_t i = 0; i < spanification_suspected_redundant_histogram_size;
-       ++i) {
+  for (size_t i = 0; i < histogram_size; ++i) {
     const double probability = static_cast<double>(histogram[i]) / num_samples;
     if (probability > 0.0) {
       entropy = entropy - probability * std::log2(probability);

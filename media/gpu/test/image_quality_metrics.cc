@@ -8,11 +8,9 @@
 #endif
 
 #include <math.h>
-
 #include <algorithm>
 #include <utility>
 
-#include "base/containers/span.h"
 #include "base/logging.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_types.h"
@@ -351,9 +349,9 @@ double ComputeLogLikelihoodRatio(scoped_refptr<const VideoFrame> golden_frame,
   return test_log_prob / golden_log_prob;
 }
 
-double ComputeAR30PSNR(base::span<const uint32_t> frame1_data,
+double ComputeAR30PSNR(const uint32_t* frame1_data,
                        size_t frame1_stride,
-                       base::span<const uint32_t> frame2_data,
+                       const uint32_t* frame2_data,
                        size_t frame2_stride,
                        size_t width,
                        size_t height) {

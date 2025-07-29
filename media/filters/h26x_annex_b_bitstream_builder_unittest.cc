@@ -7,13 +7,10 @@
 #pragma allow_unsafe_buffers
 #endif
 
-#include "media/filters/h26x_annex_b_bitstream_builder.h"
-
 #include <stdint.h>
 
 #include "base/bits.h"
-#include "base/containers/auto_spanification_helper.h"
-#include "base/containers/span.h"
+#include "media/filters/h26x_annex_b_bitstream_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace media {
@@ -21,16 +18,16 @@ namespace media {
 namespace {
 const uint64_t kTestPattern = 0xfedcba0987654321;
 
-uint64_t GetDataFromBuffer(base::span<const uint8_t> ptr, uint64_t num_bits) {
+uint64_t GetDataFromBuffer(const uint8_t* ptr, uint64_t num_bits) {
   uint64_t got = 0;
   while (num_bits > 8) {
-    got |= (ptr[0] & 0xff);
+    got |= (*ptr & 0xff);
     num_bits -= 8;
     got <<= (num_bits > 8 ? 8 : num_bits);
-    base::PostIncrementSpan(ptr);
+    ptr++;
   }
   if (num_bits > 0) {
-    uint64_t temp = (ptr[0] & 0xff);
+    uint64_t temp = (*ptr & 0xff);
     temp >>= (8 - num_bits);
     got |= temp;
   }
@@ -55,7 +52,7 @@ TEST_P(H26xAnnexBBitstreamBuilderAppendBitsTest, AppendAndVerifyBits) {
 
   EXPECT_EQ(b.BytesInBuffer(), num_bytes);
 
-  base::span<const uint8_t> ptr = b.data();
+  const uint8_t* ptr = b.data().data();
   uint64_t got = GetDataFromBuffer(ptr, num_bits);
   uint64_t expected = kTestPattern;
 
@@ -76,7 +73,7 @@ TEST_F(H26xAnnexBBitstreamBuilderAppendBitsTest, VerifyFlushAndBitsInBuffer) {
   EXPECT_EQ(b.BytesInBuffer(), num_bytes);
   EXPECT_EQ(b.BitsInBuffer(), num_bits);
 
-  base::span<const uint8_t> ptr = b.data();
+  const uint8_t* ptr = b.data().data();
   uint64_t got = GetDataFromBuffer(ptr, num_bits);
   uint64_t expected = kTestPattern;
   expected &= ((1ull << num_bits) - 1);

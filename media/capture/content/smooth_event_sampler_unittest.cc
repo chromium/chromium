@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/containers/span.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -280,17 +279,11 @@ struct DataPoint {
   double increment_ms;
 };
 
-void ReplayCheckingSamplerDecisions(
-    base::span<const DataPoint> data_points,
-    size_t spanification_suspected_redundant_num_data_points,
-    SmoothEventSampler* sampler) {
-  // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
-  // redundant in M143.
-  CHECK(spanification_suspected_redundant_num_data_points == data_points.size(),
-        base::NotFatalUntil::M143);
+void ReplayCheckingSamplerDecisions(const DataPoint* data_points,
+                                    size_t num_data_points,
+                                    SmoothEventSampler* sampler) {
   base::TimeTicks t = InitialTestTimeTicks();
-  for (size_t i = 0; i < spanification_suspected_redundant_num_data_points;
-       ++i) {
+  for (size_t i = 0; i < num_data_points; ++i) {
     t += base::Microseconds(
         static_cast<int64_t>(data_points[i].increment_ms * 1000));
     ASSERT_EQ(data_points[i].should_capture,

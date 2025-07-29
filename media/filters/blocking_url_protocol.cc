@@ -11,8 +11,6 @@
 
 #include <stddef.h>
 
-#include <array>
-
 #include "base/functional/bind.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
@@ -72,12 +70,11 @@ int BlockingUrlProtocol::Read(int size, uint8_t* data) {
                                       base::Unretained(this)));
   }
 
-  auto events =
-      std::to_array<base::WaitableEvent*>({&aborted_, &read_complete_});
+  base::WaitableEvent* events[] = { &aborted_, &read_complete_ };
   size_t index;
   {
     base::ScopedAllowBaseSyncPrimitives allow_base_sync_primitives;
-    index = base::WaitableEvent::WaitMany(events.data(), std::size(events));
+    index = base::WaitableEvent::WaitMany(events, std::size(events));
   }
 
   if (events[index] == &aborted_)
