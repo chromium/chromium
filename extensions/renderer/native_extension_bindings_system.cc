@@ -209,7 +209,8 @@ void AddConsoleError(v8::Local<v8::Context> context, const std::string& error) {
 const base::Value::Dict& GetAPISchema(const std::string& api_name) {
   const base::Value::Dict* schema =
       ExtensionAPI::GetSharedInstance()->GetSchema(api_name);
-  CHECK(schema) << api_name;
+  // Don't use CHECK() here so we capture the `api_name` in the logs.
+  LOG_IF(FATAL, !schema) << "Unknown API " << api_name;
   return *schema;
 }
 
