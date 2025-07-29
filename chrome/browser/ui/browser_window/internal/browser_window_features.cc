@@ -141,6 +141,14 @@ void BrowserWindowFeatures::Init(BrowserWindowInterface* browser) {
   // later.
   browser_ = browser;
 
+  browser_actions_ = std::make_unique<BrowserActions>(browser);
+
+  // TODO(crbug.com/431668289): Add BrowserCommandController initialization here
+  // once its ownership is moved to BrowserWindowFeatures, to maintain its old
+  // initialization order relative to BrowserActions.
+
+  browser_actions_->InitializeBrowserActions();
+
   // Initialize bookmark bar controller for all browser types.
   bookmark_bar_controller_ = std::make_unique<BookmarkBarController>(
       *browser, *browser->GetTabStripModel());

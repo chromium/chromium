@@ -9,8 +9,8 @@
 
 #include "base/callback_list.h"
 
-class Browser;
 class BrowserActionPrefsListener;
+class BrowserWindowInterface;
 
 namespace actions {
 class ActionItem;
@@ -19,7 +19,7 @@ class ActionItem;
 // Actions that a user can take that are scoped to a browser window.
 class BrowserActions {
  public:
-  explicit BrowserActions(Browser& browser);
+  explicit BrowserActions(BrowserWindowInterface* bwi);
   BrowserActions(const BrowserActions&) = delete;
   BrowserActions& operator=(const BrowserActions&) = delete;
   ~BrowserActions();
@@ -31,8 +31,6 @@ class BrowserActions {
   // Initialization is separate from construction to allow more precise timing.
   void InitializeBrowserActions();
 
-  void RemoveListeners();
-
  private:
   // Creates all the listeners for the action items that update different states
   // and property of the action item.
@@ -40,7 +38,7 @@ class BrowserActions {
 
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;
-  const raw_ref<Browser> browser_;
+  const raw_ref<BrowserWindowInterface> bwi_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_ACTIONS_H_

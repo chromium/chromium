@@ -27,6 +27,7 @@ class BookmarkBarController;
 class BookmarksSidePanelCoordinator;
 class BreadcrumbManagerBrowserAgent;
 class Browser;
+class BrowserActions;
 class BrowserContentSettingBubbleModelDelegate;
 class BrowserInstantController;
 class BrowserLiveTabContext;
@@ -175,6 +176,8 @@ class BrowserWindowFeatures {
   void TearDownPreBrowserWindowDestruction();
 
   // Public accessors for features:
+  BrowserActions* browser_actions() { return browser_actions_.get(); }
+
   extensions::Mv2DisabledDialogController*
   mv2_disabled_dialog_controller_for_testing() {
     return mv2_disabled_dialog_controller_.get();
@@ -416,6 +419,8 @@ class BrowserWindowFeatures {
 
   // Features that are per-browser window will each have a controller. e.g.
   // std::unique_ptr<FooFeature> foo_feature_;
+
+  std::unique_ptr<BrowserActions> browser_actions_;
 
   std::unique_ptr<BookmarkBarController> bookmark_bar_controller_;
 

@@ -464,7 +464,7 @@ class Browser : public TabStripModelObserver,
     return tab_strip_model_delegate_.get();
   }
 
-  BrowserActions* browser_actions() const { return browser_actions_.get(); }
+  BrowserActions* browser_actions() { return GetActions(); }
 
   chrome::BrowserCommandController* command_controller() {
     return command_controller_.get();
@@ -1350,9 +1350,6 @@ class Browser : public TabStripModelObserver,
   // This must be initialized before |command_controller_| to ensure the correct
   // set of commands are enabled.
   const std::unique_ptr<web_app::AppBrowserController> app_controller_;
-
-
-  std::unique_ptr<BrowserActions> browser_actions_;
 
   std::unique_ptr<chrome::BrowserCommandController> command_controller_;
 

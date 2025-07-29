@@ -93,7 +93,6 @@
 #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
 #include "chrome/browser/ui/bookmarks/bookmark_tab_helper.h"
 #include "chrome/browser/ui/bookmarks/bookmark_utils.h"
-#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/browser_command_controller.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
@@ -629,11 +628,12 @@ Browser::Browser(const CreateParams& params)
       creation_source_(params.creation_source),
       unload_controller_(this),
       app_controller_(web_app::MaybeCreateAppBrowserController(this)),
-      browser_actions_(new BrowserActions(*this)),
-      command_controller_(new chrome::BrowserCommandController(this)),
       window_has_shown_(false),
       user_title_(params.user_title) {
-  browser_actions_->InitializeBrowserActions();
+  // TODO(crbug.com/431668289): Move this call to BrowserWindowFeatures when it
+  // becomes the owner of BrowserCommandController.
+  command_controller_ =
+      std::make_unique<chrome::BrowserCommandController>(this);
 
   if (!profile_->IsOffTheRecord()) {
     profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
@@ -719,10 +719,6 @@ Browser::~Browser() {
   // it doesn't act on any notifications that are sent as a result of removing
   // the browser.
   command_controller_.reset();
-
-  // Remove listeners associated with browser actions so that
-  // it doesn't act on any during browser destruction.
-  browser_actions_->RemoveListeners();
 
   // Destroy ExclusiveAccessManager, which depends on `window_` which may be
   // destroyed by RemoveBrowser().
@@ -1223,7 +1219,7 @@ ImmersiveModeController* Browser::GetImmersiveModeController() {
 }
 
 BrowserActions* Browser::GetActions() {
-  return browser_actions();
+  return GetFeatures().browser_actions();
 }
 
 BrowserWindowInterface::Type Browser::GetType() const {

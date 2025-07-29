@@ -8,6 +8,7 @@
 #include <optional>
 #include <string>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -29,6 +30,7 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/commerce/commerce_ui_tab_helper.h"
 #include "chrome/browser/ui/customize_chrome/side_panel_controller.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
@@ -159,9 +161,12 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
 }
 }  // namespace
 
-BrowserActions::BrowserActions(Browser& browser) : browser_(browser) {}
+BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
+    : bwi_(CHECK_DEREF(bwi)) {}
 
 BrowserActions::~BrowserActions() {
+  browser_action_prefs_listener_.reset();
+
   // Extract the unique ptr and destruct it after the raw_ptr to avoid a
   // dangling pointer scenario.
   std::unique_ptr<actions::ActionItem> owned_root_action_item =
@@ -187,8 +192,8 @@ std::u16string BrowserActions::GetCleanTitleAndTooltipText(
 }
 
 void BrowserActions::InitializeBrowserActions() {
-  Profile* profile = browser_->profile();
-  Browser* browser = &(browser_.get());
+  Profile* profile = bwi_->GetProfile();
+  Browser* browser = bwi_->GetBrowserForMigrationOnly();
   const bool is_guest_session = profile->IsGuestSession();
 
   actions::ActionManager::Get().AddAction(
@@ -930,11 +935,9 @@ void BrowserActions::InitializeBrowserActions() {
   AddListeners();
 }
 
-void BrowserActions::RemoveListeners() {
-  browser_action_prefs_listener_.reset();
-}
-
 void BrowserActions::AddListeners() {
-  browser_action_prefs_listener_ =
-      std::make_unique<BrowserActionPrefsListener>(browser_.get());
+  // TODO(crbug.com/431668581): Refactor this to take only its dependencies
+  // (BrowserActions and Profile) instead of the entire Browser.
+  browser_action_prefs_listener_ = std::make_unique<BrowserActionPrefsListener>(
+      *bwi_->GetBrowserForMigrationOnly());
 }
