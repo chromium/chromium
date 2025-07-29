@@ -328,6 +328,8 @@ CGFloat CompactButtonHorizontalPadding() {
         // Vertical layout:
         [_editButton.centerYAnchor
             constraintEqualToAnchor:_containerToolbar.centerYAnchor],
+        [_undoButton.centerYAnchor
+            constraintEqualToAnchor:_containerToolbar.centerYAnchor],
         [_smallNewTabButton.centerYAnchor
             constraintEqualToAnchor:_containerToolbar.centerYAnchor],
         [_doneButton.centerYAnchor
@@ -337,6 +339,9 @@ CGFloat CompactButtonHorizontalPadding() {
         [_editButton.leadingAnchor
             constraintEqualToAnchor:_containerToolbar.leadingAnchor
                            constant:CompactButtonHorizontalPadding()],
+        [_undoButton.leadingAnchor
+            constraintEqualToAnchor:_containerToolbar.leadingAnchor
+                           constant:CompactButtonHorizontalPadding()],
         [_doneButton.trailingAnchor
             constraintEqualToAnchor:_containerToolbar.trailingAnchor
                            constant:-CompactButtonHorizontalPadding()],
@@ -344,6 +349,9 @@ CGFloat CompactButtonHorizontalPadding() {
             constraintEqualToAnchor:_containerToolbar.centerXAnchor],
         [_smallNewTabButton.leadingAnchor
             constraintGreaterThanOrEqualToAnchor:_editButton.trailingAnchor
+                                        constant:kCompactMinButtonSpacing],
+        [_smallNewTabButton.leadingAnchor
+            constraintGreaterThanOrEqualToAnchor:_undoButton.trailingAnchor
                                         constant:kCompactMinButtonSpacing],
         [_doneButton.leadingAnchor
             constraintGreaterThanOrEqualToAnchor:_smallNewTabButton
