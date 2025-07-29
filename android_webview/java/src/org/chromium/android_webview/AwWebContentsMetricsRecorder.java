@@ -67,7 +67,7 @@ public class AwWebContentsMetricsRecorder extends WebContentsObserver {
                 textLuminance);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void recordDarkModeMetrics(
             int nightMode,
             int lightTheme,

@@ -125,7 +125,7 @@ public class AwSafeBrowsingConfigHelper {
         return PlatformServiceBridge.getInstance().canUseGms();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static void setSafeBrowsingUserOptIn(boolean optin) {
         sUserOptInCallbackReturned = true;
         sSafeBrowsingUserOptIn = optin;

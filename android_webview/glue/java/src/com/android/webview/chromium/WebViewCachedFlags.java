@@ -46,7 +46,7 @@ public class WebViewCachedFlags {
     @IntDef({DefaultState.DISABLED, DefaultState.ENABLED})
     @Retention(RetentionPolicy.SOURCE)
     @Target(TYPE_USE)
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @interface DefaultState {
         int DISABLED = 0;
         int ENABLED = 1;
@@ -141,7 +141,7 @@ public class WebViewCachedFlags {
                 .apply();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public WebViewCachedFlags(
             SharedPreferences prefs, Map<String, @DefaultState Integer> defaults) {
         // TODO(crbug.com/414342590): Remove the call to HashSet constructor once the migration code
