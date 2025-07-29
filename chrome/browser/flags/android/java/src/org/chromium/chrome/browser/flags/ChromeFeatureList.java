@@ -991,7 +991,10 @@ public abstract class ChromeFeatureList {
     public static final CachedFlag sTabClosureMethodRefactor =
             newCachedFlag(TAB_CLOSURE_METHOD_REFACTOR, false);
     public static final CachedFlag sTabModelInitFixes =
-            newCachedFlag(TAB_MODEL_INIT_FIXES, /* defaultValue= */ false);
+            newCachedFlag(
+                    TAB_MODEL_INIT_FIXES,
+                    /* defaultValue= */ false,
+                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStateFlatBuffer =
             newCachedFlag(
                     TAB_STATE_FLAT_BUFFER,
