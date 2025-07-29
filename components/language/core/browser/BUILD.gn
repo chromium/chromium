@@ -50,7 +50,7 @@ source_set("unit_tests") {
     ":test_support",
     "//base",
     "//components/language/core/language_model",
-    "//components/pref_registry:pref_registry",
+    "//components/pref_registry",
     "//components/prefs",
     "//components/prefs:test_support",
     "//components/sync_preferences:test_support",

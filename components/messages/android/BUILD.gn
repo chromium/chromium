@@ -53,7 +53,7 @@ android_library("unit_device_javatests") {
     "//content/public/test/android:content_java_test_support",
     "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_java_test_support",
   ]
@@ -91,7 +91,7 @@ static_library("android") {
   deps = [
     ":jni_headers",
     "//content/public/browser",
-    "//ui/android:android",
+    "//ui/android",
   ]
 
   public_deps = [

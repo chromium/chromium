@@ -51,7 +51,7 @@ static_library("ntp_tiles") {
   public_deps = [
     "//base",
     "//components/history/core/browser",
-    "//components/ntp_tiles/webui/resources:resources",
+    "//components/ntp_tiles/webui/resources",
   ]
   deps = [
     "//build:branding_buildflags",
@@ -69,7 +69,7 @@ static_library("ntp_tiles") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations/service",
-    "//components/webapps/common:common",
+    "//components/webapps/common",
     "//extensions/buildflags",
     "//services/data_decoder/public/cpp",
     "//services/network/public/cpp",
@@ -114,11 +114,11 @@ source_set("unit_tests") {
     "//components/history/core/test",
     "//components/image_fetcher/core",
     "//components/image_fetcher/core:test_support",
-    "//components/pref_registry:pref_registry",
-    "//components/prefs:prefs",
+    "//components/pref_registry",
+    "//components/prefs",
     "//components/supervised_user/core/common:buildflags",
     "//components/sync_preferences:test_support",
-    "//components/webapps/common:common",
+    "//components/webapps/common",
     "//extensions/buildflags",
     "//net:test_support",
     "//services/data_decoder/public/cpp:test_support",

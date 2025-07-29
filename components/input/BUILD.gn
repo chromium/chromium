@@ -96,10 +96,10 @@ component("input") {
     "//third_party/blink/public/common:headers",
     "//ui/base",
     "//ui/base/cursor",
-    "//ui/events:events",
+    "//ui/events",
     "//ui/events:events_base",
     "//ui/events:gesture_detection",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
     "//ui/events/gestures/blink",
   ]
   if (use_aura) {
@@ -190,16 +190,16 @@ source_set("unit_tests") {
   ]
   deps = [
     ":input",
-    "//base:base",
+    "//base",
     "//base/test:test_support",
     "//testing/gtest",
     "//third_party/blink/public/common:headers",
     "//ui/base:features",
+    "//ui/events",
     "//ui/events:dom_keycode_converter",
-    "//ui/events:events",
     "//ui/events:test_support",
     "//ui/events:velocity_tracker",
-    "//ui/events/blink:blink",
+    "//ui/events/blink",
   ]
   if (is_android) {
     sources += [

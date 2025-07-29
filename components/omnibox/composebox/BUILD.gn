@@ -20,11 +20,11 @@ source_set("composebox") {
   ]
   deps = [
     ":mojo_bindings",
-    "//base:base",
+    "//base",
     "//components/endpoint_fetcher",
     "//components/lens",
     "//components/search",
-    "//components/search_engines:search_engines",
+    "//components/search_engines",
     "//components/signin/public/base",
     "//components/signin/public/identity_manager",
     "//components/variations",
@@ -66,7 +66,7 @@ source_set("test_support") {
     "//components/lens",
     "//components/variations",
     "//google_apis/common",
-    "//services/network/public/cpp:cpp",
+    "//services/network/public/cpp",
     "//third_party/lens_server_proto:lens_overlay_proto",
   ]
 }

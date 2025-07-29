@@ -15,7 +15,7 @@ source_set("language_bridge") {
   deps = [
     ":jni_headers",
     "//base",
-    "//components/language/content/browser:browser",
+    "//components/language/content/browser",
   ]
 }
 

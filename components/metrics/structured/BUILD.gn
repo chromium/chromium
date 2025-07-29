@@ -294,7 +294,7 @@ source_set("test_support") {
     ":structured_metrics_validator",
     "//base",
     "//base/test:test_support",
-    "//components/metrics:metrics",
+    "//components/metrics",
     "//components/metrics/structured/lib",
   ]
 }

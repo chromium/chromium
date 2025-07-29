@@ -29,7 +29,7 @@ component("manta") {
   deps = [
     "proto",
     "//base",
-    "//components/account_id:account_id",
+    "//components/account_id",
     "//components/endpoint_fetcher",
     "//components/keyed_service/core",
     "//components/signin/public/identity_manager",
@@ -49,7 +49,7 @@ component("manta") {
       "walrus_provider.cc",
       "walrus_provider.h",
     ]
-    deps += [ "//chromeos/constants:constants" ]
+    deps += [ "//chromeos/constants" ]
   }
 }
 

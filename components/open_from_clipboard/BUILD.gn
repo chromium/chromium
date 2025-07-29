@@ -13,7 +13,7 @@ static_library("open_from_clipboard") {
     "//base",
     "//components/variations",
     "//net",
-    "//ui/base:base",
+    "//ui/base",
     "//url",
   ]
 
@@ -68,7 +68,7 @@ static_library("test_support") {
   deps = [
     ":open_from_clipboard",
     "//base",
-    "//ui/gfx:gfx",
+    "//ui/gfx",
     "//url",
   ]
 }

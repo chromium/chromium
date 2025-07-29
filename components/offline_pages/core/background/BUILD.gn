@@ -71,7 +71,7 @@ static_library("background_offliner") {
     "//components/offline_pages/task",
     "//net",
     "//services/network/public/cpp",
-    "//sql:sql",
+    "//sql",
     "//url",
   ]
 }
@@ -134,7 +134,7 @@ source_set("unit_tests") {
     "//components/offline_pages/core:switches",
     "//services/network:test_support",
     "//services/network/public/cpp",
-    "//sql:sql",
+    "//sql",
     "//sql:test_support",
     "//testing/gmock",
     "//testing/gtest",

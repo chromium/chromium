@@ -42,7 +42,7 @@ static_library("core") {
   ]
 
   deps = [
-    "utilities:utilities",
+    "utilities",
     "//ui/gfx/geometry",
   ]
 

@@ -11,9 +11,9 @@ static_library("navigation_metrics") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/dom_distiller/core:core",
+    "//components/dom_distiller/core",
     "//components/profile_metrics",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//url",
   ]
 }

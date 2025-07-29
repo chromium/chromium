@@ -43,7 +43,7 @@ source_set("ip_protection_token_ipc_fetcher") {
     "//components/ip_protection/common:ip_protection_telemetry",
     "//components/ip_protection/common:ip_protection_token_fetcher",
     "//components/ip_protection/common:ip_protection_token_fetcher_helper",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//net/third_party/quiche:blind_sign_auth",
   ]
 }

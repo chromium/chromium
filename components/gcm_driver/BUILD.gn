@@ -66,7 +66,7 @@ static_library("gcm_driver") {
     "//net",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-    "//url:url",
+    "//url",
   ]
 
   # This target goes with these other deps and they can include headers from
@@ -105,7 +105,7 @@ static_library("gcm_driver") {
     ]
     deps += [
       "//components/crx_file",
-      "//components/version_info:version_info",
+      "//components/version_info",
       "//google_apis/gcm",
     ]
   }

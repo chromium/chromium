@@ -41,7 +41,7 @@ static_library("test_support") {
 
   deps = [
     "//base",
-    "//components/invalidation:invalidation",
+    "//components/invalidation",
   ]
 }
 
@@ -57,7 +57,7 @@ source_set("unit_tests") {
     "//components/invalidation/impl",
     "//components/sync_preferences:test_support",
     "//google_apis:test_support",
-    "//google_apis/gcm:gcm",
+    "//google_apis/gcm",
     "//testing/gmock",
     "//testing/gtest",
   ]

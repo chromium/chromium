@@ -41,7 +41,7 @@ source_set("in_process") {
       "//components/metrics",
       "//components/metrics:child_call_stack_profile_builder",
       "//components/sampling_profiler:profile_params",
-      "//components/services/heap_profiling/public/cpp:cpp",
+      "//components/services/heap_profiling/public/cpp",
       "//components/variations",
       "//components/version_info",
       "//mojo/public/cpp/bindings",

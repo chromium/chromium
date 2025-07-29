@@ -17,7 +17,7 @@ source_set("common") {
   deps = [
     "//base",
     "//base:i18n",
-    "//components/url_formatter:url_formatter",
+    "//components/url_formatter",
     "//ui/base:features",
     "//url",
   ]

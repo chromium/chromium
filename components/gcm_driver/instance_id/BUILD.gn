@@ -21,8 +21,8 @@ static_library("instance_id") {
   deps = [
     "//base",
     "//components/gcm_driver:gcm_buildflags",
-    "//components/keyed_service/core:core",
-    "//components/prefs:prefs",
+    "//components/keyed_service/core",
+    "//components/prefs",
     "//crypto",
     "//services/network/public/mojom",
   ]

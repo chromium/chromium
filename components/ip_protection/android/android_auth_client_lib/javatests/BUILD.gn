@@ -34,6 +34,6 @@ android_library("ip_protection_auth_javatests") {
     "//third_party/androidx:androidx_test_runner_java",
     "//third_party/google-truth:google_truth_java",
     "//third_party/jni_zero:jni_zero_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }

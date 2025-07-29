@@ -92,12 +92,12 @@ if (!is_android && !is_ios) {
       "//components/soda:constants",
       "//components/sync_preferences",
       "//content/public/browser",
-      "//google_apis:google_apis",
+      "//google_apis",
       "//media",
       "//media/mojo/mojom",
       "//net",
-      "//services/data_decoder/public/cpp:cpp",
-      "//services/data_decoder/public/mojom:mojom",
+      "//services/data_decoder/public/cpp",
+      "//services/data_decoder/public/mojom",
       "//services/network/public/cpp",
       "//services/network/public/mojom",
       "//ui/native_theme",
@@ -122,10 +122,10 @@ if (!is_android && !is_ios) {
       "//components/prefs",
       "//components/prefs:test_support",
       "//media/mojo/mojom:speech_recognition",
-      "//mojo/public/cpp/bindings:bindings",
+      "//mojo/public/cpp/bindings",
       "//testing/gmock",
       "//testing/gtest",
-      "//ui/gfx/geometry:geometry",
+      "//ui/gfx/geometry",
     ]
 
     if (is_chromeos) {
@@ -182,7 +182,7 @@ source_set("utils") {
     "//components/prefs",
     "//media",
     "//third_party/icu",
-    "//third_party/re2:re2",
+    "//third_party/re2",
     "//ui/base",
     "//ui/native_theme",
   ]

@@ -47,10 +47,10 @@ static_library("dwa") {
     "//build:buildflag_header_h",
     "//components/metrics",
     "//components/metrics:metrics_pref_names",
-    "//components/prefs:prefs",
-    "//components/version_info:version_info",
+    "//components/prefs",
+    "//components/version_info",
     "//mojo/public/cpp/bindings",
-    "//net:net",
+    "//net",
   ]
 }
 
@@ -67,7 +67,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//components/metrics",
     "//components/metrics:test_support",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/prefs:test_support",
     "//testing/gmock",
     "//testing/gtest",

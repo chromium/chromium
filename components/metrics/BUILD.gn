@@ -282,7 +282,7 @@ if (!is_cronet_build || is_ios) {
       "//components/prefs",
       "//components/variations",
       "//components/variations/field_trial_config",
-      "//components/version_info:version_info",
+      "//components/version_info",
       "//components/webui/flags:switches",
       "//crypto",
       "//extensions/buildflags",
@@ -442,8 +442,8 @@ if (!is_cronet_build) {
 
     deps = [
       "//base",
+      "//components/encrypted_messages",
       "//components/encrypted_messages:encrypted_message_proto",
-      "//components/encrypted_messages:encrypted_messages",
       "//components/variations",
       "//net",
       "//services/network/public/cpp",
@@ -507,7 +507,7 @@ if (!is_cronet_build) {
     ]
 
     deps = [
-      "//base:base",
+      "//base",
       "//components/sampling_profiler:profile_params",
       "//third_party/metrics_proto",
     ]
@@ -652,7 +652,7 @@ if (!is_cronet_build) {
       "//mojo/public/cpp/bindings",
       "//net:test_support",
       "//services/network:test_support",
-      "//services/network/public/cpp:cpp",
+      "//services/network/public/cpp",
       "//services/service_manager/public/cpp",
       "//testing/gmock",
       "//testing/gtest",

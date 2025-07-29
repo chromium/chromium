@@ -366,7 +366,7 @@ static_library("browser") {
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/component_updater",
-    "//components/dom_distiller/core:core",
+    "//components/dom_distiller/core",
     "//components/favicon/core",
     "//components/favicon_base",
     "//components/history_clusters/core",
@@ -509,9 +509,9 @@ static_library("location_bar") {
   ]
   deps = [
     ":buildflags",
-    "//components/dom_distiller/core:core",
+    "//components/dom_distiller/core",
     "//components/lens/proto/server:proto",
-    "//components/safe_browsing/core/common:common",
+    "//components/safe_browsing/core/common",
     "//components/search_engines",
     "//components/strings",
     "//components/url_formatter",
@@ -669,7 +669,7 @@ if (is_android) {
       "//components/embedder_support/android:util_java",
       "//components/omnibox/common:features_java",
       "//third_party/android_deps:protobuf_lite_runtime_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/metrics_proto:metrics_proto_java",
       "//third_party/mockito:mockito_java",
     ]
@@ -916,24 +916,24 @@ source_set("unit_tests") {
     "//build:blink_buildflags",
     "//components/bookmarks/browser",
     "//components/bookmarks/test",
-    "//components/dom_distiller/core:core",
+    "//components/dom_distiller/core",
     "//components/favicon/core/test:test_support",
     "//components/history/core/test",
     "//components/history_embeddings",
     "//components/history_embeddings:test_support",
     "//components/memory_pressure:test_support",
-    "//components/ntp_tiles:ntp_tiles",
+    "//components/ntp_tiles",
     "//components/omnibox/common",
     "//components/open_from_clipboard:test_support",
     "//components/optimization_guide/core",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//components/os_crypt/async/browser",
-    "//components/passage_embeddings:passage_embeddings",
+    "//components/passage_embeddings",
     "//components/passage_embeddings:test_support",
     "//components/prefs:test_support",
-    "//components/query_parser:query_parser",
-    "//components/safe_browsing/core/common:common",
+    "//components/query_parser",
+    "//components/safe_browsing/core/common",
     "//components/saved_tab_groups/test_support",
     "//components/search",
     "//components/search_engines",
@@ -946,7 +946,7 @@ source_set("unit_tests") {
     "//components/url_formatter",
     "//components/variations",
     "//components/variations:test_support",
-    "//components/variations/net:net",
+    "//components/variations/net",
     "//extensions/buildflags",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/network:test_support",
@@ -976,7 +976,7 @@ source_set("unit_tests") {
   }
 
   if (is_chromeos) {
-    deps += [ "//chromeos/constants:constants" ]
+    deps += [ "//chromeos/constants" ]
   }
 
   if (enable_extensions) {
@@ -999,7 +999,7 @@ fuzzer_test("autocomplete_input_fuzzer") {
     ":test_support",
     "//base",
     "//base:i18n",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
   ]
 }
 
@@ -1019,7 +1019,7 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
     "//base",
     "//base:i18n",
     "//third_party/icu:icui18n",
-    "//third_party/metrics_proto:metrics_proto",
+    "//third_party/metrics_proto",
   ]
   seed_corpus = "fuzz_corpus_suggest"
 }

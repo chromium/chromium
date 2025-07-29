@@ -7,13 +7,13 @@ import("//services/video_effects/args.gni")
 source_set("media_effects") {
   public_deps = [
     "//media/capture/mojom:video_effects_manager",
-    "//services/video_effects/public/mojom:mojom",
+    "//services/video_effects/public/mojom",
   ]
   deps = [
     "//base",
     "//components/keyed_service/content",
     "//components/user_prefs",
-    "//components/viz/host:host",
+    "//components/viz/host",
     "//content/public/browser",
     "//services/audio/public/mojom",
     "//services/video_capture/public/mojom",

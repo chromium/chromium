@@ -35,7 +35,7 @@ static_library("test_support_cpp") {
     "messages_test_helper.cc",
     "messages_test_helper.h",
   ]
-  public_deps = [ "//ui/android:android" ]
+  public_deps = [ "//ui/android" ]
   deps = [
     ":jni_headers",
     "//base",

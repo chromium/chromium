@@ -13,7 +13,7 @@ static_library("testing") {
     ":unit_tests_bundle_data",
     "//base",
     "//base/test:test_support",
-    "//components/language_detection/core:core",
+    "//components/language_detection/core",
   ]
 }
 

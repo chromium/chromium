@@ -16,7 +16,7 @@ static_library("request_header") {
 
   deps = [
     "//base",
-    "//url:url",
+    "//url",
   ]
 }
 

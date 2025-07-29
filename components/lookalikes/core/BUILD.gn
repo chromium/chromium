@@ -21,7 +21,7 @@ static_library("core") {
     ":safety_tips",
     "//base",
     "//components/pref_registry",
-    "//components/prefs:prefs",
+    "//components/prefs",
     "//components/security_interstitials/core",
     "//components/strings",
     "//components/url_formatter",

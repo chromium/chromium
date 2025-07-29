@@ -18,7 +18,7 @@ static_library("common") {
   ]
   deps = [
     ":mojo_bindings",
-    "//content/public/common:common",
+    "//content/public/common",
     "//extensions/buildflags",
     "//ipc",
     "//ipc:message_support",
@@ -51,6 +51,6 @@ source_set("unit_tests") {
     "//components/no_state_prefetch/common",
     "//content/test:test_support",
     "//testing/gtest",
-    "//url:url",
+    "//url",
   ]
 }
