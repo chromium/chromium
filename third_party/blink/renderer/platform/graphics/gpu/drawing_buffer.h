@@ -552,7 +552,7 @@ class PLATFORM_EXPORT DrawingBuffer : public cc::TextureLayerClient,
   // Helper function which does a readback from the currently-bound
   // framebuffer into a buffer of a certain size with 4-byte pixels.
   void ReadBackFramebuffer(base::span<uint8_t> pixels,
-                           SkColorType color_type,
+                           viz::SharedImageFormat destination_format,
                            SkAlphaType destination_alpha_type,
                            GrSurfaceOrigin destination_origin,
                            SourceDrawingBuffer source_buffer);

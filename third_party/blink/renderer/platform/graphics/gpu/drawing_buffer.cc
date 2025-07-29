@@ -458,10 +458,9 @@ bool DrawingBuffer::PrepareTransferableResource(
 
     auto mapping = resource.shared_image->Map();
 
-    // Readback in Skia native byte order (RGBA or BGRA) with kN32_SkColorType.
-    ReadBackFramebuffer(mapping->GetMemoryForPlane(0), kN32_SkColorType,
-                        kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin,
-                        kBackBuffer);
+    ReadBackFramebuffer(mapping->GetMemoryForPlane(0),
+                        resource.shared_image->format(), kPremul_SkAlphaType,
+                        kBottomLeft_GrSurfaceOrigin, kBackBuffer);
 
     *out_resource = viz::TransferableResource::Make(
         resource.shared_image,
@@ -535,12 +534,12 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage() {
   if (!bitmap.tryAllocN32Pixels(size_.width(), size_.height()))
     return nullptr;
   const size_t buffer_size = viz::ResourceSizes::CheckedSizeInBytes<size_t>(
-      size_, viz::SinglePlaneFormat::kRGBA_8888);
+      size_, viz::SharedImageFormat::N32Format());
   ReadBackFramebuffer(
       base::span<uint8_t>(reinterpret_cast<uint8_t*>(bitmap.getPixels()),
                           buffer_size),
-      kN32_SkColorType, kPremul_SkAlphaType, kBottomLeft_GrSurfaceOrigin,
-      kBackBuffer);
+      viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
+      kBottomLeft_GrSurfaceOrigin, kBackBuffer);
 
   auto sk_image = SkImages::RasterFromBitmap(bitmap);
 
@@ -1767,12 +1766,12 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
   ScopedStateRestorer scoped_state_restorer(this);
 
   // Readback in native GL byte order (RGBA).
-  SkColorType color_type = kRGBA_8888_SkColorType;
+  viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
   base::CheckedNumeric<size_t> row_bytes = 4;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
       back_color_buffer_->shared_image->format() ==
           viz::SinglePlaneFormat::kRGBA_F16) {
-    color_type = kRGBA_F16_SkColorType;
+    format = viz::SinglePlaneFormat::kRGBA_F16;
     row_bytes *= 2;
   }
   row_bytes *= Size().width();
@@ -1788,21 +1787,22 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
 
   auto pixels = base::span<uint8_t>(
       static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
-  ReadBackFramebuffer(pixels, color_type, requested_alpha_type_,
+  ReadBackFramebuffer(pixels, format, requested_alpha_type_,
                       kTopLeft_GrSurfaceOrigin, source_buffer);
 
   return StaticBitmapImage::Create(
       std::move(dst_buffer),
       SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
-                        color_type, kUnpremul_SkAlphaType,
+                        ToClosestSkColorType(format), kUnpremul_SkAlphaType,
                         color_space_.ToSkColorSpace()));
 }
 
-void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
-                                        SkColorType color_type,
-                                        SkAlphaType destination_alpha_type,
-                                        GrSurfaceOrigin destination_origin,
-                                        SourceDrawingBuffer source_buffer) {
+void DrawingBuffer::ReadBackFramebuffer(
+    base::span<uint8_t> pixels,
+    viz::SharedImageFormat destination_format,
+    SkAlphaType destination_alpha_type,
+    GrSurfaceOrigin destination_origin,
+    SourceDrawingBuffer source_buffer) {
   DCHECK(state_restorer_);
 
   GLuint fbo = 0;
@@ -1835,8 +1835,7 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
   GLenum data_type = GL_UNSIGNED_BYTE;
 
   base::CheckedNumeric<size_t> row_bytes = 4;
-  if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
-      color_type == kRGBA_F16_SkColorType) {
+  if (destination_format == viz::SinglePlaneFormat::kRGBA_F16) {
     data_type = (webgl_version_ > kWebGL1) ? GL_HALF_FLOAT : GL_HALF_FLOAT_OES;
     row_bytes *= 2;
   }
@@ -1851,7 +1850,7 @@ void DrawingBuffer::ReadBackFramebuffer(base::span<uint8_t> pixels,
                   pixels.data());
 
   // For half float storage Skia order is RGBA, hence no swizzling is needed.
-  if (color_type == kBGRA_8888_SkColorType) {
+  if (destination_format == viz::SinglePlaneFormat::kBGRA_8888) {
     // Swizzle red and blue channels to match SkBitmap's byte ordering.
     // TODO(kbr): expose GL_BGRA as extension.
     for (size_t i = 0; i < pixels.size(); i += 4) {
