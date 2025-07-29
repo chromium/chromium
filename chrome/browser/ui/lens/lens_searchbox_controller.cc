@@ -281,7 +281,7 @@ void LensSearchboxController::OnSuggestionAccepted(
     AutocompleteMatchType::Type match_type,
     bool is_zero_prefix_suggestion) {
   base::Time query_start_time = base::Time::Now();
-  std::string query_text = GetTextQueryParameterValue(destination_url);
+  std::string query_text = ExtractTextQueryParameterValue(destination_url);
   std::map<std::string, std::string> additional_query_parameters =
       GetParametersMapWithoutQuery(destination_url);
 

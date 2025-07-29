@@ -61,11 +61,11 @@ GURL BuildLensSearchURL(
 
 // Returns the value of the text query parameter value from the provided search
 // URL if any. Empty string otherwise.
-const std::string GetTextQueryParameterValue(const GURL& url);
+const std::string ExtractTextQueryParameterValue(const GURL& url);
 
 // Returns the value of the lens mode parameter value from the provided search
 // URL if any. Empty string otherwise.
-const std::string GetLensModeParameterValue(const GURL& url);
+const std::string ExtractLensModeParameterValue(const GURL& url);
 
 // Returns true if the two URLs have the same base url, and the same query
 // parameters. This differs from comparing two GURLs using == since this method

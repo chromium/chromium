@@ -222,8 +222,8 @@ bool LensOverlaySidePanelCoordinator::MaybeHandleTextDirectives(
     // also adds an additional check to make sure the text query parameters
     // match.
     if (lens::IsValidSearchResultsUrl(nav_url)) {
-      auto page_url_text_query = lens::GetTextQueryParameterValue(page_url);
-      auto nav_url_text_query = lens::GetTextQueryParameterValue(nav_url);
+      auto page_url_text_query = lens::ExtractTextQueryParameterValue(page_url);
+      auto nav_url_text_query = lens::ExtractTextQueryParameterValue(nav_url);
       if (page_url.host() != nav_url.host() ||
           page_url.path() != nav_url.path() ||
           page_url_text_query != nav_url_text_query) {
@@ -279,7 +279,7 @@ void LensOverlaySidePanelCoordinator::NotifyNewQueryLoaded(std::string query,
   // A search URL without a Lens mode parameter indicates a click on a related
   // search or other in-SRP refinement. In this case, we should clear all
   // selection and thumbnail state.
-  const std::string lens_mode = lens::GetLensModeParameterValue(search_url);
+  const std::string lens_mode = lens::ExtractLensModeParameterValue(search_url);
   if (lens_mode.empty()) {
     GetLensOverlayController()->SetAdditionalSearchQueryParams(
         /*additional_search_query_params=*/{});

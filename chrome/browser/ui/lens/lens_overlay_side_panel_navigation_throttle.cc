@@ -111,7 +111,7 @@ LensOverlaySidePanelNavigationThrottle::HandleSidePanelRequest() {
     // This is the only time a query is guaranteed to end up in the side panel
     // for a user navigation.If the SRP url did not have the common search query
     // parameters, it will reload the frame and go through this flow anyway.
-    const std::string text_query = GetTextQueryParameterValue(url);
+    const std::string text_query = ExtractTextQueryParameterValue(url);
     controller->results_side_panel_coordinator()->NotifyNewQueryLoaded(
         std::move(text_query), navigation_handle()->GetURL());
     return content::NavigationThrottle::PROCEED;

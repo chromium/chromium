@@ -206,7 +206,8 @@ void LensSearchController::IssueContextualSearchRequest(
   CHECK(invocation_source ==
         lens::LensOverlayInvocationSource::kOmniboxContextualSuggestion);
 
-  std::string query_text = lens::GetTextQueryParameterValue(destination_url);
+  std::string query_text =
+      lens::ExtractTextQueryParameterValue(destination_url);
   std::map<std::string, std::string> additional_query_parameters =
       lens::GetParametersMapWithoutQuery(destination_url);
 

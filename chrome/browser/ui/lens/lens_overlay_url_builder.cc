@@ -375,13 +375,13 @@ GURL BuildLensSearchURL(
   return url_with_query_params;
 }
 
-const std::string GetTextQueryParameterValue(const GURL& url) {
+const std::string ExtractTextQueryParameterValue(const GURL& url) {
   std::string param_value = "";
   net::GetValueForKeyInQuery(url, kTextQueryParameterKey, &param_value);
   return param_value;
 }
 
-const std::string GetLensModeParameterValue(const GURL& url) {
+const std::string ExtractLensModeParameterValue(const GURL& url) {
   std::string param_value = "";
   net::GetValueForKeyInQuery(url, kLensModeParameterKey, &param_value);
   return param_value;
