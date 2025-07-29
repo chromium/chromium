@@ -1190,42 +1190,49 @@ public class WebContentsAccessibilityTreeTest {
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionAnnotate() {
         performAriaTest("supplemental-description-annotate.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionButtonLabel() {
         performAriaTest("supplemental-description-button-label.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionImageButton() {
         performAriaTest("supplemental-description-image-button.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionLinks() {
         performAriaTest("supplemental-description-links.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionNav() {
         performAriaTest("supplemental-description-nav.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionRegion() {
         performAriaTest("supplemental-description-region.html");
     }
 
     @Test
     @SmallTest
+    @EnableFeatures(ContentFeatureList.ACCESSIBILITY_POPULATE_SUPPLEMENTAL_DESCRIPTION_API)
     public void test_supplementalDescriptionSelect() {
         performAriaTest("supplemental-description-select.html");
     }
