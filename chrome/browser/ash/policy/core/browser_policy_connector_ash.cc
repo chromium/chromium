@@ -66,6 +66,8 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_identity/device_identity_provider.h"
+#include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/cloud/cloud_policy_invalidator.h"
 #include "chrome/browser/policy/cloud/fm_registration_token_uploader.h"
 #include "chrome/browser/policy/device_management_service_configuration.h"
@@ -88,6 +90,7 @@
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/legacy_topics_cleaner.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_refresh_scheduler.h"
@@ -348,6 +351,12 @@ void BrowserPolicyConnectorAsh::Init(
 
   device_dlc_predownload_list_policy_handler_ =
       DeviceDlcPredownloadListPolicyHandler::Create();
+
+  legacy_topics_cleaner_ = std::make_unique<invalidation::LegacyTopicsCleaner>(
+      url_loader_factory,
+      std::make_unique<DeviceIdentityProvider>(
+          DeviceOAuth2TokenServiceFactory::Get()),
+      g_browser_process->local_state());
 }
 
 void BrowserPolicyConnectorAsh::OnBrowserStarted() {
@@ -425,6 +434,8 @@ void BrowserPolicyConnectorAsh::Shutdown() {
   }
 
   adb_sideloading_allowance_mode_policy_handler_.reset();
+
+  legacy_topics_cleaner_.reset();
 
   ChromeBrowserPolicyConnector::Shutdown();
 }

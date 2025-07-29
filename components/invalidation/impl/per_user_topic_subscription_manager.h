@@ -85,6 +85,7 @@ class INVALIDATION_EXPORT PerUserTopicSubscriptionManager {
   // changed, triggers re-subscription for all topics.
   virtual void UpdateSubscribedTopics(const TopicMap& topics,
                                       const std::string& new_instance_id_token);
+  void UpdateSubscribedTopics(const TopicMap& topics);
 
   // Called when the InstanceID token (previously passed to
   // UpdateSubscribedTopics()) is deleted or revoked. Clears the cached token

@@ -112,7 +112,7 @@ static_library("core") {
     "//components/account_id",
     "//components/enterprise",
     "//components/invalidation",
-    "//components/invalidation/impl",
+    "//components/invalidation:legacy_topics_cleanup",
     "//components/keyed_service/content",
     "//components/keyed_service/core",
     "//components/ownership",

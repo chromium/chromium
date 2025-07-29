@@ -18,6 +18,7 @@
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/device_identity/device_identity_provider.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_loader.h"
 #include "chrome/browser/enterprise/remote_commands/cbcm_remote_commands_factory.h"
@@ -35,6 +36,7 @@
 #include "components/gcm_driver/gcm_driver.h"
 #include "components/gcm_driver/instance_id/instance_id_driver.h"
 #include "components/invalidation/invalidation_listener.h"
+#include "components/invalidation/legacy_topics_cleaner.h"
 #include "components/policy/core/common/cloud/machine_level_user_cloud_policy_manager.h"
 #include "components/policy/core/common/remote_commands/remote_commands_constants.h"
 #include "components/policy/core/common/remote_commands/remote_commands_invalidator.h"
@@ -207,10 +209,11 @@ void ChromeBrowserCloudManagementControllerDesktop::ShutDown() {
   fm_registration_token_uploaders_.clear();
   invalidation_listener_per_project_.clear();
   device_instance_id_driver_.reset();
+  legacy_topics_cleaner_.reset();
 
   // In some tests, `DCHECK_CURRENTLY_ON(content::BrowserThread::UI)` fails.
-  // Such tests have not initialized device_oauth2_token_service anyway, so skip
-  // calling Shutdown() for the service.
+  // Such tests have not initialized device_oauth2_token_service anyway, so
+  // skip calling Shutdown() for the service.
   if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
     CHECK_IS_TEST();
     return;
@@ -370,6 +373,12 @@ void ChromeBrowserCloudManagementControllerDesktop::StartInvalidations() {
         std::make_unique<FmRegistrationTokenUploader>(
             PolicyInvalidationScope::kCBCM, invalidation_listener.get(), core));
   }
+
+  legacy_topics_cleaner_ = std::make_unique<invalidation::LegacyTopicsCleaner>(
+      g_browser_process->shared_url_loader_factory(),
+      std::make_unique<DeviceIdentityProvider>(
+          DeviceOAuth2TokenServiceFactory::Get()),
+      g_browser_process->local_state());
 }
 
 scoped_refptr<network::SharedURLLoaderFactory>

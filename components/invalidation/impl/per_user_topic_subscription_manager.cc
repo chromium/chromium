@@ -251,7 +251,11 @@ void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
   ReportNewInstanceIdTokenState(new_instance_id_token);
   DropAllSavedSubscriptionsOnTokenChange(new_instance_id_token);
   StoreNewToken(new_instance_id_token);
+  UpdateSubscribedTopics(topics);
+}
 
+void PerUserTopicSubscriptionManager::UpdateSubscribedTopics(
+    const TopicMap& topics) {
   for (const auto& topic : topics) {
     auto it = pending_subscriptions_.find(topic.first);
     if (it != pending_subscriptions_.end() &&

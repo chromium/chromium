@@ -21,12 +21,27 @@ static_library("invalidation") {
     "//base",
     "//base:i18n",
     "//components/gcm_driver",
+    "//components/invalidation:legacy_topics_cleanup",
     "//components/invalidation/impl",
     "//components/invalidation/public",
     "//components/keyed_service/core",
     "//components/pref_registry",
     "//components/prefs",
     "//google_apis",
+  ]
+}
+
+static_library("legacy_topics_cleanup") {
+  sources = [
+    "legacy_topics_cleaner.cc",
+    "legacy_topics_cleaner.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/invalidation/impl",
+    "//components/invalidation/public",
+    "//components/prefs",
   ]
 }
 
