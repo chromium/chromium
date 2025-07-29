@@ -103,6 +103,24 @@ int CalculateTokensPerSecond(int num_tokens, base::TimeDelta duration) {
          base::Time::kMicrosecondsPerSecond;
 }
 
+// If `pieces` ends with ml::Token::kModel and then a text piece, returns the
+// final text piece.
+std::optional<std::string> GetModelResponsePrefix(
+    const std::vector<InputPiece>& pieces) {
+  if (pieces.size() < 2) {
+    return std::nullopt;
+  }
+  if (const ml::Token* token =
+          std::get_if<ml::Token>(&pieces[pieces.size() - 2]);
+      !token || *token != ml::Token::kModel) {
+    return std::nullopt;
+  }
+  if (const std::string* text = std::get_if<std::string>(&pieces.back())) {
+    return *text;
+  }
+  return std::nullopt;
+}
+
 }  // namespace
 
 // Handles sending and canceling responses.
@@ -357,6 +375,7 @@ void SessionImpl::Append(
     on_device_model::mojom::AppendOptionsPtr options,
     mojo::PendingRemote<on_device_model::mojom::ContextClient> client,
     base::OnceClosure on_complete) {
+  model_response_prefix_ = GetModelResponsePrefix(options->input->pieces);
   auto context_holder = std::make_unique<ContextHolder>(
       std::move(client),
       base::BindOnce(&SessionImpl::RemoveContext, base::Unretained(this)),
@@ -383,7 +402,8 @@ void SessionImpl::Generate(
   ChromeMLExecutionOutputFn output_fn = responder_->CreateOutputFn();
   ChromeMLConstraint constraint = 0;
   if (options->constraint) {
-    constraint = executor_->CreateConstraint(*options->constraint);
+    constraint = executor_->CreateConstraint(*options->constraint,
+                                             model_response_prefix_);
     if (!constraint) {
       // TODO(crbug.com/391919456): Propagate error.
       responder_.reset();
@@ -500,7 +520,8 @@ void OnDeviceModelExecutor::UnloadAdaptation(uint32_t adaptation_id) {
 
 DISABLE_CFI_DLSYM
 ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
-    const on_device_model::mojom::ResponseConstraint& response_constraint) {
+    const on_device_model::mojom::ResponseConstraint& response_constraint,
+    const std::optional<std::string>& prefix) {
 #if defined(ENABLE_ON_DEVICE_CONSTRAINTS)
   if (!tokenizer_) {
     CHECK(chrome_ml_->api().GetTokenizerParams(
@@ -550,6 +571,35 @@ ChromeMLConstraint OnDeviceModelExecutor::CreateConstraint(
     LOG(ERROR) << "Error creating constraint: " << error;
     llg_free_constraint(constraint);
     return 0;
+  }
+  // Now apply any model prefix to the constraint so the generated model
+  // response continues with the correct constraint state.
+  if (prefix) {
+    std::vector<uint32_t> tokens;
+    // First get the total number of tokens needed.
+    size_t token_size = llg_tokenize_bytes(
+        tokenizer_, reinterpret_cast<const uint8_t*>(prefix->data()),
+        prefix->size(), tokens.data(), 0);
+    tokens.resize(token_size);
+    // Then tokenize into `tokens`.
+    llg_tokenize_bytes(tokenizer_,
+                       reinterpret_cast<const uint8_t*>(prefix->data()),
+                       prefix->size(), tokens.data(), tokens.size());
+    // Apply each token to the constraint.
+    for (uint32_t token : tokens) {
+      LlgMaskResult mask_res;
+      if (llg_compute_mask(constraint, &mask_res) < 0) {
+        LOG(ERROR) << "Error computing mask for prompt prefix.";
+        llg_free_constraint(constraint);
+        return 0;
+      }
+      LlgCommitResult res;
+      if (llg_commit_token(constraint, token, &res) < 0) {
+        LOG(ERROR) << "Error matching prompt prefix.";
+        llg_free_constraint(constraint);
+        return 0;
+      }
+    }
   }
   return reinterpret_cast<ChromeMLConstraint>(constraint);
 #else

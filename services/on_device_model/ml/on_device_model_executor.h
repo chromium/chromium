@@ -105,6 +105,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
   std::unique_ptr<Responder> responder_;
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
   std::optional<uint32_t> adaptation_id_;
+  std::optional<std::string> model_response_prefix_;
 };
 
 // Uses the ChromeML API to create a model based on the params passed to
@@ -132,7 +133,8 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) OnDeviceModelExecutor final
   void UnloadAdaptation(uint32_t adaptation_id) override;
 
   ChromeMLConstraint CreateConstraint(
-      const on_device_model::mojom::ResponseConstraint& response_constraint);
+      const on_device_model::mojom::ResponseConstraint& response_constraint,
+      const std::optional<std::string>& prefix);
 
  private:
   on_device_model::mojom::LoadModelResult Init(

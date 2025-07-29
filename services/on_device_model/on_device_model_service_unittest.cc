@@ -955,6 +955,63 @@ TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraint) {
   EXPECT_THAT(response.responses(), ElementsAre(R"({"Rating":1})"));
 }
 
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintWithPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({"a", ml::Token::kModel, "{\"Rating\""}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewJsonSchema(R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("aModel: {\"Rating\"", ":1}"));
+}
+
+TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintWithInvalidPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({"a", ml::Token::kModel, "{\"bad\""}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewJsonSchema(R"({
+    "type": "object",
+    "required": ["Rating"],
+    "additionalProperties": false,
+    "properties": {
+      "Rating": {
+        "type": "number",
+        "minimum": 1,
+        "maximum": 5
+      }
+    }
+  })");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  // For now invalid prefix will cause a disconnect.
+  // TODO:crbug.com/434766400 - Add better error messages.
+  EXPECT_THAT(response.responses(), ElementsAre());
+  EXPECT_TRUE(response.disconnected());
+}
+
 TEST_F(OnDeviceModelServiceTest, JSONSchemaConstraintInvalid) {
   auto model = LoadModel();
 
@@ -987,6 +1044,58 @@ TEST_F(OnDeviceModelServiceTest, RegexConstraint) {
 
   EXPECT_THAT(response.responses(), ElementsAre("hello"));
 }
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraintIgnoresUserPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({ml::Token::kUser, "hel"}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("hello");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("User: hel", "hello"));
+}
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraintWithPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({"a", ml::Token::kModel, "hel"}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("hello");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  EXPECT_THAT(response.responses(), ElementsAre("aModel: hel", "lo"));
+}
+
+TEST_F(OnDeviceModelServiceTest, RegexConstraintWithInvalidPrefix) {
+  auto model = LoadModel();
+
+  TestResponseHolder response;
+  mojo::Remote<mojom::Session> session;
+  model->StartSession(session.BindNewPipeAndPassReceiver(), nullptr);
+  session->Append(MakeInput({ml::Token::kModel, "boo"}), {});
+
+  auto options = mojom::GenerateOptions::New();
+  options->constraint = mojom::ResponseConstraint::NewRegex("^hello$");
+  session->Generate(std::move(options), response.BindRemote());
+  response.WaitForCompletion();
+
+  // For now invalid prefix will cause a disconnect.
+  // TODO:crbug.com/434766400 - Add better error messages.
+  EXPECT_THAT(response.responses(), ElementsAre());
+  EXPECT_TRUE(response.disconnected());
+}
+
 #endif
 
 }  // namespace

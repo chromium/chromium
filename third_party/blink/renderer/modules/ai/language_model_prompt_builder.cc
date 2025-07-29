@@ -209,6 +209,12 @@ void LanguageModelPromptBuilder::Resolve() {
   if (!json_schema_.empty()) {
     // Make sure the last prompt is a user prompt that the schema instructions
     // get appended to.
+    mojom::blink::AILanguageModelPromptPtr prefix_prompt;
+    // Pop the prefix prompt to make sure it will always be at the end.
+    if (!processed_prompts_.empty() && processed_prompts_.back()->is_prefix) {
+      prefix_prompt = std::move(processed_prompts_.back());
+      processed_prompts_.pop_back();
+    }
     if (processed_prompts_.empty() ||
         processed_prompts_.back()->role !=
             mojom::blink::AILanguageModelPromptRole::kUser) {
@@ -219,6 +225,9 @@ void LanguageModelPromptBuilder::Resolve() {
     processed_prompts_.back()->content.push_back(
         mojom::blink::AILanguageModelPromptContent::NewText(
             StrCat({kSchemaPrefix, json_schema_})));
+    if (prefix_prompt) {
+      processed_prompts_.push_back(std::move(prefix_prompt));
+    }
   }
   std::move(resolve_callback_).Run(std::move(processed_prompts_));
   Cleanup();

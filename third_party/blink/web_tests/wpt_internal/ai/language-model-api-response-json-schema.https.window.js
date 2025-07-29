@@ -52,6 +52,29 @@ promise_test(async t => {
       },
     },
   };
+  const promptPromise = session.prompt([
+    {role: 'user', content: 'hello'},
+    {role: 'assistant', content: 'prefix', prefix: true}
+  ], { responseConstraint : validRepsonseJsonSchema });
+  // Both the prompt and schema should be present, but prefix should be last.
+  assert_regexp_match(await promptPromise, /hello.*Rating.*prefix/s);
+}, 'Prompt API should work when a valid response json schema and model prefix is provided.');
+
+promise_test(async t => {
+  await ensureLanguageModel();
+  const session = await createLanguageModel();
+  const validRepsonseJsonSchema = {
+    type: "object",
+    required: ["Rating"],
+    additionalProperties: false,
+    properties: {
+      Rating: {
+        type: "number",
+        minimum: 0,
+        maximum: 5,
+      },
+    },
+  };
   const promptPromise = session.prompt('hello', {
     responseConstraint : validRepsonseJsonSchema,
     omitResponseConstraintInput : true
