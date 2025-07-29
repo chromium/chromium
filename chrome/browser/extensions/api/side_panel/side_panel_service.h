@@ -120,6 +120,9 @@ class SidePanelService : public BrowserContextKeyedAPI,
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
 
+  // Returns the side panel layout for the associated BrowserContext.
+  api::side_panel::PanelLayout GetSidePanelLayout();
+
  private:
   friend class BrowserContextKeyedAPIFactory<SidePanelService>;
 

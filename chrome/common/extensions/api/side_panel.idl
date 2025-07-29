@@ -14,6 +14,17 @@ namespace sidePanel {
     SidePanel side_panel;
   };
 
+  // Defines the possible alignment for the side panel in the browser UI.
+  enum Side {
+    left,
+    right
+  };
+
+  // Represents the layout of the side panel, indicating which side it is shown.
+  dictionary PanelLayout {
+    Side side;
+  };
+
   // The options used when setting a side panel. Omitted properties are
   // unchanged.
   dictionary PanelOptions {
@@ -69,6 +80,7 @@ namespace sidePanel {
   callback VoidCallback = void();
   callback PanelOptionsCallback = void(PanelOptions options);
   callback PanelBehaviorCallback = void(PanelBehavior behavior);
+  callback PanelLayoutCallback = void(PanelLayout layout);
 
   interface Functions {
     // Configures the side panel.
@@ -105,5 +117,9 @@ namespace sidePanel {
     static void open(
         OpenOptions options,
         VoidCallback callback);
+
+    // Returns the side panel's current layout.
+    // |callback|: Called with a $(ref:PanelLayout) containing the side value.
+    [nodoc] static void getLayout(PanelLayoutCallback callback);
   };
 };

@@ -36,6 +36,7 @@
 #include "chrome/browser/web_applications/test/os_integration_test_override_impl.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
+#include "chrome/common/pref_names.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -2018,6 +2019,76 @@ IN_PROC_BROWSER_TEST_F(
     EXPECT_FALSE(side_panel_coordinator()->IsSidePanelEntryShowing(
         GetKey(side_panel_extension->id())));
   }
+}
+
+// Verify that sidePanel.getLayout() reflects the current side panel
+// alignment ("left" or "right").
+IN_PROC_BROWSER_TEST_F(ExtensionSidePanelBrowserTest, GetLayout) {
+  TestExtensionDir dir;
+  dir.WriteManifest(R"({
+    "name": "GetLayout Test",
+    "version": "1.0",
+    "manifest_version": 3,
+    "permissions": ["sidePanel"],
+    "background": { "service_worker": "bg.js" }
+  })");
+  dir.WriteFile(FILE_PATH_LITERAL("bg.js"), R"(
+    let side = null;
+
+    function fetchLayout() {
+      chrome.sidePanel.getLayout(res => {
+        if (!res || !res.side) {
+          return false;
+        }
+        side = res.side;
+      });
+      return true;
+    }
+
+    function isLayout(expectedSide) {
+      return side === expectedSide;
+    }
+
+    function reset() {
+      side = null;
+      return true;
+    }
+  )");
+  const Extension* ext = LoadExtension(dir.UnpackedPath());
+  ASSERT_TRUE(ext);
+
+  auto* prefs = browser()->profile()->GetPrefs();
+
+  // Helper that sets the side panel alignment preference and
+  // then verifies that getLayout() returns the expected side.
+  auto runCheck = [&](bool pref, const char* expectedSide) {
+    // Set the side panel alignment preference.
+    prefs->SetBoolean(prefs::kSidePanelHorizontalAlignment, pref);
+
+    // Call getLayout(), and verify whether the retrieved panel layout
+    // contains the side value.
+    EXPECT_TRUE(ExecuteScriptInBackgroundPage(
+                    ext->id(), "chrome.test.sendScriptResult(fetchLayout());")
+                    .GetBool());
+
+    // Verify the retrieved side matches the expected side.
+    EXPECT_TRUE(
+        ExecuteScriptInBackgroundPage(
+            ext->id(),
+            base::StringPrintf("chrome.test.sendScriptResult(isLayout('%s'));",
+                               expectedSide))
+            .GetBool());
+
+    // Reset the stored side value.
+    EXPECT_TRUE(ExecuteScriptInBackgroundPage(
+                    ext->id(), "chrome.test.sendScriptResult(reset());")
+                    .GetBool());
+  };
+
+  // Verify that the side panel is aligned to the left when the preference is
+  // false, and to the right when it’s true.
+  runCheck(false, "left");
+  runCheck(true, "right");
 }
 
 // TODO(crbug.com/40243760): Add a test here which requires a browser in

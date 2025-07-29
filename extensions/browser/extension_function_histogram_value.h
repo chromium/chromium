@@ -2006,6 +2006,7 @@ enum HistogramValue {
   EXPERIMENTALACTOR_CREATETASK = 1943,
   EXPERIMENTALACTOR_REQUESTTABOBSERVATION = 1944,
   PDFVIEWERPRIVATE_SAVETODRIVE = 1945,
+  SIDEPANEL_GETLAYOUT = 1946,
   // Last entry: Add new entries above, then run:
   // tools/metrics/histograms/update_extension_histograms.py
   ENUM_BOUNDARY

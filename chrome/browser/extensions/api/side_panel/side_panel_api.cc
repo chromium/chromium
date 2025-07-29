@@ -111,4 +111,11 @@ ExtensionFunction::ResponseAction SidePanelOpenFunction::RunFunction() {
   return RespondNow(NoArguments());
 }
 
+ExtensionFunction::ResponseAction SidePanelGetLayoutFunction::RunFunction() {
+  // Only available to extensions.
+  EXTENSION_FUNCTION_VALIDATE(extension());
+  api::side_panel::PanelLayout layout = GetService()->GetSidePanelLayout();
+  return RespondNow(WithArguments(layout.ToValue()));
+}
+
 }  // namespace extensions
