@@ -985,8 +985,8 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof SavedTabGroupUndoBarController);
-        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
-        // CriteriaHelper.pollUiThread(() -> 3 == mArchivedTabModel.getCount());
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
+        CriteriaHelper.pollUiThread(() -> 3 == mArchivedTabModel.getCount());
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, true);
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1039,7 +1039,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof SavedTabGroupUndoBarController);
-        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, true);
         savedTabGroup.archivalTimeMs = System.currentTimeMillis();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1101,7 +1101,7 @@ public class ArchivedTabsDialogCoordinatorTest {
         assertTrue(
                 snackbarManager.getCurrentSnackbarForTesting().getController()
                         instanceof SavedTabGroupUndoBarController);
-        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID1, true);
         verify(mTabGroupSyncService).updateArchivalStatus(SYNC_GROUP_ID2, true);
         savedTabGroup1.archivalTimeMs = System.currentTimeMillis();

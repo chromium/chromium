@@ -21,7 +21,6 @@ import org.mockito.quality.Strictness;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.Features.DisableFeatures;
 import org.chromium.base.test.util.Features.EnableFeatures;
@@ -122,7 +121,6 @@ public class ArchivedTabsTest {
 
     @Test
     @MediumTest
-    @DisabledTest(message = "crbug.com/397901349")
     public void testCloseAllTabsAndClickUndo() {
         ChromeTabbedActivity cta = mActivityTestRule.getActivity();
 
@@ -144,7 +142,7 @@ public class ArchivedTabsTest {
                 });
         CriteriaHelper.pollUiThread(() -> 0 == mArchivedTabModel.getCount());
 
-        TabUiTestHelper.verifyUndoBarShowingAndClickUndo();
+        CriteriaHelper.pollInstrumentationThread(TabUiTestHelper::verifyUndoBarShowingAndClickUndo);
         CriteriaHelper.pollUiThread(() -> 1 == mArchivedTabModel.getCount());
     }
 }
