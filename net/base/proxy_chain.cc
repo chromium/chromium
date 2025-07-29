@@ -31,9 +31,7 @@ bool ShouldAllowQuicForAllChains() {
 }
 }  // namespace
 
-ProxyChain::ProxyChain() {
-  proxy_server_list_ = std::nullopt;
-}
+ProxyChain::ProxyChain() = default;
 
 ProxyChain::ProxyChain(const ProxyChain& other) = default;
 ProxyChain::ProxyChain(ProxyChain&& other) noexcept = default;
@@ -56,25 +54,30 @@ ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list)
   }
 }
 
-bool ProxyChain::InitFromPickle(base::PickleIterator* pickle_iter) {
-  if (!pickle_iter->ReadInt(&ip_protection_chain_id_)) {
-    return false;
+// static
+std::optional<ProxyChain> ProxyChain::InitFromPickle(
+    base::PickleIterator& pickle_iter) {
+  int ip_protection_chain_id;
+  if (!pickle_iter.ReadInt(&ip_protection_chain_id)) {
+    return std::nullopt;
   }
   size_t chain_length = 0;
-  if (!pickle_iter->ReadLength(&chain_length)) {
-    return false;
+  if (!pickle_iter.ReadLength(&chain_length)) {
+    return std::nullopt;
   }
 
   std::vector<ProxyServer> proxy_server_list;
   for (size_t i = 0; i < chain_length; ++i) {
-    proxy_server_list.push_back(ProxyServer::CreateFromPickle(pickle_iter));
+    proxy_server_list.push_back(ProxyServer::CreateFromPickle(&pickle_iter));
   }
-  proxy_server_list_ = std::move(proxy_server_list);
-  if (!IsValidInternal()) {
-    proxy_server_list_ = std::nullopt;
-    return false;
+
+  ProxyChain chain =
+      ProxyChain(std::move(proxy_server_list), ip_protection_chain_id,
+                 /*opaque_data=*/std::nullopt);
+  if (!chain.IsValid()) {
+    return std::nullopt;
   }
-  return true;
+  return chain;
 }
 
 void ProxyChain::Persist(base::Pickle* pickle) const {
@@ -107,15 +110,19 @@ std::pair<ProxyChain, const ProxyServer&> ProxyChain::SplitLast() const {
   ProxyChain new_chain =
       ProxyChain({proxy_server_list_->begin(), proxy_server_list_->end() - 1},
                  ip_protection_chain_id_, opaque_data_);
-  return std::make_pair(new_chain, std::ref(proxy_server_list_->back()));
+  CHECK(new_chain.IsValid());
+  return std::make_pair(std::move(new_chain),
+                        std::ref(proxy_server_list_->back()));
 }
 
 ProxyChain ProxyChain::Prefix(size_t len) const {
   DCHECK(IsValid());
   DCHECK_LE(len, length());
-  return ProxyChain(
+  auto new_chain = ProxyChain(
       {proxy_server_list_->begin(), proxy_server_list_->begin() + len},
       ip_protection_chain_id_, opaque_data_);
+  CHECK(new_chain.IsValid());
+  return new_chain;
 }
 
 const ProxyServer& ProxyChain::First() const {
@@ -162,7 +169,9 @@ ProxyChain::ProxyChain(std::vector<ProxyServer> proxy_server_list,
     : proxy_server_list_(std::move(proxy_server_list)),
       ip_protection_chain_id_(ip_protection_chain_id),
       opaque_data_(opaque_data) {
-  CHECK(IsValidInternal());
+  if (!IsValidInternal()) {
+    *this = ProxyChain();
+  }
 }
 
 bool ProxyChain::IsValidInternal() const {

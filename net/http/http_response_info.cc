@@ -369,9 +369,12 @@ bool HttpResponseInfo::InitFromPickle(const base::Pickle& pickle,
       (extra_flags & RESPONSE_EXTRA_INFO_DID_USE_SHARED_DICTIONARY) != 0;
 
   if (extra_flags & RESPONSE_EXTRA_INFO_HAS_PROXY_CHAIN) {
-    if (!proxy_chain.InitFromPickle(&iter)) {
+    std::optional<ProxyChain> unpickled_proxy_chain =
+        ProxyChain::InitFromPickle(iter);
+    if (!unpickled_proxy_chain) {
       return false;
     }
+    proxy_chain = std::move(*unpickled_proxy_chain);
   }
 
   return true;

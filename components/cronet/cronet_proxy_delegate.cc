@@ -37,9 +37,11 @@ void CronetProxyDelegate::OnResolveProxy(
     for (int i = 0; i < proxy_options_.proxies_size(); ++i) {
       const auto& proxy_server = proxy_options_.proxies(i);
       if (proxy_server.scheme() == cronet::proto::ProxyScheme::DIRECT) {
-        proxy_list.AddProxyChain(
+        auto chain =
             net::ProxyChain::WithOpaqueData(std::vector<net::ProxyServer>(),
-                                            /*opaque_data=*/i));
+                                            /*opaque_data=*/i);
+        CHECK(chain.IsValid());
+        proxy_list.AddProxyChain(std::move(chain));
       } else {
         net::ProxyServer::Scheme scheme =
             net::ProxyServer::Scheme::SCHEME_INVALID;
@@ -53,11 +55,13 @@ void CronetProxyDelegate::OnResolveProxy(
           default:
             NOTREACHED();
         }
-        proxy_list.AddProxyChain(net::ProxyChain::WithOpaqueData(
+        auto chain = net::ProxyChain::WithOpaqueData(
             std::vector<net::ProxyServer>{net::ProxyServer(
                 scheme,
                 net::HostPortPair(proxy_server.host(), proxy_server.port()))},
-            /*opaque_data=*/i));
+            /*opaque_data=*/i);
+        CHECK(chain.IsValid());
+        proxy_list.AddProxyChain(std::move(chain));
       }
     }
     result->UseProxyList(proxy_list);

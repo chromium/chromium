@@ -446,7 +446,7 @@ TEST(ProxyChainTest, IsValid) {
   // sequence of schemes.
   EXPECT_FALSE(ProxyChain({https1, quic2}).IsValid());
   EXPECT_FALSE(ProxyChain({https1, https2, quic1, quic2}).IsValid());
-  // ProxyChain cannot contains socks server. Only QUIC and HTTPS.
+  // Multi-hop ProxyChains cannot contain a SOCKS server. Only QUIC and HTTPS.
   EXPECT_FALSE(ProxyChain({socks, https1}).IsValid());
   EXPECT_FALSE(ProxyChain({socks, https1, https2}).IsValid());
   EXPECT_FALSE(ProxyChain({https1, socks}).IsValid());
@@ -460,18 +460,15 @@ TEST(ProxyChainTest, IsValid) {
   EXPECT_TRUE(
       ProxyChain::ForIpProtection({quic1, quic2, https1, https2}).IsValid());
 
-  // IP protection CHECKs on failure instead of just creating an invalid chain.
   // QUIC cannot follow HTTPS proxy server.
-  EXPECT_CHECK_DEATH(ProxyChain::ForIpProtection({https1, quic2}).IsValid());
-  EXPECT_CHECK_DEATH(
+  EXPECT_FALSE(ProxyChain::ForIpProtection({https1, quic2}).IsValid());
+  EXPECT_FALSE(
       ProxyChain::ForIpProtection({https1, https2, quic1, quic2}).IsValid());
   // Socks proxy server is not valid for multi-proxy chain.
-  EXPECT_CHECK_DEATH(ProxyChain::ForIpProtection({socks, https1}).IsValid());
-  EXPECT_CHECK_DEATH(
-      ProxyChain::ForIpProtection({socks, https1, https2}).IsValid());
-  EXPECT_CHECK_DEATH(ProxyChain::ForIpProtection({https1, socks}).IsValid());
-  EXPECT_CHECK_DEATH(
-      ProxyChain::ForIpProtection({https1, https2, socks}).IsValid());
+  EXPECT_FALSE(ProxyChain::ForIpProtection({socks, https1}).IsValid());
+  EXPECT_FALSE(ProxyChain::ForIpProtection({socks, https1, https2}).IsValid());
+  EXPECT_FALSE(ProxyChain::ForIpProtection({https1, socks}).IsValid());
+  EXPECT_FALSE(ProxyChain::ForIpProtection({https1, https2, socks}).IsValid());
 
 #if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
   bool multi_proxy_chain_supported = false;
@@ -502,6 +499,11 @@ TEST(ProxyChainTest, IsValid) {
             is_multi_proxy_quic_supported);
   EXPECT_EQ(ProxyChain({quic1, quic2, https1, https2}).IsValid(),
             is_multi_proxy_quic_supported);
+
+  // `ProxyChain::WithOpaqueData` should not crash when the proxy server list
+  // is invalid.
+  EXPECT_FALSE(ProxyChain::WithOpaqueData({https1, quic2}, /*opaque_data=*/123)
+                   .IsValid());
 }
 
 TEST(ProxyChainTest, Unequal) {
@@ -582,9 +584,24 @@ TEST(ProxyChainTest, PickleDirect) {
   base::Pickle pickle;
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
-  ProxyChain proxy_chain_from_pickle;
-  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
-  EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
+  std::optional<ProxyChain> proxy_chain_from_pickle =
+      ProxyChain::InitFromPickle(iter);
+  ASSERT_TRUE(proxy_chain_from_pickle);
+  EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
+}
+
+TEST(ProxyChainTest, PickleDirectIpProtection) {
+  ProxyChain proxy_chain =
+      ProxyChain::ForIpProtection(/*proxy_server_list=*/{});
+  base::Pickle pickle;
+  proxy_chain.Persist(&pickle);
+  base::PickleIterator iter(pickle);
+  std::optional<ProxyChain> proxy_chain_from_pickle =
+      ProxyChain::InitFromPickle(iter);
+  ASSERT_TRUE(proxy_chain_from_pickle);
+  EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
+  EXPECT_TRUE(proxy_chain_from_pickle->is_for_ip_protection());
+  EXPECT_TRUE(proxy_chain_from_pickle->is_direct());
 }
 
 TEST(ProxyChainTest, PickleOneProxy) {
@@ -593,26 +610,54 @@ TEST(ProxyChainTest, PickleOneProxy) {
   base::Pickle pickle;
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
-  ProxyChain proxy_chain_from_pickle;
-  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
-  EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
+  std::optional<ProxyChain> proxy_chain_from_pickle =
+      ProxyChain::InitFromPickle(iter);
+  ASSERT_TRUE(proxy_chain_from_pickle);
+  EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
+}
+
+TEST(ProxyChainTest, PickleOneProxyIpProtection) {
+  ProxyChain proxy_chain = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:11", ProxyServer::SCHEME_HTTPS)});
+  base::Pickle pickle;
+  proxy_chain.Persist(&pickle);
+  base::PickleIterator iter(pickle);
+  std::optional<ProxyChain> proxy_chain_from_pickle =
+      ProxyChain::InitFromPickle(iter);
+  ASSERT_TRUE(proxy_chain_from_pickle);
+  EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
 }
 
 TEST(ProxyChainTest, UnpickleInvalidProxy) {
   ProxyServer invalid_proxy_server;
-  // Manually pickle a proxcy chain with an invalid proxy server.
+  // Manually pickle a proxy chain with an invalid proxy server.
   base::Pickle pickle;
   pickle.WriteInt(ProxyChain::kNotIpProtectionChainId);
   pickle.WriteInt(1);  // Length of the chain
   invalid_proxy_server.Persist(&pickle);
 
   base::PickleIterator iter(pickle);
-  ProxyChain invalid_proxy_chain_from_pickle;
   // Unpickling should fail and leave us with an invalid proxy chain.
-  EXPECT_FALSE(invalid_proxy_chain_from_pickle.InitFromPickle(&iter));
+  EXPECT_FALSE(ProxyChain::InitFromPickle(iter));
   // Make sure that we unpickled the invalid proxy server.
   EXPECT_TRUE(iter.ReachedEnd());
-  EXPECT_FALSE(invalid_proxy_chain_from_pickle.IsValid());
+}
+
+// Same as above, but with an IP Protection chain ID. For consistency we'd like
+// the invalid proxy chain to match the default constructed one even if
+// unpickling fails for IP Protection chains.
+TEST(ProxyChainTest, UnpickleInvalidProxyIpProtection) {
+  ProxyServer invalid_proxy_server;
+  base::Pickle pickle;
+  pickle.WriteInt(ProxyChain::kMaxIpProtectionChainId);
+  pickle.WriteInt(1);  // Length of the chain
+  invalid_proxy_server.Persist(&pickle);
+
+  base::PickleIterator iter(pickle);
+  // Unpickling should fail and leave us with an invalid proxy chain.
+  EXPECT_FALSE(ProxyChain::InitFromPickle(iter));
+  // Make sure that we unpickled the invalid proxy server.
+  EXPECT_TRUE(iter.ReachedEnd());
 }
 
 #if !BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
@@ -691,11 +736,26 @@ TEST(ProxyChainTest, PickleTwoProxies) {
   base::Pickle pickle;
   proxy_chain.Persist(&pickle);
   base::PickleIterator iter(pickle);
-  ProxyChain proxy_chain_from_pickle;
-  EXPECT_TRUE(proxy_chain_from_pickle.InitFromPickle(&iter));
-  EXPECT_EQ(proxy_chain, proxy_chain_from_pickle);
+  std::optional<ProxyChain> proxy_chain_from_pickle =
+      ProxyChain::InitFromPickle(iter);
+  ASSERT_TRUE(proxy_chain_from_pickle);
+  EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
 }
-#endif
+#endif  // BUILDFLAG(ENABLE_BRACKETED_PROXY_URIS)
+
+TEST(ProxyChainTest, UnpickleTwoProxiesIpProtection) {
+  ProxyChain proxy_chain = ProxyChain::ForIpProtection(
+      {ProxyUriToProxyServer("foo:11", ProxyServer::SCHEME_HTTPS),
+       ProxyUriToProxyServer("foo:22", ProxyServer::SCHEME_HTTPS)});
+
+  base::Pickle pickle;
+  proxy_chain.Persist(&pickle);
+  base::PickleIterator iter(pickle);
+  std::optional<ProxyChain> proxy_chain_from_pickle =
+      ProxyChain::InitFromPickle(iter);
+  ASSERT_TRUE(proxy_chain_from_pickle);
+  EXPECT_EQ(proxy_chain, *proxy_chain_from_pickle);
+}
 
 }  // namespace
 
