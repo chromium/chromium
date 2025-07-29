@@ -177,7 +177,6 @@ public class ArchivedTabsDialogCoordinatorTest {
 
     @After
     public void tearDown() {
-        mUserActionTester.tearDown();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mArchivedTabModel
