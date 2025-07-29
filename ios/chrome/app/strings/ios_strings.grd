@@ -451,6 +451,9 @@
       <message name="IDS_IOS_AUTOFILL_EDIT_ADDRESS" desc="Title for the view in Settings for editing an Autofill profile address. [Length: 20em] [iOS only]">
         Edit address
       </message>
+      <message name="IDS_IOS_AUTOFILL_EDIT_ADDRESS_CELL" desc="Title for the cell row in Settings for editing an Autofill profile home and work address. [Length: 20em] [iOS only]">
+        Edit...
+      </message>
       <message name="IDS_IOS_AUTOFILL_EDIT_CREDIT_CARD" desc="Title for the view in Settings for editing an Autofill profile address. [Length: 20em] [iOS only]">
         Edit credit card
       </message>

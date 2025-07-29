@@ -27,3 +27,5 @@ NSString* const kAutofillCreditCardEditTableViewId =
 
 NSString* const kAutofillAddressMigrateToAccountButtonId =
     @"kAutofillAddressMigrateToAccountButtonId";
+
+NSString* const kAutofillEditButtonCellId = @"kAutofillEditButtonCellId";

@@ -53,6 +53,9 @@ const CGFloat kSymbolSize = 22;
 
   // If `YES`, denotes that the migration to account was clicked.
   BOOL _migrationToAccountSectionWasClicked;
+
+  // If `YES`, the button is shown as a cell item in a section.
+  BOOL _showEditButtonAsCell;
 }
 
 #pragma mark - Initialization
@@ -70,6 +73,10 @@ const CGFloat kSymbolSize = 22;
     _userEmail = userEmail;
     _editIncompleteProfileForAccountView = NO;
     _migrationToAccountSectionWasClicked = NO;
+    autofill::AutofillProfile::RecordType type = [_delegate accountRecordType];
+    _showEditButtonAsCell =
+        (type == autofill::AutofillProfile::RecordType::kAccountHome ||
+         type == autofill::AutofillProfile::RecordType::kAccountWork);
   }
 
   return self;
@@ -140,6 +147,13 @@ const CGFloat kSymbolSize = 22;
         toSectionWithIdentifier:section];
   }
 
+  if (_showEditButtonAsCell) {
+    [model
+        addSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierEdit];
+    [model addItem:[self editCellButtonItem]
+        toSectionWithIdentifier:AutofillProfileDetailsSectionIdentifierEdit];
+  }
+
   [self.handler loadFooterForSettings];
 }
 
@@ -158,24 +172,6 @@ const CGFloat kSymbolSize = 22;
 #pragma mark - SettingsRootTableViewController
 
 - (void)editButtonPressed {
-  if (base::FeatureList::IsEnabled(
-          autofill::features::kAutofillEnableSupportForHomeAndWork)) {
-    autofill::AutofillProfile::RecordType type = [_delegate accountRecordType];
-    if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
-      [self.applicationHandler closePresentedViewsAndOpenURL:command];
-      return;
-    }
-
-    if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
-      OpenNewTabCommand* command = [OpenNewTabCommand
-          commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
-      [self.applicationHandler closePresentedViewsAndOpenURL:command];
-      return;
-    }
-  }
-
   [super editButtonPressed];
 
   if (!self.tableView.editing) {
@@ -190,6 +186,10 @@ const CGFloat kSymbolSize = 22;
     }
   }
   [self reloadData];
+}
+
+- (BOOL)shouldShowEditButton {
+  return !_showEditButtonAsCell;
 }
 
 - (BOOL)editButtonEnabled {
@@ -218,6 +218,9 @@ const CGFloat kSymbolSize = 22;
           AutofillProfileDetailsItemTypeMigrateToAccountRecommendation ||
       itemType == AutofillProfileDetailsItemTypeMigrateToAccountButton) {
     cell.selectionStyle = UITableViewCellSelectionStyleNone;
+    return cell;
+  }
+  if (itemType == AutofillProfileDetailsItemTypeEdit) {
     return cell;
   }
   return [self.handler cell:cell
@@ -251,6 +254,22 @@ const CGFloat kSymbolSize = 22;
     }
     return;
   }
+  if (itemType == AutofillProfileDetailsItemTypeEdit) {
+    autofill::AutofillProfile::RecordType type = [_delegate accountRecordType];
+    if (type == autofill::AutofillProfile::RecordType::kAccountHome) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleMyAccountHomeAddressURL)];
+      [self.applicationHandler closePresentedViewsAndOpenURL:command];
+      return;
+    }
+
+    if (type == autofill::AutofillProfile::RecordType::kAccountWork) {
+      OpenNewTabCommand* command = [OpenNewTabCommand
+          commandWithURLFromChrome:GURL(kGoogleMyAccountWorkAddressURL)];
+      [self.applicationHandler closePresentedViewsAndOpenURL:command];
+      return;
+    }
+  }
   [self.handler didSelectRowAtIndexPath:indexPath];
 }
 
@@ -276,7 +295,8 @@ const CGFloat kSymbolSize = 22;
     canEditRowAtIndexPath:(NSIndexPath*)indexPath {
   // If we don't allow the edit of the cell, the selection of the cell isn't
   // forwarded.
-  return YES;
+  NSInteger itemType = [self.tableViewModel itemTypeForIndexPath:indexPath];
+  return itemType != AutofillProfileDetailsItemTypeEdit;
 }
 
 - (UITableViewCellEditingStyle)tableView:(UITableView*)tableView
@@ -316,6 +336,16 @@ const CGFloat kSymbolSize = 22;
                        : [UIColor colorNamed:kBlueColor];
   item.enabled = !self.tableView.editing;
   item.accessibilityIdentifier = kAutofillAddressMigrateToAccountButtonId;
+  item.accessibilityTraits |= UIAccessibilityTraitButton;
+  return item;
+}
+
+- (TableViewTextItem*)editCellButtonItem {
+  TableViewTextItem* item = [[TableViewTextItem alloc]
+      initWithType:AutofillProfileDetailsItemTypeEdit];
+  item.text = l10n_util::GetNSString(IDS_IOS_AUTOFILL_EDIT_ADDRESS_CELL);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityIdentifier = kAutofillEditButtonCellId;
   item.accessibilityTraits |= UIAccessibilityTraitButton;
   return item;
 }

@@ -118,6 +118,10 @@ id<GREYMatcher> MigrateToAccountButton() {
   return grey_accessibilityID(kAutofillAddressMigrateToAccountButtonId);
 }
 
+id<GREYMatcher> EditCellButton() {
+  return grey_accessibilityID(kAutofillEditButtonCellId);
+}
+
 // Matcher for the navigation bar title of the "Adresses and more" page.
 id<GREYMatcher> AddressesAndMoreNavBarTitle() {
   return grey_allOf(
@@ -307,7 +311,7 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
   [self openEditProfile:kHomeProfileLabel];
 
   // Switch on edit mode.
-  [[EarlGrey selectElementWithMatcher:NavigationBarEditButton()]
+  [[EarlGrey selectElementWithMatcher:EditCellButton()]
       performAction:grey_tap()];
 
   // Assert that the edit page is no longer displayed.

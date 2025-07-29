@@ -36,6 +36,7 @@ typedef NS_ENUM(NSInteger, AutofillProfileDetailsSectionIdentifier) {
   AutofillProfileDetailsSectionIdentifierMigrationButton,
   AutofillProfileDetailsSectionIdentifierErrorFooter,
   AutofillProfileDetailsSectionIdentifierFooter,
+  AutofillProfileDetailsSectionIdentifierEdit
 };
 
 // Identifier for item types for autofill profile edit views.
@@ -46,7 +47,8 @@ typedef NS_ENUM(NSInteger, AutofillProfileDetailsItemType) {
   AutofillProfileDetailsItemTypeFooter,
   AutofillProfileDetailsItemTypeSaveButton,
   AutofillProfileDetailsItemTypeMigrateToAccountRecommendation,
-  AutofillProfileDetailsItemTypeMigrateToAccountButton
+  AutofillProfileDetailsItemTypeMigrateToAccountButton,
+  AutofillProfileDetailsItemTypeEdit
 };
 
 #endif  // IOS_CHROME_BROWSER_AUTOFILL_UI_BUNDLED_ADDRESS_EDITOR_AUTOFILL_CONSTANTS_H_

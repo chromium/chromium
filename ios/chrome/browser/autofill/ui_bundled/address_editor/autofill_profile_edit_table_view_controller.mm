@@ -797,6 +797,7 @@ const CGFloat kLineSpacingBetweenErrorAndFooter = 12.0f;
     case AutofillProfileDetailsItemTypeSaveButton:
     case AutofillProfileDetailsItemTypeMigrateToAccountButton:
     case AutofillProfileDetailsItemTypeMigrateToAccountRecommendation:
+    case AutofillProfileDetailsItemTypeEdit:
       break;
   }
   return NO;
