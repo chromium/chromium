@@ -1130,13 +1130,20 @@ void Dispatcher::LoadExtensions(
       auto it =
           service_workers_paused_for_on_loaded_message_.find(extension->id());
       if (it != service_workers_paused_for_on_loaded_message_.end()) {
-        scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-            std::move(it->second->task_runner);
-        // Using base::Unretained() should be fine as this won't get destructed.
-        task_runner->PostTask(
-            FROM_HERE,
-            base::BindOnce(&Dispatcher::ResumeEvaluationOnWorkerThread,
-                           base::Unretained(this), extension->id()));
+        // It's possible that LoadExtensions is called multiple times for the
+        // same extension before the worker thread has a chance to run the
+        // ResumeEvaluationOnWorkerThread task. In that case, the task_runner
+        // will have already been moved, so we need to check if it's valid.
+        if (it->second->task_runner) {
+          scoped_refptr<base::SingleThreadTaskRunner> task_runner =
+              std::move(it->second->task_runner);
+          // Using base::Unretained() should be fine as this won't get
+          // destructed.
+          task_runner->PostTask(
+              FROM_HERE,
+              base::BindOnce(&Dispatcher::ResumeEvaluationOnWorkerThread,
+                             base::Unretained(this), extension->id()));
+        }
       }
     }
   }
