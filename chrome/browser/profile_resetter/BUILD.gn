@@ -16,19 +16,19 @@ if (!is_android) {
       "fake_profile_resetter.h",
     ]
     deps = [
-      "//chrome/browser:browser",
+      "//chrome/browser",
       "//chrome/browser/browsing_data:constants",
-      "//chrome/browser/google:google",
-      "//chrome/browser/search/background:background",
-      "//chrome/browser/search_engines:search_engines",
+      "//chrome/browser/google",
+      "//chrome/browser/search/background",
+      "//chrome/browser/search_engines",
       "//chrome/test:test_support",
-      "//components/browsing_data/content:content",
-      "//components/language/core/browser:browser",
+      "//components/browsing_data/content",
+      "//components/language/core/browser",
     ]
     if (is_chromeos) {
       deps += [
         "//chromeos/ash/components/dbus/shill:test_support",
-        "//chromeos/ash/components/network:network",
+        "//chromeos/ash/components/network",
       ]
     }
   }

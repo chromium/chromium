@@ -11,7 +11,7 @@ source_set("web_app_shortcut_copier_lib") {
 
   deps = [
     "//base",
-    "//chrome/browser/apps/app_shim:app_shim",
+    "//chrome/browser/apps/app_shim",
     "//chrome/browser/web_applications/mojom:web_app_shortcut_copier_mojom",
     "//chrome/common:version_header",
     "//content/public/common:main_function_params",

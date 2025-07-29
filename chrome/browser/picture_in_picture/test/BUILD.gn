@@ -29,7 +29,7 @@ android_library("javatests") {
     "//content/public/android:content_java",
     "//third_party/androidx:androidx_test_monitor_java",
     "//third_party/androidx:androidx_test_runner_java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
   ]
 }
 
@@ -71,7 +71,7 @@ static_library("test_support") {
   deps = [
     ":jni_headers",
     "//base",
-    "//chrome/browser/picture_in_picture:picture_in_picture",
+    "//chrome/browser/picture_in_picture",
     "//content/public/browser",
   ]
 }

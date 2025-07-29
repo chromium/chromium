@@ -104,7 +104,7 @@ if (is_android) {
       "//components/embedder_support/android:util_java",
       "//components/visited_url_ranking/public:public_java",
       "//content/public/android:content_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
       "//url:gurl_junit_test_support",

@@ -294,7 +294,7 @@ group("dev_ui_resources") {
     "//components/download/resources/download_internals:resources",
     "//components/history_clusters/history_clusters_internals/resources",
     "//components/metrics/debug:resources",
-    "//components/ntp_tiles/webui/resources:resources",
+    "//components/ntp_tiles/webui/resources",
     "//components/optimization_guide/optimization_guide_internals/resources",
     "//components/policy/resources/webui:resources",
     "//components/resources:dev_ui_components_resources",

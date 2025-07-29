@@ -35,10 +35,10 @@ source_set("android_impl") {
     ":java_enums",
     ":jni_headers",
     "//chrome/browser:browser_process",
-    "//chrome/browser/favicon:favicon",
+    "//chrome/browser/favicon",
     "//chrome/browser/profiles:profile",
-    "//components/favicon/core:core",
-    "//components/pref_registry:pref_registry",
+    "//components/favicon/core",
+    "//components/pref_registry",
   ]
 }
 
@@ -96,7 +96,7 @@ robolectric_library("junit") {
     "//base:base_junit_test_support",
     "//chrome/browser/partnercustomizations:java",
     "//chrome/browser/profiles/android:java",
-    "//third_party/junit:junit",
+    "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
 }

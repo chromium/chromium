@@ -76,7 +76,7 @@ source_set("impl") {
     "//chrome/browser/media/webrtc",
     "//chrome/browser/permissions",
     "//chrome/browser/profiles:profile",
-    "//chrome/browser/safe_browsing:safe_browsing",
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/ui:browser_navigator_params_headers",
     "//components/content_settings/core/browser",
     "//components/permissions",

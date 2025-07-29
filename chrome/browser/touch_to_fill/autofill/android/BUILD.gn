@@ -29,7 +29,7 @@ source_set("android") {
     "//chrome/browser/profiles",
     "//components/autofill/android:main_autofill_jni_headers",
     "//components/autofill/core/common:features",
-    "//content/public/browser:browser",
+    "//content/public/browser",
     "//third_party/libaddressinput:util",
     "//ui/android",
   ]

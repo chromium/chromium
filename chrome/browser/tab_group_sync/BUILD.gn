@@ -15,7 +15,7 @@ source_set("utils") {
   ]
 
   deps = [
-    "//base:base",
+    "//base",
     "//chrome/browser/profiles",
     "//components/prefs",
     "//components/saved_tab_groups/public:features",
@@ -173,7 +173,7 @@ if (is_android) {
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//third_party/jni_zero:gendeps_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java",
       "//url:url_java",
@@ -196,7 +196,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_core_java",
       "//third_party/hamcrest:hamcrest_library_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//url:url_java",
     ]
   }

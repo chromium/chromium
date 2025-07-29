@@ -52,7 +52,7 @@ build_webui("build") {
   ]
 
   mojo_files_deps = [
-    "//chrome/browser/ui/webui/ash/login/mojom:mojom",
+    "//chrome/browser/ui/webui/ash/login/mojom",
     "//chrome/browser/ui/webui/ash/login/mojom:mojom_ts__generator",
   ]
 

@@ -157,7 +157,7 @@ source_set("impl") {
   }
 
   if (enable_background_mode) {
-    deps += [ "//chrome/browser/background/extensions:extensions" ]
+    deps += [ "//chrome/browser/background/extensions" ]
   }
 
   if (is_chromeos) {
@@ -491,7 +491,7 @@ if (!is_android) {
       "//chrome/browser/preloading:prefs",
       "//chrome/browser/search_engines",
       "//chrome/browser/ui",
-      "//chrome/browser/ui/browser_window:browser_window",
+      "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/tabs:tab_strip",
       "//chrome/common:constants",
       "//chrome/common:non_code_constants",

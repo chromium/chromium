@@ -28,7 +28,7 @@ source_set("system") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/profiles",
-    "//services/device/public/cpp/geolocation:geolocation",
+    "//services/device/public/cpp/geolocation",
   ]
 
   if (is_mac) {
@@ -44,8 +44,8 @@ source_set("system") {
     sources += [ "system_permission_settings_chromeos.cc" ]
     deps += [
       "//chrome/browser:browser_public_dependencies",
-      "//chrome/browser/ash/privacy_hub:privacy_hub",
-      "//chrome/browser/web_applications:web_applications",
+      "//chrome/browser/ash/privacy_hub",
+      "//chrome/browser/web_applications",
     ]
   } else if (is_win) {
     sources += [

@@ -4,7 +4,7 @@
 
 group("password_manager") {
   public_deps = [
+    "//chrome/browser/password_manager/factories",
     "//chrome/browser/password_manager/factories:backend_factory",
-    "//chrome/browser/password_manager/factories:factories",
   ]
 }

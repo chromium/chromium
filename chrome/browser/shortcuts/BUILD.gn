@@ -181,7 +181,7 @@ source_set("unit_tests") {
 
   if (is_win) {
     sources += [ "shortcut_creator_win_unittest.cc" ]
-    deps += [ "//chrome/browser:browser" ]
+    deps += [ "//chrome/browser" ]
   }
 
   if (is_mac) {

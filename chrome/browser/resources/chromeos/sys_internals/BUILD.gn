@@ -16,7 +16,7 @@ js_library("index") {
   deps = [
     ":constants",
     ":types",
-    "line_chart:line_chart",
+    "line_chart",
     "line_chart:unit_label",
     "//ash/webui/common/resources:cr.m",
     "//ash/webui/common/resources:promise_resolver",

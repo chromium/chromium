@@ -52,7 +52,7 @@ source_set("browser_tests") {
     "//components/payments/core",
     "//components/payments/core:test_support",
     "//components/ukm:test_support",
-    "//components/webdata_services:webdata_services",
+    "//components/webdata_services",
     "//device/fido:test_support",
   ]
 
@@ -75,8 +75,8 @@ source_set("browser_tests") {
       "//chrome/test:test_support_ui",
       "//components/payments/content:utils",
       "//components/payments/content/utility",
-      "//components/permissions:permissions",
-      "//components/webdata_services:webdata_services",
+      "//components/permissions",
+      "//components/webdata_services",
     ]
   }
 
@@ -96,7 +96,7 @@ source_set("unittests") {
     "//chrome/test:test_support",
     "//components/content_settings/core/test:test_support",
     "//components/infobars/content",
-    "//components/permissions:permissions",
+    "//components/permissions",
   ]
 
   if (is_android) {

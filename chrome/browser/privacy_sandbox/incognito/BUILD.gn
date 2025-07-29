@@ -61,7 +61,7 @@ if (!is_android) {
     deps = [
       ":incognito_features",
       ":incognito_surveys",
-      "//chrome/browser/ui/hats:hats",
+      "//chrome/browser/ui/hats",
       "//chrome/browser/ui/hats:test_support",
       "//chrome/test:test_support",
     ]

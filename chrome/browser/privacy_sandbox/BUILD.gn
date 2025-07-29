@@ -60,7 +60,7 @@ source_set("countries_browser_test") {
     "//chrome/browser:browser_process",
     "//chrome/test:test_support",
     "//components/privacy_sandbox:features",
-    "//components/variations/service:service",
+    "//components/variations/service",
     "//testing/gmock",
     "//testing/gtest",
   ]

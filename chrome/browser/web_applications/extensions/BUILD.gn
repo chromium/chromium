@@ -36,7 +36,7 @@ source_set("extensions") {
     "//components/pref_registry",
     "//components/services/app_service",
     "//components/sync/model",
-    "//components/webapps/browser:browser",
+    "//components/webapps/browser",
     "//components/webapps/common",
     "//content/public/browser",
     "//extensions/browser",

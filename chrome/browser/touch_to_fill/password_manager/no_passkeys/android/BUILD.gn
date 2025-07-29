@@ -13,7 +13,7 @@ source_set("public") {
   deps = [
     "//base",
     "//chrome/browser/touch_to_fill/password_manager/no_passkeys/internal/android:jni",
-    "//ui/android:android",
+    "//ui/android",
     "//ui/gfx",
   ]
 }
@@ -26,7 +26,7 @@ source_set("unit_tests") {
     "//base",
     "//base/test:test_support",
     "//testing/gmock",
-    "//ui/android:android",
+    "//ui/android",
   ]
 
   sources = [ "no_passkeys_bottom_sheet_bridge_unittest.cc" ]

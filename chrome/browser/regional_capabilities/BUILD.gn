@@ -39,7 +39,7 @@ source_set("regional_capabilities") {
       "regional_capabilities_service_client_chromeos.h",
     ]
 
-    deps += [ "//chromeos/ash/components/system:system" ]
+    deps += [ "//chromeos/ash/components/system" ]
   }
 
   if (is_linux) {
@@ -87,7 +87,7 @@ source_set("unit_tests") {
   if (is_chromeos) {
     sources += [ "regional_capabilities_service_client_chromeos_unittest.cc" ]
 
-    deps += [ "//chromeos/ash/components/system:system" ]
+    deps += [ "//chromeos/ash/components/system" ]
   }
 
   if (is_linux) {

@@ -233,7 +233,7 @@ if (is_android) {
       "//third_party/androidx:androidx_test_runner_java",
       "//third_party/hamcrest:hamcrest_java",
       "//third_party/jni_zero:jni_zero_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
       "//third_party/mockito:mockito_java",
       "//ui/android:ui_java_test_support",
       "//ui/android:ui_no_recycler_view_java",
@@ -254,7 +254,7 @@ if (is_android) {
       "//chrome/android:chrome_java",
       "//third_party/android_deps:robolectric_all_java",
       "//third_party/androidx:androidx_test_runner_java",
-      "//third_party/junit:junit",
+      "//third_party/junit",
     ]
   }
 
@@ -269,7 +269,7 @@ if (is_android) {
       deps = [
         "//base",
         "//chrome/browser/profiles:profile",
-        "//chrome/browser/sync:sync",
+        "//chrome/browser/sync",
         "//chrome/test:test_support",
         "//components/messages/android/test:test_support_cpp",
         "//components/safe_search_api:test_support",

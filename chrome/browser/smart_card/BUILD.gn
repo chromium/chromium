@@ -44,7 +44,7 @@ source_set("smart_card") {
       "//chrome/browser/permissions",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui/browser_window",
-      "//components/content_settings/browser:browser",
+      "//components/content_settings/browser",
       "//components/permissions",
       "//components/strings:components_strings_grit",
       "//content/public/browser",
@@ -82,10 +82,10 @@ if (is_chromeos) {
     defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
     deps = [
-      "//chrome/browser/smart_card:smart_card",
+      "//chrome/browser/smart_card",
       "//chrome/browser/web_applications:web_applications_test_support",
       "//chrome/test:test_support",
-      "//components/content_settings/browser:browser",
+      "//components/content_settings/browser",
       "//content/test:test_support",
       "//testing/gmock",
       "//testing/gtest",
@@ -103,7 +103,7 @@ if (is_chromeos) {
       ":smart_card",
       "//chrome/browser",
       "//chrome/browser/content_settings:content_settings_factory",
-      "//chrome/browser/permissions:permissions",
+      "//chrome/browser/permissions",
       "//chrome/browser/policy:test_support",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui",

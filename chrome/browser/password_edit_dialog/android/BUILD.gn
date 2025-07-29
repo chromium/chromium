@@ -17,7 +17,7 @@ source_set("android") {
     "//base",
     "//chrome/app:generated_resources",
     "//content/public/browser",
-    "//ui/android:android",
+    "//ui/android",
   ]
 }
 

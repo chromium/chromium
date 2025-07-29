@@ -16,7 +16,7 @@ source_set("password_factory_headers") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/password_manager/core/browser:browser",
+    "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/password_store:password_store_interface",
     "//content/public/browser",
   ]
@@ -83,7 +83,7 @@ source_set("backend_factory") {
     "//components/password_manager/core/browser:password_manager_buildflags",
     "//components/password_manager/core/browser/affiliation:affiliation_fetching",
     "//components/password_manager/core/browser/features:password_features",
-    "//components/password_manager/core/common:common",
+    "//components/password_manager/core/common",
     "//components/prefs",
   ]
   if (is_android) {

@@ -64,11 +64,11 @@ source_set("screen_ai_service_router_factory") {
     ":screen_ai_install_state",
     "//chrome/browser/profiles:profile",
     "//components/keyed_service/core",
-    "//components/performance_manager:performance_manager",
+    "//components/performance_manager",
     "//content/public/browser",
     "//services/screen_ai/public/cpp:utilities",
+    "//services/screen_ai/public/mojom",
     "//services/screen_ai/public/mojom:factory",
-    "//services/screen_ai/public/mojom:mojom",
   ]
 
   configs += [ "//build/config/compiler:wexit_time_destructors" ]

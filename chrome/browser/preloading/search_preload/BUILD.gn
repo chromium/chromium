@@ -28,8 +28,7 @@ source_set("search_preload") {
     "//base",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/search_engines",
-    "//chrome/browser/search_engines:search_engines",
-    "//components/omnibox/browser:browser",
+    "//components/omnibox/browser",
     "//components/omnibox/browser:mojo_bindings",
     "//components/search_engines",
   ]
