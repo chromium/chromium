@@ -1082,10 +1082,9 @@ Chrome generally tries to use the operating system's user storage mechanism
 wherever possible and stores them encrypted on disk, but it is platform
 specific:
 
-*    On Windows, Chrome uses the [Data Protection API
-     (DPAPI)](https://msdn.microsoft.com/en-us/library/ms995355.aspx) to bind
-     your passwords to your user account and store them on disk encrypted with
-     a key only accessible to processes running as the same logged on user.
+*    On Windows, Chrome uses [App-Bound encryption](https://source.chromium.org/chromium/chromium/src/+/main:components/os_crypt/async/)
+     to store them on disk encrypted with a key only accessible to the Chrome
+     process as well as admin processes.
 *    On macOS and iOS, Chrome previously stored credentials directly in the user's
      Keychain, but for technical reasons, it has switched to storing the
      credentials in "Login Data" in the Chrome users profile directory, but
