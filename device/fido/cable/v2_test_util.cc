@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/v2_test_util.h"
 
 #include <array>
@@ -16,6 +11,7 @@
 
 #include "base/base64url.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/functional/callback.h"
@@ -179,7 +175,7 @@ class TestNetworkContext : public network::TestNetworkContext {
           out_watcher_(FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL),
           handshake_client_(std::move(pending_handshake_client)) {
       MojoCreateDataPipeOptions options;
-      memset(&options, 0, sizeof(options));
+      UNSAFE_TODO(memset(&options, 0, sizeof(options)));
       options.struct_size = sizeof(options);
       options.flags = MOJO_CREATE_DATA_PIPE_FLAG_NONE;
       options.element_num_bytes = sizeof(uint8_t);
@@ -349,8 +345,9 @@ class TestNetworkContext : public network::TestNetworkContext {
         } else {
           const size_t new_length =
               peer_->buffer_.size() - actually_written_bytes;
-          memmove(peer_->buffer_.data(),
-                  &peer_->buffer_.data()[actually_written_bytes], new_length);
+          UNSAFE_TODO(memmove(peer_->buffer_.data(),
+                              &peer_->buffer_.data()[actually_written_bytes],
+                              new_length));
           peer_->buffer_.resize(new_length);
           peer_->buffer_i_ -= actually_written_bytes;
         }
@@ -413,8 +410,8 @@ class TestPlatform : public authenticator::Platform {
         std::move(params->user),
         PublicKeyCredentialParams(std::move(params->public_key_parameters)));
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
-    memcpy(request.client_data_hash.data(), params->challenge.data(),
-           params->challenge.size());
+    UNSAFE_TODO(memcpy(request.client_data_hash.data(),
+                       params->challenge.data(), params->challenge.size()));
     request.resident_key_required =
         !params->authenticator_selection
             ? false
@@ -439,8 +436,8 @@ class TestPlatform : public authenticator::Platform {
     request.user_verification = params->user_verification;
 
     CHECK_EQ(request.client_data_hash.size(), params->challenge->size());
-    memcpy(request.client_data_hash.data(), params->challenge->data(),
-           params->challenge->size());
+    UNSAFE_TODO(memcpy(request.client_data_hash.data(),
+                       params->challenge->data(), params->challenge->size()));
     if (params->extensions) {
       for (const auto& prf_input_from_request :
            params->extensions->prf_inputs) {

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/dbus/bluetooth_gatt_descriptor_client.h"
 
 #include <stddef.h>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -227,7 +223,7 @@ class BluetoothGattDescriptorClientImpl
     std::vector<uint8_t> value;
 
     if (bytes)
-      value.assign(bytes, bytes + length);
+      value.assign(bytes, UNSAFE_TODO(bytes + length));
 
     std::move(callback).Run(/*error_code=*/std::nullopt, value);
   }

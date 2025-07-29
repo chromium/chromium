@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/fido/hid/fido_hid_device.h"
 
 #include <array>
@@ -19,6 +14,7 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
@@ -437,7 +433,7 @@ TEST_F(FidoHidDeviceTest, TestKeepAliveMessage) {
 std::array<uint8_t, 4> InvertChannelID(
     const std::array<uint8_t, 4> channel_id) {
   std::array<uint8_t, 4> ret;
-  memcpy(ret.data(), channel_id.data(), ret.size());
+  UNSAFE_TODO(memcpy(ret.data(), channel_id.data(), ret.size()));
   for (size_t i = 0; i < ret.size(); i++) {
     ret[i] ^= 0xff;
   }

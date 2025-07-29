@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/cable/v2_handshake.h"
 
 #include <algorithm>
 #include <array>
 #include <string_view>
 
+#include "base/compiler_specific.h"
 #include "base/containers/auto_spanification_helper.h"
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
@@ -79,7 +75,7 @@ TEST(CableV2Encoding, EIDEncrypt) {
 
   const std::optional<CableEidArray> eid2 = eid::Decrypt(advert, key);
   ASSERT_TRUE(eid2.has_value());
-  EXPECT_TRUE(memcmp(eid.data(), eid2->data(), eid.size()) == 0);
+  UNSAFE_TODO(EXPECT_TRUE(memcmp(eid.data(), eid2->data(), eid.size()) == 0));
 
   advert[0] ^= 1;
   EXPECT_FALSE(eid::Decrypt(advert, key).has_value());
@@ -99,10 +95,10 @@ TEST(CableV2Encoding, QRs) {
   const std::optional<qr::Components> decoded = qr::Parse(url);
   ASSERT_TRUE(decoded.has_value()) << url;
   static_assert(kQRKeySize >= std::tuple_size_v<decltype(decoded->secret)>);
-  EXPECT_EQ(memcmp(decoded->secret.data(),
-                   &qr_key[qr_key.size() - decoded->secret.size()],
-                   decoded->secret.size()),
-            0);
+  UNSAFE_TODO(EXPECT_EQ(memcmp(decoded->secret.data(),
+                               &qr_key[qr_key.size() - decoded->secret.size()],
+                               decoded->secret.size()),
+                        0));
   // There are two registered domains at the time of writing the test. That
   // number should only grow over time.
   EXPECT_GE(decoded->num_known_domains, 2u);
@@ -148,7 +144,8 @@ TEST(CableV2Encoding, KnownQRs) {
           // QR with an invalid compressed point.
           [](cbor::Value::MapValue* m) {
             uint8_t invalid_point[sizeof(kCompressedPoint)];
-            memcpy(invalid_point, kCompressedPoint, sizeof(invalid_point));
+            UNSAFE_TODO(
+                memcpy(invalid_point, kCompressedPoint, sizeof(invalid_point)));
             invalid_point[sizeof(invalid_point) - 1] ^= 3;
             m->emplace(0, base::span(invalid_point));
             m->emplace(1, base::span(kQRSecret));
@@ -343,7 +340,7 @@ TEST(CableV2Encoding, PaddedCBOR) {
 
   cbor::Value::MapValue map2;
   uint8_t blob[kPostHandshakeMsgPaddingGranularity] = {};
-  map2.emplace(1, base::span<const uint8_t>(blob, sizeof(blob)));
+  map2.emplace(1, UNSAFE_TODO(base::span<const uint8_t>(blob, sizeof(blob))));
   encoded = EncodePaddedCBORMap(std::move(map2));
   ASSERT_TRUE(encoded);
   EXPECT_EQ(kPostHandshakeMsgPaddingGranularity * 2, encoded->size());
@@ -415,8 +412,8 @@ TEST(CableV2Encoding, Digits) {
 
   // |BytesToDigits| and |DigitsToBytes| should round-trip.
   for (size_t i = 0; i < base::SpanificationSizeofForStdArray(test_data); i++) {
-    std::string digits =
-        qr::BytesToDigits(base::span<const uint8_t>(test_data.data(), i));
+    std::string digits = qr::BytesToDigits(
+        UNSAFE_TODO(base::span<const uint8_t>(test_data.data(), i)));
     std::optional<std::vector<uint8_t>> test_data_again =
         qr::DigitsToBytes(digits);
     ASSERT_TRUE(test_data_again.has_value());
@@ -434,7 +431,7 @@ TEST(CableV2Encoding, Digits) {
 
   // |DigitsToBytes| should reject impossible input lengths.
   char digits[20];
-  memset(digits, '0', sizeof(digits));
+  UNSAFE_TODO(memset(digits, '0', sizeof(digits)));
   for (size_t i = 0; i < sizeof(digits); i++) {
     std::optional<std::vector<uint8_t>> bytes =
         qr::DigitsToBytes(std::string_view(digits, i));

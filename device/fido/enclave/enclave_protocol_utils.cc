@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/enclave/enclave_protocol_utils.h"
 
 #include <array>
 #include <variant>
 
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
@@ -634,9 +630,10 @@ void BuildCommandRequestBody(
   }
 
   SignedMessage signed_message;
-  memcpy(signed_message.data(), handshake_hash.data(), crypto::kSHA256Length);
-  memcpy(signed_message.data() + crypto::kSHA256Length,
-         serialized_requests_hash.data(), crypto::kSHA256Length);
+  UNSAFE_TODO(memcpy(signed_message.data(), handshake_hash.data(),
+                     crypto::kSHA256Length));
+  UNSAFE_TODO(memcpy(signed_message.data() + crypto::kSHA256Length,
+                     serialized_requests_hash.data(), crypto::kSHA256Length));
 
   auto append_signature_and_finish =
       [](cbor::Value::MapValue request_body_map,

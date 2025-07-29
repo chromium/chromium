@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/gamepad_pad_state_provider.h"
 
 #include <cmath>
 #include <memory>
 #include <optional>
 
+#include "base/compiler_specific.h"
 #include "base/containers/heap_array.h"
 #include "device/gamepad/gamepad_data_fetcher.h"
 #include "device/gamepad/gamepad_provider.h"
@@ -89,7 +85,7 @@ PadState* GamepadPadStateProvider::GetConnectedPadState(uint32_t pad_index) {
 }
 
 void GamepadPadStateProvider::ClearPadState(PadState& state) {
-  memset(&state, 0, sizeof(PadState));
+  UNSAFE_TODO(memset(&state, 0, sizeof(PadState)));
 }
 
 void GamepadPadStateProvider::InitializeDataFetcher(
@@ -104,7 +100,7 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   DCHECK(pad);
 
   if (!pad_state->data.connected) {
-    memset(pad, 0, sizeof(Gamepad));
+    UNSAFE_TODO(memset(pad, 0, sizeof(Gamepad)));
     return;
   }
 
@@ -135,10 +131,10 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   if (pad_state->axis_mask != full_axis_mask) {
     for (size_t axis = 0; axis < pad->axes_length; ++axis) {
       if (!(pad_state->axis_mask & 1 << axis)) {
-        if (fabs(pad->axes[axis]) < kMinAxisResetValue) {
+        if (fabs(UNSAFE_TODO(pad->axes[axis])) < kMinAxisResetValue) {
           pad_state->axis_mask |= 1 << axis;
         } else {
-          pad->axes[axis] = 0.0f;
+          UNSAFE_TODO(pad->axes[axis]) = 0.0f;
         }
       }
     }
@@ -149,11 +145,11 @@ void GamepadPadStateProvider::MapAndSanitizeGamepadData(PadState* pad_state,
   if (pad_state->button_mask != full_button_mask) {
     for (size_t button = 0; button < pad->buttons_length; ++button) {
       if (!(pad_state->button_mask & 1 << button)) {
-        if (!pad->buttons[button].pressed) {
+        if (!UNSAFE_TODO(pad->buttons[button]).pressed) {
           pad_state->button_mask |= 1 << button;
         } else {
-          pad->buttons[button].pressed = false;
-          pad->buttons[button].value = 0.0f;
+          UNSAFE_TODO(pad->buttons[button]).pressed = false;
+          UNSAFE_TODO(pad->buttons[button]).value = 0.0f;
         }
       }
     }

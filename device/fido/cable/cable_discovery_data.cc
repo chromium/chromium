@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/fido/cable/cable_discovery_data.h"
 
 #include <algorithm>
 #include <cstring>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/i18n/string_compare.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
@@ -184,8 +180,9 @@ bool Pairing::CompareByLeastStableChannelFirst(
 // static
 bool Pairing::CompareByPublicKey(const std::unique_ptr<Pairing>& a,
                                  const std::unique_ptr<Pairing>& b) {
-  return memcmp(a->peer_public_key_x962.data(), b->peer_public_key_x962.data(),
-                sizeof(a->peer_public_key_x962)) < 0;
+  return UNSAFE_TODO(memcmp(a->peer_public_key_x962.data(),
+                            b->peer_public_key_x962.data(),
+                            sizeof(a->peer_public_key_x962))) < 0;
 }
 
 // static

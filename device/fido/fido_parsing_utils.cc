@@ -2,14 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/fido_parsing_utils.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 
@@ -20,8 +16,8 @@ namespace {
 
 constexpr bool AreSpansDisjoint(base::span<const uint8_t> lhs,
                                 base::span<const uint8_t> rhs) {
-  return lhs.data() + lhs.size() <= rhs.data() ||  // [lhs)...[rhs)
-         rhs.data() + rhs.size() <= lhs.data();    // [rhs)...[lhs)
+  return UNSAFE_TODO(lhs.data() + lhs.size()) <= rhs.data() ||  // [lhs)...[rhs)
+         UNSAFE_TODO(rhs.data() + rhs.size()) <= lhs.data();    // [rhs)...[lhs)
 }
 
 }  // namespace

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/dualshock4_controller.h"
 
 #include <algorithm>
@@ -193,12 +188,13 @@ void ProcessTouchData(base::span<const TouchPadData> touchpad_data,
         if (!initial_touch_id.has_value()) {
           initial_touch_id = j == 0 ? touch_id_0 : touch_id_1;
         }
-        auto& touch = touches[pad->touch_events_length++];
+        auto& touch = UNSAFE_TODO(touches[pad->touch_events_length++]);
         touch.touch_id =
             (j == 0 ? touch_id_0 : touch_id_1) - initial_touch_id.value();
         touch.surface_id = 0;
         // x and y coordinates stored in 3 bytes (12bits each)
-        ReadTouchCoordinates(base::span(raw_touch.data, 3u), touch);
+        ReadTouchCoordinates(UNSAFE_TODO(base::span(raw_touch.data, 3u)),
+                             touch);
       }
     }
   }
@@ -234,9 +230,9 @@ void ProcessAxisButtonData(const ControllerData& controller_data,
       controller_data.button_touch,
   });
   for (size_t i = 0; i < std::size(button_values); ++i) {
-    pad->buttons[i].pressed = button_values[i];
-    pad->buttons[i].touched = button_values[i];
-    pad->buttons[i].value = button_values[i] ? 1.0 : 0.0;
+    UNSAFE_TODO(pad->buttons[i]).pressed = button_values[i];
+    UNSAFE_TODO(pad->buttons[i]).touched = button_values[i];
+    UNSAFE_TODO(pad->buttons[i]).value = button_values[i] ? 1.0 : 0.0;
   }
 }
 
@@ -338,8 +334,8 @@ bool Dualshock4Controller::ProcessInputReport(uint8_t report_id,
 
   if (is_multitouch_enabled) {
     pad->supports_touch_events_ = true;
-    ProcessTouchData(base::span(touches, touches_count), transform_touch_id_,
-                     initial_touch_id_, pad);
+    ProcessTouchData(UNSAFE_TODO(base::span(touches, touches_count)),
+                     transform_touch_id_, initial_touch_id_, pad);
   }
 
   pad->timestamp = GamepadDataFetcher::CurrentTimeInMicroseconds();

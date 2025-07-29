@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/gamepad/gamepad_service.h"
 
 #include <string.h>
@@ -14,6 +9,7 @@
 #include <memory>
 
 #include "base/barrier_closure.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
@@ -56,7 +52,7 @@ class GamepadServiceTest : public testing::Test {
 
  protected:
   GamepadServiceTest() {
-    memset(&test_data_, 0, sizeof(test_data_));
+    UNSAFE_TODO(memset(&test_data_, 0, sizeof(test_data_)));
 
     // Configure the pad to have one button. We need our mock gamepad
     // to have at least one input so we can simulate a user gesture.

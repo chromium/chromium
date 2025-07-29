@@ -2,13 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "device/vr/util/gamepad_builder.h"
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 
@@ -70,7 +67,7 @@ std::optional<Gamepad> GamepadBuilder::GetGamepad() {
 
 void GamepadBuilder::AddButton(const GamepadButton& button) {
   DCHECK_LT(gamepad_.buttons_length, Gamepad::kButtonsLengthCap);
-  gamepad_.buttons[gamepad_.buttons_length++] = button;
+  UNSAFE_TODO(gamepad_.buttons[gamepad_.buttons_length++]) = button;
 }
 
 void GamepadBuilder::AddButton(const ButtonData& data) {
@@ -81,7 +78,7 @@ void GamepadBuilder::AddButton(const ButtonData& data) {
 
 void GamepadBuilder::AddAxis(double value, double deadzone) {
   DCHECK_LT(gamepad_.axes_length, Gamepad::kAxesLengthCap);
-  gamepad_.axes[gamepad_.axes_length++] =
+  UNSAFE_TODO(gamepad_.axes[gamepad_.axes_length++]) =
       std::fabs(value) < deadzone ? 0.0 : value;
 }
 
@@ -111,7 +108,8 @@ void GamepadBuilder::RemovePlaceholderButton() {
   // a length and that there's not any data that's been set in the alleged
   // placeholder button.
   DCHECK_GT(gamepad_.buttons_length, 0u);
-  GamepadButton button = gamepad_.buttons[gamepad_.buttons_length - 1];
+  GamepadButton button =
+      UNSAFE_TODO(gamepad_.buttons[gamepad_.buttons_length - 1]);
   DCHECK(!button.pressed && !button.touched && button.value == 0);
   gamepad_.buttons_length--;
 }

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/floss/floss_adapter_client.h"
 
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -1062,9 +1058,9 @@ TEST_F(FlossAdapterClientTest, GenericMethodSetPasskey) {
                       {.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
                   param1);
         EXPECT_EQ(kFakeBoolParam, param2);
-        EXPECT_EQ(
+        UNSAFE_TODO(EXPECT_EQ(
             std::vector<uint8_t>(kFakeBytes, kFakeBytes + sizeof(kFakeBytes)),
-            std::vector<uint8_t>(param3, param3 + param3_len));
+            std::vector<uint8_t>(param3, param3 + param3_len)));
         EXPECT_FALSE(msg.HasMoreData());
         // Create a fake response with no return value.
         auto response = ::dbus::Response::CreateEmpty();
@@ -1079,7 +1075,8 @@ TEST_F(FlossAdapterClientTest, GenericMethodSetPasskey) {
       }),
       FlossDeviceId({.address = kFakeDeviceAddr, .name = kFakeDeviceName}),
       kFakeBoolParam,
-      std::vector<uint8_t>(kFakeBytes, kFakeBytes + sizeof(kFakeBytes)));
+      std::vector<uint8_t>(kFakeBytes,
+                           UNSAFE_TODO(kFakeBytes + sizeof(kFakeBytes))));
   run_loop.Run();
 }
 

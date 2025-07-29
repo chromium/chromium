@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "device/fido/enclave/attestation.h"
 
 #include <optional>
@@ -482,7 +477,7 @@ base::expected<void, const char*> CheckRootKeyHash(
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(root_key.data(), root_key.size(), digest);
   static_assert(REPORT_DATA_SIZE >= sizeof(digest));
-  if (memcmp(digest, report_data.data(), sizeof(digest)) != 0) {
+  if (UNSAFE_TODO(memcmp(digest, report_data.data(), sizeof(digest))) != 0) {
     return base::unexpected("root key hash incorrect");
   }
   // The rest of the report data should be zeros.
@@ -707,8 +702,8 @@ base::expected<AttestationResult, const char*> ProcessAttestation(
   AttestationReport attestation_report;
   // Use `memcpy` rather than setting a pointer as the alignment of
   // `amd_attestation` may not be correct.
-  memcpy(&attestation_report, amd_attestation.data(),
-         sizeof(attestation_report));
+  UNSAFE_TODO(memcpy(&attestation_report, amd_attestation.data(),
+                     sizeof(attestation_report)));
 
   ASSIGN_OR_RETURN(auto vcek_extensions,
                    ExtractVCEKCertificateExtensions(*values.vcek_cert));

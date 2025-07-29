@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/bluetooth/floss/floss_admin_client.h"
 
 #include <map>
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
@@ -193,8 +189,9 @@ class FlossAdminClientTest : public testing::Test,
           for (auto* uuid_in_bytes : kTestUuidInBytes) {
             EXPECT_TRUE(array_reader.PopArrayOfBytes(&buf, &sz));
             EXPECT_EQ(sz, kUUIDSize);
-            EXPECT_EQ(std::vector<uint8_t>(uuid_in_bytes, uuid_in_bytes + sz),
-                      std::vector<uint8_t>(buf, buf + sz));
+            UNSAFE_TODO(EXPECT_EQ(
+                std::vector<uint8_t>(uuid_in_bytes, uuid_in_bytes + sz),
+                std::vector<uint8_t>(buf, buf + sz)));
           }
           EXPECT_FALSE(reader.HasMoreData());
           EXPECT_FALSE(array_reader.HasMoreData());

@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/pin_internal.h"
 
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/char_iterator.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_util.h"
@@ -283,7 +279,7 @@ class ProtocolV2 : public ProtocolV1 {
     static_assert(kSharedKeyLength == 2 * SHA256_DIGEST_LENGTH);
     DCHECK_GE(*out_len, kSharedKeyLength);
     const auto [hmac_key_out, aes_key_out] =
-        base::span(static_cast<uint8_t*>(out), kSharedKeyLength)
+        UNSAFE_TODO(base::span(static_cast<uint8_t*>(out), kSharedKeyLength))
             .split_at<SHA256_DIGEST_LENGTH>();
 
     constexpr uint8_t kHMACKeyInfo[] = "CTAP2 HMAC key";

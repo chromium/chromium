@@ -2,14 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
 #include "device/bluetooth/floss/floss_dbus_client.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/strings/stringprintf.h"
 #include "dbus/message.h"
@@ -382,9 +379,12 @@ bool FlossDBusClient::ReadDBusParam(dbus::MessageReader* reader,
       device::BluetoothUUID found_uuid(base::StringPrintf(
           "%02x%02x%02x%02x-%02x%02x-%02x%02x-%02x%02x-%02x%02x%02x%02x%02x%"
           "02x",
-          bytes[0], bytes[1], bytes[2], bytes[3], bytes[4], bytes[5], bytes[6],
-          bytes[7], bytes[8], bytes[9], bytes[10], bytes[11], bytes[12],
-          bytes[13], bytes[14], bytes[15]));
+          bytes[0], UNSAFE_TODO(bytes[1]), UNSAFE_TODO(bytes[2]),
+          UNSAFE_TODO(bytes[3]), UNSAFE_TODO(bytes[4]), UNSAFE_TODO(bytes[5]),
+          UNSAFE_TODO(bytes[6]), UNSAFE_TODO(bytes[7]), UNSAFE_TODO(bytes[8]),
+          UNSAFE_TODO(bytes[9]), UNSAFE_TODO(bytes[10]), UNSAFE_TODO(bytes[11]),
+          UNSAFE_TODO(bytes[12]), UNSAFE_TODO(bytes[13]),
+          UNSAFE_TODO(bytes[14]), UNSAFE_TODO(bytes[15])));
       DCHECK(found_uuid.IsValid());
       *uuid = found_uuid;
       return true;

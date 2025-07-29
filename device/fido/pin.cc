@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/351564777): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "device/fido/pin.h"
 
 #include <numeric>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/i18n/char_iterator.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -190,8 +186,8 @@ std::optional<KeyAgreementResponse> KeyAgreementResponse::ParseFromCOSE(
   if (x.size() != sizeof(ret.x) || y.size() != sizeof(ret.y)) {
     return std::nullopt;
   }
-  memcpy(ret.x, x.data(), sizeof(ret.x));
-  memcpy(ret.y, y.data(), sizeof(ret.y));
+  UNSAFE_TODO(memcpy(ret.x, x.data(), sizeof(ret.x)));
+  UNSAFE_TODO(memcpy(ret.y, y.data(), sizeof(ret.y)));
 
   bssl::UniquePtr<EC_GROUP> group(
       EC_GROUP_new_by_curve_name(NID_X9_62_prime256v1));
@@ -210,8 +206,8 @@ std::array<uint8_t, kP256X962Length> KeyAgreementResponse::X962() const {
   static_assert(ret.size() == 1 + sizeof(this->x) + sizeof(this->y),
                 "Bad length for return type");
   ret[0] = POINT_CONVERSION_UNCOMPRESSED;
-  memcpy(&ret[1], this->x, sizeof(this->x));
-  memcpy(&ret[1 + sizeof(this->x)], this->y, sizeof(this->y));
+  UNSAFE_TODO(memcpy(&ret[1], this->x, sizeof(this->x)));
+  UNSAFE_TODO(memcpy(&ret[1 + sizeof(this->x)], this->y, sizeof(this->y)));
   return ret;
 }
 
@@ -220,8 +216,8 @@ SetRequest::SetRequest(PINUVAuthProtocol protocol,
                        const KeyAgreementResponse& peer_key)
     : protocol_(protocol), peer_key_(peer_key) {
   DCHECK_EQ(ValidatePIN(pin), PINEntryError::kNoError);
-  memset(pin_, 0, sizeof(pin_));
-  memcpy(pin_, pin.data(), pin.size());
+  UNSAFE_TODO(memset(pin_, 0, sizeof(pin_)));
+  UNSAFE_TODO(memcpy(pin_, pin.data(), pin.size()));
 }
 
 cbor::Value::MapValue EncodeCOSEPublicKey(
@@ -246,11 +242,11 @@ ChangeRequest::ChangeRequest(PINUVAuthProtocol protocol,
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(old_pin.data()), old_pin.size(),
          digest);
-  memcpy(old_pin_hash_, digest, sizeof(old_pin_hash_));
+  UNSAFE_TODO(memcpy(old_pin_hash_, digest, sizeof(old_pin_hash_)));
 
   DCHECK_EQ(ValidatePIN(new_pin), PINEntryError::kNoError);
-  memset(new_pin_, 0, sizeof(new_pin_));
-  memcpy(new_pin_, new_pin.data(), new_pin.size());
+  UNSAFE_TODO(memset(new_pin_, 0, sizeof(new_pin_)));
+  UNSAFE_TODO(memcpy(new_pin_, new_pin.data(), new_pin.size()));
 }
 
 // static
@@ -394,9 +390,10 @@ AsCTAPRequestValuePair(const ChangeRequest& request) {
 
   std::vector<uint8_t> ciphertexts_concat(encrypted_pin.size() +
                                           old_pin_hash_enc.size());
-  memcpy(ciphertexts_concat.data(), encrypted_pin.data(), encrypted_pin.size());
-  memcpy(ciphertexts_concat.data() + encrypted_pin.size(),
-         old_pin_hash_enc.data(), old_pin_hash_enc.size());
+  UNSAFE_TODO(memcpy(ciphertexts_concat.data(), encrypted_pin.data(),
+                     encrypted_pin.size()));
+  UNSAFE_TODO(memcpy(ciphertexts_concat.data() + encrypted_pin.size(),
+                     old_pin_hash_enc.data(), old_pin_hash_enc.size()));
 
   std::vector<uint8_t> pin_auth =
       pin_protocol.Authenticate(shared_key, ciphertexts_concat);
@@ -442,7 +439,7 @@ PinTokenRequest::PinTokenRequest(PINUVAuthProtocol protocol,
     : TokenRequest(protocol, peer_key) {
   uint8_t digest[SHA256_DIGEST_LENGTH];
   SHA256(reinterpret_cast<const uint8_t*>(pin.data()), pin.size(), digest);
-  memcpy(pin_hash_, digest, sizeof(pin_hash_));
+  UNSAFE_TODO(memcpy(pin_hash_, digest, sizeof(pin_hash_)));
 }
 
 PinTokenRequest::~PinTokenRequest() = default;
@@ -542,9 +539,10 @@ static std::vector<uint8_t> ConcatSalts(
       salt1.size() + (salt2.has_value() ? salt2->size() : 0);
   std::vector<uint8_t> salts(salts_size);
 
-  memcpy(salts.data(), salt1.data(), salt1.size());
+  UNSAFE_TODO(memcpy(salts.data(), salt1.data(), salt1.size()));
   if (salt2.has_value()) {
-    memcpy(salts.data() + salt1.size(), salt2->data(), salt2->size());
+    UNSAFE_TODO(
+        memcpy(salts.data() + salt1.size(), salt2->data(), salt2->size()));
   }
 
   return salts;
