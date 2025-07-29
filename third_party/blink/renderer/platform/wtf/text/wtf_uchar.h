@@ -22,7 +22,11 @@ typedef int32_t UChar32;
 
 static_assert(sizeof(UChar) == 2, "UChar should be two bytes");
 
+namespace blink {
+
 // Define platform neutral 8 bit character type (L is for Latin-1).
 typedef unsigned char LChar;
+
+}  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_WTF_TEXT_WTF_UCHAR_H_

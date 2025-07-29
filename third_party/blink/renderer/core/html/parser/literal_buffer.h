@@ -36,7 +36,7 @@
 // UCharLiteralBuffer.
 template <typename T, blink::wtf_size_t kInlineSize>
 class LiteralBufferBase {
-  static_assert(std::is_same<LChar, T>::value || std::is_same<UChar, T>::value,
+  static_assert(std::is_same_v<blink::LChar, T> || std::is_same_v<UChar, T>,
                 "T must be a character type");
 
  public:
@@ -182,7 +182,7 @@ class LiteralBufferBase {
 };
 
 template <blink::wtf_size_t kInlineSize>
-class LCharLiteralBuffer : public LiteralBufferBase<LChar, kInlineSize> {
+class LCharLiteralBuffer : public LiteralBufferBase<blink::LChar, kInlineSize> {
  public:
   LCharLiteralBuffer() = default;
   LCharLiteralBuffer(const LCharLiteralBuffer& other) { *this = other; }
@@ -207,7 +207,7 @@ class LCharLiteralBuffer : public LiteralBufferBase<LChar, kInlineSize> {
   // Clear without freeing any storage.
   ALWAYS_INLINE void clear() { this->ClearImpl(); }
 
-  ALWAYS_INLINE void AddChar(LChar val) { this->AddCharImpl(val); }
+  ALWAYS_INLINE void AddChar(blink::LChar val) { this->AddCharImpl(val); }
 
   blink::String AsString() const { return blink::String(*this); }
 };
