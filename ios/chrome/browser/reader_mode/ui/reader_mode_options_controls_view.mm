@@ -39,8 +39,6 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.backgroundColor =
-        [UIColor colorNamed:kGroupedSecondaryBackgroundColor];
     self.layer.cornerRadius = kCornerRadius;
 
     _fontFamilyButton = [self createFontFamilyButton];

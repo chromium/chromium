@@ -18,6 +18,10 @@ namespace {
 // The horizontal inset for the main stack view.
 constexpr CGFloat kMainStackViewInset = 16.0;
 
+// Top and bottom padding.
+constexpr CGFloat kTopPadding = 8;
+constexpr CGFloat kBottomPadding = 54;
+
 // The spacing between items in the main stack view.
 constexpr CGFloat kMainStackViewSpacing = 16.0;
 
@@ -27,6 +31,9 @@ constexpr CGFloat kHideReaderModeButtonCornerRadius = 12.0;
 // The minimum height for the "Hide Reader Mode" button.
 constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
 
+// Opacity of the controls view when using a blur effect background.
+constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
+
 }  // namespace
 
 @interface ReaderModeOptionsViewController ()
@@ -34,12 +41,16 @@ constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
 // Main stack view. Lazily created.
 @property(nonatomic, readonly) UIStackView* mainStackView;
 
+// Button to turn off Reader mode. Lazily created.
+@property(nonatomic, readonly) UIButton* hideReaderModeButton;
+
 @end
 
 @implementation ReaderModeOptionsViewController
 
 @synthesize controlsView = _controlsView;
 @synthesize mainStackView = _mainStackView;
+@synthesize hideReaderModeButton = _hideReaderModeButton;
 
 #pragma mark - UIViewController
 
@@ -53,21 +64,29 @@ constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
       kReaderModeOptionsCloseButtonAccessibilityIdentifier;
   self.view.accessibilityIdentifier =
       kReaderModeOptionsViewAccessibilityIdentifier;
-  self.view.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+
+  // Add blurred background.
+  UIBlurEffect* blurEffect =
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
+  UIVisualEffectView* blurEffectView =
+      [[UIVisualEffectView alloc] initWithEffect:blurEffect];
+  blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
+  [self.view addSubview:blurEffectView];
+  AddSameConstraints(blurEffectView, self.view);
 
   UIView* mainStackView = self.mainStackView;
   [self.view addSubview:mainStackView];
 
   UILayoutGuide* safeAreaLayoutGuide = self.view.safeAreaLayoutGuide;
   [NSLayoutConstraint activateConstraints:@[
-    [safeAreaLayoutGuide.topAnchor
-        constraintEqualToAnchor:mainStackView.topAnchor],
-    [safeAreaLayoutGuide.centerXAnchor
-        constraintEqualToAnchor:mainStackView.centerXAnchor],
-    [safeAreaLayoutGuide.widthAnchor
-        constraintEqualToAnchor:mainStackView.widthAnchor
-                       constant:2 * kMainStackViewInset]
+    [mainStackView.topAnchor
+        constraintEqualToAnchor:safeAreaLayoutGuide.topAnchor
+                       constant:kTopPadding],
+    [mainStackView.centerXAnchor
+        constraintEqualToAnchor:safeAreaLayoutGuide.centerXAnchor],
+    [mainStackView.widthAnchor
+        constraintEqualToAnchor:safeAreaLayoutGuide.widthAnchor
+                       constant:-2 * kMainStackViewInset]
   ]];
 
   [super viewDidLoad];
@@ -76,27 +95,29 @@ constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
 - (void)viewDidLayoutSubviews {
   [super viewDidLayoutSubviews];
   __weak __typeof(self) weakSelf = self;
-  [self.navigationController.sheetPresentationController animateChanges:^{
-    [weakSelf.navigationController
-            .sheetPresentationController invalidateDetents];
+  [self.sheetPresentationController animateChanges:^{
+    [weakSelf.sheetPresentationController invalidateDetents];
   }];
+}
+
+#pragma mark - Public properties
+
+- (void)updateHideReaderModeButtonVisibility:(BOOL)visible {
+  self.hideReaderModeButton.hidden = !visible;
 }
 
 #pragma mark - Public
 
 - (CGFloat)resolveDetentValueForSheetPresentation:
     (id<UISheetPresentationControllerDetentResolutionContext>)context {
-  CGFloat detentValue =
-      [self.mainStackView
-          systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
-          .height +
-      self.navigationController.navigationBar.frame.size.height;
-  // If there is no safe area inset preventing the bottom of the main stack
-  // from touching the bottom of `self.view`, then add an inset manually.
-  if (self.view.safeAreaInsets.bottom == 0) {
-    detentValue += kMainStackViewInset;
-  }
-  return detentValue;
+  CGFloat bottomPaddingAboveSafeArea =
+      kBottomPadding - self.view.safeAreaInsets.bottom;
+  return [self.mainStackView
+             systemLayoutSizeFittingSize:UILayoutFittingCompressedSize]
+             .height +
+         kTopPadding +
+         self.navigationController.navigationBar.frame.size.height +
+         bottomPaddingAboveSafeArea;
 }
 
 #pragma mark - UI actions
@@ -123,7 +144,7 @@ constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
   mainStackView.translatesAutoresizingMaskIntoConstraints = NO;
 
   [mainStackView addArrangedSubview:self.controlsView];
-  [mainStackView addArrangedSubview:[self createHideReaderModeButton]];
+  [mainStackView addArrangedSubview:self.hideReaderModeButton];
 
   _mainStackView = mainStackView;
   return _mainStackView;
@@ -138,13 +159,19 @@ constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
   ReaderModeOptionsControlsView* controlsView =
       [[ReaderModeOptionsControlsView alloc] init];
   controlsView.translatesAutoresizingMaskIntoConstraints = NO;
+  controlsView.backgroundColor = [[UIColor colorNamed:kPrimaryBackgroundColor]
+      colorWithAlphaComponent:kBlurEffectBackgroundControlsOpacity];
 
   _controlsView = controlsView;
   return _controlsView;
 }
 
 // Returns the button to hide Reader mode.
-- (UIButton*)createHideReaderModeButton {
+- (UIButton*)hideReaderModeButton {
+  if (_hideReaderModeButton) {
+    return _hideReaderModeButton;
+  }
+
   // Create button title attributed string.
   UIFontDescriptor* boldDescriptor = [[UIFontDescriptor
       preferredFontDescriptorWithTextStyle:UIFontTextStyleBody]
@@ -183,7 +210,8 @@ constexpr CGFloat kHideReaderModeButtonMinHeight = 50.0;
       constraintGreaterThanOrEqualToConstant:kHideReaderModeButtonMinHeight]
       .active = YES;
 
-  return button;
+  _hideReaderModeButton = button;
+  return _hideReaderModeButton;
 }
 
 @end
