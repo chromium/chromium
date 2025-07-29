@@ -8,6 +8,7 @@ import android.graphics.Bitmap;
 
 import androidx.core.util.Pair;
 
+import org.chromium.ui.base.DeviceFormFactor;
 import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
@@ -122,6 +123,10 @@ public class PermissionDialogDelegate {
 
     public boolean isEmbeddedPromptVariant() {
         return mEmbeddedPromptVariant != EmbeddedPromptVariant.UNINITIALIZED;
+    }
+
+    public boolean isTablet() {
+        return DeviceFormFactor.isWindowOnTablet(getWindow());
     }
 
     public void onAccept() {

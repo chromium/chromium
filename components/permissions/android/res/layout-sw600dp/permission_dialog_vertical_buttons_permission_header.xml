@@ -49,7 +49,7 @@ found in the LICENSE file.
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/text"
             android:layout_width="match_parent"
-            android:layout_height="30dp"
+            android:layout_height="wrap_content"
             android:paddingStart="12dp"
             android:paddingEnd="0dp"
             android:gravity="top|center"

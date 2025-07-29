@@ -19,6 +19,7 @@
 #include "components/url_formatter/elide_url.h"
 #include "content/public/browser/permission_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "ui/base/device_form_factor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/text_elider.h"
 #include "ui/strings/grit/ui_strings.h"
@@ -146,12 +147,13 @@ PermissionRequest::GetDialogAnnotatedMessageText(
   }
   DCHECK_NE(0, message_id);
 
-  // Only format origins bold iff it's one time allowable (which uses a new
-  // prompt design on Clank)
+  // Only format origins bold if it's one time allowable or on tablet (which
+  // uses a new prompt design on Clank)
   return GetDialogAnnotatedMessageText(
       requesting_origin_string_formatted, message_id, /*format_origin_bold=*/
-      permissions::PermissionUtil::DoesSupportTemporaryGrants(
-          GetContentSettingsType()));
+      ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET ||
+          permissions::PermissionUtil::DoesSupportTemporaryGrants(
+              GetContentSettingsType()));
 }
 
 // static

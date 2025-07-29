@@ -140,8 +140,10 @@ public class PermissionDialogCoordinator {
                 LayoutInflaterUtils.inflate(
                         context,
                         (mDialogDelegate.isEmbeddedPromptVariant()
-                                        || mDialogDelegate.canShowEphemeralOption())
-                                ? R.layout.permission_dialog_one_time_permission
+                                        || mDialogDelegate.canShowEphemeralOption()
+                                        || PermissionDialogModelFactory.shouldUseVerticalButtons(
+                                                mDialogDelegate))
+                                ? R.layout.permission_dialog_vertical_buttons_permission
                                 : R.layout.permission_dialog,
                         null);
 
@@ -150,9 +152,8 @@ public class PermissionDialogCoordinator {
                 PropertyModelChangeProcessor.create(
                         mCustomViewModel,
                         customView,
-                        (mDialogDelegate.isEmbeddedPromptVariant()
-                                        || mDialogDelegate.canShowEphemeralOption())
-                                ? PermissionOneTimeDialogCustomViewBinder::bind
+                        PermissionDialogModelFactory.shouldUseVerticalButtons(mDialogDelegate)
+                                ? PermissionVerticalButtonsDialogCustomViewBinder::bind
                                 : PermissionDialogCustomViewBinder::bind);
         return customView;
     }

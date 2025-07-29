@@ -84,6 +84,12 @@ class PermissionDialogModelFactory {
                 new ModalDialogProperties.ModalDialogButtonSpec(
                         ModalDialogProperties.ButtonType.NEGATIVE,
                         delegate.getNegativeButtonText());
+        if (!delegate.isEmbeddedPromptVariant()
+                                        && !delegate.canShowEphemeralOption()) {
+            return new ModalDialogProperties.ModalDialogButtonSpec[] {
+                positiveButtonSpec, negativeButtonSpec
+            };
+        }
         return delegate.shouldShowPositiveNonEphemeralAsFirstButton()
                 ? new ModalDialogProperties.ModalDialogButtonSpec[] {
                     positiveButtonSpec, positiveEphemeralButtonSpec, negativeButtonSpec
@@ -94,6 +100,13 @@ class PermissionDialogModelFactory {
     }
 
     public static boolean shouldUseVerticalButtons(PermissionDialogDelegate delegate) {
+        if (delegate.isEmbeddedPromptVariant()
+                                        || delegate.canShowEphemeralOption()) {
+            return true;
+        }
+        if (delegate.isTablet()) {
+            return true;
+        }
         switch (delegate.getEmbeddedPromptVariant()) {
             case EmbeddedPromptVariant.UNINITIALIZED:
                 return delegate.canShowEphemeralOption();

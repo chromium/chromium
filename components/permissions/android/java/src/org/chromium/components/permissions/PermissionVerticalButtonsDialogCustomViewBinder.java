@@ -25,7 +25,7 @@ import java.util.List;
 
 /** The {@View} binder class for the PermissionDialogCustomView MVC. */
 @NullMarked
-class PermissionOneTimeDialogCustomViewBinder {
+class PermissionVerticalButtonsDialogCustomViewBinder {
     public static void bind(PropertyModel model, View customView, PropertyKey propertyKey) {
         if (PermissionDialogCustomViewProperties.MESSAGE_TEXT == propertyKey) {
             assert model.get(PermissionDialogCustomViewProperties.MESSAGE_TEXT) != null;

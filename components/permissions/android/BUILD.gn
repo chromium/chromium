@@ -105,15 +105,15 @@ android_resources("java_resources") {
     "res/drawable/usb_off_24px.xml",
     "res/drawable/volume_off_24px.xml",
     "res/drawable/vr180_create2d_off_24px.xml",
-    "res/layout-sw600dp/permission_dialog_one_time_permission_header.xml",
+    "res/layout-sw600dp/permission_dialog_vertical_buttons_permission_header.xml",
     "res/layout/bluetooth_scanning_permission_dialog.xml",
     "res/layout/bluetooth_scanning_permission_dialog_row.xml",
     "res/layout/device_item_list.xml",
     "res/layout/item_chooser_dialog.xml",
     "res/layout/item_chooser_dialog_row.xml",
     "res/layout/permission_dialog.xml",
-    "res/layout/permission_dialog_one_time_permission.xml",
-    "res/layout/permission_dialog_one_time_permission_header.xml",
+    "res/layout/permission_dialog_vertical_buttons_permission.xml",
+    "res/layout/permission_dialog_vertical_buttons_permission_header.xml",
     "res/layout/update_permissions_dialog.xml",
     "res/values/dimens.xml",
     "res/values/styles.xml",
@@ -174,7 +174,7 @@ android_library("java") {
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
     "java/src/org/chromium/components/permissions/PermissionDialogMediator.java",
     "java/src/org/chromium/components/permissions/PermissionDialogModelFactory.java",
-    "java/src/org/chromium/components/permissions/PermissionOneTimeDialogCustomViewBinder.java",
+    "java/src/org/chromium/components/permissions/PermissionVerticalButtonsDialogCustomViewBinder.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelPrompt.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
@@ -238,7 +238,7 @@ android_library("core_java") {
 robolectric_library("components_permissions_junit_tests") {
   sources = [
     "junit/src/org/chromium/components/permissions/PermissionDialogCustomViewBinderTest.java",
-    "junit/src/org/chromium/components/permissions/PermissionOneTimeDialogCustomViewBinderTest.java",
+    "junit/src/org/chromium/components/permissions/PermissionVerticalButtonsDialogCustomViewBinderTest.java",
     "junit/src/org/chromium/components/permissions/nfc/NfcSystemLevelPromptTest.java",
   ]
   deps = [

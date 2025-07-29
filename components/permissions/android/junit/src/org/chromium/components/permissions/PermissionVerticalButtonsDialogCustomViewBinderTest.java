@@ -30,7 +30,7 @@ import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** Robolectric tests for {@link PermissionOneTimeDialogCustomViewBinder}. */
 @RunWith(BaseRobolectricTestRunner.class)
-public class PermissionOneTimeDialogCustomViewBinderTest {
+public class PermissionVerticalButtonsDialogCustomViewBinderTest {
     private Activity mActivity;
     private View mCustomView;
     private PropertyModel mPropertyModel;
@@ -43,14 +43,14 @@ public class PermissionOneTimeDialogCustomViewBinderTest {
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mCustomView =
                 LayoutInflater.from(mActivity)
-                        .inflate(R.layout.permission_dialog_one_time_permission, null);
+                        .inflate(R.layout.permission_dialog_vertical_buttons_permission, null);
         mPropertyModel =
                 new PropertyModel.Builder(PermissionDialogCustomViewProperties.ALL_KEYS)
                         .with(PermissionDialogCustomViewProperties.MESSAGE_TEXT, MESSAGE_TEXT)
                         .build();
         mPropertyModelChangeProcessor =
                 PropertyModelChangeProcessor.create(
-                        mPropertyModel, mCustomView, PermissionOneTimeDialogCustomViewBinder::bind);
+                        mPropertyModel, mCustomView, PermissionVerticalButtonsDialogCustomViewBinder::bind);
     }
 
     @After
