@@ -14,7 +14,6 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_simple_task_runner.h"
-#include "base/time/time.h"
 #include "base/version.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/metrics/metrics_switches.h"
@@ -80,89 +79,19 @@ class AwMetricsServiceClientTest : public testing::Test {
   AwMetricsServiceTestClient* GetClient() { return client_.get(); }
   TestingPrefServiceSimple* GetPrefs() { return prefs_.get(); }
 
-  void TriggerDelayedRecordAppDataDirectorySize() {
-    task_environment_.FastForwardBy(kRecordAppDataDirectorySizeDelay);
-  }
-
  private:
   // Needed since starting metrics reporting triggers code that uses content::
   // objects.
   content::TestContentClientInitializer test_content_initializer_;
   // Needed since starting metrics reporting triggers code that expects to be
-  // running on the browser UI thread. Also needed for its FastForwardBy method.
-  content::BrowserTaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  // running on the browser UI thread.
+  content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   std::unique_ptr<TestingPrefServiceSimple> prefs_;
   std::unique_ptr<AwMetricsServiceTestClient> client_;
 };
 
 }  // namespace
-
-TEST_F(
-    AwMetricsServiceClientTest,
-    TestAppDataDirectorySize_RecordedIfFeatureEnabledConsentGrantedAndInSample) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewRecordAppDataDirectorySize);
-  base::HistogramTester histogram_tester;
-
-  GetClient()->SetInSample(true);
-  GetClient()->SetHaveMetricsConsent(true, true);
-  TriggerDelayedRecordAppDataDirectorySize();
-
-  histogram_tester.ExpectTotalCount("Android.WebView.AppDataDirectory.Size", 1);
-  histogram_tester.ExpectTotalCount(
-      "Android.WebView.AppDataDirectory.TimeToComputeSize", 1);
-}
-
-TEST_F(AwMetricsServiceClientTest,
-       TestAppDataDirectorySize_NotRecordedIfFeatureDisabled) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndDisableFeature(
-      android_webview::features::kWebViewRecordAppDataDirectorySize);
-  base::HistogramTester histogram_tester;
-
-  GetClient()->SetInSample(true);
-  GetClient()->SetHaveMetricsConsent(true, true);
-  TriggerDelayedRecordAppDataDirectorySize();
-
-  histogram_tester.ExpectTotalCount("Android.WebView.AppDataDirectory,Size", 0);
-  histogram_tester.ExpectTotalCount(
-      "Android.WebView.AppDataDirectory.TimeToComputeSize", 0);
-}
-
-TEST_F(AwMetricsServiceClientTest,
-       TestAppDataDirectorySize_NotRecordedIfConsentNotGranted) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewRecordAppDataDirectorySize);
-  base::HistogramTester histogram_tester;
-
-  GetClient()->SetInSample(true);
-  GetClient()->SetHaveMetricsConsent(true, false);
-  TriggerDelayedRecordAppDataDirectorySize();
-
-  histogram_tester.ExpectTotalCount("Android.WebView.AppDataDirectory.Size", 0);
-  histogram_tester.ExpectTotalCount(
-      "Android.WebView.AppDataDirectory.TimeToComputeSize", 0);
-}
-
-TEST_F(AwMetricsServiceClientTest,
-       TestAppDataDirectorySize_NotRecordedIfNotInSample) {
-  base::test::ScopedFeatureList scoped_list;
-  scoped_list.InitAndEnableFeature(
-      android_webview::features::kWebViewRecordAppDataDirectorySize);
-  base::HistogramTester histogram_tester;
-
-  GetClient()->SetInSample(false);
-  GetClient()->SetHaveMetricsConsent(true, true);
-  TriggerDelayedRecordAppDataDirectorySize();
-
-  histogram_tester.ExpectTotalCount("Android.WebView.AppDataDirectory.Size", 0);
-  histogram_tester.ExpectTotalCount(
-      "Android.WebView.AppDataDirectory.TimeToComputeSize", 0);
-}
 
 TEST_F(AwMetricsServiceClientTest,
        TestShouldApplyMetricsFilteringFeatureOn_AllMetrics) {

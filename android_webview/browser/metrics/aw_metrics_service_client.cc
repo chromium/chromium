@@ -11,17 +11,7 @@
 #include "android_webview/common/aw_features.h"
 #include "base/android/callback_android.h"
 #include "base/android/jni_android.h"
-#include "base/android/jni_string.h"
-#include "base/base_paths_android.h"
-#include "base/feature_list.h"
-#include "base/files/file_util.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/persistent_histogram_allocator.h"
-#include "base/path_service.h"
-#include "base/task/task_traits.h"
-#include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "base/trace_event/trace_event.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
@@ -62,8 +52,6 @@ int GetBaseSampleRatePerMille() {
 
 }  // namespace
 
-const base::TimeDelta kRecordAppDataDirectorySizeDelay = base::Seconds(10);
-
 AwMetricsServiceClient::Delegate::Delegate() = default;
 AwMetricsServiceClient::Delegate::~Delegate() = default;
 
@@ -98,36 +86,8 @@ bool AwMetricsServiceClient::ShouldApplyMetricsFiltering() const {
   return !used_to_sample_in;
 }
 
-// Used below in AwMetricsServiceClient::OnMetricsStart.
-void RecordAppDataDirectorySize() {
-  TRACE_EVENT_BEGIN0("android_webview", "RecordAppDataDirectorySize");
-  base::TimeTicks start_time = base::TimeTicks::Now();
-
-  base::FilePath app_data_dir;
-  base::PathService::Get(base::DIR_ANDROID_APP_DATA, &app_data_dir);
-  int64_t bytes = base::ComputeDirectorySize(app_data_dir);
-  // Record size up to 100MB
-  base::UmaHistogramCounts100000("Android.WebView.AppDataDirectory.Size",
-                                 bytes / 1024);
-
-  base::UmaHistogramMediumTimes(
-      "Android.WebView.AppDataDirectory.TimeToComputeSize",
-      base::TimeTicks::Now() - start_time);
-  TRACE_EVENT_END0("android_webview", "RecordAppDataDirectorySize");
-}
-
 void AwMetricsServiceClient::OnMetricsStart() {
   delegate_->AddWebViewAppStateObserver(this);
-  if (base::FeatureList::IsEnabled(
-          android_webview::features::kWebViewRecordAppDataDirectorySize) &&
-      IsReportingEnabled()) {
-    // Calculating directory size can be fairly expensive, so only do this when
-    // we are certain that the UMA histogram will be logged to the server.
-    base::ThreadPool::PostDelayedTask(
-        FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-        base::BindOnce(&RecordAppDataDirectorySize),
-        kRecordAppDataDirectorySizeDelay);
-  }
 }
 
 void AwMetricsServiceClient::OnAppStateChanged(

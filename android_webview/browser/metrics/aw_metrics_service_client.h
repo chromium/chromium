@@ -20,12 +20,6 @@
 
 namespace android_webview {
 
-// The amount of delay before calculating and recording the app data directory
-// size, intended for avoiding IO contention when an app is initializing.
-//
-// Visible for testing.
-extern const base::TimeDelta kRecordAppDataDirectorySizeDelay;
-
 // AwMetricsServiceClient is a singleton which manages WebView metrics
 // collection.
 //
