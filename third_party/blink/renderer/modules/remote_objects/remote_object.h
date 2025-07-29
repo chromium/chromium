@@ -10,25 +10,33 @@
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
 #include "third_party/blink/renderer/modules/remote_objects/remote_object_gateway_impl.h"
-#include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
+#include "v8/include/cppgc/prefinalizer.h"
 
 namespace blink {
 
 // Gin wrapper for representing objects that could be injected by the browser.
 // Recreated every time the window object is cleared.
 class RemoteObject
-    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
-          RemoteObject> {
+    : public gin::WrappableWithNamedPropertyInterceptor<RemoteObject> {
+  USING_PRE_FINALIZER(RemoteObject, Dispose);
+
  public:
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kRemoteObject};
 
   RemoteObject(RemoteObjectGatewayImpl*, int32_t);
   // Not copyable or movable
   RemoteObject(const RemoteObject&) = delete;
   RemoteObject& operator=(const RemoteObject&) = delete;
-  ~RemoteObject() override;
+  ~RemoteObject() override = default;
 
-  // gin::DeprecatedWrappable.
+  void Trace(cppgc::Visitor* visitor) const override;
+
+  const gin::WrapperInfo* wrapper_info() const override {
+    return &kWrapperInfo;
+  }
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
 
@@ -43,10 +51,11 @@ class RemoteObject
  private:
   static void RemoteObjectInvokeCallback(
       const v8::FunctionCallbackInfo<v8::Value>& info);
+  void Dispose();
   void EnsureRemoteIsBound();
 
-  WeakPersistent<RemoteObjectGatewayImpl> gateway_{nullptr};
-  mojo::Remote<mojom::blink::RemoteObject> object_;
+  WeakMember<RemoteObjectGatewayImpl> gateway_{nullptr};
+  HeapMojoRemote<mojom::blink::RemoteObject> object_;
   int32_t object_id_;
 };
 

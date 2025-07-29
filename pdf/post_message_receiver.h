@@ -34,8 +34,7 @@ class V8ValueConverter;
 // meaning it can outlive the `Client`. Messages are dropped if the `Client` is
 // destroyed.
 class PostMessageReceiver final
-    : public gin::DeprecatedWrappableWithNamedPropertyInterceptor<
-          PostMessageReceiver> {
+    : public gin::WrappableWithNamedPropertyInterceptor<PostMessageReceiver> {
  public:
   // The interface for a plugin client that handles messages from its embedder.
   class Client {
@@ -48,7 +47,8 @@ class PostMessageReceiver final
     ~Client() = default;
   };
 
-  static gin::DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr gin::WrapperInfo kWrapperInfo = {{gin::kEmbedderNativeGin},
+                                                    gin::kPostMessageReceiver};
 
   // Creates a scriptable object with an implemented `postMessage()` method.
   // Messages are posted asynchronously to `client` using `client_task_runner`.
@@ -61,21 +61,22 @@ class PostMessageReceiver final
   PostMessageReceiver(const PostMessageReceiver&) = delete;
   PostMessageReceiver& operator=(const PostMessageReceiver&) = delete;
 
- protected:
   ~PostMessageReceiver() override;
 
- private:
   PostMessageReceiver(
       v8::Isolate* isolate,
       base::WeakPtr<V8ValueConverter> v8_value_converter,
       base::WeakPtr<Client> client,
       scoped_refptr<base::SequencedTaskRunner> client_task_runner);
 
-  // gin::DeprecatedWrappable
+  const char* GetHumanReadableName() const override;
+
+  const gin::WrapperInfo* wrapper_info() const override;
+
+ private:
+  // gin::Wrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override;
-  const char* GetTypeName() override;
-
   // gin::NamedPropertyInterceptor:
   v8::Local<v8::Value> GetNamedProperty(v8::Isolate* isolate,
                                         const std::string& property) override;

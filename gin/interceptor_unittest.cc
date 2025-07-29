@@ -12,10 +12,13 @@
 #include "gin/object_template_builder.h"
 #include "gin/per_isolate_data.h"
 #include "gin/public/isolate_holder.h"
+#include "gin/public/wrappable_pointer_tags.h"
 #include "gin/test/v8_test.h"
 #include "gin/try_catch.h"
 #include "gin/wrappable.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "v8/include/cppgc/allocation.h"
+#include "v8/include/v8-cppgc.h"
 #include "v8/include/v8-function.h"
 #include "v8/include/v8-script.h"
 #include "v8/include/v8-util.h"
@@ -23,19 +26,25 @@
 namespace gin {
 
 class MyInterceptor
-    : public DeprecatedWrappableWithNamedPropertyInterceptor<MyInterceptor> {
+    : public WrappableWithNamedPropertyInterceptor<MyInterceptor> {
  public:
   MyInterceptor(const MyInterceptor&) = delete;
   MyInterceptor& operator=(const MyInterceptor&) = delete;
 
-  static DeprecatedWrapperInfo kWrapperInfo;
+  static constexpr WrapperInfo kWrapperInfo = {{kEmbedderNativeGin},
+                                               kMyInterceptor};
 
-  static gin::Handle<MyInterceptor> Create(v8::Isolate* isolate) {
-    return CreateHandle(isolate, new MyInterceptor(isolate));
+  const WrapperInfo* wrapper_info() const override { return &kWrapperInfo; }
+
+  static MyInterceptor* Create(v8::Isolate* isolate) {
+    return cppgc::MakeGarbageCollected<MyInterceptor>(
+        isolate->GetCppHeap()->GetAllocationHandle(), isolate);
   }
 
-  void Clear() {
-  }
+  explicit MyInterceptor(v8::Isolate* isolate)
+      : value_(0), template_cache_(isolate) {}
+
+  ~MyInterceptor() override = default;
 
   int value() const { return value_; }
   void set_value(int value) { value_ = value; }
@@ -72,16 +81,12 @@ class MyInterceptor
   }
 
  private:
-  explicit MyInterceptor(v8::Isolate* isolate)
-      : value_(0), template_cache_(isolate) {}
-  ~MyInterceptor() override = default;
-
   // gin::Wrappable
   gin::ObjectTemplateBuilder GetObjectTemplateBuilder(
       v8::Isolate* isolate) override {
-    return DeprecatedWrappableWithNamedPropertyInterceptor<
+    return WrappableWithNamedPropertyInterceptor<
                MyInterceptor>::GetObjectTemplateBuilder(isolate)
-        .AddNamedPropertyInterceptor();
+        .template AddNamedPropertyInterceptor<kWrapperInfo.pointer_tag>();
   }
 
   int Call(int value) {
@@ -94,8 +99,9 @@ class MyInterceptor
                                                       const std::string& name) {
     v8::Local<v8::FunctionTemplate> function_template =
         template_cache_.Get(name);
-    if (!function_template.IsEmpty())
+    if (!function_template.IsEmpty()) {
       return function_template;
+    }
     function_template = CreateFunctionTemplate(
         isolate, base::BindRepeating(&MyInterceptor::Call),
         InvokerOptions{true, nullptr});
@@ -108,15 +114,13 @@ class MyInterceptor
   v8::StdGlobalValueMap<std::string, v8::FunctionTemplate> template_cache_;
 };
 
-DeprecatedWrapperInfo MyInterceptor::kWrapperInfo = {kEmbedderNativeGin};
-
 class InterceptorTest : public V8Test {
  public:
   void RunInterceptorTest(const std::string& script_source) {
     v8::Isolate* isolate = instance_->isolate();
     v8::HandleScope handle_scope(isolate);
 
-    gin::Handle<MyInterceptor> obj = MyInterceptor::Create(isolate);
+    MyInterceptor* obj = MyInterceptor::Create(isolate);
 
     obj->set_value(42);
     EXPECT_EQ(42, obj->value());
@@ -133,7 +137,7 @@ class InterceptorTest : public V8Test {
     v8::Local<v8::Function> func;
     EXPECT_TRUE(ConvertFromV8(isolate, val, &func));
     v8::Local<v8::Value> argv[] = {
-        ConvertToV8(isolate, obj.get()).ToLocalChecked(),
+        ConvertToV8(isolate, obj).ToLocalChecked(),
     };
     func->Call(context_.Get(isolate), v8::Undefined(isolate), 1, argv)
         .ToLocalChecked();
@@ -141,7 +145,6 @@ class InterceptorTest : public V8Test {
     EXPECT_EQ("", try_catch.GetStackTrace());
 
     EXPECT_EQ(191, obj->value());
-    obj->Clear();
   }
 };
 
