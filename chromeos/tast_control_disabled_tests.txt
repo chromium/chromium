@@ -103,4 +103,8 @@ tast.apps.LaunchGalleryFromNotifications.stable
 tast.secagentd.FileEvents.auth_factors@trogdor
 tast.secagentd.FileEvents.cookies@trogdor
 
+# https://crbug.com/434741638
+apps.Sharesheet
+tast.apps.Sharesheet
+
 # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
