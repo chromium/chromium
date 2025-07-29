@@ -599,6 +599,12 @@
     <message name="IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to update an existing address.">
       Update address?
     </message>
+    <message name="IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE" desc="Title shown at the top of prompt that offers the user to add additional info to an existing address.">
+      Add new info to saved address
+    </message>
+    <message name="IDS_AUTOFILL_UPDATE_ADDRESS_ADD_NEW_INFO_PROMPT_CANCEL_BUTTON_LABEL" desc="Label of the Cancel button in the dialog that adds new info to an existing profile.">
+      Cancel
+    </message>
     <message name="IDS_AUTOFILL_ADD_NEW_ADDRESS_PROMPT_TITLE" desc="The 'Add new address' bubble title.">
       Fill your address with less typing
     </message>

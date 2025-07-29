@@ -8,6 +8,7 @@
 #include "chrome/browser/autofill/ui/ui_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/autofill/address_bubble_controller_delegate.h"
+#include "components/autofill/core/common/autofill_features.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -27,8 +28,14 @@ UpdateAddressBubbleController::UpdateAddressBubbleController(
 
 UpdateAddressBubbleController::~UpdateAddressBubbleController() = default;
 
-std::u16string UpdateAddressBubbleController::GetWindowTitle() const {
-  return l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
+std::u16string UpdateAddressBubbleController::GetWindowTitle(
+    bool has_empty_original_values) const {
+  return l10n_util::GetStringUTF16(
+      has_empty_original_values &&
+              base::FeatureList::IsEnabled(
+                  features::kAutofillEnableSupportForHomeAndWork)
+          ? IDS_AUTOFILL_ADD_NEW_INFO_ADDRESS_PROMPT_TITLE
+          : IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE);
 }
 
 std::u16string UpdateAddressBubbleController::GetFooterMessage() const {

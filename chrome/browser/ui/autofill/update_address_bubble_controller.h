@@ -31,7 +31,10 @@ class UpdateAddressBubbleController : public content::WebContentsObserver {
       const UpdateAddressBubbleController&) = delete;
   ~UpdateAddressBubbleController() override;
 
-  virtual std::u16string GetWindowTitle() const;
+  // `has_empty_original_values` indicates if the profile had original empty
+  // values meaning the prompt is being shown to add new info to an existing
+  // profile.
+  virtual std::u16string GetWindowTitle(bool has_empty_original_values) const;
   virtual std::u16string GetFooterMessage() const;
   virtual const AutofillProfile& GetProfileToSave() const;
   virtual const AutofillProfile& GetOriginalProfile() const;

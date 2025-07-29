@@ -31,7 +31,10 @@ class MockUpdateAddressBubbleController : public UpdateAddressBubbleController {
             /*web_contents=*/nullptr,
             /*profile_to_save=*/test::GetFullProfile(),
             /*original_profile=*/test::GetFullProfile()) {}
-  MOCK_METHOD(std::u16string, GetWindowTitle, (), (const, override));
+  MOCK_METHOD(std::u16string,
+              GetWindowTitle,
+              (bool has_non_empty_original_values),
+              (const, override));
   MOCK_METHOD(std::u16string, GetFooterMessage, (), (const, override));
   MOCK_METHOD(const AutofillProfile&, GetProfileToSave, (), (const, override));
   MOCK_METHOD(const AutofillProfile&,
@@ -110,7 +113,7 @@ void UpdateAddressProfileViewTest::CreateViewAndShow() {
       std::make_unique<testing::NiceMock<MockUpdateAddressBubbleController>>();
   mock_controller_ = mock_controller_unique.get();
 
-  ON_CALL(*mock_controller(), GetWindowTitle())
+  ON_CALL(*mock_controller(), GetWindowTitle)
       .WillByDefault(testing::Return(std::u16string()));
   ON_CALL(*mock_controller(), GetProfileToSave())
       .WillByDefault(testing::ReturnRef(address_profile_to_save()));

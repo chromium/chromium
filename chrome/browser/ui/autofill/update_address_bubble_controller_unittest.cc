@@ -94,7 +94,7 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingNonAccountAddress) {
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(
-      controller->GetWindowTitle(),
+      controller->GetWindowTitle(/*has_empty_original_values=*/true),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
   EXPECT_TRUE(controller->GetFooterMessage().empty());
 }
@@ -112,7 +112,7 @@ TEST_F(UpdateAddressBubbleControllerTest, UpdatingAccountAddress) {
   auto controller = CreateController(profile, original_profile);
 
   EXPECT_EQ(
-      controller->GetWindowTitle(),
+      controller->GetWindowTitle(/*has_empty_original_values=*/true),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_UPDATE_ADDRESS_PROMPT_TITLE));
   EXPECT_EQ(
       controller->GetFooterMessage(),
