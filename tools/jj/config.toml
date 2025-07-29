@@ -1,5 +1,13 @@
 # See https://jj-vcs.github.io/jj/latest/config/ for the schema.
 
+[aliases]
+# cr-* aliases are the equivalent of "porcelain" commands and should not
+# be overridden.
+# All cr-foo commands will have a corresponding foo command that you can
+# override with your preference (eg. sync -> ["cr-sync", "-a"])
+"cr-sync" = ["util", "exec", "tools/jj/sync.py", "--"]
+"sync" = ["cr-sync"]
+
 [revset-aliases]
 "trunk()" = "main@origin"
 "immutable_heads()" = "remote_bookmarks() | tags()"
