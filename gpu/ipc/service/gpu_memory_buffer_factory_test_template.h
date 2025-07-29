@@ -53,11 +53,6 @@ class GpuMemoryBufferFactoryTest : public testing::Test {
 TYPED_TEST_SUITE_P(GpuMemoryBufferFactoryTest);
 
 TYPED_TEST_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer) {
-  const gfx::GpuMemoryBufferId kBufferId(1);
-  const int kClientId = 1;
-
-  gfx::Size buffer_size(2, 2);
-
   for (auto format : gfx::GetBufferFormatsForTesting()) {
     gfx::BufferUsage usages[] = {
         gfx::BufferUsage::GPU_READ,
@@ -81,11 +76,10 @@ TYPED_TEST_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer) {
       }
 
       gfx::GpuMemoryBufferHandle handle =
-          TestFixture::factory_.CreateGpuMemoryBuffer(
-              kBufferId, buffer_size, /*framebuffer_size=*/buffer_size, format,
-              usage, kClientId, gpu::kNullSurfaceHandle);
+          TestFixture::factory_.CreateNativeGmbHandle(
+              gpu::MappableSIClientGmbId::kGpuServiceImpl, gfx::Size(2, 2),
+              format, usage);
       EXPECT_NE(handle.type, gfx::EMPTY_BUFFER);
-      TestFixture::factory_.DestroyGpuMemoryBuffer(kBufferId, kClientId);
     }
   }
 }
