@@ -24,6 +24,7 @@ namespace scheduler {
 class TaskAttributionInfo;
 }  // namespace scheduler
 
+class HTMLVideoElement;
 class SoftNavigationContext;
 class SoftNavigationPaintAttributionTracker;
 
@@ -88,8 +89,14 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   // Inform `SoftNavigationHeuristics` that `node` was modified in some way.
   // Sets up paint tracking if the modification is attributable to a
-  // `SoftNavigationContext` and connected to the DOM.
-  static void ModifiedNode(Node* node);
+  // `SoftNavigationContext` and connected to the DOM, in which case this
+  // returns true.
+  static bool ModifiedNode(Node* node);
+
+  // Inform `SoftNavigationHeuristics` that the "src" attribute for the video
+  // element changed. Sets up paint tracking if the modification is attributable
+  // to a `SoftNavigationContext` and connected to the DOM.
+  static void OnVideoSrcChanged(HTMLVideoElement*);
 
   // GarbageCollected boilerplate.
   void Trace(Visitor*) const override;
@@ -98,7 +105,7 @@ class CORE_EXPORT SoftNavigationHeuristics
 
   void SameDocumentNavigationCommitted(const String& url,
                                        SoftNavigationContext*);
-  void ModifiedDOM(Node* node);
+  bool ModifiedDOM(Node* node);
   uint32_t SoftNavigationCount() { return soft_navigation_count_; }
 
   // TaskAttributionTracker::Observer's implementation.

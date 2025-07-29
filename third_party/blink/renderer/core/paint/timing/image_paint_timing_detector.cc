@@ -275,6 +275,20 @@ void ImageRecordsManager::AssignPaintTimeToRegisteredQueuedRecords(
   }
 }
 
+void ImagePaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
+    const LayoutObject& object) {
+  // The `MediaTiming` parameter ignored when computing the hash for video
+  // elements, so pass nullptr here. It's ignored because of an issue where
+  // multiple LCP candidates are created for videos with a poster image, which
+  // is why we need to remove the record here so the subsequent first frame is
+  // attributed to the relevant interaction. See also crbug.com/330202431.
+  MediaRecordId record_id(&object, /*media=*/nullptr);
+  MediaRecordIdHash record_id_hash = record_id.GetHash();
+  if (records_manager_.IsRecordedImage(record_id_hash)) {
+    records_manager_.RemoveRecord(record_id_hash);
+  }
+}
+
 bool ImagePaintTimingDetector::RecordImage(
     const LayoutObject& object,
     const gfx::Size& intrinsic_size,

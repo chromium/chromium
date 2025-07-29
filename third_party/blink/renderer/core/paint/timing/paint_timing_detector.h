@@ -77,6 +77,10 @@ class CORE_EXPORT PaintTimingDetector
       const gfx::Rect& image_border);
   inline static void NotifyTextPaint(const gfx::Rect& text_visual_rect);
 
+  // Called when the "src" attribute changes on a <video> element and the change
+  // is attributable to an interaction.
+  static void NotifyInteractionTriggeredVideoSrcChange(const LayoutObject&);
+
   void NotifyImageFinished(const LayoutObject&, const MediaTiming*);
   void LayoutObjectWillBeDestroyed(const LayoutObject&);
   void NotifyImageRemoved(const LayoutObject&, const ImageResourceContent*);

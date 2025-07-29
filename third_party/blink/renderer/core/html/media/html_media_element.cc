@@ -78,6 +78,7 @@
 #include "third_party/blink/renderer/core/html/media/audio_output_device_controller.h"
 #include "third_party/blink/renderer/core/html/media/autoplay_policy.h"
 #include "third_party/blink/renderer/core/html/media/html_media_element_controls_list.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
 #include "third_party/blink/renderer/core/html/media/media_error.h"
 #include "third_party/blink/renderer/core/html/media/media_fragment_uri_parser.h"
@@ -103,6 +104,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/speech/speech_synthesis_base.h"
+#include "third_party/blink/renderer/core/timing/soft_navigation_heuristics.h"
 #include "third_party/blink/renderer/platform/audio/audio_bus.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider_client.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
@@ -120,6 +122,7 @@
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/event_loop.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
+#include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/strcat.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
@@ -779,6 +782,9 @@ void HTMLMediaElement::ParseAttribute(
                         StyleChangeReasonForTracing::FromAttribute(name));
     // Trigger a reload, as long as the 'src' attribute is present.
     if (!params.new_value.IsNull()) {
+      if (auto* video_element = DynamicTo<HTMLVideoElement>(this)) {
+        SoftNavigationHeuristics::OnVideoSrcChanged(video_element);
+      }
       ignore_preload_none_ = false;
       InvokeLoadAlgorithm();
     }
@@ -957,6 +963,9 @@ void HTMLMediaElement::SetSrcObjectVariant(
            << ": stream_descriptor=" << src_object_stream_descriptor_
            << ", media_source_handle=" << src_object_media_source_handle_;
 
+  if (auto* video_element = DynamicTo<HTMLVideoElement>(this)) {
+    SoftNavigationHeuristics::OnVideoSrcChanged(video_element);
+  }
   InvokeLoadAlgorithm();
 }
 

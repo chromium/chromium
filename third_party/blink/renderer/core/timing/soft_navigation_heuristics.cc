@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_frame_client.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/paint/timing/paint_timing_detector.h"
@@ -342,14 +343,14 @@ void SoftNavigationHeuristics::SameDocumentNavigationCommitted(
   }
 }
 
-void SoftNavigationHeuristics::ModifiedDOM(Node* node) {
+bool SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   // This should only be called by `ModifiedNode()` and `InsertedNode()`, and
   // detached windows should already be filtered out.
   CHECK(window_->GetFrame());
 
   SoftNavigationContext* context = GetSoftNavigationContextForCurrentTask();
   if (!context) {
-    return;
+    return false;
   }
 
   if (IsPrePaintBasedAttributionEnabled()) {
@@ -360,6 +361,7 @@ void SoftNavigationHeuristics::ModifiedDOM(Node* node) {
   }
 
   MaybeCommitNavigationOrEmitSoftNavigationEntry(context);
+  return true;
 }
 
 // TODO(crbug.com/424448145): re-architect how we pick our FCP point, when we
@@ -768,12 +770,22 @@ void SoftNavigationHeuristics::InsertedNode(Node* inserted_node,
                                                          : container_node);
 }
 
-void SoftNavigationHeuristics::ModifiedNode(Node* node) {
+// static
+bool SoftNavigationHeuristics::ModifiedNode(Node* node) {
   auto* heuristics = GetHeuristicsForNodeIfShouldTrack(*node);
   if (!heuristics) {
-    return;
+    return false;
   }
-  heuristics->ModifiedDOM(node);
+  return heuristics->ModifiedDOM(node);
+}
+
+// static
+void SoftNavigationHeuristics::OnVideoSrcChanged(HTMLVideoElement* element) {
+  if (ModifiedNode(element)) {
+    if (LayoutObject* object = element->GetLayoutObject()) {
+      PaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(*object);
+    }
+  }
 }
 
 // SoftNavigationHeuristics::EventScope implementation

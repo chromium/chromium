@@ -245,6 +245,10 @@ class CORE_EXPORT ImagePaintTimingDetector final
   // candidate.
   void ReportLargestIgnoredImage();
 
+  // Called when the "src" attribute changes on a <video> element and the change
+  // is attributable to an interaction.
+  void NotifyInteractionTriggeredVideoSrcChange(const LayoutObject&);
+
   bool IsRecordingLargestImagePaint() const {
     return recording_largest_image_paint_;
   }

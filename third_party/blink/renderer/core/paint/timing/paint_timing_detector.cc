@@ -249,6 +249,18 @@ void PaintTimingDetector::NotifyFirstVideoFrame(
   }
 }
 
+// static
+void PaintTimingDetector::NotifyInteractionTriggeredVideoSrcChange(
+    const LayoutObject& object) {
+  LocalFrameView* frame_view = object.GetFrameView();
+  if (!frame_view) {
+    return;
+  }
+  frame_view->GetPaintTimingDetector()
+      .GetImagePaintTimingDetector()
+      .NotifyInteractionTriggeredVideoSrcChange(object);
+}
+
 void PaintTimingDetector::NotifyImageFinished(const LayoutObject& object,
                                               const MediaTiming* media_timing) {
   if (IgnorePaintTimingScope::ShouldIgnore()) {
