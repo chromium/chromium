@@ -76,6 +76,8 @@ proto_library("amount_extraction_heuristic_regexes_proto") {
 
 static_library("browser") {
   sources = [
+    "autofill_ai_form_rationalization.cc",
+    "autofill_ai_form_rationalization.h",
     "autofill_browser_util.cc",
     "autofill_browser_util.h",
     "autofill_feedback_data.cc",
@@ -1315,6 +1317,7 @@ bundle_data("unit_tests_bundle_data") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "autofill_ai_form_rationalization_unittest.cc",
     "autofill_feedback_data_unittest.cc",
     "autofill_field_unittest.cc",
     "autofill_merge_unittest.cc",

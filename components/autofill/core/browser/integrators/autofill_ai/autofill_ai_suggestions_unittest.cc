@@ -12,6 +12,7 @@
 #include "base/containers/span.h"
 #include "base/containers/to_vector.h"
 #include "base/types/optional_ref.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -113,8 +114,8 @@ class AutofillAiSuggestionsTest : public testing::Test {
     const EntityInstance& entity = *it;
 
     std::vector<AutofillFieldWithAttributeType> fields_and_types =
-        DetermineAttributeTypes(*form_structure_, field.section(),
-                                entity.type());
+        RationalizeAndDetermineAttributeTypes(*form_structure_, field.section(),
+                                              entity.type());
     auto jt = std::ranges::find(fields_and_types, field.global_id(),
                                 [](const AutofillFieldWithAttributeType& f) {
                                   return f.field->global_id();
@@ -351,7 +352,7 @@ TEST_F(
                    {.name = u"Machado de Assis", .country = u"Brazil"})});
 
   // Note that passport name is the first at the rank of disambiguating texts.
-  SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY});
+  SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY, PASSPORT_NUMBER});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport"), HasLabel(u"Passport")));
 }
@@ -365,7 +366,7 @@ TEST_F(
                MakePassportWithRandomGuid({.country = u"Brazil"})});
 
   // Note that passport name is the first at the rank of disambiguating texts.
-  SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY});
+  SetForm({NAME_FULL, PASSPORT_ISSUING_COUNTRY, PASSPORT_NUMBER});
   EXPECT_THAT(CreateAutofillAiFillingSuggestions(field(0)),
               SuggestionsAre(HasLabel(u"Passport · Sweden"),
                              HasLabel(u"Passport · Brazil")));

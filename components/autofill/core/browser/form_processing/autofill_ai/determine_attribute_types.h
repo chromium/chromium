@@ -11,6 +11,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/dense_set.h"
 
@@ -28,8 +29,30 @@ struct AutofillFieldWithAttributeType {
   AttributeType type;
 };
 
+class DetermineAttributeTypesPassKey {
+  friend std::vector<AutofillFieldWithAttributeType>
+  RationalizeAndDetermineAttributeTypes(
+      base::span<const std::unique_ptr<AutofillField>> fields,
+      const Section& section_of_interest,
+      EntityType entity_of_interest);
+  friend base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>
+  RationalizeAndDetermineAttributeTypes(
+      base::span<const std::unique_ptr<AutofillField>> fields,
+      const Section& section_of_interest);
+  friend base::flat_map<
+      Section,
+      base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
+  RationalizeAndDetermineAttributeTypes(
+      base::span<const std::unique_ptr<AutofillField>> fields);
+  friend class DetermineAttributeTypesTest;
+
+  DetermineAttributeTypesPassKey() = default;
+};
+
 // DetermineAttributeTypes() computes the static and dynamic AttributeType
-// assignments of a form.
+// assignments of a form. Note that these methods can only be called from
+// `RationalizeAndDetermineAttributeTypes()` and are exposed here to make
+// testing easier.
 //
 // Static AttributeTypes are determined by the Autofill AI FieldType
 // (AutofillField::GetAutofillAiServerTypePredictions()).
@@ -58,18 +81,21 @@ struct AutofillFieldWithAttributeType {
 std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
     const Section& section_of_interest,
-    EntityType entity_of_interest);
+    EntityType entity_of_interest,
+    DetermineAttributeTypesPassKey pass_key);
 
 base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>
 DetermineAttributeTypes(base::span<const std::unique_ptr<AutofillField>> fields
                             LIFETIME_BOUND,
-                        const Section& section_of_interest);
+                        const Section& section_of_interest,
+                        DetermineAttributeTypesPassKey pass_key);
 
 base::flat_map<
     Section,
     base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
-DetermineAttributeTypes(
-    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND);
+DetermineAttributeTypes(base::span<const std::unique_ptr<AutofillField>> fields
+                            LIFETIME_BOUND,
+                        DetermineAttributeTypesPassKey pass_key);
 
 // Returns the entity types for which at least one of `fields` have a
 // corresponding AttributeType.

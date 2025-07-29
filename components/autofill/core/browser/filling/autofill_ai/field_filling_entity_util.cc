@@ -10,6 +10,7 @@
 #include "base/containers/to_vector.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
@@ -196,7 +197,7 @@ base::flat_set<FieldGlobalId> GetFieldsFillableByAutofillAi(
       Section,
       base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
       section_to_entity_and_field_and_types =
-          DetermineAttributeTypes(form.fields());
+          RationalizeAndDetermineAttributeTypes(form.fields());
 
   // Returns true if there is data present that could fill the `field`.
   auto is_fillable = [&](const AutofillField& field) {

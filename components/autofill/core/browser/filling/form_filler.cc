@@ -319,9 +319,9 @@ struct FormFiller::AugmentedFillingPayload {
                 },
                 [&](const EntityInstance* entity) -> Variant {
                   return std::pair(
-                      entity, DetermineAttributeTypes(form_structure.fields(),
-                                                      trigger_field.section(),
-                                                      entity->type()));
+                      entity, RationalizeAndDetermineAttributeTypes(
+                                  form_structure.fields(),
+                                  trigger_field.section(), entity->type()));
                 },
                 [](const VerifiedProfile* verified_profile) -> Variant {
                   return verified_profile;

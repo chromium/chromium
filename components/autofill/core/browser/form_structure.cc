@@ -38,6 +38,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/crowdsourcing/server_prediction_overrides.h"
@@ -296,7 +297,7 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
   std::map<const AutofillField*, std::vector<AttributeType>>
       field_to_attribute_types;
   for (const auto& [section, entities_and_fields] :
-       DetermineAttributeTypes(fields())) {
+       RationalizeAndDetermineAttributeTypes(fields())) {
     for (const auto& [entity, fields] : entities_and_fields) {
       for (const AutofillFieldWithAttributeType& f : fields) {
         field_to_attribute_types[&*f.field].push_back(f.type);
@@ -1012,7 +1013,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
   std::map<const AutofillField*, std::vector<AttributeType>>
       field_to_attribute_types;
   for (const auto& [section, entities_and_fields] :
-       DetermineAttributeTypes(form.fields())) {
+       RationalizeAndDetermineAttributeTypes(form.fields())) {
     for (const auto& [entity, fields] : entities_and_fields) {
       for (const AutofillFieldWithAttributeType& f : fields) {
         field_to_attribute_types[&*f.field].push_back(f.type);

@@ -408,8 +408,8 @@ bool AutofillAiManager::ShouldDisplayIph(const FormStructure& form,
   // We want to show IPH if filling the `focused_field` and fields that belong
   // to the same entity leads to an import.
   std::map<EntityType, DenseSet<AttributeType>> attributes_in_form;
-  for (auto [entity, fields_and_types] :
-       DetermineAttributeTypes(form.fields(), focused_field->section())) {
+  for (auto [entity, fields_and_types] : RationalizeAndDetermineAttributeTypes(
+           form.fields(), focused_field->section())) {
     if (base::Contains(fields_and_types, focused_field->global_id(),
                        [](const AutofillFieldWithAttributeType& f) {
                          return f.field->global_id();

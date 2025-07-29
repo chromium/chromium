@@ -1,0 +1,65 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_AI_FORM_RATIONALIZATION_H_
+#define COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_AI_FORM_RATIONALIZATION_H_
+
+#include <memory>
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "base/containers/span.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+
+namespace autofill {
+
+class AutofillField;
+class Section;
+struct AutofillFieldWithAttributeType;
+
+// RationalizeAndDetermineAttributeTypes() computes the static and dynamic
+// AttributeType assignments of a form (by calling `DetermineAttributeTypes()`)
+// and rationalize these attribute types assignments. Rationalization means (as
+// of now), checking whether the determined types satisfies the required fields
+// for the matching entity. For example, if the requirement for a passport
+// entity is that a form contains either number or expiry date and the
+// determined types are passport name and country, the rationalization will
+// completely filter out this output.
+//
+// The overloads are just specializations for performance
+// reasons. The following expressions are equivalent:
+// - `RationalizeAndDetermineAttributeTypes(fields, section, entity)`
+// - `RationalizeAndDetermineAttributeTypes(fields, section)[entity]`
+// - `RationalizeAndDetermineAttributeTypes(fields)[section][entity]`
+
+std::vector<AutofillFieldWithAttributeType>
+RationalizeAndDetermineAttributeTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
+    const Section& section_of_interest,
+    EntityType entity_of_interest);
+
+base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>
+RationalizeAndDetermineAttributeTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
+    const Section& section_of_interest);
+
+base::flat_map<
+    Section,
+    base::flat_map<EntityType, std::vector<AutofillFieldWithAttributeType>>>
+RationalizeAndDetermineAttributeTypes(
+    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND);
+
+std::vector<AutofillFieldWithAttributeType> RationalizeAttributeTypesForTesting(
+    std::vector<AutofillFieldWithAttributeType> fields,
+    EntityType entity_of_interest);
+
+// Returns whether `fields` are valid for AutofillAi. This is true when for any
+// given section found in the fields, the respective AutofillAi attribute types
+// satisfies any entity requirements.
+[[nodiscard]] bool AreFieldsRelevantForAutofillAi(
+    base::span<const std::unique_ptr<AutofillField>> fields);
+
+}  // namespace autofill
+
+#endif  // COMPONENTS_AUTOFILL_CORE_BROWSER_AUTOFILL_AI_FORM_RATIONALIZATION_H_

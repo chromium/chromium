@@ -16,6 +16,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_manager/autofill_ai/entity_data_manager.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
+#include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
@@ -247,7 +248,8 @@ std::vector<DenseSet<AttributeType>> GetAttributeTypes(
 std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
     const Section& section_of_interest,
-    EntityType entity_of_interest) {
+    EntityType entity_of_interest,
+    DetermineAttributeTypesPassKey pass_key) {
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   std::vector<AutofillFieldWithAttributeType> r;
@@ -260,6 +262,7 @@ std::vector<AutofillFieldWithAttributeType> DetermineAttributeTypes(
       }
     }
   }
+
   return r;
 }
 
@@ -268,7 +271,8 @@ using EntityMap =
 
 EntityMap DetermineAttributeTypes(
     base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
-    const Section& section_of_interest) {
+    const Section& section_of_interest,
+    DetermineAttributeTypesPassKey pass_key) {
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   EntityMap r;
@@ -285,7 +289,8 @@ EntityMap DetermineAttributeTypes(
 using SectionMap = base::flat_map<Section, EntityMap>;
 
 SectionMap DetermineAttributeTypes(
-    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND) {
+    base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
+    DetermineAttributeTypesPassKey pass_key) {
   const std::vector<DenseSet<AttributeType>> attributes_by_field =
       GetAttributeTypes(fields);
   SectionMap r;

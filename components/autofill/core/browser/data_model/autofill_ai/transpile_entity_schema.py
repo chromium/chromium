@@ -160,6 +160,21 @@ def generate_cpp_functions(schema):
   yield '  NOTREACHED();'
   yield '}'
   yield ''
+  yield 'base::span<const DenseSet<AttributeType>> EntityType::required_fields() const {'
+  yield '  switch (name_) {'
+  for entity in schema:
+    yield f'    case {entity_name(entity["name"])}: {{'
+    strike_keys = entity.get("required fields", [])
+    if strike_keys:
+      yield f'      static constexpr auto as = std::array{{{", ".join(attribute_dense_set(entity["name"], attributes) for attributes in entity["required fields"])}}};'
+      yield f'      return as;'
+    else:
+      yield f'      return {{}};'
+    yield f'    }}'
+  yield '  }'
+  yield '  NOTREACHED();'
+  yield '}'
+  yield ''
   yield 'base::span<const DenseSet<AttributeType>> EntityType::merge_constraints() const {'
   yield '  switch (name_) {'
   for entity in schema:
@@ -283,7 +298,7 @@ namespace autofill {{
 #   { "import constraints":  [ ["foo"], ["bar"], ["qux"] ],
 #     "merge constraints":   [ ["foo", "bar", "qux"] ] }
 def resolve_shorthands(schema):
-  constraints = ['import constraints', 'merge constraints', 'strike keys']
+  constraints = ['import constraints', 'merge constraints', 'strike keys', 'required fields']
   for entity in schema:
     # Constraints can be the shorthands 'all' (= all attributes) or 'any' (= at
     # least one attribute):

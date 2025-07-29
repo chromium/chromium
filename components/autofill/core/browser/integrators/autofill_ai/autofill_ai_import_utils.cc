@@ -13,6 +13,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
@@ -96,7 +97,7 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
   // and to build section_to_entity_types_attributes we want a map
   // Section -> EntityType -> AttributeType -> AttributeInstance.
   for (const auto& [section, entities_with_fields_and_types] :
-       DetermineAttributeTypes(fields)) {
+       RationalizeAndDetermineAttributeTypes(fields)) {
     for (const auto& [entity, fields_with_types] :
          entities_with_fields_and_types) {
       for (const auto& [field, attribute_type] : fields_with_types) {

@@ -22,6 +22,7 @@
 #include "base/time/time.h"
 #include "base/types/strong_alias.h"
 #include "base/types/zip.h"
+#include "components/autofill/core/browser/autofill_ai_form_rationalization.h"
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/addresses/autofill_structured_address_utils.h"
@@ -62,7 +63,7 @@ class AttributeTypeAssignment {
   AttributeTypeAssignment(
       base::span<const std::unique_ptr<AutofillField>> fields LIFETIME_BOUND,
       const Section& trigger_section)
-      : map_(DetermineAttributeTypes(fields, trigger_section)) {}
+      : map_(RationalizeAndDetermineAttributeTypes(fields, trigger_section)) {}
 
   AttributeTypeAssignment(const AttributeTypeAssignment&) = delete;
   AttributeTypeAssignment& operator=(const AttributeTypeAssignment&) = delete;
