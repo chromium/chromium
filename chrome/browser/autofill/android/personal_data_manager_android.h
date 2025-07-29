@@ -94,6 +94,10 @@ class PersonalDataManagerAndroid : public PersonalDataManagerObserver {
   base::android::ScopedJavaLocalRef<jobjectArray> GetProfileLabelsForSettings(
       JNIEnv* env);
 
+  // Gets the summary of the profile which will be displayed in the editor.
+  // This is currently used only for Home & Work profiles.
+  std::u16string GetProfileDescriptionForEditor(JNIEnv* env, std::string& guid);
+
   // Gets the labels for the profiles to suggest to the user. These labels are
   // useful for distinguishing the profiles from one another.
   //

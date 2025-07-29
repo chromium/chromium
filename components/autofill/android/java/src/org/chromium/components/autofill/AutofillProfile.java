@@ -421,6 +421,11 @@ public class AutofillProfile {
         mLanguageCode = languageCode;
     }
 
+    public boolean isHomeOrWorkProfile() {
+        return getRecordType() == RecordType.ACCOUNT_HOME
+                || getRecordType() == RecordType.ACCOUNT_WORK;
+    }
+
     /** Used by ArrayAdapter in credit card settings. */
     @Override
     public @Nullable String toString() {

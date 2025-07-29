@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.autofill.editors;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
 
@@ -240,6 +241,15 @@ public class EditorDialogView extends AlwaysDismissedDialog
             showDialog();
         } else {
             animateOutDialog();
+        }
+    }
+
+    public void setShowButtons(boolean showButtons) {
+        View buttonBar = mFooter.findViewById(R.id.button_bar);
+        if (showButtons) {
+            buttonBar.setVisibility(View.VISIBLE);
+        } else {
+            buttonBar.setVisibility(View.GONE);
         }
     }
 
@@ -506,6 +516,20 @@ public class EditorDialogView extends AlwaysDismissedDialog
                     mEditableTextFields.add(inputLayout.getEditText());
                     childView = inputLayout;
                     break;
+                }
+            case NON_EDITABLE_TEXT:
+                {
+                    View textLayout =
+                            LayoutInflater.from(mActivity)
+                                    .inflate(
+                                            R.layout.autofill_editor_dialog_non_editable_textview,
+                                            null);
+                    TextView textView = textLayout.findViewById(R.id.non_editable_textview);
+                    PropertyModelChangeProcessor.create(
+                            fieldItem.model,
+                            textView,
+                            EditorDialogViewBinder::bindNonEditableTextView);
+                    childView = textLayout;
                 }
         }
         assumeNonNull(childView);

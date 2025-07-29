@@ -34,7 +34,10 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
 
@@ -157,6 +160,15 @@ public class AddressEditorTest {
                     .setEmailAddress("first@gmail.com")
                     .setLanguageCode("en-US")
                     .build();
+    private static final AutofillProfile sHomeProfile =
+            AutofillProfile.builder()
+                    .setRecordType(RecordType.ACCOUNT_HOME)
+                    .setStreetAddress("111 First St")
+                    .setRegion("CA")
+                    .setLocality("Los Angeles")
+                    .setPostalCode("90291")
+                    .setCountryCode("US")
+                    .build();
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -217,6 +229,8 @@ public class AddressEditorTest {
         SyncServiceFactory.setInstanceForTesting(mSyncService);
 
         when(mPersonalDataManager.getDefaultCountryCodeForNewAddress()).thenReturn("US");
+        when(mPersonalDataManager.getProfileDescriptionForEditor(anyString()))
+                .thenReturn("Profile description");
         PersonalDataManagerFactory.setInstanceForTesting(mPersonalDataManager);
 
         setUpSupportedCountries(mSupportedCountries);
@@ -1227,5 +1241,53 @@ public class AddressEditorTest {
 
         editorModel.get(DONE_RUNNABLE).run();
         validateErrorMessages(mAddressEditor.getEditorModelForTesting(), /* errorsPresent= */ true);
+    }
+
+    @Test
+    @SmallTest
+    public void edit_HomeAddressProfile() {
+        AutofillProfile homeProfile = new AutofillProfile(sHomeProfile);
+        mAddressEditor =
+                new AddressEditorCoordinator(
+                        mActivity,
+                        mDelegate,
+                        mProfile,
+                        new AutofillAddress(mActivity, homeProfile, mPersonalDataManager),
+                        UPDATE_EXISTING_ADDRESS_PROFILE,
+                        /* saveToDisk= */ false);
+        mAddressEditor.setEditorDialogForTesting(mEditorDialog);
+        mAddressEditor.showEditorDialog();
+
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
+        assertNotNull(editorModel);
+
+        assertEquals(false, editorModel.get(SHOW_BUTTONS));
+
+        ListModel<FieldItem> model = editorModel.get(EDITOR_FIELDS);
+        assertEquals(1, model.size());
+
+        FieldItem fieldItem = model.get(0);
+        assertEquals(NON_EDITABLE_TEXT, fieldItem.type);
+        assertEquals(true, fieldItem.isFullLine);
+
+        PropertyModel field = fieldItem.model;
+        assertEquals("Profile description", field.get(TEXT));
+
+        final String deleteTitle =
+                mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
+        final String deleteText =
+                mActivity
+                        .getString(R.string.autofill_delete_account_address_record_type_notice)
+                        .replace("$1", USER_EMAIL);
+        final String recordTypeNotice =
+                mActivity
+                        .getString(R.string.autofill_address_home_and_work_record_type_notice)
+                        .replace("$1", USER_EMAIL);
+
+        checkModelHasExpectedValues(
+                mAddressEditor.getEditorModelForTesting(),
+                deleteTitle,
+                deleteText,
+                recordTypeNotice);
     }
 }

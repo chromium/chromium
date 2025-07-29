@@ -748,6 +748,12 @@ public class PersonalDataManager implements Destroyable {
                         .getProfileGUIDsForSettings(mPersonalDataManagerAndroid));
     }
 
+    public String getProfileDescriptionForEditor(String guid) {
+        ThreadUtils.assertOnUiThread();
+        return PersonalDataManagerJni.get()
+                .getProfileDescriptionForEditor(mPersonalDataManagerAndroid, guid);
+    }
+
     /**
      * TODO(crbug.com/41256488): Reduce the number of Java to Native calls when getting profiles
      *
@@ -1148,6 +1154,10 @@ public class PersonalDataManager implements Destroyable {
         String[] getProfileGUIDsToSuggest(long nativePersonalDataManagerAndroid);
 
         String[] getProfileLabelsForSettings(long nativePersonalDataManagerAndroid);
+
+        @JniType("std::u16string")
+        String getProfileDescriptionForEditor(
+                long nativePersonalDataManagerAndroid, @JniType("std::string") String guid);
 
         String[] getProfileLabelsToSuggest(long nativePersonalDataManagerAndroid);
 

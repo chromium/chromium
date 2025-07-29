@@ -24,11 +24,15 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
+
+import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.autofill.DropdownKeyValue;
@@ -76,6 +80,8 @@ public class EditorDialogViewBinder {
             view.setValidateOnShow(model.get(VALIDATE_ON_SHOW));
         } else if (propertyKey == VISIBLE) {
             view.setVisible(model.get(VISIBLE));
+        } else if (propertyKey == SHOW_BUTTONS) {
+            view.setShowButtons(model.get(SHOW_BUTTONS));
         } else {
             assert false : "Unhandled update to property:" + propertyKey;
         }
@@ -133,6 +139,14 @@ public class EditorDialogViewBinder {
             view.setErrorMessage(model.get(ERROR_MESSAGE));
         } else if (key == DROPDOWN_CALLBACK) {
             // Does not require binding at the moment.
+        } else {
+            assert false : "Unhandled update to property:" + key;
+        }
+    }
+
+    static void bindNonEditableTextView(PropertyModel model, TextView view, PropertyKey key) {
+        if (key == TEXT) {
+            view.setText(model.get(TEXT));
         } else {
             assert false : "Unhandled update to property:" + key;
         }

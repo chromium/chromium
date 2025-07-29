@@ -40,6 +40,7 @@
 #include "components/autofill/core/browser/geo/country_names.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/payments/payments_suggestion_generator.h"
+#include "components/autofill/core/browser/ui/addresses/autofill_address_util.h"
 #include "components/autofill/core/browser/ui/autofill_resource_utils.h"
 #include "components/autofill/core/common/autofill_clock.h"
 #include "components/autofill/core/common/autofill_constants.h"
@@ -290,6 +291,17 @@ ScopedJavaLocalRef<jobjectArray>
 PersonalDataManagerAndroid::GetProfileLabelsForSettings(JNIEnv* env) {
   return GetProfileLabels(env, false /* address_only */,
                           address_data_manager().GetProfilesForSettings());
+}
+
+std::u16string PersonalDataManagerAndroid::GetProfileDescriptionForEditor(
+    JNIEnv* env,
+    std::string& guid) {
+  const AutofillProfile* profile =
+      address_data_manager().GetProfileByGUID(guid);
+  return profile ? GetProfileDescription(
+                       *profile, g_browser_process->GetApplicationLocale(),
+                       /*include_address_and_contacts=*/true)
+                 : std::u16string();
 }
 
 ScopedJavaLocalRef<jobjectArray>

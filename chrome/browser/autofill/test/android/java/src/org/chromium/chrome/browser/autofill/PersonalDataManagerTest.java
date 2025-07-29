@@ -674,6 +674,23 @@ public class PersonalDataManagerTest {
 
     @Test
     @SmallTest
+    public void testProfileEditorDescription() throws TimeoutException {
+        AutofillProfile profile =
+                AutofillProfile.builder()
+                        .setStreetAddress("123 Main")
+                        .setRegion("California")
+                        .setLocality("Los Angeles")
+                        .setPostalCode("90210")
+                        .setCountryCode("US")
+                        .build();
+
+        String guid = mHelper.setProfile(profile);
+        String profileDescription = mHelper.getProfileDescriptionForEditor(guid);
+        assertEquals("123 Main, Los Angeles", profileDescription);
+    }
+
+    @Test
+    @SmallTest
     @Feature({"Autofill"})
     @DisableFeatures(ChromeFeatureList.AUTOFILL_ENABLE_RANKING_FORMULA_ADDRESS_PROFILES)
     public void testProfilesFrecency() throws TimeoutException {
