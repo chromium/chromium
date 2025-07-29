@@ -40,19 +40,8 @@ enum class PreloadBookmarkMetricsEvent {
 
 // These are used as control the behavior of kBookmarkTriggerForPrerender2.
 const base::FeatureParam<int> kPreconnectStartDelayOnMouseHoverByMiliseconds{
-    &features::kBookmarkTriggerForPrerender2,
+    &features::kBookmarkTriggerForPreconnect,
     "preconnect_start_delay_on_mouse_hover_ms", 100};
-const base::FeatureParam<int> kPrerenderStartDelayOnMouseHoverByMiliseconds{
-    &features::kBookmarkTriggerForPrerender2,
-    "prerender_start_delay_on_mouse_hover_ms", 300};
-const base::FeatureParam<bool> kPrerenderBookmarkBarOnMousePressedTrigger{
-    &features::kBookmarkTriggerForPrerender2,
-    "prerender_bookmarkbar_on_mouse_pressed_trigger", true};
-// The hover trigger is not enabled as we are aware that this negatively
-// affects other navigations like Omnibox search.
-const base::FeatureParam<bool> kPrerenderBookmarkBarOnMouseHoverTrigger{
-    &features::kBookmarkTriggerForPrerender2,
-    "prerender_bookmarkbar_on_mouse_hover_trigger", false};
 
 // BookmarkButtonBase -----------------------------------------------
 
@@ -175,14 +164,17 @@ void BookmarkButton::OnMouseEntered(const ui::MouseEvent& event) {
 
   BookmarkButtonBase::OnMouseEntered(event);
 
-  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
-      kPrerenderBookmarkBarOnMouseHoverTrigger.Get()) {
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect)) {
     preloading_timer_.Start(
         FROM_HERE,
         base::Milliseconds(
             kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
         base::BindRepeating(&BookmarkButton::StartPreconnecting,
                             base::Unretained(this), *url_));
+  }
+
+  if (base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect) ||
+      base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
     // Now we should register the callback function that will be used to
     // compute the preloading recall.
     if (auto* web_contents =
@@ -220,8 +212,7 @@ bool BookmarkButton::OnMousePressed(const ui::MouseEvent& event) {
                                   PreloadBookmarkMetricsEvent::kMouseDown);
   }
   if (event.IsOnlyLeftMouseButton() &&
-      base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2) &&
-      kPrerenderBookmarkBarOnMousePressedTrigger.Get()) {
+      base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2)) {
     StartPrerendering(*url_);
   }
   return result;
@@ -237,33 +228,20 @@ void BookmarkButton::OnWidgetBoundsChanged(views::Widget* widget,
 }
 
 void BookmarkButton::StartPreconnecting(GURL url) {
-  CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPrerender2));
+  // TODO(crbug.com/413259638): Introduce preconnect related tests once the
+  // related infrastructure is completed.
+  CHECK(base::FeatureList::IsEnabled(features::kBookmarkTriggerForPreconnect));
   if (bookmarkbar_preload_manager_ &&
       bookmarkbar_preload_manager_->IsPreloadingStarted()) {
     return;
   }
 
-  // Directly start prerendering to avoid timer overhead.
-  if (kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
-          kPreconnectStartDelayOnMouseHoverByMiliseconds.Get() <=
-      0) {
-    StartPrerendering(url);
-  } else {
-    auto* loading_predictor =
-        predictors::LoadingPredictorFactory::GetForProfile(browser_->profile());
-    if (loading_predictor) {
-      loading_predictor->PrepareForPageLoad(
-          /*initiator_origin=*/std::nullopt, url,
-          predictors::HintOrigin::BOOKMARK_BAR, true);
-    }
-
-    preloading_timer_.Start(
-        FROM_HERE,
-        base::Milliseconds(
-            kPrerenderStartDelayOnMouseHoverByMiliseconds.Get() -
-            kPreconnectStartDelayOnMouseHoverByMiliseconds.Get()),
-        base::BindRepeating(&BookmarkButton::StartPrerendering,
-                            base::Unretained(this), url));
+  auto* loading_predictor =
+      predictors::LoadingPredictorFactory::GetForProfile(browser_->profile());
+  if (loading_predictor) {
+    loading_predictor->PrepareForPageLoad(
+        /*initiator_origin=*/std::nullopt, url,
+        predictors::HintOrigin::BOOKMARK_BAR, true);
   }
 }
 

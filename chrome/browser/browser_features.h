@@ -34,6 +34,7 @@ BASE_DECLARE_FEATURE(kAllowUnmutedAutoplayForTWA);
 BASE_DECLARE_FEATURE(kAutocompleteActionPredictorConfidenceCutoff);
 BASE_DECLARE_FEATURE(kBookmarksTreeView);
 BASE_DECLARE_FEATURE(kBookmarkTriggerForPrerender2);
+BASE_DECLARE_FEATURE(kBookmarkTriggerForPreconnect);
 BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 BASE_DECLARE_FEATURE(kCertVerificationNetworkTime);
 BASE_DECLARE_FEATURE(kClearUserDataUponProfileDestruction);
