@@ -40,8 +40,8 @@ struct MapTraits<std::map<K, V, Compare>> {
     return input.begin();
   }
 
-  static void AdvanceIterator(ConstIterator& iterator) { iterator++; }
-  static void AdvanceIterator(Iterator& iterator) { iterator++; }
+  static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
+  static void AdvanceIterator(Iterator& iterator) { ++iterator; }
 
   static const K& GetKey(Iterator& iterator) { return iterator->first; }
   static const K& GetKey(ConstIterator& iterator) { return iterator->first; }
@@ -91,8 +91,8 @@ struct MapTraits<std::unordered_map<K, V>> {
     return input.begin();
   }
 
-  static void AdvanceIterator(ConstIterator& iterator) { iterator++; }
-  static void AdvanceIterator(Iterator& iterator) { iterator++; }
+  static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
+  static void AdvanceIterator(Iterator& iterator) { ++iterator; }
 
   static const K& GetKey(Iterator& iterator) { return iterator->first; }
   static const K& GetKey(ConstIterator& iterator) { return iterator->first; }
@@ -130,7 +130,7 @@ struct MapTraits<std::vector<std::pair<K, V>>> {
     return input.begin();
   }
 
-  static void AdvanceIterator(ConstIterator& iterator) { iterator++; }
+  static void AdvanceIterator(ConstIterator& iterator) { ++iterator; }
 
   static const K& GetKey(const ConstIterator& iterator) {
     return iterator->first;
