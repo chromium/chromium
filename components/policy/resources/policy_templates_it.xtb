@@ -279,6 +279,7 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="1202216683470826356">Mostra schede nella pagina Nuova scheda</translation>
 <translation id="1203676252390737801">Gestione dell'IP di WebRTC per URL</translation>
 <translation id="1204263402976895730">Stampanti aziendali attive</translation>
+<translation id="120513772363332049">Tutti gli altri processi non verranno pianificati sullo stesso core della CPU quando il processo di rendering è in esecuzione.</translation>
 <translation id="1207301487141109411">Impedisci la selezione degli avatar degli utenti da file system locale, fotocamera e profilo Google</translation>
 <translation id="1209096923317019235">Assegna le app come gestori predefiniti per le estensioni dei file specificate</translation>
 <translation id="120937472976628837">Segnala informazioni sulla ventola</translation>
@@ -1568,6 +1569,9 @@ In genere, questa policy è disattivata per difendere gli utenti da tentativi di
 <translation id="208566302163036794">Blocca le funzionalità disattivate</translation>
 <translation id="2086040449830622332">Attiva sandbox LPAC di stampa</translation>
 <translation id="208623333578980446">Consenti wakelock schermo per la gestione dell'alimentazione</translation>
+<translation id="2086505225896497574">La configurazione della policy consente di specificare gli ID RP WebAuthn per i quali non viene visualizzata alcuna richiesta quando vengono richiesti certificati di attestazione dei token di sicurezza nella schermata di accesso. Viene inoltre inviato un segnale al token di sicurezza per indicare che potrebbe essere utilizzata l'attestazione aziendale. Senza questo segnale, gli utenti ricevono un messaggio quando i siti richiedono l'attestazione dei token di sicurezza.
+
+Questa policy del dispositivo è equivalente alla policy per gli utenti esistente <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, ma si applica al profilo di accesso nella schermata di accesso.</translation>
 <translation id="2089541797660774692">Attiva reporting su cloud tramite browser gestito</translation>
 <translation id="2090712407517297305">La pagina della cronologia di Chrome organizzata in gruppi sarà visibile all'indirizzo chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Se la policy viene impostata su Attivata, è consentito il proxy di compressione dei dati. Se viene impostata su Disattivata, il proxy non è consentito.
@@ -3822,6 +3826,15 @@ Le connessioni che non superano il controllo non andranno a buon fine e restitui
       Se viene impostata su Disattivata, l'utilizzo dell'API Translator non è consentito.</translation>
 <translation id="366494444808132420">Consenti le integrazioni di Gemini.</translation>
 <translation id="3665437376055221832">Richiedi la selezione da parte dell'utente quando nessun certificato corrisponde alla selezione automatica.</translation>
+<translation id="3667089394451236198">Elenco di pattern URL. Le richieste avviate da siti web pubblicati da origini corrispondenti non sono soggette ai controlli di <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se un'origine è coperta sia da questa policy sia da LocalNetworkAccessBlockedForUrls, quest'ultima ha la precedenza.
+
+Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3671773704245936868">Disattiva l'evidenziazione dell'elemento attivo tramite tastiera</translation>
 <translation id="3674010627788940405">Le intestazioni delle richieste CORS senza caratteri jolly non sono supportate.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) viene comunemente utilizzato per suddividere le attività JavaScript di lunga durata.
@@ -4383,6 +4396,17 @@ Per informazioni dettagliate sui pattern <ph name="URL_LABEL" /> validi, visita 
       Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> non viene configurata, il provider di ricerca non viene attivato da alcuna parola chiave.</translation>
 <translation id="4090088362777472639">L'hash SHA-256 del playbook Ansible.</translation>
 <translation id="4091040199847925434">Disattiva la segnalazione di informazioni di sistema e contenuti della pagina utilizzati per migliorare Navigazione sicura</translation>
+<translation id="4092882308219320847">Elenco di pattern URL. Le richieste inoltrate da siti web pubblicati da origini corrispondenti non possono effettuare richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se un'origine è coperta sia da questa policy sia da LocalNetworkAccessAllowedForUrls, questa policy ha la precedenza.
+
+A seconda della fase di implementazione di <ph name="LOCAL_NETWORK_ACCESS" />, potrebbe essere necessario abilitare anche LocalNetworkAccessRestrictionsEnabled per consentire a questa policy di bloccare le richieste di <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Per le origini non coperte dai pattern specificati qui, verrà applicata la configurazione personale dell'utente.
+
+Per informazioni dettagliate sui pattern URL validi, visita la pagina https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4093058072421210667">Non consentire la funzionalità di immagine in linea.</translation>
 <translation id="4098920079809952737">Consenti la stampa con e senza immagini di sfondo</translation>
 <translation id="410061592404122032">Chiedi ogni volta che un sito vuole ottenere l'autorizzazione per la gestione delle finestre</translation>
@@ -6518,6 +6542,7 @@ Questa policy non impedisce agli utenti di salvare file su <ph name="GOOGLE_DRIV
 <translation id="5490462588616309068">Se la policy viene impostata su true o se non viene configurata, è consentito l'uso di identificatori di contenuti protetti, il che può contribuire a una riproduzione di contenuti protetti di qualità superiore.
 
 Se la policy viene impostata su false, non è consentito utilizzare gli identificatori di contenuti protetti.</translation>
+<translation id="5492713303272131731">Tutti gli altri processi possono essere pianificati sullo stesso core della CPU quando il processo di rendering è in esecuzione.</translation>
 <translation id="5494322570831642650">Consente di specificare se l'utente può aprire o meno le pagine in modalità di navigazione in incognito in <ph name="PRODUCT_NAME" />.
 
       Se viene selezionata l'opzione "Enabled" o se la policy non viene impostata, è possibile aprire le pagine in modalità di navigazione in incognito.
@@ -6890,6 +6915,7 @@ La policy riguarda i flussi di autenticazione di accesso e della schermata di bl
       Nota: separa i valori utilizzando le virgole.</translation>
 <translation id="5693469654327063861">Consenti migrazione dei dati</translation>
 <translation id="56936613186060503">In Gestione dei download non sarà disponibile un'opzione per salvare i file su <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="569457565603183">URL/domini autorizzati automaticamente per l'attestazione diretta del token di sicurezza nella schermata di accesso</translation>
 <translation id="5695209488612697377">Consente di attivare l'utilizzo di un provider di ricerca predefinito nel menu contestuale.
 
           Se la policy viene disattivata, la voce del menu contestuale di ricerca che si basa sul tuo provider di ricerca predefinito non è disponibile.
@@ -7967,7 +7993,6 @@ Per ulteriori informazioni sulla gestione dei dati per le funzionalità di AI ge
 <translation id="6412352702230183710">Consenti solo host di messaggi nativi a livello di sistema</translation>
 <translation id="6412793408912788345">Visualizza la schermata introduttiva di Gemini durante l'accesso</translation>
 <translation id="6416506846917150119">Disattiva la scrittura predittiva sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
-<translation id="6416916931494972926">Attiva i report sulla telemetria di Kiosk Vision.</translation>
 <translation id="6417265370957905582">Assistente Google</translation>
 <translation id="6419001911253110938">Attiva la visualizzazione della schermata introduttiva per le funzionalità di AI all'interno della sessione durante il flusso di accesso</translation>
 <translation id="6421254653839955267">Impostando la policy su Attivata, la ricerca CNAME viene saltata. Il nome del server viene utilizzato come valore inserito durante la generazione del Kerberos SPN.
@@ -8120,7 +8145,6 @@ Se la policy non viene configurata o se viene fornito un elenco vuoto di URL, tu
 
       Se non viene configurata, il comportamento predefinito è off per gli utenti gestiti e on per gli altri utenti.</translation>
 <translation id="6508403116553969858">Imposta il valore predefinito della policy per le funzionalità di AI generativa incluse in <ph name="PRODUCT_NAME" /></translation>
-<translation id="6508882314969525299">Disattiva i report sulla telemetria di Kiosk Vision.</translation>
 <translation id="6509376413448002446">Consente di configurare il salvaschermo dell'utente per la schermata di blocco.
 
 Se questa policy viene impostata su true, quando il dispositivo <ph name="PRODUCT_OS_NAME" /> sarà inattivo verrà mostrato un salvaschermo nella schermata di blocco.
@@ -8478,6 +8502,11 @@ Se la policy viene impostata su Enabled, i dati vengono raccolti e caricati sull
 
 Per <ph name="PRODUCT_NAME" />, questa policy viene applicata soltanto se la macchina viene registrata con il token <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Per <ph name="PRODUCT_OS_NAME" />, questa policy viene sempre applicata.</translation>
+<translation id="6720071484598746942">Se questa policy viene impostata su Attivata, ogni volta che dovrebbe essere visualizzato un avviso in <ph name="DEV_TOOLS_NAME" /> a causa di controlli <ph name="LOCAL_NETWORK_ACCCESS" /> non riusciti, la richiesta principale verrà bloccata.
+
+Se questa policy viene impostata su Disattivata o se non viene configurata, le richieste di <ph name="LOCAL_NETWORK_ACCESS" /> useranno la gestione predefinita di queste richieste.
+
+Visita la pagina https://wicg.github.io/local-network-access/ per conoscere le limitazioni relative a <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6720330829631914048">Le ore trascorse dall'inizio della giornata nel formato di 24 ore.</translation>
 <translation id="6721252203593581486">WebSQL in contesti di terze parti (ad es. iframe tra siti) è disattivato per impostazione predefinita a partire da M97 e verrà completamente rimosso in M101.
           Se la policy viene impostata su False o se non viene configurata, WebSQL in contesti di terze parti rimarrà disattivato.
@@ -10659,6 +10688,10 @@ Se la policy non viene configurata, inizialmente i controlli con il volto sono d
 <translation id="8331479227794770304">Attiva tasti permanenti</translation>
 <translation id="8332822245414537447">Disattiva il controllo dell'utilizzo delle chiavi RSA</translation>
 <translation id="8334685561819743286">Disattiva la correzione automatica sulla tastiera fisica durante la digitazione da parte degli utenti</translation>
+<translation id="8336986243404088829">Questa policy mitiga gli attacchi alla memoria tra processi tramite canali laterali isolando il processo di rendering sul core della CPU e impedendo ad altri processi di condividere lo stesso core. La mitigazione è supportata su <ph name="MS_WIN_NAME" /> 11 24H2 e versioni successive. Se il sistema operativo non dispone del supporto di pianificazione richiesto, questa policy non avrà alcun effetto. Questa policy potrebbe rallentare le prestazioni in alcuni scenari impegnativi, in modo simile alla disattivazione dell'hyperthreading. Per maggiori informazioni, consulta la pagina https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
+      Se questa policy è abilitata, nessun altro processo verrà pianificato sullo stesso core della CPU quando è in esecuzione il processo di rendering.
+      Se questa policy viene disattivata, tutti gli altri processi possono essere pianificati sullo stesso core della CPU se è in esecuzione un processo di rendering.
+      Se questa policy non viene configurata, tutti gli altri processi possono essere pianificati sullo stesso core della CPU se un processo di rendering è in esecuzione sul core. Questa configurazione potrebbe variare in base alla release di <ph name="PRODUCT_NAME" />, alle prove sul campo attualmente in esecuzione e alla piattaforma.</translation>
 <translation id="8337114537412769126">Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> è attiva, l'assegnazione di un valore alla policy <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> consente di specificare i parametri durante la ricerca di suggerimenti con POST. Si tratta di coppie di tipo nome-valore separate da virgole. Se un valore è il parametro di un modello, ad esempio <ph name="SEARCH_TERM_MARKER" />, viene sostituito con i dati dei termini di ricerca reali.
 
       Se la policy <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> non viene configurata, le richieste di ricerca di suggerimenti vengono inviate utilizzando il metodo Get.</translation>
@@ -11081,9 +11114,6 @@ Se la policy non è configurata, gli utenti non possono giocare sul dispositivo 
       Se la policy viene impostata su true, le schede che sono in secondo piano da almeno cinque minuti potrebbero essere bloccate. Il blocco delle schede riduce l'utilizzo di CPU, batteria e memoria. <ph name="PRODUCT_NAME" /> usa l'euristica per evitare di bloccare le schede in secondo piano che hanno una funzione utile (ad esempio visualizzare notifiche, riprodurre audio, riprodurre video in streaming). Gli sviluppatori web possono anche disattivare il blocco nei loro siti (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se la policy viene impostata su false, le schede non verranno bloccate.</translation>
-<translation id="8607613052618540095">Se la policy viene impostata su Enabled, i report sulla telemetria di Kiosk Vision sono attivati.
-Verrà avviato il framework Kiosk Vision e saranno attivati i report sulla telemetria del pubblico.
-Se questa policy non viene configurata o se viene impostata su Disabled, i report sulla telemetria di Kiosk Vision sono disattivati.</translation>
 <translation id="8610216287193516769">Rimossa in M122: si tratta di una policy solo lato server che non ha mai utilizzato l'infrastruttura delle policy di ChromeOS per la sua propagazione.
 Se questa policy viene impostata su <ph name="POLICY_VALUE_ALL" /> o se non viene configurata, sono consentiti tutti gli utilizzi degli account gestiti. Di conseguenza, un account gestito potrebbe essere un account secondario, che riceverebbe le policy soltanto se venisse eseguito l'accesso all'account come account principale in un profilo del browser.
       Le policy impostate per l'account non verranno applicate nei seguenti casi:
@@ -11923,6 +11953,7 @@ Per ulteriori informazioni sui contesti sicuri, visita il sito https://www.w3.or
 <translation id="9162444960513782569">Non forzare la limitazione dei timer JavaScript in background</translation>
 <translation id="9164656078867027374">Definisci i domini autorizzati ad accedere a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
 <translation id="9165128017344777105">Consenti l'autorizzazione per i caratteri locali su questi siti</translation>
+<translation id="9165498643231979857">Limita la condivisione dei core della CPU per il processo di rendering</translation>
 <translation id="9166670902476893480">Questa policy consente di stabilire se <ph name="PRODUCT_NAME" /> può eseguire query su tipi di record DNS aggiuntivi quando fa richieste DNS non sicure. Questa policy non viene applicata per query DNS effettuate tramite DNS sicuro, che può sempre eseguire query su tipi DNS aggiuntivi.
 
       Se questa policy non viene configurata o se viene impostata su Attivata, è possibile eseguire query su tipi aggiuntivi quali <ph name="DNS_TYPE_HTTPS" /> (DNS tipo 65) oltre che su <ph name="DNS_TYPE_A" /> (DNS tipo 1) e <ph name="DNS_TYPE_AAAA" /> (DNS tipo 28).

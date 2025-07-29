@@ -1371,6 +1371,7 @@
 <translation id="1931152874660185993">တပ်ဆင်ထားသည့် အစိတ်အပိုင်းများ မရှိ</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> ကို ထည့်သွင်းနေသည်</translation>
 <translation id="1932098463447129402">မတိုင်မှီမဟုတ်</translation>
+<translation id="1933070475689690969">Gemini Apps အသုံးပြုမှု</translation>
 <translation id="1933489278505808700">ဖတ်ပြီးပြောင်းရန် ခွင့်ပြုထားသည်</translation>
 <translation id="1935303383381416800">သင့်တည်နေရာကို ကြည့်ရန် ခွင့်ပြုထားသည်</translation>
 <translation id="193565226207940518">အကူအညီတူးလ်</translation>
@@ -1563,6 +1564,7 @@
 <translation id="2073496667646280609">သင့်စက် (သို့) ရွေးထားသည့် မိတ္တူကူးမည့်နေရာတွင် သိုလှောင်ခန်းနေရာလွတ် မလုံလောက်ခြင်း ဖြစ်နိုင်သည်။ နေရာရှင်းကြည့်ပါ (သို့) အခြားနေရာတစ်ခု ရွေးကြည့်ပါ။</translation>
 <translation id="2073505299004274893">စာလုံးရေ <ph name="CHARACTER_LIMIT" /> သို့မဟုတ် ၎င်းထက်လျှော့သုံးပါ</translation>
 <translation id="2074263453710478603">ChromeOS Chrome အသုံးပြုသူမှတ်တမ်းများ</translation>
+<translation id="2074599390896964828">နေရာအတိအကျ</translation>
 <translation id="2075088158103027942">စာရင်းသွင်းမှုသို့ သွားရန်</translation>
 <translation id="2075474481720804517">ဘက်ထရီ <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> နောက်ဆက်တွဲအတွက် နောက်ထပ်လုပ်ဆောင်ချက်များ</translation>
@@ -2720,6 +2722,7 @@
 <translation id="2849936225196189499">အရေးကြီး</translation>
 <translation id="285033512555869047">ပိတ်ထားသည်</translation>
 <translation id="2850541429955027218">အပြင်အဆင် ပေါင်းထည့်ရန်</translation>
+<translation id="2851291081585704741">အော့ဖ်လိုင်းဖြစ်နေသည်</translation>
 <translation id="2852045827873867442">အင်တာနက်ချိတ်ဆက်မှု လိုအပ်သည်။</translation>
 <translation id="285237063405807022">(ဖွင့်နေသည်)</translation>
 <translation id="2853121255651601031">စကားဝှက်ကို သိမ်းဆည်းပြီးပါပြီ</translation>
@@ -3510,6 +3513,7 @@
 <translation id="3435738964857648380">လုံခြုံရေး</translation>
 <translation id="343578350365773421">စာရွက်ကုန်နေသည်</translation>
 <translation id="3435896845095436175">ဖွင့်ပေးရန်</translation>
+<translation id="3437072258256045988">သင်၏ Gemini Apps အသုံးပြုမှုကို စီမံနိုင်သည်</translation>
 <translation id="3437397693214267762">သင်၏ Outlook Calendar၊ SharePoint နှင့် OneDrive ဖိုင်များကို ကြည့်ပါ</translation>
 <translation id="3438633801274389918">နင်ဂျာ</translation>
 <translation id="3439153939049640737"><ph name="HOST" />သင်၏ မိုက်ခရိုဖုန်းကို ရယူမှု အမြဲတမ်း ခွင်ပြုရန်</translation>
@@ -4775,6 +4779,7 @@
 <translation id="4295072614469448764">သင့်စက်တွင် အက်ပ်ရနိုင်ပါသည်။ သင်၏ Launcher ထဲတွင် သင်္ကေတရှိနေနိုင်ပါသည်။</translation>
 <translation id="4295979599050707005">သင့် <ph name="USER_EMAIL" /> အကောင့်ကို Chrome နှင့် Google Play ရှိ ဝဘ်ဆိုက်၊ အက်ပ်၊ နောက်ဆက်တွဲများတွင် အသုံးပြုနိုင်ကြောင်း အတည်ပြုရန် ထပ်ပြီး လက်မှတ်ထိုးဝင်ပါ။ ဤအကောင့်ကိုလည်း ဖယ်ရှားနိုင်သည်။ <ph name="LINK_BEGIN" />ပိုမို လေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> မှတစ်ဆင့် အပလီကေးရှင်းများကို ထည့်သွင်းပြီး တိုက်ရိုက်ဖွင့်ထားသည်</translation>
+<translation id="4296632172536745000">ဤဝဘ်ဆိုက်အတွက် သင်၏ မူလစကားဝှက်ကို အများမြင်သော ဒေတာကျိုးပေါက်မှုတွင် တွေ့ရှိထားသည်။ <ph name="DATE" /> တွင် သင်သည် <ph name="BRAND" /> ကို သင့်အတွက် စကားဝှက် အလိုအလျောက်ပြောင်းရန် တောင်းဆိုထားသည်။</translation>
 <translation id="4297219207642690536">ပြန်လည်စတင်ပြီး ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="4297813521149011456">ဖန်သားပြင်ပြသမှု လှည့်ခြင်း</translation>
 <translation id="4298660926525614540">ဖြုတ်နိုင်သော သိုလှောင်ခန်းအမည်များ</translation>
@@ -9330,6 +9335,7 @@
 <translation id="7582844466922312471">မိုဘိုင်း ဒေတာ</translation>
 <translation id="7583948862126372804">အရေအတွက်</translation>
 <translation id="7585106857920830898">သင့်အဖွဲ့အစည်း၏ လုံခြုံရေးမူဝါဒများဖြင့် စစ်ဆေးနေသည်...</translation>
+<translation id="7585490016012953607">ပြန်လည်ရယူသည့် စကားဝှက် — ၃ လအထိ ယာယီ သိမ်းထားသည်</translation>
 <translation id="7586498138629385861">Chrome Apps များဖွင့်ထားစဉ် Chrome ဆက်အလုပ်လုပ်နေမည်။</translation>
 <translation id="7587806318633605613">အကြံပြုချက်မှတ်တမ်း</translation>
 <translation id="7589448773774086276">လက်ရှိတဘ်ဖြင့် မျက်နှာပြင်ခွဲ၍ ပြသခြင်းအသစ်</translation>
@@ -9956,8 +9962,8 @@
 သင့်ဖိုင်များကို လုံခြုံသည့် နေရာတွင် ထားပါ။ သင့်အိတ်စတန်းရှင်း၏ ဗားရှင်းအသစ်ကို သင်ဖန်တီးရပါမည်။</translation>
 <translation id="8000020256436988724">ကိရိယာဘား</translation>
 <translation id="800117767980299235">အသံ အထူးအသားပေး</translation>
+<translation id="8001561107130904792">စာမျက်နှာအကြောင်းအရာ မျှဝေခြင်း</translation>
 <translation id="8002274832045662704">ပရင်တာ စီစဉ်သတ်မှတ်ချက် နောက်ထပ်ရွေးချယ်စရာများ</translation>
-<translation id="8002531372108263935">သင့်အဖွဲ့အစည်းဖြစ်သော <ph name="ACCOUNT_MANAGER" /> က ဤဒေတာကို ကြည့်နိုင် (သို့) စီမံနိုင်မည်မဟုတ်ပါ။ ၎င်းက လက်ရှိပရိုဖိုင်ထဲတွင် ဆက်ရှိနေပါမည်။</translation>
 <translation id="8002597610026749658">Chrome သည် ဤနေရာတွင်ပြထားသော ဘာသာစကားများအတွက် စာတန်းများ ပြုလုပ်နိုင်သည်</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ကို မရနိုင်တော့ပါ</translation>
 <translation id="8004092996156083991">သင့်စကားဝှက်များ ပေါက်ကြားသွားပါက သင့်ကို ကျွန်ုပ်တို့အသိပေးပါမည်။</translation>

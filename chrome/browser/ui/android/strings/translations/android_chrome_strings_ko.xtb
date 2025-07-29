@@ -1127,6 +1127,7 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="6137022273846704445"><ph name="APP_NAME" />의 언어</translation>
 <translation id="6138832295072039549">여기에서 사이트 설정을 변경하세요.</translation>
 <translation id="6140912465461743537">국가/지역</translation>
+<translation id="6140948187512243695">세부정보 표시</translation>
 <translation id="6142183503755612900">언제든지 설정에서 기본 검색엔진을 변경할 수 있습니다</translation>
 <translation id="6146563240635539929">동영상</translation>
 <translation id="614890671148262506">이 사이트의 알림 항상 허용</translation>
@@ -1485,7 +1486,6 @@ Chrome 환경을 개선하는 데 데이터를 사용하는 설정을 더 보려
 <translation id="7545347190366646170">액세스 권한이 있는 사용자</translation>
 <translation id="7554643625247105821">Chrome 버전을 확인할 수 없음</translation>
 <translation id="7557508262441527045">로그아웃됨</translation>
-<translation id="7561260660702735877">사이트 링크에 대한 자세한 정보</translation>
 <translation id="7573665567024262965">기본 앱 선택</translation>
 <translation id="7577900504646297215">관심분야 관리</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />개 파일 다운로드됨}other{<ph name="FILES_DOWNLOADED_MANY" />개 파일 다운로드됨}}</translation>

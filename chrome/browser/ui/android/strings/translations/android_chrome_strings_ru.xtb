@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445">Язык <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Изменить настройки сайта можно здесь</translation>
 <translation id="6140912465461743537">Страна/регион</translation>
+<translation id="6140948187512243695">Показать подробности</translation>
 <translation id="6142183503755612900">Вы в любой момент можете изменить выбор в настройках.</translation>
 <translation id="6146563240635539929">Видео</translation>
 <translation id="614890671148262506">Всегда разрешать уведомления от этого сайта</translation>
@@ -1485,7 +1486,6 @@
 <translation id="7545347190366646170">Пользователи, у которых есть доступ</translation>
 <translation id="7554643625247105821">Не удалось проверить версию Chrome</translation>
 <translation id="7557508262441527045">Выполнен выход.</translation>
-<translation id="7561260660702735877">Подробнее о сайте по ссылке…</translation>
 <translation id="7573665567024262965">Выберите приложения по умолчанию</translation>
 <translation id="7577900504646297215">Управление интересами</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Скачан <ph name="FILES_DOWNLOADED_ONE" /> файл}one{Скачан <ph name="FILES_DOWNLOADED_MANY" /> файл}few{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}many{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файлов}other{Скачано <ph name="FILES_DOWNLOADED_MANY" /> файла}}</translation>

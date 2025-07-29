@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">Få notifikationer om prisfald på de produkter, du holder øje med.</translation>
 <translation id="1521366073263497277">Gå til dit fanegitter</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
+<translation id="1523567067736644845">Lås op for at få vist adgangskoden</translation>
 <translation id="1524563461097350801">Nej tak</translation>
 <translation id="1531038290222364269">Vis faner</translation>
 <translation id="1536390784834419204">Oversæt side</translation>
@@ -1230,6 +1231,7 @@ Handoff skal være aktiveret i afsnittet Generelt i Indstillinger, og dine enhed
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
 <translation id="5873179562631407582">Hold fingeren på en åben fane</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Administreres af din organisation.</translation>
+<translation id="5887400589839399685">Kortet er gemt</translation>
 <translation id="5888889603768021126">Du er logget ind med</translation>
 <translation id="5889333064153755823">Slet browserdata</translation>
 <translation id="5896576662943111387">Designet til iOS</translation>
@@ -2009,7 +2011,6 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8819155700324279105">Tilføj ekstra beskyttelse mod onlinetrusler</translation>
 <translation id="8820817407110198400">Bogmærker</translation>
 <translation id="8822421075653507124">Da din organisation skal sikre, at denne enhed kan bruges sikkert, skal organisationen muligvis se oplysninger om dens operativsystem, browser og indstillinger, og hvilken software der er installeret på enheden.</translation>
-<translation id="8825562130641217944">Se dine bogmærker, adgangskoder og meget mere.</translation>
 <translation id="8831208860914609320">Luk alle inaktive faner</translation>
 <translation id="8831944931153286232">Føj til læseliste</translation>
 <translation id="8837654851594567190">Sortér efter udgiver</translation>

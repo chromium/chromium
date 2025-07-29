@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">ادامه</translation>
 <translation id="2371084566192454134">زبانه‌ها و گروه زبانه‌ها</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه <ph name="TITLE_OF_GROUP" /> با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
-<translation id="2479148705183875116">رفتن به تنظیمات</translation>
 <translation id="2498435670446402865">تغییر نام گروه زبانه</translation>
 <translation id="2536366509642644298">گروه‌های زبانه «<ph name="TAB_GROUP_NAME_1" />» و «<ph name="TAB_GROUP_NAME_2" />» دیگر دردسترس نیستند</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{جمع کردن <ph name="TABS_COUNT_ONE" /> برگه.}one{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}other{جمع کردن گروه برگه با <ph name="TABS_COUNT_MANY" /> برگه.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">اطلاعات فروشگاه نمایش داده شود؟</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{‫<ph name="ONE_CLOSED" /> برگه بسته شد}one{‫<ph name="MANY_CLOSED" /> برگه بسته شد}other{‫<ph name="MANY_CLOSED" /> برگه بسته شد}}</translation>
 <translation id="2894757982205307093">برگه جدید در گروه</translation>
+<translation id="2918484639460781603">رفتن به تنظیمات</translation>
 <translation id="2928243913527329289">‏Google | درباره این فروشگاه</translation>
 <translation id="3008554597174452548">توقف پیگیری محصول</translation>
 <translation id="3026391124054406831">با ایجاد گروه‌ها، برگه‌هایتان را سازمان‌دهی کنید.</translation>

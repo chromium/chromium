@@ -1508,6 +1508,9 @@ Cette règle est habituellement désactivée pour protéger les utilisateurs con
 <translation id="208566302163036794">Bloquer les fonctionnalités désactivées</translation>
 <translation id="2086040449830622332">Activer le bac à sable LPAC pour l'impression</translation>
 <translation id="208623333578980446">Autoriser les wakelocks forçant l'activation de l'écran pour la gestion de l'alimentation</translation>
+<translation id="2086505225896497574">Cette règle permet de spécifier les ID RP WebAuthn pour lesquels aucune invite ne s'affiche lorsque des certificats d'attestation des clés de sécurité sont demandés sur l'écran de connexion. Un signal est également envoyé à la clé de sécurité pour indiquer qu'une attestation d'entreprise peut être utilisée. Sans cela, les utilisateurs sont avertis lorsque des sites demandent une attestation des clés de sécurité.
+
+Cette règle relative aux appareils est équivalente à la règle relative aux utilisateurs <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" /> existante, à la différence qu'elle s'applique au profil de connexion sur l'écran de connexion.</translation>
 <translation id="2089541797660774692">Activer la création de rapports cloud via un navigateur géré</translation>
 <translation id="2090712407517297305">La page de l'historique Chrome organisée par groupes sera visible sur chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Si vous activez cette règle, le proxy de compression des données est activé. Si vous la désactivez, le proxy est désactivé.
@@ -6781,6 +6784,7 @@ Cette règle concerne à la fois les flux d'authentification à la connexion et 
       Remarque : S'il y a plusieurs valeurs, séparez-les par une virgule.</translation>
 <translation id="5693469654327063861">Autoriser la migration de données</translation>
 <translation id="56936613186060503">Le gestionnaire de téléchargement ne proposera pas l'option d'enregistrer des fichiers dans <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="569457565603183">URL/domaines automatiquement autorisés à recevoir une attestation des clés de sécurité sur l'écran de connexion</translation>
 <translation id="5695209488612697377">Permet d'utiliser un moteur de recherche par défaut dans le menu contextuel.
 
           Si vous désactivez cette règle, l'élément de menu contextuel de recherche qui dépend de votre moteur de recherche par défaut ne sera pas disponible.
@@ -7835,7 +7839,6 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="6412352702230183710">Autoriser uniquement les hôtes de messagerie natifs au niveau du système</translation>
 <translation id="6412793408912788345">Afficher l'écran d'introduction de Gemini lors de la connexion</translation>
 <translation id="6416506846917150119">Désactiver l'écriture prédictive lors de la saisie au clavier physique</translation>
-<translation id="6416916931494972926">Activer les rapports de télémétrie de Kiosk Vision.</translation>
 <translation id="6417265370957905582">Assistant Google</translation>
 <translation id="6419001911253110938">Activer l'affichage de l'écran d'introduction pour les fonctionnalités d'IA en cours de session pendant la procédure de connexion</translation>
 <translation id="6421254653839955267">Si cette règle est activée, la recherche du CNAME est ignorée. Le nom du serveur est utilisé tel qu'il a été saisi lors de la génération du SPN Kerberos.
@@ -7987,7 +7990,6 @@ Si cette règle n'est pas configurée ou si la liste d'URL est vide, toutes les 
 
       Si cette règle n'est pas configurée, le protocole est, par défaut, désactivé pour les utilisateurs gérés et activé pour les autres.</translation>
 <translation id="6508403116553969858">Définir la valeur de la règle par défaut de <ph name="PRODUCT_NAME" /> pour les fonctionnalités d'IA générative couvertes</translation>
-<translation id="6508882314969525299">Désactiver les rapports de télémétrie de Kiosk Vision.</translation>
 <translation id="6509376413448002446">Permet de configurer l'économiseur d'écran de l'utilisateur pour l'écran de verrouillage.
 
 Si cette règle est définie sur "True", l'appareil <ph name="PRODUCT_OS_NAME" /> affiche un économiseur d'écran lorsque l'écran de verrouillage est actif.
@@ -10889,9 +10891,6 @@ Si cette règle n'est pas configurée, les utilisateurs ne peuvent pas jouer à 
       Si cette règle est définie sur "True", les onglets en arrière-plan depuis au moins cinq minutes peuvent être figés. En figeant ces onglets, vous sollicitez moins le processeur, la batterie et la mémoire. <ph name="PRODUCT_NAME" /> utilise des heuristiques pour ne pas figer les onglets qui exécutent une tâche utile en arrière-plan (par exemple, l'affichage de notifications, la lecture audio d'un contenu, la diffusion d'une vidéo en streaming). Notez que les développeurs Web peuvent également choisir de ne pas figer les pages de leur site (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si cette règle est définie sur "False", aucun onglet n'est figé.</translation>
-<translation id="8607613052618540095">Si cette règle est activée, les rapports de télémétrie de Kiosk Vision sont activés.
-Elle lance le framework Kiosk Vision et active les rapports de télémétrie sur l'audience.
-Si cette règle est désactivée ou qu'elle n'est pas configurée, les rapports de télémétrie de Kiosk Vision sont désactivés.</translation>
 <translation id="8610216287193516769">Supprimée dans M122, cette règle côté serveur uniquement n'a jamais utilisé l'infrastructure de règles ChromeOS pour sa propagation.
 Si elle est définie sur <ph name="POLICY_VALUE_ALL" /> ou n'est pas configurée, l'utilisation de comptes gérés n'est pas limitée. Il sera donc possible qu'un compte géré soit un compte secondaire. Celui-ci ne recevrait alors de règles que lorsqu'il serait connecté en tant que compte principal dans un profil de navigateur.
       Les règles configurées sur le compte ne s'appliqueront pas dans les cas suivants :

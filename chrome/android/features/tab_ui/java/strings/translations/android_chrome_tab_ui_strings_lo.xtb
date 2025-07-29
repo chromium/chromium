@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">ສືບຕໍ່</translation>
 <translation id="2371084566192454134">ແຖບ ແລະ ກຸ່ມແຖບ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{ຫຍໍ້ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບ <ph name="TITLE_OF_GROUP" /> ທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບລົງ.}}</translation>
-<translation id="2479148705183875116">ໄປທີ່ການຕັ້ງຄ່າ</translation>
 <translation id="2498435670446402865">ປ່ຽນຊື່ກຸ່ມແຖບ</translation>
 <translation id="2536366509642644298">ກຸ່ມແຖບ "<ph name="TAB_GROUP_NAME_1" />" ແລະ "<ph name="TAB_GROUP_NAME_2" />" ບໍ່ສາມາດໃຊ້ໄດ້ອີກຕໍ່ໄປ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{ຫຍໍ້ <ph name="TABS_COUNT_ONE" /> ແຖບລົງ.}other{ຫຍໍ້ກຸ່ມແຖບທີ່ມີ <ph name="TABS_COUNT_MANY" /> ແຖບແລ້ວ.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">ເບິ່ງຂໍ້ມູນຮ້ານຄ້າບໍ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{ປິດ <ph name="ONE_CLOSED" /> ແຖບແລ້ວ}other{ປິດ <ph name="MANY_CLOSED" /> ແຖບແລ້ວ}}</translation>
 <translation id="2894757982205307093">ແຖບໃໝ່ໃນກຸ່ມ</translation>
+<translation id="2918484639460781603">ເຂົ້າໄປຫາການຕັ້ງຄ່າ</translation>
 <translation id="2928243913527329289">Google | ກ່ຽວກັບຮ້ານຄ້ານີ້</translation>
 <translation id="3008554597174452548">ຢຸດການຕິດຕາມສິນຄ້າ</translation>
 <translation id="3026391124054406831">ສ້າງກຸ່ມເພື່ອຈັດລະບຽບແຖບຂອງທ່ານ.</translation>

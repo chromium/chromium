@@ -1561,6 +1561,7 @@
 <translation id="2073496667646280609">Възможно е да няма достатъчно място в хранилището на устройството или в местоположението, избрано за създаване на резервно копие. Освободете място или изберете друго местоположение.</translation>
 <translation id="2073505299004274893">Използвайте не повече от <ph name="CHARACTER_LIMIT" /> знака</translation>
 <translation id="2074263453710478603">Регистрационни файлове за потребителя на Chrome под ChromeOS</translation>
+<translation id="2074599390896964828">Точно местоположение</translation>
 <translation id="2075088158103027942">Към абонамента</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батерия</translation>
 <translation id="2076228988744845354">Още действия за разширението <ph name="EXTENSION_NAME" /></translation>
@@ -2717,6 +2718,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2849936225196189499">Критично</translation>
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2850541429955027218">Добавяне на темата</translation>
+<translation id="2851291081585704741">Офлайн сте</translation>
 <translation id="2852045827873867442">Изисква се връзка с интернет.</translation>
 <translation id="285237063405807022">(зарежда се)</translation>
 <translation id="2853121255651601031">Паролата е запазена</translation>
@@ -4774,6 +4776,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4295072614469448764">Приложението е налично в терминала. Възможно е също да има икона в стартовия панел.</translation>
 <translation id="4295979599050707005">Моля, влезте отново, за да потвърдите, че профилът ви <ph name="USER_EMAIL" /> може да се използва с уебсайтове, приложения и разширения в Chrome и Google Play. Имате възможност също да го премахнете. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Приложения, които са инсталирани и поточно предавани от <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">Първоначалната ви парола за този сайт бе открита при обществено нарушение на сигурността на данните. На <ph name="DATE" /> помолихте <ph name="BRAND" /> да промени автоматично паролата ви вместо вас.</translation>
 <translation id="4297219207642690536">Рестартиране и нулиране</translation>
 <translation id="4297813521149011456">Завъртане на дисплея</translation>
 <translation id="4298660926525614540">Имена на сменяемите хранилища</translation>
@@ -9333,6 +9336,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7582844466922312471">Мобилни данни</translation>
 <translation id="7583948862126372804">Брой</translation>
 <translation id="7585106857920830898">Проверява се за съответствие с правилата за сигурност на организацията ви...</translation>
+<translation id="7585490016012953607">Парола за възстановяване – временно запазена до 3 месеца</translation>
 <translation id="7586498138629385861">Браузърът ще продължи да работи, докато приложенията в Chrome са отворени.</translation>
 <translation id="7587806318633605613">История на предложенията</translation>
 <translation id="7589448773774086276">Нов разделен изглед с текущия раздел</translation>
@@ -9959,8 +9963,8 @@ Chrome Root Program има доверие, и постоянно се подла
 Пазете файла си с ключ на сигурно място. Той ви е необходим за създаване на нови версии на разширението.</translation>
 <translation id="8000020256436988724">Лента с инструменти</translation>
 <translation id="800117767980299235">Открояване на четеното на глас</translation>
+<translation id="8001561107130904792">Споделяне на съдържанието на страниците</translation>
 <translation id="8002274832045662704">Разширена конфигурация на принтер</translation>
-<translation id="8002531372108263935">Организацията ви (<ph name="ACCOUNT_MANAGER" />) няма да може да преглежда или управлява тези данни. Те ще останат в съществуващия потребителски профил.</translation>
 <translation id="8002597610026749658">Chrome може да създава надписи на езиците, показани тук</translation>
 <translation id="8002670234429879764">Вече няма достъп до <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Ако паролите ви бъдат компрометирани, ще ви уведомим.</translation>

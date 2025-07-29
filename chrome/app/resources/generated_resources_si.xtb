@@ -1554,6 +1554,7 @@
 <translation id="2073496667646280609">ඔබට ඔබගේ උපාංගයේ හෝ තෝරා ගත් උපස්ථ ස්ථානයෙහි ප්‍රමාණවත් තරම් නොමිලේ ගබඩාව නොමැති විය හැකිය. ඉඩ නිදහස් කර ගැනීමට හෝ වෙනත් ස්ථානයක් තෝරා ගැනීමට උත්සාහ කරන්න.</translation>
 <translation id="2073505299004274893">අනුලකුණු <ph name="CHARACTER_LIMIT" />ක් හෝ අඩු ගණනක් භාවිත කරන්න</translation>
 <translation id="2074263453710478603">ChromeOS Chrome පරිශීලක ලොග</translation>
+<translation id="2074599390896964828">ඉතා නිවැරදි ස්ථානය</translation>
 <translation id="2075088158103027942">ග්‍රාහකත්වය වෙත යන්න</translation>
 <translation id="2075474481720804517">බැටරිය <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> දිගුව සඳහා තව ක්‍රියා</translation>
@@ -2710,6 +2711,7 @@
 <translation id="2849936225196189499">තීරණාත්මක</translation>
 <translation id="285033512555869047">වසා ඇත</translation>
 <translation id="2850541429955027218">තේමාව එක් කරන්න</translation>
+<translation id="2851291081585704741">ඔබ නොබැඳි වේ</translation>
 <translation id="2852045827873867442">අන්තර්ජාල සම්බන්ධතාවය අවශ්‍යයි.</translation>
 <translation id="285237063405807022">(පූරණ කෙරේ)</translation>
 <translation id="2853121255651601031">මුරපදය සුරැකිණි</translation>
@@ -9947,8 +9949,8 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 ඔබගේ මුලික ගොනුව ආරක්ෂිත ස්ථානයක තබන්න. ඔබට එය ඔබගේ දිගුවේ නව අනුවාද තැනීමට අවශ්‍ය වනු ඇත.</translation>
 <translation id="8000020256436988724">මෙවලම් තීරුව</translation>
 <translation id="800117767980299235">හඬ උද්දීපනය</translation>
+<translation id="8001561107130904792">පිටු අන්තර්ගත බෙදා ගැනීම</translation>
 <translation id="8002274832045662704">උසස් මුද්‍රක වින්‍යාසය</translation>
-<translation id="8002531372108263935">ඔබේ සංවිධානය, <ph name="ACCOUNT_MANAGER" />, හට මෙම දත්ත බැලීමට හෝ කළමනාකරණය කිරීමට නොහැකි වනු ඇත. එය පවතින පැතිකඩ තුළ පවතිනු ඇත.</translation>
 <translation id="8002597610026749658">මෙහි පෙන්වා ඇති භාෂා සඳහා Chrome හට සිරස්තල නිර්මාණය කළ හැක</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> තවදුරටත් නොලැබේ</translation>
 <translation id="8004092996156083991">ඔබේ මුරපද අවදානමට ලක් වී ඇත්නම්, අපි ඔබට දන්වන්නෙමු.</translation>

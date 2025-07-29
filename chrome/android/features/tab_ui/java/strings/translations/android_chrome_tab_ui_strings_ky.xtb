@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Улантуу</translation>
 <translation id="2371084566192454134">Өтмөктөр жана өтмөктөр тобу</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жыйыштыруу.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган <ph name="TITLE_OF_GROUP" /> өтмөктөр тобун жыйыштыруу.}}</translation>
-<translation id="2479148705183875116">Параметрлерге өтүү</translation>
 <translation id="2498435670446402865">Өтмөктөр тобунун аталышын өзгөртүү</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" жана "<ph name="TAB_GROUP_NAME_2" />" өтмөктөр топтору мындан ары жеткиликсиз</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> өтмөк жыйыштырылсын.}other{<ph name="TABS_COUNT_MANY" /> өтмөктөн турган өтмөктөр тобу жыйыштырылсын.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Дүкөн тууралуу маалыматты көрөсүзбү?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> өтмөк жабылды}other{<ph name="MANY_CLOSED" /> өтмөк жабылды}}</translation>
 <translation id="2894757982205307093">Топтогу жаңы өтмөк</translation>
+<translation id="2918484639460781603">Параметрлерге өтүү</translation>
 <translation id="2928243913527329289">Google | Бул дүкөн тууралуу</translation>
 <translation id="3008554597174452548">Товарга көз салууну токтотуу</translation>
 <translation id="3026391124054406831">Өтмөктөрдү иреттөө үчүн топторду түзүңүз.</translation>

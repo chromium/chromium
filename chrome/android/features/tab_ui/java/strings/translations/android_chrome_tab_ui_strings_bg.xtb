@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Напред</translation>
 <translation id="2371084566192454134">Раздели и групи раздели</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели „<ph name="TITLE_OF_GROUP" />“ с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
-<translation id="2479148705183875116">Към настройките</translation>
 <translation id="2498435670446402865">Преименуване на групата</translation>
 <translation id="2536366509642644298">Групите раздели „<ph name="TAB_GROUP_NAME_1" />“ и „<ph name="TAB_GROUP_NAME_2" />“ вече не са налице</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Свиване на <ph name="TABS_COUNT_ONE" /> раздел.}other{Свиване на групата с раздели с(ъс) <ph name="TABS_COUNT_MANY" /> раздела.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Искате ли да прегледате информацията за магазина?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Затворихте <ph name="ONE_CLOSED" /> раздел}other{Затворихте <ph name="MANY_CLOSED" /> раздела}}</translation>
 <translation id="2894757982205307093">Нов раздел в групата</translation>
+<translation id="2918484639460781603">Към настройките</translation>
 <translation id="2928243913527329289">Google | Всичко за този магазин</translation>
 <translation id="3008554597174452548">Спиране на следенето на продукта</translation>
 <translation id="3026391124054406831">Създайте групи, за да организирате разделите си.</translation>

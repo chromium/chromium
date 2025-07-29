@@ -1365,6 +1365,7 @@
 <translation id="1931152874660185993">Компоненты не установлены.</translation>
 <translation id="1931410639376954712">Установка <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Не ранее</translation>
+<translation id="1933070475689690969">История действий в приложениях Gemini</translation>
 <translation id="1933489278505808700">Чтение и изменение разрешены</translation>
 <translation id="1935303383381416800">Разрешить сайтам определять ваше местоположение</translation>
 <translation id="193565226207940518">Инструмент поддержки</translation>
@@ -1557,6 +1558,7 @@
 <translation id="2073496667646280609">Возможно, на диске или выбранном устройстве недостаточно места. Удалите ненужные файлы или сохраните резервные копии на другом устройстве.</translation>
 <translation id="2073505299004274893">Макс. количество символов: <ph name="CHARACTER_LIMIT" />.</translation>
 <translation id="2074263453710478603">Журналы пользователей Chrome в ChromeOS</translation>
+<translation id="2074599390896964828">Точное местоположение</translation>
 <translation id="2075088158103027942">Открыть страницу подписки</translation>
 <translation id="2075474481720804517">Батарея заряжена на <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354">Другие действия для расширения <ph name="EXTENSION_NAME" /></translation>
@@ -2710,6 +2712,7 @@
 <translation id="2849936225196189499">Критическое</translation>
 <translation id="285033512555869047">Закрытая</translation>
 <translation id="2850541429955027218">Добавить тему</translation>
+<translation id="2851291081585704741">Нет подключения к интернету</translation>
 <translation id="2852045827873867442">Требуется подключение к интернету.</translation>
 <translation id="285237063405807022">(загружается)</translation>
 <translation id="2853121255651601031">Пароль сохранен</translation>
@@ -3500,6 +3503,7 @@
 <translation id="3435738964857648380">Безопасность</translation>
 <translation id="343578350365773421">Закончилась бумага</translation>
 <translation id="3435896845095436175">Включить</translation>
+<translation id="3437072258256045988">Управлять историей действий в приложениях Gemini</translation>
 <translation id="3437397693214267762">Просматривайте календарь Outlook и файлы из SharePoint и OneDrive</translation>
 <translation id="3438633801274389918">Ниндзя</translation>
 <translation id="3439153939049640737">Всегда предоставлять <ph name="HOST" /> доступ к моему микрофону</translation>
@@ -9954,8 +9958,8 @@
 Храните файл ключей в надежном месте. Он потребуется для создания новых версий расширения.</translation>
 <translation id="8000020256436988724">Панель инструментов</translation>
 <translation id="800117767980299235">Голосовые заметки</translation>
+<translation id="8001561107130904792">Доступ к контенту страниц</translation>
 <translation id="8002274832045662704">Дополнительные настройки принтера</translation>
-<translation id="8002531372108263935">Организация <ph name="ACCOUNT_MANAGER" /> не сможет просматривать эти данные или управлять ими. Они останутся в существующем профиле.</translation>
 <translation id="8002597610026749658">Chrome может создавать субтитры на указанных здесь языках</translation>
 <translation id="8002670234429879764">Принтер <ph name="PRINTER_NAME" /> больше не доступен.</translation>
 <translation id="8004092996156083991">Мы сообщим, если ваши пароли будут раскрыты</translation>

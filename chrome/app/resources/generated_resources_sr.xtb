@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Прегледајте ажурирање назива</translation>
 <translation id="1166596238782048887">Картица <ph name="TAB_TITLE" /> припада радној површини <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Изоловане веб-апликације аутоматски прате ово подешавање</translation>
+<translation id="116712635768212829">Ако Chrome пронађе неку од лозинки у повреди података, Google менаџер лозинки може да вам понуди да промени лозинку када се пријавите.</translation>
 <translation id="1168020859489941584">Отварање за <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901"><ph name="INDEX" />. недавна AI тема од <ph name="SUBJECT" />, у стилу <ph name="STYLE" /> са расположењем <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Аутоматски промени језик да се подудара са изабраним садржајем</translation>
@@ -556,6 +557,7 @@
 <translation id="1375938286942050085">Подешавање је довршено. Сада припремите уређај за играње игара</translation>
 <translation id="137651782282853227">Сачуване адресе ће се појавити овде</translation>
 <translation id="1376771218494401509">Дај назив прозору...</translation>
+<translation id="1377438103060664754">Када се нека од ваших лозинки пронађе у повреди података, Google менаџер лозинки вас пита да ли желите да је замените јаком лозинком</translation>
 <translation id="1377600615067678409">Прескочи за сада</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> контролише ово подешавање</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нема угрожених лозинки}=1{1 угрожена лозинка}one{{NUM_COMPROMISED} угрожена лозинка}few{{NUM_COMPROMISED} угрожене лозинке}other{{NUM_COMPROMISED} угрожених лозинки}}</translation>
@@ -1554,6 +1556,7 @@
 <translation id="2073496667646280609">Можда немате довољно слободног простора на уређају или на изабраној локацији за резервне копије. Ослободите простор или изаберите другу локацију.</translation>
 <translation id="2073505299004274893">Максималан број знакова који можете да користите је <ph name="CHARACTER_LIMIT" /></translation>
 <translation id="2074263453710478603">ChromeOS евиденције корисника Chrome-а</translation>
+<translation id="2074599390896964828">Прецизна локација</translation>
 <translation id="2075088158103027942">Иди на претплату</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батерије</translation>
 <translation id="2076228988744845354">Још радњи за додатак <ph name="EXTENSION_NAME" /></translation>
@@ -2707,6 +2710,7 @@
 <translation id="2849936225196189499">Од пресудне важности</translation>
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2850541429955027218">Додај тему</translation>
+<translation id="2851291081585704741">Офлајн сте</translation>
 <translation id="2852045827873867442">Треба вам интернет веза.</translation>
 <translation id="285237063405807022">(учитавање)</translation>
 <translation id="2853121255651601031">Лозинка је сачувана</translation>
@@ -4764,6 +4768,7 @@
 <translation id="4295072614469448764">Апликација је доступна на терминалу. Можда имате и икону у Покретачу.</translation>
 <translation id="4295979599050707005">Пријавите се поново да бисте потврдили да налог <ph name="USER_EMAIL" /> може да се користи са веб-сајтовима, апликацијама и додацима у Chrome-у и на Google Play-у. Можете и да уклоните овај налог. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Инсталиране и стримоване апликације из апликације <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">Првобитна лозинка за овај сајт је пронађена у јавној повреди података. <ph name="DATE" /> сте затражили да <ph name="BRAND" /> аутоматски промени лозинку за вас.</translation>
 <translation id="4297219207642690536">Рестартуј и ресетуј</translation>
 <translation id="4297813521149011456">Ротирање екрана</translation>
 <translation id="4298660926525614540">Називи преносивих меморија</translation>
@@ -9325,6 +9330,7 @@
 <translation id="7582844466922312471">податке за мобилне уређаје</translation>
 <translation id="7583948862126372804">Број гласова</translation>
 <translation id="7585106857920830898">Проверава се да ли је у складу са безбедносним смерницама организације…</translation>
+<translation id="7585490016012953607">Лозинка за опоравак – привремено се чува до 3 месеца</translation>
 <translation id="7586498138629385861">Chrome ће наставити да ради док су Chrome апликације отворене.</translation>
 <translation id="7587806318633605613">Историја предлога</translation>
 <translation id="7589448773774086276">Нови подељени приказ са актуелном картицом</translation>
@@ -9951,8 +9957,8 @@
 Чувајте датотеку кључа на сигурном месту. Биће вам потребна да направите нове верзије додатка.</translation>
 <translation id="8000020256436988724">Трака с алаткама</translation>
 <translation id="800117767980299235">Важни аудио делови</translation>
+<translation id="8001561107130904792">Дељење садржаја странице</translation>
 <translation id="8002274832045662704">Напредна конфигурација штампача</translation>
-<translation id="8002531372108263935">Ваша организација, <ph name="ACCOUNT_MANAGER" />, неће моћи да види ове податке нити да управља њима. Остаће на постојећем профилу.</translation>
 <translation id="8002597610026749658">Chrome може да прави титлове за језике приказане овде</translation>
 <translation id="8002670234429879764">Штампач <ph name="PRINTER_NAME" /> више није доступан</translation>
 <translation id="8004092996156083991">Ако су вам лозинке угрожене, обавестићемо вас о томе.</translation>

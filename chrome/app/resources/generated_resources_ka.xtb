@@ -1558,6 +1558,7 @@
 <translation id="2073496667646280609">თქვენს მოწყობილობაზე ან სარეზერვო ასლების შექმნისთვის არჩეულ მდებარეობაზე, შესაძლოა, არასაკმარისი მეხსიერება იყოს. ცადეთ მეხსიერების გათავისუფლება, ან აირჩიეთ სხვა მდებარეობა.</translation>
 <translation id="2073505299004274893">გამოიყენეთ <ph name="CHARACTER_LIMIT" /> ან ნაკლები სიმბოლო</translation>
 <translation id="2074263453710478603">ChromeOS-ში Chrome-ის მომხმარებელთა ჟურნალები</translation>
+<translation id="2074599390896964828">ზუსტი მდებარეობა</translation>
 <translation id="2075088158103027942">გამოწერაზე გადასვლა</translation>
 <translation id="2075474481720804517">ბატარეა დატენილია <ph name="BATTERY_PERCENTAGE" />%-ზე</translation>
 <translation id="2076228988744845354">დამატებითი მოქმედებები გაფართოებისთვის <ph name="EXTENSION_NAME" /></translation>
@@ -2711,6 +2712,7 @@
 <translation id="2849936225196189499">კრიტიკული</translation>
 <translation id="285033512555869047">დაკეტილია</translation>
 <translation id="2850541429955027218">თემის დამატება</translation>
+<translation id="2851291081585704741">თქვენ ხაზგარეშე რეჟიმში ხართ</translation>
 <translation id="2852045827873867442">საჭიროა ინტერნეტ-კავშირი.</translation>
 <translation id="285237063405807022">(იტვირთება)</translation>
 <translation id="2853121255651601031">პაროლი შენახულია</translation>
@@ -9950,8 +9952,8 @@
 მთავარი ფაილი უსაფრთხო ადგილზე შეინახეთ. თქვენ ის დაგჭირდებათ გაფართოების ახალი ვერსიების შესაქმნელად.</translation>
 <translation id="8000020256436988724">ხელსაწყოთა ზოლი</translation>
 <translation id="800117767980299235">ხმოვანი მიმოხილვა</translation>
+<translation id="8001561107130904792">გვერდის კონტენტის გაზიარება</translation>
 <translation id="8002274832045662704">პრინტერის გაფართოებული კონფიგურაცია</translation>
-<translation id="8002531372108263935">თქვენი ორგანიზაცია, <ph name="ACCOUNT_MANAGER" />, ვერ შეძლებს ამ მონაცემების ნახვას და მართვას. ის დარჩება არსებულ პროფილში.</translation>
 <translation id="8002597610026749658">Chrome შექმნის სუბტიტრებს აქ ნაჩვენებ ენებზე</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ხელმისაწვდომი აღარ არის</translation>
 <translation id="8004092996156083991">გაცნობებთ, თუ თქვენი პაროლები გატყდება.</translation>

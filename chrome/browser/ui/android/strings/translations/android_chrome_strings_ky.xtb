@@ -1127,6 +1127,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="6137022273846704445"><ph name="APP_NAME" /> колдонмосунун тили</translation>
 <translation id="6138832295072039549">Сайттын параметрлерин бул жерден өзгөртүңүз</translation>
 <translation id="6140912465461743537">Өлкө/Дубан</translation>
+<translation id="6140948187512243695">Чоо-жайын көрсөтүү</translation>
 <translation id="6142183503755612900">Демейки издөө каражатын параметрлерден каалаган убакта өзгөртө аласыз</translation>
 <translation id="6146563240635539929">Видеолор</translation>
 <translation id="614890671148262506">Бул сайттын бардык билдирмелерине уруксат берилсин</translation>
@@ -1485,7 +1486,6 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="7545347190366646170">Кирүү мүмкүнчүлүгү бар адамдар</translation>
 <translation id="7554643625247105821">Chrome версиясын текшерүү мүмкүн болбой жатат</translation>
 <translation id="7557508262441527045">Аккаунтуңуздан чыктыңыз</translation>
-<translation id="7561260660702735877">Бул сайттын шилтемеси жөнүндө маалымат</translation>
 <translation id="7573665567024262965">Демейки колдонмолоруңузду тандаңыз</translation>
 <translation id="7577900504646297215">Кызыккан нерселерди башкаруу</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктөлүп алынды}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктөлүп алынды}}</translation>
@@ -1640,6 +1640,7 @@ Google аккаунтуңуздун башка Google кызматтарынан
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{<ph name="OWNER_FIRST_NAME" /> жана дагы <ph name="NUMBER_OF_OTHER_MEMBERS" /> колдонуучу бар өтмөктөр тобуна кошулуңуз}other{<ph name="OWNER_FIRST_NAME" /> жана дагы <ph name="NUMBER_OF_OTHER_MEMBERS" /> колдонуучу бар өтмөктөр тобуна кошулуңуз}}</translation>
 <translation id="8209050860603202033">Сүрөттү ачуу</translation>
 <translation id="8210770465353466621">Өтмөктөрүңүздү ушул жерден табасыз</translation>
+<translation id="8212799748012101103">Өтмөктөрдөн издөө функциясын ачуу</translation>
 <translation id="8215740705341534369">Капталдагы экран</translation>
 <translation id="8218622182176210845">Аккаунтуңузду башкарыңыз</translation>
 <translation id="8221401890884589479">Каалаган сайтты бөгөттөй аласыз. Chrome тизмеге 30 күн мурун кошулган сайттарды автоматтык түрдө жок кылып турат. <ph name="BEGIN_LINK" />Кеңири маалымат<ph name="END_LINK" /></translation>

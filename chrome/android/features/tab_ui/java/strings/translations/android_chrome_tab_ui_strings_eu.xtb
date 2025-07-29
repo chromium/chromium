@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Egin aurrera</translation>
 <translation id="2371084566192454134">Fitxak eta fitxa taldeak</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Tolestu fitxa <ph name="TABS_COUNT_ONE" /> duen<ph name="TITLE_OF_GROUP" /> fitxa taldea.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen <ph name="TITLE_OF_GROUP" /> fitxa taldea.}}</translation>
-<translation id="2479148705183875116">Joan "Ezarpenak" atalera</translation>
 <translation id="2498435670446402865">Aldatu fitxa taldearen izena</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" eta "<ph name="TAB_GROUP_NAME_2" />" fitxa taldeak jadanik ez daude erabilgarri</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Tolestu <ph name="TABS_COUNT_ONE" /> fitxa.}other{Tolestu <ph name="TABS_COUNT_MANY" /> fitxa dituen fitxa taldea.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Dendari buruzko informazioa ikusi nahi duzu?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fitxa itxi da}other{<ph name="MANY_CLOSED" /> fitxa itxi dira}}</translation>
 <translation id="2894757982205307093">Gehitu fitxa bat taldean</translation>
+<translation id="2918484639460781603">Joan ezarpenetara</translation>
 <translation id="2928243913527329289">Google | Denda honi buruz</translation>
 <translation id="3008554597174452548">Utzi produktuaren jarraipena egiteari</translation>
 <translation id="3026391124054406831">Fitxak antolatzeko, sortu taldeak.</translation>

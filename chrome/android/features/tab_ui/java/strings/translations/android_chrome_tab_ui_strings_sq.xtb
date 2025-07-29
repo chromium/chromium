@@ -11,6 +11,7 @@
 <translation id="1245862538775272968">{TAB_COUNT,plural, =1{Hap "<ph name="TITLE_OF_GROUP" />" me <ph name="TAB_COUNT2" /> skedë}other{Hap "<ph name="TITLE_OF_GROUP" />" me <ph name="TAB_COUNT2" /> skeda}}</translation>
 <translation id="1273910660700874265">Opsionet e grupit të skedave "<ph name="TITLE_OF_GROUP" />"</translation>
 <translation id="1300188005269437765">Zgjidh se kur skedat dhe grupet e skedave zhvendosen automatikisht në seksionin joaktiv.</translation>
+<translation id="1321004960118052490">Artikujt e tu joaktivë nuk do të grumbullohen</translation>
 <translation id="1329584516321524826">U përditësua pikërisht tani</translation>
 <translation id="1340839264183302272">Largohu nga grupi</translation>
 <translation id="1403729629346559879">{NUMBER_OF_TABS,plural, =1{Zgjero grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë, ngjyrë <ph name="COLOR_NAME" />, me etiketën "<ph name="CARD_LABEL" />".}other{Zgjero grupin e ndarë të skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda, ngjyrë <ph name="COLOR_NAME" />, me etiketën "<ph name="CARD_LABEL" />".}}</translation>
@@ -43,7 +44,6 @@
 <translation id="2359808026110333948">Vazhdo</translation>
 <translation id="2371084566192454134">Skedat dhe grupet e skedave</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Palos grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave "<ph name="TITLE_OF_GROUP" />" me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
-<translation id="2479148705183875116">Shko te "Cilësimet"</translation>
 <translation id="2498435670446402865">Riemërto grup skedash</translation>
 <translation id="2536366509642644298">Grupet e skedave "<ph name="TAB_GROUP_NAME_1" />" dhe "<ph name="TAB_GROUP_NAME_2" />" nuk ofrohen më</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Palos <ph name="TABS_COUNT_ONE" /> skedë.}other{Palos grupin e skedave me <ph name="TABS_COUNT_MANY" /> skeda.}}</translation>
@@ -60,6 +60,7 @@
 <translation id="2801787514987684416">Të shikohen informacionet e dyqanit?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> skedë u mbyll}other{<ph name="MANY_CLOSED" /> skeda u mbyllën}}</translation>
 <translation id="2894757982205307093">Skedë e re në grup</translation>
+<translation id="2918484639460781603">Shko te cilësimet</translation>
 <translation id="2928243913527329289">Google | Rreth këtij dyqani</translation>
 <translation id="3008554597174452548">Ndalo monitorimin e produktit</translation>
 <translation id="3026391124054406831">Krijo grupe për të organizuar skedat e tua.</translation>
@@ -111,6 +112,7 @@
 <translation id="5073204694187207510">Fshih rrjetën me ekran të plotë</translation>
 <translation id="5076161749301278626">Të shihen komentet e dyqanit?</translation>
 <translation id="5161254044473106830">Kërkohet titulli</translation>
+<translation id="524477996738997490">{AUTO_DELETE_DELAY,plural, =1{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_ONE" /> muaji. Mund ta ndryshosh këtë te cilësimet.}other{Chrome mbyll automatikisht skedat dhe grupet e skedave joaktive pas <ph name="AUTO_DELETE_DELAY_MANY" /> muajsh. Mund ta ndryshosh këtë te cilësimet.}}</translation>
 <translation id="5339733443032484186">Skeda jote e fundit</translation>
 <translation id="5380159289133845234">Arkivo skedat dublikata</translation>
 <translation id="5400836586163650660">Gri</translation>

@@ -1214,6 +1214,7 @@
 <translation id="3027915437837548462">SVG ပုံ</translation>
 <translation id="3030331669969285614">ဤအလံပြခြင်းများသည် အားလုံးရပ်တန့်သွားစေနိုင်သည့် အပြောင်းအလဲကို တားဆီး (သို့) ပြန်ပြောင်းပြီး ကန့်သတ်အချိန်အတွင်းသာ ရနိုင်ပါသည်။</translation>
 <translation id="3030542417256082866">ယာဉ်ကို သိမ်းမလား။</translation>
+<translation id="3033200136993730761">ပိုမိုသက်ဆိုင်သော Search ရလဒ်များနှင့် Google Maps ရှိ ခရီးလမ်းညွှန်ချက်များကဲ့သို့သော Google ဝန်ဆောင်မှုများတွင် အလုပ်ပြီးမြောက်စေရန် သင်၏ အိမ်လိပ်စာက ကူညီပေးနိုင်သည်။ <ph name="BEGIN_LINK" />သင်၏ Google Account <ph name="ACCOUNT" /><ph name="END_LINK" /> တွင် သင့်လိပ်စာကို တည်းဖြတ်နိုင် (သို့) ဖျက်နိုင်သည်။</translation>
 <translation id="3034526003882782781">လှိမ့်ခြင်း၊ ဇူးမ်ဆွဲခြင်းတို့ကို ခွင့်ပြုထားသည်</translation>
 <translation id="3036894576201005614">အိမ်သန့်ရှင်းရေးသုံးပစ္စည်း</translation>
 <translation id="3037177537145227281">ဈေးနှုန်း စောင့်ကြည့်နေသည်</translation>
@@ -2908,6 +2909,7 @@
 <translation id="5879272455334365707">ငွေကြေး အစီအစဉ်ဆွဲခြင်း၊ စီမံခြင်း</translation>
 <translation id="5879989559903563723">ဧည့်သည်မုဒ်တွင် ခွင့်ပြုမထားပါ</translation>
 <translation id="5880050725127890683">Chrome လုံခြုံရေး စစ်ဆေးမှုသို့ သွားပါ</translation>
+<translation id="5880385758720707152">Google Account မှ သင့်အိမ်နှင့် အလုပ်လိပ်စာများကို အော်တိုဖြည့်နိုင်သည်</translation>
 <translation id="5884465125445718607">Chinese #6 စာအိတ်</translation>
 <translation id="5886961930368713749">နှိုင်းယှဉ်မှုအတွက် တုံ့ပြန်ချက်ပို့ရန်</translation>
 <translation id="5887400589839399685">ကတ်ကို သိမ်းပြီးပါပြီ</translation>
@@ -2917,6 +2919,7 @@
 <translation id="5898767305816764989">လက်မထောင် ခလုတ်၊ သင်ကြိုက်ကြောင်း တုံ့ပြန်ချက်ပေးပို့ရန် Enter ခလုတ်နှိပ်ပါ၊ <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">အၐါရောင်</translation>
 <translation id="5903264686717710770">ခေါင်းစဉ်-</translation>
+<translation id="5905671155741555195">ပိုမိုသက်ဆိုင်သော Search ရလဒ်များနှင့် Google Maps ရှိ ခရီးလမ်းညွှန်ချက်များကဲ့သို့သော Google ဝန်ဆောင်မှုများတွင် အလုပ်ပြီးမြောက်စေရန် သင်၏ အလုပ်လိပ်စာက ကူညီပေးနိုင်သည်။ <ph name="BEGIN_LINK" />သင်၏ Google Account <ph name="ACCOUNT" /><ph name="END_LINK" /> တွင် သင့်လိပ်စာကို တည်းဖြတ်နိုင် (သို့) ဖျက်နိုင်သည်။</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (စင့်ခ်လုပ်ထားသည်)</translation>
 <translation id="5910140988253729859">အော်တိုဖြည့်ကို နောက်ပြန်ရန်</translation>
 <translation id="5911020115933784199">အစီအစဉ်နှင့် ဖော်ပြချက်</translation>
@@ -3813,6 +3816,7 @@
 <translation id="7403392780200267761">လင့်ခ်ကို မျှဝေခြင်း၊ QR ကုဒ် ပြုလုပ်ခြင်း၊ ကာစ်လုပ်ခြင်းစသည်တို့ဖြင့် ဤတဘ်ကို မျှဝေနိုင်သည်</translation>
 <translation id="7403591733719184120">သင်၏ <ph name="DEVICE_NAME" /> ကို စီမံခန့်ခွဲထားပါသည်</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> က ထပ်ဆောင်းဝန်ဆောင်မှုများအတွက် အပလီကေးရှင်းများ ထည့်သွင်းထားသည်။ အပလီကေးရှင်းများက သင့်ဒေတာအချို့ကို ဝင်သုံးခွင့်ရှိပါသည်။</translation>
+<translation id="740691708085211707">အလုပ်လိပ်စာကို Chrome အော်တိုဖြည့်မှ ဖယ်ရှားမလား။</translation>
 <translation id="7407424307057130981">&lt;p&gt;သင်၏ Windows ကွန်ပျူတာပေါ်တွင် Superfish ဆော့ဖ်ဝဲရှိနေလျှင် ဤအမှားအယွင်းကို တွေ့ရပါမည်။&lt;/p&gt;
     &lt;p&gt;ဝဘ်သို့ ချိတ်ဆက်နိုင်ရန်အတွက် ဆော့ဖ်ဝဲကို ယာယီပိတ်ရန် ဤအဆင့်များအတိုင်း လုပ်ဆောင်ပါ။ စီမံခန့်ခွဲသူ လုပ်ပိုင်ခွင့်များ လိုအပ်ပါမည်။&lt;/p&gt;
     &lt;ol&gt;
@@ -3909,6 +3913,7 @@
 <translation id="7534987659046836932">C7 စာအိတ်</translation>
 <translation id="7535087603100972091">တန်ဖိုး</translation>
 <translation id="753556296624075801">Google က ပံ့ပိုးသည်</translation>
+<translation id="753713322968419914">အိမ်လိပ်စာကို Chrome အော်တိုဖြည့်မှ ဖယ်ရှားမလား။</translation>
 <translation id="7537536606612762813">မလုပ်မနေရ</translation>
 <translation id="7543525346216957623">သင့်မိဘကို မေးပါ</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> စတင်နေသည်</translation>

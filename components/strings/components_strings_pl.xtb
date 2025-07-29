@@ -2092,6 +2092,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="4451135742916150903">Może prosić o zgodę na połączenie z urządzeniami HID</translation>
 <translation id="4451684391620232683">Tekst wyświetlany użytkownikowi:</translation>
 <translation id="4452328064229197696">Użyte właśnie hasło znaleźliśmy jako ujawnione w wyniku naruszenia bezpieczeństwa danych. Menedżer haseł Google zaleca sprawdzenie zapisanych haseł – pozwoli to zabezpieczyć Twoje konta.</translation>
+<translation id="4454620051637646665">Zamknij baner</translation>
 <translation id="4456937135469235202">Podróże dla poszukiwaczy przygód</translation>
 <translation id="4458013283022578512">Wpisz pytanie</translation>
 <translation id="4464826014807964867">Witryny z informacjami od Twojej organizacji</translation>
@@ -2677,8 +2678,10 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5464236009658034488">Materiały biurowe</translation>
 <translation id="5465724643247062031">Szkło (nieprzezroczyste)</translation>
 <translation id="5466018172325111652">Kod nie dotarł? <ph name="BEGIN_LINK" />Uzyskaj nowy kod<ph name="END_LINK" /></translation>
+<translation id="5466818462212249084">Aplikacje płatnicze</translation>
 <translation id="5470861586879999274">&amp;Ponów edycję</translation>
 <translation id="5472588168895083535">Śledzenie rąk zablokowane</translation>
+<translation id="5477756102936130143">Włącz przekierowanie do obsługiwanych aplikacji płatniczych</translation>
 <translation id="5479505548832623900">Prawdopodobnie zignorowane przez rozszerzenie.</translation>
 <translation id="547963486735802022">Spróbuj przesłać pliki ponownie</translation>
 <translation id="5481076368049295676">Te treści mogą próbować instalować na Twoim urządzeniu niebezpieczne oprogramowanie, które wykrada lub usuwa dane. <ph name="BEGIN_LINK" />Wyświetl mimo to<ph name="END_LINK" /></translation>
@@ -2788,6 +2791,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Systemy i komponenty stereo</translation>
 <translation id="5644090287519800334">Strona 1 – przesunięcie obrazu wzdłuż osi X</translation>
+<translation id="5644128326840674462">Baner promocyjny</translation>
 <translation id="5645132789250840550">Plastik (półpołysk)</translation>
 <translation id="5645719697465708351">Artykuły do organizacji przyjęć i produkty wakacyjne</translation>
 <translation id="5645854190134202180">Druga zmiana</translation>
@@ -2807,6 +2811,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="567604591393105935">Plansza dolna Handel otwarta do połowy wysokości</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Folia</translation>
+<translation id="5679086391497468752">Adres domowy</translation>
 <translation id="5680642791693447368">Thrillery i filmy kryminalne</translation>
 <translation id="568292603005599551">Pozycja X obrazu</translation>
 <translation id="5684874026226664614">Nie można przetłumaczyć tej strony.</translation>
@@ -2908,6 +2913,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5879272455334365707">Planowanie budżetu i zarządzanie finansami</translation>
 <translation id="5879989559903563723">Niedozwolone w trybie gościa</translation>
 <translation id="5880050725127890683">Otwórz kontrolę zabezpieczeń w Chrome</translation>
+<translation id="5880385758720707152">Automatycznie uzupełniaj adresy domowy i służbowy z konta Google</translation>
 <translation id="5884465125445718607">Koperta chińska nr 6</translation>
 <translation id="5886961930368713749">Prześlij opinię na temat funkcji Porównaj</translation>
 <translation id="5887400589839399685">Zapisano kartę</translation>
@@ -3302,6 +3308,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6494750904506170417">pop-upy i przekierowania</translation>
 <translation id="6495664197699704593">To hasło zostało zapisane tylko na tym urządzeniu. Aby używać go na innych urządzeniach, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Aby używać innej usługi autouzupełniania w Chrome, wybierz dostawcę autouzupełniania w ustawieniach Androida</translation>
+<translation id="6496888501595572660">W momencie płatności pokaż opcje <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />płatności odroczonej<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /></translation>
 <translation id="6499038740797743453">Zresetować hasło?</translation>
 <translation id="6502510275417601303">Panel alertu o nowych ustawieniach płatności jest zamknięty</translation>
 <translation id="6502991525169604759">Bez Twoich zmian</translation>
@@ -3969,6 +3976,7 @@ Dodatkowe informacje:
 <translation id="7625242817712715120">Zgodnie z zasadą administratora nie zaleca się drukowania tej treści</translation>
 <translation id="7627785503571172573">Zdjęcie (klisza)</translation>
 <translation id="762844065391966283">Pojedynczo</translation>
+<translation id="7629058630148860366">Adres służbowy</translation>
 <translation id="763042426047865637">Usługi ochrony mienia i ochrony przeciwpożarowej dla firm</translation>
 <translation id="7630470133768862132">Stan zgody:</translation>
 <translation id="7631072086707140121">Adres URL musi zaczynać się od HTTPS.</translation>
@@ -4654,6 +4662,7 @@ Dodatkowe informacje:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by zaktualizować przeglądarkę Chrome z poziomu jej ustawień.</translation>
 <translation id="8820817407110198400">Zakładki</translation>
 <translation id="882338992931677877">Szczelina ręczna</translation>
+<translation id="8827067923357481311">Opcje płatności odroczonej</translation>
 <translation id="8830320733681313421">Hagaki (pocztówka)</translation>
 <translation id="8830565333350631528">Wyświetl pliki w usłudze <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8831783793142731637">Dostępne w przypadku zakupów powyżej <ph name="RANGE_MINIMUM" /></translation>

@@ -1563,6 +1563,7 @@
 <translation id="2073496667646280609">మీ పరికరంలో లేదా ఎంచుకున్న బ్యాకప్ లొకేషన్‌లో ఖాళీగా ఉన్న స్టోరేజ్ తగినంత ఉండకపోవచ్చు. స్పేస్‌ను ఖాళీ చేయడానికి ట్రై చేయండి లేదా బ్యాకప్ చేయడానికి వేరే లొకేషన్‌ను ఎంచుకోండి.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> లేదా అంతకంటే తక్కువ అక్షరాలను ఉపయోగించండి</translation>
 <translation id="2074263453710478603">ChromeOS Chrome యూజర్ లాగ్‌లు</translation>
+<translation id="2074599390896964828">ఖచ్చితమైన లొకేషన్</translation>
 <translation id="2075088158103027942">సబ్‌స్క్రిప్షన్‌కు వెళ్లండి</translation>
 <translation id="2075474481720804517">బ్యాటరీ <ph name="BATTERY_PERCENTAGE" />% ఉంది</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> ఎక్స్‌టెన్షన్‌కు మరిన్ని చర్యలు</translation>
@@ -2719,6 +2720,7 @@
 <translation id="2849936225196189499">క్లిష్టమైన</translation>
 <translation id="285033512555869047">మూసివేసి ఉంది</translation>
 <translation id="2850541429955027218">థీమ్‌ను జోడించండి</translation>
+<translation id="2851291081585704741">మీరు ఆఫ్‌లైన్‌లో ఉన్నారు</translation>
 <translation id="2852045827873867442">ఇంటర్నెట్ కనెక్షన్ అవసరం.</translation>
 <translation id="285237063405807022">(లోడ్ అవుతోంది)</translation>
 <translation id="2853121255651601031">పాస్‌వర్డ్ సేవ్ చేయబడింది</translation>
@@ -9954,8 +9956,8 @@
 ఎక్స్‌టెన్షన్‌: <ph name="EXTENSION_FILE" />కీ ఫైల్: <ph name="KEY_FILE" />మీ కీ ఫైల్‌ను ఒక సురక్షితమైన స్థలంలో ఉంచండి. మీ ఎక్స్‌టెన్షన్‌ యొక్క కొత్త వెర్షన్‌ను క్రియేట్ చేయడానికి మీకు ఇది అవసరం అవుతుంది.</translation>
 <translation id="8000020256436988724">ఉపకరణపట్టీ</translation>
 <translation id="800117767980299235">వాయిస్ హైలైట్</translation>
+<translation id="8001561107130904792">పేజీలోని కంటెంట్ షేరింగ్</translation>
 <translation id="8002274832045662704">అధునాతన ప్రింటర్ కాన్ఫిగరేషన్</translation>
-<translation id="8002531372108263935">మీ సంస్థ, <ph name="ACCOUNT_MANAGER" />, ఈ డేటాను చూడటం కానీ, మేనేజ్ చేయడం కానీ చేయలేవు. ఈ డేటా ఇప్పటికే ఉన్న ప్రొఫైల్‌లోనే ఉంటుంది.</translation>
 <translation id="8002597610026749658">Chrome ఇక్కడ చూపిన భాషలకు క్యాప్షన్‌లను క్రియేట్ చేయగలదు</translation>
 <translation id="8002670234429879764">ఇకపై <ph name="PRINTER_NAME" /> అందుబాటులో ఉండదు</translation>
 <translation id="8004092996156083991">మీ పాస్‌వర్డ్‌లు చోరీకి గురైనట్లయితే, మేము మీకు తెలియజేస్తాము.</translation>

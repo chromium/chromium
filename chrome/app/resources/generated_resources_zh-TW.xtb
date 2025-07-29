@@ -854,6 +854,7 @@
 <translation id="1587275751631642843">JavaScript 控制台(&amp;J)</translation>
 <translation id="1587907146729660231">用手指輕觸電源按鈕</translation>
 <translation id="1588438908519853928">一般</translation>
+<translation id="1588772269240419305">查看標誌和名稱更新</translation>
 <translation id="1588870296199743671">使用其他程式開啟連結...</translation>
 <translation id="1588919647604819635">右鍵資訊卡</translation>
 <translation id="1589055389569595240">顯示拼字與文法</translation>
@@ -1324,6 +1325,7 @@
 <translation id="1912867150686509584">查看日曆中的更多會議</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{暫停導致瀏覽器運作緩慢的分頁}other{暫停導致瀏覽器運作緩慢的分頁}}</translation>
 <translation id="1913749768968678106">投放、儲存及分享</translation>
+<translation id="19147273405311768">將工具列重設為預設設定</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">掛斷</translation>
 <translation id="1915734383465415025">商店編號</translation>
@@ -1553,6 +1555,7 @@
 <translation id="2073496667646280609">裝置或所選的備份位置可能沒有足夠的免費儲存空間。請試著釋出空間，或選擇備份至另一個位置。</translation>
 <translation id="2073505299004274893">最多只能使用 <ph name="CHARACTER_LIMIT" /> 個字元</translation>
 <translation id="2074263453710478603">ChromeOS Chrome 使用者記錄</translation>
+<translation id="2074599390896964828">精確位置</translation>
 <translation id="2075088158103027942">前往訂閱頁面</translation>
 <translation id="2075474481720804517">電量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354">其他「<ph name="EXTENSION_NAME" />」擴充功能動作</translation>
@@ -2706,6 +2709,7 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="285033512555869047">已關閉</translation>
 <translation id="2850541429955027218">新增主題</translation>
+<translation id="2851291081585704741">你已離線</translation>
 <translation id="2852045827873867442">必須連上網際網路。</translation>
 <translation id="285237063405807022">(載入中)</translation>
 <translation id="2853121255651601031">密碼已儲存</translation>
@@ -3003,6 +3007,7 @@
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">無法與你的手機建立連線。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3061302636956643119">系統會將文字傳送給 Google 進行處理。</translation>
+<translation id="306166624240243643">查看名稱和網址更新</translation>
 <translation id="3064871050034234884">網站可以播放音效</translation>
 <translation id="3065041951436100775">分頁毀損意見回饋。</translation>
 <translation id="3065522099314259755">鍵盤重複延遲</translation>
@@ -3045,6 +3050,7 @@
 <translation id="3100071818310370858">使用位置資訊。允許具有位置存取權的應用程式和服務使用這部裝置的位置資訊。Google 可能會定期蒐集位置資料，並以匿名方式使用，改進定位精確度和適地性服務品質。<ph name="BEGIN_LINK1" />進一步瞭解位置資訊<ph name="BEGIN_LINK1_END" />瞭解詳情<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">光線昏暗</translation>
 <translation id="3101709781009526431">日期與時間</translation>
+<translation id="3102309003841389927">查看標誌更新</translation>
 <translation id="310297983047869047">上一張投影片</translation>
 <translation id="3103451787721578293">請提供上傳這項資料的原因：</translation>
 <translation id="3103512663951238230">Alt + 滑鼠左鍵</translation>
@@ -6039,6 +6045,7 @@
 <translation id="5225324770654022472">顯示應用程式捷徑</translation>
 <translation id="52254442782792731">目前尚未設定瀏覽權限</translation>
 <translation id="5225463052809312700">開啟攝影機</translation>
+<translation id="5226253862147382094">查看標誌和網址更新</translation>
 <translation id="5226514125747186">在網站圖示周圍顯示虛線圓圈。<ph name="BEGIN_LINK" />進一步瞭解閒置分頁<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">未授權網站使用位置資訊</translation>
 <translation id="5227679487546032910">預設的藍綠色顯示圖片</translation>
@@ -7349,6 +7356,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{要移除擴充功能嗎？}other{要移除 # 個擴充功能嗎？}}</translation>
 <translation id="6180510783007738939">線條工具</translation>
 <translation id="6180550893222597997">你要在「<ph name="APP_NAME" />」上使用哪一個密碼金鑰？</translation>
+<translation id="6181218116951226898">應用程式有時會更新品牌識別。請先查看所有異動，確認沒問題再更新。</translation>
 <translation id="6181431612547969857">下載遭封鎖</translation>
 <translation id="6183369864942961155">自動切換淺色/深色主題</translation>
 <translation id="6184099524311454384">搜尋分頁</translation>
@@ -7422,6 +7430,7 @@
 <translation id="6234108445915742946">Chrome《服務條款》將於 3 月 31 日變更</translation>
 <translation id="6234474535228214774">等待安裝中</translation>
 <translation id="6235208551686043831">已開啟裝置攝影機。請將攝影機鏡頭對準 eSIM 的 QR 圖碼。</translation>
+<translation id="6237256594069101884">查看網址更新</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" />群組「<ph name="GROUP_NAME" />」- <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">觸控筆做筆記應用程式</translation>
 <translation id="6237481151388361546">請變更網際網路連線並選擇「再試一次」。你也可以選擇「在基本編輯器中開啟」，使用功能有限的檢視和編輯選項。</translation>
@@ -8275,6 +8284,7 @@
 <translation id="6840155290835956714">傳送前詢問我</translation>
 <translation id="6840184929775541289">這不是憑證授權單位</translation>
 <translation id="6840214587087739194">已刪除地址</translation>
+<translation id="6841076158433142214">使用下列應用程式錄製螢幕時，你不會收到通知：</translation>
 <translation id="6841143363521180029">已加密</translation>
 <translation id="6841186874966388268">錯誤</translation>
 <translation id="6842135459748401207">僅限已登入 <ph name="USER_EMAIL" /> 的裝置</translation>
@@ -8734,6 +8744,7 @@
 <translation id="7181117767881540376">隱藏書籤列(&amp;H)</translation>
 <translation id="7181329571386134105">如要讓<ph name="CHILD_NAME" />之後可直接安裝擴充功能，不必經過你的核准，請在你的裝置上開啟 Family Link 應用程式，並更新<ph name="CHILD_NAME" />的 Google Chrome 設定。</translation>
 <translation id="7181840534454431748">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組{NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}}</translation>
+<translation id="7181976109296206547">查看標誌、名稱和網址更新</translation>
 <translation id="7182051712900867547">使用其他帳戶</translation>
 <translation id="7182063559013288142">即時無線基地台</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
@@ -8909,6 +8920,7 @@
 <translation id="7312040805247765153">無法安裝應用程式</translation>
 <translation id="7312210124139670355">管理員正在重設 eSIM，請稍候片刻。</translation>
 <translation id="7313539585802573958">鍵盤背光顏色</translation>
+<translation id="7314865262803554456">開始錄製時，你不會收到通知。</translation>
 <translation id="7314989823816739632">浪漫</translation>
 <translation id="7317342082064136423">驗證帳戶</translation>
 <translation id="7317831949569936035">學校註冊程序</translation>
@@ -9927,8 +9939,8 @@
 請妥善保管你的金鑰檔案；建立新版本的擴充功能時將需要使用該金鑰檔案。</translation>
 <translation id="8000020256436988724">工具列</translation>
 <translation id="800117767980299235">醒目顯示朗讀進度</translation>
+<translation id="8001561107130904792">網頁內容分享</translation>
 <translation id="8002274832045662704">進階印表機設定</translation>
-<translation id="8002531372108263935">貴機構 (<ph name="ACCOUNT_MANAGER" />) 將無法查看或管理這些資料。這些資料會保留在現有設定檔中。</translation>
 <translation id="8002597610026749658">Chrome 可產生以下語言的字幕</translation>
 <translation id="8002670234429879764">「<ph name="PRINTER_NAME" />」已無法使用</translation>
 <translation id="8004092996156083991">如果密碼外洩，我們會通知你。</translation>
@@ -11443,6 +11455,7 @@
 <translation id="9033765790910064284">仍要繼續</translation>
 <translation id="9033857511263905942">貼上(&amp;P)</translation>
 <translation id="903480517321259405">重新輸入 PIN 碼</translation>
+<translation id="9035157477209989051">使用下列應用程式錄製螢幕時，你會收到通知：</translation>
 <translation id="9036484080057916082">憑證簽署的時間戳記清單</translation>
 <translation id="9037054491984310631">已連線至名為「<ph name="DEVICE" />」的藍牙裝置</translation>
 <translation id="9037640663275993951">不允許使用裝置</translation>

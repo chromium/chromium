@@ -1509,6 +1509,9 @@ Esta política suele estar inhabilitada para ofrecer protección contra phishing
 <translation id="208566302163036794">Bloquear las funciones inhabilitadas</translation>
 <translation id="2086040449830622332">Habilitar entorno aislado de LPAC para imprimir</translation>
 <translation id="208623333578980446">Permitir los wake locks de pantalla para la gestión de energía</translation>
+<translation id="2086505225896497574">Si se define esta política, se especificarán los IDs RP de WebAuthn para los que no se mostrará ningún mensaje cuando se soliciten certificados de atestación de llaves de seguridad en la pantalla de inicio de sesión. Asimismo, se enviará una señal a la llave de seguridad para indicar que es posible que se utilice esa atestación empresarial. Sin esta política, cuando los sitios soliciten la atestación de las llaves de seguridad, los usuarios verán un mensaje.
+
+Esta política de dispositivos es equivalente a la política de usuarios actual <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, pero, en su lugar, se aplica al perfil de inicio de sesión en la pantalla de inicio de sesión.</translation>
 <translation id="2089541797660774692">Habilitar los informes en la nube a través de un navegador gestionado</translation>
 <translation id="2090712407517297305">La página del historial de Chrome organizada en grupos se mostrará en chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Si se habilita esta política, se permitirá usar el proxy de compresión de datos. Si se inhabilita esta política, no se permitirá usar este proxy.
@@ -6806,6 +6809,7 @@ Esta política afecta a los flujos de autenticación de inicio de sesión y de b
       Nota: Si hay varios valores, se deben separar con comas.</translation>
 <translation id="5693469654327063861">Permitir la migración de datos</translation>
 <translation id="56936613186060503">El administrador de descargas no tendrá la opción de guardar archivos en <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="569457565603183">Las URL y los dominios han permitido automáticamente la confirmación directa de la llave de seguridad en la pantalla de inicio de sesión</translation>
 <translation id="5695209488612697377">Habilita el uso de un proveedor de búsqueda predeterminado en el menú contextual.
 
           Si se inhabilita esta política, no se mostrará la opción de búsqueda del menú contextual que depende de tu proveedor de búsqueda predeterminado.
@@ -7879,7 +7883,6 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="6412352702230183710">Permitir solo hosts de mensajería nativa a nivel de sistema</translation>
 <translation id="6412793408912788345">Mostrar la pantalla de introducción de Gemini durante el inicio de sesión</translation>
 <translation id="6416506846917150119">Inhabilitar la escritura predictiva en el teclado físico cuando los usuarios escriban</translation>
-<translation id="6416916931494972926">Habilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6417265370957905582">Asistente de Google</translation>
 <translation id="6419001911253110938">Habilitar que se muestre la pantalla de introducción de las funciones de IA dentro de la sesión durante el flujo de inicio de sesión</translation>
 <translation id="6421254653839955267">Si se habilita esta política, se omitirá la consulta de CNAME. El nombre del servidor se usará tal como se haya introducido al generar el SPN de Kerberos.
@@ -8031,7 +8034,6 @@ Si no se define esta política o se proporciona una lista vacía de URLs, todas 
 
       Si no se asigna ningún valor a esta política, el comportamiento estará inhabilitado para los usuarios gestionados y habilitado para el resto de los usuarios de forma predeterminada.</translation>
 <translation id="6508403116553969858">Establecer el valor de política predeterminado para las funciones de IA generativa incluidas en <ph name="PRODUCT_NAME" /></translation>
-<translation id="6508882314969525299">Inhabilitar los informes de telemetría de Kiosk Vision.</translation>
 <translation id="6509376413448002446">Configura el salvapantallas del usuario para la pantalla de bloqueo.
 
 Si se asigna el valor true a esta política, el dispositivo <ph name="PRODUCT_OS_NAME" /> mostrará un salvapantallas en la pantalla de bloqueo cuando esté inactivo.
@@ -10950,9 +10952,6 @@ Si no se define esta política, los usuarios no podrán jugar al juego del dinos
       Si se asigna el valor "true" a esta política, las pestañas que hayan estado en segundo plano durante un mínimo de 5 minutos podrían inmovilizarse. Inmovilizar las pestañas reduce el consumo de CPU, batería y memoria. <ph name="PRODUCT_NAME" /> usa métodos heurísticos para evitar inmovilizar pestañas que realicen funciones útiles en segundo plano, como mostrar notificaciones, reproducir sonidos o emitir vídeos en streaming. Los desarrolladores web pueden inhabilitar la inmovilización en sus sitios web (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Si se asigna el valor "false" a esta política, no se inmovilizará ninguna pestaña.</translation>
-<translation id="8607613052618540095">Si se habilita esta política, se habilitarán los informes de telemetría de Kiosk Vision.
-Se iniciará el framework de Kiosk Vision y se habilitarán los informes de telemetría de la audiencia.
-Si no se define esta política o se inhabilita, se desactivarán los informes de telemetría de Kiosk Vision.</translation>
 <translation id="8610216287193516769">Se eliminó en la versión M122. Esta política solo se puede utilizar del lado del servidor y nunca ha usado la infraestructura de políticas de ChromeOS para propagarse.
 Si se asigna el valor <ph name="POLICY_VALUE_ALL" /> a esta política o no se le asigna ningún valor, se permitirán todos los usos de las cuentas gestionadas. Esto podría provocar que una cuenta gestionada fuera secundaria. En ese caso, solo recibirá políticas cuando se inicie sesión en esa cuenta como cuenta principal en un perfil del navegador.
       Las políticas establecidas en la cuenta no se implementarán en los siguientes casos:

@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Gaan voort</translation>
 <translation id="2371084566192454134">Oortjies en oortjiegroepe</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou <ph name="TITLE_OF_GROUP" />-oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
-<translation id="2479148705183875116">Gaan na Instellings</translation>
 <translation id="2498435670446402865">Hernoem oortjiegroep</translation>
 <translation id="2536366509642644298">“<ph name="TAB_GROUP_NAME_1" />”- en “<ph name="TAB_GROUP_NAME_2" />”-oortjiegroep nie meer beskikbaar nie</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Vou <ph name="TABS_COUNT_ONE" /> oortjie in.}other{Vou oortjiegroep met <ph name="TABS_COUNT_MANY" /> oortjies in.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Bekyk winkelinligting?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> oortjie is toegemaak}other{<ph name="MANY_CLOSED" /> oortjies is toegemaak}}</translation>
 <translation id="2894757982205307093">Nuwe oortjie in groep</translation>
+<translation id="2918484639460781603">Gaan na instellings</translation>
 <translation id="2928243913527329289">Google | Meer oor hierdie winkel</translation>
 <translation id="3008554597174452548">Hou op om produk na te spoor</translation>
 <translation id="3026391124054406831">Skep groepe om jou oortjies te organiseer.</translation>

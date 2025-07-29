@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">Derbyn hysbysiadau gostyngiadau prisiau ar gyfer cynhyrchion rydych yn eu holrhain.</translation>
 <translation id="1521366073263497277">Ewch i'ch grid tabiau</translation>
 <translation id="1521774566618522728">Yma heddiw</translation>
+<translation id="1523567067736644845">Datglowch i ddangos cyfrinair</translation>
 <translation id="1524563461097350801">Dim diolch</translation>
 <translation id="1531038290222364269">Dangos tabiau</translation>
 <translation id="1536390784834419204">Cyfieithu'r dudalen</translation>
@@ -1230,6 +1231,7 @@ Rhaid galluogi Handoff hefyd yn adran Cyffredinol y Gosodiadau, a rhaid i'ch dyf
 <translation id="5869522115854928033">Cyfrineiriau sydd wedi'u cadw</translation>
 <translation id="5873179562631407582">Tapiwch a daliwch unrhyw dabiau agored</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Rheolir gan eich sefydliad.</translation>
+<translation id="5887400589839399685">Cadwyd y cerdyn</translation>
 <translation id="5888889603768021126">Wedi mewngofnodi gyda</translation>
 <translation id="5889333064153755823">Dileu Data Pori</translation>
 <translation id="5896576662943111387">Wedi'i greu ar gyfer iOS</translation>
@@ -2009,7 +2011,6 @@ Gall gwefannau ddefnyddio cwcis i weld eich gweithgarwch pori ar draws gwahanol 
 <translation id="8819155700324279105">Ychwanegu haen ychwanegol o amddiffyniad rhag bygythiadau ar-lein</translation>
 <translation id="8820817407110198400">Nodau tudalen</translation>
 <translation id="8822421075653507124">Er mwyn sicrhau y gellir defnyddio'r ddyfais hon yn ddiogel, mae'n bosib y bydd angen i'ch sefydliad weld gwybodaeth am ei system weithredu, porwr, gosodiadau, a pha feddalwedd sydd wedi'i gosod ar y ddyfais.</translation>
-<translation id="8825562130641217944">Cael eich nodau tudalen, cyfrineiriau a rhagor.</translation>
 <translation id="8831208860914609320">Cau pob tab anweithredol</translation>
 <translation id="8831944931153286232">Ychwanegu at y rhestr ddarllen</translation>
 <translation id="8837654851594567190">Trefnu yn ôl cyhoeddwr</translation>

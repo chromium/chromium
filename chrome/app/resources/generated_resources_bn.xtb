@@ -1566,6 +1566,7 @@
 <translation id="2073496667646280609">আপনার ডিভাইসে বা ব্যাক-আপের জন্য বেছে নেওয়া লোকেশনে হয়ত পর্যাপ্ত খালি জায়গা নেই। জায়গা খালি করে বা অন্য কোনও লোকেশন বেছে নিয়ে চেষ্টা করুন।</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> অক্ষর অথবা তার থেকে কম অক্ষর ব্যবহার করুন</translation>
 <translation id="2074263453710478603">ChromeOS Chrome ব্যবহারকারীর লগ</translation>
+<translation id="2074599390896964828">সুনির্দিষ্ট লোকেশন</translation>
 <translation id="2075088158103027942">সাবস্ক্রিপশনে যান</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% ব্যাটারি</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> এক্সটেনশনের জন্য আরও অ্যাকশন</translation>
@@ -2722,6 +2723,7 @@
 <translation id="2849936225196189499">জটিল</translation>
 <translation id="285033512555869047">বন্ধ করা আছে</translation>
 <translation id="2850541429955027218">থীম জুড়ুন</translation>
+<translation id="2851291081585704741">আপনি অফলাইন আছেন</translation>
 <translation id="2852045827873867442">ইন্টারনেট কানেকশন প্রয়োজন।</translation>
 <translation id="285237063405807022">(লোড হচ্ছে)</translation>
 <translation id="2853121255651601031">পাসওয়ার্ড সেভ করা হয়েছে</translation>
@@ -9964,8 +9966,8 @@
 নিজের কী ফাইল কোন নিরাপদ স্থানে রাখুন৷ আপনাকে নিজের এক্সটেনশনের নতুন ভার্সন তৈরি করতে হবে৷</translation>
 <translation id="8000020256436988724">সরজ্ঞামদণ্ড</translation>
 <translation id="800117767980299235">ভয়েস হাইলাইট</translation>
+<translation id="8001561107130904792">পৃষ্ঠার কন্টেন্ট শেয়ার করা</translation>
 <translation id="8002274832045662704">প্রিন্টারের উন্নত কনফিগারেশন</translation>
-<translation id="8002531372108263935">আপনার <ph name="ACCOUNT_MANAGER" /> সংস্থা, এই ডেটা দেখতে বা ম্যানেজ করতে পারবে না। এগুলি পুরনো প্রোফাইলে থেকে যাবে।</translation>
 <translation id="8002597610026749658">Chrome এখানে দেখানো ভাষার জন্য ক্যাপশন তৈরি করতে পারবে</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> আর উপলভ্য নেই</translation>
 <translation id="8004092996156083991">আপনার পাসওয়ার্ড যদি চুরি হয়ে যায়, আমরা তা আপনাকে জানাব।</translation>

@@ -1555,6 +1555,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2073496667646280609">Je hebt mogelijk niet voldoende vrije opslagruimte op je apparaat of geselecteerde back-uplocatie. Maak ruimte vrij of kies een andere locatie.</translation>
 <translation id="2073505299004274893">Gebruik maximaal <ph name="CHARACTER_LIMIT" /> tekens</translation>
 <translation id="2074263453710478603">ChromeOS-logboeken van Chrome-gebruikers</translation>
+<translation id="2074599390896964828">Exacte locatie</translation>
 <translation id="2075088158103027942">Naar het abonnement</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% batterijlading</translation>
 <translation id="2076228988744845354">Meer acties voor de extensie <ph name="EXTENSION_NAME" /></translation>
@@ -2708,6 +2709,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2849936225196189499">Kritiek</translation>
 <translation id="285033512555869047">Gesloten</translation>
 <translation id="2850541429955027218">Thema toevoegen</translation>
+<translation id="2851291081585704741">Je bent offline</translation>
 <translation id="2852045827873867442">Internetverbinding vereist.</translation>
 <translation id="285237063405807022">(laden)</translation>
 <translation id="2853121255651601031">Wachtwoord opgeslagen</translation>
@@ -9938,8 +9940,8 @@ Sleutelbestand: <ph name="KEY_FILE" />
 Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nieuwe versies van je extensie te maken.</translation>
 <translation id="8000020256436988724">Toolbar</translation>
 <translation id="800117767980299235">Spraakhighlight</translation>
+<translation id="8001561107130904792">Paginacontent delen</translation>
 <translation id="8002274832045662704">Geavanceerde printerconfiguratie</translation>
-<translation id="8002531372108263935">Je organisatie, <ph name="ACCOUNT_MANAGER" />, kan deze gegevens niet bekijken of beheren. Ze blijven in het bestaande profiel staan.</translation>
 <translation id="8002597610026749658">Chrome kan ondertiteling maken voor de hier getoonde talen</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> is niet meer beschikbaar</translation>
 <translation id="8004092996156083991">Als je wachtwoorden zijn gehackt, laten we je dat weten.</translation>

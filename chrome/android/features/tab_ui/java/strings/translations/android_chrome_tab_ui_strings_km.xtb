@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">បន្ត</translation>
 <translation id="2371084566192454134">ផ្ទាំង និង​ក្រុមផ្ទាំង</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{បង្រួម​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_ONE" /> ផ្ទាំង។}other{បង្រួម​ក្រុមផ្ទាំង <ph name="TITLE_OF_GROUP" /> ដែលមាន <ph name="TABS_COUNT_MANY" /> ផ្ទាំង។}}</translation>
-<translation id="2479148705183875116">ចូលទៅកាន់ការកំណត់</translation>
 <translation id="2498435670446402865">ប្ដូរ​ឈ្មោះក្រុមផ្ទាំង</translation>
 <translation id="2536366509642644298">លែង​អាចប្រើ​ក្រុមផ្ទាំង "<ph name="TAB_GROUP_NAME_1" />" និង "<ph name="TAB_GROUP_NAME_2" />" បាន​ទៀតហើយ</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{បង្រួមផ្ទាំង <ph name="TABS_COUNT_ONE" />។}other{បង្រួមក្រុមផ្ទាំង​ដែលមាន <ph name="TABS_COUNT_MANY" />ផ្ទាំង។}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">មើលព័ត៌មានអំពីហាងឬ?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{បានបិទ <ph name="ONE_CLOSED" /> ផ្ទាំង}other{បានបិទ <ph name="MANY_CLOSED" /> ផ្ទាំង}}</translation>
 <translation id="2894757982205307093">ផ្ទាំងថ្មី​នៅក្នុងក្រុម</translation>
+<translation id="2918484639460781603">ចូលទៅកាន់​ការកំណត់</translation>
 <translation id="2928243913527329289">Google | អំពី​ហាងនេះ</translation>
 <translation id="3008554597174452548">បញ្ឈប់ការតាមដានផលិតផល</translation>
 <translation id="3026391124054406831">បង្កើត​ក្រុម ដើម្បី​រៀបចំ​ផ្ទាំង​របស់អ្នក។</translation>

@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Davom etish</translation>
 <translation id="2371084566192454134">Varaq va varaqlar guruhi</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaq bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini yigʻish.}other{<ph name="TABS_COUNT_MANY" /> ta varaq bilan <ph name="TITLE_OF_GROUP" /> varaqlar guruhini yigʻish.}}</translation>
-<translation id="2479148705183875116">Sozlamalarni ochish</translation>
 <translation id="2498435670446402865">Varaqlar guruhini qayta nomlash</translation>
 <translation id="2536366509642644298">“<ph name="TAB_GROUP_NAME_1" />” va “<ph name="TAB_GROUP_NAME_2" />” varaqlar guruhlari endi mavjud emas</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ta varaqni yigʻish.}other{<ph name="TABS_COUNT_MANY" /> varaqli guruhni yigʻish.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Doʻkon axboroti ochilsinmi?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ta varaq yopildi}other{<ph name="MANY_CLOSED" /> ta varaq yopildi}}</translation>
 <translation id="2894757982205307093">Joriy guruhda yangi varaq ochish</translation>
+<translation id="2918484639460781603">Sozlamalarni ochish</translation>
 <translation id="2928243913527329289">Google | Bu doʻkon haqida</translation>
 <translation id="3008554597174452548">Mahsulot kuzatuvini toʻxtatish</translation>
 <translation id="3026391124054406831">Varaqlarni tartiblash uchun guruhlar yaratish.</translation>

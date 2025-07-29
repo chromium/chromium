@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Продовжити</translation>
 <translation id="2371084566192454134">Вкладки й групи вкладок</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_ONE" /> вкладку.}one{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладку.}few{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладки.}many{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладок.}other{Згорнути групу "<ph name="TITLE_OF_GROUP" />", яка містить <ph name="TABS_COUNT_MANY" /> вкладки.}}</translation>
-<translation id="2479148705183875116">Перейти в налаштування</translation>
 <translation id="2498435670446402865">Назва групи вкладок</translation>
 <translation id="2536366509642644298">Групи вкладок "<ph name="TAB_GROUP_NAME_1" />" і "<ph name="TAB_GROUP_NAME_2" />" більше не доступні</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Згорнути <ph name="TABS_COUNT_ONE" /> вкладку}one{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладкою}few{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}many{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладками}other{Згорнути групу з <ph name="TABS_COUNT_MANY" /> вкладки}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Переглянути інформацію про магазин?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> вкладку закрито}one{<ph name="MANY_CLOSED" /> вкладку закрито}few{<ph name="MANY_CLOSED" /> вкладки закрито}many{<ph name="MANY_CLOSED" /> вкладок закрито}other{<ph name="MANY_CLOSED" /> вкладки закрито}}</translation>
 <translation id="2894757982205307093">Нова вкладка в групі</translation>
+<translation id="2918484639460781603">Перейти в налаштування</translation>
 <translation id="2928243913527329289">Google | Про цей магазин</translation>
 <translation id="3008554597174452548">Вимкнути відстеження товару</translation>
 <translation id="3026391124054406831">Щоб упорядковувати вкладки, об’єднуйте їх у групи.</translation>

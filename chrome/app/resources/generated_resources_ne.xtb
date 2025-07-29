@@ -1552,6 +1552,7 @@
 <translation id="2073496667646280609">तपाईंको डिभाइस वा तपाईंले ब्याकअप गर्नका निम्ति चयन गरेको लोकेसनमा पर्याप्त खाली ठाउँ नहुन सक्छ। ठाउँ खाली गरी हेर्नुहोस् वा ब्याकअप गर्ने अर्को लोकेसन रोजी हेर्नुहोस्।</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> वा सोभन्दा कम वर्णहरू प्रयोग गर्नुहोस्</translation>
 <translation id="2074263453710478603">ChromeOS मा Chrome प्रयोगकर्ताका लगहरू</translation>
+<translation id="2074599390896964828">सटीक लोकेसन</translation>
 <translation id="2075088158103027942">सदस्यतामा जानुहोस्</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% ब्याट्री</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> एक्स्टेन्सनका सम्बन्धमा गर्न सकिने थप कारबाहीहरू</translation>
@@ -2705,6 +2706,7 @@
 <translation id="2849936225196189499">नाजुक</translation>
 <translation id="285033512555869047">बन्द छ</translation>
 <translation id="2850541429955027218">विषयवस्तु थप्नुहोस्</translation>
+<translation id="2851291081585704741">तपाईं अफलाइन हुनुहुन्छ</translation>
 <translation id="2852045827873867442">इन्टरनेट कनेक्सन चाहिन्छ।</translation>
 <translation id="285237063405807022">(लोड गरिँदै छ)</translation>
 <translation id="2853121255651601031">पासवर्ड सेभ गरियो</translation>
@@ -9941,8 +9943,8 @@
 तपाइँको फाइल एक सुरक्षित ठाउँमा राख्नुहोस्। तपाइँले विस्तारका नयाँ संस्करणहरू सिर्जना गर्न आवश्यक छ।</translation>
 <translation id="8000020256436988724">टुलबार</translation>
 <translation id="800117767980299235">आवाजका हाइलाइटहरू</translation>
+<translation id="8001561107130904792">पेजमा भएको कन्टेन्ट सेयर गर्ने सुविधा</translation>
 <translation id="8002274832045662704">प्रिन्टरसम्बन्धी उन्नत कन्फिगुरेसन</translation>
-<translation id="8002531372108263935">तपाईंको सङ्गठन (<ph name="ACCOUNT_MANAGER" />) ले यो डेटा हेर्न वा व्यवस्थापन गर्न सक्ने छैन यो डेटा हालको प्रोफाइलमा रहिरहने छ।</translation>
 <translation id="8002597610026749658">Chrome ले यहाँ देखाइएका भाषामा क्याप्सनहरू बनाउन सक्छ</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> अब उप्रान्त उपलब्ध छैन</translation>
 <translation id="8004092996156083991">तपाईंका पासवर्डहरू ह्याक वा चोरी भएका खण्डमा हामी तपाईंलाई त्यसका बारेमा जानकारी दिने छौँ।</translation>

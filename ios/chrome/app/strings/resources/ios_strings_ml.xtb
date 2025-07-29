@@ -65,6 +65,7 @@
 <translation id="1263433075299269530">നിങ്ങൾ അവസാനമായി തുറന്ന ടാബ്</translation>
 <translation id="1264156759663453185">ഭാഗിക വിവർത്തനത്തിനായി തിരഞ്ഞെടുത്ത ടെക്‌സ്‌റ്റ് വളരെ വലുതാണ്.</translation>
 <translation id="1264974993859112054">കായികം</translation>
+<translation id="126737128831326059">എക്‌സ്‌പോർട്ട് ചെയ്യൽ പൂർത്തിയായി</translation>
 <translation id="1272079795634619415">നിര്‍ത്തുക</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} പാസ്‌വേഡ്}other{{count} പാസ്‌വേഡുകൾ}}</translation>
 <translation id="1275718070701477396">തിരഞ്ഞെടുത്തു</translation>
@@ -168,6 +169,7 @@
 <translation id="1641113438599504367">സുരക്ഷിത ബ്രൗസിംഗ്</translation>
 <translation id="1644574205037202324">ചരിത്രം</translation>
 <translation id="164673457281113247">{count,plural, =1{ബുക്ക്‌മാർക്ക് സംരക്ഷിച്ചു}other{ബുക്ക്‌മാർക്കുകൾ സംരക്ഷിച്ചു}}</translation>
+<translation id="1651260071709244114">ആപ്പുകൾ</translation>
 <translation id="1652051421944182562">സുരക്ഷാ പരിശോധനാ അറിയിപ്പുകൾ ഓണാക്കുക…</translation>
 <translation id="1652333207707886577">നിങ്ങളുടെ മെനു ഇഷ്ടാനുസൃതമാക്കുക</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{അവശേഷിക്കുന്ന സമയം: {TIME} സെക്കൻഡ്}=1{അവശേഷിക്കുന്ന സമയം: {TIME} സെക്കൻഡ്}other{അവശേഷിക്കുന്ന സമയം: {TIME} സെക്കൻഡ്}}</translation>
@@ -310,6 +312,7 @@
 <translation id="218350106843433823">പാസ്‌വേഡുകളും പാസ്‌കീകളും സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="2184272387334793084">നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും പാസ്‌വേഡുകളും മറ്റും ലഭിക്കാൻ സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2188993354115194873"><ph name="BEGIN_BOLD" />ഡൗൺലോഡുകളിലേക്ക് സംരക്ഷിക്കുക<ph name="END_BOLD" /> ടാപ്പ് ചെയ്യുക</translation>
 <translation id="219283042927675668">ഗ്രൂപ്പിലെ ടാബുകൾ</translation>
 <translation id="2194856509914051091">പരിഗണിക്കേണ്ട കാര്യങ്ങൾ</translation>
 <translation id="2196428379625389579">വെബിൽ തിരയുക</translation>
@@ -363,6 +366,7 @@
 <translation id="236977714248711277">നിങ്ങളുടെ ബ്രൗസിംഗ് അനുഭവം മെച്ചപ്പെടുത്താൻ സൈറ്റുകൾക്ക് കുക്കികൾ ഉപയോഗിക്കാനാവില്ല, ഉദാഹരണത്തിന്, സൈൻ ഇൻ ചെയ്‌ത നിലയിൽ തുടരാനോ ഷോപ്പിംഗ് കാർട്ടിലെ ഇനങ്ങൾ ഓർമ്മിക്കാനോ.
 
 വ്യത്യസ്‌ത സൈറ്റുകളിലുടനീളമുള്ള നിങ്ങളുടെ ബ്രൗസിംഗ് ആക്റ്റിവിറ്റി കാണാൻ സൈറ്റുകൾക്ക് കുക്കികൾ ഉപയോഗിക്കാനാവില്ല, ഉദാഹരണത്തിന്, പരസ്യങ്ങൾ വ്യക്തിപരമാക്കാൻ.</translation>
+<translation id="2377230674627603057">ടാബ് ഗ്രൂപ്പുകളുടെ ഗ്രിഡ്</translation>
 <translation id="2377336083033403521">ടാബുകൾ തിരയുക…</translation>
 <translation id="2381405137052800939">അടിസ്ഥാനങ്ങൾ</translation>
 <translation id="2384692388811649784">അദൃശ്യ ടാബുകൾ മറയ്ക്കാൻ</translation>
@@ -559,6 +563,7 @@
 <translation id="3174662312949010067">സംരക്ഷിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ മറ്റ് ഉപകരണങ്ങളിലും ഉപയോഗിക്കാനാകും.</translation>
 <translation id="3177338796769255211">ബുക്ക്‌മാർക്കുകളും മറ്റും നിങ്ങളുടെ എല്ലാ ഉപകരണങ്ങളിലും നേടുന്നതിന് സൈൻ ഇൻ ചെയ്യുക</translation>
 <translation id="3181954750937456830">സുരക്ഷിത ബ്രൗസിംഗ് (അപകടകരമായ സൈറ്റുകളിൽ നിന്ന് നിങ്ങളെയും ഉപകരണത്തെയും പരിരക്ഷിക്കുന്നു)</translation>
+<translation id="3186796054637504691">ചരിത്രവും വെബ്‌സൈറ്റ് ഡാറ്റയും മായ്‌ക്കുക</translation>
 <translation id="3190736958609431397">ട്രാക്ക് ചെയ്യുന്നത് അവസാനിപ്പിക്കുക</translation>
 <translation id="3208260410153224535">നിങ്ങളുടെ സ്ഥാപനം, സൈൻ ഇൻ ചെയ്യൽ ഓഫാക്കി. പുതിയ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിക്കൂ.</translation>
 <translation id="3213807041830307252">ക്യാമറയും ഫോട്ടോ ഗാലറിയും ഉപയോഗിച്ച് ഷോപ്പ് ചെയ്യുക, വിവർത്തനം ചെയ്യുക, നിങ്ങൾ കാണുന്നത് തിരിച്ചറിയുക.</translation>
@@ -700,6 +705,7 @@
 <translation id="3851938967634752633"><ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> എന്നിവയുടെയും മറ്റ് <ph name="NUMBER_OF_ACCOUNTS" /> അക്കൗണ്ടുകളുടെയും പാസ്‌വേഡുകൾ ഇല്ലാതാക്കും. നിങ്ങളുടെ അക്കൗണ്ടുകൾ ഇല്ലാതാക്കില്ല.</translation>
 <translation id="3853162385423733133">നിങ്ങളുടെ Google Account-ൽ <ph name="EMAIL" /> പാസ്‌വേഡുകൾ ഉപയോഗിക്കുന്നതും സംരക്ഷിക്കുന്നതും തുടരുക</translation>
 <translation id="3853873210696342070">ഇമ്പോർട്ട് ചെയ്യുക</translation>
+<translation id="3857113360369572832"><ph name="BEGIN_BOLD" />Safari ക്രമീകരണം<ph name="END_BOLD" /> തുറക്കുക</translation>
 <translation id="3858860766373142691">പേര്</translation>
 <translation id="3868495844258915202">പൂർണ്ണ URL കാണിക്കുക</translation>
 <translation id="3875783148670536197">എങ്ങനെയെന്ന് എന്നെ കാണിക്കുക</translation>
@@ -1231,6 +1237,7 @@
 <translation id="5869522115854928033">സംരക്ഷിച്ച പാസ്‌വേഡുകള്‍</translation>
 <translation id="5873179562631407582">തുറന്നിരിക്കുന്ന ഏതെങ്കിലും ടാബുകൾ ടാപ്പ് ചെയ്‌ത് പിടിക്കുക</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. നിങ്ങളുടെ സ്ഥാപനം മാനേജ് ചെയ്യുന്നത്.</translation>
+<translation id="5887400589839399685">കാർഡ് സംരക്ഷിച്ചു</translation>
 <translation id="5888889603768021126">ഇതുപയോഗിച്ച് സൈൻ ഇൻ ചെയ്തു</translation>
 <translation id="5889333064153755823">ബ്രൗസിംഗ് ഡാറ്റ ഇല്ലാതാക്കുക</translation>
 <translation id="5896576662943111387">iOS-നായി സൃഷ്‌ടിച്ചത്</translation>
@@ -1334,6 +1341,7 @@
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163">സ്വയമേവ പൂരിപ്പിക്കൽ <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">ബ്രൗസറിന് പകരം ആപ്പിൽ ലിങ്കുകൾ തുറക്കുക.</translation>
+<translation id="6259928806013786178">റീഡിംഗ് മോഡ് സജീവമാക്കാനായില്ല</translation>
 <translation id="6268773951964630964">പകർത്തിയ ചിത്രം തിരയുക</translation>
 <translation id="6271462272606946663">'മൊബൈൽ സൈറ്റ് അഭ്യർത്ഥിക്കുക' മറയ്ക്കുക</translation>
 <translation id="6271824294945464304">പാസ്‌വേഡ് പങ്കിടുന്നു</translation>
@@ -1589,6 +1597,7 @@
 <translation id="7215621211572884440">പോപ്പ്-അപ്പുകൾ അനുവദിച്ചവ</translation>
 <translation id="7218491361283758048">പിന്‍‌ കോഡ്</translation>
 <translation id="7221173315674413369">പുതിയത് എന്തൊക്കെ എന്നതിൽ പുതിയ ഫീച്ചറുകളും നുറുങ്ങുകളും അടുത്തറിയുക</translation>
+<translation id="7223134495231529579">ഡൗൺലോഡുകളിലേക്ക് സംരക്ഷിക്കുക</translation>
 <translation id="722339453342442311">ഇപ്പോൾ പരിശോധിക്കുക</translation>
 <translation id="7227235818314667565">പങ്കിടൽ മാനേജ് ചെയ്യൽ</translation>
 <translation id="7233006041370588369">പൂരിപ്പിക്കാൻ ഒരു പാസ്‌വേഡ് തിരഞ്ഞെടുക്കുക.</translation>
@@ -1726,6 +1735,7 @@
 <translation id="7781829728241885113">ഇന്നലെ</translation>
 <translation id="7788868432173225918">വികസിപ്പിച്ച കാഴ്ച ഡിസ്‌മിസ് ചെയ്യുക</translation>
 <translation id="7791543448312431591">ചേര്‍ക്കൂ</translation>
+<translation id="7795253248079882669"><ph name="BEGIN_BOLD" />എക്‌സ്പോർട്ട് ചെയ്യുക<ph name="END_BOLD" /> ടാപ്പ് ചെയ്യുക</translation>
 <translation id="7801064017114765401">കമ്പ്യൂട്ടറുകൾ</translation>
 <translation id="7802239711290932774">നിർദ്ദേശിച്ച പാസ്‌വേഡ് ഉപയോഗിക്കുക:</translation>
 <translation id="780301667611848630">വേണ്ട</translation>
@@ -1836,6 +1846,7 @@
 <translation id="8161614462829037225"><ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> ഉപയോഗിച്ച് അൺലോക്ക് ചെയ്യുക</translation>
 <translation id="8173034266693057059">നീളം</translation>
 <translation id="8182037667962849780">{count,plural, =1{{website_1} എന്നതിന്}=2{{website_2}, {website_1} എന്നിവയ്ക്ക്}=3{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റൊരെണ്ണത്തിനും}other{{website_1}, {website_2} എന്നിവയ്ക്കും മറ്റ് {more_count} എണ്ണത്തിനും}}</translation>
+<translation id="8185076488803799132">ഇമ്പോർട്ട് ചെയ്യുക</translation>
 <translation id="8189615296021678665">നിങ്ങൾ അടുത്ത തവണ സൈൻ ഇൻ ചെയ്യുമ്പോൾ ഈ പാസ്‌വേഡ് എളുപ്പത്തിൽ ആക്‌സസ് ചെയ്യാൻ "സംരക്ഷിക്കുക" ടാപ്പ് ചെയ്യുക.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />നിങ്ങളുടെ ഉപകരണങ്ങൾ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">പാസ്‌വേഡ് ചേർക്കുക</translation>
@@ -1852,6 +1863,7 @@
 <translation id="8230355548492839438">മുമ്പത്തേത് കണ്ടെത്തുക</translation>
 <translation id="8232956427053453090">ഡാറ്റ സൂക്ഷിക്കുക</translation>
 <translation id="8233237502828137700">ബാനർ പ്രമോ അടയ്ക്കുക</translation>
+<translation id="8258734532103758067">എന്റെ ഡാറ്റ ഞാൻ എക്‌സ്‌പോർട്ട് ചെയ്തിട്ടുണ്ട്</translation>
 <translation id="8258999165172757081">ചേർത്തു</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
 <translation id="82619448491672958">മറ്റ് ടാബുകൾ കാണുക</translation>
@@ -1920,6 +1932,7 @@
 <translation id="8505361906966222822">ഇനിപ്പറയുന്നതിൽ സംരക്ഷിക്കുക…</translation>
 <translation id="850600235656508448">ആൾമാറാട്ട മോഡിൽ തുറക്കുക</translation>
 <translation id="8511141513131731477">ആദ്യ ടാബിലേക്ക് പോകുക</translation>
+<translation id="8515534223594179607">ബ്രൗസിംഗ് ഡാറ്റ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="852075982791215701">അവസാന ടാബിലേക്ക് പോകുക</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} പാസ്‌വേഡും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ {email} എന്ന Google Account-ൽ അവ സംരക്ഷിക്കുക.}other{{count} പാസ്‌വേഡുകളും മറ്റ് ഇനങ്ങളും ഈ ഉപകരണത്തിൽ മാത്രമേ സംരക്ഷിച്ചിട്ടുള്ളൂ. മറ്റ് ഉപകരണങ്ങളിൽ ഉപയോഗിക്കുന്നതിന്, നിങ്ങളുടെ {email} എന്ന Google Account-ൽ അവ സംരക്ഷിക്കുക.}}</translation>
 <translation id="8524799873541103884"><ph name="NUMBER_OF_OPEN_TABS" />-ൽ <ph name="FIRST_VISIBLE_TAB" /> മുതൽ <ph name="LAST_VISIBLE_TAB" /> വരെയുള്ള <ph name="INCOGNITO" /> ആൾമാറാട്ട ടാബുകൾ</translation>
@@ -1971,6 +1984,7 @@
 <translation id="8680787084697685621">അക്കൗണ്ട് പ്രവേശന വിവരങ്ങള്‍ കാലഹരണപ്പെട്ടതാണ്.</translation>
 <translation id="8690752723634292147">ഇല്ലാതാക്കൽ സ്ഥിരീകരിക്കുക</translation>
 <translation id="8692689525339542358">അപകടകരമായ സൈറ്റുകളിൽ നിന്നും ഡൗൺലോഡുകളിൽ നിന്നും വിപുലീകരണങ്ങളിൽ നിന്നും പരിരക്ഷ നേടുക.</translation>
+<translation id="8692897097252418799">നിങ്ങൾക്ക് എക്‌സ്‌പോർട്ട് ചെയ്യണമെന്നുള്ള ഡാറ്റ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="8694281486652655615">ഈ ഇനം കാണിക്കുന്നു</translation>
 <translation id="8696297579102085705">നിങ്ങളുടെ ഉപകരണത്തിലേക്ക് അയയ്ക്കുക</translation>
 <translation id="8697136149718343437">വിലാസ ബാർ താഴേക്ക് നീക്കുക</translation>
@@ -2010,7 +2024,6 @@
 <translation id="8819155700324279105">ഓൺലൈൻ ഭീഷണികൾക്കെതിരെ ഒരു അധിക സുരക്ഷ ചേർക്കുക</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8822421075653507124">ഈ ഉപകരണം സുരക്ഷിതമായി ഉപയോഗിക്കാനാകുമെന്ന് ഉറപ്പാക്കാൻ, നിങ്ങളുടെ സ്ഥാപനത്തിന് ഇതിന്റെ ഓപ്പറേറ്റിംഗ് സിസ്റ്റം, ബ്രൗസർ, ക്രമീകരണം, ഉപകരണത്തിൽ എന്തെല്ലാം സോഫ്‌റ്റ്‌വെയറാണ് ഇൻസ്റ്റാൾ ചെയ്തിട്ടുള്ളത് എന്നിവ സംബന്ധിച്ച വിവരങ്ങൾ കാണേണ്ടി വന്നേക്കാം.</translation>
-<translation id="8825562130641217944">നിങ്ങളുടെ ബുക്ക്‌മാർക്കുകളും പാസ്‌വേഡുകളും മറ്റും നേടുക.</translation>
 <translation id="8831208860914609320">സജീവമല്ലാത്ത എല്ലാ ടാബുകളും അടയ്ക്കുക</translation>
 <translation id="8831944931153286232">വായിക്കാനുള്ളവയുടെ ലിസ്‌റ്റിൽ ചേർക്കുക</translation>
 <translation id="8837654851594567190">പ്രസാധകർക്ക് അനുസരിച്ച് അടുക്കുക</translation>
@@ -2125,6 +2138,7 @@
 <translation id="939598580284253335">പാസ്ഫ്രെയ്‍സ് നല്‍കുക</translation>
 <translation id="939736085109172342">പുതിയ ഫോള്‍ഡര്‍</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />നിങ്ങൾക്ക് എന്തൊക്കെ സമന്വയിപ്പിക്കാമെന്ന് കാണുക<ph name="END_LINK" /></translation>
+<translation id="942624946817804130">എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
 <translation id="945522503751344254">ഫീഡ്‌ബാക്ക് അയയ്‌ക്കുക</translation>
 <translation id="94870150074703282">ഗ്രൂപ്പ് ഇല്ലാതാക്കണോ?</translation>
 <translation id="952704832371081537">റദ്ദാക്കുക</translation>

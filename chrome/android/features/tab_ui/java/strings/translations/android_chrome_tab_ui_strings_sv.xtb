@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Fortsätt</translation>
 <translation id="2371084566192454134">Flikar och flikgrupper</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen <ph name="TITLE_OF_GROUP" /> med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
-<translation id="2479148705183875116">Öppna inställningarna</translation>
 <translation id="2498435670446402865">Byt namn på flikgrupp</translation>
 <translation id="2536366509642644298">Flikgrupperna <ph name="TAB_GROUP_NAME_1" /> och <ph name="TAB_GROUP_NAME_2" /> är inte längre tillgängliga</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Komprimera <ph name="TABS_COUNT_ONE" /> flik.}other{Komprimera flikgruppen med <ph name="TABS_COUNT_MANY" /> flikar.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Vill du visa butiksinformation?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> flik har stängts}other{<ph name="MANY_CLOSED" /> flikar har stängts}}</translation>
 <translation id="2894757982205307093">Ny flik i grupp</translation>
+<translation id="2918484639460781603">Öppna Inställningar</translation>
 <translation id="2928243913527329289">Google | Om den här butiken</translation>
 <translation id="3008554597174452548">Sluta spåra produkten</translation>
 <translation id="3026391124054406831">Skapa grupper för att ordna dina flikar.</translation>

@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445"><ph name="APP_NAME" /> հավելվածի լեզուն</translation>
 <translation id="6138832295072039549">Այստեղ կարող եք փոխել կայքի կարգավորումները</translation>
 <translation id="6140912465461743537">Երկիր/տարածաշրջան</translation>
+<translation id="6140948187512243695">Մանրամասներ</translation>
 <translation id="6142183503755612900">Դուք ցանկացած ժամանակ կարող եք փոխել ձեր ընտրությունը կարգավորումներում</translation>
 <translation id="6146563240635539929">Տեսանյութեր</translation>
 <translation id="614890671148262506">Միշտ թույլատրել ծանուցումներն այս կայքից</translation>
@@ -1485,7 +1486,6 @@
 <translation id="7545347190366646170">Օգտատերեր, որոնք ունեն հասանելիություն</translation>
 <translation id="7554643625247105821">Հնարավոր չէ ստուգել Chrome-ի տարբերակը</translation>
 <translation id="7557508262441527045">Դուք դուրս եք գրվել հաշվից</translation>
-<translation id="7561260660702735877">Տեղեկություններ հղման մասին</translation>
 <translation id="7573665567024262965">Ընտրեք ձեր կանխադրված հավելվածները</translation>
 <translation id="7577900504646297215">Կառավարել հետաքրքրությունները</translation>
 <translation id="757855969265046257">{FILES,plural, =1{Ներբեռնվեց <ph name="FILES_DOWNLOADED_ONE" /> ֆայլ}one{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}other{Ներբեռնվեց <ph name="FILES_DOWNLOADED_MANY" /> ֆայլ}}</translation>
@@ -1640,6 +1640,7 @@
 <translation id="8207867836430106322">{NUM_OTHER_MEMBERS,plural, =1{Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUMBER_OF_OTHER_MEMBERS" /> օգտատեր}one{Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUMBER_OF_OTHER_MEMBERS" /> օգտատեր}other{Միացեք ներդիրների խմբին, որում <ph name="OWNER_FIRST_NAME" />-ն է ու ևս <ph name="NUMBER_OF_OTHER_MEMBERS" /> օգտատեր}}</translation>
 <translation id="8209050860603202033">Բացել պատկերը</translation>
 <translation id="8210770465353466621">Ձեր ներդիրները կգտնեք այստեղ</translation>
+<translation id="8212799748012101103">Բացել ներդիրների որոնումը</translation>
 <translation id="8215740705341534369">Կողային էկրան</translation>
 <translation id="8218622182176210845">Կառավարեք ձեր հաշիվը</translation>
 <translation id="8221401890884589479">Դուք կարող եք արգելափակել անցանկալի կայքերը։ Chrome-ը նաև ցանկից ավտոմատ ջնջում է այն կայքերը, որոնք ավելացվել են առնվազն 30 օր առաջ։ <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>

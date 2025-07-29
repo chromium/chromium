@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445"><ph name="APP_NAME" />-ის ენა</translation>
 <translation id="6138832295072039549">შეინახეთ თქვენი საიტის პარამეტრები აქ</translation>
 <translation id="6140912465461743537">ქვეყანა/რეგიონი</translation>
+<translation id="6140948187512243695">დეტალების ჩვენება</translation>
 <translation id="6142183503755612900">ნაგულისხმევის შეცვლას ნებისმიერ დროს შეძლებთ პარამეტრებიდან</translation>
 <translation id="6146563240635539929">ვიდეოები</translation>
 <translation id="614890671148262506">ამ საიტიდან შეტყობინებების ყოველთვის დაშვება</translation>
@@ -1485,7 +1486,6 @@
 <translation id="7545347190366646170">ხალხი წვდომით</translation>
 <translation id="7554643625247105821">Chrome-ის ვერსიის შემოწმება შეუძლებელია</translation>
 <translation id="7557508262441527045">გამოსული</translation>
-<translation id="7561260660702735877">მეტი ინფო საიტიდან ბმულზე</translation>
 <translation id="7573665567024262965">აირჩიეთ ნაგულისხმევი აპები</translation>
 <translation id="7577900504646297215">ინტერესების მართვა</translation>
 <translation id="757855969265046257">{FILES,plural, =1{ჩამოიტვირთა <ph name="FILES_DOWNLOADED_ONE" /> ფაილი}other{ჩამოიტვირთა <ph name="FILES_DOWNLOADED_MANY" /> ფაილი}}</translation>

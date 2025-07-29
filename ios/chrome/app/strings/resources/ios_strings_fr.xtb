@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">Recevez des alertes en cas de baisse de prix des produits que vous suivez.</translation>
 <translation id="1521366073263497277">Accédez à la grille d'onglets</translation>
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
+<translation id="1523567067736644845">Déverrouillez pour afficher le mot de passe</translation>
 <translation id="1524563461097350801">Non, merci</translation>
 <translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
@@ -1230,6 +1231,7 @@ Handoff doit également être activé dans la section "Général" des paramètre
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5873179562631407582">Appuyez de manière prolongée sur un onglet ouvert</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Géré par votre organisation.</translation>
+<translation id="5887400589839399685">Carte enregistrée</translation>
 <translation id="5888889603768021126">Connecté avec</translation>
 <translation id="5889333064153755823">Supprimer les données de navigation</translation>
 <translation id="5896576662943111387">Conçu pour iOS</translation>
@@ -2009,7 +2011,6 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8819155700324279105">Ajoutez un niveau de sécurité supplémentaire contre les menaces en ligne</translation>
 <translation id="8820817407110198400">Favoris</translation>
 <translation id="8822421075653507124">Pour une utilisation sécurisée de cet appareil, votre organisation peut avoir besoin d'informations le concernant (système d'exploitation, navigateur, paramètres et logiciels installés).</translation>
-<translation id="8825562130641217944">Accédez à vos favoris, vos mots de passe, etc.</translation>
 <translation id="8831208860914609320">Fermer tous les onglets inactifs</translation>
 <translation id="8831944931153286232">Ajouter à la liste de lecture</translation>
 <translation id="8837654851594567190">Trier par éditeur</translation>

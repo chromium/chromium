@@ -217,7 +217,6 @@
 <translation id="3595784445906693824">కొత్త ప్రొఫైల్‌లో Chromeకి సైన్ ఇన్ చేయాలా?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు}=1{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ అజ్ఞాత విండో మళ్లీ తెరవబడదు.}other{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromeను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ # అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.}}</translation>
 <translation id="3597003331831379823">అదనపు అధికారాలతో సెటప్‌ను రన్ చేయడం విఫలమైంది. <ph name="METAINSTALLER_ERROR" /></translation>
-<translation id="3609788354808247807">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />‌ను తీసివేసింది</translation>
 <translation id="3622716124581627104">వస్తువులను లేదా ప్రదేశాలను గుర్తించండి, టెక్స్ట్‌ను కాపీ చేయండి లేదా అనువదించండి. మీరు Google Lensను ఉపయోగించినప్పుడు, పేజీ స్క్రీన్‌షాట్ Googleకు పంపబడుతుంది. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ఇప్పుడు మీ Google ఖాతాతో, షేర్ చేయ‌బ‌డిన కంప్యూటర్‌ల‌లో Chromeను సులభంగా ఉపయోగించవచ్చు.</translation>
 <translation id="3635073343384702370">మీరు పాస్‌వర్డ్‌లను సేవ్ చేసినప్పుడు Chrome మీ వాటిని చెక్ చేయగలదు</translation>
@@ -394,7 +393,6 @@
 <translation id="5941711191222866238">కనిష్టీకరించు</translation>
 <translation id="5941830788786076944">Google Chromeను డిఫాల్ట్ బ్రౌజర్‌గా చేసుకోండి</translation>
 <translation id="5947104538377036631">Chrome షార్ట్‌కట్</translation>
-<translation id="5953954252731207958">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION" />‌ను తీసివేసింది</translation>
 <translation id="5980111191913430208">తెలియని సోర్స్‌లకు చెందిన ఎక్స్‌టెన్షన్‌లు, యాప్‌లు, థీమ్‌లు మీ పరికరానికి హాని కలిగించవచ్చు. <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> నుండి మాత్రమే వాటిని ఇన్‌స్టాల్ చేయని Chrome సిఫార్సు చేస్తోంది</translation>
 <translation id="6003112304606738118">డౌన్‌లోడ్ అవుతోంది... <ph name="HOURS" /> గంట(లు) సమయం మిగిలి ఉంది</translation>
 <translation id="6008161919456049856">మీరు Google ఖాతాలో సేవ్ చేసిన మీ పాస్‌వర్డ్‌లు, పేమెంట్ ఆప్షన్‌లు, ఇంకా అడ్రస్‌లు ఈ పరికరం నుండి తీసివేయబడతాయి. వాటిని మళ్లీ Chromeలో ఉపయోగించడానికి, తిరిగి సైన్ ఇన్ చేయండి.</translation>
@@ -419,7 +417,6 @@
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome బీటా</translation>
 <translation id="6180522807229584611">ఈ ట్యాబ్ అదనపు రిసోర్స్‌లను ఉపయోగిస్తోంది. మీ పనితీరును మెరుగుపరచడానికి, దాన్ని ఇన్‌యాక్టివ్‌గా ఉంచడానికి Chromeకు అనుమతినివ్వండి.</translation>
 <translation id="6182736845697986886">అప్‌డేట్ సర్వర్ అంతర్గత ఎర్రర్ కారణంగా ఇన్‌స్టాలేషన్ విఫలమైంది.</translation>
-<translation id="6200139057479872438">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> తీసివేసింది</translation>
 <translation id="6235018212288296708">mDNS ట్రాఫిక్‌ను అనుమతించడానికి Google Chrome కోసం ఇన్‌బౌండ్ నియమం.</translation>
 <translation id="624230925347970731">Chrome త్వరలోనే మూసివేయబడుతుంది</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -537,7 +534,6 @@
 <translation id="7655455401911432608">మీ బ్రౌజింగ్ హిస్టరీ, ఈ పరికరంలో Chromeను ఉపయోగించి మీరు సందర్శించిన సైట్‌ల రికార్డ్.</translation>
 <translation id="7655472416356262023">Chrome నుండి ఖాతాను తీసివేయండి</translation>
 <translation id="7658239707568436148">రద్దు చేయండి</translation>
-<translation id="7661924425853052955">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, అలాగే మరో <ph name="COUNT" />‌ను తీసివేసింది</translation>
 <translation id="7670287553302121848">Chrome ఖాతాకు మళ్లీ ప్రామాణీకరణ అవసరం</translation>
 <translation id="769538538642757151">దేనికైనా మీ రివ్యూ అవసరం అయితే, Chrome మీకు తెలియజేస్తుంది</translation>
 <translation id="7716950018788545737">టాస్క్(లు) ముగిసింది.</translation>

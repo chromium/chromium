@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">გაგრძელება</translation>
 <translation id="2371084566192454134">ჩანართები და ჩანართების ჯგუფები</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}other{<ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის „<ph name="TITLE_OF_GROUP" />“ ჩაკეცვა.}}</translation>
-<translation id="2479148705183875116">პარამეტრებზე გადასვლა</translation>
 <translation id="2498435670446402865">ჩანართების ჯგუფის სახელის შეცვლა</translation>
 <translation id="2536366509642644298">ჩანართების ჯგუფები — „<ph name="TAB_GROUP_NAME_1" />“ და „<ph name="TAB_GROUP_NAME_2" />“ — აღარ არის ხელმისაწვდომი</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართის ჩაკეცვა.}other{ჩანართების <ph name="TABS_COUNT_MANY" />-ჩანართიანი ჯგუფის ჩაკეცვა.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">გსურთ მაღაზიის ინფორმაციის ნახვა?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> ჩანართი დაიხურა}other{<ph name="MANY_CLOSED" /> ჩანართი დაიხურა}}</translation>
 <translation id="2894757982205307093">ახალი ჩანართი ჯგუფში</translation>
+<translation id="2918484639460781603">პარამეტრებზე გადასვლა</translation>
 <translation id="2928243913527329289">Google | ამ მაღაზიის შესახებ</translation>
 <translation id="3008554597174452548">პროდუქტისთვის თვალის მიდევნების შეწყვეტა</translation>
 <translation id="3026391124054406831">შექმენით ჯგუფები ჩანართების ორგანიზებისთვის.</translation>

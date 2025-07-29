@@ -1127,6 +1127,7 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="6137022273846704445"><ph name="APP_NAME" /> қолданбасының тілі</translation>
 <translation id="6138832295072039549">Сайт параметрлерін осы жерден өзгертесіз.</translation>
 <translation id="6140912465461743537">Ел/аймақ</translation>
+<translation id="6140948187512243695">Мәліметтерді көрсету</translation>
 <translation id="6142183503755612900">Әдепкі жүйені параметрлерден кез келген уақытта өзгерте аласыз.</translation>
 <translation id="6146563240635539929">Бейнелер</translation>
 <translation id="614890671148262506">Бұл сайт хабарландыруларына үнемі рұқсат беру</translation>
@@ -1485,7 +1486,6 @@ Google аккаунтының шолу тарихы басқа Google қызме
 <translation id="7545347190366646170">Кіру рұқсаты бар адамдар</translation>
 <translation id="7554643625247105821">Chrome нұсқасын тексеру мүмкін емес</translation>
 <translation id="7557508262441527045">Аккаунттан шыққансыз.</translation>
-<translation id="7561260660702735877">Сайттағы сілтеме ақпараты</translation>
 <translation id="7573665567024262965">Әдепкі қолданбаларды таңдаңыз</translation>
 <translation id="7577900504646297215">Қызығушылықтарды басқару</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл жүктеп алынды.}other{<ph name="FILES_DOWNLOADED_MANY" /> файл жүктеп алынды.}}</translation>

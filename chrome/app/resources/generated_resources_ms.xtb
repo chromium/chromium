@@ -1568,6 +1568,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2073496667646280609">Anda mungkin tidak mempunyai storan kosong yang mencukupi pada peranti anda atau lokasi sandaran yang dipilih. Cuba kosongkan ruang atau pilih lokasi lain.</translation>
 <translation id="2073505299004274893">Gunakan <ph name="CHARACTER_LIMIT" /> atau kurang aksara</translation>
 <translation id="2074263453710478603">Log Pengguna Chrome ChromeOS</translation>
+<translation id="2074599390896964828">Lokasi Tepat</translation>
 <translation id="2075088158103027942">Akses langganan</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% Bateri</translation>
 <translation id="2076228988744845354">Lagi tindakan untuk sambungan <ph name="EXTENSION_NAME" /></translation>
@@ -2724,6 +2725,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="2849936225196189499">Kritikal</translation>
 <translation id="285033512555869047">Tertutup</translation>
 <translation id="2850541429955027218">Tambahkan tema</translation>
+<translation id="2851291081585704741">Anda di luar talian</translation>
 <translation id="2852045827873867442">Sambungan Internet diperlukan.</translation>
 <translation id="285237063405807022">(memuatkan)</translation>
 <translation id="2853121255651601031">Kata Laluan Disimpan</translation>
@@ -9967,8 +9969,8 @@ Fail Kunci: <ph name="KEY_FILE" />
 Simpan fail kunci anda di tempat selamat. Anda akan memerlukannya untuk mencipta versi baharu sambungan anda.</translation>
 <translation id="8000020256436988724">Bar alat</translation>
 <translation id="800117767980299235">Sorotan suara</translation>
+<translation id="8001561107130904792">Perkongsian kandungan halaman</translation>
 <translation id="8002274832045662704">Konfigurasi terperinci pencetak</translation>
-<translation id="8002531372108263935">Organisasi anda, <ph name="ACCOUNT_MANAGER" />, tidak akan dapat melihat atau mengurus data ini. Data ini akan kekal dalam profil sedia ada.</translation>
 <translation id="8002597610026749658">Chrome boleh membuat sari kata untuk bahasa yang ditunjukkan di sini</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" />tidak lagi tersedia.</translation>
 <translation id="8004092996156083991">Jika kata laluan anda terjejas, kami akan memberitahu anda.</translation>

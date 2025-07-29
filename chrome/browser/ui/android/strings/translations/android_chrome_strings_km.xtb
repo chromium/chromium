@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445">ភាសារបស់ <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">ផ្លាស់ប្ដូរ​ការកំណត់​គេហទំព័រ​របស់អ្នក​នៅទីនេះ</translation>
 <translation id="6140912465461743537">ប្រទេស/តំបន់៖</translation>
+<translation id="6140948187512243695">បង្ហាញ​ព័ត៌មាន​លម្អិត</translation>
 <translation id="6142183503755612900">អ្នកអាច​ប្ដូរ​លំនាំដើម​របស់អ្នក​នៅពេលណាក៏បាន​នៅក្នុង​ការ​កំណត់</translation>
 <translation id="6146563240635539929">វីដេអូ</translation>
 <translation id="614890671148262506">អនុញ្ញាត​ការជូនដំណឹង​ពី​គេហទំព័រ​នេះ​ជានិច្ច</translation>
@@ -1485,7 +1486,6 @@
 <translation id="7545347190366646170">មនុស្ស​ដែល​មាន​សិទ្ធិ​ចូល​ប្រើ</translation>
 <translation id="7554643625247105821">មិនអាច​ពិនិត្យមើល​កំណែ Chrome បានទេ</translation>
 <translation id="7557508262441527045">បានចេញពីគណនី</translation>
-<translation id="7561260660702735877">ព័ត៌មានបន្ថែមអំពីតំណពីគេហទំព័រ</translation>
 <translation id="7573665567024262965">ជ្រើសរើស​កម្មវិធី​លំនាំដើម​របស់អ្នក</translation>
 <translation id="7577900504646297215">គ្រប់គ្រង​ចំណាប់អារម្មណ៍</translation>
 <translation id="757855969265046257">{FILES,plural, =1{បានទាញយកឯកសារ <ph name="FILES_DOWNLOADED_ONE" />}other{បានទាញយកឯកសារ <ph name="FILES_DOWNLOADED_MANY" />}}</translation>

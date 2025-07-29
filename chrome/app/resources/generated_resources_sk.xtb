@@ -1365,6 +1365,7 @@ Povolenia, ktoré ste už udelili aplikáciám, sa môžu vzťahovať na tento �
 <translation id="1931152874660185993">Nie sú nainštalované žiadne komponenty.</translation>
 <translation id="1931410639376954712">Inštaluje sa <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Nie pred</translation>
+<translation id="1933070475689690969">Aktivita v aplikáciách Gemini</translation>
 <translation id="1933489278505808700">Môže čítať a meniť</translation>
 <translation id="1935303383381416800">Môže zobrazovať vašu polohu</translation>
 <translation id="193565226207940518">Nástroj podpory</translation>
@@ -1557,6 +1558,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2073496667646280609">Zrejme nemáte dostatok voľného priestoru v zariadení alebo vybranom umiestnení zálohovania. Skúste v ňom uvoľniť priestor alebo vyberte iné umiestnenie.</translation>
 <translation id="2073505299004274893">Použite <ph name="CHARACTER_LIMIT" /> alebo menej znakov</translation>
 <translation id="2074263453710478603">Denníky používateľa Chromu v systéme ChromeOS</translation>
+<translation id="2074599390896964828">Presná poloha</translation>
 <translation id="2075088158103027942">Prejsť na odber</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" /> % batérie</translation>
 <translation id="2076228988744845354">Ďalšie akcie pre rozšírenie <ph name="EXTENSION_NAME" /></translation>
@@ -2710,6 +2712,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="2849936225196189499">Kritické</translation>
 <translation id="285033512555869047">Zavretá</translation>
 <translation id="2850541429955027218">Pridať motív</translation>
+<translation id="2851291081585704741">Ste offline</translation>
 <translation id="2852045827873867442">Vyžaduje sa internetové pripojenie.</translation>
 <translation id="285237063405807022">(načítava sa)</translation>
 <translation id="2853121255651601031">Heslo bolo uložené</translation>
@@ -3500,6 +3503,7 @@ Ak chcete spravovať nastavenia tohto účtu, nainštalujte si do zariadenia apl
 <translation id="3435738964857648380">Zabezpečenie</translation>
 <translation id="343578350365773421">Minul sa papier</translation>
 <translation id="3435896845095436175">Aktivovať</translation>
+<translation id="3437072258256045988">Spravujte svoju aktivitu v aplikáciách Gemini</translation>
 <translation id="3437397693214267762">Zobrazte si Kalendár programu Outlook a súbory SharePoint a OneDrive</translation>
 <translation id="3438633801274389918">Nindža</translation>
 <translation id="3439153939049640737">Vždy povoliť stránkam <ph name="HOST" /> prístup k mikrofónu</translation>
@@ -9951,8 +9955,8 @@ Súbor kľúča: <ph name="KEY_FILE" />
 Súbor kľúča uložte na bezpečné miesto. Budete ho potrebovať na vytvorenie nových verzií svojho rozšírenia.</translation>
 <translation id="8000020256436988724">Panel s nástrojmi</translation>
 <translation id="800117767980299235">Hlasové záznamy</translation>
+<translation id="8001561107130904792">Zdieľanie obsahu stránky</translation>
 <translation id="8002274832045662704">Rozšírená konfigurácia tlačiarne</translation>
-<translation id="8002531372108263935">Vaša organizácia <ph name="ACCOUNT_MANAGER" /> si nebude môcť tieto údaje zobraziť ani ich spravovať. Zostanú v existujúcom profile.</translation>
 <translation id="8002597610026749658">Chrome môže vytvárať titulky pre jazyky, ktoré sú uvedené tu</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> už nie je k dispozícii</translation>
 <translation id="8004092996156083991">Ak dôjde k odhaleniu vašich hesiel, upozorníme vás.</translation>

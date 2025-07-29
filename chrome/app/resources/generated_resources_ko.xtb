@@ -1566,6 +1566,7 @@
 <translation id="2073496667646280609">기기 또는 선택한 백업 위치의 여유 공간이 부족할 수 있습니다. 여유 공간을 확보하거나 다른 위치를 선택해 보세요.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" />자(영문 기준) 이하여야 합니다.</translation>
 <translation id="2074263453710478603">ChromeOS Chrome 사용자 로그</translation>
+<translation id="2074599390896964828">정확한 위치</translation>
 <translation id="2075088158103027942">가입으로 이동</translation>
 <translation id="2075474481720804517">배터리 <ph name="BATTERY_PERCENTAGE" />% 남음</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> 확장 프로그램에 관한 작업 더보기</translation>
@@ -2723,6 +2724,7 @@
 <translation id="2849936225196189499">중요</translation>
 <translation id="285033512555869047">닫힘</translation>
 <translation id="2850541429955027218">테마 추가</translation>
+<translation id="2851291081585704741">오프라인 상태입니다</translation>
 <translation id="2852045827873867442">인터넷 연결이 필요합니다</translation>
 <translation id="285237063405807022">(로드 중)</translation>
 <translation id="2853121255651601031">비밀번호 저장됨</translation>
@@ -9962,8 +9964,8 @@ https://support.google.com/chromebook/?p=sm</translation>
 키 파일은 확장 프로그램의 새 버전을 만드는 데 필요하므로 안전한 장소에 보관하시기 바랍니다.</translation>
 <translation id="8000020256436988724">툴바</translation>
 <translation id="800117767980299235">음성 하이라이트</translation>
+<translation id="8001561107130904792">페이지 콘텐츠 공유</translation>
 <translation id="8002274832045662704">고급 프린터 설정</translation>
-<translation id="8002531372108263935">조직(<ph name="ACCOUNT_MANAGER" />)에서 이 데이터를 보거나 관리할 수 없습니다. 해당 데이터는 기존 프로필에 그대로 유지됩니다.</translation>
 <translation id="8002597610026749658">Chrome에서는 여기에 표시된 언어의 자막을 생성할 수 있습니다</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" />을(를) 더 이상 사용할 수 없습니다.</translation>
 <translation id="8004092996156083991">비밀번호가 유출되면 알려드립니다.</translation>

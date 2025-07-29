@@ -221,7 +221,6 @@
 <translation id="3595784445906693824">გსურთ, შეხვიდეთ Chrome-ის ახალ პროფილში?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{განახლების მისასადაგებლად თქვენი ადმინისტრატორი მოითხოვს Chrome-ის ხელახლა გაშვებას}=1{განახლების მისასადაგებლად თქვენი ადმინისტრატორი მოითხოვს Chrome-ის ხელახლა გაშვებას. თქვენი ინკოგნიტო ფანჯარა ხელახლა არ გაიხსნება.}other{განახლების მისასადაგებლად თქვენი ადმინისტრატორი მოითხოვს Chrome-ის ხელახლა გაშვებას. თქვენი # ინკოგნიტო ფანჯარა ხელახლა არ გაიხსნება.}}</translation>
 <translation id="3597003331831379823">მაღალი პრივილეგიებით დაყენების გაშვება ვერ მოხერხდა. <ph name="METAINSTALLER_ERROR" /></translation>
-<translation id="3609788354808247807">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და <ph name="PERMISSION_3" /></translation>
 <translation id="3622716124581627104">მოახდინეთ საგნების თუ ადგილების იდენტიფიცირება, დააკოპირეთ ან თარგმნეთ ტექსტი. Google Lens-ის გამოყენებისას გვერდის ეკრანის ანაბეჭდი არ ეგზავნება Google-ს. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">ადვილი გახდა თქვენი Google-ის ანგარიშის მეშვეობით Chrome-ის გამოყენება და საერთო მოხმარების კომპიუტერებზეც.</translation>
 <translation id="3635073343384702370">პაროლების შემოწმებას Chrome შეძლებს მათი შენახვის შემდეგ</translation>
@@ -403,7 +402,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5941711191222866238">ჩაკეცვა</translation>
 <translation id="5941830788786076944">Google Chrome გახდეს ნაგულისხმევი ბრაუზერი</translation>
 <translation id="5947104538377036631">Chrome-ის მალსახმობი</translation>
-<translation id="5953954252731207958">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION" /></translation>
 <translation id="5980111191913430208">უცნობი წყაროებიდან მომავალმა გაფართოებებმა, აპებმა და თემებმა შეიძლება დააზიანოს თქვენი მოწყობილობა. Chrome გირჩევთ, ისინი მხოლოდ <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />-დან დააყენოთ</translation>
 <translation id="6003112304606738118">მიმდინარეობს ჩამოტვირთვა… დარჩენილია <ph name="HOURS" /> საათი</translation>
 <translation id="6008161919456049856">ამ მოწყობილობიდან ამოიშლება თქვენი პაროლები, გადახდის მეთოდები და მისამართები, რომლებიც შეინახეთ თქვენს Google ანგარიშში. Chrome-ში რომ ისინი ხელახლა გამოიყენოთ, საჭიროა ანგარიშში შესვლა.</translation>
@@ -428,7 +426,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> — Google Chrome Beta</translation>
 <translation id="6180522807229584611">ეს ჩანართი დამატებით რესურსებს იყენებს. ეფექტურობის გაზრდის მიზნით, ნება დართეთ Chrome-ს, ჩანართი უმოქმედო რეჟიმში გადაიტანოს.</translation>
 <translation id="6182736845697986886">ინსტალაცია ვერ მოხერხდა განახლების სერვერის შიდა შეცდომის გამო.</translation>
-<translation id="6200139057479872438">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /></translation>
 <translation id="6235018212288296708">Google Chrome-ის შემომავალი ტრაფიკის წესი mDNS ტრაფიკისთვის.</translation>
 <translation id="624230925347970731">Chrome მალე დაიხურება</translation>
 <translation id="6247557882553405851">Google პაროლების მმართველი</translation>
@@ -546,7 +543,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="7655455401911432608">თქვენ მიერ ვების დათვალიერების ისტორია, ამ მოწყობილობაზე თქვენ მიერ Chrome-ის მეშვეობით მონახულებული საიტების ჩანაწერი.</translation>
 <translation id="7655472416356262023">ანგარიშის ამოშლა Chrome-იდან</translation>
 <translation id="7658239707568436148">გაუქმება</translation>
-<translation id="7661924425853052955">ბოლო დროს არ ყოფილხართ. Chrome-მა ამოშალა <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> და კიდევ <ph name="COUNT" /></translation>
 <translation id="7670287553302121848">Chrome ანგარიში საჭიროებს ხელახლა ავტორიზაციას</translation>
 <translation id="769538538642757151">Chrome გაცნობებთ, თუ რაიმეს შემოწმება დაგჭირდებათ</translation>
 <translation id="7716950018788545737">ამოცანა(ები) დასრულდა.</translation>

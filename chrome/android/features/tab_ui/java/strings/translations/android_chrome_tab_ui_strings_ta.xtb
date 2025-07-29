@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">தொடர்க</translation>
 <translation id="2371084566192454134">பக்கங்களும் பக்கக் குழுக்களும்</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> பக்கம் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள <ph name="TITLE_OF_GROUP" /> பக்கக் குழுவைச் சுருக்கும்.}}</translation>
-<translation id="2479148705183875116">அமைப்புகளுக்குச் செல்லவும்</translation>
 <translation id="2498435670446402865">பக்க குழு பெயர் மாற்றம்</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />", "<ph name="TAB_GROUP_NAME_2" />" ஆகிய பக்கக் குழுக்கள் இனி கிடைக்காது</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> தாவலைச் சுருக்கும்.}other{<ph name="TABS_COUNT_MANY" /> பக்கங்கள் உள்ள பக்கக் குழுவைச் சுருக்கும்.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">ஸ்டோர் தகவலைப் பார்க்க வேண்டுமா?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> பக்கம் மூடப்பட்டது}other{<ph name="MANY_CLOSED" /> பக்கங்கள் மூடப்பட்டன}}</translation>
 <translation id="2894757982205307093">குழுவில் புதிய தாவல்</translation>
+<translation id="2918484639460781603">அமைப்புகளுக்குச் செல்க</translation>
 <translation id="2928243913527329289">Google | இந்த ஸ்டோரைப் பற்றி</translation>
 <translation id="3008554597174452548">தயாரிப்பைக் கண்காணிப்பதை நிறுத்து</translation>
 <translation id="3026391124054406831">உங்கள் பக்கங்களை ஒழுங்கமைக்க குழுக்களை உருவாக்கலாம்.</translation>

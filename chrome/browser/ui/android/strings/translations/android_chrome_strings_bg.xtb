@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445">Езикът на <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">Тук можете да промените настройките си за сайта</translation>
 <translation id="6140912465461743537">Държава/регион</translation>
+<translation id="6140948187512243695">Показване на подробностите</translation>
 <translation id="6142183503755612900">Можете да промените основната си по всяко време от настройките</translation>
 <translation id="6146563240635539929">Видеоклипове</translation>
 <translation id="614890671148262506">Известията от този сайт да са разрешени винаги</translation>
@@ -1196,6 +1197,7 @@
 <translation id="6404511346730675251">Редактиране на отметката</translation>
 <translation id="6406506848690869874">Синхронизиранe</translation>
 <translation id="6410883413783534063">Отворете няколко раздела, за да посетите различни страници едновременно</translation>
+<translation id="6411009031428071896">Слушане на емисията</translation>
 <translation id="6411219469806822692">Придвижването по-нагоре не е възможно. Започнете от по-горна част на страницата.</translation>
 <translation id="6412931879992742813">Нов прозорец в режим „инкогнито“</translation>
 <translation id="641643625718530986">Печат…</translation>
@@ -1485,7 +1487,6 @@
 <translation id="7545347190366646170">Хора с достъп</translation>
 <translation id="7554643625247105821">Версията на Chrome не бе проверена</translation>
 <translation id="7557508262441527045">Излязохте от профила си</translation>
-<translation id="7561260660702735877">Още относно връзката от сайта</translation>
 <translation id="7573665567024262965">Избиране на приложенията по подразбиране</translation>
 <translation id="7577900504646297215">Управление на интересите</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> файл бе изтеглен}other{<ph name="FILES_DOWNLOADED_MANY" /> файла бяха изтеглени}}</translation>

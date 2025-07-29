@@ -1579,6 +1579,9 @@ Normalmente, essa política fica desativada como defesa contra phishing.</transl
 <translation id="208566302163036794">Bloquear recursos desativados</translation>
 <translation id="2086040449830622332">Ativar o sandbox de impressão de LPAC</translation>
 <translation id="208623333578980446">Permitir wake locks de tela para gerenciamento de energia</translation>
+<translation id="2086505225896497574">A definição da política vai especificar os IDs de RP do WebAuthn para os quais nenhum comando aparece quando certificados de atestado das chaves de segurança forem solicitados na tela de login. Além disso, um sinal será enviado para a chave de segurança indicando que o atestado empresarial pode ser usado. Sem essa definição, os usuários vão receber uma solicitação quando os sites solicitarem o atestado das chaves de segurança.
+
+A política do dispositivo é equivalente à política do usuário <ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />, mas se aplica ao perfil de login na tela de login.</translation>
 <translation id="2089541797660774692">Ativar os relatórios de nuvem do navegador gerenciado</translation>
 <translation id="2090712407517297305">Uma página do histórico do Chrome organizada em grupos ficará visível em chrome://history/grouped.</translation>
 <translation id="2090939118981888335">Se a política for definida como "Ativada", o proxy de compressão de dados será permitido. Se a política for definida como "Desativada", o proxy não será permitido.
@@ -7039,6 +7042,7 @@ Esta política afeta os fluxos de autenticação da tela de bloqueio e de login.
       Observação: separe vários valores usando vírgulas.</translation>
 <translation id="5693469654327063861">Permitir migração de dados</translation>
 <translation id="56936613186060503">O gerenciador de downloads não terá a opção de salvar arquivos no <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="569457565603183">URLs/domínios com permissão automática para atestado direto de chave de segurança na tela de login</translation>
 <translation id="5695209488612697377">Ativa o uso de um provedor de pesquisa padrão no menu de contexto.
 
           Se esta política for definida como desativada, o item do menu de contexto da pesquisa que depende do provedor de pesquisa padrão não estará disponível.
@@ -8169,7 +8173,6 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="6412352702230183710">Permitir apenas hosts de mensagens nativas no nível do sistema</translation>
 <translation id="6412793408912788345">Mostrar a tela inicial do Gemini durante o login</translation>
 <translation id="6416506846917150119">Desativar a escrita preditiva do teclado físico quando os usuários digitarem</translation>
-<translation id="6416916931494972926">Ativar os relatórios de telemetria do Kiosk Vision.</translation>
 <translation id="6417265370957905582">Google Assistente</translation>
 <translation id="6419001911253110938">Ativar a exibição da tela inicial para recursos de IA na sessão durante o fluxo de login</translation>
 <translation id="6421254653839955267">Ativar a política faz com que a pesquisa CNAME seja ignorada. O nome do servidor é usado conforme inserido ao gerar o SPN do Kerberos.
@@ -8330,7 +8333,6 @@ só poderão usar o URL de redirecionamento padrão ao usar a API <ph name="IDEN
 
       Se a política não for definida, o comportamento ficará desativado por padrão para usuários gerenciados e ativado para outros usuários.</translation>
 <translation id="6508403116553969858">Definir o valor padrão da política para os recursos de IA generativa cobertos do <ph name="PRODUCT_NAME" /></translation>
-<translation id="6508882314969525299">Desativar os relatórios de telemetria do Kiosk Vision.</translation>
 <translation id="6509376413448002446">Configura o protetor de tela do usuário para a tela de bloqueio.
 
 Se a política for definida como "true", o dispositivo <ph name="PRODUCT_OS_NAME" /> vai mostrar um protetor na tela de bloqueio quando estiver inativo.
@@ -11351,9 +11353,6 @@ Não definir a política significa que os usuários não poderão jogar no <ph n
       Se a política for definida como verdadeira, as guias que estiverem em segundo plano há pelo menos 5 minutos poderão ser congeladas. O congelamento de guias reduz o uso de CPU, bateria e memória. O <ph name="PRODUCT_NAME" /> usa a heurística para evitar o congelamento de guias que fazem um bom trabalho em segundo plano (por exemplo, exibir notificações, reproduzir som, fazer streaming de vídeo). Os desenvolvedores da Web também podem desativar o congelamento nos respectivos sites (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Se a política for definida como falsa, nenhuma guia será congelada.</translation>
-<translation id="8607613052618540095">Se a política for ativada, os relatórios de telemetria do Kiosk Vision serão ativados.
-Ela vai iniciar o framework Kiosk Vision e ativar os relatórios de telemetria do público-alvo.
-Se a política for desativada ou deixada sem definição, os relatórios de telemetria do Kiosk Vision serão desativados.</translation>
 <translation id="8610216287193516769">Removida na versão M122. Essa é uma política somente do lado do servidor que nunca usou a infraestrutura de políticas do ChromeOS para a propagação.
 Se esta política for definida como <ph name="POLICY_VALUE_ALL" /> ou deixada sem definição, todos os usos de contas gerenciadas serão permitidos. Isso pode fazer com que uma conta gerenciada se torne secundária, que só recebe políticas quando está conectada como conta principal em um perfil do navegador.
       As políticas definidas para a conta não são aplicadas nestes cenários:

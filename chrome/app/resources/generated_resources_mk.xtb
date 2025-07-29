@@ -856,6 +856,7 @@
 <translation id="1587275751631642843">Конзола за &amp;JavaScript</translation>
 <translation id="1587907146729660231">Допрете го копчето за вклучување со прстот</translation>
 <translation id="1588438908519853928">Нормален</translation>
+<translation id="1588772269240419305">Прегледајте ги промените на логото и името</translation>
 <translation id="1588870296199743671">Отвори ја врската со...</translation>
 <translation id="1588919647604819635">Картичка за десен клик</translation>
 <translation id="1589055389569595240">Прикажи правопис и граматика</translation>
@@ -1335,6 +1336,7 @@
 <translation id="1912867150686509584">Погледнете повеќе состаноци во вашиот „Календар“</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Паузирајте ја картичката што го забавува прелистувачот}one{Паузирајте ги картичките што го забавуваат прелистувачот}other{Паузирајте ги картичките што го забавуваат прелистувачот}}</translation>
 <translation id="1913749768968678106">Емитувајте, зачувајте и споделете</translation>
+<translation id="19147273405311768">Ресетирај го алатникот на стандардните поставки</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Спушти</translation>
 <translation id="1915734383465415025">Број на продавница</translation>
@@ -1564,6 +1566,7 @@
 <translation id="2073496667646280609">Можеби немате доволно слободен капацитет на уредот или на избраната локација за бекап. Ослободете простор или изберете друга локација.</translation>
 <translation id="2073505299004274893">Употребете <ph name="CHARACTER_LIMIT" /> знаци или помалку</translation>
 <translation id="2074263453710478603">Евиденција за корисници на Chrome на ChromeOS</translation>
+<translation id="2074599390896964828">Прецизна локација</translation>
 <translation id="2075088158103027942">Одете на претплатата</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% батерија</translation>
 <translation id="2076228988744845354">Повеќе дејства за екстензијата <ph name="EXTENSION_NAME" /></translation>
@@ -2720,6 +2723,7 @@
 <translation id="2849936225196189499">Критична</translation>
 <translation id="285033512555869047">Затворено</translation>
 <translation id="2850541429955027218">Додај тема</translation>
+<translation id="2851291081585704741">Офлајн сте</translation>
 <translation id="2852045827873867442">Интернет‑врската е задолжителна.</translation>
 <translation id="285237063405807022">(се вчитува)</translation>
 <translation id="2853121255651601031">Лозинката е зачувана</translation>
@@ -3017,6 +3021,7 @@
 <translation id="3060952009917586498">Променете го јазикот на уредот. Тековниот јазик е <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Не можевме да воспоставиме врска со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3061302636956643119">Текстот ќе се испрати во Google за обработка.</translation>
+<translation id="306166624240243643">Прегледајте ги промените на името и URL-адресата</translation>
 <translation id="3064871050034234884">Сајтовите може да пуштаат звук</translation>
 <translation id="3065041951436100775">Повратни информации за отстранета картичка.</translation>
 <translation id="3065522099314259755">Латентност на повторување на тастатурата</translation>
@@ -3059,6 +3064,7 @@
 <translation id="3100071818310370858">Користење локација. Дозволете апликациите и услугите со дозвола за локација да ја користат локацијата на уредов. Google може повремено да прибира податоци за локацијата и анонимно да ги користи за подобрување на прецизноста на локацијата и локациските услуги. <ph name="BEGIN_LINK1" />Дознајте повеќе за локацијата<ph name="BEGIN_LINK1_END" />Дознајте повеќе<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Затемни светло</translation>
 <translation id="3101709781009526431">Датум и време</translation>
+<translation id="3102309003841389927">Прегледајте ја промената на логото</translation>
 <translation id="310297983047869047">Претходен слајд</translation>
 <translation id="3103451787721578293">Внесете причина за прикачување на податоциве:</translation>
 <translation id="3103512663951238230">Alt+клик</translation>
@@ -6058,6 +6064,7 @@
 <translation id="5225324770654022472">Покажи кратенка за апликации</translation>
 <translation id="52254442782792731">Не е избрана поставка за видливоста</translation>
 <translation id="5225463052809312700">Вклучи ја камерата</translation>
+<translation id="5226253862147382094">Прегледајте ги промените на логото и URL-адресата</translation>
 <translation id="5226514125747186">Се појавува точкест круг околу иконите на сајтовите. <ph name="BEGIN_LINK" />Дознајте повеќе за неактивните картички<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Веб-сајтовите немаат дозвола да ја користат локацијата</translation>
 <translation id="5227679487546032910">Стандарден синозелен аватар</translation>
@@ -7373,6 +7380,7 @@
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Да се отстрани екстензијата?}one{Да се отстранат # екстензија?}other{Да се отстранат # екстензии?}}</translation>
 <translation id="6180510783007738939">Алатка за линија</translation>
 <translation id="6180550893222597997">Кој криптографски клуч сакате да го користите за <ph name="APP_NAME" />?</translation>
+<translation id="6181218116951226898">Апликациите понекогаш го променуваат своето брендирање. Пред да промените, прегледајте ги сите промени за да потврдите дека ви одговараат.</translation>
 <translation id="6181431612547969857">Преземањето е блокирано</translation>
 <translation id="6183369864942961155">Автоматска „Светла тема“/„Темна тема“</translation>
 <translation id="6184099524311454384">Пребарајте ги картичките</translation>
@@ -7446,6 +7454,7 @@
 <translation id="6234108445915742946">„Условите за користење“ на Chrome се менуваат на 31 март</translation>
 <translation id="6234474535228214774">Инсталирањето чека на ред</translation>
 <translation id="6235208551686043831">Камерата на уредот се вклучи. Наместете го QR-кодот од вашата eSIM-картичка пред камерата.</translation>
+<translation id="6237256594069101884">Прегледајте ја промената на URL-адресата</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> група „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Апликација за белешки со пенкало</translation>
 <translation id="6237481151388361546">Променете ја интернет-врската, па изберете „Обиди се повторно“ или изберете „Отвори во основен уредувач“ за да користите ограничени опции за прегледување и изменување.</translation>
@@ -8301,6 +8310,7 @@
 <translation id="6840155290835956714">Прашај пред да испратиш</translation>
 <translation id="6840184929775541289">Не е орган за сертифицирање</translation>
 <translation id="6840214587087739194">Адресата е избришана</translation>
+<translation id="6841076158433142214">Нема да добиете известување кога овие апликации ќе се користат за снимање на вашиот екран:</translation>
 <translation id="6841143363521180029">Шифрирана</translation>
 <translation id="6841186874966388268">Грешки</translation>
 <translation id="6842135459748401207">Само уредите најавени на <ph name="USER_EMAIL" /></translation>
@@ -8760,6 +8770,7 @@
 <translation id="7181329571386134105">За да дозволите <ph name="CHILD_NAME" /> да инсталира екстензии без ваше одобрување во иднина, отворете ја апликацијата Family Link на вашиот уред и променете ги поставките за Google Chrome на <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" />}=1{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште #}one{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште #}other{Придружете се во групата картички со <ph name="OWNER_FIRST_NAME" /> и уште #}}</translation>
+<translation id="7181976109296206547">Прегледајте ги промените на логото, името и URL-адресата</translation>
 <translation id="7182051712900867547">Користете друга сметка</translation>
 <translation id="7182063559013288142">Инстант точка на пристап</translation>
 <translation id="7182791023900310535">Преместете ја лозинката</translation>
@@ -8935,6 +8946,7 @@
 <translation id="7312040805247765153">Апликацијата не може да се инсталира</translation>
 <translation id="7312210124139670355">Администраторот ја ресетира вашата eSIM. Може да потрае неколку минути.</translation>
 <translation id="7313539585802573958">Бои на осветлувањето на тастатурата</translation>
+<translation id="7314865262803554456">Нема да добиете известување кога ќе започне снимањето.</translation>
 <translation id="7314989823816739632">Романтично</translation>
 <translation id="7317342082064136423">Потврдете ја вашата сметка</translation>
 <translation id="7317831949569936035">Регистрирање училиште</translation>
@@ -9953,8 +9965,8 @@
 Чувајте ја вашата датотека со клуч на безбедно место. Ќе ви треба за да создадете нови верзии на вашата наставка.</translation>
 <translation id="8000020256436988724">Алатник</translation>
 <translation id="800117767980299235">Нагласување со глас</translation>
+<translation id="8001561107130904792">Споделување на содржините на страницата</translation>
 <translation id="8002274832045662704">Напредна конфигурација на печатачот</translation>
-<translation id="8002531372108263935">Вашата организација (<ph name="ACCOUNT_MANAGER" />) нема да може да ги гледа или да управува со податоциве. Ќе останат во постојниот профил.</translation>
 <translation id="8002597610026749658">Chrome може да создава титлови за јазиците прикажани тука</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> веќе не е достапен</translation>
 <translation id="8004092996156083991">Ако вашите лозинки се компромитирани, ќе ве известиме.</translation>
@@ -11472,6 +11484,7 @@
 <translation id="9033765790910064284">Сепак продолжи</translation>
 <translation id="9033857511263905942">&amp;Залепи</translation>
 <translation id="903480517321259405">Повторно напишете го PIN-бројот</translation>
+<translation id="9035157477209989051">Ќе добиете известување кога овие апликации ќе се користат за снимање на вашиот екран:</translation>
 <translation id="9036484080057916082">Список со временски печати на потпишан сертификат</translation>
 <translation id="9037054491984310631">Поврзани со уред со Bluetooth именуван <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Уредот не е дозволен</translation>

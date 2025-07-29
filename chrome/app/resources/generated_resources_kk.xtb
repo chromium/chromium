@@ -1553,6 +1553,7 @@
 <translation id="2073496667646280609">Құрылғыда немесе сақтық көшірмесін жасауға таңдалған орында жад көлемі аз болуы мүмкін. Орын босатыңыз немесе басқа жер таңдап көріңіз.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> таңбадан асырмаңыз.</translation>
 <translation id="2074263453710478603">ChromeOS Chrome пайдаланушы журналдары</translation>
+<translation id="2074599390896964828">Нақты локация</translation>
 <translation id="2075088158103027942">Жазылымға өту</translation>
 <translation id="2075474481720804517">Батарея заряды: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> кеңейтіміне арналған қосымша әрекеттер</translation>
@@ -2706,6 +2707,7 @@
 <translation id="2849936225196189499">Маңызды</translation>
 <translation id="285033512555869047">Жабық</translation>
 <translation id="2850541429955027218">Тақырып қосу</translation>
+<translation id="2851291081585704741">Офлайн режимдесіз</translation>
 <translation id="2852045827873867442">Интернет байланысы қажет.</translation>
 <translation id="285237063405807022">(жүктеліп жатыр)</translation>
 <translation id="2853121255651601031">Құпия сөз сақталды</translation>
@@ -9938,8 +9940,8 @@
 Негізгі файлыңызды қауіпсіз жерде сақтаңыз. Ол кеңейтімнің жаңа нұсқаларын жасау үшін қажет.</translation>
 <translation id="8000020256436988724">Құралдар тақтасы</translation>
 <translation id="800117767980299235">Дауыстық хаттама</translation>
+<translation id="8001561107130904792">Бет контентін бөлісу</translation>
 <translation id="8002274832045662704">Принтердің қосымша конфигурациясы</translation>
-<translation id="8002531372108263935">Ұйымыңыз (<ph name="ACCOUNT_MANAGER" />) бұл деректерді көре алмайды немесе басқара алмайды. Олар қолданыстағы профильде қалады.</translation>
 <translation id="8002597610026749658">Chrome осы жерде көрсетілген тілдер үшін субтитр жасай алады.</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> бұдан былай қолжетімді емес.</translation>
 <translation id="8004092996156083991">Құпия сөздеріңіз ұрланса, сізге хабарлаймыз.</translation>

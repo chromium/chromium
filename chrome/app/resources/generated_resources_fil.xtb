@@ -856,6 +856,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1587275751631642843">&amp;JavaScript console</translation>
 <translation id="1587907146729660231">Pindutin ang power button gamit ang iyong daliri</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1588772269240419305">Suriin ang mga update sa logo at pangalan</translation>
 <translation id="1588870296199743671">Buksan ang Link Gamit ang...</translation>
 <translation id="1588919647604819635">Mag-right click sa card</translation>
 <translation id="1589055389569595240">Show Spelling and Grammar</translation>
@@ -1335,6 +1336,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1912867150686509584">Tumingin ng higit pang meeting sa iyong Calendar</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{I-pause ang Tab na Nagpapabagal sa Iyong Browser}one{I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}other{I-pause ang Mga Tab na Nagpapabagal sa Iyong Browser}}</translation>
 <translation id="1913749768968678106">I-cast, i-save, at i-share</translation>
+<translation id="19147273405311768">I-reset ang toolbar sa mga default na setting</translation>
 <translation id="1915073950770830761">canary</translation>
 <translation id="1915307458270490472">Ibaba</translation>
 <translation id="1915734383465415025">Numero ng Store</translation>
@@ -1372,6 +1374,7 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="1931152874660185993">Walang naka-install na mga bahagi.</translation>
 <translation id="1931410639376954712">Ini-install ang <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Hindi Bago</translation>
+<translation id="1933070475689690969">Aktibidad sa Mga Gemini App</translation>
 <translation id="1933489278505808700">Pinapayagang basahin at baguhin</translation>
 <translation id="1935303383381416800">Pinapayagang makita ang iyong lokasyon</translation>
 <translation id="193565226207940518">Tool sa Suporta</translation>
@@ -1564,6 +1567,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2073496667646280609">Posibleng wala kang sapat na bakanteng storage sa iyong device o napiling lokasyon ng backup. Subukang magbakante ng espasyo o pumili ng ibang lokasyon.</translation>
 <translation id="2073505299004274893">Gumamit ng <ph name="CHARACTER_LIMIT" /> (na) character o mas kaunti</translation>
 <translation id="2074263453710478603">Mga Log ng User ng Chrome ng ChromeOS</translation>
+<translation id="2074599390896964828">Eksaktong Lokasyon</translation>
 <translation id="2075088158103027942">Pumunta sa subscription</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />% Baterya</translation>
 <translation id="2076228988744845354">Higit pang pagkilos para sa extension na <ph name="EXTENSION_NAME" /></translation>
@@ -2720,6 +2724,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2849936225196189499">Kritikal</translation>
 <translation id="285033512555869047">Sarado</translation>
 <translation id="2850541429955027218">Magdagdag ng tema</translation>
+<translation id="2851291081585704741">Offline ka</translation>
 <translation id="2852045827873867442">Nire-require ang koneksyon sa internet.</translation>
 <translation id="285237063405807022">(naglo-load)</translation>
 <translation id="2853121255651601031">Na-save ang Password</translation>
@@ -3017,6 +3022,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3060952009917586498">Palitan ang wika ng device. Ang kasalukuyang wika ay <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Hindi kami makakonekta sa iyong telepono. Tiyaking nasa malapit at naka-unlock ang iyong telepono at naka-on ang Bluetooth at Wi-Fi nito.</translation>
 <translation id="3061302636956643119">Ipapadala ang text sa Google para sa pagpoproseso.</translation>
+<translation id="306166624240243643">Suriin ang mga update sa pangalan at URL</translation>
 <translation id="3064871050034234884">Puwedeng mag-play ng tunog ang mga site</translation>
 <translation id="3065041951436100775">Feedback na isinara ang tab</translation>
 <translation id="3065522099314259755">Latency ng pag-uulit ng keyboard</translation>
@@ -3059,6 +3065,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3100071818310370858">Gamitin ang lokasyon. Payagan ang mga app at serbisyong may pahintulot sa lokasyon na gamitin ang lokasyon ng device na ito. Puwedeng pana-panahong mangolekta ang Google ng data ng lokasyon at gamitin ang data na ito sa anonymous na paraan para mapahusay ang katumpakan ng lokasyon at mga serbisyong batay sa lokasyon. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa lokasyon<ph name="BEGIN_LINK1_END" />Matuto Pa<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Dim light</translation>
 <translation id="3101709781009526431">Petsa at oras</translation>
+<translation id="3102309003841389927">Suriin ang update sa logo</translation>
 <translation id="310297983047869047">Nakaraang slide</translation>
 <translation id="3103451787721578293">Maglagay ng dahilan ng pag-upload ng data na ito:</translation>
 <translation id="3103512663951238230">Alt+Pag-click</translation>
@@ -3508,6 +3515,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3435738964857648380">Seguridad</translation>
 <translation id="343578350365773421">Wala nang papel</translation>
 <translation id="3435896845095436175">I-enable</translation>
+<translation id="3437072258256045988">Pamahalaan ang iyong aktibidad sa Mga Gemini App</translation>
 <translation id="3437397693214267762">Tingnan ang iyong Outlook Calendar at mga SharePoint at OneDrive file</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Palaging pahintulutan ang <ph name="HOST" /> na i-access ang iyong mikropono</translation>
@@ -4774,6 +4782,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4295072614469448764">Available ang app sa iyong terminal. Maaari ding magkaroon ng icon sa iyong Launcher.</translation>
 <translation id="4295979599050707005">Mag-sign in ulit para kumpirmahing ang iyong account na <ph name="USER_EMAIL" /> ay magagamit sa mga website, app, at extension sa Chrome at Google Play. Puwede mo ring alisin ang account na ito. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Mga na-install at na-stream na application mula sa <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">Nakita ang iyong orihinal na password para sa site na ito sa isang pampublikong breach sa data. Noong <ph name="DATE" />, hiniling mo sa <ph name="BRAND" /> na awtomatikong palitan ang password mo para sa iyo.</translation>
 <translation id="4297219207642690536">I-restart at i-reset</translation>
 <translation id="4297813521149011456">Pag-rotate ng display</translation>
 <translation id="4298660926525614540">Mga Pangalan ng Naaalis na Storage</translation>
@@ -6058,6 +6067,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5225324770654022472">Ipakita ang shortcut ng mga app</translation>
 <translation id="52254442782792731">Hindi pa nakatakda ang kasalukuyang setting ng visibility</translation>
 <translation id="5225463052809312700">I-on ang camera</translation>
+<translation id="5226253862147382094">Suriin ang mga update sa logo at URL</translation>
 <translation id="5226514125747186">May makikitang dotted na bilog sa paligid ng mga icon ng site. <ph name="BEGIN_LINK" />Matuto pa tungkol sa mga hindi aktibong tab<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Hindi pinapayagan ang mga website na gamitin ang iyong lokasyon</translation>
 <translation id="5227679487546032910">Default na teal na avatar</translation>
@@ -7373,6 +7383,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Alisin ang extension?}one{Alisin ang # extension?}other{Alisin ang # na extension?}}</translation>
 <translation id="6180510783007738939">Line Tool</translation>
 <translation id="6180550893222597997">Aling passkey ang gusto mong gamitin para sa <ph name="APP_NAME" />?</translation>
+<translation id="6181218116951226898">Kung minsan, ina-update ng mga app ang branding ng mga ito. Suriin ang lahat ng pagbabago para matiyak na kumportable ka sa mga ito bago mag-update.</translation>
 <translation id="6181431612547969857">Na-block ang pagda-download</translation>
 <translation id="6183369864942961155">Awtomatikong maliwanag/madilim na tema</translation>
 <translation id="6184099524311454384">Maghanap sa Mga Tab</translation>
@@ -7446,6 +7457,7 @@ Puwede kang magtalaga ng maraming switch sa pagkilos na ito.</translation>
 <translation id="6234108445915742946">Magbabago na ang Mga Tuntunin ng Serbisyo ng Chrome sa Marso 31</translation>
 <translation id="6234474535228214774">Nakabinbin ang pag-install</translation>
 <translation id="6235208551686043831">Naka-on na ang camera ng device. Pakitapat ang QR Code ng iyong eSIM sa harap ng camera.</translation>
+<translation id="6237256594069101884">Suriin ang update sa URL</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> na grupong <ph name="GROUP_NAME" /> - <ph name="GROUP_CONTENTS" /> - <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">App sa pagtatala gamit ang stylus</translation>
 <translation id="6237481151388361546">Palitan ang iyong koneksyon sa internet at piliin ang "Subukan ulit," o piliin ang "Buksan sa basic na editor" para gamitin ang mga limitadong opsyon sa pagtingin at pag-edit.</translation>
@@ -8301,6 +8313,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="6840155290835956714">Magtanong bago magpadala</translation>
 <translation id="6840184929775541289">Ay hindi isang Certification Authority</translation>
 <translation id="6840214587087739194">Na-delete ang address</translation>
+<translation id="6841076158433142214">Hindi ka aabisuhan kapag ginamit ang mga app na ito para i-record ang iyong screen:</translation>
 <translation id="6841143363521180029">Naka-encrypt</translation>
 <translation id="6841186874966388268">Mga error</translation>
 <translation id="6842135459748401207">Mga device lang na naka-sign in sa <ph name="USER_EMAIL" /></translation>
@@ -8761,6 +8774,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7181329571386134105">Para payagan si <ph name="CHILD_NAME" /> na mag-install ng mga extension sa hinaharap nang walang pag-apruba mo, buksan ang Family Link app sa iyong device at i-update ang mga setting ng Google Chrome ni <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Sumali sa Grupo ng Tab kasama ni <ph name="OWNER_FIRST_NAME" />
             {NUM_OTHER_MEMBERS,plural, =0{Sumali sa Grupo ng Tab kasama ni <ph name="OWNER_FIRST_NAME" />}=1{Sumali sa Grupo ng Tab kasama ni <ph name="OWNER_FIRST_NAME" /> at # Pa}one{Sumali sa Grupo ng Tab kasama ni <ph name="OWNER_FIRST_NAME" /> at # Pa}other{Sumali sa Grupo ng Tab kasama ni <ph name="OWNER_FIRST_NAME" /> at # Pa}}</translation>
+<translation id="7181976109296206547">Suriin ang mga update sa logo, pangalan, at URL</translation>
 <translation id="7182051712900867547">Gumamit ng ibang account</translation>
 <translation id="7182063559013288142">Instant na hotspot</translation>
 <translation id="7182791023900310535">Ilipat ang iyong password</translation>
@@ -8936,6 +8950,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7312040805247765153">Hindi ma-install ang app</translation>
 <translation id="7312210124139670355">Nire-reset ng iyong administrator ang eSIM mo. Puwede itong tumagal nang ilang minuto.</translation>
 <translation id="7313539585802573958">Mga kulay ng backlight ng keyboard</translation>
+<translation id="7314865262803554456">Hindi ka aabisuhan kapag nagsimula na ang pag-record.</translation>
 <translation id="7314989823816739632">Romantiko</translation>
 <translation id="7317342082064136423">I-verify ang iyong account</translation>
 <translation id="7317831949569936035">Pag-enroll para sa paaralan</translation>
@@ -9328,6 +9343,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7582844466922312471">Data ng Mobile</translation>
 <translation id="7583948862126372804">Bilang</translation>
 <translation id="7585106857920830898">Sinusuri gamit ang mga patakaran sa seguridad ng iyong organisasyon...</translation>
+<translation id="7585490016012953607">Password sa pag-recover — pansamantalang naka-save nang hanggang 3 buwan</translation>
 <translation id="7586498138629385861">Patuloy na tatakbo ang Chrome habang nakabukas ang Chrome Apps.</translation>
 <translation id="7587806318633605613">History ng suhestyon</translation>
 <translation id="7589448773774086276">Bagong Split View sa Kasalukuyang Tab</translation>
@@ -9954,8 +9970,8 @@ Key File: <ph name="KEY_FILE" />
 Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng mga bagong bersyon ng iyong extension.</translation>
 <translation id="8000020256436988724">Toolbar</translation>
 <translation id="800117767980299235">Pag-highlight ng boses</translation>
+<translation id="8001561107130904792">Pag-share ng content ng page</translation>
 <translation id="8002274832045662704">Advanced na configuration ng printer</translation>
-<translation id="8002531372108263935">Hindi matitingnan o mapapamahalaan ng iyong organisasyong <ph name="ACCOUNT_MANAGER" /> ang data na ito. Mananatili ito sa kasalukuyang profile.</translation>
 <translation id="8002597610026749658">Puwedeng gumawa ang Chrome ng mga caption para sa mga wikang ipinapakita rito</translation>
 <translation id="8002670234429879764">Hindi na available ang <ph name="PRINTER_NAME" /></translation>
 <translation id="8004092996156083991">Ipapaalam namin sa iyo kung nakompromiso ang mga password mo.</translation>
@@ -11473,6 +11489,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="9033765790910064284">Magpatuloy pa rin</translation>
 <translation id="9033857511263905942">I-&amp;paste</translation>
 <translation id="903480517321259405">I-type ulit ang PIN</translation>
+<translation id="9035157477209989051">Aabisuhan ka kapag ginamit ang mga app na ito para i-record ang iyong screen:</translation>
 <translation id="9036484080057916082">Listahan ng Timestamp ng Nilagdaang Certificate</translation>
 <translation id="9037054491984310631">Nakakonekta sa Bluetooth device na pinangalanang <ph name="DEVICE" /></translation>
 <translation id="9037640663275993951">Hindi pinapayagan ang device</translation>

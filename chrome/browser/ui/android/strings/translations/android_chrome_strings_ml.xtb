@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445"><ph name="APP_NAME" /> എന്നതിന്റെ ഭാഷ</translation>
 <translation id="6138832295072039549">നിങ്ങളുടെ സൈറ്റ് ക്രമീകരണം ഇവിടെ മാറ്റുക</translation>
 <translation id="6140912465461743537">രാജ്യം/പ്രദേശം</translation>
+<translation id="6140948187512243695">വിശദാംശങ്ങൾ‌ കാണിക്കുക</translation>
 <translation id="6142183503755612900">നിങ്ങൾക്ക് ഏതുസമയത്തും ക്രമീകരണത്തിൽ നിങ്ങളുടെ ഡിഫോൾട്ട് മാറ്റാം</translation>
 <translation id="6146563240635539929">വീഡിയോകൾ</translation>
 <translation id="614890671148262506">ഈ സൈറ്റിൽ നിന്നുള്ള അറിയിപ്പുകൾ എപ്പോഴും അനുവദിക്കുക</translation>
@@ -1196,6 +1197,7 @@
 <translation id="6404511346730675251">ബുക്ക്‌മാർക്ക് എഡിറ്റ് ചെയ്യുക</translation>
 <translation id="6406506848690869874">Sync</translation>
 <translation id="6410883413783534063">ഒരേ സമയം വ്യത്യസ്‌ത പേജുകൾ സന്ദർശിക്കാൻ ടാബുകൾ തുറക്കുക</translation>
+<translation id="6411009031428071896">ഫീഡ് കേൾക്കൂ</translation>
 <translation id="6411219469806822692">മുകളിലേക്ക് പോകാനാകില്ല. പേജിന്റെ കുറച്ച് കൂടെ മുകളിൽ നിന്ന് ആരംഭിക്കാൻ ശ്രമിക്കൂ.</translation>
 <translation id="6412931879992742813">പുതിയ അദൃശ്യ വിൻഡോ</translation>
 <translation id="641643625718530986">പ്രിന്‍റ് ചെയ്യുക…</translation>
@@ -1485,7 +1487,6 @@
 <translation id="7545347190366646170">ആക്‌സസ് ഉള്ള ആളുകൾ</translation>
 <translation id="7554643625247105821">Chrome പതിപ്പ് പരിശോധിക്കാനാകുന്നില്ല</translation>
 <translation id="7557508262441527045">സൈൻ ഔട്ട് ചെയ്‌തു</translation>
-<translation id="7561260660702735877">സൈറ്റിലെ ലിങ്കിനെപ്പറ്റിയുള്ള കൂടുതൽ വിവരം</translation>
 <translation id="7573665567024262965">നിങ്ങളുടെ ഡിഫോൾട്ട് ആപ്പുകൾ തിരഞ്ഞെടുക്കുക</translation>
 <translation id="7577900504646297215">താൽപ്പര്യങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> ഫയൽ ഡൗൺലോഡ് ചെയ്‌തു}other{<ph name="FILES_DOWNLOADED_MANY" /> ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു}}</translation>

@@ -1560,6 +1560,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2073496667646280609">Du har kanskje ikke nok ledig plass på enheten eller den valgte plasseringen for sikkerhetskopien. Prøv å frigjøre plass eller velge en annen plassering.</translation>
 <translation id="2073505299004274893">Bruk maksimalt <ph name="CHARACTER_LIMIT" /> tegn</translation>
 <translation id="2074263453710478603">Chrome-brukerlogger for ChromeOS</translation>
+<translation id="2074599390896964828">Nøyaktig posisjon</translation>
 <translation id="2075088158103027942">Gå til abonnement</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" /> % batteri</translation>
 <translation id="2076228988744845354">Flere handlinger for <ph name="EXTENSION_NAME" />-utvidelsen</translation>
@@ -2716,6 +2717,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2849936225196189499">Kritisk</translation>
 <translation id="285033512555869047">Lukket</translation>
 <translation id="2850541429955027218">Legg til temaet</translation>
+<translation id="2851291081585704741">Du er uten nett</translation>
 <translation id="2852045827873867442">Internettilkobling er nødvendig.</translation>
 <translation id="285237063405807022">(laster inn)</translation>
 <translation id="2853121255651601031">Passordet er lagret</translation>
@@ -9952,8 +9954,8 @@ Nøkkelfil: <ph name="KEY_FILE" />
 Oppbevar nøkkelfilen på et trygt sted. Du får bruk for den når du skal opprette nye versjoner av utvidelsen.</translation>
 <translation id="8000020256436988724">Verktøylinje</translation>
 <translation id="800117767980299235">Høydepunkt fra tale</translation>
+<translation id="8001561107130904792">Deling av sideinnhold</translation>
 <translation id="8002274832045662704">Avansert skriveroppsett</translation>
-<translation id="8002531372108263935">Organisasjonen din, <ph name="ACCOUNT_MANAGER" />, kan ikke se eller administrere disse dataene. Den blir værende i den eksisterende profilen.</translation>
 <translation id="8002597610026749658">Chrome kan opprette teksting for språkene som vises her</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> er ikke tilgjengelig lenger</translation>
 <translation id="8004092996156083991">Vi gir deg beskjed hvis passordene dine blir utsatt for sikkerhetsbrudd.</translation>

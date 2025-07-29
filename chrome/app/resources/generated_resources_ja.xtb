@@ -1360,6 +1360,7 @@
 <translation id="1931152874660185993">コンポーネントはインストールされていません。</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> をインストールしています</translation>
 <translation id="1932098463447129402">開始時刻</translation>
+<translation id="1933070475689690969">Gemini アプリ アクティビティ</translation>
 <translation id="1933489278505808700">読み取りと変更を許可しました</translation>
 <translation id="1935303383381416800">位置情報の取得を許可するサイト</translation>
 <translation id="193565226207940518">サポートツール</translation>
@@ -1552,6 +1553,7 @@
 <translation id="2073496667646280609">デバイスまたは選択したバックアップの場所の空き容量が不足している可能性があります。空き容量を確保するか、別の場所を選択してください。</translation>
 <translation id="2073505299004274893">半角 <ph name="CHARACTER_LIMIT" /> 文字以内で入力してください</translation>
 <translation id="2074263453710478603">ChromeOS の Chrome ユーザーのログ</translation>
+<translation id="2074599390896964828">正確な位置情報</translation>
 <translation id="2075088158103027942">登録ページに移動</translation>
 <translation id="2075474481720804517">バッテリー残量: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> 拡張機能のその他の操作</translation>
@@ -2702,6 +2704,7 @@
 <translation id="2849936225196189499">重要</translation>
 <translation id="285033512555869047">閉じています</translation>
 <translation id="2850541429955027218">テーマを追加</translation>
+<translation id="2851291081585704741">オフラインです</translation>
 <translation id="2852045827873867442">インターネット接続が必要です。</translation>
 <translation id="285237063405807022">（読み込んでいます）</translation>
 <translation id="2853121255651601031">パスワードが保存されました</translation>
@@ -3490,6 +3493,7 @@
 <translation id="3435738964857648380">セキュリティ</translation>
 <translation id="343578350365773421">用紙がありません</translation>
 <translation id="3435896845095436175">有効にする</translation>
+<translation id="3437072258256045988">Gemini アプリ アクティビティを管理する</translation>
 <translation id="3437397693214267762">Outlook カレンダー、SharePoint ファイル、OneDrive ファイルを表示</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> によるマイクへのアクセスを常に許可する</translation>
@@ -4754,6 +4758,7 @@
 <translation id="4295072614469448764">アプリはお使いのデバイスでご利用いただけます。ランチャーにアイコンが追加されている可能性もあります。</translation>
 <translation id="4295979599050707005">もう一度ログインして、Chrome と Google Play のウェブサイト、アプリ、拡張機能でアカウント（<ph name="USER_EMAIL" />）を使用できることを確認してください。このアカウントを削除することも可能です。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> からインストールされ、ストリーミングされたアプリケーション</translation>
+<translation id="4296632172536745000">一般に報告されているデータ侵害で、このサイトの元のパスワードが検出されました。<ph name="DATE" /> に <ph name="BRAND" /> でパスワードを自動変更しました。</translation>
 <translation id="4297219207642690536">再起動してリセット</translation>
 <translation id="4297813521149011456">ディスプレイの回転</translation>
 <translation id="4298660926525614540">リムーバブル ストレージ名</translation>
@@ -9304,6 +9309,7 @@
 <translation id="7582844466922312471">モバイル データ</translation>
 <translation id="7583948862126372804">数</translation>
 <translation id="7585106857920830898">組織のセキュリティ ポリシーに沿ってチェックしています…</translation>
+<translation id="7585490016012953607">再設定パスワード - 最大 3 か月間一時的に保存されます</translation>
 <translation id="7586498138629385861">Chrome アプリが開いている間 Chrome は実行され続けます。</translation>
 <translation id="7587806318633605613">候補の履歴</translation>
 <translation id="7589448773774086276">現在のタブで新しい分割表示</translation>
@@ -9929,8 +9935,8 @@
 鍵ファイルは安全な場所に保管してください。拡張機能の新しいバージョンの作成時に必要となります。</translation>
 <translation id="8000020256436988724">ツールバー</translation>
 <translation id="800117767980299235">音声ハイライト</translation>
+<translation id="8001561107130904792">ページ コンテンツの共有</translation>
 <translation id="8002274832045662704">プリンタの詳細設定</translation>
-<translation id="8002531372108263935">組織（<ph name="ACCOUNT_MANAGER" />）は、このデータを閲覧したり管理したりすることはできません。このデータは既存のプロフィールに残ります。</translation>
 <translation id="8002597610026749658">ここに表示されている言語の字幕を自動で作成できます</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> は利用できなくなりました</translation>
 <translation id="8004092996156083991">パスワードが不正使用された場合はお知らせします。</translation>

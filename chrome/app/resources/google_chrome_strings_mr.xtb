@@ -220,7 +220,6 @@
 <translation id="3595784445906693824">नवीन प्रोफाइलमध्ये Chrome मध्ये साइन इन करायचे आहे का?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chrome पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="3597003331831379823">वाढीव विशेषाधिकारांसह सेटअप रन करता आला नाही. <ph name="METAINSTALLER_ERROR" /></translation>
-<translation id="3609788354808247807">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> परवानग्या काढून टाकल्या</translation>
 <translation id="3622716124581627104">गोष्टी किंवा ठिकाणे ओळखा आणि मजकूर कॉपी किंवा भाषांतरित करा. तुम्ही Google Lens वापरता, तेव्हा पेजचा स्क्रीनशॉट Google ला पाठवला जातो. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">आता आपल्या Google खात्यावर आणि शेअर केलेल्या संगणकांवर Chrome वापरणे अधिक सुलभ आहे.</translation>
 <translation id="3635073343384702370">तुम्ही तुमचे पासवर्ड सेव्ह केल्यावर Chrome ते तपासू शकते</translation>
@@ -400,7 +399,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="5941711191222866238">कमी करा</translation>
 <translation id="5941830788786076944">Google Chromeला डीफॉल्ट ब्राउझर बनवा</translation>
 <translation id="5947104538377036631">Chrome शॉर्टकट</translation>
-<translation id="5953954252731207958">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION" /> परवानगी काढून टाकली</translation>
 <translation id="5980111191913430208">अज्ञात स्रोतांकडील एक्स्टेंशन, अ‍ॅप्स आणि थीम तुमच्या डिव्हाइसला हानी पोहोचवू शकतात. Chrome फक्त <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> मधून ते इंस्टॉल करण्याची शिफारस करते</translation>
 <translation id="6003112304606738118">डाउनलोड करत आहे... <ph name="HOURS" /> तास शिल्लक आहे(आहेत)</translation>
 <translation id="6008161919456049856">तुम्ही तुमच्या Google खाते मध्ये सेव्ह केलेले तुमचे पासवर्ड, पेमेंट पद्धती आणि ॲड्रेस हे या डिव्हाइसवरून काढून टाकले जातील. ते Chrome मध्ये पुन्हा वापरण्यासाठी, पुन्हा साइन इन करा.</translation>
@@ -425,7 +423,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> - Google Chrome बीटा</translation>
 <translation id="6180522807229584611">हा टॅब अतिरिक्त स्रोत वापरत आहे. तुमच्या परफॉर्मन्समध्ये सुधारणा करण्यासाठी, Chrome ला तो इनॅक्टिव्ह करू द्या.</translation>
 <translation id="6182736845697986886">अपडेट सर्व्हरच्या अंतर्गत एररमुळे इंस्टॉलेशन यशस्वी झाले नाही.</translation>
-<translation id="6200139057479872438">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> परवानग्या काढून टाकल्या</translation>
 <translation id="6235018212288296708">mDNS रहदारीस अनुमती देण्यासाठी Google Chrome साठी अंतर्गामी नियम.</translation>
 <translation id="624230925347970731">Chrome लवकरच बंद होईल</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
@@ -543,7 +540,6 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7655455401911432608">तुमचा ब्राउझिंग इतिहास, ज्यामध्ये या डिव्हाइसवर तुम्ही Chrome वापरून भेट दिलेल्या साइटची नोंद असते.</translation>
 <translation id="7655472416356262023">Chrome मधून खाते काढून टाका</translation>
 <translation id="7658239707568436148">रद्द करा</translation>
-<translation id="7661924425853052955">तुम्ही अलीकडे भेट दिलेली नाही. Chrome ने <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> आणि आणखी <ph name="COUNT" /> परवानग्या काढून टाकल्या</translation>
 <translation id="7670287553302121848">Chrome खात्यासाठी री-ऑथेंटिकेशन आवश्यक आहे</translation>
 <translation id="769538538642757151">तुम्ही एखाद्या गोष्टीचे पुनरावलोकन करणे आवश्यक असल्यास, Chrome तुम्हाला कळवेल</translation>
 <translation id="7716950018788545737">टास्क संपले आहे (संपली आहेत).</translation>

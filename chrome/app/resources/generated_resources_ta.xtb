@@ -1373,6 +1373,7 @@
 <translation id="1931152874660185993">கூறுகள் எதுவும் நிறுவப்படவில்லை.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> ஐ நிறுவுகிறது</translation>
 <translation id="1932098463447129402">இதற்குமுன் அல்ல</translation>
+<translation id="1933070475689690969">Gemini ஆப்ஸ் செயல்பாடுகள்</translation>
 <translation id="1933489278505808700">படிக்கவும் மாற்றவும் அனுமதிக்கப்பட்டுள்ளது</translation>
 <translation id="1935303383381416800">உங்கள் இருப்பிடத்தைப் பார்க்க அனுமதிக்கப்பட்டுள்ள தளங்கள்</translation>
 <translation id="193565226207940518">உதவிக் கருவி</translation>
@@ -1565,6 +1566,7 @@
 <translation id="2073496667646280609">உங்கள் சாதனத்திலோ காப்புப் பிரதிக்குத் தேர்ந்தெடுத்த இடத்திலோ தேவையான அளவு சேமிப்பகம் இல்லாமல் இருக்கலாம். சேமிப்பிடத்தைக் காலியாக்கவும் அல்லது வேறு இடத்தைத் தேர்வுசெய்யவும்.</translation>
 <translation id="2073505299004274893"><ph name="CHARACTER_LIMIT" /> அல்லது அதற்குக் குறைவான எழுத்துகளைப் பயன்படுத்தவும்</translation>
 <translation id="2074263453710478603">ChromeOS Chrome பயனர் பதிவுகள்</translation>
+<translation id="2074599390896964828">துல்லியமான இருப்பிடம்</translation>
 <translation id="2075088158103027942">சந்தாவிற்குச் செல்</translation>
 <translation id="2075474481720804517">பேட்டரி: <ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354"><ph name="EXTENSION_NAME" /> நீட்டிப்புக்கான கூடுதல் செயல்கள்</translation>
@@ -2721,6 +2723,7 @@
 <translation id="2849936225196189499">சிக்கலான</translation>
 <translation id="285033512555869047">மூடப்பட்டுள்ளது</translation>
 <translation id="2850541429955027218">தீமினைச் சேர்</translation>
+<translation id="2851291081585704741">ஆஃப்லைனில் உள்ளீர்கள்</translation>
 <translation id="2852045827873867442">இணைய இணைப்பு தேவை.</translation>
 <translation id="285237063405807022">(ஏற்றுகிறது)</translation>
 <translation id="2853121255651601031">கடவுச்சொல் சேமிக்கப்பட்டது</translation>
@@ -3511,6 +3514,7 @@
 <translation id="3435738964857648380">பாதுகாப்பு</translation>
 <translation id="343578350365773421">காகிதம் தீர்ந்துவிட்டது</translation>
 <translation id="3435896845095436175">இயக்கு</translation>
+<translation id="3437072258256045988">உங்கள் Gemini ஆப்ஸ் செயல்பாடுகளை நிர்வகிக்கலாம்</translation>
 <translation id="3437397693214267762">உங்கள் Outlook Calendar, SharePoint மற்றும் OneDrive ஃபைல்கள் ஆகியவற்றைப் பாருங்கள்</translation>
 <translation id="3438633801274389918">நிஞ்சா</translation>
 <translation id="3439153939049640737">உங்கள் மைக்ரோஃபோனை <ph name="HOST" /> எப்போதும் அணுக அனுமதிக்கவும்</translation>
@@ -9962,8 +9966,8 @@
 உங்கள் முக்கிய ஃபைலை பாதுகாப்பான இடத்தில் வையுங்கள். உங்கள் நீட்டிப்பின் புதிய பதிப்புகளை நீங்கள் உருவாக்க வேண்டி ஏற்படும்.</translation>
 <translation id="8000020256436988724">Toolbar</translation>
 <translation id="800117767980299235">குரல் ஹைலைட்</translation>
+<translation id="8001561107130904792">பக்க உள்ளடக்கத்தைப் பகிர்தல்</translation>
 <translation id="8002274832045662704">மேம்பட்ட பிரிண்ட்டர் உள்ளமைவு</translation>
-<translation id="8002531372108263935">உங்கள் நிறுவனத்தால் (<ph name="ACCOUNT_MANAGER" />) இந்தத் தரவைப் பார்க்கவோ நிர்வகிக்கவோ முடியாது. இது உங்களின் தற்போதைய சுயவிவரத்திலேயே இருக்கும்.</translation>
 <translation id="8002597610026749658">இங்கே காட்டப்படும் மொழிகளுக்கான சப்டைட்டில்களை Chrome உருவாக்கும்</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> இனி கிடைக்காது</translation>
 <translation id="8004092996156083991">உங்கள் கடவுச்சொற்கள் களவாடப்பட்டிருந்தால் உங்களுக்குத் தெரியப்படுத்துவோம்.</translation>

@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Devam</translation>
 <translation id="2371084566192454134">Sekmeler ve sekme grupları</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli <ph name="TITLE_OF_GROUP" /> sekme grubunu daralt.}}</translation>
-<translation id="2479148705183875116">Ayarlar'a git</translation>
 <translation id="2498435670446402865">Sekme grubunu yeniden adlandırın</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ve "<ph name="TAB_GROUP_NAME_2" />" sekme grupları artık kullanılamıyor</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> sekmeyi daralt.}other{<ph name="TABS_COUNT_MANY" /> sekmeli sekme grubunu daralt.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Mağaza bilgileri görüntülensin mi?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> sekme kapatıldı}other{<ph name="MANY_CLOSED" /> sekme kapatıldı}}</translation>
 <translation id="2894757982205307093">Grupta yeni sekme</translation>
+<translation id="2918484639460781603">Ayarlara git</translation>
 <translation id="2928243913527329289">Google | Bu mağaza hakkında</translation>
 <translation id="3008554597174452548">Ürünü takip etmeyi bırak</translation>
 <translation id="3026391124054406831">Sekmelerinizi düzenlemek için gruplar oluşturun.</translation>

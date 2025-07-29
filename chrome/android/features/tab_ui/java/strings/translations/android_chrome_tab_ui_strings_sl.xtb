@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2371084566192454134">Zavihki in skupine zavihkov</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> z <ph name="TABS_COUNT_ONE" /> zavihkom.}one{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki.}other{Strni skupino zavihkov <ph name="TITLE_OF_GROUP" /> s/z <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
-<translation id="2479148705183875116">V nastavitve</translation>
 <translation id="2498435670446402865">Preim. skupine zavihkov</translation>
 <translation id="2536366509642644298">Skupini zavihkov »<ph name="TAB_GROUP_NAME_1" />« in »<ph name="TAB_GROUP_NAME_2" />« nista več na voljo</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Strni <ph name="TABS_COUNT_ONE" /> zavihek.}one{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkom.}two{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihkoma.}few{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki.}other{Strni skupino zavihkov s/z <ph name="TABS_COUNT_MANY" /> zavihki.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Si želite ogledati podatke o trgovini?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> zavihek je zaprt}one{<ph name="MANY_CLOSED" /> zavihek je zaprt}two{<ph name="MANY_CLOSED" /> zavihka sta zaprta}few{<ph name="MANY_CLOSED" /> zavihki so zaprti}other{<ph name="MANY_CLOSED" /> zavihkov je zaprtih}}</translation>
 <translation id="2894757982205307093">Novi zavihek v skupini</translation>
+<translation id="2918484639460781603">Pojdi v nastavitve</translation>
 <translation id="2928243913527329289">Google | O tej trgovini</translation>
 <translation id="3008554597174452548">Ustavi spremljanje izdelka</translation>
 <translation id="3026391124054406831">Ustvarite skupine in organizirajte zavihke.</translation>

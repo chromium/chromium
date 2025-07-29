@@ -193,6 +193,7 @@
 <translation id="3282568296779691940">Вхід у Chrome</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="3292333338048274092">Потім вам потрібно буде перезапустити Chrome.</translation>
+<translation id="3324218984287646518">Запитати Google Об’єктив про це відео</translation>
 <translation id="3327226547491422998">Пізніше Chrome пропонуватиме вам автоматично заповнювати форми за допомогою збереженої інформації</translation>
 <translation id="3352986031709923790">правий верхній кут області пошуку: <ph name="RIGHT" />% праворуч, <ph name="TOP" />% згори</translation>
 <translation id="3360895254066713204">Помічник Chrome</translation>
@@ -211,11 +212,11 @@
 <translation id="3576528680708590453">Ваш системний адміністратор налаштував Chrome відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в альтернативному веб-переглядачі.</translation>
 <translation id="3582972582564653026">Синхронізуйте та персоналізуйте роботу Chrome на всіх своїх пристроях</translation>
 <translation id="3583751698304738917">Ви вже ввійшли як <ph name="USER_EMAIL_ADDRESS" /> в іншому профілі Chrome</translation>
+<translation id="358381413217813387">Знайти цю сторінку за допомогою Google Об’єктива</translation>
 <translation id="3589519427766620380">Запитати Google Об’єктив про цю сторінку</translation>
 <translation id="3595784445906693824">Увійти в Chrome у новий профіль?</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення}=1{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. Вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}one{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікно в режимі анонімного перегляду не відновиться й не відкриється знову.}few{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікна в режимі анонімного перегляду не відновляться й не відкриються знову.}many{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікон в режимі анонімного перегляду не відновляться й не відкриються знову.}other{Адміністратор вимагає перезапустити Chrome, щоб застосувати оновлення. # вікна в режимі анонімного перегляду не відновиться й не відкриється знову.}}</translation>
 <translation id="3597003331831379823">Не вдалося виконати налаштування з розширеними повноваженнями. <ph name="METAINSTALLER_ERROR" />.</translation>
-<translation id="3609788354808247807">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
 <translation id="3622716124581627104">Визначайте об’єкти й місця, а також копіюйте та перекладайте текст. Коли ви користуєтеся Google Об’єктивом, у Google надсилається знімок сторінки. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">Користуватися Chrome у своєму обліковому записі Google на спільних комп’ютерах стало легше.</translation>
 <translation id="3635073343384702370">Chrome зможе перевірити ваші паролі, коли ви їх збережете</translation>
@@ -291,9 +292,11 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="4501471624619070934">Помилка встановлення через обмеження доступу в цій країні.</translation>
 <translation id="4567424176335768812">Ви ввійшли як <ph name="USER_EMAIL_ADDRESS" />. Ваші закладки, історія й інші налаштування будуть доступні на всіх пристроях, на яких ви ввійдете в цей обліковий запис.</translation>
 <translation id="4571503333518166079">Перейти до налаштувань сповіщень Chrome</translation>
+<translation id="4592634244097223647">Запитати Google про це зображення</translation>
 <translation id="459622048091363950">Коли Chrome отримає доступ, веб-сайти зможуть надсилати вам запити на доступ.</translation>
 <translation id="4598116752460667024">Пошукайте потрібний процес у списку.</translation>
 <translation id="4600710005438004015">Не вдалось оновити Chrome до останньої версії. Ви не зможете скористатися новими функціями та застосувати виправлення системи безпеки.</translation>
+<translation id="4608435347866444037">Знайти це зображення за допомогою Google Об’єктива</translation>
 <translation id="4624065194742029982">Анонімний режим у Chrome</translation>
 <translation id="4627412468266359539">Необов’язково: допоможіть нам покращувати функції та підвищувати продуктивність ОС Chrome Flex, автоматично надсилаючи компанії Google дані про використання й діагностику.</translation>
 <translation id="4633000520311261472">Щоб зробити Chrome безпечнішим, ми вимкнули деякі розширення, установлені не із сайту <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> і, можливо, додані без вашого відома.</translation>
@@ -390,7 +393,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="5941711191222866238">Згорнути</translation>
 <translation id="5941830788786076944">Зробити Google Chrome переглядачем за промовчанням</translation>
 <translation id="5947104538377036631">Ярлик Chrome</translation>
-<translation id="5953954252731207958">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував дозвіл "<ph name="PERMISSION" />".</translation>
 <translation id="5980111191913430208">Розширення, додатки й теми з невідомих джерел можуть зашкодити вашому пристрою. Рекомендоване джерело встановлень у Chrome – <ph name="IDS_EXTENSION_WEB_STORE_TITLE" />.</translation>
 <translation id="6003112304606738118">Завантаження… Залишилося: <ph name="HOURS" /> год.</translation>
 <translation id="6008161919456049856">Ваші паролі, способи оплати й адреси, збережені в обліковому записі Google, буде вилучено із цього пристрою. Щоб знову використовувати їх у Chrome, увійдіть в обліковий запис.</translation>
@@ -415,7 +417,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6173637689840186878"><ph name="PAGE_TITLE" /> – Бета-версія Google Chrome</translation>
 <translation id="6180522807229584611">Ця вкладка використовує додаткові ресурси. Щоб підвищити продуктивність, дозвольте Chrome зробити її неактивною.</translation>
 <translation id="6182736845697986886">Не вдалося встановити через внутрішню помилку сервера оновлень.</translation>
-<translation id="6200139057479872438">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" />.</translation>
 <translation id="6235018212288296708">Вхідне правило для Google Chrome дозволяє трафік mDNS.</translation>
 <translation id="624230925347970731">Незабаром Chrome закриється</translation>
 <translation id="6247557882553405851">Google Менеджер паролів</translation>
@@ -479,6 +480,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7025789849649390912">Встановлення зупинено.</translation>
 <translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
 <translation id="7059914902409643750">Персоналізуйте Chrome</translation>
+<translation id="7060643578009939353">Знайти це відео за допомогою Google Об’єктива</translation>
 <translation id="7071827361006050863">Незабаром Chrome видалить дані веб-перегляду</translation>
 <translation id="7085332316435785646">Укажіть, чи включати історію Chrome, щоб ми краще персоналізували роботу сервісів Google</translation>
 <translation id="7088681679121566888">Chrome оновлено</translation>
@@ -532,7 +534,6 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7655455401911432608">Ваша історія веб-перегляду – перелік сайтів, які ви відвідали через Chrome на цьому пристрої.</translation>
 <translation id="7655472416356262023">Вилучити обліковий запис із Chrome</translation>
 <translation id="7658239707568436148">Скасувати</translation>
-<translation id="7661924425853052955">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і ще <ph name="COUNT" />.</translation>
 <translation id="7670287553302121848">Потрібно пройти повторну автентифікацію в обліковому записі Chrome</translation>
 <translation id="769538538642757151">Chrome повідомить вас, якщо потрібно буде вжити заходів</translation>
 <translation id="7716950018788545737">Завдання завершено.</translation>
@@ -613,6 +614,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8712637175834984815">OK</translation>
 <translation id="8712767363896337380">Майже готово. Перезапустіть Chrome, щоб завершити оновлення.</translation>
 <translation id="8718062187489036808">Вийти з облікового запису Chrome</translation>
+<translation id="8725440680697264016">Запитати Google про це відео</translation>
 <translation id="873133009373065397">Google Chrome не може визначити чи встановити веб-переглядач за умовчанням</translation>
 <translation id="8747073452963259673">лівий нижній кут області пошуку: <ph name="LEFT" />% ліворуч, <ph name="BOTTOM" />% знизу</translation>
 <translation id="8748735421235723888">Chrome звільняє оперативну пам’ять, яку займають неактивні вкладки. Завдяки цьому активні вкладки й інші додатки мають більше ресурсів на комп’ютері, а Chrome працює швидше. Неактивні вкладки автоматично стануть активними, коли ви знову відкриєте їх. <ph name="BEGIN_LINK" />Докладніше про режим заощадження пам’яті.<ph name="END_LINK" /></translation>
@@ -629,6 +631,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="8843516219908676469">Chrome краще визначає форми й швидше заповнює їх</translation>
 <translation id="8851180723659088381">{NUM_EXTENSIONS,plural, =1{Chrome радить вилучити його}one{Chrome радить вилучити їх}few{Chrome радить вилучити їх}many{Chrome радить вилучити їх}other{Chrome радить вилучити їх}}</translation>
 <translation id="8862326446509486874">У вас немає відповідних прав для встановлення на рівні системи. Спробуйте запустити програму встановлення, увійшовши з правами адміністратора.</translation>
+<translation id="8883862939660515976">Запитати Google Об’єктив про це зображення</translation>
 <translation id="8914504000324227558">Перезапустити Chrome</translation>
 <translation id="8922193594870374009">Щоб надіслати номер із сайту <ph name="ORIGIN" /> на телефон Android, увійдіть у Chrome на обох пристроях.</translation>
 <translation id="8948460679427074738">Немає відомостей про конфіденційність цього розширення, зокрема про те, як воно збирає і використовує дані. Chrome радить вилучити його.</translation>

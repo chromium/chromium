@@ -1508,6 +1508,9 @@ Diese Richtlinie ist normalerweise zum Schutz vor Phishing deaktiviert.</transla
 <translation id="208566302163036794">Deaktivierte Funktionen sperren</translation>
 <translation id="2086040449830622332">LPAC-Sandbox für Druckdienste aktivieren</translation>
 <translation id="208623333578980446">Bildschirm-Wakelocks für die Energieverwaltung zulassen</translation>
+<translation id="2086505225896497574">Wenn die Richtlinie konfiguriert ist, werden WebAuthn-RP-IDs festgelegt, für die keine Aufforderung angezeigt wird, wenn auf dem Anmeldebildschirm Attestierungszertifikate von Sicherheitsschlüsseln angefordert werden. Zusätzlich wird ein Signal an den Sicherheitsschlüssel gesendet, dass eine geschäftliche Attestierung verwendet werden kann. Anderenfalls erhalten Nutzer eine Aufforderung, wenn Websites eine Attestierung von Sicherheitsschlüsseln anfordern.
+
+Diese Geräterichtlinie entspricht der vorhandenen Nutzerrichtlinie „<ph name="SECURITY_KEY_PERMIT_ATTESTATION_POLICY_NAME" />“, gilt aber stattdessen für das Anmeldeprofil auf dem Anmeldebildschirm.</translation>
 <translation id="2089541797660774692">Cloud-Berichterstellung über verwaltete Browser aktivieren</translation>
 <translation id="2090712407517297305">Die in Gruppen eingeteilte Chrome-Verlaufsseite ist unter chrome://history/grouped sichtbar.</translation>
 <translation id="2090939118981888335">Wenn diese Richtlinie aktiviert ist, wird der Proxy zur Datenkomprimierung zugelassen. Ist die Richtlinie deaktiviert, kann der Proxy nicht verwendet werden.
@@ -6776,6 +6779,7 @@ Die Richtlinie wirkt sich sowohl auf die Authentifizierung bei der Anmeldung als
       Hinweis: Trenne mehrere Werte durch Kommas.</translation>
 <translation id="5693469654327063861">Datenmigration zulassen</translation>
 <translation id="56936613186060503">Der Download-Manager hat keine Option zum Speichern von Dateien in <ph name="GOOGLE_DRIVE_NAME" />.</translation>
+<translation id="569457565603183">Für URLs/Domains ist auf dem Anmeldebildschirm automatisch eine direkte Attestierung des Sicherheitsschlüssels zulässig</translation>
 <translation id="5695209488612697377">Aktiviert die Verwendung eines Standardsuchanbieters im Kontextmenü.
 
           Wenn diese Richtlinie deaktiviert ist, ist die Suche mit deinem Standardsuchanbieter im Kontextmenü nicht verfügbar.
@@ -7823,7 +7827,6 @@ Weitere Informationen zur Datenverarbeitung bei auf generativer KI basierenden 
 <translation id="6412352702230183710">Native Nachrichtenhosts nur auf Systemebene zulassen</translation>
 <translation id="6412793408912788345">Einführungsbildschirm für Gemini bei der Anmeldung anzeigen</translation>
 <translation id="6416506846917150119">Wortvorschläge bei Nutzung der physischen Tastatur beim Tippen deaktivieren</translation>
-<translation id="6416916931494972926">Berichte mit Telemetriedaten von Kiosk Vision aktivieren.</translation>
 <translation id="6417265370957905582">Google Assistant</translation>
 <translation id="6419001911253110938">Anzeigen des Einführungsbildschirms für KI-Funktionen während der Sitzung bei der Anmeldung aktivieren</translation>
 <translation id="6421254653839955267">Wenn die Richtlinie aktiviert ist, wird die CNAME-Suche übersprungen. Der Servername wird so wie eingegeben verwendet, wenn der Kerberos-SPN generiert wird.
@@ -7975,7 +7978,6 @@ Wenn die Richtlinie nicht konfiguriert ist oder eine leere Liste mit URLs angege
 
       Ist sie nicht konfiguriert, wird dieses Verhalten für verwaltete Nutzer standardmäßig deaktiviert und für andere Nutzer hingegen aktiviert.</translation>
 <translation id="6508403116553969858">Standardrichtlinienwert für die abgedeckten, auf generativer KI von <ph name="PRODUCT_NAME" /> basierenden Funktionen festlegen</translation>
-<translation id="6508882314969525299">Berichte mit Telemetriedaten von Kiosk Vision deaktivieren.</translation>
 <translation id="6509376413448002446">Dadurch wird der Bildschirmschoner des Nutzers für den Sperrbildschirm konfiguriert.
 
 Wenn diese Richtlinie auf „true“ gesetzt ist, wird bei Inaktivität auf dem <ph name="PRODUCT_OS_NAME" />-Gerät ein Bildschirmschoner auf dem Sperrbildschirm angezeigt.
@@ -10870,9 +10872,6 @@ Wenn die Richtlinie nicht konfiguriert ist, können Nutzer das Dinosaurierspiel 
       Wenn sie auf "true" gesetzt ist, können diese Tabs deaktiviert werden. Durch die Deaktivierung von Tabs werden CPU, Akku und Arbeitsspeicher entlastet. Bei <ph name="PRODUCT_NAME" /> wird eine Heuristik genutzt, um Tabs zu erkennen, die zwar im Hintergrund ausgeführt werden, jedoch aktiviert bleiben sollten, weil auf ihnen beispielsweise Benachrichtigungen angezeigt, Ton wiedergegeben oder Videos gestreamt werden. Webentwickler können die Deaktivierung ihrer Website auch unterbinden (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Wenn die Richtlinie auf "false" gesetzt ist, werden Tabs nicht deaktiviert.</translation>
-<translation id="8607613052618540095">Wenn die Richtlinie aktiviert ist, werden Berichte mit Telemetriedaten von Kiosk Vision erstellt.
-Dadurch wird das Kiosk Vision-Framework gestartet und die Erstellung von Berichten mit Zielgruppen-Telemetriedaten wird aktiviert.
-Wenn die Richtlinie nicht konfiguriert oder deaktiviert ist, werden keine Berichte mit Telemetriedaten von Kiosk Vision erstellt.</translation>
 <translation id="8610216287193516769">In M122 entfernt: Bei dieser rein serverseitigen Richtlinie wurde nie die ChromeOS-Richtlinieninfrastruktur zur Weitergabe verwendet.
 Wenn diese Richtlinie auf „<ph name="POLICY_VALUE_ALL" />“ gesetzt oder nicht konfiguriert ist, ist jegliche Nutzung von verwalteten Konten zulässig. Das kann dazu führen, dass ein verwaltetes Konto ein sekundäres Konto ist. Ein sekundäres Konto kann nur Richtlinien empfangen, wenn das Konto in einem Browserprofil als primäres Konto angemeldet ist.
       Richtlinien für das Konto werden in den folgenden Szenarien nicht umgesetzt:

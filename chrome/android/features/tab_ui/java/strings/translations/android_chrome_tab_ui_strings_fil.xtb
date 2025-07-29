@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Magpatuloy</translation>
 <translation id="2371084566192454134">Mga tab at grupo ng tab</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na <ph name="TITLE_OF_GROUP" /> na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
-<translation id="2479148705183875116">Pumunta sa Mga Setting</translation>
 <translation id="2498435670446402865">I-rename: grupo ng tab</translation>
 <translation id="2536366509642644298">Hindi na available ang mga grupo ng tab na "<ph name="TAB_GROUP_NAME_1" />" at "<ph name="TAB_GROUP_NAME_2" />"</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{I-collapse ang <ph name="TABS_COUNT_ONE" /> tab.}one{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> tab.}other{I-collapse ang grupo ng tab na may <ph name="TABS_COUNT_MANY" /> na tab.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Tingnan ang impormasyon ng store?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Isinara ang <ph name="ONE_CLOSED" />}one{Isinara ang <ph name="MANY_CLOSED" /> tab}other{Isinara ang <ph name="MANY_CLOSED" /> na tab}}</translation>
 <translation id="2894757982205307093">Bagong tab sa grupo</translation>
+<translation id="2918484639460781603">Pumunta sa mga setting</translation>
 <translation id="2928243913527329289">Google | Tungkol sa store na ito</translation>
 <translation id="3008554597174452548">Ihinto ang pagsubaybay sa produkto</translation>
 <translation id="3026391124054406831">Gumawa ng mga grupo para isaayos ang iyong mga tab.</translation>

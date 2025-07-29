@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Fortsett</translation>
 <translation id="2371084566192454134">Faner og fanegrupper</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul <ph name="TITLE_OF_GROUP" /> fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
-<translation id="2479148705183875116">Gå til Innstillinger</translation>
 <translation id="2498435670446402865">Gi fanegruppen nytt navn</translation>
 <translation id="2536366509642644298">Fanegruppene «<ph name="TAB_GROUP_NAME_1" />» og «<ph name="TAB_GROUP_NAME_2" />» er ikke tilgjengelige mer</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Skjul <ph name="TABS_COUNT_ONE" /> fane.}other{Skjul fanegruppe med <ph name="TABS_COUNT_MANY" /> faner.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Vil du se informasjon om butikken?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> fane er lukket}other{<ph name="MANY_CLOSED" /> faner er lukket}}</translation>
 <translation id="2894757982205307093">Ny fane i gruppen</translation>
+<translation id="2918484639460781603">Gå til Innstillinger</translation>
 <translation id="2928243913527329289">Google | Om denne butikken</translation>
 <translation id="3008554597174452548">Slutt å spore produktet</translation>
 <translation id="3026391124054406831">Opprett grupper for å organisere fanene dine.</translation>

@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">চালিয়ে যান</translation>
 <translation id="2371084566192454134">ট্যাব ও ট্যাব গ্রুপ</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ আড়াল করুন যার মধ্যে <ph name="TABS_COUNT_ONE" />টি ট্যাব আছে।}one{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ আড়াল করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{<ph name="TITLE_OF_GROUP" /> ট্যাব গ্রুপ আড়াল করুন যার মধ্যে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
-<translation id="2479148705183875116">সেটিংসে যান</translation>
 <translation id="2498435670446402865">ট্যাব গ্রুপের নাম বদলান</translation>
 <translation id="2536366509642644298">"<ph name="TAB_GROUP_NAME_1" />" ও "<ph name="TAB_GROUP_NAME_2" />" ট্যাব গ্রুপ আর উপলভ্য নেই</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" />টি ট্যাব ছোট করুন।}one{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}other{সেই ট্যাব গ্রুপকে ছোট করুন যাতে <ph name="TABS_COUNT_MANY" />টি ট্যাব আছে।}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">স্টোর সংক্রান্ত তথ্য দেখতে চান?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" />টি ট্যাব বন্ধ করা হয়েছে}one{<ph name="MANY_CLOSED" />টি ট্যাব বন্ধ করা হয়েছে}other{<ph name="MANY_CLOSED" />টি ট্যাব বন্ধ করা হয়েছে}}</translation>
 <translation id="2894757982205307093">গ্রুপে নতুন ট্যাব যোগ করুন</translation>
+<translation id="2918484639460781603">সেটিংসে যান</translation>
 <translation id="2928243913527329289">Google | এই স্টোর সম্পর্কে</translation>
 <translation id="3008554597174452548">প্রোডাক্ট আর ট্র্যাক করতে চাই না</translation>
 <translation id="3026391124054406831">আপনার ট্যাব সাজাতে গ্রুপ তৈরি করুন।</translation>

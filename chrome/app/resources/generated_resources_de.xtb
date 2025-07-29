@@ -851,6 +851,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1587275751631642843">&amp;JavaScript-Konsole</translation>
 <translation id="1587907146729660231">Berühre die Ein-/Aus-Taste mit dem Finger</translation>
 <translation id="1588438908519853928">Normal</translation>
+<translation id="1588772269240419305">Aktualisierung des Logos und des Namens überprüfen</translation>
 <translation id="1588870296199743671">Link öffnen mit...</translation>
 <translation id="1588919647604819635">Karte rechtsklicken</translation>
 <translation id="1589055389569595240">Rechtschreibung und Grammatik einblenden</translation>
@@ -1321,6 +1322,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1912867150686509584">Mehr Besprechungen in deinem Kalender sehen</translation>
 <translation id="1913734973620799732">{NUM_TABS,plural, =1{Tab pausieren, der deinen Browser verlangsamt}other{Tabs pausieren, die deinen Browser verlangsamen}}</translation>
 <translation id="1913749768968678106">Streamen, speichern und teilen</translation>
+<translation id="19147273405311768">Symbolleiste auf Standardeinstellungen zurücksetzen</translation>
 <translation id="1915073950770830761">Canary</translation>
 <translation id="1915307458270490472">Auflegen</translation>
 <translation id="1915734383465415025">Geschäftsnummer</translation>
@@ -1550,6 +1552,7 @@ Wenn du die Family Link App auf deinem Gerät installierst, kannst du die Einste
 <translation id="2073496667646280609">Du hast möglicherweise nicht ausreichend freien Speicherplatz auf deinem Gerät oder am ausgewählten Speicherort für die Sicherung. Du kannst versuchen, Speicherplatz freizugeben, oder einen anderen Speicherort auswählen.</translation>
 <translation id="2073505299004274893">Bitte höchstens <ph name="CHARACTER_LIMIT" /> Zeichen verwenden</translation>
 <translation id="2074263453710478603">Chrome-Nutzerprotokolle für ChromeOS</translation>
+<translation id="2074599390896964828">Genauer Standort</translation>
 <translation id="2075088158103027942">Zum Abo</translation>
 <translation id="2075474481720804517">Akkustand <ph name="BATTERY_PERCENTAGE" /> %</translation>
 <translation id="2076228988744845354">Weitere Aktionen für die Erweiterung „<ph name="EXTENSION_NAME" />“</translation>
@@ -2703,6 +2706,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2849936225196189499">Kritisch</translation>
 <translation id="285033512555869047">Geschlossen</translation>
 <translation id="2850541429955027218">Design hinzufügen</translation>
+<translation id="2851291081585704741">Du bist offline</translation>
 <translation id="2852045827873867442">Eine Internetverbindung ist erforderlich.</translation>
 <translation id="285237063405807022">(wird geladen)</translation>
 <translation id="2853121255651601031">Passwort gespeichert</translation>
@@ -3000,6 +3004,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3060952009917586498">Ändere die Gerätesprache. Die aktuelle Sprache ist <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Es konnte keine Verbindung zu deinem Smartphone hergestellt werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3061302636956643119">Der Text wird zur Verarbeitung an Google gesendet.</translation>
+<translation id="306166624240243643">Aktualisierung des Namens und der URL überprüfen</translation>
 <translation id="3064871050034234884">Websites dürfen Ton wiedergeben</translation>
 <translation id="3065041951436100775">Feedback zur Tab-Beendigung</translation>
 <translation id="3065522099314259755">Wiederholungslatenz für Tastatur</translation>
@@ -3042,6 +3047,7 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3100071818310370858">Standort verwenden. Apps und Dienste mit Berechtigung zur Standortermittlung dürfen den Standort dieses Geräts nutzen. Google kann Standortdaten in regelmäßigen Abständen erheben und diese Daten auf anonyme Weise verwenden, um die Genauigkeit des Standortdienstes und standortbezogene Dienste zu verbessern. <ph name="BEGIN_LINK1" />Weitere Informationen zum Standort<ph name="BEGIN_LINK1_END" />Weitere Informationen<ph name="END_LINK1" /></translation>
 <translation id="3101126716313987672">Schwaches Licht</translation>
 <translation id="3101709781009526431">Datum und Uhrzeit</translation>
+<translation id="3102309003841389927">Aktualisierung des Logos überprüfen</translation>
 <translation id="310297983047869047">Vorherige Folie</translation>
 <translation id="3103451787721578293">Bitte gib einen Grund für das Hochladen dieser Daten an:</translation>
 <translation id="3103512663951238230">Alt + Klick</translation>
@@ -6038,6 +6044,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5225324770654022472">Verknüpfung "Apps" anzeigen</translation>
 <translation id="52254442782792731">Aktuell ist keine Sichtbarkeitseinstellung festgelegt</translation>
 <translation id="5225463052809312700">Kamera einschalten</translation>
+<translation id="5226253862147382094">Aktualisierung des Logos und der URL überprüfen</translation>
 <translation id="5226514125747186">Ein gepunkteter Kreis erscheint um Websitesymbole. <ph name="BEGIN_LINK" />Weitere Informationen zu inaktiven Tabs<ph name="END_LINK" /></translation>
 <translation id="5226731562812684363">Websites dürfen deinen Standort nicht verwenden</translation>
 <translation id="5227679487546032910">Blaugrüner Standardavatar</translation>
@@ -7349,6 +7356,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6180389074227570449">{NUM_EXTENSIONS,plural, =1{Erweiterung entfernen?}other{# Erweiterungen entfernen?}}</translation>
 <translation id="6180510783007738939">Linientool</translation>
 <translation id="6180550893222597997">Welchen Passkey möchtest du für <ph name="APP_NAME" /> verwenden?</translation>
+<translation id="6181218116951226898">Apps aktualisieren manchmal ihr Branding. Überprüfe, ob du mit allen Änderungen einverstanden bist, bevor du das Update durchführst.</translation>
 <translation id="6181431612547969857">Download blockiert</translation>
 <translation id="6183369864942961155">Automatisches helles/dunkles Design</translation>
 <translation id="6184099524311454384">Tabs suchen</translation>
@@ -7422,6 +7430,7 @@ Du kannst dieser Aktion mehrere Schalter zuweisen.</translation>
 <translation id="6234108445915742946">Neue Nutzungsbedingungen für Chrome ab dem 31. März</translation>
 <translation id="6234474535228214774">Installation ausstehend</translation>
 <translation id="6235208551686043831">Die Gerätekamera wurde aktiviert. Bitte halte deinen eSIM-QR-Code in die Kamera.</translation>
+<translation id="6237256594069101884">Aktualisierung der URL überprüfen</translation>
 <translation id="6237342324375264347"><ph name="SHARE_STATE" /> Gruppe „<ph name="GROUP_NAME" />“ – <ph name="GROUP_CONTENTS" /> – <ph name="COLLAPSED_STATE" /></translation>
 <translation id="6237474966939441970">Notizen-App für Eingabestift</translation>
 <translation id="6237481151388361546">Verbinde dich mit einem anderen Netzwerk und wähle „Noch einmal versuchen“ aus. Du kannst auch „Im Basiseditor öffnen“ auswählen, um eingeschränkte Optionen zum Ansehen und Bearbeiten zu verwenden.</translation>
@@ -8275,6 +8284,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="6840155290835956714">Vor dem Senden nachfragen</translation>
 <translation id="6840184929775541289">Ist keine Zertifizierungsstelle</translation>
 <translation id="6840214587087739194">Adresse gelöscht</translation>
+<translation id="6841076158433142214">Du wirst nicht benachrichtigt, wenn die folgenden Apps verwendet werden, um deinen Bildschirm aufzuzeichnen:</translation>
 <translation id="6841143363521180029">Verschlüsselt</translation>
 <translation id="6841186874966388268">Fehler</translation>
 <translation id="6842135459748401207">Nur Geräte, die im Konto <ph name="USER_EMAIL" /> angemeldet sind</translation>
@@ -8735,6 +8745,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7181329571386134105">Wenn du <ph name="CHILD_NAME" /> erlauben möchtest, Erweiterungen zukünftig ohne deine Zustimmung zu installieren, öffne die Family Link App auf deinem Gerät und aktualisiere die Google Chrome-Einstellungen von <ph name="CHILD_NAME" />.</translation>
 <translation id="7181840534454431748">Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> beitreten
               {NUM_OTHER_MEMBERS,plural, =0{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> beitreten}=1{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und # weiteren Person beitreten}other{Tabgruppe mit <ph name="OWNER_FIRST_NAME" /> und # weiteren Personen beitreten}}</translation>
+<translation id="7181976109296206547">Aktualisierung des Logos, des Namens und der URL überprüfen</translation>
 <translation id="7182051712900867547">Ein anderes Konto verwenden</translation>
 <translation id="7182063559013288142">Instant-Hotspot</translation>
 <translation id="7182791023900310535">Passwort verschieben</translation>
@@ -8910,6 +8921,7 @@ Du hast # weitere kompromittierte Passwörter. Der Google Passwortmanager empfi
 <translation id="7312040805247765153">Die App kann nicht installiert werden</translation>
 <translation id="7312210124139670355">Dein Administrator setzt deine eSIM zurück. Das kann einige Minuten dauern.</translation>
 <translation id="7313539585802573958">Farben der Tastaturbeleuchtung</translation>
+<translation id="7314865262803554456">Du wirst nicht benachrichtigt, wenn die Aufzeichnung beginnt.</translation>
 <translation id="7314989823816739632">Romantisch</translation>
 <translation id="7317342082064136423">Konto bestätigen</translation>
 <translation id="7317831949569936035">Registrierung bei einer Bildungseinrichtung</translation>
@@ -9928,8 +9940,8 @@ Schlüsseldatei: <ph name="KEY_FILE" />
 Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, um neue Versionen deiner Erweiterung zu erstellen.</translation>
 <translation id="8000020256436988724">Symbolleiste</translation>
 <translation id="800117767980299235">Sprachnotiz</translation>
+<translation id="8001561107130904792">Freigabe von Seiteninhalten</translation>
 <translation id="8002274832045662704">Erweiterte Druckerkonfiguration</translation>
-<translation id="8002531372108263935">Deine Organisation (<ph name="ACCOUNT_MANAGER" />) kann diese Daten nicht einsehen oder verwalten. Sie bleiben im vorhandenen Profil.</translation>
 <translation id="8002597610026749658">Chrome kann Untertitel für die hier angezeigten Sprachen erstellen</translation>
 <translation id="8002670234429879764"><ph name="PRINTER_NAME" /> ist nicht mehr verfügbar</translation>
 <translation id="8004092996156083991">Wenn deine Passwörter gehackt werden, informieren wir dich darüber.</translation>
@@ -11444,6 +11456,7 @@ Dazu gehören beispielsweise installierte Software, Dateien, dein Browser, das B
 <translation id="9033765790910064284">Trotzdem fortfahren</translation>
 <translation id="9033857511263905942">&amp;Einfügen</translation>
 <translation id="903480517321259405">PIN noch einmal eingeben</translation>
+<translation id="9035157477209989051">Du wirst benachrichtigt, wenn die folgenden Apps verwendet werden, um deinen Bildschirm aufzuzeichnen:</translation>
 <translation id="9036484080057916082">Liste mit Zeitstempeln der signierten Zertifikate</translation>
 <translation id="9037054491984310631">Mit dem Bluetooth-Gerät namens „<ph name="DEVICE" />“ verbunden</translation>
 <translation id="9037640663275993951">Gerät ist nicht zulässig</translation>

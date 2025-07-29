@@ -1549,6 +1549,7 @@
 <translation id="2073496667646280609">您的设备或所选备份位置可能没有足够的可用存储空间。请尝试释放一些空间，或者改为备份到别处。</translation>
 <translation id="2073505299004274893">字符数不得超过 <ph name="CHARACTER_LIMIT" /> 个</translation>
 <translation id="2074263453710478603">ChromeOS 上的 Chrome 用户日志</translation>
+<translation id="2074599390896964828">精确位置</translation>
 <translation id="2075088158103027942">前往订阅页面</translation>
 <translation id="2075474481720804517">电池电量：<ph name="BATTERY_PERCENTAGE" />%</translation>
 <translation id="2076228988744845354">可对“<ph name="EXTENSION_NAME" />”扩展程序执行的更多操作</translation>
@@ -2701,6 +2702,7 @@
 <translation id="2849936225196189499">关键</translation>
 <translation id="285033512555869047">已关闭</translation>
 <translation id="2850541429955027218">添加主题背景</translation>
+<translation id="2851291081585704741">您目前处于离线状态</translation>
 <translation id="2852045827873867442">需要联网。</translation>
 <translation id="285237063405807022">（加载中）</translation>
 <translation id="2853121255651601031">密码已保存</translation>
@@ -4755,6 +4757,7 @@
 <translation id="4295072614469448764">应用已可在您的终端上使用，且可能在启动器中显示图标。</translation>
 <translation id="4295979599050707005">请重新登录，以确认您的账号 (<ph name="USER_EMAIL" />) 可用于 Chrome 和 Google Play 中的网站、应用和扩展程序。您还可以移除此账号。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">通过“<ph name="APP_NAME" />”安装和流式传输的应用</translation>
+<translation id="4296632172536745000">我们发现，您在此网站上使用的原密码在某次公开数据泄露事件中发生了外泄。您在 <ph name="DATE" />要求<ph name="BRAND" />自动为您更改密码。</translation>
 <translation id="4297219207642690536">重启并重置</translation>
 <translation id="4297813521149011456">显示屏旋转</translation>
 <translation id="4298660926525614540">可移动存储设备名称</translation>
@@ -9308,6 +9311,7 @@
 <translation id="7582844466922312471">移动数据</translation>
 <translation id="7583948862126372804">计数</translation>
 <translation id="7585106857920830898">正在检查是否符合贵组织的安全政策…</translation>
+<translation id="7585490016012953607">恢复密码 - 最多临时保存 3 个月</translation>
 <translation id="7586498138629385861">Chrome应用处于打开状态时，Chrome将持续运行。</translation>
 <translation id="7587806318633605613">建议历史记录</translation>
 <translation id="7589448773774086276">使用当前标签页创建新的拆分视图</translation>
@@ -9934,8 +9938,8 @@
 请妥善保存您的密钥文件。您还需要使用该文件创建新版扩展程序。</translation>
 <translation id="8000020256436988724">工具栏</translation>
 <translation id="800117767980299235">语音突出显示</translation>
+<translation id="8001561107130904792">分享网页内容</translation>
 <translation id="8002274832045662704">高级打印机配置</translation>
-<translation id="8002531372108263935">您的组织 (<ph name="ACCOUNT_MANAGER" />) 将无法查看或管理这些数据。它们将保留在现有资料中。</translation>
 <translation id="8002597610026749658">Chrome 可以为此处显示的语言创建字幕</translation>
 <translation id="8002670234429879764">“<ph name="PRINTER_NAME" />”已断开连接</translation>
 <translation id="8004092996156083991">如果您的密码已泄露，我们会通知您。</translation>

@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Jätka</translation>
 <translation id="2371084566192454134">Vaheleht</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp <ph name="TITLE_OF_GROUP" />.}}</translation>
-<translation id="2479148705183875116">Ava seaded</translation>
 <translation id="2498435670446402865">Vahelehegrupi ümbernimetamine</translation>
 <translation id="2536366509642644298">Vahelehegrupid „<ph name="TAB_GROUP_NAME_1" />“ ja „<ph name="TAB_GROUP_NAME_2" />“ ei ole enam saadaval</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Ahenda <ph name="TABS_COUNT_ONE" /> vaheleht.}other{Ahenda <ph name="TABS_COUNT_MANY" /> vahelehega vahelehegrupp.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Kas kuvada poe teave?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> vaheleht suleti}other{<ph name="MANY_CLOSED" /> vahelehte suleti}}</translation>
 <translation id="2894757982205307093">Uus vaheleht grupis</translation>
+<translation id="2918484639460781603">Ava seaded</translation>
 <translation id="2928243913527329289">Google | Teave selle poe kohta</translation>
 <translation id="3008554597174452548">Lõpeta toote jälgimine</translation>
 <translation id="3026391124054406831">Looge vahekaartide korraldamiseks gruppe.</translation>

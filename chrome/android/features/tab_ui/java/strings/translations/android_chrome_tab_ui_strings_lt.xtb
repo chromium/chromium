@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Tęskite</translation>
 <translation id="2371084566192454134">Skirtukai ir skirtukų grupės</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_ONE" /> skirtukas.}one{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę „<ph name="TITLE_OF_GROUP" />“, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
-<translation id="2479148705183875116">Eiti į nustatymus</translation>
 <translation id="2498435670446402865">Pervardyti skirtukų grupę</translation>
 <translation id="2536366509642644298">Skirtukų grupės „<ph name="TAB_GROUP_NAME_1" />“ ir „<ph name="TAB_GROUP_NAME_2" />“ nebepasiekiamos</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Sutraukti <ph name="TABS_COUNT_ONE" /> skirtuką.}one{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukas.}few{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukai.}many{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtuko.}other{Sutraukti skirtukų grupę, kurioje yra <ph name="TABS_COUNT_MANY" /> skirtukų.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Peržiūrėti parduotuvės informaciją?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{Uždarytas <ph name="ONE_CLOSED" /> skirtukas}one{Uždarytas <ph name="MANY_CLOSED" /> skirtukas}few{Uždaryti <ph name="MANY_CLOSED" /> skirtukai}many{Uždaryta <ph name="MANY_CLOSED" /> skirtuko}other{Uždaryta <ph name="MANY_CLOSED" /> skirtukų}}</translation>
 <translation id="2894757982205307093">Naujas skirtukas grupėje</translation>
+<translation id="2918484639460781603">Eiti į nustatymus</translation>
 <translation id="2928243913527329289">„Google“ | Apie šią parduotuvę</translation>
 <translation id="3008554597174452548">Stabdyti produkto stebėjimą</translation>
 <translation id="3026391124054406831">Kurkite grupes, kad galėtumėte tvarkyti skirtukus.</translation>

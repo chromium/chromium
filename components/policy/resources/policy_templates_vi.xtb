@@ -8001,7 +8001,6 @@ Các tính năng AI tạo sinh của Công cụ cho nhà phát triển bao gồm
 <translation id="6412352702230183710">Chỉ cho phép các máy chủ nhắn tin gốc ở cấp hệ thống</translation>
 <translation id="6412793408912788345">Hiển thị màn hình giới thiệu Gemini trong quy trình đăng nhập</translation>
 <translation id="6416506846917150119">Tắt tính năng gợi ý khi viết bằng bàn phím vật lý khi người dùng đánh máy</translation>
-<translation id="6416916931494972926">Bật tính năng báo cáo đo từ xa của Kiosk Vision.</translation>
 <translation id="6417265370957905582">Trợ lý Google</translation>
 <translation id="6419001911253110938">Cho phép hiển thị màn hình giới thiệu các tính năng AI trong phiên hoạt động trong quy trình đăng nhập</translation>
 <translation id="6421254653839955267">Nếu bạn đặt chính sách này thành Enabled (Bật), hệ thống sẽ bỏ qua quá trình tra cứu CNAME. Khi đó, tên máy chủ bạn đã nhập khi tạo SPN Kerberos sẽ được sử dụng.
@@ -8158,7 +8157,6 @@ Nếu bạn không đặt chính sách này hoặc cung cấp một danh sách U
 
       Nếu bạn không đặt chính sách này, chế độ mặc định sẽ là tắt đối với người dùng được quản lý và bật đối với người dùng khác.</translation>
 <translation id="6508403116553969858">Đặt giá trị chính sách mặc định cho các tính năng AI tạo sinh của <ph name="PRODUCT_NAME" /> được đề cập đến trong chính sách này</translation>
-<translation id="6508882314969525299">Tắt tính năng báo cáo đo từ xa của Kiosk Vision.</translation>
 <translation id="6509376413448002446">Thiết lập trình bảo vệ màn hình của người dùng cho màn hình khoá.
 
 Nếu bạn đặt chính sách này thành true (đúng), thiết bị <ph name="PRODUCT_OS_NAME" /> sẽ hiển thị trình bảo vệ màn hình trên màn hình khoá khi thiết bị ở trạng thái không hoạt động.
@@ -11108,9 +11106,6 @@ Nếu bạn không đặt chính sách này, thì người dùng không thể ch
       Nếu bạn đặt chính sách này thành true, thì các thẻ chạy trong nền trong tối thiểu 5 phút có thể bị đóng băng. Việc đóng băng thẻ sẽ giúp giảm mức sử dụng CPU, pin và bộ nhớ. <ph name="PRODUCT_NAME" /> sử dụng kỹ thuật "tự nghiệm học" để tránh đóng băng các thẻ hữu ích chạy trong nền (ví dụ: hiển thị thông báo, phát âm thanh, phát video trực tuyến). Các nhà phát triển web cũng có thể chọn không đóng băng trang web của mình (https://chromium.googlesource.com/chromium/src/+/HEAD/chrome/browser/performance_manager/docs/freezing_opt_out_opt_in.md).
 
       Nếu bạn đặt chính sách thành false thì sẽ không có thẻ nào bị đóng băng.</translation>
-<translation id="8607613052618540095">Nếu bạn đặt chính sách này thành Bật, thì tính năng báo cáo đo từ xa của Kiosk Vision sẽ được bật.
-Thao tác này sẽ khởi động khung Kiosk Vision và cho phép báo cáo dữ liệu đo từ xa về đối tượng.
-Nếu bạn không đặt hoặc đặt chính sách này thành Tắt, thì tính năng báo cáo đo từ xa của Kiosk Vision sẽ bị tắt.</translation>
 <translation id="8610216287193516769">Đã xoá trong M122 – đây là chính sách chỉ dành cho phía máy chủ và không bao giờ sử dụng cơ sở hạ tầng chính sách ChromeOS để truyền.
 Nếu bạn đặt chính sách này thành <ph name="POLICY_VALUE_ALL" /> hoặc không đặt, mọi cách sử dụng tài khoản được quản lý đều được cho phép. Việc này có thể khiến một tài khoản được quản lý trở thành một tài khoản phụ, tức là sẽ chỉ nhận được chính sách khi tài khoản đó được đăng nhập làm tài khoản chính trong một hồ sơ trình duyệt.
       Chính sách đặt cho tài khoản này sẽ không được thực thi trong những trường hợp sau:

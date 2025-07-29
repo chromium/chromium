@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">Receive price drop alerts for products that you track.</translation>
 <translation id="1521366073263497277">Go to your tab grid</translation>
 <translation id="1521774566618522728">Active today</translation>
+<translation id="1523567067736644845">Unlock to show password</translation>
 <translation id="1524563461097350801">No, thanks</translation>
 <translation id="1531038290222364269">Show tabs</translation>
 <translation id="1536390784834419204">Translate page</translation>
@@ -1230,6 +1231,7 @@ Handoff must also be enabled in the General section of Settings, and your device
 <translation id="5869522115854928033">Saved passwords</translation>
 <translation id="5873179562631407582">Tap and hold any open tabs</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Managed by your organisation.</translation>
+<translation id="5887400589839399685">Card saved</translation>
 <translation id="5888889603768021126">Signed in with</translation>
 <translation id="5889333064153755823">Delete browsing data</translation>
 <translation id="5896576662943111387">Built for iOS</translation>
@@ -1664,7 +1666,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="75362970626182391">New tab group</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
-<translation id="7554791636758816595">New Tab</translation>
+<translation id="7554791636758816595">New tab</translation>
 <translation id="7557508262441527045">Signed out</translation>
 <translation id="7561196759112975576">Always</translation>
 <translation id="7561982940498449837">Close menu</translation>
@@ -2009,7 +2011,6 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8819155700324279105">Add an extra layer of protection against online threats</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="8822421075653507124">To make sure that this device can be used safely, your organisation may need to see information about its operating system, browser, settings and what software is installed on the device.</translation>
-<translation id="8825562130641217944">Get your bookmarks, passwords and more.</translation>
 <translation id="8831208860914609320">Close all inactive</translation>
 <translation id="8831944931153286232">Add to reading list</translation>
 <translation id="8837654851594567190">Sort by publisher</translation>

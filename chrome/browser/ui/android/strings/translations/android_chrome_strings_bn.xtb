@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445"><ph name="APP_NAME" /> অ্যাপের ভাষা</translation>
 <translation id="6138832295072039549">এখান থেকে আপনার সাইট সেটিংস পরিবর্তন করুন</translation>
 <translation id="6140912465461743537">দেশ/অঞ্চল</translation>
+<translation id="6140948187512243695">বিশদ বিবরণ দেখান</translation>
 <translation id="6142183503755612900">আপনি সেটিংস থেকে নিজের ডিফল্ট সার্চ ইঞ্জিন যেকোনও সময়ে পরিবর্তন করতে পারবেন</translation>
 <translation id="6146563240635539929">ভিডিও</translation>
 <translation id="614890671148262506">এই সাইট থেকে সবসময় বিজ্ঞপ্তির অনুমতি দিন</translation>
@@ -1485,7 +1486,6 @@
 <translation id="7545347190366646170">যেসব লোকজনের কাছে অ্যাক্সেস আছে</translation>
 <translation id="7554643625247105821">Chrome ভার্সন চেক করা যাচ্ছে না</translation>
 <translation id="7557508262441527045">সাইন-আউট করুন</translation>
-<translation id="7561260660702735877">সাইটের লিঙ্ক নিয়ে আরও তথ্য</translation>
 <translation id="7573665567024262965">আপনার ডিফল্ট অ্যাপ বেছে নিন</translation>
 <translation id="7577900504646297215">আপনার পছন্দ ম্যানেজ করুন</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" />টি ফাইল ডাউনলোড হয়েছে}one{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}other{<ph name="FILES_DOWNLOADED_MANY" />টি ফাইল ডাউনলোড হয়েছে}}</translation>

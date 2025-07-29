@@ -1231,6 +1231,7 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="5869522115854928033">Lagrede passord</translation>
 <translation id="5873179562631407582">Trykk og hold på åpne faner</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Administreres av organisasjonen din.</translation>
+<translation id="5887400589839399685">Kortet er lagret</translation>
 <translation id="5888889603768021126">Logget på med</translation>
 <translation id="5889333064153755823">Slett nettlesingsdata</translation>
 <translation id="5896576662943111387">Bygget for iOS</translation>
@@ -2010,7 +2011,6 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="8819155700324279105">Legg til et ekstra lag med beskyttelse mot trusler på nettet</translation>
 <translation id="8820817407110198400">Bokmerker</translation>
 <translation id="8822421075653507124">For å sikre at denne enheten kan brukes på en trygg måte, kan det hende organisasjonen din trenger å se informasjon om operativsystemet, nettleseren og innstillingene, samt hvilken programvare som er installert på enheten.</translation>
-<translation id="8825562130641217944">Få bokmerkene dine, passordene dine med mer.</translation>
 <translation id="8831208860914609320">Lukk alle inaktive</translation>
 <translation id="8831944931153286232">Legg til på leselisten</translation>
 <translation id="8837654851594567190">Sorter etter publisist</translation>

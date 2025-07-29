@@ -1564,6 +1564,7 @@
 <translation id="2073496667646280609">יכול להיות שאין מספיק מקום אחסון פנוי במכשיר או במיקום שנבחר לגיבוי. כדאי לנסות לפנות מקום או לבחור מיקום אחר.</translation>
 <translation id="2073505299004274893">אפשר להזין עד <ph name="CHARACTER_LIMIT" /> תווים</translation>
 <translation id="2074263453710478603">‏היומנים של משתמשי Chrome ב-ChromeOS</translation>
+<translation id="2074599390896964828">מיקום מדויק</translation>
 <translation id="2075088158103027942">לדף המינוי</translation>
 <translation id="2075474481720804517">%<ph name="BATTERY_PERCENTAGE" /> סוללה</translation>
 <translation id="2076228988744845354">פעולות נוספות שקשורות לתוסף <ph name="EXTENSION_NAME" /></translation>
@@ -2720,6 +2721,7 @@
 <translation id="2849936225196189499">קריטי</translation>
 <translation id="285033512555869047">סגורה</translation>
 <translation id="2850541429955027218">הוספת העיצוב</translation>
+<translation id="2851291081585704741">אין חיבור לאינטרנט</translation>
 <translation id="2852045827873867442">צריך חיבור לאינטרנט.</translation>
 <translation id="285237063405807022">(בטעינה)</translation>
 <translation id="2853121255651601031">הסיסמה נשמרה</translation>
@@ -4776,6 +4778,7 @@
 <translation id="4295072614469448764">האפליקציה זמינה במסוף שלך. בחלק מהמקרים מופיע סמל במרכז האפליקציות.</translation>
 <translation id="4295979599050707005">‏יש להיכנס שוב כדי לאשר את השימוש בחשבון שלך, <ph name="USER_EMAIL" />, ביחד עם אתרים, אפליקציות ותוספים ב-Chrome וב-Google Play. ניתן גם להסיר את החשבון הזה. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">אפליקציות שהותקנו ושודרו דרך <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">הסיסמה המקורית שלך לאתר הזה נמצאה בפרצה ציבורית באבטחת מידע. בתאריך <ph name="DATE" /> ביקשת מ-<ph name="BRAND" /> לשנות באופן אוטומטי את הסיסמה שלך.</translation>
 <translation id="4297219207642690536">הפעלה מחדש ואתחול</translation>
 <translation id="4297813521149011456">סיבוב מסך</translation>
 <translation id="4298660926525614540">שמות של התקני אחסון נשלפים</translation>
@@ -9339,6 +9342,7 @@
 <translation id="7582844466922312471">נתונים סלולריים</translation>
 <translation id="7583948862126372804">מספר</translation>
 <translation id="7585106857920830898">המערכת בודקת אם הקובץ עומד בדרישות של מדיניות האבטחה של הארגון…</translation>
+<translation id="7585490016012953607">סיסמת השחזור נשמרת באופן זמני למשך עד 3 חודשים</translation>
 <translation id="7586498138629385861">‏Chrome ימשיך לפעול כל עוד יש אפליקציות Chrome פתוחות.</translation>
 <translation id="7587806318633605613">היסטוריית הצעות</translation>
 <translation id="7589448773774086276">תצוגה מפוצלת חדשה עם הכרטיסייה הנוכחית</translation>
@@ -9964,8 +9968,8 @@
 יש לשמור על קובץ המפתח שלך במקום בטוח. הוא נחוץ אותו כדי ליצור גרסאות חדשות של התוסף שלך.</translation>
 <translation id="8000020256436988724">סרגל כלים</translation>
 <translation id="800117767980299235">הקראת ההדגשה</translation>
+<translation id="8001561107130904792">שיתוף תוכן הדף</translation>
 <translation id="8002274832045662704">הגדרה מתקדמת של המדפסת</translation>
-<translation id="8002531372108263935">הארגון שלך, <ph name="ACCOUNT_MANAGER" />, לא יוכל לראות את הנתונים האלה או לנהל אותם. הם יישארו בפרופיל הקיים.</translation>
 <translation id="8002597610026749658">‏‫Chrome יכול ליצור כתוביות בשפות שמוצגות כאן</translation>
 <translation id="8002670234429879764">המדפסת <ph name="PRINTER_NAME" /> לא זמינה יותר</translation>
 <translation id="8004092996156083991">אם הסיסמאות שלך ייחשפו לאחרים, אנחנו נודיע לך.</translation>

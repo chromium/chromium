@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">Recibe alertas si los productos que sigues bajan de precio.</translation>
 <translation id="1521366073263497277">Ve a la cuadrícula de pestañas</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
+<translation id="1523567067736644845">Desbloquea para ver la contraseña</translation>
 <translation id="1524563461097350801">No, gracias</translation>
 <translation id="1531038290222364269">Mostrar pestañas</translation>
 <translation id="1536390784834419204">Traducir página</translation>
@@ -362,6 +363,7 @@
 <translation id="236977714248711277">Los sitios no pueden usar cookies para mejorar tu experiencia de navegación; por ejemplo, para mantener tu sesión iniciada o recordar los artículos de tu carrito de la compra.
 
 Los sitios no pueden usar cookies para ver tu actividad de navegación en otros sitios con el objetivo de, por ejemplo, personalizar anuncios.</translation>
+<translation id="2377230674627603057">Cuadrícula de grupos de pestañas</translation>
 <translation id="2377336083033403521">Buscar pestañas…</translation>
 <translation id="2381405137052800939">Configuración básica</translation>
 <translation id="2384692388811649784">Ocultar pestañas de Incógnito</translation>
@@ -1230,6 +1232,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="5869522115854928033">Contraseñas guardadas</translation>
 <translation id="5873179562631407582">Mantén pulsada cualquier pestaña abierta</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />, gestionado por tu organización.</translation>
+<translation id="5887400589839399685">Tarjeta guardada</translation>
 <translation id="5888889603768021126">Sesión iniciada con</translation>
 <translation id="5889333064153755823">Eliminar datos de navegación</translation>
 <translation id="5896576662943111387">Diseñado para iOS</translation>
@@ -1333,6 +1336,7 @@ Handoff también debe estar habilitado en la sección General de Ajustes del sis
 <translation id="6247557882553405851">Gestor de contraseñas de Google</translation>
 <translation id="6251835855431997163">Autocompletar <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Abrir enlaces en la aplicación en lugar de en el navegador.</translation>
+<translation id="6259928806013786178">No se ha podido iniciar el modo Lectura</translation>
 <translation id="6268773951964630964">Buscar la imagen copiada</translation>
 <translation id="6271462272606946663">Ocultar Solicitar sitio web móvil</translation>
 <translation id="6271824294945464304">Compartiendo contraseña</translation>
@@ -2009,7 +2013,6 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8819155700324279105">Añade una capa adicional de protección frente a las amenazas online</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8822421075653507124">Para asegurarse de que este dispositivo se puede usar de forma segura, es posible que tu organización necesite ver información sobre su sistema operativo, navegador, configuración y el software instalado en el dispositivo.</translation>
-<translation id="8825562130641217944">Accede a tus marcadores, contraseñas y más.</translation>
 <translation id="8831208860914609320">Cerrar todas las inactivas</translation>
 <translation id="8831944931153286232">Añadir a lista de lectura</translation>
 <translation id="8837654851594567190">Ordenar por editor</translation>

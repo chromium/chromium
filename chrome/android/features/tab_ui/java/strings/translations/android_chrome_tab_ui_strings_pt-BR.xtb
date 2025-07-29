@@ -44,7 +44,6 @@
 <translation id="2359808026110333948">Continuar</translation>
 <translation id="2371084566192454134">Guias e grupos de guias</translation>
 <translation id="2375257132547014176">{TABS_COUNT,plural, =1{Fechar grupo de guias "<ph name="TITLE_OF_GROUP" />" com <ph name="TABS_COUNT_ONE" /> guia.}one{Fechar <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Fechar <ph name="TITLE_OF_GROUP" /> grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
-<translation id="2479148705183875116">Acessar as configurações</translation>
 <translation id="2498435670446402865">Renomear grupo de guias</translation>
 <translation id="2536366509642644298">Os grupos de guias "<ph name="TAB_GROUP_NAME_1" />" e "<ph name="TAB_GROUP_NAME_2" />" não estão mais disponíveis</translation>
 <translation id="2539705006853443997">{TABS_COUNT,plural, =1{Recolher <ph name="TABS_COUNT_ONE" /> guia.}one{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guia.}other{Recolher grupo de guias com <ph name="TABS_COUNT_MANY" /> guias.}}</translation>
@@ -61,6 +60,7 @@
 <translation id="2801787514987684416">Ver informações da loja?</translation>
 <translation id="2883875523421277445">{NUMBER_OF_TABS_CLOSED,plural, =1{<ph name="ONE_CLOSED" /> guia fechada}one{<ph name="MANY_CLOSED" /> guia fechada}other{<ph name="MANY_CLOSED" /> guias fechadas}}</translation>
 <translation id="2894757982205307093">Nova guia no grupo</translation>
+<translation id="2918484639460781603">Ir a configurações</translation>
 <translation id="2928243913527329289">Google | Sobre a loja</translation>
 <translation id="3008554597174452548">Parar de monitorar o produto</translation>
 <translation id="3026391124054406831">Crie grupos para organizar as guias.</translation>

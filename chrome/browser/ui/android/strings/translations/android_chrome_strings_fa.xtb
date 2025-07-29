@@ -1127,6 +1127,7 @@
 <translation id="6137022273846704445">زبان <ph name="APP_NAME" /></translation>
 <translation id="6138832295072039549">تنظیمات سایتتان را اینجا تغییر دهید</translation>
 <translation id="6140912465461743537">کشور/منطقه</translation>
+<translation id="6140948187512243695">نمایش جزئیات</translation>
 <translation id="6142183503755612900">هرزمان بخواهید می‌توانید موتور جستجوی پیش‌فرض را در تنظیمات تغییر دهید</translation>
 <translation id="6146563240635539929">ویدیو</translation>
 <translation id="614890671148262506">اعلان‌های این سایت همواره مجاز باشد</translation>
@@ -1196,6 +1197,7 @@
 <translation id="6404511346730675251">ویرایش نشانک</translation>
 <translation id="6406506848690869874">همگام‌سازی</translation>
 <translation id="6410883413783534063">برای بازدید هم‌زمان از صفحه‌های مختلف، چند زبانه باز کنید</translation>
+<translation id="6411009031428071896">گوش دادن به فید</translation>
 <translation id="6411219469806822692">نمی‌توان بالاتر رفت. از بخش بالاتری در صفحه شروع کنید.</translation>
 <translation id="6412931879992742813">پنجره جدید ناشناس</translation>
 <translation id="641643625718530986">چاپ...</translation>
@@ -1485,7 +1487,6 @@
 <translation id="7545347190366646170">افرادی که دسترسی دارند</translation>
 <translation id="7554643625247105821">‏بررسی نسخه Chrome امکان‌پذیر نیست</translation>
 <translation id="7557508262441527045">از سیستم خارج شدید</translation>
-<translation id="7561260660702735877">اطلاعات بیشتر درباره پیوند سایت</translation>
 <translation id="7573665567024262965">برنامه‌های پیش‌فرض را انتخاب کنید</translation>
 <translation id="7577900504646297215">مدیریت علایق</translation>
 <translation id="757855969265046257">{FILES,plural, =1{<ph name="FILES_DOWNLOADED_ONE" /> فایل بارگیری شد}one{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}other{<ph name="FILES_DOWNLOADED_MANY" /> فایل بارگیری شد}}</translation>

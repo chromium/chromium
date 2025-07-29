@@ -140,6 +140,7 @@
 <translation id="1520027731907768768">Receba alertas de descida do preço de produtos que acompanha.</translation>
 <translation id="1521366073263497277">Aceda à grelha de separadores</translation>
 <translation id="1521774566618522728">Ativo hoje</translation>
+<translation id="1523567067736644845">Desbloqueie para mostrar a palavra-passe</translation>
 <translation id="1524563461097350801">Não</translation>
 <translation id="1531038290222364269">Mostrar separadores</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
@@ -362,6 +363,7 @@
 <translation id="236977714248711277">Os sites não podem utilizar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras.
 
 Os sites não podem utilizar cookies para ver a sua atividade de navegação em diferentes sites, por exemplo, para personalizar anúncios.</translation>
+<translation id="2377230674627603057">Grelha de grupos de separadores</translation>
 <translation id="2377336083033403521">Pesquisar separadores…</translation>
 <translation id="2381405137052800939">Noções básicas</translation>
 <translation id="2384692388811649784">Oculte os separadores de navegação anónima</translation>
@@ -1230,6 +1232,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5873179562631407582">Toque sem soltar em qualquer separador aberto</translation>
 <translation id="5878899964490256268"><ph name="EMAIL" />. Gerido pela sua organização.</translation>
+<translation id="5887400589839399685">Cartão guardado</translation>
 <translation id="5888889603768021126">Com sessão iniciada com</translation>
 <translation id="5889333064153755823">Eliminar dados de navegação</translation>
 <translation id="5896576662943111387">Concebido para o iOS</translation>
@@ -1333,6 +1336,7 @@ A Entrega também tem de estar ativada na secção Geral das Definições e os s
 <translation id="6247557882553405851">Gestor de Palavras-passe da Google</translation>
 <translation id="6251835855431997163">Preencher automaticamente <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Abrir links na aplicação em vez de no navegador.</translation>
+<translation id="6259928806013786178">Falha do modo de leitura</translation>
 <translation id="6268773951964630964">Pesquisar imagem copiada</translation>
 <translation id="6271462272606946663">Ocultar Pedir site para dispositivos móveis</translation>
 <translation id="6271824294945464304">A partilhar a palavra-passe</translation>
@@ -2009,7 +2013,6 @@ Os sites podem utilizar cookies para ver a sua atividade de navegação em difer
 <translation id="8819155700324279105">Adicione uma camada extra de proteção contra ameaças online</translation>
 <translation id="8820817407110198400">Marcadores</translation>
 <translation id="8822421075653507124">Para garantir que este dispositivo pode ser usado em segurança, a sua organização pode ter de ver informações sobre o sistema operativo, o navegador, as definições e que software está instalado no dispositivo.</translation>
-<translation id="8825562130641217944">Obtenha os seus marcadores, palavras-passe e muito mais.</translation>
 <translation id="8831208860914609320">Fechar todos os inativos</translation>
 <translation id="8831944931153286232">Adicionar à Lista de leitura</translation>
 <translation id="8837654851594567190">Ordenar por publicador</translation>
