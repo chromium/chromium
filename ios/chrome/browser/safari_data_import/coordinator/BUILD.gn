@@ -64,6 +64,7 @@ source_set("import_coordinator") {
     "//components/password_manager/core/browser/ui",
     "//components/reading_list/core",
     "//components/user_data_importer/ios",
+    "//ios/chrome/app/strings",
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
@@ -79,6 +80,7 @@ source_set("import_coordinator") {
     "//ios/chrome/browser/shared/model/profile",
     "//ios/chrome/browser/webauthn/model",
     "//ios/chrome/common/ui/promo_style",
+    "//ui/base",
   ]
 }
 

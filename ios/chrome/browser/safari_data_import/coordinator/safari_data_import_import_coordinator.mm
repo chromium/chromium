@@ -7,6 +7,7 @@
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
 #import "base/check_op.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/notreached.h"
 #import "components/autofill/core/browser/data_manager/payments/payments_data_manager.h"
 #import "components/autofill/core/browser/data_manager/personal_data_manager.h"
@@ -34,6 +35,14 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
+#import "ios/chrome/grit/ios_strings.h"
+#import "ui/base/l10n/l10n_util_mac.h"
+
+namespace {
+/// Histogram to keep track of the success rate of attempts to display an alert
+/// right after the file picker supposedly dismisses.
+const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
+}  // namespace
 
 @interface SafariDataImportImportCoordinator () <
     PromoStyleViewControllerDelegate,
@@ -42,6 +51,10 @@
 /// The mediator handling the interaction with the model. Lazily loaded with
 /// `-mediator` method.
 @property(nonatomic, readonly) SafariDataImportImportMediator* mediator;
+
+/// Alert screen being displayed when the last selected file could not be
+/// processed or contains no valid items.
+@property(nonatomic, readonly) UIAlertController* alert;
 
 @end
 
@@ -56,6 +69,7 @@
 }
 
 @synthesize mediator = _mediator;
+@synthesize alert = _alert;
 @synthesize baseNavigationController = _baseNavigationController;
 
 - (instancetype)initWithBaseNavigationController:
@@ -127,6 +141,31 @@
   return _mediator;
 }
 
+- (UIAlertController*)alert {
+  if (!_alert) {
+    NSString* title = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE);
+    NSString* description = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION);
+    NSString* buttonText = l10n_util::GetNSString(
+        IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_OK_BUTTON);
+    __weak __typeof(self) weakSelf = self;
+    UIAlertAction* dismiss = [UIAlertAction
+        actionWithTitle:buttonText
+                  style:UIAlertActionStyleDefault
+                handler:^(UIAlertAction* action) {
+                  [weakSelf.alert dismissViewControllerAnimated:YES
+                                                     completion:nil];
+                }];
+    _alert = [UIAlertController
+        alertControllerWithTitle:title
+                         message:description
+                  preferredStyle:UIAlertControllerStyleAlert];
+    [_alert addAction:dismiss];
+  }
+  return _alert;
+}
+
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
@@ -134,8 +173,9 @@
   BOOL hasConflicts = YES;
   switch (_containerViewController.importStage) {
     case SafariDataImportStage::kNotStarted:
-      [self transitionToNextImportStage];
-      [self showFilePicker];
+      if ([self showFilePicker]) {
+        [self transitionToNextImportStage];
+      }
       break;
     case SafariDataImportStage::kFileLoading:
       NOTREACHED() << "button should be disabled";
@@ -173,8 +213,11 @@
   SafariDataImportStage currentStage = _containerViewController.importStage;
   CHECK_EQ(currentStage, SafariDataImportStage::kFileLoading)
       << "Not supported for stage: " << static_cast<int>(currentStage);
+  /// If the user has not explicitly canceled the import, alert the user that
+  /// they selected the wrong file.
   if (!userInitiated) {
-    // TODO(crbug.com/420703283): Display an alert.
+    BOOL success = [self presentViewController:self.alert];
+    base::UmaHistogramBoolean(kDisplayAlertHistogram, success);
   }
   [self.mediator reset];
   _containerViewController.importStage = SafariDataImportStage::kNotStarted;
@@ -183,11 +226,8 @@
 #pragma mark - Private
 
 /// Displays the document picker so the user could select the Safari data file.
-- (void)showFilePicker {
-  if (_documentProvider && (_documentProvider.isBeingPresented ||
-                            _documentProvider.presentingViewController)) {
-    return;
-  }
+/// If the picker cannot be displayed currently, return NO.
+- (BOOL)showFilePicker {
   UTType* zip = [UTType typeWithIdentifier:@"com.pkware.zip-archive"];
   _documentProvider = [[UIDocumentPickerViewController alloc]
       initForOpeningContentTypes:@[ zip ]];
@@ -201,13 +241,12 @@
   _documentProvider.delegate = self.mediator;
   _documentProvider.modalPresentationStyle =
       UIModalPresentationOverCurrentContext;
-  [_containerViewController presentViewController:_documentProvider
-                                         animated:YES
-                                       completion:nil];
+  return [self presentViewController:_documentProvider];
 }
 
-/// Presents the modal for the user to handle password conflicts.
-- (void)showPasswordConflictResolutionModal {
+/// Presents the modal for the user to handle password conflicts. If it cannot
+/// be shown, return NO.
+- (BOOL)showPasswordConflictResolutionModal {
   /// TODO(crbug.com/420703283): Use real data from mediator.
   NSArray<PasswordImportItem*>* passwordConflicts = @[
     [[PasswordImportItem alloc] initWithURL:@"test.org"
@@ -224,9 +263,19 @@
           [[SafariDataImportPasswordConflictResolutionViewController alloc]
               initWithPasswordConflicts:passwordConflicts]];
   wrapper.toolbarHidden = NO;
-  [_containerViewController presentViewController:wrapper
+  return [self presentViewController:wrapper];
+}
+
+/// Presents `viewController` and returns `YES` if no other view controller is
+/// being presented. Returns `NO` otherwise.
+- (BOOL)presentViewController:(UIViewController*)viewController {
+  if (_containerViewController.presentedViewController) {
+    return NO;
+  }
+  [_containerViewController presentViewController:viewController
                                          animated:YES
                                        completion:nil];
+  return YES;
 }
 
 @end
