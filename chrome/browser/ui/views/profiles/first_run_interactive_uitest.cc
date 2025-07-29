@@ -65,10 +65,6 @@
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view_class_properties.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
-#error "Unsupported platform"
-#endif
-
 namespace {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kProfilePickerViewId);

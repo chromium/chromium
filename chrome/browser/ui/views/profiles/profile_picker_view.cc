@@ -36,9 +36,11 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
@@ -69,11 +71,6 @@
 #include "ui/views/widget/widget.h"
 #include "url/gurl.h"
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
-#endif
-
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/shell_integration_win.h"
 #include "ui/base/win/shell.h"
@@ -100,12 +97,8 @@ constexpr int kWindowHeight = 758;
 constexpr float kMaxRatioOfWorkArea = 0.9;
 
 constexpr int kSupportedAcceleratorCommands[] = {
-    IDC_CLOSE_TAB,  IDC_CLOSE_WINDOW,    IDC_EXIT,
-    IDC_FULLSCREEN, IDC_MINIMIZE_WINDOW, IDC_BACK,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    IDC_RELOAD
-#endif
-};
+    IDC_CLOSE_TAB,       IDC_CLOSE_WINDOW, IDC_EXIT,  IDC_FULLSCREEN,
+    IDC_MINIMIZE_WINDOW, IDC_BACK,         IDC_RELOAD};
 
 class ProfilePickerWidget : public views::Widget {
  public:
@@ -194,7 +187,6 @@ base::FilePath ProfilePicker::GetSwitchProfilePath() {
   return base::FilePath();
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 void ProfilePicker::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
@@ -218,7 +210,6 @@ void ProfilePicker::SwitchToReauth(
         std::move(on_error_callback));
   }
 }
-#endif
 
 // static
 void ProfilePicker::SwitchToSignedOutPostIdentityFlow(
@@ -483,7 +474,6 @@ void ProfilePickerView::OnLocalProfileInitialized(
   GetProfilePickerFlowController()->SwitchToSignedOutPostIdentityFlow(profile);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::SetNativeToolbarVisible(bool visible) {
   if (!visible) {
     toolbar_->SetVisible(false);
@@ -507,7 +497,6 @@ bool ProfilePickerView::IsNativeToolbarVisibleForTesting() const {
 SkColor ProfilePickerView::GetPreferredBackgroundColor() const {
   return GetColorProvider()->GetColor(kColorToolbar);
 }
-#endif
 
 bool ProfilePickerView::HandleKeyboardEvent(
     content::WebContents* source,
@@ -686,7 +675,6 @@ void ProfilePickerView::FinishInit() {
 std::unique_ptr<ProfileManagementFlowController>
 ProfilePickerView::CreateFlowController(Profile* picker_profile,
                                         ClearHostClosure clear_host_callback) {
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   if (params_.entry_point() == ProfilePicker::EntryPoint::kFirstRun) {
     auto first_run_exited_callback =
         base::BindOnce(&ProfilePicker::Params::NotifyFirstRunExited,
@@ -697,7 +685,6 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
         /*host=*/this, std::move(clear_host_callback), picker_profile,
         std::move(first_run_exited_callback));
   }
-#endif
 
   if (params_.entry_point() == ProfilePicker::EntryPoint::kGlicManager) {
     auto profile_picked_callback =
@@ -716,7 +703,6 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
       params_.on_select_profile_target_url(), params_.initial_email());
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerView::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
@@ -732,7 +718,6 @@ void ProfilePickerView::SwitchToReauth(
       profile, std::move(switch_finished_callback),
       std::move(on_error_callback));
 }
-#endif
 
 void ProfilePickerView::WindowClosing() {
   // If a profile is locked, it might have been loaded and it's first browser
@@ -827,15 +812,12 @@ bool ProfilePickerView::AcceleratorPressed(const ui::Accelerator& accelerator) {
       NavigateBack();
       break;
     }
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
     // Always reload bypassing cache.
     case IDC_RELOAD:
     case IDC_RELOAD_BYPASSING_CACHE:
     case IDC_RELOAD_CLEARING_CACHE:
       flow_controller_->OnReloadRequested();
       break;
-
-#endif
     default:
       NOTREACHED() << "Unexpected command_id: " << command_id;
   }
@@ -865,12 +847,10 @@ void ProfilePickerView::BuildLayout() {
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                    views::MaximumFlexSizeRule::kUnbounded));
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   auto toolbar = std::make_unique<ProfilePickerDiceSignInToolbar>();
   toolbar_ = AddChildView(std::move(toolbar));
   // Toolbar gets built and set visible once we it's needed for the Dice signin.
   SetNativeToolbarVisible(false);
-#endif
 
   auto web_view = std::make_unique<views::WebView>();
   web_view->set_allow_accelerators(true);

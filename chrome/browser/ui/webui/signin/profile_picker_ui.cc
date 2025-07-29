@@ -218,11 +218,7 @@ void AddFlags(content::WebUIDataSource* html_source, bool is_glic_version) {
   html_source->AddBoolean("profilesReorderingEnabled",
                           base::FeatureList::IsEnabled(kProfilesReordering));
   html_source->AddBoolean("signInProfileCreationFlowSupported",
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
                           AccountConsistencyModeManager::IsDiceSignInAllowed());
-#else
-                          true);
-#endif
 
   html_source->AddBoolean("isBrowserSigninAllowed", IsBrowserSigninAllowed());
   html_source->AddBoolean("isForceSigninEnabled",

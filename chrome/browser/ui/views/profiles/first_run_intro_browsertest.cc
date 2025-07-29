@@ -19,10 +19,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 
-#if !BUILDFLAG(ENABLE_DICE_SUPPORT)
-#error Platform not supported
-#endif
-
 // Tests for the chrome://intro WebUI page. They live here and not in the webui
 // directory because they manipulate views.
 namespace {

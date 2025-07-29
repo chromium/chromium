@@ -41,15 +41,13 @@ class ProfileManagementFlowController {
     // the profile type choice at the beginning of the profile creation
     // flow and the account selection.
     kProfilePicker = 1,
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-    // Renders the sign in screen on Dice platforms.
+    // Renders the sign in screen on platforms.
     kAccountSelection = 2,
     // Moves the rest of the flow to a browser tab so that the user can complete
     // the SAML sign in they started at the previous step.
     kFinishSamlSignin = 3,
     // Renders the reauth page.
     kReauth = 4,
-#endif
     // Renders all post-sign in screens: enterprise management consent, profile
     // switch, sync opt-in, etc.
     kPostSignInFlow = 5,
@@ -92,9 +90,7 @@ class ProfileManagementFlowController {
 
   void OnNavigateBackRequested();
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void OnReloadRequested();
-#endif
 
   // Cancel the signed-in profile setup and returns back to the main picker
   // screen (if the original EntryPoint was to open the picker).

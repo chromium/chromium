@@ -104,12 +104,10 @@ void ProfileManagementFlowController::OnNavigateBackRequested() {
       ->OnNavigateBackRequested();
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowController::OnReloadRequested() {
   DCHECK(initialized_steps_.contains(flow_tracker_.tracked_step()));
   initialized_steps_.at(flow_tracker_.tracked_step())->OnReloadRequested();
 }
-#endif
 
 std::u16string
 ProfileManagementFlowController::GetFallbackAccessibleWindowTitle() const {

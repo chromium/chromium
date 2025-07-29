@@ -11,12 +11,9 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#endif
 
 class ProfilePickerSignedInFlowController;
 class ProfilePickerWebContentsHost;
@@ -35,7 +32,6 @@ class ProfileManagementStepController {
   CreateForProfilePickerApp(ProfilePickerWebContentsHost* host,
                             const GURL& initial_url);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Forwards the profile and account specific arguments obtained from the
   // sign-in step to the caller, see
   // `ProfilePickerDiceSignInProvider::SignedInCallback` for more info.
@@ -68,7 +64,6 @@ class ProfileManagementStepController {
                             std::unique_ptr<content::WebContents> contents,
                             base::OnceCallback<void(PostHostClearedCallback)>
                                 finish_picker_section_callback);
-#endif
 
   static std::unique_ptr<ProfileManagementStepController>
   CreateForPostSignInFlow(
@@ -104,10 +99,8 @@ class ProfileManagementStepController {
   // Frees up unneeded resources. `Show()` will be called if it's needed again.
   virtual void OnHidden() {}
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Method to be called if the user is attempting to reload this step.
   virtual void OnReloadRequested();
-#endif
 
   // Method to be called if the user is attempting to navigate back.
   virtual void OnNavigateBackRequested() = 0;

@@ -212,7 +212,6 @@ class ProfilePicker {
   // re-activation). When reactivated, the displayed page is not updated.
   static void Show(Params&& params);
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Helper struct to allow passing different profile information for sign in:
   // - An optional color for a new profile.
   // - A file path for an existing profile.
@@ -251,7 +250,6 @@ class ProfilePicker {
       Profile* profile,
       base::OnceCallback<void(bool)> switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
-#endif
 
   // Switch to the flow that comes when the user decides to create a profile
   // without signing in.

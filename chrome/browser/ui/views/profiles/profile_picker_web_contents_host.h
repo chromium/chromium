@@ -10,10 +10,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/web_modal/web_contents_modal_dialog_host.h"
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 #include "ui/views/controls/webview/web_contents_set_background_color.h"
-#endif
 
 class GURL;
 class ForceSigninUIError;
@@ -71,7 +68,6 @@ class ProfilePickerWebContentsHost {
   virtual void ShowForceSigninErrorDialog(const ForceSigninUIError& error,
                                           bool success) = 0;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   // Changes the visibility of the host's native toolbar, which shows a back
   // button.
   virtual void SetNativeToolbarVisible(bool visible) = 0;
@@ -79,7 +75,6 @@ class ProfilePickerWebContentsHost {
   // Returns the background colors that other `content::WebContents` that are
   // rendered by this host should use to match the toolbar.
   virtual SkColor GetPreferredBackgroundColor() const = 0;
-#endif
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_WEB_CONTENTS_HOST_H_

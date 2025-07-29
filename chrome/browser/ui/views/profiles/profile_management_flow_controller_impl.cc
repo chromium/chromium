@@ -14,13 +14,10 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#endif
 
 ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
     ProfilePickerWebContentsHost* host,
@@ -33,7 +30,6 @@ ProfileManagementFlowControllerImpl::ProfileManagementFlowControllerImpl(
 ProfileManagementFlowControllerImpl::~ProfileManagementFlowControllerImpl() =
     default;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementFlowControllerImpl::
     SwitchToIdentityStepsFromAccountSelection(
         StepSwitchFinishedCallback step_switch_finished_callback,
@@ -68,7 +64,6 @@ void ProfileManagementFlowControllerImpl::
                std::move(step_switch_finished_callback),
                CreateSwitchToStepPopCallback(pop_back_step));
 }
-#endif
 
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreatePostSignInStep(
@@ -80,7 +75,6 @@ ProfileManagementFlowControllerImpl::CreatePostSignInStep(
                                            std::move(contents)));
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementFlowControllerImpl::CreateSamlStep(
     Profile* signed_in_profile,
@@ -131,7 +125,6 @@ void ProfileManagementFlowControllerImpl::HandleSignInCompleted(
   // before this the account selection's is released.
   UnregisterStep(Step::kAccountSelection);
 }
-#endif
 
 void ProfileManagementFlowControllerImpl::SwitchToPostIdentitySteps(
     PostHostClearedCallback post_host_cleared_callback) {

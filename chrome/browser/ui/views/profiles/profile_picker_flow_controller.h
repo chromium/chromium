@@ -30,7 +30,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
 
   void Init() override;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,
                           StepSwitchFinishedCallback switch_finished_callback);
 
@@ -38,7 +37,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       Profile* profile,
       StepSwitchFinishedCallback switch_finished_callback,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback);
-#endif
 
   void CancelPostSignInFlow() override;
 
@@ -62,7 +60,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       PostHostClearedCallback post_host_cleared_callback) override;
 
  private:
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
   void OnReauthCompleted(
       Profile* profile,
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback,
@@ -73,7 +70,6 @@ class ProfilePickerFlowController : public ProfileManagementFlowControllerImpl {
       base::OnceCallback<void(const ForceSigninUIError&)> on_error_callback,
       const ForceSigninUIError& error,
       bool switch_step_success);
-#endif
 
   std::unique_ptr<ProfilePickerSignedInFlowController>
   CreateSignedInFlowController(

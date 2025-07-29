@@ -21,15 +21,12 @@
 #include "chrome/browser/ui/profiles/profile_customization_util.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/search_engine_choice/search_engine_choice_ui.h"
 #include "components/search_engines/search_engine_choice/search_engine_choice_utils.h"
 #include "google_apis/gaia/core_account_id.h"
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#endif
 
 namespace {
 class ProfilePickerAppStepController : public ProfileManagementStepController {
@@ -72,7 +69,6 @@ class ProfilePickerAppStepController : public ProfileManagementStepController {
   const GURL initial_url_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class DiceSignInStepController : public ProfileManagementStepController {
  public:
   explicit DiceSignInStepController(
@@ -229,8 +225,6 @@ class FinishSamlSignInStepController : public ProfileManagementStepController {
   base::WeakPtrFactory<FinishSamlSignInStepController> weak_ptr_factory_{this};
 };
 
-#endif
-
 class PostSignInStepController : public ProfileManagementStepController {
  public:
   explicit PostSignInStepController(
@@ -380,7 +374,6 @@ ProfileManagementStepController::CreateForProfilePickerApp(
   return std::make_unique<ProfilePickerAppStepController>(host, initial_url);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 // static
 std::unique_ptr<ProfileManagementStepController>
 ProfileManagementStepController::CreateForDiceSignIn(
@@ -403,8 +396,6 @@ ProfileManagementStepController::CreateForFinishSamlSignIn(
       host, profile, std::move(contents),
       std::move(finish_picker_section_callback));
 }
-
-#endif
 
 // static
 std::unique_ptr<ProfileManagementStepController>
@@ -443,9 +434,7 @@ ProfileManagementStepController::ProfileManagementStepController(
 
 ProfileManagementStepController::~ProfileManagementStepController() = default;
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfileManagementStepController::OnReloadRequested() {}
-#endif
 
 void ProfileManagementStepController::NavigateBackInternal(
     content::WebContents* contents) {

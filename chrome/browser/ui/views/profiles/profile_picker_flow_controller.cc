@@ -41,6 +41,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
@@ -53,10 +54,6 @@
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/mojom/themes.mojom.h"
-
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#endif
 
 namespace {
 
@@ -278,7 +275,6 @@ class ProfileCreationSignedInFlowController
       step_completed_callback_;
 };
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 class ReauthFlowStepController : public ProfileManagementStepController {
  public:
   explicit ReauthFlowStepController(
@@ -323,7 +319,6 @@ std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
           std::move(on_reauth_completed)),
       profile);
 }
-#endif
 
 void RecordProfilingFinishReason(
     metrics::StartupProfilingFinishReason finish_reason) {
@@ -505,7 +500,6 @@ void ProfilePickerFlowController::Init() {
   SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
 }
 
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
 void ProfilePickerFlowController::SwitchToDiceSignIn(
     ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
@@ -596,8 +590,6 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
   std::move(on_error_callback).Run(error);
 }
 
-#endif
-
 base::FilePath ProfilePickerFlowController::GetSwitchProfilePathOrEmpty()
     const {
   if (weak_signed_in_flow_controller_) {
@@ -625,9 +617,7 @@ void ProfilePickerFlowController::CancelPostSignInFlow() {
     case ProfilePicker::EntryPoint::kOnStartupCreateProfileWithEmail: {
       SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
       UnregisterStep(Step::kPostSignInFlow);
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
       UnregisterStep(Step::kAccountSelection);
-#endif
       return;
     }
     case ProfilePicker::EntryPoint::kAppMenuProfileSubMenuAddNewProfile:

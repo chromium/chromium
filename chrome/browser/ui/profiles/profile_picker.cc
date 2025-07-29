@@ -86,11 +86,7 @@ ProfilePicker::Params ProfilePicker::Params::ForBackgroundManager(
 ProfilePicker::Params ProfilePicker::Params::ForFirstRun(
     const base::FilePath& profile_path,
     FirstRunExitedCallback first_run_exited_callback) {
-  Params params(
-#if BUILDFLAG(ENABLE_DICE_SUPPORT)
-      EntryPoint::kFirstRun,
-#endif
-      profile_path);
+  Params params(EntryPoint::kFirstRun, profile_path);
   params.first_run_exited_callback_ = std::move(first_run_exited_callback);
   return params;
 }
