@@ -488,9 +488,7 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
     std::string issuer_id,
     std::string currency,
     uint64_t min_price_in_micros,
-    uint64_t max_price_in_micros,
-    std::vector<sync_pb::PaymentInstrument_ActionRequired> actions_required =
-        {});
+    uint64_t max_price_in_micros);
 
 // Returns a linked BNPL issuer with fake data.
 BnplIssuer GetTestLinkedBnplIssuer(

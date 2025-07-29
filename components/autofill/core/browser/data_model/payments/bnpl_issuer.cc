@@ -37,22 +37,17 @@ BnplIssuer::BnplIssuer() = default;
 
 bool operator==(const BnplIssuer& a, const BnplIssuer& b) = default;
 
-BnplIssuer::BnplIssuer(
-    std::optional<int64_t> instrument_id,
-    BnplIssuer::IssuerId issuer_id,
-    std::vector<EligiblePriceRange> eligible_price_ranges,
-    DenseSet<PaymentInstrument::ActionRequired> action_required)
+BnplIssuer::BnplIssuer(std::optional<int64_t> instrument_id,
+                       BnplIssuer::IssuerId issuer_id,
+                       std::vector<EligiblePriceRange> eligible_price_ranges)
     : issuer_id_(std::move(issuer_id)),
       payment_instrument_(
           instrument_id.has_value()
               ? std::make_optional<PaymentInstrument>(
                     instrument_id.value(),
-                    /*nickname=*/u"",
-                    /*display_icon_url=*/GURL(),
-                    /*supported_rails=*/
-                    DenseSet({PaymentInstrument::PaymentRail::kCardNumber}),
-                    /*is_fido_enrolled=*/false,
-                    std::move(action_required))
+                    u"",
+                    GURL(),
+                    DenseSet({PaymentInstrument::PaymentRail::kCardNumber}))
               : std::nullopt),
       eligible_price_ranges_(std::move(eligible_price_ranges)) {}
 
