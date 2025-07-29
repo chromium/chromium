@@ -243,14 +243,6 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
       base::Unretained(this)));
   iph_link_focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
 
-  // Allocate space for the suggestion text only after accounting
-  // for the space needed to render the inline action chip row.
-  suggestion_view_->SetProperty(
-      views::kFlexBehaviorKey,
-      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
-                               views::MaximumFlexSizeRule::kPreferred)
-          .WithOrder(2));
-
   // TODO(b/345536738): Move the common code for setting up instances of
   //  OmniboxResultViewButton to the constructor.
   thumbs_up_button_ = suggestion_and_buttons->AddChildView(
@@ -319,6 +311,15 @@ OmniboxResultView::OmniboxResultView(OmniboxPopupViewViews* popup_view,
   button_row_ = suggestion_and_button_row->AddChildView(
       std::make_unique<OmniboxSuggestionButtonRowView>(popup_view_,
                                                        model_index));
+  // If there's insufficient space for rendering both the suggestion text
+  // and the action chip row at their preferred sizes, the give priority to the
+  // button row by setting its order to 1 here and the suggestion view's order
+  // to 2 in `SetMatch()` (lower numbers get higher priority).
+  button_row_->SetProperty(
+      views::kFlexBehaviorKey,
+      views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToZero,
+                               views::MaximumFlexSizeRule::kPreferred)
+          .WithOrder(1));
 
   mouse_enter_exit_handler_.ObserveMouseEnterExitOn(this);
 
