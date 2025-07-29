@@ -43,7 +43,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
-import org.chromium.base.DeviceInfo;
 import org.chromium.base.InputHintChecker;
 import org.chromium.base.Log;
 import org.chromium.base.PowerMonitor;
@@ -2636,7 +2635,7 @@ public abstract class ChromeActivity extends AsyncInitializationActivity
             return true;
         }
 
-        if (id == R.id.dev_tools && DeviceInfo.isDesktop()) {
+        if (id == R.id.dev_tools) {
             DevToolsWindowAndroid.openDevTools(currentTab.getWebContents());
             return true;
         }
