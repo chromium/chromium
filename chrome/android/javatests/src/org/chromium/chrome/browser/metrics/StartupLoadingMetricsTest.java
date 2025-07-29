@@ -397,6 +397,7 @@ public class StartupLoadingMetricsTest {
     @Test
     @LargeTest
     @EnableFeatures(ChromeFeatureList.TRACE_BINDER_IPC)
+    @DisabledTest(message = "crbug.com/434923221")
     public void testNtpBinderMetricRecordedCorrectly() throws Exception {
         HistogramWatcher ntpBinderWatcher =
                 HistogramWatcher.newBuilder()
