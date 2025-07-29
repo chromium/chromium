@@ -25,6 +25,7 @@
 #include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_context_bound_object.h"
 #include "chrome/browser/ai/ai_context_bound_object_set.h"
+#include "chrome/browser/ai/ai_crx_component.h"
 #include "chrome/browser/ai/ai_language_model.h"
 #include "chrome/browser/ai/ai_proofreader.h"
 #include "chrome/browser/ai/ai_rewriter.h"
@@ -975,9 +976,11 @@ void AIManager::AddModelDownloadProgressObserver(
     mojo::PendingRemote<blink ::mojom::ModelDownloadProgressObserver>
         observer_remote) {
   model_download_progress_manager_.AddObserver(
-      &component_update_service_.get(), std::move(observer_remote),
-      {component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
-           GetOnDeviceModelExtensionId()});
+      std::move(observer_remote),
+      on_device_ai::AICrxComponent::FromComponentIds(
+          &component_update_service_.get(),
+          {component_updater::OptimizationGuideOnDeviceModelInstallerPolicy::
+               GetOnDeviceModelExtensionId()}));
 }
 
 void AIManager::RenderWidgetHostVisibilityChanged(

@@ -5,68 +5,19 @@
 #include "chrome/browser/ai/ai_model_download_progress_manager.h"
 
 #include "base/functional/bind.h"
-#include "base/types/pass_key.h"
 #include "chrome/browser/ai/ai_utils.h"
-#include "components/update_client/crx_update_item.h"
-#include "components/update_client/update_client.h"
 
 namespace on_device_ai {
-
-namespace {
-
-bool IsDownloadEvent(const component_updater::CrxUpdateItem& item) {
-  // See class comment: components/update_client/component.h
-  switch (item.state) {
-    case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kUpdating:
-    case update_client::ComponentState::kUpToDate:
-    case update_client::ComponentState::kDownloadingDiff:
-    case update_client::ComponentState::kUpdatingDiff:
-      return item.downloaded_bytes >= 0 && item.total_bytes >= 0;
-    case update_client::ComponentState::kNew:
-    case update_client::ComponentState::kChecking:
-    case update_client::ComponentState::kCanUpdate:
-    case update_client::ComponentState::kUpdated:
-    case update_client::ComponentState::kUpdateError:
-    case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kLastStatus:
-      return false;
-  }
-}
-
-bool IsAlreadyInstalled(const component_updater::CrxUpdateItem& item) {
-  // See class comment: components/update_client/component.h
-  switch (item.state) {
-    case update_client::ComponentState::kUpdated:
-    case update_client::ComponentState::kUpToDate:
-      return true;
-    case update_client::ComponentState::kNew:
-    case update_client::ComponentState::kChecking:
-    case update_client::ComponentState::kCanUpdate:
-    case update_client::ComponentState::kDownloading:
-    case update_client::ComponentState::kUpdating:
-    case update_client::ComponentState::kUpdateError:
-    case update_client::ComponentState::kRun:
-    case update_client::ComponentState::kDownloadingDiff:
-    case update_client::ComponentState::kUpdatingDiff:
-    case update_client::ComponentState::kLastStatus:
-      return false;
-  }
-}
-
-}  // namespace
 
 AIModelDownloadProgressManager::AIModelDownloadProgressManager() = default;
 AIModelDownloadProgressManager::~AIModelDownloadProgressManager() = default;
 
 void AIModelDownloadProgressManager::AddObserver(
-    component_updater::ComponentUpdateService* component_update_service,
     mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
         observer_remote,
-    base::flat_set<std::string> component_ids) {
-  reporters_.emplace(std::make_unique<Reporter>(*this, component_update_service,
-                                                std::move(observer_remote),
-                                                std::move(component_ids)));
+    base::flat_set<std::unique_ptr<Component>> components) {
+  reporters_.emplace(std::make_unique<Reporter>(
+      *this, std::move(observer_remote), std::move(components)));
 }
 
 void AIModelDownloadProgressManager::RemoveReporter(Reporter* reporter) {
@@ -78,49 +29,86 @@ int AIModelDownloadProgressManager::GetNumberOfReporters() {
   return reporters_.size();
 }
 
+AIModelDownloadProgressManager::Component::Component() = default;
+AIModelDownloadProgressManager::Component::~Component() = default;
+
+AIModelDownloadProgressManager::Component::Component(Component&&) = default;
+
+void AIModelDownloadProgressManager::Component::SetDownloadedBytes(
+    int64_t downloaded_bytes) {
+  if (downloaded_bytes == downloaded_bytes_) {
+    return;
+  }
+
+  // `downloaded_bytes` should be monotonically increasing.
+  CHECK_GT(downloaded_bytes, downloaded_bytes_.value_or(-1));
+  CHECK_GE(downloaded_bytes, 0);
+
+  downloaded_bytes_ = downloaded_bytes;
+  MaybeRunEventCallback();
+}
+void AIModelDownloadProgressManager::Component::SetTotalBytes(
+    int64_t total_bytes) {
+  if (total_bytes == total_bytes_) {
+    return;
+  }
+
+  // `total_bytes_` should never change after it's been set.
+  CHECK(!total_bytes_.has_value());
+  CHECK_GE(total_bytes, 0);
+
+  total_bytes_ = total_bytes;
+  MaybeRunEventCallback();
+}
+
+void AIModelDownloadProgressManager::Component::SetEventCallback(
+    EventCallback event_callback) {
+  event_callback_ = std::move(event_callback);
+}
+
+void AIModelDownloadProgressManager::Component::MaybeRunEventCallback() {
+  if (!determined_bytes() || !event_callback_) {
+    return;
+  }
+  event_callback_.Run(*this);
+}
+
 AIModelDownloadProgressManager::Reporter::Reporter(
     AIModelDownloadProgressManager& manager,
-    component_updater::ComponentUpdateService* component_update_service,
     mojo::PendingRemote<blink::mojom::ModelDownloadProgressObserver>
         observer_remote,
-    base::flat_set<std::string> component_ids)
+    base::flat_set<std::unique_ptr<Component>> components)
     : manager_(manager),
       observer_remote_(std::move(observer_remote)),
-      component_ids_(std::move(component_ids)) {
-  CHECK(component_update_service);
-
+      components_(std::move(components)) {
   observer_remote_.set_disconnect_handler(base::BindOnce(
-      &AIModelDownloadProgressManager::Reporter::OnRemoteDisconnect,
-      weak_ptr_factory_.GetWeakPtr()));
+      &Reporter::OnRemoteDisconnect, weak_ptr_factory_.GetWeakPtr()));
 
   // Don't watch any components that are already installed.
-  for (auto iter = component_ids_.begin(); iter != component_ids_.end();) {
-    component_updater::CrxUpdateItem item;
-    bool success = component_update_service->GetComponentDetails(*iter, &item);
-
-    // When `success` is false, it means the component hasn't been registered
-    // yet. `GetComponentDetails` doesn't fill out `item` in this case, and we
-    // can just treat the component as if it had a state of `kNew`.
-    if (success && IsAlreadyInstalled(item)) {
-      iter = component_ids_.erase(iter);
+  for (auto iter = components_.begin(); iter != components_.end();) {
+    if ((*iter)->is_complete()) {
+      iter = components_.erase(iter);
     } else {
+      // TODO(crbug.com/425322243): Support passing in an uninstalled component
+      // with undetermined bytes.
+      CHECK(!(*iter)->determined_bytes());
+
+      // Watch for progress updates.
+      (*iter)->SetEventCallback(base::BindRepeating(
+          &Reporter::OnEvent, weak_ptr_factory_.GetWeakPtr()));
       ++iter;
     }
   }
 
   // If there are no component ids to observe, just send zero and one hundred
   // percent.
-  if (component_ids_.empty()) {
+  if (components_.empty()) {
     observer_remote_->OnDownloadProgressUpdate(
         0, AIUtils::kNormalizedDownloadProgressMax);
     observer_remote_->OnDownloadProgressUpdate(
         AIUtils::kNormalizedDownloadProgressMax,
         AIUtils::kNormalizedDownloadProgressMax);
-    return;
   }
-
-  // Watch for progress updates.
-  component_updater_observation_.Observe(component_update_service);
 }
 
 AIModelDownloadProgressManager::Reporter::~Reporter() = default;
@@ -140,16 +128,19 @@ int64_t AIModelDownloadProgressManager::Reporter::GetDownloadedBytes() {
 }
 
 void AIModelDownloadProgressManager::Reporter::ProcessEvent(
-    const component_updater::CrxUpdateItem& item) {
-  CHECK_GE(item.downloaded_bytes, 0);
-  CHECK_GE(item.total_bytes, 0);
+    const Component& component) {
+  // Should only receive events for components that have their bytes determined.
+  CHECK(component.determined_bytes());
 
-  auto iter = observed_downloaded_bytes_.find(item.id);
+  CHECK_GE(component.downloaded_bytes(), 0);
+  CHECK_GE(component.total_bytes(), 0);
+
+  auto iter = observed_downloaded_bytes_.find(&component);
 
   // If we've seen this component before, then just update the downloaded bytes
   // for it.
   if (iter != observed_downloaded_bytes_.end()) {
-    iter->second = item.downloaded_bytes;
+    iter->second = component.downloaded_bytes();
     return;
   }
 
@@ -157,15 +148,15 @@ void AIModelDownloadProgressManager::Reporter::ProcessEvent(
   // `component_downloaded_bytes_` map.
   CHECK(!ready_to_report_);
 
-  auto result =
-      observed_downloaded_bytes_.insert({item.id, item.downloaded_bytes});
+  auto result = observed_downloaded_bytes_.insert(
+      {&component, component.downloaded_bytes()});
   CHECK(result.second);
 
-  components_total_bytes_ += item.total_bytes;
+  components_total_bytes_ += component.total_bytes();
 
   // If we have observed the downloaded bytes of all our components then we're
   // ready to start reporting.
-  ready_to_report_ = observed_downloaded_bytes_.size() == component_ids_.size();
+  ready_to_report_ = observed_downloaded_bytes_.size() == components_.size();
 
   if (!ready_to_report_) {
     return;
@@ -185,13 +176,8 @@ void AIModelDownloadProgressManager::Reporter::ProcessEvent(
       0, AIUtils::kNormalizedDownloadProgressMax);
 }
 
-void AIModelDownloadProgressManager::Reporter::OnEvent(
-    const component_updater::CrxUpdateItem& item) {
-  if (!IsDownloadEvent(item) || !component_ids_.contains(item.id)) {
-    return;
-  }
-
-  ProcessEvent(item);
+void AIModelDownloadProgressManager::Reporter::OnEvent(Component& component) {
+  ProcessEvent(component);
 
   // Wait for the total number of bytes to be downloaded to become determined.
   if (!ready_to_report_) {

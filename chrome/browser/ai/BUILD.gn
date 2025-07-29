@@ -118,6 +118,8 @@ source_set("impl") {
 
 source_set("ai_model_download_progress_manager") {
   sources = [
+    "ai_crx_component.cc",
+    "ai_crx_component.h",
     "ai_model_download_progress_manager.cc",
     "ai_model_download_progress_manager.h",
   ]
@@ -153,6 +155,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
+    "ai_crx_component_unittest.cc",
     "ai_language_model_unittest.cc",
     "ai_manager_unittest.cc",
     "ai_model_download_progress_manager_unittest.cc",

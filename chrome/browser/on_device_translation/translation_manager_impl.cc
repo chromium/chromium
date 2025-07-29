@@ -9,6 +9,7 @@
 #include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/task/sequenced_task_runner.h"
+#include "chrome/browser/ai/ai_crx_component.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/translate_kit_component_installer.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -354,8 +355,9 @@ void TranslationManagerImpl::CreateTranslator(
           crx_file::id_util::GenerateIdFromHash(config.public_key_sha));
     }
     model_download_progress_manager_.AddObserver(
-        GetComponentUpdateService(), std::move(options->observer_remote),
-        std::move(component_ids));
+        std::move(options->observer_remote),
+        on_device_ai::AICrxComponent::FromComponentIds(
+            GetComponentUpdateService(), std::move(component_ids)));
   }
 
   base::OnceClosure create_translator =
