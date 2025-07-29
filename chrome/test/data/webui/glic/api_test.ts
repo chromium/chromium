@@ -397,8 +397,8 @@ class ApiTests extends ApiTestFixtureBase {
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.hasFocus);
-    assertTrue(
-        focus.hasFocus.tabData.url.endsWith('glic/test.html'),
+    assertEquals(
+        new URL(focus.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus.hasFocus.tabData.url}`);
     assertEquals('Test Page', focus.hasFocus.tabData.title);
     assertFalse(!!focus.hasNoFocus);
@@ -411,8 +411,8 @@ class ApiTests extends ApiTestFixtureBase {
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.hasFocus);
-    assertTrue(
-        focus.hasFocus.tabData.url.endsWith('glic/test.html'),
+    assertEquals(
+        new URL(focus.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus.hasFocus.tabData.url}`);
     assertFalse(!!focus.hasNoFocus);
 
@@ -420,9 +420,9 @@ class ApiTests extends ApiTestFixtureBase {
     await this.advanceToNextStep();
     const focus2 = await sequence.next();
     assertTrue(!!focus2.hasFocus);
-    assertTrue(
-        focus2.hasFocus.tabData.url.endsWith(
-            'scrollable_page_with_content.html'),
+    assertEquals(
+        new URL(focus2.hasFocus.tabData.url).pathname,
+        '/scrollable_page_with_content.html',
         `url=${focus2.hasFocus.tabData.url}`);
 
     await this.advanceToNextStep();
@@ -441,8 +441,8 @@ class ApiTests extends ApiTestFixtureBase {
 
     // Final state, after the tab is fully loaded.
     assertTrue(!!focus3.hasFocus);
-    assertTrue(
-        focus3.hasFocus.tabData.url.endsWith('glic/test.html'),
+    assertEquals(
+        new URL(focus3.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus3.hasFocus.tabData.url}`);
     assertFalse(!!focus3.hasNoFocus);
   }
@@ -455,8 +455,8 @@ class ApiTests extends ApiTestFixtureBase {
         observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
     const focus = await sequence.next();
     assertTrue(!!focus.hasFocus);
-    assertTrue(
-        focus.hasFocus.tabData.url.endsWith('glic/test.html'),
+    assertEquals(
+        new URL(focus.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus.hasFocus.tabData.url}`);
     assertFalse(!!focus.hasNoFocus);
 
@@ -484,13 +484,9 @@ class ApiTests extends ApiTestFixtureBase {
     });
 
     // Final state, after the tab is fully loaded.
-    assertFalse(
-        !!focus2.hasFocus &&
-        focus2.hasFocus.tabData.url.endsWith(
-            'scrollable_page_with_content.html'));
     assertTrue(!!focus2.hasFocus);
-    assertTrue(
-        focus2.hasFocus.tabData.url.endsWith('glic/test.html'),
+    assertEquals(
+        new URL(focus2.hasFocus.tabData.url).pathname, '/glic/test.html',
         `url=${focus2.hasFocus.tabData.url}`);
     assertFalse(!!focus2.hasNoFocus);
   }
@@ -506,8 +502,8 @@ class ApiTests extends ApiTestFixtureBase {
           !!focus.hasFocus,
           `#1: should have a focused tab; FocusedTabData=${
               JSON.stringify(focus)}`);
-      assertTrue(
-          !!focus.hasFocus?.tabData.url.endsWith('glic/test.html'),
+      assertEquals(
+          new URL(focus.hasFocus?.tabData.url).pathname, '/glic/test.html',
           `#1: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
       assertTrue(
           sequence.isEmpty(), '#1: Spurious updates after first tab opened');
@@ -521,9 +517,9 @@ class ApiTests extends ApiTestFixtureBase {
           !!focus.hasFocus,
           `#2: should have a focused tab; FocusedTabData=${
               JSON.stringify(focus)}`);
-      assertTrue(
-          !!focus.hasFocus?.tabData.url.endsWith(
-              'scrollable_page_with_content.html'),
+      assertEquals(
+          new URL(focus.hasFocus?.tabData.url).pathname,
+          '/scrollable_page_with_content.html',
           `#2: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
       assertTrue(
           sequence.isEmpty(), '#2: Spurious updates after first tab navigated');
@@ -537,8 +533,8 @@ class ApiTests extends ApiTestFixtureBase {
           !!focus.hasFocus,
           `#3: should have a focused tab; FocusedTabData=${
               JSON.stringify(focus)}`);
-      assertTrue(
-          !!focus.hasFocus?.tabData.url.endsWith('glic/test.html'),
+      assertEquals(
+          new URL(focus.hasFocus?.tabData.url).pathname, '/glic/test.html',
           `#3: Unexpected URL; FocusedTabData=${JSON.stringify(focus)}`);
       assertTrue(
           sequence.isEmpty(), '#3: Spurious updates after a new tab opened');
@@ -561,7 +557,7 @@ class ApiTests extends ApiTestFixtureBase {
     await this.host.setTabContextPermissionState(false);
 
     try {
-      await this.host.getContextFromFocusedTab?.({});
+      await this.host.getContextFromFocusedTab({});
     } catch (e) {
       assertEquals(
           'tabContext failed: permission denied:' +
@@ -570,14 +566,32 @@ class ApiTests extends ApiTestFixtureBase {
     }
   }
 
+  async testGetContextFromPinnedTabWithoutPermission() {
+    assertTrue(!!this.host.getContextFromTab);
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertTrue(!!this.host.pinTabs);
+    await this.host.setTabContextPermissionState(false);
+
+    const focusSequence =
+        observeSequence<FocusedTabData>(this.host.getFocusedTabStateV2());
+    const focus = await focusSequence.next();
+    const tabId = checkDefined(focus?.hasFocus?.tabData.tabId);
+    assertTrue(!!await this.host.pinTabs([tabId]));
+    const result = await this.host.getContextFromTab(tabId, {});
+    assertTrue(!!result);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/test.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+  }
+
   async testGetContextFromFocusedTabWithNoRequestedData() {
     assertTrue(!!this.host.getContextFromFocusedTab);
     await this.host.setTabContextPermissionState(true);
 
     const result = await this.host.getContextFromFocusedTab({});
     assertTrue(!!result);
-    assertTrue(
-        result.tabData.url.endsWith('glic/test.html') ?? false,
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
     assertFalse(!!result.annotatedPageData);
     assertFalse(!!result.pdfDocumentData);
@@ -598,8 +612,8 @@ class ApiTests extends ApiTestFixtureBase {
 
     assertTrue(!!result);
 
-    assertTrue(
-        result.tabData.url.endsWith('glic/test.html') ?? false,
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/test.html',
         `Tab data has unexpected url ${result.tabData.url}`);
     assertFalse(!!result.pdfDocumentData);  // The page is not a PDF.
     assertTrue(!!result.webPageData);
@@ -652,8 +666,8 @@ class ApiTests extends ApiTestFixtureBase {
       return result;
     });
 
-    assertTrue(
-        result.tabData.url.endsWith('pdf/test.pdf') ?? false,
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/pdf/test.pdf',
         `Tab data has unexpected url ${result.tabData.url}`);
     assertFalse(!!result.webPageData);
 
@@ -1309,10 +1323,58 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     await this.advanceToNextStep();
     focusedTabState = await tabStatePromise;
     assertTrue(!!focusedTabState.hasFocus);
-    assertTrue(
-        focusedTabState.hasFocus.tabData.url.endsWith(
-            'scrollable_page_with_content.html'),
+    assertEquals(
+        new URL(focusedTabState.hasFocus.tabData.url).pathname,
+        '/scrollable_page_with_content.html',
         `url=${focusedTabState.hasFocus.tabData.url}`);
+  }
+
+  async testNoExtractionWhileHidden() {
+    assertTrue(!!this.host.getContextFromFocusedTab);
+    assertTrue(!!this.host.getContextFromTab);
+    assertTrue(!!this.host.getFocusedTabStateV2);
+    assertTrue(!!this.host.pinTabs);
+    await this.host.setTabContextPermissionState(true);
+
+    // While still hidden (preloaded), focused tab extraction should fail.
+    let errorMessage =
+        await assertRejects(this.host.getContextFromFocusedTab({}));
+    assertEquals(
+        'tabContext failed: permission denied: window not showing',
+        errorMessage);
+
+    // Glic panel is open, so both focused and arbitrary tab extraction should
+    // succeed.
+    await this.advanceToNextStep();
+    await this.client.waitForFirstOpen();
+    let result = await this.host.getContextFromFocusedTab({});
+    assertTrue(!!result);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/test.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+    const focusedTab = await this.host.getFocusedTabStateV2().getCurrentValue();
+    const tabId = checkDefined(focusedTab?.hasFocus?.tabData.tabId);
+    assertTrue(await this.host.pinTabs([tabId]));
+    result = await this.host.getContextFromTab(tabId, {});
+    assertTrue(!!result);
+    assertEquals(
+        new URL(result.tabData.url).pathname, '/glic/test.html',
+        `Tab data has unexpected url ${result.tabData.url}`);
+
+    // Glic panel is hidden again. Focused and arbitrary tab extraction should
+    // fail.
+    await this.advanceToNextStep();
+    // Panel closure was only requested by native code, but still needs to be
+    // waited on.
+    await observeSequence(this.host.panelActive()).waitForValue(false);
+    errorMessage = await assertRejects(this.host.getContextFromFocusedTab({}));
+    assertEquals(
+        'tabContext failed: permission denied: window not showing',
+        errorMessage);
+    errorMessage = await assertRejects(this.host.getContextFromTab(tabId, {}));
+    assertEquals(
+        'tabContext failed: permission denied: window not showing',
+        errorMessage);
   }
 }
 

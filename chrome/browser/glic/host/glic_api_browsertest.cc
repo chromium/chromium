@@ -377,6 +377,7 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+// Test fixture that preloads the web client before starting the test.
 class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
  public:
   GlicApiTestWithOneTabAndPreloading() {
@@ -405,18 +406,6 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
         network::mojom::ConnectionType::CONNECTION_ETHERNET);
   }
 
-  void SetUpOnMainThread() override {
-    GlicApiTest::SetUpOnMainThread();
-    RunTestSequence(InstrumentTab(kFirstTab),
-                    NavigateWebContents(kFirstTab, page_url()));
-  }
-
-  void TearDown() override {
-    GlicApiTestWithOneTab::TearDown();
-    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
-    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
-  }
-
   auto CreateAndWarmGlic() {
     return Do([this] { GetService()->TryPreload(); });
   }
@@ -427,6 +416,30 @@ class GlicApiTestWithOneTabAndPreloading : public GlicApiTestWithOneTab {
           base::MemoryPressureMonitor::MemoryPressureLevel::
               MEMORY_PRESSURE_LEVEL_NONE);
     });
+  }
+
+  void SetUpOnMainThread() override {
+    // GlicApiTestWithOneTab::SetUpOnMainThread also opens the glic panel, so
+    // duplicate everything else it does and call GlicApiTest::SetUpOnMainThread
+    // directly.
+    GlicApiTest::SetUpOnMainThread();
+    histogram_tester = std::make_unique<base::HistogramTester>();
+    RunTestSequence(InstrumentTab(kFirstTab),
+                    NavigateWebContents(kFirstTab, page_url()));
+
+    // Preload the web client.
+    RunTestSequence(WaitForShow(kGlicButtonElementId), ResetMemoryPressure(),
+                    ObserveState(glic::test::internal::kWebUiState, &host()),
+                    CreateAndWarmGlic(),
+                    WaitForState(glic::test::internal::kWebUiState,
+                                 mojom::WebUiState::kReady),
+                    CheckControllerShowing(false));
+  }
+
+  void TearDown() override {
+    GlicApiTestWithOneTab::TearDown();
+    GlicProfileManager::ForceMemoryPressureForTesting(std::nullopt);
+    GlicProfileManager::ForceConnectionTypeForTesting(std::nullopt);
   }
 
  private:
@@ -1009,20 +1022,31 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,
                        testDeferredFocusedTabStateAtCreation) {
-  // Preload a web contents and then navigate.
+  // Navigate the first tab.
   RunTestSequence(
-      WaitForShow(kGlicButtonElementId), ResetMemoryPressure(),
-      ObserveState(glic::test::internal::kWebUiState, &host()),
-      CreateAndWarmGlic(),
-      WaitForState(glic::test::internal::kWebUiState,
-                   mojom::WebUiState::kReady),
-      CheckControllerShowing(false),
       NavigateWebContents(kFirstTab,
                           InProcessBrowserTest::embedded_test_server()->GetURL(
                               "/scrollable_page_with_content.html")));
   ExecuteJsTest();
   RunTestSequence(ToggleGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerShowing(true));
+  ContinueJsTest();
+}
+
+// Tests that both focused and arbitrary tab extraction are rejected
+// when the glic panel is hidden.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,
+                       testNoExtractionWhileHidden) {
+  // Attempt to extract context with the preloaded client.
+  ExecuteJsTest();
+
+  // Open the glic panel and attempt to extract context.
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ContinueJsTest();
+
+  // Hide the glic panel again and attempt to extract context.
+  window_controller().Close();
   ContinueJsTest();
 }
 
@@ -1095,6 +1119,11 @@ IN_PROC_BROWSER_TEST_F(GlicApiTest, testGetFocusedTabStateV2BrowserClosed) {
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testGetContextFromFocusedTabWithoutPermission) {
+  ExecuteJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testGetContextFromPinnedTabWithoutPermission) {
   ExecuteJsTest();
 }
 
