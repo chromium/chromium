@@ -121,7 +121,7 @@ class StylusHandwritingInitiator {
         return TOOL_TYPE_STYLUS == motionEvent.getToolType(motionEvent.getActionIndex());
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     boolean isViewWritable() {
         // TODO(crbug.com/317299999): Expose API to check whether event is over editable element.
         return true;

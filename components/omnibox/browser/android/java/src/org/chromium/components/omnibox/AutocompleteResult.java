@@ -65,7 +65,7 @@ public class AutocompleteResult {
      * @param suggestions List of AutocompleteMatch objects.
      * @param groupsInfo Additional information about the AutocompleteMatch groups.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public AutocompleteResult(
             long nativeResult,
             @Nullable List<AutocompleteMatch> suggestions,
@@ -113,7 +113,7 @@ public class AutocompleteResult {
      *     content of this array must match the length and IDs of the |groupIds|.
      * @return AutocompleteResult object encompassing supplied information.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     static AutocompleteResult fromNative(
             long nativeAutocompleteResult,
@@ -137,7 +137,7 @@ public class AutocompleteResult {
         Collections.addAll(mSuggestions, suggestions);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     void notifyNativeDestroyed() {
         mNativeAutocompleteResult = 0;

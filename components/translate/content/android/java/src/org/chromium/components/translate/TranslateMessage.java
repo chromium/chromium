@@ -109,7 +109,7 @@ class TranslateMessage implements TranslateMessageSecondaryMenu.Handler {
                 dismissalDurationSeconds);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     TranslateMessage(
             Context context,
             MessageDispatcher messageDispatcher,

@@ -97,7 +97,7 @@ public class BluetoothScanningPermissionDialog {
      * @param nativeBluetoothScanningPermissionDialogPtr A pointer back to the native part of the
      *     implementation for this dialog.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public BluetoothScanningPermissionDialog(
             WindowAndroid windowAndroid,
             String origin,
@@ -238,7 +238,7 @@ public class BluetoothScanningPermissionDialog {
         return dialog;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     public void addOrUpdateDevice(String deviceId, String deviceName) {
         if (TextUtils.isEmpty(deviceName)) {

@@ -411,10 +411,9 @@ public class ShareImageFileUtils {
      * @param filePath The file path a destination file.
      * @param fileName The file name a destination file.
      * @param extension The extension a destination file.
-     *
      * @return The new File object.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static File getNextAvailableFile(String filePath, String fileName, String extension)
             throws IOException {
         File destFile = new File(filePath, fileName + extension);

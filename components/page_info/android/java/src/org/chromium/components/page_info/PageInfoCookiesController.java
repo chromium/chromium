@@ -10,8 +10,6 @@ import static org.chromium.components.content_settings.PrefNames.IN_CONTEXT_COOK
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.VisibleForTesting;
-
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
@@ -293,7 +291,6 @@ public class PageInfoCookiesController extends PageInfoPreferenceSubpageControll
         mControlsState = controlsState;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
     public void setRwsInfoForTesting(Collection<Website> rwsInfoForTesting) {
         mRwsInfoForTesting = rwsInfoForTesting;
     }

@@ -41,7 +41,7 @@ public class InputContext {
     // END OF PUBLIC API.
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void fillNativeInputContext(long target) {
         int booleanCount = 0;
         int intCount = 0;

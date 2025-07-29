@@ -128,7 +128,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.JUMP_START_OMNIBOX, FeatureState.ENABLED_IN_TEST);
 
     /** See {@link #shouldRetainOmniboxOnFocus()}. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final CachedFlag sRetainOmniboxOnFocus =
             newFlag(OmniboxFeatureList.RETAIN_OMNIBOX_ON_FOCUS, FeatureState.ENABLED_IN_TEST);
 

@@ -451,8 +451,10 @@ public class PageInfoController
                 });
     }
 
-    /** Dismiss the popup, and then run a task after the animation has completed (if there is one). */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    /**
+     * Dismiss the popup, and then run a task after the animation has completed (if there is one).
+     */
+    @VisibleForTesting
     public void runAfterDismiss(Runnable task) {
         assert mPendingRunAfterDismissTask == null;
         mPendingRunAfterDismissTask = task;
@@ -504,17 +506,17 @@ public class PageInfoController
         return !DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public View getPageInfoView() {
         return mContainer;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public @Nullable PageInfoCookiesController getCookiesController() {
         return mCookiesController;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public boolean isDialogShowing() {
         return mDialog != null;
     }
@@ -571,7 +573,7 @@ public class PageInfoController
                                 dialogPosition));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static @Nullable PageInfoController getLastPageInfoController() {
         return sLastPageInfoControllerForTesting != null
                 ? sLastPageInfoControllerForTesting.get()
@@ -594,7 +596,7 @@ public class PageInfoController
         return mDelegate.getBrowserContext();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public PageInfoControllerDelegate getPageInfoControllerDelegate() {
         return mDelegate;
     }

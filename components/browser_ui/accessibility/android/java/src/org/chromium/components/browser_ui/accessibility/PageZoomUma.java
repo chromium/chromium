@@ -73,31 +73,31 @@ public class PageZoomUma {
     // LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:AccessibilityPageZoomUsageType)
 
     // Page Zoom histogram values
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_APP_MENU_ENABLED_STATE_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuEnabledState";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_APP_MENU_SLIDER_OPENED_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuSliderOpened";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_CHANGED_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuSliderZoomLevelChanged";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_APP_MENU_SLIDER_ZOOM_LEVEL_VALUE_HISTOGRAM =
             "Accessibility.Android.PageZoom.AppMenuSliderZoomLevelValue";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_CHANGED_HISTOGRAM =
             "Accessibility.Android.PageZoom.SettingsDefaultZoomLevelChanged";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_SETTINGS_DEFAULT_ZOOM_LEVEL_VALUE_HISTOGRAM =
             "Accessibility.Android.PageZoom.SettingsDefaultZoomLevelValue";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static final String PAGE_ZOOM_FEATURE_USAGE = "Accessibility.Android.PageZoom.Usage";
 
     /**

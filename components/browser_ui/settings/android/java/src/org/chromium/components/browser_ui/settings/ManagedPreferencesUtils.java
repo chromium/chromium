@@ -124,9 +124,9 @@ public class ManagedPreferencesUtils {
 
     /**
      * @return The resource ID for the managed icon to show. Returns 0 if no managed icon should be
-     *         shown.
+     *     shown.
      */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static int getManagedIconResId(
             @Nullable ManagedPreferenceDelegate delegate, Preference preference) {
         if (delegate == null) return 0;

@@ -35,7 +35,7 @@ public class FormData {
     public final String mHost;
     public final List<FormFieldData> mFields;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     @CalledByNative
     static FormData createFormData(
             int sessionId,

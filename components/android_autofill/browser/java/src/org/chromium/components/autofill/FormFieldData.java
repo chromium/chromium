@@ -210,7 +210,7 @@ public class FormFieldData {
                 : getEmptyServerPredictionsString();
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static String getEmptyServerPredictionsString() {
         return "NO_SERVER_DATA";
     }
@@ -243,7 +243,7 @@ public class FormFieldData {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static FormFieldData createFormFieldData(
             String name,
             String label,

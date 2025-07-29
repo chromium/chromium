@@ -65,7 +65,7 @@ public class DeviceDelegate {
     }
 
     @CalledByNative
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static void openPixAccountLinkingPageInWallet(WindowAndroid windowAndroid, String email) {
         if (windowAndroid == null) {
             return;

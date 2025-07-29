@@ -143,7 +143,7 @@ public class PageInfoPermissionsController extends PageInfoPreferenceSubpageCont
     }
 
     /** Returns the most comprehensive subtitle summary string. */
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public static @Nullable String getPermissionSummaryString(
             List<PermissionObject> permissions, Resources resources) {
         int numPermissions = permissions.size();

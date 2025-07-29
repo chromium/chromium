@@ -70,7 +70,7 @@ public class PageZoomMediator {
         PageZoomMetrics.logZoomLevelUKM(mWebContents, value);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void handleDecreaseClicked(@Nullable Void unused) {
         // When decreasing zoom, "snap" to the greatest preset value that is less than the current.
         double currentZoomFactor = getZoomLevel(mWebContents);
@@ -81,7 +81,7 @@ public class PageZoomMediator {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void handleIncreaseClicked(@Nullable Void unused) {
         // When increasing zoom, "snap" to the smallest preset value that is more than the current.
         double currentZoomFactor = getZoomLevel(mWebContents);
@@ -92,7 +92,7 @@ public class PageZoomMediator {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void handleResetClicked(@Nullable Void unused) {
         // Reset as if the user moved the seekbar to the default zoom value
         handleSeekBarValueChanged(
@@ -150,12 +150,12 @@ public class PageZoomMediator {
     }
 
     // Pass-through methods to HostZoomMap, which has static methods to call through JNI.
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     void setZoomLevel(WebContents webContents, double newZoomLevel) {
         HostZoomMap.setZoomLevel(webContents, newZoomLevel);
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     double getZoomLevel(WebContents webContents) {
         return HostZoomMap.getZoomLevel(webContents);
     }
