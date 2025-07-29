@@ -382,6 +382,9 @@ void FillAndSubmitXframeCreditCardForm() {
   [[EarlGrey selectElementWithMatcher:UploadBottomSheetCancelButtonMatcher()]
       performAction:grey_tap()];
 
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+
   // Assert save card bottomsheet dimisses.
   GREYAssertTrue(
       [self
