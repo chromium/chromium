@@ -187,6 +187,9 @@ class PermissionRequest {
   // request types.
   PermissionRequestGestureType GetGestureType() const;
 
+  // Used to store the prompt options for the permission request.
+  void SetPromptOptions(PromptOptions prompt_options);
+
   virtual const std::vector<std::string>& GetRequestedAudioCaptureDeviceIds()
       const;
   virtual const std::vector<std::string>& GetRequestedVideoCaptureDeviceIds()

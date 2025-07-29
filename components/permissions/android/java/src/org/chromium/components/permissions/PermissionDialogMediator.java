@@ -117,8 +117,10 @@ public class PermissionDialogMediator
         mState = State.PROMPT_OPEN;
     }
 
-    private void onLocationAccuracyRadioButtonSelected(int accuracy) {
-        // TODO(crbug.com/410752554): Handle the selected location accuracy.
+    private void onLocationAccuracyRadioButtonSelected(boolean accuracy) {
+        if (mDialogDelegate != null) {
+            mDialogDelegate.onGeolocationAccuracySelected(accuracy);
+        }
     }
 
     /** Update the current displaying dialog. */

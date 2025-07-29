@@ -447,6 +447,10 @@ PermissionRequestGestureType PermissionRequest::GetGestureType() const {
   return PermissionUtil::GetGestureType(data_->user_gesture);
 }
 
+void PermissionRequest::SetPromptOptions(PromptOptions prompt_options) {
+  data_->prompt_options = std::move(prompt_options);
+}
+
 const std::vector<std::string>&
 PermissionRequest::GetRequestedAudioCaptureDeviceIds() const {
   return data_->requested_audio_capture_device_ids;

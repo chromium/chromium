@@ -99,6 +99,8 @@ class PermissionPromptAndroid : public PermissionPrompt {
 
   bool IsShowing() const { return this == delegate()->GetCurrentPrompt(); }
 
+  void SetPromptOptions(PromptOptions prompt_options);
+
  protected:
   Delegate* delegate() const { return delegate_; }
 

@@ -284,6 +284,8 @@ class PermissionRequestManager
   // PromptResolved metrics, for ask prompts.
   bool ShouldRecordUmaForCurrentPrompt() const;
 
+  void SetPromptOptions(PromptOptions prompt_options) override;
+
  private:
   friend class test::PermissionRequestManagerTestApi;
   friend class test::MockPermissionRequestManager;

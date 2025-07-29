@@ -106,6 +106,8 @@ class PermissionDialogDelegate : public content::WebContentsObserver {
   // update permission icon or showing next dialog.
   void NotifyPermissionAllowed();
 
+  void OnGeolocationAccuracySelected(JNIEnv* env, bool isPrecise);
+
  private:
   // On navigation or page destruction, hide the dialog.
   void DismissDialog();

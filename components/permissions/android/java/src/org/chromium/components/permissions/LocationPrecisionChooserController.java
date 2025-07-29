@@ -42,7 +42,7 @@ public class LocationPrecisionChooserController {
     private final Context mContext;
     private final LinearLayout mContainer;
     private final @LocationAccuracy int mInitialSelection;
-    private final @Nullable Consumer<Integer> mSelectionListener;
+    private final @Nullable Consumer<Boolean> mSelectionListener;
     private final List<RichRadioButtonData> mOptionsToDisplay;
     private final Map<String, Integer> mIdToAccuracyMap;
 
@@ -51,7 +51,7 @@ public class LocationPrecisionChooserController {
     public LocationPrecisionChooserController(
             Context context,
             LinearLayout container,
-            @Nullable Consumer<Integer> selectionListener) {
+            @Nullable Consumer<Boolean> selectionListener) {
 
         mContext = context;
         mContainer = container;
@@ -92,7 +92,7 @@ public class LocationPrecisionChooserController {
                     if (mSelectionListener != null) {
                         @LocationAccuracy Integer accuracy = mIdToAccuracyMap.get(selectedId);
                         if (accuracy != null) {
-                            mSelectionListener.accept(accuracy);
+                            mSelectionListener.accept(accuracy == LocationAccuracy.PRECISE);
                         }
                     }
                 });

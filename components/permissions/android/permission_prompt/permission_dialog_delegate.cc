@@ -287,6 +287,18 @@ void PermissionDialogDelegate::WebContentsDestroyed() {
   DismissDialog();
 }
 
+void PermissionDialogDelegate::OnGeolocationAccuracySelected(JNIEnv* env,
+                                                             bool isPrecise) {
+  CHECK(permission_prompt_);
+
+  GeolocationPromptOptions geolocation_options;
+  geolocation_options.selected_precise = isPrecise;
+
+  PromptOptions prompt_options = geolocation_options;
+
+  permission_prompt_->SetPromptOptions(std::move(prompt_options));
+}
+
 static jint JNI_PermissionDialogDelegate_GetRequestTypeEnumSize(JNIEnv* env) {
   return static_cast<int>(RequestType::kMaxValue) + 1;
 }

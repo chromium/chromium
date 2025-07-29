@@ -209,7 +209,8 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
                                 request_data.embedding_origin,
                                 std::move(callback), false /* persist */,
-                                PermissionDecision::kDeny);
+                                PermissionDecision::kDeny,
+                                request_data.prompt_options);
       return;
     }
 
@@ -229,7 +230,8 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
       FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
                                 request_data.embedding_origin,
                                 std::move(callback), false /* persist */,
-                                PermissionDecision::kDeny);
+                                PermissionDecision::kDeny,
+                                request_data.prompt_options);
       return;
     }
 
@@ -241,13 +243,14 @@ void GeolocationPermissionContextAndroid::NotifyPermissionSet(
         base::BindOnce(
             &GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown,
             weak_factory_.GetWeakPtr(), request_data.requesting_origin,
-            request_data.embedding_origin, persist, decision));
+            request_data.embedding_origin, persist, decision,
+            request_data.prompt_options));
     return;
   }
 
   FinishNotifyPermissionSet(request_data.id, request_data.requesting_origin,
                             request_data.embedding_origin, std::move(callback),
-                            persist, decision);
+                            persist, decision, request_data.prompt_options);
 }
 
 content::PermissionResult
@@ -425,6 +428,7 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
     const GURL& embedding_origin,
     bool persist,
     PermissionDecision decision,
+    std::optional<PromptOptions> prompt_options,
     LocationSettingsDialogOutcome prompt_outcome) {
   bool is_default_search = IsRequestingOriginDSE(requesting_origin);
   if (prompt_outcome == GRANTED) {
@@ -440,9 +444,10 @@ void GeolocationPermissionContextAndroid::OnLocationSettingsDialogShown(
   if (!location_settings_dialog_callback_)
     return;
 
-  FinishNotifyPermissionSet(
-      location_settings_dialog_request_id_, requesting_origin, embedding_origin,
-      std::move(location_settings_dialog_callback_), persist, decision);
+  FinishNotifyPermissionSet(location_settings_dialog_request_id_,
+                            requesting_origin, embedding_origin,
+                            std::move(location_settings_dialog_callback_),
+                            persist, decision, prompt_options);
 
   location_settings_dialog_request_id_ =
       PermissionRequestID(content::GlobalRenderFrameHostId(0, 0),
@@ -455,14 +460,17 @@ void GeolocationPermissionContextAndroid::FinishNotifyPermissionSet(
     const GURL& embedding_origin,
     BrowserPermissionCallback callback,
     bool persist,
-    PermissionDecision decision) {
+    PermissionDecision decision,
+    std::optional<PromptOptions> prompt_options) {
+  PermissionRequestData request_data(
+      this, id,
+      content::PermissionRequestDescription(
+          content::PermissionDescriptorUtil::CreatePermissionDescriptorForPermissionType(
+              blink::PermissionType::GEOLOCATION)),
+      requesting_origin, embedding_origin);
+  request_data.prompt_options = prompt_options.value_or(std::monostate());
   GeolocationPermissionContext::NotifyPermissionSet(
-      PermissionRequestData(this, id,
-                            content::PermissionRequestDescription(
-                                content::PermissionDescriptorUtil::
-                                    CreatePermissionDescriptorForPermissionType(
-                                        blink::PermissionType::GEOLOCATION)),
-                            requesting_origin),
+     request_data,
       std::move(callback), persist, decision, /*is_final_decision=*/true);
 }
 

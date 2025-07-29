@@ -262,6 +262,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrants() {
 #endif
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::HAND_TRACKING,
@@ -280,6 +281,7 @@ const std::vector<ContentSettingsType>& GetTypesWithTemporaryGrantsInHcsm() {
 #endif
       ContentSettingsType::KEYBOARD_LOCK,
       ContentSettingsType::GEOLOCATION,
+      ContentSettingsType::GEOLOCATION_WITH_OPTIONS,
       ContentSettingsType::MEDIASTREAM_MIC,
       ContentSettingsType::MEDIASTREAM_CAMERA,
       ContentSettingsType::HAND_TRACKING,

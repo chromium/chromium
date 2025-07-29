@@ -179,6 +179,12 @@ public class PermissionDialogDelegate {
         mDialogController = controller;
     }
 
+    public void onGeolocationAccuracySelected(boolean isPrecise) {
+        assert mNativeDelegatePtr != 0;
+        PermissionDialogDelegateJni.get()
+                .onGeolocationAccuracySelected(mNativeDelegatePtr, isPrecise);
+    }
+
     /** Return the size of the RequestType enum used for permission requests. */
     public static int getRequestTypeEnumSize() {
         return PermissionDialogDelegateJni.get().getRequestTypeEnumSize();
@@ -329,5 +335,7 @@ public class PermissionDialogDelegate {
         void systemSettingsShown(long nativePermissionDialogDelegate);
 
         int getRequestTypeEnumSize();
+
+        void onGeolocationAccuracySelected(long nativePermissionDialogDelegate, boolean isPrecise);
     }
 }

@@ -884,6 +884,13 @@ const PermissionPrompt* PermissionRequestManager::GetCurrentPrompt() const {
   return view_.get();
 }
 
+void PermissionRequestManager::SetPromptOptions(
+    PromptOptions prompt_options) {
+  for (auto& request : requests_) {
+    request->SetPromptOptions(prompt_options);
+  }
+}
+
 bool PermissionRequestManager::
     IsCurrentRequestEmbeddedPermissionElementInitiated() const {
   return IsRequestInProgress() &&
