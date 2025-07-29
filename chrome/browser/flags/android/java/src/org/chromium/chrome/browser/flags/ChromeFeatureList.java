@@ -1466,6 +1466,9 @@ public abstract class ChromeFeatureList {
                             "google_bottom_bar_variant_is_google_default_search_engine_check_enabled",
                             false);
 
+    public static final IntCachedFeatureParam sCctResetMinimumTimeoutMinutes =
+            newIntCachedFeatureParam(CCT_RESET_TIMEOUT_ENABLED, "minimum_reset_timeout_mins", 1);
+
     public static final StringCachedFeatureParam sCctResizableForThirdPartiesAllowlistEntries =
             newStringCachedFeatureParam(CCT_RESIZABLE_FOR_THIRD_PARTIES, "allowlist_entries", "");
     public static final StringCachedFeatureParam sCctResizableForThirdPartiesDenylistEntries =
@@ -1730,6 +1733,7 @@ public abstract class ChromeFeatureList {
                     sCctGoogleBottomBarVariantLayoutsSingleDeckerHeightDp,
                     sCctGoogleBottomBarVariantLayoutsVariantLayout,
                     sCctMinimizedEnabledByDefaultManufacturerExcludeList,
+                    sCctResetMinimumTimeoutMinutes,
                     sCctResizableForThirdPartiesAllowlistEntries,
                     sCctResizableForThirdPartiesDefaultPolicy,
                     sCctResizableForThirdPartiesDenylistEntries,

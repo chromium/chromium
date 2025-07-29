@@ -4797,6 +4797,26 @@ const FeatureEntry::FeatureVariation
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kCCTResetTimeoutParams_1min[] = {
+    {"minimum_reset_timeout_mins", "1"},
+};
+const FeatureEntry::FeatureParam kCCTResetTimeoutParams_15min[] = {
+    {"minimum_reset_timeout_mins", "15"},
+};
+const FeatureEntry::FeatureParam kCCTResetTimeoutParams_30min[] = {
+    {"minimum_reset_timeout_mins", "30"},
+};
+const FeatureEntry::FeatureVariation kCCTResetTimeoutVariations[] = {
+    {"- Minimum timeout 1 minute", kCCTResetTimeoutParams_1min,
+     std::size(kCCTResetTimeoutParams_1min), nullptr},
+    {"- Minimum timeout 15 minutes", kCCTResetTimeoutParams_15min,
+     std::size(kCCTResetTimeoutParams_15min), nullptr},
+    {"- Minimum timeout 30 minutes", kCCTResetTimeoutParams_30min,
+     std::size(kCCTResetTimeoutParams_30min), nullptr},
+};
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
 const FeatureEntry::FeatureParam kAndroidTabDeclutterAutoDeleteTesting[] = {
     {"android_tab_declutter_auto_delete_promo_test", "true"}};
 const FeatureEntry::FeatureVariation
@@ -8129,7 +8149,10 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-reset-timeout-enabled",
      flag_descriptions::kCCTResetTimeoutEnabledName,
      flag_descriptions::kCCTResetTimeoutEnabledDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kCCTResetTimeoutEnabled)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+        chrome::android::kCCTResetTimeoutEnabled,
+        kCCTResetTimeoutVariations,
+        "CCTResetTimeoutVariations")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
