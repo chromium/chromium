@@ -916,15 +916,10 @@ enum class FullscreenTransitionSpeed {
 
 FullscreenTransitionSpeed FullscreenTransitionSpeedParam();
 
-bool IsFullscreenTransitionSet();
+bool IsFullscreenTransitionSpeedSet();
 
-bool IsFullscreenTransitionOffsetSet();
-
-extern const char kMediumFullscreenTransitionOffsetParam[];
-
-// Feature flag to changes the distance of unique scrolling before triggering
-// the fullscreen transition or the speed of the transition.
-BASE_DECLARE_FEATURE(kFullscreenTransition);
+// Feature flag to changes the speed of the transition to fullscreen.
+BASE_DECLARE_FEATURE(kFullscreenTransitionSpeed);
 
 // Feature flag for switching the toolbar UI to an observer-based architecture.
 BASE_DECLARE_FEATURE(kRefactorToolbarsSize);

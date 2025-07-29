@@ -132,8 +132,7 @@
   // Update the content offset of the scroll view to match the padding
   // that will be included in the frame.
   newContentOffset.y += (insets.top - currentTopInset) / self.model->GetSpeed();
-  if (self.compensateFrameChangeByOffset &&
-      !IsFullscreenTransitionOffsetSet()) {
+  if (self.compensateFrameChangeByOffset) {
     scrollViewProxy.contentOffset = newContentOffset;
   }
 

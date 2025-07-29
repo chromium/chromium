@@ -12573,7 +12573,7 @@
             ]
         }
     ],
-    "IOSFullscreenTransition": [
+    "IOSFullscreenTransitionSpeed": [
         {
             "platforms": [
                 "ios"
@@ -12585,7 +12585,7 @@
                         "FullscreenTransitionSpeed": "0"
                     },
                     "enable_features": [
-                        "FullscreenTransition"
+                        "FullscreenTransitionSpeed"
                     ]
                 },
                 {
@@ -12594,16 +12594,7 @@
                         "FullscreenTransitionSpeed": "2"
                     },
                     "enable_features": [
-                        "FullscreenTransition"
-                    ]
-                },
-                {
-                    "name": "EnabledMediumDelay",
-                    "params": {
-                        "MediumFullscreenTransitionOffset": "true"
-                    },
-                    "enable_features": [
-                        "FullscreenTransition"
+                        "FullscreenTransitionSpeed"
                     ]
                 }
             ]

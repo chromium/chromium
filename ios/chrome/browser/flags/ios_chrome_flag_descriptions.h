@@ -366,8 +366,8 @@ extern const char kFullscreenImprovementDescription[];
 extern const char kFullscreenPromosManagerSkipInternalLimitsName[];
 extern const char kFullscreenPromosManagerSkipInternalLimitsDescription[];
 
-extern const char kFullscreenTransitionName[];
-extern const char kFullscreenTransitionDescription[];
+extern const char kFullscreenTransitionSpeedName[];
+extern const char kFullscreenTransitionSpeedDescription[];
 
 extern const char kFullscreenSmoothScrollingName[];
 extern const char kFullscreenSmoothScrollingDescription[];

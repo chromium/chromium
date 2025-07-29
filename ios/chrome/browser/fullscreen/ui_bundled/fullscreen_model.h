@@ -209,16 +209,6 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   // offset is updated.
   void SetLastScrollDirection(FullscreenModelScrollDirection direction);
 
-  // Helper for updating `progress_` accordingly to `distance_offset_`.
-  CGFloat UpdateProgressHelper(CGFloat progress_shift,
-                               CGFloat delta,
-                               CGFloat delta_shift,
-                               CGFloat toolbar_height);
-
-  // Helper for updating `scrolling_delay_delta_shift_down_to_up` and
-  // `scrolling_delay_delta_shift_up_to_down`.
-  CGFloat GetNewDeltaShift(CGFloat delta) const;
-
   // Updates `speed_` of the fullscreen model accordingly to
   // fullscreen flag `fullscreen transition experiment`.
   void UpdateSpeed();
@@ -322,14 +312,8 @@ class FullscreenModel : public ChromeBroadcastObserverInterface,
   // Current direction of scrolling initiated by the user.
   FullscreenModelScrollDirection fullscreen_scroll_direction_ =
       FullscreenModelScrollDirection::kNone;
-  // Distance in pixels before triggering fullscreen transition.
-  CGFloat distance_offset_ = 0.0;
   // Speed of fullscreen transition.
   CGFloat speed_ = 1.0;
-  CGFloat scrolling_delay_progress_shift_down_to_up_ = 0.0;
-  CGFloat scrolling_delay_delta_shift_down_to_up_ = 0.0;
-  CGFloat scrolling_delay_progress_shift_up_to_down_ = 1.0;
-  CGFloat scrolling_delay_delta_shift_up_to_down_ = 0.0;
   // Time when scrolling started.
   std::optional<base::TimeTicks> start_scrolling_time_ = std::nullopt;
   // True is the scrolling time have been recorded.

@@ -5269,9 +5269,9 @@
     "expiry_milestone": 145
   },
   {
-    "name": "fullscreen-transition",
+    "name": "fullscreen-transition-speed",
     "owners": [ "prasanaa@google.com", "alionadangla@chromium.org", "bling-flags@google.com" ],
-    "expiry_milestone": 150
+    "expiry_milestone": 155
   },
   {
     "name": "fullscreen-viewport-adjustment-experiment",

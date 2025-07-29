@@ -1118,8 +1118,6 @@ const FeatureEntry::FeatureParam kDefaultFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "1"}};
 const FeatureEntry::FeatureParam kFastFullscreenTransitionSpeed[] = {
     {kFullscreenTransitionSpeedParam, "2"}};
-const FeatureEntry::FeatureParam kMediumFullscreenTransitionOffset[] = {
-    {kMediumFullscreenTransitionOffsetParam, "true"}};
 
 const FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
     {"Slow speed", kSlowFullscreenTransitionSpeed,
@@ -1127,9 +1125,7 @@ const FeatureEntry::FeatureVariation kFullscreenTransitionVariations[] = {
     {"Default speed", kDefaultFullscreenTransitionSpeed,
      std::size(kDefaultFullscreenTransitionSpeed), nullptr},
     {"Fast speed", kFastFullscreenTransitionSpeed,
-     std::size(kFastFullscreenTransitionSpeed), nullptr},
-    {"Medium offset", kMediumFullscreenTransitionOffset,
-     std::size(kMediumFullscreenTransitionOffset), nullptr}};
+     std::size(kFastFullscreenTransitionSpeed), nullptr}};
 
 const FeatureEntry::FeatureParam kFullscreenScrollThreshold1[] = {
     {web::features::kFullscreenScrollThresholdAmount, "1"}};
@@ -2418,11 +2414,12 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(
          autofill::features::
              kAutofillEnableAllowlistForBmoCardCategoryBenefits)},
-    {"fullscreen-transition", flag_descriptions::kFullscreenTransitionName,
-     flag_descriptions::kFullscreenTransitionDescription, flags_ui::kOsIos,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(kFullscreenTransition,
+    {"fullscreen-transition-speed",
+     flag_descriptions::kFullscreenTransitionSpeedName,
+     flag_descriptions::kFullscreenTransitionSpeedDescription, flags_ui::kOsIos,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(kFullscreenTransitionSpeed,
                                     kFullscreenTransitionVariations,
-                                    "IOSFullscreenTransition")},
+                                    "IOSFullscreenTransitionSpeed")},
     {"ios-deprecate-feed-header",
      flag_descriptions::kDeprecateFeedHeaderExperimentName,
      flag_descriptions::kDeprecateFeedHeaderExperimentDescription,

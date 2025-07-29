@@ -1046,26 +1046,19 @@ const char kFullscreenTransitionDefaultSpeed[] =
     "MediumFullscreenTransitionSpeed";
 const char kFullscreenTransitionFaster[] = "FastFullscreenTransitionSpeed";
 const char kFullscreenTransitionSpeedParam[] = "FullscreenTransitionSpeed";
-const char kMediumFullscreenTransitionOffsetParam[] =
-    "MediumFullscreenTransitionOffset";
 
-bool IsFullscreenTransitionSet() {
-  return base::FeatureList::IsEnabled(kFullscreenTransition);
+bool IsFullscreenTransitionSpeedSet() {
+  return base::FeatureList::IsEnabled(kFullscreenTransitionSpeed);
 }
 
 FullscreenTransitionSpeed FullscreenTransitionSpeedParam() {
   return static_cast<FullscreenTransitionSpeed>(
       base::GetFieldTrialParamByFeatureAsInt(
-          kFullscreenTransition, kFullscreenTransitionSpeedParam, 1));
+          kFullscreenTransitionSpeed, kFullscreenTransitionSpeedParam, 1));
 }
 
-bool IsFullscreenTransitionOffsetSet() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      kFullscreenTransition, kMediumFullscreenTransitionOffsetParam, false);
-}
-
-BASE_FEATURE(kFullscreenTransition,
-             "FullscreenTransition",
+BASE_FEATURE(kFullscreenTransitionSpeed,
+             "FullscreenTransitionSpeed",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kRefactorToolbarsSize,
