@@ -227,6 +227,21 @@ TEST_P(QuicSessionAttemptManagerTest, RequestSessionSync) {
   EXPECT_TRUE(requester.session());
 }
 
+TEST_P(QuicSessionAttemptManagerTest, RequestSessionSyncFailure) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(net::features::kAsyncQuicSession);
+
+  InitializeWithDefaultProofVerifyDetails();
+
+  MockQuicData socket_data(version_);
+  socket_data.AddConnect(ASYNC, ERR_CONNECTION_REFUSED);
+  socket_data.AddSocketDataToFactory(socket_factory_.get());
+
+  SessionRequester requester = CreateRequester();
+  int result = requester.Request();
+  EXPECT_THAT(result, IsError(ERR_CONNECTION_REFUSED));
+}
+
 TEST_P(QuicSessionAttemptManagerTest, RequestSessionAsync) {
   InitializeWithDefaultProofVerifyDetails();
 
