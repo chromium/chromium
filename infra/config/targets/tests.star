@@ -566,13 +566,6 @@ targets.tests.isolated_script_test(
     name = "chrome_java_test_pagecontroller_junit_tests",
 )
 
-targets.tests.gtest_test(
-    name = "chrome_java_test_wpr_tests",
-    mixins = [
-        "skia_gold_test",
-    ],
-)
-
 targets.tests.isolated_script_test(
     name = "chrome_junit_tests",
 )

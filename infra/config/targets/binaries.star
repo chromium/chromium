@@ -473,13 +473,6 @@ targets.binaries.generated_script(
     skip_usage_check = True,
 )
 
-targets.binaries.console_test_launcher(
-    name = "chrome_java_test_wpr_tests",
-    label = "//chrome/test/android:chrome_java_test_wpr_tests",
-    # All references have been moved to starlark
-    skip_usage_check = True,
-)
-
 targets.binaries.generated_script(
     name = "chrome_junit_tests",
     label = "//chrome/android:chrome_junit_tests",

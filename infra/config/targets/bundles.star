@@ -659,7 +659,6 @@ targets.bundle(
         "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
-        "android_wpr_record_replay_tests",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -711,7 +710,6 @@ targets.bundle(
         "android_monochrome_smoke_tests",
         "android_smoke_tests",
         "android_specific_chromium_gtests",
-        "android_wpr_record_replay_tests",
         "chromium_gtests",
         "chromium_gtests_for_devices_with_graphical_output",
         "linux_flavor_specific_chromium_gtests",
@@ -959,13 +957,6 @@ targets.bundle(
             "gpu_integration_test_common_args",
         ],
     },
-)
-
-targets.bundle(
-    name = "android_wpr_record_replay_tests",
-    targets = [
-        "chrome_java_test_wpr_tests",
-    ],
 )
 
 targets.bundle(
