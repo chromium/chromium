@@ -185,6 +185,11 @@ void AutofillAiLogger::RecordFunnelMetrics(const FunnelState& funnel_state,
   if (!funnel_state.has_data_to_fill) {
     return;
   }
+  LogFunnelMetric("SuggestionAfterReadiness", submission_state,
+                  funnel_state.suggestions_shown);
+  if (!funnel_state.suggestions_shown) {
+    return;
+  }
   LogFunnelMetric("FillAfterSuggestion", submission_state,
                   funnel_state.did_fill_suggestions);
   if (!funnel_state.did_fill_suggestions) {

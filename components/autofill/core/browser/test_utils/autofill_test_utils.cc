@@ -1024,6 +1024,44 @@ EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
       /*use_date=*/base::Time::FromTimeT(0));
 }
 
+EntityInstance GetNationalIdCardEntityInstance(NationalIdCardOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.number) {
+    attributes.emplace_back(AttributeType(kNationalIdCardNumber));
+    attributes.back().SetInfo(NATIONAL_ID_CARD_NUMBER, options.number,
+                              std::string(options.app_locale),
+                              /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.country) {
+    attributes.emplace_back(AttributeType(kNationalIdCardCountry));
+    attributes.back().SetInfo(NATIONAL_ID_CARD_ISSUING_COUNTRY, options.country,
+                              std::string(options.app_locale),
+                              /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.issue_date) {
+    attributes.emplace_back(AttributeType(kNationalIdCardIssueDate));
+    attributes.back().SetInfo(NATIONAL_ID_CARD_ISSUE_DATE, options.issue_date,
+                              std::string(options.app_locale),
+                              /*format_string=*/u"",
+                              VerificationStatus::kNoStatus);
+  }
+  if (options.expiry_date) {
+    attributes.emplace_back(AttributeType(kNationalIdCardExpirationDate));
+    attributes.back().SetInfo(
+        NATIONAL_ID_CARD_EXPIRATION_DATE, options.expiry_date,
+        std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+  return EntityInstance(
+      EntityType(EntityTypeName::kNationalIdCard), std::move(attributes),
+      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      /*use_date=*/base::Time::FromTimeT(0));
+}
+
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types) {
   possible_field_types.emplace_back();

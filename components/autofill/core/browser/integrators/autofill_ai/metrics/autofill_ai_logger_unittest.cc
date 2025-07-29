@@ -51,52 +51,8 @@ using ::testing::ReturnRef;
 constexpr auto kVehicle = EntityType(EntityTypeName::kVehicle);
 constexpr auto kDriversLicense = EntityType(EntityTypeName::kDriversLicense);
 constexpr auto kPassport = EntityType(EntityTypeName::kPassport);
-
+constexpr auto kNationalIdCard = EntityType(EntityTypeName::kNationalIdCard);
 constexpr char kDefaultUrl[] = "https://example.com";
-constexpr char16_t kDefaultPassportNumber[] = u"123";
-constexpr char16_t kDefaultLicensePlate[] = u"XC-12-34";
-
-constexpr char submitted_str[] = "Submitted";
-constexpr char abandoned_str[] = "Abandoned";
-constexpr char eligibility[] = "Autofill.Ai.Funnel.%s.Eligibility";
-constexpr char readiness_after_eligibility[] =
-    "Autofill.Ai.Funnel.%s.ReadinessAfterEligibility";
-constexpr char fill_after_suggestion[] =
-    "Autofill.Ai.Funnel.%s.FillAfterSuggestion";
-constexpr char correction_after_fill[] =
-    "Autofill.Ai.Funnel.%s.CorrectionAfterFill";
-
-std::string GetEligibilityHistogram() {
-  return base::StringPrintf(eligibility, "Aggregate");
-}
-std::string GetEligibilityHistogram(bool submitted) {
-  return base::StringPrintf(eligibility,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetReadinessAfterEligibilityHistogram() {
-  return base::StringPrintf(readiness_after_eligibility, "Aggregate");
-}
-std::string GetReadinessAfterEligibilityHistogram(bool submitted) {
-  return base::StringPrintf(readiness_after_eligibility,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetFillAfterSuggestionHistogram() {
-  return base::StringPrintf(fill_after_suggestion, "Aggregate");
-}
-std::string GetFillAfterSuggestionHistogram(bool submitted) {
-  return base::StringPrintf(fill_after_suggestion,
-                            submitted ? submitted_str : abandoned_str);
-}
-
-std::string GetCorrectionAfterFillHistogram() {
-  return base::StringPrintf(correction_after_fill, "Aggregate");
-}
-std::string GetCorrectionAfterFillHistogram(bool submitted) {
-  return base::StringPrintf(correction_after_fill,
-                            submitted ? submitted_str : abandoned_str);
-}
 
 class MockAutofillClient : public TestAutofillClient {
  public:
@@ -114,6 +70,10 @@ class MockAutofillClient : public TestAutofillClient {
 class BaseAutofillAiTest : public testing::Test {
  public:
   BaseAutofillAiTest() {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kAutofillAiWithDataSchema,
+                              features::kAutofillAiNationalIdCard},
+        /*disabled_features=*/{});
     autofill_client().set_entity_data_manager(
         std::make_unique<EntityDataManager>(
             webdata_helper_.autofill_webdata_service(),
@@ -154,51 +114,36 @@ class BaseAutofillAiTest : public testing::Test {
   }
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreatePassportForm(
-      std::u16string passport_number = std::u16string(kDefaultPassportNumber),
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form = CreateFormStructure(
         {PASSPORT_NAME_TAG, PASSPORT_NUMBER, PHONE_HOME_WHOLE_NUMBER},
         std::move(url));
-    form->field(0)->set_value(u"Jon Doe");
-    form->field(1)->set_value(std::move(passport_number));
     return form;
   }
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateVehicleForm(
-      std::u16string license_plate = std::u16string(kDefaultLicensePlate),
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form = CreateFormStructure(
         {VEHICLE_OWNER_TAG, VEHICLE_LICENSE_PLATE}, std::move(url));
-    form->field(0)->set_value(u"Jane Doe");
-    form->field(1)->set_value(std::move(license_plate));
     return form;
   }
 
   [[nodiscard]] std::unique_ptr<FormStructure> CreateDriversLicenseForm(
-      std::u16string passport_number = std::u16string(kDefaultPassportNumber),
       std::string url = std::string(kDefaultUrl)) {
     std::unique_ptr<FormStructure> form =
         CreateFormStructure({DRIVERS_LICENSE_NAME_TAG, DRIVERS_LICENSE_NUMBER,
                              DRIVERS_LICENSE_REGION, DRIVERS_LICENSE_ISSUE_DATE,
                              DRIVERS_LICENSE_EXPIRATION_DATE},
                             std::move(url));
-    form->field(0)->set_value(u"Jon Doe");
-    form->field(1)->set_value(std::move(passport_number));
     return form;
   }
 
-  // A form is made eligible by adding an AutofillAi type prediction.
-  std::unique_ptr<FormStructure> CreateEligibleForm() {
-    FormData form_data;
-    form_data.set_main_frame_origin(
-        url::Origin::Create(GURL("https://myform_root.com/form.html")));
-    auto form = std::make_unique<FormStructure>(form_data);
-    AutofillField& autofill_ai_field = test_api(*form).PushField();
-    AutofillQueryResponse::FormSuggestion::FieldSuggestion::FieldPrediction
-        prediction;
-    prediction.set_type(PASSPORT_NUMBER);
-    autofill_ai_field.set_server_predictions({prediction});
-
+  [[nodiscard]] std::unique_ptr<FormStructure> CreateNationalIdCardForm(
+      std::string url = std::string(kDefaultUrl)) {
+    std::unique_ptr<FormStructure> form = CreateFormStructure(
+        {NATIONAL_ID_CARD_NUMBER, NATIONAL_ID_CARD_ISSUING_COUNTRY,
+         NATIONAL_ID_CARD_ISSUE_DATE, NATIONAL_ID_CARD_EXPIRATION_DATE},
+        std::move(url));
     return form;
   }
 
@@ -215,8 +160,7 @@ class BaseAutofillAiTest : public testing::Test {
   MockAutofillClient& autofill_client() { return autofill_client_; }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kAutofillAiWithDataSchema};
+  base::test::ScopedFeatureList scoped_feature_list_;
   test::AutofillUnitTestEnvironment autofill_test_env_;
   base::test::SingleThreadTaskEnvironment task_environment_;
   NiceMock<MockAutofillClient> autofill_client_;
@@ -266,8 +210,9 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 
 // Test that the funnel metrics are logged correctly given different scenarios.
 // This test is parameterized by a boolean representing whether the form was
-// submitted or abandoned, and an integer representing the last stage of the
-// funnel that was reached:
+// submitted or abandoned, an `EntityType` representing the type of funnel we're
+// testing, and an integer representing the last stage of the funnel that was
+// reached:
 //
 // 0) A form was loaded
 // 1) The form was detected eligible for AutofillAi.
@@ -277,16 +222,47 @@ TEST_F(BaseAutofillAiTest, NumberOfFilledFields) {
 // 5) The user corrected the filled suggestion.
 class AutofillAiFunnelMetricsTest
     : public BaseAutofillAiTest,
-      public testing::WithParamInterface<std::tuple<bool, int>> {
+      public testing::WithParamInterface<std::tuple<bool, EntityType, int>> {
+  static constexpr char kFunnelUmaMask[] = "Autofill.Ai.Funnel.%s.%s";
+
  public:
   AutofillAiFunnelMetricsTest() = default;
 
   bool submitted() { return std::get<0>(GetParam()); }
-  bool is_form_eligible() { return std::get<1>(GetParam()) > 0; }
-  bool user_has_data() { return std::get<1>(GetParam()) > 1; }
-  bool user_saw_suggestions() { return std::get<1>(GetParam()) > 2; }
-  bool user_filled_suggestion() { return std::get<1>(GetParam()) > 3; }
-  bool user_corrected_filling() { return std::get<1>(GetParam()) > 4; }
+  EntityType entity_type() { return std::get<1>(GetParam()); }
+  bool is_form_eligible() { return std::get<2>(GetParam()) > 0; }
+  bool user_has_data() { return std::get<2>(GetParam()) > 1; }
+  bool user_saw_suggestions() { return std::get<2>(GetParam()) > 2; }
+  bool user_filled_suggestion() { return std::get<2>(GetParam()) > 3; }
+  bool user_corrected_filling() { return std::get<2>(GetParam()) > 4; }
+
+  std::unique_ptr<FormStructure> CreateForm() {
+    switch (entity_type().name()) {
+      case EntityTypeName::kPassport:
+        return CreatePassportForm();
+      case EntityTypeName::kDriversLicense:
+        return CreateDriversLicenseForm();
+      case EntityTypeName::kVehicle:
+        return CreateVehicleForm();
+      case EntityTypeName::kNationalIdCard:
+        return CreateNationalIdCardForm();
+    }
+    NOTREACHED();
+  }
+
+  EntityInstance CreateEntity() {
+    switch (entity_type().name()) {
+      case EntityTypeName::kPassport:
+        return test::GetPassportEntityInstance();
+      case EntityTypeName::kDriversLicense:
+        return test::GetDriversLicenseEntityInstance();
+      case EntityTypeName::kVehicle:
+        return test::GetVehicleEntityInstance();
+      case EntityTypeName::kNationalIdCard:
+        return test::GetNationalIdCardEntityInstance();
+    }
+    NOTREACHED();
+  }
 
   void ExpectCorrectFunnelRecording(
       const base::HistogramTester& histogram_tester) {
@@ -321,6 +297,19 @@ class AutofillAiFunnelMetricsTest
     }
 
     if (user_has_data()) {
+      histogram_tester.ExpectUniqueSample(
+          GetSuggestionAfterReadinessHistogram(), user_saw_suggestions(), 1);
+      histogram_tester.ExpectUniqueSample(
+          GetSuggestionAfterReadinessHistogram(submitted()),
+          user_saw_suggestions(), 1);
+    } else {
+      histogram_tester.ExpectTotalCount(GetSuggestionAfterReadinessHistogram(),
+                                        0);
+      histogram_tester.ExpectTotalCount(
+          GetSuggestionAfterReadinessHistogram(submitted()), 0);
+    }
+
+    if (user_saw_suggestions()) {
       histogram_tester.ExpectUniqueSample(GetFillAfterSuggestionHistogram(),
                                           user_filled_suggestion(), 1);
       histogram_tester.ExpectUniqueSample(
@@ -344,11 +333,50 @@ class AutofillAiFunnelMetricsTest
           GetCorrectionAfterFillHistogram(submitted()), 0);
     }
   }
+
+ private:
+  std::string GetFunnelHistogram(std::string_view funnel_state,
+                                 std::optional<bool> submitted) {
+    std::string_view submission_state = "Aggregate";
+    if (submitted) {
+      submission_state = *submitted ? "Submitted" : "Abandoned";
+    }
+    return base::StringPrintf(kFunnelUmaMask, submission_state, funnel_state);
+  }
+
+  std::string GetEligibilityHistogram(
+      std::optional<bool> submitted = std::nullopt) {
+    return GetFunnelHistogram("Eligibility", submitted);
+  }
+
+  std::string GetReadinessAfterEligibilityHistogram(
+      std::optional<bool> submitted = std::nullopt) {
+    return GetFunnelHistogram("ReadinessAfterEligibility", submitted);
+  }
+
+  std::string GetSuggestionAfterReadinessHistogram(
+      std::optional<bool> submitted = std::nullopt) {
+    return GetFunnelHistogram("SuggestionAfterReadiness", submitted);
+  }
+
+  std::string GetFillAfterSuggestionHistogram(
+      std::optional<bool> submitted = std::nullopt) {
+    return GetFunnelHistogram("FillAfterSuggestion", submitted);
+  }
+
+  std::string GetCorrectionAfterFillHistogram(
+      std::optional<bool> submitted = std::nullopt) {
+    return GetFunnelHistogram("CorrectionAfterFill", submitted);
+  }
 };
 
 INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
                          AutofillAiFunnelMetricsTest,
                          testing::Combine(testing::Bool(),
+                                          testing::Values(kPassport,
+                                                          kDriversLicense,
+                                                          kVehicle,
+                                                          kNationalIdCard),
                                           testing::Values(0, 1, 2, 3, 4, 5)));
 
 // Tests that appropriate calls in `AutofillAiManager`
@@ -356,20 +384,20 @@ INSTANTIATE_TEST_SUITE_P(AutofillAiTest,
 TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   // This will dictate whether the form will be eligible for filling or not.
   std::unique_ptr<FormStructure> form =
-      is_form_eligible() ? CreateEligibleForm() : CreateIneligibleForm();
+      is_form_eligible() ? CreateForm() : CreateIneligibleForm();
   // This will dictate whether we consider the form ready to be filled or not.
-  EntityInstance passport = test::GetPassportEntityInstance();
+  EntityInstance entity = CreateEntity();
   if (user_has_data()) {
-    AddOrUpdateEntityInstance(passport);
+    AddOrUpdateEntityInstance(entity);
   }
   manager().OnFormSeen(*form);
 
   if (user_saw_suggestions()) {
-    manager().OnSuggestionsShown(*form, *form->field(0), {kPassport},
+    manager().OnSuggestionsShown(*form, *form->field(0), {entity_type()},
                                  /*ukm_source_id=*/{});
   }
   if (user_filled_suggestion()) {
-    manager().OnDidFillSuggestion(passport, *form, *form->field(0),
+    manager().OnDidFillSuggestion(entity, *form, *form->field(0),
                                   {form->field(0)},
                                   /*ukm_source_id=*/{});
   }
@@ -606,7 +634,7 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
 };
 
 TEST_F(AutofillAiMqlsMetricsTest, FieldEvent) {
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
 
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
                                                   {kPassport},
@@ -688,7 +716,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
 // in for Autofill AI.
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
   SetAutofillAiOptInStatus(autofill_client(), AutofillAiOptInStatus::kOptedOut);
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submission_state=*/true,
                                                  /*opt_in_status=*/false);
@@ -698,7 +726,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_OptOut) {
 // Tests that KeyMetrics MQLS metrics aren't recorded if the form was abandoned
 // and not submitted.
 TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics_FormAbandoned) {
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
 
   test_api(manager()).logger().RecordFormMetrics(*form, /*ukm_source_id=*/{},
                                                  /*submission_state=*/false,
@@ -715,7 +743,7 @@ TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsIfDisabledByEnterprisePolicy) {
       base::to_underlying(optimization_guide::model_execution::prefs::
                               ModelExecutionEnterprisePolicyValue::kDisable));
 
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
                                                   {kPassport},
                                                   /*ukm_source_id=*/{});
@@ -729,7 +757,7 @@ TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsIfDisabledByEnterprisePolicy) {
 TEST_F(AutofillAiMqlsMetricsTest, NoMqlsMetricsWhenOffTheRecord) {
   autofill_client().set_is_off_the_record(true);
 
-  std::unique_ptr<FormStructure> form = CreateEligibleForm();
+  std::unique_ptr<FormStructure> form = CreatePassportForm();
   test_api(manager()).logger().OnSuggestionsShown(*form, *form->field(0),
                                                   {kPassport},
                                                   /*ukm_source_id=*/{});
