@@ -32,7 +32,6 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink-forward.h"
-#include "third_party/blink/public/common/loader/worker_main_script_load_parameters.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/code_cache.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/script/script_type.mojom-blink-forward.h"
@@ -74,6 +73,7 @@ class WorkerResourceTimingNotifier;
 class TrustedTypePolicyFactory;
 class V8UnionTrustedScriptURLOrUSVString;
 class WorkerLocation;
+struct WorkerMainScriptLoadParameters;
 class WorkerNavigator;
 class WorkerThread;
 
