@@ -159,6 +159,12 @@ BASE_FEATURE_ENUM_PARAM(MiniToolbarActiveConfiguration,
                         MiniToolbarActiveConfiguration::ShowMenu,
                         &kMiniToolbarActiveConfigurationOptions);
 
+BASE_FEATURE_PARAM(int,
+                   kSideBySideSnapDistance,
+                   &kSideBySide,
+                   "snap_distance",
+                   5);
+
 // When enabled along with SideBySide flag, split tabs will be restored on
 // startup.
 BASE_FEATURE(kSideBySideSessionRestore,

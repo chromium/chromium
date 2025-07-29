@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/frame/multi_contents_view.h"
 
 #include <algorithm>
+#include <cstdlib>
 
 #include "base/check_deref.h"
 #include "base/feature_list.h"
@@ -231,20 +232,34 @@ void MultiContentsView::OnResize(int resize_amount, bool done_resizing) {
     initial_start_width_on_resize_ =
         std::make_optional(contents_container_views_[0]->size().width());
   }
-
   double total_width = contents_container_views_[0]->size().width() +
                        contents_container_views_[0]->GetInsets().width() +
                        contents_container_views_[1]->size().width() +
                        contents_container_views_[1]->GetInsets().width();
-  double start_ratio = (initial_start_width_on_resize_.value() +
-                        contents_container_views_[0]->GetInsets().width() +
-                        static_cast<double>(resize_amount)) /
-                       total_width;
-  delegate_->ResizeWebContents(start_ratio, done_resizing);
+  double end_width = (initial_start_width_on_resize_.value() +
+                      contents_container_views_[0]->GetInsets().width() +
+                      static_cast<double>(resize_amount));
+
+  // If end_width is within the snap point widths, update to the snap point.
+  delegate_->ResizeWebContents(
+      CalculateRatioWithSnapPoints(end_width, total_width), done_resizing);
 
   if (done_resizing) {
     initial_start_width_on_resize_ = std::nullopt;
   }
+}
+
+double MultiContentsView::CalculateRatioWithSnapPoints(
+    double end_width,
+    double total_width) const {
+  for (const double& snap_point : snap_points_) {
+    double dp_snap_point = snap_point * total_width;
+    if (std::abs(dp_snap_point - end_width) <
+        features::kSideBySideSnapDistance.Get()) {
+      return snap_point;
+    }
+  }
+  return end_width / total_width;
 }
 
 void MultiContentsView::OnPaint(gfx::Canvas* canvas) {
