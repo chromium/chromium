@@ -6,6 +6,7 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/unguessable_token.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {
@@ -18,6 +19,23 @@ const char kComposeboxSessionDurationCompleted[] =
     "Test.Composebox.Session.Duration.Completed";
 const char kComposeboxQuerySubmissionTime[] =
     "Test.Composebox.Query.Time.ToSubmission";
+const char kComposeboxFileUploadAttemptPdf[] =
+    "Test.Composebox.Session.File.Browser.UploadAttemptCount.Pdf";
+const char kComposeboxFileUploadSuccessPdf[] =
+    "Test.Composebox.Session.File.Browser.UploadSuccessCount.Pdf";
+const char kComposeboxFileUploadServerErrorPdf[] =
+    "Test.Composebox.Session.File.Browser.UploadFailureCount.Pdf";
+const char kComposeboxFileValidationBrowserErrorForPdf[] =
+    "Test.Composebox.Session.File.Browser.ValidationFailureCount.Pdf."
+    "BrowserProcessingError";
+const char kComposeboxFileUploadAttempt[] =
+    "Test.Composebox.Session.File.Browser.UploadAttemptCount.";
+const char kComposeboxFileUploadSuccess[] =
+    "Test.Composebox.Session.File.Browser.UploadSuccessCount.";
+const char kComposeboxFileUploadFailure[] =
+    "Test.Composebox.Session.File.Browser.UploadFailureCount.";
+const char kComposeboxFileValidationErrorTypes[] =
+    "Test.Composebox.Session.File.Browser.ValidationFailureCount.";
 }  // namespace
 
 class ComposeboxMetricsRecorderTest : public testing::Test {
@@ -107,3 +125,206 @@ TEST_F(ComposeboxMetricsRecorderTest, MultiQuerySubmissionSession) {
   histogram_tester().ExpectTimeBucketCount(kComposeboxQuerySubmissionTime,
                                            base::Seconds(90), 1);
 }
+
+TEST_F(ComposeboxMetricsRecorderTest, FileUploadSuccess) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  task_environment().FastForwardBy(base::Seconds(30));
+  // Simulate file upload.
+  lens::MimeType file_mime_type = lens::MimeType::kPdf;
+  FileUploadStatus upload_status = FileUploadStatus::kProcessing;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+  // Finally simulate upload success.
+  upload_status = FileUploadStatus::kUploadSuccessful;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+
+  DestructMetricsRecorder();
+  histogram_tester().ExpectTotalCount(kComposeboxFileUploadAttemptPdf, 1);
+  histogram_tester().ExpectTotalCount(kComposeboxFileUploadSuccessPdf, 1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, FileUploadError) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  task_environment().FastForwardBy(base::Seconds(30));
+  // Simulate file upload.
+  lens::MimeType file_mime_type = lens::MimeType::kPdf;
+  FileUploadStatus upload_status = FileUploadStatus::kProcessing;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+  // Next simulate file upload failure.
+  upload_status = FileUploadStatus::kUploadFailed;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      FileUploadErrorType::kServerError);
+
+  DestructMetricsRecorder();
+  histogram_tester().ExpectTotalCount(kComposeboxFileUploadAttemptPdf, 1);
+  histogram_tester().ExpectTotalCount(kComposeboxFileUploadServerErrorPdf, 1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, FileValidationError) {
+  // Setup user flow.
+  FileUploadErrorType error = FileUploadErrorType::kBrowserProcessingError;
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  task_environment().FastForwardBy(base::Seconds(30));
+  // Simulate file validation error.
+  lens::MimeType file_mime_type = lens::MimeType::kPdf;
+  FileUploadStatus upload_status = FileUploadStatus::kProcessing;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+  // Next simulate file validation error.
+  upload_status = FileUploadStatus::kValidationFailed;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status, error);
+
+  // Simulate another file validation error.
+  upload_status = FileUploadStatus::kProcessing;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+  upload_status = FileUploadStatus::kValidationFailed;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status, error);
+
+  DestructMetricsRecorder();
+  histogram_tester().ExpectBucketCount(kComposeboxFileUploadAttemptPdf, 2, 1);
+  histogram_tester().ExpectBucketCount(
+      kComposeboxFileValidationBrowserErrorForPdf, 2, 1);
+}
+
+TEST_F(ComposeboxMetricsRecorderTest, MultiFileUpload) {
+  // Setup user flow.
+  metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+  task_environment().FastForwardBy(base::Seconds(30));
+  // Simulate unsuccessful file upload.
+  lens::MimeType file_mime_type = lens::MimeType::kPdf;
+  FileUploadStatus upload_status = FileUploadStatus::kProcessing;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+  upload_status = FileUploadStatus::kUploadFailed;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      FileUploadErrorType::kServerError);
+
+  // Simulate successful file upload.
+  upload_status = FileUploadStatus::kProcessing;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+  upload_status = FileUploadStatus::kUploadSuccessful;
+  metrics().OnFileUploadStatusChanged(file_mime_type, upload_status,
+                                      std::nullopt);
+
+  DestructMetricsRecorder();
+  histogram_tester().ExpectBucketCount(kComposeboxFileUploadAttemptPdf, 2, 1);
+  histogram_tester().ExpectTotalCount(kComposeboxFileUploadSuccessPdf, 1);
+  histogram_tester().ExpectTotalCount(kComposeboxFileUploadServerErrorPdf, 1);
+}
+
+class MetricsRecorderFileTest
+    : public ComposeboxMetricsRecorderTest,
+      public testing::WithParamInterface<
+          std::tuple<FileUploadStatus, lens::MimeType>> {
+ public:
+  void SetUp() override {
+    ComposeboxMetricsRecorderTest::SetUp();
+    metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+    metrics().OnFileUploadStatusChanged(
+        mime_type_param(), FileUploadStatus::kProcessing, std::nullopt);
+    mime_type_string_ = metrics().MimeTypeToString(mime_type_param());
+  }
+  void TestUploadSuccessMetrics() {
+    histogram_tester().ExpectTotalCount(
+        kComposeboxFileUploadAttempt + mime_type_string_, 1);
+    histogram_tester().ExpectTotalCount(
+        kComposeboxFileUploadSuccess + mime_type_string_, 1);
+  }
+  void TestUploadFailureMetrics() {
+    histogram_tester().ExpectTotalCount(
+        kComposeboxFileUploadAttempt + mime_type_string_, 1);
+    histogram_tester().ExpectTotalCount(
+        kComposeboxFileUploadFailure + mime_type_string_, 1);
+  }
+
+ protected:
+  FileUploadStatus status_param() const { return std::get<0>(GetParam()); }
+  lens::MimeType mime_type_param() const { return std::get<1>(GetParam()); }
+
+ private:
+  std::string mime_type_string_;
+};
+
+TEST_P(MetricsRecorderFileTest, FileUploadStatusChanged) {
+  metrics().OnFileUploadStatusChanged(mime_type_param(), status_param(),
+                                      std::nullopt);
+  DestructMetricsRecorder();
+  switch (status_param()) {
+    case FileUploadStatus::kUploadSuccessful:
+      TestUploadSuccessMetrics();
+      break;
+    case FileUploadStatus::kUploadFailed:
+      TestUploadFailureMetrics();
+      break;
+    default:
+      break;
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MetricsRecorderFileTest,
+    testing::Combine(testing::Values(FileUploadStatus::kUploadSuccessful,
+                                     FileUploadStatus::kUploadFailed),
+                     testing::Values(lens::MimeType::kPdf,
+                                     lens::MimeType::kImage,
+                                     lens::MimeType::kUnknown)));
+
+class MetricsRecorderFileValidationTest
+    : public ComposeboxMetricsRecorderTest,
+      public testing::WithParamInterface<
+          std::tuple<FileUploadErrorType, lens::MimeType>> {
+ public:
+  void SetUp() override {
+    ComposeboxMetricsRecorderTest::SetUp();
+    metrics().NotifySessionStateChanged(SessionState::kSessionStarted);
+    metrics().OnFileUploadStatusChanged(
+        mime_type_param(), FileUploadStatus::kProcessing, std::nullopt);
+    mime_type_string_ = metrics().MimeTypeToString(mime_type_param());
+    error_type_string_ = metrics().FileErrorToString(error_param());
+  }
+  void TestValidationFailedMetrics() {
+    histogram_tester().ExpectTotalCount(
+        kComposeboxFileUploadAttempt + mime_type_string_, 1);
+    histogram_tester().ExpectTotalCount(kComposeboxFileValidationErrorTypes +
+                                            mime_type_string_ + "." +
+                                            error_type_string_,
+                                        1);
+  }
+
+ protected:
+  FileUploadErrorType error_param() const { return std::get<0>(GetParam()); }
+  lens::MimeType mime_type_param() const { return std::get<1>(GetParam()); }
+
+ private:
+  std::string mime_type_string_;
+  std::string error_type_string_;
+};
+
+TEST_P(MetricsRecorderFileValidationTest, ValidationError) {
+  metrics().OnFileUploadStatusChanged(
+      mime_type_param(), FileUploadStatus::kValidationFailed, error_param());
+  DestructMetricsRecorder();
+  TestValidationFailedMetrics();
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    MetricsRecorderFileValidationTest,
+    testing::Combine(
+        testing::Values(FileUploadErrorType::kUnknown,
+                        FileUploadErrorType::kBrowserProcessingError,
+                        FileUploadErrorType::kNetworkError,
+                        FileUploadErrorType::kServerError,
+                        FileUploadErrorType::kServerSizeLimitExceeded,
+                        FileUploadErrorType::kAborted,
+                        FileUploadErrorType::kImageProcessingError),
+        testing::Values(lens::MimeType::kPdf,
+                        lens::MimeType::kImage,
+                        lens::MimeType::kUnknown)));

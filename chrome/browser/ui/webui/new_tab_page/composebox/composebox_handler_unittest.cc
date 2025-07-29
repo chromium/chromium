@@ -415,7 +415,8 @@ TEST_P(ComposeboxHandlerFileUploadStatusTest, FileUploadStatusChanged) {
 
   const auto expected_status = GetParam();
   base::UnguessableToken token = base::UnguessableToken::Create();
-  handler().OnFileUploadStatusChanged(token, expected_status, std::nullopt);
+  handler().OnFileUploadStatusChanged(token, lens::MimeType::kPdf,
+                                      expected_status, std::nullopt);
   mock_page_.FlushForTesting();
 
   EXPECT_EQ(expected_status, status);

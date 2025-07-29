@@ -51,6 +51,7 @@ class ComposeboxHandler
   // ComposeboxQueryController::FileUploadStatusObserver:
   void OnFileUploadStatusChanged(
       const base::UnguessableToken& file_token,
+      lens::MimeType mime_type,
       composebox_query::mojom::FileUploadStatus file_upload_status,
       const std::optional<FileUploadErrorType>& error_type) override;
 
