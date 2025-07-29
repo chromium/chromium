@@ -80,9 +80,28 @@ BASE_FEATURE(kAutofillAiCreateEntityDataManager,
 );
 
 // If enabled, no GeoIp requirements are imposed for AutofillAi.
+// Note that this feature can be modified as follows (all assuming that
+// `kAutofillAiIgnoreGeoIp` is enabled):
+// - If both `kAutofillAiIgnoreGeoIpAllowlist` and
+//   `kAutofillAiIgnoreGeoIpBlocklist` are empty, then all geo IPs are
+//   permitted.
+// - If only `kAutofillAiIgnoreGeoIpBlocklist` is non-empty, then all geo ips
+//   but those in `kAutofillAiIgnoreGeoIpBlocklist` are permitted.
+// - If `kAutofillAiIgnoreGeoIpAllowlist` is non-empty, then only geo ips in
+//   `kAutofillAiIgnoreGeoIpAllowlist` are permitted.
+//
+// Both the allowlist and the blocklist are expected to consist of
+// comma-separated uppercase two-digit country codes (see documentation of
+// `GeoIpCountryCode`.)
 BASE_FEATURE(kAutofillAiIgnoreGeoIp,
              "AutofillAiIgnoreGeoIp",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpAllowlist{
+    &kAutofillAiIgnoreGeoIp, "autofill_ai_geo_ip_allowlist", ""};
+
+const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpBlocklist{
+    &kAutofillAiIgnoreGeoIp, "autofill_ai_geo_ip_blocklist", ""};
 
 // If enabled, no locale requirements are imposed for AutofillAi.
 BASE_FEATURE(kAutofillAiIgnoreLocale,

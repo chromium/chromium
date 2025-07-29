@@ -273,6 +273,96 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCode) {
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
 }
 
+// Tests that if `kAutofillAiIgnoreGeoIp` and an allowlist is set, the feature
+// is enabled in countries on the allowlist.
+TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithAllowlist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiIgnoreGeoIp,
+      {{"autofill_ai_geo_ip_allowlist", "BR,MX"}});
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("BR"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("MX"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that if `kAutofillAiIgnoreGeoIp` and a blocklist is set, the feature
+// is disabled only in the countries on the allowlist.
+TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiIgnoreGeoIp,
+      {{"autofill_ai_geo_ip_blocklist", "FR,MX,CA"}});
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("FR"));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("MX"));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("CA"));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("US"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that users can edit stored data even if their GeoIP is on the
+// blocklist.
+TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklistAndSavedData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiIgnoreGeoIp,
+      {{"autofill_ai_geo_ip_blocklist", "IN"}});
+
+  AddEntity();
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
+  const bool is_allowed =
+      (GetParam() ==
+       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
+      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that every GeoIP is permitted if `kAutofillAiIgnoreGeoIp` is enabled
+// and no blocklist or allowlist is set.
+TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIp) {
+  base::test::ScopedFeatureList feature_list{features::kAutofillAiIgnoreGeoIp};
+
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("DE"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("IT"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("US"));
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that the blocklist has priority over the allowlist.
+TEST_P(AutofillAiMayPerformActionTest, IgnoreGeoIpBlocklistAndAllowlist) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiIgnoreGeoIp,
+      {{"autofill_ai_geo_ip_blocklist", "IN"},
+       {"autofill_ai_geo_ip_allowlist", "IN"}});
+
+  client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
+  EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
+}
+
 TEST_P(AutofillAiMayPerformActionTest, AppLocale) {
   client().set_app_locale("de-DE");
   EXPECT_FALSE(MayPerformAutofillAiAction(client(), GetParam()));
