@@ -155,7 +155,7 @@ bool ExtensionInstallForceListPolicyHandler::ParseList(
     size_t pos = entry_string.find(';');
     if (pos == std::string::npos) {
       extension_id = entry_string;
-      update_url = extension_urls::GetWebstoreUpdateUrl().spec();
+      update_url = extension_urls::kChromeWebstoreUpdateURL;
     } else {
       extension_id = entry_string.substr(0, pos);
       update_url = entry_string.substr(pos + 1);
