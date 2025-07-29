@@ -53,9 +53,12 @@
         _actionType = TabGroupActionType::kLeaveOrKeepSharedTabGroup;
         break;
       }
+      case data_sharing::MemberRole::kUnknown: {
+        _actionType = TabGroupActionType::kCloseLastTabUnknownRole;
+        break;
+      }
       case data_sharing::MemberRole::kInvitee:
       case data_sharing::MemberRole::kFormerMember:
-      case data_sharing::MemberRole::kUnknown:
         NOTREACHED();
     }
 

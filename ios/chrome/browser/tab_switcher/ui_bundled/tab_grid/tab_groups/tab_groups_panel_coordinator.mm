@@ -233,6 +233,7 @@ constexpr CGFloat kFacePileAvatarSize = 24;
           case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
           case TabGroupActionType::kUngroupTabGroup:
           case TabGroupActionType::kDeleteTabGroup:
+          case TabGroupActionType::kCloseLastTabUnknownRole:
             NOTREACHED();
         }
       });

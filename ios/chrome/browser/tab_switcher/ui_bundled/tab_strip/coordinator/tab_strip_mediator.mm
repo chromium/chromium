@@ -1906,6 +1906,7 @@ NSMutableArray<TabStripItemIdentifier*>* CreateItemIdentifiers(
     case TabGroupActionType::kDeleteTabGroup:
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
+    case TabGroupActionType::kCloseLastTabUnknownRole:
       NOTREACHED();
   }
 }

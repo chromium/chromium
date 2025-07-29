@@ -7,6 +7,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
+#import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -16,6 +17,7 @@
 #import "ios/chrome/browser/tab_switcher/ui_bundled/tab_group_action_type.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ui/base/l10n/l10n_util.h"
+#import "ui/strings/grit/ui_strings.h"
 
 @implementation TabGroupConfirmationCoordinator {
   // The action type that a tab group is going to take.
@@ -29,6 +31,8 @@
   UIBarButtonItem* _sourceButtonItem;
   // The action sheet coordinator, if one is currently being shown.
   ActionSheetCoordinator* _actionSheetCoordinator;
+  // The alert coordinator, if one is currently being shown.
+  AlertCoordinator* _alert_coordinator;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -63,6 +67,21 @@
   CHECK(self.primaryAction);
   if ([self shouldHaveSecondaryAction]) {
     CHECK(self.secondaryAction);
+  }
+
+  if (_actionType == TabGroupActionType::kCloseLastTabUnknownRole) {
+    _alert_coordinator = [[AlertCoordinator alloc]
+        initWithBaseViewController:self.baseViewController
+                           browser:self.browser
+                             title:l10n_util::GetNSString(
+                                       IDS_IOS_SHARED_GROUP_ERROR_TITLE)
+                           message:l10n_util::GetNSString(
+                                       IDS_IOS_SHARED_GROUP_ERROR_MESSAGE)];
+    [_alert_coordinator addItemWithTitle:l10n_util::GetNSString(IDS_APP_OK)
+                                  action:self.primaryAction
+                                   style:UIAlertActionStyleDefault];
+    [_alert_coordinator start];
+    return;
   }
 
   if (_sourceView) {
@@ -148,6 +167,8 @@
   }
   [_actionSheetCoordinator stop];
   _actionSheetCoordinator = nil;
+  [_alert_coordinator stop];
+  _alert_coordinator = nil;
 }
 
 // Returns a string used in the first item of the context menu.
@@ -163,6 +184,8 @@
     case TabGroupActionType::kDeleteSharedTabGroup:
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
       return l10n_util::GetNSString(IDS_IOS_CONTENT_CONTEXT_DELETESHAREDGROUP);
+    case TabGroupActionType::kCloseLastTabUnknownRole:
+      NOTREACHED();
   }
 }
 
@@ -176,6 +199,7 @@
     case TabGroupActionType::kDeleteTabGroup:
     case TabGroupActionType::kLeaveSharedTabGroup:
     case TabGroupActionType::kDeleteSharedTabGroup:
+    case TabGroupActionType::kCloseLastTabUnknownRole:
       NOTREACHED();
   }
 }
@@ -198,6 +222,8 @@
     case TabGroupActionType::kDeleteOrKeepSharedTabGroup:
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       return l10n_util::GetNSString(IDS_IOS_TAB_GROUP_CONFIRMATION_KEEP_TITLE);
+    case TabGroupActionType::kCloseLastTabUnknownRole:
+      NOTREACHED();
   }
 }
 
@@ -258,6 +284,8 @@
     case TabGroupActionType::kLeaveOrKeepSharedTabGroup:
       return l10n_util::GetNSString(
           IDS_IOS_SHARED_TAB_GROUP_CONFIRMATION_KEEP_OR_LEAVE_MESSAGE);
+    case TabGroupActionType::kCloseLastTabUnknownRole:
+      NOTREACHED();
   }
 }
 
