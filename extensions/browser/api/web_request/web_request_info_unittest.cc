@@ -11,6 +11,7 @@
 #include "extensions/browser/extension_navigation_ui_data.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 #include "base/json/json_writer.h"
 

@@ -28,6 +28,10 @@ class NavigationHandle;
 class RenderFrameHost;
 }
 
+namespace net {
+class HttpResponseHeaders;
+}
+
 namespace extensions {
 class ExtensionPrefs;
 class PermissionHelper;
