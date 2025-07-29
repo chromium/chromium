@@ -547,10 +547,13 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <owner>cros-families-eng@google.com</owner>
   <summary>
     Records whether managed sites approved list and blocked list are enabled for
-    currently active Family Link user. Prior to M93, this metric was recorded at
-    the beginning of first active session daily. In M93, this metric is now also
-    recorded when manual hosts and manual urls policies are changed. Ignores the
-    reports during OOBE and sign out.
+    currently active Family Link user. Records daily and also when manual hosts
+    and manual urls policies are changed. Ignores the reports during OOBE and
+    sign out.
+
+    Historical caveats: Stable M137 (all versions 137.0.7146.0 to 138.0.7197.0)
+    have unreliable data for this histogram. Versions before 137.0.7146.0
+    over-recored the metric.
   </summary>
 </histogram>
 
@@ -577,30 +580,25 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   </summary>
 </histogram>
 
-<histogram name="FamilyUser.ManagedSiteListCount.Approved"
-    units="Number of approved sites" expires_after="2026-01-04">
+<histogram name="FamilyUser.ManagedSiteListCount{ListType}"
+    units="Number of sites" expires_after="2026-01-04">
   <owner>zhangwenyu@google.com</owner>
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Records number of approved urls and hosts for currently active Family Link
-    user. This metric is recorded at the beginning of first active session daily
-    and when manual hosts and manual urls policies are changed. Ignores the
-    reports during OOBE and sign out.
-  </summary>
-</histogram>
+    Records the number of {ListType} urls and hosts for currently active Family
+    Link user. This metric is recorded at the beginning of first active session
+    daily and when manual hosts and manual urls policies are changed. Ignores
+    the reports during OOBE and sign out.
 
-<histogram name="FamilyUser.ManagedSiteListCount.Blocked"
-    units="Number of blocked sites" expires_after="2026-01-04">
-  <owner>zhangwenyu@google.com</owner>
-  <owner>longbowei@google.com</owner>
-  <owner>cros-families-eng@google.com</owner>
-  <summary>
-    Records number of blocked urls and hosts for currently active Family Link
-    user. This metric is recorded at the beginning of first active session daily
-    and when manual hosts and manual urls policies are changed. Ignores the
-    reports during OOBE and sign out.
+    Historical caveats: Stable M137 (all versions 137.0.7146.0 to 138.0.7197.0)
+    have unreliable data for this histogram. Versions before 137.0.7146.0
+    over-recored the metric.
   </summary>
+  <token key="ListType">
+    <variant name=".Approved" summary="approved"/>
+    <variant name=".Blocked" summary="blocked"/>
+  </token>
 </histogram>
 
 <histogram name="FamilyUser.NewUserAdded" enum="NewUserAdded"
@@ -685,12 +683,15 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
   <owner>longbowei@google.com</owner>
   <owner>cros-families-eng@google.com</owner>
   <summary>
-    Records the web filter type for currently active Family Link user. Prior to
-    M93, this metric was recorded at the beginning of first active session
-    daily. In M93, this metric is now also recorded when web filter type policy
-    changed. This metric is not emitted during OOBE and sign out.
-    FamilyUser.WebFilterType.PerRecord is emitted for every UMA record, in which
-    there is an active supervised user, from the current session.
+    Records the web filter type for currently active supervised user. Records
+    daily and also when web filter type policy changed. This metric is not
+    emitted during OOBE and sign out. FamilyUser.WebFilterType.PerRecord is
+    emitted for every UMA record, in which there is an active supervised user,
+    from the current session.
+
+    Historical caveats: Stable M137 (all versions 137.0.7146.0 to 138.0.7197.0)
+    have unreliable data for this histogram. Versions before 137.0.7146.0
+    overrecored the metric.
   </summary>
 </histogram>
 
@@ -826,6 +827,10 @@ Current expiration date for histograms owned by cros-families-eng@google.com:
     blocked). If outcome is blocked then the reason for the block (e.g.
     SafeSites, Blocklist) is also recorded. For more granular information see
     ManagedUsers.FilteringResult.
+
+    Historical caveats: versions before 138.0.7197.0 were updating the url
+    filter for ineligible non-supervised users, overtriggering the
+    classification.
   </summary>
 <!-- LINT.IfChange(top_level_filtering_context) -->
 
