@@ -218,10 +218,6 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
   return handle;
 }
 
-void GpuMemoryBufferFactoryDXGI::DestroyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    int client_id) {}
-
 bool GpuMemoryBufferFactoryDXGI::FillSharedMemoryRegionWithBufferContents(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {

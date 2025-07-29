@@ -50,14 +50,6 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
                                                client_id, std::move(pixmap));
 }
 
-void GpuMemoryBufferFactoryNativePixmap::DestroyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    int client_id) {
-  base::AutoLock lock(native_pixmaps_lock_);
-  NativePixmapMapKey key(id.id, client_id);
-  native_pixmaps_.erase(key);
-}
-
 bool GpuMemoryBufferFactoryNativePixmap::
     FillSharedMemoryRegionWithBufferContents(
         gfx::GpuMemoryBufferHandle buffer_handle,
@@ -94,17 +86,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferFromNativePixmap(
     return gfx::GpuMemoryBufferHandle();
   }
 
-  gfx::GpuMemoryBufferHandle new_handle(std::move(native_pixmap_handle));
-
-  // TODO(reveman): Remove this once crbug.com/628334 has been fixed.
-  {
-    base::AutoLock lock(native_pixmaps_lock_);
-    NativePixmapMapKey key(id.id, client_id);
-    DCHECK(native_pixmaps_.find(key) == native_pixmaps_.end());
-    native_pixmaps_[key] = pixmap;
-  }
-
-  return new_handle;
+  return gfx::GpuMemoryBufferHandle(std::move(native_pixmap_handle));
 }
 
 }  // namespace gpu

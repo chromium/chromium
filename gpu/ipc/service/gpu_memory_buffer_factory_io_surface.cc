@@ -51,10 +51,6 @@ GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(
   return gfx::GpuMemoryBufferHandle(std::move(io_surface));
 }
 
-void GpuMemoryBufferFactoryIOSurface::DestroyGpuMemoryBuffer(
-    gfx::GpuMemoryBufferId id,
-    int client_id) {}
-
 bool GpuMemoryBufferFactoryIOSurface::FillSharedMemoryRegionWithBufferContents(
     gfx::GpuMemoryBufferHandle buffer_handle,
     base::UnsafeSharedMemoryRegion shared_memory) {

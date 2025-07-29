@@ -71,11 +71,6 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
       int client_id,
       SurfaceHandle surface_handle) = 0;
 
-  // Destroys GPU memory buffer identified by |id|. It can be called on any
-  // thread.
-  virtual void DestroyGpuMemoryBuffer(gfx::GpuMemoryBufferId id,
-                                      int client_id) = 0;
-
   // Fills |shared_memory| with the contents of the provided |buffer_handle|
   virtual bool FillSharedMemoryRegionWithBufferContents(
       gfx::GpuMemoryBufferHandle buffer_handle,
