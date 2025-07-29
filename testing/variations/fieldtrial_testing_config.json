@@ -4182,33 +4182,6 @@
             ]
         }
     ],
-    "CameraMicPreview": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "CameraOther_20250408",
-                    "params": {
-                        "action_filter": "Accepted,AcceptedOnce,Dismissed",
-                        "probability": "0.6",
-                        "prompt_disposition_reason_filter": "DefaultFallback",
-                        "request_type_filter": "VideoCapture",
-                        "survey_display_time": "OnPromptResolved",
-                        "trigger_id": "jGykX8MLD0ugnJ3q1cK0NzqCtGvZ"
-                    },
-                    "enable_features": [
-                        "CameraMicPreview",
-                        "GetUserMediaDeferredDeviceSettingsSelection",
-                        "PermissionsPromptSurvey"
-                    ]
-                }
-            ]
-        }
-    ],
     "Canvas2DAutoFlushParams": [
         {
             "platforms": [
