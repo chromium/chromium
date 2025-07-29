@@ -46,7 +46,7 @@ UserCloudPolicyManager::UserCloudPolicyManager(
     std::unique_ptr<CloudExternalDataManager> external_data_manager,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner,
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter)
-    : CloudPolicyManager(dm_protocol::kChromeUserPolicyType,
+    : CloudPolicyManager(dm_protocol::GetChromeUserPolicyType(),
                          std::string(),
                          std::move(user_store),
                          task_runner,

@@ -205,7 +205,7 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   EXPECT_EQ(clients[0].username.value(), "tast-user@managedchrome.com");
   ASSERT_EQ(clients[0].allowed_policy_types.size(), 1u);
   EXPECT_EQ(*clients[0].allowed_policy_types.begin(),
-            policy::dm_protocol::kChromeUserPolicyType);
+            policy::dm_protocol::GetChromeUserPolicyType());
   EXPECT_TRUE(clients[0].state_keys.empty());
 
   JSONFileValueDeserializer deserializer(client_state_path_);
@@ -237,7 +237,7 @@ TEST_F(FakeDMServerTest, HandleRegisterRequestSucceeds) {
   ASSERT_TRUE(allowed_policy_types);
   ASSERT_EQ(allowed_policy_types->size(), 1u);
   EXPECT_EQ((*allowed_policy_types)[0].GetString(),
-            policy::dm_protocol::kChromeUserPolicyType);
+            policy::dm_protocol::GetChromeUserPolicyType());
 
   const base::Value::List* state_keys = client_dict->FindList("state_keys");
   ASSERT_TRUE(state_keys);

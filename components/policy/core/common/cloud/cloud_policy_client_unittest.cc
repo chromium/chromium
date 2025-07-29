@@ -183,7 +183,7 @@ class FakeClientDataDelegate : public ClientDataDelegate {
 
 std::string CreatePolicyData(const std::string& policy_value) {
   em::PolicyData policy_data;
-  policy_data.set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_data.set_policy_type(dm_protocol::GetChromeUserPolicyType());
   policy_data.set_policy_value(policy_value);
   return policy_data.SerializeAsString();
 }
@@ -193,7 +193,7 @@ em::DeviceManagementRequest GetPolicyRequest() {
 
   em::PolicyFetchRequest* policy_fetch_request =
       policy_request.mutable_policy_request()->add_requests();
-  policy_fetch_request->set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_fetch_request->set_policy_type(dm_protocol::GetChromeUserPolicyType());
   policy_fetch_request->set_signature_type(em::PolicyFetchRequest::SHA256_RSA);
   policy_fetch_request->set_verification_key_hash(kPolicyVerificationKeyHash);
   policy_fetch_request->set_device_dm_token(kDeviceDMToken);
@@ -462,7 +462,7 @@ class CloudPolicyClientTest : public testing::Test {
       : task_environment_(std::move(task_env)),
         job_type_(DeviceManagementService::JobConfiguration::TYPE_INVALID),
         client_id_(kClientID),
-        policy_type_(dm_protocol::kChromeUserPolicyType) {
+        policy_type_(dm_protocol::GetChromeUserPolicyType()) {
 #if BUILDFLAG(IS_CHROMEOS)
     fake_statistics_provider_.SetMachineStatistic(ash::system::kSerialNumberKey,
                                                   "fake_serial_number");
@@ -1765,7 +1765,7 @@ TEST_F(CloudPolicyClientMultipleThreadsTest,
       expected_requests;
   // Expected user policy fetch request.
   std::pair<std::string, std::string> user_policy_key(
-      dm_protocol::kChromeUserPolicyType, std::string());
+      dm_protocol::GetChromeUserPolicyType(), std::string());
   expected_requests[user_policy_key] =
       GetPolicyRequest().policy_request().requests(0);
   // Expected user cloud policy fetch request.
@@ -1905,8 +1905,8 @@ TEST_F(CloudPolicyClientTest, PolicyFetchWithExtensionPolicy) {
       ResponseMap;
   ResponseMap expected_responses;
   std::set<std::pair<std::string, std::string>> expected_namespaces;
-  std::pair<std::string, std::string> key(dm_protocol::kChromeUserPolicyType,
-                                          std::string());
+  std::pair<std::string, std::string> key(
+      dm_protocol::GetChromeUserPolicyType(), std::string());
   // Copy the user policy fetch request.
   expected_responses[key].CopyFrom(
       policy_response.policy_response().responses(0));

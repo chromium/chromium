@@ -92,7 +92,7 @@ ConfigurationPolicyProvider* TestHarness::CreateProvider(
   store_ = store.get();
   store_->NotifyStoreLoaded();
   ConfigurationPolicyProvider* provider = new CloudPolicyManager(
-      dm_protocol::kChromeUserPolicyType, std::string(), std::move(store),
+      dm_protocol::GetChromeUserPolicyType(), std::string(), std::move(store),
       task_runner, network::TestNetworkConnectionTracker::CreateGetter());
   Mock::VerifyAndClearExpectations(store_.get());
   return provider;
@@ -164,7 +164,7 @@ class CloudPolicyManagerTest : public testing::Test {
 
  protected:
   CloudPolicyManagerTest()
-      : policy_type_(dm_protocol::kChromeUserPolicyType) {}
+      : policy_type_(dm_protocol::GetChromeUserPolicyType()) {}
 
   void SetUp() override {
     // Set up a policy map for testing.

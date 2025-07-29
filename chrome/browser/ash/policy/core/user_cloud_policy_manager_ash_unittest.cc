@@ -196,7 +196,7 @@ class UserCloudPolicyManagerAshTest : public testing::Test {
     policy_proto.mutable_homepagelocation()->set_value("http://chromium.org");
     ASSERT_TRUE(
         policy_proto.SerializeToString(policy_data_.mutable_policy_value()));
-    policy_data_.set_policy_type(dm_protocol::kChromeUserPolicyType);
+    policy_data_.set_policy_type(dm_protocol::GetChromeUserPolicyType());
     policy_data_.set_device_id(kDeviceId);
     policy_data_.set_request_token(kDMToken);
     policy_data_.set_device_id("id987");

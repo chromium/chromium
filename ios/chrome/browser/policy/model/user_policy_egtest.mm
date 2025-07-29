@@ -95,8 +95,9 @@ void SetUpPolicyServer(policy::EmbeddedPolicyTestServer* policy_server) {
       ->mutable_policy_options()
       ->set_mode(enterprise_management::PolicyOptions::MANDATORY);
   settings.mutable_incognitomodeavailability()->set_value(1);
-  policy_storage->SetPolicyPayload(policy::dm_protocol::kChromeUserPolicyType,
-                                   settings.SerializeAsString());
+  policy_storage->SetPolicyPayload(
+      policy::dm_protocol::GetChromeUserPolicyType(),
+      settings.SerializeAsString());
 
   policy_storage->add_managed_user("*");
   policy_storage->set_policy_user(GetTestEmail());

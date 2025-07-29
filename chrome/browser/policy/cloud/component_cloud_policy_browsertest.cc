@@ -128,7 +128,7 @@ class ComponentCloudPolicyTest : public extensions::ExtensionBrowserTest {
     client_info.device_token = kDMToken;
     client_info.allowed_policy_types = {
         policy::dm_protocol::kChromeExtensionPolicyType,
-        policy::dm_protocol::kChromeUserPolicyType,
+        policy::dm_protocol::GetChromeUserPolicyType(),
     };
     test_server_.client_storage()->RegisterClient(client_info);
     ASSERT_TRUE(test_server_.Start());

@@ -32,7 +32,7 @@ UserCloudPolicyStoreBase::CreateValidator(
   // Configure the validator.
   auto validator = std::make_unique<UserCloudPolicyValidator>(
       std::move(policy_fetch_response), background_task_runner_);
-  validator->ValidatePolicyType(dm_protocol::kChromeUserPolicyType);
+  validator->ValidatePolicyType(dm_protocol::GetChromeUserPolicyType());
   validator->ValidateAgainstCurrentPolicy(
       policy(), timestamp_option, CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,
       CloudPolicyValidatorBase::DEVICE_ID_REQUIRED);

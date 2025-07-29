@@ -34,10 +34,10 @@ void AddAllowedPolicyTypes(em::DeviceRegisterRequest::Type type,
     // TODO(crbug.com/1289442): Remove this case once the type is correctly set
     // for request type `register`.
     case em::DeviceRegisterRequest::TT:
-      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
+      allowed_policy_types->insert({dm_protocol::GetChromeUserPolicyType()});
       break;
     case em::DeviceRegisterRequest::USER:
-      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType,
+      allowed_policy_types->insert({dm_protocol::GetChromeUserPolicyType(),
                                     dm_protocol::kChromeExtensionPolicyType});
       break;
     case em::DeviceRegisterRequest::DEVICE:
@@ -48,14 +48,14 @@ void AddAllowedPolicyTypes(em::DeviceRegisterRequest::Type type,
            dm_protocol::kChromeSigninExtensionPolicyType});
       break;
     case em::DeviceRegisterRequest::BROWSER:
-      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType,
+      allowed_policy_types->insert({dm_protocol::GetChromeUserPolicyType(),
                                     dm_protocol::kChromeExtensionPolicyType});
       break;
     case em::DeviceRegisterRequest::ANDROID_BROWSER:
-      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
+      allowed_policy_types->insert({dm_protocol::GetChromeUserPolicyType()});
       break;
     case em::DeviceRegisterRequest::IOS_BROWSER:
-      allowed_policy_types->insert({dm_protocol::kChromeUserPolicyType});
+      allowed_policy_types->insert({dm_protocol::GetChromeUserPolicyType()});
       break;
     default:
       NOTREACHED();

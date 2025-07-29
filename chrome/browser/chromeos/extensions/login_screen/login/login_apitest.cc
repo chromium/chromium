@@ -449,7 +449,7 @@ class LoginApitestWithEnterpriseUser : public LoginApitest {
     SetUpSessionExtensionUserPolicyBuilder();
     enterprise_management::PolicyData& policy_data =
         user_policy_builder_->policy_data();
-    policy_data.set_policy_type(policy::dm_protocol::kChromeUserPolicyType);
+    policy_data.set_policy_type(policy::dm_protocol::GetChromeUserPolicyType());
     policy_data.set_username(account_id.GetUserEmail());
     policy_data.set_gaia_id(account_id.GetGaiaId().ToString());
     user_policy_builder_->Build();

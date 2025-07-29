@@ -66,7 +66,7 @@ ProfileCloudPolicyStore::CreateValidator(
   // validation.
 
   validator->ValidatePolicyType(
-      is_dasherless_ ? dm_protocol::kChromeUserPolicyType
+      is_dasherless_ ? dm_protocol::GetChromeUserPolicyType()
                      : dm_protocol::kChromeMachineLevelUserCloudPolicyType);
   validator->ValidateAgainstCurrentPolicy(
       policy(), option, CloudPolicyValidatorBase::DM_TOKEN_REQUIRED,

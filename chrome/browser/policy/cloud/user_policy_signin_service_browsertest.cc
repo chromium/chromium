@@ -245,8 +245,9 @@ class UserPolicySigninServiceTest : public InProcessBrowserTest {
     settings.mutable_showhomebutton()->mutable_policy_options()->set_mode(
         em::PolicyOptions::MANDATORY);
     settings.mutable_showhomebutton()->set_value(true);
-    policy_storage->SetPolicyPayload(policy::dm_protocol::kChromeUserPolicyType,
-                                     settings.SerializeAsString());
+    policy_storage->SetPolicyPayload(
+        policy::dm_protocol::GetChromeUserPolicyType(),
+        settings.SerializeAsString());
     policy_storage->add_managed_user("*");
     policy_storage->set_policy_user(kTestEmail);
     policy_storage->signature_provider()->set_current_key_version(1);

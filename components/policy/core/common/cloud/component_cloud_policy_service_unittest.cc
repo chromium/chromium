@@ -116,7 +116,7 @@ class ComponentCloudPolicyServiceTest : public testing::Test {
   ComponentCloudPolicyServiceTest()
       : cache_(nullptr),
         client_(nullptr),
-        core_(dm_protocol::kChromeUserPolicyType,
+        core_(dm_protocol::GetChromeUserPolicyType(),
               std::string(),
               &store_,
               base::SingleThreadTaskRunner::GetCurrentDefault(),

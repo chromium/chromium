@@ -180,7 +180,7 @@ class CloudPolicyInvalidatorTestBase : public testing::Test {
 };
 
 CloudPolicyInvalidatorTestBase::CloudPolicyInvalidatorTestBase()
-    : core_(dm_protocol::kChromeUserPolicyType,
+    : core_(dm_protocol::GetChromeUserPolicyType(),
             std::string(),
             &store_,
             task_environment_.GetMainThreadTaskRunner(),

@@ -28,7 +28,7 @@ constexpr auto kTestReason = PolicyFetchReason::kTest;
 class CloudPolicyServiceTest : public testing::Test {
  public:
   CloudPolicyServiceTest()
-      : policy_type_(dm_protocol::kChromeUserPolicyType),
+      : policy_type_(dm_protocol::GetChromeUserPolicyType()),
         service_(policy_type_, std::string(), &client_, &store_) {}
 
   MOCK_METHOD1(OnPolicyRefresh, void(bool));

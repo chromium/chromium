@@ -45,7 +45,7 @@ ProfileCloudPolicyManager::ProfileCloudPolicyManager(
     network::NetworkConnectionTrackerGetter network_connection_tracker_getter,
     bool is_dasherless)
     : CloudPolicyManager(
-          is_dasherless ? dm_protocol::kChromeUserPolicyType
+          is_dasherless ? dm_protocol::GetChromeUserPolicyType()
                         : dm_protocol::kChromeMachineLevelUserCloudPolicyType,
           /*settings_entity_id=*/std::string(),
           std::move(profile_store),

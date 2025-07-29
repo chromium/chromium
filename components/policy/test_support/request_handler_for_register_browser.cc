@@ -100,12 +100,12 @@ RequestHandlerForRegisterBrowser::ValidateRegisterBrowserRequest(
   return nullptr;
 }
 
-constexpr base::flat_set<std::string>
+base::flat_set<std::string>
 RequestHandlerForRegisterBrowser::allowed_policy_types() {
   return base::MakeFlatSet<std::string>(
       std::vector({dm_protocol::kChromeMachineLevelUserCloudPolicyType,
                    dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
-                   dm_protocol::kChromeUserPolicyType}));
+                   dm_protocol::GetChromeUserPolicyType()}));
 }
 
 RequestHandlerForRegisterPolicyAgent::RequestHandlerForRegisterPolicyAgent(
@@ -139,7 +139,7 @@ RequestHandlerForRegisterPolicyAgent::ValidateRegisterBrowserRequest(
   return nullptr;
 }
 
-constexpr base::flat_set<std::string>
+base::flat_set<std::string>
 RequestHandlerForRegisterPolicyAgent::allowed_policy_types() {
   return base::MakeFlatSet<std::string>(
       std::vector({dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,

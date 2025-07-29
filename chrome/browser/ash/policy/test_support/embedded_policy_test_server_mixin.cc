@@ -92,7 +92,7 @@ void EmbeddedPolicyTestServerMixin::SetUp() {
   client_info.device_token = policy::PolicyBuilder::kFakeToken;
   client_info.allowed_policy_types = {
       policy::dm_protocol::kChromeDevicePolicyType,
-      policy::dm_protocol::kChromeUserPolicyType,
+      policy::dm_protocol::GetChromeUserPolicyType(),
       policy::dm_protocol::kChromePublicAccountPolicyType,
       policy::dm_protocol::kChromeExtensionPolicyType,
       policy::dm_protocol::kChromeSigninExtensionPolicyType,
@@ -127,7 +127,7 @@ void EmbeddedPolicyTestServerMixin::UpdateUserPolicy(
     const enterprise_management::CloudPolicySettings& policy,
     const std::string& policy_user) {
   policy_test_server_->policy_storage()->set_policy_user(policy_user);
-  UpdatePolicy(policy::dm_protocol::kChromeUserPolicyType,
+  UpdatePolicy(policy::dm_protocol::GetChromeUserPolicyType(),
                policy.SerializeAsString());
 }
 

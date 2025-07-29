@@ -50,7 +50,7 @@ std::unique_ptr<HttpResponse> RequestHandlerForPolicy::HandleRequest(
       dm_protocol::kChromeMachineLevelExtensionCloudPolicyType,
       dm_protocol::kChromePublicAccountPolicyType,
       dm_protocol::kChromeSigninExtensionPolicyType,
-      dm_protocol::kChromeUserPolicyType,
+      dm_protocol::GetChromeUserPolicyType(),
       dm_protocol::kGoogleUpdateMachineLevelAppsPolicyType,
       dm_protocol::kGoogleUpdateMachineLevelOmahaPolicyType,
   };
@@ -215,7 +215,7 @@ bool RequestHandlerForPolicy::ProcessCloudPolicy(
     policy_data.set_public_key_version(signing_key_version);
   }
 
-  if (policy_type == dm_protocol::kChromeUserPolicyType ||
+  if (policy_type == policy::dm_protocol::GetChromeUserPolicyType() ||
       policy_type == dm_protocol::kChromePublicAccountPolicyType) {
     std::vector<std::string> user_affiliation_ids =
         policy_storage()->user_affiliation_ids();

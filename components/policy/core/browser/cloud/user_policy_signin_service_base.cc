@@ -23,22 +23,29 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace em = enterprise_management;
 
 namespace policy {
 
 namespace {
 
+em::DeviceRegisterRequest::Type GetCloudPolicyRegistrationType() {
 #if BUILDFLAG(IS_ANDROID)
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::ANDROID_BROWSER;
+  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+    return em::DeviceRegisterRequest::BROWSER;
+  } else {
+    return em::DeviceRegisterRequest::ANDROID_BROWSER;
+  }
 #elif BUILDFLAG(IS_IOS)
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::IOS_BROWSER;
+  return em::DeviceRegisterRequest::IOS_BROWSER;
 #else
-const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
-    em::DeviceRegisterRequest::BROWSER;
+  return em::DeviceRegisterRequest::BROWSER;
 #endif
+}
 
 }  // namespace
 
@@ -310,7 +317,7 @@ void UserPolicySigninServiceBase::RegisterForPolicyWithAccountId(
   // `RegisterForPolicyWithAccountId()`, if any.
   registration_helper_for_temporary_client_ =
       std::make_unique<CloudPolicyClientRegistrationHelper>(
-          policy_client.get(), kCloudPolicyRegistrationType);
+          policy_client.get(), GetCloudPolicyRegistrationType());
 
   // Using a raw pointer to |this| is okay, because the service owns
   // |registration_helper_for_temporary_client_|.
@@ -344,7 +351,7 @@ void UserPolicySigninServiceBase::RegisterCloudPolicyService() {
   // Start the process of registering the CloudPolicyClient. Once it completes,
   // policy fetch will automatically happen.
   registration_helper_ = std::make_unique<CloudPolicyClientRegistrationHelper>(
-      policy_manager()->core()->client(), kCloudPolicyRegistrationType);
+      policy_manager()->core()->client(), GetCloudPolicyRegistrationType());
   registration_helper_->StartRegistration(
       identity_manager(),
       identity_manager()->GetPrimaryAccountId(signin::ConsentLevel::kSignin),

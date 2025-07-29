@@ -20,7 +20,7 @@ MockCloudPolicyManager::MockCloudPolicyManager(
     std::unique_ptr<CloudPolicyStore> store,
     const scoped_refptr<base::SequencedTaskRunner>& task_runner)
     : CloudPolicyManager(
-          dm_protocol::kChromeUserPolicyType,
+          dm_protocol::GetChromeUserPolicyType(),
           std::string(),
           std::move(store),
           task_runner,

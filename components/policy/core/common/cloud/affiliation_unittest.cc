@@ -113,7 +113,7 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_User) {
 
   policy::MockUserCloudPolicyStore store;
   policy::CloudPolicyCore core(
-      policy::dm_protocol::kChromeUserPolicyType, std::string(), &store,
+      policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 
@@ -137,7 +137,7 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_Device) {
 
   policy::MockUserCloudPolicyStore store;
   policy::CloudPolicyCore core(
-      policy::dm_protocol::kChromeUserPolicyType, std::string(), &store,
+      policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 
@@ -161,7 +161,7 @@ TEST(CloudManagementAffiliationTest, GetUserAffiliationIdsFromCore_NoClient) {
 
   policy::MockUserCloudPolicyStore store;
   policy::CloudPolicyCore core(
-      policy::dm_protocol::kChromeUserPolicyType, std::string(), &store,
+      policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 
@@ -182,7 +182,7 @@ TEST(CloudManagementAffiliationTest,
 
   policy::MockUserCloudPolicyStore store;
   policy::CloudPolicyCore core(
-      policy::dm_protocol::kChromeUserPolicyType, std::string(), &store,
+      policy::dm_protocol::GetChromeUserPolicyType(), std::string(), &store,
       base::SingleThreadTaskRunner::GetCurrentDefault(),
       network::TestNetworkConnectionTracker::CreateGetter());
 

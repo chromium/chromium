@@ -531,7 +531,7 @@ void PolicyBuilder::SetSignatureType(
 template <>
 TypedPolicyBuilder<em::CloudPolicySettings>::TypedPolicyBuilder()
     : payload_(new em::CloudPolicySettings()) {
-  policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_data().set_policy_type(dm_protocol::GetChromeUserPolicyType());
 }
 
 // Have the instantiation compiled into the module.

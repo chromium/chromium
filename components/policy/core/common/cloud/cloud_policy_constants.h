@@ -80,7 +80,6 @@ extern const char kValueRequestDeterminePromotionEligibility[];
 
 // Policy type strings for the policy_type field in PolicyFetchRequest.
 extern const char kChromeDevicePolicyType[];
-extern const char kChromeUserPolicyType[];
 extern const char kChromePublicAccountPolicyType[];
 extern const char kChromeExtensionPolicyType[];
 extern const char kChromeSigninExtensionPolicyType[];
@@ -107,6 +106,9 @@ enum PolicyFetchStatus {
   POLICY_FETCH_SUCCESS = 200,
   POLICY_FETCH_ERROR_NOT_FOUND = 902,
 };
+
+// Chrome managed-user's policy type when fetching user policy from DM server.
+const char* GetChromeUserPolicyType();
 
 }  // namespace dm_protocol
 

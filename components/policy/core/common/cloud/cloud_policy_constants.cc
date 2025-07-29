@@ -10,6 +10,10 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_switches.h"
 
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif
+
 namespace policy {
 
 // Constants related to the device management protocol.
@@ -84,16 +88,8 @@ const char kValueRequestFmRegistrationTokenUpload[] =
 const char kValueRequestDeterminePromotionEligibility[] =
     "promotion_eligibility";
 
+// User policy type is determined in GetChromeUserPolicyType.
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
-#if BUILDFLAG(IS_CHROMEOS)
-const char kChromeUserPolicyType[] = "google/chromeos/user";
-#elif BUILDFLAG(IS_ANDROID)
-const char kChromeUserPolicyType[] = "google/android/user";
-#elif BUILDFLAG(IS_IOS)
-const char kChromeUserPolicyType[] = "google/ios/user";
-#else
-const char kChromeUserPolicyType[] = "google/chrome/user";
-#endif
 const char kChromePublicAccountPolicyType[] = "google/chromeos/publicaccount";
 const char kChromeExtensionPolicyType[] = "google/chrome/extension";
 const char kChromeSigninExtensionPolicyType[] =
@@ -131,6 +127,22 @@ const char kChromeUserRemoteCommandType[] = "google/chrome/user/remotecommand";
 
 const char kChromeMachineLevelUserCloudPolicyTypeBase64[] =
     "Z29vZ2xlL2Nocm9tZS9tYWNoaW5lLWxldmVsLXVzZXI=";
+
+const char* GetChromeUserPolicyType() {
+#if BUILDFLAG(IS_CHROMEOS)
+  return "google/chromeos/user";
+#elif BUILDFLAG(IS_ANDROID)
+  if (base::android::BuildInfo::GetInstance()->is_desktop()) {
+    return "google/chrome/user";
+  } else {
+    return "google/android/user";
+  }
+#elif BUILDFLAG(IS_IOS)
+  return "google/ios/user";
+#else
+  return "google/chrome/user";
+#endif
+}
 
 }  // namespace dm_protocol
 

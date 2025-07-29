@@ -93,7 +93,7 @@ ThirdPartyIdentityType TranslateProtobufThirdPartyIdentityType(
 
 bool IsChromePolicy(const std::string& type) {
   return type == dm_protocol::kChromeDevicePolicyType ||
-         type == dm_protocol::kChromeUserPolicyType ||
+         type == dm_protocol::GetChromeUserPolicyType() ||
          IsMachineLevelUserCloudPolicyType(type);
 }
 
@@ -275,7 +275,7 @@ std::string FormatMacAddress(const CloudPolicyClient::MacAddress& mac_address) {
 // Returns the histogram variant for the corresponding `type`. Returns nullopt
 // if there is no variant for the type.
 std::optional<std::string_view> HistogramVariantForType(std::string_view type) {
-  if (type == dm_protocol::kChromeUserPolicyType) {
+  if (type == dm_protocol::GetChromeUserPolicyType()) {
     return "UserPolicy";
   } else if (type == dm_protocol::kChromeMachineLevelUserCloudPolicyType) {
     return "MachineLevelUserCloudPolicy";

@@ -343,7 +343,7 @@ class CloudPolicyTest : public PlatformBrowserTest,
   void SetServerPolicy(const em::CloudPolicySettings& settings,
                        int key_version) {
     test_server_->policy_storage()->SetPolicyPayload(
-        dm_protocol::kChromeUserPolicyType, settings.SerializeAsString());
+        dm_protocol::GetChromeUserPolicyType(), settings.SerializeAsString());
 
     test_server_->policy_storage()->add_managed_user("*");
     test_server_->policy_storage()->set_policy_user(GetTestUser());

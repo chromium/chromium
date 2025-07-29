@@ -441,7 +441,7 @@ TEST_F(UserCloudPolicyStoreAshTest, MultipleStoresWithRotation) {
   EXPECT_EQ(initial_public_key, store_->policy_signature_public_key());
 
   // Store the correct policy signed with the new public key.
-  policy_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  policy_.policy_data().set_policy_type(dm_protocol::GetChromeUserPolicyType());
   policy_.Build();
   std::string new_public_key = policy_.GetPublicNewSigningKeyAsString();
   ASSERT_FALSE(new_public_key.empty());

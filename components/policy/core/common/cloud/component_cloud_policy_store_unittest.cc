@@ -239,7 +239,8 @@ TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyWrongDeviceId) {
 }
 
 TEST_F(ComponentCloudPolicyStoreTest, ValidatePolicyBadType) {
-  builder_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  builder_.policy_data().set_policy_type(
+      dm_protocol::GetChromeUserPolicyType());
   std::string error;
   EXPECT_FALSE(store_->ValidatePolicy(kTestPolicyNS, CreateResponse(),
                                       nullptr /* policy_data */,
@@ -517,7 +518,8 @@ TEST_F(ComponentCloudPolicyStoreTest, StoreAndLoad) {
   EXPECT_TRUE(IsStoreEmpty(*store_));
 
   // Store policy for an unsupported domain.
-  builder_.policy_data().set_policy_type(dm_protocol::kChromeUserPolicyType);
+  builder_.policy_data().set_policy_type(
+      dm_protocol::GetChromeUserPolicyType());
   EXPECT_FALSE(
       store_->Store(PolicyNamespace(POLICY_DOMAIN_CHROME, kTestExtension),
                     CreateSerializedResponse(), CreatePolicyData().get(),
