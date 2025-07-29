@@ -51,10 +51,9 @@ const CGFloat kMenuCornerRadius = 20;
 
 - (void)start {
   BOOL readerModeActive = NO;
-  if (IsReaderModeAvailable()) {
-    ReaderModeTabHelper* readerModeTabHelper =
-        ReaderModeTabHelper::FromWebState(
-            self.browser->GetWebStateList()->GetActiveWebState());
+  ReaderModeTabHelper* readerModeTabHelper = ReaderModeTabHelper::FromWebState(
+      self.browser->GetWebStateList()->GetActiveWebState());
+  if (readerModeTabHelper) {
     readerModeActive = readerModeTabHelper->IsActive();
 
     DistillerService* distillerService =
@@ -69,8 +68,11 @@ const CGFloat kMenuCornerRadius = 20;
   _mediator = [[PageActionMenuMediator alloc] init];
   _viewController.BWGHandler =
       HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
-  _viewController.readerModeHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ReaderModeCommands);
+  if (readerModeTabHelper &&
+      readerModeTabHelper->CurrentPageSupportsReaderMode()) {
+    _viewController.readerModeHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ReaderModeCommands);
+  }
   _viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
 

@@ -432,7 +432,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
     UIButton* readerModeButton =
         [self createSmallButtonWithIcon:readerModeImage
                                   title:readerModeLabelText
-                                enabled:YES];
+                                enabled:[self isReaderModeAvailable]];
     [readerModeButton addTarget:self
                          action:@selector(handleReaderModeTapped:)
                forControlEvents:UIControlEventTouchUpInside];
@@ -550,6 +550,11 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
                                     kSmallButtonIconSize);
 #endif
+}
+
+// Whether the Reader mode is currently available.
+- (BOOL)isReaderModeAvailable {
+  return self.readerModeHandler != nil;
 }
 
 // Whether the Lens overlay is currently available.
