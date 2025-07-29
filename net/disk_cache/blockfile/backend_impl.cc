@@ -74,6 +74,13 @@ BASE_FEATURE_PARAM(double,
                    "dump_without_crashing_frequency",
                    0.01);
 
+BASE_FEATURE_PARAM(
+    double,
+    kBlockfileCacheBackendDumpWithoutCrashingFrequencyOnInvalidLinks,
+    &kBlockfileCacheBackendDumpWithoutCrashing,
+    "dump_without_crashing_frequency_on_invalid_links",
+    0.01);
+
 int DesiredIndexTableLen(int32_t storage_size) {
   if (storage_size <= k64kEntriesStore)
     return kBaseTableLen;
@@ -1036,6 +1043,7 @@ void BackendImpl::ReportError(int error) {
   // We transmit positive numbers, instead of direct error codes.
   DCHECK_LE(error, 0);
   if (GetCacheType() == net::DISK_CACHE) {
+    SCOPED_CRASH_KEY_NUMBER("DiskCache", "disk_cache_error", error * -1);
     // TODO(crbug.com/433551601): Remove this once sufficient crash reports have
     // been gathered, and definitely before stable.
     if (error == ERR_INIT_FAILED) {
@@ -1053,6 +1061,18 @@ void BackendImpl::ReportError(int error) {
           // reason why init failed.
           base::File::Error file_error = base::File::GetLastFileError();
           SCOPED_CRASH_KEY_NUMBER("DiskCache", "file_error", file_error);
+          base::debug::DumpWithoutCrashing();
+        }
+      }
+    } else if (error == ERR_INVALID_LINKS) {
+      static bool has_considered_dumping = false;
+      if (!has_considered_dumping) {
+        has_considered_dumping = true;
+        if (base::FeatureList::IsEnabled(
+                kBlockfileCacheBackendDumpWithoutCrashing) &&
+            base::ShouldRecordSubsampledMetric(
+                kBlockfileCacheBackendDumpWithoutCrashingFrequencyOnInvalidLinks
+                    .Get())) {
           base::debug::DumpWithoutCrashing();
         }
       }
