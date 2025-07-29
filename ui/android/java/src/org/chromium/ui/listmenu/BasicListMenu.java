@@ -110,6 +110,8 @@ public class BasicListMenu implements ListMenu {
     }
 
     private final ListView mListView;
+    private final ModelList mHeaderModelList = new ModelList();
+    private final ModelList mContentModelList;
     private final ModelListAdapter mAdapter;
     private final View mContentView;
     private final List<Runnable> mClickRunnables = new LinkedList<>();
@@ -136,22 +138,21 @@ public class BasicListMenu implements ListMenu {
         View contentView = LayoutInflater.from(context).inflate(R.layout.list_menu_layout, null);
         View hairline = contentView.findViewById(R.id.menu_header_bottom_hairline);
         ListView listView = contentView.findViewById(R.id.menu_list);
-        mAdapter =
-                createAdapter(
-                        data,
-                        Set.of(),
-                        (model) -> {
-                            if (delegate != null) delegate.onItemSelected(model);
-                            // We will run the runnables that are registered by the time this lambda
-                            // is called.
-                            for (Runnable r : mClickRunnables) {
-                                r.run();
-                            }
-                        });
+        mAdapter = createAdapter(data, Set.of(), (model) -> callDelegate(delegate, model));
         mContentView = contentView;
+        mContentModelList = data;
         mListView = listView;
         mListView.setAdapter(mAdapter);
         mListView.setDivider(null);
+
+        ListView headerListView = mContentView.findViewById(R.id.menu_header);
+        headerListView.setAdapter(
+                createAdapter(
+                        mHeaderModelList, Set.of(), (model) -> callDelegate(delegate, model)));
+
+        // Allow keyboard focus + keyboard clicks on list items.
+        headerListView.setItemsCanFocus(true);
+        listView.setItemsCanFocus(true);
 
         if (backgroundDrawable != Resources.ID_NULL) {
             contentView.setBackgroundResource(backgroundDrawable);
@@ -203,6 +204,25 @@ public class BasicListMenu implements ListMenu {
 
     public ModelListAdapter getAdapterForTesting() {
         return mAdapter;
+    }
+
+    /**
+     * Runs {@param dismissDialog} at the end of each callback, recursively (through submenu items).
+     * If an item doesn't already have a click callback in its model, no click callback is added.
+     *
+     * @param dismissDialog The {@link Runnable} to run.
+     */
+    public void setupCallbacksRecursively(Runnable dismissDialog) {
+        ListMenuUtils.setupCallbacksRecursively(mHeaderModelList, mContentModelList, dismissDialog);
+    }
+
+    private void callDelegate(@Nullable Delegate delegate, PropertyModel model) {
+        if (delegate != null) delegate.onItemSelected(model);
+        // We will run the runnables that are registered by the time this lambda
+        // is called.
+        for (Runnable r : mClickRunnables) {
+            r.run();
+        }
     }
 
     /** Listens to scrolls on list view contents and changes visibility of header hairline. */

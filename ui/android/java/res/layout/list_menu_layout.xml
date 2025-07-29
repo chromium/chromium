@@ -21,6 +21,8 @@ found in the LICENSE file.
         android:id="@+id/menu_header_bottom_hairline"
         android:layout_height="@dimen/divider_height"
         android:visibility="invisible"
+        android:focusable="false"
+        android:screenReaderFocusable="false"
         style="@style/HorizontalDivider"/>
     <ListView
         android:id="@+id/menu_list"
