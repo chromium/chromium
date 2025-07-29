@@ -7,8 +7,12 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
+#include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {
+
+class GridLayoutData;
 
 class CORE_EXPORT LayoutMasonry : public LayoutBlock {
  public:
@@ -20,6 +24,13 @@ class CORE_EXPORT LayoutMasonry : public LayoutBlock {
     // See tool_highlight.ts in devtools-frontend.
     return "LayoutMasonry";
   }
+
+  Vector<LayoutUnit> GridTrackPositions(
+      GridTrackSizingDirection track_direction) const;
+  LayoutUnit GridGap(GridTrackSizingDirection track_direction) const;
+  LayoutUnit MasonryItemOffset(GridTrackSizingDirection track_direction) const;
+
+  const GridLayoutData* LayoutData() const;
 
  private:
   bool IsLayoutMasonry() const final {

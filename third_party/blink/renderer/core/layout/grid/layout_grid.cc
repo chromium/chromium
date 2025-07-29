@@ -143,12 +143,32 @@ bool LayoutGrid::ShouldInvalidateSubgridMinMaxSizesCacheFor(
 }
 
 const GridLayoutData* LayoutGrid::LayoutData() const {
+  return GetGridLayoutDataFromFragments(this);
+}
+
+// static
+const GridLayoutData* LayoutGrid::GetGridLayoutDataFromFragments(
+    const LayoutBlock* layout_block) {
+  CHECK(layout_block);
   // Retrieve the layout data from the last fragment as it has the most
   // up-to-date grid geometry.
-  const wtf_size_t fragment_count = PhysicalFragmentCount();
+  const wtf_size_t fragment_count = layout_block->PhysicalFragmentCount();
   if (fragment_count == 0)
     return nullptr;
-  return GetLayoutResult(fragment_count - 1)->GetGridLayoutData();
+  return layout_block->GetLayoutResult(fragment_count - 1)->GetGridLayoutData();
+}
+
+// static
+LayoutUnit LayoutGrid::ComputeGridGap(
+    const GridLayoutData* grid_layout_data,
+    GridTrackSizingDirection track_direction) {
+  if (!grid_layout_data) {
+    return LayoutUnit();
+  }
+
+  return (track_direction == kForColumns)
+             ? grid_layout_data->Columns().GutterSize()
+             : grid_layout_data->Rows().GutterSize();
 }
 
 wtf_size_t LayoutGrid::AutoRepeatCountForDirection(
@@ -180,13 +200,7 @@ wtf_size_t LayoutGrid::ExplicitGridEndForDirection(
 
 LayoutUnit LayoutGrid::GridGap(GridTrackSizingDirection track_direction) const {
   NOT_DESTROYED();
-  const auto* grid_layout_data = LayoutData();
-  if (!grid_layout_data)
-    return LayoutUnit();
-
-  return (track_direction == kForColumns)
-             ? grid_layout_data->Columns().GutterSize()
-             : grid_layout_data->Rows().GutterSize();
+  return ComputeGridGap(LayoutData(), track_direction);
 }
 
 LayoutUnit LayoutGrid::GridItemOffset(

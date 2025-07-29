@@ -167,6 +167,13 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
     PlaceOutOfFlowItems(oof_children);
   }
 
+  // Transfer track layout data to support masonry overlay in DevTools.
+  GridLayoutData layout_data;
+  layout_data.SetTrackCollection(
+      std::make_unique<GridLayoutTrackCollection>(track_collection));
+  container_builder_.TransferGridLayoutData(
+      std::make_unique<GridLayoutData>(layout_data));
+
   // Account for border, scrollbar, and padding in the intrinsic block size.
   intrinsic_block_size_ += BorderScrollbarPadding().BlockSum();
 
