@@ -4,9 +4,14 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 
+#include "base/notimplemented.h"
+#include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/tab_group.h"
+#include "components/tabs/public/tab_group_tab_collection.h"
 
 namespace tabs_api::converters {
 
@@ -31,36 +36,47 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
 }
 
 tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
-    tabs::TabCollectionHandle handle,
-    tabs::TabCollection::Type collection_type) {
-  auto tab_collection = tabs_api::mojom::TabCollection::New();
-  tab_collection->id =
-      tabs_api::NodeId(tabs_api::NodeId::Type::kCollection,
-                      base::NumberToString(handle.raw_value()));
-  tab_collection->collection_type =
-      tabs_api::mojom::TabCollection::CollectionType::kUnknown;
-  switch (collection_type) {
-    case tabs::TabCollection::Type::TABSTRIP:
-      tab_collection->collection_type =
-          tabs_api::mojom::TabCollection::CollectionType::kTabStrip;
-      break;
-    case tabs::TabCollection::Type::PINNED:
-      tab_collection->collection_type =
-          tabs_api::mojom::TabCollection::CollectionType::kPinned;
-      break;
-    case tabs::TabCollection::Type::UNPINNED:
-      tab_collection->collection_type =
-          tabs_api::mojom::TabCollection::CollectionType::kUnpinned;
-      break;
-    case tabs::TabCollection::Type::GROUP:
-      tab_collection->collection_type =
-          tabs_api::mojom::TabCollection::CollectionType::kTabGroup;
-      break;
-    case tabs::TabCollection::Type::SPLIT:
-      tab_collection->collection_type =
-          tabs_api::mojom::TabCollection::CollectionType::kSplitTab;
-      break;
+    const tabs::TabCollection* collection) {
+  CHECK(collection);
+  auto node_id = tabs_api::NodeId(
+      tabs_api::NodeId::Type::kCollection,
+      base::NumberToString(collection->GetHandle().raw_value()));
+  switch (collection->type()) {
+    case tabs::TabCollection::Type::TABSTRIP: {
+      auto mojo_tab_strip = tabs_api::mojom::TabStrip::New();
+      mojo_tab_strip->id = node_id;
+      return tabs_api::mojom::TabCollection::NewTabStrip(
+          std::move(mojo_tab_strip));
+    }
+    case tabs::TabCollection::Type::PINNED: {
+      auto mojo_pinned_tabs = tabs_api::mojom::PinnedTabs::New();
+      mojo_pinned_tabs->id = node_id;
+      return tabs_api::mojom::TabCollection::NewPinnedTabs(
+          std::move(mojo_pinned_tabs));
+    }
+    case tabs::TabCollection::Type::UNPINNED: {
+      auto mojo_unpinned_tabs = tabs_api::mojom::UnpinnedTabs::New();
+      mojo_unpinned_tabs->id = node_id;
+      return tabs_api::mojom::TabCollection::NewUnpinnedTabs(
+          std::move(mojo_unpinned_tabs));
+    }
+    case tabs::TabCollection::Type::GROUP: {
+      auto mojo_tab_group = tabs_api::mojom::TabGroup::New();
+      mojo_tab_group->id = node_id;
+      const tabs::TabGroupTabCollection* group_collection =
+          static_cast<const tabs::TabGroupTabCollection*>(collection);
+      const TabGroup* tab_group = group_collection->GetTabGroup();
+      CHECK(tab_group);
+      mojo_tab_group->data = *tab_group->visual_data();
+      return tabs_api::mojom::TabCollection::NewTabGroup(
+          std::move(mojo_tab_group));
+    }
+    case tabs::TabCollection::Type::SPLIT: {
+      // TODO(crbug.com/421933194): Add SplitTab.
+      NOTIMPLEMENTED();
+    }
   }
-  return tab_collection;
+  NOTREACHED();
 }
+
 }  // namespace tabs_api::converters

@@ -49,6 +49,7 @@ mojom("mojom") {
         "//chrome/browser/ui/tabs/tab_strip_api/types/position.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h",
         "//chrome/browser/ui/tabs/tab_strip_api/types/tab_group_visual_data_traits.h",
+        "//components/tab_groups/tab_group_visual_data.h",
       ]
       traits_sources = [
         "//chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.cc",

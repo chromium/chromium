@@ -80,18 +80,17 @@ TEST_F(TabStripServiceImplTest, GetTabs) {
   bool success = client_->GetTabs(&result);
 
   ASSERT_TRUE(success);
-  ASSERT_EQ(tabs_api::mojom::TabCollection::CollectionType::kTabStrip,
-            result.value()->tab_strip->collection->collection_type);
-  ASSERT_EQ(1u, result.value()->tab_strip->elements.size());
-  ASSERT_TRUE(result.value()->tab_strip->elements[0]->is_tab_container());
-  ASSERT_EQ("888", result.value()
-                       ->tab_strip->elements[0]
-                       ->get_tab_container()
-                       ->tab->id.Id());
-  ASSERT_EQ(NodeId::Type::kContent, result.value()
-                                       ->tab_strip->elements[0]
-                                       ->get_tab_container()
-                                       ->tab->id.Type());
+  const auto& snapshot = result.value();
+  ASSERT_TRUE(snapshot->tab_strip);
+  ASSERT_TRUE(snapshot->tab_strip->collection->is_tab_strip());
+  ASSERT_EQ(1u, snapshot->tab_strip->elements.size());
+  ASSERT_TRUE(snapshot->tab_strip->elements[0]->is_tab_container());
+  ASSERT_EQ(
+      "888",
+      snapshot->tab_strip->elements[0]->get_tab_container()->tab->id.Id());
+  ASSERT_EQ(
+      NodeId::Type::kContent,
+      snapshot->tab_strip->elements[0]->get_tab_container()->tab->id.Type());
   // TODO(crbug.com/412709270): we can probably easily test the observation
   // in unit test as well. But it is already covered by the browser
   // test, so skipping for now.

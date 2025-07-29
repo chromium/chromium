@@ -22,23 +22,29 @@ struct Tab {
   tabs.mojom.TabNetworkState network_state;
 };
 
-// References the TabCollection object. A TabCollection can be of various
-// `collection_types`. The `id` is used to uniquely identify the TabCollection
-// with the tree.
-struct TabCollection {
-  enum CollectionType {
-    kUnknown,
-    kTabStrip,
-    kPinned,
-    kUnpinned,
-    kTabGroup,
-    kSplitTab,
-  };
-
-  // Unique id for the specific TabCollection. The id type would be a
-  // kCollection.
+// Tabstrip is a TabCollection that represents the top-level collection of
+// a browser.
+struct TabStrip {
   NodeId id;
-  CollectionType collection_type;
+};
+
+// PinnedTabs is a TabCollection of all tabs that have been
+// pinned by the user in a browser.
+struct PinnedTabs {
+  NodeId id;
+};
+
+// UnpinnedTabs is a TabCollection of all tabs that are not part of any
+// other collection in a browser.
+struct UnpinnedTabs {
+  NodeId id;
+};
+
+// TabGroup is a TabCollection created by the user to organize a group
+// of tabs with an associated set of visual data.
+struct TabGroup {
+  NodeId id;
+  TabGroupVisualData data;
 };
 
 // TODO(crbug.com/425652802): This should be merged with struct
@@ -49,6 +55,16 @@ struct TabGroupVisualData {
   string title;
   tab_groups.mojom.Color color;
   bool is_collapsed;
+};
+
+// A TabCollection is a container in the tab strip tree. Using a union enforces
+// that a collection must be exactly one of the types below thus preventing
+// inconsistent states.
+union TabCollection {
+  TabStrip tab_strip;
+  PinnedTabs pinned_tabs;
+  UnpinnedTabs unpinned_tabs;
+  TabGroup tab_group;
 };
 
 // The TabCollection tree has child nodes that can be a Tab or a

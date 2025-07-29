@@ -16,8 +16,7 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
                                      const TabRendererData& data);
 
 tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
-    tabs::TabCollectionHandle handle,
-    tabs::TabCollection::Type collection_type);
+    const tabs::TabCollection* collection);
 
 }  // namespace tabs_api::converters
 

@@ -24,19 +24,13 @@ struct OnTabDataChangedEvent {
 };
 
 struct OnTabGroupCreatedEvent {
-  // The ID of the newly created group.
-  NodeId group_id;
-  // The visual data of the newly created group.
-  TabGroupVisualData visual_data;
+  TabCollection tab_collection;
   // Position of the group in the tab strip.
   Position position;
 };
 
 struct OnTabGroupVisualsChangedEvent {
-  // The ID of the group whose visuals have changed.
-  NodeId group_id;
-  // The new visual data of the group.
-  TabGroupVisualData visual_data;
+  TabCollection tab_collection;
 };
 
 struct OnTabMovedEvent {

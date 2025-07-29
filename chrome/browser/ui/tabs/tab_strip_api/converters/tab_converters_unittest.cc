@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/tabs/tab_strip_api/converters/tab_converters.h"
 
+#include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
 #include "components/tabs/public/tab_collection.h"
@@ -13,6 +14,12 @@
 
 namespace tabs_api::converters {
 namespace {
+
+class FakeTabCollection : public tabs::TabCollection {
+ public:
+  explicit FakeTabCollection(Type type) : TabCollection(type, {}, true) {}
+  ~FakeTabCollection() override = default;
+};
 
 TEST(TabStripServiceConverters, ConvertTab) {
   tabs::TabHandle handle(888);
@@ -29,15 +36,16 @@ TEST(TabStripServiceConverters, ConvertTab) {
 }
 
 TEST(TabStripServiceConverters, ConvertTabCollection) {
-  tabs::TabCollectionHandle handle(888);
-  tabs::TabCollection::Type collection_type =
-      tabs::TabCollection::Type::TABSTRIP;
+  FakeTabCollection collection(tabs::TabCollection::Type::TABSTRIP);
+  const std::string expected_id =
+      base::NumberToString(collection.GetHandle().raw_value());
+  auto mojo = BuildMojoTabCollection(&collection);
 
-  auto mojo = BuildMojoTabCollection(handle, collection_type);
-  ASSERT_EQ("888", mojo->id.Id());
-  ASSERT_EQ(NodeId::Type::kCollection, mojo->id.Type());
-  ASSERT_EQ(tabs_api::mojom::TabCollection::CollectionType::kTabStrip,
-            mojo->collection_type);
+  ASSERT_TRUE(mojo->is_tab_strip());
+
+  const auto& tab_strip = mojo->get_tab_strip();
+  ASSERT_EQ(expected_id, tab_strip->id.Id());
+  ASSERT_EQ(NodeId::Type::kCollection, tab_strip->id.Type());
 }
 
 }  // namespace
