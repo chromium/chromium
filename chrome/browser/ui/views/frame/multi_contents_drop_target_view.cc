@@ -221,6 +221,7 @@ void MultiContentsDropTargetView::DoDrop(
   auto urls = event.data().GetURLs(ui::FilenameToURLPolicy::CONVERT_FILENAMES);
   CHECK(urls.has_value());
   drop_delegate_->HandleLinkDrop(side, urls.value());
+  output_drag_op = ui::mojom::DragOperation::kLink;
 }
 
 void MultiContentsDropTargetView::HandleTabDrop(
