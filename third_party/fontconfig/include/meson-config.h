@@ -26,12 +26,6 @@
 
 #define FC_TEMPLATEDIR "/usr/share/fontconfig/conf.avail"
 
-#define FC_VERSION_MAJOR 2
-
-#define FC_VERSION_MICRO 1
-
-#define FC_VERSION_MINOR 17
-
 #define FLEXIBLE_ARRAY_MEMBER /**/
 
 #define FONTCONFIG_PATH "/etc/fonts"
