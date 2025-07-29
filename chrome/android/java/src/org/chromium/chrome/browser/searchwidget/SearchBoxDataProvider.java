@@ -9,7 +9,6 @@ import android.content.Context;
 import androidx.annotation.ColorInt;
 import androidx.annotation.ColorRes;
 
-import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.LocationBarDataProvider;
@@ -105,7 +104,6 @@ class SearchBoxDataProvider implements LocationBarDataProvider {
     @Override
     public GURL getCurrentGurl() {
         if (GURL.isEmptyOrInvalid(mGurl)) {
-            assert LibraryLoader.getInstance().isInitialized();
             mGurl = SearchActivityPreferencesManager.getCurrent().searchEngineUrl;
         }
 

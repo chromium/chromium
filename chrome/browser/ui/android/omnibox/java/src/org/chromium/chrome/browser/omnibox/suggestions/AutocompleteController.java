@@ -97,19 +97,14 @@ public class AutocompleteController {
     /**
      * Starts querying for omnibox suggestions for a given text.
      *
-     * @param url The URL of the current tab, used to suggest query refinements.
-     * @param pageClassification The page classification of the current tab.
-     * @param text The text to query autocomplete suggestions for.
+     * @param input The AutocompleteInput describing current input context.
      * @param cursorPosition The position of the cursor within the text. Set to -1 if the cursor is
      *     not focused on the text.
      * @param preventInlineAutocomplete Whether autocomplete suggestions should be prevented.
      */
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     public void start(
-            GURL url,
-            AutocompleteInput input,
-            int cursorPosition,
-            boolean preventInlineAutocomplete) {
+            AutocompleteInput input, int cursorPosition, boolean preventInlineAutocomplete) {
         if (mNativeController == 0) return;
 
         AutocompleteControllerJni.get()
@@ -118,7 +113,7 @@ public class AutocompleteController {
                         input.getUserText(),
                         cursorPosition,
                         null,
-                        url.getSpec(),
+                        input.getPageUrl().getSpec(),
                         input.getPageClassification(),
                         preventInlineAutocomplete,
                         OmniboxFeatures.sOmniboxSiteSearch.isEnabled(),
@@ -137,6 +132,17 @@ public class AutocompleteController {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get()
                 .startPrefetch(mNativeController, url.getSpec(), pageClassification);
+    }
+
+    /**
+     * Issue a prefetch request for zero prefix suggestions. Prefetch is a fire-and-forget operation
+     * that yields no results. This overload gets the page URL and classification from the
+     * AutocompleteInput.
+     *
+     * @param input The AutocompleteInput containing page URL and classification.
+     */
+    void startPrefetch(AutocompleteInput input) {
+        startPrefetch(input.getPageUrl(), input.getPageClassification());
     }
 
     /**
@@ -160,23 +166,24 @@ public class AutocompleteController {
     /**
      * Starts a query for suggestions before any input is available from the user.
      *
-     * @param omniboxText The text displayed in the omnibox.
-     * @param url The url of the currently loaded web page.
-     * @param pageClassification The page classification of the current tab.
+     * @param input The AutocompleteInput describing current input context.
      * @param title The title of the currently loaded web page.
      */
-    public void startZeroSuggest(
-            String omniboxText, GURL url, int pageClassification, String title) {
+    public void startZeroSuggest(AutocompleteInput input, String title) {
         if (mNativeController == 0) return;
 
         AutocompleteControllerJni.get()
                 .onOmniboxFocused(
-                        mNativeController, omniboxText, url.getSpec(), pageClassification, title);
+                        mNativeController,
+                        input.getUserText(),
+                        input.getPageUrl().getSpec(),
+                        input.getPageClassification(),
+                        title);
     }
 
     /**
      * Stops generating autocomplete suggestions for the currently specified text from {@link
-     * #start(Profile,String, String, boolean)}.
+     * #start(AutocompleteInput, int, boolean)}.
      *
      * @param clear Whether to clear the most recent autocomplete results. When true, the {@link
      *     #onSuggestionsReceived(AutocompleteResult, String)} will be called with an empty result

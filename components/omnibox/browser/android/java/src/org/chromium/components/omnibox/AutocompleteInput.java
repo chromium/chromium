@@ -9,10 +9,12 @@ import android.text.TextUtils;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.url.GURL;
 
 /** AutocompleteInput encompasses the input to autocomplete. */
 @NullMarked
 public class AutocompleteInput {
+    private GURL mPageUrl;
     private int mPageClassification;
     private String mUserText;
     private boolean mAllowExactKeywordMatch;
@@ -29,6 +31,16 @@ public class AutocompleteInput {
     /** Returns the current page classification. */
     public int getPageClassification() {
         return mPageClassification;
+    }
+
+    /** Set the page URL for the input. */
+    public void setPageUrl(GURL pageUrl) {
+        mPageUrl = pageUrl;
+    }
+
+    /** Returns the current page URL. */
+    public GURL getPageUrl() {
+        return mPageUrl;
     }
 
     /** Set the text as currently typed by the User. */
@@ -86,5 +98,7 @@ public class AutocompleteInput {
     public void reset() {
         mUserText = "";
         mAllowExactKeywordMatch = false;
+        mPageUrl = GURL.emptyGURL();
+        mPageClassification = PageClassification.BLANK_VALUE;
     }
 }
