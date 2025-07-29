@@ -102,6 +102,20 @@ void FlipVertically(base::span<uint8_t> framebuffer,
   }
 }
 
+sk_sp<SkData> TryAllocateSkDataForBitmap(viz::SharedImageFormat format,
+                                         gfx::Size size) {
+  CHECK_EQ(format.BitsPerPixel() % 8, 0);
+  base::CheckedNumeric<size_t> data_size = format.BitsPerPixel() / 8;
+  data_size *= size.width();
+  data_size *= size.height();
+
+  if (!data_size.IsValid()) {
+    return nullptr;
+  }
+
+  return TryAllocateSkData(data_size.ValueOrDie());
+}
+
 class ScopedDrawBuffer {
   STACK_ALLOCATED();
 
@@ -1767,21 +1781,13 @@ DrawingBuffer::GetRGBAUnacceleratedStaticBitmapImage(
 
   // Readback in native GL byte order (RGBA).
   viz::SharedImageFormat format = viz::SinglePlaneFormat::kRGBA_8888;
-  base::CheckedNumeric<size_t> row_bytes = 4;
   if (RuntimeEnabledFeatures::WebGLDrawingBufferStorageEnabled() &&
       back_color_buffer_->shared_image->format() ==
           viz::SinglePlaneFormat::kRGBA_F16) {
     format = viz::SinglePlaneFormat::kRGBA_F16;
-    row_bytes *= 2;
   }
-  row_bytes *= Size().width();
 
-  base::CheckedNumeric<size_t> num_rows = Size().height();
-  base::CheckedNumeric<size_t> data_size = num_rows * row_bytes;
-  if (!data_size.IsValid())
-    return nullptr;
-
-  sk_sp<SkData> dst_buffer = TryAllocateSkData(data_size.ValueOrDie());
+  sk_sp<SkData> dst_buffer = TryAllocateSkDataForBitmap(format, Size());
   if (!dst_buffer)
     return nullptr;
 
