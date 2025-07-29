@@ -22,7 +22,6 @@
 #include "chrome/browser/ash/power/ml/idle_event_notifier.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/user_session_activity.pb.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
