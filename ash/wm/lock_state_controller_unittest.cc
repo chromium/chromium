@@ -11,6 +11,7 @@
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
+#include "ash/public/cpp/ash_prefs.h"
 #include "ash/public/cpp/shutdown_controller.h"
 #include "ash/root_window_controller.h"
 #include "ash/session/session_controller_impl.h"
@@ -19,6 +20,7 @@
 #include "ash/system/power/power_button_controller.h"
 #include "ash/system/power/power_button_controller_test_api.h"
 #include "ash/system/power/power_button_test_base.h"
+#include "ash/test/login_info.h"
 #include "ash/touch/touch_devices_controller.h"
 #include "ash/utility/layer_copy_animator.h"
 #include "ash/wallpaper/views/wallpaper_view.h"
@@ -1055,6 +1057,12 @@ class LockStateControllerInformedRestoreTest : public LockStateControllerTest {
     file_path_ = temp_dir_.GetPath().AppendASCII("test_informed_restore.png");
     SetInformedRestoreImagePathForTest(file_path_);
     Initialize(ButtonType::NORMAL, LoginStatus::USER);
+
+    // Although `kAskEveryTime` is the default value, this is needed because
+    // `IsAskEveryTime` checks the pref is explicitly set using `HasPrefPath`.
+    Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
+        prefs::kRestoreAppsAndPagesPrefName,
+        static_cast<int>(full_restore::RestoreOption::kAskEveryTime));
   }
 
   void TearDown() override {
@@ -1331,6 +1339,72 @@ TEST_F(LockStateControllerInformedRestoreTest, CancelShutdown) {
   // The shutdown should be cancelable and the existing informed restore image
   // should be deleted as the shutdown was canceled.
   EXPECT_TRUE(lock_state_controller_->MaybeCancelShutdownAnimation());
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerInformedRestoreTest,
+       ScreenshotIsTakenIfInformedRestoreIsEnabled) {
+  EXPECT_FALSE(base::PathExists(file_path()));
+
+  // At least one window is needed to trigger screenshot.
+  auto test_window = CreateTestWindow();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_informed_restore_image_callback(
+      run_loop.QuitClosure());
+  // Disable the timeout to avoid test flakiness.
+  lock_state_test_api_->disable_screenshot_timeout_for_test(true);
+
+  lock_state_controller_->RequestSignOut();
+  run_loop.Run();
+  EXPECT_TRUE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerInformedRestoreTest,
+       ScreenshotIsNotTakenIfFullRestoreIsAlways) {
+  // Create an empty file to simulate an old informed restore image. This should
+  // be removed when screenshot is not taken.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
+      prefs::kRestoreAppsAndPagesPrefName,
+      static_cast<int>(full_restore::RestoreOption::kAlways));
+
+  // At least one window is needed to trigger screenshot.
+  auto test_window = CreateTestWindow();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_informed_restore_image_callback(
+      run_loop.QuitClosure());
+  // Disable the timeout to avoid test flakiness.
+  lock_state_test_api_->disable_screenshot_timeout_for_test(true);
+
+  lock_state_controller_->RequestSignOut();
+  run_loop.Run();
+  EXPECT_FALSE(base::PathExists(file_path()));
+}
+
+TEST_F(LockStateControllerInformedRestoreTest,
+       ScreenshotIsNotTakenIfFullRestoreIsDisabled) {
+  // Create an empty file to simulate an old informed restore image. This should
+  // be removed when screenshot is not taken.
+  ASSERT_TRUE(base::WriteFile(file_path(), ""));
+
+  Shell::Get()->session_controller()->GetPrimaryUserPrefService()->SetInteger(
+      prefs::kRestoreAppsAndPagesPrefName,
+      static_cast<int>(full_restore::RestoreOption::kDoNotRestore));
+
+  // At least one window is needed to trigger screenshot.
+  auto test_window = CreateTestWindow();
+
+  base::RunLoop run_loop;
+  lock_state_test_api_->set_informed_restore_image_callback(
+      run_loop.QuitClosure());
+  // Disable the timeout to avoid test flakiness.
+  lock_state_test_api_->disable_screenshot_timeout_for_test(true);
+
+  lock_state_controller_->RequestSignOut();
   run_loop.Run();
   EXPECT_FALSE(base::PathExists(file_path()));
 }

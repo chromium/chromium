@@ -180,10 +180,27 @@ void DeleteInformedRestoreImage(base::OnceClosure& for_test_callback,
                              std::move(delete_image_cb));
 }
 
+bool IsInformedRestoreEnabledForPrimaryUser() {
+  auto* session_controller_impl = Shell::Get()->session_controller();
+  CHECK(session_controller_impl);
+  auto* prefs = session_controller_impl->GetPrimaryUserPrefService();
+  if (!prefs) {
+    // Note: this may be called on the login screen.
+    return false;
+  }
+  return IsAskEveryTime(prefs);
+}
+
 // TODO(minch): Check whether the screenshot should be taken in kiosk mode.
 // Returns true if the informed restore screenshot should be taken on session
 // state changes.
 bool ShouldTakeInformedRestoreScreenshot() {
+  // If the current active user disables the informed restore feature, we should
+  // not take the screenshot.
+  if (!IsInformedRestoreEnabledForPrimaryUser()) {
+    return false;
+  }
+
   auto* shell = Shell::Get();
   // Do not take the informed restore screenshot if it is in overview mode, lock
   // screen, home launcher or pinned mode.
@@ -238,8 +255,10 @@ bool ShouldTakeInformedRestoreScreenshot() {
   if (!has_regular_unminimized_window) {
     RecordScreenshotOnShutdownStatus(
         ScreenshotOnShutdownStatus::kFailedWithNoWindows);
+    return false;
   }
-  return has_regular_unminimized_window;
+
+  return true;
 }
 
 // Hide the cursor and lock the cursor as well if `lock` is true.
