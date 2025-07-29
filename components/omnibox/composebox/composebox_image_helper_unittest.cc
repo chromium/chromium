@@ -36,8 +36,10 @@ class ComposeboxImageHelperTest : public testing::Test {
 
   lens::ImageData DownscaleAndEncodeBitmap(
       SkBitmap bitmap,
-      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs) {
+      scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs,
+      bool enable_webp_encoding = true) {
     ImageEncodingOptions image_options{
+        .enable_webp_encoding = enable_webp_encoding,
         .max_size = kImageMaxArea,
         .max_height = kImageMaxHeight,
         .max_width = kImageMaxWidth,
@@ -154,6 +156,24 @@ TEST_F(ComposeboxImageHelperTest, DownscaleAndEncodeBitmapTransparent) {
   lens::ImageData image_data =
       DownscaleAndEncodeBitmap(bitmap, ref_counted_logs);
   std::string expected_output = GetWebpBytesForBitmap(bitmap);
+
+  EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());
+  EXPECT_EQ(bitmap.height(), image_data.image_metadata().height());
+  EXPECT_EQ(expected_output, image_data.payload().image_bytes());
+}
+
+TEST_F(ComposeboxImageHelperTest,
+       DownscaleAndEncodeBitmapTransparentWebpDisabled) {
+  // Create a bitmap. Since it isn't marked with kOpaque_SkAlphaType the
+  // output should be WebP instead of JPEG.
+  SkBitmap bitmap;
+  bitmap.allocN32Pixels(/*width=*/100, /*height=*/100);
+  bitmap.eraseColor(SK_ColorGREEN);
+  scoped_refptr<lens::RefCountedLensOverlayClientLogs> ref_counted_logs =
+      base::MakeRefCounted<lens::RefCountedLensOverlayClientLogs>();
+  lens::ImageData image_data = DownscaleAndEncodeBitmap(
+      bitmap, ref_counted_logs, /*enable_webp_encoding=*/false);
+  std::string expected_output = GetJpegBytesForBitmap(bitmap);
 
   EXPECT_EQ(bitmap.width(), image_data.image_metadata().width());
   EXPECT_EQ(bitmap.height(), image_data.image_metadata().height());
