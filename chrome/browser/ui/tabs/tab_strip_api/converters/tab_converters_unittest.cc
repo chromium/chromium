@@ -39,7 +39,7 @@ TEST(TabStripServiceConverters, ConvertTabCollection) {
   FakeTabCollection collection(tabs::TabCollection::Type::TABSTRIP);
   const std::string expected_id =
       base::NumberToString(collection.GetHandle().raw_value());
-  auto mojo = BuildMojoTabCollection(&collection);
+  auto mojo = BuildMojoTabCollection(collection.GetHandle());
 
   ASSERT_TRUE(mojo->is_tab_strip());
 

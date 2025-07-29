@@ -36,7 +36,8 @@ tabs_api::mojom::TabPtr BuildMojoTab(tabs::TabHandle handle,
 }
 
 tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
-    const tabs::TabCollection* collection) {
+    tabs::TabCollectionHandle handle) {
+  const tabs::TabCollection* collection = handle.Get();
   CHECK(collection);
   auto node_id = tabs_api::NodeId(
       tabs_api::NodeId::Type::kCollection,

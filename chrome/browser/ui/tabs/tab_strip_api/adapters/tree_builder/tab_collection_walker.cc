@@ -17,7 +17,7 @@ TabCollectionWalker::TabCollectionWalker(
 
 mojom::TabCollectionContainerPtr TabCollectionWalker::Walk() const {
   auto mojo_tab_collection =
-      tabs_api::converters::BuildMojoTabCollection(target_);
+      tabs_api::converters::BuildMojoTabCollection(target_->GetHandle());
   auto mojo_tab_collection_container =
       tabs_api::mojom::TabCollectionContainer::New();
   mojo_tab_collection_container->collection = std::move(mojo_tab_collection);
