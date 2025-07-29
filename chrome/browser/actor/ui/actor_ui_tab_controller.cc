@@ -67,6 +67,8 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
                                        UiResultCallback callback) {
   if (current_ui_tab_state_ == ui_tab_state &&
       current_tab_active_status_ == tab_active_status) {
+    base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback), true));
     return;
   }
 
