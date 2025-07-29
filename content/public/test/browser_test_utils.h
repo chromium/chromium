@@ -878,20 +878,24 @@ class EvalJsResult {
   // will fail with a CHECK. Use Extract methods only when accessing the
   // result value is necessary; prefer operator== and EXPECT_EQ() instead:
   // they don't CHECK, and give better error messages.
-  [[nodiscard]] const std::string& ExtractString() const;
+  [[nodiscard]] const std::string& ExtractString() const LIFETIME_BOUND;
   [[nodiscard]] int ExtractInt() const;
   [[nodiscard]] bool ExtractBool() const;
   [[nodiscard]] double ExtractDouble() const;
-  [[nodiscard]] const base::Value::List& ExtractList() const;
-  [[nodiscard]] const base::Value::Dict& ExtractDict() const;
-  [[nodiscard]] const std::string& ExtractError() const;
+  [[nodiscard]] const base::Value::List& ExtractList() const LIFETIME_BOUND;
+  [[nodiscard]] const base::Value::Dict& ExtractDict() const LIFETIME_BOUND;
+  [[nodiscard]] const std::string& ExtractError() const LIFETIME_BOUND;
 
-  bool is_ok() const { return std::holds_alternative<base::Value>(data_); }
+  [[nodiscard]] bool is_ok() const {
+    return std::holds_alternative<base::Value>(data_);
+  }
 
-  bool is_string() const { return is_ok() && value()->is_string(); }
-  bool is_bool() const { return is_ok() && value()->is_bool(); }
-  bool is_list() const { return is_ok() && value()->is_list(); }
-  bool is_dict() const { return is_ok() && value()->is_dict(); }
+  [[nodiscard]] bool is_string() const {
+    return is_ok() && value()->is_string();
+  }
+  [[nodiscard]] bool is_bool() const { return is_ok() && value()->is_bool(); }
+  [[nodiscard]] bool is_list() const { return is_ok() && value()->is_list(); }
+  [[nodiscard]] bool is_dict() const { return is_ok() && value()->is_dict(); }
 
   // Enables EvalJsResult to be used directly in ASSERT/EXPECT macros:
   //
