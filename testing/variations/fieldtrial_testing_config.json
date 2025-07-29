@@ -17642,6 +17642,21 @@
             ]
         }
     ],
+    "PlatformExperienceHelper": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "InstallPlatformExperienceHelper",
+                    "enable_features": [
+                        "InstallPlatformExperienceHelperWin"
+                    ]
+                }
+            ]
+        }
+    ],
     "PlayReadyHardwareSecureDecryption": [
         {
             "platforms": [
