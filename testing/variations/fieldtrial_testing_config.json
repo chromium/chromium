@@ -9402,6 +9402,24 @@
             ]
         }
     ],
+    "EnableSinglePageAppDataProtection": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableSinglePageAppDataProtection"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableTLS13EarlyData": [
         {
             "platforms": [
