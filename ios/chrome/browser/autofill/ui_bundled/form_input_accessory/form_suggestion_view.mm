@@ -250,7 +250,7 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
     AddSameConstraints(stackView, self);
   }
   [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor].active =
-      true;
+      YES;
 
   // Rotate the UIScrollView and its UIStackView subview 180 degrees so that the
   // first suggestion actually shows up first.
@@ -284,18 +284,29 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   return wrapperContainer;
 }
 
+// Adds a FormSuggestionLabel to this FormSuggestionView's stack view.
+- (void)addFormSuggestionLabel:(FormSuggestionLabel*)label
+                       atIndex:(NSUInteger)idx {
+  if (IsLiquidGlassEffectEnabled()) {
+    if (idx > 0) {
+      [self.stackView addArrangedSubview:[self createSeparatorView]];
+    }
+  }
+
+  [self.stackView addArrangedSubview:label];
+}
+
+// Creates a FormSuggestionLabel for each suggestion and adds them to this
+// FormSuggestionView's stack view, along with the trailing view, if any.
 - (void)createAndInsertArrangedSubviews {
   auto setupBlock = ^(FormSuggestion* suggestion, NSUInteger idx, BOOL* stop) {
-    UIView* label = [[FormSuggestionLabel alloc]
+    FormSuggestionLabel* label = [[FormSuggestionLabel alloc]
            initWithSuggestion:suggestion
                         index:idx
                numSuggestions:[self.suggestions count]
         accessoryTrailingView:self.accessoryTrailingView
                      delegate:self];
-    if (IsLiquidGlassEffectEnabled() && idx > 0) {
-      [self.stackView addArrangedSubview:[self createSeparatorView]];
-    }
-    [self.stackView addArrangedSubview:label];
+    [self addFormSuggestionLabel:label atIndex:idx];
     if (idx == 0 &&
         suggestion.featureForIPH != SuggestionFeatureForIPH::kUnknown) {
       // Track the first element.

@@ -378,7 +378,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
           stackView, self,
           LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
       [stackView.heightAnchor constraintEqualToAnchor:self.heightAnchor]
-          .active = true;
+          .active = YES;
     } else {
       AddSameConstraints(stackView, self);
     }
@@ -488,7 +488,7 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 
 - (void)layoutSubviews {
   [super layoutSubviews];
-  self.layer.cornerRadius = [self cornerRadius];
+  [self setCornerRadius:[self cornerRadius]];
   if (!IsLiquidGlassEffectEnabled() && IsKeyboardAccessoryUpgradeEnabled()) {
     self.layer.shadowRadius = kShadowRadius;
     self.layer.shadowOffset = CGSizeMake(0, kShadowVerticalOffset);
@@ -524,6 +524,23 @@ NSString* AccessibilityLabel(NSString* suggestion_text,
 }
 
 #pragma mark - Private
+
+// Sets the corner radius. Can be dymamic if the liquid glass effect is enabled.
+- (void)setCornerRadius:(CGFloat)cornerRadius {
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (IsLiquidGlassEffectEnabled()) {
+    if (@available(iOS 26, *)) {
+      self.cornerConfiguration = [UICornerConfiguration
+          configurationWithRadius:
+              [UICornerRadius
+                  containerConcentricRadiusWithMinimum:[self cornerRadius]]];
+      return;
+    }
+  }
+#endif  // defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >=
+        // __IPHONE_26_0
+  self.layer.cornerRadius = [self cornerRadius];
+}
 
 // Color of the suggestion chips.
 - (UIColor*)customBackgroundColor {
