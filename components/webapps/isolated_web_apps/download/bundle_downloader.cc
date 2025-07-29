@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
+#include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
 
 #include <memory>
 #include <optional>

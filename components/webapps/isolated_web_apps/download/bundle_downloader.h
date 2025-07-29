@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_DOWNLOADER_H_
-#define CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_DOWNLOADER_H_
+#ifndef COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_DOWNLOAD_BUNDLE_DOWNLOADER_H_
+#define COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_DOWNLOAD_BUNDLE_DOWNLOADER_H_
 
 #include <memory>
 #include <optional>
@@ -12,13 +12,16 @@
 #include "base/files/scoped_temp_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
-#include "net/traffic_annotation/network_traffic_annotation.h"
 #include "url/gurl.h"
 
 namespace network {
 class SimpleURLLoader;
 class SharedURLLoaderFactory;
 }  // namespace network
+
+namespace net {
+struct PartialNetworkTrafficAnnotationTag;
+}  // namespace net
 
 namespace web_app {
 
@@ -94,4 +97,4 @@ class IsolatedWebAppDownloader {
 
 }  // namespace web_app
 
-#endif  // CHROME_BROWSER_WEB_APPLICATIONS_ISOLATED_WEB_APPS_ISOLATED_WEB_APP_DOWNLOADER_H_
+#endif  // COMPONENTS_WEBAPPS_ISOLATED_WEB_APPS_DOWNLOAD_BUNDLE_DOWNLOADER_H_

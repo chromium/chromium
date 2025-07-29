@@ -10,8 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/devtools/protocol/pwa.h"
-#include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
+#include "url/gurl.h"
 
 class Profile;
 

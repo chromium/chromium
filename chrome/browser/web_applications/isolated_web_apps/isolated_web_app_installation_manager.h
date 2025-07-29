@@ -17,9 +17,9 @@
 #include "base/one_shot_event.h"
 #include "base/types/expected.h"
 #include "chrome/browser/web_applications/isolated_web_apps/commands/install_isolated_web_app_command.h"
-#include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_downloader.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_install_source.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
+#include "components/webapps/isolated_web_apps/download/bundle_downloader.h"
 
 namespace base {
 class CommandLine;
