@@ -571,9 +571,6 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   void SetPrefService(PrefService* pref_service);
 
-  // Returns the value of the AutofillBnplEnabled pref.
-  virtual bool IsAutofillBnplPrefEnabled() const;
-
   void NotifyObservers();
 
   CreditCard* GetMutableCreditCardByGUID(const std::string& guid);
@@ -648,6 +645,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
 
   // Returns whether Autofill card benefit suggestion labels should be blocked.
   bool ShouldBlockCardBenefitSuggestionLabels() const;
+
+  // Returns the value of the AutofillBnplEnabled pref.
+  virtual bool IsAutofillBnplPrefEnabled() const;
 
   // Checks whether any new card art url is synced. If so, attempt to fetch the
   // image based on the url.
