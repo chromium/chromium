@@ -356,7 +356,7 @@ TEST_F(InstallFromSyncTest, UrlRedirectUseFallback) {
 
   // Trusted app icons are also obtained, at least as part of the fallback
   // installation flow.
-  EXPECT_THAT(registrar().GetTrustedAppIcons(app_id),
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
               ElementsAre(apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)));
 }
 
@@ -401,7 +401,7 @@ TEST_F(InstallFromSyncTest, FallbackWebAppInstallInfo) {
 
   // Trusted app icons are also obtained, at least as part of the fallback
   // installation flow.
-  EXPECT_THAT(registrar().GetTrustedAppIcons(app_id),
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
               ElementsAre(apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)));
 }
 
@@ -452,7 +452,7 @@ TEST_F(InstallFromSyncTest, FallbackManifestIdMismatch) {
 
   // Trusted app icons are also obtained, at least as part of the fallback
   // installation flow.
-  EXPECT_THAT(registrar().GetTrustedAppIcons(app_id),
+  EXPECT_THAT(registrar().GetTrustedAppIconsMetadata(app_id),
               ElementsAre(apps::IconInfo(kTrustedIconUrl, kTrustedIconSize)));
 }
 

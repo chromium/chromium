@@ -846,14 +846,7 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
         purpose, GetSquareSizePxs(web_app_info.icon_bitmaps, purpose));
   }
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
-
-  // If the installation or update process does not provide any trusted icons,
-  // clone them from the manifest icons itself.
-  if (web_app_info.trusted_icons.empty()) {
-    web_app.SetTrustedIcons(web_app_info.manifest_icons);
-  } else {
-    web_app.SetTrustedIcons(web_app_info.trusted_icons);
-  }
+  web_app.SetTrustedIcons(web_app_info.trusted_icons);
 }
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {

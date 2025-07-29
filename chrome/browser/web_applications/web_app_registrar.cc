@@ -768,10 +768,54 @@ void WebAppRegistrar::NotifyAlwaysShowToolbarInFullscreenChanged(
 }
 #endif
 
-std::vector<apps::IconInfo> WebAppRegistrar::GetTrustedAppIcons(
+std::vector<apps::IconInfo> WebAppRegistrar::GetTrustedAppIconsMetadata(
     const webapps::AppId& app_id) const {
+  std::vector<apps::IconInfo> trusted_app_icons;
   auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->trusted_icons() : std::vector<apps::IconInfo>();
+  if (!web_app) {
+    return trusted_app_icons;
+  }
+
+  return web_app->trusted_icons().empty() ? web_app->manifest_icons()
+                                          : web_app->trusted_icons();
+}
+
+std::optional<apps::IconInfo>
+WebAppRegistrar::GetSingleTrustedAppIconForSecuritySurfaces(
+    const webapps::AppId& app_id,
+    const SquareSizePx input_size) {
+  auto trusted_app_icons = GetTrustedAppIconsMetadata(app_id);
+  if (trusted_app_icons.empty()) {
+    return std::nullopt;
+  }
+
+  // This is the ideal case, where there is a single trusted icon to be used by
+  // the system, so return that information and exit early.
+  if (trusted_app_icons.size() == 1) {
+    return trusted_app_icons.at(0);
+  }
+
+  // First, choose the icon that is closest to `input_size` but larger, to
+  // prefer downscaling a larger icon instead of upscaling a smaller one if
+  // required.
+  std::map<SquareSizePx, apps::IconInfo> size_to_info;
+  for (const auto& icon : trusted_app_icons) {
+    if (!icon.square_size_px.has_value()) {
+      continue;
+    }
+    size_to_info.emplace(icon.square_size_px.value(), icon);
+  }
+  auto icon_size_greater_or_equal = size_to_info.lower_bound(input_size);
+  if (icon_size_greater_or_equal != size_to_info.end()) {
+    return icon_size_greater_or_equal->second;
+  }
+
+  // If no icons are found, choose the one that has a size closest to
+  // `input_size` but smaller.
+  CHECK(icon_size_greater_or_equal != size_to_info.begin());
+  auto less_than_required_icon_size = icon_size_greater_or_equal;
+  --less_than_required_icon_size;
+  return less_than_required_icon_size->second;
 }
 
 const WebApp* WebAppRegistrar::GetAppById(const webapps::AppId& app_id) const {

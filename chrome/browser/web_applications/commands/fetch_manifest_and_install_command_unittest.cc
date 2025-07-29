@@ -254,6 +254,59 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
   EXPECT_EQ(1, fake_ui_manager().num_reparent_tab_calls());
 }
 
+// Verify that with multiple icons provided in the manifest, there can only be a
+// single trusted icon to be used in the system.
+// TODO(crbug.com/427566601): Read and verify bitmaps from WebAppIconManager
+// once the APIs for that are added.
+TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifestTrustedIcons) {
+  base::test::ScopedFeatureList feature_list(features::kWebAppUsePrimaryIcon);
+  auto manifest = CreateValidManifest();
+
+  // Prepare all the data to be fetched or downloaded.
+  IconsMap icons_map;
+  const GURL url = GURL("https://example.com/path");
+
+  GURL icon_url1 = url.Resolve("color1.png");
+  icons_map[icon_url1] = {CreateSquareIcon(icon_size::k64, SK_ColorBLUE)};
+  GURL icon_url2 = url.Resolve("color2.png");
+  icons_map[icon_url2] = {CreateSquareIcon(icon_size::k128, SK_ColorGREEN)};
+  manifest->icons = {
+      CreateSquareImageResource(icon_url1, icon_size::k64, {IconPurpose::ANY}),
+      CreateSquareImageResource(icon_url2, icon_size::k512,
+                                {IconPurpose::ANY, IconPurpose::MASKABLE})};
+
+  SetupPageState(std::move(manifest));
+  SetupIconState(icons_map, /*trigger_primary_page_changed=*/true);
+
+  EXPECT_EQ(InstallAndWait(webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
+                           CreateDialogCallback(true)),
+            webapps::InstallResultCode::kSuccessNewInstall);
+
+  apps::IconInfo icon_info1(icon_url1, icon_size::k64);
+  icon_info1.purpose = apps::IconInfo::Purpose::kAny;
+  apps::IconInfo icon_info2(icon_url2, icon_size::k512);
+  icon_info2.purpose = apps::IconInfo::Purpose::kAny;
+  apps::IconInfo icon_info3(icon_url2, icon_size::k512);
+  icon_info3.purpose = apps::IconInfo::Purpose::kMaskable;
+
+  bool prefer_maskable = false;
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+  prefer_maskable = true;
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+  apps::IconInfo trusted_icon = prefer_maskable ? icon_info3 : icon_info2;
+
+  EXPECT_THAT(provider()->registrar_unsafe().GetAppIconInfos(kWebAppId),
+              testing::ElementsAre(icon_info1, icon_info2, icon_info3));
+  EXPECT_THAT(
+      provider()->registrar_unsafe().GetTrustedAppIconsMetadata(kWebAppId),
+      testing::ElementsAre(trusted_icon));
+  EXPECT_EQ(
+      trusted_icon,
+      provider()->registrar_unsafe().GetSingleTrustedAppIconForSecuritySurfaces(
+          kWebAppId, /*input_size=*/96));
+}
+
 TEST_F(FetchManifestAndInstallCommandTest,
        SuccessWithFallbackInstallWithManifest) {
   SetupPageState();
