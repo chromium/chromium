@@ -237,20 +237,11 @@ void BnplManager::OnVcnDetailsFetched(
 void BnplManager::OnIssuerSelected(BnplIssuer selected_issuer) {
   ongoing_flow_state_->issuer = std::move(selected_issuer);
 
-  if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-      !AcceptTosActionRequired()) {
+  if (ongoing_flow_state_->issuer.payment_instrument().has_value()) {
     ongoing_flow_state_->instrument_id = base::NumberToString(
         ongoing_flow_state_->issuer.payment_instrument()->instrument_id());
 
     LoadRiskDataForFetchingRedirectUrl();
-  } else {
-    GetLegalMessageFromServer();
-  }
-}
-
-void BnplManager::GetLegalMessageFromServer() {
-  if (AcceptTosActionRequired()) {
-    GetDetailsForUpdateBnplPaymentInstrument();
   } else {
     GetDetailsForCreateBnplPaymentInstrument();
   }
@@ -364,14 +355,13 @@ void BnplManager::FetchRedirectUrl() {
 void BnplManager::OnRedirectUrlFetched(
     PaymentsAutofillClient::PaymentsRpcResult result,
     const BnplFetchUrlResponseDetails& response) {
-  if (ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-      !AcceptTosActionRequired()) {
-    // If the BNPL issuer selected is linked and doesn't require ToS acceptance,
-    // then the issuer selection dialog must be showing, so close it.
+  if (ongoing_flow_state_->issuer.payment_instrument().has_value()) {
+    // If the BNPL issuer selected is linked, the issuer selection dialog must
+    // be showing, so close it.
     payments_autofill_client().DismissSelectBnplIssuerDialog();
   } else {
-    // If the BNPL issuer selected is not linked, or is linked but requires ToS
-    // acceptance, then the ToS dialog must be showing, so close it.
+    // If the BNPL issuer selected is not linked, the ToS dialog must be
+    // showing, so close it.
     payments_autofill_client().CloseBnplTos();
   }
 
@@ -505,11 +495,7 @@ void BnplManager::MaybeUpdateSuggestionsWithBnpl(
 
 void BnplManager::OnTosDialogAccepted() {
   if (!ongoing_flow_state_->risk_data.empty()) {
-    if (AcceptTosActionRequired()) {
-      UpdateBnplPaymentInstrument();
-    } else {
-      CreateBnplPaymentInstrument();
-    }
+    CreateBnplPaymentInstrument();
     return;
   }
 
@@ -525,11 +511,7 @@ void BnplManager::OnPrefetchedRiskDataLoaded(const std::string& risk_data) {
 void BnplManager::OnRiskDataLoadedAfterTosDialogAcceptance(
     const std::string& risk_data) {
   ongoing_flow_state_->risk_data = risk_data;
-  if (AcceptTosActionRequired()) {
-    UpdateBnplPaymentInstrument();
-  } else {
-    CreateBnplPaymentInstrument();
-  }
+  CreateBnplPaymentInstrument();
 }
 
 void BnplManager::CreateBnplPaymentInstrument() {
@@ -683,13 +665,6 @@ bool BnplManager::IsEligibleForBnpl() const {
         return autofill_optimization_guide->IsUrlEligibleForBnplIssuer(
             bnpl_issuer.issuer_id(), url);
       });
-}
-
-bool BnplManager::AcceptTosActionRequired() const {
-  return ongoing_flow_state_->issuer.payment_instrument().has_value() &&
-         base::Contains(ongoing_flow_state_->issuer.payment_instrument()
-                            ->action_required(),
-                        PaymentInstrument::ActionRequired::kAcceptTos);
 }
 
 }  // namespace autofill::payments
