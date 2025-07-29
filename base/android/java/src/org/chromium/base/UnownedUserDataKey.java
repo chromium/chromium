@@ -166,7 +166,7 @@ public final class UnownedUserDataKey<T extends UnownedUserData> {
         return getHostAttachmentCount(object) > 0;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     /* package */ int getHostAttachmentCount(T object) {
         assertNoDestroyedAttachments();
         int ret = 0;

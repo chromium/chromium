@@ -170,7 +170,7 @@ public final class UnownedUserDataHost {
         this(new Handler(retrieveNonNullLooperOrThrow()));
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     /* package */ UnownedUserDataHost(Handler handler) {
         mHandler = handler;
     }

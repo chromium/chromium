@@ -50,12 +50,11 @@ public class TraceEvent implements AutoCloseable {
     private static volatile boolean sUiThreadReady;
     private static boolean sEventNameFilteringEnabled;
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     static class BasicLooperMonitor implements Printer {
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-        static final String LOOPER_TASK_PREFIX = "Looper.dispatch: ";
+        @VisibleForTesting static final String LOOPER_TASK_PREFIX = "Looper.dispatch: ";
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         static final String FILTERED_EVENT_NAME = LOOPER_TASK_PREFIX + "EVENT_NAME_FILTERED";
 
         private static final int SHORTEST_LOG_PREFIX_LENGTH = "<<<<< Finished to ".length();
@@ -99,7 +98,7 @@ public class TraceEvent implements AutoCloseable {
             mCurrentTarget = null;
         }
 
-        @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+        @VisibleForTesting
         static String getTraceEventName(String line) {
             if (sEventNameFilteringEnabled) {
                 return FILTERED_EVENT_NAME;
