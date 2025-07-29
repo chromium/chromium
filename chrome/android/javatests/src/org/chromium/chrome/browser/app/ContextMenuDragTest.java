@@ -14,15 +14,12 @@ import android.view.DragEvent;
 import android.view.View;
 import android.view.View.DragShadowBuilder;
 
-import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.After;
-import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -30,16 +27,14 @@ import org.junit.runner.RunWith;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.contextmenu.ContextMenuCoordinator;
-import org.chromium.chrome.browser.firstrun.FirstRunStatus;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
-import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
-import org.chromium.chrome.test.util.ChromeApplicationTestUtils;
+import org.chromium.chrome.test.transit.AutoResetCtaTransitTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.browser.contextmenu.ContextMenuUtils;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuSwitches;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -67,26 +62,21 @@ public class ContextMenuDragTest {
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
     private static final String TEST_IMAGE_ID = "testImage";
 
-    @ClassRule
-    public static ChromeTabbedActivityTestRule sActivityTestRule =
-            new ChromeTabbedActivityTestRule();
-
     static TestDragAndDropDelegate sTestDragAndDropDelegate = new TestDragAndDropDelegate();
 
     @Rule
-    public BlankCTATabInitialStateRule mTestRule =
-            new BlankCTATabInitialStateRule(sActivityTestRule, false);
+    public AutoResetCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.fastAutoResetCtaActivityRule();
 
     private EmbeddedTestServer mTestServer;
 
     private ContextMenuCoordinator mContextMenu;
     private String mTestUrl;
+    private WebPageStation mPage;
     private Tab mTab;
 
     @BeforeClass
     public static void setupBeforeClass() {
-        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
-
         // Stop the real call to android View#startDragAndDrop. Test file do not have real touches
         // over the screen so there's no way to end the drag event properly. Doing this in
         // @BeforeClass since ViewAndroidDelegate is created earlier than @Before due to batching.
@@ -96,16 +86,12 @@ public class ContextMenuDragTest {
 
     @Before
     public void setUp() {
-        mTestServer =
-                EmbeddedTestServer.createAndStartServer(
-                        ApplicationProvider.getApplicationContext());
+        mTestServer = mActivityTestRule.getTestServer();
         mTestUrl = mTestServer.getURL(TEST_PATH);
 
-        sActivityTestRule.loadUrl(mTestUrl);
-        mTab = sActivityTestRule.getActivity().getActivityTab();
-        CriteriaHelper.pollUiThread(() -> mTab.isUserInteractable() && !mTab.isLoading());
-        ChromeApplicationTestUtils.assertWaitForPageScaleFactorMatch(
-                sActivityTestRule.getActivity(), 0.5f);
+        mPage = mActivityTestRule.startOnBlankPage().loadWebPageProgrammatically(mTestUrl);
+        mTab = mPage.getTab();
+        mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
     }
 
     @After
@@ -115,11 +101,6 @@ public class ContextMenuDragTest {
                     if (mContextMenu != null) mContextMenu.dismiss();
                 });
         sTestDragAndDropDelegate.reset();
-    }
-
-    @AfterClass
-    public static void tearDownAfterClass() {
-        ThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(false));
     }
 
     @Test
@@ -161,7 +142,7 @@ public class ContextMenuDragTest {
 
         final int minDragThresholdPx =
                 (int)
-                                (sActivityTestRule
+                                (mActivityTestRule
                                                 .getActivity()
                                                 .getResources()
                                                 .getDisplayMetrics()

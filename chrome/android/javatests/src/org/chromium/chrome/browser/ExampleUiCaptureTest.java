@@ -6,7 +6,6 @@ package org.chromium.chrome.browser;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,7 +16,8 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.ui.base.DeviceFormFactor;
 
 /** Simple test to demonstrate use of ScreenShooter rule. */
@@ -26,20 +26,17 @@ import org.chromium.ui.base.DeviceFormFactor;
 @Restriction(DeviceFormFactor.PHONE) // Tab switcher button only exists on phones.
 public class ExampleUiCaptureTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Rule public ScreenShooter mScreenShooter = new ScreenShooter();
-
-    @Before
-    public void setUp() {
-        mActivityTestRule.startMainActivityFromLauncher();
-    }
 
     /** Capture the New Tab Page and the tab switcher. */
     @Test
     @SmallTest
     @Feature({"UiCatalogue"})
     public void testCaptureNewTabPage() {
+        mActivityTestRule.startFromLauncherAtNtp();
         mScreenShooter.shoot("NTP", ScreenShooter.TagsEnum.UiCatalogueExample);
     }
 }
