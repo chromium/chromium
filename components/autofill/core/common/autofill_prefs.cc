@@ -5,6 +5,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 
 #include "base/feature_list.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
@@ -190,7 +191,24 @@ bool IsAutofillProfileEnabled(const PrefService* prefs) {
 }
 
 void SetAutofillProfileEnabled(PrefService* prefs, bool enabled) {
+  if (prefs->GetBoolean(kAutofillProfileEnabled) == enabled) {
+    return;
+  }
+
   prefs->SetBoolean(kAutofillProfileEnabled, enabled);
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(AutofillAddressOptInChange)
+  enum class AutofillAddressOptInChange {
+    kOptIn = 0,
+    kOptOut = 1,
+    kMaxValue = kOptOut
+  };
+  // LINT.ThenChange(/tools/metrics/histograms/metadata/autofill/enums.xml:AutofillAddressOptInChange)
+  using enum AutofillAddressOptInChange;
+  base::UmaHistogramEnumeration("Autofill.Address.IsEnabled.Change",
+                                enabled ? kOptIn : kOptOut);
 }
 
 bool IsPaymentMethodsMandatoryReauthEnabled(const PrefService* prefs) {
