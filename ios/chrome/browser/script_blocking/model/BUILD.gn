@@ -39,3 +39,14 @@ source_set("factory") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "script_blocking_rule_applier_service_unittest.mm" ]
+  deps = [
+    ":model",
+    "//ios/web/public/test",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest",
+  ]
+}

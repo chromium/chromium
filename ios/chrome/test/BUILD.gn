@@ -430,6 +430,7 @@ test("ios_chrome_unittests") {
     "//ios/chrome/browser/saved_tab_groups/coordinator:unit_tests",
     "//ios/chrome/browser/saved_tab_groups/model:unit_tests",
     "//ios/chrome/browser/screenshot/model:unit_tests",
+    "//ios/chrome/browser/script_blocking/model:unit_tests",
     "//ios/chrome/browser/search_engine_choice/model:unit_tests",
     "//ios/chrome/browser/search_engine_choice/ui_bundled:unit_tests",
     "//ios/chrome/browser/search_engines/model:unit_tests",

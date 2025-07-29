@@ -38,6 +38,7 @@ class ScriptBlockingRuleApplierService
       const ScriptBlockingRuleApplierService&) = delete;
 
  private:
+  friend class ScriptBlockingRuleApplierServiceTest;
   // KeyedService:
   void Shutdown() override;
 
