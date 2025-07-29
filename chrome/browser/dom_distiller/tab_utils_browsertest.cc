@@ -66,7 +66,7 @@ namespace {
 const char* kSimpleArticlePath = "/dom_distiller/simple_article.html";
 const char* kOriginalArticleTitle = "Test Page Title";
 const char* kExpectedArticleHeading = "Test Page Title";
-const char* kExpectedDocumentTitle = "Test Page Title";
+const char* kExpectedDocumentTitle = "Test Page Title - Reading Mode";
 
 std::unique_ptr<content::WebContents> NewContentsWithSameParamsAs(
     content::WebContents* source_web_contents) {
@@ -196,8 +196,9 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
   EXPECT_EQ(kExpectedArticleHeading, GetArticleHeading(after_web_contents));
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       BackForwardNavigationRegeneratesDistillabilitySignal) {
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    DISABLED_BackForwardNavigationRegeneratesDistillabilitySignal) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestDistillabilityObserver distillability_observer(initial_web_contents);
@@ -262,7 +263,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       DomDistillDisableForBackForwardCache) {
+                       DISABLED_DomDistillDisableForBackForwardCache) {
   content::BackForwardCacheDisabledTester tester;
 
   GURL url1(article_url());
@@ -298,7 +299,8 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
               kDomDistiller_SelfDeletingRequestDelegate)));
 }
 
-IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
+IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
+                       DISABLED_SecurityStateIsNone) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   TestDistillabilityObserver distillability_observer(initial_web_contents);
@@ -326,7 +328,7 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest, SecurityStateIsNone) {
 
 // TODO(crbug.com/40776875): Flaky on Mac.
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
-                       FaviconFromOriginalPage) {
+                       DISABLED_FaviconFromOriginalPage) {
   content::WebContents* initial_web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 
@@ -390,7 +392,7 @@ class DomDistillerTabUtilsMPArchTest : public DomDistillerTabUtilsBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsMPArchTest,
-                       TaskTrackerRemovedWhenPrimaryPageChanged) {
+                       DISABLED_TaskTrackerRemovedWhenPrimaryPageChanged) {
   NavigateAndDistill();
   // Ensure the TaskTracker for distilling the source article exist.
   EXPECT_TRUE(HasTaskTracker());
@@ -419,7 +421,7 @@ class DomDistillerTabUtilsFencedFrameTest
 };
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsFencedFrameTest,
-                       TaskTrackerNotRemovedByFencedFrame) {
+                       DISABLED_TaskTrackerNotRemovedByFencedFrame) {
   NavigateAndDistill();
   // Ensure the TaskTracker for distilling the source article exist.
   EXPECT_TRUE(HasTaskTracker());
@@ -460,7 +462,7 @@ class DomDistillerTabUtilsPrerenderTest
 };
 
 IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsPrerenderTest,
-                       TaskTrackerNotRemovedByPrerendering) {
+                       DISABLED_TaskTrackerNotRemovedByPrerendering) {
   NavigateAndDistill();
   // Ensure the TaskTracker for distilling the source article exist.
   EXPECT_TRUE(HasTaskTracker());

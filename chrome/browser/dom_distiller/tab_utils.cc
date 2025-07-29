@@ -12,7 +12,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
-#include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
@@ -29,6 +28,10 @@
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "chrome/browser/android/tab_android.h"
+#endif
 
 namespace {
 
@@ -192,14 +195,17 @@ void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
   SelfDeletingRequestDelegate* view_request_delegate =
       new SelfDeletingRequestDelegate(new_web_contents.get());
 
+#if BUILDFLAG(IS_ANDROID)
   TabAndroid* tab = TabAndroid::FromWebContents(old_web_contents);
   std::unique_ptr<content::WebContents> old_web_contents_owned =
       tab->SwapWebContents(std::move(new_web_contents),
                            /*did_start_load=*/false,
                            /*did_finish_load=*/false);
+  old_web_contents = old_web_contents_owned.release();
+#endif
 
   std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
-      new SourcePageHandleWebContents(old_web_contents_owned.release(), true));
+      new SourcePageHandleWebContents(old_web_contents, true));
 
   MaybeStartDistillation(std::move(source_page_handle), view_request_delegate);
 }

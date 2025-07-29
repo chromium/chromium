@@ -3196,6 +3196,7 @@ if (!is_android) {
       "../browser/direct_sockets/direct_sockets_apitest.cc",
       "../browser/dom_distiller/distillable_page_utils_browsertest.cc",
       "../browser/dom_distiller/dom_distiller_viewer_source_browsertest.cc",
+      "../browser/dom_distiller/tab_utils_browsertest.cc",
       "../browser/dom_distiller/test_distillation_observers.cc",
       "../browser/dom_distiller/test_distillation_observers.h",
       "../browser/domain_reliability/browsertest.cc",
@@ -3872,10 +3873,6 @@ if (!is_android) {
         "//chrome/browser/glic/test_support",
         "//chrome/renderer/actor:browser_tests",
       ]
-    }
-
-    if (is_android) {
-      sources += [ "../browser/dom_distiller/tab_utils_browsertest.cc" ]
     }
 
     if (!is_chrome_for_testing) {
