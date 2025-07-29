@@ -14,7 +14,6 @@ import sys
 import zipfile
 
 from util import build_utils
-from util import resource_utils
 
 sys.path[1:1] = [
     # `Resources_pb2` module imports `descriptor`, which imports `six`.
@@ -29,11 +28,6 @@ from proto import Resources_pb2
 # First bytes in an .flat.arsc file.
 # uint32: Magic ("ARSC"), version (1), num_entries (1), type (0)
 _FLAT_ARSC_HEADER = b'AAPT\x01\x00\x00\x00\x01\x00\x00\x00\x00\x00\x00\x00'
-
-# The package ID hardcoded for shared libraries. See
-# _HardcodeSharedLibraryDynamicAttributes() for more details. If this value
-# changes make sure to change REQUIRED_PACKAGE_IDENTIFIER in WebLayerImpl.java.
-SHARED_LIBRARY_HARDCODED_ID = 36
 
 
 def _ProcessZip(zip_path, process_func):
@@ -56,41 +50,9 @@ def _ProcessZip(zip_path, process_func):
         f.writestr(info, data)
 
 
-def _ProcessProtoItem(item):
-  if not item.HasField('ref'):
-    return
-
-  # If this is a dynamic attribute (type ATTRIBUTE, package ID 0), hardcode
-  # the package to SHARED_LIBRARY_HARDCODED_ID.
-  if item.ref.type == Resources_pb2.Reference.ATTRIBUTE and not (item.ref.id
-                                                                 & 0xff000000):
-    item.ref.id |= (0x01000000 * SHARED_LIBRARY_HARDCODED_ID)
-    item.ref.ClearField('is_dynamic')
-
-
-def _ProcessProtoValue(value):
-  if value.HasField('item'):
-    _ProcessProtoItem(value.item)
-    return
-
-  compound_value = value.compound_value
-  if compound_value.HasField('style'):
-    for entry in compound_value.style.entry:
-      _ProcessProtoItem(entry.item)
-  elif compound_value.HasField('array'):
-    for element in compound_value.array.element:
-      _ProcessProtoItem(element.item)
-  elif compound_value.HasField('plural'):
-    for entry in compound_value.plural.entry:
-      _ProcessProtoItem(entry.item)
-
-
 def _ProcessProtoXmlNode(xml_node):
   if not xml_node.HasField('element'):
     return
-
-  for attribute in xml_node.element.attribute:
-    _ProcessProtoItem(attribute.compiled_item)
 
   for child in xml_node.element.child:
     _ProcessProtoXmlNode(child)
@@ -139,76 +101,6 @@ def _SplitLocaleResourceType(_type, allowed_resource_names):
   del locale_type.entry[:]
   locale_type.entry.extend(locale_entries)
   return locale_type
-
-
-def _HardcodeInTable(table, is_bundle_module, shared_resources_allowlist):
-  translations_package = None
-  allowed_resource_names = set()
-  if is_bundle_module:
-    # A separate top level package will be added to the resources, which
-    # contains only locale specific resources. The package ID of the locale
-    # resources is hardcoded to SHARED_LIBRARY_HARDCODED_ID. This causes
-    # resources in locale splits to all get assigned
-    # SHARED_LIBRARY_HARDCODED_ID as their package ID, which prevents a bug
-    # in shared library bundles where each split APK gets a separate dynamic
-    # ID, and cannot be accessed by the main APK.
-    translations_package = Resources_pb2.Package()
-    translations_package.package_id.id = SHARED_LIBRARY_HARDCODED_ID
-    translations_package.package_name = (table.package[0].package_name +
-                                         '_translations')
-
-    # These resources are allowed in the base resources, since they are needed
-    # by WebView.
-    if shared_resources_allowlist:
-      allowed_resource_names = set(
-          resource_utils.GetRTxtStringResourceNames(shared_resources_allowlist))
-
-  for package in table.package:
-    for _type in package.type:
-      for entry in _type.entry:
-        for config_value in entry.config_value:
-          _ProcessProtoValue(config_value.value)
-
-      if translations_package is not None:
-        locale_type = _SplitLocaleResourceType(_type, allowed_resource_names)
-        if locale_type:
-          translations_package.type.add().CopyFrom(locale_type)
-
-  if translations_package is not None:
-    table.package.add().CopyFrom(translations_package)
-
-
-def HardcodeSharedLibraryDynamicAttributes(zip_path,
-                                           is_bundle_module,
-                                           shared_resources_allowlist=None):
-  """Hardcodes the package IDs of dynamic attributes and locale resources.
-
-  Hardcoding dynamic attribute package IDs is a workaround for b/147674078,
-  which affects Android versions pre-N. Hardcoding locale resource package IDs
-  is a workaround for b/155437035, which affects resources built with
-  --shared-lib on all Android versions
-
-  Args:
-    zip_path: Path to proto APK file.
-    is_bundle_module: True for bundle modules.
-    shared_resources_allowlist: Set of resource names to not extract out of the
-        main package.
-  """
-
-  def process_func(filename, data):
-    if filename == 'resources.pb':
-      table = Resources_pb2.ResourceTable()
-      table.ParseFromString(data)
-      _HardcodeInTable(table, is_bundle_module, shared_resources_allowlist)
-      data = table.SerializeToString()
-    elif filename.endswith('.xml') and not filename.startswith('res/raw'):
-      xml_node = Resources_pb2.XmlNode()
-      xml_node.ParseFromString(data)
-      _ProcessProtoXmlNode(xml_node)
-      data = xml_node.SerializeToString()
-    return data
-
-  _ProcessZip(zip_path, process_func)
 
 
 class _ResourceStripper:

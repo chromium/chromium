@@ -55,9 +55,6 @@
     },
     "vr": {
       "default_component": "Internals>XR>VR"
-    },
-    "weblayer": {
-      "default_component": "Internals>WebLayer"
     }
   },
   "component_overrides": {

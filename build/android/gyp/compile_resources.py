@@ -841,19 +841,6 @@ def _PackageApk(options, build):
       build.proto_path, build.arsc_path
   ])
 
-  # Workaround for b/147674078. This is only needed for WebLayer and does not
-  # affect WebView usage, since WebView does not used dynamic attributes.
-  if options.shared_resources:
-    logging.debug('Hardcoding dynamic attributes')
-    protoresources.HardcodeSharedLibraryDynamicAttributes(
-        build.proto_path, options.is_bundle_module,
-        options.shared_resources_allowlist)
-
-    build_utils.CheckOutput([
-        options.aapt2_path, 'convert', '--output-format', 'binary', '-o',
-        build.arsc_path, build.proto_path
-    ])
-
   # Sanity check that the created resources have the expected package ID.
   logging.debug('Performing sanity check')
   _, actual_package_id = resource_utils.ExtractArscPackage(
@@ -954,11 +941,6 @@ def main(args):
       rjava_build_options.ExportSomeResources(
           options.shared_resources_allowlist)
       rjava_build_options.GenerateOnResourcesLoaded()
-      if options.shared_resources:
-        # The final resources will only be used in WebLayer, so hardcode the
-        # package ID to be what WebLayer expects.
-        rjava_build_options.SetFinalPackageId(
-            protoresources.SHARED_LIBRARY_HARDCODED_ID)
     elif options.shared_resources or options.app_as_shared_lib:
       rjava_build_options.ExportAllResources()
       rjava_build_options.GenerateOnResourcesLoaded()

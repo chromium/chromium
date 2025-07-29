@@ -176,8 +176,6 @@ def find_usage_of_java_res(fpath: Text,
       'remoting/android',
       'tools/android',
       'ui/android',
-      'weblayer/browser',
-      'weblayer/shell',
   ]
 
   xml_pattern = f'@{res_type}/{basename}'

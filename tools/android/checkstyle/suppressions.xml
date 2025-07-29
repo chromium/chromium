@@ -4,7 +4,7 @@
 <suppressions>
   <!-- Code in chrome/ should use SharedPreferencesManager. Ref: crbug.com/1022108 -->
   <suppress id="UseSharedPreferencesManagerFromChromeCheck"
-            files="src/(android_webview|base|chromecast|components|content|device|media|net|remoting|services|testing|third_party|tools|ui|weblayer)/"/>
+            files="src/(android_webview|base|chromecast|components|content|device|media|net|remoting|services|testing|third_party|tools|ui)/"/>
   <!-- FooTest.java, FooTestUtil.java, and FooTestUtils.java do not need to use SharedPreferencesManager. -->
   <suppress id="UseSharedPreferencesManagerFromChromeCheck"
             files="Test(Utils?)?\.java"/>
