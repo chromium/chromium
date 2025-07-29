@@ -10,5 +10,8 @@ assert(!is_android)
 source_set("common") {
   sources = [ "actor_login_types.h" ]
 
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//url",
+  ]
 }

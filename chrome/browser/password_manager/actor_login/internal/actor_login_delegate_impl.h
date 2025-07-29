@@ -8,16 +8,14 @@
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_delegate.h"
-#include "components/password_manager/core/browser/form_fetcher.h"
+#include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_user_data.h"
 
-namespace password_manager {
-class FormFetcherImpl;
-class PasswordManagerClient;
-}  // namespace password_manager
-
 namespace actor_login {
+
+class ActorLoginCredentialFiller;
 
 // Delegate implementation, scoped to `WebContents` as its functionality is
 // intrinsically tied to a specific browser tab.
@@ -26,8 +24,22 @@ class ActorLoginDelegateImpl
       public content::WebContentsUserData<ActorLoginDelegateImpl>,
       public password_manager::FormFetcher::Consumer {
  public:
+  using PasswordDriverSupplierForPrimaryMainFrame =
+      base::RepeatingCallback<password_manager::PasswordManagerDriver*(
+          content::WebContents*)>;
+
+  static ActorLoginDelegate* GetOrCreate(
+      content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client);
+
+  static ActorLoginDelegate* GetOrCreateForTesting(
+      content::WebContents* web_contents,
+      password_manager::PasswordManagerClient* client,
+      PasswordDriverSupplierForPrimaryMainFrame driver_supplier);
+
   ~ActorLoginDelegateImpl() override;
 
+  // Not copyable or movable.
   ActorLoginDelegateImpl(const ActorLoginDelegateImpl&) = delete;
   ActorLoginDelegateImpl& operator=(const ActorLoginDelegateImpl&) = delete;
 
@@ -42,14 +54,17 @@ class ActorLoginDelegateImpl
   // Private constructor for `WebContentsUserData`.
   // This is the constructor that `WebContentsUserData::FromWebContents` will
   // call when no instance exists and it needs to create one.
-  explicit ActorLoginDelegateImpl(
+  ActorLoginDelegateImpl(
       content::WebContents* web_contents,
-      password_manager::PasswordManagerClient* client);
+      password_manager::PasswordManagerClient* client,
+      PasswordDriverSupplierForPrimaryMainFrame driver_supplier);
 
-  // Private helper methods for handling asynchronous task completion.
-  void OnAttemptLoginCompleted();
+  // Private helper methods for handling task completion. They should be
+  // invoked asynchronously.
+  void OnAttemptLoginCompleted(
+      base::expected<LoginStatusResult, ActorLoginError> result);
 
-  // `FormFetcher::Consumer`:
+  // `FormFetcher::Consumer`
   void OnFetchCompleted() override;
 
   // Store the pending callbacks. A non-null callback indicates an active
@@ -57,9 +72,17 @@ class ActorLoginDelegateImpl
   CredentialsOrErrorReply pending_get_credentials_callback_;
   LoginStatusResultOrErrorReply pending_attempt_login_callback_;
 
+  // Callback that returns a `PasswordManagerDriver` corresponding to the
+  // primary main frame of the passed-in `WebContents`.
+  PasswordDriverSupplierForPrimaryMainFrame driver_supplier_;
+
+  // Fetches best matching saved credentials when `GetCredentials` is called.
   std::unique_ptr<password_manager::FormFetcherImpl> form_fetcher_;
 
   raw_ptr<password_manager::PasswordManagerClient> client_ = nullptr;
+
+  // Fills credentials into a form. Scoped to one `AttemptLogin` request.
+  std::unique_ptr<ActorLoginCredentialFiller> credential_filler_;
 
   base::WeakPtrFactory<ActorLoginDelegateImpl> weak_ptr_factory_{this};
 

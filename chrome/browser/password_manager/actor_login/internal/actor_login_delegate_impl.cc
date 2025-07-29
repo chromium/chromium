@@ -7,19 +7,40 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
-#include "base/strings/utf_string_conversions.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/types/expected.h"
+#include "components/password_manager/content/browser/content_password_manager_driver.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
 #include "components/password_manager/core/browser/features/password_features.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_manager.h"
+#include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 
+using password_manager::ContentPasswordManagerDriver;
+using password_manager::PasswordManagerDriver;
+using password_manager::PasswordManagerInterface;
+
 namespace actor_login {
+
 namespace {
+password_manager::PasswordManagerDriver*
+GetPasswordManagerDriverForPrimaryMainFrame(
+    content::WebContents* web_contents) {
+  if (content::RenderFrameHost* rfh = web_contents->GetPrimaryMainFrame()) {
+    return password_manager::ContentPasswordManagerDriver::
+        GetForRenderFrameHost(rfh);
+  }
+  return nullptr;  // No driver without primary main frame.
+}
 
 Credential PasswordFormToCredential(
     const password_manager::PasswordForm& form) {
@@ -40,10 +61,33 @@ Credential PasswordFormToCredential(
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(ActorLoginDelegateImpl);
 
+// static
+ActorLoginDelegate* ActorLoginDelegateImpl::GetOrCreate(
+    content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client) {
+  CHECK(web_contents);
+  return ActorLoginDelegateImpl::GetOrCreateForWebContents(
+      web_contents, client,
+      base::BindRepeating(GetPasswordManagerDriverForPrimaryMainFrame));
+}
+
+// static
+ActorLoginDelegate* ActorLoginDelegateImpl::GetOrCreateForTesting(
+    content::WebContents* web_contents,
+    password_manager::PasswordManagerClient* client,
+    PasswordDriverSupplierForPrimaryMainFrame driver_supplier) {
+  CHECK(web_contents);
+
+  return ActorLoginDelegateImpl::GetOrCreateForWebContents(
+      web_contents, client, std::move(driver_supplier));
+}
+
 ActorLoginDelegateImpl::ActorLoginDelegateImpl(
     content::WebContents* web_contents,
-    password_manager::PasswordManagerClient* client)
+    password_manager::PasswordManagerClient* client,
+    PasswordDriverSupplierForPrimaryMainFrame driver_supplier)
     : content::WebContentsUserData<ActorLoginDelegateImpl>(*web_contents),
+      driver_supplier_(std::move(driver_supplier)),
       client_(client) {}
 
 ActorLoginDelegateImpl::~ActorLoginDelegateImpl() = default;
@@ -94,27 +138,39 @@ void ActorLoginDelegateImpl::AttemptLogin(
                        base::unexpected(ActorLoginError::kServiceBusy)));
     return;
   }
+
   if (!base::FeatureList::IsEnabled(password_manager::features::kActorLogin)) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   base::unexpected(ActorLoginError::kUnknown)));
     return;
   }
+
   // Store the callback to mark as active
   pending_attempt_login_callback_ = std::move(callback);
 
-  // Simulate asynchronous operation and return `false` indicating failure.
-  // TODO(crbug.com/427170499) - Implement actual logic.
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  PasswordManagerDriver* driver = driver_supplier_.Run(&GetWebContents());
+  CHECK(driver);
+  PasswordManagerInterface* password_manager = driver->GetPasswordManager();
+  CHECK(password_manager);
+
+  const url::Origin origin =
+      GetWebContents().GetPrimaryMainFrame()->GetLastCommittedOrigin();
+
+  credential_filler_ = std::make_unique<ActorLoginCredentialFiller>(
+      origin, credential,
+      base::BindPostTaskToCurrentDefault(
+          base::BindOnce(&ActorLoginDelegateImpl::OnAttemptLoginCompleted,
+                         weak_ptr_factory_.GetWeakPtr())));
+  credential_filler_->AttemptLogin(password_manager);
 }
 
-void ActorLoginDelegateImpl::OnAttemptLoginCompleted() {
+void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
+    base::expected<LoginStatusResult, ActorLoginError> result) {
   // There shouldn't be a pending request without a pending callback.
   CHECK(pending_attempt_login_callback_);
-  std::move(pending_attempt_login_callback_).Run(LoginStatusResult(false));
+  std::move(pending_attempt_login_callback_).Run(std::move(result));
+  credential_filler_.reset();
 }
 
 void ActorLoginDelegateImpl::OnFetchCompleted() {

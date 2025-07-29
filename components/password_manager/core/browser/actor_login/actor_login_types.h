@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/types/expected.h"
 #include "base/types/strong_alias.h"
+#include "url/gurl.h"
 
 namespace actor_login {
 
@@ -63,7 +64,11 @@ using CredentialsOrError =
     base::expected<std::vector<Credential>, ActorLoginError>;
 using CredentialsOrErrorReply = base::OnceCallback<void(CredentialsOrError)>;
 
-using LoginStatusResult = base::StrongAlias<struct LoginStatusResultTag, bool>;
+enum class LoginStatusResult {
+  kSuccessUsernameAndPasswordFilled,
+  kErrorNoSigninForm,
+};
+
 using LoginStatusResultOrError =
     base::expected<LoginStatusResult, ActorLoginError>;
 using LoginStatusResultOrErrorReply =

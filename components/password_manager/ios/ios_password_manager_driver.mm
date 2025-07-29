@@ -189,6 +189,10 @@ const GURL& IOSPasswordManagerDriver::GetLastCommittedURL() const {
   return bridge_.lastCommittedURL;
 }
 
+const url::Origin& IOSPasswordManagerDriver::GetLastCommittedOrigin() const {
+  NOTREACHED();
+}
+
 gfx::RectF IOSPasswordManagerDriver::TransformToRootCoordinates(
     const gfx::RectF& bounds_in_frame_coordinates) {
   NOTIMPLEMENTED();

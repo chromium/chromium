@@ -78,6 +78,7 @@ class IOSPasswordManagerDriver final
   bool IsInPrimaryMainFrame() const override;
   bool CanShowAutofillUi() const override;
   const GURL& GetLastCommittedURL() const override;
+  const url::Origin& GetLastCommittedOrigin() const override;
   gfx::RectF TransformToRootCoordinates(
       const gfx::RectF& bounds_in_frame_coordinates) override;
   base::WeakPtr<PasswordManagerDriver> AsWeakPtr() override;

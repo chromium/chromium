@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/mojom/autofill_types.mojom-shared.h"
 #include "components/autofill/core/common/unique_ids.h"
 #include "ui/accessibility/ax_tree_id.h"
+#include "url/origin.h"
 
 class GURL;
 
@@ -204,6 +205,9 @@ class PasswordManagerDriver {
 
   // Returns the last committed URL of the frame.
   virtual const GURL& GetLastCommittedURL() const = 0;
+
+  // Returns the last committed origin of the frame.
+  virtual const url::Origin& GetLastCommittedOrigin() const = 0;
 
   // Annotate password related (username, password) DOM input elements with
   // corresponding HTML attributes. It is used only for debugging.

@@ -393,6 +393,11 @@ const GURL& ContentPasswordManagerDriver::GetLastCommittedURL() const {
   return render_frame_host_->GetLastCommittedURL();
 }
 
+const url::Origin& ContentPasswordManagerDriver::GetLastCommittedOrigin()
+    const {
+  return render_frame_host_->GetLastCommittedOrigin();
+}
+
 void ContentPasswordManagerDriver::AnnotateFieldsWithParsingResult(
     const autofill::ParsingResult& parsing_result) {
   if (const auto& agent = GetPasswordAutofillAgent()) {

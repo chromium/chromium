@@ -125,6 +125,7 @@ class ContentPasswordManagerDriver final
   bool CanShowAutofillUi() const override;
   int GetFrameId() const override;
   const GURL& GetLastCommittedURL() const override;
+  const url::Origin& GetLastCommittedOrigin() const override;
   void AnnotateFieldsWithParsingResult(
       const autofill::ParsingResult& parsing_result) override;
   base::WeakPtr<password_manager::PasswordManagerDriver> AsWeakPtr() override;

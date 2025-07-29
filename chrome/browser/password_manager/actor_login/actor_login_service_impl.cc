@@ -21,9 +21,7 @@ ActorLoginDelegate* GetOrCreateDelegate(content::WebContents* web_contents) {
   password_manager::ContentPasswordManagerDriver* driver =
       password_manager::ContentPasswordManagerDriver::GetForRenderFrameHost(
           web_contents->GetPrimaryMainFrame());
-  return content::WebContentsUserData<
-      ActorLoginDelegateImpl>::GetOrCreateForWebContents(web_contents,
-                                                         driver->client());
+  return ActorLoginDelegateImpl::GetOrCreate(web_contents, driver->client());
 }
 
 }  // namespace

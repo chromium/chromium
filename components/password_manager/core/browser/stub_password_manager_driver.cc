@@ -7,6 +7,7 @@
 #include "components/autofill/core/common/aliases.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "url/gurl.h"
+#include "url/origin.h"
 
 namespace password_manager {
 
@@ -90,6 +91,10 @@ int StubPasswordManagerDriver::GetFrameId() const {
 
 const GURL& StubPasswordManagerDriver::GetLastCommittedURL() const {
   return GURL::EmptyGURL();
+}
+
+const url::Origin& StubPasswordManagerDriver::GetLastCommittedOrigin() const {
+  return opaque_origin_;
 }
 
 gfx::RectF StubPasswordManagerDriver::TransformToRootCoordinates(
