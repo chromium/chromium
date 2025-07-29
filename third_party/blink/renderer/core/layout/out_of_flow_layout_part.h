@@ -328,7 +328,7 @@ class CORE_EXPORT OutOfFlowLayoutPart {
       const BlockNode& candidate,
       const StitchedAnchorQueries* anchor_queries) const;
 
-  ContainingBlockInfo ApplyPositionAreaOffsets(
+  LogicalRect ApplyPositionAreaOffsets(
       const PositionAreaOffsets& offsets,
       PhysicalOffset default_anchor_scroll_shift,
       const ContainingBlockInfo& container_info) const;

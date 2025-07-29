@@ -669,13 +669,11 @@ void OutOfFlowLayoutPart::HandleFragmentation() {
   }
 }
 
-OutOfFlowLayoutPart::ContainingBlockInfo
-OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
+LogicalRect OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
     const PositionAreaOffsets& offsets,
     PhysicalOffset default_anchor_scroll_shift,
     const OutOfFlowLayoutPart::ContainingBlockInfo& container_info) const {
-  ContainingBlockInfo adjusted_container_info(container_info);
-  LogicalRect& rect = adjusted_container_info.rect;
+  LogicalRect rect = container_info.rect;
 
   // Reduce the container size and adjust the offset based on the position-area.
   const BoxStrut insets =
@@ -747,7 +745,7 @@ OutOfFlowLayoutPart::ApplyPositionAreaOffsets(
     rect.ShiftInlineEndEdgeTo(rect.InlineEndOffset() + delta);
   }
 
-  return adjusted_container_info;
+  return rect;
 }
 
 // Retrieve the stored ContainingBlockInfo needed for placing positioned nodes.
@@ -2251,7 +2249,8 @@ OutOfFlowLayoutPart::TryCalculateOffset(
   DCHECK(base::ValuesEquivalent(node_info.node.Style().PositionAnchor(),
                                 candidate_style.PositionAnchor()));
 
-  ContainingBlockInfo container_info = node_info.base_container_info;
+  const ContainingBlockInfo& container_info = node_info.base_container_info;
+  LogicalRect container_rect = container_info.rect;
   if (const std::optional<PositionAreaOffsets> offsets =
           candidate_style.PositionAreaOffsets()) {
     Element* elm = To<Element>(node_info.node.GetDOMNode());
@@ -2265,7 +2264,7 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       StyleEngine& style_engine = elm->GetDocument().GetStyleEngine();
       style_engine.MarkForDefaultAnchorScrollShift(*elm);
     }
-    container_info = ApplyPositionAreaOffsets(
+    container_rect = ApplyPositionAreaOffsets(
         *offsets, default_anchor_scroll_shift, container_info);
   }
 
@@ -2273,7 +2272,6 @@ OutOfFlowLayoutPart::TryCalculateOffset(
       candidate_style.GetWritingDirection();
   const auto container_writing_direction = container_info.writing_direction;
 
-  const LogicalRect& container_rect = container_info.rect;
   const PhysicalSize container_physical_content_size =
       ToPhysicalSize(container_rect.size,
                      node_info.default_writing_direction.GetWritingMode());
