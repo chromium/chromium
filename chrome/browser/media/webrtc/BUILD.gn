@@ -215,6 +215,13 @@ source_set("webrtc") {
     if (enable_glic) {
       deps += [ "//chrome/browser/glic" ]
     }
+
+    if (is_win) {
+      sources += [
+        "desktop_capture_devices_util_win.cc",
+        "desktop_capture_devices_util_win.h",
+      ]
+    }
   }
 
   if (is_mac) {
