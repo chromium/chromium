@@ -368,39 +368,28 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     return std::nullopt;
   }
 
-  if (!service->HasSyncConsent()) {
-    // Only some errors can be shown if the account isn't a consented primary
-    // account.
-    // Note the condition checked is not IsInitialSyncFeatureSetupComplete(),
-    // because the setup incomplete case is treated separately below. See the
-    // comment in ShouldRequestSyncConfirmation() about dashboard resets.
-    if (service->RequiresClientUpgrade()) {
-      return AvatarSyncErrorType::kUpgradeClientError;
+  if (service->HasSyncConsent()) {
+    if (ShouldRequestSyncConfirmation(service)) {
+      return AvatarSyncErrorType::kSettingsUnconfirmedError;
     }
 
-    if (service->GetUserSettings()
-            ->IsPassphraseRequiredForPreferredDataTypes()) {
-      return AvatarSyncErrorType::kPassphraseError;
+    // RequiresClientUpgrade() is unrecoverable, but is treated separately
+    // below.
+    if (service->HasUnrecoverableError() && !service->RequiresClientUpgrade()) {
+      // Display different messages and buttons for managed accounts.
+      if (!ChromeSigninClientFactory::GetForProfile(profile)
+               ->IsClearPrimaryAccountAllowed(
+                   IdentityManagerFactory::GetForProfile(profile)
+                       ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
+        return AvatarSyncErrorType::kManagedUserUnrecoverableError;
+      }
+      return AvatarSyncErrorType::kUnrecoverableError;
     }
 
-    return GetTrustedVaultError(service);
-  }
-
-  // RequiresClientUpgrade() is unrecoverable, but is treated separately below.
-  if (service->HasUnrecoverableError() && !service->RequiresClientUpgrade()) {
-    // Display different messages and buttons for managed accounts.
-    if (!ChromeSigninClientFactory::GetForProfile(profile)
-             ->IsClearPrimaryAccountAllowed(
-                 IdentityManagerFactory::GetForProfile(profile)
-                     ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
-      return AvatarSyncErrorType::kManagedUserUnrecoverableError;
+    if (service->GetTransportState() ==
+        syncer::SyncService::TransportState::PAUSED) {
+      return AvatarSyncErrorType::kSyncPaused;
     }
-    return AvatarSyncErrorType::kUnrecoverableError;
-  }
-
-  if (service->GetTransportState() ==
-      syncer::SyncService::TransportState::PAUSED) {
-    return AvatarSyncErrorType::kSyncPaused;
   }
 
   if (service->RequiresClientUpgrade()) {
@@ -411,17 +400,7 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     return AvatarSyncErrorType::kPassphraseError;
   }
 
-  const std::optional<AvatarSyncErrorType> trusted_vault_error =
-      GetTrustedVaultError(service);
-  if (trusted_vault_error) {
-    return trusted_vault_error;
-  }
-
-  if (ShouldRequestSyncConfirmation(service)) {
-    return AvatarSyncErrorType::kSettingsUnconfirmedError;
-  }
-
-  return std::nullopt;
+  return GetTrustedVaultError(service);
 }
 
 std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
@@ -475,8 +454,11 @@ bool ShouldRequestSyncConfirmation(const syncer::SyncService* service) {
 
 bool ShouldShowSyncPassphraseError(const syncer::SyncService* service) {
   const syncer::SyncUserSettings* settings = service->GetUserSettings();
-  return settings->IsInitialSyncFeatureSetupComplete() &&
-         settings->IsPassphraseRequiredForPreferredDataTypes();
+  if (service->HasSyncConsent() &&
+      !settings->IsInitialSyncFeatureSetupComplete()) {
+    return false;
+  }
+  return settings->IsPassphraseRequiredForPreferredDataTypes();
 }
 
 #if !BUILDFLAG(IS_ANDROID)
