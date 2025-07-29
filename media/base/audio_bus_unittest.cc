@@ -16,6 +16,7 @@
 #include <limits>
 #include <memory>
 
+#include "base/containers/span.h"
 #include "base/memory/aligned_memory.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
@@ -305,9 +306,10 @@ TEST_F(AudioBusTest, WrapMemory) {
   VerifyReadWriteAndAlignment(bus.get());
 
   // Verify the channel vectors lie within the provided memory block.
-  const float* backing_memory_start = data.as_span().data();
-  const float* backing_memory_end = backing_memory_start + total_frame_count;
-  EXPECT_GE(bus->channel_span(0).data(), backing_memory_start);
+  base::span<const float> backing_memory_start = data.as_span();
+  const float* backing_memory_end =
+      backing_memory_start.subspan(total_frame_count).data();
+  EXPECT_GE(bus->channel_span(0).data(), backing_memory_start.data());
   EXPECT_LT(bus->channel_span(bus->channels() - 1).data() + bus->frames(),
             backing_memory_end);
 }

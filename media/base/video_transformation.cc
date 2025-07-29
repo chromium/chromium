@@ -15,6 +15,7 @@
 #include <array>
 #include <cmath>
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/notreached.h"
 #include "base/numerics/angle_conversions.h"
@@ -77,7 +78,7 @@ std::array<int32_t, 4> VideoTransformation::GetMatrix() const {
   }
 }
 
-VideoTransformation::VideoTransformation(const int32_t matrix[4]) {
+VideoTransformation::VideoTransformation(base::span<const int32_t, 4> matrix) {
   // Promote to int64_t to avoid abs(int32_min) being undefined.
   const std::array<int64_t, 4> matrix64 = {
       matrix[0],

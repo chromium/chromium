@@ -38,42 +38,42 @@ class VideoTransformationTest : public testing::Test {
 // }
 TEST_F(VideoTransformationTest, MatrixToVideoTransformation) {
   std::array<int32_t, 4> mat = {65536, 0, 0, 65536};
-  auto t = VideoTransformation(mat.data());
+  auto t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_0);
   EXPECT_FALSE(t.mirrored);
 
   mat = {-65536, 0, 0, 65536};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_0);
   EXPECT_TRUE(t.mirrored);
 
   mat = {0, 65536, -65536, 0};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_90);
   EXPECT_FALSE(t.mirrored);
 
   mat = {0, 65536, 65536, 0};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_90);
   EXPECT_TRUE(t.mirrored);
 
   mat = {-65536, 0, 0, -65536};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_180);
   EXPECT_FALSE(t.mirrored);
 
   mat = {65536, 0, 0, -65536};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_180);
   EXPECT_TRUE(t.mirrored);
 
   mat = {0, -65536, 65536, 0};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_270);
   EXPECT_FALSE(t.mirrored);
 
   mat = {0, -65536, -65536, 0};
-  t = VideoTransformation(mat.data());
+  t = VideoTransformation(mat);
   EXPECT_EQ(t.rotation, VIDEO_ROTATION_270);
   EXPECT_TRUE(t.mirrored);
 }
@@ -81,36 +81,36 @@ TEST_F(VideoTransformationTest, MatrixToVideoTransformation) {
 TEST_F(VideoTransformationTest, ComputeMatrix) {
   // Standard 90 degree increments with no rotation all end up rotated normally
   VideoTransformation transformation = VideoTransformation(VIDEO_ROTATION_0);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_0, false));
 
   transformation = VideoTransformation(VIDEO_ROTATION_90, false);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_90, false));
 
   transformation = VideoTransformation(VIDEO_ROTATION_180);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_180, false));
 
   transformation = VideoTransformation(VIDEO_ROTATION_270);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_270, false));
 
   // Test the mirrored cases
   transformation = VideoTransformation(VIDEO_ROTATION_0, true);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_0, true));
 
   transformation = VideoTransformation(VIDEO_ROTATION_90, true);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_90, true));
 
   transformation = VideoTransformation(VIDEO_ROTATION_180, true);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_180, true));
 
   transformation = VideoTransformation(VIDEO_ROTATION_270, true);
-  EXPECT_EQ(VideoTransformation(transformation.GetMatrix().data()),
+  EXPECT_EQ(VideoTransformation(transformation.GetMatrix()),
             VideoTransformation(VIDEO_ROTATION_270, true));
 }
 
