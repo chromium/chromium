@@ -37,13 +37,13 @@
 #include "chrome/browser/ui/ash/login/fake_login_display_host.h"
 #include "chrome/browser/ui/webui/ash/login/online_login_utils.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/network/portal_detector/mock_network_portal_detector.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
 #include "google_apis/gaia/gaia_id.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -327,7 +327,7 @@ class EnrollmentScreenBaseTest : public testing::Test {
   }
 
   TestingPrefServiceSimple& local_state() {
-    return *scoped_testing_local_state_.Get();
+    return *TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   }
 
   MockEnrollmentLauncher& mock_enrollment_launcher() {
@@ -376,10 +376,6 @@ class EnrollmentScreenBaseTest : public testing::Test {
 
   // Used by `enrollment_screen_`.
   ScopedStubInstallAttributes test_install_attributes_;
-
-  // Used by `EnrollmentRequisitionManager` and `StartupUtils`.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   // Used by `EnrollmentRequisitionManager`.
   system::ScopedFakeStatisticsProvider fake_statistics_provider_;

@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/wizard_context.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ui/webui/ash/login/fake_update_required_screen_handler.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -39,8 +38,7 @@ using ::testing::Return;
 
 class UpdateRequiredScreenUnitTest : public testing::Test {
  public:
-  UpdateRequiredScreenUnitTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  UpdateRequiredScreenUnitTest() = default;
 
   UpdateRequiredScreenUnitTest(const UpdateRequiredScreenUnitTest&) = delete;
   UpdateRequiredScreenUnitTest& operator=(const UpdateRequiredScreenUnitTest&) =
@@ -114,7 +112,6 @@ class UpdateRequiredScreenUnitTest : public testing::Test {
  private:
   // Test versions of core browser infrastructure.
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   // This is used for `GetEnterpriseDisplayDomain`.
   ScopedStubInstallAttributes test_install_attributes_;

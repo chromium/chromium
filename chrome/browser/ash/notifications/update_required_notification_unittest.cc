@@ -20,7 +20,6 @@
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -104,7 +103,6 @@ class UpdateRequiredNotificationTest
 
  private:
   bool user_managed_ = true;
-  ScopedTestingLocalState local_state_;
   ScopedTestingCrosSettings scoped_testing_cros_settings_;
   std::unique_ptr<NotificationDisplayServiceTester> notification_service_;
   ScopedStubInstallAttributes scoped_stub_install_attributes_;
@@ -115,8 +113,7 @@ class UpdateRequiredNotificationTest
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 
-UpdateRequiredNotificationTest::UpdateRequiredNotificationTest()
-    : local_state_(TestingBrowserProcess::GetGlobal()) {
+UpdateRequiredNotificationTest::UpdateRequiredNotificationTest() {
   ON_CALL(*this, IsDeviceEnterpriseManaged)
       .WillByDefault(testing::Return(true));
   ON_CALL(*this, IsUserLoggedIn).WillByDefault(testing::Return(true));

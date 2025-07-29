@@ -40,7 +40,6 @@
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
 #include "chrome/browser/policy/messaging_layer/public/report_client_test_util.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/attestation/fake_certificate.h"
@@ -230,7 +229,7 @@ class DeviceCloudPolicyManagerAshTest
     manager_->SetSigninProfileSchemaRegistry(&schema_registry_);
 
     user_manager_ = std::make_unique<user_manager::FakeUserManager>(
-        scoped_testing_local_state_.Get());
+        TestingBrowserProcess::GetGlobal()->local_state());
     manager_->OnUserManagerCreated(user_manager_.get());
 
     // SharedURLLoaderFactory and LocalState singletons have to be set since
@@ -242,7 +241,7 @@ class DeviceCloudPolicyManagerAshTest
     ash::SystemSaltGetter::Initialize();
     DeviceOAuth2TokenServiceFactory::Initialize(
         test_url_loader_factory_.GetSafeWeakWrapper(),
-        scoped_testing_local_state_.Get());
+        TestingBrowserProcess::GetGlobal()->local_state());
 
     url_fetcher_response_code_ = net::HTTP_OK;
     url_fetcher_response_string_ =
@@ -314,7 +313,7 @@ class DeviceCloudPolicyManagerAshTest
   }
 
   void InitDeviceCloudPolicyInitializer() {
-    manager_->Initialize(scoped_testing_local_state_.Get());
+    manager_->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
     EnrollmentRequisitionManager::Initialize();
     initializer_ = std::make_unique<DeviceCloudPolicyInitializer>(
         &device_management_service_, install_attributes_.get(),
@@ -373,9 +372,6 @@ class DeviceCloudPolicyManagerAshTest
   std::unique_ptr<reporting::ReportingClient::TestEnvironment>
       reporting_test_enviroment_;
 
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
-
   std::unique_ptr<ash::InstallAttributes> install_attributes_;
 
   net::HttpStatusCode url_fetcher_response_code_;
@@ -412,7 +408,7 @@ TEST_F(DeviceCloudPolicyManagerAshTest, FreshDevice) {
   FlushDeviceSettings();
   EXPECT_TRUE(manager_->IsInitializationComplete(POLICY_DOMAIN_CHROME));
 
-  manager_->Initialize(scoped_testing_local_state_.Get());
+  manager_->Initialize(TestingBrowserProcess::GetGlobal()->local_state());
 
   PolicyBundle bundle;
   EXPECT_TRUE(manager_->policies().Equals(bundle));

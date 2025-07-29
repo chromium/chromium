@@ -190,7 +190,6 @@ class ChromeArcUtilTest : public testing::Test {
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<base::test::ScopedCommandLine> command_line_;
   content::BrowserTaskEnvironment task_environment_;
   base::ScopedTempDir data_dir_;

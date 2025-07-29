@@ -27,7 +27,6 @@
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/ui/webui/ash/multidevice_setup/multidevice_setup_dialog.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -321,11 +320,6 @@ class SmartLockServiceTest : public testing::Test {
 
   // Must outlive TestingProfiles.
   content::BrowserTaskEnvironment task_environment_;
-
-  // PrefService which contains the browser process' local storage. It should be
-  // destructed after TestingProfile.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;

@@ -2,17 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
+
 #include <string>
 
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
-#include "chrome/browser/ash/app_mode/metrics/periodic_metrics_service.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/network/network_handler_test_helper.h"
 #include "chromeos/ash/components/sync_wifi/network_test_helper.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/user_activity/user_activity_detector.h"
@@ -41,11 +42,10 @@ class BasePeriodicMetricsServiceTest {
  public:
   BasePeriodicMetricsServiceTest()
       : task_environment_(base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
         network_handler_test_helper_(
             std::make_unique<NetworkHandlerTestHelper>()),
-        periodic_metrics_service_(local_state()),
+        periodic_metrics_service_(
+            TestingBrowserProcess::GetGlobal()->local_state()),
         histogram_tester_(std::make_unique<base::HistogramTester>()) {}
 
   BasePeriodicMetricsServiceTest(const BasePeriodicMetricsServiceTest&) =
@@ -54,8 +54,6 @@ class BasePeriodicMetricsServiceTest {
       const BasePeriodicMetricsServiceTest&) = delete;
 
   base::test::TaskEnvironment* task_environment() { return &task_environment_; }
-
-  TestingPrefServiceSimple* local_state() { return local_state_->Get(); }
 
   base::HistogramTester* histogram_tester() { return histogram_tester_.get(); }
 
@@ -89,7 +87,6 @@ class BasePeriodicMetricsServiceTest {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   sync_preferences::TestingPrefServiceSyncable user_prefs_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
   PeriodicMetricsService periodic_metrics_service_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
@@ -146,7 +143,8 @@ class InternetPeriodicMetricsServiceTest
 
   void TearDown() override {
     network_handler_test_helper_.reset();
-    local_state()->RemoveUserPref(prefs::kKioskMetrics);
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->RemoveUserPref(
+        prefs::kKioskMetrics);
   }
 
   void MakeOffline() {
@@ -210,7 +208,8 @@ class UserActivityPeriodicMetricsServiceTest
       const UserActivityPeriodicMetricsServiceTest&) = delete;
 
   void TearDown() override {
-    local_state()->RemoveUserPref(prefs::kKioskMetrics);
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->RemoveUserPref(
+        prefs::kKioskMetrics);
   }
 
   void SetDeviceIdleTime(base::TimeDelta idle_time,

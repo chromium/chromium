@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -56,7 +55,6 @@ class ExistingUserControllerBaseTest : public ::testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  ScopedTestingLocalState scoped_local_state_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<AuthEventsRecorder> auth_events_recorder_;

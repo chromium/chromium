@@ -14,10 +14,10 @@
 #include "chrome/browser/ash/kerberos/kerberos_credentials_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/kerberos/kerberos_client.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -40,8 +40,7 @@ constexpr char kConfig[] = "[libdefaults]";
 
 class SmbKerberosCredentialsUpdaterTest : public testing::Test {
  public:
-  SmbKerberosCredentialsUpdaterTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {
+  SmbKerberosCredentialsUpdaterTest() {
     // Enable Kerberos via policy.
     SetPref(prefs::kKerberosEnabled, base::Value(true));
 
@@ -53,7 +52,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
     profile_builder.SetProfileName(kProfileEmail);
     profile_ = profile_builder.Build();
     credentials_manager_ = std::make_unique<KerberosCredentialsManager>(
-        local_state_.Get(), profile_.get());
+        TestingBrowserProcess::GetGlobal()->local_state(), profile_.get());
   }
 
   ~SmbKerberosCredentialsUpdaterTest() override {
@@ -75,7 +74,7 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
   }
 
   void SetPref(const char* name, base::Value value) {
-    local_state_.Get()->SetManagedPref(
+    TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetManagedPref(
         name, std::make_unique<base::Value>(std::move(value)));
   }
 
@@ -86,7 +85,6 @@ class SmbKerberosCredentialsUpdaterTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
   user_manager::TypedScopedUserManager<FakeChromeUserManager> user_manager_{
       std::make_unique<FakeChromeUserManager>()};
   std::unique_ptr<TestingProfile> profile_;

@@ -21,10 +21,10 @@
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/test_event_router.h"
@@ -119,8 +119,7 @@ class TestEventRouterObserver
 
 class FileManagerEventRouterTest : public testing::Test {
  public:
-  FileManagerEventRouterTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  FileManagerEventRouterTest() = default;
   FileManagerEventRouterTest(const FileManagerEventRouterTest&) = delete;
   FileManagerEventRouterTest& operator=(const FileManagerEventRouterTest&) =
       delete;
@@ -167,7 +166,6 @@ class FileManagerEventRouterTest : public testing::Test {
     return io_task::EntryStatus(std::move(url), base::File::FILE_OK);
   }
 
-  ScopedTestingLocalState scoped_testing_local_state_;
   content::BrowserTaskEnvironment task_environment_;
   display::test::TestScreen test_screen_{/*create_display=*/true,
                                          /*register_screen=*/true};
@@ -408,8 +406,8 @@ class FileManagerEventRouterLocalFilesTest : public FileManagerEventRouterTest {
   ~FileManagerEventRouterLocalFilesTest() override = default;
 
   void SetLocalUserFilesPolicy(bool allowed) {
-    scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
-                                                  allowed);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+        prefs::kLocalUserFilesAllowed, allowed);
   }
 
  private:

@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
@@ -147,8 +146,6 @@ class DeviceDisablingManagerOOBETest : public DeviceDisablingManagerTestBase {
  private:
   void OnDeviceDisabledChecked(bool device_disabled);
 
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   FakeStatisticsProvider statistics_provider_;
 
   base::RunLoop run_loop_;
@@ -177,7 +174,7 @@ void DeviceDisablingManagerOOBETest::CheckWhetherDeviceDisabledDuringOOBE() {
 }
 
 void DeviceDisablingManagerOOBETest::SetDeviceDisabled(bool disabled) {
-  ScopedDictPrefUpdate dict(scoped_testing_local_state_.Get(),
+  ScopedDictPrefUpdate dict(TestingBrowserProcess::GetGlobal()->local_state(),
                             prefs::kServerBackedDeviceState);
   if (disabled) {
     dict->Set(policy::kDeviceStateMode, policy::kDeviceStateModeDisabled);

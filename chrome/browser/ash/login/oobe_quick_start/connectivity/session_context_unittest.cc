@@ -10,7 +10,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -31,7 +30,7 @@ constexpr char kPrepareForUpdateDidTransferWifiKey[] = "did_transfer_wifi";
 
 class SessionContextTest : public testing::Test {
  public:
-  SessionContextTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  SessionContextTest() = default;
   SessionContextTest(const SessionContextTest&) = delete;
   SessionContextTest& operator=(const SessionContextTest&) = delete;
 
@@ -40,7 +39,9 @@ class SessionContextTest : public testing::Test {
     session_context_->FillOrResetSession();
   }
 
-  PrefService* GetLocalState() { return local_state_.Get(); }
+  PrefService* GetLocalState() {
+    return TestingBrowserProcess::GetGlobal()->local_state();
+  }
 
   std::string GetSecondarySharedSecretString() {
     SessionContext::SharedSecret secondary_shared_secret =
@@ -53,7 +54,6 @@ class SessionContextTest : public testing::Test {
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
   std::unique_ptr<SessionContext> session_context_;
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(SessionContextTest, GetPrepareForUpdateInfo) {

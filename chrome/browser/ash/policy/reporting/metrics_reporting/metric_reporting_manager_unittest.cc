@@ -23,7 +23,6 @@
 #include "chrome/browser/chromeos/reporting/metric_default_utils.h"
 #include "chrome/browser/chromeos/reporting/metric_reporting_prefs.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/session_manager/session_manager_client.h"
@@ -1061,7 +1060,6 @@ class EventDrivenTelemetryCollectorPoolTest
   std::unique_ptr<::testing::NiceMock<test::MockDelegate>> mock_delegate_;
 
   ::ash::ScopedTestingCrosSettings cros_settings_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   // Placeholder test profile needed for initializing downstream components.
   TestingProfile profile_;

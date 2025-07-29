@@ -45,7 +45,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/dbus/cicerone/cicerone_client.h"
@@ -403,10 +402,6 @@ class ChildStatusCollectorTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  // scoped_testing_local_state_ should be destructed after TestingProfile.
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;

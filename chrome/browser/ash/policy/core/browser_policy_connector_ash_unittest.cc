@@ -11,7 +11,6 @@
 #include "chrome/browser/ash/wallpaper_handlers/test_wallpaper_fetcher_delegate.h"
 #include "chrome/browser/ui/ash/wallpaper/test_wallpaper_controller.h"
 #include "chrome/browser/ui/ash/wallpaper/wallpaper_controller_client_impl.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
@@ -28,8 +27,6 @@
 namespace policy {
 
 TEST(BrowserPolicyConnectorAshTest, UserManager) {
-  ScopedTestingLocalState testing_local_state{
-      TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment;
   constexpr auto kAccountId = AccountId::Literal::FromUserEmailGaiaId(
       "test@example.com", GaiaId::Literal("1234567890"));
@@ -47,7 +44,7 @@ TEST(BrowserPolicyConnectorAshTest, UserManager) {
   user_manager::ScopedUserManager user_manager(
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
+          TestingBrowserProcess::GetGlobal()->local_state()));
   ash::UserImageManagerRegistry user_image_manager_registry(user_manager.Get());
 
   {

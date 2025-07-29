@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/version_updater/mock_version_updater_delegate.h"
 #include "chrome/browser/ash/login/version_updater/update_time_estimator.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -51,7 +50,7 @@ MATCHER_P2(DowloadingTimeLeftEq, can_be_used, time, "") {
 
 class VersionUpdaterUnitTest : public testing::Test {
  public:
-  VersionUpdaterUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  VersionUpdaterUnitTest() = default;
 
   VersionUpdaterUnitTest(const VersionUpdaterUnitTest&) = delete;
   VersionUpdaterUnitTest& operator=(const VersionUpdaterUnitTest&) = delete;
@@ -152,8 +151,6 @@ class VersionUpdaterUnitTest : public testing::Test {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
  private:
-  ScopedTestingLocalState local_state_;
-
   int checks_count_ = 0;
 };
 

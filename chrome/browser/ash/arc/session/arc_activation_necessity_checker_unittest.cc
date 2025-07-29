@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -91,7 +90,8 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
 
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        testing_local_state_.Get(), ash::CrosSettings::Get()));
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        ash::CrosSettings::Get()));
 
     const AccountId account_id =
         AccountId::FromUserEmailGaiaId(kUserEmail, GaiaId("1234567890"));
@@ -136,8 +136,6 @@ class ArcActivationNecessityCheckerTest : public testing::Test {
  protected:
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  ScopedTestingLocalState testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   ash::ScopedStubInstallAttributes install_attributes_;
   ash::ScopedTestingCrosSettings testing_cros_settings_;
   session_manager::SessionManager session_manager_;

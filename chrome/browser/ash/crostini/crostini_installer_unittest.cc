@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/crostini/crostini_types.mojom.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -89,10 +88,7 @@ class CrostiniInstallerTest : public testing::Test {
     base::test::TestFuture<void> result_future_;
   };
 
-  CrostiniInstallerTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
-        browser_part_(g_browser_process->platform_part()) {}
+  CrostiniInstallerTest() : browser_part_(g_browser_process->platform_part()) {}
 
   CrostiniInstallerTest(const CrostiniInstallerTest&) = delete;
   CrostiniInstallerTest& operator=(const CrostiniInstallerTest&) = delete;
@@ -201,7 +197,6 @@ class CrostiniInstallerTest : public testing::Test {
   std::unique_ptr<CrostiniInstaller> crostini_installer_;
 
  private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };

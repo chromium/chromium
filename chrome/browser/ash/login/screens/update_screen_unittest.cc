@@ -15,7 +15,6 @@
 #include "chrome/browser/ash/login/screens/mock_update_screen.h"
 #include "chrome/browser/ash/login/startup_utils.h"
 #include "chrome/browser/ash/login/wizard_context.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/ash/components/dbus/update_engine/update_engine_client.h"
@@ -34,7 +33,7 @@ using ::testing::Return;
 
 class UpdateScreenUnitTest : public testing::Test {
  public:
-  UpdateScreenUnitTest() : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  UpdateScreenUnitTest() = default;
 
   UpdateScreenUnitTest(const UpdateScreenUnitTest&) = delete;
   UpdateScreenUnitTest& operator=(const UpdateScreenUnitTest&) = delete;
@@ -130,7 +129,6 @@ class UpdateScreenUnitTest : public testing::Test {
   // Test versions of core browser infrastructure.
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_;
   std::unique_ptr<NetworkHandlerTestHelper> network_handler_test_helper_;
 };
 

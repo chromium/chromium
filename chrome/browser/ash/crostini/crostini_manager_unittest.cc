@@ -41,7 +41,6 @@
 #include "chrome/browser/ui/views/crostini/crostini_ansible_software_config_view.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/anomaly_detector/anomaly_detector_client.h"
@@ -155,8 +154,6 @@ class CrostiniManagerTest : public testing::Test {
   CrostiniManagerTest()
       : task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD,
                           base::test::TaskEnvironment::TimeSource::MOCK_TIME),
-        local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     ash::AnomalyDetectorClient::InitializeFake();
     ash::ChunneldClient::InitializeFake();
@@ -256,7 +253,6 @@ class CrostiniManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
 
  private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };

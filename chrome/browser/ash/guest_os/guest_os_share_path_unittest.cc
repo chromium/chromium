@@ -214,10 +214,7 @@ class GuestOsSharePathTest : public testing::Test {
                         expected_failure_reason, success, failure_reason);
   }
 
-  GuestOsSharePathTest()
-      : local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
-        browser_part_(g_browser_process->platform_part()) {
+  GuestOsSharePathTest() : browser_part_(g_browser_process->platform_part()) {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
     ash::ConciergeClient::InitializeFake();
@@ -274,7 +271,8 @@ class GuestOsSharePathTest : public testing::Test {
     // Setup for DriveFS.
     user_manager_.Reset(std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        local_state_->Get(), ash::CrosSettings::Get()));
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        ash::CrosSettings::Get()));
     account_id_ = AccountId::FromUserEmailGaiaId(
         profile()->GetProfileUserName(), GaiaId("12345"));
     ASSERT_TRUE(user_manager::TestHelper(user_manager::UserManager::Get())
@@ -354,7 +352,6 @@ class GuestOsSharePathTest : public testing::Test {
   std::unique_ptr<arc::ArcSessionManager> arc_session_manager_;
 
  private:
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };

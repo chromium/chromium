@@ -38,7 +38,6 @@
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
 #include "chromeos/ash/experiences/system_web_apps/types/system_web_app_delegate_map.h"
@@ -1427,8 +1426,8 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness,
   void SetUp() override {
     // Kiosk user session needs to be set up before profile creation done in
     // ChromeRenderViewHostTestHarness::SetUp().
-    user_manager_.Reset(
-        std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
+    user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
+        TestingBrowserProcess::GetGlobal()->local_state()));
     ash::ProfileHelper::Get();  // Instantiate BrowserContextHelper.
     chromeos::SetUpFakeKioskSession();
     ChromeRenderViewHostTestHarness::SetUp();
@@ -1463,7 +1462,6 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness,
   }
 
  private:
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   user_manager::ScopedUserManager user_manager_;
 };
 

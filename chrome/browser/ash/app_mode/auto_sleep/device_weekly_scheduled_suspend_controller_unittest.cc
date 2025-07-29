@@ -20,12 +20,12 @@
 #include "chrome/browser/ash/app_mode/auto_sleep/device_weekly_scheduled_suspend_test_policy_builder.h"
 #include "chrome/browser/ash/app_mode/auto_sleep/weekly_interval_timer.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time.h"
 #include "chromeos/ash/components/policy/weekly_time/weekly_time_interval.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash {
@@ -37,8 +37,7 @@ using DayOfWeek = DeviceWeeklyScheduledSuspendTestPolicyBuilder::DayOfWeek;
 
 class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
  protected:
-  DeviceWeeklyScheduledSuspendControllerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DeviceWeeklyScheduledSuspendControllerTest() = default;
 
   // testing::Test:
   void SetUp() override {
@@ -69,8 +68,8 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
   }
 
   void UpdatePolicyPref(base::Value::List schedule_list) {
-    testing_local_state_.Get()->SetList(prefs::kDeviceWeeklyScheduledSuspend,
-                                        std::move(schedule_list));
+    TestingBrowserProcess::GetGlobal()->local_state()->SetList(
+        prefs::kDeviceWeeklyScheduledSuspend, std::move(schedule_list));
   }
 
   void UpdatePolicyAndCheckIntervals(
@@ -112,7 +111,7 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
   void InitController() {
     device_weekly_scheduled_suspend_controller_ =
         std::make_unique<DeviceWeeklyScheduledSuspendController>(
-            testing_local_state_.Get());
+            TestingBrowserProcess::GetGlobal()->local_state());
   }
 
   int user_activity_calls() const { return user_activity_calls_; }
@@ -121,7 +120,6 @@ class DeviceWeeklyScheduledSuspendControllerTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::IO,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState testing_local_state_;
   std::unique_ptr<DeviceWeeklyScheduledSuspendController>
       device_weekly_scheduled_suspend_controller_;
   int user_activity_calls_;

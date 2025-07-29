@@ -29,7 +29,6 @@
 #include "chrome/browser/policy/networking/policy_cert_service_factory.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -199,13 +198,12 @@ class MultiUserSignInPolicyControllerTest : public testing::Test {
 
   TestingProfile* profile(int index) { return user_profiles_[index]; }
 
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   content::BrowserTaskEnvironment task_environment_;
   TypedScopedUserManager<ash::FakeChromeUserManager> fake_user_manager_{
       std::make_unique<ash::FakeChromeUserManager>()};
   std::unique_ptr<user_manager::MultiUserSignInPolicyController> controller_{
       std::make_unique<user_manager::MultiUserSignInPolicyController>(
-          local_state_.Get(),
+          TestingBrowserProcess::GetGlobal()->local_state(),
           fake_user_manager_.Get())};
   std::unique_ptr<TestingProfileManager> profile_manager_;
 

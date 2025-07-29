@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/nearby/fake_quick_start_connectivity_service.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connection.h"
 #include "chromeos/ash/components/nearby/common/connections_manager/fake_nearby_connections_manager.h"
@@ -395,8 +394,6 @@ class TargetDeviceConnectionBrokerImplTest : public testing::Test {
   FakeConnectionLifecycleListener connection_lifecycle_listener_;
   raw_ptr<FakeConnection::Factory> connection_factory_ = nullptr;
   base::HistogramTester histogram_tester_;
-  ScopedTestingLocalState scoped_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<FakeQuickStartDecoder> fake_quick_start_decoder_ =
       std::make_unique<FakeQuickStartDecoder>();

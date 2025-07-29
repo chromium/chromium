@@ -18,13 +18,14 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/browser/ash/settings/stub_cros_settings_provider.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
 #include "chromeos/ash/components/settings/cros_settings.h"
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_registry_simple.h"
+#include "components/prefs/testing_pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -119,9 +120,9 @@ class MockKioskAppManagerObserver : public KioskAppManagerObserver {
 class KioskIwaManagerBaseTest : public testing::Test {
  public:
   KioskIwaManagerBaseTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
-        iwa_manager_(CHECK_DEREF(local_state_.Get())) {
+      : fake_user_manager_(std::make_unique<ash::FakeChromeUserManager>()),
+        iwa_manager_(
+            CHECK_DEREF(TestingBrowserProcess::GetGlobal()->local_state())) {
     UserDataAuthClient::InitializeFake();
     iwa_manager().AddObserver(&observer());
   }
@@ -161,15 +162,12 @@ class KioskIwaManagerBaseTest : public testing::Test {
         ash::features::kIsolatedWebAppKiosk);
   }
 
-  PrefRegistrySimple* registry() { return local_state_.Get()->registry(); }
-
   MockKioskAppManagerObserver& observer() { return observer_; }
   KioskIwaManager& iwa_manager() { return iwa_manager_; }
 
  private:
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>

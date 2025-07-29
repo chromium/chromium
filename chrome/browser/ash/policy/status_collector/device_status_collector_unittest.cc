@@ -74,7 +74,6 @@
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
@@ -1163,8 +1162,8 @@ class DeviceStatusCollectorTest : public testing::Test {
 
   void MockAutoLaunchKioskIwa(
       const DeviceLocalAccount& auto_launch_app_account) {
-    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>(
-        CHECK_DEREF(scoped_local_state_.Get()));
+    kiosk_iwa_manager_ = std::make_unique<ash::KioskIwaManager>(CHECK_DEREF(
+        TestingBrowserProcess::GetGlobal()->GetTestingLocalState()));
     kiosk_iwa_manager_->AddAppForTesting(auto_launch_app_account);
 
     std::vector<DeviceLocalAccount> accounts;
@@ -1198,8 +1197,6 @@ class DeviceStatusCollectorTest : public testing::Test {
   base::ScopedEnvironmentVariableOverride timezone_override_{"TZ", "UTC"};
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   ChromeContentClient content_client_;
   ChromeContentBrowserClient browser_content_client_;
@@ -3865,10 +3862,12 @@ TEST_F(DeviceStatusCollectorTest, DemoModeDimensions) {
   scoped_stub_install_attributes_.Get()->SetDemoMode();
   scoped_feature_list_.InitAndEnableFeature(
       ash::features::kFeatureManagementFeatureAwareDeviceDemoMode);
-  scoped_local_state_.Get()->SetString(ash::prefs::kDemoModeCountry, "CA");
-  scoped_local_state_.Get()->SetString(ash::prefs::kDemoModeRetailerId,
-                                       "retailer");
-  scoped_local_state_.Get()->SetString(ash::prefs::kDemoModeStoreId, "1234");
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
+      ash::prefs::kDemoModeCountry, "CA");
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
+      ash::prefs::kDemoModeRetailerId, "retailer");
+  TestingBrowserProcess::GetGlobal()->GetTestingLocalState()->SetString(
+      ash::prefs::kDemoModeStoreId, "1234");
 
   expected.set_country("CA");
   expected.set_retailer_name("retailer");

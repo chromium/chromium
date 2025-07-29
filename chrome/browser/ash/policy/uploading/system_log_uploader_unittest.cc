@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/common/chrome_features.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/prefs/testing_pref_service.h"
@@ -220,8 +219,6 @@ class SystemLogUploaderTest : public testing::TestWithParam<bool> {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
   ash::ScopedCrosSettingsTestHelper settings_helper_;
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
   base::test::ScopedFeatureList feature_list;

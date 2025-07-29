@@ -42,7 +42,6 @@
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -62,6 +61,7 @@
 #include "chromeos/ash/experiences/arc/test/fake_file_system_instance.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -110,9 +110,6 @@ class FileManagerPathUtilTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
-  // Needed for `DriveIntegrationService`.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       user_manager_{std::make_unique<ash::FakeChromeUserManager>()};
@@ -809,9 +806,6 @@ class FileManagerPathUtilConvertUrlTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
-  // Needed for `DriveIntegrationService`.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   arc::FakeFileSystemInstance fake_file_system_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>

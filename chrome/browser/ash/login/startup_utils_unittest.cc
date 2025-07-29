@@ -9,7 +9,6 @@
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_test_helper.h"
 #include "chrome/browser/prefs/browser_prefs.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/prefs/testing_pref_service.h"
@@ -25,9 +24,6 @@ class StartupUtilsTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   ash::system::ScopedFakeStatisticsProvider statistics_provider_;
   base::test::ScopedCommandLine command_line_;

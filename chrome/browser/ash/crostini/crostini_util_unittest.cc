@@ -13,7 +13,6 @@
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/guest_os/guest_os_pref_names.h"
 #include "chrome/test/base/browser_process_platform_part_test_api_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -24,6 +23,7 @@
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/seneschal/seneschal_client.h"
 #include "components/component_updater/ash/fake_component_manager_ash.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,8 +37,6 @@ class CrostiniUtilTest : public testing::Test {
   CrostiniUtilTest()
       : app_id_(crostini::CrostiniTestHelper::GenerateAppId(kDesktopFileId)),
         task_environment_(content::BrowserTaskEnvironment::REAL_IO_THREAD),
-        local_state_(std::make_unique<ScopedTestingLocalState>(
-            TestingBrowserProcess::GetGlobal())),
         browser_part_(g_browser_process->platform_part()) {
     ash::ChunneldClient::InitializeFake();
     ash::CiceroneClient::InitializeFake();
@@ -98,7 +96,6 @@ class CrostiniUtilTest : public testing::Test {
 
  private:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<ScopedTestingLocalState> local_state_;
   scoped_refptr<component_updater::FakeComponentManagerAsh> component_manager_;
   BrowserProcessPlatformPartTestApi browser_part_;
 };

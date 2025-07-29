@@ -58,8 +58,7 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
 
  protected:
   DeviceSettingsProviderTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        user_data_dir_override_(chrome::DIR_USER_DATA) {}
+      : user_data_dir_override_(chrome::DIR_USER_DATA) {}
 
   void SetUp() override {
     DeviceSettingsTestBase::SetUp();
@@ -73,7 +72,8 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
     provider_ = std::make_unique<DeviceSettingsProvider>(
         base::BindRepeating(&DeviceSettingsProviderTest::SettingChanged,
                             base::Unretained(this)),
-        device_settings_service_.get(), local_state_.Get());
+        device_settings_service_.get(),
+        TestingBrowserProcess::GetGlobal()->local_state());
     Mock::VerifyAndClearExpectations(this);
   }
 
@@ -444,8 +444,6 @@ class DeviceSettingsProviderTest : public DeviceSettingsTestBase {
   }
 
   base::test::ScopedFeatureList feature_list_;
-
-  ScopedTestingLocalState local_state_;
 
   std::unique_ptr<DeviceSettingsProvider> provider_;
 

@@ -34,7 +34,6 @@
 #include "chrome/browser/ash/app_list/search/types.h"
 #include "chrome/browser/ash/app_list/test/fake_app_list_model_updater.h"
 #include "chrome/browser/ash/app_list/test/test_app_list_controller_delegate.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -160,9 +159,6 @@ class SearchControllerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-
-  // Needed for `DriveIntegrationService`.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 
   display::test::TestScreen test_screen_{/*create_dispay=*/true,
                                          /*register_screen=*/true};

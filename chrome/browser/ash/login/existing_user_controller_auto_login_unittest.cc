@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/ash/components/login/auth/auth_events_recorder.h"
@@ -44,8 +43,7 @@ const int kAutoLoginDelay2 = 180000;
 class ExistingUserControllerAutoLoginTest : public ::testing::Test {
  protected:
   ExistingUserControllerAutoLoginTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()),
-        fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {
+      : fake_user_manager_(std::make_unique<FakeChromeUserManager>()) {
     auth_events_recorder_ = ash::AuthEventsRecorder::CreateForTesting();
   }
 
@@ -137,7 +135,6 @@ class ExistingUserControllerAutoLoginTest : public ::testing::Test {
  private:
   std::unique_ptr<MockLoginDisplayHost> mock_login_display_host_;
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState local_state_;
 
   // Required by ExistingUserController:
   FakeSessionManagerClient fake_session_manager_client_;

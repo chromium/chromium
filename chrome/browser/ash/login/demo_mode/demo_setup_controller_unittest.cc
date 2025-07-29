@@ -27,7 +27,6 @@
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/component_updater/cros_component_installer_chromeos.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/cryptohome/system_salt_getter.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
@@ -36,6 +35,7 @@
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/prefs/pref_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -116,8 +116,7 @@ class DemoSetupControllerTestHelper {
 
 class DemoSetupControllerTest : public testing::Test {
  protected:
-  DemoSetupControllerTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  DemoSetupControllerTest() = default;
 
   DemoSetupControllerTest(const DemoSetupControllerTest&) = delete;
   DemoSetupControllerTest& operator=(const DemoSetupControllerTest&) = delete;
@@ -155,7 +154,6 @@ class DemoSetupControllerTest : public testing::Test {
   base::HistogramTester histogram_tester_;
 
  private:
-  ScopedTestingLocalState testing_local_state_;
   ScopedStubInstallAttributes test_install_attributes_;
   system::ScopedFakeStatisticsProvider statistics_provider_;
 };

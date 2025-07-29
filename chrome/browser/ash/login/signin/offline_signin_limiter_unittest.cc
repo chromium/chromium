@@ -90,7 +90,6 @@ class OfflineSigninLimiterTest : public testing::Test {
   std::unique_ptr<OfflineSigninLimiter> limiter_;
   base::test::ScopedPowerMonitorTestSource test_power_monitor_source_;
 
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   std::unique_ptr<user_manager::KnownUser> known_user_;
   std::optional<session_manager::SessionManager> session_manager_;
 };
@@ -139,7 +138,8 @@ void OfflineSigninLimiterTest::SetUp() {
   session_manager_.emplace();
   fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
   profile_ = std::make_unique<TestingProfile>();
-  known_user_ = std::make_unique<user_manager::KnownUser>(local_state_.Get());
+  known_user_ = std::make_unique<user_manager::KnownUser>(
+      TestingBrowserProcess::GetGlobal()->local_state());
 }
 
 void OfflineSigninLimiterTest::TearDown() {

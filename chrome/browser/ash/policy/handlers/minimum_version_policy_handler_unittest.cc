@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/browser/ash/settings/scoped_testing_cros_settings.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/ash/components/dbus/update_engine/fake_update_engine_client.h"
@@ -92,7 +91,6 @@ class MinimumVersionPolicyHandlerTest
 
  private:
   bool user_managed_ = true;
-  ScopedTestingLocalState local_state_;
   base::test::ScopedFeatureList feature_list_;
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
   ash::ScopedStubInstallAttributes scoped_stub_install_attributes_;
@@ -103,8 +101,7 @@ class MinimumVersionPolicyHandlerTest
   std::unique_ptr<MinimumVersionPolicyHandler> minimum_version_policy_handler_;
 };
 
-MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest()
-    : local_state_(TestingBrowserProcess::GetGlobal()) {
+MinimumVersionPolicyHandlerTest::MinimumVersionPolicyHandlerTest() {
   feature_list_.InitAndEnableFeature(ash::features::kMinimumChromeVersion);
 }
 

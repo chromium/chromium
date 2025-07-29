@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/arc/locked_fullscreen/arc_locked_fullscreen_manager.h"
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -29,6 +28,7 @@
 #include "chromeos/ash/experiences/arc/test/arc_util_test_support.h"
 #include "chromeos/ash/experiences/arc/test/fake_arc_session.h"
 #include "components/account_id/account_id.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/test_helper.h"
@@ -74,7 +74,8 @@ class ArcLockedFullscreenManagerTest
     // Initialize a testing profile and the user manager. Needed to test ARC.
     user_manager_ = std::make_unique<user_manager::UserManagerImpl>(
         std::make_unique<user_manager::FakeUserManagerDelegate>(),
-        local_state_.Get(), ash::CrosSettings::Get());
+        TestingBrowserProcess::GetGlobal()->local_state(),
+        ash::CrosSettings::Get());
     user_manager_->Initialize();
 
     const AccountId account_id(
@@ -125,7 +126,7 @@ class ArcLockedFullscreenManagerTest
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   base::test::ScopedFeatureList scoped_feature_list_;
   ash::ScopedCrosSettingsTestHelper cros_settings_helper_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
+
   std::unique_ptr<user_manager::UserManagerImpl> user_manager_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
   session_manager::SessionManager session_manager_;

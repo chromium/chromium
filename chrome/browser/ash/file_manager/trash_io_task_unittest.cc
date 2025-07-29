@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/drive/drive_integration_service_factory.h"
 #include "chrome/browser/ash/file_manager/trash_common_util.h"
 #include "chrome/browser/ash/file_manager/trash_unittest_base.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
@@ -196,9 +195,6 @@ TEST_F(TrashIOTaskTest, MixedUnsupportedAndSupportedDirectoriesShouldError) {
 }
 
 TEST_F(TrashIOTaskTest, SupportedDirectoryShouldSucceed) {
-  // Needed for `DriveIntegrationService`.
-  ScopedTestingLocalState local_state(TestingBrowserProcess::GetGlobal());
-
   // Force the drive integration service to be created, this ensures the code
   // path that adds the drive mount point is exercised.
   drive::DriveIntegrationServiceFactory::GetForProfile(profile_.get());

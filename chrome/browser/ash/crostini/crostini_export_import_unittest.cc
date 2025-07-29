@@ -19,7 +19,6 @@
 #include "chrome/browser/ash/guest_os/guest_os_share_path_factory.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/chunneld/chunneld_client.h"
@@ -221,9 +220,6 @@ class CrostiniExportImportTest : public testing::Test {
   base::FilePath tarball_;
 
   content::BrowserTaskEnvironment task_environment_;
-
-  // Needed for `DriveIntegrationService`, which `GuestOsSharePath` depends on.
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
 };
 
 TEST_F(CrostiniExportImportTest, TestNotAllowed) {

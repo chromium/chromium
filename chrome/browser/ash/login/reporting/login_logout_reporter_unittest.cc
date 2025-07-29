@@ -12,7 +12,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/policy/reporting/user_event_reporter_helper_testing.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/login/auth/public/auth_failure.h"
@@ -168,16 +167,13 @@ struct LoginLogoutReporterTestCase {
 class LoginLogoutReporterTest
     : public ::testing::TestWithParam<LoginLogoutReporterTestCase> {
  protected:
-  LoginLogoutReporterTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  LoginLogoutReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
   void TearDown() override { test_helper_.Shutdown(); }
 
   LoginLogoutTestHelper test_helper_;
-
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LoginLogoutReporterTest, ReportAffiliatedLogin) {
@@ -346,16 +342,13 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 class LoginFailureReporterTest : public ::testing::TestWithParam<AuthFailure> {
  protected:
-  LoginFailureReporterTest()
-      : local_state_(TestingBrowserProcess::GetGlobal()) {}
+  LoginFailureReporterTest() = default;
 
   void SetUp() override { test_helper_.Init(); }
 
   void TearDown() override { test_helper_.Shutdown(); }
 
   LoginLogoutTestHelper test_helper_;
-
-  ScopedTestingLocalState local_state_;
 };
 
 TEST_F(LoginFailureReporterTest, ReportAffiliatedLoginFailure_OwnerRequired) {

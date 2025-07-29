@@ -19,7 +19,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/demo_mode/utils/demo_session_utils.h"
 #include "chromeos/ash/components/install_attributes/stub_install_attributes.h"
@@ -120,11 +119,8 @@ class SessionLengthLimiterTest : public testing::Test {
 
  private:
   TestingPrefServiceSimple& local_state() {
-    return *scoped_testing_local_state_.Get();
+    return *TestingBrowserProcess::GetGlobal()->GetTestingLocalState();
   }
-
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   bool user_activity_seen_;
 

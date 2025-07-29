@@ -28,10 +28,10 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager_factory.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -94,8 +94,7 @@ std::unique_ptr<KeyedService> BuildVolumeManager(
 
 class CopyOrMoveIOTaskTestBase : public testing::Test {
  public:
-  CopyOrMoveIOTaskTestBase()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  CopyOrMoveIOTaskTestBase() = default;
 
  protected:
   void SetUp() override {
@@ -116,7 +115,6 @@ class CopyOrMoveIOTaskTestBase : public testing::Test {
         base::FilePath::FromUTF8Unsafe(path));
   }
 
-  ScopedTestingLocalState scoped_testing_local_state_;
   content::BrowserTaskEnvironment task_environment_;
   ash::disks::FakeDiskMountManager disk_mount_manager_;
   TestingProfile profile_;

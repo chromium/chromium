@@ -18,7 +18,6 @@
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/dbus/shill/shill_device_client.h"
@@ -542,9 +541,6 @@ class TetherServiceTest : public testing::Test {
   bool is_adapter_present_;
   bool is_adapter_powered_;
   bool shutdown_reason_verified_;
-
-  ScopedTestingLocalState scoped_testing_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<TestTetherService> tether_service_;
   std::unique_ptr<TestingProfile> profile_;

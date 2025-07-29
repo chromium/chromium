@@ -11,7 +11,6 @@
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_names.h"
@@ -47,15 +46,13 @@ class PasswordSyncTokenLoginCheckerTest : public testing::Test {
       base::test::TaskEnvironment::MainThreadType::UI,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
 
-  ScopedTestingLocalState scoped_local_state_;
   std::unique_ptr<net::BackoffEntry> sync_token_retry_backoff_;
   user_manager::TypedScopedUserManager<ash::FakeChromeUserManager>
       fake_user_manager_;
   std::unique_ptr<PasswordSyncTokenLoginChecker> checker_;
 };
 
-PasswordSyncTokenLoginCheckerTest::PasswordSyncTokenLoginCheckerTest()
-    : scoped_local_state_(TestingBrowserProcess::GetGlobal()) {
+PasswordSyncTokenLoginCheckerTest::PasswordSyncTokenLoginCheckerTest() {
   fake_user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
 
   sync_token_retry_backoff_ = std::make_unique<net::BackoffEntry>(

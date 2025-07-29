@@ -21,7 +21,6 @@
 #include "chrome/browser/ash/ownership/ownership_histograms.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/net/fake_nss_service.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/policy/device_policy/device_policy_builder.h"
@@ -113,8 +112,6 @@ class OwnerKeyLoaderTestBase : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  ScopedTestingLocalState scoped_local_state_{
-      TestingBrowserProcess::GetGlobal()};
 
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   raw_ptr<ash::FakeChromeUserManager> user_manager_ = nullptr;

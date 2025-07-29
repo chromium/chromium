@@ -25,7 +25,6 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/ui/ash/login/mock_login_display_host.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chromeos/ash/components/dbus/dbus_thread_manager.h"
 #include "chromeos/ash/components/dbus/session_manager/fake_session_manager_client.h"
@@ -41,6 +40,7 @@
 #include "components/policy/core/common/cloud/mock_cloud_policy_manager.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_service.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
+#include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/fake_user_manager_delegate.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -282,7 +282,6 @@ class DemoLoginControllerTest : public testing::Test {
       policy_controller_;
 
   testing::NiceMock<ash::MockLoginDisplayHost> mock_login_display_host_;
-  ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
   system::FakeStatisticsProvider statistics_provider_;
 
   // Required for `user_manager::UserList`:
@@ -294,7 +293,7 @@ class DemoLoginControllerTest : public testing::Test {
   user_manager::ScopedUserManager user_manager_{
       std::make_unique<user_manager::UserManagerImpl>(
           std::make_unique<user_manager::FakeUserManagerDelegate>(),
-          TestingBrowserProcess::GetGlobal()->GetTestingLocalState())};
+          TestingBrowserProcess::GetGlobal()->local_state())};
   session_manager::SessionManager session_manager_;
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 

@@ -27,7 +27,6 @@
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/ash/components/browser_context_helper/annotated_account_id.h"
@@ -36,6 +35,7 @@
 #include "chromeos/ash/components/disks/fake_disk_mount_manager.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -52,8 +52,7 @@ constexpr char kTestFile[] = "test_file.txt";
 
 class LocalFilesMigrationManagerTest : public testing::Test {
  public:
-  LocalFilesMigrationManagerTest()
-      : scoped_testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  LocalFilesMigrationManagerTest() = default;
 
   LocalFilesMigrationManagerTest(const LocalFilesMigrationManagerTest&) =
       delete;
@@ -165,7 +164,7 @@ class LocalFilesMigrationManagerTest : public testing::Test {
       bool local_user_files_allowed = false,
       const std::string& destination = download_dir_util::kLocationOneDrive) {
     SetLocalUserFilesAllowed(local_user_files_allowed);
-    scoped_testing_local_state_.Get()->SetString(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetString(
         prefs::kLocalUserFilesMigrationDestination, destination);
 
     profile()->GetPrefs()->SetInteger(prefs::kSkyVaultMigrationState,
@@ -174,13 +173,13 @@ class LocalFilesMigrationManagerTest : public testing::Test {
 
   // Sets the local user files allowed pref value.
   void SetLocalUserFilesAllowed(bool local_user_files_allowed) {
-    scoped_testing_local_state_.Get()->SetBoolean(prefs::kLocalUserFilesAllowed,
-                                                  local_user_files_allowed);
+    TestingBrowserProcess::GetGlobal()->local_state()->SetBoolean(
+        prefs::kLocalUserFilesAllowed, local_user_files_allowed);
   }
 
   // Sets the local user files migration destination pref value.
   void SetMigrationDestination(const std::string& destination) {
-    scoped_testing_local_state_.Get()->SetString(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetString(
         prefs::kLocalUserFilesMigrationDestination, destination);
   }
 
@@ -193,7 +192,6 @@ class LocalFilesMigrationManagerTest : public testing::Test {
   testing::NiceMock<ash::MockUserDataAuthClient> userdataauth_;
 
  private:
-  ScopedTestingLocalState scoped_testing_local_state_;
   base::test::ScopedFeatureList scoped_feature_list_;
   content::BrowserTaskEnvironment task_environment_;
   ash::system::FakeStatisticsProvider statistics_provider_;

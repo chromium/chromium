@@ -21,7 +21,6 @@
 #include "chrome/browser/policy/messaging_layer/proto/synced/log_upload_event.pb.h"
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/support_tool/data_collection_module.pb.h"
-#include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
@@ -66,12 +65,11 @@ class TestEventObserver : public policy::EventObserverBase {
 
 class EventObserverBaseTest : public testing::Test {
  public:
-  EventObserverBaseTest()
-      : testing_local_state_(TestingBrowserProcess::GetGlobal()) {}
+  EventObserverBaseTest() = default;
 
   void SetLastUploadTime(const std::string event_name,
                          base::Time last_upload_time) {
-    testing_local_state_.Get()->SetDict(
+    TestingBrowserProcess::GetGlobal()->local_state()->SetDict(
         policy::prefs::kEventBasedLogLastUploadTimes,
         base::Value::Dict().Set(event_name,
                                 base::TimeToValue(last_upload_time)));
@@ -83,7 +81,6 @@ class EventObserverBaseTest : public testing::Test {
  private:
   base::test::SingleThreadTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  ScopedTestingLocalState testing_local_state_;
 };
 
 }  // namespace
