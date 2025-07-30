@@ -52,9 +52,9 @@ class CORE_EXPORT ScriptRunner final : public GarbageCollected<ScriptRunner>,
   // Delays script evaluation after `ScriptRunnerDelayer::Activate()` until
   // `ScriptRunnerDelayer::Deactivate()`.
   //
-  // Each `DelayReason` value represents one reason to delay, and there should
-  // be at most one active `ScriptRunnerDelayer` for each `ScriptRunnerDelayer`
-  // for each `ScriptRunner`.
+  // Each `DelayReason` value represents one reason to delay, and for each
+  // `ScriptRunner` there should be at most one active `ScriptRunnerDelayer` for
+  // each `DelayReason`.
   //
   // Each script can choose to wait or not to wait for each `DelayReason`, and
   // are evaluated after all of its relevant `ScriptRunnerDelayer`s are
