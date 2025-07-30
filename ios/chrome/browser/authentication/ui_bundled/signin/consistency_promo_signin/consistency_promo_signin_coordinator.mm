@@ -252,6 +252,7 @@
   // nothing.
   [self disconnectMediatorWithResult:SigninCoordinatorResultInterrupted];
   [self stopAccountChooserCoordinator];
+  [self stopReauthCoordinator];
   [super stopAnimated:animated];
 }
 
@@ -317,6 +318,7 @@
 }
 
 - (void)stopReauthCoordinator {
+  self.reauthCoordinator.delegate = nil;
   [self.reauthCoordinator stop];
   self.reauthCoordinator = nil;
 }

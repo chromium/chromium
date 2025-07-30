@@ -56,6 +56,10 @@
   return self;
 }
 
+- (void)dealloc {
+  CHECK(!_identityInteractionManager, base::NotFatalUntil::M144);
+}
+
 #pragma mark - ChromeCoordinator
 
 - (void)start {
@@ -81,15 +85,12 @@
 
 - (void)stop {
   if (_identityInteractionManager) {
-    // The operation hasn't finished yet - cancel and notify the delegate.
+    // The operation hasn't finished yet - cancel.
     [_identityInteractionManager cancelAuthActivityAnimated:NO];
-
-    [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kInterrupted];
-
-    [self.delegate reauthFinishedWithResult:ReauthResult::kInterrupted];
     _identityInteractionManager = nil;
+    [self.delegate reauthFinishedWithResult:ReauthResult::kInterrupted];
+    [self recordReauthFlowEvent:signin_metrics::ReauthFlowEvent::kInterrupted];
   }
-  self.delegate = nil;
 
   [super stop];
 }

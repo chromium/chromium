@@ -41,8 +41,9 @@ enum class ReauthResult : int {
 @property(nonatomic, weak) id<ReauthCoordinatorDelegate> delegate;
 
 // Designated initializer for ReauthCoordinator started from an explicit
-// reauthentication UI. `identity` - the identity for which the reauthentication
-// flow should be shown.
+// reauthentication UI.
+// `identity` - the identity for which the reauthentication flow should be
+//            shown.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                    account:(const CoreAccountInfo&)account
@@ -52,7 +53,7 @@ enum class ReauthResult : int {
 
 // Designated initializer for ReauthCoordinator started from a sign-in flow.
 // `identity` - the identity for which the reauthentication flow should be
-//         shown.
+//            shown.
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
                                    browser:(Browser*)browser
                                    account:(const CoreAccountInfo&)account
