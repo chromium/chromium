@@ -8,6 +8,8 @@
 #include <oleacc.h>
 #endif  // BUILDFLAG(IS_WIN)
 
+#include <utility>
+
 #include "base/task/single_thread_task_runner.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/platform/ax_platform.h"
@@ -60,6 +62,8 @@ void WidgetAXManager::Enable() {
   update.root_id = root_data.id;
   update.nodes.push_back(root_data);
 
+  cache_->Insert(&widget_->GetRootView()->GetViewAccessibility());
+
   ax_tree_manager_.reset(
       ui::BrowserAccessibilityManager::Create(update, *this, this));
 }
@@ -73,6 +77,8 @@ void WidgetAXManager::OnEvent(ViewAccessibility& view_ax,
   pending_events_.push_back({view_ax.GetUniqueId(), event_type});
   pending_data_updates_.insert(view_ax.GetUniqueId());
 
+  cache_->Insert(&view_ax);
+
   SchedulePendingUpdate();
 }
 
@@ -82,6 +88,7 @@ void WidgetAXManager::OnDataChanged(ViewAccessibility& view_ax) {
   }
 
   pending_data_updates_.insert(view_ax.GetUniqueId());
+  cache_->Insert(&view_ax);
 
   SchedulePendingUpdate();
 }
@@ -272,9 +279,75 @@ void WidgetAXManager::SendPendingUpdate() {
     return;
   }
 
-  // TODO(accessibility): Implement the serialization.
+  std::vector<ui::AXTreeUpdate> tree_updates;
+  std::vector<ui::AXEvent> events;
+
+  auto pending_events_copy = std::move(pending_events_);
+  auto pending_data_changes_copy = std::move(pending_data_updates_);
   pending_events_.clear();
   pending_data_updates_.clear();
+
+  // Serialize the events first.
+  for (auto& event_copy : pending_events_copy) {
+    const int id = event_copy.id;
+    const ax::mojom::Event event_type = event_copy.event_type;
+    ViewAccessibility* view_ax = cache_->Get(id);
+
+    if (!view_ax) {
+      continue;
+    }
+
+    // We must fire the event if the node is in the client tree. To determine
+    // if it is, we need to serialize the node first.
+    ui::AXTreeUpdate update;
+    if (!tree_serializer_->SerializeChanges(view_ax, &update)) {
+      return;
+    }
+    tree_updates.push_back(std::move(update));
+    pending_data_changes_copy.erase(id);
+
+    // Fire the event on the node, but only if it's actually in the tree.
+    // Sometimes we get events fired on nodes with an ancestor that's
+    // marked invisible, for example. In those cases we should still
+    // call SerializeChanges (because the change may have affected the
+    // ancestor) but we shouldn't fire the event on the node not in the tree.
+    //
+    // TODO(crbug.com/40672441): Add test once we have a way to dump events
+    // for views.
+    if (tree_serializer_->IsInClientTree(view_ax)) {
+      ui::AXEvent event;
+      event.id = view_ax->GetUniqueId();
+      event.event_type = event_type;
+      events.push_back(std::move(event));
+    }
+  }
+
+  // Serialize any changes that were not associated with an event.
+  ui::AXTreeUpdate update;
+  for (auto& id : pending_data_changes_copy) {
+    ViewAccessibility* view_ax = cache_->Get(id);
+    if (!view_ax) {
+      continue;
+    }
+
+    if (!tree_serializer_->SerializeChanges(view_ax, &update)) {
+      return;
+    }
+    tree_updates.push_back(std::move(update));
+  }
+
+  // TODO(crbug.com/40672441): Make sure the focused node is serialized.
+
+  if (tree_updates.empty() && events.empty()) {
+    // Nothing to do, no updates or events.
+    return;
+  }
+
+  ui::AXUpdatesAndEvents updates_and_events;
+  updates_and_events.updates = std::move(tree_updates);
+  updates_and_events.events = std::move(events);
+
+  ax_tree_manager_->OnAccessibilityEvents(updates_and_events);
 }
 
 }  // namespace views
