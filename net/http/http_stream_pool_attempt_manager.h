@@ -256,9 +256,6 @@ class HttpStreamPool::AttemptManager
   void SetOnCompleteCallbackForTesting(base::OnceClosure callback);
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(HttpStreamPoolAttemptManagerTest,
-                           GetIPEndPointToAttempt);
-
   // Represents the availability of this instance. If not kAvailable, `this`
   // can't handle new Jobs and this should not have in-flight attempts.
   enum class AvailabilityState {
