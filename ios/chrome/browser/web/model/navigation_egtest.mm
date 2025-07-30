@@ -122,32 +122,6 @@ std::unique_ptr<net::test_server::HttpResponse> WindowLocationHashHandlers(
   return std::move(http_response);
 }
 
-// This works reasonably well on iOS26, although sometimes the swipe doesn't
-// take, so retry a few times. This does not work on <iOS26.
-void SwipeWebInDirection(GREYDirection direction) {
-  auto block = ^BOOL {
-    NSInteger index = [ChromeEarlGrey navigationBackListItemsCount];
-    XCUIApplication* app = [[XCUIApplication alloc] init];
-    XCUIElement* view = [app.scrollViews elementBoundByIndex:0];
-    if (direction == kGREYDirectionLeft) {
-      [view swipeRightWithVelocity:XCUIGestureVelocityFast];
-    } else {
-      [view swipeLeftWithVelocity:XCUIGestureVelocityFast];
-    }
-    GREYWaitForAppToIdle(@"App failed to idle");
-    NSInteger new_index = [ChromeEarlGrey navigationBackListItemsCount];
-    return index != new_index;
-  };
-
-  NSString* errorString =
-      [NSString stringWithFormat:@"Waiting to swipe %d", (int)direction];
-  GREYCondition* SwipeInDirection = [GREYCondition conditionWithName:errorString
-                                                               block:block];
-  GREYAssertTrue(
-      [SwipeInDirection waitWithTimeout:base::Seconds(45).InSecondsF()],
-      @"Failed to swipe to navigate");
-}
-
 }  // namespace
 
 // Integration tests for navigating history via JavaScript and the forward and
@@ -659,7 +633,12 @@ void SwipeWebInDirection(GREYDirection direction) {
 
   // Swipe back twice.
   if (iOS26_OR_ABOVE()) {
-    SwipeWebInDirection(kGREYDirectionLeft);
+    XCUICoordinate* swipeRightiOS26 =
+        [leftEdgeCoord coordinateWithOffset:CGVectorMake(50, 0.5)];
+    [leftEdgeCoord pressForDuration:0.1f
+               thenDragToCoordinate:swipeRightiOS26
+                       withVelocity:XCUIGestureVelocityFast
+                thenHoldForDuration:0.001];
   } else {
     [leftEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeRight];
   }
@@ -689,11 +668,17 @@ void SwipeWebInDirection(GREYDirection direction) {
   GREYWaitForAppToIdle(@"App failed to idle");
   [ChromeEarlGrey waitForWebStateContainingText:"pony"];
 
+  XCUICoordinate* rightEdgeCoord =
+      [app coordinateWithNormalizedOffset:CGVectorMake(rightEdge, 0.5)];
   if (iOS26_OR_ABOVE()) {
-    SwipeWebInDirection(kGREYDirectionRight);
+    XCUICoordinate* swipeLeft =
+        [rightEdgeCoord coordinateWithOffset:CGVectorMake(-50, 0.5)];
+    [rightEdgeCoord pressForDuration:0.1f
+                thenDragToCoordinate:swipeLeft
+                        withVelocity:XCUIGestureVelocityFast
+                 thenHoldForDuration:0.001];
+
   } else {
-    XCUICoordinate* rightEdgeCoord =
-        [app coordinateWithNormalizedOffset:CGVectorMake(rightEdge, 0.5)];
     XCUICoordinate* swipeLeft =
         [rightEdgeCoord coordinateWithOffset:CGVectorMake(-600, 0.5)];
     [rightEdgeCoord pressForDuration:0.1f thenDragToCoordinate:swipeLeft];
