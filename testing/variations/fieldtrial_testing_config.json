@@ -8366,6 +8366,9 @@
             "experiments": [
                 {
                     "name": "Enabled",
+                    "params": {
+                        "max_instance_limit": "20"
+                    },
                     "enable_features": [
                         "DisableInstanceLimit",
                         "InstanceSwitcherV2"
