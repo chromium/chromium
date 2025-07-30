@@ -6897,9 +6897,6 @@ crbug.com/1344652 [ Mac ] external/wpt/webmessaging/with-ports/020.html [ Failur
 crbug.com/1345192 accessibility/aria-combo-box-with-delay-add.html [ Crash Failure Pass Timeout ]
 crbug.com/1345235 external/wpt/content-security-policy/style-src/stylehash-basic-blocked.sub.html [ Crash Failure Pass Timeout ]
 
-# Temporarily disabled to land https://crrev.com/c/6796895
-crbug.com/433162438 http/tests/devtools/console/console-format-classes.js [ Failure Pass ]
-
 # Sheriff 2022-07-26
 crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-links.html [ Crash Failure Pass Timeout ]
 crbug.com/1347459 [ Fuchsia ] fast/css3-text/css3-text-decoration/text-decoration-style-inherit-not-propagated-by-out-of-flow.html [ Crash Failure Pass Timeout ]
