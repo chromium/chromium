@@ -713,10 +713,10 @@ BASE_FEATURE(kGlicPanelSetPositionOnDrag,
              base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kGlicPanelResetOnSessionTimeout,
              "GlicPanelResetOnSessionTimeout",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH{
     &kGlicPanelResetOnSessionTimeout,
-    "glic-panel-reset-session-timeout-delay-h", 4};
+    "glic-panel-reset-session-timeout-delay-h", 0};
 
 BASE_FEATURE(kGlicRecordActorJournal,
              "GlicRecordActorJournal",
