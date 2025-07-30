@@ -67,7 +67,9 @@ public class DataSharingMetrics {
         ShareActionStateAndroid.GROUP_CREATE_FAILED,
         ShareActionStateAndroid.URL_CREATION_FAILED,
         ShareActionStateAndroid.SHARE_SHEET_SHOWN,
-        ShareActionStateAndroid.COUNT
+        ShareActionStateAndroid.SHARE_SHEET_CLICKED,
+        ShareActionStateAndroid.SHARE_SHEET_CANCELLED,
+        ShareActionStateAndroid.COUNT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface ShareActionStateAndroid {
@@ -79,7 +81,9 @@ public class DataSharingMetrics {
         int GROUP_CREATE_FAILED = 5;
         int URL_CREATION_FAILED = 6;
         int SHARE_SHEET_SHOWN = 7;
-        int COUNT = 8;
+        int SHARE_SHEET_CLICKED = 8;
+        int SHARE_SHEET_CANCELLED = 9;
+        int COUNT = 10;
     }
 
     // LINT.ThenChange(//tools/metrics/histograms/metadata/data_sharing/enums.xml:ShareActionStateAndroid)

@@ -9,6 +9,7 @@ import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Resources;
@@ -43,6 +44,7 @@ import org.chromium.chrome.browser.tabwindow.WindowId;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareHelper;
 import org.chromium.components.browser_ui.share.ShareParams;
+import org.chromium.components.browser_ui.share.ShareParams.TargetChosenCallback;
 import org.chromium.components.collaboration.CollaborationControllerDelegate;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.collaboration.CollaborationServiceLeaveOrDeleteEntryPoint;
@@ -693,7 +695,23 @@ public class DataSharingTabManager {
                                 mWindowAndroid,
                                 context.getString(R.string.collaboration_share_sheet_title),
                                 url.getSpec())
-                        .setText(text);
+                        .setText(text)
+                        .setCallback(
+                                new TargetChosenCallback() {
+                                    @Override
+                                    public void onTargetChosen(@Nullable ComponentName target) {
+                                        DataSharingMetrics.recordShareActionFlowState(
+                                                DataSharingMetrics.ShareActionStateAndroid
+                                                        .SHARE_SHEET_CLICKED);
+                                    }
+
+                                    @Override
+                                    public void onCancel() {
+                                        DataSharingMetrics.recordShareActionFlowState(
+                                                DataSharingMetrics.ShareActionStateAndroid
+                                                        .SHARE_SHEET_CANCELLED);
+                                    }
+                                });
 
         if (preview != null) {
             shareParamsBuilder.setPreviewImageBitmap(preview);

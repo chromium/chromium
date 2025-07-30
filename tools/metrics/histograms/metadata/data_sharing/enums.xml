@@ -88,6 +88,8 @@ chromium-metrics-reviews@google.com.
   <int value="5" label="Group create failed"/>
   <int value="6" label="URL creation failed"/>
   <int value="7" label="Share sheet shown"/>
+  <int value="8" label="Share sheet was clicked"/>
+  <int value="9" label="Share sheet cancelled"/>
 </enum>
 
 </enums>
