@@ -104,6 +104,31 @@ the file `//chrome/build/android-arm64.pgo.txt` contains the name of the
 `*.profdata` file that is used as the PGO profile by default if no other profile
 is specified via the GN arg `pgo_data_path`.
 
+### Interaction with Orderfile Generation
+
+On Android, the PGO profile generation process is tightly coupled with
+[orderfile generation](./orderfile.md). The CI builders that generate PGO
+profiles are configured to trigger the corresponding orderfile generation
+builders upon successful completion.
+
+This triggering mechanism is defined in the CI configuration files:
+
+- The PGO builder configurations (in
+  `//internal/infra/config/subprojects/chrome/ci/chrome.pgo.star`) specify which
+  orderfile builders to trigger via the `builders_to_trigger` parameter.
+- The custom recipe at
+  [`build_internal/recipes/recipes/clank/pgo.py`](https://source.corp.google.com/h/chromium/infra/infra_superproject/+/main:build_internal/recipes/recipes/clank/pgo.py)
+  reads this parameter and triggers the specified downstream builds.
+- The orderfile builders are configured with a `triggered_by` parameter, which
+  allows them to be triggered by the listed PGO builder.
+
+This ensures that the orderfile, which helps optimize the binary layout, is
+always built using the freshest profile data at the same Chromium commit that
+the PGO profile is generated from. The `clank/pgo.py` recipe also passes the
+Cloud Storage location of the newly generated PGO profile to the orderfile
+builder as it would not have been rolled into trunk by Skia autorollers at this
+point.
+
 ## Background Reading
 
 https://clang.llvm.org/docs/UsersManual.html#profile-guided-optimization
