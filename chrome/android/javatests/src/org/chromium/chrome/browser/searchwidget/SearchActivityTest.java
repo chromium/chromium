@@ -8,6 +8,7 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.any;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.eq;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -30,7 +31,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
@@ -79,7 +79,6 @@ import org.chromium.chrome.test.util.OmniboxTestUtils;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
-import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteMatchBuilder;
 import org.chromium.components.omnibox.AutocompleteResult;
@@ -448,12 +447,12 @@ public class SearchActivityTest {
         mTestDelegate.onFinishDeferredInitializationCallback.waitForCallback(0);
 
         // Omnibox suggestions should be requested now.
-        var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-        verify(mAutocompleteController, times(1)).startZeroSuggest(captor.capture(), any());
-        Assert.assertEquals("", captor.getValue().getUserText());
-        Assert.assertEquals(
-                PageClassification.ANDROID_SEARCH_WIDGET_VALUE,
-                captor.getValue().getPageClassification());
+        verify(mAutocompleteController, times(1))
+                .startZeroSuggest(
+                        eq(""),
+                        any(/* DSE URL */ ),
+                        eq(PageClassification.ANDROID_SEARCH_WIDGET_VALUE),
+                        any());
     }
 
     @Test

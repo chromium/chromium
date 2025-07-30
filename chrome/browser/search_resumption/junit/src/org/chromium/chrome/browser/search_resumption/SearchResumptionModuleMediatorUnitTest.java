@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.search_resumption;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,7 +48,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.omnibox.OmniboxSuggestionType;
@@ -292,9 +293,8 @@ public class SearchResumptionModuleMediatorUnitTest {
                         cachedSuggestions);
         if (!useNewServiceEnabled && cachedSuggestions == null) {
             verify(mAutocompleteController).addOnSuggestionsReceivedListener(mListener.capture());
-            var captor = ArgumentCaptor.forClass(AutocompleteInput.class);
-            verify(mAutocompleteController, times(1)).startZeroSuggest(captor.capture(), any());
-            Assert.assertEquals(mUrlToTrack.getSpec(), captor.getValue().getPageUrl().getSpec());
+            verify(mAutocompleteController, times(1))
+                    .startZeroSuggest(any(), eq(mUrlToTrack), anyInt(), any());
         }
 
         FeatureOverrides.newBuilder()

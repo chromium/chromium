@@ -195,7 +195,7 @@ public class AutocompleteInputUnitTest {
     @Test
     public void getPageClassification() {
         // Test initial value
-        assertEquals(PageClassification.BLANK_VALUE, mInput.getPageClassification());
+        assertEquals(0, mInput.getPageClassification());
 
         // Test setting and getting different values
         mInput.setPageClassification(PageClassification.ANDROID_SEARCH_WIDGET_VALUE);
@@ -244,7 +244,7 @@ public class AutocompleteInputUnitTest {
         // Reset should clear text and keyword match but not page classification
         mInput.reset();
 
-        assertEquals(PageClassification.BLANK_VALUE, mInput.getPageClassification());
+        assertEquals(PageClassification.OTHER_VALUE, mInput.getPageClassification());
         assertEquals("", mInput.getUserText());
         assertFalse(mInput.allowExactKeywordMatch());
         assertTrue(mInput.isInZeroPrefixContext());
