@@ -74,11 +74,6 @@ mojom("mojom") {
           mojom = "gfx.mojom.BufferPlane"
           cpp = "::gfx::BufferPlane"
         },
-        {
-          mojom = "gfx.mojom.GpuMemoryBufferId"
-          cpp = "::gfx::GpuMemoryBufferId"
-          copyable_pass_by_value = true
-        },
       ]
 
       traits_headers = [ "buffer_types_mojom_traits.h" ]

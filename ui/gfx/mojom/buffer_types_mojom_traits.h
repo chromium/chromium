@@ -212,20 +212,6 @@ struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
                    gfx::BufferUsageAndFormat* out);
 };
 
-template <>
-struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)
-    StructTraits<gfx::mojom::GpuMemoryBufferIdDataView,
-                 gfx::GpuMemoryBufferId> {
-  static int32_t id(const gfx::GpuMemoryBufferId& buffer_id) {
-    return buffer_id.id;
-  }
-  static bool Read(gfx::mojom::GpuMemoryBufferIdDataView data,
-                   gfx::GpuMemoryBufferId* out) {
-    out->id = data.id();
-    return true;
-  }
-};
-
 #if BUILDFLAG(USE_BLINK)
 template <>
 struct COMPONENT_EXPORT(GFX_SHARED_MOJOM_TRAITS)

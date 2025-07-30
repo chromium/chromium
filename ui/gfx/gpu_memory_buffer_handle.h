@@ -58,8 +58,6 @@ enum GpuMemoryBufferType {
 #endif
 };
 
-using GpuMemoryBufferId = GenericSharedMemoryId;
-
 #if BUILDFLAG(IS_WIN)
 using DXGIHandleToken = base::TokenType<class DXGIHandleTokenTypeMarker>;
 
