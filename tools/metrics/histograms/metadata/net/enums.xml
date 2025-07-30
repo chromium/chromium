@@ -2931,6 +2931,7 @@ Called by update_net_trust_anchors.py.-->
   <int value="5" label="OpenFileFailed"/>
   <int value="6" label="ReadFileFailed"/>
   <int value="7" label="WrongMagicNumber"/>
+  <int value="8" label="FailedToCreateDirectory"/>
 </enum>
 
 <!-- LINT.ThenChange(//net/disk_cache/sql/sql_backend_impl.h:FakeIndexFileError) -->

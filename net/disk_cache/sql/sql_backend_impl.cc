@@ -55,6 +55,9 @@ FakeIndexFileError CheckFakeIndexFileInternal(const base::FilePath& path) {
     }
     return FakeIndexFileError::kOkExisting;
   }
+  if (!base::DirectoryExists(path) && !base::CreateDirectory(path)) {
+    return FakeIndexFileError::kFailedToCreateDirectory;
+  }
   base::File file(file_path, base::File::FLAG_CREATE | base::File::FLAG_WRITE);
   if (!file.IsValid()) {
     return FakeIndexFileError::kCreateFileFailed;

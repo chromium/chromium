@@ -55,7 +55,8 @@ class NET_EXPORT_PRIVATE SqlBackendImpl final : public Backend {
     kOpenFileFailed = 5,
     kReadFileFailed = 6,
     kWrongMagicNumber = 7,
-    kMaxValue = kWrongMagicNumber,
+    kFailedToCreateDirectory = 8,
+    kMaxValue = kFailedToCreateDirectory,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/net/enums.xml:SqlDiskCacheFakeIndexFileError)
 

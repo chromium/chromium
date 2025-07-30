@@ -197,6 +197,24 @@ TEST_F(SqlBackendImplTest, InitWithCreateFileFailed) {
                                       FakeIndexFileError::kCreateFileFailed, 1);
 }
 
+TEST_F(SqlBackendImplTest, InitWithFailedToCreateDirectory) {
+  base::HistogramTester histogram_tester;
+  base::FilePath cache_dir =
+      temp_dir_.GetPath().Append(FILE_PATH_LITERAL("cache"));
+  // Create a file where the cache directory is supposed to be, to simulate a
+  // directory creation failure.
+  ASSERT_TRUE(base::WriteFile(cache_dir, ""));
+
+  auto backend = std::make_unique<SqlBackendImpl>(cache_dir, kDefaultMaxBytes,
+                                                  net::CacheType::DISK_CACHE);
+  base::test::TestFuture<int> future;
+  backend->Init(future.GetCallback());
+  ASSERT_EQ(future.Get(), net::ERR_FAILED);
+  histogram_tester.ExpectUniqueSample(
+      "Net.SqlDiskCache.FakeIndexFileError",
+      FakeIndexFileError::kFailedToCreateDirectory, 1);
+}
+
 TEST_F(SqlBackendImplTest, MaxFileSizeSmallMax) {
   const int64_t kMaxBytes = 10 * 1024 * 1024;
   auto backend = CreateBackendAndInit(kMaxBytes);
