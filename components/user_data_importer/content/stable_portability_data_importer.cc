@@ -58,10 +58,9 @@ StablePortabilityDataImporter::StablePortabilityDataImporter(
       origin_sequence_task_runner_(
           base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {
+          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      background_worker_(background_task_runner_, std::move(bookmark_parser)){
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  background_worker_ = base::SequenceBound<BackgroundWorker>(
-      background_task_runner_, std::move(bookmark_parser));
 }
 
 StablePortabilityDataImporter::~StablePortabilityDataImporter() = default;
@@ -87,7 +86,6 @@ void StablePortabilityDataImporter::ImportBookmarks(
   // Post to the thread pool the task for parsing the file. Adding the actual
   // data to the user's storage should still be done on the origin sequence by
   // `OnBookmarksParsed`, as that's where the `bookmark_model_` lives.
-  // TODO(crnug.com/432010608): Sandbox parsing the bookmarks file.
   background_worker_.AsyncCall(&BackgroundWorker::ParseBookmarks)
       .WithArgs(std::move(file),
                 std::move(bookmarks_parser_callback_on_thread));
@@ -132,7 +130,6 @@ void StablePortabilityDataImporter::ImportReadingList(
   // Post to the thread pool the task for parsing the file. Adding the actual
   // data to the user's storage should still be done on the origin sequence by
   // `OnBookmarksParsed`, as that's where the `reading_list_model_` lives.
-  // TODO(crnug.com/432010608): Sandbox parsing the reading list file.
   background_worker_.AsyncCall(&BackgroundWorker::ParseBookmarks)
       .WithArgs(std::move(file),
                 std::move(reading_list_parser_callback_on_thread));
