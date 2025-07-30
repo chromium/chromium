@@ -1314,18 +1314,15 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
     RecordReceivedResponseUkmForOutermostMainFrame();
   }
 
-  network::mojom::URLResponseHead* head_ptr = head.get();
-
   // Record ServiceWorker and the Static Routing API metrics.
   MaybeRecordServiceWorkerMainResourceInfo(head);
 
   auto on_receive_response = base::BindOnce(
       &NavigationURLLoaderImpl::NotifyResponseStarted,
-      weak_factory_.GetWeakPtr(), std::move(head),
-      std::move(url_loader_client_endpoints), std::move(response_body_),
-      global_request_id_, is_download);
+      weak_factory_.GetWeakPtr(), std::move(url_loader_client_endpoints),
+      std::move(response_body_), global_request_id_, is_download);
 
-  ParseHeaders(url_, head_ptr, std::move(on_receive_response));
+  ParseHeaders(url_, std::move(head), std::move(on_receive_response));
 }
 
 void NavigationURLLoaderImpl::OnReceiveRedirect(
@@ -1371,11 +1368,10 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
   GURL previous_url = url_;
   url_ = redirect_info.new_url;
 
-  network::mojom::URLResponseHead* head_ptr = head.get();
-  auto on_receive_redirect = base::BindOnce(
-      &NavigationURLLoaderImpl::NotifyRequestRedirected,
-      weak_factory_.GetWeakPtr(), redirect_info, std::move(head));
-  ParseHeaders(previous_url, head_ptr, std::move(on_receive_redirect));
+  auto on_receive_redirect =
+      base::BindOnce(&NavigationURLLoaderImpl::NotifyRequestRedirected,
+                     weak_factory_.GetWeakPtr(), redirect_info);
+  ParseHeaders(previous_url, std::move(head), std::move(on_receive_redirect));
 }
 
 void NavigationURLLoaderImpl::OnUploadProgress(
@@ -1659,8 +1655,8 @@ NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
 
 void NavigationURLLoaderImpl::ParseHeaders(
     const GURL& url,
-    network::mojom::URLResponseHead* head,
-    base::OnceClosure continuation) {
+    network::mojom::URLResponseHeadPtr head,
+    base::OnceCallback<void(network::mojom::URLResponseHeadPtr)> continuation) {
   // As an optimization, when we know the parsed headers will be empty, we can
   // skip the network process roundtrip.
   // TODO(arthursonzogni): If there are any performance issues, consider
@@ -1692,40 +1688,44 @@ void NavigationURLLoaderImpl::ParseHeaders(
   if (head->parsed_headers) {
 #ifndef NDEBUG
     // In debug mode, force reparsing the headers and check that they match.
-    auto check = [](base::OnceClosure continuation,
-                    network::mojom::URLResponseHead* head, GURL url,
+    auto check = [](base::OnceCallback<void(network::mojom::URLResponseHeadPtr)>
+                        continuation,
+                    network::mojom::URLResponseHeadPtr head, GURL url,
                     base::TimeTicks call_time,
                     network::mojom::ParsedHeadersPtr parsed_headers) {
       base::UmaHistogramMicrosecondsTimes(
           "Navigation.URLLoader.ParseHeaders.RoundTripTimeForVerify",
           base::TimeTicks::Now() - call_time);
       CheckParsedHeadersEquals(parsed_headers, head->parsed_headers, url);
-      std::move(continuation).Run();
+      std::move(continuation).Run(std::move(head));
     };
+    scoped_refptr<net::HttpResponseHeaders> headers = head->headers;
     GetNetworkService()->ParseHeaders(
-        url, head->headers,
-        base::BindOnce(check, std::move(continuation), head, url,
+        url, std::move(headers),
+        base::BindOnce(check, std::move(continuation), std::move(head), url,
                        base::TimeTicks::Now()));
 #else   // NDEBUG
-    std::move(continuation).Run();
+    std::move(continuation).Run(std::move(head));
 #endif  // NDEBUG
     return;
   }
 
-  auto assign = [](base::OnceClosure continuation,
-                   network::mojom::URLResponseHead* head,
+  auto assign = [](base::OnceCallback<void(network::mojom::URLResponseHeadPtr)>
+                       continuation,
+                   network::mojom::URLResponseHeadPtr head,
                    base::TimeTicks call_time,
                    network::mojom::ParsedHeadersPtr parsed_headers) {
     base::UmaHistogramMicrosecondsTimes(
         "Navigation.URLLoader.ParseHeaders.RoundTripTimeForNonNetworkResponse",
         base::TimeTicks::Now() - call_time);
     head->parsed_headers = std::move(parsed_headers);
-    std::move(continuation).Run();
+    std::move(continuation).Run(std::move(head));
   };
 
+  scoped_refptr<net::HttpResponseHeaders> headers = head->headers;
   GetNetworkService()->ParseHeaders(
-      url, head->headers,
-      base::BindOnce(assign, std::move(continuation), head,
+      url, std::move(headers),
+      base::BindOnce(assign, std::move(continuation), std::move(head),
                      base::TimeTicks::Now()));
 }
 
@@ -2034,11 +2034,11 @@ void NavigationURLLoaderImpl::CancelNavigationTimeout() {
 }
 
 void NavigationURLLoaderImpl::NotifyResponseStarted(
-    network::mojom::URLResponseHeadPtr response_head,
     network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
     mojo::ScopedDataPipeConsumerHandle response_body,
     const GlobalRequestID& global_request_id,
-    bool is_download) {
+    bool is_download,
+    network::mojom::URLResponseHeadPtr response_head) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "navigation", "Navigation timeToResponseStarted", TRACE_ID_LOCAL(this),
       "&NavigationURLLoaderImpl", static_cast<void*>(this), "success", true);

@@ -240,15 +240,16 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
   void ParseHeaders(const GURL& url,
-                    network::mojom::URLResponseHead* head,
-                    base::OnceClosure continuation);
+                    network::mojom::URLResponseHeadPtr head,
+                    base::OnceCallback<void(network::mojom::URLResponseHeadPtr)>
+                        continuation);
 
   void NotifyResponseStarted(
-      network::mojom::URLResponseHeadPtr response_head,
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,
       mojo::ScopedDataPipeConsumerHandle response_body,
       const GlobalRequestID& global_request_id,
-      bool is_download);
+      bool is_download,
+      network::mojom::URLResponseHeadPtr response_head);
 
   void NotifyRequestRedirected(net::RedirectInfo redirect_info,
                                network::mojom::URLResponseHeadPtr response);
