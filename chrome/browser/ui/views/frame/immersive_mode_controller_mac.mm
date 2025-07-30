@@ -91,6 +91,10 @@ ImmersiveModeControllerMac::~ImmersiveModeControllerMac() {
 void ImmersiveModeControllerMac::Init(BrowserView* browser_view) {
   browser_view_ = browser_view;
   focus_search_ = std::make_unique<ImmersiveModeFocusSearchMac>(browser_view);
+  browser_close_subscription_ =
+      browser_view_->browser()->RegisterBrowserDidClose(
+          base::BindRepeating(&ImmersiveModeControllerMac::BrowserDidClose,
+                              base::Unretained(this)));
 }
 
 void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
@@ -123,7 +127,6 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
       SetTabNativeWidgetID(tab_overlay_host->bridged_native_widget_id());
     }
     top_container_observation_.Observe(browser_view_->top_container());
-    browser_frame_observation_.Observe(browser_view_->GetWidget());
     overlay_widget_observation_.Observe(browser_view_->overlay_widget());
 
     // Capture the overlay content view before enablement. Once enabled the view
@@ -198,7 +201,6 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
           browser_view_->tab_strip_region_view(), 0);
     }
     top_container_observation_.Reset();
-    browser_frame_observation_.Reset();
     overlay_widget_observation_.Reset();
 
     // Notify BrowserView about the fullscreen exit so that the top container
@@ -241,6 +243,11 @@ gfx::Insets ImmersiveModeControllerMac::GetTabStripRegionViewInsets() {
   return browser_view_->frame()->GetFrameView()->CaptionButtonsOnLeadingEdge()
              ? gfx::Insets::TLBR(1, right_left_inset, 0, 0)
              : gfx::Insets::TLBR(1, 0, 0, right_left_inset);
+}
+
+void ImmersiveModeControllerMac::BrowserDidClose(
+    BrowserWindowInterface* browser) {
+  SetEnabled(false);
 }
 
 bool ImmersiveModeControllerMac::IsEnabled() const {
@@ -362,10 +369,6 @@ void ImmersiveModeControllerMac::OnViewBoundsChanged(
   if (auto* window = GetNSWindowMojo()) {
     window->OnTopContainerViewBoundsChanged(bounds);
   }
-}
-
-void ImmersiveModeControllerMac::OnWidgetDestroying(views::Widget* widget) {
-  SetEnabled(false);
 }
 
 void ImmersiveModeControllerMac::LockDestroyed() {
