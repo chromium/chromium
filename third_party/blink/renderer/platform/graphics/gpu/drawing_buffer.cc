@@ -84,6 +84,14 @@ namespace blink {
 
 namespace {
 
+// Note: The swapchain implementation of low-latency WebGL is actually *used*
+// only on Windows but it's *compiled* on all platforms, so the feature must
+// also be defined on al platforms even though it also will be used only on
+// Windows.
+BASE_FEATURE(kUseSingleSIForLowLatencyWebGLOnWindows,
+             "UseSingleSIForLowLatencyWebGLOnWindows",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 const float kResourceAdjustedRatio = 0.5;
 
 bool g_should_fail_drawing_buffer_creation_for_testing = false;
@@ -783,10 +791,13 @@ DrawingBuffer::ExportLowLatencyCanvasResource() {
   // Swap chain must be presented before resource is exported.
   ResolveAndPresentSwapChainIfNeeded();
 
+  bool using_two_si_swap_chain_impl =
+      using_swap_chain_ &&
+      !base::FeatureList::IsEnabled(kUseSingleSIForLowLatencyWebGLOnWindows);
   scoped_refptr<ColorBuffer> color_buffer =
-      using_swap_chain_ ? front_color_buffer_ : back_color_buffer_;
+      using_two_si_swap_chain_impl ? front_color_buffer_ : back_color_buffer_;
 
-  if (contents_changed_ && !using_swap_chain_) {
+  if (contents_changed_ && !using_two_si_swap_chain_impl) {
     // Restart SharedImage access on the single SharedImage to ensure a write
     // fence is generated on the shared image to guarantee display reads this
     // frame completely. Display may still read parts of subsequent frames,
@@ -913,6 +924,8 @@ bool DrawingBuffer::Initialize(const gfx::Size& size, bool use_multisampling) {
   auto webgl_preferences = ContextProvider()->GetWebglPreferences();
 
   // We can't use anything other than explicit resolve for swap chain.
+  // TODO(crbug.com/40074896): Determine whether this restriction holds for the
+  // single-SI swapchain impl.
   bool supports_implicit_resolve =
       !using_swap_chain_ && extensions_util_->SupportsExtension(
                                 "GL_EXT_multisampled_render_to_texture");
@@ -1891,7 +1904,10 @@ void DrawingBuffer::ResolveAndPresentSwapChainIfNeeded() {
   ScopedStateRestorer scoped_state_restorer(this);
   ResolveIfNeeded(kDiscardAllowed);
 
-  if (!using_swap_chain_) {
+  bool using_two_si_swap_chain_impl =
+      using_swap_chain_ &&
+      !base::FeatureList::IsEnabled(kUseSingleSIForLowLatencyWebGLOnWindows);
+  if (!using_two_si_swap_chain_impl) {
     return;
   }
 
@@ -1979,12 +1995,19 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   if (using_swap_chain_) {
     usage = usage | gpu::SHARED_IMAGE_USAGE_SCANOUT;
     usage = usage | gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
-    gpu::SharedImageInterface::SwapChainSharedImages shared_images =
-        sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
-                             back_buffer_alpha_type, usage,
-                             "WebGLDrawingBuffer");
-    back_buffer_shared_image = std::move(shared_images.back_buffer);
-    front_buffer_shared_image = std::move(shared_images.front_buffer);
+    if (base::FeatureList::IsEnabled(kUseSingleSIForLowLatencyWebGLOnWindows)) {
+      back_buffer_shared_image = sii->CreateSharedImage(
+          {color_buffer_format_, size, color_space_, origin,
+           back_buffer_alpha_type, usage, "WebGLDrawingBuffer"},
+          gpu::kNullSurfaceHandle);
+    } else {
+      gpu::SharedImageInterface::SwapChainSharedImages shared_images =
+          sii->CreateSwapChain(color_buffer_format_, size, color_space_, origin,
+                               back_buffer_alpha_type, usage,
+                               "WebGLDrawingBuffer");
+      back_buffer_shared_image = std::move(shared_images.back_buffer);
+      front_buffer_shared_image = std::move(shared_images.front_buffer);
+    }
   } else {
     // First see if creating a SharedImage that can be used as an overlay is
     // feasible.
@@ -2062,7 +2085,8 @@ scoped_refptr<DrawingBuffer::ColorBuffer> DrawingBuffer::CreateColorBuffer(
   }
 
   if (front_buffer_shared_image) {
-    DCHECK(using_swap_chain_);
+    DCHECK(using_swap_chain_ && !base::FeatureList::IsEnabled(
+                                    kUseSingleSIForLowLatencyWebGLOnWindows));
     // Import frontbuffer of swap chain into GL.
     std::unique_ptr<gpu::SharedImageTexture> si_texture =
         front_buffer_shared_image->CreateGLTexture(gl_);
