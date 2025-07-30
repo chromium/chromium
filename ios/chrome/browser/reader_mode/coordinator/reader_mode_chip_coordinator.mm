@@ -44,8 +44,12 @@
 - (void)showReaderModeChip {
   [self.visibilityDelegate readerModeChipCoordinator:self
                           didSetReaderModeChipHidden:NO];
-  _viewController.readerModeOptionsHandler = HandlerForProtocol(
-      self.browser->GetCommandDispatcher(), ReaderModeOptionsCommands);
+  CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
+  if ([dispatcher
+          dispatchingForProtocol:@protocol(ReaderModeOptionsCommands)]) {
+    _viewController.readerModeOptionsHandler =
+        HandlerForProtocol(dispatcher, ReaderModeOptionsCommands);
+  }
 }
 
 - (void)hideReaderModeChip {
