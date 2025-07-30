@@ -5,6 +5,7 @@
 """Unittests for run.py."""
 
 import contextlib
+import datetime
 import io
 import json
 import mock
@@ -12,6 +13,8 @@ import os
 import re
 import sys
 import unittest
+
+from pyfakefs.fake_filesystem_unittest import TestCase
 
 import constants
 import iossim_util
@@ -31,8 +34,40 @@ sys.path.extend([
 ])
 import exception_recorder
 
-class UnitTest(unittest.TestCase):
 
+@mock.patch(
+    'os.path.getmtime', return_value=datetime.datetime(2025, 1, 1).timestamp())
+class RotateOutDirTest(TestCase):
+
+  def setUp(self):
+    super().setUp()
+    self.setUpPyfakefs()
+
+  def test_rotate_with_clobber(self, _):
+    self.fs.create_dir('out/Release/test-results')
+    self.fs.create_file(
+        'out/Release/test-results_2024-01-01-000000/output.json')
+    runner = run.Runner()
+    runner.maybe_rotate_out_dir('out/Release/test-results', archive_limit=1)
+    self.assertFalse(os.path.exists('out/Release/test-results'))
+    self.assertTrue(os.path.isdir('out/Release/test-results_2025-01-01-000000'))
+    self.assertFalse(
+        os.path.isdir('out/Release/test-results_2024-01-01-000000'))
+
+  def test_does_not_exist(self, mock_getmtime):
+    mock_getmtime.side_effect = FileNotFoundError('not found')
+    runner = run.Runner()
+    runner.maybe_rotate_out_dir('out/Release/test-results')
+    self.assertFalse(os.path.exists('out/Release/test-results'))
+
+  def test_skip_build_dir(self, _):
+    self.fs.create_file('out/Release/args.gn')
+    runner = run.Runner()
+    runner.maybe_rotate_out_dir('out/Release')
+    self.assertTrue(os.path.isdir('out/Release'))
+
+
+class ParseArgsUnitTest(unittest.TestCase):
   def test_parse_args_ok(self):
     cmd = [
         '--app',
