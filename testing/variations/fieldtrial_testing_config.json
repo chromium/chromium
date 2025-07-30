@@ -10502,7 +10502,21 @@
     "ForceOffTextAutosizing": [
         {
             "platforms": [
-                "android",
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ForceOffTextAutosizing"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ForceOffTextAutosizingWebView": [
+        {
+            "platforms": [
                 "android_webview"
             ],
             "experiments": [
