@@ -1186,7 +1186,8 @@ class SkyVaultFilesAppBrowserTest
       const std::string* provider = value.FindString("provider");
       CHECK(provider);
       CHECK(*provider == download_dir_util::kLocationGoogleDrive ||
-            *provider == download_dir_util::kLocationOneDrive);
+            *provider == download_dir_util::kLocationOneDrive ||
+            *provider == "delete");
       g_browser_process->local_state()->SetString(
           prefs::kLocalUserFilesMigrationDestination, *provider);
       return true;
@@ -1411,6 +1412,9 @@ WRAPPED_INSTANTIATE_TEST_SUITE_P(
                           .DontMountVolumes()
                           .EnableSkyVault(),
                       TestCase("skyVaultMigrationRemovesMyFilesOpenAfter")
+                          .DontMountVolumes()
+                          .EnableSkyVault(),
+                      TestCase("skyVaultMigrationDeleteLocalFiles")
                           .DontMountVolumes()
                           .EnableSkyVault()));
 

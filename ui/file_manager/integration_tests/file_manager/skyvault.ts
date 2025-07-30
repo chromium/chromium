@@ -291,3 +291,18 @@ export async function skyVaultMigrationRemovesMyFilesOpenAfter() {
   const myFilesLabel = 'My files';
   await directoryTree.waitForItemLostByLabel(myFilesLabel);
 }
+
+/**
+Tests that the Files app opens successfully when the migration
+destination is set to "delete", addressing a crash (crbug.com/433496883) that
+occurred when the policy was configured and no files were present for deletion.
+ */
+export async function skyVaultMigrationDeleteLocalFiles() {
+  await remoteCall.setLocalFilesMigrationDestination('delete');
+  // Mount the local folder after setting the policies.
+  await sendTestMessage({name: 'skyvault:mountMyFiles'});
+
+  // Open Files app. It shouldn't crash.
+  const appId = await remoteCall.openNewWindow(null, null);
+  chrome.test.assertTrue(!!appId, 'failed to open new window');
+}
