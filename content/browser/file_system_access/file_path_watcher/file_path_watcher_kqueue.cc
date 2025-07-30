@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/browser/file_system_access/file_path_watcher/file_path_watcher_kqueue.h"
 
 #include <fcntl.h>
@@ -130,19 +125,23 @@ void FilePathWatcherKQueue::CloseFileDescriptor(uintptr_t* fd) {
   *fd = kNoFileDescriptor;
 }
 
-bool FilePathWatcherKQueue::AreKeventValuesValid(struct kevent* kevents,
-                                                 int count) {
+bool FilePathWatcherKQueue::AreKeventValuesValid(
+    base::span<const struct kevent> kevents,
+    int count) {
   if (count < 0) {
     DPLOG(ERROR) << "kevent";
     return false;
   }
+
+  kevents = kevents.first(base::checked_cast<size_t>(count));
+
   bool valid = true;
-  for (int i = 0; i < count; ++i) {
-    if (kevents[i].flags & EV_ERROR && kevents[i].data) {
+  for (const auto& kevent : kevents) {
+    if (kevent.flags & EV_ERROR && kevent.data) {
       // Find the kevent in |events_| that matches the kevent with the error.
       EventVector::iterator event = events_.begin();
       for (; event != events_.end(); ++event) {
-        if (event->ident == kevents[i].ident) {
+        if (event->ident == kevent.ident) {
           break;
         }
       }
@@ -154,10 +153,10 @@ bool FilePathWatcherKQueue::AreKeventValuesValid(struct kevent* kevents,
         }
       }
       if (path_name.empty()) {
-        path_name = base::StringPrintf(
-            "fd %ld", reinterpret_cast<long>(&kevents[i].ident));
+        path_name =
+            base::StringPrintf("fd %ld", reinterpret_cast<long>(&kevent.ident));
       }
-      DLOG(ERROR) << "Error: " << kevents[i].data << " for " << path_name;
+      DLOG(ERROR) << "Error: " << kevent.data << " for " << path_name;
       valid = false;
     }
   }
@@ -248,7 +247,7 @@ bool FilePathWatcherKQueue::UpdateWatches(bool* target_file_affected) {
     const int valid_int = base::checked_cast<int>(valid);
     int count = HANDLE_EINTR(
         kevent(kqueue_, &events_[0], valid_int, &updates[0], valid_int, NULL));
-    if (!AreKeventValuesValid(&updates[0], count)) {
+    if (!AreKeventValuesValid(updates, count)) {
       return false;
     }
     update_watches = false;
@@ -304,7 +303,7 @@ bool FilePathWatcherKQueue::Watch(const base::FilePath& path,
   const int last_entry_int = base::checked_cast<int>(last_entry);
   int count = HANDLE_EINTR(kevent(kqueue_, &events_[0], last_entry_int,
                                   &responses[0], last_entry_int, NULL));
-  if (!AreKeventValuesValid(&responses[0], count)) {
+  if (!AreKeventValuesValid(responses, count)) {
     // Calling Cancel() here to close any file descriptors that were opened.
     // This would happen in the destructor anyways, but FilePathWatchers tend to
     // be long lived, and if an error has occurred, there is no reason to waste
@@ -358,7 +357,7 @@ void FilePathWatcherKQueue::OnKQueueReadable() {
 
   // Error values are stored within updates, so check to make sure that no
   // errors occurred.
-  if (!AreKeventValuesValid(&updates[0], count)) {
+  if (!AreKeventValuesValid(updates, count)) {
     callback_.Run(target_, true /* error */);
     Cancel();
     return;
