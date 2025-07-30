@@ -18,7 +18,7 @@
 #include "base/test/mock_callback.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "content/public/test/browser_task_environment.h"
 #include "device/fido/public_key_credential_params.h"
@@ -99,8 +99,8 @@ class PasskeyBrowserBinderTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   scoped_refptr<FakeBrowserBoundKeyStore> fake_browser_bound_key_store_ =
       base::MakeRefCounted<FakeBrowserBoundKeyStore>();
-  scoped_refptr<MockPaymentManifestWebDataService> mock_web_data_service_ =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  scoped_refptr<MockWebPaymentsWebDataService> mock_web_data_service_ =
+      base::MakeRefCounted<MockWebPaymentsWebDataService>();
 };
 
 TEST_F(PasskeyBrowserBinderTest, CreatesUnboundKey) {

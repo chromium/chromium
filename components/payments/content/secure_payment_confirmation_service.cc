@@ -8,7 +8,7 @@
 #include "base/feature_list.h"
 #include "base/memory/ref_counted_memory.h"
 #include "components/payments/content/browser_binding/browser_bound_key.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -43,7 +43,7 @@ void OnIsUserVerifyingPlatformAuthenticatorAvailable(
 SecurePaymentConfirmationService::SecurePaymentConfirmationService(
     content::RenderFrameHost& render_frame_host,
     mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
-    scoped_refptr<PaymentManifestWebDataService> web_data_service,
+    scoped_refptr<WebPaymentsWebDataService> web_data_service,
     std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
     : DocumentService(render_frame_host, std::move(receiver)),
       web_data_service_(web_data_service),

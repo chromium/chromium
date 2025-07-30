@@ -61,8 +61,8 @@ class ChromePaymentRequestDelegate : public ContentPaymentRequestDelegate {
   content::RenderFrameHost* GetRenderFrameHost() const override;
   std::unique_ptr<webauthn::InternalAuthenticator> CreateInternalAuthenticator()
       const override;
-  scoped_refptr<PaymentManifestWebDataService>
-  GetPaymentManifestWebDataService() const override;
+  scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService()
+      const override;
   PaymentRequestDisplayManager* GetDisplayManager() override;
   void EmbedPaymentHandlerWindow(
       const GURL& url,

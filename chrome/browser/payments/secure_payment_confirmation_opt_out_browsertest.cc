@@ -4,8 +4,8 @@
 
 #include "chrome/browser/payments/secure_payment_confirmation_browsertest.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
 #include "content/public/test/browser_test.h"
@@ -25,7 +25,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -64,7 +64,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -101,7 +101,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -304,7 +304,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutDisabledTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -353,7 +353,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -390,7 +390,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -593,7 +593,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationOptOutDisabledUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(

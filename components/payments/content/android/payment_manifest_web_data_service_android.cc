@@ -115,8 +115,8 @@ void PaymentManifestWebDataServiceAndroid::OnPaymentMethodManifestRequestDone(
 }
 
 void PaymentManifestWebDataServiceAndroid::Destroy(JNIEnv* env) {
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      GetPaymentManifestWebDataService();
+  scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
+      GetWebPaymentsWebDataService();
   if (web_data_service) {
     for (const auto& request : web_data_service_requests_) {
       web_data_service->CancelRequest(request.first);
@@ -135,8 +135,8 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentMethodManifest(
   base::android::AppendJavaStringArrayToStringVector(env, japps_package_names,
                                                      &apps_package_names);
 
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      GetPaymentManifestWebDataService();
+  scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
+      GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
     return;
   }
@@ -149,8 +149,8 @@ void PaymentManifestWebDataServiceAndroid::AddPaymentMethodManifest(
 void PaymentManifestWebDataServiceAndroid::AddPaymentWebAppManifest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobjectArray>& jmanifest_sections) {
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      GetPaymentManifestWebDataService();
+  scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
+      GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
     return;
   }
@@ -185,8 +185,8 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentMethodManifest(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& jmethod_name,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      GetPaymentManifestWebDataService();
+  scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
+      GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
     return false;
   }
@@ -204,8 +204,8 @@ bool PaymentManifestWebDataServiceAndroid::GetPaymentWebAppManifest(
     JNIEnv* env,
     const base::android::JavaParamRef<jstring>& japp_package_name,
     const base::android::JavaParamRef<jobject>& jcallback) {
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-      GetPaymentManifestWebDataService();
+  scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
+      GetWebPaymentsWebDataService();
   if (web_data_service == nullptr) {
     return false;
   }
@@ -233,14 +233,14 @@ static jlong JNI_PaymentManifestWebDataService_Init(
   return reinterpret_cast<intptr_t>(manifest_web_data_service_android);
 }
 
-scoped_refptr<PaymentManifestWebDataService>
-PaymentManifestWebDataServiceAndroid::GetPaymentManifestWebDataService() {
+scoped_refptr<WebPaymentsWebDataService>
+PaymentManifestWebDataServiceAndroid::GetWebPaymentsWebDataService() {
   if (!web_contents_ || !web_contents_->GetBrowserContext()) {
     return nullptr;
   }
 
   return webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           web_contents_->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS);
 }

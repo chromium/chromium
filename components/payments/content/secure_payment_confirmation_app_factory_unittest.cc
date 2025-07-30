@@ -17,8 +17,8 @@
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/mock_payment_app_factory_delegate.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
 #include "components/payments/content/mock_secure_payment_confirmation_credential_finder.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/native_error_strings.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
@@ -87,7 +87,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
         std::move(mock_credential_finder));
 
     mock_authenticator_ = CreateMockInternalAuthenticator();
-    mock_service_ = base::MakeRefCounted<MockPaymentManifestWebDataService>();
+    mock_service_ = base::MakeRefCounted<MockWebPaymentsWebDataService>();
   }
 
   std::unique_ptr<MockPaymentAppFactoryDelegate> CreateMockDelegate(
@@ -96,7 +96,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
         web_contents_, std::move(method_data));
     EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
         .WillOnce(Return(ByMove(std::move(mock_authenticator_))));
-    EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+    EXPECT_CALL(*mock_delegate, GetWebPaymentsWebDataService())
         .WillRepeatedly(Return(mock_service_));
 
     return mock_delegate;
@@ -162,7 +162,7 @@ class SecurePaymentConfirmationAppFactoryTest : public testing::Test {
   std::string challenge_bytes_;
   std::string credential_id_bytes_;
   std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator_;
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service_;
+  scoped_refptr<MockWebPaymentsWebDataService> mock_service_;
   // Owned by `secure_payment_confirmation_app_factory_`, so must be declared
   // after it to avoid a dangling raw_ptr during destruction.
   raw_ptr<MockSecurePaymentConfirmationCredentialFinder>
@@ -616,7 +616,7 @@ TEST_F(SecurePaymentConfirmationAppFactoryTest,
   // Ensure that the SecurePaymentConfirmationAppFactory extracts and passes in
   // the correct set of credentials, relying party id, and caller origin. The
   // remaining parameters are the InternalAuthenticator, the
-  // PaymentManifestWebDataService, and the result callback - these are not
+  // WebPaymentsWebDataService, and the result callback - these are not
   // important to verify.
   EXPECT_CALL(*mock_credential_finder_,
               GetMatchingCredentials(Eq(credential_ids), relying_party_id,
@@ -863,11 +863,11 @@ TEST_F(SecurePaymentConfirmationAppFactoryUxRefreshTest,
   auto mock_delegate = std::make_unique<MockPaymentAppFactoryDelegate>(
       web_contents_, std::move(method_data));
 
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service =
-      base::MakeRefCounted<MockPaymentManifestWebDataService>();
+  scoped_refptr<MockWebPaymentsWebDataService> mock_service =
+      base::MakeRefCounted<MockWebPaymentsWebDataService>();
   EXPECT_CALL(*mock_delegate, CreateInternalAuthenticator())
       .WillOnce(Return(ByMove(std::move(mock_authenticator))));
-  EXPECT_CALL(*mock_delegate, GetPaymentManifestWebDataService())
+  EXPECT_CALL(*mock_delegate, GetWebPaymentsWebDataService())
       .WillRepeatedly(Return(mock_service));
   std::unique_ptr<PaymentApp> secure_payment_confirmation_app;
   EXPECT_CALL(*mock_delegate, OnPaymentAppCreated(_))

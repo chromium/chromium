@@ -24,7 +24,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "components/autofill/core/browser/test_utils/test_event_waiter.h"
 #include "components/keyed_service/core/service_access_type.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/error_strings.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
@@ -109,7 +109,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, Show_TransactionUX) {
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -182,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationTest, IconDownloadFailure) {
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -351,7 +351,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationActivationlessShowTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -431,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(
@@ -507,7 +507,7 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationUxRefreshTest,
   std::vector<uint8_t> credential_id = {'c', 'r', 'e', 'd'};
   std::vector<uint8_t> user_id = {'u', 's', 'e', 'r'};
   webdata_services::WebDataServiceWrapperFactory::
-      GetPaymentManifestWebDataServiceForBrowserContext(
+      GetWebPaymentsWebDataServiceForBrowserContext(
           GetActiveWebContents()->GetBrowserContext(),
           ServiceAccessType::EXPLICIT_ACCESS)
           ->AddSecurePaymentConfirmationCredential(

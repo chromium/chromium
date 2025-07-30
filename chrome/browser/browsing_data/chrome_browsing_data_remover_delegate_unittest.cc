@@ -142,7 +142,7 @@
 #include "components/password_manager/core/browser/password_store/mock_smart_bubble_stats_store.h"
 #include "components/password_manager/core/browser/password_store/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/performance_manager/public/user_tuning/prefs.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_actions_history.h"
@@ -4209,7 +4209,7 @@ class
  public:
   using MockWrapper = testing::NiceMock<payments::MockWebDataServiceWrapper>;
   using MockService =
-      testing::NiceMock<payments::MockPaymentManifestWebDataService>;
+      testing::NiceMock<payments::MockWebPaymentsWebDataService>;
 
   TestingProfile::TestingFactories GetTestingFactories() override {
     TestingProfile::TestingFactories factories =
@@ -4219,7 +4219,7 @@ class
         base::BindLambdaForTesting([&](content::BrowserContext* context)
                                        -> std::unique_ptr<KeyedService> {
           auto wrapper = std::make_unique<MockWrapper>();
-          ON_CALL(*wrapper, GetPaymentManifestWebData)
+          ON_CALL(*wrapper, GetWebPaymentsWebData)
               .WillByDefault(Return(service_));
           return std::move(wrapper);
         }));

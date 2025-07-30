@@ -23,9 +23,9 @@
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/passkey_browser_binder.h"
 #include "components/payments/content/payment_app.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
 #include "components/payments/content/secure_payment_confirmation_app.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/native_error_strings.h"
@@ -205,11 +205,10 @@ void DidDownloadIcon(IconInfo* icon_info,
 // app, i.e. for a single PaymentRequest object construction.
 struct SecurePaymentConfirmationAppFactory::Request
     : public content::WebContentsObserver {
-  Request(
-      base::WeakPtr<PaymentAppFactory::Delegate> delegate,
-      scoped_refptr<payments::PaymentManifestWebDataService> web_data_service,
-      mojom::SecurePaymentConfirmationRequestPtr mojo_request,
-      std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
+  Request(base::WeakPtr<PaymentAppFactory::Delegate> delegate,
+          scoped_refptr<payments::WebPaymentsWebDataService> web_data_service,
+          mojom::SecurePaymentConfirmationRequestPtr mojo_request,
+          std::unique_ptr<webauthn::InternalAuthenticator> authenticator)
       : content::WebContentsObserver(delegate->GetWebContents()),
         delegate(delegate),
         web_data_service(web_data_service),
@@ -231,7 +230,7 @@ struct SecurePaymentConfirmationAppFactory::Request
   }
 
   base::WeakPtr<PaymentAppFactory::Delegate> delegate;
-  scoped_refptr<payments::PaymentManifestWebDataService> web_data_service;
+  scoped_refptr<payments::WebPaymentsWebDataService> web_data_service;
   mojom::SecurePaymentConfirmationRequestPtr mojo_request;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator;
   IconInfo payment_instrument_icon_info;
@@ -330,8 +329,8 @@ void SecurePaymentConfirmationAppFactory::Create(
         delegate->OnDoneCreatingPaymentApps();
         return;
       }
-      scoped_refptr<payments::PaymentManifestWebDataService> web_data_service =
-          delegate->GetPaymentManifestWebDataService();
+      scoped_refptr<payments::WebPaymentsWebDataService> web_data_service =
+          delegate->GetWebPaymentsWebDataService();
       if (!web_data_service) {
         delegate->OnDoneCreatingPaymentApps();
         return;

@@ -48,7 +48,7 @@ BrowserBoundKeyDeleterFactory::BuildServiceInstanceForBrowserContext(
   CHECK(!context->IsOffTheRecord());
   auto service = std::make_unique<BrowserBoundKeyDeleter>(
       webdata_services::WebDataServiceWrapperFactory::
-          GetPaymentManifestWebDataServiceForBrowserContext(
+          GetWebPaymentsWebDataServiceForBrowserContext(
               context, ServiceAccessType::EXPLICIT_ACCESS));
   return service;
 }

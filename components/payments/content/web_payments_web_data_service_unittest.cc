@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
@@ -52,9 +52,9 @@ class MockWebDataServiceConsumer : public WebDataServiceConsumer {
               (override));
 };
 
-class PaymentManifestWebDataServiceTest : public ::testing::Test {
+class WebPaymentsWebDataServiceTest : public ::testing::Test {
  public:
-  PaymentManifestWebDataServiceTest() {
+  WebPaymentsWebDataServiceTest() {
     os_crypt_ = os_crypt_async::GetTestOSCryptAsyncForTesting();
     scoped_refptr<base::SingleThreadTaskRunner> task_runner =
         task_environment_.GetMainThreadTaskRunner();
@@ -64,17 +64,16 @@ class PaymentManifestWebDataServiceTest : public ::testing::Test {
         /*db_task_runner=*/task_runner);
     web_database_service_->AddTable(std::make_unique<WebPaymentsTable>());
     web_database_service_->LoadDatabase(os_crypt_.get());
-    payment_manifest_web_data_service_ =
-        base::MakeRefCounted<PaymentManifestWebDataService>(
-            web_database_service_, task_runner);
-    payment_manifest_web_data_service_->Init(base::DoNothing());
+    web_payments_web_data_service_ =
+        base::MakeRefCounted<WebPaymentsWebDataService>(web_database_service_,
+                                                        task_runner);
+    web_payments_web_data_service_->Init(base::DoNothing());
   }
 
  protected:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::MainThreadType::UI};
-  scoped_refptr<PaymentManifestWebDataService>
-      payment_manifest_web_data_service_;
+  scoped_refptr<WebPaymentsWebDataService> web_payments_web_data_service_;
 
   std::unique_ptr<WDTypedResult> RunAndWaitForConsumer(
       base::OnceCallback<WebDataServiceBase::Handle(
@@ -127,7 +126,7 @@ class PaymentManifestWebDataServiceTest : public ::testing::Test {
   scoped_refptr<WebDatabaseService> web_database_service_;
 };
 
-TEST_F(PaymentManifestWebDataServiceTest, BrowserBoundKey) {
+TEST_F(WebPaymentsWebDataServiceTest, BrowserBoundKey) {
   const std::vector<uint8_t> credential_id({0x01, 0x02, 0x03, 0x04});
   const std::string relying_party_id("relying-party.example");
   const std::vector<uint8_t> browser_bound_key_id({0x11, 0x12, 0x13, 0x14});
@@ -136,7 +135,7 @@ TEST_F(PaymentManifestWebDataServiceTest, BrowserBoundKey) {
       FROM_HERE, TestTimeouts::action_max_timeout());
   std::unique_ptr<WDTypedResult> set_bbk_result = RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->SetBrowserBoundKey(
+        return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id, relying_party_id, browser_bound_key_id, consumer);
       }));
   ASSERT_TRUE(set_bbk_result);
@@ -146,7 +145,7 @@ TEST_F(PaymentManifestWebDataServiceTest, BrowserBoundKey) {
   // Retrieve the browser bound key id.
   std::unique_ptr<WDTypedResult> get_bbk_result = RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->GetBrowserBoundKey(
+        return web_payments_web_data_service_->GetBrowserBoundKey(
             credential_id, relying_party_id, consumer);
       }));
 
@@ -158,7 +157,7 @@ TEST_F(PaymentManifestWebDataServiceTest, BrowserBoundKey) {
             std::optional(browser_bound_key_id));
 }
 
-TEST_F(PaymentManifestWebDataServiceTest, GetAllBrowserBoundKey) {
+TEST_F(WebPaymentsWebDataServiceTest, GetAllBrowserBoundKey) {
   const std::vector<uint8_t> credential_id_1({0x01, 0x02, 0x03, 0x04});
   const std::string relying_party_id_1("relying-party.example");
   const std::vector<uint8_t> browser_bound_key_id_1({0x11, 0x12, 0x13, 0x14});
@@ -167,13 +166,13 @@ TEST_F(PaymentManifestWebDataServiceTest, GetAllBrowserBoundKey) {
   const std::vector<uint8_t> browser_bound_key_id_2({0x31, 0x32, 0x33, 0x34});
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->SetBrowserBoundKey(
+        return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_1, relying_party_id_1, browser_bound_key_id_1,
             consumer);
       }));
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->SetBrowserBoundKey(
+        return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_2, relying_party_id_2, browser_bound_key_id_2,
             consumer);
       }));
@@ -181,7 +180,7 @@ TEST_F(PaymentManifestWebDataServiceTest, GetAllBrowserBoundKey) {
   std::unique_ptr<WDTypedResult> result =
       RunAndWaitForCallback(base::BindLambdaForTesting(
           [&](WebDataServiceRequestCallback request_callback) {
-            return payment_manifest_web_data_service_->GetAllBrowserBoundKeys(
+            return web_payments_web_data_service_->GetAllBrowserBoundKeys(
                 std::move(request_callback));
           }));
 
@@ -197,7 +196,7 @@ TEST_F(PaymentManifestWebDataServiceTest, GetAllBrowserBoundKey) {
                                        browser_bound_key_id_2)));
 }
 
-TEST_F(PaymentManifestWebDataServiceTest, DeleteBrowserBoundKey) {
+TEST_F(WebPaymentsWebDataServiceTest, DeleteBrowserBoundKey) {
   const std::vector<uint8_t> credential_id_1({0x01, 0x02, 0x03, 0x04});
   const std::string relying_party_id_1("relying-party.example");
   const std::vector<uint8_t> browser_bound_key_id_1({0x11, 0x12, 0x13, 0x14});
@@ -209,26 +208,26 @@ TEST_F(PaymentManifestWebDataServiceTest, DeleteBrowserBoundKey) {
   const std::vector<uint8_t> browser_bound_key_id_3({0x51, 0x52, 0x53, 0x54});
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->SetBrowserBoundKey(
+        return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_1, relying_party_id_1, browser_bound_key_id_1,
             consumer);
       }));
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->SetBrowserBoundKey(
+        return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_2, relying_party_id_2, browser_bound_key_id_2,
             consumer);
       }));
   RunAndWaitForConsumer(
       base::BindLambdaForTesting([&](WebDataServiceConsumer* consumer) {
-        return payment_manifest_web_data_service_->SetBrowserBoundKey(
+        return web_payments_web_data_service_->SetBrowserBoundKey(
             credential_id_3, relying_party_id_3, browser_bound_key_id_3,
             consumer);
       }));
   base::MockCallback<base::OnceClosure> mock_callback;
 
   EXPECT_CALL(mock_callback, Run());
-  payment_manifest_web_data_service_->DeleteBrowserBoundKeys(
+  web_payments_web_data_service_->DeleteBrowserBoundKeys(
       std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId>{
           BrowserBoundKeyMetadata::RelyingPartyAndCredentialId(
               relying_party_id_1, credential_id_1),
@@ -242,7 +241,7 @@ TEST_F(PaymentManifestWebDataServiceTest, DeleteBrowserBoundKey) {
   ASSERT_TRUE(base::test::RunUntil([this, &result, &result_data]() -> bool {
     result = RunAndWaitForCallback(base::BindLambdaForTesting(
         [&](WebDataServiceRequestCallback request_callback) {
-          return payment_manifest_web_data_service_->GetAllBrowserBoundKeys(
+          return web_payments_web_data_service_->GetAllBrowserBoundKeys(
               std::move(request_callback));
         }));
     if (!result ||

@@ -16,7 +16,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webdata/common/web_data_service_consumer.h"
 
 namespace payments {
@@ -35,7 +35,7 @@ struct BrowserBoundKeyMetadata;
 // Example passkey creation usage:
 //
 // auto binder = PasskeyBrowserBinder(
-//     std::move(key_store), payment_manifest_web_data_service);
+//     std::move(key_store), web_payments_web_data_service);
 //
 // // Create an unbound key.
 // PasskeyBrowserBinder::UnboundKey unbound_key =
@@ -55,7 +55,7 @@ struct BrowserBoundKeyMetadata;
 // auto passkey = ...; // After retrieving the passkey.
 //
 // binder_ = std::make_unique<PasskeyBrowserBinder>(
-//     std::move(key_store), payment_manifest_web_data_service);
+//     std::move(key_store), web_payments_web_data_service);
 //
 // binder_->GetOrCreateBoundKeyForPasskey(
 //     passkey.GetCredentialId(),
@@ -77,7 +77,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
   // `key_store` and `web_data_service` are required and must be set.
   PasskeyBrowserBinder(
       scoped_refptr<BrowserBoundKeyStore> key_store,
-      scoped_refptr<PaymentManifestWebDataService> web_data_service);
+      scoped_refptr<WebPaymentsWebDataService> web_data_service);
   PasskeyBrowserBinder(const PasskeyBrowserBinder&) = delete;
   PasskeyBrowserBinder& operator=(const PasskeyBrowserBinder&) = delete;
   ~PasskeyBrowserBinder() override;
@@ -185,7 +185,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
       base::RepeatingCallback<std::vector<uint8_t>(size_t length)>);
 
   BrowserBoundKeyStore* GetBrowserBoundKeyStoreForTesting();
-  PaymentManifestWebDataService* GetWebDataServiceForTesting();
+  WebPaymentsWebDataService* GetWebDataServiceForTesting();
 
  private:
   // Called after retrieving the possibly empty `existing_browser_bound_key_id`
@@ -217,7 +217,7 @@ class PasskeyBrowserBinder : public WebDataServiceConsumer {
   void RecordCreationOrRetrieval(bool is_creation, bool did_succeed);
 
   scoped_refptr<BrowserBoundKeyStore> key_store_;
-  scoped_refptr<PaymentManifestWebDataService> web_data_service_;
+  scoped_refptr<WebPaymentsWebDataService> web_data_service_;
   std::map<WebDataServiceBase::Handle, base::OnceCallback<void(bool)>>
       set_browser_bound_key_handlers_;
   std::map<WebDataServiceBase::Handle,

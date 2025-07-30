@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
-#define COMPONENTS_PAYMENTS_CONTENT_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_WEB_DATA_SERVICE_H_
+#define COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_WEB_DATA_SERVICE_H_
 
 #include <stdint.h>
 
@@ -30,16 +30,16 @@ struct SecurePaymentConfirmationCredential;
 
 // Web data service to read/write data in WebAppManifestSectionTable and
 // WebPaymentsTable.
-class PaymentManifestWebDataService : public WebDataServiceBase,
-                                      public WebDataServiceConsumer {
+class WebPaymentsWebDataService : public WebDataServiceBase,
+                                  public WebDataServiceConsumer {
  public:
-  PaymentManifestWebDataService(
+  WebPaymentsWebDataService(
       scoped_refptr<WebDatabaseService> wdbs,
       scoped_refptr<base::SequencedTaskRunner> ui_task_runner);
 
-  PaymentManifestWebDataService(const PaymentManifestWebDataService&) = delete;
-  PaymentManifestWebDataService& operator=(
-      const PaymentManifestWebDataService&) = delete;
+  WebPaymentsWebDataService(const WebPaymentsWebDataService&) = delete;
+  WebPaymentsWebDataService& operator=(const WebPaymentsWebDataService&) =
+      delete;
 
   // Adds the web app `manifest`.
   void AddPaymentWebAppManifest(std::vector<WebAppManifestSection> manifest);
@@ -120,7 +120,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       std::unique_ptr<WDTypedResult> result) override;
 
  protected:
-  ~PaymentManifestWebDataService() override;
+  ~WebPaymentsWebDataService() override;
 
  private:
   std::unique_ptr<WDTypedResult> ClearSecurePaymentConfirmationCredentialsImpl(
@@ -173,4 +173,4 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_WEB_PAYMENTS_WEB_DATA_SERVICE_H_

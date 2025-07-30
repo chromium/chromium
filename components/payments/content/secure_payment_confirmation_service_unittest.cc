@@ -14,8 +14,8 @@
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key.h"
 #include "components/payments/content/browser_binding/fake_browser_bound_key_store.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
@@ -89,9 +89,9 @@ class SecurePaymentConfirmationServiceTestBase {
   content::TestBrowserContext context_;
   content::TestWebContentsFactory web_contents_factory_;
   raw_ptr<content::WebContents> web_contents_;
-  scoped_refptr<payments::MockPaymentManifestWebDataService>
+  scoped_refptr<payments::MockWebPaymentsWebDataService>
       mock_web_data_service_ =
-          base::MakeRefCounted<MockPaymentManifestWebDataService>();
+          base::MakeRefCounted<MockWebPaymentsWebDataService>();
   // The `spc_service_` must be deleted after `mock_internal_authenticator_`, as
   // it owns the underlying std::unique_ptr.
   std::unique_ptr<SecurePaymentConfirmationService,

@@ -28,7 +28,7 @@ class InternalAuthenticator;
 
 namespace payments {
 
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 class PaymentRequestDialog;
 class PaymentRequestDisplayManager;
 class PaymentUIObserver;
@@ -52,8 +52,8 @@ class ContentPaymentRequestDelegate : public PaymentRequestDelegate {
   CreateInternalAuthenticator() const = 0;
 
   // Returns the web data service for caching payment method manifests.
-  virtual scoped_refptr<PaymentManifestWebDataService>
-  GetPaymentManifestWebDataService() const = 0;
+  virtual scoped_refptr<WebPaymentsWebDataService>
+  GetWebPaymentsWebDataService() const = 0;
 
   // Returns the PaymentRequestDisplayManager associated with this
   // PaymentRequest's BrowserContext.

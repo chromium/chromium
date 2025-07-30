@@ -15,8 +15,8 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/method_strings.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 #include "components/payments/core/url_util.h"
@@ -56,7 +56,7 @@ ManifestVerifier::ManifestVerifier(const url::Origin& merchant_origin,
                                    content::WebContents* web_contents,
                                    PaymentManifestDownloader* downloader,
                                    PaymentManifestParser* parser,
-                                   PaymentManifestWebDataService* cache)
+                                   WebPaymentsWebDataService* cache)
     : merchant_origin_(merchant_origin),
       log_(web_contents),
       downloader_(downloader),

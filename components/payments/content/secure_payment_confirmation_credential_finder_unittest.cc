@@ -13,7 +13,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/scoped_feature_list.h"
-#include "components/payments/content/mock_payment_manifest_web_data_service.h"
+#include "components/payments/content/mock_web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webauthn/core/browser/mock_internal_authenticator.h"
@@ -48,8 +48,7 @@ class SecurePaymentConfirmationCredentialFinderTest : public testing::Test {
         mock_authenticator_(
             std::make_unique<webauthn::MockInternalAuthenticator>(
                 web_contents_)),
-        mock_service_(
-            base::MakeRefCounted<MockPaymentManifestWebDataService>()) {}
+        mock_service_(base::MakeRefCounted<MockWebPaymentsWebDataService>()) {}
 
   // Required for test environment setup.
   content::BrowserTaskEnvironment task_environment_;
@@ -59,7 +58,7 @@ class SecurePaymentConfirmationCredentialFinderTest : public testing::Test {
 
   // Mocks of the underlying authenticator and user database service.
   std::unique_ptr<webauthn::MockInternalAuthenticator> mock_authenticator_;
-  scoped_refptr<MockPaymentManifestWebDataService> mock_service_;
+  scoped_refptr<MockWebPaymentsWebDataService> mock_service_;
 
   // The class under test.
   SecurePaymentConfirmationCredentialFinder credential_finder_;

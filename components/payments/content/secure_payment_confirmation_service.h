@@ -31,7 +31,7 @@ class InternalAuthenticator;
 
 namespace payments {
 
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 
 // Implementation of the mojom::SecurePaymentConfirmationService interface,
 // which provides SPC-related functionality that is not tied to a specific
@@ -43,7 +43,7 @@ class SecurePaymentConfirmationService
   SecurePaymentConfirmationService(
       content::RenderFrameHost& render_frame_host,
       mojo::PendingReceiver<mojom::SecurePaymentConfirmationService> receiver,
-      scoped_refptr<PaymentManifestWebDataService> web_data_service,
+      scoped_refptr<WebPaymentsWebDataService> web_data_service,
       std::unique_ptr<webauthn::InternalAuthenticator> authenticator);
   ~SecurePaymentConfirmationService() override;
 
@@ -112,7 +112,7 @@ class SecurePaymentConfirmationService
   void Reset();
 
   State state_ = State::kIdle;
-  scoped_refptr<PaymentManifestWebDataService> web_data_service_;
+  scoped_refptr<WebPaymentsWebDataService> web_data_service_;
   std::unique_ptr<webauthn::InternalAuthenticator> authenticator_;
   std::optional<WebDataServiceBase::Handle> data_service_request_handle_;
   StorePaymentCredentialCallback storage_callback_;

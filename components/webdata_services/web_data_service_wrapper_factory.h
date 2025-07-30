@@ -14,7 +14,7 @@ class BrowserContext;
 }  // namespace content
 
 namespace payments {
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 }  // namespace payments
 
 class WebDataServiceWrapper;
@@ -37,8 +37,8 @@ class WebDataServiceWrapperFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context,
       ServiceAccessType access_type);
 
-  static scoped_refptr<payments::PaymentManifestWebDataService>
-  GetPaymentManifestWebDataServiceForBrowserContext(
+  static scoped_refptr<payments::WebPaymentsWebDataService>
+  GetWebPaymentsWebDataServiceForBrowserContext(
       content::BrowserContext* context,
       ServiceAccessType access_type);
 

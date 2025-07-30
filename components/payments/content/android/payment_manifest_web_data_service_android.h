@@ -12,7 +12,7 @@
 #include "base/android/scoped_java_ref.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webdata/common/web_data_results.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_data_service_consumer.h"
@@ -81,8 +81,7 @@ class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
       JNIEnv* env,
       WebDataServiceBase::Handle h,
       std::unique_ptr<WDTypedResult> result);
-  scoped_refptr<PaymentManifestWebDataService>
-  GetPaymentManifestWebDataService();
+  scoped_refptr<WebPaymentsWebDataService> GetWebPaymentsWebDataService();
 
   base::WeakPtr<content::WebContents> web_contents_;
 

@@ -8,8 +8,8 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/payment_app_factory.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
@@ -44,8 +44,8 @@ class MockPaymentAppFactoryDelegate : public PaymentAppFactory::Delegate {
                      const std::vector<mojom::PaymentMethodDataPtr>&());
   MOCK_CONST_METHOD0(CreateInternalAuthenticator,
                      std::unique_ptr<webauthn::InternalAuthenticator>());
-  MOCK_CONST_METHOD0(GetPaymentManifestWebDataService,
-                     scoped_refptr<PaymentManifestWebDataService>());
+  MOCK_CONST_METHOD0(GetWebPaymentsWebDataService,
+                     scoped_refptr<WebPaymentsWebDataService>());
   MOCK_METHOD0(MayCrawlForInstallablePaymentApps, bool());
   bool IsOffTheRecord() const override { return is_off_the_record_; }
   base::WeakPtr<PaymentRequestSpec> GetSpec() const override {

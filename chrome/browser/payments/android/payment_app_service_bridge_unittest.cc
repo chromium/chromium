@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "components/payments/content/android/payment_app_service_bridge.h"
+
 #include <memory>
 #include <vector>
 
@@ -10,10 +12,9 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/payments/content/android/payment_app_service_bridge.h"
 #include "components/payments/content/payment_app_service.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/payment_request_spec.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/const_csp_checker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
@@ -89,7 +90,7 @@ class PaymentAppServiceBridgeUnitTest
   raw_ptr<content::WebContents> web_contents_;
   GURL top_origin_;
   GURL frame_origin_;
-  scoped_refptr<PaymentManifestWebDataService> web_data_service_;
+  scoped_refptr<WebPaymentsWebDataService> web_data_service_;
 };
 
 TEST_P(PaymentAppServiceBridgeUnitTest, Smoke) {

@@ -16,9 +16,9 @@
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
 #include "components/payments/content/manifest_verifier.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/utility/payment_manifest_parser.h"
 #include "components/payments/content/web_app_manifest.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/payment_manifest_downloader.h"
 #include "content/public/browser/global_routing_id.h"
 #include "third_party/blink/public/mojom/payments/payment_request.mojom.h"
@@ -73,7 +73,7 @@ class InstallablePaymentAppCrawler {
       content::RenderFrameHost* initiator_render_frame_host,
       PaymentManifestDownloader* downloader,
       PaymentManifestParser* parser,
-      PaymentManifestWebDataService* cache);
+      WebPaymentsWebDataService* cache);
 
   InstallablePaymentAppCrawler(const InstallablePaymentAppCrawler&) = delete;
   InstallablePaymentAppCrawler& operator=(const InstallablePaymentAppCrawler&) =

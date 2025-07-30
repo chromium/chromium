@@ -21,7 +21,7 @@ class InternalAuthenticator;
 
 namespace payments {
 
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 struct SecurePaymentConfirmationCredential;
 
 // Wraps retrieval and matching of SPC credentials, from either the user profile
@@ -50,7 +50,7 @@ class SecurePaymentConfirmationCredentialFinder
       const std::string& relying_party_id,
       const url::Origin& caller_origin,
       webauthn::InternalAuthenticator* authenticator,
-      scoped_refptr<payments::PaymentManifestWebDataService> web_data_service,
+      scoped_refptr<payments::WebPaymentsWebDataService> web_data_service,
       SecurePaymentConfirmationCredentialFinderCallback result_callback);
 
   // WebDataServiceConsumer:
@@ -75,7 +75,7 @@ class SecurePaymentConfirmationCredentialFinder
   // called with the result.
   std::map<WebDataServiceBase::Handle,
            std::pair<SecurePaymentConfirmationCredentialFinderCallback,
-                     scoped_refptr<payments::PaymentManifestWebDataService>>>
+                     scoped_refptr<payments::WebPaymentsWebDataService>>>
       requests_;
 
   base::WeakPtrFactory<SecurePaymentConfirmationCredentialFinder>

@@ -5,7 +5,7 @@
 #include "components/payments/content/secure_payment_confirmation_credential_finder.h"
 
 #include "base/feature_list.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/secure_payment_confirmation_credential.h"
 #include "components/webauthn/core/browser/internal_authenticator.h"
@@ -41,7 +41,7 @@ void SecurePaymentConfirmationCredentialFinder::GetMatchingCredentials(
     const std::string& relying_party_id,
     const url::Origin& caller_origin,
     webauthn::InternalAuthenticator* authenticator,
-    scoped_refptr<payments::PaymentManifestWebDataService> web_data_service,
+    scoped_refptr<payments::WebPaymentsWebDataService> web_data_service,
     SecurePaymentConfirmationCredentialFinderCallback result_callback) {
   // If we have credential-store level support for SPC, we can query the store
   // directly. Otherwise, we have to rely on the user profile database.

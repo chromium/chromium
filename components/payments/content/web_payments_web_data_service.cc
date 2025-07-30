@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 
 #include <utility>
 
@@ -18,23 +18,22 @@
 
 namespace payments {
 
-PaymentManifestWebDataService::PaymentManifestWebDataService(
+WebPaymentsWebDataService::WebPaymentsWebDataService(
     scoped_refptr<WebDatabaseService> wdbs,
     scoped_refptr<base::SequencedTaskRunner> ui_task_runner)
     : WebDataServiceBase(std::move(wdbs), std::move(ui_task_runner)) {}
 
-PaymentManifestWebDataService::~PaymentManifestWebDataService() = default;
+WebPaymentsWebDataService::~WebPaymentsWebDataService() = default;
 
-void PaymentManifestWebDataService::AddPaymentWebAppManifest(
+void WebPaymentsWebDataService::AddPaymentWebAppManifest(
     std::vector<WebAppManifestSection> manifest) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(
-          &PaymentManifestWebDataService::AddPaymentWebAppManifestImpl, this,
-          std::move(manifest)));
+      base::BindOnce(&WebPaymentsWebDataService::AddPaymentWebAppManifestImpl,
+                     this, std::move(manifest)));
 }
 
-WebDatabase::State PaymentManifestWebDataService::AddPaymentWebAppManifestImpl(
+WebDatabase::State WebPaymentsWebDataService::AddPaymentWebAppManifestImpl(
     const std::vector<WebAppManifestSection>& manifest,
     WebDatabase* db) {
   if (WebAppManifestSectionTable::FromWebDatabase(db)->AddWebAppManifest(
@@ -45,17 +44,16 @@ WebDatabase::State PaymentManifestWebDataService::AddPaymentWebAppManifestImpl(
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-void PaymentManifestWebDataService::AddPaymentMethodManifest(
+void WebPaymentsWebDataService::AddPaymentMethodManifest(
     const std::string& payment_method,
     std::vector<std::string> app_package_names) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(
-          &PaymentManifestWebDataService::AddPaymentMethodManifestImpl, this,
-          payment_method, std::move(app_package_names)));
+      base::BindOnce(&WebPaymentsWebDataService::AddPaymentMethodManifestImpl,
+                     this, payment_method, std::move(app_package_names)));
 }
 
-WebDatabase::State PaymentManifestWebDataService::AddPaymentMethodManifestImpl(
+WebDatabase::State WebPaymentsWebDataService::AddPaymentMethodManifestImpl(
     const std::string& payment_method,
     const std::vector<std::string>& app_package_names,
     WebDatabase* db) {
@@ -67,20 +65,18 @@ WebDatabase::State PaymentManifestWebDataService::AddPaymentMethodManifestImpl(
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
-WebDataServiceBase::Handle
-PaymentManifestWebDataService::GetPaymentWebAppManifest(
+WebDataServiceBase::Handle WebPaymentsWebDataService::GetPaymentWebAppManifest(
     const std::string& web_app,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &PaymentManifestWebDataService::GetPaymentWebAppManifestImpl, this,
-          web_app),
+      base::BindOnce(&WebPaymentsWebDataService::GetPaymentWebAppManifestImpl,
+                     this, web_app),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetPaymentWebAppManifestImpl(
+WebPaymentsWebDataService::GetPaymentWebAppManifestImpl(
     const std::string& web_app,
     WebDatabase* db) {
   RemoveExpiredData(db);
@@ -90,20 +86,18 @@ PaymentManifestWebDataService::GetPaymentWebAppManifestImpl(
           web_app));
 }
 
-WebDataServiceBase::Handle
-PaymentManifestWebDataService::GetPaymentMethodManifest(
+WebDataServiceBase::Handle WebPaymentsWebDataService::GetPaymentMethodManifest(
     const std::string& payment_method,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(
-          &PaymentManifestWebDataService::GetPaymentMethodManifestImpl, this,
-          payment_method),
+      base::BindOnce(&WebPaymentsWebDataService::GetPaymentMethodManifestImpl,
+                     this, payment_method),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetPaymentMethodManifestImpl(
+WebPaymentsWebDataService::GetPaymentMethodManifestImpl(
     const std::string& payment_method,
     WebDatabase* db) {
   RemoveExpiredData(db);
@@ -113,20 +107,20 @@ PaymentManifestWebDataService::GetPaymentMethodManifestImpl(
 }
 
 WebDataServiceBase::Handle
-PaymentManifestWebDataService::AddSecurePaymentConfirmationCredential(
+WebPaymentsWebDataService::AddSecurePaymentConfirmationCredential(
     std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     WebDataServiceConsumer* consumer) {
   DCHECK(credential);
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::
+      base::BindOnce(&WebPaymentsWebDataService::
                          AddSecurePaymentConfirmationCredentialImpl,
                      this, std::move(credential)),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::AddSecurePaymentConfirmationCredentialImpl(
+WebPaymentsWebDataService::AddSecurePaymentConfirmationCredentialImpl(
     std::unique_ptr<SecurePaymentConfirmationCredential> credential,
     WebDatabase* db) {
   return std::make_unique<WDResult<bool>>(
@@ -135,13 +129,13 @@ PaymentManifestWebDataService::AddSecurePaymentConfirmationCredentialImpl(
 }
 
 WebDataServiceBase::Handle
-PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentials(
+WebPaymentsWebDataService::GetSecurePaymentConfirmationCredentials(
     std::vector<std::vector<uint8_t>> credential_ids,
     const std::string& relying_party_id,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::
+      base::BindOnce(&WebPaymentsWebDataService::
                          GetSecurePaymentConfirmationCredentialsImpl,
                      this, std::move(credential_ids),
                      std::move(relying_party_id)),
@@ -149,7 +143,7 @@ PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentials(
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentialsImpl(
+WebPaymentsWebDataService::GetSecurePaymentConfirmationCredentialsImpl(
     std::vector<std::vector<uint8_t>> credential_ids,
     const std::string& relying_party_id,
     WebDatabase* db) {
@@ -161,22 +155,21 @@ PaymentManifestWebDataService::GetSecurePaymentConfirmationCredentialsImpl(
               std::move(credential_ids), std::move(relying_party_id)));
 }
 
-WebDataServiceBase::Handle PaymentManifestWebDataService::SetBrowserBoundKey(
+WebDataServiceBase::Handle WebPaymentsWebDataService::SetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     std::vector<uint8_t> browser_bound_key_id,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::SetBrowserBoundKeyImpl,
-                     this, std::move(credential_id),
-                     std::move(relying_party_id),
+      base::BindOnce(&WebPaymentsWebDataService::SetBrowserBoundKeyImpl, this,
+                     std::move(credential_id), std::move(relying_party_id),
                      std::move(browser_bound_key_id)),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::SetBrowserBoundKeyImpl(
+WebPaymentsWebDataService::SetBrowserBoundKeyImpl(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     std::vector<uint8_t> browser_bound_key_id,
@@ -187,20 +180,19 @@ PaymentManifestWebDataService::SetBrowserBoundKeyImpl(
                        std::move(browser_bound_key_id)));
 }
 
-WebDataServiceBase::Handle PaymentManifestWebDataService::GetBrowserBoundKey(
+WebDataServiceBase::Handle WebPaymentsWebDataService::GetBrowserBoundKey(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     WebDataServiceConsumer* consumer) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::GetBrowserBoundKeyImpl,
-                     this, std::move(credential_id),
-                     std::move(relying_party_id)),
+      base::BindOnce(&WebPaymentsWebDataService::GetBrowserBoundKeyImpl, this,
+                     std::move(credential_id), std::move(relying_party_id)),
       consumer);
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetBrowserBoundKeyImpl(
+WebPaymentsWebDataService::GetBrowserBoundKeyImpl(
     std::vector<uint8_t> credential_id,
     std::string relying_party_id,
     WebDatabase* db) {
@@ -210,34 +202,33 @@ PaymentManifestWebDataService::GetBrowserBoundKeyImpl(
           std::move(credential_id), std::move(relying_party_id)));
 }
 
-WebDataServiceBase::Handle
-PaymentManifestWebDataService::GetAllBrowserBoundKeys(
+WebDataServiceBase::Handle WebPaymentsWebDataService::GetAllBrowserBoundKeys(
     WebDataServiceRequestCallback callback) {
   return wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::GetAllBrowserBoundKeysImpl,
+      base::BindOnce(&WebPaymentsWebDataService::GetAllBrowserBoundKeysImpl,
                      this),
       std::move(callback));
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::GetAllBrowserBoundKeysImpl(WebDatabase* db) {
+WebPaymentsWebDataService::GetAllBrowserBoundKeysImpl(WebDatabase* db) {
   return std::make_unique<WDResult<std::vector<BrowserBoundKeyMetadata>>>(
       BROWSER_BOUND_KEY_METADATA,
       WebPaymentsTable::FromWebDatabase(db)->GetAllBrowserBoundKeys());
 }
 
-void PaymentManifestWebDataService::DeleteBrowserBoundKeys(
+void WebPaymentsWebDataService::DeleteBrowserBoundKeys(
     std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId> passkeys,
     base::OnceClosure callback) {
   wdbs_->ScheduleDBTask(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::DeleteBrowserBoundKeysImpl,
+      base::BindOnce(&WebPaymentsWebDataService::DeleteBrowserBoundKeysImpl,
                      this, std::move(passkeys),
                      base::BindPostTaskToCurrentDefault(std::move(callback))));
 }
 
-WebDatabase::State PaymentManifestWebDataService::DeleteBrowserBoundKeysImpl(
+WebDatabase::State WebPaymentsWebDataService::DeleteBrowserBoundKeysImpl(
     std::vector<BrowserBoundKeyMetadata::RelyingPartyAndCredentialId> passkeys,
     base::OnceClosure callback,
     WebDatabase* db) {
@@ -251,13 +242,13 @@ WebDatabase::State PaymentManifestWebDataService::DeleteBrowserBoundKeysImpl(
   return WebDatabase::State::COMMIT_NOT_NEEDED;
 }
 
-void PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentials(
+void WebPaymentsWebDataService::ClearSecurePaymentConfirmationCredentials(
     base::Time begin,
     base::Time end,
     base::OnceClosure callback) {
   WebDataServiceBase::Handle handle = wdbs_->ScheduleDBTaskWithResult(
       FROM_HERE,
-      base::BindOnce(&PaymentManifestWebDataService::
+      base::BindOnce(&WebPaymentsWebDataService::
                          ClearSecurePaymentConfirmationCredentialsImpl,
                      this, begin, end),
       this);
@@ -265,7 +256,7 @@ void PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentials(
 }
 
 std::unique_ptr<WDTypedResult>
-PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentialsImpl(
+WebPaymentsWebDataService::ClearSecurePaymentConfirmationCredentialsImpl(
     base::Time begin,
     base::Time end,
     WebDatabase* db) {
@@ -274,17 +265,18 @@ PaymentManifestWebDataService::ClearSecurePaymentConfirmationCredentialsImpl(
                        ->ClearSecurePaymentConfirmationCredentials(begin, end));
 }
 
-void PaymentManifestWebDataService::OnWebDataServiceRequestDone(
+void WebPaymentsWebDataService::OnWebDataServiceRequestDone(
     WebDataServiceBase::Handle h,
     std::unique_ptr<WDTypedResult> result) {
   if (clearing_credentials_requests_.find(h) ==
-      clearing_credentials_requests_.end())
+      clearing_credentials_requests_.end()) {
     return;
+  }
 
   std::move(clearing_credentials_requests_[h]).Run();
 }
 
-void PaymentManifestWebDataService::RemoveExpiredData(WebDatabase* db) {
+void WebPaymentsWebDataService::RemoveExpiredData(WebDatabase* db) {
   WebAppManifestSectionTable::FromWebDatabase(db)->RemoveExpiredData();
   WebPaymentsTable::FromWebDatabase(db)->RemoveExpiredData();
 }

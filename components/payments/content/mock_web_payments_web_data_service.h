@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_MOCK_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
-#define COMPONENTS_PAYMENTS_CONTENT_MOCK_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_MOCK_WEB_PAYMENTS_WEB_DATA_SERVICE_H_
+#define COMPONENTS_PAYMENTS_CONTENT_MOCK_WEB_PAYMENTS_WEB_DATA_SERVICE_H_
 
 #include "base/time/time.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/webdata/common/web_database_service.h"
 #include "components/webdata_services/web_data_service_wrapper.h"
 #include "components/webdata_services/web_data_service_wrapper_factory.h"
@@ -15,9 +15,9 @@
 
 namespace payments {
 
-class MockPaymentManifestWebDataService : public PaymentManifestWebDataService {
+class MockWebPaymentsWebDataService : public WebPaymentsWebDataService {
  public:
-  MockPaymentManifestWebDataService();
+  MockWebPaymentsWebDataService();
 
   MOCK_METHOD(WebDataServiceBase::Handle,
               GetSecurePaymentConfirmationCredentials,
@@ -54,14 +54,14 @@ class MockPaymentManifestWebDataService : public PaymentManifestWebDataService {
               (override));
 
  protected:
-  ~MockPaymentManifestWebDataService() override;
+  ~MockWebPaymentsWebDataService() override;
 };
 
 class MockWebDataServiceWrapper : public WebDataServiceWrapper {
  public:
   MockWebDataServiceWrapper();
-  MOCK_METHOD(scoped_refptr<PaymentManifestWebDataService>,
-              GetPaymentManifestWebData,
+  MOCK_METHOD(scoped_refptr<WebPaymentsWebDataService>,
+              GetWebPaymentsWebData,
               (),
               ());
   MOCK_METHOD(void, Shutdown, (), (override));
@@ -71,4 +71,4 @@ class MockWebDataServiceWrapper : public WebDataServiceWrapper {
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_MOCK_PAYMENT_MANIFEST_WEB_DATA_SERVICE_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_MOCK_WEB_PAYMENTS_WEB_DATA_SERVICE_H_

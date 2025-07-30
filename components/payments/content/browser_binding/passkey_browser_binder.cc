@@ -20,7 +20,7 @@
 #include "components/payments/content/browser_binding/browser_bound_key.h"
 #include "components/payments/content/browser_binding/browser_bound_key_metadata.h"
 #include "components/payments/content/browser_binding/browser_bound_key_store.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/secure_payment_confirmation_metrics.h"
 #include "components/webdata/common/web_data_results.h"
 #include "crypto/random.h"
@@ -126,7 +126,7 @@ static void FindDeletedPasskeys(
 
 PasskeyBrowserBinder::PasskeyBrowserBinder(
     scoped_refptr<BrowserBoundKeyStore> key_store,
-    scoped_refptr<PaymentManifestWebDataService> web_data_service)
+    scoped_refptr<WebPaymentsWebDataService> web_data_service)
     : key_store_(std::move(key_store)),
       web_data_service_(std::move(web_data_service)),
       random_bytes_as_vector_callback_(
@@ -297,8 +297,7 @@ PasskeyBrowserBinder::GetBrowserBoundKeyStoreForTesting() {
   return key_store_.get();
 }
 
-PaymentManifestWebDataService*
-PasskeyBrowserBinder::GetWebDataServiceForTesting() {
+WebPaymentsWebDataService* PasskeyBrowserBinder::GetWebDataServiceForTesting() {
   return web_data_service_.get();
 }
 

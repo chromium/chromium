@@ -36,7 +36,7 @@ namespace payments {
 
 class PaymentManifestDownloader;
 class PaymentManifestParser;
-class PaymentManifestWebDataService;
+class WebPaymentsWebDataService;
 
 // Verifies that payment handlers (i.e., service worker payment apps) can use
 // the payment method names that they claim. Each object can be used to verify
@@ -75,7 +75,7 @@ class ManifestVerifier final : public WebDataServiceConsumer {
                    content::WebContents* web_contents,
                    PaymentManifestDownloader* downloader,
                    PaymentManifestParser* parser,
-                   PaymentManifestWebDataService* cache);
+                   WebPaymentsWebDataService* cache);
 
   ManifestVerifier(const ManifestVerifier&) = delete;
   ManifestVerifier& operator=(const ManifestVerifier&) = delete;
@@ -121,7 +121,7 @@ class ManifestVerifier final : public WebDataServiceConsumer {
   raw_ptr<PaymentManifestParser, DanglingUntriaged> parser_;
 
   // Caches the manifests.
-  raw_ptr<PaymentManifestWebDataService> cache_;
+  raw_ptr<WebPaymentsWebDataService> cache_;
 
   // The list of payment apps being verified.
   content::InstalledPaymentAppsFinder::PaymentApps apps_;

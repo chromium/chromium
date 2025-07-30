@@ -42,9 +42,9 @@
 #include "components/webdata/common/webdata_constants.h"
 
 #if BUILDFLAG(USE_BLINK)
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/web_app_manifest_section_table.h"
 #include "components/payments/content/web_payments_table.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #endif
 
 namespace {
@@ -180,10 +180,10 @@ WebDataServiceWrapper::WebDataServiceWrapper(
       base::BindOnce(show_error_callback, ERROR_LOADING_TOKEN));
 
 #if BUILDFLAG(USE_BLINK)
-  payment_manifest_web_data_ =
-      base::MakeRefCounted<payments::PaymentManifestWebDataService>(
+  web_payments_web_data_ =
+      base::MakeRefCounted<payments::WebPaymentsWebDataService>(
           profile_database_, ui_task_runner);
-  payment_manifest_web_data_->Init(
+  web_payments_web_data_->Init(
       base::BindOnce(show_error_callback, ERROR_LOADING_PAYMENT_MANIFEST));
 #endif
 
@@ -266,7 +266,7 @@ void WebDataServiceWrapper::Shutdown() {
   token_web_data_->ShutdownOnUISequence();
 
 #if BUILDFLAG(USE_BLINK)
-  payment_manifest_web_data_->ShutdownOnUISequence();
+  web_payments_web_data_->ShutdownOnUISequence();
 #endif
 
   profile_database_->ShutdownDatabase();
@@ -298,8 +298,8 @@ scoped_refptr<TokenWebData> WebDataServiceWrapper::GetTokenWebData() {
 }
 
 #if BUILDFLAG(USE_BLINK)
-scoped_refptr<payments::PaymentManifestWebDataService>
-WebDataServiceWrapper::GetPaymentManifestWebData() {
-  return payment_manifest_web_data_;
+scoped_refptr<payments::WebPaymentsWebDataService>
+WebDataServiceWrapper::GetWebPaymentsWebData() {
+  return web_payments_web_data_;
 }
 #endif

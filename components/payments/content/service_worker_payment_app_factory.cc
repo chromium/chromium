@@ -13,9 +13,9 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/payments/content/developer_console_logger.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
 #include "components/payments/content/service_worker_payment_app.h"
 #include "components/payments/content/service_worker_payment_app_finder.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 #include "components/payments/core/error_message_util.h"
 #include "components/payments/core/features.h"
 #include "components/payments/core/method_strings.h"
@@ -183,7 +183,7 @@ void ServiceWorkerPaymentAppFactory::Create(base::WeakPtr<Delegate> delegate) {
   ServiceWorkerPaymentAppFinder::GetOrCreateForCurrentDocument(rfh)
       ->GetAllPaymentApps(
           delegate->GetFrameSecurityOrigin(),
-          delegate->GetPaymentManifestWebDataService(),
+          delegate->GetWebPaymentsWebDataService(),
           mojo::Clone(delegate->GetMethodData()), delegate->GetCSPChecker(),
           base::BindOnce(&ServiceWorkerPaymentAppCreator::CreatePaymentApps,
                          creator_->GetWeakPtr()),

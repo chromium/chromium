@@ -7,14 +7,14 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/payments/content/payment_manifest_web_data_service.h"
+#include "components/payments/content/web_payments_web_data_service.h"
 
 namespace payments {
 
 class BrowserBoundKeyDeleter : public KeyedService {
  public:
   explicit BrowserBoundKeyDeleter(
-      scoped_refptr<PaymentManifestWebDataService> web_data_service);
+      scoped_refptr<WebPaymentsWebDataService> web_data_service);
 
   // Non-copyable
   BrowserBoundKeyDeleter(const BrowserBoundKeyDeleter&) = delete;
@@ -31,7 +31,7 @@ class BrowserBoundKeyDeleter : public KeyedService {
   virtual void RemoveInvalidBBKs();
 
  private:
-  scoped_refptr<PaymentManifestWebDataService> web_data_service_;
+  scoped_refptr<WebPaymentsWebDataService> web_data_service_;
 };
 
 }  // namespace payments
