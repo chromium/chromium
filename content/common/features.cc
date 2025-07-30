@@ -321,6 +321,93 @@ BASE_FEATURE(kKeepChildProcessAfterIPCReset,
              "KeepChildProcessAfterIPCReset",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables Local Network Access checks for all types of web workers.
+//
+// The exact checks run are the same as for other document subresources, and
+// depends on the state of the main Local Network Access feature flags
+//`kLocalNetworkAccessChecks`.
+BASE_FEATURE(kLocalNetworkAccessForWorkers,
+             "LocalNetworkAccessForWorkers",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks in warning mode for all types of web
+// workers.
+//
+// Does nothing if `kLocalNetworkAccessForWorkers` is disabled.
+//
+// If both this and `kLocalNetworkAccessChecksForWorkers` are enabled, then LNA
+// requests for workers do not require a permission, but simply display a
+// warning in DevTools.
+BASE_FEATURE(kLocalNetworkAccessForWorkersWarningOnly,
+             "LocalNetworkAccessForWorkersWarningOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks for main frame navigations.
+//
+// The exact checks run are the same as for other document subresources, and
+// depends on the state of the main Local Network Access feature flags
+//`kLocalNetworkAccessChecks`.
+BASE_FEATURE(kLocalNetworkAccessForNavigations,
+             "LocalNetworkAccessForNavigations",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks in warning mode for main frame
+// navigations.
+//
+// Does nothing if `kLocalNetworkAccessForNavigations` is disabled.
+//
+// If both this and `kLocalNetworkAccessChecksForNavigations` are enabled, then
+// main frame navigations that qualify as LNA requests do not require a
+// permission, but simply display a warning in DevTools.
+BASE_FEATURE(kLocalNetworkAccessForNavigationsWarningOnly,
+             "LocalNetworkAccessForNavigationsWarningOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks for subframe navigations.
+//
+// The exact checks run are the same as for other document subresources, and
+// depends on the state of the main Local Network Access feature flags
+//`kLocalNetworkAccessChecks`.
+BASE_FEATURE(kLocalNetworkAccessForSubframeNavigations,
+             "LocalNetworkAccessForSubframeNavigations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks in warning mode for subframe navigations.
+//
+// Does nothing if `kLocalNetworkAccessForSubframeNavigations` is disabled.
+//
+// If both this and `kLocalNetworkAccessChecksForSubframeNavigations` are
+// enabled, then subframe navigations that qualify as LNA requests do not
+// require a permission, but simply display a warning in DevTools.
+BASE_FEATURE(kLocalNetworkAccessForSubframeNavigationsWarningOnly,
+             "LocalNetworkAccessForSubframeNavigationsWarningOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks for subframe navigations.
+//
+// The same checks are run as for other document subresources, and depends on
+// the state of the main Local Network Access feature flags
+//`kLocalNetworkAccessChecks`, however when enabled these navigations are
+// blocked without triggering a permission prompt.
+//
+// See crbug.com/409303581 for more discussion of Fenced Frames and LNA.
+BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigations,
+             "LocalNetworkAccessForFencedFrameNavigations",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Enables Local Network Access checks in warning mode for fenced frame
+// navigations.
+//
+// Does nothing if `kLocalNetworkAccessForFencedFrameNavigations`
+// is disabled.
+//
+// If both this and `kLocalNetworkAccessChecksForFencedFrameNavigations` are
+// enabled, then fenced frame navigations that qualify as LNA requests are not
+// blocked, but simply display a warning in DevTools.
+BASE_FEATURE(kLocalNetworkAccessForFencedFrameNavigationsWarningOnly,
+             "LocalNetworkAccessForFencedFrameNavigationsWarningOnly",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If this feature is enabled, media-device enumerations use a cache that is
 // invalidated upon notifications sent by base::SystemMonitor. If disabled, the
 // cache is considered invalid on every enumeration request.

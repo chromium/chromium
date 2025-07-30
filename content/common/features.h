@@ -102,6 +102,20 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kInterestGroupUpdateIfOlderThan);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kIOSurfaceCapturer);
 #endif
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kKeepChildProcessAfterIPCReset);
+
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLocalNetworkAccessForWorkers);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLocalNetworkAccessForWorkersWarningOnly);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLocalNetworkAccessForNavigations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kLocalNetworkAccessForNavigationsWarningOnly);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kLocalNetworkAccessForSubframeNavigations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kLocalNetworkAccessForSubframeNavigationsWarningOnly);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kLocalNetworkAccessForFencedFrameNavigations);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(
+    kLocalNetworkAccessForFencedFrameNavigationsWarningOnly);
+
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaDevicesSystemMonitorCache);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMediaStreamTrackTransfer);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kMojoDedicatedThread);

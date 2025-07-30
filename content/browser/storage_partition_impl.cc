@@ -2183,10 +2183,10 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
   //      state, and if the state is ASK trigger the permission prompt. These
   //      should also handle being delegated into subframe documents.
   //   2. Navigation context (ContextType::kNavigationRequestContext) covers
-  //      subframe navigations. These should check for existing permission
-  //      state, and if the state is ASK trigger the permission prompt. Nested
-  //      subframes should be allowed iff permission policy delegated the
-  //      permission into the embedding frame.
+  //      all navigations. If the navigation is in a subframe, these should
+  //      check for existing permission state, and if the state is ASK trigger
+  //      the permission prompt. Nested subframes should be allowed iff
+  //      permission policy delegated the permission into the embedding frame.
   //   3. Worker context (ContextType::kServiceWorkerContext) covers requests
   //      from workers. These may not have an existing document around. These
   //      should check for the permission state, but NOT trigger the permission
@@ -2207,10 +2207,51 @@ void StoragePartitionImpl::OnLocalNetworkAccessPermissionRequired(
       // Get the document that is making the request.
       rfh = context.navigation_or_document()->GetDocument();
     } else if (context.navigation_or_document()->GetNavigationRequest()) {
-      // Get the document that is embedding the frame being navigated.
-      rfh = context.navigation_or_document()
-                ->GetNavigationRequest()
-                ->GetParentFrameOrOuterDocument();
+      // Currently the LNA permission only applies to subframe navigations.
+      // See content/browser/renderer_host/private_network_access_util.cc for
+      // current feature state to policy mapping logic.
+      //
+      // For other types of navigation, we either default-allow or default-block
+      // local network requests:
+      //  - Primary main frame: default-allow.
+      //  - Guest view main frame: default-allow.
+      //  - Prerender: default-block.
+      //  - Fenced frame: default-block. (See crbug.com/409303581.)
+      auto* request = context.navigation_or_document()->GetNavigationRequest();
+      switch (request->GetNavigatingFrameType()) {
+        case FrameType::kPrimaryMainFrame:
+        case FrameType::kGuestMainFrame:
+          std::move(callback).Run(true);
+          return;
+        case FrameType::kFencedFrameRoot:
+        case FrameType::kPrerenderMainFrame:
+          std::move(callback).Run(false);
+          return;
+        case FrameType::kSubframe:
+          // Get the document that initiated the navigation. Can be nullptr if
+          // the initiator has gone away, in which case we should just block the
+          // navigation.
+          RenderFrameHost* initiating_rfh =
+              request->GetInitiatorFrameToken().has_value()
+                  ? RenderFrameHost::FromFrameToken(
+                        content::GlobalRenderFrameHostToken(
+                            request->GetInitiatorProcessId(),
+                            request->GetInitiatorFrameToken().value()))
+                  : nullptr;
+          // We additionally check that the initiator is a frame ancestor of the
+          // frame that is navigating, so that we don't try to pop up a
+          // permission prompt on a different tab/window than the one where the
+          // navigation is occurring.
+          RenderFrameHostImpl* current_frame = request->GetParentFrame();
+          while (current_frame) {
+            if (current_frame == initiating_rfh) {
+              rfh = initiating_rfh;
+              break;
+            }
+            current_frame = current_frame->GetParent();
+          }
+          break;
+      }
     }
     if (!rfh) {
       std::move(callback).Run(false);

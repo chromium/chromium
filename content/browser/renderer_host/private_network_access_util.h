@@ -19,7 +19,9 @@ struct PolicyContainerPolicies;
 enum class PrivateNetworkRequestContext {
   kSubresource,  // Subresource fetches initiated by documents.
   kWorker,  // Worker script fetches/updates or fetches within worker scripts.
-  kNavigation,  // Navigation fetches
+  kMainFrameNavigation,    // Main frame navigation fetches.
+  kSubframeNavigation,     // Subframe navigation fetches (e.g., iframe).
+  kFencedFrameNavigation,  // Navigation of a fenced frame.
 };
 
 // Returns the policy to use for private network requests fetched by a client
