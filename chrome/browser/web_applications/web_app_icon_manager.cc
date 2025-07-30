@@ -75,6 +75,10 @@ constexpr base::FilePath::CharType kIconsMaskableDirectoryName[] =
     FILE_PATH_LITERAL("Icons Maskable");
 constexpr base::FilePath::CharType kTrustedIconFolderName[] =
     FILE_PATH_LITERAL("Trusted Icons");
+constexpr base::FilePath::CharType kPendingTrustedIconFolderName[] =
+    FILE_PATH_LITERAL("Pending Trusted Icons");
+constexpr base::FilePath::CharType kPendingManifestIconFolderName[] =
+    FILE_PATH_LITERAL("Pending Manifest Icons");
 
 // This utility struct is to carry error logs between threads via return values.
 // If we weren't generating multithreaded errors we would just append the errors
@@ -119,36 +123,15 @@ struct IconId {
   SquareSizePx size;
 };
 
-// This is a private implementation detail of WebAppIconManager, where and how
-// to store icon files.
-// `app_manifest_resources_directory` is the path to the app-specific
-// subdirectory of the profile's manifest resources directory.
-base::FilePath GetProductIconsDirectory(
-    const base::FilePath& app_manifest_resources_directory,
-    IconPurpose purpose) {
+base::FilePath GetRelativeDirectoryForPurpose(IconPurpose purpose) {
   switch (purpose) {
     case IconPurpose::ANY:
-      return app_manifest_resources_directory.Append(kIconsAnyDirectoryName);
+      return base::FilePath(kIconsAnyDirectoryName);
     case IconPurpose::MONOCHROME:
-      return app_manifest_resources_directory.Append(
-          kIconsMonochromeDirectoryName);
+      return base::FilePath(kIconsMonochromeDirectoryName);
     case IconPurpose::MASKABLE:
-      return app_manifest_resources_directory.Append(
-          kIconsMaskableDirectoryName);
+      return base::FilePath(kIconsMaskableDirectoryName);
   }
-}
-
-base::FilePath GetTrustedProductIconsDirectoryRelative(IconPurpose purpose) {
-  base::FilePath trusted_dir(kTrustedIconFolderName);
-  switch (purpose) {
-    case IconPurpose::ANY:
-      return trusted_dir.Append(kIconsAnyDirectoryName);
-    case IconPurpose::MONOCHROME:
-      return trusted_dir.Append(kIconsMonochromeDirectoryName);
-    case IconPurpose::MASKABLE:
-      return trusted_dir.Append(kIconsMaskableDirectoryName);
-  }
-  return trusted_dir;
 }
 
 // This is a private implementation detail of WebAppIconManager, where and how
@@ -207,8 +190,9 @@ base::FilePath GetTrustedIconsFileName(const base::FilePath& web_apps_directory,
                                        const IconId& icon_id) {
   base::FilePath app_dir =
       GetManifestResourcesDirectoryForApp(web_apps_directory, icon_id.app_id);
-  return app_dir
-      .Append(GetTrustedProductIconsDirectoryRelative(icon_id.purpose))
+  base::FilePath trusted_dir(kTrustedIconFolderName);
+  return app_dir.Append(trusted_dir)
+      .Append(GetRelativeDirectoryForPurpose(icon_id.purpose))
       .AppendASCII(base::StringPrintf("%i.png", icon_id.size));
 }
 
@@ -218,7 +202,8 @@ base::FilePath GetIconFileName(const base::FilePath& web_apps_directory,
                                const IconId& icon_id) {
   base::FilePath app_dir =
       GetManifestResourcesDirectoryForApp(web_apps_directory, icon_id.app_id);
-  base::FilePath icons_dir = GetProductIconsDirectory(app_dir, icon_id.purpose);
+  base::FilePath icons_dir =
+      app_dir.Append(GetRelativeDirectoryForPurpose(icon_id.purpose));
 
   return icons_dir.AppendASCII(base::StringPrintf("%i.png", icon_id.size));
 }
@@ -655,17 +640,21 @@ class WriteIconsJob {
  public:
   static TypedResult<bool> WriteIconsBlocking(
       scoped_refptr<FileUtilsWrapper> utils,
-      base::FilePath&& web_apps_directory,
-      webapps::AppId&& app_id,
-      IconBitmaps&& icon_bitmaps,
-      IconBitmaps&& trusted_icon_bitmaps,
-      ShortcutsMenuIconBitmaps&& shortcuts_menu_icon_bitmaps,
-      IconsMap&& other_icons) {
+      base::FilePath web_apps_directory,
+      webapps::AppId app_id,
+      IconBitmaps icon_bitmaps,
+      IconBitmaps trusted_icon_bitmaps,
+      IconBitmaps pending_trusted_icon_bitmaps,
+      IconBitmaps pending_manifest_icon_bitmaps,
+      ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps,
+      IconsMap other_icons) {
     TRACE_EVENT0("ui",
                  "web_app_icon_manager::WriteIconsJob::WriteIconsBlocking");
     WriteIconsJob job(
         std::move(utils), std::move(web_apps_directory), std::move(app_id),
         std::move(icon_bitmaps), std::move(trusted_icon_bitmaps),
+        std::move(pending_trusted_icon_bitmaps),
+        std::move(pending_manifest_icon_bitmaps),
         std::move(shortcuts_menu_icon_bitmaps), std::move(other_icons));
     return job.Execute();
   }
@@ -675,17 +664,22 @@ class WriteIconsJob {
 
  private:
   WriteIconsJob(scoped_refptr<FileUtilsWrapper> utils,
-                base::FilePath&& web_apps_directory,
-                webapps::AppId&& app_id,
-                IconBitmaps&& icon_bitmaps,
-                IconBitmaps&& trusted_icon_bitmaps,
-                ShortcutsMenuIconBitmaps&& shortcuts_menu_icon_bitmaps,
-                IconsMap&& other_icons)
+                base::FilePath web_apps_directory,
+                webapps::AppId app_id,
+                IconBitmaps icon_bitmaps,
+                IconBitmaps trusted_icon_bitmaps,
+                IconBitmaps pending_trusted_icon_bitmaps,
+                IconBitmaps pending_manifest_icon_bitmaps,
+                ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps,
+                IconsMap other_icons)
       : utils_(std::move(utils)),
         web_apps_directory_(std::move(web_apps_directory)),
         app_id_(std::move(app_id)),
         icon_bitmaps_(std::move(icon_bitmaps)),
         trusted_icon_bitmaps_(std::move(trusted_icon_bitmaps)),
+        pending_trusted_icon_bitmaps_(std::move(pending_trusted_icon_bitmaps)),
+        pending_manifest_icon_bitmaps_(
+            std::move(pending_manifest_icon_bitmaps)),
         shortcuts_menu_icon_bitmaps_(std::move(shortcuts_menu_icon_bitmaps)),
         other_icons_(std::move(other_icons)) {}
   ~WriteIconsJob() = default;
@@ -694,17 +688,39 @@ class WriteIconsJob {
     TRACE_EVENT0("ui", "web_app_icon_manager::WriteIconsJob::Execute");
     // Write product icons directly in the app's directory.
     auto result = AtomicallyWriteIcons(
-        base::BindRepeating(&WriteIconsJob::WriteProductIcons,
-                            base::Unretained(this)),
+        base::BindRepeating(&WriteIconsJob::WriteIcons, base::Unretained(this),
+                            icon_bitmaps_),
         /*subdir_for_icons=*/{});
     if (result.HasErrors())
       return result;
 
     if (!trusted_icon_bitmaps_.empty()) {
       result = AtomicallyWriteIcons(
-          base::BindRepeating(&WriteIconsJob::WriteTrustedIcons,
-                              base::Unretained(this)),
+          base::BindRepeating(&WriteIconsJob::WriteIcons,
+                              base::Unretained(this), trusted_icon_bitmaps_),
           /*subdir_for_icons=*/base::FilePath(kTrustedIconFolderName));
+      if (result.HasErrors()) {
+        return result;
+      }
+    }
+
+    if (!pending_trusted_icon_bitmaps_.empty()) {
+      result = AtomicallyWriteIcons(
+          base::BindRepeating(&WriteIconsJob::WriteIcons,
+                              base::Unretained(this),
+                              pending_trusted_icon_bitmaps_),
+          /*subdir_for_icons=*/base::FilePath(kPendingTrustedIconFolderName));
+      if (result.HasErrors()) {
+        return result;
+      }
+    }
+
+    if (!pending_manifest_icon_bitmaps_.empty()) {
+      result = AtomicallyWriteIcons(
+          base::BindRepeating(&WriteIconsJob::WriteIcons,
+                              base::Unretained(this),
+                              pending_manifest_icon_bitmaps_),
+          /*subdir_for_icons=*/base::FilePath(kPendingManifestIconFolderName));
       if (result.HasErrors()) {
         return result;
       }
@@ -741,8 +757,9 @@ class WriteIconsJob {
   // holds all the data written by `write_icons_callback`. The path is relative
   // to the app's manifest resources directory.
   TypedResult<bool> AtomicallyWriteIcons(
-      const base::RepeatingCallback<
-          TypedResult<bool>(const base::FilePath& path)>& write_icons_callback,
+      const base::RepeatingCallback<TypedResult<bool>(
+          const base::FilePath& path,
+          const base::FilePath& subdir_path)>& write_icons_callback,
       const base::FilePath& subdir_for_icons) {
     TRACE_EVENT0("ui",
                  "web_app_icon_manager::WriteIconsJob::AtomicallyWriteIcons");
@@ -769,7 +786,7 @@ class WriteIconsJob {
       return create_result;
 
     TypedResult<bool> write_result =
-        write_icons_callback.Run(app_temp_dir.GetPath());
+        write_icons_callback.Run(app_temp_dir.GetPath(), subdir_for_icons);
     if (write_result.HasErrors())
       return write_result;
 
@@ -800,35 +817,14 @@ class WriteIconsJob {
     return {.value = true};
   }
 
-  TypedResult<bool> WriteProductIcons(const base::FilePath& base_dir) {
-    TRACE_EVENT0("ui",
-                 "web_app_icon_manager::WriteIconsJob::WriteProductIcons");
-    for (IconPurpose purpose : kIconPurposes) {
-      base::FilePath icons_dir = GetProductIconsDirectory(base_dir, purpose);
-
-      auto create_result = CreateDirectory(icons_dir);
-      if (create_result.HasErrors())
-        return create_result;
-
-      for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
-           icon_bitmaps_.GetBitmapsForPurpose(purpose)) {
-        TypedResult<bool> write_result =
-            EncodeAndWriteIcon(icons_dir, icon_bitmap.second);
-        if (write_result.HasErrors()) {
-          return write_result;
-        }
-      }
-    }
-
-    return {.value = true};
-  }
-
-  TypedResult<bool> WriteTrustedIcons(const base::FilePath& base_dir) {
-    TRACE_EVENT0("ui",
-                 "web_app_icon_manager::WriteIconsJob::WriteTrustedIcons");
+  TypedResult<bool> WriteIcons(const IconBitmaps& icon_bitmaps,
+                               const base::FilePath& base_dir,
+                               const base::FilePath& subdir_for_icons) {
+    TRACE_EVENT0("ui", "web_app_icon_manager::WriteIconsJob::WriteIcons");
     for (IconPurpose purpose : kIconPurposes) {
       base::FilePath icons_dir =
-          base_dir.Append(GetTrustedProductIconsDirectoryRelative(purpose));
+          base_dir.Append(subdir_for_icons)
+              .Append(GetRelativeDirectoryForPurpose(purpose));
 
       auto create_result = CreateDirectory(icons_dir);
       if (create_result.HasErrors()) {
@@ -836,7 +832,7 @@ class WriteIconsJob {
       }
 
       for (const std::pair<const SquareSizePx, SkBitmap>& icon_bitmap :
-           trusted_icon_bitmaps_.GetBitmapsForPurpose(purpose)) {
+           icon_bitmaps.GetBitmapsForPurpose(purpose)) {
         TypedResult<bool> write_result =
             EncodeAndWriteIcon(icons_dir, icon_bitmap.second);
         if (write_result.HasErrors()) {
@@ -844,14 +840,14 @@ class WriteIconsJob {
         }
       }
     }
-
     return {.value = true};
   }
 
   // Writes shortcuts menu icons files to the Shortcut Icons directory. Creates
   // a new directory per shortcut item using its index in the vector.
   TypedResult<bool> WriteShortcutsMenuIcons(
-      const base::FilePath& app_manifest_resources_directory) {
+      const base::FilePath& app_manifest_resources_directory,
+      const base::FilePath&) {
     TRACE_EVENT0(
         "ui", "web_app_icon_manager::WriteIconsJob::WriteShortcutsMenuIcons");
     for (IconPurpose purpose : kIconPurposes) {
@@ -890,11 +886,11 @@ class WriteIconsJob {
   }
 
   TypedResult<bool> WriteOtherIcons(
-      const base::FilePath& app_manifest_resources_directory) {
+      const base::FilePath& app_manifest_resources_directory,
+      const base::FilePath& subdir_path) {
     TRACE_EVENT0("ui", "web_app_icon_manager::WriteIconsJob::WriteOtherIcons");
     const base::FilePath general_icons_dir =
-        app_manifest_resources_directory.Append(
-            GetOtherIconsRelativeDirectory());
+        app_manifest_resources_directory.Append(subdir_path);
     auto create_result = CreateDirectory(general_icons_dir);
     if (create_result.HasErrors())
       return create_result;
@@ -958,6 +954,8 @@ class WriteIconsJob {
   webapps::AppId app_id_;
   IconBitmaps icon_bitmaps_;
   IconBitmaps trusted_icon_bitmaps_;
+  IconBitmaps pending_trusted_icon_bitmaps_;
+  IconBitmaps pending_manifest_icon_bitmaps_;
   ShortcutsMenuIconBitmaps shortcuts_menu_icon_bitmaps_;
   SkBitmap home_tab_icon_bitmap_;
   IconsMap other_icons_;
@@ -1003,8 +1001,28 @@ void WebAppIconManager::WriteData(
       base::BindOnce(
           &WriteIconsJob::WriteIconsBlocking, provider_->file_utils(),
           web_apps_directory_, std::move(app_id), std::move(icon_bitmaps),
-          std::move(trusted_icon_bitmaps),
+          std::move(trusted_icon_bitmaps), IconBitmaps{}, IconBitmaps{},
           std::move(shortcuts_menu_icon_bitmaps), std::move(other_icons_map)),
+      base::BindOnce(&LogErrorsCallCallback<bool>, GetWeakPtr(),
+                     std::move(callback)));
+}
+
+void WebAppIconManager::WritePendingIconData(
+    webapps::AppId app_id,
+    IconBitmaps pending_trusted_icon_bitmaps,
+    IconBitmaps pending_manifest_icon_bitmaps,
+    WriteDataCallback callback) {
+  TRACE_EVENT0("ui", "WebAppIconManager::WriteData");
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  icon_task_runner_->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&WriteIconsJob::WriteIconsBlocking,
+                     provider_->file_utils(), web_apps_directory_,
+                     std::move(app_id), IconBitmaps{}, IconBitmaps{},
+                     std::move(pending_trusted_icon_bitmaps),
+                     std::move(pending_manifest_icon_bitmaps),
+                     ShortcutsMenuIconBitmaps{}, IconsMap{}),
       base::BindOnce(&LogErrorsCallCallback<bool>, GetWeakPtr(),
                      std::move(callback)));
 }

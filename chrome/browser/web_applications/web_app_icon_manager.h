@@ -64,6 +64,12 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
                  ShortcutsMenuIconBitmaps shortcuts_menu_icons,
                  IconsMap other_icons_map,
                  WriteDataCallback callback);
+
+  // Writes pending icon bitmaps for an app.
+  void WritePendingIconData(webapps::AppId app_id,
+                            IconBitmaps pending_trusted_icon_bitmaps,
+                            IconBitmaps pending_manifest_icon_bitmaps,
+                            WriteDataCallback callback);
   void DeleteData(webapps::AppId app_id, WriteDataCallback callback);
 
   void SetProvider(base::PassKey<WebAppProvider>, WebAppProvider& provider);
