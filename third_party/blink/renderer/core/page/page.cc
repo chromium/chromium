@@ -1026,9 +1026,7 @@ void Page::SetMaxSafeAreaInsets(LocalFrame* setter, gfx::Insets max_safe_area) {
     applied_safe_area_insets_ = scaled_max_safe_area_insets_;
     SetSafeAreaEnvVariables(setter, scaled_max_safe_area_insets_);
   }
-  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
-    SetSafeAreaMaxEnvVariables(setter, scaled_max_safe_area_insets_);
-  }
+  SetSafeAreaMaxEnvVariables(setter, scaled_max_safe_area_insets_);
 }
 
 void Page::SettingsChanged(ChangeType change_type) {

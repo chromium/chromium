@@ -1049,7 +1049,6 @@ TEST_F(BrowserControlsTest, MAYBE(StateUpdateRecomputesSafeAreaInset)) {
 
 TEST_F(BrowserControlsTest, MAYBE(SafeAreaMaxInsetVars)) {
   ScopedDynamicSafeAreaInsetsForTest dynamic_safe_area_insets(true);
-  ScopedCSSSafeAreaMaxInsetForTest safe_area_max_inset(true);
 
   WebViewImpl* web_view = Initialize();
   web_view->GetSettings()->SetDynamicSafeAreaInsetsEnabled(true);

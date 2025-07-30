@@ -28,16 +28,14 @@ void SetDefaultEnvironmentVariables(StyleEnvironmentVariables* instance) {
                         kSafeAreaInsetDefault);
   instance->SetVariable(UADefinedVariable::kSafeAreaInsetRight,
                         kSafeAreaInsetDefault);
-  if (RuntimeEnabledFeatures::CSSSafeAreaMaxInsetEnabled()) {
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetTop,
-                          kSafeAreaInsetDefault);
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetLeft,
-                          kSafeAreaInsetDefault);
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetBottom,
-                          kSafeAreaInsetDefault);
-    instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetRight,
-                          kSafeAreaInsetDefault);
-  }
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetTop,
+                        kSafeAreaInsetDefault);
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetLeft,
+                        kSafeAreaInsetDefault);
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetBottom,
+                        kSafeAreaInsetDefault);
+  instance->SetVariable(UADefinedVariable::kSafeAreaMaxInsetRight,
+                        kSafeAreaInsetDefault);
   instance->SetVariable(UADefinedVariable::kKeyboardInsetTop,
                         kKeyboardInsetDefault);
   instance->SetVariable(UADefinedVariable::kKeyboardInsetLeft,

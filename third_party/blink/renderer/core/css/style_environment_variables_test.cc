@@ -330,7 +330,6 @@ TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_Change) {
 }
 
 TEST_F(StyleEnvironmentVariablesTest, GlobalVariable_DefaultsPresent) {
-  ScopedCSSSafeAreaMaxInsetForTest scoped_feature(true);
   // Reinitialize after updating feature state.
   ClearRootInstance();
 
