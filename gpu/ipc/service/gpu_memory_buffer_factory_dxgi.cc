@@ -91,12 +91,9 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
 }
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(
-    const gfx::Size& size,
-    const gfx::Size& framebuffer_size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    SurfaceHandle surface_handle) {
+GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(const gfx::Size& size,
+                                                      gfx::BufferFormat format,
+                                                      gfx::BufferUsage usage) {
   DCHECK(io_runner_);
 
   gfx::GpuMemoryBufferHandle result;
@@ -108,15 +105,13 @@ GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(
           [](gfx::GpuMemoryBufferHandle* out_gmb_handle,
              base::WaitableEvent* waitable_event,
              GpuMemoryBufferFactoryDXGI* factory, const gfx::Size& size,
-             const gfx::Size& framebuffer_size, gfx::BufferFormat format,
-             gfx::BufferUsage usage, SurfaceHandle surface_handle) {
-            *out_gmb_handle = factory->CreateGpuMemoryBuffer(
-                size, framebuffer_size, format, usage, surface_handle);
+             gfx::BufferFormat format, gfx::BufferUsage usage) {
+            *out_gmb_handle =
+                factory->CreateGpuMemoryBuffer(size, format, usage);
 
             waitable_event->Signal();
           },
-          &result, &event, this, size, framebuffer_size, format, usage,
-          surface_handle));
+          &result, &event, this, size, format, usage));
 
   event.Wait();
 
@@ -125,18 +120,14 @@ GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
     const gfx::Size& size,
-    const gfx::Size& framebuffer_size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    SurfaceHandle surface_handle) {
+    gfx::BufferUsage usage) {
   if (io_runner_ && !io_runner_->BelongsToCurrentThread()) {
     // Thread-hop is required!
-    return CreateGpuMemoryBufferOnIO(size, framebuffer_size, format, usage,
-                                     surface_handle);
+    return CreateGpuMemoryBufferOnIO(size, format, usage);
   }
 
   TRACE_EVENT0("gpu", "GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer");
-  DCHECK_EQ(framebuffer_size, size);
 
   gfx::GpuMemoryBufferHandle handle;
 

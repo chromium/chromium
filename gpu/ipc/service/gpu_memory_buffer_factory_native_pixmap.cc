@@ -35,15 +35,13 @@ GpuMemoryBufferFactoryNativePixmap::~GpuMemoryBufferFactoryNativePixmap() =
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
     const gfx::Size& size,
-    const gfx::Size& framebuffer_size,
     gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    SurfaceHandle surface_handle) {
+    gfx::BufferUsage usage) {
   scoped_refptr<gfx::NativePixmap> pixmap =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
-          ->CreateNativePixmap(surface_handle, GetVulkanDeviceQueue(), size,
-                               format, usage, framebuffer_size);
+          ->CreateNativePixmap(gpu::kNullSurfaceHandle, GetVulkanDeviceQueue(),
+                               size, format, usage, size);
   return CreateGpuMemoryBufferFromNativePixmap(size, format, usage,
                                                std::move(pixmap));
 }

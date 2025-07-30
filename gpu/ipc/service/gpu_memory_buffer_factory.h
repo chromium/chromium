@@ -49,10 +49,8 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
   // when creating a buffer for scanout using the Ozone/DRM backend).
   virtual gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
       const gfx::Size& size,
-      const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      SurfaceHandle surface_handle) = 0;
+      gfx::BufferUsage usage) = 0;
 
   // Fills |shared_memory| with the contents of the provided |buffer_handle|
   virtual bool FillSharedMemoryRegionWithBufferContents(

@@ -22,14 +22,9 @@ GpuMemoryBufferFactoryIOSurface::GpuMemoryBufferFactoryIOSurface() = default;
 GpuMemoryBufferFactoryIOSurface::~GpuMemoryBufferFactoryIOSurface() = default;
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(
-    const gfx::Size& size,
-    const gfx::Size& framebuffer_size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage,
-    SurfaceHandle surface_handle) {
-  DCHECK_EQ(framebuffer_size, size);
-
+GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(const gfx::Size& size,
+                                                       gfx::BufferFormat format,
+                                                       gfx::BufferUsage usage) {
   bool should_clear = true;
   base::apple::ScopedCFTypeRef<IOSurfaceRef> io_surface =
       gfx::CreateIOSurface(size, format, should_clear);

@@ -38,10 +38,8 @@ class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
   // GpuMemoryBufferFactory:
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
       const gfx::Size& size,
-      const gfx::Size& framebuffer_size,
       gfx::BufferFormat format,
-      gfx::BufferUsage usage,
-      SurfaceHandle surface_handle) override {
+      gfx::BufferUsage usage) override {
     return gfx::GpuMemoryBufferHandle();
   }
   bool FillSharedMemoryRegionWithBufferContents(
@@ -81,9 +79,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactory::CreateNativeGmbHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
-  auto handle = CreateGpuMemoryBuffer(size, /*framebuffer_size=*/size, format,
-                                      usage, gpu::kNullSurfaceHandle);
-  return handle;
+  return CreateGpuMemoryBuffer(size, format, usage);
 }
 
 }  // namespace gpu
