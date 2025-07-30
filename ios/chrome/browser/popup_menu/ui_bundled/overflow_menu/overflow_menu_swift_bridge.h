@@ -10,6 +10,7 @@
 
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_metrics_handler.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/material_timing.h"
 #import "ios/chrome/grit/ios_strings.h"
 
