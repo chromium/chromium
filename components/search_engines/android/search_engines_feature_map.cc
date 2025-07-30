@@ -21,7 +21,8 @@ namespace {
 // Array of features exposed through the Java BaseFeatureMap API. Entries in
 // this array refer to features defined in //search_engines features.
 const base::Feature* const kFeaturesExposedToJava[] = {
-    &switches::kClaySnackbar};
+    &switches::kClaySnackbar,
+    &switches::kSuppressDefaultBrowserPromoIfChoiceSet};
 
 // static
 base::android::FeatureMap* GetFeatureMap() {
