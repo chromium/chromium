@@ -125,6 +125,20 @@ public class EdgeToEdgeControllerFactory {
     }
 
     /**
+     * Creates an adjuster for padding to the view to account for edge-to-edge, relying on the
+     * EdgeToEdgeController for the bottom inset.
+     *
+     * @param view The view to be adjusted.
+     * @param edgeToEdgeController The {@link EdgeToEdgeController} for providing the appropriate
+     *     bottom inset.
+     */
+    public static EdgeToEdgePadAdjuster createForView(
+            View view, EdgeToEdgeController edgeToEdgeController) {
+        return new SimpleEdgeToEdgePadAdjuster(
+                view, edgeToEdgeController, EdgeToEdgeUtils.isDrawKeyNativePageToEdgeEnabled());
+    }
+
+    /**
      * Creates an adjuster for padding to the view to account for edge-to-edge, and observe the
      * supplier if edge to edge is enabled.
      *
