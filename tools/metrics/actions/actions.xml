@@ -50082,6 +50082,8 @@ should be able to be added at any place in this file.
       label="For iOSDefaultBrowserBadgeEligibility feature"/>
   <suffix name="iOSDefaultBrowserBannerPromoFeature"
       label="For iOS Default browser banner promo."/>
+  <suffix name="iOSDefaultBrowserOffCyclePromo"
+      label="For iOSDefaultBrowserOffCyclePromo feature"/>
   <suffix name="iOSDefaultBrowserOverflowMenuBadge"
       label="For iOSDefaultBrowserOverflowMenuBadge feature"/>
   <suffix name="iOSDefaultBrowserSettingsBadge"

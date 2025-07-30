@@ -126,6 +126,18 @@
   }
 }
 
+// Register or deregister Default Browser off-cycle promo.
+- (void)updateOffCyclePromoRegistration {
+  if (IsDefaultBrowserOffCyclePromoEnabled() &&
+      !IsChromeLikelyDefaultBrowser()) {
+    self.promosManager->RegisterPromoForSingleDisplay(
+        promos_manager::Promo::DefaultBrowserOffCycle);
+  } else {
+    self.promosManager->DeregisterPromo(
+        promos_manager::Promo::DefaultBrowserOffCycle);
+  }
+}
+
 // Signed in users are eligible for generic default browser promo. Notify FET if
 // user is currently signed in.
 - (void)notifyFETSigninStatus {
@@ -288,6 +300,7 @@
     return;
   }
 
+  [self updateOffCyclePromoRegistration];
   [self updatePostRestorePromoRegistration];
   [self updatePostDefaultAbandonmentPromoRegistration];
   [self updateAllTabsPromoRegistration];

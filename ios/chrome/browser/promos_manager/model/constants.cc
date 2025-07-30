@@ -96,6 +96,10 @@ std::optional<Promo> PromoForName(std::string_view promo) {
     return promos_manager::Promo::SafariImportRemindMeLater;
   }
 
+  if (promo == "promos_manager::Promo::DefaultBrowserOffCycle") {
+    return promos_manager::Promo::DefaultBrowserOffCycle;
+  }
+
   return std::nullopt;
 }
 
@@ -143,6 +147,8 @@ std::string_view ShortNameForPromo(Promo promo) {
       return "BWGPromo";
     case promos_manager::Promo::SafariImportRemindMeLater:
       return "SafariImportRemindMeLater";
+    case promos_manager::Promo::DefaultBrowserOffCycle:
+      return "DefaultBrowserOffCycle";
   }
 }
 

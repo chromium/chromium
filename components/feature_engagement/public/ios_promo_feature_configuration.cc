@@ -89,6 +89,13 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
                                    feature_engagement::kMaxStoragePeriod);
     }
 
+    // The off-cycle promo should count as a generic promo impression,
+    // effectively putting it back on cooldown.
+    config.event_configs.insert(EventConfig(
+        "default_browser_off_cycle_promo_trigger", Comparator(EQUAL, 0),
+        feature_engagement::kDefaultBrowserEligibilitySlidingWindowParam.Get(),
+        feature_engagement::kMaxStoragePeriod));
+
     if (base::FeatureList::IsEnabled(
             kDefaultBrowserTriggerCriteriaExperiment)) {
       // Skip the regular conditions check for trigger criteria experiment and
@@ -510,6 +517,27 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     // non-contextual default browser promo. Thus, it should share cooldown
     // rules.
     config.groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    return config;
+  }
+
+  if (kIPHiOSDefaultBrowserOffCyclePromoFeature.name == feature->name) {
+    // A config for a feature to handle the off-cycle generic default browser
+    // promo.
+    std::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
+    config->storage_type = StorageType::DEVICE;
+
+    config->trigger =
+        EventConfig("default_browser_off_cycle_promo_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config->used =
+        EventConfig("default_browser_off_cycle_promo_used",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
     return config;
   }
 

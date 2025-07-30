@@ -276,6 +276,8 @@ chromium-metrics-reviews@google.com.
       summary="default browser badge promo eligibility tracking"/>
   <variant name="IPH_iOSDefaultBrowserBannerPromoFeature"
       summary="iOS Default browser banner promo"/>
+  <variant name="IPH_iOSDefaultBrowserOffCyclePromo"
+      summary="showing the Default Browser off-cycle Promo on iOS"/>
   <variant name="IPH_iOSDefaultBrowserOverflowMenuBadge"
       summary="default browser badge promo on the overflow menu"/>
   <variant name="IPH_iOSDefaultBrowserSettingsBadge"

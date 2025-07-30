@@ -31,6 +31,7 @@
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/features.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_default_abandonment/post_default_abandonment_promo_provider.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/post_restore/post_restore_default_browser_promo_provider.h"
+#import "ios/chrome/browser/default_promo/ui_bundled/promo_handler/default_browser_off_cycle_promo_display_handler.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/promo_handler/default_browser_promo_display_handler.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/promo_handler/default_browser_remind_me_later_promo_display_handler.h"
 #import "ios/chrome/browser/default_promo/ui_bundled/stay_safe_default_browser_promo_view_provider.h"
@@ -626,6 +627,10 @@
       [[DefaultBrowserPromoDisplayHandler alloc] init];
   _displayHandlerPromos[promos_manager::Promo::DefaultBrowserRemindMeLater] =
       [[DefaultBrowserRemindMeLaterPromoDisplayHandler alloc] init];
+  if (IsDefaultBrowserOffCyclePromoEnabled()) {
+    _displayHandlerPromos[promos_manager::Promo::DefaultBrowserOffCycle] =
+        [[DefaultBrowserOffCyclePromoDisplayHandler alloc] init];
+  }
 
   // Sign-in fullscreen promo handler.
   if (IsFullscreenSigninPromoManagerMigrationEnabled()) {

@@ -38,8 +38,7 @@ enum class Promo {
   PostRestoreDefaultBrowserAlert =
       8,  // Post Restore Default Browser (native iOS alert)
   DefaultBrowserRemindMeLater = 9,  // Remind me later for default browser.
-  // OmniboxPosition = 10,          // Obsolete. Choose between top and bottom
-  // omnibox.
+  // OmniboxPosition = 10,  // Obsolete. Choose between top and bottom omnibox.
   DockingPromo = 11,               // Docking Promo.
   DockingPromoRemindMeLater = 12,  // Docking Promo (Remind Me Later version).
   AllTabsDefaultBrowser = 13,      // "All Tabs" default browser promo.
@@ -50,8 +49,9 @@ enum class Promo {
   WelcomeBack = 18,                // Welcome Back promo.
   BWGPromo = 19,                   // BWG promo.
   SafariImportRemindMeLater =
-      20,  // Reminder for the Safari import entry point.
-  kMaxValue = SafariImportRemindMeLater,
+      20,                       // Reminder for the Safari import entry point.
+  DefaultBrowserOffCycle = 21,  // Off-cycle fullscreen default browser promo.
+  kMaxValue = DefaultBrowserOffCycle,
 };
 // LINT.ThenChange(/ios/chrome/browser/promos_manager/model/constants.cc)
 // Also update IOSPromosManagerPromo in
