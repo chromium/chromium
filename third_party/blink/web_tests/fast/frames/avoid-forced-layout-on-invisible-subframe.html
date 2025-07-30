@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<body>  
+  <div id="content"></div>  
+<script>
+  const content = document.getElementById("content");
+  promise_test(async t => {
+    await new Promise(resolve => window.addEventListener("load", resolve));
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    window.iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    iframe.src = "resources/notify-parent-on-load.html";
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    document.body.appendChild(iframe);
+    forced_layout_before = internals.layoutCountForTesting();
+    const layout_count_before = await new Promise(resolve => {
+      window.did_load_frame = () => {
+        content.innerText = performance.now();
+        resolve(internals.layoutCountForTesting());
+      };
+    });
+    await new Promise(resolve => requestAnimationFrame(resolve));
+    assert_equals(internals.layoutCountForTesting(), layout_count_before);
+  }, "Test that fully parsing an invisible iframe doesn't force a style-recalc/layout");
+</script>
