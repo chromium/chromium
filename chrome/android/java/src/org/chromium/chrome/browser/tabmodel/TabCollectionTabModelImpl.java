@@ -893,7 +893,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void createTabGroupForTabGroupSync(List<Tab> tabs, Token tabGroupId) {
         if (tabs.isEmpty()) return;
 
-        mergeListOfTabsToGroupInternal(tabs, tabs.get(0), /* notify= */ false, tabGroupId);
+        mergeListOfTabsToGroupInternal(
+                tabs, tabs.get(0), /* notify= */ false, /* indexInGroup= */ null, tabGroupId);
     }
 
     @Override
@@ -923,7 +924,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     public void mergeListOfTabsToGroup(
             List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, boolean notify) {
         mergeListOfTabsToGroupInternal(
-                tabs, destinationTab, notify, /* tabGroupIdForNewGroup= */ null);
+                tabs,
+                destinationTab,
+                notify,
+                /* indexInGroup= */ indexInGroup,
+                /* tabGroupIdForNewGroup= */ null);
     }
 
     @Override
@@ -1319,10 +1324,22 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
                 /* isDestinationTab= */ false);
     }
 
+    /**
+     * Merges a list of tabs into a destination group at a specified position.
+     *
+     * @param tabs The list of {@link Tab}s to merge.
+     * @param destinationTab The destination {@link Tab} identifying the target group.
+     * @param notify Whether to notify observers to show UI like snackbars.
+     * @param indexInGroup The index within the destination group to insert the tabs. Null appends
+     *     to the end.
+     * @param tabGroupIdForNewGroup A specific {@link Token} to use if a new group is created. Null
+     *     will generate a random one.
+     */
     public void mergeListOfTabsToGroupInternal(
             List<Tab> tabs,
             Tab destinationTab,
             boolean notify,
+            @Nullable Integer indexInGroup,
             @Nullable Token tabGroupIdForNewGroup) {
         assertOnUiThread();
         if (mNativeTabCollectionTabModelImplPtr == 0) return;
@@ -1361,15 +1378,16 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         candidateTabGroupIds.remove(destinationTabGroupId);
 
         if (adoptCandidateGroupId) {
+            assert indexInGroup == null
+                    : "indexInGroup should not be set when adopting a candidate group.";
             moveGroupToIndex(destinationTabGroupId, indexOf(destinationTab));
         }
-
+        int destinationTabIndex = indexOf(destinationTab);
         if (!wasDestinationTabInGroup) {
-            int index = indexOf(destinationTab);
             moveTabInternal(
                     destinationTab,
-                    index,
-                    index,
+                    destinationTabIndex,
+                    destinationTabIndex,
                     destinationTabGroupId,
                     /* isPinned= */ false,
                     /* isDestinationTab= */ true);
@@ -1387,21 +1405,66 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             }
         }
 
-        int endIndex = getCount();
+        // Calculate the initial insertion point in the tab model.
+        int destinationIndexInTabModel;
+        if (wasDestinationTabInGroup || adoptCandidateGroupId) {
+            // If we adopt a candidate group, indexInGroup should be null. ie, add all tabs to
+            // after destination tab.
+            List<Tab> tabsInDestGroup = getTabsInGroup(destinationTabGroupId);
+            int groupSize = tabsInDestGroup.size();
+            int insertionIndexInGroup =
+                    (indexInGroup == null)
+                            ? groupSize
+                            : MathUtils.clamp(indexInGroup, 0, groupSize);
+            Tab firstTabInGroup = tabsInDestGroup.get(0);
+            int firstTabModelIndex = indexOf(firstTabInGroup);
+            destinationIndexInTabModel = firstTabModelIndex + insertionIndexInGroup;
+        } else {
+            // New group is being formed; position relative to the destination tab.
+            destinationIndexInTabModel =
+                    (indexInGroup != null && indexInGroup == 0)
+                            ? destinationTabIndex
+                            : destinationTabIndex + 1;
+        }
+
         for (Tab tab : tabs) {
-            if (tab == destinationTab) continue;
 
-            if (destinationTabGroupId.equals(tab.getTabGroupId())) continue;
+            int currentIndex = indexOf(tab);
+            assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
-            // Move all the tabs to the end of the tab group. The native code will find the right
-            // index to insert the tab.
+            int adjustedDestinationIndexInTabModel = destinationIndexInTabModel;
+
+            // A "move" is conceptually a "remove" then an "add". When moving a tab from
+            // a position *before* the destination (e.g., from index 2 to 5), the removal
+            // causes all subsequent elements, including the destination, to shift left by one.
+            // We must decrement the destination index to compensate for this shift and ensure
+            // the tab is inserted at the correct final position.
+            //
+            // This adjustment is not needed when moving a tab backward (e.g., from 5 to 2),
+            // as the removal does not affect the indices of items that come before it.
+            if (currentIndex < destinationIndexInTabModel) {
+                adjustedDestinationIndexInTabModel--;
+            }
+
+            // Iff the tab is already a part of the destination group, and is at the required index,
+            // we can skip the move. We require the tab to be at the right index to ensure the order
+            // of the tabs in the list of tabs being merged is replicated in the tab group.
+            if (destinationTabGroupId.equals(tab.getTabGroupId())
+                    && currentIndex == adjustedDestinationIndexInTabModel) {
+                continue;
+            }
+
             moveTabInternal(
                     tab,
-                    indexOf(tab),
-                    endIndex,
+                    currentIndex,
+                    adjustedDestinationIndexInTabModel,
                     destinationTabGroupId,
                     /* isPinned= */ false,
                     /* isDestinationTab= */ false);
+
+            if (currentIndex >= destinationIndexInTabModel) {
+                destinationIndexInTabModel++;
+            }
         }
 
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {

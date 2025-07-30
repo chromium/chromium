@@ -1685,7 +1685,7 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId, tab0.getTabGroupId());
                     assertEquals(groupId, tab1.getTabGroupId());
                     assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
-                    assertTabsInOrderAre(List.of(tab1, tab0, tab2));
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
                 });
     }
 
@@ -1768,6 +1768,64 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId, tab2.getTabGroupId());
                     assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
                     assertTabsInOrderAre(List.of(tab2, tab0, tab1));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testMergeListOfTabsToGroupInternal_MergeWithIndex() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroupInternal(
+                            List.of(tab2, tab3), tab2, false, null, null);
+                    Token groupId = tab2.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    mCollectionModel.mergeListOfTabsToGroupInternal(
+                            List.of(tab1, tab5), tab2, false, /* indexInGroup= */ 1, null);
+
+                    assertEquals(
+                            "mTab1 should have joined the group.", groupId, tab1.getTabGroupId());
+                    assertEquals(
+                            "mTab4 should have joined the group.", groupId, tab5.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab2, tab1, tab5, tab3, tab4));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testMergeListOfTabsToGroupInternal_MergeToFront() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroupInternal(
+                            List.of(tab2, tab3), tab2, false, null, null);
+                    Token groupId = tab2.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    mCollectionModel.mergeListOfTabsToGroupInternal(
+                            List.of(tab1, tab5), tab2, false, /* indexInGroup= */ 0, null);
+
+                    assertEquals(
+                            "mTab1 should have joined the group.", groupId, tab1.getTabGroupId());
+                    assertEquals(
+                            "mTab4 should have joined the group.", groupId, tab5.getTabGroupId());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab5, tab2, tab3, tab4));
                 });
     }
 
