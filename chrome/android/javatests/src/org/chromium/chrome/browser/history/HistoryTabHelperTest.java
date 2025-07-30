@@ -34,7 +34,8 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.url.GURL;
 
@@ -47,7 +48,8 @@ public class HistoryTabHelperTest {
     private static final String FILE_PATH2 = "/chrome/test/data/android/simple.html";
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @MediumTest

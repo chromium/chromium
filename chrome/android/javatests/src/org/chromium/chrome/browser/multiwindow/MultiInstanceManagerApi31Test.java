@@ -36,7 +36,9 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistedInstanc
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.messages.MessageDispatcher;
@@ -54,11 +56,14 @@ import java.util.List;
 @MinAndroidSdkLevel(VERSION_CODES.S)
 public class MultiInstanceManagerApi31Test {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
+
+    private WebPageStation mPage;
 
     @Before
     public void setup() throws InterruptedException {
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
     }
 
     @After
@@ -93,14 +98,14 @@ public class MultiInstanceManagerApi31Test {
         otherActivities[2].finishAndRemoveTask();
         var newActivity =
                 createNewWindow(firstActivity, otherActivities[2].getWindowIdForTesting());
-        mActivityTestRule.setActivity(newActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(newActivity);
         mActivityTestRule.waitForActivityCompletelyLoaded();
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 4);
         waitForInstanceRestorationMessage();
 
         // Cleanup activities.
-        mActivityTestRule.setActivity(firstActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(firstActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var multiInstanceManager =
@@ -157,13 +162,13 @@ public class MultiInstanceManagerApi31Test {
                 ChromeTabbedActivity.class, Stage.DESTROYED, otherActivities[0]::finish);
         var newActivity =
                 createNewWindow(otherActivities[0], otherActivities[0].getWindowIdForTesting());
-        mActivityTestRule.setActivity(newActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(newActivity);
 
         verifyInstanceState(/* expectedActiveInstances= */ 2, /* expectedTotalInstances= */ 3);
         waitForInstanceRestorationMessage();
 
         // Cleanup activities.
-        mActivityTestRule.setActivity(firstActivity);
+        mActivityTestRule.getActivityTestRule().setActivity(firstActivity);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     var multiInstanceManager =

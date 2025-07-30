@@ -33,7 +33,9 @@ import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelObserver;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.components.browser_ui.modaldialog.ModalDialogView;
 import org.chromium.components.browser_ui.modaldialog.TabModalPresenter;
@@ -45,7 +47,6 @@ import org.chromium.components.messages.MessageStateHandler;
 import org.chromium.components.messages.MessagesTestHelper;
 import org.chromium.components.safe_browsing.SafeBrowsingApiBridge;
 import org.chromium.net.test.EmbeddedTestServer;
-import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
@@ -65,9 +66,8 @@ import java.util.concurrent.TimeoutException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class SubresourceFilterTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
-
-    @Rule public EmbeddedTestServerRule mTestServerRule = new EmbeddedTestServerRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private EmbeddedTestServer mTestServer;
 
@@ -79,6 +79,7 @@ public final class SubresourceFilterTest {
             "{\"matches\":[{\"threat_type\":\"13\",\"sf_bas\":\"\"}]}";
     private static final String METADATA_FOR_WARNING =
             "{\"matches\":[{\"threat_type\":\"13\",\"sf_bas\":\"warn\"}]}";
+    private WebPageStation mPage;
 
     private void createAndPublishRulesetDisallowingSuffix(String suffix) {
         TestRulesetPublisher publisher = new TestRulesetPublisher();
@@ -94,9 +95,9 @@ public final class SubresourceFilterTest {
 
     @Before
     public void setUp() throws Exception {
-        mTestServer = mTestServerRule.getServer();
+        mTestServer = mActivityTestRule.getTestServer();
         SafeBrowsingApiBridge.setSafeBrowsingApiHandler(new MockSafeBrowsingApiHandler());
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mPage = mActivityTestRule.startOnBlankPage();
 
         // Disallow all jpgs.
         createAndPublishRulesetDisallowingSuffix(".jpg");
