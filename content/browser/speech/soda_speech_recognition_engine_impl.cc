@@ -92,7 +92,7 @@ bool SodaSpeechRecognitionEngineImpl::Initialize() {
                          weak_factory_.GetWeakPtr())));
 
   speech_recognition_mgr_delegate->BindSpeechRecognitionContext(
-      std::move(speech_recognition_context_receiver));
+      std::move(speech_recognition_context_receiver), config_.language);
 
   speech_recognition_context_.set_disconnect_handler(
       base::BindPostTaskToCurrentDefault(base::BindOnce(

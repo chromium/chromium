@@ -1082,6 +1082,10 @@ constexpr char kOptGuideModelFetcherLastFetchAttempt[] =
 constexpr char kOptGuideModelFetcherLastFetchSuccess[] =
     "optimization_guide.predictionmodelfetcher.last_fetch_success";
 
+// Deprecated 07/2025
+inline constexpr char kSodaScheduledDeletionTime[] =
+    "accessibility.captions.soda_scheduled_deletion_time";
+
 #if BUILDFLAG(IS_CHROMEOS)
 // Deprecated 07/2025.
 inline constexpr char kTimeOfFirstFilesAppChipPress[] =
@@ -1532,6 +1536,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 07/2025
   registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchAttempt, 0);
   registry->RegisterInt64Pref(kOptGuideModelFetcherLastFetchSuccess, 0);
+
+  // Deprecated 07/2025
+  registry->RegisterTimePref(kSodaScheduledDeletionTime, base::Time());
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Deprecated 07/2025.

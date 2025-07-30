@@ -1326,7 +1326,8 @@ void AccessibilityManager::OnDictationChanged(bool triggered_by_user) {
     // push back SODA deletion each time start-up occurs with dictation
     // disabled.
     speech::SodaInstaller::GetInstance()->SetUninstallTimer(
-        pref_service, g_browser_process->local_state());
+        g_browser_process->local_state(),
+        pref_service->GetString(prefs::kAccessibilityDictationLocale));
   }
 
   if (!enabled)

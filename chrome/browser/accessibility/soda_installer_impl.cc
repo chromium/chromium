@@ -132,7 +132,6 @@ void SodaInstallerImpl::UninstallSoda(PrefService* global_prefs) {
                                             weak_factory_.GetWeakPtr()));
 
   SodaInstaller::UnregisterLanguages(global_prefs);
-  global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 
   soda_binary_installed_ = false;
   is_soda_downloading_ = false;

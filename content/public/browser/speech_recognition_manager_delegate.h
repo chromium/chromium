@@ -39,8 +39,8 @@ class SpeechRecognitionManagerDelegate {
   // the non-android platforms.
   // This is called on the IO thread.
   virtual void BindSpeechRecognitionContext(
-      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
-          receiver) = 0;
+      mojo::PendingReceiver<media::mojom::SpeechRecognitionContext> receiver,
+      const std::string& language) = 0;
 #endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_ANDROID)
 };
 

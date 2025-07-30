@@ -413,7 +413,6 @@ void SodaInstallerImplChromeOS::UninstallSoda(PrefService* global_prefs) {
   language_pack_progress_.clear();
   SodaInstaller::UnregisterLanguages(global_prefs);
   installed_language_paths_.clear();
-  global_prefs->SetTime(prefs::kSodaScheduledDeletionTime, base::Time());
 }
 
 void SodaInstallerImplChromeOS::SetSodaBinaryPath(base::FilePath new_path) {

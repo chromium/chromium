@@ -625,7 +625,7 @@ int SpeechRecognitionManagerImpl::CreateSession(
           speech_recognition_context_receiver =
               speech_recognition_context_.BindNewPipeAndPassReceiver();
       speech_recognition_mgr_delegate->BindSpeechRecognitionContext(
-          std::move(speech_recognition_context_receiver));
+          std::move(speech_recognition_context_receiver), config.language);
     }
 
     media::mojom::SpeechRecognitionOptionsPtr options =

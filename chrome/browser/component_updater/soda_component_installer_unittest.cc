@@ -44,8 +44,8 @@ class SodaComponentInstallerTest : public ::testing::Test {
   void SetUp() override {
     profile_prefs_.registry()->RegisterBooleanPref(prefs::kLiveCaptionEnabled,
                                                    false);
-    local_state_.registry()->RegisterTimePref(prefs::kSodaScheduledDeletionTime,
-                                              base::Time());
+    local_state_.registry()->RegisterTimePref(
+        prefs::kSodaEnUsScheduledDeletionTime, base::Time());
     profile_prefs_.registry()->RegisterStringPref(
         prefs::kLiveCaptionLanguageCode, speech::kUsEnglishLocale);
   }

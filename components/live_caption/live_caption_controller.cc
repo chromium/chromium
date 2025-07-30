@@ -64,7 +64,6 @@ LiveCaptionController::LiveCaptionController(
 
   enabled_ = IsLiveCaptionEnabled();
   base::UmaHistogramBoolean("Accessibility.LiveCaption2", enabled_);
-  MaybeSetLiveCaptionLanguage();
 
   if (enabled_) {
     StartLiveCaption();
@@ -116,8 +115,8 @@ void LiveCaptionController::OnLiveCaptionEnabledChanged() {
     StartLiveCaption();
   } else {
     StopLiveCaption();
-    speech::SodaInstaller::GetInstance()->SetUninstallTimer(profile_prefs(),
-                                                            global_prefs_);
+    speech::SodaInstaller::GetInstance()->SetUninstallTimer(global_prefs_,
+                                                            GetLanguageCode());
   }
 }
 
@@ -139,6 +138,7 @@ bool LiveCaptionController::IsLiveCaptionEnabled() {
 
 void LiveCaptionController::StartLiveCaption() {
   DCHECK(enabled_);
+  MaybeSetLiveCaptionLanguage();
   // The SodaInstaller determines whether SODA is already on the device and
   // whether or not to download. Once SODA is on the device and ready, the
   // SODAInstaller calls OnSodaInstalled on its observers. The UI is created at

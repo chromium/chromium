@@ -67,10 +67,12 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   // uninstallation, and if so, triggers uninstallation.
   virtual void Init(PrefService* profile_prefs, PrefService* global_prefs);
 
-  // Schedules SODA for uninstallation if no SODA client features are
-  // currently enabled. Should be called when client features using SODA are
-  // disabled.
-  void SetUninstallTimer(PrefService* profile_prefs, PrefService* global_prefs);
+  // Schedules a SODA language pack for uninstallation. The language pack will
+  // not be uninstalled if it's the default language for a enabled feature that
+  // uses it. The SODA binary will be uninstalled when the last installed
+  // language pack is uninstalled.
+  void SetUninstallTimer(PrefService* global_prefs,
+                         const std::string& language);
 
   // Gets the directory path of the installed SODA lib bundle, or an empty path
   // if not installed. Currently Chrome OS only, returns empty path on other
@@ -168,6 +170,14 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
 
   bool IsLanguageEnabled(const std::string& language);
 
+  // Uninstalls unused language packs. Uninstalls the SODA binary if no
+  // installed language packs remain.
+  void MaybeUninstallSoda(PrefService* profile_prefs,
+                          PrefService* global_prefs);
+
+  // Returns whether SODA was used recently.
+  bool WasSodaUsedRecently(PrefService* global_prefs);
+
  protected:
   // Initializes language and installs the per-language components.
   virtual void InitLanguages(PrefService* profile_prefs,
@@ -221,7 +231,12 @@ class COMPONENT_EXPORT(SODA_INSTALLER) SodaInstaller {
   friend class SodaInstallerImplChromeOSTest;
   friend class SodaInstallerImplTest;
   // Any new feature using SODA should add its pref here.
-  bool IsAnyFeatureUsingSodaEnabled(PrefService* prefs);
+  bool IsAnyFeatureUsingSodaEnabled(PrefService* prefs) const;
+
+#if !BUILDFLAG(IS_CHROMEOS)
+  bool IsLanguageActiveDefault(const std::string& language,
+                               PrefService* profile_prefs) const;
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 };
 
 }  // namespace speech

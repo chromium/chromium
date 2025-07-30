@@ -37,6 +37,7 @@ class MockSodaInstallerImpl : public SodaInstallerImpl {
 
   void InstallLanguage(const std::string& language,
                        PrefService* global_prefs) override {
+    SodaInstaller::RegisterLanguage(language, global_prefs);
     OnSodaLanguagePackInstalled(speech::GetLanguageCode(language));
   }
 };
@@ -90,9 +91,10 @@ class SodaInstallerImplTest : public testing::Test {
     task_environment_.RunUntilIdle();
   }
 
-  void SetUninstallTimer() {
+  void SetUninstallTimer(
+      speech::LanguageCode language_code = speech::LanguageCode::kEnUs) {
     soda_installer_impl_->SetUninstallTimer(pref_service_.get(),
-                                            pref_service_.get());
+                                            GetLanguageName(language_code));
   }
 
   void FastForwardBy(base::TimeDelta delta) {
@@ -180,19 +182,29 @@ TEST_F(SodaInstallerImplTest, UninstallSodaAfterThirtyDays) {
 
   // Turn off features that use SODA so that the uninstall timer can be set.
   SetLiveCaptionEnabled(false);
-  SetUninstallTimer();
-  ASSERT_TRUE(IsSodaInstalled());
+  InstallLanguage(speech::GetLanguageName(kJapaneseLocale));
+  InstallLanguage(speech::GetLanguageName(kEnglishLocale));
+  SetUninstallTimer(kEnglishLocale);
+  ASSERT_TRUE(IsSodaInstalled(kEnglishLocale));
+  ASSERT_TRUE(IsSodaInstalled(kJapaneseLocale));
 
   // If 30 days pass without the uninstall time being reset, SODA will be
   // uninstalled the next time Init() is called.
   // Set SodaInstaller initialized state to false to mimic a browser shutdown.
   SetSodaInstallerInitialized(false);
-  FastForwardBy(kSodaUninstallTime);
-  ASSERT_TRUE(IsSodaInstalled());
+  FastForwardBy(kSodaUninstallTime / 2);
+
+  // Simulate the usage of the Japanese language pack by pushing the
+  // uninstallation time back.
+  SetUninstallTimer(kJapaneseLocale);
+  FastForwardBy(kSodaUninstallTime / 2);
+  ASSERT_TRUE(IsSodaInstalled(kEnglishLocale));
+  ASSERT_TRUE(IsSodaInstalled(kJapaneseLocale));
 
   // The uninstallation process doesn't start until Init() is called again.
   Init();
-  ASSERT_FALSE(IsSodaInstalled());
+  ASSERT_FALSE(IsSodaInstalled(kEnglishLocale));
+  ASSERT_TRUE(IsSodaInstalled(kJapaneseLocale));
 }
 
 TEST_F(SodaInstallerImplTest, ReregisterSodaWithinThirtyDays) {

@@ -96,7 +96,7 @@ class SodaInstallerImplChromeOSTest : public testing::Test {
 
   void SetUninstallTimer() {
     soda_installer_impl_->SetUninstallTimer(pref_service_.get(),
-                                            pref_service_.get());
+                                            GetLanguageName(kEnglishLocale));
   }
 
   void FastForwardBy(base::TimeDelta delta) {
