@@ -58,7 +58,7 @@ id<GREYMatcher> PrintOptionsCancelButton() {
     dialogTitle = @"Options";
   }
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(dialogTitle)]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      assertWithMatcher:grey_minimumVisiblePercent(0.7)];
 
   // Clean up and close print dialog.
   [[EarlGrey selectElementWithMatcher:PrintOptionsCancelButton()]
