@@ -37,7 +37,7 @@ def mojom_format(filename, contents=None):
     If `contents` is provided, then it is used instead of reading the file.
     """
     if contents is None:
-        with open(filename, newline='\n') as f:
+        with open(filename, newline='\n', encoding='utf-8') as f:
             contents = f.read()
     tree = parser.Parse(contents, filename, with_comments=True)
     output = StringIO(newline='\n')
