@@ -501,7 +501,11 @@ NSString* LeakedPasswordDescription() {
 
 // Tests that the Password Checkup Homepage header image view is correctly
 // shown/hidden depending on the device's orientation.
+// TODO(crbug.com/435095080): Reenable this test.
 - (void)testPasswordCheckupHomepageDeviceOrientation {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator");
+  }
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_SKIPPED(@"Landscape orientation doesn't change the look of "
                            @"the Password Checkup Homepage.");
