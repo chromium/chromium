@@ -105,7 +105,7 @@ RepeatingCallback<void(T)> BarrierCallback(
     CallbackType<void(DoneArg)> done_callback) {
   if (num_callbacks == 0) {
     std::move(done_callback).Run({});
-    return BindRepeating(&internal::ShouldNeverRun<T>);
+    return base::BindRepeating(&internal::ShouldNeverRun<T>);
   }
 
   return base::BindRepeating(
