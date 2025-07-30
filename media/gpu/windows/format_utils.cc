@@ -88,4 +88,25 @@ bool IsRec601(const gfx::ColorSpace& color_space) {
          color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::SMPTE170M;
 }
 
+gfx::ColorSpace GetEncoderOutputColorSpaceFromInputColorSpace(
+    const gfx::ColorSpace& input_color_space) {
+  gfx::ColorSpace output_color_space = input_color_space;
+  if (input_color_space.GetMatrixID() == gfx::ColorSpace::MatrixID::RGB) {
+    if (input_color_space.GetPrimaryID() ==
+        gfx::ColorSpace::PrimaryID::SMPTE170M) {
+      output_color_space = input_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::SMPTE170M, input_color_space.GetRangeID());
+    } else if (input_color_space.GetPrimaryID() ==
+               gfx::ColorSpace::PrimaryID::BT2020) {
+      output_color_space = input_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::BT2020_NCL,
+          input_color_space.GetRangeID());
+    } else {
+      output_color_space = input_color_space.GetWithMatrixAndRange(
+          gfx::ColorSpace::MatrixID::BT709, input_color_space.GetRangeID());
+    }
+  }
+  return output_color_space;
+}
+
 }  // namespace media

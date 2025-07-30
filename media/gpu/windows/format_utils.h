@@ -25,6 +25,9 @@ MEDIA_GPU_EXPORT bool IsRec709(const gfx::ColorSpace& color_space);
 
 MEDIA_GPU_EXPORT bool IsRec601(const gfx::ColorSpace& color_space);
 
+MEDIA_GPU_EXPORT gfx::ColorSpace GetEncoderOutputColorSpaceFromInputColorSpace(
+    const gfx::ColorSpace& input_color_space);
+
 }  // namespace media
 
 #endif  // MEDIA_GPU_WINDOWS_FORMAT_UTILS_H_

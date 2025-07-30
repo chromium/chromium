@@ -212,38 +212,18 @@ class D3D12VideoEncodeDelegateTestWithProcessFrame
     : public D3D12VideoEncodeDelegateTest,
       public testing::WithParamInterface<bool> {};
 
-TEST_P(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrame) {
-  bool do_process_frame = GetParam();
+TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithoutVP) {
   VideoEncodeAccelerator::Config config = GetDefaultH264Config();
   ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
 
   gfx::Size input_size = config.input_visible_size;
-  if (do_process_frame) {
-    input_size += {1, 0};
-  }
   auto input_frame = CreateResource(input_size, config.input_format);
-  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateREC709();
   constexpr size_t kPayloadSize = 1024;
   auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
   BitstreamBuffer bitstream_buffer(base::RandInt(0, H264DPB::kDPBMaxSize - 1),
                                    shared_memory.Duplicate(), kPayloadSize);
-  if (do_process_frame) {
-    EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames)
-        .WillOnce([&](ID3D12Resource*, UINT, const gfx::ColorSpace&,
-                      const gfx::Rect& input_rectangle, ID3D12Resource*, UINT,
-                      const gfx::ColorSpace&,
-                      const gfx::Rect& output_rectangle) {
-          EXPECT_EQ(input_rectangle.width(), input_size.width());
-          EXPECT_EQ(input_rectangle.height(), input_size.height());
-          EXPECT_EQ(output_rectangle.width(),
-                    config.input_visible_size.width());
-          EXPECT_EQ(output_rectangle.height(),
-                    config.input_visible_size.height());
-          return true;
-        });
-  } else {
-    EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
-  }
+  EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames).Times(0);
   EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
       .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
   auto result_or_error =
@@ -258,8 +238,44 @@ TEST_P(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrame) {
   EXPECT_EQ(metadata.payload_size_bytes, kPayloadSize);
 }
 
-INSTANTIATE_TEST_SUITE_P(,
-                         D3D12VideoEncodeDelegateTestWithProcessFrame,
-                         testing::Values(true, false));
+TEST_F(D3D12VideoEncodeDelegateTestWithProcessFrame, EncodeFrameWithVP) {
+  VideoEncodeAccelerator::Config config = GetDefaultH264Config();
+  ASSERT_TRUE(encoder_delegate_->Initialize(config).is_ok());
+
+  gfx::Size input_size = config.input_visible_size;
+  input_size += {1, 0};
+  auto input_frame = CreateResource(input_size, config.input_format);
+  gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
+  constexpr size_t kPayloadSize = 1024;
+  auto shared_memory = base::UnsafeSharedMemoryRegion::Create(kPayloadSize);
+  BitstreamBuffer bitstream_buffer(base::RandInt(0, H264DPB::kDPBMaxSize - 1),
+                                   shared_memory.Duplicate(), kPayloadSize);
+  EXPECT_CALL(*GetVideoProcessorWrapper(), ProcessFrames)
+      .WillOnce([&](ID3D12Resource*, UINT, const gfx::ColorSpace&,
+                    const gfx::Rect& input_rectangle, ID3D12Resource*, UINT,
+                    const gfx::ColorSpace&, const gfx::Rect& output_rectangle) {
+        EXPECT_EQ(input_rectangle.width(), input_size.width());
+        EXPECT_EQ(input_rectangle.height(), input_size.height());
+        EXPECT_EQ(output_rectangle.width(), config.input_visible_size.width());
+        EXPECT_EQ(output_rectangle.height(),
+                  config.input_visible_size.height());
+        return true;
+      });
+
+  EXPECT_CALL(*GetVideoEncoderWrapper(), GetEncoderOutputMetadata)
+      .WillOnce(Return(GetEncoderOutputMetadataResourceMap(kPayloadSize)));
+  auto result_or_error =
+      encoder_delegate_->Encode(input_frame, 0, color_space, bitstream_buffer,
+                                VideoEncoder::EncodeOptions());
+  Mock::VerifyAndClearExpectations(GetVideoProcessorWrapper());
+  ASSERT_TRUE(result_or_error.has_value());
+
+  auto [bitstream_buffer_id, metadata] = std::move(result_or_error).value();
+  EXPECT_EQ(bitstream_buffer_id, bitstream_buffer.id());
+  const gfx::ColorSpace output_color_space = color_space.GetWithMatrixAndRange(
+      gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::FULL);
+  EXPECT_EQ(metadata.encoded_color_space, output_color_space);
+  EXPECT_EQ(metadata.payload_size_bytes, kPayloadSize);
+}
 
 }  // namespace media

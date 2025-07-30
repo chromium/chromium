@@ -696,27 +696,8 @@ void MediaFoundationVideoEncodeAccelerator::QueueInput(
     return;
   }
   result.timestamp = frame->timestamp();
-  if (frame->ColorSpace().GetMatrixID() == gfx::ColorSpace::MatrixID::RGB) {
-    // This frame is going to be converted to YUV before being processed
-    // by the encoder, and a YUV frame should never use an identity matrix.
-    if (frame->ColorSpace().GetPrimaryID() ==
-        gfx::ColorSpace::PrimaryID::SMPTE170M) {
-      result.color_space = frame->ColorSpace().GetWithMatrixAndRange(
-          gfx::ColorSpace::MatrixID::SMPTE170M,
-          frame->ColorSpace().GetRangeID());
-    } else if (frame->ColorSpace().GetPrimaryID() ==
-               gfx::ColorSpace::PrimaryID::BT2020) {
-      result.color_space = frame->ColorSpace().GetWithMatrixAndRange(
-          gfx::ColorSpace::MatrixID::BT2020_NCL,
-          frame->ColorSpace().GetRangeID());
-    } else {
-      // Assume BT709 matrix if primaries do not suggest something else.
-      result.color_space = frame->ColorSpace().GetWithMatrixAndRange(
-          gfx::ColorSpace::MatrixID::BT709, frame->ColorSpace().GetRangeID());
-    }
-  } else {
-    result.color_space = frame->ColorSpace();
-  }
+  result.color_space =
+      GetEncoderOutputColorSpaceFromInputColorSpace(frame->ColorSpace());
   result.options = options;
   result.discard_output = discard_output;
 

@@ -7,6 +7,7 @@
 #include <ranges>
 
 #include "base/bits.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/logging.h"
 #include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
@@ -15,6 +16,7 @@
 #include "media/gpu/windows/d3d12_video_encode_av1_delegate.h"
 #include "media/gpu/windows/d3d12_video_encode_h264_delegate.h"
 #include "media/gpu/windows/d3d12_video_encoder_wrapper.h"
+#include "media/gpu/windows/format_utils.h"
 #include "third_party/microsoft_dxheaders/src/include/directx/d3dx12_core.h"
 
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
@@ -119,8 +121,6 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     // TODO(crbug.com/40275246): support L1T2/L1T3.
     supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
     supported_profile.is_software_codec = false;
-    supported_profile.supports_gpu_shared_images =
-        base::FeatureList::IsEnabled(kD3D12SharedImageEncode);
 
     std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
         profiles;
@@ -142,9 +142,22 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
       default:
         NOTREACHED();
     }
+    bool supports_shared_image =
+        base::FeatureList::IsEnabled(kD3D12SharedImageEncode);
     for (const auto& [profile, formats] : profiles) {
       supported_profile.profile = profile;
       supported_profile.gpu_supported_pixel_formats = formats;
+      if (supports_shared_image) {
+        static constexpr auto kSupportedPixelFormatD3D12VideoProcessing =
+            base::MakeFixedFlatSet<VideoPixelFormat>(
+                {PIXEL_FORMAT_I420, PIXEL_FORMAT_NV12, PIXEL_FORMAT_YV12,
+                 PIXEL_FORMAT_NV21, PIXEL_FORMAT_ARGB, PIXEL_FORMAT_XRGB,
+                 PIXEL_FORMAT_ABGR, PIXEL_FORMAT_XBGR});
+        std::ranges::copy(
+            kSupportedPixelFormatD3D12VideoProcessing,
+            std::back_inserter(supported_profile.gpu_supported_pixel_formats));
+        supported_profile.supports_gpu_shared_images = supports_shared_image;
+      }
       supported_profiles.push_back(supported_profile);
     }
   }
@@ -224,10 +237,13 @@ D3D12VideoEncodeDelegate::Encode(
     const gfx::ColorSpace& input_frame_color_space,
     const BitstreamBuffer& bitstream_buffer,
     const VideoEncoder::EncodeOptions& options) {
+  const gfx::ColorSpace& output_color_space =
+      GetEncoderOutputColorSpaceFromInputColorSpace(input_frame_color_space);
   if (D3D12_RESOURCE_DESC input_frame_desc = input_frame->GetDesc();
       input_frame_desc.Width != input_size_.Width ||
       input_frame_desc.Height != input_size_.Height ||
-      input_frame_desc.Format != input_format_) {
+      input_frame_desc.Format != input_format_ ||
+      input_frame_color_space != output_color_space) {
     if (!processed_input_frame_) {
       D3D12_RESOURCE_DESC processed_input_frame_desc =
           CD3DX12_RESOURCE_DESC::Tex2D(input_format_, input_size_.Width,
@@ -243,7 +259,7 @@ D3D12VideoEncodeDelegate::Encode(
     bool ok = video_processor_wrapper_->ProcessFrames(
         input_frame.Get(), input_frame_subresource, input_frame_color_space,
         gfx::Rect(0, 0, input_frame_desc.Width, input_frame_desc.Height),
-        processed_input_frame_.Get(), 0, input_frame_color_space,
+        processed_input_frame_.Get(), 0, output_color_space,
         gfx::Rect(0, 0, input_size_.Width, input_size_.Height));
     if (!ok) {
       return {EncoderStatus::Codes::kSystemAPICallError,
@@ -255,7 +271,7 @@ D3D12VideoEncodeDelegate::Encode(
   }
 
   auto impl_result = EncodeImpl(input_frame.Get(), input_frame_subresource,
-                                options, input_frame_color_space);
+                                options, output_color_space);
   if (!impl_result.has_value()) {
     return std::move(impl_result).error();
   }
@@ -272,7 +288,7 @@ D3D12VideoEncodeDelegate::Encode(
       .bitstream_buffer_id_ = bitstream_buffer.id(),
       .metadata_ = std::move(impl_result).value(),
   };
-  encode_result.metadata_.encoded_color_space = input_frame_color_space;
+  encode_result.metadata_.encoded_color_space = output_color_space;
   encode_result.metadata_.payload_size_bytes =
       std::move(payload_size_or_error).value();
   return encode_result;

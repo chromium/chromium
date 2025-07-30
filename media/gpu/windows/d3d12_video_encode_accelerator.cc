@@ -192,9 +192,9 @@ void GenerateResourceOnSynTokenReleased(
     d3d11_context->CopySubresourceRegion(shared_texture.Get(), 0, 0, 0, 0,
                                          input_texture.Get(), 0, nullptr);
 
-    // TODO(https://crbug.com/40275246): Signal a shared D3D11 fence and wait
-    // on D3D12 video processor queue or video encoder queue, depending on if
-    // VP is needed, instead of waiting on CPU timeline.
+    // TODO(https://crbug.com/40275246): Pass a shared D3D11 fence and wait
+    // on D3D12 video processor command queue, or D3D12 video encoder queue,
+    // depending on whether VP is needed, instead of waiting on D3D11.
     hr = dxgi_device2->EnqueueSetEvent(event.handle());
     if (SUCCEEDED(hr)) {
       event.Wait();
@@ -204,7 +204,6 @@ void GenerateResourceOnSynTokenReleased(
       d3d11_context->Flush();
     }
 
-    // Try to get shared handle from the copied texture, for D3D12 access.
     hr = shared_texture.As(&dxgi_resource);
     RETURN_ON_FAILURE_WITH_CALLBACK(
         hr, "Failed to query DXGI resource from shared texture");
@@ -623,6 +622,7 @@ void D3D12VideoEncodeAccelerator::EncodeTask(
     input_frame.shared_image_token = frame->shared_image()->mailbox();
     input_frame.resolve_shared_image_requested = acquired_command_buffer_;
     input_frames_queue_.push_back(std::move(input_frame));
+
     if (acquired_command_buffer_) {
       // If we don't have a command buffer yet, we will resolve the shared image
       // later when the command buffer is available.
