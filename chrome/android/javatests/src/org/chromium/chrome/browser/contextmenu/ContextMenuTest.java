@@ -93,6 +93,7 @@ import org.chromium.components.embedder_support.contextmenu.ChipRenderParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuParams;
 import org.chromium.components.embedder_support.contextmenu.ContextMenuPopulatorFactory;
 import org.chromium.components.policy.test.annotations.Policies;
+import org.chromium.content_public.browser.RenderCoordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
 import org.chromium.content_public.browser.test.util.TestTouchUtils;
 import org.chromium.content_public.common.ContentFeatures;
@@ -149,6 +150,13 @@ public class ContextMenuTest {
 
     private static final String TEST_PATH =
             "/chrome/test/data/android/contextmenu/context_menu_test.html";
+    // LINT.IfChange(PageScaleFactor)
+    // The initial-scale defined in the test html file meta. The setUp function
+    // will check that the page scale factor has been updated to this value.
+    // This ensures the long press/ right click is simulated at the correct
+    // coordinates of the specified element. See crbug.com/432281754.
+    private static final double PAGE_SCALE_FACTOR = 0.5;
+    // LINT.ThenChange(//chrome/test/data/android/contextmenu/context_menu_test.html:PageScaleFactor)
 
     private EmbeddedTestServer mTestServer;
     private String mTestUrl;
@@ -220,7 +228,13 @@ public class ContextMenuTest {
         deleteTestFiles();
         sDownloadTestRule.loadUrl(mTestUrl);
         Tab tab = sDownloadTestRule.getActivity().getActivityTab();
-        CriteriaHelper.pollUiThread(() -> tab.isUserInteractable() && !tab.isLoading());
+        CriteriaHelper.pollUiThread(
+                () ->
+                        tab.isUserInteractable()
+                                && !tab.isLoading()
+                                && RenderCoordinates.fromWebContents(tab.getWebContents())
+                                                .getPageScaleFactor()
+                                        == PAGE_SCALE_FACTOR);
         setupLensChipDelegate();
         DownloadUtils.setIsDownloadRestrictedByPolicyForTesting(false);
         DataProtectionBridgeJni.setInstanceForTesting(mDataProtectionBridgeMock);
