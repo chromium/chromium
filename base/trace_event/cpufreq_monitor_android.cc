@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/trace_event/cpufreq_monitor_android.h"
 
 #include <fcntl.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -209,9 +205,9 @@ void CPUFreqMonitor::Sample(
     ssize_t bytes_read = read(fd, data, kNumBytesToReadForSampling);
     if (bytes_read > 0) {
       if (static_cast<size_t>(bytes_read) < kNumBytesToReadForSampling) {
-        data[static_cast<size_t>(bytes_read)] = '\0';
+        UNSAFE_TODO(data[static_cast<size_t>(bytes_read)]) = '\0';
       }
-      int ret = sscanf(data, "%d", &freq);
+      int ret = UNSAFE_TODO(sscanf(data, "%d", &freq));
       if (ret == 0 || ret == std::char_traits<char>::eof()) {
         freq = 0;
       }

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/native_unwinder_android.h"
 
 #include <inttypes.h>
@@ -20,6 +15,7 @@
 
 #include "base/android/build_info.h"
 #include "base/android/jni_android.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/profiler/native_unwinder_android_map_delegate.h"
@@ -420,7 +416,8 @@ TEST(NativeUnwinderAndroidTest, DISABLED_JavaFunction) {
 TEST(NativeUnwinderAndroidTest, UnwindStackMemoryTest) {
   std::vector<uint8_t> input = {1, 2, 3, 4, 5};
   uintptr_t begin = reinterpret_cast<uintptr_t>(input.data());
-  uintptr_t end = reinterpret_cast<uintptr_t>(input.data() + input.size());
+  uintptr_t end =
+      reinterpret_cast<uintptr_t>(UNSAFE_TODO(input.data() + input.size()));
   UnwindStackMemoryAndroid memory(begin, end);
 
   const auto check_read_fails = [&](uintptr_t addr, size_t size) {
@@ -430,8 +427,8 @@ TEST(NativeUnwinderAndroidTest, UnwindStackMemoryTest) {
   const auto check_read_succeeds = [&](uintptr_t addr, size_t size) {
     std::vector<uint8_t> output(size);
     EXPECT_EQ(size, memory.Read(addr, output.data(), size));
-    EXPECT_EQ(
-        0, memcmp(reinterpret_cast<const uint8_t*>(addr), output.data(), size));
+    UNSAFE_TODO(EXPECT_EQ(0, memcmp(reinterpret_cast<const uint8_t*>(addr),
+                                    output.data(), size)));
   };
 
   check_read_fails(begin - 1, 1);

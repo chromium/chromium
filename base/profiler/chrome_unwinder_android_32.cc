@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "base/profiler/chrome_unwinder_android_32.h"
 
 #include <algorithm>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/memory/aligned_memory.h"
 #include "base/notreached.h"
 #include "base/numerics/checked_math.h"
@@ -34,7 +30,8 @@ uintptr_t* GetRegisterPointer(RegisterContext* context,
       &RegisterContext::arm_ip,  &RegisterContext::arm_sp,
       &RegisterContext::arm_lr,  &RegisterContext::arm_pc,
   };
-  return reinterpret_cast<uintptr_t*>(&(context->*registers[register_index]));
+  return reinterpret_cast<uintptr_t*>(
+      &(context->*UNSAFE_TODO(registers[register_index])));
 }
 
 // Pops the value on the top of stack out and assign it to target register.
@@ -64,7 +61,7 @@ uintptr_t DecodeULEB128(const uint8_t*& bytes) {
     DCHECK_LE(shift, sizeof(uintptr_t) * 8);  // ULEB128 must not overflow.
     value += (*bytes & 0x7fu) << shift;
     shift += 7;
-  } while (*bytes++ & 0x80);
+  } while (*UNSAFE_TODO(bytes++) & 0x80);
   return value;
 }
 
@@ -189,7 +186,8 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   if (GetTopBits(*instruction, 2) == 0b00) {
     // 00xxxxxx
     // vsp = vsp + (xxxxxx << 2) + 4. Covers range 0x04-0x100 inclusive.
-    const uintptr_t offset = ((*instruction++ & 0b00111111u) << 2) + 4;
+    const uintptr_t offset =
+        ((*UNSAFE_TODO(instruction++) & 0b00111111u) << 2) + 4;
 
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
@@ -200,7 +198,8 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   } else if (GetTopBits(*instruction, 2) == 0b01) {
     // 01xxxxxx
     // vsp = vsp - (xxxxxx << 2) - 4. Covers range 0x04-0x100 inclusive.
-    const uintptr_t offset = ((*instruction++ & 0b00111111u) << 2) + 4;
+    const uintptr_t offset =
+        ((*UNSAFE_TODO(instruction++) & 0b00111111u) << 2) + 4;
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) -
         offset;
@@ -210,7 +209,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   } else if (GetTopBits(*instruction, 4) == 0b1001) {
     // 1001nnnn (nnnn != 13,15)
     // Set vsp = r[nnnn].
-    const uint8_t register_index = *instruction++ & 0b00001111;
+    const uint8_t register_index = *UNSAFE_TODO(instruction++) & 0b00001111;
     DCHECK_NE(register_index, 13);  // Must not set sp to sp.
     DCHECK_NE(register_index, 15);  // Must not set sp to pc.
     // Note: We shouldn't have cases that are setting caller-saved registers
@@ -222,7 +221,8 @@ UnwindInstructionResult ExecuteUnwindInstruction(
   } else if (GetTopBits(*instruction, 5) == 0b10101) {
     // 10101nnn
     // Pop r4-r[4+nnn], r14
-    const uint8_t max_register_index = (*instruction++ & 0b00000111u) + 4;
+    const uint8_t max_register_index =
+        (*UNSAFE_TODO(instruction++) & 0b00000111u) + 4;
     for (uint8_t n = 4; n <= max_register_index; n++) {
       if (!PopRegister(thread_context, n)) {
         return UnwindInstructionResult::kAborted;
@@ -231,15 +231,16 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     if (!PopRegister(thread_context, 14)) {
       return UnwindInstructionResult::kAborted;
     }
-  } else if (*instruction == 0b10000000 && *(instruction + 1) == 0) {
+  } else if (*instruction == 0b10000000 &&
+             *(UNSAFE_TODO(instruction + 1)) == 0) {
     // 10000000 00000000
     // Refuse to unwind.
-    instruction += 2;
+    UNSAFE_TODO(instruction += 2);
     return UnwindInstructionResult::kAborted;
   } else if (GetTopBits(*instruction, 4) == 0b1000) {
     const uint32_t register_bitmask =
-        ((*instruction & 0xfu) << 8) + *(instruction + 1);
-    instruction += 2;
+        ((*instruction & 0xfu) << 8) + *(UNSAFE_TODO(instruction + 1));
+    UNSAFE_TODO(instruction += 2);
     // 1000iiii iiiiiiii
     // Pop up to 12 integer registers under masks {r15-r12}, {r11-r4}
     for (uint8_t register_index = 4; register_index < 16; register_index++) {
@@ -258,7 +259,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     // indicates that no further instructions are to be processed for this
     // frame.
 
-    instruction++;
+    UNSAFE_TODO(instruction++);
     // Only copy lr to pc when pc is not updated by other instructions before.
     if (!pc_was_updated) {
       thread_context->arm_pc = thread_context->arm_lr;
@@ -269,7 +270,7 @@ UnwindInstructionResult ExecuteUnwindInstruction(
     // 10110010 uleb128
     // vsp = vsp + 0x204 + (uleb128 << 2)
     // (for vsp increments of 0x104-0x200, use 00xxxxxx twice)
-    instruction++;
+    UNSAFE_TODO(instruction++);
     const auto new_sp =
         CheckedNumeric<uintptr_t>(RegisterContextStackPointer(thread_context)) +
         (CheckedNumeric<uintptr_t>(DecodeULEB128(instruction)) << 2) + 0x204;

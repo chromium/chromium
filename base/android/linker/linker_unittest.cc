@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <link.h>
 #include <sys/mman.h>
 #include <sys/prctl.h>
 #include <sys/utsname.h>
 
+#include "base/compiler_specific.h"
 #include "base/files/scoped_file.h"
 #include "base/logging.h"
 #include "base/system/sys_info.h"
@@ -80,7 +76,7 @@ int LibraryRangeFinder::VisitLibraryPhdrs(dl_phdr_info* info,
   const size_t kPageSize = sysconf(_SC_PAGESIZE);
   bool is_matching = false;
   for (int i = 0; i < info->dlpi_phnum; ++i) {
-    const ElfW(Phdr)* phdr = &info->dlpi_phdr[i];
+    const ElfW(Phdr)* phdr = &UNSAFE_TODO(info->dlpi_phdr[i]);
     switch (phdr->p_type) {
       case PT_LOAD:
         // See if this segment's load address matches the value passed to
@@ -165,7 +161,7 @@ TEST_F(LinkerTest, CreatedRegionIsSealed) {
   NativeLibInfo lib_info = {0, 0};
   lib_info.set_relro_info_for_testing(
       reinterpret_cast<uintptr_t>(relro_address), kRelroSize);
-  memset(relro_address, 0xEE, kRelroSize);
+  UNSAFE_TODO(memset(relro_address, 0xEE, kRelroSize));
 
   // Create shared RELRO.
   ASSERT_EQ(true, lib_info.CreateSharedRelroFdForTesting());
@@ -178,7 +174,7 @@ TEST_F(LinkerTest, CreatedRegionIsSealed) {
       mmap(nullptr, kRelroSize, PROT_READ, MAP_SHARED, relro_fd, 0);
   ASSERT_NE(MAP_FAILED, ro_address);
   EXPECT_EQ(0xEEEEEEEEU, *reinterpret_cast<uint32_t*>(ro_address));
-  int not_equal = memcmp(relro_address, ro_address, kRelroSize);
+  int not_equal = UNSAFE_TODO(memcmp(relro_address, ro_address, kRelroSize));
   EXPECT_EQ(0, not_equal);
   munmap(ro_address, kRelroSize);
 
