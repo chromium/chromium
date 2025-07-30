@@ -142,8 +142,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
  public:
   UnderlineViewUpdater(Browser* browser, GlicTabUnderlineView* underline_view)
       : underline_view_(underline_view), browser_(browser) {
-    auto* glic_service =
-        GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
+    auto* glic_service = GetGlicKeyedService();
     GlicSharingManager& sharing_manager = glic_service->sharing_manager();
 
     // Subscribe to changes in the focused tab.
@@ -159,17 +158,19 @@ class GlicTabUnderlineView::UnderlineViewUpdater
                                     OnIndicatorStatusChanged,
                                 base::Unretained(this)));
 
+    // Subscribe to changes in the set of pinned tabs.
+    pinned_tabs_change_subscription_ =
+        sharing_manager.AddPinnedTabsChangedCallback(base::BindRepeating(
+            &GlicTabUnderlineView::UnderlineViewUpdater::OnPinnedTabsChanged,
+            base::Unretained(this)));
+
     // Observe changes in the floaty state.
     glic_service->window_controller().AddStateObserver(this);
-
-    // TODO(cuianthony): Subscribe to changes in the set of pinned tabs.
   }
   UnderlineViewUpdater(const UnderlineViewUpdater&) = delete;
   UnderlineViewUpdater& operator=(const UnderlineViewUpdater&) = delete;
   ~UnderlineViewUpdater() override {
-    GlicKeyedService* glic_service =
-        GlicKeyedService::Get(browser_->GetProfile());
-    glic_service->window_controller().RemoveStateObserver(this);
+    GetGlicKeyedService()->window_controller().RemoveStateObserver(this);
   }
 
   // Called when the focused tab changes with the focused tab data object.
@@ -241,6 +242,25 @@ class GlicTabUnderlineView::UnderlineViewUpdater
             : UpdateUnderlineReason::kContextAccessIndicatorOff);
   }
 
+  // Called when the glic set of pinned tabs changes.
+  void OnPinnedTabsChanged(
+      const std::vector<content::WebContents*>& pinned_contents) {
+    if (!GetTabInterface()) {
+      // If the TabInterface is invalid at this point, there is no relevant UI
+      // to handle.
+      return;
+    }
+
+    // Triggering is handled based on whether the tab is in the pinned set.
+    if (IsUnderlineTabPinned()) {
+      UpdateUnderlineView(
+          UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet);
+      return;
+    }
+    UpdateUnderlineView(
+        UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet);
+  }
+
   // The glic panel state must be separately observed because underlines of
   // pinned tabs uniquely respond to showing/hiding of the glic panel.
   void PanelStateChanged(const glic::mojom::PanelState& panel_state,
@@ -253,9 +273,8 @@ class GlicTabUnderlineView::UnderlineViewUpdater
 
  private:
   // Types of updates to the tab underline UI effect given changes in relevant
-  // triggering signals, including tab focus, glic sharing controls and the
-  // floaty panel.
-  // TODO(cuianthony): Add support for changes in the set of pinned tabs.
+  // triggering signals, including tab focus, glic sharing controls, pinned tabs
+  // and the floaty panel.
   enum class UpdateUnderlineReason {
     kContextAccessIndicatorOn = 0,
     kContextAccessIndicatorOff,
@@ -270,10 +289,18 @@ class GlicTabUnderlineView::UnderlineViewUpdater
     kFocusedTabChanged_ChromeGainedFocus,
     kFocusedTabChanged_ChromeLostFocus,
 
+    // Chanes were made to the set of pinned of tabs.
+    kPinnedTabsChanged_TabInPinnedSet,
+    kPinnedTabsChanged_TabNotInPinnedSet,
+
     // Events related to the glic panel's state.
     kPanelStateChanged_PanelShowing,
     kPanelStateChanged_PanelHidden,
   };
+
+  GlicKeyedService* GetGlicKeyedService() {
+    return GlicKeyedServiceFactory::GetGlicKeyedService(browser_->GetProfile());
+  }
 
   // Returns the TabInterface corresponding to `underline_view_`, if it is
   // valid.
@@ -288,9 +315,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
 
   bool IsUnderlineTabPinned() {
     if (auto tab_interface = GetTabInterface()) {
-      GlicKeyedService* glic_service =
-          GlicKeyedService::Get(browser_->GetProfile());
-      if (glic_service) {
+      if (auto* glic_service = GetGlicKeyedService()) {
         return glic_service->sharing_manager().IsTabPinned(
             tab_interface->GetHandle());
       }
@@ -300,9 +325,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
 
   bool IsUnderlineTabSharedThroughActiveFollow() {
     if (auto tab_interface = GetTabInterface()) {
-      GlicKeyedService* glic_service =
-          GlicKeyedService::Get(browser_->GetProfile());
-      if (glic_service) {
+      if (auto* glic_service = GetGlicKeyedService()) {
         return (glic_service->sharing_manager().GetFocusedTabData().focus() ==
                 tab_interface.get()) &&
                context_access_indicator_enabled_;
@@ -387,6 +410,30 @@ class GlicTabUnderlineView::UnderlineViewUpdater
           HideUnderline();
         }
         break;
+      case UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet:
+        // If `underline_view_` is not visible, then this tab was just added to
+        // the set of pinned tabs.
+        if (!underline_view_->IsShowing()) {
+          // Pinned tab underlines should only be visible while the glic panel
+          // is open.
+          if (IsGlicWindowShowing()) {
+            ShowAndAnimateUnderline();
+          }
+        } else {
+          // This tab was already pinned - re-animate to reflect the change in
+          // the set of pinned tabs.
+          AnimateUnderline();
+        }
+        break;
+      case UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet:
+        // Re-animate to reflect the change in the set of pinned tabs.
+        if (IsUnderlineTabSharedThroughActiveFollow()) {
+          AnimateUnderline();
+          return;
+        }
+        // This tab may have just been removed from the pinned set.
+        HideUnderline();
+        break;
       case UpdateUnderlineReason::kPanelStateChanged_PanelShowing:
         // Visibility of underlines of pinned tabs should follow visibility of
         // the glic panel.
@@ -458,6 +505,10 @@ class GlicTabUnderlineView::UnderlineViewUpdater
         return "ChromeGainedFocus";
       case UpdateUnderlineReason::kFocusedTabChanged_ChromeLostFocus:
         return "ChromeLostFocus";
+      case UpdateUnderlineReason::kPinnedTabsChanged_TabInPinnedSet:
+        return "TabInPinnedSet";
+      case UpdateUnderlineReason::kPinnedTabsChanged_TabNotInPinnedSet:
+        return "TabNotInPinnedSet";
       case UpdateUnderlineReason::kPanelStateChanged_PanelShowing:
         return "PanelShowing";
       case UpdateUnderlineReason::kPanelStateChanged_PanelHidden:
@@ -491,6 +542,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   base::CallbackListSubscription focus_change_subscription_;
   bool context_access_indicator_enabled_ = false;
   base::CallbackListSubscription indicator_change_subscription_;
+  base::CallbackListSubscription pinned_tabs_change_subscription_;
 
   static constexpr size_t kNumReasonsToKeep = 10u;
   std::list<std::string> underline_update_reasons_;
