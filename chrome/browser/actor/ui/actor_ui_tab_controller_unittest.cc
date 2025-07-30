@@ -128,7 +128,7 @@ TEST_F(ActorUiTabControllerTest, SetActorTaskStateResume_SetsStateCorrectly) {
 TEST_F(ActorUiTabControllerTest, OnUiTabStateChange_NoOpIfStateIsUnchanged) {
   UiTabState ui_tab_state = UiTabState(
       ActorOverlayState(true, false, std::nullopt),
-      HandoffButtonState(true, HandoffButtonState::ControlOwnership::kAgent));
+      HandoffButtonState(true, HandoffButtonState::ControlOwnership::kActor));
 
   EXPECT_CALL(*mock_handoff_button_controller_, UpdateState(_, _)).Times(1);
 
@@ -197,7 +197,7 @@ TEST_P(
   bool tab_is_activated = std::get<2>(GetParam());
 
   HandoffButtonState handoff_button_state(
-      handoff_is_active, HandoffButtonState::ControlOwnership::kAgent);
+      handoff_is_active, HandoffButtonState::ControlOwnership::kActor);
   ActorOverlayState actor_overlay_state(actor_overlay_is_active, false,
                                         std::nullopt);
   UiTabState ui_tab_state(actor_overlay_state, handoff_button_state);
@@ -230,7 +230,7 @@ TEST_P(ActorUiTabControllerParamTest,
   actor_ui_tab_controller_->OnTabActiveStatusChanged(tab_is_activated,
                                                      &mock_tab());
   HandoffButtonState handoff_button_state_before(
-      handoff_is_active, HandoffButtonState::ControlOwnership::kAgent);
+      handoff_is_active, HandoffButtonState::ControlOwnership::kActor);
   ActorOverlayState actor_overlay_state_before(actor_overlay_is_active, false,
                                                std::nullopt);
   UiTabState ui_tab_state_before(actor_overlay_state_before,
@@ -239,7 +239,7 @@ TEST_P(ActorUiTabControllerParamTest,
                                                base::DoNothing());
 
   HandoffButtonState handoff_button_state_after(
-      !handoff_is_active, HandoffButtonState::ControlOwnership::kAgent);
+      !handoff_is_active, HandoffButtonState::ControlOwnership::kActor);
   ActorOverlayState actor_overlay_state_after(actor_overlay_is_active, false,
                                               std::nullopt);
   UiTabState ui_tab_state_after(actor_overlay_state_after,

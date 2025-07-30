@@ -57,7 +57,7 @@ class ActorUiStateManager : public ActorUiStateManagerInterface {
   // `current_time`.
   std::vector<TaskId> GetCompletedTasks(base::Time current_time) const;
 
-  // Shows toast that notifies user the agent is working in the background.
+  // Shows toast that notifies user the Actor is working in the background.
   // Shows a maximum of kToastShownMax per profile.
   void MaybeShowToast(BrowserWindowInterface* bwi);
 

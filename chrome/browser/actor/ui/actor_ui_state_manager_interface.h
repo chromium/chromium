@@ -31,11 +31,11 @@ class ActorUiStateManagerInterface {
   // TODO(crbug.com/428014205): Once UX is determined for multiple tasks, states
   // here may change.
   enum class UiState {
-    // There are no active agent tasks on this profile.
+    // There are no active Actor tasks on this profile.
     kInactive,
-    // There are active agent tasks on this profile.
+    // There are active Actor tasks on this profile.
     kActive,
-    // There are agent tasks that need attention, this includes agent pause &
+    // There are Actor tasks that need attention, this includes Actor pause &
     // completed tasks within the kCompletedTaskExpiryDelay.
     kCheckTasks,
   };

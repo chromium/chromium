@@ -68,7 +68,7 @@ class HandoffButtonController {
   bool is_active_ = false;
   bool is_visible_ = false;
   HandoffButtonState::ControlOwnership ownership_ =
-      HandoffButtonState::ControlOwnership::kAgent;
+      HandoffButtonState::ControlOwnership::kActor;
   const raw_ref<tabs::TabInterface> tab_interface_;
 
   base::WeakPtrFactory<HandoffButtonController> weak_ptr_factory_{this};

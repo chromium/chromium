@@ -367,13 +367,13 @@ const auto kActorTaskTestValues =
              .actor_overlay = ActorOverlayState(/*is_active=*/true),
              .handoff_button =
                  {.is_active = true,
-                  .controller = HandoffButtonState::ControlOwnership::kAgent}}},
+                  .controller = HandoffButtonState::ControlOwnership::kActor}}},
         {ActorTask::State::kReflecting,
          UiTabState{
              .actor_overlay = ActorOverlayState(/*is_active=*/true),
              .handoff_button =
                  {.is_active = true,
-                  .controller = HandoffButtonState::ControlOwnership::kAgent}}},
+                  .controller = HandoffButtonState::ControlOwnership::kActor}}},
         {ActorTask::State::kPausedByClient,
          UiTabState{.actor_overlay = ActorOverlayState(/*is_active=*/false),
                     .handoff_button =
@@ -411,7 +411,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
       .actor_overlay = ActorOverlayState(/*is_active=*/true),
       .handoff_button = {
           .is_active = true,
-          .controller = HandoffButtonState::ControlOwnership::kAgent}};
+          .controller = HandoffButtonState::ControlOwnership::kActor}};
   VerifyUiEvent(StartingToActOnTab{mock_tab_.GetHandle(), TaskId(123)},
                 expected_ui_tab_state);
 }
@@ -433,7 +433,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
           /*is_active=*/true, /*mouse_down=*/false, page_target),
       .handoff_button = {
           .is_active = true,
-          .controller = HandoffButtonState::ControlOwnership::kAgent}};
+          .controller = HandoffButtonState::ControlOwnership::kActor}};
   VerifyUiEvent(MouseMove{mock_tab_.GetHandle(), page_target},
                 expected_ui_tab_state);
 }
@@ -445,7 +445,7 @@ TEST_F(ActorUiStateManagerUiEventUiTabScopedTest,
           ActorOverlayState(/*is_active=*/true, /*mouse_down=*/true),
       .handoff_button = {
           .is_active = true,
-          .controller = HandoffButtonState::ControlOwnership::kAgent}};
+          .controller = HandoffButtonState::ControlOwnership::kActor}};
   VerifyUiEvent(MouseClick{mock_tab_.GetHandle(), MouseClickType::kLeft,
                            MouseClickCount::kSingle},
                 expected_ui_tab_state);

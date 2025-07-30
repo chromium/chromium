@@ -35,13 +35,13 @@ using tabs::TabInterface;
 
 // TODO(crbug.com/424495020): Hardcoded states; Move this out to it's own file
 // to be shared with tab controller.
-const UiTabState& GetAgentControlledUiTabState() {
-  static const UiTabState kAgentState = {
+const UiTabState& GetActorControlledUiTabState() {
+  static const UiTabState kActorState = {
       .actor_overlay = ActorOverlayState(/*is_active=*/true),
       .handoff_button = {
           .is_active = true,
-          .controller = HandoffButtonState::ControlOwnership::kAgent}};
-  return kAgentState;
+          .controller = HandoffButtonState::ControlOwnership::kActor}};
+  return kActorState;
 }
 
 const UiTabState& GetPausedUiTabState() {
@@ -74,15 +74,15 @@ auto GetNewUiStateFn(ActorUiStateManager& manager) {
         if (auto* tab_controller = manager.GetUiTabController(tab)) {
           tab_controller->SetActiveTaskId(e.task_id);
         }
-        return TabUiUpdate{tab, GetAgentControlledUiTabState()};
+        return TabUiUpdate{tab, GetActorControlledUiTabState()};
       },
       [](const MouseClick& e) -> TabUiUpdate {
-        UiTabState ui_tab_state = GetAgentControlledUiTabState();
+        UiTabState ui_tab_state = GetActorControlledUiTabState();
         ui_tab_state.actor_overlay.mouse_down = true;
         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
       },
       [](const MouseMove& e) -> TabUiUpdate {
-        UiTabState ui_tab_state = GetAgentControlledUiTabState();
+        UiTabState ui_tab_state = GetActorControlledUiTabState();
         ui_tab_state.actor_overlay.mouse_target = e.target;
         return TabUiUpdate{e.tab_handle.Get(), ui_tab_state};
       }};
@@ -131,7 +131,7 @@ void ActorUiStateManager::OnActorTaskStateChange(
           << "Task state should never be set to kCreated from another state.";
     case ActorTask::State::kActing:
     case ActorTask::State::kReflecting:
-      ui_tab_state = GetAgentControlledUiTabState();
+      ui_tab_state = GetActorControlledUiTabState();
       break;
     case ActorTask::State::kPausedByClient:
       ui_tab_state = GetPausedUiTabState();

@@ -69,7 +69,7 @@ void HandoffButtonController::UpdateState(const HandoffButtonState& state,
   ImageModel icon;
   // TODO(crbug.com/422541242): Update icon color to match spec.
   switch (state.controller) {
-    case kAgent:
+    case kActor:
       text = TAKE_OVER_TASK_TEXT;
       icon = ImageModel::FromVectorIcon(
           vector_icons::kSelectWindowChromeRefreshIcon, SK_ColorDKGRAY);
@@ -193,9 +193,9 @@ void HandoffButtonController::CloseButton(views::Widget::ClosedReason reason) {
 }
 
 void HandoffButtonController::OnButtonPressed() {
-  // If the agent is currently in control, pressing the button
+  // If the Actor is currently in control, pressing the button
   // flips the state and pauses the task.
-  if (ownership_ == kAgent) {
+  if (ownership_ == kActor) {
     GetTabController()->SetActorTaskPaused();
   } else {
     GetTabController()->SetActorTaskResume();

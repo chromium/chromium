@@ -140,7 +140,7 @@ TEST_F(HandoffButtonControllerTest,
 TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
   HandoffButtonState state;
   state.is_active = true;
-  state.controller = kAgent;
+  state.controller = kActor;
   controller_->UpdateState(state, /*is_visible=*/true);
   EXPECT_EQ(button_->GetText(), actor::ui::TAKE_OVER_TASK_TEXT);
   EXPECT_EQ(1, controller_->update_bounds_call_count());
@@ -154,11 +154,11 @@ TEST_F(HandoffButtonControllerTest, ButtonTextUpdatesWhenOwnershipChanges) {
 }
 
 TEST_F(HandoffButtonControllerTest,
-       CallSetActorTaskPausedWhenAgentHasControlOnButtonPressed) {
-  HandoffButtonState agent_state;
-  agent_state.is_active = true;
-  agent_state.controller = kAgent;
-  controller_->UpdateState(agent_state, /*is_visible=*/true);
+       CallSetActorTaskPausedWhenActorHasControlOnButtonPressed) {
+  HandoffButtonState actor_state;
+  actor_state.is_active = true;
+  actor_state.controller = kActor;
+  controller_->UpdateState(actor_state, /*is_visible=*/true);
 
   EXPECT_CALL(*controller_->GetTabController(), SetActorTaskPaused());
 

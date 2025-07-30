@@ -52,8 +52,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void UpdateState(const UiTabState& ui_tab_state,
                    bool tab_active_status,
                    UiResultCallback callback);
-  // Computes whether the Agent Overlay is visible based on the current state.
-  bool ComputeAgentOverlayVisibility();
+  // Computes whether the Actor Overlay is visible based on the current state.
+  bool ComputeActorOverlayVisibility();
 
   // Tab subscriptions:
   // Called when the tab is detached.

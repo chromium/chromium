@@ -116,7 +116,7 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiOverlay.Get()) {
     actor_overlay_view_controller_->UpdateState(
-        current_ui_tab_state_.actor_overlay, ComputeAgentOverlayVisibility());
+        current_ui_tab_state_.actor_overlay, ComputeActorOverlayVisibility());
   }
 
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
@@ -135,7 +135,7 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
       FROM_HERE, base::BindOnce(std::move(callback), true));
 }
 
-bool ActorUiTabController::ComputeAgentOverlayVisibility() {
+bool ActorUiTabController::ComputeActorOverlayVisibility() {
   // Only visible when its state and the associated tab are both active.
   return current_ui_tab_state_.actor_overlay.is_active &&
          current_tab_active_status_;
