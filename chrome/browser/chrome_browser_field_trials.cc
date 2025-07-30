@@ -119,6 +119,10 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
     feature_overrides.DisableFeature(features::kEyeDropper);
   }
 #elif BUILDFLAG(IS_ANDROID)  // BUILDFLAG(IS_LINUX)
+  // TODO(crbug.com/422902880): Remove when tablet rollout is complete.
+  feature_overrides.EnableFeature(
+      base::features::kUseSharedRebindServiceConnection);
+  feature_overrides.EnableFeature(features::kGroupRebindingForGroupImportance);
 #if BUILDFLAG(IS_DESKTOP_ANDROID)
   // Nota bene: Anything here is expected to be short-lived, unless deemed too
   // risky to launch to non-desktop platforms. New features being added here
@@ -148,16 +152,12 @@ void ChromeBrowserFieldTrials::RegisterFeatureOverrides(
   feature_overrides.EnableFeature(features::kUserMediaScreenCapturing);
 
   // Enable desktop tab management features.
-  // TODO(crbug.com/422902880): Remove when tablet rollout is complete.
-  feature_overrides.EnableFeature(
-      base::features::kUseSharedRebindServiceConnection);
   // TODO(crbug.com/422902940): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(
       base::features::kBackgroundNotPerceptibleBinding);
   // TODO(crbug.com/422902625): Remove when rollout is complete to all form
   // factors.
   feature_overrides.EnableFeature(chrome::android::kProcessRankPolicyAndroid);
-  feature_overrides.EnableFeature(features::kGroupRebindingForGroupImportance);
   feature_overrides.EnableFeature(chrome::android::kProtectedTabsAndroid);
   // TODO(crbug.com/422903297): Remove when tablet rollout is complete.
   feature_overrides.EnableFeature(features::kRendererProcessLimitOnAndroid);
