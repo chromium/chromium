@@ -260,7 +260,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Enterprise.AutoEnrollmentControllerTimeout"
     enum="EnterpriseAutoEnrollmentControllerTimeoutReport"
-    expires_after="2025-10-12">
+    expires_after="2026-07-12">
   <owner>vsavu@google.com</owner>
   <owner>igorcov@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -695,7 +695,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.DevicePolicyDeviceIdValidity2.{EnrollmentType}"
-    enum="EnterprisePolicyDeviceIdValidity" expires_after="2025-11-09">
+    enum="EnterprisePolicyDeviceIdValidity" expires_after="2026-07-09">
   <owner>igorcov@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <summary>
@@ -2478,7 +2478,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.KeySignatureVerification"
-    enum="EnterpriseKeySignatureVerification" expires_after="2025-08-10">
+    enum="EnterpriseKeySignatureVerification" expires_after="2026-07-10">
   <owner>igorcov@chromium.org</owner>
   <owner>emaxx@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3751,7 +3751,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.UserPolicyChromeOS.InitialFetch.OAuth2Error"
-    enum="GoogleServiceAuthError" expires_after="2025-08-10">
+    enum="GoogleServiceAuthError" expires_after="2026-07-10">
   <owner>igorcov@chromium.org</owner>
   <owner>asumaneev@google.com</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
@@ -3837,7 +3837,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Enterprise.VpdUpdateStatus" units="units"
-    expires_after="2025-09-14">
+    expires_after="2026-07-14">
   <owner>igorcov@chromium.org</owner>
   <owner>tnagel@chromium.org</owner>
   <owner>chromeos-commercial-remote-management@google.com</owner>
