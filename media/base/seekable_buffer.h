@@ -38,7 +38,7 @@
 #include <list>
 #include <optional>
 
-#include "base/containers/span.h"
+#include "base/containers/span_or_size.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/numerics/checked_math.h"
 #include "base/time/time.h"
@@ -149,8 +149,7 @@ class MEDIA_EXPORT SeekableBuffer {
   // number of bytes read. The current read position will be moved forward by
   // the number of bytes read. If `data` is NULL, only the current read position
   // will advance but no data will be copied.
-  size_t InternalRead(std::optional<base::span<uint8_t>> data,
-                      size_t num_bytes,
+  size_t InternalRead(base::SpanOrSize<uint8_t> data,
                       bool advance_position,
                       size_t forward_offset);
 
