@@ -25,6 +25,16 @@ namespace optimization_guide {
 
 namespace {
 
+// Whether image input is enabled for CPU backend.
+BASE_FEATURE(kOnDeviceModelCpuImageInput,
+             "OnDeviceModelCpuImageInput",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
+// Whether audio input is enabled for CPU backend.
+BASE_FEATURE(kOnDeviceModelCpuAudioInput,
+             "OnDeviceModelCpuAudioInput",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Commandline switch to force a particular performance class.
 const char kOverridePerformanceClassSwitch[] =
     "optimization-guide-performance-class";
@@ -244,15 +254,21 @@ bool PerformanceClassifier::IsLowTierDevice() const {
 }
 
 bool PerformanceClassifier::SupportsImageInput() const {
-  return IsPerformanceClassCompatible(
-      features::kPerformanceClassListForImageInput.Get(),
-      GetPerformanceClass());
+  return (IsDeviceGPUCapable() &&
+          IsPerformanceClassCompatible(
+              features::kPerformanceClassListForImageInput.Get(),
+              GetPerformanceClass())) ||
+         (IsDeviceCapable() &&
+          base::FeatureList::IsEnabled(kOnDeviceModelCpuImageInput));
 }
 
 bool PerformanceClassifier::SupportsAudioInput() const {
-  return IsPerformanceClassCompatible(
-      features::kPerformanceClassListForAudioInput.Get(),
-      GetPerformanceClass());
+  return (IsDeviceGPUCapable() &&
+          IsPerformanceClassCompatible(
+              features::kPerformanceClassListForAudioInput.Get(),
+              GetPerformanceClass())) ||
+         (IsDeviceCapable() &&
+          base::FeatureList::IsEnabled(kOnDeviceModelCpuAudioInput));
 }
 
 std::vector<proto::OnDeviceModelPerformanceHint>
