@@ -90,7 +90,7 @@ namespace {
 // Windows.
 BASE_FEATURE(kUseSingleSIForLowLatencyWebGLOnWindows,
              "UseSingleSIForLowLatencyWebGLOnWindows",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 const float kResourceAdjustedRatio = 0.5;
 
