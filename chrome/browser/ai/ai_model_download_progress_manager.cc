@@ -88,16 +88,19 @@ AIModelDownloadProgressManager::Reporter::Reporter(
   for (auto iter = components_.begin(); iter != components_.end();) {
     if ((*iter)->is_complete()) {
       iter = components_.erase(iter);
-    } else {
-      // TODO(crbug.com/425322243): Support passing in an uninstalled component
-      // with undetermined bytes.
-      CHECK(!(*iter)->determined_bytes());
-
-      // Watch for progress updates.
-      (*iter)->SetEventCallback(base::BindRepeating(
-          &Reporter::OnEvent, weak_ptr_factory_.GetWeakPtr()));
-      ++iter;
+      continue;
     }
+
+    Component& component = *iter->get();
+
+    // Watch for progress updates.
+    component.SetEventCallback(base::BindRepeating(
+        &Reporter::OnEvent, weak_ptr_factory_.GetWeakPtr()));
+
+    if (component.determined_bytes()) {
+      OnEvent(component);
+    }
+    ++iter;
   }
 
   // If there are no component ids to observe, just send zero and one hundred

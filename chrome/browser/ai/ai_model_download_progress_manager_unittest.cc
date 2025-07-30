@@ -136,21 +136,128 @@ TEST_F(AIModelDownloadProgressManagerTest,
   base::test::RunUntil([&]() { return manager.GetNumberOfReporters() == 0; });
 }
 
+TEST_F(AIModelDownloadProgressManagerTest,
+       DoesntReceiveUpdateUntilAllBytesAreDetermined) {
+  // Both total and download bytes are undetermined.
+  {
+    AIModelDownloadProgressManager manager;
+    AITestUtils::FakeMonitor monitor;
+    FakeComponent component(std::nullopt, std::nullopt);
+
+    // No events should be fired since bytes haven't been determined yet.
+    manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                        component.GetImplAsList());
+    monitor.ExpectNoUpdate();
+    FastForwardBy(base::Milliseconds(51));
+
+    // No events should be fired since total bytes hasn't been determined yet.
+    component.SetDownloadedBytes(0);
+    monitor.ExpectNoUpdate();
+    FastForwardBy(base::Milliseconds(51));
+
+    // Bytes have been determined so we should receive the first update.
+    component.SetTotalBytes(100);
+    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+
+  // Download bytes are undetermined.
+  {
+    AIModelDownloadProgressManager manager;
+    AITestUtils::FakeMonitor monitor;
+    FakeComponent component(std::nullopt, 100);
+
+    // No events should be fired since downloaded bytes hasn't been determined
+    // yet.
+    manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                        component.GetImplAsList());
+    monitor.ExpectNoUpdate();
+    FastForwardBy(base::Milliseconds(51));
+
+    // Bytes have been determined so we should receive the first update.
+    component.SetDownloadedBytes(0);
+    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+
+  // Total bytes are undetermined.
+  {
+    AIModelDownloadProgressManager manager;
+    AITestUtils::FakeMonitor monitor;
+    FakeComponent component(0, std::nullopt);
+
+    // No events should be fired since total bytes hasn't been determined yet.
+    manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                        component.GetImplAsList());
+    monitor.ExpectNoUpdate();
+    FastForwardBy(base::Milliseconds(51));
+
+    // Bytes have been determined so we should receive the first update.
+    component.SetTotalBytes(100);
+    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+
+  // Multiple components with one having undetermined downloaded bytes.
+  {
+    AIModelDownloadProgressManager manager;
+    AITestUtils::FakeMonitor monitor;
+    FakeComponent component1(0, 100);
+    FakeComponent component2(std::nullopt, 1000);
+    ComponentList component_list;
+    component_list.insert(component1.GetImpl());
+    component_list.insert(component2.GetImpl());
+
+    // No events should be fired since `component2`'s downloaded bytes haven't
+    // been determined yet.
+    manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                        std::move(component_list));
+    monitor.ExpectNoUpdate();
+    FastForwardBy(base::Milliseconds(51));
+
+    // Bytes have been determined so we should receive the first update.
+    component2.SetDownloadedBytes(0);
+    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+}
+
+TEST_F(AIModelDownloadProgressManagerTest,
+       SendsUpdateIfBytesAreAlreadyDetermined) {
+  // One component.
+  {
+    AIModelDownloadProgressManager manager;
+    AITestUtils::FakeMonitor monitor;
+    FakeComponent component(0, 100);
+
+    // We should get the first update since all bytes have been determined.
+    manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                        component.GetImplAsList());
+    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+
+  // Two components.
+  {
+    AIModelDownloadProgressManager manager;
+    AITestUtils::FakeMonitor monitor;
+    FakeComponent component1(0, 100);
+    FakeComponent component2(0, 1000);
+    ComponentList component_list;
+    component_list.insert(component1.GetImpl());
+    component_list.insert(component2.GetImpl());
+
+    // We should get the first update since all bytes have been determined.
+    manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                        std::move(component_list));
+    monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
+  }
+}
+
 TEST_F(AIModelDownloadProgressManagerTest, FirstUpdateIsReportedAsZero) {
   AIModelDownloadProgressManager manager;
   AITestUtils::FakeMonitor monitor;
-  FakeComponent component(std::nullopt, 100);
-
-  manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
-                      component.GetImplAsList());
-
-  // No events should be fired until the first update.
-  monitor.ExpectNoUpdate();
-  FastForwardBy(base::Milliseconds(51));
+  FakeComponent component(10, 100);
 
   // The first update should be reported as zero. And `total_bytes` should
   // always be `kNormalizedProgressMax` (0x10000).
-  component.SetDownloadedBytes(10);
+  manager.AddObserver(monitor.BindNewPipeAndPassRemote(),
+                      component.GetImplAsList());
   monitor.ExpectReceivedUpdate(0, AIUtils::kNormalizedDownloadProgressMax);
 
   // No other events should be fired.
