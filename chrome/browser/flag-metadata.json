@@ -2842,6 +2842,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "enable-auxiliary-navigation-stays-in-PWA",
+    "owners": [
+        "muratori@google.org",
+        "lt-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "enable-ax-tree-fixing",
     "owners": [ "mschillaci@chromium.org", "//ui/accessibility/OWNERS" ],
     "expiry_milestone": 150

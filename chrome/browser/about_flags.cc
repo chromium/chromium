@@ -7832,6 +7832,11 @@ const FeatureEntry kFeatureEntries[] = {
          kAuxiliaryNavigationStaysInBrowserVariations,
          "AuxiliaryNavigationStaysInBrowser")},
 
+    {"enable-auxiliary-navigation-stays-in-PWA",
+     flag_descriptions::kAuxiliaryNavigationStaysInPWAName,
+     flag_descriptions::kAuxiliaryNavigationStaysInPWADescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(external_intents::kAuxiliaryNavigationStaysInPWA)},
+
     {"enable-magic-stack-android", flag_descriptions::kMagicStackAndroidName,
      flag_descriptions::kMagicStackAndroidDescription, kOsAndroid,
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kMagicStackAndroid,

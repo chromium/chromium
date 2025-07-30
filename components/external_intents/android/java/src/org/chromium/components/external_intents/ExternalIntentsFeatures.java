@@ -29,6 +29,8 @@ public class ExternalIntentsFeatures {
             "ReparentTopLevelNavigationFromPWA";
     public static final String REPARENT_AUXILIARY_NAVIGATION_FROM_PWA_NAME =
             "ReparentAuxiliaryNavigationFromPWA";
+    public static final String AUXILIARY_NAVIGATION_STAYS_IN_PWA_NAME =
+            "AuxiliaryNavigationStaysInPWA";
 
     public static final ExternalIntentsFeature EXTERNAL_NAVIGATION_DEBUG_LOGS =
             new ExternalIntentsFeature(0, EXTERNAL_NAVIGATION_DEBUG_LOGS_NAME);
@@ -49,6 +51,9 @@ public class ExternalIntentsFeatures {
 
     public static final ExternalIntentsFeature REPARENT_AUXILIARY_NAVIGATION_FROM_PWA =
             new ExternalIntentsFeature(5, REPARENT_AUXILIARY_NAVIGATION_FROM_PWA_NAME);
+
+    public static final ExternalIntentsFeature AUXILIARY_NAVIGATION_STAYS_IN_PWA =
+            new ExternalIntentsFeature(6, AUXILIARY_NAVIGATION_STAYS_IN_PWA_NAME);
 
     public static class ExternalIntentsFeature extends Features {
         private final int mOrdinal;

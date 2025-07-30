@@ -12543,6 +12543,7 @@ from previous Chrome versions.
   <int value="-574177355"
       label="AutoPictureInPictureForVideoPlayback:disabled"/>
   <int value="-574000901" label="AVIF:enabled"/>
+  <int value="-573652879" label="AuxiliaryNavigationStaysInPWA:enabled"/>
   <int value="-573570330" label="QuickAnswersTranslationCloudAPI:disabled"/>
   <int value="-573375274" label="DisplayPerformanceMode:enabled"/>
   <int value="-572592521"
@@ -19008,6 +19009,7 @@ from previous Chrome versions.
   <int value="1787171971" label="UserEducationExperienceVersion2:enabled"/>
   <int value="1787279386" label="VirtualKeyboardMultitouch:enabled"/>
   <int value="1787572807" label="PrefixWebAppWindowsWithAppName:enabled"/>
+  <int value="1788323093" label="AuxiliaryNavigationStaysInPWA:disabled"/>
   <int value="1789517771" label="MacV2Sandbox:enabled"/>
   <int value="1789793147" label="HTTPSServerPreviewsUsingURLLoader:disabled"/>
   <int value="1789795039"

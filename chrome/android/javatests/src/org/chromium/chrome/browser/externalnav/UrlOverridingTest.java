@@ -2386,7 +2386,6 @@ public class UrlOverridingTest {
                     Criteria.checkThat(tab.getWebContents().hasOpener(), Matchers.is(true));
                 });
 
-        // open external app
         TouchCommon.singleClickView(tab.getView());
 
         CriteriaHelper.pollUiThread(
@@ -2459,6 +2458,24 @@ public class UrlOverridingTest {
 
         Assert.assertFalse(newActivity.getActivityTab().isTabInPWA());
         Assert.assertFalse(newActivity.getActivityTab().getWebContents().hasOpener());
+    }
+
+    @Test
+    @EnableFeatures({ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_PWA_NAME})
+    @LargeTest
+    public void testAuxiliaryNavigationFromPWAStaysInPWA() throws TimeoutException {
+        InterceptNavigationDelegateClientImpl.setIsDesktopWindowingModeForTesting(false);
+
+        String url =
+                getUrlWithParam(
+                        NAVIGATION_FROM_TARGET_BLANK_REL_OPENER_LINK,
+                        mTestServer.getURL(HELLO_PAGE));
+
+        launchTwa("com.foo.bar", url);
+        ChromeActivity activity = mCustomTabActivityRule.getActivity();
+
+        Assert.assertTrue(activity.getActivityTab().isTabInPWA());
+        Assert.assertFalse(activity.getActivityTab().getWebContents().hasOpener());
     }
 
     private void doTestInitialIntentToApp(boolean allowInitialIntentToLeave) throws Exception {

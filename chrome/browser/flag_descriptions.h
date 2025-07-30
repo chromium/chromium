@@ -2752,6 +2752,9 @@ extern const char kAutomotiveBackButtonBarStreamlineDescription[];
 extern const char kAuxiliaryNavigationStaysInBrowserName[];
 extern const char kAuxiliaryNavigationStaysInBrowserDescription[];
 
+extern const char kAuxiliaryNavigationStaysInPWAName[];
+extern const char kAuxiliaryNavigationStaysInPWADescription[];
+
 extern const char kBackgroundNotPerceptibleBindingName[];
 extern const char kBackgroundNotPerceptibleBindingDescription[];
 

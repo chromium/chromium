@@ -16568,6 +16568,25 @@
             ]
         }
     ],
+    "PWANavigationCapturingAndroidFullscreenWindowing": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledFullscreenWindowingNavigations",
+                    "params": {
+                        "auxiliary_navigation_stays_in_browser": "all_wm"
+                    },
+                    "enable_features": [
+                        "AuxiliaryNavigationStaysInBrowser",
+                        "AuxiliaryNavigationStaysInPWA"
+                    ]
+                }
+            ]
+        }
+    ],
     "PWANavigationCapturingV2ChromeOS": [
         {
             "platforms": [

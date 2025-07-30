@@ -535,6 +535,11 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
                 // A new auxiliary browsing context navigation starting in the browser should not be
                 // captured.
                 result = OverrideUrlLoadingResult.forNoOverride();
+            } else if (ExternalIntentsFeatures.AUXILIARY_NAVIGATION_STAYS_IN_PWA.isEnabled()
+                    && isPWAAuxiliaryNavigationInFullscreenWM()) {
+                // A new auxiliary browsing context navigation starting in the PWA should not be
+                // captured.
+                result = OverrideUrlLoadingResult.forNoOverride();
             } else {
                 result = assumeNonNull(mExternalNavHandler).shouldOverrideUrlLoading(params);
             }
@@ -677,6 +682,15 @@ public class InterceptNavigationDelegateImpl extends InterceptNavigationDelegate
         // the return statement below, otherwise remove it.
         WebContents webContents = assumeNonNull(mClient.getWebContents());
         return mClient.isTabInBrowser()
+                && webContents.hasOpener()
+                && webContents.getOriginalWindowOpenDisposition()
+                        == WindowOpenDisposition.NEW_FOREGROUND_TAB;
+    }
+
+    private boolean isPWAAuxiliaryNavigationInFullscreenWM() {
+        WebContents webContents = assumeNonNull(mClient.getWebContents());
+        return mClient.isTabInPWA()
+                && !mClient.isInDesktopWindowingMode()
                 && webContents.hasOpener()
                 && webContents.getOriginalWindowOpenDisposition()
                         == WindowOpenDisposition.NEW_FOREGROUND_TAB;

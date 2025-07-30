@@ -4764,6 +4764,12 @@ const char kAuxiliaryNavigationStaysInBrowserDescription[] =
     "If enabled, any new auxiliary browsing context navigation started in "
     "the browser will open in a new tab.";
 
+const char kAuxiliaryNavigationStaysInPWAName[] =
+    "Prevent app opening for auxiliary navigations that start in a PWA";
+const char kAuxiliaryNavigationStaysInPWADescription[] =
+    "If enabled, any new auxiliary browsing context navigation started in "
+    "any PWA will open a new tab in the same PWA.";
+
 const char kBackgroundNotPerceptibleBindingName[] =
     "Enable not perceptible binding without cpu priority boosting";
 const char kBackgroundNotPerceptibleBindingDescription[] =
