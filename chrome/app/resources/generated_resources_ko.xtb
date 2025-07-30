@@ -301,7 +301,7 @@
 <translation id="1195210374336998651">앱 설정으로 이동</translation>
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
-<translation id="1197088940767939838">오렌지색</translation>
+<translation id="1197088940767939838">주황색</translation>
 <translation id="11978075283960463">앱에 저장된 데이터: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">저시력 음성 도구</translation>
 <translation id="119944043368869598">모두 삭제</translation>
@@ -6324,7 +6324,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5413640305322530561">진단 및 사용 데이터 자세히 알아보기</translation>
 <translation id="5414198321558177633">프로필 목록을 새로고침하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5414566801737831689">방문하는 웹사이트의 아이콘 조회</translation>
-<translation id="5414836363063783498">확인 중...</translation>
+<translation id="5414836363063783498">인증 중...</translation>
 <translation id="5415328625985164836">이 프로그램은 베타 버전입니다. 이제 Chromebook에서 Steam을 사용하여 게임을 즐길 수 있습니다.</translation>
 <translation id="5415497281076257439">구문</translation>
 <translation id="5417312524372586921">브라우저 테마</translation>
@@ -8046,7 +8046,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6667187897999649121">현재는 가족 구성원과만 비밀번호를 공유할 수 있습니다. 최대 6명이 참여할 수 있는 <ph name="BEGIN_LINK" />가족 그룹을 만들고<ph name="END_LINK" /> Google 서비스에서 제품 및 구독을 더 재미있게 활용하세요.</translation>
 <translation id="666731172850799929"><ph name="APP_NAME" />에서 열기</translation>
 <translation id="6669195257625975787">데이터는 현재 보고 있는 사이트와 동일하게 처리됩니다.</translation>
-<translation id="6669637573228217624">파일 업로드</translation>
 <translation id="6670142487971298264"><ph name="APP_NAME" /> 사용 가능</translation>
 <translation id="6670767097276846646">일부 확장 프로그램은 Chrome에 검색엔진을 추가할 수 있습니다.</translation>
 <translation id="6670983860904543332">자동 업데이트를 통해 최신 기능을 사용할 수 있습니다. 최근 업데이트의 주요 정보를 살펴보세요.</translation>
