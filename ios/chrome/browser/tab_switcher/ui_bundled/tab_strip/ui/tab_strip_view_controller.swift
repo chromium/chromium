@@ -180,14 +180,12 @@ class TabStripViewController: UIViewController, TabStripConsumer, TabStripNewTab
 
         /// `leadingStaticSeparator` constraints.
         leadingStaticSeparator.leadingAnchor.constraint(equalTo: collectionView.leadingAnchor),
-        leadingStaticSeparator.bottomAnchor.constraint(
-          equalTo: collectionView.bottomAnchor,
-          constant: -TabStripConstants.StaticSeparator.bottomInset),
+        leadingStaticSeparator.centerYAnchor.constraint(
+          equalTo: collectionView.centerYAnchor),
         /// `trailingStaticSeparator` constraints.
         trailingStaticSeparator.trailingAnchor.constraint(equalTo: collectionView.trailingAnchor),
-        trailingStaticSeparator.bottomAnchor.constraint(
-          equalTo: collectionView.bottomAnchor,
-          constant: -TabStripConstants.StaticSeparator.bottomInset),
+        trailingStaticSeparator.centerYAnchor.constraint(
+          equalTo: collectionView.centerYAnchor),
       ])
   }
 

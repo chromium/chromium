@@ -84,7 +84,6 @@ public struct TabStripConstants {
     public static let regularSeparatorHeight: CGFloat = 18
     public static let horizontalInset: CGFloat = 4
     public static let leadingInset: CGFloat = 6
-    public static let bottomInset: CGFloat = 8
     public static let backgroundColorAlpha: CGFloat = 0.3
     public static let solidBackgroundVerticalPadding: CGFloat = 5
   }
