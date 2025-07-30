@@ -600,7 +600,7 @@ ADML_PREDEFINED_STRINGS_TABLE_EN = [
     ('Pol_TargetVersionPrefix', 'Target version prefix override'),
     ('Pol_RollbackToTargetVersion', 'Rollback to Target version'),
     ('Pol_MajorVersionRollout', 'Major version rollout'),
-    ('Pol_MinorVersionRollout', 'Major version rollout'),
+    ('Pol_MinorVersionRollout', 'Minor version rollout'),
     ('Part_AutoUpdateCheckPeriod', 'Minutes between update checks'),
     ('Part_UpdateCheckSuppressedStartHour',
      'Hour in a day that start to suppress update check'),
