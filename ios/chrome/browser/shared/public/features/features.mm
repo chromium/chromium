@@ -1012,7 +1012,7 @@ bool IsProvisionalNotificationAlertEnabled() {
 
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 constexpr base::FeatureParam<int> kDefaultBrowserBannerPromoImpressionLimit{
     &kDefaultBrowserBannerPromo, "DefaultBrowserBannerPromoImpressionLimit", 5};

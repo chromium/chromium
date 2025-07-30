@@ -7527,24 +7527,6 @@
             ]
         }
     ],
-    "DefaultBrowserBannerPromo": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20250709",
-                    "params": {
-                        "DefaultBrowserBannerPromoImpressionLimit": "5"
-                    },
-                    "enable_features": [
-                        "DefaultBrowserBannerPromo"
-                    ]
-                }
-            ]
-        }
-    ],
     "DefaultBrowserPromoAndroid2": [
         {
             "platforms": [
