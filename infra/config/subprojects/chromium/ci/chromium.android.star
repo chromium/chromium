@@ -4048,8 +4048,7 @@ ci.builder(
     targets_settings = targets.settings(
         os_type = targets.os_type.ANDROID,
     ),
-    gardener_rotations = args.ignore_default(None),
-    #tree_closing = True,
+    tree_closing = True,
     console_view_entry = consoles.console_view_entry(
         category = "tester|x64",
         short_name = "16",
