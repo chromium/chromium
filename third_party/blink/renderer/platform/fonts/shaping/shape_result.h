@@ -401,6 +401,8 @@ class PLATFORM_EXPORT ShapeResult : public GarbageCollected<ShapeResult> {
 #endif
 
  protected:
+  friend class ShapeResultCursor;
+
   // Ensure |grapheme_| is computed. |BreakGlyphs| is valid only when
   // |grapheme_| is computed.
   void EnsureGraphemes(const StringView& text) const;

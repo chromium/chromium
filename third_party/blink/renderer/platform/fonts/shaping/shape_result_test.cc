@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/platform/fonts/font.h"
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/font_test_utilities.h"
+#include "third_party/blink/renderer/platform/fonts/shaping/shape_result_cursor.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_run.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_spacing.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/shape_result_test_info.h"
@@ -851,6 +852,63 @@ TEST_P(CaretOffsetForHitTestTest, CaretOffsetForHitTest) {
               result->CaretOffsetForHitTest(test_data.positions[i], text_view))
         << "index " << i;
   }
+}
+
+class ShapeResultCursorTest : public ShapeResultTest {};
+
+TEST_F(ShapeResultCursorTest, Ltr) {
+  String string("0123456789");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(GetFont(kLatinFont), TextDirection::kLtr);
+  ShapeResultCursor cursor(result);
+  EXPECT_EQ(cursor.CharacterIndex(), 0u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 20u);
+
+  cursor.MoveToCharacter(4);
+  EXPECT_EQ(cursor.glyph_index_, 4u);
+  EXPECT_EQ(cursor.CharacterIndex(), 4u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 24u);
+
+  const TextRunLayoutUnit advance = cursor.ClusterAdvance();
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  const TextRunLayoutUnit space(10);
+  cursor.AddSpaceToRight(space);
+  EXPECT_EQ(advance + space, cursor.GlyphData().advance);
+  EXPECT_FALSE(cursor.run_->glyph_data_.HasNonZeroOffsets());
+
+  cursor.AddSpaceToLeft(-space);
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(cursor.run_->glyph_data_.Offsets()[cursor.glyph_index_],
+            GlyphOffset(-space, 0));
+}
+
+TEST_F(ShapeResultCursorTest, Rtl) {
+  // نص اختبار العربية
+  String string(
+      u"\u0646\u0635\u0627\u062E\u062A\u0628\u0627\u0631\u0627\u0644\u0639"
+      u"\u0631\u0628\u064A\u0629");
+  HarfBuzzShaper shaper(string);
+  ShapeResult* result = shaper.Shape(GetFont(kArabicFont), TextDirection::kRtl);
+  ShapeResultCursor cursor(result);
+  EXPECT_EQ(cursor.CharacterIndex(), 0u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 497u);
+
+  cursor.MoveToCharacter(4);
+  EXPECT_EQ(cursor.glyph_index_, 10u);
+  EXPECT_EQ(cursor.CharacterIndex(), 4u);
+  EXPECT_EQ(cursor.GlyphData().glyph, 440u);
+
+  const TextRunLayoutUnit advance = cursor.ClusterAdvance();
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  const TextRunLayoutUnit space(10);
+  cursor.AddSpaceToRight(space);
+  EXPECT_EQ(advance + space, cursor.GlyphData().advance);
+  EXPECT_FALSE(cursor.run_->glyph_data_.HasNonZeroOffsets());
+
+  cursor.AddSpaceToLeft(-space);
+  EXPECT_EQ(advance, cursor.GlyphData().advance);
+  EXPECT_EQ(cursor.run_->glyph_data_.Offsets()[cursor.glyph_index_],
+            GlyphOffset(-space, 0));
 }
 
 }  // namespace blink

@@ -88,6 +88,7 @@ struct PLATFORM_EXPORT ShapeResultRun final
     visitor->Trace(graphemes_);
   }
 
+  unsigned NumCharacters() const { return num_characters_; }
   unsigned NumGlyphs() const { return glyph_data_.size(); }
   bool HasLigatures() const { return NumGlyphs() < num_characters_; }
   hb_direction_t HbDirection() const {
@@ -425,11 +426,14 @@ struct PLATFORM_EXPORT ShapeResultRun final
   friend class HarfBuzzShaper;
   friend class ShapeResult;
   friend class ShapeResultBuffer;
+  friend class ShapeResultCursor;
   friend class ShapeResultTest;
   friend class ShapeResultTestInfo;
   friend class ShapeResultView;
   friend class ShapeResultRunTest;
   FRIEND_TEST_ALL_PREFIXES(GlyphDataRangeTest, Data);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Ltr);
+  FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Rtl);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyConstructor);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataCopyFromRange);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultRunTest, GlyphDataReverse);
