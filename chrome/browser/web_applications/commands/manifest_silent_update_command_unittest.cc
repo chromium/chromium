@@ -673,4 +673,274 @@ TEST_F(ManifestSilentUpdateCommandTest,
           /*count=*/1)));
 }
 
+TEST_F(ManifestSilentUpdateCommandTest,
+       IconLessThanTenPercentChangedDiffUpdatedSilently) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+
+  SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
+  // For a 96x96 image, total pixels = 9216.
+  // 10% of 9216 = 921.6 pixels.
+  // We'll change a small area, for example, the first 9 rows, to a different
+  // color. 9 rows * 96 columns = 864 pixels changed. This is < 10%.
+  changed_bitmap.eraseArea(SkIRect::MakeXYWH(0, 0, 96, 9), SK_ColorRED);
+
+  // Set icon in content.
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {changed_bitmap};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       IconLessThanTenPercentAndStartUrlChangedDiffUpdatedSilently) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            "https://www.foo.bar/web_apps/basic.html");
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+  new_manifest->start_url = GURL("https://www.foo.bar/web_apps/new_basic.html");
+
+  SkBitmap changed_bitmap = gfx::test::CreateBitmap(96, SK_ColorCYAN);
+  // For a 96x96 image, total pixels = 9216.
+  // 10% of 9216 = 921.6 pixels.
+  // We'll change a small area, for example, the first 9 rows, to a different
+  // color. 9 rows * 96 columns = 864 pixels changed. This is < 10%.
+  changed_bitmap.eraseArea(SkIRect::MakeXYWH(0, 0, 96, 9), SK_ColorRED);
+
+  // Set icon in content.
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {changed_bitmap};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppSilentlyUpdated);
+
+  ASSERT_FALSE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            "https://www.foo.bar/web_apps/new_basic.html");
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppSilentlyUpdated,
+                  /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       IconMoreThanTenPercentDiffChangedPendingUpdateInfoSaved) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+
+  // Set icon in content. Setting the icon color to YELLOW to trigger a more
+  // than 10% image diff.
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {gfx::test::CreateBitmap(96, SK_ColorYELLOW)};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(pending_update_info->manifest_icons_size(), 1);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->url(),
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->purpose(),
+            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 96);
+
+  EXPECT_EQ(pending_update_info->trusted_icons_size(), 1);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->url(),
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
+            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
+
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate,
+                  /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       IconMoreThanTenPercentDiffAndNameChangedPendingUpdateInfoSaved) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+  EXPECT_EQ(
+      provider().registrar_unsafe().GetAppById(app_id)->untranslated_name(),
+      base::UTF16ToUTF8(u"Foo App"));
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+  new_manifest->name = u"New Name";
+
+  // Set icon in content. Setting the icon color to YELLOW to trigger a more
+  // than 10% image diff.
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {gfx::test::CreateBitmap(96, SK_ColorYELLOW)};
+
+  EXPECT_EQ(RunManifestUpdateAndGetResult(),
+            ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(pending_update_info->manifest_icons_size(), 1);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->url(),
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->purpose(),
+            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 96);
+
+  EXPECT_EQ(pending_update_info->trusted_icons_size(), 1);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->url(),
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
+            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
+
+  EXPECT_EQ(pending_update_info->name(), base::UTF16ToUTF8(u"New Name"));
+  EXPECT_THAT(histogram_tester_.GetAllSamples(
+                  "Webapp.Update.ManifestSilentUpdateCheckResult"),
+              BucketsAre(base::Bucket(
+                  ManifestSilentUpdateCheckResult::kAppOnlyHasSecurityUpdate,
+                  /*count=*/1)));
+}
+
+TEST_F(ManifestSilentUpdateCommandTest,
+       IconMoreThanTenPercentDiffAndStartUrlChangedPendingUpdateInfoSaved) {
+  SetupBasicInstallablePageState();
+  webapps::AppId app_id = test::InstallForWebContents(
+      profile(), web_contents(),
+      webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).begin()->url,
+            GURL("https://example.com/path/def_icon.png"));
+  EXPECT_EQ(provider().registrar_unsafe().GetAppIconInfos(app_id).size(), 1u);
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            "https://www.foo.bar/web_apps/basic.html");
+
+  auto& new_manifest = GetPageManifest();
+
+  // Set up manifest icon.
+  blink::Manifest::ImageResource new_icon;
+  new_icon.src = GURL("https://example2.com/path/def_icon.png");
+  new_icon.sizes = {{96, 96}};
+  new_icon.purpose = {blink::mojom::ManifestImageResource_Purpose::ANY};
+
+  new_manifest->icons = {new_icon};
+  new_manifest->start_url = GURL("https://www.foo.bar/web_apps/new_basic.html");
+  // Set icon in content. Setting the icon color to YELLOW to trigger a more
+  // than 10% image diff.
+  web_contents_manager()
+      .GetOrCreateIconState(GURL("https://example2.com/path/def_icon.png"))
+      .bitmaps = {gfx::test::CreateBitmap(96, SK_ColorYELLOW)};
+
+  EXPECT_EQ(
+      RunManifestUpdateAndGetResult(),
+      ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges);
+
+  std::optional<proto::PendingUpdateInfo> pending_update_info =
+      provider().registrar_unsafe().GetAppById(app_id)->pending_update_info();
+  ASSERT_TRUE(AppHasPendingUpdateInfo(app_id));
+  EXPECT_EQ(pending_update_info->manifest_icons_size(), 1);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->url(),
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->purpose(),
+            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->manifest_icons().begin()->size_in_px(), 96);
+
+  EXPECT_EQ(pending_update_info->trusted_icons_size(), 1);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->url(),
+            GURL("https://example2.com/path/def_icon.png"));
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->purpose(),
+            sync_pb::WebAppIconInfo::Purpose::WebAppIconInfo_Purpose_ANY);
+  EXPECT_EQ(pending_update_info->trusted_icons().begin()->size_in_px(), 96);
+
+  EXPECT_EQ(provider().registrar_unsafe().GetAppStartUrl(app_id),
+            "https://www.foo.bar/web_apps/new_basic.html");
+  EXPECT_THAT(
+      histogram_tester_.GetAllSamples(
+          "Webapp.Update.ManifestSilentUpdateCheckResult"),
+      BucketsAre(base::Bucket(
+          ManifestSilentUpdateCheckResult::kAppHasNonSecurityAndSecurityChanges,
+          /*count=*/1)));
+}
+
 }  // namespace web_app

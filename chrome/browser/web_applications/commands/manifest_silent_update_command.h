@@ -84,22 +84,23 @@ class ManifestSilentUpdateCommand
   void StartWithLock(std::unique_ptr<NoopLock> lock) override;
 
  private:
+  // Stage: Upgrade NoopLock to AppLock
+  // (ManifestSilentUpdateCommandStage::kAcquiringAppLock).
+  void OnManifestFetchedAcquireAppLock(
+      blink::mojom::ManifestPtr opt_manifest,
+      bool valid_manifest_for_web_app,
+      webapps::InstallableStatusCode installable_status);
+
   // Stage: Starting to fetch new manifest data
   // (ManifestSilentUpdateCommandStage::kFetchingNewManifestData).
-  void StashNewManifestJson(blink::mojom::ManifestPtr opt_manifest,
-                            bool valid_manifest_for_web_app,
-                            webapps::InstallableStatusCode installable_status);
+  void StartManifestToInstallInfoJob(blink::mojom::ManifestPtr opt_manifest);
 
   // The `install_info` will have icons populated if they were found in the
   // manifest.
   void OnWebAppInfoCreatedFromManifest(
       std::unique_ptr<WebAppInstallInfo> install_info);
-  void StashValidatedScopeExtensions(
+  void StashValidatedScopeExtensionsAndLoadExistingManifest(
       ScopeExtensions validated_scope_extensions);
-
-  // Updates NoopLock to an AppLock after retrieving the new manifest data and
-  // storing it.
-  void OnAppLockRetrieved();
 
   // Stage: Loading existing manifest data from disk.
   // (ManifestSilentUpdateCommandStage::kLoadingExistingManifestData)
@@ -141,6 +142,9 @@ class ManifestSilentUpdateCommand
   std::unique_ptr<WebAppDataRetriever> data_retriever_;
   std::unique_ptr<WebAppIconDownloader> icon_downloader_;
   std::unique_ptr<ManifestToWebAppInstallInfoJob> manifest_to_install_info_job_;
+  std::optional<apps::IconInfo> new_manifest_trusted_icon_;
+  std::optional<apps::IconInfo> existing_manifest_trusted_icon_;
+  bool has_icon_url_changed_;
 
   // Temporary variables stored here while the update check progresses
   // asynchronously.
