@@ -7,7 +7,6 @@
 #include <fontconfig/fontconfig.h>
 
 #include "base/check_op.h"
-#include "base/environment.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
@@ -22,12 +21,6 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #endif  // BUILDFLAG(IS_CHROMEOS)
-
-namespace features {
-BASE_FEATURE(kFontConfigFontationsIndexing,
-             "FontConfigFontationsIndexing",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-}
 
 namespace gfx {
 
@@ -54,12 +47,6 @@ class COMPONENT_EXPORT(GFX) GlobalFontConfig {
   GlobalFontConfig() {
     TRACE_EVENT0("ui", "GlobalFontConfig::GlobalFontConfig");
     SCOPED_UMA_HISTOGRAM_TIMER("Startup.InitializeFontConfigDuration");
-
-    if (base::FeatureList::IsEnabled(features::kFontConfigFontationsIndexing)) {
-      std::unique_ptr<base::Environment> environment =
-          base::Environment::Create();
-      environment->SetVar("FC_FONTATIONS", "1");
-    }
 
     // Without this call, the FontConfig library gets implicitly initialized
     // on the first call to FontConfig. Since it's not safe to initialize it

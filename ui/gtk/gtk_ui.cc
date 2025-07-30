@@ -58,7 +58,6 @@
 #include "ui/events/keycodes/dom/keycode_converter.h"
 #include "ui/gfx/animation/animation.h"
 #include "ui/gfx/font_render_params.h"
-#include "ui/gfx/linux/fontconfig_util.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/skia_conversions.h"
