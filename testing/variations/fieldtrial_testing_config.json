@@ -1677,6 +1677,48 @@
             ]
         }
     ],
+    "AttributionReportNavigationBasedRetry": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "fuchsia",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_third_retry",
+                    "params": {
+                        "navigation_retry_attempt": "third_retry"
+                    },
+                    "enable_features": [
+                        "AttributionReportNavigationBasedRetry"
+                    ]
+                },
+                {
+                    "name": "Enabled_second_retry",
+                    "params": {
+                        "navigation_retry_attempt": "second_retry"
+                    },
+                    "enable_features": [
+                        "AttributionReportNavigationBasedRetry"
+                    ]
+                },
+                {
+                    "name": "Enabled_first_retry",
+                    "params": {
+                        "navigation_retry_attempt": "first_retry"
+                    },
+                    "enable_features": [
+                        "AttributionReportNavigationBasedRetry"
+                    ]
+                }
+            ]
+        }
+    ],
     "AttributionReportingInBrowserMigration": [
         {
             "platforms": [
