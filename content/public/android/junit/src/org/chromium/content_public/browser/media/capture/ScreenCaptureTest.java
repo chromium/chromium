@@ -21,6 +21,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
@@ -39,6 +40,7 @@ import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
 import android.os.Build;
 import android.os.Handler;
+import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.view.Surface;
 import android.view.WindowMetrics;
@@ -61,7 +63,8 @@ import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
-import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
+import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.lang.ref.WeakReference;
@@ -88,7 +91,7 @@ public class ScreenCaptureTest {
     private static final int NEW_HEIGHT_PX = 500;
     private static final long NATIVE_POINTER = 1L;
 
-    @Mock private WebContents mWebContents;
+    @Mock private MockWebContents mWebContents;
     @Mock private WindowAndroid mWindowAndroid;
     @Mock private MediaProjection mMediaProjection;
     @Mock private VirtualDisplay mVirtualDisplay;
@@ -749,5 +752,40 @@ public class ScreenCaptureTest {
         // Clean up the acquired frame.
         pendingReleases.remove().run();
         verify(image).close();
+    }
+
+    @Test
+    public void testOnTopLevelNativeWindowChanged() {
+        final ActivityResult activityResult = new ActivityResult(Activity.RESULT_OK, new Intent());
+        ScreenCapture.onPick(mWebContents, activityResult);
+        ScreenCapture.onForegroundServiceRunning(true);
+
+        assertTrue(mScreenCapture.startCapture());
+        assertEquals(1, mImageHandlerStates.size());
+
+        final ArgumentCaptor<WebContentsObserver> observerCaptor =
+                ArgumentCaptor.forClass(WebContentsObserver.class);
+        verify(mWebContents).addObserver(observerCaptor.capture());
+        final WebContentsObserver observer = observerCaptor.getValue();
+        assertNotNull(observer);
+
+        // Simulate a DPI change.
+        final int newDpi = TEST_DPI + 100;
+        updateConfiguration(mContext, TEST_WIDTH_DP, TEST_HEIGHT_DP, newDpi);
+
+        // Simulate a window change.
+        observer.onTopLevelNativeWindowChanged(mWindowAndroid);
+        shadowOf(Looper.myLooper()).idle();
+
+        // Verify a new ImageHandler was created with the new DPI.
+        assertEquals(2, mImageHandlerStates.size());
+        final var handler = mImageHandlerStates.get(1).imageHandler;
+        assertEquals(newDpi, handler.getCaptureState().dpi);
+
+        // Verify VirtualDisplay was updated. The width/height in pixels should not change.
+        final int widthPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().width;
+        final int heightPx = mImageHandlerStates.get(0).imageHandler.getCaptureState().height;
+        verify(mVirtualDisplay).resize(widthPx, heightPx, newDpi);
+        verify(mVirtualDisplay).setSurface(handler.getSurface());
     }
 }

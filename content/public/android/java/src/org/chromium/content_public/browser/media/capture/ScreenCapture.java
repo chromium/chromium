@@ -26,9 +26,11 @@ import org.jni_zero.CalledByNative;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 
 import java.nio.ByteBuffer;
@@ -101,7 +103,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     private static final ConditionVariable sLatch = new ConditionVariable(false);
 
     // Holds the pointer to the C++ side object. The C++ side has the ownership of the Java side.
-    private long mNativeDesktopCapturerAndroid;
+    private volatile long mNativeDesktopCapturerAndroid;
 
     private final Handler mHandler;
     private final ImageHandlerFactory mImageHandlerFactory;
@@ -116,6 +118,7 @@ public class ScreenCapture implements ImageHandler.Delegate {
     private final ArrayList<ImageHandler> mImageHandlerQueue = new ArrayList<>();
 
     private @Nullable WebContents mWebContents;
+    private volatile @Nullable WebContentsObserver mWebContentsObserver;
 
     private ScreenCapture(long nativeDesktopCapturerAndroid) {
         this(nativeDesktopCapturerAndroid, ImageHandler::new);
@@ -155,8 +158,17 @@ public class ScreenCapture implements ImageHandler.Delegate {
         sNextPickState.set(null);
     }
 
+    /**
+     * Gets the `Context` for the `Activity` the `WebContents` is associated with.
+     *
+     * <p>This can be called on either the UI thread or the desktop capture thread. If called on the
+     * desktop capture thread, callers must only read values from the Context and not perform any
+     * modifications. Reads may theoretically return stale values, so callers on the desktop capture
+     * thread must be ok with receiving potentially old values.
+     */
     private @Nullable Context maybeGetContext() {
-        final WindowAndroid window = assumeNonNull(mWebContents).getTopLevelNativeWindow();
+        if (mWebContents == null) return null;
+        final WindowAndroid window = mWebContents.getTopLevelNativeWindow();
         if (window == null) return null;
         return window.getContext().get();
     }
@@ -179,7 +191,23 @@ public class ScreenCapture implements ImageHandler.Delegate {
         sLatch.block();
 
         mWebContents = pickState.mWebContents;
-        // TODO(crbug.com/352187279): Update the context if the WebContents is reparented.
+
+        // `WebContentsObserver` modifies `WebContents` by adding an observer, and that observer
+        // list is not thread safe to use. So, we do this on the UI thread. We also run this
+        // as blocking so we know that we are observing before creating the listener - this
+        // guarantees that we won't miss any updates.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mWebContentsObserver =
+                            new WebContentsObserver(mWebContents) {
+                                @Override
+                                public void onTopLevelNativeWindowChanged(
+                                        @Nullable WindowAndroid windowAndroid) {
+                                    mHandler.post(() -> updateContext());
+                                }
+                            };
+                });
+
         final Context context = maybeGetContext();
         if (context == null) return false;
 
@@ -212,6 +240,16 @@ public class ScreenCapture implements ImageHandler.Delegate {
     void destroy() {
         mNativeDesktopCapturerAndroid = 0;
 
+        // No need to block here since `updateContext` will early exit since
+        // `mNativeDesktopCapturerAndroid` is now 0.
+        ThreadUtils.runOnUiThread(
+                () -> {
+                    if (mWebContentsObserver != null) {
+                        mWebContentsObserver.observe(null);
+                        mWebContentsObserver = null;
+                    }
+                });
+
         if (mMediaProjection != null) {
             mMediaProjection.stop();
             mMediaProjection = null;
@@ -231,6 +269,25 @@ public class ScreenCapture implements ImageHandler.Delegate {
             mVirtualDisplay.release();
             mVirtualDisplay = null;
         }
+    }
+
+    private void updateContext() {
+        assert mHandler.getLooper().isCurrentThread();
+        if (mNativeDesktopCapturerAndroid == 0) return;
+        if (mImageHandlerQueue.isEmpty()) return;
+
+        final Context context = maybeGetContext();
+        // It's possible to not have a Context if the WebContents is not attached to a window.
+        if (context == null) return;
+
+        final CaptureState captureState =
+                mImageHandlerQueue.get(mImageHandlerQueue.size() - 1).getCaptureState();
+        recreateListener(
+                new CaptureState(
+                        captureState.width,
+                        captureState.height,
+                        context.getResources().getConfiguration().densityDpi,
+                        captureState.format));
     }
 
     private class MediaProjectionCallback extends MediaProjection.Callback {
