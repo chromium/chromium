@@ -271,6 +271,10 @@ ScriptPromise<GPUDevice> GPUAdapter::requestDevice(
 
   wgpu::DeviceDescriptor dawn_desc = {};
 
+  wgpu::DawnConsumeAdapterDescriptor consume_adapter_desc;
+  consume_adapter_desc.consumeAdapter = true;
+  dawn_desc.nextInChain = &consume_adapter_desc;
+
   GPUSupportedLimits::ComboLimits required_limits;
   if (descriptor->hasRequiredLimits()) {
     dawn_desc.requiredLimits = required_limits.GetLinked();
