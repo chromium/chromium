@@ -157,6 +157,11 @@ void RenderViewContextMenuBase::AddCustomItemsToMenu(
             RenderViewContextMenuBase::ConvertToContentCustomCommandId(
                 item->action),
             item->label, submenu);
+        if (!item->feature_name.empty()) {
+          menu_model->SetIsNewFeatureAt(
+              menu_model->GetItemCount() - 1,
+              GetIsNewFeatureAtValue(base::UTF16ToUTF8(item->feature_name)));
+        }
         break;
       }
       default:
