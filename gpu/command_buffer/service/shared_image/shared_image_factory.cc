@@ -638,7 +638,8 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
                                          GrSurfaceOrigin surface_origin,
                                          SkAlphaType alpha_type,
                                          gpu::SharedImageUsageSet usage) {
-  if (!D3DImageBackingFactory::IsSwapChainSupported(gpu_preferences_)) {
+  if (!D3DImageBackingFactory::IsSwapChainSupported(
+          gpu_preferences_, context_state_->dawn_context_provider())) {
     return false;
   }
 
@@ -650,7 +651,8 @@ bool SharedImageFactory::CreateSwapChain(const Mailbox& front_buffer_mailbox,
 }
 
 bool SharedImageFactory::PresentSwapChain(const Mailbox& mailbox) {
-  if (!D3DImageBackingFactory::IsSwapChainSupported(gpu_preferences_)) {
+  if (!D3DImageBackingFactory::IsSwapChainSupported(
+          gpu_preferences_, context_state_->dawn_context_provider())) {
     return false;
   }
   auto* shared_image = GetFactoryRef(mailbox);
@@ -813,7 +815,8 @@ gpu::SharedImageCapabilities SharedImageFactory::MakeCapabilities() {
   shared_image_caps.shared_image_d3d = IsD3DSharedImageSupported();
   shared_image_caps.shared_image_swap_chain =
       shared_image_caps.shared_image_d3d &&
-      D3DImageBackingFactory::IsSwapChainSupported(gpu_preferences_);
+      D3DImageBackingFactory::IsSwapChainSupported(
+          gpu_preferences_, context_state_->dawn_context_provider());
 #endif  // BUILDFLAG(IS_WIN)
 
   return shared_image_caps;

@@ -6,6 +6,10 @@
 
 #include <d3d11_1.h>
 
+// clang-format off
+#include <dawn/native/D3D11Backend.h>
+// clang-format on
+
 #include "base/memory/shared_memory_mapping.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/win/scoped_handle.h"
@@ -21,6 +25,10 @@
 #include "ui/gl/direct_composition_support.h"
 #include "ui/gl/gl_angle_util_win.h"
 #include "ui/gl/gl_utils.h"
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
 
 namespace gpu {
 
@@ -255,12 +263,20 @@ bool D3DImageBackingFactory::IsD3DSharedImageSupported(
 
 // static
 bool D3DImageBackingFactory::IsSwapChainSupported(
-    const GpuPreferences& gpu_preferences) {
-  // TODO(crbug.com/40074896): enable swapchain support when d3d11 is shared
-  // with ANGLE.
+    const GpuPreferences& gpu_preferences,
+    DawnContextProvider* dawn_context_provider /*=nullptr*/) {
+  if (gpu_preferences.gr_context_type == GrContextType::kGraphiteDawn) {
+    // This is only supported if graphite and ANGLE share the same D3D11 device.
+    CHECK(dawn_context_provider);
+    auto dawn_d3d11_device = dawn_context_provider->GetD3D11Device();
+    auto angle_d3d11_device = gl::QueryD3D11DeviceObjectFromANGLE();
+    if (dawn_d3d11_device != angle_d3d11_device) {
+      return false;
+    }
+  }
+
   return gl::DirectCompositionSupported() &&
-         gl::DXGISwapChainTearingSupported() &&
-         gpu_preferences.gr_context_type == GrContextType::kGL;
+         gl::DXGISwapChainTearingSupported();
 }
 
 // static
@@ -284,9 +300,10 @@ bool D3DImageBackingFactory::CreateSwapChainInternal(
     viz::SharedImageFormat format,
     const gfx::Size& size) {
   DXGI_FORMAT swap_chain_format;
-  if ((format == viz::SinglePlaneFormat::kRGBA_8888) ||
-      (format == viz::SinglePlaneFormat::kRGBX_8888) ||
-      (format == viz::SinglePlaneFormat::kBGRA_8888)) {
+  if (format == viz::SinglePlaneFormat::kRGBA_8888 ||
+      format == viz::SinglePlaneFormat::kRGBX_8888) {
+    swap_chain_format = DXGI_FORMAT_R8G8B8A8_UNORM;
+  } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
     swap_chain_format = DXGI_FORMAT_B8G8R8A8_UNORM;
   } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
     swap_chain_format = DXGI_FORMAT_R16G16B16A16_FLOAT;

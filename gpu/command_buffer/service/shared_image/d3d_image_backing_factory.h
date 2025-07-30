@@ -28,6 +28,7 @@ class ColorSpace;
 }  // namespace gfx
 
 namespace gpu {
+class DawnContextProvider;
 class DXGISharedHandleManager;
 class SharedImageBacking;
 struct Mailbox;
@@ -52,7 +53,9 @@ class GPU_GLES2_EXPORT D3DImageBackingFactory
                                         const GpuPreferences& gpu_preferences);
 
   // Returns true if DXGI swap chain shared images for overlays are supported.
-  static bool IsSwapChainSupported(const GpuPreferences& gpu_preferences);
+  static bool IsSwapChainSupported(
+      const GpuPreferences& gpu_preferences,
+      DawnContextProvider* dawn_context_provider = nullptr);
 
   // Clears the current back buffer to |color| on the immediate context.
   static bool ClearBackBufferToColor(IDXGISwapChain1* swap_chain,
