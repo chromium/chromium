@@ -60,6 +60,14 @@ class VariationsSafeSeedStore {
 
   // Clear all state in the underlying storage.
   virtual void ClearState() = 0;
+
+  // Reads seed data and returns the result of the load. If a pointer for the
+  // signature is provided, the signature will be read and stored into
+  // |base64_seed_signature|. The value stored into |seed_data| should only be
+  // used if the result is `LoadSeedResult::kSuccess`.
+  // Side-effect: If the read fails, clears the prefs associated with the seed.
+  virtual LoadSeedResult ReadSeedData(std::string* seed_data,
+                                      std::string* base64_seed_signature) = 0;
 };
 
 }  // namespace variations

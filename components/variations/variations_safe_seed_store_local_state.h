@@ -60,6 +60,8 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSafeSeedStoreLocalState
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
   void ClearState() override;
+  LoadSeedResult ReadSeedData(std::string* seed_data,
+                              std::string* base64_seed_signature) override;
 
   static void RegisterPrefs(PrefRegistrySimple* registry);
 

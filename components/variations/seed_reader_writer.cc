@@ -21,6 +21,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/pref_names.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace variations {
 namespace {
@@ -355,6 +356,58 @@ void SeedReaderWriter::SetPermanentConsistencyCountryAndVersion(
   SetPermanentCountryVersion(local_state_,
                              fields_prefs_->permanent_country_code_version,
                              country, version);
+}
+
+LoadSeedResult SeedReaderWriter::ReadSeedData(
+    std::string* seed_data,
+    std::string* base64_seed_signature) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  const StoredSeed stored_seed = GetSeedData();
+  if (stored_seed.data.empty()) {
+    return LoadSeedResult::kEmpty;
+  }
+
+  // As a space optimization, the latest seed might not be stored directly, but
+  // rather aliased to the safe seed. We don't need to store the signature,
+  // since it is the same as the safe seed.
+  if (stored_seed.data == kIdenticalToSafeSeedSentinel) {
+    *seed_data = stored_seed.data;
+    return LoadSeedResult::kSuccess;
+  }
+
+  std::string_view compressed_data;
+  std::string decoded_data;
+  switch (stored_seed.storage_format) {
+    case StoredSeed::StorageFormat::kCompressed:
+      compressed_data = stored_seed.data;
+      break;
+    // Because clients not using a seed file get seed data from local state
+    // instead, they need to decode the base64-encoded seed data first.
+    case StoredSeed::StorageFormat::kCompressedAndBase64Encoded:
+      if (!base::Base64Decode(stored_seed.data, &decoded_data)) {
+        return LoadSeedResult::kCorruptBase64;
+      }
+      compressed_data = decoded_data;
+      break;
+  }
+
+  // A corrupt seed could result in a very large buffer being allocated which
+  // could crash the process.
+  // The maximum size of an uncompressed seed at 50 MiB.
+  constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
+  if (compression::GetUncompressedSize(compressed_data) >
+      kMaxUncompressedSeedSize) {
+    return LoadSeedResult::kExceedsUncompressedSizeLimit;
+  }
+  if (!compression::GzipUncompress(compressed_data, seed_data)) {
+    return LoadSeedResult::kCorruptGzip;
+  }
+
+  // Copy the signature from the loaded seed.
+  if (base64_seed_signature) {
+    *base64_seed_signature = stored_seed.signature;
+  }
+  return LoadSeedResult::kSuccess;
 }
 
 base::ImportantFileWriter::BackgroundDataProducerCallback

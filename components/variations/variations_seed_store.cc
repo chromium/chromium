@@ -64,13 +64,6 @@ const uint8_t kPublicKey[] = {
     0xc5, 0xef, 0x20, 0xc6, 0xa3, 0x10, 0xbf,
 };
 
-// A sentinel value that may be stored as the latest variations seed value in
-// prefs to indicate that the latest seed is identical to the safe seed. Used to
-// avoid duplicating storage space.
-constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
-
-// The maximum size of an uncompressed seed at 50 MiB.
-constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
 
 #if BUILDFLAG(IS_CHROMEOS)
 // Number of attempts to send the safe seed from Chrome to CrOS platforms before
@@ -624,55 +617,20 @@ LoadSeedResult VariationsSeedStore::ReadSeedData(
     SeedType seed_type,
     std::string* seed_data,
     std::string* base64_seed_signature) {
-  const StoredSeed loaded_seed = seed_type == SeedType::LATEST
-                                     ? seed_reader_writer_->GetSeedData()
-                                     : safe_seed_store_->GetCompressedSeed();
-
-  if (loaded_seed.data.empty()) {
-    return LoadSeedResult::kEmpty;
+  LoadSeedResult load_seed_result =
+      seed_type == SeedType::LATEST
+          ? seed_reader_writer_->ReadSeedData(seed_data, base64_seed_signature)
+          : safe_seed_store_->ReadSeedData(seed_data, base64_seed_signature);
+  if (load_seed_result != LoadSeedResult::kSuccess) {
+    ClearPrefs(seed_type);
+    return load_seed_result;
   }
-
   // As a space optimization, the latest seed might not be stored directly, but
   // rather aliased to the safe seed.
   if (seed_type == SeedType::LATEST &&
-      loaded_seed.data == kIdenticalToSafeSeedSentinel) {
+      *seed_data == kIdenticalToSafeSeedSentinel) {
     return ReadSeedData(SeedType::SAFE, seed_data, base64_seed_signature);
   }
-
-  // If the decode process fails, assume the pref value is corrupt and clear it.
-  std::string_view compressed_data;
-  std::string decoded_data;
-  switch (loaded_seed.storage_format) {
-    case StoredSeed::StorageFormat::kCompressed:
-      compressed_data = loaded_seed.data;
-      break;
-    // Because clients not using a seed file get seed data from local state
-    // instead, they need to decode the base64-encoded seed data first.
-    case StoredSeed::StorageFormat::kCompressedAndBase64Encoded:
-      if (!base::Base64Decode(loaded_seed.data, &decoded_data)) {
-        ClearPrefs(seed_type);
-        return LoadSeedResult::kCorruptBase64;
-      }
-      compressed_data = decoded_data;
-      break;
-  }
-  // A corrupt seed could result in a very large buffer being allocated which
-  // could crash the process.
-  if (compression::GetUncompressedSize(compressed_data) >
-      kMaxUncompressedSeedSize) {
-    ClearPrefs(seed_type);
-    return LoadSeedResult::kExceedsUncompressedSizeLimit;
-  }
-  if (!compression::GzipUncompress(compressed_data, seed_data)) {
-    ClearPrefs(seed_type);
-    return LoadSeedResult::kCorruptGzip;
-  }
-
-  // Copy the signature from the loaded seed.
-  if (base64_seed_signature) {
-    *base64_seed_signature = loaded_seed.signature;
-  }
-
   return LoadSeedResult::kSuccess;
 }
 

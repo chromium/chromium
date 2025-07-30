@@ -19,6 +19,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/version_info/channel.h"
+#include "components/variations/metrics.h"
 #include "components/variations/proto/stored_seed_info.pb.h"
 
 class PrefService;
@@ -32,6 +33,11 @@ const char kSeedFileTrial[] = "SeedFileTrial";
 const char kDefaultGroup[] = "Default";
 const char kControlGroup[] = "Control_V7";
 const char kSeedFilesGroup[] = "SeedFiles_V7";
+
+// A sentinel value that may be stored as the latest variations seed value in
+// to indicate that the latest seed is identical to the safe seed. Used to avoid
+// duplicating storage space.
+inline constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
 
 // Represents a seed and its storage format where clients using
 // seed-file-based seeds store compressed data and those using
@@ -177,6 +183,13 @@ class COMPONENT_EXPORT(VARIATIONS) SeedReaderWriter
   // Sets the permanent consistency country and version.
   void SetPermanentConsistencyCountryAndVersion(std::string_view country,
                                                 std::string_view version);
+
+  // Reads seed data and returns the result of the load. If a pointer for the
+  // signature is provided, the signature will be read and stored into
+  // |base64_seed_signature|. The value stored into |seed_data| should only be
+  // used if the result is `LoadSeedResult::kSuccess`.
+  LoadSeedResult ReadSeedData(std::string* seed_data,
+                              std::string* base64_seed_signature = nullptr);
 
  private:
   // Returns the serialized data to be written to disk. This is done

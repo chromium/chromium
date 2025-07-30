@@ -49,6 +49,8 @@ class EarlyBootSafeSeed : public VariationsSafeSeedStore {
   void SetSeedReaderWriterForTesting(
       std::unique_ptr<SeedReaderWriter> seed_reader_writer) override;
   void ClearState() override;
+  LoadSeedResult ReadSeedData(std::string* seed_data,
+                              std::string* base64_seed_signature) override;
 
  private:
   // Details of the safe seed to use for early boot.

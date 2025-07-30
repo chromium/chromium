@@ -99,6 +99,12 @@ void VariationsSafeSeedStoreLocalState::ClearState() {
   local_state_->ClearPref(prefs::kVariationsSafeSeedLocale);
 }
 
+LoadSeedResult VariationsSafeSeedStoreLocalState::ReadSeedData(
+    std::string* seed_data,
+    std::string* base64_seed_signature) {
+  return seed_reader_writer_->ReadSeedData(seed_data, base64_seed_signature);
+}
+
 // static
 void VariationsSafeSeedStoreLocalState::RegisterPrefs(
     PrefRegistrySimple* registry) {

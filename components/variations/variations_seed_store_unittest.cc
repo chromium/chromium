@@ -54,14 +54,6 @@ using ::base::test::EqualsProto;
 using ::testing::IsEmpty;
 using ::testing::Not;
 
-// The sentinel value that may be stored as the latest variations seed value in
-// prefs to indicate that the latest seed is identical to the safe seed.
-// Note: This constant is intentionally duplicated in the test because it is
-// persisted to disk. In order to maintain backward-compatibility, it's
-// important that code continue to correctly handle this specific constant, even
-// if the constant used internally in the implementation changes.
-constexpr char kIdenticalToSafeSeedSentinel[] = "safe_seed_content";
-
 // File used by SeedReaderWriter to store a latest seed.
 const base::FilePath::CharType kSeedFilename[] = FILE_PATH_LITERAL("TestSeed");
 

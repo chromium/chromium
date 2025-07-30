@@ -4,7 +4,9 @@
 
 #include "components/variations/cros_evaluate_seed/early_boot_safe_seed.h"
 
+#include "base/base64.h"
 #include "base/time/time.h"
+#include "third_party/zlib/google/compression_utils.h"
 
 namespace variations::cros_early_boot::evaluate_seed {
 
@@ -72,5 +74,37 @@ void EarlyBootSafeSeed::SetSeedReaderWriterForTesting(
     std::unique_ptr<SeedReaderWriter> seed_reader_writer) {}
 
 void EarlyBootSafeSeed::ClearState() {}
+
+LoadSeedResult EarlyBootSafeSeed::ReadSeedData(
+    std::string* seed_data,
+    std::string* base64_seed_signature) {
+  const StoredSeed stored_seed = GetCompressedSeed();
+  if (stored_seed.data.empty()) {
+    return LoadSeedResult::kEmpty;
+  }
+
+  std::string compressed_data;
+  if (!base::Base64Decode(stored_seed.data, &compressed_data)) {
+    return LoadSeedResult::kCorruptBase64;
+  }
+
+  // A corrupt seed could result in a very large buffer being allocated which
+  // could crash the process.
+  // The maximum size of an uncompressed seed at 50 MiB.
+  constexpr std::size_t kMaxUncompressedSeedSize = 50 * 1024 * 1024;
+  if (compression::GetUncompressedSize(compressed_data) >
+      kMaxUncompressedSeedSize) {
+    return LoadSeedResult::kExceedsUncompressedSizeLimit;
+  }
+  if (!compression::GzipUncompress(compressed_data, seed_data)) {
+    return LoadSeedResult::kCorruptGzip;
+  }
+
+  // Copy the signature from the loaded seed.
+  if (base64_seed_signature) {
+    *base64_seed_signature = stored_seed.signature;
+  }
+  return LoadSeedResult::kSuccess;
+}
 
 }  // namespace variations::cros_early_boot::evaluate_seed
