@@ -562,10 +562,17 @@ public class ChromeBackupAgentImpl extends ChromeBackupAgent.Impl {
             }
         }
 
-        Profile profile = ProfileManager.getLastUsedRegularProfile();
-        IdentityManager identityManager =
-                assertNonNull(IdentityServicesProvider.get().getIdentityManager(profile));
-        if (!identityManager.hasPrimaryAccount(ConsentLevel.SIGNIN)) {
+        boolean hasPrimaryAccount =
+                PostTask.runSynchronously(
+                        TaskTraits.UI_DEFAULT,
+                        () -> {
+                            Profile profile = ProfileManager.getLastUsedRegularProfile();
+                            return assertNonNull(
+                                            IdentityServicesProvider.get()
+                                                    .getIdentityManager(profile))
+                                    .hasPrimaryAccount(ConsentLevel.SIGNIN);
+                        });
+        if (!hasPrimaryAccount) {
             if (signedInAccountInfo != null) {
                 editor.apply();
                 signInAndWaitForResult(signedInAccountInfo);
