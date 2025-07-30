@@ -28,13 +28,11 @@ PaintPropertyChangeType ClipPaintPropertyNode::State::ComputeChange(
     const State& other) const {
   if (local_transform_space != other.local_transform_space ||
       paint_clip_rect_ != other.paint_clip_rect_ ||
+      layout_clip_rect_excluding_overlay_scrollbars !=
+          other.layout_clip_rect_excluding_overlay_scrollbars ||
       !ClipPathEquals(other.clip_path) ||
       pixel_moving_filter != other.pixel_moving_filter) {
     return PaintPropertyChangeType::kChangedOnlyValues;
-  }
-  if (layout_clip_rect_excluding_overlay_scrollbars !=
-      other.layout_clip_rect_excluding_overlay_scrollbars) {
-    return PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
   }
   return PaintPropertyChangeType::kUnchanged;
 }

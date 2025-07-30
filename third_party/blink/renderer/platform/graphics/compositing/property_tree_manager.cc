@@ -460,7 +460,7 @@ int PropertyTreeManager::EnsureCompositorTransformNode(
 
   compositor_node.should_undo_overscroll =
       transform_node.RequiresCompositingForFixedToViewport();
-  if (transform_node.NodeChangeAffectsRaster()) {
+  if (transform_node.NodeChanged() != PaintPropertyChangeType::kUnchanged) {
     compositor_node.SetTransformChanged(cc::DamageReason::kUntracked);
   } else {
     compositor_node.ClearTransformChanged();
@@ -1325,7 +1325,8 @@ void PropertyTreeManager::PopulateCcEffectNode(
     effect_node.filters = filter->AsCcFilterOperations();
   }
   effect_node.double_sided = !transform.IsBackfaceHidden();
-  effect_node.effect_changed = effect.NodeChangeAffectsRaster();
+  effect_node.effect_changed =
+      effect.NodeChanged() != PaintPropertyChangeType::kUnchanged;
 
   effect_node.view_transition_element_resource_id =
       effect.ViewTransitionElementResourceId();

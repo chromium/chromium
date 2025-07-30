@@ -447,7 +447,7 @@ bool PendingLayer::PropertyTreeStateChanged(
       old_pending_layer->property_tree_state_ != property_tree_state_)
     return true;
 
-  auto change = PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
+  auto change = PaintPropertyChangeType::kChangedOnlySimpleValues;
   if (change_of_decomposited_transforms_ >= change)
     return true;
 

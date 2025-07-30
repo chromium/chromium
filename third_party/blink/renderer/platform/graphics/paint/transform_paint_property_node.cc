@@ -83,6 +83,7 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
       is_for_svg_child != other.is_for_svg_child ||
       backface_visibility != other.backface_visibility ||
       rendering_context_id != other.rendering_context_id ||
+      direct_compositing_reasons != other.direct_compositing_reasons ||
       compositor_element_id != other.compositor_element_id ||
       // This change affects cull rect expansion for scrolling contents.
       UsesCompositedScrolling() != other.UsesCompositedScrolling() ||
@@ -97,22 +98,7 @@ PaintPropertyChangeType TransformPaintPropertyNode::State::ComputeChange(
     return PaintPropertyChangeType::kChangedOnlyValues;
   }
 
-  auto change =
-      ComputeTransformChange(other.transform_and_origin, animation_state);
-
-  bool non_reraster_values_changed =
-      direct_compositing_reasons != other.direct_compositing_reasons;
-  if (non_reraster_values_changed) {
-    // Both transform change and non-reraster change is upgraded to value
-    // change to avoid loss of non-reraster change when PaintPropertyTreeBuilder
-    // downgrades kChangedOnlySimpleValues to kChangedOnlyCompositedValues
-    // after a successful direct update.
-    return change != PaintPropertyChangeType::kUnchanged
-               ? PaintPropertyChangeType::kChangedOnlyValues
-               : PaintPropertyChangeType::kChangedOnlyNonRerasterValues;
-  }
-
-  return change;
+  return ComputeTransformChange(other.transform_and_origin, animation_state);
 }
 
 void TransformPaintPropertyNode::State::Trace(Visitor* visitor) const {

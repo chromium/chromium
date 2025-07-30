@@ -1138,7 +1138,7 @@ bool PaintArtifactCompositor::TryFastPathUpdate(
       // If this fires, a property tree value has changed but we are missing a
       // call to |PaintArtifactCompositor::SetNeedsUpdate|.
       DCHECK(!chunk.properties.Unalias().ChangedToRoot(
-          PaintPropertyChangeType::kChangedOnlyNonRerasterValues));
+          PaintPropertyChangeType::kChangedOnlySimpleValues));
     }
   }
 #endif
