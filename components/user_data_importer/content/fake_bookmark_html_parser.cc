@@ -4,6 +4,8 @@
 
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
+
 namespace user_data_importer {
 
 FakeBookmarkHtmlParser::FakeBookmarkHtmlParser() = default;
@@ -12,7 +14,7 @@ FakeBookmarkHtmlParser::~FakeBookmarkHtmlParser() = default;
 
 void FakeBookmarkHtmlParser::Parse(const std::string& raw_html,
                                    ParseCallback callback) {
-  parser_.Parse(raw_html, std::move(callback));
+  std::move(callback).Run(ParseBookmarksUnsafe(std::move(raw_html)));
 }
 
 }  // namespace user_data_importer

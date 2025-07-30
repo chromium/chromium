@@ -23,9 +23,9 @@
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
-#include "components/user_data_importer/content/content_bookmark_parser.h"
-#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
 #include "components/user_data_importer/content/favicon_reencode.h"
+#include "components/user_data_importer/utility/bookmark_parser.h"
 #include "sql/database.h"
 #include "sql/statement.h"
 #include "url/gurl.h"
@@ -115,8 +115,6 @@ void FirefoxImporter::StartImport(
   bridge_ = bridge;
   source_path_ = source_profile.source_path;
   app_path_ = source_profile.app_path;
-  bookmarks_parsed_ = false;
-  all_types_but_bookmarks_parsed_ = false;
 
 #if BUILDFLAG(IS_POSIX)
   locale_ = source_profile.locale;
@@ -146,11 +144,9 @@ void FirefoxImporter::StartImport(
   if ((items & user_data_importer::FAVORITES) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportBookmarks();
-    // Bookmarks is asynchronous, wait until until the parsing has occurred to
-    // notify it has ended.
-  } else {
-    bookmarks_parsed_ = true;
+    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
   }
+
 #if !BUILDFLAG(IS_MAC)
   if ((items & user_data_importer::PASSWORDS) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::PASSWORDS);
@@ -164,14 +160,7 @@ void FirefoxImporter::StartImport(
     bridge_->NotifyItemEnded(user_data_importer::AUTOFILL_FORM_DATA);
   }
 
-  all_types_but_bookmarks_parsed_ = true;
-  MaybeNotifyEnded();
-}
-
-void FirefoxImporter::MaybeNotifyEnded() {
-  if (all_types_but_bookmarks_parsed_ && bookmarks_parsed_) {
-    bridge_->NotifyEnded();
-  }
+  bridge_->NotifyEnded();
 }
 
 void FirefoxImporter::ImportHistory() {
@@ -222,30 +211,13 @@ void FirefoxImporter::ImportHistory() {
 }
 
 void FirefoxImporter::ImportBookmarks() {
-  base::FilePath file = app_path_.AppendASCII("defaults")
-                            .AppendASCII("profile")
-                            .AppendASCII("bookmarks.html");
-
-  // TODO(crbug.com/432010608): Use ContentBookmarkParserInUtilityProcess
-  // instead.
-  user_data_importer::MakeBookmarkParser()->Parse(
-      file, base::BindOnce(&FirefoxImporter::OnBookmarksParsed,
-                           weak_ptr_factory_.GetWeakPtr()));
-}
-
-void FirefoxImporter::OnBookmarksParsed(
-    user_data_importer::BookmarkParser::BookmarkParsingResult
-        default_bookmarks) {
-  base::ScopedClosureRunner cleanup_runner(base::BindOnce(
-      &FirefoxImporter::NotifyBookmarksEnded, weak_ptr_factory_.GetWeakPtr()));
-
-  base::FilePath file = GetCopiedSourcePath("places.sqlite");
-  if (!base::PathExists(file)) {
+  base::FilePath sqlite_file = GetCopiedSourcePath("places.sqlite");
+  if (!base::PathExists(sqlite_file)) {
     return;
   }
 
   sql::Database db(kDatabaseTag);
-  if (!db.Open(file)) {
+  if (!db.Open(sqlite_file)) {
     return;
   }
 
@@ -266,11 +238,20 @@ void FirefoxImporter::OnBookmarksParsed(
   LoadLivemarkIDs(&db, &livemark_id);
 
   // Load the default bookmarks.
+  base::FilePath bookmarks_file = app_path_.AppendASCII("defaults")
+                                      .AppendASCII("profile")
+                                      .AppendASCII("bookmarks.html");
+  std::string raw_html;
+
+  // ReadFileToString can return false, but still populate something into
+  // `raw_html`. In that case, try to recover as much data as possible.
+  base::ReadFileToString(bookmarks_file, &raw_html);
+  user_data_importer::BookmarkParser::ParsedBookmarks default_bookmarks =
+      user_data_importer::ParseBookmarksUnsafe(raw_html);
+
   std::set<GURL> default_urls;
-  if (default_bookmarks.has_value()) {
-    for (const auto& bookmark : default_bookmarks->bookmarks) {
-      default_urls.insert(bookmark.url);
-    }
+  for (const auto& bookmark : default_bookmarks.bookmarks) {
+    default_urls.insert(bookmark.url);
   }
 
   BookmarkList list;
@@ -416,12 +397,6 @@ void FirefoxImporter::OnBookmarksParsed(
       bridge_->SetFavicons(favicons);
     }
   }
-}
-
-void FirefoxImporter::NotifyBookmarksEnded() {
-  bookmarks_parsed_ = true;
-  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
-  MaybeNotifyEnded();
 }
 
 #if !BUILDFLAG(IS_MAC)

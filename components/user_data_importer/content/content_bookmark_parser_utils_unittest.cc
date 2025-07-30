@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
 
 #include <stddef.h>
 
@@ -12,18 +12,12 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/functional/bind.h"
-#include "base/functional/callback.h"
-#include "base/functional/callback_helpers.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_mock_clock_override.h"
-#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
-#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
-#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
@@ -31,8 +25,7 @@ using base::UTF16ToWide;
 
 namespace user_data_importer {
 
-TEST(ContentBookmarkParserInUtilityProcessTest,
-     CanImportURLAsSearchEngineTest) {
+TEST(ContentBookmarkParserUtilsTest, CanImportURLAsSearchEngineTest) {
   struct TestCase {
     const std::string url;
     const bool can_be_imported_as_search_engine;
@@ -95,11 +88,8 @@ TEST(ContentBookmarkParserInUtilityProcessTest,
   }
 }
 
-class ContentBookmarkParserInUtilityProcessWithDataTest : public testing::Test {
+class ContentBookmarkParserUtilsWithDataTest : public testing::Test {
  public:
-  ContentBookmarkParserInUtilityProcessWithDataTest()
-      : parser_(std::make_unique<ContentBookmarkParserInUtilityProcess>(
-            mojo::PendingReceiver<mojom::BookmarkHtmlParser>())) {}
   void SetUp() override;
 
  protected:
@@ -129,11 +119,10 @@ class ContentBookmarkParserInUtilityProcessWithDataTest : public testing::Test {
       const user_data_importer::ImportedBookmarkEntry& entry);
 
   base::FilePath test_data_path_;
-  std::unique_ptr<ContentBookmarkParserInUtilityProcess> parser_;
   base::ScopedMockClockOverride clock;
 };
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::SetUp() {
+void ContentBookmarkParserUtilsWithDataTest::SetUp() {
   ASSERT_TRUE(
       base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &test_data_path_));
   test_data_path_ = test_data_path_.AppendASCII(
@@ -141,9 +130,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::SetUp() {
   CHECK(base::PathExists(test_data_path_));
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectFirstFirefox2Bookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectFirstFirefox2Bookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"Empty", entry.title);
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1295938143), entry.creation_time);
@@ -153,9 +141,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   }
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectSecondFirefox2Bookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectSecondFirefox2Bookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"[Tamura Yukari.com]", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1234567890), entry.creation_time);
@@ -166,9 +153,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ("http://www.tamurayukari.com/", entry.url.spec());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectThirdFirefox2Bookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectThirdFirefox2Bookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"Google", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.creation_time, clock.Now());
@@ -179,25 +165,22 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ("http://www.google.com/", entry.url.spec());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectFirstEpiphanyBookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectFirstEpiphanyBookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"[Tamura Yukari.com]", entry.title);
   EXPECT_EQ("http://www.tamurayukari.com/", entry.url.spec());
   EXPECT_EQ(0U, entry.path.size());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectSecondEpiphanyBookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectSecondEpiphanyBookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"Google", entry.title);
   EXPECT_EQ("http://www.google.com/", entry.url.spec());
   EXPECT_EQ(0U, entry.path.size());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectFirstFirefox23Bookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectFirstFirefox23Bookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"Google", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1376102167), entry.creation_time);
@@ -206,9 +189,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ("https://www.google.com/", entry.url.spec());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectSecondFirefox23Bookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectSecondFirefox23Bookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"Issues", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1376102304), entry.creation_time);
@@ -217,9 +199,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ("https://code.google.com/p/chromium/issues/list", entry.url.spec());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectThirdFirefox23Bookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectThirdFirefox23Bookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"CodeSearch", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1376102224), entry.creation_time);
@@ -228,7 +209,7 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ("http://code.google.com/p/chromium/codesearch", entry.url.spec());
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
+void ContentBookmarkParserUtilsWithDataTest::
     ExpectFirstFirefoxBookmarkWithKeyword(
         const user_data_importer::SearchEngineInfo& info) {
   EXPECT_EQ(u"http://example.{searchTerms}.com/", info.url);
@@ -236,7 +217,7 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ(u"Bookmark Keyword", info.display_name);
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
+void ContentBookmarkParserUtilsWithDataTest::
     ExpectSecondFirefoxBookmarkWithKeyword(
         const user_data_importer::SearchEngineInfo& info) {
   EXPECT_EQ(u"http://example.com/?q={searchTerms}", info.url);
@@ -244,9 +225,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ(u"BookmarkName", info.display_name);
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectFirstEmptyFolderBookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectFirstEmptyFolderBookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(std::u16string(), entry.title);
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1295938143), entry.creation_time);
@@ -256,9 +236,8 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   }
 }
 
-void ContentBookmarkParserInUtilityProcessWithDataTest::
-    ExpectSecondEmptyFolderBookmark(
-        const user_data_importer::ImportedBookmarkEntry& entry) {
+void ContentBookmarkParserUtilsWithDataTest::ExpectSecondEmptyFolderBookmark(
+    const user_data_importer::ImportedBookmarkEntry& entry) {
   EXPECT_EQ(u"[Tamura Yukari.com]", entry.title);
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(base::Time::FromTimeT(1234567890), entry.creation_time);
@@ -269,16 +248,11 @@ void ContentBookmarkParserInUtilityProcessWithDataTest::
   EXPECT_EQ("http://www.tamurayukari.com/", entry.url.spec());
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
-       Firefox2BookmarkFileImport) {
+TEST_F(ContentBookmarkParserUtilsWithDataTest, Firefox2BookmarkFileImport) {
   base::FilePath path = test_data_path_.AppendASCII("firefox2.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(3U, result.bookmarks.size());
   ExpectFirstFirefox2Bookmark(result.bookmarks[0]);
@@ -286,15 +260,11 @@ TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
   ExpectThirdFirefox2Bookmark(result.bookmarks[2]);
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
-       BookmarkFileWithHrTagImport) {
+TEST_F(ContentBookmarkParserUtilsWithDataTest, BookmarkFileWithHrTagImport) {
   base::FilePath path = test_data_path_.AppendASCII("firefox23.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(3U, result.bookmarks.size());
   ExpectFirstFirefox23Bookmark(result.bookmarks[0]);
@@ -302,45 +272,35 @@ TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
   ExpectThirdFirefox23Bookmark(result.bookmarks[2]);
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
-       EpiphanyBookmarkFileImport) {
+TEST_F(ContentBookmarkParserUtilsWithDataTest, EpiphanyBookmarkFileImport) {
   base::FilePath path = test_data_path_.AppendASCII("epiphany.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(2U, result.bookmarks.size());
   ExpectFirstEpiphanyBookmark(result.bookmarks[0]);
   ExpectSecondEpiphanyBookmark(result.bookmarks[1]);
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
+TEST_F(ContentBookmarkParserUtilsWithDataTest,
        FirefoxBookmarkFileWithKeywordImport) {
   base::FilePath path =
       test_data_path_.AppendASCII("firefox_bookmark_keyword.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(2U, result.search_engines.size());
   ExpectFirstFirefoxBookmarkWithKeyword(result.search_engines[0]);
   ExpectSecondFirefoxBookmarkWithKeyword(result.search_engines[1]);
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest, EmptyFolderImport) {
+TEST_F(ContentBookmarkParserUtilsWithDataTest, EmptyFolderImport) {
   base::FilePath path = test_data_path_.AppendASCII("empty_folder.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(3U, result.bookmarks.size());
   ExpectFirstEmptyFolderBookmark(result.bookmarks[0]);
@@ -348,15 +308,11 @@ TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest, EmptyFolderImport) {
   ExpectThirdFirefox2Bookmark(result.bookmarks[2]);
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
-       RedditSaverFileImport) {
+TEST_F(ContentBookmarkParserUtilsWithDataTest, RedditSaverFileImport) {
   base::FilePath path = test_data_path_.AppendASCII("redditsaver.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(2U, result.bookmarks.size());
   EXPECT_EQ(u"Google", result.bookmarks[0].title);
@@ -366,15 +322,12 @@ TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
 // Verifies that importing a bookmarks file without a charset specified succeeds
 // (by falling back to a default charset). Per [ http://crbug.com/460423 ], this
 // sort of bookmarks file is generated by IE.
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
+TEST_F(ContentBookmarkParserUtilsWithDataTest,
        InternetExplorerBookmarkFileWithoutCharsetImport) {
   base::FilePath path = test_data_path_.AppendASCII("ie_sans_charset.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   ASSERT_EQ(3U, result.bookmarks.size());
   EXPECT_EQ(u"Google", result.bookmarks[0].title);
@@ -388,14 +341,11 @@ TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest,
             result.bookmarks[2].last_visit_time);
 }
 
-TEST_F(ContentBookmarkParserInUtilityProcessWithDataTest, ToolbarFolder) {
+TEST_F(ContentBookmarkParserUtilsWithDataTest, ToolbarFolder) {
   base::FilePath path = test_data_path_.AppendASCII("toolbar_folder.html");
   std::string content;
   ASSERT_TRUE(base::ReadFileToString(path, &content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-  parser_->Parse(content, bookmarks_parsed_future.GetCallback());
-  BookmarkParser::ParsedBookmarks result = bookmarks_parsed_future.Take();
+  BookmarkParser::ParsedBookmarks result = ParseBookmarksUnsafe(content);
 
   // Only one bookmark since bookmarks with post data are ignored.
   ASSERT_EQ(1U, result.bookmarks.size());

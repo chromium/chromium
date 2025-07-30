@@ -7,9 +7,7 @@
 
 #include <string>
 
-#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
-#include "mojo/public/cpp/bindings/receiver.h"
 
 namespace user_data_importer {
 
@@ -20,10 +18,6 @@ class FakeBookmarkHtmlParser : public mojom::BookmarkHtmlParser {
   ~FakeBookmarkHtmlParser() override;
 
   void Parse(const std::string& raw_html, ParseCallback callback) override;
-
- private:
-  ContentBookmarkParserInUtilityProcess parser_{
-      mojo::PendingReceiver<mojom::BookmarkHtmlParser>()};
 };
 
 }  // namespace user_data_importer

@@ -8,6 +8,8 @@ source_set("content") {
     "content_bookmark_parser.h",
     "content_bookmark_parser_in_utility_process.cc",
     "content_bookmark_parser_in_utility_process.h",
+    "content_bookmark_parser_utils.cc",
+    "content_bookmark_parser_utils.h",
     "favicon_reencode.cc",
     "favicon_reencode.h",
     "stable_portability_data_importer.cc",
@@ -28,6 +30,7 @@ source_set("content") {
     "//url",
   ]
 }
+
 source_set("test_support") {
   testonly = true
 
@@ -37,7 +40,7 @@ source_set("test_support") {
   ]
 
   deps = [
-    "//components/user_data_importer/content",
+    ":content",
     "//components/user_data_importer/mojom",
   ]
 }
@@ -45,7 +48,7 @@ source_set("test_support") {
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_bookmark_parser_in_utility_process_unittest.cc",
+    "content_bookmark_parser_utils_unittest.cc",
     "stable_portability_data_importer_unittest.cc",
   ]
   deps = [

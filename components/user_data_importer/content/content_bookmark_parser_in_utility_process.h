@@ -10,8 +10,6 @@
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
-class GURL;
-
 namespace user_data_importer {
 
 // This class should be run in a sandboxed process and parse the contents of a
@@ -34,12 +32,6 @@ class ContentBookmarkParserInUtilityProcess : public mojom::BookmarkHtmlParser {
  private:
   mojo::Receiver<mojom::BookmarkHtmlParser> receiver_;
 };
-
-// Returns true if |url| should be imported as a search engine, i.e. because it
-// has replacement terms. Chrome treats such bookmarks as search engines rather
-// than true bookmarks.
-bool CanImportURLAsSearchEngine(const GURL& url,
-                                std::string* search_engine_url);
 
 }  // namespace user_data_importer
 

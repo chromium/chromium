@@ -45,7 +45,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
-#include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/content_bookmark_parser_utils.h"
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 #include "content/public/test/browser_task_environment.h"
 #include "skia/rusty_png_feature.h"
@@ -466,13 +466,8 @@ TEST_F(BookmarkHTMLWriterTest, ExportThenImport) {
   // Read the bookmarks back in.
   std::string html_content;
   ASSERT_TRUE(base::ReadFileToString(path_, &html_content));
-  base::test::TestFuture<user_data_importer::BookmarkParser::ParsedBookmarks>
-      bookmarks_parsed_future;
-
-  user_data_importer::FakeBookmarkHtmlParser parser;
-  parser.Parse(html_content, bookmarks_parsed_future.GetCallback());
-
-  auto result = bookmarks_parsed_future.Take();
+  auto result =
+      user_data_importer::ParseBookmarksUnsafe(std::move(html_content));
 
   std::vector<user_data_importer::ImportedBookmarkEntry> parsed_bookmarks =
       result.bookmarks;

@@ -13,7 +13,6 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/mock_importer_bridge.h"
@@ -44,8 +43,6 @@ class FirefoxImporterTest : public testing::Test {
     user_data_importer::SourceProfile profile;
     profile.source_path = places_path;
 
-    base::RunLoop run_loop;
-
     EXPECT_CALL(*bridge_, NotifyStarted());
     EXPECT_CALL(*bridge_, NotifyItemStarted(user_data_importer::FAVORITES));
     EXPECT_CALL(*bridge_, AddBookmarks(_, _))
@@ -53,13 +50,9 @@ class FirefoxImporterTest : public testing::Test {
     EXPECT_CALL(*bridge_, SetFavicons(_))
         .WillOnce(::testing::SaveArg<0>(favicons));
     EXPECT_CALL(*bridge_, NotifyItemEnded(user_data_importer::FAVORITES));
-    EXPECT_CALL(*bridge_, NotifyEnded()).WillOnce(testing::Invoke([&]() {
-      run_loop.Quit();
-    }));
+    EXPECT_CALL(*bridge_, NotifyEnded());
     importer_->StartImport(profile, user_data_importer::FAVORITES,
                            bridge_.get());
-
-    run_loop.Run();  // Wait for the import to finish.
   }
 
  private:

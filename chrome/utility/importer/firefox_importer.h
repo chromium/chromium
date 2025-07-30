@@ -18,11 +18,11 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "chrome/utility/importer/importer.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
-#include "components/user_data_importer/utility/bookmark_parser.h"
 
 class GURL;
 
@@ -62,19 +62,7 @@ class FirefoxImporter : public Importer {
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
 
-  // Notifies the `bridge_` if the import has ended.
-  void MaybeNotifyEnded();
-
   void ImportBookmarks();
-
-  // Notifies the `bridge_` that the bookmarks import has ended. It also calls
-  // `MaybeNotifyEnded` to notify that the full import has ended when
-  // appropriate.
-  void NotifyBookmarksEnded();
-
-  void OnBookmarksParsed(
-      user_data_importer::BookmarkParser::BookmarkParsingResult
-          default_bookmarks);
 
 #if !BUILDFLAG(IS_MAC)
   void ImportPasswords();
@@ -128,8 +116,6 @@ class FirefoxImporter : public Importer {
   // profile. |base_file_name| must be ASCII. Returns empty path on I/O failure.
   base::FilePath GetCopiedSourcePath(std::string_view base_file_name);
 
-  bool bookmarks_parsed_ = false;
-  bool all_types_but_bookmarks_parsed_ = false;
   base::FilePath source_path_;
   base::FilePath app_path_;
   base::ScopedTempDir source_path_copy_;
