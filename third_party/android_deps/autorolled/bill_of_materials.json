@@ -1497,7 +1497,7 @@
     {
         "name": "okio-jvm",
         "group": "com.squareup.okio",
-        "version": "3.15.0"
+        "version": "3.16.0"
     },
     {
         "name": "wire-runtime",
@@ -1672,7 +1672,7 @@
     {
         "name": "kotlin-stdlib",
         "group": "org.jetbrains.kotlin",
-        "version": "2.1.21"
+        "version": "2.2.0"
     },
     {
         "name": "kotlin-stdlib-common",

@@ -584,7 +584,7 @@ template("define_autorolled_targets") {
     # This is generated, do not edit. Update BuildConfigGenerator.groovy instead.
     java_prebuilt("com_squareup_okio_okio_jvm_java") {
       jar_path =
-          "autorolled/cipd/libs/com_squareup_okio_okio_jvm/okio-jvm-3.15.0.jar"
+          "autorolled/cipd/libs/com_squareup_okio_okio_jvm/okio-jvm-3.16.0.jar"
       output_name = "com_squareup_okio_okio_jvm"
       supports_android = true
       requires_android = true

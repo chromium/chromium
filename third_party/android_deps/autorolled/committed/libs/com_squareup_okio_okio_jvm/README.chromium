@@ -1,7 +1,7 @@
 Name: okio
 Short Name: okio-jvm
 URL: https://github.com/square/okio/
-Version: 3.15.0
+Version: 3.16.0
 Update Mechanism: Autoroll
 License: Apache-2.0
 License File: LICENSE
