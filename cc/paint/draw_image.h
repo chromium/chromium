@@ -81,10 +81,6 @@ class CC_PAINT_EXPORT DrawImage {
     DCHECK(target_color_params_.has_value());
     return target_color_params_->color_space;
   }
-  float sdr_white_level() const {
-    DCHECK(target_color_params_.has_value());
-    return target_color_params_->sdr_max_luminance_nits;
-  }
 
  private:
   void SetTargetColorParams(const TargetColorParams& target_color_params);

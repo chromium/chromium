@@ -84,8 +84,7 @@ DrawImage::DrawImage(const DrawImage& other,
       scale_(SkSize::Make(other.scale_.width() * scale_adjustment,
                           other.scale_.height() * scale_adjustment)),
       matrix_is_decomposable_(other.matrix_is_decomposable_),
-      frame_index_(frame_index),
-      target_color_params_(target_color_params) {
+      frame_index_(frame_index) {
   SetTargetColorParams(target_color_params);
 }
 

@@ -201,7 +201,7 @@ class HdrCanvasColorSpace : public virtual BaseTest {
   TargetColorParams GetTargetColorParams() const override {
     TargetColorParams result(gfx::ColorSpace(
         gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::SRGB_HDR));
-    result.hdr_max_luminance_relative = 4.f;
+    result.hdr_headroom = 2.f;
     return result;
   }
 };

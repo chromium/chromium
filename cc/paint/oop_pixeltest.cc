@@ -830,7 +830,7 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
     RasterOptions options(kSize);
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = 1.f;
+    options.target_color_params.hdr_headroom = 0.f;
     auto result = Raster(display_item_list, options);
     auto out_color = result.getColor4f(0, 0);
     EXPECT_NEAR(out_color.fR, std::pow(kBaseLinear / kDestScale, kGamma), kEps);
@@ -844,7 +844,7 @@ TEST_F(OopPixelTest, DrawGainmapImage) {
     RasterOptions options(kSize);
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = kDestScale;
+    options.target_color_params.hdr_headroom = std::log2(kDestScale);
     auto result = Raster(display_item_list, options);
     auto out_color = result.getColor4f(0, 0);
     EXPECT_NEAR(out_color.fR, std::pow(0.5f / kDestScale, kGamma), kEps);
@@ -918,7 +918,7 @@ TEST_F(OopPixelTest, DrawGainmapImageCubic) {
     auto dest_color_space = SkColorSpace::MakeSRGBLinear();
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = kRatioMax;
+    options.target_color_params.hdr_headroom = std::log2(kRatioMax);
   }
   auto result = Raster(display_item_list, options);
 
@@ -1021,7 +1021,7 @@ TEST_F(OopPixelTest, DrawGainmapImageFiltering) {
     auto dest_color_space = SkColorSpace::MakeSRGBLinear();
     options.target_color_params.color_space =
         gfx::ColorSpace(*dest_color_space);
-    options.target_color_params.hdr_max_luminance_relative = kRatioMax;
+    options.target_color_params.hdr_headroom = std::log2(kRatioMax);
   }
   auto result = Raster(display_item_list, options);
 
@@ -1157,7 +1157,7 @@ TEST_F(OopPixelTest, DrawHdrImageWithMetadata) {
   {
     constexpr float kExpected = 0.933675419515227f;
     constexpr float kDstHeadroom = 1.5f;
-    options.target_color_params.hdr_max_luminance_relative = kDstHeadroom;
+    options.target_color_params.hdr_headroom = std::log2(kDstHeadroom);
     auto actual =
         Raster(make_display_item_list(image_500_nits, 10000.f), options);
     auto color = actual.getColor4f(0, 0);

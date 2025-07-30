@@ -2025,7 +2025,6 @@ TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
     return params;
 
   gfx::DisplayColorSpaces display_cs = GetDisplayColorSpaces();
-  params.sdr_max_luminance_nits = display_cs.GetSDRMaxLuminanceNits();
 
   if (settings_.prefer_raster_in_srgb &&
       content_color_usage == gfx::ContentColorUsage::kSRGB) {
@@ -2038,7 +2037,7 @@ TargetColorParams LayerTreeHostImpl::GetTargetColorParams(
     params.color_space = raster_color_space;
   }
   if (params.color_space.IsHDR()) {
-    params.hdr_max_luminance_relative = display_cs.GetHDRMaxLuminanceRelative();
+    params.hdr_headroom = display_cs.GetHdrHeadroom();
   }
   return params;
 }

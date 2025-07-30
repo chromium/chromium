@@ -28,20 +28,12 @@ struct CC_PAINT_EXPORT TargetColorParams {
   // The target buffer's color space.
   gfx::ColorSpace color_space = gfx::ColorSpace::CreateSRGB();
 
-  // The maximum SDR luminance of the target, in nits.
-  float sdr_max_luminance_nits = gfx::ColorSpace::kDefaultSDRWhiteLevel;
-
-  // The maximum HDR luminance of the target, in multiples of the SDR maximum
-  // luminance (a non-HDR-capable display will have a value of 1).
-  float hdr_max_luminance_relative = 1.f;
-
-  // Return log2 of hdr_max_luminance_relative.
-  float GetHdrHeadroom() const;
+  float GetHdrHeadroom() const { return hdr_headroom.value_or(0); }
+  std::optional<float> hdr_headroom;
 
   bool operator==(const TargetColorParams& other) const {
     return color_space == other.color_space &&
-           sdr_max_luminance_nits == other.sdr_max_luminance_nits &&
-           hdr_max_luminance_relative == other.hdr_max_luminance_relative;
+           hdr_headroom == other.hdr_headroom;
   }
   bool operator!=(const TargetColorParams& other) const {
     return !(*this == other);

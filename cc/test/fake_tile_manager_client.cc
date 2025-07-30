@@ -36,8 +36,6 @@ TargetColorParams FakeTileManagerClient::GetTargetColorParams(
     gfx::ContentColorUsage /*content_color_usage*/) const {
   TargetColorParams result;
   result.color_space = color_space_;
-  result.sdr_max_luminance_nits = gfx::ColorSpace::kDefaultSDRWhiteLevel;
-  result.hdr_max_luminance_relative = 1.f;
   return result;
 }
 

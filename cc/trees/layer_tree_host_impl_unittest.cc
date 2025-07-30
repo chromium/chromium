@@ -16692,8 +16692,6 @@ TEST_P(LayerTreeHostImplTest, RasterColorSpace) {
   wcg_params =
       host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
   EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateDisplayP3D65());
-  EXPECT_EQ(wcg_params.sdr_max_luminance_nits,
-            gfx::ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 TEST_P(LayerTreeHostImplTest, RasterColorSpaceSoftware) {
@@ -16710,8 +16708,6 @@ TEST_P(LayerTreeHostImplTest, RasterColorSpaceSoftware) {
   wcg_params =
       host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kWideColorGamut);
   EXPECT_EQ(wcg_params.color_space, gfx::ColorSpace::CreateSRGB());
-  EXPECT_EQ(wcg_params.sdr_max_luminance_nits,
-            gfx::ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 TEST_P(LayerTreeHostImplTest, RasterColorPrefersSRGB) {
@@ -16731,8 +16727,6 @@ TEST_P(LayerTreeHostImplTest, RasterColorPrefersSRGB) {
   host_impl_->active_tree()->SetDisplayColorSpaces(gfx::DisplayColorSpaces(p3));
   srgb_params = host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kSRGB);
   EXPECT_EQ(srgb_params.color_space, p3);
-  EXPECT_EQ(srgb_params.sdr_max_luminance_nits,
-            gfx::ColorSpace::kDefaultSDRWhiteLevel);
 }
 
 TEST_P(LayerTreeHostImplTest, RasterColorSpaceHDR) {
@@ -16754,19 +16748,15 @@ TEST_P(LayerTreeHostImplTest, RasterColorSpaceHDR) {
   const auto hdr_params =
       host_impl_->GetTargetColorParams(gfx::ContentColorUsage::kHDR);
 
-  // Non-HDR content should be rasterized in P3.
+  // sRGB content is rastered as sRGB, WCG as P3.
   const auto srgb = gfx::ColorSpace::CreateSRGB();
   const auto p3 = gfx::ColorSpace::CreateDisplayP3D65();
   EXPECT_EQ(srgb_params.color_space, srgb);
-  EXPECT_EQ(srgb_params.sdr_max_luminance_nits, kCustomWhiteLevel);
-  EXPECT_EQ(srgb_params.hdr_max_luminance_relative, 1.f);
+  EXPECT_EQ(srgb_params.GetHdrHeadroom(), 0.f);
   EXPECT_EQ(wcg_params.color_space, p3);
-  EXPECT_EQ(wcg_params.sdr_max_luminance_nits, kCustomWhiteLevel);
-  EXPECT_EQ(wcg_params.hdr_max_luminance_relative, 1.f);
-
+  EXPECT_EQ(wcg_params.GetHdrHeadroom(), 0.f);
   EXPECT_EQ(hdr_params.color_space, p3.GetAsHDR());
-  EXPECT_EQ(hdr_params.sdr_max_luminance_nits, kCustomWhiteLevel);
-  EXPECT_EQ(hdr_params.hdr_max_luminance_relative, kHDRMaxLuminanceRelative);
+  EXPECT_EQ(hdr_params.GetHdrHeadroom(), std::log2(kHDRMaxLuminanceRelative));
 }
 
 TEST_F(CommitToPendingTreeLayerTreeHostImplTest,

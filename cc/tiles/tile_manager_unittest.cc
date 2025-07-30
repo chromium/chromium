@@ -2667,7 +2667,7 @@ TEST_F(TileManagerReadyToDrawTest, NonSmoothActivationDoesNotWaitOnCallback) {
 TEST_F(TileManagerReadyToDrawTest, HdrHeadroomPropagated) {
   constexpr float kTestHdrHeadroom = 2.f;
   TargetColorParams target_color_params;
-  target_color_params.hdr_max_luminance_relative = std::exp2(kTestHdrHeadroom);
+  target_color_params.hdr_headroom = kTestHdrHeadroom;
   host_impl()->set_target_color_params(target_color_params);
   mock_raster_buffer_provider()->set_expected_hdr_headroom(kTestHdrHeadroom);
 
@@ -3901,7 +3901,6 @@ class HdrImageTileManagerTest : public CheckerImagingTileManagerTest {
       EXPECT_FALSE(pending_tasks.empty());
       for (const auto& draw_info : pending_tasks) {
         EXPECT_EQ(draw_info.target_color_space(), raster_cs);
-        EXPECT_FLOAT_EQ(draw_info.sdr_white_level(), kCustomWhiteLevel);
       }
     }
 
