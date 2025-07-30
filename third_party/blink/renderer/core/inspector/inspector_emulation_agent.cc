@@ -508,9 +508,17 @@ protocol::Response InspectorEmulationAgent::setFocusEmulationEnabled(
   // During shutdown, the page and/or main frame might already be detached.
   // We must guard against accessing a null document.
   const Page* page = GetWebViewImpl()->GetPage();
-  if (page->MainFrame() && To<LocalFrame>(page->MainFrame())->GetDocument()) {
-    page->GetFocusController().SetFocusEmulationEnabled(enabled);
+  if (!page) {
+    return response;
   }
+
+  if (Frame* main_frame = page->MainFrame()) {
+    LocalFrame* local_main_frame = DynamicTo<LocalFrame>(main_frame);
+    if (local_main_frame && local_main_frame->GetDocument()) {
+      page->GetFocusController().SetFocusEmulationEnabled(enabled);
+    }
+  }
+
   return response;
 }
 
