@@ -57,8 +57,14 @@ source_set("browser_tests") {
   ]
 
   if (is_android) {
-    sources += [ "expandable_payment_handler_browsertest.cc" ]
-    deps += [ "//components/payments/content/android" ]
+    sources += [
+      "browser_bound_keys_deleter_browsertest.cc",
+      "expandable_payment_handler_browsertest.cc",
+    ]
+    deps += [
+      "//components/payments/content/android",
+      "//components/payments/content/browser_binding:test_support",
+    ]
   }
 
   if (!is_android) {

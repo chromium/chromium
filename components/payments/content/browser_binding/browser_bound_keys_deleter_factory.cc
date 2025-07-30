@@ -32,6 +32,11 @@ BrowserBoundKeyDeleter* BrowserBoundKeyDeleterFactory::GetForBrowserContext(
       GetInstance()->GetServiceForBrowserContext(context, /*create=*/false));
 }
 
+void BrowserBoundKeyDeleterFactory::SetServiceForTesting(
+    std::unique_ptr<BrowserBoundKeyDeleter> service) {
+  service_for_testing_ = std::move(service);
+}
+
 content::BrowserContext* BrowserBoundKeyDeleterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   if (context->IsOffTheRecord()) {
@@ -46,10 +51,18 @@ std::unique_ptr<KeyedService>
 BrowserBoundKeyDeleterFactory::BuildServiceInstanceForBrowserContext(
     content::BrowserContext* context) const {
   CHECK(!context->IsOffTheRecord());
-  auto service = std::make_unique<BrowserBoundKeyDeleter>(
-      webdata_services::WebDataServiceWrapperFactory::
-          GetWebPaymentsWebDataServiceForBrowserContext(
-              context, ServiceAccessType::EXPLICIT_ACCESS));
+  std::unique_ptr<BrowserBoundKeyDeleter> service;
+  if (service_for_testing_) {
+    service = std::move(service_for_testing_);
+  } else {
+    service = std::make_unique<BrowserBoundKeyDeleter>(
+        webdata_services::WebDataServiceWrapperFactory::
+            GetWebPaymentsWebDataServiceForBrowserContext(
+                context, ServiceAccessType::EXPLICIT_ACCESS));
+  }
+  // This triggers a cleanup of browser bound keys at startup (and the service
+  // may be used later for explicit cleanup from delete browsing data).
+  service->RemoveInvalidBBKs();
   return service;
 }
 

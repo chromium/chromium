@@ -29,6 +29,10 @@ class BrowserBoundKeyDeleterFactory : public BrowserContextKeyedServiceFactory {
   static BrowserBoundKeyDeleter* GetForBrowserContext(
       content::BrowserContext* context);
 
+  // This method must be called before the service is constructed in
+  // BuildServiceInstanceForBrowserContext() to have an effect.
+  void SetServiceForTesting(std::unique_ptr<BrowserBoundKeyDeleter> service);
+
  protected:
   content::BrowserContext* GetBrowserContextToUse(
       content::BrowserContext* context) const override;
@@ -42,6 +46,10 @@ class BrowserBoundKeyDeleterFactory : public BrowserContextKeyedServiceFactory {
   friend base::NoDestructor<BrowserBoundKeyDeleterFactory>;
   BrowserBoundKeyDeleterFactory();
   ~BrowserBoundKeyDeleterFactory() override;
+
+  // In order to return this testing service from the const method
+  // BuildServiceInstanceForBrowserContext(), the member needs to be mutable.
+  mutable std::unique_ptr<BrowserBoundKeyDeleter> service_for_testing_;
 };
 
 }  // namespace payments
