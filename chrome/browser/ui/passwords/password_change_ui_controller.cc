@@ -78,6 +78,7 @@ void LogDialogAction(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kCanceled:
     case PasswordChangeDelegate::State::kNoState:
+    case PasswordChangeDelegate::State::kLoginFormDetected:
       NOTREACHED();
   }
 }
@@ -93,6 +94,10 @@ void LogToastEvent(PasswordChangeDelegate::State state,
     case PasswordChangeDelegate::State::kChangingPassword:
       base::UmaHistogramEnumeration(
           "PasswordManager.PasswordChange.ChangingPasswordToast", event);
+      return;
+    case PasswordChangeDelegate::State::kLoginFormDetected:
+      base::UmaHistogramEnumeration(
+          "PasswordManager.PasswordChange.WaitingForUserSignInToast", event);
       return;
     case PasswordChangeDelegate::State::kPasswordSuccessfullyChanged:
     case PasswordChangeDelegate::State::kCanceled:
@@ -350,6 +355,13 @@ PasswordChangeUIController::GetDialogOrToastConfiguration(
       return ToastOptions(
           l10n_util::GetStringUTF16(IDS_PASSWORD_MANAGER_UI_PASSWORD_UNCHANGED),
           vector_icons::kPasswordManagerIcon, std::nullopt);
+    case PasswordChangeDelegate::State::kLoginFormDetected:
+      return ToastOptions(
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_TOAST_SIGN_IN_TO_CONTINUE),
+          l10n_util::GetStringUTF16(
+              IDS_PASSWORD_MANAGER_UI_PASSWORD_CHANGE_CANCEL),
+          std::move(cancel_toast_callback));
 
     case PasswordChangeDelegate::State::kNoState:
       NOTREACHED();
@@ -439,7 +451,8 @@ void PasswordChangeUIController::OnDialogCanceled() {
   CHECK(password_change_delegate_);
   LogDialogAction(state_, PasswordChangeDialogAction::kCancelButtonClicked);
   if (state_ == PasswordChangeDelegate::State::kWaitingForAgreement ||
-      state_ == PasswordChangeDelegate::State::kOfferingPasswordChange) {
+      state_ == PasswordChangeDelegate::State::kOfferingPasswordChange ||
+      state_ == PasswordChangeDelegate::State::kLoginFormDetected) {
     password_change_delegate_->OnPasswordChangeDeclined();
   }
   password_change_delegate_->Stop();

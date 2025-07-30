@@ -248,6 +248,8 @@ void PasswordChangeDelegateImpl::StartPasswordChangeFlow() {
       ChromePasswordManagerClient::FromWebContents(executor_.get()),
       logs_uploader_.get(), change_password_url_,
       base::BindOnce(&PasswordChangeDelegateImpl::OnPasswordChangeFormFound,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::BindOnce(&PasswordChangeDelegateImpl::OnLoginFormFound,
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -297,6 +299,10 @@ void PasswordChangeDelegateImpl::OnPasswordChangeFormFound(
   submission_verifier_->FillChangePasswordForm(
       form_manager, username_, original_password_, generated_password_);
   UpdateState(State::kChangingPassword);
+}
+
+void PasswordChangeDelegateImpl::OnLoginFormFound() {
+  UpdateState(State::kLoginFormDetected);
 }
 
 void PasswordChangeDelegateImpl::OnTabWillDetach(

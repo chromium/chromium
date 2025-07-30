@@ -34,12 +34,14 @@ class ChangePasswordFormFinder {
   static constexpr base::TimeDelta kFormWaitingTimeout = base::Seconds(30);
   using ChangePasswordFormFoundCallback =
       base::OnceCallback<void(password_manager::PasswordFormManager*)>;
+  using LoginFormFoundCallback = base::OnceCallback<void()>;
 
   ChangePasswordFormFinder(content::WebContents* web_contents,
                            password_manager::PasswordManagerClient* client,
                            ModelQualityLogsUploader* logs_uploader,
                            const GURL& change_password_url,
-                           ChangePasswordFormFoundCallback callback);
+                           ChangePasswordFormFoundCallback callback,
+                           LoginFormFoundCallback login_form_found_callback);
 
   ChangePasswordFormFinder(
       base::PassKey<class ChangePasswordFormFinderTest>,
@@ -48,6 +50,7 @@ class ChangePasswordFormFinder {
       ModelQualityLogsUploader* logs_uploader,
       const GURL& change_password_url,
       ChangePasswordFormFoundCallback callback,
+      LoginFormFoundCallback login_form_found_callback,
       base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
           capture_annotated_page_content);
 
@@ -91,6 +94,7 @@ class ChangePasswordFormFinder {
   const GURL change_password_url_;
 
   ChangePasswordFormFoundCallback callback_;
+  LoginFormFoundCallback login_form_found_callback_;
 
   base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
       capture_annotated_page_content_;

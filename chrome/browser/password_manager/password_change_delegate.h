@@ -54,7 +54,11 @@ class PasswordChangeDelegate {
     // present on a main page.
     kNoState = 9,
 
-    kMaxValue = kNoState,
+    // Login form was detected on a page during an ongoing password change flow.
+    // The flow is not stopped, but the user action is required.
+    kLoginFormDetected = 10,
+
+    kMaxValue = kLoginFormDetected,
   };
   // LINT.ThenChange(/tools/metrics/histograms/metadata/password/enums.xml:PasswordChangeFlowState)
 

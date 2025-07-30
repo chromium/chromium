@@ -52,12 +52,14 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
     password_manager::PasswordManagerClient* client,
     ModelQualityLogsUploader* logs_uploader,
     const GURL& change_password_url,
-    ChangePasswordFormFoundCallback callback)
+    ChangePasswordFormFoundCallback callback,
+    LoginFormFoundCallback login_form_found_callback)
     : web_contents_(web_contents),
       client_(client),
       logs_uploader_(logs_uploader),
       change_password_url_(change_password_url),
-      callback_(std::move(callback)) {
+      callback_(std::move(callback)),
+      login_form_found_callback_(std::move(login_form_found_callback)) {
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
@@ -78,13 +80,15 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
     ModelQualityLogsUploader* logs_uploader,
     const GURL& change_password_url,
     ChangePasswordFormFoundCallback callback,
+    LoginFormFoundCallback login_form_found_callback,
     base::OnceCallback<void(optimization_guide::OnAIPageContentDone)>
         capture_annotated_page_content)
     : ChangePasswordFormFinder(web_contents,
                                client,
                                logs_uploader,
                                change_password_url,
-                               std::move(callback)) {
+                               std::move(callback),
+                               std::move(login_form_found_callback)) {
   capture_annotated_page_content_ = std::move(capture_annotated_page_content);
 }
 
@@ -112,6 +116,10 @@ void ChangePasswordFormFinder::OnInitialFormWaitingResult(
   // in.
   if (result.login_form_manager) {
     timeout_timer_.Reset();
+    if (login_form_found_callback_) {
+      std::move(login_form_found_callback_).Run();
+    }
+
     web_contents_->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(change_password_url_));
 
