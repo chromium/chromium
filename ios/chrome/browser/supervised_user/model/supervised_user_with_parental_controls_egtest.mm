@@ -57,6 +57,14 @@ static const char* kInterstitialDetails = "Details";
 @interface SupervisedUserWithParentalControlsTestCase : ChromeTestCase
 @end
 
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserInterstitialOnBackButton \
+  testSupervisedUserInterstitialOnBackButton
+#else
+#define MAYBE_testSupervisedUserInterstitialOnBackButton \
+  FLAKY_testSupervisedUserInterstitialOnBackButton
+#endif
+
 @implementation SupervisedUserWithParentalControlsTestCase
 
 - (AppLaunchConfiguration)appConfigurationForTestCase {
@@ -79,22 +87,22 @@ static const char* kInterstitialDetails = "Details";
           isRunningTest:@selector
           (testSupervisedUserShowInterstitialDetailsLinkOnClickForNarrowScreen)] ||
       [self isRunningTest:@selector
-            (testSupervisedUserInterstitialOnBackButton)] ||
+            (MAYBE_testSupervisedUserInterstitialOnBackButton)] ||
       [self isRunningTest:@selector
             (testSupervisedUserInterstitialShowBlockReasonAndDetails)]) {
     // Tests that apply only in blocked url interstitial V2.
     config.features_disabled.push_back(
         supervised_user::kSupervisedUserBlockInterstitialV3);
     if ([self isRunningTest:@selector
-              (testSupervisedUserInterstitialOnBackButton)]) {
+              (MAYBE_testSupervisedUserInterstitialOnBackButton)]) {
       config.features_disabled.push_back(supervised_user::kLocalWebApprovals);
     }
   } else {
-      config.features_enabled_and_params.push_back(
-          {supervised_user::kLocalWebApprovals,
-           {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "5000"}}}});
-      config.features_enabled_and_params.push_back(
-          {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
+    config.features_enabled_and_params.push_back(
+        {supervised_user::kLocalWebApprovals,
+         {{{"LocalWebApprovalBottomSheetLoadTimeoutMs", "5000"}}}});
+    config.features_enabled_and_params.push_back(
+        {supervised_user::kSupervisedUserBlockInterstitialV3, {}});
   }
   return config;
 }
@@ -220,7 +228,16 @@ static const char* kInterstitialDetails = "Details";
 // when a filtering for them is triggered. Also tests that the filtering logic
 // on existing tabs does not force-realize unrealized states. This is a
 // regression test for bug: 1486459.
-- (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
+// TODO(crbug.com/435140688): Reenable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
+  testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
+#else
+#define MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates \
+  FLAKY_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates
+#endif
+- (void)
+    MAYBE_testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
   // Signing in the user and allow all sites.
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -435,7 +452,16 @@ static const char* kInterstitialDetails = "Details";
 
 // Tests that block-listing a url, results in showing immediately the
 // interstitial if the user has the url open in a tab.
-- (void)testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
+// TODO(crbug.com/435140688): Reenable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing \
+  testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing
+#else
+#define MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing \
+  FLAKY_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing
+#endif
+- (void)
+    MAYBE_testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
@@ -452,8 +478,16 @@ static const char* kInterstitialDetails = "Details";
 // Tests that users who have the filtering behaviour changed from "Allow all"
 // to "Allow approved" websites, will be shown the interstitial as soon as
 // the filtering behaviour changes.
+// TODO(crbug.com/435140688): Reenable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange \
+  testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange
+#else
+#define MAYBE_testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange \
+  FLAKY_testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange
+#endif
 - (void)
-    testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange {
+    MAYBE_testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange {
   [self signInSupervisedUser];
   GURL safeURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:safeURL];
@@ -470,7 +504,16 @@ static const char* kInterstitialDetails = "Details";
 // Tests that for users who have the filtering behaviour changed from "Allow
 // approved" to "Allow all" websites, a blocked pages will be refreshed and
 // unblocks as soon as the filtering behaviour changes.
-- (void)testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
+// TODO(crbug.com/435140688): Reenable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange \
+  testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange
+#else
+#define MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange \
+  FLAKY_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange
+#endif
+- (void)
+    MAYBE_testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -620,9 +663,10 @@ static const char* kInterstitialDetails = "Details";
   }
 }
 
-// Test that the when Local Web Approval is disabled, the "Back" button of the interstitial
-// gets us to the previous page.
-- (void)testSupervisedUserInterstitialOnBackButton {
+// Test that the when Local Web Approval is disabled, the "Back" button of the
+// interstitial gets us to the previous page.
+// TODO(crbug.com/435140688): Reenable this test.
+- (void)MAYBE_testSupervisedUserInterstitialOnBackButton {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -649,9 +693,18 @@ static const char* kInterstitialDetails = "Details";
   [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
 }
 
-// Test that the when Local Web Approval is enabled, users can request a local web
-// approval from the waiting screen.
-- (void)testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
+// Test that the when Local Web Approval is enabled, users can request a local
+// web approval from the waiting screen.
+// TODO(crbug.com/435140688): Reenable this test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen \
+  testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen
+#else
+#define MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen \
+  FLAKY_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen
+#endif
+- (void)
+    MAYBE_testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
