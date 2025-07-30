@@ -27,6 +27,9 @@ use icu_provider::prelude::*;
 use vecs::Index32;
 use zerovec::*;
 
+#[cfg(feature = "compiled_data")]
+pub use crate::provider::Baked;
+
 // TODO(#3776): Improve the documentation of this datastruct.
 
 icu_provider::data_marker!(
@@ -173,7 +176,7 @@ pub struct Rule<'a> {
 }
 
 /// The special matchers and replacers used by this transliterator.
-#[derive(Debug, Clone, zerofrom::ZeroFrom, PartialEq, Eq)]
+#[derive(Debug, Clone, zerofrom::ZeroFrom, PartialEq, Eq, Default)]
 #[cfg_attr(feature = "serde", derive(serde::Deserialize))]
 #[cfg_attr(feature = "datagen", derive(serde::Serialize, databake::Bake))]
 #[cfg_attr(feature = "datagen", databake(path = icu_experimental::transliterate::provider))]
