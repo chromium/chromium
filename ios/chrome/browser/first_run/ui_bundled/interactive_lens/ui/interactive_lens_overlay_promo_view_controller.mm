@@ -17,6 +17,8 @@
 #import "ui/base/l10n/l10n_util.h"
 
 namespace {
+// Corner radius for the top two corners of the Lens view.
+const CGFloat kLensViewCornerRadius = 45.0;
 // Static image assets.
 NSString* const kLensImageName = @"mountain_webpage";
 // Multiplier for the top padding for the Lens image.
@@ -43,6 +45,11 @@ const CGFloat kButtonBottomMargin = 45.0;
 @end
 
 @implementation InteractiveLensOverlayPromoViewController {
+  // The container view for the static background image that sits beind the Lens
+  // view.
+  UIView* _backgroundContainerView;
+  // The static background image view that sits inside _backgroundContainerView.
+  UIImageView* _backgroundImageView;
   // View for the tip bubble.
   BubbleView* _bubbleView;
   // View controller for the interactive Lens instance.
@@ -127,12 +134,40 @@ const CGFloat kButtonBottomMargin = 45.0;
       _footerContainerView, view,
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
 
+  // Add the container for the background image view.
+  _backgroundContainerView = [[UIView alloc] init];
+  _backgroundContainerView.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundContainerView.clipsToBounds = YES;
+  _backgroundContainerView.layer.cornerRadius = kLensViewCornerRadius;
+  _backgroundContainerView.layer.maskedCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  [view addSubview:_backgroundContainerView];
+
+  // Create the background image view and constrain it to its container.
+  _backgroundImageView = [[UIImageView alloc] init];
+  _backgroundImageView.translatesAutoresizingMaskIntoConstraints = NO;
+  _backgroundImageView.contentMode = UIViewContentModeScaleAspectFill;
+  _backgroundImageView.layer.cornerRadius = kLensViewCornerRadius;
+  _backgroundImageView.layer.maskedCorners =
+      kCALayerMinXMinYCorner | kCALayerMaxXMinYCorner;
+  _backgroundImageView.layer.borderWidth = 0.5;
+  _backgroundImageView.layer.borderColor =
+      [UIColor colorNamed:kGrey300Color].CGColor;
+  [_backgroundContainerView addSubview:_backgroundImageView];
+  AddSameConstraintsToSides(
+      _backgroundImageView, _backgroundContainerView,
+      LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kTop);
+
   // Add and constrain the Lens view.
   [_lensViewController willMoveToParentViewController:self];
   [self addChildViewController:_lensViewController];
   UIView* lensView = _lensViewController.view;
   lensView.translatesAutoresizingMaskIntoConstraints = NO;
   [view addSubview:lensView];
+
+  // Make the background image view should be the same size/position as the lens
+  // view since it will sit directly behind.
+  AddSameConstraints(_backgroundContainerView, lensView);
 
   NSLayoutConstraint* lensViewTopAnchor =
       [lensView.topAnchor constraintEqualToAnchor:_textScrollView.bottomAnchor
@@ -205,6 +240,7 @@ const CGFloat kButtonBottomMargin = 45.0;
   _bubbleViewBottomConstraint.constant = [self lensImageTopPadding] * 0.7;
   if (!_lensSearchImage) {
     _lensSearchImage = [self createLensSearchImage];
+    _backgroundImageView.image = _lensSearchImage;
   }
 }
 
