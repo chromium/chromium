@@ -274,6 +274,8 @@ crbug.com/949003 http/tests/printing/cross-site-frame.html [ Failure Pass ]
 
 # --- END Skia roll test suppresions
 
+# Expected to crash: Test removes the browsing context during JS execution.
+external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html [ Crash ]
 
 crbug.com/1462226 wpt_internal/prerender/restriction-web-auth.https.html [ Crash Failure Pass Timeout ]
 
@@ -2732,7 +2734,6 @@ crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createIm
 crbug.com/422811223 external/wpt/html/canvas/element/manual/imagebitmap/createImageBitmap-resolves-in-task.any.worker.html [ Failure ]
 crbug.com/413633034 external/wpt/html/webappapis/scripting/event-loops/new-scroll-event-dispatched-at-next-updating-rendering-time.html [ Failure ]
 crbug.com/406036293 [ Mac ] external/wpt/css/css-overflow/keyboard-scroll.html [ Failure Pass ]
-crbug.com/626703 external/wpt/trusted-types/DOMWindowTimers-setTimeout-setInterval.html [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/editing/plaintext-only/insertLineBreak.html?white-space=pre [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/editing/plaintext-only/insertLineBreak.html?white-space=pre-wrap [ Failure ]
 crbug.com/626703 [ Mac ] external/wpt/editing/plaintext-only/insertLineBreak.html?white-space=pre-line [ Failure ]
@@ -2747,7 +2748,6 @@ crbug.com/626703 external/wpt/service-workers/service-worker/navigation-timing-e
 crbug.com/626703 external/wpt/preload/preload-resource-match.https.html [ Failure ]
 crbug.com/1359555 external/wpt/speculation-rules/prerender/workers.https.html [ Failure Timeout ]
 crbug.com/324447993 external/wpt/web-locks/clientids.https.html [ Failure ]
-crbug.com/343770003 external/wpt/trusted-types/WorkerGlobalScope-eval.html [ Failure ]
 crbug.com/355428699 external/wpt/scroll-to-text-fragment/find-range-from-text-directive.html [ Failure Pass Timeout ]
 [ Mac14-arm64 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure ]  # Flaky output
 [ Mac14 ] external/wpt/clear-site-data/clear-cache.https.html [ Failure Timeout ]  # Flaky output
@@ -3163,7 +3163,6 @@ crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-r
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error-downgraded.tentative.html [ Crash ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-navigation-signature_verification_error.tentative.html [ Crash ]
 crbug.com/428759817 [ Win11-arm64 ] external/wpt/signed-exchange/reporting/sxg-reporting-prefetch-cert_fetch_error-downgraded.tentative.html [ Timeout ]
-crbug.com/428754684 external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html [ Crash ]
 crbug.com/428744357 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/contexts.py [ Failure ]
 crbug.com/428744357 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/invalid.py [ Failure ]
 crbug.com/428744357 external/wpt/webdriver/tests/bidi/emulation/set_locale_override/locale.py [ Failure ]
@@ -3513,8 +3512,6 @@ crbug.com/389545685 [ Mac12 ] external/wpt/css/css-position/sticky/position-stic
 crbug.com/389545685 [ Mac13 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac14 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
 crbug.com/389545685 [ Mac15-arm64 ] external/wpt/css/css-position/sticky/position-sticky-fractional-offset.html [ Failure ]
-crbug.com/388934352 external/wpt/trusted-types/block-eval-function-constructor.html [ Failure ]
-crbug.com/388934352 external/wpt/trusted-types/WorkerGlobalScope-importScripts.html [ Failure ]
 crbug.com/388580242 [ Mac14 ] external/wpt/html/cross-origin-opener-policy/popup-redirect-same-origin-allow-popups.https.html [ Crash Failure ]
 crbug.com/388309400 [ Mac15 ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
 crbug.com/388309400 [ Win ] external/wpt/css/CSS2/backgrounds/background-position-applies-to-012.xht [ Crash ]
