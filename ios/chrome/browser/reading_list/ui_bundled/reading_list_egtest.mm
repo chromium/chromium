@@ -1156,7 +1156,13 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Open in New Tab context menu action for a reading list entry.
+// TODO(crbug.com/435093473): Reenable this test.
 - (void)testContextMenuOpenInNewTab {
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator iOS 17");
+    }
+  }
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
