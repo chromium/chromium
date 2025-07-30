@@ -1589,6 +1589,14 @@
     "expiry_milestone": -1
   },
   {
+    "name": "chrome-native-url-overriding",
+    "owners": [
+      "mfiaz@google.com",
+      "clank-tab-dev@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "chrome-web-store-navigation-throttle",
     "owners": [ "marissashen@google.com", "chrome-web-store-consumer-eng-team@google.com"],
     "expiry_milestone": 150

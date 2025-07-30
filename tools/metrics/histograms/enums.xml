@@ -9040,6 +9040,7 @@ from previous Chrome versions.
   <int value="-1863249844" label="AccessibilityService:disabled"/>
   <int value="-1863066403" label="MoveThemePrefsToSpecifics:disabled"/>
   <int value="-1863020461" label="PasswordChangeInSettings:enabled"/>
+  <int value="-1862309711" label="ChromeNativeUrlOverriding:disabled"/>
   <int value="-1861814223" label="MidiManagerDynamicInstantiation:enabled"/>
   <int value="-1861712507" label="MediaAppImageMantisMakeASticker:disabled"/>
   <int value="-1861278695" label="BulkTabRestore:enabled"/>
@@ -10151,6 +10152,7 @@ from previous Chrome versions.
   <int value="-1455852875" label="WebAuthentication:disabled"/>
   <int value="-1455559065"
       label="OmniboxUIExperimentShowPlaceholderWhenCaretShowing:disabled"/>
+  <int value="-1454859000" label="ChromeNativeUrlOverriding:enabled"/>
   <int value="-1454479680" label="FileHandlingAPI:enabled"/>
   <int value="-1454397907" label="OptimizationHints:disabled"/>
   <int value="-1454327921"

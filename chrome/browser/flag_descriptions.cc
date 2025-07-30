@@ -3993,6 +3993,10 @@ const char kTabSwitcherGroupSuggestionsTestModeAndroidDescription[] =
     "Helper flag for testing that shows group suggestions for the last 3 tabs "
     "in the tab switcher (if present).";
 
+const char kChromeNativeUrlOverridingName[] = "Chrome Native Url Overriding";
+const char kChromeNativeUrlOverridingDescription[] =
+    "Allows for URL overriding for chrome-native:// pages";
+
 const char kTabletTabStripAnimationName[] = "Tablet Tab Strip Animation";
 const char kTabletTabStripAnimationDescription[] =
     "Enables new tablet tab strip animations.";

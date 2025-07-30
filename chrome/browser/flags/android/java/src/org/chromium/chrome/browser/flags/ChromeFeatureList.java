@@ -333,6 +333,7 @@ public abstract class ChromeFeatureList {
     public static final String CCT_TOOLBAR_REFACTOR = "CCTToolbarRefactor";
     public static final String CCT_RESET_TIMEOUT_ENABLED = "CCTResetTimeoutEnabled";
     public static final String CHANGE_UNFOCUSED_PRIORITY = "ChangeUnfocusedPriority";
+    public static final String CHROME_NATIVE_URL_OVERRIDING = "ChromeNativeUrlOverriding";
     public static final String CHROME_SURVEY_NEXT_ANDROID = "ChromeSurveyNextAndroid";
     public static final String CLAMP_AUTOMOTIVE_SCALING = "ClampAutomotiveScaling";
     public static final String CLANK_STARTUP_LATENCY_INJECTION = "ClankStartupLatencyInjection";
@@ -1240,6 +1241,8 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_IN_VIZ, true);
+    public static final MutableFlagWithSafeDefault sChromeNativeUrlOverriding =
+            newMutableFlagWithSafeDefault(CHROME_NATIVE_URL_OVERRIDING, false);
     public static final MutableFlagWithSafeDefault sClearBrowsingDataAndroidSurvey =
             newMutableFlagWithSafeDefault(CLEAR_BROWSING_DATA_ANDROID_SURVEY, false);
     public static final MutableFlagWithSafeDefault sControlsVisibilityFromNavigations =

@@ -285,6 +285,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kCCTToolbarRefactor,
     &kCCTResetTimeoutEnabled,
     &kChangeUnfocusedPriority,
+    &kChromeNativeUrlOverriding,
     &kDefaultBrowserPromoAndroid2,
     &kDisableInstanceLimit,
     &kDontAutoHideBrowserControls,
@@ -881,6 +882,10 @@ BASE_FEATURE(kCCTToolbarRefactor,
 
 BASE_FEATURE(kCCTResetTimeoutEnabled,
              "CCTResetTimeoutEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kChromeNativeUrlOverriding,
+             "ChromeNativeUrlOverriding",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kChangeUnfocusedPriority,

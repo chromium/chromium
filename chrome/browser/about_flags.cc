@@ -8201,10 +8201,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"cct-reset-timeout-enabled",
      flag_descriptions::kCCTResetTimeoutEnabledName,
      flag_descriptions::kCCTResetTimeoutEnabledDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-        chrome::android::kCCTResetTimeoutEnabled,
-        kCCTResetTimeoutVariations,
-        "CCTResetTimeoutVariations")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kCCTResetTimeoutEnabled,
+                                    kCCTResetTimeoutVariations,
+                                    "CCTResetTimeoutVariations")},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -10347,6 +10346,11 @@ const FeatureEntry kFeatureEntries[] = {
      kOsAndroid,
      FEATURE_VALUE_TYPE(
          chrome::android::kTabSwitcherGroupSuggestionsTestModeAndroid)},
+
+    {"chrome-native-url-overriding",
+     flag_descriptions::kChromeNativeUrlOverridingName,
+     flag_descriptions::kChromeNativeUrlOverridingDescription, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kChromeNativeUrlOverriding)},
 #endif
 
     {"group-promo-prototype", flag_descriptions::kGroupPromoPrototypeName,

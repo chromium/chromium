@@ -2266,6 +2266,9 @@ extern const char kTabSwitcherGroupSuggestionsAndroidDescription[];
 extern const char kTabSwitcherGroupSuggestionsTestModeAndroidName[];
 extern const char kTabSwitcherGroupSuggestionsTestModeAndroidDescription[];
 
+extern const char kChromeNativeUrlOverridingName[];
+extern const char kChromeNativeUrlOverridingDescription[];
+
 extern const char kTabletTabStripAnimationName[];
 extern const char kTabletTabStripAnimationDescription[];
 
