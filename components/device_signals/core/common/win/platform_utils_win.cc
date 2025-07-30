@@ -362,7 +362,7 @@ SettingValue GetDiskEncrypted() {
   return SettingValue::DISABLED;
 }
 
-std::vector<std::string> GetMacAddresses() {
+std::vector<std::string> internal::GetMacAddressesImpl() {
   std::vector<std::string> mac_addresses;
   ULONG adapter_info_size = 0;
   // Get the right buffer size in case of overflow

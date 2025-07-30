@@ -136,7 +136,7 @@ SettingValue GetDiskEncrypted() {
   return SettingValue::DISABLED;
 }
 
-std::vector<std::string> GetMacAddresses() {
+std::vector<std::string> internal::GetMacAddressesImpl() {
   std::vector<std::string> result;
   base::DirReaderPosix reader("/sys/class/net");
   if (!reader.IsValid()) {

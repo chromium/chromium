@@ -77,7 +77,7 @@ SettingValue GetDiskEncrypted() {
   return SettingValue::UNKNOWN;
 }
 
-std::vector<std::string> GetMacAddresses() {
+std::vector<std::string> internal::GetMacAddressesImpl() {
   std::vector<std::string> result;
   struct ifaddrs* ifa = nullptr;
 

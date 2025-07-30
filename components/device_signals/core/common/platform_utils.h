@@ -55,6 +55,17 @@ SettingValue GetSecureBootEnabled();
 std::optional<std::string> GetWindowsMachineDomain();
 #endif  // BUILDFLAG(IS_WIN)
 
+namespace internal {
+
+// Sets a `mac_addresses` vector to be used for testing purposes. The vector
+// will be copied into static storage.
+void SetMacAddressesForTesting(const std::vector<std::string>& mac_addresses);
+
+void ClearMacAddressesForTesting();
+
+std::vector<std::string> GetMacAddressesImpl();
+
+}  // namespace internal
 }  // namespace device_signals
 
 #endif  // COMPONENTS_DEVICE_SIGNALS_CORE_COMMON_PLATFORM_UTILS_H_
