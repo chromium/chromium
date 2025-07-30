@@ -8,6 +8,7 @@
 #include "base/functional/callback_helpers.h"
 #include "components/viz/common/resources/shared_image_format_utils.h"
 #include "gpu/ipc/client/gpu_channel_host.h"
+#include "media/capture/video/chromeos/pixel_format_utils.h"
 #include "media/capture/video/chromeos/video_capture_device_factory_chromeos.h"
 
 namespace media {
@@ -18,7 +19,7 @@ CameraBufferFactory::~CameraBufferFactory() = default;
 
 scoped_refptr<gpu::ClientSharedImage> CameraBufferFactory::CreateSharedImage(
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     const gfx::ColorSpace& color_space) {
   auto sii = VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface();
@@ -42,7 +43,7 @@ scoped_refptr<gpu::ClientSharedImage> CameraBufferFactory::CreateSharedImage(
   // SharedImages over to the renderer process when feasible (i.e., for non-R8
   // and/or for R8 on devices where it's texturable).
   auto shared_image = sii->CreateSharedImage(
-      {viz::GetSharedImageFormat(format), size, color_space,
+      {format, size, color_space,
        gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE),
        "CameraBufferFactory"},
       gpu::kNullSurfaceHandle, usage);
@@ -56,7 +57,7 @@ scoped_refptr<gpu::ClientSharedImage>
 CameraBufferFactory::CreateSharedImageFromGmbHandle(
     gfx::GpuMemoryBufferHandle buffer_handle,
     const gfx::Size& size,
-    gfx::BufferFormat format,
+    viz::SharedImageFormat format,
     gfx::BufferUsage usage,
     const gfx::ColorSpace& color_space) {
   auto sii = VideoCaptureDeviceFactoryChromeOS::GetSharedImageInterface();
@@ -80,7 +81,7 @@ CameraBufferFactory::CreateSharedImageFromGmbHandle(
   // SharedImages over to the renderer process when feasible (i.e., for non-R8
   // and/or for R8 on devices where it's texturable).
   auto shared_image = sii->CreateSharedImage(
-      {viz::GetSharedImageFormat(format), size, color_space,
+      {format, size, color_space,
        gpu::SharedImageUsageSet(gpu::SHARED_IMAGE_USAGE_CPU_ONLY_READ_WRITE),
        "CameraBufferFactory"},
       gpu::kNullSurfaceHandle, usage, std::move(buffer_handle));
@@ -101,17 +102,17 @@ ChromiumPixelFormat CameraBufferFactory::ResolveStreamBufferFormat(
     return resolved_format_usages_[key];
   }
 
-  ChromiumPixelFormat kUnsupportedFormat{PIXEL_FORMAT_UNKNOWN,
-                                         gfx::BufferFormat::RGBX_8888};
-  size_t kDummyBufferWidth = 128, kDummyBufferHeight = 128;
+  const ChromiumPixelFormat kUnsupportedFormat{
+      PIXEL_FORMAT_UNKNOWN, viz::SinglePlaneFormat::kRGBX_8888};
+  constexpr size_t kDummyBufferWidth = 128, kDummyBufferHeight = 128;
   std::vector<ChromiumPixelFormat> cr_formats =
-      PixFormatHalToChromium(hal_format);
+      HalPixelFormatToChromiumPixelFormat(hal_format);
   if (cr_formats.empty()) {
     return kUnsupportedFormat;
   }
   for (const auto& f : cr_formats) {
     auto shared_image = CreateSharedImage(
-        gfx::Size(kDummyBufferWidth, kDummyBufferHeight), f.gfx_format, usage);
+        gfx::Size(kDummyBufferWidth, kDummyBufferHeight), f.si_format, usage);
     if (shared_image) {
       resolved_format_usages_[key] = f;
       return f;

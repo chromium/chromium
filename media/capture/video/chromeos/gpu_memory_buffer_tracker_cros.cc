@@ -15,14 +15,14 @@
 namespace media {
 
 GpuMemoryBufferTrackerCros::GpuMemoryBufferTrackerCros() = default;
-
 GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 
 bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
                                       VideoPixelFormat format,
                                       const mojom::PlaneStridesPtr& strides) {
-  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
-  if (!gfx_format) {
+  std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToVizSIFormat(format);
+  if (!si_format) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
   }
@@ -30,24 +30,24 @@ bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
   // so we try the usage flag that covers all use cases.
   // JPEG capture buffer is backed by R8 pixel buffer.
   const gfx::BufferUsage usage =
-      *gfx_format == gfx::BufferFormat::R_8
+      format == PIXEL_FORMAT_MJPEG
           ? gfx::BufferUsage::CAMERA_AND_CPU_READ_WRITE
           : gfx::BufferUsage::VEA_READ_CAMERA_AND_CPU_READ_WRITE;
-
   shared_image_ =
-      buffer_factory_.CreateSharedImage(dimensions, *gfx_format, usage);
-  return shared_image_ ? true : false;
+      buffer_factory_.CreateSharedImage(dimensions, *si_format, usage);
+  return !!shared_image_;
 }
 
 bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
-  std::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
-  if (!gfx_format) {
+  std::optional<viz::SharedImageFormat> si_format =
+      VideoPixelFormatToVizSIFormat(format);
+  if (!si_format) {
     return false;
   }
-  return (viz::GetSharedImageFormat(*gfx_format) == shared_image_->format() &&
+  return (*si_format == shared_image_->format() &&
           dimensions == shared_image_->size());
 }
 
