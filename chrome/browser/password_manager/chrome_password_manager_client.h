@@ -437,8 +437,10 @@ class ChromePasswordManagerClient
 #endif
 
   // content::WebContentsObserver overrides.
+  void RenderFrameDeleted(content::RenderFrameHost* render_frame_host) override;
   void PrimaryPageChanged(content::Page& page) override;
   void WebContentsDestroyed() override;
+  void DidFinishNavigation(content::NavigationHandle* navigation) override;
   void ResourceLoadComplete(
       content::RenderFrameHost* render_frame_host,
       const content::GlobalRequestID& request_id,

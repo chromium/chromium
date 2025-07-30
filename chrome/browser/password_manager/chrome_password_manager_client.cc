@@ -1899,6 +1899,12 @@ ChromePasswordManagerClient::ChromePasswordManagerClient(
                         InitializationPolicy::kObservePreexistingManagers);
 }
 
+void ChromePasswordManagerClient::RenderFrameDeleted(
+    content::RenderFrameHost* render_frame_host) {
+  otp_manager_.OnRenderFrameDeleted(
+      autofill::LocalFrameToken(render_frame_host->GetFrameToken().value()));
+}
+
 void ChromePasswordManagerClient::PrimaryPageChanged(content::Page& page) {
 #if BUILDFLAG(IS_ANDROID)
   if (first_cct_page_load_metrics_recorder_) {
@@ -1957,6 +1963,20 @@ void ChromePasswordManagerClient::WebContentsDestroyed() {
             messages::DismissReason::TAB_DESTROYED);
   }
 #endif
+}
+
+void ChromePasswordManagerClient::DidFinishNavigation(
+    content::NavigationHandle* navigation) {
+  if (!navigation->HasCommitted() || navigation->IsSameDocument()) {
+    return;
+  }
+
+  if (navigation->IsInPrimaryMainFrame()) {
+    otp_manager_.OnDidFinishNavigationInMainFrame();
+  } else {
+    otp_manager_.OnDidFinishNavigationInIframe(autofill::LocalFrameToken(
+        navigation->GetRenderFrameHost()->GetFrameToken().value()));
+  }
 }
 
 void ChromePasswordManagerClient::ResourceLoadComplete(

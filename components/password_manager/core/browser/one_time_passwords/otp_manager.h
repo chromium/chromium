@@ -59,6 +59,19 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
                          base::OnceCallback<void(std::vector<std::string>)>
                              callback) const override;
 
+  // Called by the client when the renderer frame identified by `frame_token` is
+  // deleted.
+  void OnRenderFrameDeleted(const autofill::LocalFrameToken& frame_token);
+
+  // Called by the client when the main frame finishes navigating away from the
+  // current page.
+  void OnDidFinishNavigationInMainFrame();
+
+  // Called by the client when an iframe finishes navigating away from the
+  // current page.
+  void OnDidFinishNavigationInIframe(
+      const autofill::LocalFrameToken& frame_token);
+
   const base::flat_map<autofill::FormGlobalId, std::unique_ptr<OtpFormManager>>&
   form_managers() const {
     return form_managers_;
@@ -73,6 +86,11 @@ class OtpManager : public autofill::OtpSuggestionDelegate {
   // Returns a manager for a form, if it exists, or nullptr otherwise.
   OtpFormManager* GetManagerForForm(
       const autofill::FormGlobalId& form_id) const;
+
+  // Removes form managers managing OTP forms in a frame identified by
+  // `frame_token`.
+  void CleanFormManagersForTheFrame(
+      const autofill::LocalFrameToken& frame_token);
 
   // The client that owns this class and is guaranteed to outlive it.
   const raw_ptr<PasswordManagerClient> client_;

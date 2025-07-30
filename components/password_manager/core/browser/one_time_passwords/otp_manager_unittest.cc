@@ -24,6 +24,14 @@ using testing::ReturnRef;
 
 constexpr char kTestOtpUrl[] = "https://www.otp-obsessed.com/verification";
 
+FormData CreateTestForm(const autofill::LocalFrameToken& frame_token) {
+  FormData form;
+  form.set_fields({autofill::test::CreateTestFormField(
+      "some_label", "some_name", "some_value",
+      autofill::FormControlType::kInputText)});
+  return autofill::test::CreateFormDataForFrame(form, frame_token);
+}
+
 class MockPasswordManagerClient : public StubPasswordManagerClient {
  public:
   MockPasswordManagerClient() = default;
@@ -219,6 +227,57 @@ TEST_F(OtpManagerTest, FormManagerNotUpdatedWithNotOverridePredictions) {
       form.fields()[0].global_id()};
   EXPECT_EQ(expected_otp_field_ids,
             otp_manager_.form_managers().at(form.global_id())->otp_field_ids());
+}
+
+TEST_F(OtpManagerTest, CleanFormManagersCacheForIndividualFrames) {
+  autofill::LocalFrameToken frame_token1 =
+      autofill::test::MakeLocalFrameToken();
+  FormData form1 = CreateTestForm(frame_token1);
+
+  autofill::LocalFrameToken frame_token2 =
+      autofill::test::MakeLocalFrameToken();
+  FormData form2 = CreateTestForm(frame_token2);
+
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent).Times(2);
+  otp_manager_.ProcessClassificationModelPredictions(
+      form1, {{form1.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+  otp_manager_.ProcessClassificationModelPredictions(
+      form2, {{form2.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  ASSERT_EQ(2u, otp_manager_.form_managers().size());
+
+  // Simulate the first frame being deleted and verify that the form manager
+  // managing the form in the first frame is deleted too.
+  otp_manager_.OnRenderFrameDeleted(frame_token1);
+  EXPECT_EQ(1u, otp_manager_.form_managers().size());
+  EXPECT_FALSE(otp_manager_.form_managers().contains(form1.global_id()));
+  EXPECT_TRUE(otp_manager_.form_managers().contains(form2.global_id()));
+
+  // Simulate the second frame navigating and verify that the form manager
+  // managing the form in the second frame is deleted.
+  otp_manager_.OnDidFinishNavigationInIframe(frame_token2);
+  EXPECT_EQ(0u, otp_manager_.form_managers().size());
+}
+
+TEST_F(OtpManagerTest, CleanFormManagersCacheOnMainFrameNavigation) {
+  autofill::LocalFrameToken frame_token1 =
+      autofill::test::MakeLocalFrameToken();
+  FormData form1 = CreateTestForm(frame_token1);
+
+  autofill::LocalFrameToken frame_token2 =
+      autofill::test::MakeLocalFrameToken();
+  FormData form2 = CreateTestForm(frame_token2);
+
+  EXPECT_CALL(mock_client_, InformPasswordChangeServiceOfOtpPresent).Times(2);
+  otp_manager_.ProcessClassificationModelPredictions(
+      form1, {{form1.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+  otp_manager_.ProcessClassificationModelPredictions(
+      form2, {{form2.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  ASSERT_EQ(2u, otp_manager_.form_managers().size());
+
+  otp_manager_.OnDidFinishNavigationInMainFrame();
+  EXPECT_EQ(0u, otp_manager_.form_managers().size());
 }
 
 #if BUILDFLAG(IS_ANDROID)

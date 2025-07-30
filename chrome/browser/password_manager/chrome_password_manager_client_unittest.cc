@@ -2167,6 +2167,120 @@ TEST_F(ChromePasswordManagerClientTest,
       Observer::FieldTypeSource::kHeuristicsOrAutocomplete);
 }
 
+TEST_F(ChromePasswordManagerClientTest,
+       DidFinishNavigationInMainFrameClearsAllOtpManagers) {
+  password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
+  ASSERT_TRUE(otp_manager);
+
+  // Create a main frame and a subframe.
+  const GURL kTestUrl("https://example.com");
+  NavigateAndCommit(GURL(kTestUrl));
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+
+  FormData main_frame_form = CreateLoginFormDataForFrame(main_rfh());
+  otp_manager->ProcessClassificationModelPredictions(
+      main_frame_form,
+      {{main_frame_form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  FormData subframe_form = CreateLoginFormDataForFrame(subframe);
+  otp_manager->ProcessClassificationModelPredictions(
+      subframe_form,
+      {{subframe_form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  ASSERT_EQ(2u, otp_manager->form_managers().size());
+
+  // Simulate finishing a navigation in the main frame.
+  content::MockNavigationHandle handle(GURL(kTestUrl), main_rfh());
+  handle.set_has_committed(true);
+  handle.set_is_in_primary_main_frame(true);
+  static_cast<content::WebContentsObserver*>(GetClient())
+      ->DidFinishNavigation(&handle);
+
+  // All form managers should be cleared.
+  EXPECT_EQ(0u, otp_manager->form_managers().size());
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       DidStartSameDocumentNavigationDoesNotClearOtpManagers) {
+  password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
+  ASSERT_TRUE(otp_manager);
+  const GURL kTestUrl("https://example.com");
+  NavigateAndCommit(GURL(kTestUrl));
+
+  FormData main_frame_form = CreateLoginFormDataForFrame(main_rfh());
+  otp_manager->ProcessClassificationModelPredictions(
+      main_frame_form,
+      {{main_frame_form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+  ASSERT_EQ(1u, otp_manager->form_managers().size());
+
+  // Simulate finishing a navigation within the same document in the main frame.
+  content::MockNavigationHandle handle(GURL(kTestUrl), main_rfh());
+  handle.set_is_in_primary_main_frame(true);
+  handle.set_has_committed(true);
+  handle.set_is_same_document(true);
+  static_cast<content::WebContentsObserver*>(GetClient())
+      ->DidFinishNavigation(&handle);
+
+  // Form managers should survive.
+  EXPECT_EQ(1u, otp_manager->form_managers().size());
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       DidFinishNavigationInIframeClearsOtpManagersForFrame) {
+  password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
+  ASSERT_TRUE(otp_manager);
+
+  const GURL kTestUrl("https://example.com");
+  NavigateAndCommit(GURL(kTestUrl));
+  content::RenderFrameHost* subframe =
+      content::RenderFrameHostTester::For(main_rfh())->AppendChild("subframe");
+
+  FormData main_frame_form = CreateLoginFormDataForFrame(main_rfh());
+  otp_manager->ProcessClassificationModelPredictions(
+      main_frame_form,
+      {{main_frame_form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  FormData subframe_form = CreateLoginFormDataForFrame(subframe);
+  otp_manager->ProcessClassificationModelPredictions(
+      subframe_form,
+      {{subframe_form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+
+  ASSERT_EQ(2u, otp_manager->form_managers().size());
+
+  // Simulate finishing a navigation in the subframe.
+  content::MockNavigationHandle handle(GURL(kTestUrl), subframe);
+  handle.set_is_in_primary_main_frame(false);
+  handle.set_has_committed(true);
+  static_cast<content::WebContentsObserver*>(GetClient())
+      ->DidFinishNavigation(&handle);
+
+  // Only the form manager for the subframe should be cleared.
+  EXPECT_EQ(1u, otp_manager->form_managers().size());
+  EXPECT_TRUE(
+      otp_manager->form_managers().contains(main_frame_form.global_id()));
+  EXPECT_FALSE(
+      otp_manager->form_managers().contains(subframe_form.global_id()));
+}
+
+TEST_F(ChromePasswordManagerClientTest,
+       RenderFrameDeletedClearsOtpManagersForFrame) {
+  password_manager::OtpManager* otp_manager = GetClient()->GetOtpManager();
+  ASSERT_TRUE(otp_manager);
+
+  NavigateAndCommit(GURL("https://example.com"));
+  FormData form = CreateLoginFormDataForFrame(main_rfh());
+  otp_manager->ProcessClassificationModelPredictions(
+      form, {{form.fields()[0].global_id(), autofill::ONE_TIME_CODE}});
+  ASSERT_EQ(1u, otp_manager->form_managers().size());
+
+  static_cast<content::WebContentsObserver*>(GetClient())
+      ->RenderFrameDeleted(main_rfh());
+
+  // The form manager should be cleared.
+  EXPECT_EQ(0u, otp_manager->form_managers().size());
+}
+
 #if BUILDFLAG(IS_ANDROID)
 TEST_F(ChromePasswordManagerClientAndroidTest,
        DelaySuggestionsSheetWhenPasskeysPending) {
