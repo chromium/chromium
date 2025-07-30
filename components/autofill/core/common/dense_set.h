@@ -472,6 +472,11 @@ class DenseSet {
   constexpr explicit DenseSet(const Range& range, Proj proj = {})
       : DenseSet(std::ranges::begin(range), std::ranges::end(range), proj) {}
 
+  constexpr DenseSet(const DenseSet&) = default;
+  constexpr DenseSet& operator=(const DenseSet&) = default;
+
+  constexpr ~DenseSet() = default;
+
   // Returns a set containing all values from `kMinValue` to `kMaxValue`,
   // regardless of whether the values represent an existing enum.
   static constexpr DenseSet all() {
