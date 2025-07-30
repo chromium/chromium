@@ -147,8 +147,7 @@ PageInfoMainView::PageInfoMainView(
 
   int link_text_id = 0;
   int tooltip_text_id = 0;
-  if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id) &&
-      !base::FeatureList::IsEnabled(page_info::kPageInfoHideSiteSettings)) {
+  if (ui_delegate_->ShouldShowSiteSettings(&link_text_id, &tooltip_text_id)) {
     site_settings_link_ = AddChildView(std::make_unique<RichHoverButton>(
         base::BindRepeating(
             [](PageInfoMainView* view) {

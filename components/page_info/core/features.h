@@ -28,9 +28,6 @@ extern const base::FeatureParam<bool> kShowSampleContent;
 // Enables the history section for Page Info on desktop.
 BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
 
-// Hides site settings row.
-BASE_DECLARE_FEATURE(kPageInfoHideSiteSettings);
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 // Enables the merchant trust section for Page Info.

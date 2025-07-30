@@ -44,10 +44,6 @@ BASE_FEATURE(kPageInfoHistoryDesktop,
              "PageInfoHistoryDesktop",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kPageInfoHideSiteSettings,
-             "PageInfoHideSiteSettings",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #endif  // !BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kMerchantTrust,
