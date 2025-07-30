@@ -30,8 +30,7 @@ import java.io.OutputStream;
 public class ChromeBluetoothSocket {
     private static final String TAG = "Bluetooth";
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
-    final BluetoothSocketWrapper mSocket;
+    @VisibleForTesting final BluetoothSocketWrapper mSocket;
 
     private final InputStream mInputStream;
     private final OutputStream mOutputStream;

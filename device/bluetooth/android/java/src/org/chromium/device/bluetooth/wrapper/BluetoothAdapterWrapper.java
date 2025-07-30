@@ -97,7 +97,7 @@ public class BluetoothAdapterWrapper {
         }
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting
     public BluetoothAdapterWrapper(
             BluetoothAdapter adapter,
             Context context,
