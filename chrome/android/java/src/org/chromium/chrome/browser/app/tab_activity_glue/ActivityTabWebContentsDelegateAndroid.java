@@ -17,8 +17,6 @@ import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.collection.ArrayMap;
 
 import org.chromium.base.AconfigFlaggedApiDelegate;
@@ -31,6 +29,8 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.blink.mojom.DisplayMode;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.SwipeRefreshHandler;
@@ -85,6 +85,7 @@ import java.util.Objects;
  * {@link WebContentsDelegateAndroid} that interacts with {@link Activity} and those of the lifetime
  * of the activity to process requests from underlying {@link WebContents} for a given {@link Tab}.
  */
+@NullMarked
 public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegateAndroid {
     private static final String TAG = "ActivityTabWCDA";
 
@@ -92,7 +93,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     private final Tab mTab;
 
-    @Nullable private Activity mActivity;
+    private @Nullable Activity mActivity;
     private final ChromeActivityNativeDelegate mChromeActivityNativeDelegate;
     private final boolean mIsCustomTab;
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
@@ -102,7 +103,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
     private final Supplier<ModalDialogManager> mModalDialogManagerSupplier;
     private final TabObserver mTabObserver;
-    @Nullable private final ExclusiveAccessManager mExclusiveAccessManager;
+    private final @Nullable ExclusiveAccessManager mExclusiveAccessManager;
 
     public ActivityTabWebContentsDelegateAndroid(
             Tab tab,
@@ -112,9 +113,9 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             BrowserControlsStateProvider browserControlsStateProvider,
             FullscreenManager fullscreenManager,
             TabCreatorManager tabCreatorManager,
-            @NonNull Supplier<TabModelSelector> tabModelSelectorSupplier,
-            @NonNull Supplier<CompositorViewHolder> compositorViewHolderSupplier,
-            @NonNull Supplier<ModalDialogManager> modalDialogManagerSupplier,
+            Supplier<TabModelSelector> tabModelSelectorSupplier,
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            Supplier<ModalDialogManager> modalDialogManagerSupplier,
             @Nullable ExclusiveAccessManager exclusiveAccessManager) {
         mTab = tab;
         mActivity = activity;
@@ -220,12 +221,15 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
         // Grab the URL, which might not be available via the Tab.
         GURL url = mWebContentsUrlMapping.remove(webContents);
+        if (url == null) return false;
 
         // Skip opening a new Tab if it doesn't make sense.
         if (mTab.isClosing()) return false;
 
+        WindowAndroid window = mTab.getWindowAndroid();
         boolean openingPopup =
-                PopupCreator.arePopupsEnabled(mTab.getWindowAndroid().getDisplay())
+                window != null
+                        && PopupCreator.arePopupsEnabled(window.getDisplay())
                         && (disposition == WindowOpenDisposition.NEW_POPUP);
         if (disposition == WindowOpenDisposition.NEW_POPUP) {
             RecordHistogram.recordBooleanHistogram(
@@ -258,8 +262,8 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (tab == null) return false;
 
         if (openingPopup) {
-            PopupCreator.moveTabToNewPopup(
-                    tab, windowFeatures, mTab.getWindowAndroid().getDisplay());
+            assert window != null;
+            PopupCreator.moveTabToNewPopup(tab, windowFeatures, window.getDisplay());
         }
 
         if (disposition == WindowOpenDisposition.NEW_FOREGROUND_TAB) {
@@ -332,15 +336,17 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
             return;
         }
 
+        if (mActivity == null) return;
         final AppTask appTask = AndroidTaskUtils.getAppTaskFromId(mActivity, mActivity.getTaskId());
         if (appTask == null) {
             Log.e(TAG, "Got a null AppTask in setContentsBounds()");
             return;
         }
 
+        WindowAndroid window = mTab.getWindowAndroid();
+        if (window == null) return;
         final Pair<Integer, Rect> localCoordinatesPx =
-                DisplayUtil.getLocalCoordinatesPx(
-                        new RectF(bounds), mTab.getWindowAndroid().getDisplay());
+                DisplayUtil.getLocalCoordinatesPx(new RectF(bounds), window.getDisplay());
         delegate.moveTaskTo(appTask, localCoordinatesPx.first, localCoordinatesPx.second);
     }
 
@@ -372,6 +378,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         TabModelUtils.setIndex(model, index);
 
         WindowAndroid hostWindow = mTab.getWindowAndroid();
+        if (hostWindow == null) return;
 
         // If the activity is the top resumed activity, then it is already focused so we can drop
         // the call.
@@ -394,6 +401,7 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     /** Brings chrome's Activity to foreground, if it is not so. */
     protected void bringActivityToForeground() {
+        if (mActivity == null) return;
         if (ChromeFeatureList.isEnabled(
                 ChromeFeatureList.USE_ACTIVITY_MANAGER_FOR_TAB_ACTIVATION)) {
             ((ActivityManager) mActivity.getSystemService(Context.ACTIVITY_SERVICE))
@@ -548,7 +556,9 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         if (mActivity == null) return 0;
 
         View rootView = mActivity.getWindow().getDecorView().getRootView();
-        return mTab.getWindowAndroid().getKeyboardDelegate().calculateTotalKeyboardHeight(rootView);
+        WindowAndroid window = mTab.getWindowAndroid();
+        if (window == null) return 0;
+        return window.getKeyboardDelegate().calculateTotalKeyboardHeight(rootView);
     }
 
     @Override
@@ -637,7 +647,10 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
         // called right after WebContents::Activate. But in various corner cases, that
         // activation may fail.
         if (mActivity == null || !mTab.isUserInteractable()) {
-            mTab.getWebContents().getNavigationController().cancelPendingReload();
+            WebContents webContents = mTab.getWebContents();
+            if (webContents != null) {
+                webContents.getNavigationController().cancelPendingReload();
+            }
             return;
         }
 
@@ -647,20 +660,18 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
                         modalDialogManager,
                         (Integer dismissalCause) -> {
                             if (!mTab.isInitialized()) return;
+                            WebContents webContents = mTab.getWebContents();
+                            if (webContents == null) return;
                             switch (dismissalCause) {
                                 case DialogDismissalCause.POSITIVE_BUTTON_CLICKED:
-                                    mTab.getWebContents()
-                                            .getNavigationController()
-                                            .continuePendingReload();
+                                    webContents.getNavigationController().continuePendingReload();
                                     break;
                                 case DialogDismissalCause.ACTIVITY_DESTROYED:
                                 case DialogDismissalCause.TAB_DESTROYED:
                                     // Intentionally ignored as the tab object is gone.
                                     break;
                                 default:
-                                    mTab.getWebContents()
-                                            .getNavigationController()
-                                            .cancelPendingReload();
+                                    webContents.getNavigationController().cancelPendingReload();
                                     break;
                             }
                         });
@@ -697,10 +708,11 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
 
     @Override
     protected boolean isDynamicSafeAreaInsetsEnabled() {
+        if (mActivity == null) return false;
         return EdgeToEdgeUtils.isEdgeToEdgeBottomChinEnabled(mActivity);
     }
 
-    protected TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
+    protected @Nullable TabGroupModelFilter getTabGroupModelFilter(Tab tab) {
         return TabModelUtils.getTabGroupModelFilterByTab(tab);
     }
 

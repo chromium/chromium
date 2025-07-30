@@ -15,6 +15,8 @@ import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.customtabs.CustomTabIntentDataProvider;
@@ -25,9 +27,10 @@ import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayUtil;
 
 /** Handles launching new popup windows as CCTs. */
+@NullMarked
 public class PopupCreator {
-    private static Boolean sArePopupsEnabledForTesting;
-    private static ReparentingTask sReparentingTaskForTesting;
+    private static @Nullable Boolean sArePopupsEnabledForTesting;
+    private static @Nullable ReparentingTask sReparentingTaskForTesting;
 
     // TODO(https://crbug.com/411002260): remove the display argument when Android display topology
     // API is available in Chrome

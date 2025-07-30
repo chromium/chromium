@@ -8,6 +8,7 @@ import org.jni_zero.NativeMethods;
 
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenOptions;
@@ -52,7 +53,7 @@ public class ExclusiveAccessManager implements Destroyable {
      *
      * @param webContents exit requester
      */
-    public void exitFullscreenModeForTab(WebContents webContents) {
+    public void exitFullscreenModeForTab(@Nullable WebContents webContents) {
         ExclusiveAccessManagerJni.get()
                 .exitFullscreenModeForTab(mExclusiveAccessManagerAndroidNativePointer, webContents);
     }
@@ -105,7 +106,7 @@ public class ExclusiveAccessManager implements Destroyable {
                 boolean showStatusBar);
 
         void exitFullscreenModeForTab(
-                long nativeExclusiveAccessManagerAndroid, WebContents webContents);
+                long nativeExclusiveAccessManagerAndroid, @Nullable WebContents webContents);
 
         boolean isFullscreenForTabOrPending(
                 long nativeExclusiveAccessManagerAndroid, WebContents webContents);
