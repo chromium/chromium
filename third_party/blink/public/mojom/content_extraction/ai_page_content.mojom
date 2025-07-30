@@ -154,7 +154,11 @@ enum AIPageContentClickabilityReason {
   // The node has the aria-expanded attribute indicating it controls the
   // visibility of other elements. This reason implies that the associated
   // control is currently collapsed.
-  kAriaExpandedFalse
+  kAriaExpandedFalse,
+
+  // The node has autocomplete, as indicated by the same-named attribute or
+  // aria-autocomplete.
+  kAutocomplete,
 };
 
 struct AIPageContentNodeInteractionInfo {

@@ -270,6 +270,16 @@ void AddClickabilityReasons(
           Reason::kAriaExpandedFalse);
     }
   }
+
+  const auto& autocomplete =
+      element.FastGetAttribute(html_names::kAutocompleteAttr);
+  const auto& aria_autocomplete =
+      element.FastGetAttribute(html_names::kAriaAutocompleteAttr);
+  if ((autocomplete && autocomplete != "off") ||
+      (aria_autocomplete == "inline" || aria_autocomplete == "list" ||
+       aria_autocomplete == "both")) {
+    interaction_info.clickability_reasons.push_back(Reason::kAutocomplete);
+  }
 }
 
 bool ShouldSkipSubtree(const LayoutObject& object) {

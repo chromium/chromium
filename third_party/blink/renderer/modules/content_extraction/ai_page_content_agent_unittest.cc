@@ -4098,5 +4098,46 @@ TEST_F(AIPageContentAgentTest, AriaExpandedFalse) {
           mojom::blink::AIPageContentClickabilityReason::kAriaExpandedFalse));
 }
 
+TEST_F(AIPageContentAgentTest, Autocomplete) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(), R"(<body>
+      <input>
+      <input autocomplete=off>
+      <input autocomplete=on>
+      <input aria-autocomplete>
+      <input aria-autocomplete=none>
+      <input aria-autocomplete=list>
+      </body>)",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  const bool kExpected[] = {
+      false,  // no attribute
+      false,  // disabled
+      true,
+      false,  // empty
+      false,  // disabled
+      true,
+  };
+
+  GetAIPageContentWithActionableElements();
+
+  for (int i = 0; bool expected : kExpected) {
+    SCOPED_TRACE(i);
+
+    const auto& input_node = *ContentRootNode().children_nodes[i];
+    ASSERT_TRUE(input_node.content_attributes->node_interaction_info);
+    const auto& interaction_info =
+        *input_node.content_attributes->node_interaction_info;
+
+    EXPECT_THAT(
+        interaction_info.clickability_reasons,
+        testing::Contains(
+            mojom::blink::AIPageContentClickabilityReason::kAutocomplete)
+            .Times(expected));
+
+    ++i;
+  }
+}
+
 }  // namespace
 }  // namespace blink
