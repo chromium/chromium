@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import static android.app.DownloadManager.ACTION_NOTIFICATION_CLICKED;
 
+import static org.chromium.build.NullUtil.assertNonNull;
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_CANCEL;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_OPEN;
 import static org.chromium.chrome.browser.download.DownloadNotificationService.ACTION_DOWNLOAD_PAUSE;
@@ -26,6 +28,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.TextUtils;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.notifications.NotificationConstants;
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
@@ -41,6 +45,7 @@ import org.chromium.components.offline_items_collection.LegacyHelpers;
 import org.chromium.components.offline_items_collection.OfflineItem;
 
 /** Creates and updates notifications related to downloads. */
+@NullMarked
 public final class DownloadNotificationFactory {
     // Limit file name to 25 characters. TODO(qinmin): use different limit for different devices?
     public static final int MAX_FILE_NAME_LENGTH = 25;
@@ -54,12 +59,6 @@ public final class DownloadNotificationFactory {
 
     // Time out duration for dangerous download notification.
     private static final long DANGEROUS_DOWNLOAD_TIME_OUT_DURATION_IN_MILLIS = 5 * 60 * 1000;
-
-    private static <T> void checkNotNull(T reference) {
-        if (reference == null) {
-            throw new NullPointerException();
-        }
-    }
 
     private static void checkArgument(boolean expression) {
         if (!expression) {
@@ -81,7 +80,7 @@ public final class DownloadNotificationFactory {
      *     android.app.NotificationManager#notify(String, int, Notification)}.
      * @return Notification that is built based on these parameters.
      */
-    public static Notification buildNotification(
+    public static @Nullable Notification buildNotification(
             Context context,
             @DownloadNotificationService.DownloadStatus int downloadStatus,
             DownloadUpdate downloadUpdate,
@@ -127,8 +126,8 @@ public final class DownloadNotificationFactory {
         var resources = context.getResources();
         switch (downloadStatus) {
             case DownloadNotificationService.DownloadStatus.IN_PROGRESS:
-                checkNotNull(downloadUpdate.getProgress());
-                checkNotNull(downloadUpdate.getContentId());
+                assertNonNull(downloadUpdate.getProgress());
+                assertNonNull(downloadUpdate.getContentId());
                 checkArgument(downloadUpdate.getNotificationId() != -1);
 
                 if (downloadUpdate.getIsDownloadPending()) {
@@ -182,15 +181,15 @@ public final class DownloadNotificationFactory {
                     builder.setLargeIcon(downloadUpdate.getIcon());
                 }
 
+                boolean indeterminate = downloadUpdate.getProgress().isIndeterminate();
                 if (!downloadUpdate.getIsDownloadPending()) {
-                    boolean indeterminate = downloadUpdate.getProgress().isIndeterminate();
                     builder.setProgress(
                             100,
                             indeterminate ? -1 : downloadUpdate.getProgress().getPercentage(),
                             indeterminate);
                 }
 
-                if (!downloadUpdate.getProgress().isIndeterminate()
+                if (!indeterminate
                         && !downloadUpdate.getIsOffTheRecord()
                         && downloadUpdate.getTimeRemainingInMillis() >= 0
                         && !LegacyHelpers.isLegacyOfflinePage(downloadUpdate.getContentId())) {
@@ -206,7 +205,7 @@ public final class DownloadNotificationFactory {
 
                 break;
             case DownloadNotificationService.DownloadStatus.PAUSED:
-                checkNotNull(downloadUpdate.getContentId());
+                assertNonNull(downloadUpdate.getContentId());
                 checkArgument(downloadUpdate.getNotificationId() != -1);
 
                 contentText = resources.getString(R.string.download_notification_paused);
@@ -267,7 +266,7 @@ public final class DownloadNotificationFactory {
 
                 iconId = R.drawable.offline_pin;
                 // Download from Android DownloadManager carries an empty namespace.
-                if (TextUtils.isEmpty(downloadUpdate.getContentId().namespace)) {
+                if (TextUtils.isEmpty(assumeNonNull(downloadUpdate.getContentId()).namespace)) {
                     // Create an intent to view all Android downloads.
                     Intent intent = new Intent(DownloadManager.ACTION_VIEW_DOWNLOADS);
                     intent.setFlags(
@@ -310,7 +309,7 @@ public final class DownloadNotificationFactory {
                 builder.setTimeoutAfter(TIME_OUT_DURATION_IN_MILLIS);
                 break;
             case DownloadNotificationService.DownloadStatus.DANGEROUS:
-                checkNotNull(downloadUpdate.getContentId());
+                assertNonNull(downloadUpdate.getContentId());
                 checkArgument(downloadUpdate.getNotificationId() != -1);
                 iconId = R.drawable.dangerous_filled_24dp;
                 contentText = resources.getString(R.string.download_notification_dangerous_blocked);
@@ -416,7 +415,10 @@ public final class DownloadNotificationFactory {
      * @param otrProfileId The {@link OtrProfileId} of the download. Null if in regular mode.
      */
     public static Intent buildActionIntent(
-            Context context, String action, ContentId id, OtrProfileId otrProfileId) {
+            Context context,
+            String action,
+            @Nullable ContentId id,
+            @Nullable OtrProfileId otrProfileId) {
         ComponentName component =
                 new ComponentName(
                         context.getPackageName(), DownloadBroadcastManager.class.getName());

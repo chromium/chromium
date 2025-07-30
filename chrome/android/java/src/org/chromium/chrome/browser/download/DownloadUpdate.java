@@ -202,7 +202,7 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setIcon(Bitmap icon) {
+        public Builder setIcon(@Nullable Bitmap icon) {
             this.mIcon = icon;
             return this;
         }
@@ -240,7 +240,7 @@ public final class DownloadUpdate {
             return this;
         }
 
-        public Builder setOriginalUrl(GURL originalUrl) {
+        public Builder setOriginalUrl(@Nullable GURL originalUrl) {
             this.mOriginalUrl = originalUrl;
             return this;
         }
