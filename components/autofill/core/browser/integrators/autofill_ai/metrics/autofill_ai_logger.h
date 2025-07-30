@@ -90,6 +90,10 @@ class AutofillAiLogger {
   // documentation of `FunnelState` for more information about what is recorded.
   std::map<FormGlobalId, std::map<EntityType, FunnelState>> form_states_;
 
+  // Records the IDs of forms that were submitted throughout the lifetime of
+  // this object.
+  std::set<FormGlobalId> submitted_forms_;
+
   // Records the last filled `EntityType` for each field. This information is
   // currently unavailable in `AutofillField`, because
   // `AutofillField::filling_product_` isn't accurate enough when it comes to

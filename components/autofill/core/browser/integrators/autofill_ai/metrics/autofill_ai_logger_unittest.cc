@@ -88,6 +88,7 @@ class BaseAutofillAiTest : public testing::Test {
   }
 
   AutofillAiManager& manager() { return *manager_; }
+  std::unique_ptr<AutofillAiManager>& manager_ptr() { return manager_; }
 
   void AddOrUpdateEntityInstance(EntityInstance entity) {
     autofill_client().GetEntityDataManager()->AddOrUpdateEntityInstance(
@@ -438,8 +439,12 @@ TEST_P(AutofillAiFunnelMetricsTest, Manager) {
   }
 
   base::HistogramTester histogram_tester;
-  test_api(manager()).logger().RecordFormMetrics(
-      *form, /*ukm_source_id=*/{}, submitted(), /*opt_in_status=*/true);
+  if (submitted()) {
+    manager().OnFormSubmitted(*form, /*ukm_source_id=*/{});
+  } else {
+    // The destructor would trigger the logging of *Funnel*Abandoned* metrics.
+    manager_ptr().reset();
+  }
   ExpectCorrectFunnelRecording(histogram_tester);
 }
 

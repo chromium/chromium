@@ -70,7 +70,16 @@ void LogKeyMetric(std::string_view key_metric_name,
 
 AutofillAiLogger::AutofillAiLogger(AutofillClient* client)
     : ukm_logger_(client) {}
-AutofillAiLogger::~AutofillAiLogger() = default;
+AutofillAiLogger::~AutofillAiLogger() {
+  for (const auto& [form_id, states] : form_states_) {
+    if (!submitted_forms_.contains(form_id)) {
+      DenseSet<EntityType> relevant_entities(
+          states, &std::pair<const EntityType, FunnelState>::first);
+      RecordFunnelMetrics(states, relevant_entities,
+                          /*submission_state=*/false);
+    }
+  }
+}
 
 void AutofillAiLogger::OnFormEligibilityAvailable(
     FormGlobalId form_id,
@@ -135,6 +144,9 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
                                          ukm::SourceId ukm_source_id,
                                          bool submission_state,
                                          bool opt_in_status) {
+  if (submission_state) {
+    submitted_forms_.insert(form.global_id());
+  }
   const DenseSet<EntityType> relevant_entities =
       GetRelevantEntityTypesForFields(form.fields());
   if (relevant_entities.empty()) {
