@@ -7144,42 +7144,74 @@ def CheckTranslationExpectations(input_api,
 
 def CheckStableMojomChanges(input_api, output_api):
     """Changes to [Stable] mojom types must preserve backward-compatibility."""
-    changed_mojoms = input_api.AffectedFiles(
-        include_deletes=True,
-        file_filter=lambda f: f.LocalPath().endswith(('.mojom')))
+    no_mojo_stable_checks = input_api.change.GitFootersFromDescription().get(
+        'No-Stable-Mojom-Checks', None)
 
-    if not changed_mojoms or input_api.no_diffs:
+    expect_stable_mojom_failures = False
+    if no_mojo_stable_checks:
+        if no_mojo_stable_checks == 'true':
+            expect_stable_mojom_failures = True
+        else:
+            return [
+                output_api.PresubmitError(
+                    'If present, No-Stable-Mojom-Checks only accepts the value "true".'
+                )
+            ]
+
+    def CheckMojomsIfNeeded():
+        changed_mojoms = input_api.AffectedFiles(
+            include_deletes=True,
+            file_filter=lambda f: f.LocalPath().endswith(('.mojom')))
+
+        if not changed_mojoms or input_api.no_diffs:
+            return []
+
+        delta = []
+        for mojom in changed_mojoms:
+            delta.append({
+                'filename': mojom.LocalPath(),
+                'old': '\n'.join(mojom.OldContents()) or None,
+                'new': '\n'.join(mojom.NewContents()) or None,
+            })
+
+        process = input_api.subprocess.Popen([
+            input_api.python3_executable,
+            input_api.os_path.join(
+                input_api.PresubmitLocalPath(), 'mojo', 'public', 'tools',
+                'mojom', 'check_stable_mojom_compatibility.py'), '--src-root',
+            input_api.PresubmitLocalPath()
+        ],
+                                             stdin=input_api.subprocess.PIPE,
+                                             stdout=input_api.subprocess.PIPE,
+                                             stderr=input_api.subprocess.PIPE,
+                                             universal_newlines=True)
+        (x, error) = process.communicate(input=input_api.json.dumps(delta))
+        if process.returncode:
+            return [
+                output_api.PresubmitError(
+                    'One or more [Stable] mojom definitions changed in a way '
+                    'that breaks backward compatibility. See '
+                    'https://chromium.googlesource.com/chromium/src/+/HEAD/mojo/public/tools/bindings/README.md#versioning'
+                    ' for details.\n\n'
+                    'If you are confident this is a false positive, add '
+                    '`No-Stable-Mojom-Checks: true` to the git footers to suppress '
+                    'this check.',
+                    long_text=error)
+            ]
         return []
 
-    delta = []
-    for mojom in changed_mojoms:
-        delta.append({
-            'filename': mojom.LocalPath(),
-            'old': '\n'.join(mojom.OldContents()) or None,
-            'new': '\n'.join(mojom.NewContents()) or None,
-        })
-
-    process = input_api.subprocess.Popen([
-        input_api.python3_executable,
-        input_api.os_path.join(
-            input_api.PresubmitLocalPath(), 'mojo', 'public', 'tools', 'mojom',
-            'check_stable_mojom_compatibility.py'), '--src-root',
-        input_api.PresubmitLocalPath()
-    ],
-                                         stdin=input_api.subprocess.PIPE,
-                                         stdout=input_api.subprocess.PIPE,
-                                         stderr=input_api.subprocess.PIPE,
-                                         universal_newlines=True)
-    (x, error) = process.communicate(input=input_api.json.dumps(delta))
-    if process.returncode:
-        return [
-            output_api.PresubmitError(
-                'One or more [Stable] mojom definitions appears to have been changed '
-                'in a way that is not backward-compatible. See '
-                'https://chromium.googlesource.com/chromium/src/+/HEAD/mojo/public/tools/bindings/README.md#versioning'
-                ' for details.',
-                long_text=error)
-        ]
+    results = CheckMojomsIfNeeded()
+    if bool(results) != expect_stable_mojom_failures:
+        if expect_stable_mojom_failures:
+            return [
+                output_api.PresubmitError(
+                    'No [Stable] mojom definitions changed in a way breaks '
+                    'backward compatibility.\n\n'
+                    'Please remove the unnecessary git footer '
+                    '`No-Stable-Mojom-Checks: true`.')
+            ]
+        else:
+            return results
     return []
 
 
