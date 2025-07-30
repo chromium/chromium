@@ -8,11 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
+#include "components/omnibox/browser/searchbox.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/gfx/vector_icon_types.h"
-#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom.h"
 
 class MetricsReporter;
 class OmniboxController;

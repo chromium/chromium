@@ -21,6 +21,7 @@ build_webui("build") {
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/searchbox:build_ts",
     "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
   ]
   webui_context_type = "trusted"
   optimize = optimize_webui
@@ -29,7 +30,7 @@ build_webui("build") {
     optimize_webui_in_files = [ "omnibox_popup.js" ]
     optimize_webui_excludes = [
       "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
-      "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
+      "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
       "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
       "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",

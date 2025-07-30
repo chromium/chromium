@@ -6,12 +6,12 @@ import '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import '/strings.m.js';
 
 import {ColorChangeUpdater} from '//resources/cr_components/color_change_listener/colors_css_updater.js';
-import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/cr_components/searchbox/searchbox.mojom-webui.js';
 import {SearchboxBrowserProxy} from '//resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxDropdownElement} from '//resources/cr_components/searchbox/searchbox_dropdown.js';
 import {assert} from '//resources/js/assert.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {AutocompleteResult, OmniboxPopupSelection, PageCallbackRouter} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';

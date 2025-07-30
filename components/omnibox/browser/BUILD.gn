@@ -1026,7 +1026,16 @@ fuzzer_test("search_suggestion_parser_fuzzer") {
 
 mojom("mojo_bindings") {
   sources = [ "omnibox.mojom" ]
-  webui_module_path = "/"
 
-  public_deps = [ "//mojo/public/mojom/base" ]
+  if (!is_android && !is_ios) {
+    sources += [ "searchbox.mojom" ]
+  }
+
+  webui_module_path = "chrome://resources/mojo/components/omnibox/browser"
+
+  public_deps = [
+    "//mojo/public/mojom/base",
+    "//ui/gfx/mojom",
+    "//url/mojom:url_mojom_gurl",
+  ]
 }

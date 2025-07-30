@@ -36,6 +36,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "components/page_image_service/mojom/page_image_service.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -50,7 +51,6 @@
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/most_visited/most_visited.mojom.h"
-#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
 namespace base {
 class RefCountedMemory;

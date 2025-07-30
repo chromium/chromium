@@ -9,10 +9,10 @@ import '//resources/cr_elements/cr_icons.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {MetricsReporterImpl} from '//resources/js/metrics_reporter/metrics_reporter.js';
+import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {RenderType, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import type {AutocompleteMatch, AutocompleteResult, OmniboxPopupSelection, PageHandlerInterface} from './searchbox.mojom-webui.js';
-import {RenderType, SideType} from './searchbox.mojom-webui.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import {getTemplate} from './searchbox_dropdown.html.js';
 import type {SearchboxMatchElement} from './searchbox_match.js';

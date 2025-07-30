@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {PageHandlerInterface} from './searchbox.mojom-webui.js';
-import {PageCallbackRouter, PageHandler} from './searchbox.mojom-webui.js';
+import type {PageHandlerInterface} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {PageCallbackRouter, PageHandler} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 /**
  * @fileoverview This file provides a singleton class that exposes the Mojo

@@ -27,7 +27,6 @@ source_set("searchbox") {
     "//third_party/metrics_proto",
     "//ui/gfx",
     "//ui/gfx/geometry",
-    "//ui/webui/resources/cr_components/searchbox:mojo_bindings",
     "//url",
   ]
   deps = [

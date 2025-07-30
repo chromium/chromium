@@ -4,10 +4,10 @@
 
 import {getFaviconForPageURL} from '//resources/js/icon.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import type {AutocompleteMatch} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './searchbox_icon.html.js';
-import type {AutocompleteMatch} from './searchbox.mojom-webui.js';
 
 const CALCULATOR: string = 'search-calculator-answer';
 const DOCUMENT_MATCH_TYPE: string = 'document';

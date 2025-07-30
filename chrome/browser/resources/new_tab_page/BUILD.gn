@@ -122,7 +122,7 @@ build_webui("build") {
                                 "chrome://resources/cr_components/color_change_listener/color_change_listener.mojom-webui.js",
                                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
                                 "chrome://resources/cr_components/page_image_service/page_image_service.mojom-webui.js",
-                                "chrome://resources/cr_components/searchbox/searchbox.mojom-webui.js",
+                                "chrome://resources/mojo/omnibox/browser/searchbox.mojom-webui.js",
                                 "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
                                 "chrome://resources/js/metrics_reporter/metrics_reporter.mojom-webui.js",
                                 "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",

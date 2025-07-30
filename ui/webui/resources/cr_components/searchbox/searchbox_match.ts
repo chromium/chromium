@@ -11,15 +11,16 @@ import '//resources/cr_elements/cr_hidden_style.css.js';
 
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
+import {NavigationPredictor} from '//resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
+import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
+import {SelectionLineState} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-import {NavigationPredictor} from './omnibox.mojom-webui.js';
 import {SearchboxBrowserProxy} from './searchbox_browser_proxy.js';
 import type {SearchboxIconElement} from './searchbox_icon.js';
 import {getTemplate} from './searchbox_match.html.js';
-import type {ACMatchClassification, Action, AutocompleteMatch, OmniboxPopupSelection, PageHandlerInterface, SideType} from './searchbox.mojom-webui.js';
-import {SelectionLineState} from './searchbox.mojom-webui.js';
 import {decodeString16, mojoTimeTicks} from './utils.js';
+
 
 
 // clang-format off

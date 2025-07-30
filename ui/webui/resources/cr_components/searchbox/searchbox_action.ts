@@ -5,10 +5,10 @@
 import '//resources/cr_elements/cr_shared_style.css.js';
 
 import {sanitizeInnerHtml} from '//resources/js/parse_html_subset.js';
+import type {Action} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './searchbox_action.html.js';
-import type {Action} from './searchbox.mojom-webui.js';
 import {decodeString16} from './utils.js';
 
 // Displays an action associated with AutocompleteMatch (i.e. Clear

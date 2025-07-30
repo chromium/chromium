@@ -10,13 +10,13 @@
 #include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/omnibox/browser/searchbox.mojom-forward.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/webui_config.h"
 #include "content/public/common/url_constants.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_web_ui_controller.h"
 #include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom-forward.h"
-#include "ui/webui/resources/cr_components/searchbox/searchbox.mojom-forward.h"
 
 class Profile;
 class RealboxHandler;

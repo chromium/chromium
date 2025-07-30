@@ -334,7 +334,6 @@ browser_exposed_mojom_targets = [
   "//ui/webui/resources/cr_components/history_clusters:mojo_bindings",
   "//ui/webui/resources/cr_components/history_embeddings:mojo_bindings",
   "//ui/webui/resources/cr_components/most_visited:mojom",
-  "//ui/webui/resources/cr_components/searchbox:mojo_bindings",
   "//ui/webui/resources/cr_components/theme_color_picker:mojom",
   "//ui/webui/resources/js/browser_command:mojo_bindings",
   "//ui/webui/resources/js/metrics_reporter:mojo_bindings",

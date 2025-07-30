@@ -5,9 +5,9 @@
 import 'chrome://new-tab-page/strings.m.js';
 import 'chrome://resources/cr_components/searchbox/searchbox_match.js';
 
-import {NavigationPredictor} from 'chrome://resources/cr_components/searchbox/omnibox.mojom-webui.js';
 import {SearchboxBrowserProxy} from 'chrome://resources/cr_components/searchbox/searchbox_browser_proxy.js';
 import type {SearchboxMatchElement} from 'chrome://resources/cr_components/searchbox/searchbox_match.js';
+import {NavigationPredictor} from 'chrome://resources/mojo/components/omnibox/browser/omnibox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
