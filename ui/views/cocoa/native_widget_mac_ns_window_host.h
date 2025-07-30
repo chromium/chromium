@@ -9,6 +9,7 @@
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/memory/raw_ptr.h"
@@ -185,8 +186,8 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   uint64_t GetRootViewNSViewId() const { return root_view_id_; }
 
   void set_immersive_mode_reveal_client(
-      ImmersiveModeRevealClient* reveal_client) {
-    immersive_mode_reveal_client_ = reveal_client;
+      base::WeakPtr<ImmersiveModeRevealClient> reveal_client) {
+    immersive_mode_reveal_client_ = std::move(reveal_client);
   }
 
   // Initialize the ui::Compositor and ui::Layer.
@@ -527,7 +528,7 @@ class VIEWS_EXPORT NativeWidgetMacNSWindowHost
   std::unique_ptr<TooltipManager> tooltip_manager_;
   std::unique_ptr<TextInputHost> text_input_host_;
 
-  raw_ptr<ImmersiveModeRevealClient> immersive_mode_reveal_client_;
+  base::WeakPtr<ImmersiveModeRevealClient> immersive_mode_reveal_client_;
 
   std::u16string window_title_;
 

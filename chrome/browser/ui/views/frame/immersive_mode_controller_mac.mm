@@ -141,7 +141,7 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
 
     views::NativeWidgetMacNSWindowHost::GetFromNativeWindow(
         browser_view_->GetWidget()->GetNativeWindow())
-        ->set_immersive_mode_reveal_client(this);
+        ->set_immersive_mode_reveal_client(weak_ptr_factory_.GetWeakPtr());
 
     // Move the appropriate children from the browser widget to the overlay
     // widget, unless we are entering content fullscreen. Make sure to call
