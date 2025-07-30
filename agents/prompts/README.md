@@ -16,6 +16,8 @@ complete a task. Everything is intended to work with gemini-cli.
 
 ## Creating the System Instruction Prompt
 
+Googler-only docs: http://go/chrome-coding-with-ai-agents
+
 Create a local, untracked file `//GEMINI.md`. Include the relevant
 prompts using @, for example, a typical desktop developer will use:
 

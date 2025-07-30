@@ -7,6 +7,8 @@ The goal is to provide a scalable and organized way to share prompts and tools
 among developers, accommodating the various environments (Linux, Mac, Windows)
 and agent types in use.
 
+Googler-only docs: http://go/chrome-coding-with-ai-agents
+
 ## Directory Structure
 
 ### Prompts
