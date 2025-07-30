@@ -114,16 +114,6 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
     kFailed,
   };
 
-  // Must match `SaveRequestType` in
-  // `chrome/common/extensions/api/pdf_viewer_private.idl` and
-  // chromium/tools/typescript/definitions/pdf_viewer_private.d.ts.
-  enum class SaveRequestType {
-    kAnnotation = 0,
-    kOriginal = 1,
-    kEdited = 2,
-    kSearchified = 3,
-  };
-
   // Provides services from the plugin's container.
   class Client : public V8ValueConverter {
    public:
@@ -626,7 +616,8 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   void HandleStopScrollingMessage(const base::Value::Dict& message);
   void HandleViewportMessage(const base::Value::Dict& message);
 
-  void SaveToBuffer(SaveRequestType request_type, const std::string& token);
+  void SaveToBuffer(pdf::mojom::SaveRequestType request_type,
+                    const std::string& token);
   void SaveToFile(const std::string& token);
 
   // Returns `block_size` bytes to save the PDF with `request_type`, starting
@@ -636,7 +627,7 @@ class PdfViewWebPlugin final : public PDFiumEngineClient,
   // The function also returns the total file size.
   // Note that it only handles files less than INT_MAX size, and if the file is
   // larger than that, it returns 0 as file size and no data.
-  SaveDataBlock SaveBlockToBuffer(SaveRequestType request_type,
+  SaveDataBlock SaveBlockToBuffer(pdf::mojom::SaveRequestType request_type,
                                   uint32_t offset,
                                   uint32_t block_size);
 

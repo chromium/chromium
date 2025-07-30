@@ -275,16 +275,16 @@ base::Value::Dict CreateSaveDataBlockMessage(
       .Set("totalFileSize", base::checked_cast<int>(data.total_file_size));
 }
 
-PdfViewWebPlugin::SaveRequestType ParseSaveRequestType(
+pdf::mojom::SaveRequestType ParseSaveRequestType(
     const std::string& save_request_type) {
   if (save_request_type == "ANNOTATION") {
-    return PdfViewWebPlugin::SaveRequestType::kAnnotation;
+    return pdf::mojom::SaveRequestType::kAnnotation;
   } else if (save_request_type == "ORIGINAL") {
-    return PdfViewWebPlugin::SaveRequestType::kOriginal;
+    return pdf::mojom::SaveRequestType::kOriginal;
   } else if (save_request_type == "EDITED") {
-    return PdfViewWebPlugin::SaveRequestType::kEdited;
+    return pdf::mojom::SaveRequestType::kEdited;
   } else if (save_request_type == "SEARCHIFIED") {
-    return PdfViewWebPlugin::SaveRequestType::kSearchified;
+    return pdf::mojom::SaveRequestType::kSearchified;
   }
   NOTREACHED();
 }
@@ -1849,7 +1849,7 @@ void PdfViewWebPlugin::HandleGetSelectedTextMessage(
 void PdfViewWebPlugin::HandleGetSaveDataBlockMessage(
     const base::Value::Dict& message) {
   const std::string& token = *message.FindString("token");
-  SaveRequestType request_type =
+  pdf::mojom::SaveRequestType request_type =
       ParseSaveRequestType(*message.FindString("saveRequestType"));
   uint32_t offset = static_cast<uint32_t>(message.FindInt("offset").value());
   uint32_t block_size =
@@ -1925,11 +1925,11 @@ void PdfViewWebPlugin::HandleSaveAttachmentMessage(
 
 void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
   const std::string& token = *message.FindString("token");
-  SaveRequestType request_type =
+  pdf::mojom::SaveRequestType request_type =
       ParseSaveRequestType(*message.FindString("saveRequestType"));
 
   switch (request_type) {
-    case SaveRequestType::kAnnotation:
+    case pdf::mojom::SaveRequestType::kAnnotation:
 #if BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
       // In annotation mode, assume the user will make edits and prefer saving
       // using the plugin data.
@@ -1939,17 +1939,17 @@ void PdfViewWebPlugin::HandleSaveMessage(const base::Value::Dict& message) {
 #else
       NOTREACHED();
 #endif  // BUILDFLAG(ENABLE_INK) || BUILDFLAG(ENABLE_PDF_INK2)
-    case SaveRequestType::kOriginal: {
+    case pdf::mojom::SaveRequestType::kOriginal: {
       const bool can_save = plugin_can_save_ || edit_mode_;
       SetPluginCanSave(false);
       SaveToFile(token);
       SetPluginCanSave(can_save);
       return;
     }
-    case SaveRequestType::kEdited:
+    case pdf::mojom::SaveRequestType::kEdited:
       SaveToBuffer(request_type, token);
       return;
-    case SaveRequestType::kSearchified:
+    case pdf::mojom::SaveRequestType::kSearchified:
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
       CHECK(base::FeatureList::IsEnabled(
           chrome_pdf::features::kPdfSearchifySave));
@@ -2128,11 +2128,11 @@ void PdfViewWebPlugin::HandleViewportMessage(const base::Value::Dict& message) {
   UpdateScroll(GetScrollPositionFromOffset(scroll_offset));
 }
 
-void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
+void PdfViewWebPlugin::SaveToBuffer(pdf::mojom::SaveRequestType request_type,
                                     const std::string& token) {
-  CHECK(request_type == SaveRequestType::kAnnotation ||
-        request_type == SaveRequestType::kEdited ||
-        request_type == SaveRequestType::kSearchified);
+  CHECK(request_type == pdf::mojom::SaveRequestType::kAnnotation ||
+        request_type == pdf::mojom::SaveRequestType::kEdited ||
+        request_type == pdf::mojom::SaveRequestType::kSearchified);
 
   engine_->KillFormFocus();
 
@@ -2152,7 +2152,7 @@ void PdfViewWebPlugin::SaveToBuffer(SaveRequestType request_type,
 #endif  // BUILDFLAG(ENABLE_PDF_INK2)
 
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  use_save_data |= (request_type == SaveRequestType::kSearchified);
+  use_save_data |= (request_type == pdf::mojom::SaveRequestType::kSearchified);
 #endif
 
   if (use_save_data) {
@@ -2200,13 +2200,13 @@ uint32_t PdfViewWebPlugin::VerifyParamsAndGetSaveBlockSize(
 }
 
 PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBuffer(
-    SaveRequestType request_type,
+    pdf::mojom::SaveRequestType request_type,
     uint32_t offset,
     uint32_t block_size) {
   engine_->KillFormFocus();
 
   SaveDataBlock result;
-  if (request_type == SaveRequestType::kOriginal) {
+  if (request_type == pdf::mojom::SaveRequestType::kOriginal) {
     // This function does not handle files larger than INT_MAX.
     if (engine_->GetLoadedByteSize() <= static_cast<uint32_t>(INT_MAX)) {
       result.total_file_size = engine_->GetLoadedByteSize();

@@ -11,7 +11,7 @@ declare global {
   export namespace chrome {
     export namespace pdfViewerPrivate {
       // Keep in sync with the values for enum `SaveRequestType` in
-      // `pdf/pdf_view_web_plugin.h` and
+      // `pdf/mojom/pdf.mojom` and
       // `chrome/common/extensions/api/pdf_viewer_private.idl`.
       export enum SaveRequestType {
         ANNOTATION = 'ANNOTATION',

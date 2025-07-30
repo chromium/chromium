@@ -2299,23 +2299,22 @@ TEST_F(PdfViewWebPluginSaveTest, EditedInEditMode) {
 
 class PdfViewWebPluginSaveInBlocksTest : public PdfViewWebPluginTest {
  protected:
-  base::Value::Dict CreateRequest(
-      PdfViewWebPlugin::SaveRequestType request_type,
-      uint32_t offset,
-      uint32_t block_size,
-      std::string token) {
+  base::Value::Dict CreateRequest(pdf::mojom::SaveRequestType request_type,
+                                  uint32_t offset,
+                                  uint32_t block_size,
+                                  std::string token) {
     std::string request_type_string;
     switch (request_type) {
-      case PdfViewWebPlugin::SaveRequestType::kAnnotation:
+      case pdf::mojom::SaveRequestType::kAnnotation:
         request_type_string = "ANNOTATION";
         break;
-      case PdfViewWebPlugin::SaveRequestType::kOriginal:
+      case pdf::mojom::SaveRequestType::kOriginal:
         request_type_string = "ORIGINAL";
         break;
-      case PdfViewWebPlugin::SaveRequestType::kEdited:
+      case pdf::mojom::SaveRequestType::kEdited:
         request_type_string = "EDITED";
         break;
-      case PdfViewWebPlugin::SaveRequestType::kSearchified:
+      case pdf::mojom::SaveRequestType::kSearchified:
         request_type_string = "SEARCHIFIED";
         break;
     }
@@ -2370,8 +2369,8 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, GetSuggestedFileName) {
 TEST_F(PdfViewWebPluginSaveInBlocksTest, OriginalInOneBlock) {
   base::span data(TestPDFiumEngine::kLoadedData);
   ExpectResponse(data, 0, data.size(), "token-1");
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kOriginal,
-                                   0, 0, "token-1"));
+  plugin_->OnMessage(
+      CreateRequest(pdf::mojom::SaveRequestType::kOriginal, 0, 0, "token-1"));
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
   pdf_receiver_.FlushForTesting();
 }
@@ -2383,11 +2382,11 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, OriginalInMulipleBlocks) {
   ASSERT_GT(data.size(), 3u);
   ExpectResponse(data, 0, 3, "token-1");
   ExpectResponse(data, 3, data.size() - 3, "token-2");
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kOriginal,
-                                   0, 0, "token-1"));
+  plugin_->OnMessage(
+      CreateRequest(pdf::mojom::SaveRequestType::kOriginal, 0, 0, "token-1"));
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kOriginal,
-                                   3, data.size() - 3, "token-2"));
+  plugin_->OnMessage(CreateRequest(pdf::mojom::SaveRequestType::kOriginal, 3,
+                                   data.size() - 3, "token-2"));
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
   pdf_receiver_.FlushForTesting();
 }
@@ -2397,8 +2396,8 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, EditedInOneBlock) {
 
   base::span data(TestPDFiumEngine::kSaveData);
   ExpectResponse(data, 0, data.size(), "token-1");
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kEdited,
-                                   0, 0, "token-1"));
+  plugin_->OnMessage(
+      CreateRequest(pdf::mojom::SaveRequestType::kEdited, 0, 0, "token-1"));
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
   pdf_receiver_.FlushForTesting();
 }
@@ -2412,11 +2411,11 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, EditedInMultipleBlock) {
   ExpectResponse(data, 0, 2, "token-1");
   ExpectResponse(data, 2, data.size() - 2, "token-2");
 
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kEdited,
-                                   0, 0, "token-1"));
+  plugin_->OnMessage(
+      CreateRequest(pdf::mojom::SaveRequestType::kEdited, 0, 0, "token-1"));
   EXPECT_FALSE(plugin_->IsSaveDataBufferEmptyForTesting());
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kEdited,
-                                   2, data.size() - 2, "token-2"));
+  plugin_->OnMessage(CreateRequest(pdf::mojom::SaveRequestType::kEdited, 2,
+                                   data.size() - 2, "token-2"));
   EXPECT_TRUE(plugin_->IsSaveDataBufferEmptyForTesting());
   pdf_receiver_.FlushForTesting();
 }
@@ -2429,8 +2428,8 @@ TEST_F(PdfViewWebPluginSaveInBlocksTest, ReleaseSaveBuffer) {
   ASSERT_GT(data.size(), 2u);
   ExpectResponse(data, 0, 2, "token-1");
 
-  plugin_->OnMessage(CreateRequest(PdfViewWebPlugin::SaveRequestType::kEdited,
-                                   0, 0, "token-1"));
+  plugin_->OnMessage(
+      CreateRequest(pdf::mojom::SaveRequestType::kEdited, 0, 0, "token-1"));
   EXPECT_FALSE(plugin_->IsSaveDataBufferEmptyForTesting());
 
   plugin_->OnMessage(
