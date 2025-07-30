@@ -28,6 +28,8 @@ class BrowserDelegateImpl : public BrowserDelegate {
   size_t GetWebContentsCount() const override;
   content::WebContents* GetWebContentsAt(size_t index) const override;
   aura::Window* GetNativeWindow() const override;
+  std::optional<webapps::AppId> GetAppId() const override;
+  bool IsWebApp() const override;
   bool IsClosing() const override;
   bool IsActive() const override;
   void Show() override;

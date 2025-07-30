@@ -21,6 +21,9 @@
 #include "base/timer/timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_ash.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/ash/browser_delegate/browser_controller.h"
+#include "chrome/browser/ash/browser_delegate/browser_delegate.h"
+#include "chrome/browser/ash/browser_delegate/browser_type.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash.h"
 #include "chrome/browser/ash/ownership/owner_settings_service_ash_factory.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
@@ -294,26 +297,29 @@ bool IsSystemWebApp(Profile* profile, const webapps::AppId& app_id) {
 }
 
 bool HasValidPwaBrowserForAppId(const std::string& app_id) {
-  for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {
-    if (browser->profile()->IsOffTheRecord() || !browser->IsActive()) {
-      continue;
-    }
-
-    if (browser->type() != Browser::TYPE_APP) {
-      CAMPAIGNS_LOG(ERROR) << "Not pwa browser type";
-      return false;
-    }
-
-    if (!web_app::AppBrowserController::IsForWebApp(browser, app_id)) {
-      CAMPAIGNS_LOG(ERROR) << "Browser belongs to a different app";
-      return false;
-    }
-
-    return true;
+  ash::BrowserDelegate* browser =
+      ash::BrowserController::GetInstance()->GetLastUsedBrowser();
+  if (!browser) {
+    return false;
   }
 
-  CAMPAIGNS_LOG(ERROR) << "No browser window";
-  return false;
+  if (browser->IsOffTheRecord() || !browser->IsActive()) {
+    CAMPAIGNS_LOG(ERROR) << "No browser window";
+    return false;
+  }
+
+  if (browser->GetType() != ash::BrowserType::kApp) {
+    CAMPAIGNS_LOG(ERROR) << "Not pwa browser type";
+    return false;
+  }
+
+  std::optional<webapps::AppId> browser_app_id = browser->GetAppId();
+  if (!browser->IsWebApp() || browser_app_id != app_id) {
+    CAMPAIGNS_LOG(ERROR) << "Browser belongs to a different app";
+    return false;
+  }
+
+  return true;
 }
 
 void SetCampaignManagerPrefService(Profile* profile) {

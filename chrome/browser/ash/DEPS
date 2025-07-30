@@ -16,4 +16,5 @@ include_rules = [
   # moved out of chrome/.
   "+chrome/browser/ash/browser_delegate/browser_controller.h",
   "+chrome/browser/ash/browser_delegate/browser_delegate.h",
+  "+chrome/browser/ash/browser_delegate/browser_type.h",
 ]
