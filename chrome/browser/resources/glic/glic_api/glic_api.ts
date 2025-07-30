@@ -918,6 +918,8 @@ export enum InvocationSource {
   WHATS_NEW = 9,
   /** User clicks sign-in and then signs in. */
   AFTER_SIGN_IN = 10,
+  /** User shared a tab. */
+  SHARED_TAB = 11,
 }
 
 /** The default value of TabContextOptions.pdfSizeLimit. */

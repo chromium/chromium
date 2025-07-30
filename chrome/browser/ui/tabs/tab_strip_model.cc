@@ -112,6 +112,7 @@
 #include "ui/gfx/range/range.h"
 
 #if BUILDFLAG(ENABLE_GLIC)
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #endif
 
@@ -2742,6 +2743,10 @@ void TabStripModel::ExecuteContextMenuCommand(int context_index,
       }
       if (command_id == CommandGlicStartShare) {
         CHECK(service->sharing_manager().PinTabs(tab_handles));
+        if (!service->IsWindowOrFreShowing()) {
+          service->ToggleUI(nullptr, true,
+                            glic::mojom::InvocationSource::kSharedTab);
+        }
       } else {
         CHECK(service->sharing_manager().UnpinTabs(tab_handles));
       }
