@@ -199,6 +199,15 @@ class ApiTests extends ApiTestFixtureBase {
 
   async testDoNothing() {}
 
+  // This test should fail even if the ApiTestError is captured in a try-catch
+  // block.
+  async testFailureForCapturedApiTestError() {
+    try {
+      throw new ApiTestError('Non-throwing test error');
+    } catch (e) {
+    }
+  }
+
   async testAllTestsAreRegistered() {
     const allNames = [];
     for (const fixture of TEST_FIXTURES) {
@@ -820,7 +829,7 @@ class ApiTests extends ApiTestFixtureBase {
       try {
         const result = await reader.read();
         if (result.done) {
-          throw new Error('Track ended before a frame could be read.');
+          throw new ApiTestError('Track ended before a frame could be read.');
         }
         const frame = result.value;  // This is a VideoFrame
         frame.close();
@@ -1169,9 +1178,9 @@ class ApiTests extends ApiTestFixtureBase {
 
   private async assertCreateTabFails(url: string) {
     assertTrue(!!this.host.createTab);
-    const errorMessage = await assertRejects(
-        this.host.createTab(url, {openInBackground: false}));
-    assertEquals('createTab: failed', errorMessage);
+    await assertRejects(
+        this.host.createTab(url, {openInBackground: false}),
+        {withErrorMessage: 'createTab: failed'});
   }
 
   async testMaybeRefreshUserStatus() {
@@ -1337,11 +1346,10 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     await this.host.setTabContextPermissionState(true);
 
     // While still hidden (preloaded), focused tab extraction should fail.
-    let errorMessage =
-        await assertRejects(this.host.getContextFromFocusedTab({}));
-    assertEquals(
-        'tabContext failed: permission denied: window not showing',
-        errorMessage);
+    await assertRejects(this.host.getContextFromFocusedTab({}), {
+      withErrorMessage:
+          'tabContext failed: permission denied: window not showing',
+    });
 
     // Glic panel is open, so both focused and arbitrary tab extraction should
     // succeed.
@@ -1367,14 +1375,14 @@ class ApiTestWithoutOpen extends ApiTestFixtureBase {
     // Panel closure was only requested by native code, but still needs to be
     // waited on.
     await observeSequence(this.host.panelActive()).waitForValue(false);
-    errorMessage = await assertRejects(this.host.getContextFromFocusedTab({}));
-    assertEquals(
-        'tabContext failed: permission denied: window not showing',
-        errorMessage);
-    errorMessage = await assertRejects(this.host.getContextFromTab(tabId, {}));
-    assertEquals(
-        'tabContext failed: permission denied: window not showing',
-        errorMessage);
+    await assertRejects(this.host.getContextFromFocusedTab({}), {
+      withErrorMessage:
+          'tabContext failed: permission denied: window not showing',
+    });
+    await assertRejects(this.host.getContextFromTab(tabId, {}), {
+      withErrorMessage:
+          'tabContext failed: permission denied: window not showing',
+    });
   }
 }
 
@@ -1390,7 +1398,7 @@ class WebClientThatFailsInitialize extends WebClient {
   override initialize(glicBrowserHost: GlicBrowserHost): Promise<void> {
     if (this.failWith === 'error') {
       return Promise.reject(
-          new Error('WebClientThatFailsInitialize.initialize'));
+          new ApiTestError('WebClientThatFailsInitialize.initialize'));
     }
     if (this.failWith === 'timeout') {
       return sleep(15000);
@@ -1573,6 +1581,7 @@ class TestRunner implements TestStepper {
   fixture: ApiTestFixtureBase|undefined;
   testDone: Promise<void>|undefined;
   testFound = false;
+  stepFailures: ApiTestError[] = [];
   constructor(private testName: string) {
     console.info(`TestRunner(${testName})`);
   }
@@ -1590,6 +1599,10 @@ class TestRunner implements TestStepper {
     }
     this.fixture = (new fixtureCtor(this)) as ApiTestFixtureBase;
     return await this.fixture.setUpClient();
+  }
+
+  recordTestFailure(error: ApiTestError) {
+    this.stepFailures.push(error);
   }
 
   // Sets up the test and starts running it.
@@ -1622,6 +1635,17 @@ class TestRunner implements TestStepper {
     try {
       const result =
           await Promise.race([this.testDone, this.nextStepPromise.promise]);
+      if (this.stepFailures.length > 0) {
+        // One or more failures occurred during the test but they were not
+        // raised as an error. Report the first non-raised failure.
+        const e: ApiTestError = this.stepFailures[0] as ApiTestError;
+        console.error(
+            `Test ${this.testName} failed at ${
+                this.fixture!.getStepLabel()}.\n` +
+            await improveStackTrace(e.stack ?? ''));
+        return `Failed at ${this.fixture!.getStepLabel()} ` +
+            `due to (captured error): ${e}`;
+      }
       if (result && typeof result === 'object' &&
           result['id'] === 'next-step') {
         return result;
@@ -1634,6 +1658,8 @@ class TestRunner implements TestStepper {
             await improveStackTrace(e.stack ?? ''));
       }
       return `Failed at ${this.fixture!.getStepLabel()} due to: ${e}`;
+    } finally {
+      this.stepFailures = [];
     }
     return 'pass';
   }
@@ -1686,6 +1712,8 @@ async function improveStackTrace(stack: string) {
   return outLines.join('\n');
 }
 
+let testRunner: TestRunner;
+
 async function main() {
   if (getTestName() !== 'testNoBootstrap') {
     console.info('api_test waiting for GlicHostRegistry');
@@ -1695,7 +1723,7 @@ async function main() {
   // If no test is selected, load a client that does nothing.
   // This is present because test.html is used as a dummy test client in
   // some tests.
-  const testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
+  testRunner = new TestRunner(getTestName() ?? 'testDoNothing');
   await testRunner.setUp();
 
   (window as any).runApiTest =
@@ -1708,12 +1736,20 @@ async function main() {
   };
 }
 
+/** Error type for causing API test failures. */
+class ApiTestError extends Error {
+  constructor(message: string) {
+    super(message);
+    testRunner.recordTestFailure(this);
+  }
+}
 
 type ComparableValue = boolean|string|number|undefined|null;
 
 function assertTrue(x: boolean, message?: string): asserts x {
   if (!x) {
-    throw new Error(`assertTrue failed: '${x}' is not true. ${message ?? ''}`);
+    throw new ApiTestError(
+        `assertTrue failed: '${x}' is not true. ${message ?? ''}`);
   }
 }
 
@@ -1725,7 +1761,7 @@ function assertDefined<T>(x: T|undefined, message?: string): asserts x {
 
 function assertFalse(x: boolean, message?: string): asserts x is false {
   if (x) {
-    throw new Error(
+    throw new ApiTestError(
         `assertFalse failed: '${x}' is not false. ${message ?? ''}`);
   }
 }
@@ -1733,13 +1769,15 @@ function assertFalse(x: boolean, message?: string): asserts x is false {
 function assertEquals(
     a: ComparableValue, b: ComparableValue, message?: string) {
   if (a !== b) {
-    throw new Error(`assertEquals('${a}', '${b}') failed. ${message ?? ''}`);
+    throw new ApiTestError(
+        `assertEquals failed: '${a}' !== '${b}'. ${message ?? ''}`);
   }
 }
 
-function checkDefined<T>(v: T|undefined): T {
+function checkDefined<T>(v: T|undefined, message?: string): T {
   if (v === undefined) {
-    throw new Error('checkDefined: value is undefined');
+    throw new ApiTestError(
+        `checkDefined: value is undefined. ${message ?? ''}`);
   }
   return v;
 }
@@ -1760,12 +1798,13 @@ function getTimeout(timeoutMs?: number): number {
 // Waits for a promise to resolve. If the timeout is reached first, throws an
 // exception. Note this is useful because if the test times out in the normal
 // way, we do not receive a very useful error.
-async function waitFor<T>(value: Promise<T>, timeoutMs?: number): Promise<T> {
+async function waitFor<T>(
+    value: Promise<T>, timeoutMs?: number, message?: string): Promise<T> {
   const timeoutResult = Symbol();
   const result = await Promise.race(
       [value, sleep(getTimeout(timeoutMs)).then(() => timeoutResult)]);
   if (result === timeoutResult) {
-    throw new Error(`Timed out while waiting`);
+    throw new ApiTestError(`waitFor timed out. ${message ?? ''}`);
   }
   return value;
 }
@@ -1775,8 +1814,8 @@ async function waitFor<T>(value: Promise<T>, timeoutMs?: number): Promise<T> {
 // timeout is reached first. Otherwise, this returns the value returned by
 // condition.
 async function runUntil<T>(
-    condition: () => T | PromiseLike<T>,
-    timeoutMs?: number): Promise<NonNullable<T>> {
+    condition: () => T | PromiseLike<T>, timeoutMs?: number,
+    message?: string): Promise<NonNullable<T>> {
   timeoutMs = getTimeout(timeoutMs);
   const sleepMs = getTimeout(timeoutMs) / 20;
   const timeout = performance.now() + timeoutMs;
@@ -1787,22 +1826,30 @@ async function runUntil<T>(
     }
     await sleep(sleepMs);
   }
-  throw new Error('runUntil timed out');
+  throw new ApiTestError(`runUntil timed out. ${message ?? ''}`);
 }
 
 function readStream(stream: ReadableStream<Uint8Array>): Promise<Uint8Array> {
   return new Response(stream).bytes();
 }
 
-async function assertRejects<T>(promise: Promise<T>):
-    Promise<string|undefined> {
+async function assertRejects<T>(
+    promise: Promise<T>,
+    options?: {withErrorMessage?: string}): Promise<string|undefined> {
   return promise.then(
       () => {
-        // The promise should have rejected.
-        assertTrue(false);
+        // The promise should have been rejected.
+        throw new ApiTestError('Promise not rejected.');
       },
       (e) => {
-        return (e as Error).message;
+        assertTrue(
+            e instanceof Error,
+            'JS test harness does not support non-Error rejection objects');
+        const errorMessage = (e as Error).message;
+        if (options?.withErrorMessage !== undefined) {
+          assertEquals(options.withErrorMessage, errorMessage);
+        }
+        return errorMessage;
       });
 }
 

@@ -8,6 +8,8 @@
 #include <deque>
 #include <memory>
 #include <ranges>
+#include <string>
+#include <string_view>
 
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -161,6 +163,15 @@ struct ExecuteTestOptions {
   //   chrome/test/base/testing_profile.h or you need to subclass your test
   //   class from Profile, not from BrowserContext.
   bool wait_for_guest = true;
+
+  // Expect that the JS execution should return a failure. Used for internal
+  // test harness testing.
+  bool should_fail = false;
+
+  // Only considered if `should_fail` is true. This value can be set to the
+  // expected string output of the JS error. If this is not set, will only check
+  // that the JS result is not "pass".
+  std::string_view should_fail_with_error;
 };
 
 class GlicApiTest : public NonInteractiveGlicTest {
@@ -320,7 +331,15 @@ class GlicApiTest : public NonInteractiveGlicTest {
       next_step_required_ = true;
       return;
     }
-    ASSERT_EQ(result, "pass");
+    if (!options.should_fail) {
+      ASSERT_EQ(result, "pass");
+    } else if (options.should_fail_with_error.empty()) {
+      ASSERT_NE(result, "pass")
+          << "JS step should have failed, but it succeeded";
+    } else {
+      ASSERT_EQ(result, options.should_fail_with_error)
+          << "JS step should have failed, but it succeeded";
+    }
   }
 
   // Records all requests to the embedded test server.
@@ -530,6 +549,17 @@ class GlicApiTestWithFastTimeout : public GlicApiTest {
 // Just verify the test harness works.
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testDoNothing) {
   ExecuteJsTest();
+}
+
+// Confirms that JS assertion errors captured by try-catch blocks will still
+// result in test failures.
+IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
+                       testFailureForCapturedApiTestError) {
+  const std::string expected_failure =
+      "Failed at step #1 (single or first) due to (captured error): "
+      "Error: Non-throwing test error";
+  ExecuteJsTest(
+      {.should_fail = true, .should_fail_with_error = expected_failure});
 }
 
 // Checks that all tests in api_test.ts have a corresponding test case in this
