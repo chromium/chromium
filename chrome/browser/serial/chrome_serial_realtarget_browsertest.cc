@@ -5,6 +5,8 @@
 #include <memory>
 
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/serial/chrome_serial_delegate.h"
 #include "chrome/browser/serial/web_serial_chooser.h"
 #include "chrome/browser/ui/browser.h"
@@ -17,6 +19,11 @@
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "device/bluetooth/bluetooth_adapter_factory.h"
+#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/bluetooth_socket.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 namespace {
 
@@ -155,6 +162,42 @@ class SerialRealTargetTest : public InProcessBrowserTest {
     test_content_browser_client_.UnsetAsBrowserClient();
   }
 
+  // Attempt socket connection with `uuid_string` to all bluetooth devices known
+  // to the adapter.
+  void AttemptSocketConnectionToBluetoothDevices(std::string uuid_string) {
+    base::test::TestFuture<scoped_refptr<device::BluetoothAdapter>>
+        adapter_future;
+    device::BluetoothAdapterFactory::Get()->GetAdapter(
+        adapter_future.GetCallback());
+
+    scoped_refptr<device::BluetoothAdapter> adapter = adapter_future.Get();
+    ASSERT_TRUE(adapter);
+    for (auto* device : adapter->GetDevices()) {
+      base::test::TestFuture<scoped_refptr<device::BluetoothSocket>>
+          socket_future;
+      auto split_callback =
+          base::SplitOnceCallback(socket_future.GetCallback());
+
+      LOG(INFO) << "Attempt socket connection with " << uuid_string
+                << " to device " << device->GetNameForDisplay();
+      // The purpose of this function is to make the system to talk to bluetooth
+      // devices so UUIDs of the devices will be known to the system, which
+      // avoid issue like empty UUIDs in BluetoothDevice when testing after
+      // system reboot.
+      device->ConnectToService(
+          device::BluetoothUUID(uuid_string), std::move(split_callback.first),
+          base::BindLambdaForTesting([&](const std::string& message) {
+            std::move(split_callback.second).Run(nullptr);
+          }));
+      scoped_refptr<device::BluetoothSocket> socket = socket_future.Get();
+      if (socket) {
+        base::test::TestFuture<void> disconnect_future;
+        socket->Disconnect(disconnect_future.GetCallback());
+        ASSERT_TRUE(disconnect_future.Wait());
+      }
+    }
+  }
+
  private:
   TestContentBrowserClient test_content_browser_client_;
 };
@@ -177,6 +220,10 @@ IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, SerialOpenAndClosePort) {
 }
 
 IN_PROC_BROWSER_TEST_F(SerialRealTargetTest, BluetoothSerialOpenAndClosePort) {
+  // This step is to make the target bluetooth device connected to the system,
+  // to reduce flaky when running Serial Bluetooth test.
+  AttemptSocketConnectionToBluetoothDevices(
+      std::string(kPixelBudsProSerialPortUuid));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
   auto test_script = base::StringPrintf(
