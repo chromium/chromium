@@ -4,6 +4,7 @@
 """Runner class for variations smoke tests."""
 
 from datetime import datetime
+import json
 import logging
 import os
 import subprocess
@@ -33,6 +34,17 @@ LOGGER = logging.getLogger(__name__)
 # Test arguments to make EG2 test load the seed instead of fetching a new one.
 _SEED_ARG = '--seed={}'
 _SIGNATURE_ARG = '--signature={}'
+# Test arguments to make EG2 test assign the app to a variations channel.
+_VARIATIONS_CHANNEL_ARG = '--variations-channel={}'
+
+
+def _load_crashing_seed():
+  """Reads and parses the test variations seed."""
+  seed_path = os.path.join(_THIS_DIR, 'test_data', 'crash_seed.json')
+  with open(seed_path, 'r') as f:
+    seed_json = json.load(f)
+  return (seed_json['variations_compressed_seed'],
+          seed_json['variations_seed_signature'])
 
 
 class SeedData:
@@ -97,14 +109,17 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
   def _launch_app_once(self,
                        out_sub_dir,
                        verify_fetched_within_launch=False,
-                       seed_data=None):
+                       seed_data=None,
+                       variations_channel=None):
     """Launches app once.
 
     Args:
       out_sub_dir: (str) Sub dir under |self.out_dir| for this attempt output.
       verify_fetched_within_launch: (bool) Whether to verify that the fetch
         would happens in current launch.
-      seed_data: None or SeedData instance to pass as args to the test.
+      seed_data: (None or SeedData) instance to pass as args to the test.
+      variations_channel: (None or str) variations channel to pass as args to
+        the test.
 
     Returns:
       (test_result_util.ResultCollection): Raw EG test result of the launch.
@@ -119,6 +134,10 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
 
     if seed_data:
       current_launch_args.extend(seed_data.as_test_arguments())
+
+    if variations_channel:
+      current_launch_args.append(
+          _VARIATIONS_CHANNEL_ARG.format(variations_channel))
 
     self.test_app.test_args.extend(current_launch_args)
 
@@ -152,18 +171,9 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
       LOGGER.error(log)
       return False, log
 
-    # Verify a production version of variations seed was fetched successfully.
-    current_seed, current_signature = seed_helper.get_current_seed(
-        self._user_data_dir())
-    if not current_seed or not current_signature:
-      log = 'Failed to fetch variations seed on initial fetch launch.'
-      LOGGER.error(log)
-      return False, log
-
+    # Launch app with a valid seed.
     seed, signature = seed_helper.load_test_seed_from_file(
         self.variations_seed_path)
-
-    # Launch app with seed path.
     injected_launch_result = self._launch_app_once(
         'injected_launch', seed_data=SeedData(seed, signature))
     if not injected_launch_result.passed_tests():
@@ -171,35 +181,15 @@ class VariationsSimulatorParallelTestRunner(SimulatorParallelTestRunner):
       LOGGER.error(log)
       return False, log
 
-    current_seed, current_signature = seed_helper.get_current_seed(
-        self._user_data_dir())
-    if current_seed != seed or current_signature != signature:
-      log = 'Failed to update seed with seed from file.'
-      LOGGER.error(log)
-      return False, log
-
-    # Reset last fetch timestamp to one day before now. On mobile devices a
-    # fetch will only happen after 30 min of last fetch.
-    self._reset_last_fetch_time()
-
-    # Launch app again to refetch and update the injected seed with a delta.
-    update_launch_result = self._launch_app_once(
-        'update_launch', verify_fetched_within_launch=True)
-    if not update_launch_result.passed_tests():
-      log = 'Test failure at app launch to update seed with a delta.'
-      LOGGER.error(log)
-      return False, log
-
-    # Verify seed has been updated successfully and it's different from the
-    # injected test seed.
-    #
-    # TODO(crbug.com/40191854): This test expectation may not work correctly
-    # when a field trial config under test does not affect a platform, so it
-    # requires more investigations to figure out the correct behavior.
-    current_seed, current_signature = seed_helper.get_current_seed(
-        self._user_data_dir())
-    if current_seed == seed or current_signature == signature:
-      log = 'Failed to update seed with a delta.'
+    # Launch app with a crashing seed. The app should crash on launch.
+    # We need to assign a channel so that the app enables the crashing study.
+    crashing_seed, crashing_signature = _load_crashing_seed()
+    crashing_launch_result = self._launch_app_once(
+        'crashing_launch',
+        seed_data=SeedData(crashing_seed, crashing_signature),
+        variations_channel='dev')
+    if crashing_launch_result.passed_tests():
+      log = "Expected test to crash, but app didn't crash"
       LOGGER.error(log)
       return False, log
 

@@ -21,6 +21,9 @@ static const char kVerifyFetchedInCurrentLaunch[] =
 static const char kSeedArg[] = "seed";
 static const char kSignatureArg[] = "signature";
 
+// Variations channel. If exists, the app will be assigned to it.
+static const char kVariationsChannelArg[] = "variations-channel";
+
 // Timeout to wait for a successful variations seed fetch after the test method
 // starts.
 static const NSTimeInterval kWaitForFetchTimeout = 30.0;
@@ -37,7 +40,16 @@ static const NSTimeInterval kWaitForFetchTimeout = 30.0;
   AppLaunchConfiguration config;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(kSeedArg)) {
     config.relaunch_policy = ForceRelaunchByCleanShutdown;
-    config.additional_args = {"--disable-variations-seed-fetch"};
+    config.additional_args.push_back("--disable-variations-seed-fetch");
+  }
+  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
+          kVariationsChannelArg)) {
+    std::string channel =
+        base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
+            kVariationsChannelArg);
+    config.relaunch_policy = ForceRelaunchByCleanShutdown;
+    config.additional_args.push_back(
+        base::StrCat({"--fake-variations-channel=", channel}));
   }
   return config;
 }
