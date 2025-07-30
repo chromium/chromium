@@ -1924,11 +1924,21 @@ NavigationURLLoaderImpl::CreateNetworkLoaderFactory(
 }
 
 void NavigationURLLoaderImpl::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
+    std::vector<std::string> removed_headers,
+    net::HttpRequestHeaders modified_headers,
+    net::HttpRequestHeaders modified_cors_exempt_headers) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!redirect_info_.new_url.is_empty());
+
+  // Don't send Accept: application/signed-exchange for fallback redirects.
+  // This is also applied to `resource_request_->headers` via
+  // `net::RedirectUtil::UpdateHttpRequest()`.
+  if (redirect_info_.is_signed_exchange_fallback_redirect) {
+    modified_headers.SetHeader(
+        net::HttpRequestHeaders::kAccept,
+        FrameAcceptHeaderValue(/*allow_sxg_responses=*/false,
+                               browser_context_));
+  }
 
   // Update `resource_request_` and call Restart to give our `interceptors_` a
   // chance at handling the new location. If no interceptor wants to take
@@ -1965,19 +1975,10 @@ void NavigationURLLoaderImpl::FollowRedirect(
 
   // Need to cache modified headers for `url_loader_` since it doesn't use
   // `resource_request_` during redirect.
-  url_loader_removed_headers_ = removed_headers;
-  url_loader_modified_headers_ = modified_headers;
-  url_loader_modified_cors_exempt_headers_ = modified_cors_exempt_headers;
-
-  // Don't send Accept: application/signed-exchange for fallback redirects.
-  if (redirect_info_.is_signed_exchange_fallback_redirect) {
-    std::string header_value =
-        FrameAcceptHeaderValue(/*allow_sxg_responses=*/false, browser_context_);
-    url_loader_modified_headers_.SetHeader(net::HttpRequestHeaders::kAccept,
-                                           header_value);
-    resource_request_->headers.SetHeader(net::HttpRequestHeaders::kAccept,
-                                         header_value);
-  }
+  url_loader_removed_headers_ = std::move(removed_headers);
+  url_loader_modified_headers_ = std::move(modified_headers);
+  url_loader_modified_cors_exempt_headers_ =
+      std::move(modified_cors_exempt_headers);
 
   Restart();
 }

@@ -37,9 +37,9 @@ void TestNavigationURLLoader::Start() {
 }
 
 void TestNavigationURLLoader::FollowRedirect(
-    const std::vector<std::string>& removed_headers,
-    const net::HttpRequestHeaders& modified_headers,
-    const net::HttpRequestHeaders& modified_cors_exempt_headers) {
+    std::vector<std::string> removed_headers,
+    net::HttpRequestHeaders modified_headers,
+    net::HttpRequestHeaders modified_cors_exempt_headers) {
   DCHECK_EQ(loader_type_, NavigationURLLoader::LoaderType::kRegular);
   redirect_count_++;
 }
