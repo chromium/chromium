@@ -705,29 +705,6 @@ PreloadingDecider::FindSuitableCandidates(
   return suitable_candidates;
 }
 
-std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
-                        blink::mojom::SpeculationCandidatePtr>>
-PreloadingDecider::GetMatchedPreloadingCandidateByNoVarySearchHint(
-    const PreloadingDecider::SpeculationCandidateKey& lookup_key,
-    const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence) const {
-  std::optional<
-      std::pair<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>>
-      result;
-
-  // Check all URLs that might match via NVS hint.
-  // If there are multiple candidates that match the first one.
-  EnumerateNoVarySearchMatchedCandidates(
-      lookup_key, enacting_predictor, confidence,
-      [&](const SpeculationCandidateKey& standby_key,
-          const blink::mojom::SpeculationCandidatePtr& candidate) {
-        result = std::make_pair(standby_key, candidate.Clone());
-        return true;  // Stop enumeration after the first match.
-      });
-
-  return result;
-}
-
 bool PreloadingDecider::ShouldWaitForPrefetchResult(const GURL& url) {
   // TODO(liviutinta): Don't implement any No-Vary-Search hint matching here
   // for now. It is not clear how to match `url` with a `processed_candidate`.
