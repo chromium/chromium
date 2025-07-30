@@ -1743,13 +1743,26 @@ bool PictureLayerImpl::CalculateRasterTranslation(
   // ScreenSpaceTransform() and DrawTransform() in PixelAlignmentOffset(),
   // here we also check if the scale of DrawTransform() approximately equals
   // raster_contents_scale_.
+  // ScreenSpaceTransform() and DrawTransform() need to be scaled by
+  // external_page_scale_factor which is set for OOPIF.
+  const float external_page_scale_factor =
+      (base::FeatureList::IsEnabled(
+           features::kComputeRasterTranslateForExternalScale) &&
+       layer_tree_impl())
+          ? layer_tree_impl()->external_page_scale_factor()
+          : 1.f;
+
+  gfx::Transform scaled_draw_transform = DrawTransform();
+  scaled_draw_transform.PostScale(external_page_scale_factor);
   if (!draw_property_utils::RasterScalesApproximatelyEqual(
-          DrawTransform().To2dScale(), raster_contents_scale_)) {
+          scaled_draw_transform.To2dScale(), raster_contents_scale_)) {
     return false;
   }
 
+  gfx::Transform scaled_screen_space_transform = ScreenSpaceTransform();
+  scaled_screen_space_transform.PostScale(external_page_scale_factor);
   if (auto offset = draw_property_utils::PixelAlignmentOffset(
-          ScreenSpaceTransform(), DrawTransform())) {
+          scaled_screen_space_transform, scaled_draw_transform)) {
     raster_translation = *offset;
     return true;
   }
