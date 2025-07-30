@@ -100,6 +100,32 @@ class GlicWindowControllerUiTest : public test::InteractiveGlicTest {
     return Do([this]() { ReauthAccount(window_controller().profile()); });
   }
 
+  bool IsWorkAreaTooSmallForTest() {
+    gfx::Rect work_area_bounds =
+        display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
+    gfx::Size glic_expected_size = GlicWidget::GetInitialSize();
+    gfx::Size cell_size = {work_area_bounds.width() / 3,
+                           work_area_bounds.height() / 3};
+    // Set browser bounds to the center cell of the work area bounds.
+    gfx::Rect browser_bounds = gfx::Rect(
+        gfx::Point(work_area_bounds.width() / 3 + work_area_bounds.x(),
+                   work_area_bounds.height() / 3 + work_area_bounds.y()),
+        cell_size);
+    browser()->window()->SetBounds(browser_bounds);
+    browser_bounds = browser()->window()->GetBounds();
+
+    // The test places the browser in the center cell. For the test to be valid,
+    // there must be enough space around the browser for the GlicWidget to
+    // appear without being clipped or overlapping in a way that breaks the test
+    // logic.
+    return cell_size.width() <= glic_expected_size.width() / 2 ||
+           cell_size.height() <= glic_expected_size.height() / 2 ||
+           work_area_bounds.width() <=
+               browser_bounds.width() + glic_expected_size.width() ||
+           work_area_bounds.height() <=
+               browser_bounds.height() + glic_expected_size.height();
+  }
+
  private:
   std::unique_ptr<GlicController> glic_controller_ =
       std::make_unique<GlicController>();
@@ -511,27 +537,34 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestInitialBounds) {
   }
 }
 
-// TODO(crbug.com/426542319): Fix and re-enable.
-IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
-                       DISABLED_TestPositionMetrics) {
+// TODO(b/426542319): Fix and enable tests on non-mac platforms.
+#if BUILDFLAG(IS_MAC)
+IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, TestPositionMetrics) {
+  if (IsWorkAreaTooSmallForTest()) {
+    GTEST_SKIP()
+        << "Test's work area bounds are too small for consistent results.";
+  }
   // The GlicButton and Tabstrip are not actually shown until a tab is created.
   chrome::AddTabAt(browser(), GURL("about:blank"), 0, true);
   gfx::Rect work_area_bounds =
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area();
-  // Set browser bounds to the center ninth of the work area bounds.
-  gfx::Rect browser_bounds =
-      gfx::Rect(work_area_bounds.width() / 3 + work_area_bounds.x(),
-                work_area_bounds.height() / 3 + work_area_bounds.y(),
-                work_area_bounds.width() / 3, work_area_bounds.height() / 3);
+  // Work area is split into 9 cells.
+  gfx::Size cell_size = {work_area_bounds.width() / 3,
+                         work_area_bounds.height() / 3};
+  // Set browser bounds to the center cell of the work area bounds.
+  gfx::Rect browser_bounds = gfx::Rect(
+      gfx::Point(work_area_bounds.width() / 3 + work_area_bounds.x(),
+                 work_area_bounds.height() / 3 + work_area_bounds.y()),
+      cell_size);
   browser()->window()->SetBounds(browser_bounds);
+  browser_bounds = browser()->window()->GetBounds();
 
   base::HistogramTester tester;
 
   auto open_and_close = [this,
                          &tester](ChromeRelativePosition expected_position) {
     RunTestSequence(ActivateSurface(kBrowserViewElementId),
-                    SimulateGlicHotkey(),
-                    WaitForAndInstrumentGlic(kHostAndContents),
+                    SimulateGlicHotkey(), WaitForAndInstrumentGlic(kNone),
                     CheckControllerHasWidget(true),
                     CheckControllerWidgetMode(GlicWindowMode::kDetached),
                     SimulateOsButton(), WaitForHide(test::kGlicHostElementId),
@@ -587,20 +620,7 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest,
   // ChromeRelativePosition::kChromeOnOtherDisplay isn't being tested since
   // tests involving moving Glic to another display are flaky.
 }
-
-class GlicWindowControllerWithPreviousPostionUiTest
-    : public GlicWindowControllerUiTest {
- public:
-  void SetUpBrowserContextKeyedServices(
-      content::BrowserContext* context) override {
-    // Set initial bounds via pref and check that they are used.
-    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
-        prefs::kGlicPreviousPositionX, 20);
-    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
-        prefs::kGlicPreviousPositionY, 10);
-    test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
-  }
-};
+#endif
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
   ProfileManager* const profile_manager = g_browser_process->profile_manager();
@@ -626,6 +646,20 @@ IN_PROC_BROWSER_TEST_F(GlicWindowControllerUiTest, PermanentlyDeleteProfile) {
 
   EXPECT_FALSE(service1->IsWindowShowing());
 }
+
+class GlicWindowControllerWithPreviousPostionUiTest
+    : public GlicWindowControllerUiTest {
+ public:
+  void SetUpBrowserContextKeyedServices(
+      content::BrowserContext* context) override {
+    // Set initial bounds via pref and check that they are used.
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionX, 20);
+    Profile::FromBrowserContext(context)->GetPrefs()->SetInteger(
+        prefs::kGlicPreviousPositionY, 10);
+    test::InteractiveGlicTest::SetUpBrowserContextKeyedServices(context);
+  }
+};
 
 IN_PROC_BROWSER_TEST_F(GlicWindowControllerWithPreviousPostionUiTest,
                        TestInitialBounds) {
