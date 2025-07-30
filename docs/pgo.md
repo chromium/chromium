@@ -83,6 +83,17 @@ To produce an executable built with a custom PGO profile:
 [browser_names]: https://source.chromium.org/chromium/chromium/src/+/main:third_party/catapult/telemetry/telemetry/internal/backends/android_browser_backend_settings.py;l=400;drc=bf85e76dc3467385a623e9bf11ab950cf2889ca5
 [telemetry_docs]: https://www.chromium.org/developers/telemetry/upload_to_cloud_storage/#request-access-for-google-partners
 
+## Using Custom PGO Profiles
+
+To use a custom PGO profile, you need to specify the GCS bucket, path, and
+filename of the profile. This can be done by setting the following GN args:
+
+```
+pgo_gs_bucket = "chrome-pgo-trybot-profiles"
+pgo_gs_bucket_path = "pgo_profiles"
+pgo_override_filename = "<full-filename-of-your-profile>.profdata"
+```
+
 ## How It Works
 
 `chrome_pgo_phase` is defined in [`build/config/compiler/pgo/pgo.gni`][pgo_gni].
