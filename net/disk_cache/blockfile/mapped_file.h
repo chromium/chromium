@@ -66,6 +66,9 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
 
   // Flush the memory-mapped section to disk (synchronously).
   void Flush();
+#if BUILDFLAG(IS_WIN)
+  void EnableFlush();
+#endif
 
   // Heats up the file system cache and make sure the file is fully
   // readable (synchronously).
@@ -75,7 +78,9 @@ class NET_EXPORT_PRIVATE MappedFile : public File {
   ~MappedFile() override;
 
   bool init_ = false;
+
 #if BUILDFLAG(IS_WIN)
+  bool enable_flush_ = false;
   HANDLE section_;
 #endif
 

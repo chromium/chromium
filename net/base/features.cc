@@ -762,6 +762,12 @@ BASE_FEATURE(kHstsTopLevelNavigationsOnly,
              "HstsTopLevelNavigationsOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kHttpCacheMappedFileFlushWin,
+             "HttpCacheMappedFileFlushWin",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kHttpCacheNoVarySearch,
              "HttpCacheNoVarySearch",
              base::FEATURE_DISABLED_BY_DEFAULT);

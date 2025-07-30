@@ -1437,6 +1437,11 @@ bool BackendImpl::InitBackingStore(bool* file_created) {
 
   index_ = base::MakeRefCounted<MappedFile>();
   data_ = static_cast<Index*>(index_->Init(index_name, 0));
+#if BUILDFLAG(IS_WIN)
+  // Experimentally enable flush for the index file on Windows
+  // (crbug.com/433551601).
+  index_->EnableFlush();
+#endif
   if (!data_) {
     LOG(ERROR) << "Unable to map Index file";
     return false;

@@ -778,6 +778,11 @@ NET_EXPORT BASE_DECLARE_FEATURE(kNewClientCertPathBuilding);
 // When enabled HSTS upgrades will only apply to top-level navigations.
 NET_EXPORT BASE_DECLARE_FEATURE(kHstsTopLevelNavigationsOnly);
 
+#if BUILDFLAG(IS_WIN)
+// Whether or not to flush on MappedFile::Flush().
+NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheMappedFileFlushWin);
+#endif
+
 // Whether or not to apply No-Vary-Search processing in the HTTP disk cache.
 NET_EXPORT BASE_DECLARE_FEATURE(kHttpCacheNoVarySearch);
 
