@@ -869,7 +869,6 @@ std::optional<SkColor> Tab::GetGroupColor() const {
       controller_->GetGroupColorId(group().value()));
 }
 
-
 bool Tab::IsActive() const {
   if (split()) {
     return std::ranges::any_of(controller()->GetTabsInSplit(this),
@@ -1097,10 +1096,22 @@ void Tab::UpdateIconVisibility() {
   }
 
   const bool has_favicon = data().show_icon;
-  const bool has_alert_icon =
+  bool has_alert_icon =
       (alert_indicator_button_ ? alert_indicator_button_->showing_alert_state()
                                : GetAlertStateToShow(data().alert_state))
           .has_value();
+#if BUILDFLAG(ENABLE_GLIC)
+  std::optional<tabs::TabAlert> current_alert_state =
+      alert_indicator_button_->showing_alert_state();
+  if (glic_tab_underline_view_ &&
+      (current_alert_state == tabs::TabAlert::GLIC_ACCESSING ||
+       current_alert_state == tabs::TabAlert::GLIC_SHARING)) {
+    // Tab underlines for glic multitab replace `alert_indicator_button` as the
+    // UI indicator for sharing. In this case, ensure the alert indicator is
+    // hidden.
+    has_alert_icon = false;
+  }
+#endif
 
   is_animating_from_pinned_ &= animating();
 
