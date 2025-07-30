@@ -89,7 +89,15 @@ TEST(VarIntCoding, SingleByteCases) {
 TEST(VarIntCoding, EmbeddedZeroByte) {
   auto arr = std::array<char, 3>{'\x81', '\x00', '\x07'};
   std::string_view input(arr.data(), arr.size());
-  EXPECT_EQ(input.size(), 3U);
+  int64_t ignored;
+  EXPECT_FALSE(DecodeVarInt(&input, &ignored));
+}
+
+// When using the max number of bytes (10), the top byte must be exactly 1.
+TEST(VarIntCoding, JunkBitsInTopByte) {
+  auto arr = std::array<char, 10>{'\x80', '\x80', '\x80', '\x80', '\x80',
+                                  '\x80', '\x80', '\x80', '\x80', '\x05'};
+  std::string_view input(arr.data(), arr.size());
   int64_t ignored;
   EXPECT_FALSE(DecodeVarInt(&input, &ignored));
 }
