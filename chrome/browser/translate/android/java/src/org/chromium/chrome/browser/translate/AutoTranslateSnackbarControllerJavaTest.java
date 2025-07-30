@@ -26,7 +26,9 @@ import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.ui.messages.snackbar.Snackbar;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
+import org.chromium.chrome.test.transit.page.WebPageStation;
 
 import java.lang.ref.WeakReference;
 import java.util.concurrent.ExecutionException;
@@ -37,7 +39,8 @@ import java.util.concurrent.ExecutionException;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class AutoTranslateSnackbarControllerJavaTest {
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     private static final long NATIVE_SNACKBAR_VIEW = 1001L;
 
@@ -45,15 +48,15 @@ public final class AutoTranslateSnackbarControllerJavaTest {
 
     private AutoTranslateSnackbarController mAutoTranslateSnackbarController;
     private SnackbarManager mSnackbarManager;
+    private WebPageStation mPage;
 
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
-        mActivityTestRule.startMainActivityOnBlankPage();
-        mSnackbarManager = mActivityTestRule.getActivity().getSnackbarManager();
-        WeakReference<Activity> weakReference =
-                new WeakReference<>(mActivityTestRule.getActivity());
+        mPage = mActivityTestRule.startOnBlankPage();
+        mSnackbarManager = mPage.getActivity().getSnackbarManager();
+        WeakReference<Activity> weakReference = new WeakReference<>(mPage.getActivity());
 
         mAutoTranslateSnackbarController =
                 new AutoTranslateSnackbarController(

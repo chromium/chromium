@@ -20,7 +20,8 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.profiles.ProfileManager;
-import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
+import org.chromium.chrome.test.transit.ChromeTransitTestRules;
+import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 
 import java.util.concurrent.TimeoutException;
@@ -31,7 +32,8 @@ import java.util.concurrent.TimeoutException;
 public class TabGroupSyncServiceFactoryTest {
 
     @Rule
-    public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
+    public FreshCtaTransitTestRule mActivityTestRule =
+            ChromeTransitTestRules.freshChromeTabbedActivityRule();
 
     @Test
     @MediumTest
@@ -39,7 +41,7 @@ public class TabGroupSyncServiceFactoryTest {
         TabGroupSyncService testService = new TestTabGroupSyncService();
         TabGroupSyncServiceFactory.setForTesting(testService);
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {
@@ -58,7 +60,7 @@ public class TabGroupSyncServiceFactoryTest {
     @MediumTest
     public void testServiceCreation_RealService() throws TimeoutException {
         LibraryLoader.getInstance().ensureInitialized();
-        mActivityTestRule.startMainActivityOnBlankPage();
+        mActivityTestRule.startOnBlankPage();
 
         ThreadUtils.runOnUiThreadBlocking(
                 new Runnable() {

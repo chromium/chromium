@@ -75,6 +75,7 @@ android_library("javatests") {
     "//chrome/browser/ui/messages/android:java",
     "//chrome/browser/ui/messages/android:java_resources",
     "//chrome/test/android:chrome_java_integration_test_support",
+    "//chrome/test/android:chrome_java_transit",
     "//chrome/test/android:chrome_java_unit_test_support",
     "//components/browser_ui/test/android:test_support_java",
     "//components/browser_ui/widget/android:java",
