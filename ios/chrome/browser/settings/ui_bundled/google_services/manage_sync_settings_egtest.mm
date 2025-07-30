@@ -967,7 +967,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload button description in the account settings
 // contains the correct string for reading list.
+// TODO(crbug.com/435139218): Reenable this test.
 - (void)testBulkUploadDescriptionTextForReadingList {
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
+#endif
   // Add local data.
   reading_list_test_utils::AddURLToReadingListWithSnackbarDismiss(
       GURL("https://example.com"), nil);
@@ -991,7 +995,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 
 // Tests that the batch upload button description in the account settings
 // contains the correct string for passwords and other data type.
+// TODO(crbug.com/435139218): Reenable this test.
 - (void)testBulkUploadDescriptionTextForPasswordsAndOthers {
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
+#endif
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
@@ -1020,7 +1028,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // - Passwords
 // - Bookmarks
 // - Reading list
+// TODO(crbug.com/435139218): Reenable this test.
 - (void)testBulkUploadPageForAllDataTypes {
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
+#endif
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
@@ -1170,12 +1182,7 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests that bulk upload moves the following data types to account:
 // - Passwords
 // TODO(crbug.com/407020882): Remove FLAKY_ from this test.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testBulkUploadForPasswords FLAKY_testBulkUploadForPasswords
-#else
-#define MAYBE_testBulkUploadForPasswords testBulkUploadForPasswords
-#endif
-- (void)MAYBE_testBulkUploadForPasswords {
+- (void)FLAKY_testBulkUploadForPasswords {
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
@@ -1265,7 +1272,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // Tests that bulk upload moves the following data types to account:
 // - Bookmarks
 // - Reading List
+// TODO(crbug.com/435139218): Reenable this test.
 - (void)testBulkUploadForBookmarksAndReadingList {
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
+#endif
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
@@ -1341,7 +1352,11 @@ void ExpectBatchUploadConfirmationSnackbar(int count, NSString* email) {
 // - Passwords
 // - Bookmarks
 // - Reading List
+// TODO(crbug.com/435139218): Reenable this test.
 - (void)testBulkUploadForAllDataTypes {
+#if !TARGET_OS_SIMULATOR
+  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
+#endif
   // Add local data.
   password_manager_test_utils::SavePasswordFormToProfileStore(
       @"password", @"user", @"https://example.com");
