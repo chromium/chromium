@@ -3,7 +3,7 @@ rootWebArea htmlTag='#document' name='Material Web Select'
 ++++genericContainer ignored
 ++++++genericContainer htmlTag='div' name='Ready'
 ++++++++genericContainer ignored
-++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' value='Filled select %C2%A0'
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Filled select' value='Filled select %C2%A0'
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer className='container-overflow' htmlTag='div'
 ++++++++++++++++genericContainer className='background' htmlTag='div'
@@ -62,7 +62,7 @@ rootWebArea htmlTag='#document' name='Material Web Select'
 ++++++++++++++++++++genericContainer ignored invisible
 ++++++++++++++++++++genericContainer ignored invisible
 ++++++++genericContainer ignored
-++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' value='Outlined select Banana'
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Outlined select' value='Outlined select Banana'
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer className='container-overflow' htmlTag='div'
 ++++++++++++++++genericContainer className='outline' htmlTag='div'
@@ -126,7 +126,7 @@ rootWebArea htmlTag='#document' name='Material Web Select'
 ++++++++++++++++++++genericContainer ignored invisible
 ++++++++++++++++++++genericContainer ignored invisible
 ++++++++genericContainer ignored
-++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' value='Required select* %C2%A0'
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-filled-field' name='Required select' value='Required select* %C2%A0'
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer className='container-overflow' htmlTag='div'
 ++++++++++++++++genericContainer className='background' htmlTag='div'
@@ -185,7 +185,7 @@ rootWebArea htmlTag='#document' name='Material Web Select'
 ++++++++++++++++++++genericContainer ignored invisible
 ++++++++++++++++++++genericContainer ignored invisible
 ++++++++genericContainer ignored
-++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' value='Disabled select %C2%A0' restriction=disabled
+++++++++++comboBoxMenuButton collapsed className='field' htmlTag='md-outlined-field' name='Disabled select' value='Disabled select %C2%A0' restriction=disabled
 ++++++++++++genericContainer ignored
 ++++++++++++++genericContainer className='container-overflow' htmlTag='div'
 ++++++++++++++++genericContainer className='outline' htmlTag='div'

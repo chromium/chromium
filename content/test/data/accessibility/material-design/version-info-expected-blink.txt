@@ -6,11 +6,11 @@ rootWebArea name='Material Design Version Information'
 ++++++++++inlineTextBox name='Material Design Version Information'
 ++++++genericContainer name='Version information'
 ++++++++genericContainer
-++++++++++staticText name='Material Web Components Library: 2.2.0'
-++++++++++++inlineTextBox name='Material Web Components Library: 2.2.0'
+++++++++++staticText name='Material Web Components Library: 2.3.0'
+++++++++++++inlineTextBox name='Material Web Components Library: 2.3.0'
 ++++++++genericContainer
-++++++++++staticText name='Material Design Info: Material Design Components v2.2.0'
-++++++++++++inlineTextBox name='Material Design Info: Material Design Components v2.2.0'
+++++++++++staticText name='Material Design Info: Material Design Components v2.3.0'
+++++++++++++inlineTextBox name='Material Design Info: Material Design Components v2.3.0'
 ++++++++genericContainer
 ++++++++++staticText name='Lit Framework: 3.1.0'
 ++++++++++++inlineTextBox name='Lit Framework: 3.1.0'

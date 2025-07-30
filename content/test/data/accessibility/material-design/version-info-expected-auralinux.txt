@@ -3,9 +3,9 @@
 ++++[static] name='Material Design Version Information'
 ++[section] name='Version information'
 ++++[section]
-++++++[static] name='Material Web Components Library: 2.2.0'
+++++++[static] name='Material Web Components Library: 2.3.0'
 ++++[section]
-++++++[static] name='Material Design Info: Material Design Components v2.2.0'
+++++++[static] name='Material Design Info: Material Design Components v2.3.0'
 ++++[section]
 ++++++[static] name='Lit Framework: 3.1.0'
 ++++[section]

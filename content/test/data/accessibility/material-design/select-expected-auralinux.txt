@@ -1,6 +1,6 @@
 [document web] name='Material Web Select'
 ++[section] name='Ready'
-++++[combo box]
+++++[combo box] name='Filled select'
 ++++++[section]
 ++++++++[section]
 ++++++++[section]
@@ -14,7 +14,7 @@
 ++++++++++++++[static] name='%C2%A0'
 ++++++++++[section]
 ++++++++++++[image]
-++++[combo box]
+++++[combo box] name='Outlined select'
 ++++++[section]
 ++++++++[section]
 ++++++++++[section]
@@ -32,7 +32,7 @@
 ++++++++++++++[static] name='Banana'
 ++++++++++[section]
 ++++++++++++[image]
-++++[combo box]
+++++[combo box] name='Required select'
 ++++++[section]
 ++++++++[section]
 ++++++++[section]
@@ -46,7 +46,7 @@
 ++++++++++++++[static] name='%C2%A0'
 ++++++++++[section]
 ++++++++++++[image]
-++++[combo box]
+++++[combo box] name='Disabled select'
 ++++++[section]
 ++++++++[section]
 ++++++++++[section]
