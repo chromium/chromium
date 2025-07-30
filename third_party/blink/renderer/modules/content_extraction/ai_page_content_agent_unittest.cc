@@ -3565,6 +3565,24 @@ TEST_F(AIPageContentAgentTest, DisabledButton) {
   CheckHitTestableButNotInteractive(button);
 }
 
+TEST_F(AIPageContentAgentTest, InertButton) {
+  frame_test_helpers::LoadHTMLString(
+      helper_.LocalMainFrame(),
+      R"HTML(
+        <body>
+         <button inert>Text</button>
+        </body>
+      )HTML",
+      url_test_helpers::ToKURL("http://foobar.com"));
+
+  GetAIPageContentWithActionableElements();
+
+  const auto& root = ContentRootNode();
+  ASSERT_EQ(root.children_nodes.size(), 1u);
+  const auto& button = *root.children_nodes.at(0);
+  EXPECT_FALSE(button.content_attributes->node_interaction_info);
+}
+
 TEST_F(AIPageContentAgentTest, ActionablePseudoElements) {
   frame_test_helpers::LoadHTMLString(
       helper_.LocalMainFrame(),
