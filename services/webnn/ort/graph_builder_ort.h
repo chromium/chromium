@@ -261,6 +261,10 @@ class GraphBuilderOrt {
       const mojom::LayerNormalization& layer_normalization);
   void AddLeakyReluOperation(const mojom::LeakyRelu& leaky_relu);
   void AddLinearOperation(const mojom::Linear& linear);
+  template <typename LstmType>
+    requires(std::is_same_v<LstmType, mojom::Lstm> ||
+             std::is_same_v<LstmType, mojom::LstmCell>)
+  void AddLstmOperation(const LstmType& lstm);
   void AddMatMulOperation(const mojom::Matmul& matmul);
   void AddPadOperation(const mojom::Pad& pad);
   void AddPool2dOperation(const mojom::Pool2d& pool2d);
