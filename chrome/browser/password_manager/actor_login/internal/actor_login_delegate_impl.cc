@@ -16,12 +16,12 @@
 #include "base/types/expected.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/password_manager/core/browser/actor_login/internal/actor_login_credential_filler.h"
+#include "components/password_manager/core/browser/actor_login/internal/actor_login_get_credentials_helper.h"
 #include "components/password_manager/core/browser/features/password_features.h"
-#include "components/password_manager/core/browser/form_fetcher_impl.h"
+#include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_driver.h"
 #include "components/password_manager/core/browser/password_manager_util.h"
-#include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -32,6 +32,7 @@ using password_manager::PasswordManagerInterface;
 namespace actor_login {
 
 namespace {
+
 password_manager::PasswordManagerDriver*
 GetPasswordManagerDriverForPrimaryMainFrame(
     content::WebContents* web_contents) {
@@ -40,21 +41,6 @@ GetPasswordManagerDriverForPrimaryMainFrame(
         GetForRenderFrameHost(rfh);
   }
   return nullptr;  // No driver without primary main frame.
-}
-
-Credential PasswordFormToCredential(
-    const password_manager::PasswordForm& form) {
-  CHECK(form.match_type);
-  CHECK_NE(form.match_type.value(),
-           password_manager::PasswordForm::MatchType::kGrouped);
-  Credential credential;
-  credential.username = form.username_value;
-  // TODO(crbug.com/427171031): Clarify the format.
-  credential.source_site_or_app =
-      base::UTF8ToUTF16(form.url.GetWithEmptyPath().spec());
-  // TODO(crbug.com/427171031): Use PasswordManager to set the real value here.
-  credential.immediatelyAvailableToLogin = false;
-  return credential;
 }
 
 }  // namespace
@@ -98,7 +84,7 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
 
   // One request at a time mechanism using pending callbacks.
   // Check if either callback is currently active.
-  if (pending_get_credentials_callback_ || pending_attempt_login_callback_) {
+  if (get_credentials_helper_ || pending_attempt_login_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -111,17 +97,12 @@ void ActorLoginDelegateImpl::GetCredentials(CredentialsOrErrorReply callback) {
         base::BindOnce(std::move(callback), std::vector<Credential>()));
     return;
   }
-  // Store the callback to mark as active
-  pending_get_credentials_callback_ = std::move(callback);
-  password_manager::PasswordFormDigest form_digest(
-      password_manager::PasswordForm::Scheme::kHtml,
-      password_manager::GetSignonRealm(GetWebContents().GetLastCommittedURL()),
-      GetWebContents().GetLastCommittedURL());
-  form_fetcher_ = std::make_unique<password_manager::FormFetcherImpl>(
-      std::move(form_digest), client_,
-      /*should_migrate_http_passwords=*/false);
-  form_fetcher_->Fetch();
-  form_fetcher_->AddConsumer(this);
+
+  get_credentials_helper_ = std::make_unique<ActorLoginGetCredentialsHelper>(
+      GetWebContents().GetLastCommittedURL(), client_,
+      std::move(callback).Then(
+          base::BindOnce(&ActorLoginDelegateImpl::OnGetCredentialsCompleted,
+                         weak_ptr_factory_.GetWeakPtr())));
 }
 
 void ActorLoginDelegateImpl::AttemptLogin(
@@ -131,7 +112,7 @@ void ActorLoginDelegateImpl::AttemptLogin(
 
   // One request at a time mechanism using pending callbacks.
   // Check if either callback is currently active.
-  if (pending_get_credentials_callback_ || pending_attempt_login_callback_) {
+  if (get_credentials_helper_ || pending_attempt_login_callback_) {
     base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(std::move(callback),
@@ -165,6 +146,10 @@ void ActorLoginDelegateImpl::AttemptLogin(
   credential_filler_->AttemptLogin(password_manager);
 }
 
+void ActorLoginDelegateImpl::OnGetCredentialsCompleted() {
+  get_credentials_helper_.reset();
+}
+
 void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
     base::expected<LoginStatusResult, ActorLoginError> result) {
   // There shouldn't be a pending request without a pending callback.
@@ -173,13 +158,5 @@ void ActorLoginDelegateImpl::OnAttemptLoginCompleted(
   credential_filler_.reset();
 }
 
-void ActorLoginDelegateImpl::OnFetchCompleted() {
-  std::vector<Credential> result;
-  std::ranges::transform(form_fetcher_->GetBestMatches(),
-                         std::back_inserter(result), &PasswordFormToCredential);
-
-  form_fetcher_.reset();
-  std::move(pending_get_credentials_callback_).Run(std::move(result));
-}
 
 }  // namespace actor_login

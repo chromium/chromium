@@ -158,16 +158,16 @@ TEST_F(ActorLoginDelegateImplTest, GetCredentials_FeatureOff) {
   EXPECT_TRUE(future.Get().value().empty());
 }
 
-TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy_FeatureOn) {
+TEST_F(ActorLoginDelegateImplTest, GetCredentialsServiceBusy) {
   base::test::ScopedFeatureList scoped_feature_list(
       password_manager::features::kActorLogin);
   // Start the first request.
   base::test::TestFuture<CredentialsOrError> first_future;
   delegate_->GetCredentials(first_future.GetCallback());
-  // Immediately try to start a second request.
+  // Immediately try to start a second request, which should fail.
   base::test::TestFuture<CredentialsOrError> second_future;
   delegate_->GetCredentials(second_future.GetCallback());
-  // The second request should be rejected immediately with `kServiceBusy`.
+
   ASSERT_FALSE(second_future.Get().has_value());
   EXPECT_EQ(second_future.Get().error(), ActorLoginError::kServiceBusy);
 
@@ -269,74 +269,6 @@ TEST_F(ActorLoginDelegateImplTest, CallbacksAreResetAfterCompletion_FeatureOn) {
   base::test::TestFuture<LoginStatusResultOrError> future4;
   delegate_->AttemptLogin(credential, future4.GetCallback());
   ASSERT_TRUE(future4.Get().has_value());
-}
-
-TEST_F(ActorLoginDelegateImplTest, GetCredentialsFiltersByDomain_FeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kActorLogin);
-
-  password_manager::PasswordForm form1;
-  form1.url = GURL("https://foo.com");
-  form1.signon_realm = form1.url.spec();
-  form1.username_value = u"foo_username";
-  form1.password_value = u"foo_password";
-  client_.profile_store()->AddLogin(form1);
-
-  password_manager::PasswordForm form2;
-  form2.url = GURL("https://bar.com");
-  form2.signon_realm = form2.url.spec();
-  form2.username_value = u"bar_username";
-  form2.password_value = u"bar_password";
-  client_.account_store()->AddLogin(form2);
-
-  content::WebContentsTester::For(web_contents_)
-      ->SetLastCommittedURL(GURL("https://foo.com"));
-
-  base::test::TestFuture<CredentialsOrError> future;
-  delegate_->GetCredentials(future.GetCallback());
-
-  ASSERT_TRUE(future.Get().has_value());
-  ASSERT_EQ(future.Get().value().size(), 1u);
-  EXPECT_EQ(future.Get().value()[0].username, u"foo_username");
-  EXPECT_EQ(future.Get().value()[0].type, kPassword);
-  EXPECT_EQ(future.Get().value()[0].source_site_or_app, u"https://foo.com/");
-  EXPECT_FALSE(future.Get().value()[0].immediatelyAvailableToLogin);
-}
-
-TEST_F(ActorLoginDelegateImplTest, GetCredentialsFromAllStores_FeatureOn) {
-  base::test::ScopedFeatureList scoped_feature_list(
-      password_manager::features::kActorLogin);
-
-  password_manager::PasswordForm form1;
-  form1.url = GURL("https://foo.com");
-  form1.signon_realm = form1.url.spec();
-  form1.username_value = u"foo_username";
-  form1.password_value = u"foo_password";
-  client_.profile_store()->AddLogin(form1);
-
-  password_manager::PasswordForm form2;
-  form2.url = GURL("https://foo.com");
-  form2.signon_realm = form2.url.spec();
-  form2.username_value = u"bar_username";
-  form2.password_value = u"bar_password";
-  client_.account_store()->AddLogin(form2);
-
-  content::WebContentsTester::For(web_contents_)
-      ->SetLastCommittedURL(GURL("https://foo.com"));
-
-  base::test::TestFuture<CredentialsOrError> future;
-  delegate_->GetCredentials(future.GetCallback());
-
-  ASSERT_TRUE(future.Get().has_value());
-  const auto& credentials = future.Get().value();
-  ASSERT_EQ(credentials.size(), 2u);
-
-  std::vector<std::u16string> usernames;
-  for (const auto& credential : credentials) {
-    usernames.push_back(credential.username);
-  }
-  EXPECT_THAT(usernames,
-              testing::UnorderedElementsAre(u"foo_username", u"bar_username"));
 }
 
 }  // namespace actor_login
