@@ -99,7 +99,7 @@ def main(argv):
   if args.diff is not None:
     _print_diff_names(args.diff)
   else:
-    name_set = get_names(_histogram_xml_files())
+    name_set = get_names(histogram_xml_files())
     for name in sorted(list(name_set)):
       print(name)
 
