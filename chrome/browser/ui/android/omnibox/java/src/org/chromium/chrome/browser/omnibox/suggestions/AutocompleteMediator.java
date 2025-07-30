@@ -404,6 +404,7 @@ class AutocompleteMediator
         }
 
         if (activated) {
+            mAutocompleteInput.setPageUrl(mDataProvider.getCurrentGurl());
             mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
             mDeferredIMEWindowInsetApplicationCallback.attach(mWindowAndroid);
             dismissDeleteDialog(DialogDismissalCause.DISMISSED_BY_NATIVE);
@@ -445,6 +446,7 @@ class AutocompleteMediator
             // Prevent any upcoming omnibox suggestions from showing once a URL is loaded (and as
             // a consequence the omnibox is unfocused).
             clearSuggestions();
+            mAutocompleteInput.reset();
         }
     }
 
@@ -874,7 +876,6 @@ class AutocompleteMediator
                                     == mUrlBarEditingTextProvider.getSelectionEnd()
                             ? mUrlBarEditingTextProvider.getSelectionStart()
                             : -1;
-            GURL currentUrl = mDataProvider.getCurrentGurl();
 
             postAutocompleteRequest(
                     () -> {
@@ -882,7 +883,6 @@ class AutocompleteMediator
                         mAutocomplete.ifPresent(
                                 a ->
                                         a.start(
-                                                currentUrl,
                                                 mAutocompleteInput,
                                                 cursorPosition,
                                                 preventAutocomplete));
@@ -1068,7 +1068,7 @@ class AutocompleteMediator
                         mAutocomplete.ifPresent(
                                 a ->
                                         a.startPrefetch(
-                                                mDataProvider.getCurrentGurl(),
+                                                mAutocompleteInput.getPageUrl(),
                                                 pageClassification)),
                 SCHEDULE_FOR_IMMEDIATE_EXECUTION);
     }
@@ -1087,11 +1087,7 @@ class AutocompleteMediator
         if (mDelegate.isUrlBarFocused()) {
             mAutocomplete.ifPresent(
                     a -> {
-                        a.startZeroSuggest(
-                                mUrlBarEditingTextProvider.getTextWithAutocomplete(),
-                                mDataProvider.getCurrentGurl(),
-                                mAutocompleteInput.getPageClassification(),
-                                mDataProvider.getTitle());
+                        a.startZeroSuggest(mAutocompleteInput, mDataProvider.getTitle());
                     });
         }
     }
@@ -1149,7 +1145,6 @@ class AutocompleteMediator
     void stopAutocomplete(boolean clear) {
         mAutocomplete.ifPresent(a -> a.stop(clear));
         // All suggestions are now removed.
-        if (clear) mAutocompleteInput.reset();
         cancelAutocompleteRequests();
     }
 
@@ -1158,8 +1153,7 @@ class AutocompleteMediator
         stopAutocomplete(false);
         mAutocompleteInput.setPageClassification(mDataProvider.getPageClassification(false));
         mAutocompleteInput.setUserText(query);
-        mAutocomplete.ifPresent(
-                a -> a.start(mDataProvider.getCurrentGurl(), mAutocompleteInput, -1, false));
+        mAutocomplete.ifPresent(a -> a.start(mAutocompleteInput, -1, false));
     }
 
     /**
@@ -1210,7 +1204,7 @@ class AutocompleteMediator
         // validation.
         if (autocompleteResultIsFromCache) return;
 
-        GURL currentPageUrl = mDataProvider.getCurrentGurl();
+        GURL currentPageUrl = mAutocompleteInput.getPageUrl();
         long elapsedTimeSinceModified = getElapsedTimeSinceInputChange();
         int autocompleteLength =
                 mUrlBarEditingTextProvider.getTextWithAutocomplete().length()
@@ -1301,6 +1295,11 @@ class AutocompleteMediator
     /** Execute any pending Autocomplete requests, if the Autocomplete subsystem is ready. */
     private void runPendingAutocompleteRequests() {
         if (!mNativeInitialized || mAutocomplete.isEmpty()) return;
+
+        // Set the Page URL now. This is a corner case for the SearchActivity, which is unable to
+        // resolve the Page URL until Profile is available.
+        // All other scenarios should rely on `onOmniboxSessionStateChange()` handling.
+        mAutocompleteInput.setPageUrl(mDataProvider.getCurrentGurl());
 
         mDeferredLoadAction
                 // If deferred load action is present, cancel all autocomplete and load the URL.
@@ -1454,7 +1453,7 @@ class AutocompleteMediator
 
         // Preserve current page context for Jump-start Omnibox feature.
         if (OmniboxFeatures.sJumpStartOmniboxCoverRecentlyVisitedPage.getValue()) {
-            pageUrl = mDataProvider.getCurrentGurl();
+            pageUrl = mAutocompleteInput.getPageUrl();
             pageClass = mDataProvider.getPageClassification(false);
 
             var currentContext = CachedZeroSuggestionsManager.readJumpStartContext();
@@ -1467,10 +1466,13 @@ class AutocompleteMediator
                     new CachedZeroSuggestionsManager.JumpStartContext(pageUrl, pageClass));
             CachedZeroSuggestionsManager.eraseCachedSuggestionsByPageClass(pageClass);
         }
+        var input = new AutocompleteInput();
+        input.setPageUrl(pageUrl);
+        input.setPageClassification(pageClass);
 
         // Retrieve suggestions related to the most recently visited page.
         // This is a best-effort action and may not always work (e.g. if Chrome gets killed or
         // swiped away before we manage to retrieve and persist the information).
-        mAutocomplete.get().startZeroSuggest("", pageUrl, pageClass, mDataProvider.getTitle());
+        mAutocomplete.get().startZeroSuggest(input, mDataProvider.getTitle());
     }
 }

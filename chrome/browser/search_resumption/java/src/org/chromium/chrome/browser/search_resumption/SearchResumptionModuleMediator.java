@@ -29,6 +29,7 @@ import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObse
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
+import org.chromium.components.omnibox.AutocompleteInput;
 import org.chromium.components.omnibox.AutocompleteMatch;
 import org.chromium.components.omnibox.AutocompleteResult;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -206,11 +207,13 @@ public class SearchResumptionModuleMediator
                                 mAutoComplete = controller;
                                 mAutoComplete.addOnSuggestionsReceivedListener(this);
                                 int pageClassification = getPageClassification();
+
+                                var input = new AutocompleteInput();
+                                input.setPageUrl(mTabToTrackSuggestion.getUrl());
+                                input.setPageClassification(pageClassification);
+
                                 mAutoComplete.startZeroSuggest(
-                                        "",
-                                        mTabToTrackSuggestion.getUrl(),
-                                        pageClassification,
-                                        mTabToTrackSuggestion.getTitle());
+                                        input, mTabToTrackSuggestion.getTitle());
                             });
         } else {
             mSearchResumptionModuleBridge = new SearchResumptionModuleBridge(profile);
