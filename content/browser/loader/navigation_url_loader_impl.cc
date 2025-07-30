@@ -771,16 +771,7 @@ void NavigationURLLoaderImpl::Restart() {
                resource_request_->navigation_redirect_chain
                    [resource_request_->navigation_redirect_chain.size() -
                     2]))) {
-    if (loader_holder_.url_loader()) {
-      loader_holder_.url_loader()->ResetForFollowRedirect(
-          *resource_request_.get(), url_loader_removed_headers_,
-          url_loader_modified_headers_,
-          url_loader_modified_cors_exempt_headers_);
-      url_loader_removed_headers_.clear();
-      url_loader_modified_headers_.Clear();
-      url_loader_modified_cors_exempt_headers_.Clear();
-    }
-    loader_holder_.ResetLoader();
+    loader_holder_.ResetForFollowRedirect(*resource_request_.get());
   }
   received_response_ = false;
   head_update_params_ = ResponseHeadUpdateParams();
@@ -846,15 +837,7 @@ void NavigationURLLoaderImpl::StartInterceptedRequest(
   // If `url_loader_` already exists, this means we are following a redirect
   // using an interceptor. In this case we should make sure to reset the
   // loader, similar to what is done in Restart().
-  if (loader_holder_.url_loader()) {
-    loader_holder_.url_loader()->ResetForFollowRedirect(
-        *resource_request_.get(), url_loader_removed_headers_,
-        url_loader_modified_headers_, url_loader_modified_cors_exempt_headers_);
-    url_loader_removed_headers_.clear();
-    url_loader_modified_headers_.Clear();
-    url_loader_modified_cors_exempt_headers_.Clear();
-  }
-  loader_holder_.ResetLoader();
+  loader_holder_.ResetForFollowRedirect(*resource_request_.get());
 
   CreateThrottlingLoaderAndStart(std::move(single_request_factory),
                                  std::move(additional_throttles));
@@ -902,6 +885,50 @@ NavigationURLLoaderImpl::LoaderHolder::Unbind() {
   }
 }
 
+NavigationURLLoaderImpl::LoaderHolder::ModifiedHeadersOnRedirect::
+    ModifiedHeadersOnRedirect(
+        std::vector<std::string> removed_headers,
+        net::HttpRequestHeaders modified_headers,
+        net::HttpRequestHeaders modified_cors_exempt_headers)
+    : removed_headers_(std::move(removed_headers)),
+      modified_headers_(std::move(modified_headers)),
+      modified_cors_exempt_headers_(std::move(modified_cors_exempt_headers)) {}
+
+NavigationURLLoaderImpl::LoaderHolder::ModifiedHeadersOnRedirect::
+    ~ModifiedHeadersOnRedirect() = default;
+
+void NavigationURLLoaderImpl::LoaderHolder::SetModifiedHeadersOnRedirect(
+    std::vector<std::string> removed_headers,
+    net::HttpRequestHeaders modified_headers,
+    net::HttpRequestHeaders modified_cors_exempt_headers) {
+  modified_headers_on_redirect_.emplace(
+      std::move(removed_headers), std::move(modified_headers),
+      std::move(modified_cors_exempt_headers));
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::ResetForFollowRedirect(
+    network::ResourceRequest& resource_request) {
+  if (url_loader_) {
+    CHECK(modified_headers_on_redirect_);
+    url_loader_->ResetForFollowRedirect(
+        resource_request, modified_headers_on_redirect_->removed_headers_,
+        modified_headers_on_redirect_->modified_headers_,
+        modified_headers_on_redirect_->modified_cors_exempt_headers_);
+    modified_headers_on_redirect_.reset();
+  }
+  // TODO(https://crbug.com/40943077): Call `Reset()` instead.
+  ResetLoader();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::FollowRedirect() {
+  CHECK(url_loader_);
+  CHECK(modified_headers_on_redirect_);
+  url_loader_->FollowRedirect(
+      std::move(modified_headers_on_redirect_->removed_headers_),
+      std::move(modified_headers_on_redirect_->modified_headers_),
+      std::move(modified_headers_on_redirect_->modified_cors_exempt_headers_));
+}
+
 void NavigationURLLoaderImpl::StartNonInterceptedRequest(
     ResponseHeadUpdateParams head_update_params) {
   // If we already have the default `url_loader_` we must come here after a
@@ -909,10 +936,7 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
   // so let the loader just follow the redirect.
   if (loader_holder_.url_loader()) {
     DCHECK(!redirect_info_.new_url.is_empty());
-    loader_holder_.url_loader()->FollowRedirect(
-        std::move(url_loader_removed_headers_),
-        std::move(url_loader_modified_headers_),
-        std::move(url_loader_modified_cors_exempt_headers_));
+    loader_holder_.FollowRedirect();
     return;
   }
 
@@ -1975,10 +1999,9 @@ void NavigationURLLoaderImpl::FollowRedirect(
 
   // Need to cache modified headers for `url_loader_` since it doesn't use
   // `resource_request_` during redirect.
-  url_loader_removed_headers_ = std::move(removed_headers);
-  url_loader_modified_headers_ = std::move(modified_headers);
-  url_loader_modified_cors_exempt_headers_ =
-      std::move(modified_cors_exempt_headers);
+  loader_holder_.SetModifiedHeadersOnRedirect(
+      std::move(removed_headers), std::move(modified_headers),
+      std::move(modified_cors_exempt_headers));
 
   Restart();
 }

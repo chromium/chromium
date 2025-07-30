@@ -303,12 +303,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
   scoped_refptr<network::SharedURLLoaderFactory> network_loader_factory_;
 
-  // Caches the modified request headers provided by clients during redirect,
-  // will be consumed by next `url_loader_->FollowRedirect()`.
-  std::vector<std::string> url_loader_removed_headers_;
-  net::HttpRequestHeaders url_loader_modified_headers_;
-  net::HttpRequestHeaders url_loader_modified_cors_exempt_headers_;
-
   SubresourceLoaderParams subresource_loader_params_;
 
   std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors_;
@@ -389,6 +383,35 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // `URLLoaderClientEndpointsPtr` (transitioning to `kUnbound`).
     [[nodiscard]] network::mojom::URLLoaderClientEndpointsPtr Unbind();
 
+    // Redirect handling: the expected sequence is:
+    // 1. `NavigationURLLoaderImpl::OnReceiveRedirect()`
+    // 2. `LoaderHolder::SetModifiedHeadersOnRedirect()`
+    // 3. Either:
+    //    - `LoaderHolder::FollowRedirect()`, when we want and can continue
+    //      using the current `url_loader` for the next redirect leg, or
+    //    - `LoaderHolder::ResetForFollowRedirect()` then
+    //      `LoaderHolder::SetLoader()`, when we start the next redirect leg
+    //      with a new loader.
+    // Also `LoaderHolder::Reset()` can be called at any time during this to
+    // cancel loading.
+    // TODO(https://crbug.com/434182226): Add `CHECK()`s to confirm these
+    // sequences.
+
+    // Cache the modified request headers provided by clients during redirect.
+    // They will be consumed by next `FollowRedirect()` or
+    // `ResetForFollowRedirect()`.
+    void SetModifiedHeadersOnRedirect(
+        std::vector<std::string> removed_headers,
+        net::HttpRequestHeaders modified_headers,
+        net::HttpRequestHeaders modified_cors_exempt_headers);
+
+    // Follows the redirect using the current `url_loader_`.
+    void FollowRedirect();
+
+    // Similar to `ResetLoader()`, but also calls
+    // `URLLoader::ResetForFollowRedirect()` if needed.
+    void ResetForFollowRedirect(network::ResourceRequest& resource_request);
+
    private:
     // `NavigationURLLoaderImpl`'s `URLLoaderClient` methods are called either
     // via `url_loader_` or `response_loader_receiver_`.
@@ -404,6 +427,21 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // `MaybeCreateLoaderForResponse()` (at least within Chromium codesearch).
     // For now this is kept here as-is but probably can be removed.
     mojo::PendingRemote<network::mojom::URLLoader> response_url_loader_;
+
+    struct ModifiedHeadersOnRedirect final {
+      ModifiedHeadersOnRedirect(
+          std::vector<std::string> removed_headers,
+          net::HttpRequestHeaders modified_headers,
+          net::HttpRequestHeaders modified_cors_exempt_headers);
+      ModifiedHeadersOnRedirect(const ModifiedHeadersOnRedirect&) = delete;
+      ModifiedHeadersOnRedirect(ModifiedHeadersOnRedirect&&) = delete;
+      ~ModifiedHeadersOnRedirect();
+
+      std::vector<std::string> removed_headers_;
+      net::HttpRequestHeaders modified_headers_;
+      net::HttpRequestHeaders modified_cors_exempt_headers_;
+    };
+    std::optional<ModifiedHeadersOnRedirect> modified_headers_on_redirect_;
   };
 
   LoaderHolder loader_holder_{this};
