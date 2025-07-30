@@ -220,11 +220,7 @@ static const char* kInterstitialDetails = "Details";
 // when a filtering for them is triggered. Also tests that the filtering logic
 // on existing tabs does not force-realize unrealized states. This is a
 // regression test for bug: 1486459.
-// TODO(crbug.com/435140688): Reenable this test.
 - (void)testSupervisedUserURLFilteringReloadsOnlyRealizedExistingWebStates {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
-#endif
   // Signing in the user and allow all sites.
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -439,11 +435,7 @@ static const char* kInterstitialDetails = "Details";
 
 // Tests that block-listing a url, results in showing immediately the
 // interstitial if the user has the url open in a tab.
-// TODO(crbug.com/435140688): Reenable this test.
 - (void)testSupervisedUserWithAllowAllFilteringIsBlockedOnURLBlockListing {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
-#endif
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
 
@@ -460,12 +452,8 @@ static const char* kInterstitialDetails = "Details";
 // Tests that users who have the filtering behaviour changed from "Allow all"
 // to "Allow approved" websites, will be shown the interstitial as soon as
 // the filtering behaviour changes.
-// TODO(crbug.com/435140688): Reenable this test.
 - (void)
     testSupervisedUserWithAllowApprovedSitesFilteringIsBlockedOnFilterChange {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
-#endif
   [self signInSupervisedUser];
   GURL safeURL = self.testServer->GetURL(kEchoPath);
   [ChromeEarlGrey loadURL:safeURL];
@@ -482,11 +470,7 @@ static const char* kInterstitialDetails = "Details";
 // Tests that for users who have the filtering behaviour changed from "Allow
 // approved" to "Allow all" websites, a blocked pages will be refreshed and
 // unblocks as soon as the filtering behaviour changes.
-// TODO(crbug.com/435140688): Reenable this test.
 - (void)testSupervisedUserWithAllowAllSitesFilteringIsUnblockedOnFilterChange {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
-#endif
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFilteringToAllowApprovedSites];
 
@@ -636,13 +620,9 @@ static const char* kInterstitialDetails = "Details";
   }
 }
 
-// Test that the when Local Web Approval is disabled, the "Back" button of the
-// interstitial gets us to the previous page.
-// TODO(crbug.com/435140688): Reenable this test.
+// Test that the when Local Web Approval is disabled, the "Back" button of the interstitial
+// gets us to the previous page.
 - (void)testSupervisedUserInterstitialOnBackButton {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
-#endif
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
@@ -669,13 +649,9 @@ static const char* kInterstitialDetails = "Details";
   [ChromeEarlGrey waitForWebStateContainingText:kDefaultContent];
 }
 
-// Test that the when Local Web Approval is enabled, users can request a local
-// web approval from the waiting screen.
-// TODO(crbug.com/435140688): Reenable this test.
+// Test that the when Local Web Approval is enabled, users can request a local web
+// approval from the waiting screen.
 - (void)testSupervisedUserInterstitialOnLocalApprovalRequestFromWaitingScreen {
-#if !TARGET_OS_SIMULATOR
-  EARL_GREY_TEST_DISABLED(@"Disabled on devices");
-#endif
   [self signInSupervisedUser];
   [SupervisedUserSettingsAppInterface setFakePermissionCreator];
   [SupervisedUserSettingsAppInterface setFilteringToAllowAllSites];
