@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_radio_group_view.h"
 
+#include "chrome/browser/ui/save_to_drive/account_chooser_view_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -77,8 +78,10 @@ BEGIN_METADATA(AccountChooserRadioButtonRow)
 END_METADATA
 
 AccountChooserRadioGroupView::AccountChooserRadioGroupView(
+    AccountChooserViewDelegate& parent_dialog,
     const std::vector<AccountInfo>& accounts,
-    std::optional<CoreAccountId> primary_account_id) {
+    std::optional<CoreAccountId> primary_account_id)
+    : parent_dialog_(parent_dialog) {
   CHECK(accounts.size() > 1) << "Account chooser radio group view should only "
                                 "be used for multi-account cases.";
   SetCascadingRadioGroupView(this, views::kCascadingRadioGroupView);
@@ -119,8 +122,7 @@ AccountChooserRadioGroupView::~AccountChooserRadioGroupView() = default;
 void AccountChooserRadioGroupView::SelectAccount(const AccountInfo& account) {
   auto it = accounts_.find(account);
   CHECK(it != accounts_.end());
-  // TODO(crbug.com/434686397): future implementation - update account selected
-  // field.
+  parent_dialog_->OnAccountSelected(account);
 }
 
 BEGIN_METADATA(AccountChooserRadioGroupView)

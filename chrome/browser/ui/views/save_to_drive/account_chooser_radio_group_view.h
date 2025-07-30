@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "chrome/browser/ui/save_to_drive/account_chooser_view_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/radio_button.h"
@@ -56,7 +57,8 @@ class AccountChooserRadioGroupView : public views::BoxLayoutView,
   METADATA_HEADER(AccountChooserRadioGroupView, views::BoxLayoutView)
  public:
   // Precondition: accounts.size() > 1
-  AccountChooserRadioGroupView(const std::vector<AccountInfo>& accounts,
+  AccountChooserRadioGroupView(AccountChooserViewDelegate& parent_dialog,
+                               const std::vector<AccountInfo>& accounts,
                                std::optional<CoreAccountId> primary_account_id);
   AccountChooserRadioGroupView(const AccountChooserRadioGroupView&) = delete;
   AccountChooserRadioGroupView& operator=(const AccountChooserRadioGroupView&) =
@@ -75,6 +77,7 @@ class AccountChooserRadioGroupView : public views::BoxLayoutView,
   // Sorted by account display name.
   std::map<AccountInfo, AccountChooserRadioButtonRow*, AccountInfoCmp>
       accounts_;
+  raw_ref<AccountChooserViewDelegate> parent_dialog_;  // can never be null
 };
 }  // namespace save_to_drive
 #endif  // CHROME_BROWSER_UI_VIEWS_SAVE_TO_DRIVE_ACCOUNT_CHOOSER_RADIO_GROUP_VIEW_H_

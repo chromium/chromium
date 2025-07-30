@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_radio_group_view.h"
 
+#include "chrome/browser/ui/save_to_drive/mock_account_chooser_view_delegate.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "chrome/browser/ui/views/save_to_drive/account_chooser_test_util.h"
 #include "chrome/browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.h"
@@ -61,6 +62,7 @@ class AccountChooserRadioGroupViewTest : public views::ViewsTestBase {
  protected:
   std::unique_ptr<views::Widget> anchor_view_widget_;
   raw_ptr<views::View> anchor_view_;
+  MockAccountChooserViewDelegate mock_account_chooser_view_delegate_;
 };
 
 TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithoutPrimary) {
@@ -68,9 +70,14 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithoutPrimary) {
       GetTestAccount("pothos", kTestDomain, /*gaia_id=*/1);
   AccountInfo account_fern = GetTestAccount("fern", kTestDomain, /*gaia_id=*/2);
   std::vector<AccountInfo> accounts = {account_pothos, account_fern};
+
+  // We expect the lexicographically first account to be selected.
+  EXPECT_CALL(mock_account_chooser_view_delegate_,
+              OnAccountSelected(
+                  Field(&AccountInfo::account_id, account_fern.account_id)));
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
-          accounts, std::nullopt));
+          mock_account_chooser_view_delegate_, accounts, std::nullopt));
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 5u);  // 3 separators + 2 accounts
@@ -93,9 +100,14 @@ TEST_F(AccountChooserRadioGroupViewTest, MultiAccountWithPrimary) {
       GetTestAccount("alder", kTestDomain, /*gaia_id=*/3);
   std::vector<AccountInfo> accounts = {account_fern, account_pothos,
                                        account_alder};
+  // We expect the primary account to be selected.
+  EXPECT_CALL(mock_account_chooser_view_delegate_,
+              OnAccountSelected(
+                  Field(&AccountInfo::account_id, account_pothos.account_id)));
   AccountChooserRadioGroupView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserRadioGroupView>(
-          accounts, account_pothos.account_id));
+          mock_account_chooser_view_delegate_, accounts,
+          account_pothos.account_id));
   std::vector<raw_ptr<views::View, VectorExperimental>> children =
       account_chooser_view->children();
   ASSERT_EQ(children.size(), 7u);  // 4 separators + 3 accounts

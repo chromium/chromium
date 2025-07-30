@@ -56,7 +56,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateBodyMultiAccount(
       views::ScrollView::ScrollBarMode::kDisabled);
   views::View* const content =
       scroll_view->SetContents(std::make_unique<AccountChooserRadioGroupView>(
-          accounts, primary_account_id));
+          *parent_dialog_, accounts, primary_account_id));
 
   int per_account_size = content->GetPreferredSize().height() / accounts.size();
   scroll_view->ClipHeightTo(
