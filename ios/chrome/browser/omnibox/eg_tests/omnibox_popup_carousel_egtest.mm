@@ -186,7 +186,13 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests the "Copy URL" action of carousel context menu.
+// TODO(crbug.com/435096812): Reenable this test.
 - (void)testMostVisitedTileCopyURL {
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator iOS 17");
+    }
+  }
   [self addNumberOfMostVisitedTiles:1];
   Page page1 = Page(1);
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
