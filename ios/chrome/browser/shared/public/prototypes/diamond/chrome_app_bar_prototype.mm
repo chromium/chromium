@@ -29,6 +29,12 @@ CGFloat BrowserBackgroundGapHeight() {
 // Duration of the animation.
 const CGFloat kBackgroundTransitionTime = 0.25;
 
+// Shadow constants.
+const CGFloat kButtonShadowOffsetX = 0;
+const CGFloat kButtonShadowOffsetY = 1;
+const CGFloat kButtonShadowRadius = 3;
+const CGFloat kButtonShadowOpacity = 0.2;
+
 UIButtonConfiguration* ButtonConfiguration() {
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
@@ -45,6 +51,16 @@ UIButtonConfiguration* ButtonConfiguration() {
   };
 
   return configuration;
+}
+
+// Configures the shadow for the given `button`.
+void ConfigureButtonShadow(UIButton* button) {
+  button.layer.shadowColor = [UIColor blackColor].CGColor;
+  button.layer.shadowOffset =
+      CGSizeMake(kButtonShadowOffsetX, kButtonShadowOffsetY);
+  button.layer.shadowRadius = kButtonShadowRadius;
+  button.layer.shadowOpacity = kButtonShadowOpacity;
+  button.layer.masksToBounds = NO;
 }
 
 }  // namespace
@@ -96,11 +112,11 @@ UIButtonConfiguration* ButtonConfiguration() {
 
     UIButtonConfiguration* askGeminiConfiguration = ButtonConfiguration();
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
-    askGeminiConfiguration.image = CustomSymbolWithPointSize(
-        kGeminiBrandedLogoImage, kChromeAppBarPrototypeSymbolSize);
+    askGeminiConfiguration.image =
+        GetCustomAppBarSymbol(kGeminiBrandedLogoImage);
 #else
-    askGeminiConfiguration.image = DefaultSymbolWithPointSize(
-        kGeminiNonBrandedLogoImage, kChromeAppBarPrototypeSymbolSize);
+    askGeminiConfiguration.image =
+        GetCustomAppBarSymbol(kGeminiNonBrandedLogoImage);
 #endif  // BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
 
     askGeminiConfiguration.title =
@@ -108,22 +124,22 @@ UIButtonConfiguration* ButtonConfiguration() {
     _askGeminiButton = [UIButton buttonWithConfiguration:askGeminiConfiguration
                                            primaryAction:nil];
     _askGeminiButton.translatesAutoresizingMaskIntoConstraints = NO;
+    ConfigureButtonShadow(_askGeminiButton);
 
     UIButtonConfiguration* openNewTabConfiguration = ButtonConfiguration();
-    openNewTabConfiguration.image = DefaultSymbolWithPointSize(
-        kPlusInCircleSymbol, kChromeAppBarPrototypeSymbolSize);
+    openNewTabConfiguration.image = GetDefaultAppBarSymbol(kPlusInCircleSymbol);
     openNewTabConfiguration.title =
         l10n_util::GetNSString(IDS_IOS_DIAMOND_PROTOTYPE_NEW_TAB);
     _openNewTabButton =
         [UIButton buttonWithConfiguration:openNewTabConfiguration
                             primaryAction:nil];
     _openNewTabButton.translatesAutoresizingMaskIntoConstraints = NO;
+    ConfigureButtonShadow(_openNewTabButton);
 
     UIButtonConfiguration* tabGridConfiguration = ButtonConfiguration();
     // TODO(crbug.com/429955447): replace the symbol with a tab grid icon,
     // including number of tabs.
-    tabGridConfiguration.image =
-        DefaultSymbolWithPointSize(@"square", kChromeAppBarPrototypeSymbolSize);
+    tabGridConfiguration.image = GetDefaultAppBarSymbol(kAppSymbol);
     tabGridConfiguration.imageColorTransformer = ^UIColor*(UIColor* color) {
       return UIColor.clearColor;
     };
@@ -134,6 +150,7 @@ UIButtonConfiguration* ButtonConfiguration() {
                                      primaryAction:nil];
     [_tabGridButton setup];
     _tabGridButton.translatesAutoresizingMaskIntoConstraints = NO;
+    ConfigureButtonShadow(_tabGridButton);
 
     UIStackView* stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
       _askGeminiButton, _openNewTabButton, _tabGridButton

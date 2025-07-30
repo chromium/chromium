@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/public/prototypes/diamond/new_tab_prototype_view_controller.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 
 namespace {
@@ -46,6 +47,9 @@ NSString* kDiamondEnterTabGridNotification =
     @"kDiamondEnterTabGridNotification";
 NSString* kDiamondLeaveTabGridNotification =
     @"kDiamondLeaveTabGridNotification";
+
+NSString* const kAppSymbol = @"app";
+NSString* const kAppFillSymbol = @"app.fill";
 
 void DiamondPrototypeStartGemini(bool from_tab_grid,
                                  bool incognito_grid,
@@ -104,4 +108,26 @@ void DiamondPrototypeStartNewTab(bool from_tab_grid,
   [base_view_controller presentViewController:new_tab_view_controller
                                      animated:YES
                                    completion:nil];
+}
+
+namespace {
+
+// Returns the symbol configuration for the app bar.
+UIImageSymbolConfiguration* GetAppBarSymbolConfiguration() {
+  return [UIImageSymbolConfiguration
+      configurationWithPointSize:kChromeAppBarPrototypeSymbolSize
+                          weight:UIImageSymbolWeightSemibold
+                           scale:UIImageSymbolScaleMedium];
+}
+
+}  // namespace
+
+UIImage* GetDefaultAppBarSymbol(NSString* symbol_name) {
+  return DefaultSymbolWithConfiguration(symbol_name,
+                                        GetAppBarSymbolConfiguration());
+}
+
+UIImage* GetCustomAppBarSymbol(NSString* symbol_name) {
+  return CustomSymbolWithConfiguration(symbol_name,
+                                       GetAppBarSymbolConfiguration());
 }
