@@ -117,7 +117,7 @@
     {
         "name": "browser",
         "group": "androidx.browser",
-        "version": "1.9.0-SNAPSHOT"
+        "version": "1.10.0-SNAPSHOT"
     },
     {
         "name": "cardview",
