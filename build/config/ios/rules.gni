@@ -465,6 +465,7 @@ template("ios_app_bundle") {
       _info_plist_path,
     ]
     sources += ios_mobileprovision_files
+    sources += [ ios_mobileprovision_files_filelist ]
 
     outputs = [ _generate_entitlements_output ]
 
@@ -472,10 +473,8 @@ template("ios_app_bundle") {
       "generate-entitlements",
       "-e=" + rebase_path(_entitlements_path, root_build_dir),
       "-p=" + rebase_path(_info_plist_path, root_build_dir),
+      "-M=" + rebase_path(ios_mobileprovision_files_filelist, root_build_dir),
     ]
-    foreach(mobileprovision, ios_mobileprovision_files) {
-      args += [ "-m=" + rebase_path(mobileprovision, root_build_dir) ]
-    }
     args += rebase_path(outputs, root_build_dir)
   }
 

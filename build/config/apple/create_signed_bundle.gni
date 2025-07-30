@@ -318,12 +318,10 @@ template("apple_mobile_create_signed_bundle") {
       "-t=" + invoker.platform_sdk_name,
       "-i=" + ios_code_signing_identity,
       "-b=" + rebase_path(_bundle_binary_path, root_build_dir),
+      "-M=" + rebase_path(ios_mobileprovision_files_filelist, root_build_dir),
     ]
-    foreach(mobileprovision, ios_mobileprovision_files) {
-      post_processing_args +=
-          [ "-m=" + rebase_path(mobileprovision, root_build_dir) ]
-    }
     post_processing_sources += ios_mobileprovision_files
+    post_processing_sources += [ ios_mobileprovision_files_filelist ]
     if (_enable_entitlements) {
       post_processing_args +=
           [ "-e=" + rebase_path(_entitlements_path, root_build_dir) ]
