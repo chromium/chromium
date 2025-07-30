@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/ui/browser_actions.h"
 #include "chrome/browser/ui/passwords/manage_passwords_state.h"
 #include "chrome/browser/ui/passwords/passwords_client_ui_delegate.h"
 #include "chrome/browser/ui/passwords/passwords_leak_dialog_delegate.h"
@@ -56,6 +57,7 @@ class ManagePasswordsIconView;
 class CredentialLeakDialogController;
 class CredentialManagerDialogController;
 class PasswordBaseDialogController;
+class ManagePasswordsPageActionController;
 
 // Per-tab class to control the Omnibox password icon and bubble.
 class ManagePasswordsUIController
@@ -245,6 +247,13 @@ class ManagePasswordsUIController
   // submitted, or when a navigation occurs to update the visibility of the
   // manage passwords icon and bubble.
   virtual void UpdateBubbleAndIconVisibility();
+
+  // Called when the manage passwords icon needs to be shown and it sets the
+  // state of the icon, and shows the associated bubble without user
+  // interaction.
+  void UpdatePasswordIconAndBubbleState(
+      ManagePasswordsPageActionController* controller,
+      actions::ActionItem* passwords_action_item);
 
   // Called to create the account chooser dialog. Mocked in tests.
   virtual AccountChooserPrompt* CreateAccountChooser(
