@@ -1859,6 +1859,114 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(result[2].left < result[3].left);
     }
 
+    /** Test |AccessibilityNodeInfo| object for character bounds for a text field node. */
+    @Test
+    @SmallTest
+    public void testNodeInfo_extraDataAdded_characterLocationsInTextField() {
+        final String text = "Some text that is long so it wraps";
+        final int linebreakIndex = 18;
+        setupTestWithHTML("<textarea rows=\"2\" cols=\"20\">" + text + "</textarea>");
+
+        // Wait until we find a node in the accessibility tree with the text "Text".
+        int textNodeVirtualViewId = waitForNodeMatching(sTextMatcher, text);
+        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
+        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
+
+        // Call the API we want to test - addExtraDataToAccessibilityNodeInfo.
+        final Bundle arguments = new Bundle();
+        arguments.putInt(EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_START_INDEX, 0);
+        arguments.putInt(EXTRA_DATA_TEXT_CHARACTER_LOCATION_ARG_LENGTH, text.length());
+
+        // addExtraDataToAccessibilityNodeInfo() will end up calling RenderFrameHostImpl's method
+        // AccessibilityPerformAction() in the C++ code, which needs to be run from the UI thread.
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            mNodeInfo,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                });
+
+        // The data needed for text character locations loads asynchronously. Block until
+        // it successfully returns the character bounds.
+        CriteriaHelper.pollUiThread(
+                () -> {
+                    AccessibilityNodeInfoCompat textNode =
+                            createAccessibilityNodeInfo(textNodeVirtualViewId);
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            textNode,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                    Bundle textNodeExtras = textNode.getExtras();
+                    RectF[] textNodeResults =
+                            (RectF[])
+                                    textNodeExtras.getParcelableArray(
+                                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+                    Criteria.checkThat(textNodeResults, Matchers.arrayWithSize(text.length()));
+                    Criteria.checkThat(textNodeResults[0], Matchers.not(textNodeResults[1]));
+                });
+
+        // The final result should be the separate bounding box of all four characters.
+        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
+                            textNodeVirtualViewId,
+                            mNodeInfo,
+                            EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY,
+                            arguments);
+                });
+
+        Bundle extras = mNodeInfo.getExtras();
+        // The role string should be a camel cased programmatic identifier.
+        CharSequence roleString = extras.getCharSequence(EXTRAS_KEY_CHROME_ROLE);
+        Assert.assertEquals("textField", roleString.toString());
+
+        RectF[] result =
+                (RectF[]) extras.getParcelableArray(EXTRA_DATA_TEXT_CHARACTER_LOCATION_KEY);
+        Assert.assertNotEquals(result, null);
+        Assert.assertEquals(text.length(), result.length);
+
+        StringBuilder sb = new StringBuilder();
+        for (RectF rect : result) {
+            sb.append(rect.toString());
+            sb.append(" ");
+        }
+        Log.d(TAG, "result: [%s]", sb.toString());
+
+        for (int i = 1; i < text.length(); i++) {
+            Assert.assertNotEquals("For index=" + i, result[0], result[i]);
+        }
+
+        // All bounds should have nonzero left, top, width, and height
+        for (RectF rect : result) {
+            String msg = "For RectF=" + rect.toString();
+            Assert.assertTrue(msg, rect.left > 0);
+            Assert.assertTrue(msg, rect.top > 0);
+            Assert.assertTrue(msg, rect.width() > 0);
+            Assert.assertTrue(msg, rect.height() > 0);
+        }
+
+        // They should be in order.
+        float prevX = result[0].left;
+        float prevY = result[0].top;
+        for (int i = 1; i < result.length; i++) {
+            String msg = "For index=" + i + " char=\"" + text.charAt(i) + "\"";
+            if (i == linebreakIndex) {
+                Assert.assertTrue(msg, prevX > result[i].left);
+                Assert.assertTrue(msg, prevY < result[i].top);
+                prevX = result[i].left;
+                prevY = result[i].top;
+                continue;
+            }
+            Assert.assertTrue(msg, prevX < result[i].left);
+            Assert.assertEquals(msg, prevY, result[i].top, /* delta= */ 0);
+            prevX = result[i].left;
+        }
+    }
+
     /**
      * Test |AccessibilityNodeInfo| object for character bounds in screen coordinates should be
      * different in window coordinates.
