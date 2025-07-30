@@ -1,0 +1,10 @@
+{
+  "name": "example_server",
+  "version": "1.0.0",
+  "mcpServers": {
+    "example_server": {
+      "command": "vpython3",
+      "args": ["agents/mcp/example_server/server.py"]
+    }
+  }
+}

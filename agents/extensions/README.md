@@ -63,6 +63,11 @@ There are three types of MCP server configurations supported:
 3. **Remote MCP Server:** The configuration for these servers contains a
    reference to a remote URL where the MCP server is hosted.
 
+## Creating an MCP server
 
-[1] https://modelcontextprotocol.io/
-[2] https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
+See the [example][3] server for a minimal example for creating an MCP tool
+with python and FastMCP
+
+[1]: https://modelcontextprotocol.io/
+[2]: https://github.com/google-gemini/gemini-cli/blob/main/docs/extension.md
+[3]: example_server/README.md
