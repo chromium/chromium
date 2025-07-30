@@ -8,12 +8,15 @@
 #include <cstddef>
 #include <string>
 
+#include "ui/gfx/font_list.h"
+
 namespace webauthn_ui_helpers {
 
 // Takes a valid relying party identifier and elides it so that it's suitable to
 // display on UI.
 std::u16string RpIdToElidedHost(const std::string& relying_party_id,
-                                size_t width);
+                                size_t width,
+                                gfx::FontList font_list);
 
 }  // namespace webauthn_ui_helpers
 

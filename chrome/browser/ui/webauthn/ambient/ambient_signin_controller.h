@@ -75,7 +75,7 @@ class AmbientSigninController
   // Called when the user selects a password shown in the bubble.
   void OnPasswordSelected(const password_manager::PasswordForm* form);
 
-  std::u16string GetRpId() const;
+  std::u16string GetRpIdForDisplay() const;
   base::OnceClosure GetSignInCallback();
 
   base::WeakPtr<AmbientSigninController> GetWeakPtr();

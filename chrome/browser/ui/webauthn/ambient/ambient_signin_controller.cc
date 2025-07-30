@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/webauthn/ambient/ambient_signin_bubble_view.h"
+#include "chrome/browser/ui/webauthn/webauthn_ui_helpers.h"
 #include "components/password_manager/core/browser/passkey_credential.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
@@ -28,6 +29,8 @@
 #include "content/public/browser/visibility.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/credentialmanagement/credential_type_flags.mojom.h"
+#include "ui/views/layout/layout_provider.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/widget/widget.h"
 
 using blink::mojom::CredentialTypeFlags;
@@ -173,8 +176,17 @@ void AmbientSigninController::OnPasswordSelected(
       .Run(std::make_pair(form->username_value, form->password_value));
 }
 
-std::u16string AmbientSigninController::GetRpId() const {
-  return model_ ? base::UTF8ToUTF16(model_->relying_party_id)
+std::u16string AmbientSigninController::GetRpIdForDisplay() const {
+  views::LayoutProvider* layout_provider = views::LayoutProvider::Get();
+  int title_width =
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_PREFERRED_WIDTH) -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG).width() -
+      layout_provider->GetInsetsMetric(views::INSETS_DIALOG_TITLE).width();
+  gfx::FontList font_list = views::TypographyProvider::Get().GetFont(
+      views::style::CONTEXT_DIALOG_TITLE, views::style::STYLE_PRIMARY);
+  return model_ ? webauthn_ui_helpers::RpIdToElidedHost(
+                      model_->relying_party_id, title_width, font_list)
                 : std::u16string();
 }
 
