@@ -991,8 +991,10 @@ void MessagingBackendServiceImpl::OnTabUpdated(
       (is_local || triggering_user_is_self)
           ? DirtyType::kNone
           : (is_selected ? DirtyType::kChip : DirtyType::kDotAndChip);
-  if (HasSeenTabUpdate(updated_tab)) {
-    dirty_type = DirtyType::kNone;
+  if (HasSeenTabUpdate(updated_tab) && dirty_type != DirtyType::kNone) {
+    // If the tab has been seen before, we should not show dirty dots, only
+    // the chip.
+    dirty_type = DirtyType::kChip;
   }
 
   collaboration_pb::Message message =

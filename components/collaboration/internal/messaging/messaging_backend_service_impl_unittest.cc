@@ -1146,7 +1146,7 @@ TEST_F(MessagingBackendServiceImplTest,
   // It should add a message for this tab to the DB, but not result in
   // persistent message notification.
   EXPECT_CALL(mock_persistent_message_observer_, DisplayPersistentMessage)
-      .Times(0);
+      .Times(2u);
   EXPECT_EQ(1u, GetMessageCountFromDB());
   tg_notifier_observer_->OnTabUpdated(tab1, tab1,
                                       tab_groups::TriggerSource::REMOTE, false);
@@ -1155,7 +1155,7 @@ TEST_F(MessagingBackendServiceImplTest,
   // Verify that a message is created for remote tab addition.
   auto message = GetLastMessageFromDB();
   VerifyGenericMessageData(message, "my group id",
-                           collaboration_pb::TAB_UPDATED, DirtyType::kNone,
+                           collaboration_pb::TAB_UPDATED, DirtyType::kChip,
                            now.ToTimeT());
 
   EXPECT_EQ(gaia2, GaiaId(message.triggering_user_gaia_id()));
