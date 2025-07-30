@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/container_node.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/document_parser.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
@@ -33,10 +34,14 @@ class DOMPatchStatus : public ScriptWrappable {
  public:
   static DOMPatchStatus* Create(ContainerNode& target,
                                 HTMLTemplateElement* source = nullptr,
-                                const KURL& source_url = KURL());
+                                const KURL& source_url = KURL(),
+                                Node* previous_child = nullptr,
+                                Node* next_child = nullptr);
   DOMPatchStatus(HTMLTemplateElement* source,
                  ContainerNode& target,
-                 const KURL& source_url);
+                 const KURL& source_url,
+                 Node* previous_child,
+                 Node* next_child);
   ScriptPromise<IDLUndefined> finished(ScriptState*);
   HTMLTemplateElement* source() { return source_; }
   void Trace(Visitor*) const override;
@@ -57,8 +62,13 @@ class DOMPatchStatus : public ScriptWrappable {
   State state_ = State::kPending;
   Member<HTMLTemplateElement> source_;
   Member<ContainerNode> target_;
+  Member<Node> previous_child_;
+  Member<Node> next_child_;
   Member<ScriptPromiseProperty<IDLUndefined, IDLAny>> finished_;
   Member<DocumentParser> parser_;
+  // In some cases we buffer into a fragment instead of streaming directly to
+  // the DOM.
+  Member<DocumentFragment> buffer_fragment_;
   KURL source_url_;
   Member<ThreadableLoader> loader_;
 };

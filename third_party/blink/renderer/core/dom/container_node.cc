@@ -1891,7 +1891,33 @@ String ContainerNode::getHTML(const GetHTMLOptions* options,
 
 WritableStream* ContainerNode::patchSelf(ScriptState* script_state) {
   return PatchSupplement::From(GetDocument())
-      ->CreateSinglePatchStream(script_state, *this);
+      ->CreateSinglePatchStream(script_state, *this, /*previous_child=*/nullptr,
+                                /*next_child=*/nullptr);
+}
+
+WritableStream* ContainerNode::patchAfter(ScriptState* script_state,
+                                          Node* a,
+                                          ExceptionState& exception_state) {
+  return patchBetween(script_state, a, nullptr, exception_state);
+}
+WritableStream* ContainerNode::patchBefore(ScriptState* script_state,
+                                           Node* b,
+                                           ExceptionState& exception_state) {
+  return patchBetween(script_state, nullptr, b, exception_state);
+}
+WritableStream* ContainerNode::patchBetween(ScriptState* script_state,
+                                            Node* a,
+                                            Node* b,
+                                            ExceptionState& exception_state) {
+  if ((a && a->parentNode() != this) || (b && b->parentNode() != this)) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kHierarchyRequestError,
+        "Reference nodes have to be children of the target node when patching");
+    return nullptr;
+  }
+
+  return PatchSupplement::From(GetDocument())
+      ->CreateSinglePatchStream(script_state, *this, a, b);
 }
 
 WritableStream* ContainerNode::patchAll(ScriptState* script_state) {

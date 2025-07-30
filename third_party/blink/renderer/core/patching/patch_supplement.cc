@@ -61,8 +61,8 @@ ExtractBytesOrStringFromChunk(ScriptValue chunk,
 
 class SinglePatchSink : public UnderlyingSinkBase {
  public:
-  explicit SinglePatchSink(ContainerNode& target)
-      : patch_(DOMPatchStatus::Create(target)) {}
+  explicit SinglePatchSink(ContainerNode& target, Node* a, Node* b)
+      : patch_(DOMPatchStatus::Create(target, nullptr, KURL(), a, b)) {}
   void Trace(Visitor* visitor) const override {
     visitor->Trace(patch_);
     UnderlyingSinkBase::Trace(visitor);
@@ -254,7 +254,9 @@ void PatchSupplement::DidComplete(Node& target) {
 
 WritableStream* PatchSupplement::CreateSinglePatchStream(
     ScriptState* script_state,
-    ContainerNode& target) {
+    ContainerNode& target,
+    Node* previous_child,
+    Node* next_child) {
   DOMPatchStatus* previous = CurrentPatchFor(target);
   if (previous) {
     previous->Terminate(ScriptValue::From(
@@ -263,7 +265,9 @@ WritableStream* PatchSupplement::CreateSinglePatchStream(
                           "Patch aborted by another patch call")));
   };
   return WritableStream::CreateWithCountQueueingStrategy(
-      script_state, MakeGarbageCollected<SinglePatchSink>(target), 1);
+      script_state,
+      MakeGarbageCollected<SinglePatchSink>(target, previous_child, next_child),
+      1);
 }
 
 WritableStream* PatchSupplement::CreateSubtreePatchStream(

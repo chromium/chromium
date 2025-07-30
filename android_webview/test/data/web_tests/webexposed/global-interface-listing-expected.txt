@@ -2100,7 +2100,10 @@ interface Document : Node
     method importNode
     method moveBefore
     method open
+    method patchAfter
     method patchAll
+    method patchBefore
+    method patchBetween
     method patchSelf
     method prepend
     method queryCommandEnabled
@@ -2270,7 +2273,10 @@ interface DocumentFragment : Node
     method getElementById
     method getPartRoot
     method moveBefore
+    method patchAfter
     method patchAll
+    method patchBefore
+    method patchBetween
     method patchSelf
     method prepend
     method querySelector
@@ -2466,7 +2472,10 @@ interface Element : Node
     method insertAdjacentText
     method matches
     method moveBefore
+    method patchAfter
     method patchAll
+    method patchBefore
+    method patchBetween
     method patchSelf
     method prepend
     method pseudo

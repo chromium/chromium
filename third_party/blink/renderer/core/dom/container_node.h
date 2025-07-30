@@ -473,6 +473,9 @@ class CORE_EXPORT ContainerNode : public Node {
   String getHTML(const GetHTMLOptions*, ExceptionState&) const;
 
   WritableStream* patchSelf(ScriptState*);
+  WritableStream* patchAfter(ScriptState*, Node* a, ExceptionState&);
+  WritableStream* patchBefore(ScriptState*, Node* b, ExceptionState&);
+  WritableStream* patchBetween(ScriptState*, Node* a, Node* b, ExceptionState&);
   WritableStream* patchAll(ScriptState*);
 
   // DocumentOrElementEventHandlers:

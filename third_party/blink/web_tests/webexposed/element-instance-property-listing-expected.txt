@@ -304,7 +304,10 @@ namespace http://www.w3.org/1999/xhtml
     property parentElement
     property parentNode
     property part
+    property patchAfter
     property patchAll
+    property patchBefore
+    property patchBetween
     property patchSelf
     property popover
     property prefix
@@ -1593,7 +1596,10 @@ namespace http://www.w3.org/2000/svg
     property parentElement
     property parentNode
     property part
+    property patchAfter
     property patchAll
+    property patchBefore
+    property patchBetween
     property patchSelf
     property prefix
     property prepend

@@ -350,7 +350,10 @@ void HTMLTreeBuilder::FragmentParsingContext::Init(
     ContainerNode* fragment_target,
     Element* context_element) {
   DCHECK(fragment_target);
-  DCHECK(!fragment_target->HasChildren());
+  DCHECK((fragment_target == context_element &&
+          RuntimeEnabledFeatures::DocumentPatchingEnabled()) ||
+         (fragment_target->IsDocumentFragment() &&
+          !fragment_target->HasChildren()));
   fragment_target_ = fragment_target;
   context_element_stack_item_ = MakeGarbageCollected<HTMLStackItem>(
       context_element, HTMLStackItem::kItemForContextElement);

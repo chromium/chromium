@@ -13,6 +13,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abstract_range.h"
+#include "third_party/blink/renderer/core/dom/document_fragment.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/mutation_observer.h"
@@ -26,6 +27,7 @@
 #include "third_party/blink/renderer/core/patching/patch_event.h"
 #include "third_party/blink/renderer/core/patching/patch_supplement.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
+#include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -34,20 +36,29 @@
 #include "third_party/blink/renderer/platform/loader/fetch/text_resource_decoder_options.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+#include "v8-exception.h"
+#include "v8-isolate.h"
 
 namespace blink {
 // static
 DOMPatchStatus* DOMPatchStatus::Create(ContainerNode& target,
                                        HTMLTemplateElement* source,
-                                       const KURL& source_url) {
-  return MakeGarbageCollected<DOMPatchStatus>(source, target, source_url);
+                                       const KURL& source_url,
+                                       Node* previous_child,
+                                       Node* next_child) {
+  return MakeGarbageCollected<DOMPatchStatus>(source, target, source_url,
+                                              previous_child, next_child);
 }
 
 DOMPatchStatus::DOMPatchStatus(HTMLTemplateElement* source,
                                ContainerNode& target,
-                               const KURL& source_url)
+                               const KURL& source_url,
+                               Node* previous_child,
+                               Node* next_child)
     : source_(source),
       target_(target),
+      previous_child_(previous_child),
+      next_child_(next_child),
       finished_(
           MakeGarbageCollected<ScriptPromiseProperty<IDLUndefined, IDLAny>>(
               target.GetDocument().GetExecutionContext())),
@@ -71,12 +82,28 @@ void DOMPatchStatus::Start() {
 void DOMPatchStatus::Commit() {
   state_ = State::kActive;
   loader_.Clear();
-  target_->RemoveChildren();
+  if (!next_child_ && !previous_child_) {
+    target_->RemoveChildren();
+  } else {
+    while (true) {
+      Node* next = previous_child_ ? previous_child_->nextSibling()
+                                   : target_->firstChild();
+      if (!next || next == next_child_) {
+        break;
+      }
+      target_->RemoveChild(next);
+    }
+    if (next_child_) {
+      buffer_fragment_ = DocumentFragment::Create(GetDocument());
+    }
+  }
+
   parser_ = MakeGarbageCollected<HTMLDocumentParser>(
-      target_,
+      buffer_fragment_ ? buffer_fragment_ : target_,
       target_->IsElementNode() ? &To<Element>(*target_)
                                : target_->parentElement(),
-      ParserContentPolicy::kDisallowScriptingAndPluginContent);
+      ParserContentPolicy::kDisallowScriptingAndPluginContent,
+      ParserPrefetchPolicy::kDisallowPrefetching);
 }
 
 void DOMPatchStatus::DispatchPatchEvent() {
@@ -160,6 +187,26 @@ void DOMPatchStatus::Finish() {
 
   parser_->Finish();
 
+  // TODO(nrosenthal): see if we can also stream between.
+  if (buffer_fragment_) {
+    CHECK(next_child_);
+
+    // We need to check that this InsertBefore is still valid.
+    // Since patching is an async operation, the child we use as the
+    // insertBefore reference might no longer be connected or no longer the
+    // child of this parent. In that case, we reject the patch's promise with
+    // the error thrown by the DOM operation.
+    v8::Isolate* isolate = GetDocument().GetExecutionContext()->GetIsolate();
+    ExceptionState exception_state(isolate);
+    TryRethrowScope rethrow(isolate, exception_state);
+    target_->InsertBefore(buffer_fragment_.Release(), next_child_,
+                          exception_state);
+    if (rethrow.HasCaught()) {
+      Terminate(ScriptValue(isolate, rethrow.GetException()));
+      return;
+    }
+  }
+
   if (!source_url_.IsEmpty()) {
     state_ = State::kPending;
     // TODO(nrosenthal): start fetching earlier and buffer the response if
@@ -215,8 +262,11 @@ Document& DOMPatchStatus::GetDocument() {
 void DOMPatchStatus::Trace(Visitor* visitor) const {
   visitor->Trace(source_);
   visitor->Trace(target_);
+  visitor->Trace(previous_child_);
+  visitor->Trace(next_child_);
   visitor->Trace(finished_);
   visitor->Trace(parser_);
+  visitor->Trace(buffer_fragment_);
   visitor->Trace(loader_);
   ScriptWrappable::Trace(visitor);
 }
