@@ -2397,6 +2397,119 @@ TEST_F(OnDeviceModelServiceControllerTest, IgnoresNonRepeatingText) {
       false, 1);
 }
 
+TEST_F(OnDeviceModelServiceControllerTest,
+       WithholdsTrailingNewlinesAcrossResponses) {
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
+
+  fake_settings_.set_execute_result({
+      "some text",
+      " texts with newlines\n\n",
+      "\n",
+      "\n\n",
+      "\n",
+      "\n",
+      "\n no trailing newline",
+      "\n more trailing newlines\n\n",
+      "\n\n",
+      "\n",
+      "",
+  });
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  const std::vector<std::string> partial_responses = {
+      "some text",
+      " texts with newlines",
+      "\n\n\n\n\n\n\n\n no trailing newline",
+      "\n more trailing newlines",
+  };
+  EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
+  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest,
+       WithholdsTrailingNewlinesNoTrailingNewlines) {
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
+
+  fake_settings_.set_execute_result({
+      "some text",
+      " texts with newlines\n",
+      "\n",
+      "\n\n",
+      "\n",
+      "\n",
+      "\n no trailing newline",
+  });
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  const std::vector<std::string> partial_responses = {
+      "some text",
+      " texts with newlines",
+      "\n\n\n\n\n\n\n no trailing newline",
+  };
+  EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
+  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
+}
+
+TEST_F(OnDeviceModelServiceControllerTest, NoWithholdsTrailingNewlines) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kOptimizationGuideOnDeviceModel,
+      {{"on_device_model_withhold_newlines", "false"}});
+  FakeAdaptationAsset compose_asset({.config = UnsafeComposeConfig()});
+  Initialize({
+      .base_model = &standard_assets_.base_model,
+      .adaptations = {&compose_asset},
+  });
+
+  fake_settings_.set_execute_result({
+      "some text",
+      " texts with newlines\n\n",
+      "\n",
+      "\n\n",
+      "\n",
+      "\n",
+      "\n no trailing newline",
+      "\n more trailing newlines\n\n",
+      "\n\n",
+      "\n",
+      "",
+  });
+  auto session = CreateSession();
+  ASSERT_TRUE(session);
+  session->ExecuteModel(UserInputRequest("foo"),
+                        response_.GetStreamingCallback());
+  ASSERT_TRUE(response_.GetFinalStatus());
+  const std::vector<std::string> partial_responses = {
+      "some text",
+      " texts with newlines\n\n",
+      "\n",
+      "\n\n",
+      "\n",
+      "\n",
+      "\n no trailing newline",
+      "\n more trailing newlines\n\n",
+      "\n\n",
+      "\n",
+      "",
+  };
+  EXPECT_EQ(*response_.value(), ConcatResponses(partial_responses));
+  EXPECT_THAT(response_.partials(), ElementsAreArray(partial_responses));
+}
+
 TEST_F(OnDeviceModelServiceControllerTest, UsesSessionTopKAndTemperature) {
   // Session sampling params should have precedence over feature ones.
   auto config = SimpleComposeConfig();

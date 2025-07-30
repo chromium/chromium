@@ -90,6 +90,12 @@ std::string GenerateExecutionId() {
   return "on-device:" + base::Uuid::GenerateRandomV4().AsLowercaseString();
 }
 
+bool GetOnDeviceModelWithholdNewlines() {
+  static const base::FeatureParam<bool> kOnDeviceModelWitholdNewlines{
+      &features::kOptimizationGuideOnDeviceModel,
+      "on_device_model_withhold_newlines", true};
+  return kOnDeviceModelWitholdNewlines.Get();
+}
 }  // namespace
 
 OnDeviceExecution::OnDeviceExecution(
@@ -247,9 +253,19 @@ void OnDeviceExecution::OnResponse(
         time_to_first_response.InMilliseconds());
   }
 
-  current_response_ += chunk->text;
-  num_unchecked_response_tokens_++;
-  num_response_tokens_++;
+  if (GetOnDeviceModelWithholdNewlines()) {
+    NewlineBuffer::Chunk trimmed_chunk = newline_buffer_.Append(chunk->text);
+    if (trimmed_chunk.text.empty()) {
+      return;
+    }
+    current_response_ += trimmed_chunk.text;
+    num_unchecked_response_tokens_ += trimmed_chunk.num_tokens;
+    num_response_tokens_ += trimmed_chunk.num_tokens;
+  } else {
+    current_response_ += chunk->text;
+    num_unchecked_response_tokens_++;
+    num_response_tokens_++;
+  }
 
   if (HasRepeatingSuffix(current_response_)) {
     // If a repeat is detected, halt the response, and cancel/finish early.

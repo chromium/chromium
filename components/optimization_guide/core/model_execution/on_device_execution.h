@@ -20,6 +20,7 @@
 #include "components/optimization_guide/core/model_execution/on_device_context.h"
 #include "components/optimization_guide/core/model_execution/on_device_model_feature_adapter.h"
 #include "components/optimization_guide/core/model_execution/optimization_guide_model_execution_error.h"
+#include "components/optimization_guide/core/model_execution/repetition_checker.h"
 #include "components/optimization_guide/core/model_execution/safety_checker.h"
 #include "components/optimization_guide/core/model_execution/substitution.h"
 #include "components/optimization_guide/core/model_quality/model_quality_logs_uploader_service.h"
@@ -253,6 +254,9 @@ class OnDeviceExecution final
   size_t output_token_count_ = 0;
   // The number of tokens in execute portion of the input.
   size_t execute_input_token_count_ = 0;
+
+  // A buffer to hold trailing newlines.
+  NewlineBuffer newline_buffer_;
 
   // Callback to provide the execution result.
   OptimizationGuideModelExecutionResultStreamingCallback callback_;
