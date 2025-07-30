@@ -1010,6 +1010,10 @@ bool IsProvisionalNotificationAlertEnabled() {
   return base::FeatureList::IsEnabled(kProvisionalNotificationAlert);
 }
 
+BASE_FEATURE(kIOSOneTimeDefaultBrowserNotification,
+             "IOSOneTimeDefaultBrowserNotification",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kDefaultBrowserBannerPromo,
              "DefaultBrowserBannerPromo",
              base::FEATURE_ENABLED_BY_DEFAULT);

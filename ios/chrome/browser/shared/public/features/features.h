@@ -869,6 +869,9 @@ extern const char kIOSExpandedTipsOrderParam[];
 // Returns whether `kIOSExpandTips` is enabled.
 bool IsIOSExpandedTipsEnabled();
 
+// Feature flag for the one-time default browser notification.
+BASE_DECLARE_FEATURE(kIOSOneTimeDefaultBrowserNotification);
+
 // Feature flag to show an alert to the user when only provisiona notifications
 // are allowed.
 BASE_DECLARE_FEATURE(kProvisionalNotificationAlert);

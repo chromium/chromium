@@ -863,6 +863,12 @@ const char kIOSExpandedTipsDescription[] =
     "Enables a feature that adds several new Tips Notifications that can be "
     "sent.";
 
+const char kIOSOneTimeDefaultBrowserNotificationName[] =
+    "One-time default browser notification";
+const char kIOSOneTimeDefaultBrowserNotificationDescription[] =
+    "Enables a one-time notification to prompt the user to set the app as the "
+    "default browser.";
+
 const char kIOSProvidesAppNotificationSettingsName[] =
     "IOS Provides App Notification Settings";
 const char kIOSProvidesAppNotificationSettingsDescription[] =

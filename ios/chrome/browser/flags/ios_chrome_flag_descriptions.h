@@ -496,6 +496,10 @@ extern const char kIOSReactivationNotificationsDescription[];
 extern const char kIOSExpandedTipsName[];
 extern const char kIOSExpandedTipsDescription[];
 
+// Name and description for the one-time default browser notification flag.
+extern const char kIOSOneTimeDefaultBrowserNotificationName[];
+extern const char kIOSOneTimeDefaultBrowserNotificationDescription[];
+
 extern const char kIOSProvidesAppNotificationSettingsName[];
 extern const char kIOSProvidesAppNotificationSettingsDescription[];
 
