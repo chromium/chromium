@@ -4737,6 +4737,31 @@ const FeatureEntry::Choice kDataSharingVersioningStateChoices[] = {
 // LINT.ThenChange(//ios/chrome/browser/flags/about_flags.mm:DataSharingVersioningChoices)
 
 const FeatureEntry::FeatureParam
+    kDiskCacheBackendExperimentVariations_Default[] = {{"backend", "default"}};
+const FeatureEntry::FeatureParam
+    kDiskCacheBackendExperimentVariations_Simple[] = {{"backend", "simple"}};
+#if !BUILDFLAG(IS_ANDROID)
+// Block file backend is not supported on Android to reduce the binary size.
+const FeatureEntry::FeatureParam
+    kDiskCacheBackendExperimentVariations_Blockfile[] = {
+        {"backend", "blockfile"}};
+#endif  // !BUILDFLAG(IS_ANDROID)
+const FeatureEntry::FeatureParam kDiskCacheBackendExperimentVariations_Sql[] = {
+    {"backend", "sql"}};
+
+const FeatureEntry::FeatureVariation kDiskCacheBackendExperimentVariations[] = {
+    {"default backend", kDiskCacheBackendExperimentVariations_Default,
+     std::size(kDiskCacheBackendExperimentVariations_Default), nullptr},
+    {"simple backend", kDiskCacheBackendExperimentVariations_Simple,
+     std::size(kDiskCacheBackendExperimentVariations_Simple), nullptr},
+#if !BUILDFLAG(IS_ANDROID)
+    {"blockfile backend", kDiskCacheBackendExperimentVariations_Blockfile,
+     std::size(kDiskCacheBackendExperimentVariations_Blockfile), nullptr},
+#endif  // !BUILDFLAG(IS_ANDROID)
+    {"experimental sql backend", kDiskCacheBackendExperimentVariations_Sql,
+     std::size(kDiskCacheBackendExperimentVariations_Sql), nullptr}};
+
+const FeatureEntry::FeatureParam
     kSafetyHubDisruptiveNotificationRevocationVariations_RevokeAll[] = {
         {"shadow_run", "false"},
         {"max_engagement_score", "100.0"},
@@ -9870,6 +9895,13 @@ const FeatureEntry kFeatureEntries[] = {
     {"http-cache-no-vary-search", flag_descriptions::kHttpCacheNoVarySearchName,
      flag_descriptions::kHttpCacheNoVarySearchDescription, kOsAll,
      FEATURE_VALUE_TYPE(net::features::kHttpCacheNoVarySearch)},
+
+    {"http-cache-custom-backend",
+     flag_descriptions::kHttpCacheCustomBackendName,
+     flag_descriptions::kHttpCacheCustomBackendDescription, kOsAll,
+     FEATURE_WITH_PARAMS_VALUE_TYPE(net::features::kDiskCacheBackendExperiment,
+                                    kDiskCacheBackendExperimentVariations,
+                                    "DiskCacheBackendExperiment")},
 
 #if !BUILDFLAG(IS_ANDROID)
     {"audio-ducking", flag_descriptions::kAudioDuckingName,

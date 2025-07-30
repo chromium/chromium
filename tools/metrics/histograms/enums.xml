@@ -9116,6 +9116,7 @@ from previous Chrome versions.
   <int value="-1837329460" label="NewEncodeCpuLoadEstimator:enabled"/>
   <int value="-1837137559" label="MediaAppImageMantisErase:enabled"/>
   <int value="-1836854634" label="CloseTabSuggestions:enabled"/>
+  <int value="-1836834774" label="DiskCacheBackendExperiment:enabled"/>
   <int value="-1836511093"
       label="QueryTilesRemoveTrendingAfterInactivity:enabled"/>
   <int value="-1836412886" label="UseChimeAndroidSdk:disabled"/>
@@ -12616,6 +12617,7 @@ from previous Chrome versions.
   <int value="-547301855" label="SyncPseudoUSSSupervisedUsers:enabled"/>
   <int value="-547179727" label="AutofillEnableFIDOProgressDialog:enabled"/>
   <int value="-546825817" label="EnableShortcutCustomizationLogging:disabled"/>
+  <int value="-546737535" label="DiskCacheBackendExperiment:disabled"/>
   <int value="-546217920" label="HttpsFirstModeIncognito:enabled"/>
   <int value="-546188357" label="InitialNavigationEntry:enabled"/>
   <int value="-545624357"

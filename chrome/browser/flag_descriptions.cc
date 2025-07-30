@@ -1183,6 +1183,11 @@ const char kDsePreload2OnPressName[] =
 const char kDsePreload2OnPressDescription[] =
     "Enables on-press triggers of DsePreload2";
 
+const char kHttpCacheCustomBackendName[] =
+    "Use custom disk cache backend for HTTP Cache";
+const char kHttpCacheCustomBackendDescription[] =
+    "Enables the experimental disk cache backend for HTTP Cache";
+
 const char kHttpCacheNoVarySearchName[] = "No Vary Search in Disk Cache";
 const char kHttpCacheNoVarySearchDescription[] =
     "Enables the No-Vary-Search header in the disk cache";

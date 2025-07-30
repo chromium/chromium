@@ -881,6 +881,9 @@ extern const char kDsePreload2Description[];
 extern const char kDsePreload2OnPressName[];
 extern const char kDsePreload2OnPressDescription[];
 
+extern const char kHttpCacheCustomBackendName[];
+extern const char kHttpCacheCustomBackendDescription[];
+
 extern const char kHttpCacheNoVarySearchName[];
 extern const char kHttpCacheNoVarySearchDescription[];
 
