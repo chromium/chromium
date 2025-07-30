@@ -235,8 +235,8 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       GoogleLogoServiceFactory::GetForProfile(_profile);
   if (!logo) {
     _fingerprint = "";
-    [self.containerView setStyle:SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_LOGO
-                        animated:animate];
+    [self.containerView setLogoState:SearchEngineLogoState::kNone
+                            animated:animate];
     self.containerView.isAccessibilityElement = YES;
     return;
   }
@@ -295,8 +295,7 @@ void OnLogoAvailable(SearchEngineLogoMediator* mediator,
       _animatedUrl.is_valid() ? SHOWN_LOGO_TYPE_CTA : SHOWN_LOGO_TYPE_STATIC,
       SHOWN_LOGO_TYPE_COUNT);
 
-  [self.containerView setStyle:SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE
-                      animated:animate];
+  [self.containerView setLogoState:logoState animated:animate];
 }
 
 // Called when the doodle's appearance animation completes.

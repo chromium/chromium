@@ -10,13 +10,7 @@
 #include "base/ios/block_types.h"
 
 @protocol SearchEngineLogoContainerViewDelegate;
-
-// Enum describing whether the logo displayed is the normal Google logo or a
-// doodle.
-typedef NS_ENUM(short, SearchEngineLogoContainerViewStyle) {
-  SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_LOGO,
-  SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_DOODLE
-};
+enum class SearchEngineLogoState;
 
 // Container view used to display the Google logo or doodle.
 @interface SearchEngineLogoContainerView : UIView
@@ -24,8 +18,8 @@ typedef NS_ENUM(short, SearchEngineLogoContainerViewStyle) {
 // The delegate.
 @property(nonatomic, weak) id<SearchEngineLogoContainerViewDelegate> delegate;
 
-// The logo style.  Defaults to SEARCH_ENGINE_LOGO_CONTAINER_VIEW_STYLE_LOGO.
-@property(nonatomic, assign) SearchEngineLogoContainerViewStyle style;
+// The logo state.
+@property(nonatomic, assign, readonly) SearchEngineLogoState logoState;
 
 // Whether the doodle is shown and animating.
 @property(nonatomic, readonly, getter=isAnimatingDoodle) BOOL animatingDoodle;
@@ -37,8 +31,7 @@ typedef NS_ENUM(short, SearchEngineLogoContainerViewStyle) {
 @property(nonatomic, copy) NSString* doodleAltText;
 
 // Setter for `style` with the option to do a crossfade animation.
-- (void)setStyle:(SearchEngineLogoContainerViewStyle)style
-        animated:(BOOL)animated;
+- (void)setLogoState:(SearchEngineLogoState)logoState animated:(BOOL)animated;
 
 // Setters for the doodle image.  Adds a crossfade animation when `animated` is
 // yes. Runs the `animations` block as part of the transition animation,
