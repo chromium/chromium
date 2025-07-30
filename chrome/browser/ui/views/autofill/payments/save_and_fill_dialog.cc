@@ -249,7 +249,6 @@ std::unique_ptr<views::View> SaveAndFillDialog::CreateLegalMessageView() {
     return nullptr;
   }
 
-  // TODO(crbug.com/378164165): Add account info to the server dialog.
   return autofill::CreateLegalMessageView(
       message_lines, std::u16string(), ui::ImageModel(),
       base::BindRepeating(on_legal_message_link_clicked_));
