@@ -14,7 +14,7 @@ namespace {
 
 class FakeActorOverlayViewController : public ActorOverlayViewController {
  public:
-  explicit FakeActorOverlayViewController(tabs::TabInterface* tab_interface)
+  explicit FakeActorOverlayViewController(tabs::TabInterface& tab_interface)
       : ActorOverlayViewController(tab_interface) {
     mock_tab_controller_ = std::make_unique<MockActorUiTabController>();
   }
@@ -33,7 +33,7 @@ class ActorOverlayViewControllerTest : public testing::Test {
  public:
   ActorOverlayViewControllerTest() {
     overlay_view_controller =
-        std::make_unique<FakeActorOverlayViewController>(&mock_tab);
+        std::make_unique<FakeActorOverlayViewController>(mock_tab);
   }
 
  protected:

@@ -23,7 +23,7 @@ namespace actor::ui {
 // to the underlying web content.
 class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
  public:
-  explicit ActorOverlayViewController(tabs::TabInterface* tab_interface);
+  explicit ActorOverlayViewController(tabs::TabInterface& tab_interface);
 
   ActorOverlayViewController(const ActorOverlayViewController&) = delete;
   ActorOverlayViewController& operator=(const ActorOverlayViewController&) =

@@ -31,10 +31,8 @@ ActorUiTabController::ActorUiTabController(
         std::make_unique<HandoffButtonController>(*tab_);
   }
   if (!actor_overlay_view_controller_) {
-    // TODO: change ActorOverlayViewController constructor to take a
-    // TabInterface&
     actor_overlay_view_controller_ =
-        std::make_unique<ActorOverlayViewController>(&tab_.get());
+        std::make_unique<ActorOverlayViewController>(*tab_);
   }
 
   CHECK(actor_keyed_service_);

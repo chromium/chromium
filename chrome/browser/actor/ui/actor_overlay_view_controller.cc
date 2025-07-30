@@ -16,8 +16,8 @@
 namespace actor::ui {
 
 ActorOverlayViewController::ActorOverlayViewController(
-    tabs::TabInterface* tab_interface)
-    : tab_interface_(*tab_interface) {}
+    tabs::TabInterface& tab_interface)
+    : tab_interface_(tab_interface) {}
 
 ActorOverlayViewController::~ActorOverlayViewController() = default;
 
