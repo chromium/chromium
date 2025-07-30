@@ -123,7 +123,7 @@ public class SigninBridgeTest {
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), anyInt());
+                .create(any(), any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -137,7 +137,7 @@ public class SigninBridgeTest {
         SigninBridge.openAccountPickerBottomSheet(
                 mTabMock, CONTINUE_URL, mAccountPickerBottomSheetCoordinatorFactoryMock);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), anyInt());
+                .create(any(), any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -152,7 +152,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_SIGNIN_NOT_ALLOWED,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), anyInt());
+                .create(any(), any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -167,7 +167,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_NO_ACCOUNTS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), anyInt());
+                .create(any(), any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -187,7 +187,7 @@ public class SigninBridgeTest {
                         AccountConsistencyPromoAction.SUPPRESSED_CONSECUTIVE_DISMISSALS,
                         SigninAccessPoint.WEB_SIGNIN);
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock, never())
-                .create(any(), any(), any(), any(), any(), anyInt());
+                .create(any(), any(), any(), any(), any(), any(), anyInt());
     }
 
     @Test
@@ -201,6 +201,7 @@ public class SigninBridgeTest {
         verify(mAccountPickerBottomSheetCoordinatorFactoryMock)
                 .create(
                         eq(mWindowAndroidMock),
+                        any(),
                         eq(mBottomSheetControllerMock),
                         any(),
                         any(),

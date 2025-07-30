@@ -46,6 +46,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.signin.SigninFeatures;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.SigninMatchers;
 import org.chromium.ui.test.util.DeviceRestriction;
 import org.chromium.ui.test.util.NightModeTestUtils;
@@ -66,6 +67,8 @@ public class AccountPickerBottomSheetRenderTest {
     private static final String FULL_NAME1 = "Test Account1";
     private static final String GIVEN_NAME1 = "Account1";
     private static final String TEST_EMAIL2 = "test.account2@gmail.com";
+
+    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     private static final class CustomAccountPickerDelegate implements AccountPickerDelegate {
         private boolean mSwitchToTryAgainView;
@@ -416,6 +419,7 @@ public class AccountPickerBottomSheetRenderTest {
                     mCoordinator =
                             new AccountPickerBottomSheetCoordinator(
                                     mActivityTestRule.getActivity().getWindowAndroid(),
+                                    mIdentityManager,
                                     getBottomSheetController(),
                                     mAccountPickerDelegate,
                                     AccountPickerBottomSheetTestUtil.getBottomSheetStrings(

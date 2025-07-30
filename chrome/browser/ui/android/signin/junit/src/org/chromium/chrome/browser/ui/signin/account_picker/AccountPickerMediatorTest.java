@@ -24,6 +24,7 @@ import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerPropert
 import org.chromium.chrome.browser.ui.signin.account_picker.AccountPickerProperties.ExistingAccountRowProperties;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modelutil.MVCListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -49,6 +50,7 @@ public class AccountPickerMediatorTest {
     @Mock private AccountPickerCoordinator.Listener mListenerMock;
 
     private final MVCListAdapter.ModelList mModelList = new MVCListAdapter.ModelList();
+    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
 
     private AccountPickerMediator mMediator;
 
@@ -65,7 +67,10 @@ public class AccountPickerMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT2);
         mMediator =
                 new AccountPickerMediator(
-                        RuntimeEnvironment.getApplication(), mModelList, mListenerMock);
+                        RuntimeEnvironment.getApplication(),
+                        mModelList,
+                        mListenerMock,
+                        mIdentityManager);
         // ACCOUNT1, ACCOUNT2, ADD_ACCOUNT.
         Assert.assertEquals(3, mModelList.size());
         checkItemForExistingAccountRow(0, TestAccounts.ACCOUNT1);
@@ -78,7 +83,10 @@ public class AccountPickerMediatorTest {
         mAccountManagerTestRule.addAccount(TestAccounts.ACCOUNT1);
         mMediator =
                 new AccountPickerMediator(
-                        RuntimeEnvironment.getApplication(), mModelList, mListenerMock);
+                        RuntimeEnvironment.getApplication(),
+                        mModelList,
+                        mListenerMock,
+                        mIdentityManager);
         mAccountManagerTestRule.addAccount(ACCOUNT1_DIFFERENT_NAME);
         // ACCOUNT_DIFFERENT_NAME, ADD_ACCOUNT
         Assert.assertEquals(2, mModelList.size());

@@ -44,6 +44,7 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.components.signin.SigninFeatures;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.components.signin.test.util.TestAccounts;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
@@ -79,6 +80,8 @@ public class AccountPickerDialogTest {
 
     private AccountPickerDialogCoordinator mCoordinator;
 
+    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
+
     @BeforeClass
     public static void setupSuite() {
         sActivity = sActivityTestRule.launchActivity(null);
@@ -95,7 +98,8 @@ public class AccountPickerDialogTest {
                                     sActivity,
                                     mListenerMock,
                                     new ModalDialogManager(
-                                            new AppModalPresenter(sActivity), ModalDialogType.APP));
+                                            new AppModalPresenter(sActivity), ModalDialogType.APP),
+                                    mIdentityManager);
                 });
     }
 

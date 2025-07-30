@@ -43,6 +43,7 @@ import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.components.signin.metrics.SignoutReason;
@@ -351,8 +352,15 @@ public class FullscreenSigninMediator
      */
     private void onSelectedAccountClicked() {
         if (isContinueOrDismissClicked()) return;
+
+        IdentityManager identityManager =
+                IdentityServicesProvider.get()
+                        .getIdentityManager(
+                                assertNonNull(
+                                        mDelegate.getProfileSupplier().get().getOriginalProfile()));
         mDialogCoordinator =
-                new AccountPickerDialogCoordinator(mContext, this, mModalDialogManager);
+                new AccountPickerDialogCoordinator(
+                        mContext, this, mModalDialogManager, assertNonNull(identityManager));
     }
 
     /** Callback for the PropertyKey {@link FullscreenSigninProperties#ON_CONTINUE_AS_CLICKED}. */

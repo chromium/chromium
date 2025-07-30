@@ -30,6 +30,7 @@ import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -75,6 +76,7 @@ public class AccountPickerBottomSheetMediator
 
     AccountPickerBottomSheetMediator(
             WindowAndroid windowAndroid,
+            IdentityManager identityManager,
             AccountPickerDelegate accountPickerDelegate,
             Runnable onDismissButtonClicked,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -86,7 +88,8 @@ public class AccountPickerBottomSheetMediator
         mWindowAndroid = windowAndroid;
         mActivity = assertNonNull(windowAndroid.getActivity().get());
         mAccountPickerDelegate = accountPickerDelegate;
-        mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity);
+        mProfileDataCache =
+                ProfileDataCache.createWithDefaultImageSizeAndNoBadge(mActivity, identityManager);
         mDeviceLockActivityLauncher = deviceLockActivityLauncher;
         mIsWebSignin = isWebSignin;
         mSigninAccessPoint = signinAccessPoint;

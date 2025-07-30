@@ -166,6 +166,7 @@ public class SigninBottomSheetCoordinator implements AccountPickerDelegate {
         mAccountPickerBottomSheetCoordinator =
                 new AccountPickerBottomSheetCoordinator(
                         mWindowAndroid,
+                        mSigninManager.getIdentityManager(),
                         mBottomSheetController,
                         this,
                         bottomSheetStrings,

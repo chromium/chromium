@@ -34,6 +34,7 @@ import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.base.AccountInfo;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.base.WindowAndroid;
@@ -47,6 +48,7 @@ final class SigninBridge {
     static class AccountPickerBottomSheetCoordinatorFactory {
         AccountPickerBottomSheetCoordinator create(
                 WindowAndroid windowAndroid,
+                IdentityManager identityManager,
                 BottomSheetController bottomSheetController,
                 AccountPickerDelegate accountPickerDelegate,
                 AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -54,6 +56,7 @@ final class SigninBridge {
                 @AccountPickerLaunchMode int accountPickerLaunchMode) {
             return new AccountPickerBottomSheetCoordinator(
                     windowAndroid,
+                    identityManager,
                     bottomSheetController,
                     accountPickerDelegate,
                     accountPickerBottomSheetStrings,
@@ -142,6 +145,7 @@ final class SigninBridge {
 
         factory.create(
                 windowAndroid,
+                signinManager.getIdentityManager(),
                 bottomSheetController,
                 new WebSigninAccountPickerDelegate(tab, new WebSigninBridge.Factory(), continueUrl),
                 strings,

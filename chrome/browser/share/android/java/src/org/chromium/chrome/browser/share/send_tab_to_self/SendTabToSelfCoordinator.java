@@ -221,6 +221,7 @@ public class SendTabToSelfCoordinator {
                                     .build();
                     new AccountPickerBottomSheetCoordinator(
                             mWindowAndroid,
+                            IdentityServicesProvider.get().getIdentityManager(mProfile),
                             mController,
                             new SendTabToSelfAccountPickerDelegate(
                                     this::onSignInComplete,

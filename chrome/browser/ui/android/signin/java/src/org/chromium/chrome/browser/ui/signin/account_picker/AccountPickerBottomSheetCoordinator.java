@@ -21,6 +21,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Stat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
+import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.google_apis.gaia.CoreAccountId;
@@ -69,6 +70,7 @@ public class AccountPickerBottomSheetCoordinator {
     @MainThread
     public AccountPickerBottomSheetCoordinator(
             WindowAndroid windowAndroid,
+            IdentityManager identityManager,
             BottomSheetController bottomSheetController,
             AccountPickerDelegate accountPickerDelegate,
             AccountPickerBottomSheetStrings accountPickerBottomSheetStrings,
@@ -85,6 +87,7 @@ public class AccountPickerBottomSheetCoordinator {
         mAccountPickerBottomSheetMediator =
                 new AccountPickerBottomSheetMediator(
                         windowAndroid,
+                        identityManager,
                         accountPickerDelegate,
                         this::dismiss,
                         accountPickerBottomSheetStrings,
@@ -102,6 +105,7 @@ public class AccountPickerBottomSheetCoordinator {
                 new AccountPickerCoordinator(
                         mView.getAccountListView(),
                         mAccountPickerBottomSheetMediator,
+                        identityManager,
                         R.layout.account_picker_bottom_sheet_row,
                         R.layout.account_picker_bottom_sheet_new_account_row);
 

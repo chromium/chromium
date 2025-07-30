@@ -42,6 +42,7 @@ import org.chromium.chrome.test.util.browser.signin.AccountManagerTestRule;
 import org.chromium.components.browser_ui.device_lock.DeviceLockActivityLauncher;
 import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
+import org.chromium.components.signin.test.util.FakeIdentityManager;
 import org.chromium.ui.base.TestActivity;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -67,6 +68,7 @@ public class SigninBottomSheetCoordinatorTest {
     @Mock private SigninBottomSheetCoordinator.Delegate mDelegateMock;
     @Mock private AccountPickerBottomSheetMediator mMediator;
 
+    private final FakeIdentityManager mIdentityManager = new FakeIdentityManager();
     private static final @SigninAccessPoint int ACCESS_POINT =
             SigninAccessPoint.NTP_SIGNED_OUT_ICON;
     private ComponentActivity mActivity;
@@ -86,6 +88,7 @@ public class SigninBottomSheetCoordinatorTest {
         ShadowPostTask.setTestImpl((taskTraits, task, delay) -> task.run());
         SigninMetricsUtilsJni.setInstanceForTesting(mSigninMetricsUtilsNativeMock);
         when(mSigninManagerMock.isSigninAllowed()).thenReturn(true);
+        when(mSigninManagerMock.getIdentityManager()).thenReturn(mIdentityManager);
         when(mWindowAndroidMock.getActivity()).thenReturn(new WeakReference<>(mActivity));
         AccountPickerBottomSheetStrings bottomSheetStrings =
                 new AccountPickerBottomSheetStrings.Builder(
