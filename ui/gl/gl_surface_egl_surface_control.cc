@@ -207,8 +207,8 @@ void GLSurfaceEGLSurfaceControl::CommitPendingTransaction(
   pending_transaction_->SetOnCompleteCb(std::move(complete_cb),
                                         gpu_task_runner_);
 
-  if (use_target_deadline_) {
-    DCHECK(!!choreographer_vsync_id_for_next_frame_);
+  if (use_target_deadline_ &&
+      choreographer_vsync_id_for_next_frame_.has_value()) {
     DCHECK(gfx::SurfaceControl::SupportsSetFrameTimeline());
     pending_transaction_->SetFrameTimelineId(
         choreographer_vsync_id_for_next_frame_.value());
