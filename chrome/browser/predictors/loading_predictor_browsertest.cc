@@ -38,7 +38,6 @@
 #include "chrome/browser/predictors/lcp_critical_path_predictor/lcp_critical_path_predictor_util.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
 #include "chrome/browser/predictors/loading_test_util.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/predictors/predictors_enums.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/predictors_switches.h"
@@ -57,6 +56,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/page_navigator.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
@@ -212,10 +212,11 @@ class LcpTimingPredictedWaiter : public TestObserver {
   std::optional<std::string> lcp_element_locator_;
 };
 
-class TestPreconnectManagerObserver : public PreconnectManager::Observer {
+class TestPreconnectManagerObserver
+    : public content::PreconnectManager::Observer {
  public:
   explicit TestPreconnectManagerObserver(
-      PreconnectManager* preconnect_manager) {
+      content::PreconnectManager* preconnect_manager) {
     preconnect_manager->SetObserverForTesting(this);
   }
 

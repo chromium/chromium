@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREDICTORS_PRECONNECT_MANAGER_IMPL_H_
-#define CHROME_BROWSER_PREDICTORS_PRECONNECT_MANAGER_IMPL_H_
+#ifndef CONTENT_BROWSER_PRELOADING_PRECONNECT_MANAGER_IMPL_H_
+#define CONTENT_BROWSER_PRELOADING_PRECONNECT_MANAGER_IMPL_H_
 
 #include <list>
 #include <map>
@@ -15,29 +15,25 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
-#include "chrome/browser/predictors/proxy_lookup_client_impl.h"
-#include "chrome/browser/predictors/resolve_host_client_impl.h"
+#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/resolve_host_client_impl.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "net/base/network_anonymization_key.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/gurl.h"
 
-namespace content {
-class BrowserContext;
-}
-
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class NetworkContext;
-}
-}  // namespace network
+}  // namespace network::mojom
 
-namespace predictors {
+namespace content {
+
+class BrowserContext;
 
 // Stores the status of all preconnects associated with a given |url|.
-struct PreresolveInfo {
+struct CONTENT_EXPORT PreresolveInfo {
   PreresolveInfo(const GURL& url, size_t count);
 
   PreresolveInfo(const PreresolveInfo&) = delete;
@@ -56,7 +52,7 @@ struct PreresolveInfo {
 
 // Stores all data need for running a preresolve and a subsequent optional
 // preconnect for a |url|.
-struct PreresolveJob {
+struct CONTENT_EXPORT PreresolveJob {
   PreresolveJob(
       const GURL& url,
       int num_sockets,
@@ -104,7 +100,7 @@ struct PreresolveJob {
   base::TimeTicks creation_time;
 };
 
-class PreconnectManagerImpl : public PreconnectManager {
+class CONTENT_EXPORT PreconnectManagerImpl : public PreconnectManager {
  public:
   static const size_t kMaxInflightPreresolves = 3;
 
@@ -172,7 +168,7 @@ class PreconnectManagerImpl : public PreconnectManager {
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       const content::StoragePartitionConfig* storage_partition_config,
-      ProxyLookupCallback callback) const;
+      ProxyLookupClientImpl::ProxyLookupCallback callback) const;
 
   void TryToLaunchPreresolveJobs();
   void OnPreresolveFinished(PreresolveJobId job_id, bool success);
@@ -198,6 +194,6 @@ class PreconnectManagerImpl : public PreconnectManager {
   base::WeakPtrFactory<PreconnectManagerImpl> weak_factory_{this};
 };
 
-}  // namespace predictors
+}  // namespace content
 
-#endif  // CHROME_BROWSER_PREDICTORS_PRECONNECT_MANAGER_IMPL_H_
+#endif  // CONTENT_BROWSER_PRELOADING_PRECONNECT_MANAGER_IMPL_H_

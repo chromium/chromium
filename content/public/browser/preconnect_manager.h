@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREDICTORS_PRECONNECT_MANAGER_H_
-#define CHROME_BROWSER_PREDICTORS_PRECONNECT_MANAGER_H_
+#ifndef CONTENT_PUBLIC_BROWSER_PRECONNECT_MANAGER_H_
+#define CONTENT_PUBLIC_BROWSER_PRECONNECT_MANAGER_H_
 
 #include <memory>
 
@@ -20,9 +20,11 @@ namespace network::mojom {
 class NetworkContext;
 }
 
-namespace predictors {
+namespace content {
 
-struct PreconnectedRequestStats {
+// Holds information about a preconnect request for a given origin as part of
+// a call to PreconnectManager::Start. Provided as part of PreconnectStats.
+struct CONTENT_EXPORT PreconnectedRequestStats {
   PreconnectedRequestStats(const url::Origin& origin, bool was_preconnected);
   PreconnectedRequestStats(const PreconnectedRequestStats& other);
   ~PreconnectedRequestStats();
@@ -31,10 +33,12 @@ struct PreconnectedRequestStats {
   bool was_preconnected;
 };
 
-struct PreconnectStats {
+// Details the results of a call to PreconnectManager::Start for the given URL
+// and provided to PreconnectManager::Delegate::PreconnectFinished.
+struct CONTENT_EXPORT PreconnectStats {
   explicit PreconnectStats(const GURL& url);
 
-  // Stats must be moved only.
+  // Disable copying for efficiency.
   PreconnectStats(const PreconnectStats&) = delete;
   PreconnectStats& operator=(const PreconnectStats&) = delete;
 
@@ -48,20 +52,22 @@ struct PreconnectStats {
 // PreconnectManager is responsible for preresolving and preconnecting to
 // origins based on the input list of URLs.
 //  - The input list of URLs is associated with a main frame url that can be
-//  used for cancelling.
+//    used for cancelling.
 //  - Limits the total number of preresolves in flight.
 //  - Preresolves an URL before preconnecting to it to have a better control on
-//  number of speculative dns requests in flight.
+//    number of speculative dns requests in flight.
 //  - When stopped, waits for the pending preresolve requests to finish without
-//  issuing preconnects for them.
+//    issuing preconnects for them.
 //  - All methods of the class must be called on the UI thread.
-class PreconnectManager {
+class CONTENT_EXPORT PreconnectManager {
  public:
   class Delegate {
    public:
     virtual ~Delegate() = default;
 
     // Called when a preconnect to |preconnect_url| is initiated for |url|.
+    // Note: This is only called in response to Start (and not for methods such
+    // as StartPreresolveHost or StartPreconnectUrl).
     virtual void PreconnectInitiated(const GURL& url,
                                      const GURL& preconnect_url) = 0;
 
@@ -100,7 +106,7 @@ class PreconnectManager {
 
   // Starts preconnect and preresolve jobs associated with |url|.
   virtual void Start(const GURL& url,
-                     std::vector<content::PreconnectRequest> requests,
+                     std::vector<PreconnectRequest> requests,
                      net::NetworkTrafficAnnotationTag traffic_annotation) = 0;
 
   // Starts special preconnect and preresolve jobs that are not cancellable and
@@ -115,18 +121,18 @@ class PreconnectManager {
       const GURL& url,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       net::NetworkTrafficAnnotationTag traffic_annotation,
-      const content::StoragePartitionConfig* storage_partition_config) = 0;
+      const StoragePartitionConfig* storage_partition_config) = 0;
   virtual void StartPreresolveHosts(
       const std::vector<GURL>& urls,
       const net::NetworkAnonymizationKey& network_anonymization_key,
       net::NetworkTrafficAnnotationTag traffic_annotation,
-      const content::StoragePartitionConfig* storage_partition_config) = 0;
+      const StoragePartitionConfig* storage_partition_config) = 0;
   virtual void StartPreconnectUrl(
       const GURL& url,
       bool allow_credentials,
       net::NetworkAnonymizationKey network_anonymization_key,
       net::NetworkTrafficAnnotationTag traffic_annotation,
-      const content::StoragePartitionConfig* storage_partition_config,
+      const StoragePartitionConfig* storage_partition_config,
       std::optional<net::ConnectionKeepAliveConfig> keepalive_config,
       mojo::PendingRemote<network::mojom::ConnectionChangeObserverClient>
           connection_change_observer_client) = 0;
@@ -143,9 +149,9 @@ class PreconnectManager {
 
   static std::unique_ptr<PreconnectManager> Create(
       base::WeakPtr<PreconnectManager::Delegate> delegate,
-      content::BrowserContext* browser_context);
+      BrowserContext* browser_context);
 };
 
-}  // namespace predictors
+}  // namespace content
 
-#endif  // CHROME_BROWSER_PREDICTORS_PRECONNECT_MANAGER_H_
+#endif  // CONTENT_PUBLIC_BROWSER_PRECONNECT_MANAGER_H_

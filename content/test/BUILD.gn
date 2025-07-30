@@ -2708,6 +2708,7 @@ test("content_unittests") {
     "../browser/permissions/permission_util_unittest.cc",
     "../browser/picture_in_picture/picture_in_picture_service_impl_unittest.cc",
     "../browser/preloading/anchor_element_interaction_host_impl_unittest.cc",
+    "../browser/preloading/preconnect_manager_impl_unittest.cc",
     "../browser/preloading/preconnector_unittest.cc",
     "../browser/preloading/prefetch/contamination_delay_navigation_throttle_unittest.cc",
     "../browser/preloading/prefetch/no_vary_search_helper_unittest.cc",

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/predictors/preconnect_manager_impl.h"
+#include "content/browser/preloading/preconnect_manager_impl.h"
 
 #include <algorithm>
 #include <map>
@@ -15,16 +15,13 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/predictors/loading_test_util.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
-#include "chrome/browser/predictors/predictors_features.h"
-#include "chrome/browser/predictors/proxy_lookup_client_impl.h"
-#include "chrome/browser/predictors/resolve_host_client_impl.h"
-#include "chrome/browser/preloading/preloading_prefs.h"
-#include "chrome/test/base/testing_profile.h"
+#include "content/browser/preloading/prefetch/proxy_lookup_client_impl.h"
+#include "content/browser/preloading/resolve_host_client_impl.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/preconnect_request.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_task_environment.h"
+#include "content/public/test/test_browser_context.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
@@ -44,7 +41,7 @@ using testing::Return;
 using testing::SaveArg;
 using testing::StrictMock;
 
-namespace predictors {
+namespace content {
 
 namespace {
 
@@ -226,20 +223,20 @@ class PreconnectManagerImplTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  std::unique_ptr<TestingProfile> profile_;
+  std::unique_ptr<TestBrowserContext> browser_context_;
   std::unique_ptr<StrictMock<MockNetworkContext>> mock_network_context_;
   std::unique_ptr<StrictMock<MockPreconnectManagerDelegate>> mock_delegate_;
   std::unique_ptr<PreconnectManagerImpl> preconnect_manager_;
 };
 
 PreconnectManagerImplTest::PreconnectManagerImplTest()
-    : profile_(std::make_unique<TestingProfile>()),
+    : browser_context_(std::make_unique<TestBrowserContext>()),
       mock_network_context_(std::make_unique<StrictMock<MockNetworkContext>>()),
       mock_delegate_(
           std::make_unique<StrictMock<MockPreconnectManagerDelegate>>()),
       preconnect_manager_(
           std::make_unique<PreconnectManagerImpl>(mock_delegate_->AsWeakPtr(),
-                                                  profile_.get())) {
+                                                  browser_context_.get())) {
   preconnect_manager_->SetNetworkContextForTesting(mock_network_context_.get());
 }
 
@@ -1311,4 +1308,4 @@ TEST_F(PreconnectManagerImplTest, TestBothProxyAndHostLookupFailed) {
                                             net::ERR_NAME_NOT_RESOLVED);
 }
 
-}  // namespace predictors
+}  // namespace content

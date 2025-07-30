@@ -259,10 +259,11 @@ ResourcePrefetchPredictor* LoadingPredictor::resource_prefetch_predictor() {
   return resource_prefetch_predictor_.get();
 }
 
-PreconnectManager* LoadingPredictor::preconnect_manager() {
+content::PreconnectManager* LoadingPredictor::preconnect_manager() {
   CHECK(!shutdown_);
   if (!preconnect_manager_) {
-    preconnect_manager_ = PreconnectManager::Create(GetWeakPtr(), profile_);
+    preconnect_manager_ =
+        content::PreconnectManager::Create(GetWeakPtr(), profile_);
   }
 
   return preconnect_manager_.get();
@@ -457,7 +458,7 @@ void LoadingPredictor::PreconnectInitiated(const GURL& url,
 }
 
 void LoadingPredictor::PreconnectFinished(
-    std::unique_ptr<PreconnectStats> stats) {
+    std::unique_ptr<content::PreconnectStats> stats) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (shutdown_)
     return;

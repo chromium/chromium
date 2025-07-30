@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/predictors/preconnect_manager_impl.h"
+#include "content/browser/preloading/preconnect_manager_impl.h"
 
 #include <utility>
 
@@ -22,9 +22,16 @@
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-namespace predictors {
+namespace content {
 
 const bool kAllowCredentialsOnPreconnectByDefault = true;
+
+std::unique_ptr<PreconnectManager> PreconnectManager::Create(
+    base::WeakPtr<PreconnectManager::Delegate> delegate,
+    content::BrowserContext* browser_context) {
+  return std::make_unique<PreconnectManagerImpl>(std::move(delegate),
+                                                 browser_context);
+}
 
 PreconnectedRequestStats::PreconnectedRequestStats(const url::Origin& origin,
                                                    bool was_preconnected)
@@ -287,7 +294,7 @@ std::unique_ptr<ProxyLookupClientImpl> PreconnectManagerImpl::LookupProxyForUrl(
     const GURL& url,
     const net::NetworkAnonymizationKey& network_anonymization_key,
     const content::StoragePartitionConfig* storage_partition_config,
-    ProxyLookupCallback callback) const {
+    ProxyLookupClientImpl::ProxyLookupCallback callback) const {
   DCHECK(url.DeprecatedGetOriginAsURL() == url);
   DCHECK(url.SchemeIsHTTPOrHTTPS());
 
@@ -450,4 +457,4 @@ network::mojom::NetworkContext* PreconnectManagerImpl::GetNetworkContext(
   return network_context;
 }
 
-}  // namespace predictors
+}  // namespace content

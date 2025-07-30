@@ -35,7 +35,6 @@
 #include "chrome/browser/password_manager/profile_password_store_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -79,6 +78,7 @@
 #include "components/sync/test/test_sync_service.h"
 #include "components/user_education/common/user_education_features.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
@@ -329,7 +329,7 @@ TEST_F(RenderViewContextMenuExtensionsTest,
 
 class RenderViewContextMenuPrefsTest
     : public ChromeRenderViewHostTestHarness,
-      public predictors::PreconnectManager::Observer {
+      public content::PreconnectManager::Observer {
  public:
   RenderViewContextMenuPrefsTest() = default;
 

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/predictors/resolve_host_client_impl.h"
+#include "content/browser/preloading/resolve_host_client_impl.h"
 
 #include <utility>
 
@@ -21,7 +21,7 @@
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
 
-namespace predictors {
+namespace content {
 
 ResolveHostClientImpl::ResolveHostClientImpl(
     const GURL& url,
@@ -86,4 +86,4 @@ void ResolveHostClientImpl::OnConnectionError() {
   std::move(callback_).Run(false);
 }
 
-}  // namespace predictors
+}  // namespace content

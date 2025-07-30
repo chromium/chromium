@@ -17,20 +17,28 @@ namespace content {
 
 ProxyLookupClientImpl::ProxyLookupClientImpl(
     const GURL& url,
+    const net::NetworkAnonymizationKey network_anonymization_key,
     ProxyLookupCallback callback,
     network::mojom::NetworkContext* network_context)
     : callback_(std::move(callback)) {
   DCHECK(network_context);
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  const net::NetworkAnonymizationKey network_anonymization_key =
-      net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url));
-
   network_context->LookUpProxyForURL(url, network_anonymization_key,
                                      receiver_.BindNewPipeAndPassRemote());
   receiver_.set_disconnect_handler(
       base::BindOnce(&ProxyLookupClientImpl::OnProxyLookupComplete,
                      base::Unretained(this), net::ERR_ABORTED, std::nullopt));
 }
+
+ProxyLookupClientImpl::ProxyLookupClientImpl(
+    const GURL& url,
+    ProxyLookupCallback callback,
+    network::mojom::NetworkContext* network_context)
+    : ProxyLookupClientImpl(
+          url,
+          net::NetworkAnonymizationKey::CreateSameSite(net::SchemefulSite(url)),
+          std::move(callback),
+          network_context) {}
 
 ProxyLookupClientImpl::~ProxyLookupClientImpl() = default;
 

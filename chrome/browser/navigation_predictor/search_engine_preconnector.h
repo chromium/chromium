@@ -10,8 +10,8 @@
 #include "base/numerics/clamped_math.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/timer/timer.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "services/network/public/mojom/connection_change_observer_client.mojom.h"
 #include "url/origin.h"
 
@@ -63,7 +63,7 @@ class WebContentVisibilityManager {
 // Class to preconnect to the user's default search engine at regular intervals.
 // Preconnects are made by |this| if the browser app is likely in foreground.
 class SearchEnginePreconnector
-    : public predictors::PreconnectManager::Delegate,
+    : public content::PreconnectManager::Delegate,
       public WebContentVisibilityManager,
       public KeyedService,
       public network::mojom::ConnectionChangeObserverClient {
@@ -90,7 +90,7 @@ class SearchEnginePreconnector
   void PreconnectInitiated(const GURL& url,
                            const GURL& preconnect_url) override {}
   void PreconnectFinished(
-      std::unique_ptr<predictors::PreconnectStats> stats) override {}
+      std::unique_ptr<content::PreconnectStats> stats) override {}
 
   bool IsPreconnectEnabled() override;
 
@@ -100,7 +100,7 @@ class SearchEnginePreconnector
   void OnConnectionFailed() override;
 
   // Lazily creates the PreconnectManager instance.
-  predictors::PreconnectManager& GetPreconnectManager();
+  content::PreconnectManager& GetPreconnectManager();
 
   // WebContentVisibilityManager methods
   // TODO(crbug.com/406022435): Update to observe the
@@ -191,7 +191,7 @@ class SearchEnginePreconnector
   // Used to preconnect regularly.
   base::OneShotTimer timer_;
 
-  std::unique_ptr<predictors::PreconnectManager> preconnect_manager_;
+  std::unique_ptr<content::PreconnectManager> preconnect_manager_;
 
   std::optional<base::TimeTicks> last_preconnect_attempt_time_;
 

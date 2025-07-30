@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
-#define CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
+#ifndef CONTENT_BROWSER_PRELOADING_RESOLVE_HOST_CLIENT_IMPL_H_
+#define CONTENT_BROWSER_PRELOADING_RESOLVE_HOST_CLIENT_IMPL_H_
 
 #include <optional>
 
@@ -21,13 +21,11 @@ namespace net {
 class NetworkAnonymizationKey;
 }  // namespace net
 
-namespace network {
-namespace mojom {
+namespace network::mojom {
 class NetworkContext;
-}
-}  // namespace network
+}  // namespace network::mojom
 
-namespace predictors {
+namespace content {
 
 using ResolveHostCallback = base::OnceCallback<void(bool success)>;
 
@@ -64,6 +62,6 @@ class ResolveHostClientImpl : public network::ResolveHostClientBase {
   ResolveHostCallback callback_;
 };
 
-}  // namespace predictors
+}  // namespace content
 
-#endif  // CHROME_BROWSER_PREDICTORS_RESOLVE_HOST_CLIENT_IMPL_H_
+#endif  // CONTENT_BROWSER_PRELOADING_RESOLVE_HOST_CLIENT_IMPL_H_

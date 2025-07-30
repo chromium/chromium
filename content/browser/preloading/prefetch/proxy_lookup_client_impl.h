@@ -33,6 +33,12 @@ class CONTENT_EXPORT ProxyLookupClientImpl
   ProxyLookupClientImpl(const GURL& url,
                         ProxyLookupCallback callback,
                         network::mojom::NetworkContext* network_context);
+  ProxyLookupClientImpl(
+      const GURL& url,
+      const net::NetworkAnonymizationKey network_anonymization_key,
+      ProxyLookupCallback callback,
+      network::mojom::NetworkContext* network_context);
+
   ~ProxyLookupClientImpl() override;
 
   ProxyLookupClientImpl(const ProxyLookupClientImpl&) = delete;

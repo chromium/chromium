@@ -321,6 +321,7 @@ source_set("browser_sources") {
     "platform_notification_context.h",
     "platform_notification_service.h",
     "popup_menu.h",
+    "preconnect_manager.h",
     "preconnect_request.cc",
     "preconnect_request.h",
     "prefetch_handle.h",

@@ -19,7 +19,6 @@
 #include "chrome/browser/navigation_predictor/search_engine_preconnector_keyed_service_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
-#include "chrome/browser/predictors/preconnect_manager.h"
 #include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/subresource_filter/subresource_filter_browser_test_harness.h"
@@ -29,6 +28,7 @@
 #include "chrome/test/base/search_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/search_engines/template_url_service.h"
+#include "content/public/browser/preconnect_manager.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -41,7 +41,7 @@ namespace {
 
 class NavigationPredictorPreconnectClientBrowserTest
     : public subresource_filter::SubresourceFilterBrowserTest,
-      public predictors::PreconnectManager::Observer {
+      public content::PreconnectManager::Observer {
  public:
   NavigationPredictorPreconnectClientBrowserTest()
       : subresource_filter::SubresourceFilterBrowserTest() {

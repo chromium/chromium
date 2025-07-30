@@ -285,10 +285,9 @@ void SearchEnginePreconnector::StartPreconnectWithDelay(
                               base::Unretained(this)));
 }
 
-predictors::PreconnectManager&
-SearchEnginePreconnector::GetPreconnectManager() {
+content::PreconnectManager& SearchEnginePreconnector::GetPreconnectManager() {
   if (!preconnect_manager_) {
-    preconnect_manager_ = predictors::PreconnectManager::Create(
+    preconnect_manager_ = content::PreconnectManager::Create(
         GetWeakPtr(), Profile::FromBrowserContext(browser_context_));
   }
 
