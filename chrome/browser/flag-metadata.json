@@ -1601,7 +1601,7 @@
   },
   {
     "name": "chromebox-usb-passthrough-restrictions",
-    "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
+    "owners": [ "drmasquatch@google.com", "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -1933,17 +1933,17 @@
   },
   {
     "name": "crostini-container-install",
-    "owners": [ "davidmunro@google.com", "clumptini@google.com" ],
-    "expiry_milestone": 150
-  },
-  {
-    "name": "crostini-containerless",
     "owners": [ "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
+    "name": "crostini-containerless",
+    "owners": [ "drmasquatch@google.com", "clumptini@google.com" ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "crostini-gpu-support",
-    "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
+    "owners": [ "drmasquatch@google.com", "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -1954,17 +1954,17 @@
   },
   {
     "name": "crostini-qt-ime-support",
-    "owners": [ "timloh@chromium.org", "sophialin@google.com", "clumptini@google.com" ],
+    "owners": [ "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
     "name": "crostini-reset-lxd-db",
-    "owners": [ "easy@google.com", "jamesye@google.com", "sidereal@google.com", "clumptini@google.com" ],
+    "owners": [ "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
     "name": "crostini-virtual-keyboard-support",
-    "owners": [ "timloh@chromium.org", "sophialin@google.com", "clumptini@google.com" ],
+    "owners": [ "clumptini@google.com" ],
     "expiry_milestone": 150
   },
   {
@@ -2218,7 +2218,7 @@
   },
   {
     "name": "disable-bruschetta-install-checks",
-    "owners": [ "denniskempin@chromium.org", "drmasquatch@google.com", "clumptini@google.com" ],
+    "owners": [ "drmasquatch@google.com", "clumptini@google.com" ],
     // This flag does not expire because it allows developers to disable hardcoded
     // install checks that may need to change during development.
     "expiry_milestone": -1
