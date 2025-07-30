@@ -563,7 +563,6 @@ test("ios_web_view_unittests") {
     "//components/autofill/core/browser:test_support",
     "//components/autofill/ios/browser:test_support",
     "//components/autofill/ios/form_util:test_support",
-    "//components/invalidation/impl:test_support",
     "//components/language_detection/core",
     "//components/password_manager/core/browser:test_support",
     "//components/password_manager/core/browser/leak_detection:test_support",

@@ -30,7 +30,6 @@ source_set("model") {
     "//components/consent_auditor",
     "//components/dom_distiller/core",
     "//components/history/core/browser",
-    "//components/invalidation/impl",
     "//components/network_time",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/browser/sharing",

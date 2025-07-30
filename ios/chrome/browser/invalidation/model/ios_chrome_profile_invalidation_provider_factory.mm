@@ -17,7 +17,6 @@
 #import "ios/chrome/browser/gcm/model/instance_id/ios_chrome_instance_id_profile_service_factory.h"
 #import "ios/chrome/browser/gcm/model/ios_chrome_gcm_profile_service_factory.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "services/network/public/cpp/shared_url_loader_factory.h"
 
 using invalidation::ProfileInvalidationProvider;
 

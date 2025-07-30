@@ -10,7 +10,6 @@ include_rules = [
   "+components/image_fetcher/ios",
   "+components/infobars/core",
   "+components/invalidation",
-  "+components/invalidation/impl",
   "+components/keyed_service/core",
   "+components/keyed_service/ios",
   "+components/language/core/browser",

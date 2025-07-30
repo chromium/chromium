@@ -43,7 +43,6 @@ source_set("test_support") {
 
   if (use_blink) {
     deps += [
-      "//components/invalidation/impl",
       "//components/policy/core/browser",
       "//ui/gl:test_support",
     ]
