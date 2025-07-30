@@ -17,7 +17,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/values.h"
 #include "gin/function_template.h"
-#include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/wrapper_info.h"

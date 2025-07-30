@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_REMOTE_OBJECTS_REMOTE_OBJECT_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_REMOTE_OBJECTS_REMOTE_OBJECT_H_
 
-#include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"

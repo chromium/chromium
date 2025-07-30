@@ -31,7 +31,6 @@ component("gin") {
     "gin_export.h",
     "gin_features.cc",
     "gin_features.h",
-    "handle.h",
     "interceptor.cc",
     "interceptor.h",
     "isolate_holder.cc",

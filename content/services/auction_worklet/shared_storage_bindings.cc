@@ -13,7 +13,6 @@
 #include "content/services/auction_worklet/public/mojom/auction_shared_storage_host.mojom.h"
 #include "content/services/auction_worklet/webidl_compat.h"
 #include "gin/converter.h"
-#include "gin/handle.h"
 #include "gin/object_template_builder.h"
 #include "gin/public/wrapper_info.h"
 #include "gin/public/wrappable_pointer_tags.h"

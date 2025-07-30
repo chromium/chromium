@@ -10,7 +10,6 @@
 #include "extensions/renderer/guest_view/mime_handler_view/mime_handler_view_container_manager.h"
 #include "gin/arguments.h"
 #include "gin/dictionary.h"
-#include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"

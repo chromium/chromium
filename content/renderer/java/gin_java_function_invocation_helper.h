@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
 #include "gin/arguments.h"
-#include "gin/handle.h"
 
 namespace content {
 

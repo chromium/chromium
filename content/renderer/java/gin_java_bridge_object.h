@@ -10,7 +10,6 @@
 #include "base/memory/weak_ptr.h"
 #include "content/common/gin_java_bridge.mojom.h"
 #include "content/renderer/java/gin_java_bridge_dispatcher.h"
-#include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"

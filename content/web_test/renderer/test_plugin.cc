@@ -22,7 +22,6 @@
 #include "components/viz/common/resources/shared_image_format.h"
 #include "content/web_test/renderer/test_runner.h"
 #include "content/web_test/renderer/web_frame_test_proxy.h"
-#include "gin/handle.h"
 #include "gin/interceptor.h"
 #include "gin/object_template_builder.h"
 #include "gin/wrappable.h"
