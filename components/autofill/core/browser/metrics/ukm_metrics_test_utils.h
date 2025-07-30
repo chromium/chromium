@@ -23,6 +23,8 @@ struct ExpectedUkmMetricsPair : public std::pair<std::string, int64_t> {
       : ExpectedUkmMetricsPair(str, static_cast<int64_t>(mode)) {}
   ExpectedUkmMetricsPair(std::string str, HtmlFieldType type)
       : ExpectedUkmMetricsPair(str, static_cast<int64_t>(type)) {}
+  ExpectedUkmMetricsPair(std::string str, bool b)
+      : ExpectedUkmMetricsPair(str, static_cast<int64_t>(b)) {}
 
   friend std::ostream& operator<<(std::ostream& os,
                                   const ExpectedUkmMetricsPair& ukm_pair) {

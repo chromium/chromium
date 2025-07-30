@@ -50,7 +50,7 @@ CreditCardFormEventLogger::~CreditCardFormEventLogger() = default;
 
 void CreditCardFormEventLogger::OnBnplSuggestionShown() {
   if (!has_logged_bnpl_suggestion_shown_) {
-    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionShown);
+    LogBnplSuggestionShown(driver().GetPageUkmSourceId());
     has_logged_bnpl_suggestion_shown_ = true;
   }
 }
@@ -570,7 +570,7 @@ void CreditCardFormEventLogger::LogCardUnmaskAuthenticationPromptCompleted(
 
 void CreditCardFormEventLogger::OnDidAcceptBnplSuggestion() {
   if (!has_logged_bnpl_suggestion_accepted_) {
-    LogBnplFormEvent(BnplFormEvent::kBnplSuggestionAccepted);
+    LogBnplSuggestionAccepted(driver().GetPageUkmSourceId());
     has_logged_bnpl_suggestion_accepted_ = true;
   }
 }

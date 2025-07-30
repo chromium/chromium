@@ -23,6 +23,9 @@ using ::base::BucketsInclude;
 using ::base::test::RunOnceCallback;
 
 using PaymentsRpcResult = payments::PaymentsAutofillClient::PaymentsRpcResult;
+using UkmBnplSuggestionShownType = ukm::builders::Autofill_BnplSuggestionShown;
+using UkmBnplSuggestionAcceptedType =
+    ukm::builders::Autofill_BnplSuggestionAccepted;
 using UkmSuggestionsShownType = ukm::builders::Autofill_SuggestionsShown;
 using UkmSuggestionFilledType = ukm::builders::Autofill_SuggestionFilled;
 using UkmTextFieldValueChangedType = ukm::builders::Autofill_TextFieldDidChange;
@@ -124,6 +127,23 @@ TEST_F(CreditCardFormEventLoggerTest,
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionAccepted,
       /*expected_bucket_count=*/1);
+}
+
+// Tests that the appropriate UKM metrics are logged when a BNPL suggestion is
+// shown and accepted.
+TEST_F(CreditCardFormEventLoggerTest,
+       BnplSuggestionShownAndAccepted_UkmMetricsLogged) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+  autofill_manager().GetCreditCardFormEventLogger().OnDidAcceptBnplSuggestion();
+
+  VerifyUkm(&test_ukm_recorder(), form, UkmBnplSuggestionShownType::kEntryName,
+            {{{UkmBnplSuggestionShownType::kShownName, true}}});
+  VerifyUkm(&test_ukm_recorder(), form,
+            UkmBnplSuggestionAcceptedType::kEntryName,
+            {{{UkmBnplSuggestionAcceptedType::kAcceptedName, true}}});
 }
 
 // Tests that the Bnpl FormFilledOnce event is logged once when
@@ -450,7 +470,7 @@ TEST_F(CreditCardFormEventLoggerTest,
 // Tests that the `kBnplSuggestionShown` event is logged once when
 // `OnBnplSuggestionShown()` is called.
 TEST_F(CreditCardFormEventLoggerTest,
-       OnBnplSuggestionShown_SuggestionAddedLogged) {
+       OnBnplSuggestionShown_SuggestionShownLogged) {
   base::HistogramTester histogram_tester;
 
   autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
@@ -466,6 +486,19 @@ TEST_F(CreditCardFormEventLoggerTest,
       "Autofill.FormEvents.CreditCard.Bnpl",
       /*sample=*/autofill_metrics::BnplFormEvent::kBnplSuggestionShown,
       /*expected_bucket_count=*/1);
+}
+
+// Tests that the `UkmBnplSuggestionShownType` event is logged once when
+// `OnBnplSuggestionShown()` is called.
+TEST_F(CreditCardFormEventLoggerTest,
+       OnBnplSuggestionShown_SuggestionShownLogged_Ukm) {
+  auto [form, field_types] = CreateMonthYearNumberForm(/*number_value=*/"");
+  autofill_manager().AddSeenForm(form, field_types);
+
+  autofill_manager().GetCreditCardFormEventLogger().OnBnplSuggestionShown();
+
+  VerifyUkm(&test_ukm_recorder(), form, UkmBnplSuggestionShownType::kEntryName,
+            {{{UkmBnplSuggestionShownType::kShownName, true}}});
 }
 
 // Test that we log parsed form event for credit card forms.
