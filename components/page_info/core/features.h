@@ -24,12 +24,6 @@ BASE_DECLARE_FEATURE(kPageInfoAboutThisSiteMoreLangs);
 // Whether we show hard-coded content for some sites like https://example.com.
 extern const base::FeatureParam<bool> kShowSampleContent;
 
-#if !BUILDFLAG(IS_ANDROID)
-// Enables the history section for Page Info on desktop.
-BASE_DECLARE_FEATURE(kPageInfoHistoryDesktop);
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 // Enables the merchant trust section for Page Info.
 BASE_DECLARE_FEATURE(kMerchantTrust);
 

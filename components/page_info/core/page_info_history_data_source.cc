@@ -60,7 +60,6 @@ std::u16string PageInfoHistoryDataSource::FormatLastVisitedTimestamp(
 
 void PageInfoHistoryDataSource::GetLastVisitedTimestamp(
     base::OnceCallback<void(std::optional<base::Time>)> callback) {
-  // TODO(crbug.com/40808038): Use the data source in Android implementation.
   base::Time now = base::Time::Now();
   history_service_->GetLastVisitToHost(
       site_url_.host(), base::Time() /* before_time */, now /* end_time */,

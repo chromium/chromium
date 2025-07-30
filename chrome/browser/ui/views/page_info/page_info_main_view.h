@@ -32,7 +32,6 @@ class RichHoverButton;
 class PageInfoNavigationHandler;
 class PageInfoSecurityContentView;
 class PermissionToggleRowView;
-class PageInfoHistoryController;
 
 namespace test {
 class PageInfoBubbleViewTestApi;
@@ -68,7 +67,6 @@ class PageInfoMainView : public views::View,
   PageInfoMainView(PageInfo* presenter,
                    ChromePageInfoUiDelegate* ui_delegate,
                    PageInfoNavigationHandler* navigation_handler,
-                   PageInfoHistoryController* history_controller,
                    base::OnceClosure initialized_callback,
                    bool allow_extended_site_info);
   ~PageInfoMainView() override;

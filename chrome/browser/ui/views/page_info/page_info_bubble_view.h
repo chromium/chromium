@@ -20,7 +20,6 @@
 class ChromePageInfoUiDelegate;
 class PageSwitcherView;
 class PageInfoBubbleSpecification;
-class PageInfoHistoryController;
 class PageInfoViewFactory;
 class PageInfoMerchantTrustCoordinator;
 
@@ -92,8 +91,6 @@ class PageInfoBubbleView : public PageInfoBubbleViewBase,
   std::unique_ptr<ChromePageInfoUiDelegate> ui_delegate_;
 
   std::unique_ptr<PageInfoViewFactory> view_factory_;
-
-  std::unique_ptr<PageInfoHistoryController> history_controller_;
 
   std::unique_ptr<PageInfoMerchantTrustCoordinator> merchant_trust_coordinator_;
 

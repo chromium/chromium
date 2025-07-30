@@ -23,7 +23,6 @@
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/controls/rich_hover_button.h"
 #include "chrome/browser/ui/views/page_info/chosen_object_view.h"
-#include "chrome/browser/ui/views/page_info/page_info_history_controller.h"
 #include "chrome/browser/ui/views/page_info/page_info_navigation_handler.h"
 #include "chrome/browser/ui/views/page_info/page_info_security_content_view.h"
 #include "chrome/browser/ui/views/page_info/page_info_view_factory.h"
@@ -109,7 +108,6 @@ PageInfoMainView::PageInfoMainView(
     PageInfo* presenter,
     ChromePageInfoUiDelegate* ui_delegate,
     PageInfoNavigationHandler* navigation_handler,
-    PageInfoHistoryController* history_controller,
     base::OnceClosure initialized_callback,
     bool allow_extended_site_info)
     : presenter_(presenter),
@@ -164,10 +162,6 @@ PageInfoMainView::PageInfoMainView(
         gfx::Insets::TLBR(0, 0, 0, kContainerExtraRightMargin));
     site_settings_link_->SetTooltipText(
         l10n_util::GetStringUTF16(tooltip_text_id));
-  }
-
-  if (base::FeatureList::IsEnabled(page_info::kPageInfoHistoryDesktop)) {
-    history_controller->InitRow(AddChildView(CreateContainerView()));
   }
 
   // No extra right margins since the children are also containers and will have

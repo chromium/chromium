@@ -39,13 +39,6 @@ BASE_FEATURE(kPageInfoAboutThisSiteMoreLangs,
 const base::FeatureParam<bool> kShowSampleContent{&kPageInfoAboutThisSite,
                                                   "ShowSampleContent", false};
 
-#if !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPageInfoHistoryDesktop,
-             "PageInfoHistoryDesktop",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-#endif  // !BUILDFLAG(IS_ANDROID)
-
 BASE_FEATURE(kMerchantTrust,
              "MerchantTrust",
              base::FEATURE_ENABLED_BY_DEFAULT);

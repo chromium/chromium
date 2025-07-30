@@ -7,7 +7,6 @@
 #include "base/time/time_override.h"
 #include "build/build_config.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_info/about_this_site_service_factory.h"
@@ -37,7 +36,6 @@
 #include "components/content_settings/core/common/cookie_blocking_3pcd_status.h"
 #include "components/content_settings/core/common/cookie_controls_state.h"
 #include "components/content_settings/core/common/features.h"
-#include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/core/optimization_guide_proto_util.h"
 #include "components/optimization_guide/core/optimization_guide_switches.h"
 #include "components/page_info/core/about_this_site_service.h"
@@ -73,7 +71,6 @@ constexpr int kTopicsAPITestTaxonomyVersion = 1;
 
 constexpr char kExpiredCertificateFile[] = "expired_cert.pem";
 constexpr char kAboutThisSiteUrl[] = "a.test";
-constexpr char kHistoryUrl[] = "b.test";
 constexpr char kMerchantTrustUrl[] = "b.test";
 constexpr char kMerchantTrustUrlWithoutSummary[] = "c.test";
 
@@ -716,54 +713,6 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewPrivacySandboxDialogBrowserTest,
                        InvokeUi_PrivacySandboxSubpage) {
-  ShowAndVerifyUi();
-}
-
-class PageInfoBubbleViewHistoryDialogBrowserTest : public DialogBrowserTest {
- public:
-  PageInfoBubbleViewHistoryDialogBrowserTest() {
-    feature_list_.InitWithFeatures(
-        {page_info::kPageInfoHistoryDesktop},
-        {content_settings::features::kTrackingProtection3pcd});
-  }
-
-  void SetUpOnMainThread() override {
-    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
-    https_server_.ServeFilesFromSourceDirectory(GetChromeTestDataDir());
-    ASSERT_TRUE(https_server_.Start());
-
-    host_resolver()->AddRule("*", "127.0.0.1");
-
-    base::Time yesterday = base::Time::Now() - base::Days(1);
-    auto* history_service = HistoryServiceFactory::GetForProfile(
-        browser()->profile(), ServiceAccessType::EXPLICIT_ACCESS);
-    history_service->AddPage(GetUrl(kHistoryUrl), yesterday,
-                             history::SOURCE_BROWSED);
-  }
-
-  // DialogBrowserTest:
-  void ShowUi(const std::string& name) override {
-    // Bubble dialogs' bounds may exceed the display's work area.
-    // https://crbug.com/893292.
-    set_should_verify_dialog_bounds(false);
-
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetUrl(kHistoryUrl)));
-    OpenPageInfoBubble(browser());
-    // Set static site name to prevent flakes caused by changing port.
-    SetStaticSiteName(u"Example site");
-  }
-
-  GURL GetUrl(const std::string& host) {
-    return https_server_.GetURL(host, "/title1.html");
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-  net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
-};
-
-IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewHistoryDialogBrowserTest,
-                       InvokeUi_History) {
   ShowAndVerifyUi();
 }
 
