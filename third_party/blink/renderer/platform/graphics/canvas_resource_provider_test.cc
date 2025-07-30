@@ -167,6 +167,10 @@ TEST_F(CanvasResourceProviderTest,
 }
 
 TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list{kUseCRPSIForLowLatencyOnWindows};
+#endif
+
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -187,13 +191,16 @@ TEST_F(CanvasResourceProviderTest, CanvasResourceProviderAcceleratedOverlay) {
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to RGBA8, or BGRA8 on MacOS
+  // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
+  // Windows
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
-#else
+#elif !BUILDFLAG(IS_WIN)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
+#else
+  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 #endif
 }
 
@@ -599,6 +606,10 @@ TEST_F(CanvasResourceProviderTest,
 
 TEST_F(CanvasResourceProviderTest,
        CanvasResourceProviderDirect2DGpuMemoryBuffer) {
+#if BUILDFLAG(IS_WIN)
+  base::test::ScopedFeatureList feature_list{kUseCRPSIForLowLatencyOnWindows};
+#endif
+
   const gfx::Size kSize(10, 10);
   const SkImageInfo kInfo =
       SkImageInfo::MakeN32Premul(10, 10, SkColorSpace::MakeSRGB());
@@ -619,13 +630,16 @@ TEST_F(CanvasResourceProviderTest,
   EXPECT_TRUE(provider->SupportsDirectCompositing());
   EXPECT_TRUE(provider->IsSingleBuffered());
   // As it is an CanvasResourceProviderSharedImage and an accelerated canvas, it
-  // will internally force it to RGBA8, or BGRA8 on MacOS
+  // will internally force it to RGBA8 on MacOS, or otherwise RGBA8 if not on
+  // Windows
 #if BUILDFLAG(IS_MAC)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kBGRA_8888_SkColorType));
-#else
+#elif !BUILDFLAG(IS_WIN)
   EXPECT_TRUE(provider->GetSkImageInfo() ==
               kInfo.makeColorType(kRGBA_8888_SkColorType));
+#else
+  EXPECT_TRUE(provider->GetSkImageInfo() == kInfo);
 #endif
 }
 
