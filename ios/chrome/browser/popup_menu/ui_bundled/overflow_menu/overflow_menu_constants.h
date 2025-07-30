@@ -40,7 +40,6 @@ enum class ActionType {
   ReadingList,
   ClearBrowsingData,
   Translate,
-  ReaderMode,
   DesktopSite,
   FindInPage,
   TextZoom,
@@ -51,6 +50,7 @@ enum class ActionType {
   LensOverlay,
   AIPrototype,
   SetTabReminder,
+  ReaderMode,
   // TODO(crbug.com/416002705): Rename reference to BWG.
   AskBWG,
 };
