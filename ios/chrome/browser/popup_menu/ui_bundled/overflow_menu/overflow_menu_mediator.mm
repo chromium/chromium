@@ -1482,24 +1482,22 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   // The "Add to Reading List" functionality requires JavaScript execution,
   // which is paused while overlays are displayed over the web content area.
-  self.readLaterAction.enabled = !self.webContentAreaShowingOverlay &&
-                                 [self isCurrentURLWebURL] &&
-                                 !isReaderModeActive;
+  self.readLaterAction.enabled =
+      !self.webContentAreaShowingOverlay && [self isCurrentURLWebURL];
 
   BOOL bookmarkEnabled =
       [self isCurrentURLWebURL] && [self isEditBookmarksEnabled];
-  self.addBookmarkAction.enabled = bookmarkEnabled && !isReaderModeActive;
-  self.editBookmarkAction.enabled = bookmarkEnabled && !isReaderModeActive;
+  self.addBookmarkAction.enabled = bookmarkEnabled;
+  self.editBookmarkAction.enabled = bookmarkEnabled;
   self.translateAction.enabled =
       [self isTranslateEnabled] && !isReaderModeActive;
   self.findInPageAction.enabled =
       [self isFindInPageEnabled] && !isReaderModeActive;
   self.textZoomAction.enabled = [self isTextZoomEnabled] && !isReaderModeActive;
   self.requestDesktopAction.enabled =
-      [self userAgentType] == web::UserAgentType::MOBILE && !isReaderModeActive;
+      [self userAgentType] == web::UserAgentType::MOBILE;
   self.requestMobileAction.enabled =
-      [self userAgentType] == web::UserAgentType::DESKTOP &&
-      !isReaderModeActive;
+      [self userAgentType] == web::UserAgentType::DESKTOP;
 
   // Enable/disable items based on enterprise policies.
   self.openTabAction.enterpriseDisabled =
