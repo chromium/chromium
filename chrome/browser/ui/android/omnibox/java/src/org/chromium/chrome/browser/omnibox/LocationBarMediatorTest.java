@@ -112,7 +112,9 @@ import org.chromium.url.JUnitTestGURLs;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /** Unit tests for LocationBarMediator. */
 @RunWith(BaseRobolectricTestRunner.class)
@@ -475,7 +477,8 @@ public class LocationBarMediatorTest {
         testLoadUrlWithAutocompleteLoadCallback_base();
     }
 
-    public void testLoadUrlWithPostData_base() {
+    @Test
+    public void testLoadUrlWithPostData() {
         mMediator.onFinishNativeInitialization();
         String text = "text";
         byte[] data = new byte[] {0, 1, 2, 3, 4};
@@ -484,7 +487,8 @@ public class LocationBarMediatorTest {
         doReturn(data).when(mResourceRequestBodyJni).createResourceRequestBodyFromBytes(any());
         mMediator.loadUrl(
                 new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
-                        .setpostDataAndType(data, text)
+                        .setPostData(data)
+                        .setExtraHeaders(Map.of("Content-Type", text))
                         .build());
 
         verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
@@ -497,15 +501,28 @@ public class LocationBarMediatorTest {
     }
 
     @Test
-    @DisableFeatures({OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB})
-    public void testLoadUrlWithPostDataNoPostDelayedTaskFocusTab() {
-        testLoadUrlWithPostData_base();
-    }
+    public void testLoadUrlWithExtraHeaders() {
+        mMediator.onFinishNativeInitialization();
+        Map<String, String> headers = new HashMap<>();
+        headers.put("Authorization", "Bearer token123");
+        headers.put("Custom-Header", "custom-value");
+        headers.put("Content-Type", "application/json");
 
-    @Test
-    @EnableFeatures({OmniboxFeatureList.POST_DELAYED_TASK_FOCUS_TAB})
-    public void testLoadUrlWithPostDataPostDelayedTaskFocusTab() {
-        testLoadUrlWithPostData_base();
+        doReturn(mTab).when(mLocationBarDataProvider).getTab();
+        mMediator.loadUrl(
+                new OmniboxLoadUrlParams.Builder(TEST_URL, PageTransition.TYPED)
+                        .setExtraHeaders(headers)
+                        .build());
+
+        verify(mTab).loadUrl(mLoadUrlParamsCaptor.capture());
+        assertEquals(TEST_URL, mLoadUrlParamsCaptor.getValue().getUrl());
+        assertEquals(
+                PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
+                mLoadUrlParamsCaptor.getValue().getTransitionType());
+        String verbatimHeaders = mLoadUrlParamsCaptor.getValue().getVerbatimHeaders();
+        assertTrue(verbatimHeaders.contains("Authorization: Bearer token123"));
+        assertTrue(verbatimHeaders.contains("Custom-Header: custom-value"));
+        assertTrue(verbatimHeaders.contains("Content-Type: application/json"));
     }
 
     @Test
@@ -545,11 +562,12 @@ public class LocationBarMediatorTest {
         assertEquals(PageTransition.TYPED, params.transitionType);
         assertEquals(0, params.inputStartTimestamp);
         assertNull(null, params.postData);
-        assertNull(null, params.postDataType);
+        assertTrue(params.extraHeaders.isEmpty());
         assertFalse(params.openInNewTab);
         verify(mTab, times(0)).loadUrl(any());
     }
 
+    @Test
     public void testLoadUrl_openInNewTab_base() {
         mMediator.onFinishNativeInitialization();
 

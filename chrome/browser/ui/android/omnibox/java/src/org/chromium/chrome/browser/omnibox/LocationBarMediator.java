@@ -629,16 +629,18 @@ class LocationBarMediator
                 loadUrlParams.setInputStartTimestamp(omniboxLoadUrlParams.inputStartTimestamp);
             }
 
-            if (!TextUtils.isEmpty(omniboxLoadUrlParams.postDataType)) {
+            if (!omniboxLoadUrlParams.extraHeaders.isEmpty()) {
                 StringBuilder headers = new StringBuilder();
-                String prevHeader = loadUrlParams.getVerbatimHeaders();
-                if (prevHeader != null && !prevHeader.isEmpty()) {
-                    headers.append(prevHeader);
+                for (var entry : omniboxLoadUrlParams.extraHeaders.entrySet()) {
+                    headers.append(entry.getKey());
+                    headers.append(": ");
+                    headers.append(entry.getValue());
                     headers.append("\r\n");
                 }
-
-                headers.append("Content-Type: ");
-                headers.append(omniboxLoadUrlParams.postDataType);
+                String previousHeaders = loadUrlParams.getVerbatimHeaders();
+                if (!TextUtils.isEmpty(previousHeaders)) {
+                    headers.append(previousHeaders);
+                }
 
                 loadUrlParams.setVerbatimHeaders(headers.toString());
             }

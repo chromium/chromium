@@ -9,6 +9,8 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.omnibox.suggestions.AutocompleteDelegate.AutocompleteLoadCallback;
 import org.chromium.ui.base.PageTransition;
 
+import java.util.Map;
+
 /** Holds parameters for AutocompleteDelegate.LoadUrl. */
 @NullMarked
 public class OmniboxLoadUrlParams {
@@ -17,7 +19,7 @@ public class OmniboxLoadUrlParams {
     public final long inputStartTimestamp;
     public final boolean openInNewTab;
     public final byte @Nullable [] postData;
-    public final @Nullable String postDataType;
+    public final Map<String, String> extraHeaders;
     public final @Nullable AutocompleteLoadCallback callback;
 
     private OmniboxLoadUrlParams(
@@ -26,14 +28,14 @@ public class OmniboxLoadUrlParams {
             long inputStartTimestamp,
             boolean openInNewTab,
             byte @Nullable [] postData,
-            @Nullable String postDataType,
+            Map<String, String> extraHeaders,
             @Nullable AutocompleteLoadCallback callback) {
         this.url = url;
         this.transitionType = transitionType;
         this.inputStartTimestamp = inputStartTimestamp;
         this.openInNewTab = openInNewTab;
         this.postData = postData;
-        this.postDataType = postDataType;
+        this.extraHeaders = extraHeaders;
         this.callback = callback;
     }
 
@@ -44,7 +46,7 @@ public class OmniboxLoadUrlParams {
         public long inputStartTimestamp;
         public boolean openInNewTab;
         public byte @Nullable [] postData;
-        public @Nullable String postDataType;
+        public Map<String, String> extraHeaders = Map.of();
         public @Nullable AutocompleteLoadCallback callback;
 
         /**
@@ -79,19 +81,26 @@ public class OmniboxLoadUrlParams {
          * Set the post data of this load, and its type.
          *
          * @param postData Post data for this http post load.
-         * @param postDataType Post data type for this http post load.
          */
-        public Builder setpostDataAndType(
-                byte @Nullable [] postData, @Nullable String postDataType) {
+        public Builder setPostData(byte @Nullable [] postData) {
             this.postData = postData;
-            this.postDataType = postDataType;
             return this;
         }
 
         /**
-         * Set the callback of this loa.
+         * Set the extra headers for this navigation.
          *
-         * @param callback The callback will be called once the url is loaded.
+         * @param extraHeaders Extra headers to be included with the HTTP request.
+         */
+        public Builder setExtraHeaders(Map<String, String> extraHeaders) {
+            this.extraHeaders = extraHeaders;
+            return this;
+        }
+
+        /**
+         * Specify callback to be invoked once the URL is loaded.
+         *
+         * @param callback The callback to be invoked.
          */
         public Builder setAutocompleteLoadCallback(AutocompleteLoadCallback callback) {
             this.callback = callback;
@@ -106,7 +115,7 @@ public class OmniboxLoadUrlParams {
                     inputStartTimestamp,
                     openInNewTab,
                     postData,
-                    postDataType,
+                    extraHeaders,
                     callback);
         }
     }

@@ -197,10 +197,11 @@ public class SearchActivityUtils {
 
         // Attach information about page to load.
         intent.setData(Uri.parse(fixedUrl.getSpec()));
-        if (!TextUtils.isEmpty(params.postDataType)
+        String postDataType = params.extraHeaders.get("Content-Type");
+        if (!TextUtils.isEmpty(postDataType)
                 && params.postData != null
                 && params.postData.length != 0) {
-            intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, params.postDataType)
+            intent.putExtra(IntentHandler.EXTRA_POST_DATA_TYPE, postDataType)
                     .putExtra(IntentHandler.EXTRA_POST_DATA, params.postData);
         }
 
