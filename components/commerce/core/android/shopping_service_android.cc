@@ -270,6 +270,20 @@ void ShoppingServiceAndroid::HandleDiscountInfoCallback(
       discount_info_array_obj);
 }
 
+void ShoppingServiceAndroid::GetAvailableDiscountInfoForUrl(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_gurl,
+    const JavaParamRef<jobject>& j_callback) {
+  CHECK(shopping_service_);
+
+  GURL url = url::GURLAndroid::ToNativeGURL(env, j_gurl);
+
+  shopping_service_->GetAvailableDiscountInfoForUrl(
+      {url}, base::BindOnce(&ShoppingServiceAndroid::HandleDiscountInfoCallback,
+                            weak_ptr_factory_.GetWeakPtr(), env,
+                            ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
 void ShoppingServiceAndroid::FetchPriceEmailPref(JNIEnv* env) {
   CHECK(shopping_service_);
 

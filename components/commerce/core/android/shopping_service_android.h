@@ -56,6 +56,10 @@ class ShoppingServiceAndroid : public base::SupportsUserData::Data,
                              const JavaParamRef<jobject>& j_gurl,
                              const JavaParamRef<jobject>& j_callback);
 
+  void GetAvailableDiscountInfoForUrl(JNIEnv* env,
+                                      const JavaParamRef<jobject>& j_gurl,
+                                      const JavaParamRef<jobject>& j_callback);
+
   void FetchPriceEmailPref(JNIEnv* env);
 
   void ScheduleSavedProductUpdate(JNIEnv* env);

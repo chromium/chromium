@@ -262,6 +262,22 @@ public class ShoppingService {
     }
 
     /**
+     * Fetch available discounts information for a URL.
+     *
+     * @param url The URL to fetch discounts info for.
+     * @param callback The callback that will run after the fetch is completed.
+     */
+    public void getAvailableDiscountInfoForUrl(GURL url, DiscountInfoCallback callback) {
+        if (mNativeShoppingServiceAndroid == 0) {
+            callback.onResult(url, null);
+            return;
+        }
+
+        ShoppingServiceJni.get()
+                .getAvailableDiscountInfoForUrl(mNativeShoppingServiceAndroid, url, callback);
+    }
+
+    /**
      * Requests that the service fetch the price notification email preference from the backend.
      * This call will update the preference kept by the pref service directly -- changes to the
      * value should also be observed through the pref service. This method should only be used in
@@ -636,6 +652,9 @@ public class ShoppingService {
         boolean isPriceInsightsEligible(long nativeShoppingServiceAndroid);
 
         void getDiscountInfoForUrl(
+                long nativeShoppingServiceAndroid, GURL url, DiscountInfoCallback callback);
+
+        void getAvailableDiscountInfoForUrl(
                 long nativeShoppingServiceAndroid, GURL url, DiscountInfoCallback callback);
 
         boolean isDiscountEligibleToShowOnNavigation(long nativeShoppingServiceAndroid);
