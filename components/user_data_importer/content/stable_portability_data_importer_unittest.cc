@@ -4,6 +4,11 @@
 
 #include "components/user_data_importer/content/stable_portability_data_importer.h"
 
+#include <memory>
+#include <string>
+#include <utility>
+#include <vector>
+
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -15,12 +20,15 @@
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/bookmarks/browser/bookmark_test_util.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
+#include "components/bookmarks/test/test_matchers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
@@ -33,7 +41,10 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
+#include "ui/base/l10n/l10n_util.h"
 
+using bookmarks::test::IsFolder;
+using bookmarks::test::IsUrlBookmark;
 using testing::ElementsAre;
 using testing::IsEmpty;
 
@@ -49,9 +60,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     history_service_ = history::CreateHistoryService(history_dir_.GetPath(),
                                                      /*create_db=*/false);
 
-    auto bookmark_client = std::make_unique<bookmarks::TestBookmarkClient>();
-    bookmark_model_ =
-        std::make_unique<bookmarks::BookmarkModel>(std::move(bookmark_client));
+    bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
@@ -80,8 +89,8 @@ class StablePortabilityDataImporterTest : public testing::Test {
 
   int GetNumberOfHistoryImported() const { return number_history_imported_; }
 
-  const std::vector<ImportedBookmarkEntry>& GetPendingBookmarks() const {
-    return importer_->pending_bookmarks_;
+  const bookmarks::BookmarkNode* GetOtherBookmarkNode() {
+    return bookmark_model_->other_node();
   }
 
   const std::vector<ImportedBookmarkEntry>& GetPendingReadingList() const {
@@ -226,22 +235,17 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Basic) {
       </DL>)");
   EXPECT_EQ(GetNumberOfBookmarksImported(), 2);
 
-  ASSERT_EQ(GetPendingBookmarks().size(), 2u);
-  ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Google");
-  EXPECT_EQ(entry.creation_time,
-            base::Time::FromSecondsSinceUnixEpoch(904914000));
-  EXPECT_EQ(entry.url, GURL("https://www.google.com/"));
-  EXPECT_THAT(entry.path, IsEmpty());
-
-  entry = GetPendingBookmarks()[1];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Chromium");
-  // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
-  EXPECT_THAT(entry.path, IsEmpty());
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(
+      other_node->children(),
+      ElementsAre(IsFolder(
+          l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER),
+          ElementsAre(
+              IsUrlBookmark(u"Google", GURL("https://www.google.com/"),
+                            base::Time::FromSecondsSinceUnixEpoch(904914000)),
+              // No timestamp maps to current time.
+              IsUrlBookmark(u"Chromium", GURL("https://www.chromium.org/"),
+                            base::Time::Now())))));
 
   EXPECT_EQ(GetPendingReadingList().size(), 0u);
 }
@@ -257,22 +261,17 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_NoTopLevelDL) {
       <DT><A HREF="https://www.chromium.org/">Chromium</A>)");
   EXPECT_EQ(GetNumberOfBookmarksImported(), 2);
 
-  ASSERT_EQ(GetPendingBookmarks().size(), 2u);
-  ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Google");
-  EXPECT_EQ(entry.creation_time,
-            base::Time::FromSecondsSinceUnixEpoch(904914000));
-  EXPECT_EQ(entry.url, GURL("https://www.google.com/"));
-  EXPECT_THAT(entry.path, IsEmpty());
-
-  entry = GetPendingBookmarks()[1];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Chromium");
-  // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
-  EXPECT_THAT(entry.path, IsEmpty());
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(
+      other_node->children(),
+      ElementsAre(IsFolder(
+          l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER),
+          ElementsAre(
+              IsUrlBookmark(u"Google", GURL("https://www.google.com/"),
+                            base::Time::FromSecondsSinceUnixEpoch(904914000)),
+              // No timestamp maps to current time.
+              IsUrlBookmark(u"Chromium", GURL("https://www.chromium.org/"),
+                            base::Time::Now())))));
 
   EXPECT_EQ(GetPendingReadingList().size(), 0u);
 }
@@ -298,41 +297,30 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Folders) {
       <DL><p>
       </DL>
       </DL>)");
-  EXPECT_EQ(GetNumberOfBookmarksImported(), 4);
+  EXPECT_EQ(GetNumberOfBookmarksImported(), 3);
 
-  ASSERT_EQ(GetPendingBookmarks().size(), 4u);
-
-  ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Google");
-  EXPECT_EQ(entry.creation_time,
-            base::Time::FromSecondsSinceUnixEpoch(904914000));
-  EXPECT_EQ(entry.url, GURL("https://www.google.com/"));
-  EXPECT_THAT(entry.path, IsEmpty());
-
-  entry = GetPendingBookmarks()[1];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Example");
-  EXPECT_EQ(entry.creation_time,
-            base::Time::FromSecondsSinceUnixEpoch(915181200));
-  EXPECT_EQ(entry.url, GURL("https://www.example.com/"));
-  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
-
-  entry = GetPendingBookmarks()[2];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Kitsune");
-  EXPECT_EQ(entry.creation_time,
-            base::Time::FromSecondsSinceUnixEpoch(1674205200));
-  EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/Kitsune"));
-  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1", u"Folder 1.1"));
-
-  entry = GetPendingBookmarks()[3];
-  EXPECT_TRUE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Empty Folder");
-  // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_TRUE(entry.url.is_empty());
-  EXPECT_THAT(entry.path, IsEmpty());
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(
+      other_node->children(),
+      ElementsAre(IsFolder(
+          l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER),
+          ElementsAre(
+              IsUrlBookmark(u"Google", GURL("https://www.google.com/"),
+                            base::Time::FromSecondsSinceUnixEpoch(904914000)),
+              IsFolder(
+                  u"Folder 1",
+                  ElementsAre(
+                      IsUrlBookmark(
+                          u"Example", GURL("https://www.example.com/"),
+                          base::Time::FromSecondsSinceUnixEpoch(915181200)),
+                      IsFolder(
+                          u"Folder 1.1",
+                          ElementsAre(IsUrlBookmark(
+                              u"Kitsune",
+                              GURL("https://en.wikipedia.org/wiki/Kitsune"),
+                              base::Time::FromSecondsSinceUnixEpoch(
+                                  1674205200)))))),
+              IsFolder(u"Empty Folder", ElementsAre())))));
 
   EXPECT_EQ(GetPendingReadingList().size(), 0u);
 }
@@ -354,7 +342,9 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
 
   EXPECT_EQ(GetPendingReadingList().size(), 3u);
 
-  ASSERT_EQ(GetPendingBookmarks().size(), 0u);
+  // "Imported" bookmarks folder should *not* have been created.
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(other_node->children(), ElementsAre());
 
   ImportedBookmarkEntry entry = GetPendingReadingList()[0];
   EXPECT_FALSE(entry.is_folder);
@@ -408,29 +398,27 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
 
   EXPECT_EQ(GetNumberOfBookmarksImported(), 2);
 
-  ASSERT_EQ(GetPendingBookmarks().size(), 2u);
-
-  // <A>Google</A> was skipped for lack of URL.
-
-  // The folder contains a mix of invalid and valid entries. Ensure the valid
-  // ones are preserved.
-  ImportedBookmarkEntry entry = GetPendingBookmarks()[0];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Chromium");
-  // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
-  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
-
-  entry = GetPendingBookmarks()[1];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Example");
-  // Invalid timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_EQ(entry.url, GURL("https://www.example.org/"));
-  EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
-
-  // <A>Google Reader</A> was skipped for lack of URL.
+  const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
+  EXPECT_THAT(
+      other_node->children(),
+      ElementsAre(IsFolder(
+          l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER),
+          ElementsAre(
+              // <A>Google</A> was skipped for lack of URL.
+              IsFolder(u"Folder 1",
+                       // The folder contains a mix of invalid and valid
+                       // entries. Ensure the valid ones are preserved.
+                       ElementsAre(
+                           IsUrlBookmark(u"Chromium",
+                                         GURL("https://www.chromium.org/"),
+                                         // No timestamp maps to current time.
+                                         base::Time::Now()),
+                           IsUrlBookmark(
+                               u"Example", GURL("https://www.example.org/"),
+                               // Invalid timestamp maps to current time.
+                               base::Time::Now())
+                           // <A>Google Reader</A> was skipped for lack of URL.
+                           ))))));
 }
 
 // Tests parsing a simple JSON file with two history entries.

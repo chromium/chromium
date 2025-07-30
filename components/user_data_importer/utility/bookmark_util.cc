@@ -105,7 +105,8 @@ size_t ImportBookmarks(BookmarkModel* bookmark_model,
         continue;
       }
       bookmark_model->AddURL(parent, parent->children().size(),
-                             bookmark_entry.title, bookmark_entry.url);
+                             bookmark_entry.title, bookmark_entry.url, nullptr,
+                             bookmark_entry.creation_time);
       ++imported_count;
     }
   }

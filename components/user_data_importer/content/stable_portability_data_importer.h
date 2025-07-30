@@ -153,11 +153,6 @@ class StablePortabilityDataImporter {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // Bookmarks which have been parsed, but not yet committed to permanent
-  // storage.
-  std::vector<ImportedBookmarkEntry> pending_bookmarks_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   // Reading List items which have been parsed, but not yet committed to
   // permanent storage.
   std::vector<ImportedBookmarkEntry> pending_reading_list_

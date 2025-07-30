@@ -10,9 +10,12 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "components/strings/grit/components_strings.h"
+#include "components/user_data_importer/utility/bookmark_util.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
 #include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
 #include "content/public/browser/browser_thread.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace user_data_importer {
 
@@ -97,16 +100,23 @@ void StablePortabilityDataImporter::OnBookmarksParsed(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!bookmark_model_) {
+    PostCallback(std::move(bookmarks_callback), 0);
+    return;
+  }
+
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
                    [this, &bookmarks_callback](auto) {
                      // TODO(crbug.com/414604427): Log error to UMA.
                      PostCallback(std::move(bookmarks_callback), 0);
                    });
 
-  // TODO(crbug.com/414604427): Add the parsed bookmarks to the user's storage.
-  pending_bookmarks_ = std::move(value.bookmarks);
+  // Add the parsed bookmarks to the user's storage.
+  size_t imported_count = ::user_data_importer::ImportBookmarks(
+      bookmark_model_, std::move(value.bookmarks),
+      l10n_util::GetStringUTF16(IDS_IMPORTED_FOLDER));
 
-  PostCallback(std::move(bookmarks_callback), pending_bookmarks_.size());
+  PostCallback(std::move(bookmarks_callback), imported_count);
 }
 
 void StablePortabilityDataImporter::ImportReadingList(
