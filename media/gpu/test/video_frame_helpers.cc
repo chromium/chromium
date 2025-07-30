@@ -478,7 +478,7 @@ scoped_refptr<const VideoFrame> CreateVideoFrameFromImage(const Image& image) {
   scoped_refptr<VideoFrame> video_frame =
       VideoFrame::WrapExternalDataWithLayout(
           *layout, image.VisibleRect(), image.VisibleRect().size(),
-          image.Data(), image.DataSize(), base::TimeDelta());
+          image.DataSpan(), base::TimeDelta());
   if (!video_frame) {
     LOG(ERROR) << "Failed to create VideoFrame";
     return nullptr;

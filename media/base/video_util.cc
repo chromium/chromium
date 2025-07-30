@@ -837,7 +837,10 @@ scoped_refptr<VideoFrame> CreateFromSkImage(sk_sp<SkImage> sk_image,
       *layout, visible_rect, natural_size,
       // TODO(crbug.com/40162403): We should be able to wrap readonly memory in
       // a VideoFrame instead of using writable_addr() here.
-      reinterpret_cast<uint8_t*>(pm.writable_addr()), pm.computeByteSize(),
+      // SAFETY: We take the pointer and size from SkPixmap, we rely on Skia
+      // to give us a valid memory region.
+      UNSAFE_BUFFERS(base::span(reinterpret_cast<uint8_t*>(pm.writable_addr()),
+                                pm.computeByteSize())),
       timestamp);
   if (!frame)
     return nullptr;

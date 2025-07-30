@@ -227,6 +227,10 @@ bool Image::IsMetadataLoaded() const {
   return pixel_format_ != PIXEL_FORMAT_UNKNOWN;
 }
 
+base::span<const uint8_t> Image::DataSpan() const {
+  return mapped_file_.bytes();
+}
+
 uint8_t* Image::Data() const {
   return mapped_file_.data();
 }

@@ -913,24 +913,27 @@ TEST(VideoFrame, WrapExternalDataWithInvalidLayout) {
   ASSERT_TRUE(layout.has_value());
 
   // Validate single plane size exceeds data size.
-  uint8_t data = 0;
+  std::vector<uint8_t> small_data(1);
   auto frame = VideoFrame::WrapExternalDataWithLayout(
-      *layout, gfx::Rect(coded_size), coded_size, &data, sizeof(data),
+      *layout, gfx::Rect(coded_size), coded_size, small_data,
       base::TimeDelta());
   ASSERT_FALSE(frame);
 
   // Validate sum of planes exceeds data size.
-  frame = VideoFrame::WrapExternalDataWithLayout(
-      *layout, gfx::Rect(coded_size), coded_size, &data, sizes[0] + sizes[1],
-      base::TimeDelta());
+  std::vector<uint8_t> medium_data(sizes[0] + sizes[1]);
+  frame = VideoFrame::WrapExternalDataWithLayout(*layout, gfx::Rect(coded_size),
+                                                 coded_size, medium_data,
+                                                 base::TimeDelta());
   ASSERT_FALSE(frame);
 
   // Validate offset exceeds plane size.
   planes[0].offset = 201;
   layout =
       VideoFrameLayout::CreateWithPlanes(PIXEL_FORMAT_I420, coded_size, planes);
+  ASSERT_TRUE(layout.has_value());
+  std::vector<uint8_t> other_data(sizes[0]);
   frame = VideoFrame::WrapExternalDataWithLayout(*layout, gfx::Rect(coded_size),
-                                                 coded_size, &data, sizes[0],
+                                                 coded_size, other_data,
                                                  base::TimeDelta());
   ASSERT_FALSE(frame);
 }
