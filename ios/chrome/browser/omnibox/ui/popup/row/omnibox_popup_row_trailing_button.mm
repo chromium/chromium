@@ -238,6 +238,7 @@ NSString* const kAIMCircleAnimationDarkMode = @"mia_glowing_circle_animation";
   }
 
   [self.aimAnimationView removeFromSuperview];
+  _aimAnimationView = nil;
 }
 
 // Creates an animation view for the AIM entry point.
