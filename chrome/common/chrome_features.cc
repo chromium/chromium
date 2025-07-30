@@ -373,7 +373,7 @@ const base::FeatureParam<bool> kGlicActorUiOverlayMagicCursor{
     &kGlicActorUi, kGlicActorUiOverlayMagicCursorName, false};
 // Controls whether the toast in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiToast{&kGlicActorUi,
-                                                 kGlicActorUiToastName, false};
+                                                 kGlicActorUiToastName, true};
 // Controls whether the handoff button in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiHandoffButton{
     &kGlicActorUi, kGlicActorUiHandoffButtonName, false};
