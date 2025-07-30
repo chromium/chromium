@@ -258,10 +258,17 @@ AccessCodeCastDiscoveryInterface::CreateEndpointFetcher(
   return std::make_unique<EndpointFetcher>(
       profile_->GetDefaultStoragePartition()
           ->GetURLLoaderFactoryForBrowserProcess(),
-      kDiscoveryOAuthConsumerName,
-      GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})), kGetMethod,
-      kContentType, discovery_scopes, kTimeout, kEmptyPostData,
-      kTrafficAnnotation, identity_manager_, consent_level);
+      identity_manager_,
+      EndpointFetcher::RequestParams::Builder(
+          endpoint_fetcher::HttpMethod::kGet, kTrafficAnnotation)
+          .SetConsentLevel(consent_level)
+          .SetContentType(kContentType)
+          .SetTimeout(kTimeout)
+          .SetUrl(GURL(base::StrCat({GetDiscoveryUrl(), "/", access_code})))
+          .SetOauthScopes(discovery_scopes)
+          .SetOauthConsumerName(kDiscoveryOAuthConsumerName)
+          .SetPostData(kEmptyPostData)
+          .Build());
 }
 
 void AccessCodeCastDiscoveryInterface::ValidateDiscoveryAccessCode(
