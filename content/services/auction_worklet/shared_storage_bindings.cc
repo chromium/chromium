@@ -410,8 +410,6 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(v8_helper_->isolate(),
                                   &SharedStorageBindings::SetMethodConstructor,
                                   v8_this);
-    set_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields);
     set_method_ctor_template->Inherit(base_modifier_method_template);
     set_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageSetMethodName));
@@ -427,8 +425,6 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
             &SharedStorageBindings::AppendMethodConstructor, v8_this);
-    append_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields);
     append_method_ctor_template->Inherit(base_modifier_method_template);
     append_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageAppendMethodName));
@@ -445,8 +441,6 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
             &SharedStorageBindings::DeleteMethodConstructor, v8_this);
-    delete_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields);
     delete_method_ctor_template->Inherit(base_modifier_method_template);
     delete_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageDeleteMethodName));
@@ -463,8 +457,6 @@ void SharedStorageBindings::AttachToContext(v8::Local<v8::Context> context) {
         v8::FunctionTemplate::New(
             v8_helper_->isolate(),
             &SharedStorageBindings::ClearMethodConstructor, v8_this);
-    clear_method_ctor_template->InstanceTemplate()->SetInternalFieldCount(
-        gin::kNumberOfInternalFields);
     clear_method_ctor_template->Inherit(base_modifier_method_template);
     clear_method_ctor_template->SetClassName(
         v8_helper_->CreateStringFromLiteral(kSharedStorageClearMethodName));

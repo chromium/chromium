@@ -77,7 +77,6 @@ component("gin") {
     "v8_shared_memory_dump_provider.h",
     "wrappable.cc",
     "wrappable.h",
-    "wrapper_info.cc",
   ]
 
   if (use_partition_alloc) {

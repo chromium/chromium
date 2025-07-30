@@ -141,7 +141,7 @@ ObjectTemplateBuilder::ObjectTemplateBuilder(v8::Isolate* isolate,
                   : "Objects of this type cannot be created using the "
                     "constructor"))),
       template_(constructor_template_->InstanceTemplate()) {
-  template_->SetInternalFieldCount(kNumberOfInternalFields);
+  template_->SetInternalFieldCount(0);
 }
 
 ObjectTemplateBuilder::ObjectTemplateBuilder(
