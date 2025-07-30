@@ -317,7 +317,14 @@ class FileSystemAccessBrowserSlowLoadTest : public FileSystemAccessBrowserTest {
       main_document_response_;
 };
 
-IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserSlowLoadTest, WaitUntilLoaded) {
+// TODO(crbug.com/435037306): Flaky on Mac.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_WaitUntilLoaded DISABLED_WaitUntilLoaded
+#else
+#define MAYBE_WaitUntilLoaded WaitUntilLoaded
+#endif
+IN_PROC_BROWSER_TEST_P(FileSystemAccessBrowserSlowLoadTest,
+                       MAYBE_WaitUntilLoaded) {
   const base::FilePath test_file = CreateTestFile("");
   const std::string file_contents = "file contents to write";
 
