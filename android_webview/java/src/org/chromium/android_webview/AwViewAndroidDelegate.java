@@ -5,17 +5,21 @@
 package org.chromium.android_webview;
 
 import android.graphics.Insets;
-import android.graphics.Point;
+import android.graphics.Rect;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
+import android.view.WindowManager;
+import android.view.WindowMetrics;
 import android.widget.FrameLayout;
 
 import androidx.annotation.Nullable;
 import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.android_webview.common.AwFeatureMap;
+import org.chromium.android_webview.common.AwFeatures;
 import org.chromium.android_webview.common.Lifetime;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.ViewAndroidDelegate;
@@ -38,7 +42,10 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
     private final AwScrollOffsetManager mScrollManager;
     private final WebContents mWebContents;
 
-    private int mBottomInset;
+    // The amount the IME is currently imposing into the parent Window.
+    private int mBottomImeInset;
+    // The last bottom inset we calculated that should be applied to the visual viewport.
+    private int mLastBottomInset;
 
     /** Represents the position of an anchor view. */
     @VisibleForTesting
@@ -164,33 +171,64 @@ public class AwViewAndroidDelegate extends ViewAndroidDelegate {
     @Override
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     public int getViewportInsetBottom() {
-        return mBottomInset;
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_REPORT_IME_INSETS)
+                || Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            return 0;
+        }
+        View containerView = getContainerView();
+        if (!containerView.isAttachedToWindow()) {
+            // View is not attached yet, no insets needed.
+            return 0;
+        }
+
+        WindowMetrics wm =
+                containerView
+                        .getContext()
+                        .getSystemService(WindowManager.class)
+                        .getCurrentWindowMetrics();
+        // These are the bounds of the current Window on the screen. These are absolute coordinates.
+        Rect windowBounds = wm.getBounds();
+        int[] pos = new int[2];
+        containerView.getLocationInWindow(pos);
+        // This represents the size and position of the WebView *relative* to the Window. These are
+        // relative coordinates (to the top left corner of the Window).
+        Rect viewRectInWindow =
+                new Rect(
+                        pos[0],
+                        pos[1],
+                        pos[0] + containerView.getWidth(),
+                        pos[1] + containerView.getHeight());
+
+        // This is the positive difference between the bottom of the WebView and the top of the IME.
+        // For cases where the bottom of the WebView is higher than the top of the IME, return 0.
+        // Otherwise, calculate the overlap by taking the bottom of the WebView (regardless of
+        // whether this is obscured by the visible portion of the Window) and subtract the height of
+        // the Window after deducting the IME overlap. This gives us the highest point in the
+        // Window's coordinates that the IME reaches. In the case where the IME is not present
+        // (mBottomImeInset is 0), this ensures that the visual viewport shows only the part of the
+        // WebView that is visible in the Window.
+        int result =
+                Math.max(0, (viewRectInWindow.bottom - (windowBounds.height() - mBottomImeInset)));
+        if (result != mLastBottomInset) {
+            mLastBottomInset = result;
+            // This does cause an extra round trip but allows us to recover in cases like bottom
+            // sheets where the WebView is moved and the area that's obscured may have changed.
+            // The alternative was attaching a scroll listener which probably would've been worse.
+            if (mWebContents != null && mWebContents.getRenderWidgetHostView() != null) {
+                mWebContents.getRenderWidgetHostView().onViewportInsetBottomChanged();
+            }
+        }
+
+        return result;
     }
 
     @RequiresApi(Build.VERSION_CODES.R)
     private WindowInsets onApplyWindowInsets(View v, WindowInsets insets) {
+        if (!AwFeatureMap.isEnabled(AwFeatures.WEBVIEW_REPORT_IME_INSETS)) {
+            return insets;
+        }
         Insets imeInsets = insets.getInsets(WindowInsets.Type.ime());
-        if (imeInsets.bottom == 0) {
-            mBottomInset = 0;
-            if (mWebContents != null && mWebContents.getRenderWidgetHostView() != null) {
-                mWebContents.getRenderWidgetHostView().onViewportInsetBottomChanged();
-            }
-            return insets;
-        }
-        View containerView = getContainerView();
-        if (containerView.getDisplay() == null) {
-            // View is not attached yet, do nothing and pass insets through.
-            return insets;
-        }
-        int[] pos = new int[2];
-        containerView.getLocationOnScreen(pos);
-        Point screenSize = new Point();
-        containerView.getDisplay().getRealSize(screenSize);
-        // Calculate the intersect between the WebView bounds and the IME and clamp it to >= 0.
-        mBottomInset =
-                Math.max(
-                        0,
-                        (pos[1] + containerView.getHeight()) - (screenSize.y - imeInsets.bottom));
+        mBottomImeInset = imeInsets.bottom;
         if (mWebContents != null && mWebContents.getRenderWidgetHostView() != null) {
             mWebContents.getRenderWidgetHostView().onViewportInsetBottomChanged();
         }
