@@ -685,6 +685,23 @@ TEST_F(SyncUserSettingsImplTest, SyncFeatureDisabledViaDashboard) {
   sync_user_settings->ClearSyncFeatureDisabledViaDashboard();
   EXPECT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
 }
+
+TEST_F(SyncUserSettingsImplTest,
+       PreferredDataTypesWhileSyncFeatureDisabledViaDashboard) {
+  std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
+      MakeSyncUserSettings(GetUserTypes());
+
+  ASSERT_FALSE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
+  ASSERT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO, BOOKMARKS}));
+
+  sync_user_settings->SetSyncFeatureDisabledViaDashboard();
+
+  ASSERT_TRUE(sync_user_settings->IsSyncFeatureDisabledViaDashboard());
+  EXPECT_TRUE(sync_user_settings->GetPreferredDataTypes().HasAll(
+      {NIGORI, DEVICE_INFO}));
+  EXPECT_FALSE(sync_user_settings->GetPreferredDataTypes().Has(BOOKMARKS));
+}
 #else   // BUILDFLAG(IS_CHROMEOS)
 TEST_F(SyncUserSettingsImplTest, SetInitialSyncFeatureSetupComplete) {
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =

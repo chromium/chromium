@@ -387,10 +387,19 @@ DataTypeSet SyncUserSettingsImpl::GetPreferredDataTypes() const {
                               delegate_->GetSyncAccountStateForPrefs() ==
                                   SyncPrefs::SyncAccountState::kSyncing);
 
-  types.PutAll(AlwaysPreferredUserTypes());
 #if BUILDFLAG(IS_CHROMEOS)
-  types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
+  if (IsSyncFeatureDisabledViaDashboard()) {
+    // If sync is disabled via dashboard, only a minimal set of datatypes should
+    // sync. This prevents code changes from causing accidental behavioral
+    // differences in this ChromeOS-specific edge case, as a side effect of
+    // starting sync-the-transport.
+    types.Clear();
+  } else {
+    types.PutAll(UserSelectableOsTypesToDataTypes(GetSelectedOsTypes()));
+  }
 #endif
+
+  types.PutAll(AlwaysPreferredUserTypes());
   types.RetainAll(registered_data_types_);
 
   // Control types (in practice, NIGORI) are always considered "preferred", even

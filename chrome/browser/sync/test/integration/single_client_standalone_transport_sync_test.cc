@@ -223,49 +223,10 @@ IN_PROC_BROWSER_TEST_P(SingleClientStandaloneTransportSyncTest,
 
   // There are no immediate plans to launch additional types on ChromeOS, so the
   // list is hardcoded here.
-  syncer::DataTypeSet expected_types{syncer::AUTOFILL_WALLET_CREDENTIAL,
-                                     syncer::AUTOFILL_WALLET_DATA,
-                                     syncer::AUTOFILL_WALLET_USAGE,
-                                     syncer::DEVICE_INFO,
-                                     syncer::NIGORI,
-                                     syncer::USER_CONSENTS,
-                                     syncer::SEND_TAB_TO_SELF,
-                                     syncer::SECURITY_EVENTS,
-                                     syncer::SHARING_MESSAGE,
-                                     syncer::ARC_PACKAGE,
-                                     syncer::OS_PREFERENCES,
-                                     syncer::OS_PRIORITY_PREFERENCES};
-
-  // TODO(crbug.com/424698545): This seems off: many of the
-  // datatypes below should not start.
-  expected_types.PutAll({
-      syncer::APP_LIST,
-      syncer::CONTACT_INFO,
-      syncer::EXTENSIONS,
-      syncer::EXTENSION_SETTINGS,
-      syncer::INCOMING_PASSWORD_SHARING_INVITATION,
-      syncer::OUTGOING_PASSWORD_SHARING_INVITATION,
-      syncer::PASSWORDS,
-      syncer::SAVED_TAB_GROUP,
-      syncer::WEBAUTHN_CREDENTIAL,
-  });
-
-  if (data_sharing::features::IsDataSharingFunctionalityEnabled()) {
-    expected_types.Put(syncer::SHARED_TAB_GROUP_DATA);
-    expected_types.Put(syncer::COLLABORATION_GROUP);
-
-    if (base::FeatureList::IsEnabled(syncer::kSyncSharedTabGroupAccountData)) {
-      expected_types.Put(syncer::SHARED_TAB_GROUP_ACCOUNT_DATA);
-    }
-  }
-
-  if (base::FeatureList::IsEnabled(commerce::kProductSpecifications)) {
-    expected_types.Put(syncer::PRODUCT_COMPARISON);
-  }
-
-  if (base::FeatureList::IsEnabled(syncer::kSyncAutofillLoyaltyCard)) {
-    expected_types.Put(syncer::AUTOFILL_VALUABLE);
-  }
+  const syncer::DataTypeSet expected_types{
+      syncer::DEVICE_INFO,     syncer::NIGORI,
+      syncer::USER_CONSENTS,   syncer::SEND_TAB_TO_SELF,
+      syncer::SECURITY_EVENTS, syncer::SHARING_MESSAGE};
 
   EXPECT_THAT(GetSyncService(0)->GetActiveDataTypes(),
               ContainerEq(expected_types));
