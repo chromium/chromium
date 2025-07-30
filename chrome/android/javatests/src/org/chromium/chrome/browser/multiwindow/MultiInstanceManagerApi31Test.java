@@ -32,7 +32,6 @@ import org.chromium.base.test.util.DoNotBatch;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistedInstanceType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
@@ -221,7 +220,7 @@ public class MultiInstanceManagerApi31Test {
                     Criteria.checkThat(
                             "Active instance count is incorrect.",
                             MultiInstanceManagerApi31.getPersistedInstanceIds(
-                                            PersistedInstanceType.ACTIVE)
+                                            MultiInstanceManager.PersistedInstanceType.ACTIVE)
                                     .size(),
                             is(expectedActiveInstances));
                     Criteria.checkThat(

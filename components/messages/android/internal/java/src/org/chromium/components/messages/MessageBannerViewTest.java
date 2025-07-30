@@ -6,7 +6,6 @@ package org.chromium.components.messages;
 
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -272,7 +271,7 @@ public class MessageBannerViewTest {
 
         // Click on the message banner view holding the popup menu to dismiss the menu, verify that
         // #onPopupMenuDismissed is invoked.
-        onView(withChild(withText(SECONDARY_BUTTON_MENU_TEXT))).perform(click());
+        onView(withText(SECONDARY_BUTTON_MENU_TEXT)).perform(click());
         Mockito.verify(listener).onPopupMenuDismissed();
     }
 

@@ -84,7 +84,7 @@ import java.util.Set;
  */
 @NullMarked
 public class MultiWindowUtils implements ActivityStateListener {
-    public static final int INVALID_TASK_ID = -1; // Defined in android.app.ActivityTaskManager.
+    public static final int INVALID_TASK_ID = MultiInstanceManager.INVALID_TASK_ID;
     private static final int DEFAULT_TAB_COUNT_FOR_RELAUNCH = 0;
 
     static final String HISTOGRAM_NUM_ACTIVITIES_DESKTOP_WINDOW =
@@ -109,18 +109,6 @@ public class MultiWindowUtils implements ActivityStateListener {
     private @Nullable Boolean mTabbedActivity2TaskRunning;
     private @Nullable WeakReference<ChromeTabbedActivity> mLastResumedTabbedActivity;
     private boolean mIsInMultiWindowModeForTesting;
-
-    @IntDef({
-        PersistedInstanceType.ANY,
-        PersistedInstanceType.ACTIVE,
-        PersistedInstanceType.INACTIVE
-    })
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface PersistedInstanceType {
-        int ANY = 0;
-        int ACTIVE = 1;
-        int INACTIVE = 2;
-    }
 
     // Note: these values must match the AndroidMultiWindowActivityType enum in enums.xml.
     @IntDef({MultiWindowActivityType.ENTER, MultiWindowActivityType.EXIT})

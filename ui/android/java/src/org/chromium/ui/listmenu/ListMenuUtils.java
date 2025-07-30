@@ -58,11 +58,11 @@ public class ListMenuUtils {
      * @return A configured {@link ModelListAdapter} ready to be set on the {@link ListView}.
      */
     @NonNull
-    public static ModelListAdapter createAdapter(
+    public static ListMenuItemAdapter createAdapter(
             ModelList listItems,
             Collection<Integer> disabledTypes,
             ListMenu.@Nullable Delegate delegate) {
-        ModelListAdapter adapter = new ListMenuItemAdapter(listItems, disabledTypes, delegate);
+        ListMenuItemAdapter adapter = new ListMenuItemAdapter(listItems, disabledTypes, delegate);
 
         adapter.registerType(
                 ListItemType.DIVIDER,

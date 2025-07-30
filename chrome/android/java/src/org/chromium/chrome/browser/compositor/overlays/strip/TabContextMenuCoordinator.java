@@ -5,8 +5,15 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 import static org.chromium.ui.listmenu.BasicListMenu.buildMenuDivider;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM_WITH_SUBMENU;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
 import android.app.Activity;
 import android.content.res.Resources;
@@ -21,6 +28,8 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -32,6 +41,7 @@ import org.chromium.chrome.browser.tabmodel.TabClosingSource;
 import org.chromium.chrome.browser.tabmodel.TabClosureParams;
 import org.chromium.chrome.browser.tabmodel.TabClosureParamsUtils;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilter;
+import org.chromium.chrome.browser.tabmodel.TabList;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tasks.tab_management.TabGroupListBottomSheetCoordinator;
 import org.chromium.chrome.browser.tasks.tab_management.TabOverflowMenuCoordinator;
@@ -41,11 +51,15 @@ import org.chromium.components.browser_ui.widget.ListItemBuilder;
 import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.listmenu.ListMenuItemProperties;
+import org.chromium.ui.listmenu.ListMenuSubmenuItemProperties;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -56,6 +70,7 @@ import java.util.List;
 @NullMarked
 public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Integer> {
     private final Supplier<TabModel> mTabModelSupplier;
+    private final MultiInstanceManager mMultiInstanceManager;
     private final WindowAndroid mWindowAndroid;
 
     private TabContextMenuCoordinator(
@@ -80,6 +95,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
                 collaborationService,
                 windowAndroid.getActivity().get());
         mTabModelSupplier = tabModelSupplier;
+        mMultiInstanceManager = multiInstanceManager;
         mWindowAndroid = windowAndroid;
     }
 
@@ -208,18 +224,7 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
 
         if (tab.getTabGroupId() == null && MultiWindowUtils.isMultiInstanceApi31Enabled()) {
             // Show the option to move the tab to another window iff the tab is not in a group.
-            Activity activity = assumeNonNull(mWindowAndroid.getActivity().get());
-            String title =
-                    activity.getResources()
-                            .getQuantityString(
-                                    R.plurals.move_tab_to_another_window,
-                                    MultiWindowUtils.getInstanceCount());
-            itemList.add(
-                    new ListItemBuilder()
-                            .withTitle(title)
-                            .withMenuId(R.id.move_to_other_window_menu_id)
-                            .withIsIncognito(isIncognito)
-                            .build());
+            itemList.add(createMoveToWindowItem(tab, isIncognito));
         }
 
         itemList.add(buildMenuDivider(isIncognito));
@@ -252,5 +257,59 @@ public class TabContextMenuCoordinator extends TabOverflowMenuCoordinator<Intege
         var tab = mTabModelSupplier.get().getTabById(id);
         if (tab == null) return null;
         return TabShareUtils.getCollaborationIdOrNull(tab.getTabGroupId(), mTabGroupSyncService);
+    }
+
+    private ListItem createMoveToWindowItem(Tab tab, boolean isIncognito) {
+        Activity activity = assumeNonNull(mWindowAndroid.getActivity().get());
+        String title =
+                activity.getResources()
+                        .getQuantityString(
+                                R.plurals.move_tab_to_another_window,
+                                MultiWindowUtils.getInstanceCount());
+        if (ChromeFeatureList.isEnabled(
+                ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)) {
+            List<InstanceInfo> activeInstances = mMultiInstanceManager.getInstanceInfo(ACTIVE);
+            if (activeInstances.size() == 1) {
+                return new ListItemBuilder()
+                        .withTitle(title)
+                        .withMenuId(R.id.move_to_other_window_menu_id)
+                        .withIsIncognito(isIncognito)
+                        .build();
+            }
+            List<ListItem> windowChoices = new ArrayList<>();
+            for (InstanceInfo instanceInfo : activeInstances) {
+                if (mMultiInstanceManager.getCurrentInstanceId() == instanceInfo.instanceId) {
+                    continue;
+                }
+                windowChoices.add(
+                        new ListItem(
+                                MENU_ITEM,
+                                new PropertyModel.Builder(ListMenuItemProperties.ALL_KEYS)
+                                        .with(TITLE, instanceInfo.title)
+                                        .with(
+                                                CLICK_LISTENER,
+                                                (v) -> {
+                                                    mMultiInstanceManager.moveTabToWindow(
+                                                            instanceInfo,
+                                                            tab,
+                                                            TabList.INVALID_TAB_INDEX);
+                                                })
+                                        .with(ENABLED, true)
+                                        .build()));
+            }
+            return new ListItem(
+                    MENU_ITEM_WITH_SUBMENU,
+                    new PropertyModel.Builder(ListMenuSubmenuItemProperties.ALL_KEYS)
+                            .with(TITLE, title)
+                            .with(SUBMENU_ITEMS, windowChoices)
+                            .with(ENABLED, true)
+                            .build());
+        } else {
+            return new ListItemBuilder()
+                    .withTitle(title)
+                    .withMenuId(R.id.move_to_other_window_menu_id)
+                    .withIsIncognito(isIncognito)
+                    .build();
+        }
     }
 }

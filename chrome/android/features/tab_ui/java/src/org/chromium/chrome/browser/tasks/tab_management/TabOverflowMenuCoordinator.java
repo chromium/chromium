@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.MENU_ITEM_ID;
+import static org.chromium.ui.listmenu.ListMenuUtils.createAdapter;
+import static org.chromium.ui.listmenu.ListMenuUtils.setupCallbacksRecursively;
+
 import android.app.Activity;
 import android.content.ComponentCallbacks;
 import android.content.Context;
@@ -39,17 +44,14 @@ import org.chromium.components.collaboration.CollaborationService;
 import org.chromium.components.data_sharing.member_role.MemberRole;
 import org.chromium.components.tab_group_sync.TabGroupSyncService;
 import org.chromium.ui.UiUtils;
-import org.chromium.ui.listmenu.ListItemType;
 import org.chromium.ui.listmenu.ListMenuItemAdapter;
-import org.chromium.ui.listmenu.ListMenuItemProperties;
-import org.chromium.ui.listmenu.ListMenuItemViewBinder;
-import org.chromium.ui.listmenu.ListSectionDividerViewBinder;
-import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.AnchoredPopupWindow.HorizontalOrientation;
 import org.chromium.ui.widget.RectProvider;
 import org.chromium.ui.widget.ViewRectProvider;
+
+import java.util.Set;
 
 /**
  * A coordinator for the overflow menu for tabs and tab groups. This applies to both the
@@ -78,12 +80,12 @@ public abstract class TabOverflowMenuCoordinator<T> {
     }
 
     private static class OverflowMenuHolder<T> {
-        private static final int INVALID_ITEM_ID = -1;
         private final Context mContext;
         private final View mContentView;
         private final ComponentCallbacks mComponentCallbacks;
         private final @Nullable LifetimeAssert mLifetimeAssert = LifetimeAssert.create(this);
         private AnchoredPopupWindow mMenuWindow;
+        private boolean mSubmenuNavigationInProgress;
 
         OverflowMenuHolder(
                 RectProvider anchorViewRectProvider,
@@ -119,35 +121,30 @@ public abstract class TabOverflowMenuCoordinator<T> {
             TouchTrackingListView touchTrackingListView =
                     mContentView.findViewById(R.id.tab_group_action_menu_list);
             ListMenuItemAdapter adapter =
-                    new ListMenuItemAdapter(modelList) {
-                        @Override
-                        public long getItemId(int position) {
-                            ListItem item = (ListItem) getItem(position);
-                            if (getItemViewType(position) == ListItemType.MENU_ITEM) {
-                                return item.model.get(ListMenuItemProperties.MENU_ITEM_ID);
-                            } else {
-                                return INVALID_ITEM_ID;
-                            }
-                        }
-                    };
-            adapter.registerType(
-                    ListItemType.MENU_ITEM,
-                    new LayoutViewBuilder(R.layout.list_menu_item),
-                    ListMenuItemViewBinder::binder);
-            adapter.registerType(
-                    ListItemType.DIVIDER,
-                    new LayoutViewBuilder(R.layout.list_section_divider),
-                    ListSectionDividerViewBinder::bind);
+                    createAdapter(
+                            modelList,
+                            Set.of(),
+                            (model) -> {
+                                // Because ListMenuItemAdapter always uses the delegate if there is
+                                // one, we need to manually call click listeners.
+                                if (model.containsKey(CLICK_LISTENER)
+                                        && model.get(CLICK_LISTENER) != null) {
+                                    // Set mSubmenuNavigationInProgress to prevent the popup from
+                                    // being destroyed. It will be cleaned up in the DataSetObserver
+                                    // below.
+                                    mSubmenuNavigationInProgress = true;
+                                    model.get(CLICK_LISTENER).onClick(mContentView);
+                                    return;
+                                }
+                                onItemClickedCallback.onClick(
+                                        model.get(MENU_ITEM_ID),
+                                        id,
+                                        collaborationId,
+                                        /* listViewTouchTracker= */ touchTrackingListView);
+                                mMenuWindow.dismiss();
+                            });
+            touchTrackingListView.setItemsCanFocus(true);
             touchTrackingListView.setAdapter(adapter);
-            touchTrackingListView.setOnItemClickListener(
-                    (p, v, pos, menuId) -> {
-                        onItemClickedCallback.onClick(
-                                (int) menuId,
-                                id,
-                                collaborationId,
-                                /* listViewTouchTracker= */ touchTrackingListView);
-                        mMenuWindow.dismiss();
-                    });
 
             View decorView = activity.getWindow().getDecorView();
 
@@ -179,6 +176,10 @@ public abstract class TabOverflowMenuCoordinator<T> {
                     new DataSetObserver() {
                         @Override
                         public void onChanged() {
+                            if (mSubmenuNavigationInProgress) {
+                                mSubmenuNavigationInProgress = false;
+                                return;
+                            }
                             resize();
                         }
                     });
@@ -385,6 +386,7 @@ public abstract class TabOverflowMenuCoordinator<T> {
             @HorizontalOrientation int horizontalOrientation,
             Activity activity,
             boolean isIncognito) {
+
         assert mMenuHolder == null;
         @Nullable String collaborationId = getCollaborationIdOrNull(id);
         Drawable menuBackground = getMenuBackground(activity, isIncognito);
@@ -477,6 +479,19 @@ public abstract class TabOverflowMenuCoordinator<T> {
             buildCollaborationMenuItems(
                     modelList, mCollaborationService.getCurrentUserRoleForGroup(collaborationId));
         }
+        // Set up callbacks for submenu navigation
+        setupCallbacksRecursively(
+                /* headerModelList= */ null,
+                modelList,
+                () -> {
+                    if (mMenuHolder != null) {
+                        mMenuHolder.dismiss();
+                    }
+                });
+    }
+
+    public void configureMenuItemsForTesting(ModelList modelList, T id) {
+        configureMenuItems(modelList, id);
     }
 
     public void destroyMenuForTesting() {

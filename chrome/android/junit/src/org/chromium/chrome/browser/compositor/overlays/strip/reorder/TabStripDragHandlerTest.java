@@ -1323,7 +1323,7 @@ public class TabStripDragHandlerTest {
 
             // Verify - Move to new window not invoked.
             verify(mDestMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), any(), anyInt());
+                    .moveTabGroupToWindow(any(Activity.class), any(), anyInt());
         } else {
             event =
                     mockDragEvent(
@@ -1336,7 +1336,8 @@ public class TabStripDragHandlerTest {
             mSourceInstance.onDrag(mTabsToolbarView, event);
 
             // Verify - Move to new window not invoked.
-            verify(mDestMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+            verify(mDestMultiInstanceManager, times(0))
+                    .moveTabToWindow(any(Activity.class), any(), anyInt());
         }
     }
 
@@ -1656,10 +1657,11 @@ public class TabStripDragHandlerTest {
         if (isGroupDrag) {
             // Verify tab group is not moved.
             verify(mSourceMultiInstanceManager, times(0))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), anyInt());
+                    .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), anyInt());
         } else {
             // Verify tab is not moved.
-            verify(mSourceMultiInstanceManager, times(0)).moveTabToWindow(any(), any(), anyInt());
+            verify(mSourceMultiInstanceManager, times(0))
+                    .moveTabToWindow(any(Activity.class), any(), anyInt());
         }
     }
 
@@ -1667,10 +1669,11 @@ public class TabStripDragHandlerTest {
         if (isGroupDrag) {
             // Verify tab group is moved.
             verify(mDestMultiInstanceManager, times(1))
-                    .moveTabGroupToWindow(any(), eq(mTabGroupMetadata), eq(index));
+                    .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), eq(index));
         } else {
             // Verify tab is moved.
-            verify(mDestMultiInstanceManager, times(1)).moveTabToWindow(any(), any(), eq(index));
+            verify(mDestMultiInstanceManager, times(1))
+                    .moveTabToWindow(any(Activity.class), any(), eq(index));
         }
     }
 

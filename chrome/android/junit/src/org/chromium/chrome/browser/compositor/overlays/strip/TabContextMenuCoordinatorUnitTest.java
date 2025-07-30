@@ -5,18 +5,27 @@
 package org.chromium.chrome.browser.compositor.overlays.strip;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.multiwindow.InstanceInfo.Type.CURRENT;
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.PersistedInstanceType.ACTIVE;
 import static org.chromium.chrome.browser.share.ShareDelegate.ShareOrigin.TAB_STRIP_CONTEXT_MENU;
 import static org.chromium.ui.listmenu.ListItemType.DIVIDER;
+import static org.chromium.ui.listmenu.ListItemType.MENU_ITEM;
+import static org.chromium.ui.listmenu.ListItemType.SUBMENU_HEADER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 import static org.chromium.ui.listmenu.ListSectionDividerProperties.COLOR_ID;
 
 import android.app.Activity;
 import android.os.SystemClock;
 import android.view.MotionEvent;
+import android.view.View;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -37,6 +46,7 @@ import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.collaboration.CollaborationServiceFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.InstanceInfo;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -67,7 +77,6 @@ import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.url.GURL;
 
 import java.lang.ref.WeakReference;
-import java.util.Collections;
 import java.util.List;
 
 /** Unit tests for {@link TabContextMenuCoordinator}. */
@@ -81,6 +90,38 @@ public class TabContextMenuCoordinatorUnitTest {
     private static final String COLLABORATION_ID = "CollaborationId";
     private static final GURL EXAMPLE_URL = new GURL("https://example.com");
     private static final GURL CHROME_SCHEME_URL = new GURL("chrome://history");
+    private static final int INSTANCE_ID_1 = 5;
+    private static final int INSTANCE_ID_2 = 6;
+    private static final String WINDOW_TITLE_1 = "Window Title 1";
+    private static final String WINDOW_TITLE_2 = "Window Title 2";
+    private static final int TASK_ID = 7;
+    private static final int NUM_TABS = 1;
+    private static final int NUM_INCOGNITO_TABS = 0;
+    private static final long LAST_ACCESSED_TIME = 100L;
+
+    private static final InstanceInfo INSTANCE_INFO_1 =
+            new InstanceInfo(
+                    INSTANCE_ID_1,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    WINDOW_TITLE_1,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ false,
+                    LAST_ACCESSED_TIME);
+
+    private static final InstanceInfo INSTANCE_INFO_2 =
+            new InstanceInfo(
+                    INSTANCE_ID_2,
+                    TASK_ID,
+                    CURRENT,
+                    EXAMPLE_URL.toString(),
+                    WINDOW_TITLE_2,
+                    NUM_TABS,
+                    NUM_INCOGNITO_TABS,
+                    /* isIncognitoSelected= */ false,
+                    LAST_ACCESSED_TIME);
 
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
 
@@ -109,6 +150,7 @@ public class TabContextMenuCoordinatorUnitTest {
     @Mock private CollaborationService mCollaborationService;
     @Mock private ServiceStatus mServiceStatus;
     @Mock private WeakReference<Activity> mWeakReferenceActivity;
+    @Mock private View mView;
 
     @Before
     public void setUp() {
@@ -136,6 +178,8 @@ public class TabContextMenuCoordinatorUnitTest {
         when(mNonUrlTab.getUrl()).thenReturn(CHROME_SCHEME_URL);
         when(mTabGroupModelFilter.getTabModel()).thenReturn(mTabModel);
         when(mTabGroupModelFilter.getTabUngrouper()).thenReturn(mTabUngrouper);
+        when(mMultiInstanceManager.getCurrentInstanceId()).thenReturn(INSTANCE_ID_1);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE)).thenReturn(List.of(INSTANCE_INFO_1));
         mSavedTabGroup.collaborationId = COLLABORATION_ID;
         setupWithIncognito(/* incognito= */ false); // Most tests will run not in incognito mode
         initializeCoordinator();
@@ -209,6 +253,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_tabOutsideOfGroup() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -251,11 +296,14 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_tabOutsideOfGroup_multipleWindows() {
-        MultiWindowUtils.setInstanceCountForTesting(2);
+        MultiWindowUtils.setInstanceCountForTesting(3);
+        when(mMultiInstanceManager.getInstanceInfo(ACTIVE))
+                .thenReturn(List.of(INSTANCE_INFO_1, INSTANCE_INFO_2));
 
         var modelList = new ModelList();
-        mTabContextMenuCoordinator.buildMenuActionItems(modelList, TAB_OUTSIDE_OF_GROUP_ID);
+        mTabContextMenuCoordinator.configureMenuItemsForTesting(modelList, TAB_OUTSIDE_OF_GROUP_ID);
 
         assertEquals("Number of items in the list menu is incorrect", 5, modelList.size());
 
@@ -267,16 +315,7 @@ public class TabContextMenuCoordinatorUnitTest {
                 R.id.add_to_tab_group,
                 modelList.get(0).model.get(ListMenuItemProperties.MENU_ITEM_ID));
 
-        // List item 2
-        assertEquals(
-                mWeakReferenceActivity
-                        .get()
-                        .getResources()
-                        .getQuantityString(R.plurals.move_tab_to_another_window, 2),
-                modelList.get(1).model.get(ListMenuItemProperties.TITLE));
-        assertEquals(
-                R.id.move_to_other_window_menu_id,
-                modelList.get(1).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+        // List item 2 should be a submenu, excluding inactive instances; checked at the end of test
 
         // List item 3
         assertEquals(DIVIDER, modelList.get(2).type);
@@ -290,6 +329,44 @@ public class TabContextMenuCoordinatorUnitTest {
         assertEquals(R.string.close, modelList.get(4).model.get(ListMenuItemProperties.TITLE_ID));
         assertEquals(
                 R.id.close_tab, modelList.get(4).model.get(ListMenuItemProperties.MENU_ITEM_ID));
+
+        // Check submenu (list item 2
+        var moveToOtherWindowItem = modelList.get(1);
+        var subMenu = moveToOtherWindowItem.model.get(SUBMENU_ITEMS);
+        assertNotNull("Submenu should be present", subMenu);
+        assertEquals("Submenu should have 1 item", 1, subMenu.size());
+
+        moveToOtherWindowItem.model.get(CLICK_LISTENER).onClick(mView);
+
+        // Check submenu items
+        assertEquals(2, modelList.size());
+        assertEquals(
+                "Expected first item to have SUBMENU_HEADER type",
+                SUBMENU_HEADER,
+                modelList.get(0).type);
+        assertEquals(
+                "Expected submenu back header to have the same text as submenu parent item",
+                mWeakReferenceActivity
+                        .get()
+                        .getResources()
+                        .getQuantityString(
+                                R.plurals.move_tab_to_another_window,
+                                MultiWindowUtils.getInstanceCount()),
+                modelList.get(0).model.get(TITLE));
+        StringBuilder modelListContents = new StringBuilder();
+        for (int i = 0; i < modelList.size(); i++) {
+            modelListContents.append(modelList.get(i).toString());
+        }
+        assertEquals(
+                "Expected submenu to have 2 items, but was " + modelListContents,
+                2,
+                modelList.size());
+        assertEquals(
+                "Expected submenu child to have MENU_ITEM type", MENU_ITEM, modelList.get(1).type);
+        assertEquals(
+                "Expected submenu child to have text WINDOW_TITLE_2",
+                WINDOW_TITLE_2,
+                modelList.get(1).model.get(TITLE));
     }
 
     @Test
@@ -325,6 +402,7 @@ public class TabContextMenuCoordinatorUnitTest {
 
     @Test
     @Feature("Tab Strip Context Menu")
+    @EnableFeatures(ChromeFeatureList.SUBMENUS_TAB_CONTEXT_MENU_LFF_TAB_STRIP)
     public void testListMenuItems_nonShareableUrl() {
         MultiWindowUtils.setInstanceCountForTesting(1);
         var modelList = new ModelList();
@@ -517,17 +595,5 @@ public class TabContextMenuCoordinatorUnitTest {
         StripLayoutContextMenuCoordinatorTestUtils.testAnchor_offset_incognito(
                 (rectProvider) -> mTabContextMenuCoordinator.showMenu(rectProvider, TAB_ID),
                 mTabContextMenuCoordinator::destroyMenuForTesting);
-    }
-
-    @Test
-    @Feature("Tab Strip Context Menu")
-    public void testMoveToAnotherWindow() {
-        mOnItemClickedCallback.onClick(
-                R.id.move_to_other_window_menu_id,
-                TAB_ID,
-                COLLABORATION_ID,
-                /* listViewTouchTracker= */ null);
-        verify(mMultiInstanceManager, times(1))
-                .moveTabsToOtherWindow(Collections.singletonList(mTab1));
     }
 }

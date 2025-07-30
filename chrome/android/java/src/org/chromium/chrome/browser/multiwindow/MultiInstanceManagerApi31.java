@@ -53,7 +53,6 @@ import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.multiwindow.MultiInstanceState.MultiInstanceStateObserver;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.InstanceAllocationType;
-import org.chromium.chrome.browser.multiwindow.MultiWindowUtils.PersistedInstanceType;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.ChromeSharedPreferences;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -102,7 +101,6 @@ import java.util.regex.Pattern;
 class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements ActivityStateListener {
     private static final String TAG = "MIMApi31";
     private static final String TAG_MULTI_INSTANCE = "MultiInstance";
-    public static final int INVALID_TASK_ID = MultiWindowUtils.INVALID_TASK_ID;
     /* package */ static final long SIX_MONTHS_MS = TimeUnit.DAYS.toMillis(6 * 30);
     private static final String EMPTY_DATA = "";
     private static @Nullable MultiInstanceState sState;
@@ -231,7 +229,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 new LargeIconBridge(getProfile()),
                 (instanceInfo) -> {
                     if (tabs.size() == 1) {
-                        moveTabAction(instanceInfo, tabs.get(0), TabList.INVALID_TAB_INDEX);
+                        moveTabToWindow(instanceInfo, tabs.get(0), TabList.INVALID_TAB_INDEX);
                     } else {
                         moveTabsAction(instanceInfo, tabs, TabList.INVALID_TAB_INDEX);
                     }
@@ -257,7 +255,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 mModalDialogManagerSupplier.get(),
                 new LargeIconBridge(getProfile()),
                 (instanceInfo) -> {
-                    moveTabGroupAction(instanceInfo, tabGroupMetadata, TabList.INVALID_TAB_INDEX);
+                    moveTabGroupToWindow(instanceInfo, tabGroupMetadata, TabList.INVALID_TAB_INDEX);
 
                     // Close the source instance window, if needed.
                     closeChromeWindowIfEmpty(mInstanceId);
@@ -268,8 +266,8 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                         : R.string.menu_move_to_other_window);
     }
 
-    @VisibleForTesting
-    void moveTabAction(InstanceInfo info, Tab tab, int tabAtIndex) {
+    @Override
+    public void moveTabToWindow(InstanceInfo info, Tab tab, int tabAtIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
             reparentTabToRunningActivity((ChromeTabbedActivity) targetActivity, tab, tabAtIndex);
@@ -314,8 +312,9 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         }
     }
 
-    @VisibleForTesting
-    void moveTabGroupAction(InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
+    @Override
+    public void moveTabGroupToWindow(
+            InstanceInfo info, TabGroupMetadata tabGroupMetadata, int startIndex) {
         Activity targetActivity = getActivityById(info.instanceId);
         if (targetActivity != null) {
             reparentTabGroupToRunningActivity(
@@ -482,12 +481,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
     }
 
     @Override
-    public List<InstanceInfo> getInstanceInfo() {
+    public List<InstanceInfo> getInstanceInfo(@PersistedInstanceType int persistedInstanceType) {
         removeInvalidInstanceData(/* cleanupApplicationStatus= */ false);
         List<InstanceInfo> result = new ArrayList<>();
         SparseBooleanArray visibleTasks = MultiWindowUtils.getVisibleTasks();
         int currentItemPos = -1;
-        for (int i : getAllPersistedInstanceIds()) {
+        for (int i : getPersistedInstanceIds(persistedInstanceType)) {
             @InstanceInfo.Type int type = InstanceInfo.Type.OTHER;
             Activity a = getActivityById(i);
             if (a != null) {
@@ -1438,7 +1437,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
-            moveTabAction(info, tab, atIndex);
+            moveTabToWindow(info, tab, atIndex);
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }
@@ -1452,7 +1451,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
         // Get the current instance and move tab there.
         InstanceInfo info = getInstanceInfoFor(activity);
         if (info != null) {
-            moveTabGroupAction(info, tabGroupMetadata, atIndex);
+            moveTabGroupToWindow(info, tabGroupMetadata, atIndex);
         } else {
             Log.w(TAG, "DnD: InstanceInfo of Chrome Window not found.");
         }

@@ -12,7 +12,9 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.reset;
@@ -21,6 +23,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.multiwindow.MultiInstanceManager.INVALID_TASK_ID;
 import static org.chromium.chrome.browser.tabwindow.TabWindowManager.INVALID_WINDOW_ID;
 
 import android.app.Activity;
@@ -43,6 +46,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
+import org.mockito.InOrder;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
@@ -1281,14 +1285,24 @@ public class MultiInstanceManagerApi31UnitTest {
     @Test
     public void testMoveTabToCurrentWindow_calledWithDesiredParameters() {
         setupTwoInstances();
+        InstanceInfo instanceInfo = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
+        clearInvocations(mMultiInstanceManager); // Clear getInstanceInfoFor call above.
 
         // Action
         int tabAtIndex = 0;
         mMultiInstanceManager.moveTabToWindow(mTabbedActivityTask63, mTab1, tabAtIndex);
 
-        // Verify moveTabAction and getCurrentInstanceInfo are each called once.
-        verify(mMultiInstanceManager, times(1)).moveTabAction(any(), eq(mTab1), eq(tabAtIndex));
-        verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
+        // Verify moveTabToWindow and getCurrentInstanceInfo are each called once.
+        InOrder inOrderVerifier = inOrder(mMultiInstanceManager);
+        inOrderVerifier
+                .verify(mMultiInstanceManager, times(1))
+                .moveTabToWindow(mTabbedActivityTask63, mTab1, tabAtIndex);
+        inOrderVerifier
+                .verify(mMultiInstanceManager, times(1))
+                .getInstanceInfoFor(mTabbedActivityTask63);
+        inOrderVerifier
+                .verify(mMultiInstanceManager, times(1))
+                .moveTabToWindow(instanceInfo, mTab1, tabAtIndex);
     }
 
     @Test
@@ -1303,17 +1317,17 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Verify moveTabGroupAction and getCurrentInstanceInfo are each called once.
         verify(mMultiInstanceManager, times(1))
-                .moveTabGroupAction(any(), eq(mTabGroupMetadata), eq(tabAtIndex));
+                .moveTabGroupToWindow(any(Activity.class), eq(mTabGroupMetadata), eq(tabAtIndex));
         verify(mMultiInstanceManager, times(1)).getInstanceInfoFor(any());
     }
 
     @Test
-    public void testMoveTabAction_WithTabIndex_success() {
+    public void testMoveTabToWindow_WithTabIndex_success() {
         setupTwoInstances();
 
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* tabAtIndex= */ 0);
+        mMultiInstanceManager.moveTabToWindow(info, mTab1, /* tabAtIndex= */ 0);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1329,7 +1343,7 @@ public class MultiInstanceManagerApi31UnitTest {
 
         // Action
         InstanceInfo info = mMultiInstanceManager.getInstanceInfoFor(mTabbedActivityTask63);
-        mMultiInstanceManager.moveTabGroupAction(info, mTabGroupMetadata, /* startIndex= */ 0);
+        mMultiInstanceManager.moveTabGroupToWindow(info, mTabGroupMetadata, /* startIndex= */ 0);
 
         // Verify reparentTabToRunningActivity is called once.
         verify(mMultiInstanceManager, times(1))
@@ -1344,7 +1358,7 @@ public class MultiInstanceManagerApi31UnitTest {
     }
 
     @Test
-    public void testMoveTabAction_WithNonExistentInstance_success() {
+    public void testMoveTabToWindow_WithNonExistentInstance_success() {
         setupTwoInstances();
 
         // Action
@@ -1359,7 +1373,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false,
                         0);
-        mMultiInstanceManager.moveTabAction(info, mTab1, /* tabAtIndex= */ 0);
+        mMultiInstanceManager.moveTabToWindow(info, mTab1, /* tabAtIndex= */ 0);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here
@@ -1415,7 +1429,7 @@ public class MultiInstanceManagerApi31UnitTest {
                         0,
                         false,
                         0);
-        mMultiInstanceManager.moveTabGroupAction(info, mTabGroupMetadata, /* startIndex= */ 0);
+        mMultiInstanceManager.moveTabGroupToWindow(info, mTabGroupMetadata, /* startIndex= */ 0);
 
         // Verify moveAndReparentTabToNewWindow is called made with desired parameters once. The
         // method is validated in integration test here
@@ -1459,8 +1473,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Chrome instance should be closed.",
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
-        verify(mMultiInstanceManager, times(1))
-                .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
+        verify(mMultiInstanceManager, times(1)).closeInstance(anyInt(), eq(INVALID_TASK_ID));
     }
 
     @Test
@@ -1478,8 +1491,7 @@ public class MultiInstanceManagerApi31UnitTest {
                 "Chrome instance should be closed.",
                 mMultiInstanceManager.closeChromeWindowIfEmpty(INSTANCE_ID_1));
 
-        verify(mMultiInstanceManager, times(1))
-                .closeInstance(anyInt(), eq(MultiWindowUtils.INVALID_TASK_ID));
+        verify(mMultiInstanceManager, times(1)).closeInstance(anyInt(), eq(INVALID_TASK_ID));
     }
 
     @Test
