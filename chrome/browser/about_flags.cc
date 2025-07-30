@@ -1633,9 +1633,19 @@ const FeatureEntry::FeatureVariation kOmniboxToolbeltVariations[] = {
 const FeatureEntry::FeatureParam kComposeboxShowZps[] = {
     {"ShowComposeboxZps", "true"},
 };
+const FeatureEntry::FeatureParam kComposeboxNoClickOutsideClosure[] = {
+    {"ConfigParam", "EgIQAA=="},
+};
+const FeatureEntry::FeatureParam kComposeboxNoEscClosure[] = {
+    {"ConfigParam", "EgIIAA=="},
+};
 
 const FeatureEntry::FeatureVariation kNtpComposeboxVariations[] = {
     {"- Show ZPS", kComposeboxShowZps, std::size(kComposeboxShowZps), nullptr},
+    {"- Disable Click Outside Closure", kComposeboxNoClickOutsideClosure,
+     std::size(kComposeboxNoClickOutsideClosure), nullptr},
+    {"- Disable Escape Closure", kComposeboxNoEscClosure,
+     std::size(kComposeboxNoEscClosure), nullptr},
 };
 
 #endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) ||
