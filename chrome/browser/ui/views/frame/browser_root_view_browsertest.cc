@@ -227,7 +227,13 @@ IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest,
   EXPECT_EQ(3, model->active_index());
 }
 
-IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, DropOrderingCorrect) {
+// TODO(crbug.com/386194202): Flaky on Linux.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_DropOrderingCorrect DISABLED_DropOrderingCorrect
+#else
+#define MAYBE_DropOrderingCorrect DropOrderingCorrect
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserRootViewBrowserTest, MAYBE_DropOrderingCorrect) {
   TabStripModel* model = browser()->tab_strip_model();
 
   // HELPER FUNCTION: Verify that the tabs in the current browser window match
