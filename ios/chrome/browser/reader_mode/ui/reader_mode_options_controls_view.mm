@@ -17,7 +17,7 @@ constexpr CGFloat kCornerRadius = 12.0;
 constexpr CGFloat kSpacing = 16.0;
 constexpr CGFloat kHorizontalInsets = 12.0;
 constexpr CGFloat kVerticalInsets = 16.0;
-constexpr CGFloat kFontSizeStackSpacing = 0.5;
+constexpr CGFloat kFontSizeStackSpacing = 1.0;
 constexpr CGFloat kSmallFontSize = 17.0;
 constexpr CGFloat kLargeFontSize = 24.0;
 constexpr CGFloat kFirstRowHeight = 50.0;
@@ -185,7 +185,7 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   configuration.titleAlignment = UIButtonConfigurationTitleAlignmentLeading;
   configuration.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.background.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   configuration.background.cornerRadius = kCornerRadius;
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
@@ -312,7 +312,7 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.background.backgroundColor =
-      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+      [UIColor colorNamed:kSecondaryBackgroundColor];
   configuration.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.background.cornerRadius = 0;
   UIFont* font = [UIFont systemFontOfSize:fontSize];
@@ -420,7 +420,7 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   configuration.background.backgroundColor = backgroundColor;
   configuration.background.strokeColor =
       selected ? [UIColor colorNamed:kBlue600Color]
-               : [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
+               : [UIColor colorNamed:kSecondaryBackgroundColor];
   configuration.background.strokeWidth =
       selected ? kSelectedThemeBorderWidth : kUnselectedThemeBorderWidth;
   configuration.background.cornerRadius = kSecondRowHeight / 2.0;
