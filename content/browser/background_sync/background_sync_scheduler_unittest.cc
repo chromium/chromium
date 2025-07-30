@@ -9,6 +9,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
+#include "base/hash/hash.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -41,9 +42,12 @@ class TestBrowserClient : public ContentBrowserClient {
   StoragePartitionConfig GetStoragePartitionConfigForSite(
       BrowserContext* browser_context,
       const GURL& site) override {
+    // The URL spec contains invalid filesystem characters like ':' so fasthash
+    // it to make it valid on all OS.
+    const auto spec_hash = base::NumberToString(base::FastHash(site.spec()));
     return content::StoragePartitionConfig::Create(
-        browser_context, "PartitionDomain" + site.spec(),
-        "Partition" + site.spec(), false /* in_memory */);
+        browser_context, "PartitionDomain" + spec_hash, "Partition" + spec_hash,
+        false /* in_memory */);
   }
 };
 
