@@ -18,6 +18,7 @@
 
 #include <cstdint>
 #include <limits>
+#include <mutex>  // NOLINT(build/c++11)
 #include <random>
 #include <thread>  // NOLINT(build/c++11)
 #include <type_traits>
@@ -131,15 +132,13 @@ static_assert(std::is_trivially_destructible<SpinLock>(), "");
 
 TEST(SpinLock, StackNonCooperativeDisablesScheduling) {
   SpinLock spinlock(base_internal::SCHEDULE_KERNEL_ONLY);
-  spinlock.Lock();
+  SpinLockHolder l(&spinlock);
   EXPECT_FALSE(base_internal::SchedulingGuard::ReschedulingIsAllowed());
-  spinlock.Unlock();
 }
 
 TEST(SpinLock, StaticNonCooperativeDisablesScheduling) {
-  static_noncooperative_spinlock.Lock();
+  SpinLockHolder l(&static_noncooperative_spinlock);
   EXPECT_FALSE(base_internal::SchedulingGuard::ReschedulingIsAllowed());
-  static_noncooperative_spinlock.Unlock();
 }
 
 TEST(SpinLock, WaitCyclesEncoding) {
@@ -293,6 +292,11 @@ TEST(SpinLockTest, IsCooperative) {
 
   SpinLock kernel_only(base_internal::SCHEDULE_KERNEL_ONLY);
   EXPECT_FALSE(SpinLockTest::IsCooperative(kernel_only));
+}
+
+TEST(SpinLockTest, ScopedLock) {
+  SpinLock s;
+  std::scoped_lock l(s);
 }
 
 }  // namespace

@@ -265,6 +265,26 @@ TEST(CHECKTest, TestBinaryChecksWithNullptr) {
   ABSL_TEST_CHECK_NE(nullptr, p_not_null);
 }
 
+struct ExampleTypeThatHasNoStreamOperator {
+  bool x;
+
+  bool operator==(const ExampleTypeThatHasNoStreamOperator& other) const {
+    return x == other.x;
+  }
+  bool operator==(const bool& other) const { return x == other; }
+};
+
+TEST(CHECKDeathTest, TestBinaryChecksWithUnprintable) {
+  ExampleTypeThatHasNoStreamOperator a{true};
+  ExampleTypeThatHasNoStreamOperator b{false};
+  ABSL_TEST_CHECK_EQ(a, a);
+  EXPECT_DEATH(ABSL_TEST_CHECK_EQ(a, b),
+               "Check failed: a == b \\(UNPRINTABLE vs. UNPRINTABLE\\)");
+  ABSL_TEST_CHECK_EQ(a, true);
+  EXPECT_DEATH(ABSL_TEST_CHECK_EQ(a, false),
+               "Check failed: a == false \\(UNPRINTABLE vs. 0\\)");
+}
+
 #if GTEST_HAS_DEATH_TEST
 
 // Test logging of various char-typed values by failing CHECK*().

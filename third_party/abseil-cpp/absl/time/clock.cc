@@ -415,7 +415,7 @@ static int64_t GetCurrentTimeNanosSlowPath()
     ABSL_LOCKS_EXCLUDED(time_state.lock) {
   // Serialize access to slow-path.  Fast-path readers are not blocked yet, and
   // code below must not modify last_sample until the seqlock is acquired.
-  time_state.lock.Lock();
+  base_internal::SpinLockHolder l(&time_state.lock);
 
   // Sample the kernel time base.  This is the definition of
   // "now" if we take the slow path.
@@ -445,8 +445,6 @@ static int64_t GetCurrentTimeNanosSlowPath()
     estimated_base_ns =
         UpdateLastSample(now_cycles, now_ns, delta_cycles, &sample);
   }
-
-  time_state.lock.Unlock();
 
   return static_cast<int64_t>(estimated_base_ns);
 }

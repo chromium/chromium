@@ -267,7 +267,7 @@ void UpdateVLogSites() ABSL_UNLOCK_FUNCTION(mutex)
   // have to wait on all updates in order to acquire `mutex` and initialize
   // themselves.
   absl::MutexLock ul(GetUpdateSitesMutex());
-  mutex.Unlock();
+  mutex.unlock();
   VLogSite* n = site_list_head.load(std::memory_order_seq_cst);
   // Because sites are added to the list in the order they are executed, there
   // tend to be clusters of entries with the same file.
@@ -299,7 +299,7 @@ void UpdateVModule(absl::string_view vmodule)
     if (!absl::SimpleAtoi(glob_level.substr(eq + 1), &level)) continue;
     glob_levels.emplace_back(glob, level);
   }
-  mutex.Lock();  // Unlocked by UpdateVLogSites().
+  mutex.lock();  // unlocked by UpdateVLogSites().
   get_vmodule_info().clear();
   for (const auto& it : glob_levels) {
     const absl::string_view glob = it.first;
@@ -311,10 +311,10 @@ void UpdateVModule(absl::string_view vmodule)
 
 int UpdateGlobalVLogLevel(int v)
     ABSL_LOCKS_EXCLUDED(mutex, GetUpdateSitesMutex()) {
-  mutex.Lock();  // Unlocked by UpdateVLogSites().
+  mutex.lock();  // unlocked by UpdateVLogSites().
   const int old_global_v = global_v;
   if (v == global_v) {
-    mutex.Unlock();
+    mutex.unlock();
     return old_global_v;
   }
   global_v = v;
@@ -324,7 +324,7 @@ int UpdateGlobalVLogLevel(int v)
 
 int PrependVModule(absl::string_view module_pattern, int log_level)
     ABSL_LOCKS_EXCLUDED(mutex, GetUpdateSitesMutex()) {
-  mutex.Lock();  // Unlocked by UpdateVLogSites().
+  mutex.lock();  // unlocked by UpdateVLogSites().
   int old_v = PrependVModuleLocked(module_pattern, log_level);
   UpdateVLogSites();
   return old_v;

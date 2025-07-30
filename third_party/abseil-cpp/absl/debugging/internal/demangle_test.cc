@@ -1936,11 +1936,11 @@ static const char *DemangleStackConsumption(const char *mangled,
   return g_demangle_result;
 }
 
-// Demangle stack consumption should be within 8kB for simple mangled names
+// Demangle stack consumption should be within 9kB for simple mangled names
 // with some level of nesting. With alternate signal stack we have 64K,
 // but some signal handlers run on thread stack, and could have arbitrarily
 // little space left (so we don't want to make this number too large).
-const int kStackConsumptionUpperLimit = 8192;
+const int kStackConsumptionUpperLimit = 9670;
 
 // Returns a mangled name nested to the given depth.
 static std::string NestedMangledName(int depth) {

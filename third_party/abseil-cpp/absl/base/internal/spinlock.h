@@ -93,7 +93,7 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
 #endif
 
   // Acquire this SpinLock.
-  inline void Lock() ABSL_EXCLUSIVE_LOCK_FUNCTION() {
+  inline void lock() ABSL_EXCLUSIVE_LOCK_FUNCTION() {
     ABSL_TSAN_MUTEX_PRE_LOCK(this, 0);
     if (!TryLockImpl()) {
       SlowLock();
@@ -101,11 +101,13 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
     ABSL_TSAN_MUTEX_POST_LOCK(this, 0, 0);
   }
 
+  inline void Lock() ABSL_EXCLUSIVE_LOCK_FUNCTION() { return lock(); }
+
   // Try to acquire this SpinLock without blocking and return true if the
   // acquisition was successful.  If the lock was not acquired, false is
-  // returned.  If this SpinLock is free at the time of the call, TryLock
-  // will return true with high probability.
-  [[nodiscard]] inline bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+  // returned.  If this SpinLock is free at the time of the call, try_lock will
+  // return true with high probability.
+  [[nodiscard]] inline bool try_lock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
     ABSL_TSAN_MUTEX_PRE_LOCK(this, __tsan_mutex_try_lock);
     bool res = TryLockImpl();
     ABSL_TSAN_MUTEX_POST_LOCK(
@@ -114,8 +116,12 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
     return res;
   }
 
+  [[nodiscard]] inline bool TryLock() ABSL_EXCLUSIVE_TRYLOCK_FUNCTION(true) {
+    return try_lock();
+  }
+
   // Release this SpinLock, which must be held by the calling thread.
-  inline void Unlock() ABSL_UNLOCK_FUNCTION() {
+  inline void unlock() ABSL_UNLOCK_FUNCTION() {
     ABSL_TSAN_MUTEX_PRE_UNLOCK(this, 0);
     uint32_t lock_value = lockword_.load(std::memory_order_relaxed);
     lock_value = lockword_.exchange(lock_value & kSpinLockCooperative,
@@ -132,6 +138,8 @@ class ABSL_LOCKABLE ABSL_ATTRIBUTE_WARN_UNUSED SpinLock {
     }
     ABSL_TSAN_MUTEX_POST_UNLOCK(this, 0);
   }
+
+  inline void Unlock() ABSL_UNLOCK_FUNCTION() { unlock(); }
 
   // Determine if the lock is held.  When the lock is held by the invoking
   // thread, true will always be returned. Intended to be used as
@@ -229,9 +237,9 @@ class ABSL_SCOPED_LOCKABLE [[nodiscard]] SpinLockHolder {
  public:
   inline explicit SpinLockHolder(SpinLock* l) ABSL_EXCLUSIVE_LOCK_FUNCTION(l)
       : lock_(l) {
-    l->Lock();
+    l->lock();
   }
-  inline ~SpinLockHolder() ABSL_UNLOCK_FUNCTION() { lock_->Unlock(); }
+  inline ~SpinLockHolder() ABSL_UNLOCK_FUNCTION() { lock_->unlock(); }
 
   SpinLockHolder(const SpinLockHolder&) = delete;
   SpinLockHolder& operator=(const SpinLockHolder&) = delete;

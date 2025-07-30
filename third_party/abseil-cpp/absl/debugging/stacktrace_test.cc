@@ -218,6 +218,59 @@ ABSL_ATTRIBUTE_NOINLINE static void FixupNoFixupEquivalenceNoInline() {
 
 TEST(StackTrace, FixupNoFixupEquivalence) { FixupNoFixupEquivalenceNoInline(); }
 
+TEST(StackTrace, CustomUnwinderPerformsFixup) {
+#if ABSL_HAVE_ATTRIBUTE_WEAK
+  // This test is known not to pass on MSVC (due to weak symbols)
+
+  constexpr int kSkip = 1;  // Skip our own frame, whose return PCs won't match
+  constexpr auto kStackCount = 1;
+
+  absl::SetStackUnwinder(absl::DefaultStackUnwinder);
+  const Cleanup restore_state([enable_fixup = g_enable_fixup,
+                               fixup_calls = g_fixup_calls,
+                               should_fixup_calls = g_should_fixup_calls]() {
+    absl::SetStackUnwinder(nullptr);
+    g_enable_fixup = enable_fixup;
+    g_fixup_calls = fixup_calls;
+    g_should_fixup_calls = should_fixup_calls;
+  });
+
+  StackTrace trace;
+
+  g_enable_fixup = true;
+  g_should_fixup_calls = 0;
+  g_fixup_calls = 0;
+  absl::GetStackTrace(trace.result, kSkip, kStackCount);
+  EXPECT_GT(g_should_fixup_calls, 0);
+  EXPECT_GT(g_fixup_calls, 0);
+
+  g_enable_fixup = true;
+  g_should_fixup_calls = 0;
+  g_fixup_calls = 0;
+  absl::GetStackFrames(trace.result, trace.sizes, kSkip, kStackCount);
+  EXPECT_GT(g_should_fixup_calls, 0);
+  EXPECT_GT(g_fixup_calls, 0);
+
+  g_enable_fixup = true;
+  g_should_fixup_calls = 0;
+  g_fixup_calls = 0;
+  absl::GetStackTraceWithContext(trace.result, kSkip, kStackCount, nullptr,
+                                 nullptr);
+  EXPECT_GT(g_should_fixup_calls, 0);
+  EXPECT_GT(g_fixup_calls, 0);
+
+  g_enable_fixup = true;
+  g_should_fixup_calls = 0;
+  g_fixup_calls = 0;
+  absl::GetStackFramesWithContext(trace.result, trace.sizes, kSkip, kStackCount,
+                                  nullptr, nullptr);
+  EXPECT_GT(g_should_fixup_calls, 0);
+  EXPECT_GT(g_fixup_calls, 0);
+#else
+  GTEST_SKIP() << "Need weak symbol support";
+#endif
+}
+
 #if ABSL_HAVE_BUILTIN(__builtin_frame_address)
 struct FrameInfo {
   const void* return_address;

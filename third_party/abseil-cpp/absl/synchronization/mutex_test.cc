@@ -23,7 +23,9 @@
 #include <cstdlib>
 #include <functional>
 #include <memory>
+#include <mutex>  // NOLINT(build/c++11)
 #include <random>
+#include <shared_mutex>  // NOLINT(build/c++14)
 #include <string>
 #include <thread>  // NOLINT(build/c++11)
 #include <type_traits>
@@ -2032,6 +2034,18 @@ TEST(Mutex, LockWhenWithTimeoutResult) {
   mu.Unlock();
   th1.join();
   th2.join();
+}
+
+TEST(Mutex, ScopedLock) {
+  absl::Mutex mu;
+  {
+    std::scoped_lock l(mu);
+  }
+
+  {
+    std::shared_lock l(mu);
+    EXPECT_TRUE(l.owns_lock());
+  }
 }
 
 }  // namespace

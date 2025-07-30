@@ -224,6 +224,19 @@ void MakeCheckOpValueString(std::ostream& os, signed char v);
 void MakeCheckOpValueString(std::ostream& os, unsigned char v);
 void MakeCheckOpValueString(std::ostream& os, const void* absl_nullable p);
 
+void MakeCheckOpUnprintableString(std::ostream& os);
+
+// A wrapper for types that have no operator<<.
+struct UnprintableWrapper {
+  template <typename T>
+  explicit UnprintableWrapper(const T&) {}
+
+  friend std::ostream& operator<<(std::ostream& os, const UnprintableWrapper&) {
+    MakeCheckOpUnprintableString(os);
+    return os;
+  }
+};
+
 namespace detect_specialization {
 
 // MakeCheckOpString is being specialized for every T and U pair that is being
@@ -352,6 +365,15 @@ template <class T>
 struct is_streamable<T, std::void_t<decltype(std::declval<std::ostream&>()
                                              << std::declval<T>())>>
     : std::true_type {};
+
+// This overload triggers when T is neither possible to print nor an enum.
+template <typename T>
+std::enable_if_t<std::negation_v<std::disjunction<
+                     std::is_convertible<T, int>, std::is_enum<T>,
+                     std::is_pointer<T>, std::is_same<T, std::nullptr_t>,
+                     is_streamable<T>, HasAbslStringify<T>>>,
+                 UnprintableWrapper>
+Detect(...);
 
 // This overload triggers when T is a scoped enum that has not defined an output
 // stream operator (operator<<) or AbslStringify. It causes the enum value to be

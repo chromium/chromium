@@ -783,6 +783,7 @@ EXPORTS
     ?Init@FlagImpl@flags_internal@absl@@AAEXXZ
     ?InitDiscreteDistribution@random_internal@absl@@YA?AV?$vector@U?$pair@NI@__Cr@std@@V?$allocator@U?$pair@NI@__Cr@std@@@23@@__Cr@std@@PAV?$vector@NV?$allocator@N@__Cr@std@@@45@@Z
     ?InitFrom@?$Storage@UPayload@status_internal@absl@@$00V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@@inlined_vector_internal@absl@@QAEXABV123@@Z
+    ?InitSigSafeArena@base_internal@absl@@YAXXZ
     ?InitTables@CRC32@crc_internal@absl@@UAEXXZ
     ?InitTree@ChunkIterator@Cord@absl@@AAEXPAUCordRep@cord_internal@3@@Z
     ?InitWhat@BadStatusOrAccess@absl@@ABEXXZ
@@ -838,7 +839,6 @@ EXPORTS
     ?LocalTime@TimeZoneInfo@cctz@time_internal@absl@@ABE?AUabsolute_lookup@time_zone@234@_JABUTransition@234@@Z
     ?LocalTime@TimeZoneInfo@cctz@time_internal@absl@@ABE?AUabsolute_lookup@time_zone@234@_JABUTransitionType@234@@Z
     ?Lock@CordzInfo@cord_internal@absl@@QAEXW4MethodIdentifier@CordzUpdateTracker@23@@Z
-    ?Lock@Mutex@absl@@QAEXXZ
     ?LockSlow@Mutex@absl@@AAEXPBUMuHowS@2@PBVCondition@2@H@Z
     ?LockSlowLoop@Mutex@absl@@AAEXPAUSynchWaitParams@2@H@Z
     ?LockSlowWithDeadline@Mutex@absl@@AAE_NPBUMuHowS@2@PBVCondition@2@VKernelTimeout@synchronization_internal@2@H@Z
@@ -852,6 +852,7 @@ EXPORTS
     ?MakeAbsNanos@KernelTimeout@synchronization_internal@absl@@QBE_JXZ
     ?MakeAbsTimespec@KernelTimeout@synchronization_internal@absl@@QBE?AUtimespec@@XZ
     ?MakeCheckFailString@status_internal@absl@@YAPBDPBVStatus@2@PBD@Z
+    ?MakeCheckOpUnprintableString@log_internal@absl@@YAXAAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@C@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@D@Z
     ?MakeCheckOpValueString@log_internal@absl@@YAXAAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@E@Z
@@ -988,10 +989,7 @@ EXPORTS
     ?ReadOneWord@FlagImpl@flags_internal@absl@@QBE_JXZ
     ?ReadSeedMaterialFromOSEntropy@random_internal@absl@@YA_NV?$Span@I@2@@Z
     ?ReadSequenceLockedData@FlagImpl@flags_internal@absl@@ABEXPAX@Z
-    ?ReaderLock@Mutex@absl@@QAEXXZ
-    ?ReaderTryLock@Mutex@absl@@QAE_NXZ
     ?ReaderTryLockSlow@Mutex@absl@@AAE_NXZ
-    ?ReaderUnlock@Mutex@absl@@QAEXXZ
     ?Rebuild@CordRepBtree@cord_internal@absl@@CAXPAPAV123@PAV123@_N@Z
     ?Rebuild@CordRepBtree@cord_internal@absl@@SAPAV123@PAV123@@Z
     ?RecordClearedReservationSlow@container_internal@absl@@YAXPAUHashtablezInfo@12@@Z
@@ -1094,6 +1092,7 @@ EXPORTS
     ?ShouldLogBacktraceAt@log_internal@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@H@Z
     ?ShouldPrependLogPrefix@absl@@YA_NXZ
     ?ShouldSymbolizeLogStackTrace@log_internal@absl@@YA_NXZ
+    ?SigSafeArena@base_internal@absl@@YAPAUArena@LowLevelAlloc@12@XZ
     ?Signal@CondVar@absl@@QAEXXZ
     ?SignalAll@CondVar@absl@@QAEXXZ
     ?SimpleAtob@absl@@YA_NV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PA_N@Z
@@ -1213,7 +1212,6 @@ EXPORTS
     ?TrackCord@CordzInfo@cord_internal@absl@@SAXAAVInlineData@23@W4MethodIdentifier@CordzUpdateTracker@23@_J@Z
     ?Trans@Mutex@absl@@AAEXPBUMuHowS@2@@Z
     ?Trunc@absl@@YA?AVDuration@1@V21@0@Z
-    ?TryLock@Mutex@absl@@QAE_NXZ
     ?TryLockSlow@Mutex@absl@@AAE_NXZ
     ?TryNewCRC32AcceleratedX86ARMCombined@crc_internal@absl@@YAPAVCRCImpl@12@XZ
     ?TryParse@FlagImpl@flags_internal@absl@@ABE?AV?$unique_ptr@XUDynValueDeleter@flags_internal@absl@@@__Cr@std@@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@56@AAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@56@@Z
@@ -1236,7 +1234,6 @@ EXPORTS
     ?UnimplementedError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?UnknownError@absl@@YA?AVStatus@1@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@@Z
     ?Unlock@CordzInfo@cord_internal@absl@@QAEXXZ
-    ?Unlock@Mutex@absl@@QAEXXZ
     ?UnlockSlow@Mutex@absl@@AAEXPAUSynchWaitParams@2@@Z
     ?Unparse@flags_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@F@Z
     ?Unparse@flags_internal@absl@@YA?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@G@Z
@@ -1326,6 +1323,8 @@ EXPORTS
     ?kDefaultIterControl@container_internal@absl@@3W4ctrl_t@12@A
     ?load_time_zone@cctz@time_internal@absl@@YA_NABV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@PAVtime_zone@123@@Z
     ?local_time_zone@cctz@time_internal@absl@@YA?AVtime_zone@123@XZ
+    ?lock@Mutex@absl@@QAEXXZ
+    ?lock_shared@Mutex@absl@@QAEXXZ
     ?lookup@time_zone@cctz@time_internal@absl@@QBE?AUabsolute_lookup@1234@ABV?$time_point@Vsystem_clock@chrono@__Cr@std@@V?$duration@_JV?$ratio@$00$00@__Cr@std@@@234@@chrono@__Cr@std@@@Z
     ?lookup@time_zone@cctz@time_internal@absl@@QBE?AUcivil_lookup@1234@ABV?$civil_time@Usecond_tag@detail@cctz@time_internal@absl@@@detail@234@@Z
     ?memcasecmp@strings_internal@absl@@YAHPBD0I@Z
@@ -1363,6 +1362,10 @@ EXPORTS
     ?status@BadStatusOrAccess@absl@@QBEABVStatus@2@XZ
     ?stream@OstreamView@LogMessage@log_internal@absl@@QAEAAV?$basic_ostream@DU?$char_traits@D@__Cr@std@@@__Cr@std@@XZ
     ?transfer_unprobed_elements_to_next_capacity_fn@?$raw_hash_set@U?$FlatHashMapPolicy@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@container_internal@absl@@UStringHash@23@UStringEq@23@V?$allocator@U?$pair@$$CBV?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@PAVCommandLineFlag@absl@@@__Cr@std@@@__Cr@std@@@container_internal@absl@@CAXAAVCommonFields@23@PBW4ctrl_t@23@PAX2P6AX2EII@Z@Z
+    ?try_lock@Mutex@absl@@QAE_NXZ
+    ?try_lock_shared@Mutex@absl@@QAE_NXZ
+    ?unlock@Mutex@absl@@QAEXXZ
+    ?unlock_shared@Mutex@absl@@QAEXXZ
     ?utc_time_zone@cctz@time_internal@absl@@YA?AVtime_zone@123@XZ
     ?version@time_zone@cctz@time_internal@absl@@QBE?AV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@XZ
     ?what@BadStatusOrAccess@absl@@UBEPBDXZ

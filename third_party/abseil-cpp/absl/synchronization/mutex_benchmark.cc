@@ -72,24 +72,6 @@ static void DelayNs(int64_t ns, int* data) {
   }
 }
 
-template <typename MutexType>
-class RaiiLocker {
- public:
-  explicit RaiiLocker(MutexType* mu) : mu_(mu) { mu_->Lock(); }
-  ~RaiiLocker() { mu_->Unlock(); }
- private:
-  MutexType* mu_;
-};
-
-template <>
-class RaiiLocker<std::mutex> {
- public:
-  explicit RaiiLocker(std::mutex* mu) : mu_(mu) { mu_->lock(); }
-  ~RaiiLocker() { mu_->unlock(); }
- private:
-  std::mutex* mu_;
-};
-
 // RAII object to change the Mutex priority of the running thread.
 class ScopedThreadMutexPriority {
  public:
@@ -226,7 +208,7 @@ void BM_Contended(benchmark::State& state) {
     // to keep ratio between local work and critical section approximately
     // equal regardless of number of threads.
     DelayNs(100 * state.threads(), &local);
-    RaiiLocker<MutexType> locker(&shared->mu);
+    std::scoped_lock locker(shared->mu);
     DelayNs(state.range(0), &shared->data);
   }
 }

@@ -1915,6 +1915,13 @@ class raw_hash_set {
   auto KeyTypeCanBeHashed(const Hash& h, const key_type& k) -> decltype(h(k));
   auto KeyTypeCanBeEq(const Eq& eq, const key_type& k) -> decltype(eq(k, k));
 
+  // Try to be helpful when the hasher returns an unreasonable type.
+  using key_hash_result =
+      absl::remove_cvref_t<decltype(std::declval<const Hash&>()(
+          std::declval<const key_type&>()))>;
+  static_assert(sizeof(key_hash_result) >= sizeof(size_t),
+                "`Hash::operator()` should return a `size_t`");
+
   using AllocTraits = absl::allocator_traits<allocator_type>;
   using SlotAlloc = typename absl::allocator_traits<
       allocator_type>::template rebind_alloc<slot_type>;
