@@ -22,7 +22,7 @@ class MockSmartCardContextFactory
   mojo::PendingRemote<device::mojom::SmartCardContextFactory> GetRemote();
 
   // `device::mojom::SmartCardContextFactory` overrides:
-  void CreateContext(CreateContextCallback) override;
+  MOCK_METHOD(void, CreateContext, (CreateContextCallback), (override));
 
   // `device::mojom::SmartCardContext` overrides:
   MOCK_METHOD(void, ListReaders, (ListReadersCallback callback), (override));
@@ -55,6 +55,8 @@ class MockSmartCardContextFactory
   // Expect a ListReaders() call. Will return `readers`.
   void ExpectListReaders(std::vector<std::string> readers);
   void ExpectListReadersError(device::mojom::SmartCardError error);
+
+  void ExpectCreateContextError(device::mojom::SmartCardError error);
 
   void ClearContextReceivers();
 

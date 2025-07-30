@@ -17,6 +17,16 @@ MockSmartCardContextFactory::MockSmartCardContextFactory() {
   context_receivers_.set_disconnect_handler(
       base::BindRepeating(&MockSmartCardContextFactory::ContextDisconnected,
                           base::Unretained(this)));
+
+  ON_CALL(*this, CreateContext)
+      .WillByDefault([this](CreateContextCallback callback) {
+        mojo::PendingRemote<device::mojom::SmartCardContext> context_remote;
+        context_receivers_.Add(this,
+                               context_remote.InitWithNewPipeAndPassReceiver());
+
+        std::move(callback).Run(SmartCardCreateContextResult::NewContext(
+            std::move(context_remote)));
+      });
 }
 
 MockSmartCardContextFactory::~MockSmartCardContextFactory() = default;
@@ -26,15 +36,6 @@ MockSmartCardContextFactory::GetRemote() {
   mojo::PendingRemote<device::mojom::SmartCardContextFactory> pending_remote;
   receivers_.Add(this, pending_remote.InitWithNewPipeAndPassReceiver());
   return pending_remote;
-}
-
-void MockSmartCardContextFactory::CreateContext(
-    CreateContextCallback callback) {
-  mojo::PendingRemote<device::mojom::SmartCardContext> context_remote;
-  context_receivers_.Add(this, context_remote.InitWithNewPipeAndPassReceiver());
-
-  std::move(callback).Run(
-      SmartCardCreateContextResult::NewContext(std::move(context_remote)));
 }
 
 void MockSmartCardContextFactory::ExpectConnectFakeReaderSharedT1(
@@ -76,6 +77,13 @@ void MockSmartCardContextFactory::ExpectListReadersError(
   EXPECT_CALL(*this, ListReaders(_))
       .WillOnce(RunOnceCallback<0>(
           device::mojom::SmartCardListReadersResult::NewError(error)));
+}
+
+void MockSmartCardContextFactory::ExpectCreateContextError(
+    device::mojom::SmartCardError error) {
+  EXPECT_CALL(*this, CreateContext(_))
+      .WillOnce(RunOnceCallback<0>(
+          device::mojom::SmartCardCreateContextResult::NewError(error)));
 }
 
 void MockSmartCardContextFactory::ClearContextReceivers() {
