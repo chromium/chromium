@@ -7,10 +7,12 @@
 #include <memory>
 #include <string>
 #include <string_view>
+#include <tuple>
 
 #include "ash/constants/ash_features.h"
 #include "base/functional/bind.h"
 #include "base/strings/string_util.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
@@ -29,7 +31,10 @@
 #include "chromeos/ash/components/settings/cros_settings_names.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
-#include "components/content_settings/core/common/pref_names.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/core/common/policy_map.h"
+#include "components/policy/policy_constants.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/prefs/pref_service.h"
 #include "components/web_package/signed_web_bundles/signed_web_bundle_id.h"
@@ -38,6 +43,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "net/base/host_port_pair.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features_generated.h"
 #include "url/gurl.h"
 
 namespace ash {
@@ -62,10 +68,15 @@ constexpr std::array<const char*, 5> kExpectedDeviceAttributeValues = {
     kDeviceAnnotatedAssetId, kDeviceAnnotatedLocation, kDeviceDirectoryApiId,
     kDeviceHostname, kDeviceSerialNumber};
 
-constexpr char kNotAllowedOriginExpectedError[] =
+constexpr char kPermissionsPolicyErrorTemplate[] =
+    "a JavaScript error: \"NotAllowedError: Failed to execute "
+    "'get%s' on 'NavigatorManagedData': Permissions-Policy: "
+    "device-attributes are disabled.";
+
+constexpr char kNoDeviceAttributesPermissionExpectedError[] =
     "a JavaScript error: \"UnknownError: The current origin cannot use this "
-    "web API because it is not allowed by the "
-    "DeviceAttributesAllowedForOrigins policy.\"\n";
+    "web API because it was not granted the 'device-attributes' "
+    "permission.\"\n";
 
 const web_package::SignedWebBundleId kTestWebBundleId =
     web_app::test::GetDefaultEd25519WebBundleId();
@@ -108,13 +119,30 @@ content::EvalJsResult CallDeviceAttributesApi(
                                                     {attribute_name}, nullptr));
 }
 
+struct KioskIwaDeviceAttributesApiTestParams {
+  using TupleT = std::tuple<bool, bool, bool, bool>;
+  bool feature_flag;
+  bool allow_policy;
+  bool block_policy;
+  bool permissions_policy;
+  explicit KioskIwaDeviceAttributesApiTestParams(TupleT t)
+      : feature_flag(std::get<0>(t)),
+        allow_policy(std::get<1>(t)),
+        block_policy(std::get<2>(t)),
+        permissions_policy(std::get<3>(t)) {}
+};
+
 }  // namespace
 
-class KioskIwaDeviceAttributesApiTest : public MixinBasedInProcessBrowserTest {
+class KioskIwaDeviceAttributesApiTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<
+          KioskIwaDeviceAttributesApiTestParams> {
  public:
   KioskIwaDeviceAttributesApiTest() {
+    InitFeatureList();
     iwa_server_mixin_.AddBundle(
-        web_app::IsolatedWebAppBuilder(web_app::ManifestBuilder())
+        web_app::IsolatedWebAppBuilder(GetIwaManifestBuilder())
             .BuildBundle(web_app::test::GetDefaultEd25519KeyPair()));
   }
 
@@ -123,6 +151,15 @@ class KioskIwaDeviceAttributesApiTest : public MixinBasedInProcessBrowserTest {
       delete;
   KioskIwaDeviceAttributesApiTest& operator=(
       const KioskIwaDeviceAttributesApiTest&) = delete;
+
+  void SetUpInProcessBrowserTestFixture() override {
+    policy_provider_.SetDefaultReturns(
+        true /* is_initialization_complete_return */,
+        true /* is_first_policy_load_complete_return */);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
+    MixinBasedInProcessBrowserTest::SetUpInProcessBrowserTestFixture();
+  }
 
   void SetUpOnMainThread() override {
     MixinBasedInProcessBrowserTest::SetUpOnMainThread();
@@ -137,13 +174,63 @@ class KioskIwaDeviceAttributesApiTest : public MixinBasedInProcessBrowserTest {
     return browser_view ? browser_view->GetActiveWebContents() : nullptr;
   }
 
-  void AllowDeviceAttributesForIwaOrigin() {
-    browser()->profile()->GetPrefs()->SetList(
-        prefs::kManagedDeviceAttributesAllowedForOrigins,
-        base::Value::List().Append(kAppOrigin.Serialize()));
+  bool IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() {
+    return GetParam().feature_flag;
+  }
+  bool IsAllowPolicySet() { return GetParam().allow_policy; }
+  bool IsBlockPolicySet() { return GetParam().block_policy; }
+  bool IsPermissionsPolicyGranted() { return GetParam().permissions_policy; }
+
+  void MaybeSetEnterprisePoliciesForIwaOrigin() {
+    if (!IsAllowPolicySet() && !IsBlockPolicySet()) {
+      return;
+    }
+    policy::PolicyMap policies;
+    if (IsBlockPolicySet()) {
+      policies.Set(
+          policy::key::kDeviceAttributesBlockedForOrigins,
+          policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+          policy::POLICY_SOURCE_CLOUD,
+          base::Value(base::Value::List().Append(kAppOrigin.Serialize())),
+          nullptr);
+    }
+    if (IsAllowPolicySet()) {
+      policies.Set(
+          policy::key::kDeviceAttributesAllowedForOrigins,
+          policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+          policy::POLICY_SOURCE_CLOUD,
+          base::Value(base::Value::List().Append(kAppOrigin.Serialize())),
+          nullptr);
+    }
+    policy_provider_.UpdateChromePolicy(policies);
   }
 
  private:
+  void InitFeatureList() {
+    if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()) {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kIsolatedWebAppKiosk,
+                                blink::features::
+                                    kDeviceAttributesPermissionPolicy},
+          /*disabled_features=*/{});
+    } else {
+      feature_list_.InitWithFeatures(
+          /*enabled_features=*/{ash::features::kIsolatedWebAppKiosk},
+          /*disabled_features=*/{
+              blink::features::kDeviceAttributesPermissionPolicy});
+    }
+  }
+
+  web_app::ManifestBuilder GetIwaManifestBuilder() {
+    auto manifest_builder = web_app::ManifestBuilder();
+    if (IsPermissionsPolicyGranted()) {
+      manifest_builder.AddPermissionsPolicy(
+          network::mojom::PermissionsPolicyFeature::kDeviceAttributes, true,
+          {});
+    }
+    return manifest_builder;
+  }
+
   void SetDevicePolicies() {
     ScopedDevicePolicyUpdate scoped_update(
         policy_helper_.device_policy(), base::BindLambdaForTesting([this]() {
@@ -182,39 +269,64 @@ class KioskIwaDeviceAttributesApiTest : public MixinBasedInProcessBrowserTest {
                                              kTestWebBundleId.id(),
                                              /*port=*/0);
 
-  base::test::ScopedFeatureList feature_list_{
-      ash::features::kIsolatedWebAppKiosk};
+  base::test::ScopedFeatureList feature_list_;
   web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_{&mixin_host_};
   KioskMixin kiosk_{&mixin_host_};
   policy::DevicePolicyCrosTestHelper policy_helper_;
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 };
 
-IN_PROC_BROWSER_TEST_F(KioskIwaDeviceAttributesApiTest,
-                       AllowedOriginWithAttributesSet) {
-  AllowDeviceAttributesForIwaOrigin();
+IN_PROC_BROWSER_TEST_P(KioskIwaDeviceAttributesApiTest,
+                       ObtainingDeviceAttributes) {
+  const bool device_attributes_should_work =
+      IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
+          ? !IsBlockPolicySet() && IsPermissionsPolicyGranted()
+          : IsAllowPolicySet();
+  MaybeSetEnterprisePoliciesForIwaOrigin();
 
   WaitForJsObject(web_contents(), "navigator.managed");
 
   ASSERT_EQ(kDeviceAttributeNames.size(),
             kExpectedDeviceAttributeValues.size());
   for (size_t i = 0; i < kDeviceAttributeNames.size(); ++i) {
-    EXPECT_EQ(kExpectedDeviceAttributeValues[i],
-              CallDeviceAttributesApi(web_contents(), kDeviceAttributeNames[i])
-                  .ExtractString());
-  }
-}
-
-IN_PROC_BROWSER_TEST_F(KioskIwaDeviceAttributesApiTest,
-                       DisallowedOriginCantAccessAPI) {
-  WaitForJsObject(web_contents(), "navigator.managed");
-
-  // All of the methods should be defined, but return the same error.
-  for (const std::string& attribute : kDeviceAttributeNames) {
     content::EvalJsResult result =
-        CallDeviceAttributesApi(web_contents(), attribute);
-    EXPECT_EQ(result.ExtractError(), kNotAllowedOriginExpectedError);
+        CallDeviceAttributesApi(web_contents(), kDeviceAttributeNames[i]);
+    if (device_attributes_should_work) {
+      EXPECT_EQ(kExpectedDeviceAttributeValues[i], result.ExtractString());
+    } else {
+      std::string expected_error;
+      if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() &&
+          !IsPermissionsPolicyGranted()) {
+        expected_error = base::StringPrintf(kPermissionsPolicyErrorTemplate,
+                                            kDeviceAttributeNames[i]);
+      } else {
+        expected_error = kNoDeviceAttributesPermissionExpectedError;
+      }
+
+      EXPECT_THAT(result.ExtractError(), ::testing::StartsWith(expected_error));
+    }
   }
 }
 
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    KioskIwaDeviceAttributesApiTest,
+    ::testing::ConvertGenerator<KioskIwaDeviceAttributesApiTestParams::TupleT>(
+        ::testing::Combine(
+            ::testing::Bool(),  // kDeviceAttributesPermissionPolicy
+                                // feature flag
+            ::testing::Bool(),  // allow policy
+            ::testing::Bool(),  // block policy
+            ::testing::Bool()   // permissions policy
+            )),
+    [](const ::testing::TestParamInfo<KioskIwaDeviceAttributesApiTestParams>&
+           info) {
+      return base::StringPrintf(
+          "FeatureFlag%s_AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
+          info.param.feature_flag ? "Enabled" : "Disabled",
+          info.param.allow_policy ? "Set" : "Unset",
+          info.param.block_policy ? "Set" : "Unset",
+          info.param.permissions_policy ? "Granted" : "Denied");
+    });
 }  // namespace ash

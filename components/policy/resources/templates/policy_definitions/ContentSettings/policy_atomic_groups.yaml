@@ -113,3 +113,9 @@ LegacyCookieScopeSettings:
   policies:
   - LegacyCookieScopeEnabled
   - LegacyCookieScopeEnabledForDomainList
+DeviceAttributesSettings:
+  caption: Device Attributes settings
+  policies:
+  - DefaultDeviceAttributesSetting
+  - DeviceAttributesAllowedForOrigins
+  - DeviceAttributesBlockedForOrigins

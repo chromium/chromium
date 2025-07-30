@@ -149,6 +149,10 @@ constexpr PrefsForManagedContentSettingsMapEntry
          ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_ALLOW},
         {prefs::kManagedSmartCardConnectBlockedForUrls,
          ContentSettingsType::SMART_CARD_GUARD, CONTENT_SETTING_BLOCK},
+        {prefs::kManagedDeviceAttributesAllowedForOrigins,
+         ContentSettingsType::DEVICE_ATTRIBUTES, CONTENT_SETTING_ALLOW},
+        {prefs::kManagedDeviceAttributesBlockedForOrigins,
+         ContentSettingsType::DEVICE_ATTRIBUTES, CONTENT_SETTING_BLOCK},
 #endif
         {prefs::kManagedControlledFrameAllowedForUrls,
          ContentSettingsType::CONTROLLED_FRAME, CONTENT_SETTING_ALLOW},
@@ -379,6 +383,8 @@ const PolicyProvider::PrefsForManagedDefaultMapEntry
 #if BUILDFLAG(IS_CHROMEOS)
         {ContentSettingsType::SMART_CARD_GUARD,
          prefs::kManagedDefaultSmartCardConnectSetting},
+        {ContentSettingsType::DEVICE_ATTRIBUTES,
+         prefs::kManagedDefaultDeviceAttributesSetting},
 #endif  // BUILDFLAG(IS_CHROMEOS)
 };
 

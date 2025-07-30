@@ -12,8 +12,6 @@ example_value: 1
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
 items:
 - caption: Allow force-installed Isolated Web Apps and kiosk applications to use the Device Attributes API
   name: AllowDeviceAttributes
@@ -29,5 +27,7 @@ schema:
   - 1
   - 2
   type: integer
+supported_on:
+- chrome_os:140-
 tags: []
 type: int-enum

@@ -14,8 +14,6 @@ example_value:
 features:
   dynamic_refresh: true
   per_profile: true
-future_on:
-- chrome_os
 owners:
 - file://chrome/browser/device_api/OWNERS
 - iwa-team@google.com
@@ -23,5 +21,7 @@ schema:
   items:
     type: string
   type: array
+supported_on:
+- chrome_os:140-
 tags: []
 type: list

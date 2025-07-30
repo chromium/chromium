@@ -1022,6 +1022,160 @@ IN_PROC_BROWSER_TEST_F(SmartCardConnectPolicyTest,
                            content_settings::SettingSource::kUser),
             GetSmartCardConnectContentSetting(GetTestingUrl()));
 }
+
+class DeviceAttributesPolicyTest : public PolicyTest {
+ public:
+  void SetUpOnMainThread() override {
+    PolicyTest::SetUpOnMainThread();
+    ASSERT_TRUE(embedded_test_server()->Start());
+    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestingUrl()));
+  }
+
+ protected:
+  GURL GetTestingUrl() const {
+    return embedded_test_server()->GetURL("/empty.html");
+  }
+
+  std::pair<ContentSetting, content_settings::SettingSource>
+  GetDeviceAttributesContentSetting(const GURL& url) {
+    content_settings::SettingInfo settings_info;
+    auto content_setting =
+        HostContentSettingsMapFactory::GetForProfile(browser()->profile())
+            ->GetContentSetting(/*primary_url=*/url, /*secondary_url=*/url,
+                                ContentSettingsType::DEVICE_ATTRIBUTES,
+                                &settings_info);
+    return std::make_pair(content_setting, settings_info.source);
+  }
+
+  void SetDefaultDeviceAttributesSettingToAllowed() {
+    SetPolicy(&policies_, key::kDefaultDeviceAttributesSetting,
+              base::Value(kAllowSetting));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDefaultDeviceAttributesSettingToBlocked() {
+    SetPolicy(&policies_, key::kDefaultDeviceAttributesSetting,
+              base::Value(kBlockSetting));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDeviceAttributesAllowedFor(std::string_view url) {
+    SetPolicy(&policies_, key::kDeviceAttributesAllowedForOrigins,
+              base::Value(base::Value::List().Append(url)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void SetDeviceAttributesBlockedFor(std::string_view url) {
+    SetPolicy(&policies_, key::kDeviceAttributesBlockedForOrigins,
+              base::Value(base::Value::List().Append(url)));
+    UpdateProviderPolicy(policies_);
+  }
+
+  void CheckDeviceAttributesContentSetting(
+      std::pair<ContentSetting, content_settings::SettingSource> expected_value,
+      GURL expected_source) {
+    EXPECT_EQ(expected_value,
+              GetDeviceAttributesContentSetting(expected_source));
+  }
+
+ private:
+  static constexpr int32_t kAllowSetting = 1;
+  static constexpr int32_t kBlockSetting = 2;
+  PolicyMap policies_;
+};
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesAllowedForOrigins) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesAllowedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesBlockedForOrigins) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesBlockedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_BLOCK, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesBlockedByDefault) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDefaultDeviceAttributesSettingToBlocked();
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_BLOCK, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+
+  // Allow should override block
+  SetDeviceAttributesAllowedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesAllowedByDefault) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDefaultDeviceAttributesSettingToAllowed();
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+
+  // Block should override allow
+  SetDeviceAttributesBlockedFor(GetTestingUrl().spec());
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_BLOCK, content_settings::SettingSource::kPolicy},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesCannotBeAllowedForWildcard) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesAllowedFor("*");
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+}
+
+IN_PROC_BROWSER_TEST_F(DeviceAttributesPolicyTest,
+                       DeviceAttributesCannotBeBlockedForWildcard) {
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+
+  SetDeviceAttributesBlockedFor("*");
+
+  CheckDeviceAttributesContentSetting(
+      {CONTENT_SETTING_ALLOW, content_settings::SettingSource::kUser},
+      GetTestingUrl());
+}
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace policy

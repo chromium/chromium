@@ -21,8 +21,9 @@
 #include "chromeos/ash/components/policy/device_policy/cached_device_policy_updater.h"
 #include "chromeos/ash/components/system/fake_statistics_provider.h"
 #include "components/account_id/account_id.h"
-#include "components/content_settings/core/common/pref_names.h"
-#include "components/prefs/pref_service.h"
+#include "components/policy/core/browser/browser_policy_connector.h"
+#include "components/policy/core/common/mock_configuration_policy_provider.h"
+#include "components/policy/policy_constants.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/web_package/test_support/signed_web_bundles/key_pair.h"
 #include "content/public/test/browser_test.h"
@@ -66,44 +67,74 @@ constexpr char kTestAffiliationId[] = "test-affiliation-id";
 constexpr char kPermissionsPolicyError[] =
     "Permissions-Policy: device-attributes are disabled.";
 
-constexpr char kAdminPolicyError[] =
-    "The current origin cannot use this web API because it is not allowed by "
-    "the DeviceAttributesAllowedForOrigins policy.";
+constexpr char kNoDeviceAttributesPermissionErrorMessage[] =
+    "The current origin cannot use this web API because it was not granted the "
+    "'device-attributes' permission.";
 
 constexpr char kChildFrameError[] =
     "This API is allowed only in top level frames.";
+
+struct IsolatedWebAppDeviceAttributesBrowserTestParams {
+  using TupleT = std::tuple<bool, bool, bool, bool>;
+  bool feature_flag;
+  bool allow_policy;
+  bool block_policy;
+  bool permissions_policy;
+  explicit IsolatedWebAppDeviceAttributesBrowserTestParams(TupleT t)
+      : feature_flag(std::get<0>(t)),
+        allow_policy(std::get<1>(t)),
+        block_policy(std::get<2>(t)),
+        permissions_policy(std::get<3>(t)) {}
+};
 
 }  // namespace
 
 class IsolatedWebAppDeviceAttributesBrowserTest
     : public IsolatedWebAppBrowserTestHarness,
-      public ::testing::WithParamInterface<std::tuple<bool, bool, bool>> {
+      public ::testing::WithParamInterface<
+          IsolatedWebAppDeviceAttributesBrowserTestParams> {
  public:
   IsolatedWebAppDeviceAttributesBrowserTest() {
+    InitFeatureList();
     fake_statistics_provider_.SetVpdStatus(
         ash::system::StatisticsProvider::VpdStatus::kValid);
-    if (IsFeatureFlagEnabled()) {
-      features_.InitAndEnableFeature(
-          blink::features::kDeviceAttributesPermissionPolicy);
-    } else {
-      features_.InitAndDisableFeature(
-          blink::features::kDeviceAttributesPermissionPolicy);
-    }
   }
   void SetUpInProcessBrowserTestFixture() override {
+    policy_provider_.SetDefaultReturns(
+        /*is_initialization_complete_return=*/true,
+        /*is_first_policy_load_complete_return=*/true);
+    policy::BrowserPolicyConnector::SetPolicyProviderForTesting(
+        &policy_provider_);
     IsolatedWebAppBrowserTestHarness::SetUpInProcessBrowserTestFixture();
     SetUpPolicies();
   }
 
  protected:
-  bool IsFeatureFlagEnabled() { return std::get<0>(GetParam()); }
-  bool IsPermissionsPolicyGranted() { return std::get<1>(GetParam()); }
-  bool IsAdminPolicyAllowed() { return std::get<2>(GetParam()); }
+  bool IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() {
+    return GetParam().feature_flag;
+  }
+  bool IsAllowPolicySet() { return GetParam().allow_policy; }
+  bool IsBlockPolicySet() { return GetParam().block_policy; }
+  bool IsPermissionsPolicyGranted() { return GetParam().permissions_policy; }
 
-  void AllowDeviceAttributesForOrigin(const std::string& origin) {
-    profile()->GetPrefs()->SetList(
-        prefs::kManagedDeviceAttributesAllowedForOrigins,
-        base::Value::List().Append(origin));
+  void MaybeSetEnterprisePoliciesForOrigin(const std::string& origin) {
+    if (!IsAllowPolicySet() && !IsBlockPolicySet()) {
+      return;
+    }
+    policy::PolicyMap policies;
+    if (IsBlockPolicySet()) {
+      policies.Set(policy::key::kDeviceAttributesBlockedForOrigins,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD,
+                   base::Value(base::Value::List().Append(origin)), nullptr);
+    }
+    if (IsAllowPolicySet()) {
+      policies.Set(policy::key::kDeviceAttributesAllowedForOrigins,
+                   policy::POLICY_LEVEL_MANDATORY, policy::POLICY_SCOPE_USER,
+                   policy::POLICY_SOURCE_CLOUD,
+                   base::Value(base::Value::List().Append(origin)), nullptr);
+    }
+    policy_provider_.UpdateChromePolicy(policies);
   }
 
   void SetUpOnMainThread() override {
@@ -115,8 +146,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
                                                   kDeviceSerialNumber);
   }
 
-  IsolatedWebAppUrlInfo InstallApp(
-      bool device_attributes_permissions_policy_enabled) {
+  IsolatedWebAppUrlInfo InstallApp() {
     auto web_bundle_id = web_package::test::GetDefaultEd25519WebBundleId();
     auto iwa_url_info =
         web_app::IsolatedWebAppUrlInfo::CreateFromSignedWebBundleId(
@@ -125,14 +155,8 @@ class IsolatedWebAppDeviceAttributesBrowserTest
     web_app::WebAppTestInstallObserver observer(profile());
     observer.BeginListening({iwa_url_info.app_id()});
 
-    auto manifest_builder = ManifestBuilder();
-    if (device_attributes_permissions_policy_enabled) {
-      manifest_builder.AddPermissionsPolicy(
-          network::mojom::PermissionsPolicyFeature::kDeviceAttributes, true,
-          {});
-    }
     isolated_web_app_update_server_mixin_.AddBundle(
-        IsolatedWebAppBuilder(manifest_builder)
+        IsolatedWebAppBuilder(GetIwaManifestBuilder())
             .BuildBundle(web_bundle_id,
                          {web_package::test::GetDefaultEd25519KeyPair()}));
     web_app::test::AddForceInstalledIwaToPolicy(
@@ -145,6 +169,16 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   }
 
  private:
+  void InitFeatureList() {
+    if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()) {
+      features_.InitAndEnableFeature(
+          blink::features::kDeviceAttributesPermissionPolicy);
+    } else {
+      features_.InitAndDisableFeature(
+          blink::features::kDeviceAttributesPermissionPolicy);
+    }
+  }
+
   void SetUpPolicies() {
     {
       policy::CachedDevicePolicyUpdater updater;
@@ -168,6 +202,16 @@ class IsolatedWebAppDeviceAttributesBrowserTest
     return *(policy_helper_.device_policy());
   }
 
+  web_app::ManifestBuilder GetIwaManifestBuilder() {
+    auto manifest_builder = ManifestBuilder();
+    if (IsPermissionsPolicyGranted()) {
+      manifest_builder.AddPermissionsPolicy(
+          network::mojom::PermissionsPolicyFeature::kDeviceAttributes, true,
+          {});
+    }
+    return manifest_builder;
+  }
+
   base::test::ScopedFeatureList features_;
   ash::DeviceStateMixin device_state_{
       &mixin_host_,
@@ -177,6 +221,7 @@ class IsolatedWebAppDeviceAttributesBrowserTest
   ash::RegularLoggedInBrowserTestMixin logged_in_{
       &mixin_host_, AccountId::FromUserEmailGaiaId(kManagedUserEmail, kGaiaId)};
   ash::system::ScopedFakeStatisticsProvider fake_statistics_provider_;
+  testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
   policy::DevicePolicyCrosTestHelper policy_helper_;
   web_app::IsolatedWebAppUpdateServerMixin
       isolated_web_app_update_server_mixin_{&mixin_host_};
@@ -184,36 +229,40 @@ class IsolatedWebAppDeviceAttributesBrowserTest
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
                        ObtainingDeviceAttributes) {
-  IsolatedWebAppUrlInfo url_info = InstallApp(IsPermissionsPolicyGranted());
-  if (IsAdminPolicyAllowed()) {
-    AllowDeviceAttributesForOrigin(url_info.origin().Serialize());
-  }
+  IsolatedWebAppUrlInfo url_info = InstallApp();
+  const bool device_attributes_should_work =
+      IsDeviceAttributesPermissionPolicyFeatureFlagEnabled()
+          ? !IsBlockPolicySet() && IsPermissionsPolicyGranted()
+          : IsAllowPolicySet();
+  MaybeSetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
+
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_NE(app_frame, nullptr);
   ASSERT_EQ(kDeviceAttributeNames.size(),
             kExpectedDeviceAttributeValues.size());
-  bool device_attributes_should_work = IsFeatureFlagEnabled()
-                                           ? IsPermissionsPolicyGranted()
-                                           : IsAdminPolicyAllowed();
   for (size_t i = 0; i < kDeviceAttributeNames.size(); ++i) {
     if (device_attributes_should_work) {
       EXPECT_EQ(kExpectedDeviceAttributeValues[i],
                 CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]));
     } else {
+      std::string expected_error;
+      if (IsDeviceAttributesPermissionPolicyFeatureFlagEnabled() &&
+          !IsPermissionsPolicyGranted()) {
+        expected_error = kPermissionsPolicyError;
+      } else {
+        expected_error = kNoDeviceAttributesPermissionErrorMessage;
+      }
       EXPECT_THAT(CallDeviceAttributesApi(app_frame, kDeviceAttributeNames[i]),
-                  content::EvalJsResult::ErrorIs(
-                      HasSubstr(IsFeatureFlagEnabled() ? kPermissionsPolicyError
-                                                       : kAdminPolicyError)));
+                  content::EvalJsResult::ErrorIs(HasSubstr(expected_error)));
     }
   }
 }
 
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
                        ObtainingDeviceAttributesFromChildFrame) {
-  IsolatedWebAppUrlInfo url_info = InstallApp(IsPermissionsPolicyGranted());
-  if (IsAdminPolicyAllowed()) {
-    AllowDeviceAttributesForOrigin(url_info.origin().Serialize());
-  }
+  IsolatedWebAppUrlInfo url_info = InstallApp();
+  MaybeSetEnterprisePoliciesForOrigin(url_info.origin().Serialize());
+
   content::RenderFrameHost* app_frame = OpenApp(url_info.app_id());
   ASSERT_NE(app_frame, nullptr);
 
@@ -240,16 +289,22 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppDeviceAttributesBrowserTest,
 INSTANTIATE_TEST_SUITE_P(
     All,
     IsolatedWebAppDeviceAttributesBrowserTest,
-    ::testing::Combine(::testing::Bool(),  // feature flag
-                       ::testing::Bool(),  // permissions policy
-                       ::testing::Bool()   // admin policy
-                       ),
-    [](const ::testing::TestParamInfo<std::tuple<bool, bool, bool>>& info) {
-      // Generate a descriptive name for each test case.
+    ::testing::ConvertGenerator<
+        IsolatedWebAppDeviceAttributesBrowserTestParams::TupleT>(
+        ::testing::Combine(
+            ::testing::Bool(),  // kDeviceAttributesPermissionPolicy
+                                // feature flag
+            ::testing::Bool(),  // allow policy
+            ::testing::Bool(),  // block policy
+            ::testing::Bool()   // permissions policy
+            )),
+    [](const ::testing::TestParamInfo<
+        IsolatedWebAppDeviceAttributesBrowserTestParams>& info) {
       return base::StringPrintf(
-          "FeatureFlag%s_PermissionsPolicy%s_AdminPolicy%s",
-          std::get<0>(info.param) ? "Enabled" : "Disabled",
-          std::get<1>(info.param) ? "Granted" : "Denied",
-          std::get<2>(info.param) ? "Allowed" : "Denied");
+          "FeatureFlag%s_AllowPolicy%s_BlockPolicy%s_PermissionsPolicy%s",
+          info.param.feature_flag ? "Enabled" : "Disabled",
+          info.param.allow_policy ? "Set" : "Unset",
+          info.param.block_policy ? "Set" : "Unset",
+          info.param.permissions_policy ? "Granted" : "Denied");
     });
 }  // namespace web_app

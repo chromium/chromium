@@ -28,9 +28,9 @@ using Result = blink::mojom::DeviceAttributeResult;
 constexpr char kNotAffiliatedErrorMessage[] =
     "This web API is not allowed if the current profile is not affiliated.";
 
-constexpr char kNotAllowedOriginErrorMessage[] =
-    "The current origin cannot use this web API because it is not allowed by "
-    "the DeviceAttributesAllowedForOrigins policy.";
+constexpr char kNoDeviceAttributesPermissionErrorMessage[] =
+    "The current origin cannot use this web API because it was not granted the "
+    "'device-attributes' permission.";
 
 #if !BUILDFLAG(IS_CHROMEOS)
 const char kNotSupportedPlatformErrorMessage[] =
@@ -50,7 +50,7 @@ void DeviceAttributeApiImpl::ReportNotAffiliatedError(
 void DeviceAttributeApiImpl::ReportNotAllowedError(
     base::OnceCallback<void(DeviceAttributeResultPtr)> callback) {
   std::move(callback).Run(
-      Result::NewErrorMessage(kNotAllowedOriginErrorMessage));
+      Result::NewErrorMessage(kNoDeviceAttributesPermissionErrorMessage));
 }
 
 void DeviceAttributeApiImpl::GetDirectoryId(
