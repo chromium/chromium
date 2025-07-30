@@ -21,6 +21,7 @@
 #include "components/performance_manager/test_support/graph_test_harness.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -667,6 +668,141 @@ TEST_F(ProcessRankPolicyAndroidTest, NonVisiblePage) {
 
   EXPECT_EQ(web_contents()->GetPrimaryMainFrameImportanceForTesting(),
             content::ChildProcessImportance::NORMAL);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest, SubframeImportanceForImportant) {
+  if (!content::IsPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "Perceptible importance is not supported.";
+  }
+  scoped_feature_list_
+      .InitWithFeatures(/*enabled_features=*/
+                        {::features::kSubframeImportance,
+                         ::features::kSubframePriorityContribution},
+                        /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(true));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(true);
+  page_graph.page.get()->SetIsVisible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryPageSubframeImportanceForTesting(),
+            content::ChildProcessImportance::PERCEPTIBLE);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest,
+       SubframeImportanceForImportantWithoutPerceptibleSupport) {
+  if (!content::IsPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "Perceptible importance is not supported.";
+  }
+  scoped_feature_list_
+      .InitWithFeatures(/*enabled_features=*/
+                        {::features::kSubframeImportance,
+                         ::features::kSubframePriorityContribution},
+                        /*disabled_features=*/{
+                            chrome::android::kProtectedTabsAndroid});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(true);
+  page_graph.page.get()->SetIsVisible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryPageSubframeImportanceForTesting(),
+            content::ChildProcessImportance::NORMAL);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest,
+       SubframeImportanceForImportantFallbackToModerate) {
+  if (!content::IsPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "Perceptible importance is not supported.";
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{chrome::android::kProtectedTabsAndroid,
+        {{"fallback_to_moderate", "true"}}},
+       {::features::kSubframeImportance, {}},
+       {::features::kSubframePriorityContribution, {}}},
+      /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(true);
+  page_graph.page.get()->SetIsVisible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryPageSubframeImportanceForTesting(),
+            content::ChildProcessImportance::MODERATE);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest, SubframeImportanceForProtectedTab) {
+  if (!content::IsPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "Perceptible importance is not supported.";
+  }
+  scoped_feature_list_
+      .InitWithFeatures(/*enabled_features=*/
+                        {chrome::android::kProtectedTabsAndroid,
+                         ::features::kSubframeImportance,
+                         ::features::kSubframePriorityContribution},
+                        /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(true));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(false);
+  page_graph.page.get()->SetIsVisible(false);
+  page_graph.page.get()->SetIsAudible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryPageSubframeImportanceForTesting(),
+            content::ChildProcessImportance::PERCEPTIBLE);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest,
+       SubframeImportanceForProtectedTabWithoutPerceptibleSupport) {
+  if (!content::IsPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "Perceptible importance is not supported.";
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{chrome::android::kProtectedTabsAndroid,
+        {{"fallback_to_moderate", "false"}}},
+       {::features::kSubframeImportance, {}},
+       {::features::kSubframePriorityContribution, {}}},
+      /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(false);
+  page_graph.page.get()->SetIsVisible(false);
+  page_graph.page.get()->SetIsAudible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryPageSubframeImportanceForTesting(),
+            content::ChildProcessImportance::NORMAL);
+}
+
+TEST_F(ProcessRankPolicyAndroidTest,
+       SubframeImportanceForProtectedTabFallbackToModerate) {
+  if (!content::IsPerceptibleImportanceSupported()) {
+    GTEST_SKIP() << "Perceptible importance is not supported.";
+  }
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      /*enabled_features=*/
+      {{chrome::android::kProtectedTabsAndroid,
+        {{"fallback_to_moderate", "true"}}},
+       {::features::kSubframeImportance, {}},
+       {::features::kSubframePriorityContribution, {}}},
+      /*disabled_features=*/{});
+  graph_->PassToGraph(std::make_unique<ProcessRankPolicyAndroid>(false));
+  MockPageGraph page_graph = CreateDefaultPage();
+  DefaultNavigation(page_graph.page.get());
+
+  page_graph.page.get()->SetIsFocused(false);
+  page_graph.page.get()->SetIsVisible(false);
+  page_graph.page.get()->SetIsAudible(true);
+
+  EXPECT_EQ(web_contents()->GetPrimaryPageSubframeImportanceForTesting(),
+            content::ChildProcessImportance::MODERATE);
 }
 
 }  // namespace performance_manager::policies

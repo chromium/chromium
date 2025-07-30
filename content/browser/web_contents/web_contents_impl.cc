@@ -3124,16 +3124,51 @@ WebContentsImpl::GetPrimaryMainFrameImportanceForTesting() {
   return GetPrimaryMainFrame()->GetRenderWidgetHost()->importance();
 }
 
-void WebContentsImpl::SetPrimaryMainFrameImportance(
-    ChildProcessImportance importance) {
-  OPTIONAL_TRACE_EVENT1("content", "WebContentsImpl::SetMainFrameImportance",
-                        "importance", static_cast<int>(importance));
+ChildProcessImportance
+WebContentsImpl::GetPrimaryPageSubframeImportanceForTesting() {
+  return primary_subframe_importance_;
+}
+
+void WebContentsImpl::SetPrimaryPageImportance(
+    ChildProcessImportance main_frame_importance,
+    ChildProcessImportance subframe_importance) {
+  OPTIONAL_TRACE_EVENT2(
+      "content", "WebContentsImpl::SetPrimaryPageImportance",
+      "main_frame_importance", static_cast<int>(main_frame_importance),
+      "subframe_importance", static_cast<int>(subframe_importance));
   CHECK(IsPerceptibleImportanceSupported() ||
-        importance != ChildProcessImportance::PERCEPTIBLE)
+        (main_frame_importance != ChildProcessImportance::PERCEPTIBLE &&
+         subframe_importance != ChildProcessImportance::PERCEPTIBLE))
       << "Setter of ChildProcessImportance::PERCEPTIBLE should be aware of the "
          "support and avoid using PERCEPTIBLE if "
          "IsPerceptibleImportanceSupported() is false";
-  GetPrimaryMainFrame()->GetRenderWidgetHost()->SetImportance(importance);
+  CHECK(main_frame_importance >= subframe_importance);
+
+  if (base::FeatureList::IsEnabled(features::kSubframeImportance)) {
+    CHECK(
+        base::FeatureList::IsEnabled(features::kSubframePriorityContribution));
+    if (subframe_importance != primary_subframe_importance_) {
+      primary_subframe_importance_ = subframe_importance;
+      ApplyPrimaryPageSubframeImportance();
+    }
+  }
+
+  GetPrimaryMainFrame()->GetRenderWidgetHost()->SetImportance(
+      main_frame_importance);
+}
+
+void WebContentsImpl::ApplyPrimaryPageSubframeImportance() {
+  OPTIONAL_TRACE_EVENT1(
+      "content", "WebContentsImpl::ApplyPrimaryPageSubframeImportance",
+      "importance", static_cast<int>(primary_subframe_importance_));
+  for (FrameTreeNode* node : primary_frame_tree_.Nodes()) {
+    if (node->IsMainFrame()) {
+      continue;
+    }
+    if (auto* rwh = node->current_frame_host()->GetLocalRenderWidgetHost()) {
+      rwh->SetImportance(primary_subframe_importance_);
+    }
+  }
 }
 #endif
 
@@ -8583,6 +8618,16 @@ void WebContentsImpl::RenderFrameCreated(
   if (safe_area_insets_host_) {
     safe_area_insets_host_->RenderFrameCreated(render_frame_host);
   }
+
+#if BUILDFLAG(IS_ANDROID)
+  if (base::FeatureList::IsEnabled(features::kSubframeImportance) &&
+      render_frame_host->GetParent() &&
+      render_frame_host->frame_tree()->is_primary()) {
+    if (auto* rwh = render_frame_host->GetLocalRenderWidgetHost()) {
+      rwh->SetImportance(primary_subframe_importance_);
+    }
+  }
+#endif
 }
 
 void WebContentsImpl::RenderFrameDeleted(
@@ -11756,6 +11801,16 @@ void WebContentsImpl::NotifyPageBecamePrimary(PageImpl& page) {
   OPTIONAL_TRACE_EVENT0("content", "WebContentsImpl::PrimaryPageChanged");
 
   DCHECK_EQ(&page, &GetPrimaryPage());
+
+#if BUILDFLAG(IS_ANDROID)
+  // Apply the cached subframe importance if it is set. This is needed for
+  // pages restored from back/forward cache. Note that we don't need to clear
+  // importance for non-primary pages because the importance is ignored at
+  // RenderWidgetHostImpl::GetPriority() and updated when it becomes inactive.
+  if (base::FeatureList::IsEnabled(features::kSubframeImportance)) {
+    ApplyPrimaryPageSubframeImportance();
+  }
+#endif
 
   // Clear |save_package_| since the primary page changed.
   if (save_package_) {

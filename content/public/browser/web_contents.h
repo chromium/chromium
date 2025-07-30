@@ -1502,12 +1502,27 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   // Returns the primary main frame importance. This is for testing only.
   virtual ChildProcessImportance GetPrimaryMainFrameImportanceForTesting() = 0;
 
-  // Set an importance of the page to the primary main frame.
+  // Returns the primary page's subframe importance cached. This is for testing
+  // only.
+  virtual ChildProcessImportance
+  GetPrimaryPageSubframeImportanceForTesting() = 0;
+
+  // Set importance for main frame and subframes of the page in the primary
+  // frame tree.
   //
-  // Note this does not affect importance of subframe processes or main frames
-  // processeses for non-primary pages.
-  virtual void SetPrimaryMainFrameImportance(
-      ChildProcessImportance importance) = 0;
+  // The subframe importance will be set to new subframes in the primary frame
+  // tree when they are created as well. Also the subframe importance will be
+  // set to subframes when they are restored (e.g. from BFCache) to the primary
+  // frame tree.
+  //
+  // SubframePriorityContribution and SubframeImportance features are required
+  // to set subframe importance to other than NORMAL.
+  //
+  // The subframe_importance must be less than or equal to the
+  // main_frame_importance.
+  virtual void SetPrimaryPageImportance(
+      ChildProcessImportance main_frame_importance,
+      ChildProcessImportance subframe_importance) = 0;
 #endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns true if the WebContents has completed its first meaningful paint

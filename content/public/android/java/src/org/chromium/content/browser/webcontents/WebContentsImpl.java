@@ -598,12 +598,17 @@ public class WebContentsImpl
     }
 
     @Override
-    public void setPrimaryMainFrameImportance(@ChildProcessImportance int importance) {
+    public void setPrimaryPageImportance(
+            @ChildProcessImportance int mainFrameImportance,
+            @ChildProcessImportance int subframeImportance) {
         checkNotDestroyed();
         assert ChildProcessConnection.supportNotPerceptibleBinding()
-                || importance != ChildProcessImportance.PERCEPTIBLE;
+                || (mainFrameImportance != ChildProcessImportance.PERCEPTIBLE
+                        && subframeImportance != ChildProcessImportance.PERCEPTIBLE);
+        assert mainFrameImportance >= subframeImportance;
         WebContentsImplJni.get()
-                .setPrimaryMainFrameImportance(mNativeWebContentsAndroid, importance);
+                .setPrimaryPageImportance(
+                        mNativeWebContentsAndroid, mainFrameImportance, subframeImportance);
     }
 
     @Override
@@ -1320,7 +1325,8 @@ public class WebContentsImpl
 
         void collapseSelection(long nativeWebContentsAndroid);
 
-        void setPrimaryMainFrameImportance(long nativeWebContentsAndroid, int importance);
+        void setPrimaryPageImportance(
+                long nativeWebContentsAndroid, int mainFrameImportance, int subframeImportance);
 
         void suspendAllMediaPlayers(long nativeWebContentsAndroid);
 

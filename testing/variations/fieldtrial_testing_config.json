@@ -23016,6 +23016,26 @@
             ]
         }
     ],
+    "ShouldContributePriorityToProcessByFrameLifecycle": [
+        {
+            "platforms": [
+                "android_weblayer",
+                "android_webview",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ShouldContributePriorityToProcessByFrameLifecycle"
+                    ]
+                }
+            ]
+        }
+    ],
     "ShowNewTabAnimationsAndroid": [
         {
             "platforms": [
@@ -23799,6 +23819,22 @@
                     "name": "Enabled_20250728",
                     "enable_features": [
                         "StrictHighRankProcessLRU"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SubframeImportance": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "SubframeImportance",
+                        "SubframePriorityContribution"
                     ]
                 }
             ]

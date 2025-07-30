@@ -628,8 +628,10 @@ class CONTENT_EXPORT WebContentsImpl
   void RequestFindMatchRects(int current_version) override;
   service_manager::InterfaceProvider* GetJavaInterfaces() override;
   ChildProcessImportance GetPrimaryMainFrameImportanceForTesting() override;
-  void SetPrimaryMainFrameImportance(
-      ChildProcessImportance importance) override;
+  ChildProcessImportance GetPrimaryPageSubframeImportanceForTesting() override;
+  void SetPrimaryPageImportance(
+      ChildProcessImportance main_frame_importance,
+      ChildProcessImportance subframe_importance) override;
 #endif
   bool HasRecentInteraction() override;
   [[nodiscard]] ScopedIgnoreInputEvents IgnoreInputEvents(
@@ -2198,6 +2200,11 @@ class CONTENT_EXPORT WebContentsImpl
   void RecursivelyConstructAXTree(ui::AXNode* node,
                                   std::vector<ui::AXNodeData>& nodes);
 
+#if BUILDFLAG(IS_ANDROID)
+  // Apply the cached primary subframe importance to the primary frame tree.
+  void ApplyPrimaryPageSubframeImportance();
+#endif
+
   // Data for core operation ---------------------------------------------------
 
   // Delegate for notifying our owner about stuff. Not owned by us.
@@ -2252,6 +2259,11 @@ class CONTENT_EXPORT WebContentsImpl
 
 #if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<WebContentsAndroid> web_contents_android_;
+  // Caches the importance of subframes in the primary frame tree.
+  // WebContentsImpl::RenderFrameCreated() sets the importance to a new
+  // RenderWidgetHost for new subframes.
+  ChildProcessImportance primary_subframe_importance_ =
+      ChildProcessImportance::NORMAL;
 #endif
 
   // Manages the embedder state for browser plugins, if this WebContents is an

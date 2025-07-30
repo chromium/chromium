@@ -246,12 +246,17 @@ public interface WebContents extends Parcelable {
 
     /**
      * ChildProcessImportance on Android allows controls of the renderer process bindings
-     * independent of visibility. Note this does not affect importance of subframe processes or main
-     * frames processeses for non-primary pages.
+     * independent of visibility. Note this does not affect importance of processes for non-primary
+     * pages.
      *
-     * @param importance importance of the primary page's main frame process.
+     * <p>The subframeImportance must be less than or equal to the mainFrameImportance.
+     *
+     * @param mainFrameImportance importance of the primary page's main frame process.
+     * @param subframeImportance importance of the primary page's subframes process.
      */
-    void setPrimaryMainFrameImportance(@ChildProcessImportance int importance);
+    void setPrimaryPageImportance(
+            @ChildProcessImportance int mainFrameImportance,
+            @ChildProcessImportance int subframeImportance);
 
     /**
      * Suspends all media players for this WebContents. Note: There may still be activities

@@ -2212,8 +2212,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 #if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
                        ChildImportanceTestForBackForwardCachedPagesTest) {
-  web_contents()->SetPrimaryMainFrameImportance(
-      ChildProcessImportance::MODERATE);
+  web_contents()->SetPrimaryPageImportance(
+      ChildProcessImportance::MODERATE, ChildProcessImportance::NORMAL);
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
@@ -2240,6 +2240,92 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // back-forward cache.
   EXPECT_EQ(ChildProcessImportance::MODERATE,
             rfh_a->GetProcess()->GetEffectiveImportance());
+}
+
+class BackForwardCacheInternalSubframeImportanceBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitWithFeatures(
+        /* enabled_features= */ {features::kSubframePriorityContribution,
+                                 features::kSubframeImportance},
+        /* disabled_features= */ {});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(
+    BackForwardCacheInternalSubframeImportanceBrowserTest,
+    ChildImportanceTestForBackForwardCachedPagesWithSubframeTest) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  GURL url_b(embedded_test_server()->GetURL("c.com", "/title1.html"));
+
+  // 1) Navigate to A.
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  RenderFrameHostImpl* rfh_main = current_frame_host();
+  RenderFrameHostImpl* rfh_child = web_contents()
+                                       ->GetPrimaryFrameTree()
+                                       .root()
+                                       ->child_at(0)
+                                       ->current_frame_host();
+  RenderFrameDeletedObserver delete_observer_rfh_main(rfh_main);
+  RenderFrameDeletedObserver delete_observer_rfh_child(rfh_child);
+
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::IMPORTANT,
+                                           ChildProcessImportance::MODERATE);
+
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+
+  // 2) Navigate to B.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_FALSE(delete_observer_rfh_main.deleted());
+  ASSERT_FALSE(delete_observer_rfh_child.deleted());
+
+  // 3) Verify the importance of page after entering back-forward cache to be
+  // "NORMAL".
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+
+  // 4) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // 5) Verify the importance was restored correctly after page leaves
+  // back-forward cache.
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            rfh_child->GetProcess()->GetEffectiveImportance());
+
+  // 6) Navigate to B again.
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  ASSERT_FALSE(delete_observer_rfh_main.deleted());
+  ASSERT_FALSE(delete_observer_rfh_child.deleted());
+
+  // Change the importance while the page is in back-forward cache.
+  web_contents()->SetPrimaryPageImportance(
+    ChildProcessImportance::MODERATE, ChildProcessImportance::NORMAL);
+
+  // 4) Go back to A.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+
+  // 5) Verify the importance was restored correctly after page leaves
+  // back-forward cache.
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            rfh_main->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            rfh_child->GetProcess()->GetEffectiveImportance());
 }
 #endif
 

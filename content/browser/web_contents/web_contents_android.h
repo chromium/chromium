@@ -98,7 +98,9 @@ class CONTENT_EXPORT WebContentsAndroid {
 
   void ResumeLoadingCreatedWebContents(JNIEnv* env);
 
-  void SetPrimaryMainFrameImportance(JNIEnv* env, jint importance);
+  void SetPrimaryPageImportance(JNIEnv* env,
+                                jint main_frame_importance,
+                                jint subframe_importance);
   void SuspendAllMediaPlayers(JNIEnv* env);
   void SetAudioMuted(JNIEnv* env, jboolean mute);
   jboolean IsAudioMuted(JNIEnv* env);

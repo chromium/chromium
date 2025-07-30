@@ -497,10 +497,12 @@ void WebContentsAndroid::ResumeLoadingCreatedWebContents(JNIEnv* env) {
   web_contents_->ResumeLoadingCreatedWebContents();
 }
 
-void WebContentsAndroid::SetPrimaryMainFrameImportance(JNIEnv* env,
-                                                       jint importance) {
-  web_contents_->SetPrimaryMainFrameImportance(
-      static_cast<ChildProcessImportance>(importance));
+void WebContentsAndroid::SetPrimaryPageImportance(JNIEnv* env,
+                                                  jint main_frame_importance,
+                                                  jint subframe_importance) {
+  web_contents_->SetPrimaryPageImportance(
+      static_cast<ChildProcessImportance>(main_frame_importance),
+      static_cast<ChildProcessImportance>(subframe_importance));
 }
 
 void WebContentsAndroid::SuspendAllMediaPlayers(JNIEnv* env) {

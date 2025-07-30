@@ -14,6 +14,7 @@
 #include "chrome/browser/performance_manager/policies/discard_eligibility_policy.h"
 #include "content/public/browser/android/child_process_importance.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 
 namespace performance_manager::policies {
 
@@ -160,7 +161,20 @@ void ProcessRankPolicyAndroid::UpdateProcessRank(const PageNode* page_node) {
       page_node->GetWebContents();
   CHECK(web_contents, base::NotFatalUntil::M140);
   if (web_contents) {
-    web_contents->SetPrimaryMainFrameImportance(importance);
+    content::ChildProcessImportance subframe_importance =
+        content::ChildProcessImportance::NORMAL;
+    if (base::FeatureList::IsEnabled(features::kSubframePriorityContribution) &&
+        base::FeatureList::IsEnabled(features::kSubframeImportance) &&
+        importance >= content::ChildProcessImportance::PERCEPTIBLE) {
+      if (is_perceptible_importance_supported_) {
+        subframe_importance = content::ChildProcessImportance::PERCEPTIBLE;
+      } else if (base::FeatureList::IsEnabled(
+                     chrome::android::kProtectedTabsAndroid) &&
+                 chrome::android::kFallbackToModerateParam.Get()) {
+        subframe_importance = content::ChildProcessImportance::MODERATE;
+      }
+    }
+    web_contents->SetPrimaryPageImportance(importance, subframe_importance);
   }
 }
 

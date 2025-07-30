@@ -9525,9 +9525,117 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
   EXPECT_FALSE(mock_handler_speculative.did_receive_event());
 }
 
-IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
-  web_contents()->SetPrimaryMainFrameImportance(
-      ChildProcessImportance::MODERATE);
+class SitePerProcessBrowserTestWithSubframePriority
+    : public SitePerProcessBrowserTest {
+ public:
+  SitePerProcessBrowserTestWithSubframePriority() {
+    scoped_feature_list_.InitWithFeatures(
+        /* enabled_features= */ {features::kSubframePriorityContribution,
+                                 features::kSubframeImportance},
+        /* disabled_features= */ {});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTestWithSubframePriority,
+                       TestChildProcessImportance) {
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::IMPORTANT,
+                                           ChildProcessImportance::MODERATE);
+
+  // Construct root page with one child in different domain.
+  EXPECT_TRUE(NavigateToURL(
+      shell(), embedded_test_server()->GetURL(
+                   "a.com", "/cross_site_iframe_factory.html?a(b)")));
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  ASSERT_EQ(1u, root->child_count());
+  FrameTreeNode* child = root->child_at(0);
+
+  // Importance should survive initial navigation.
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(
+      ChildProcessImportance::MODERATE,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+
+  // Setting NORMAL importance for child frame.
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::MODERATE,
+                                           ChildProcessImportance::NORMAL);
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(
+      ChildProcessImportance::NORMAL,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+
+  // Check setting the same importance for main frame and subframe.
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::MODERATE,
+                                           ChildProcessImportance::MODERATE);
+  EXPECT_EQ(ChildProcessImportance::MODERATE,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(
+      ChildProcessImportance::MODERATE,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+
+  // Check setting importance.
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::NORMAL,
+                                           ChildProcessImportance::NORMAL);
+  EXPECT_EQ(ChildProcessImportance::NORMAL,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(
+      ChildProcessImportance::NORMAL,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::IMPORTANT,
+                                           ChildProcessImportance::MODERATE);
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(
+      ChildProcessImportance::MODERATE,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+
+  // Check importance is maintained if child navigates to new domain.
+  int old_child_process_id =
+      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      root->child_at(0),
+      embedded_test_server()->GetURL("foo.com", "/title2.html")));
+  int new_child_process_id =
+      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  EXPECT_NE(old_child_process_id, new_child_process_id);
+  EXPECT_EQ(
+      ChildProcessImportance::MODERATE,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+
+  // Check importance is maintained if root navigates to new domain.
+  int old_root_process_id =
+      root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  EXPECT_TRUE(NavigateToURLFromRenderer(
+      root, embedded_test_server()->GetURL(
+                "b.com", "/cross_site_iframe_factory.html?b(a)")));
+  int new_root_process_id =
+      root->current_frame_host()->GetProcess()->GetDeprecatedID();
+  EXPECT_NE(old_root_process_id, new_root_process_id);
+  EXPECT_EQ(ChildProcessImportance::IMPORTANT,
+            root->current_frame_host()->GetProcess()->GetEffectiveImportance());
+
+  ASSERT_EQ(1u, root->child_count());
+  child = root->child_at(0);
+  int new_child_process_id_2 =
+      child->current_frame_host()->GetProcess()->GetDeprecatedID();
+  EXPECT_NE(new_child_process_id, new_child_process_id_2);
+  EXPECT_EQ(
+      ChildProcessImportance::MODERATE,
+      child->current_frame_host()->GetProcess()->GetEffectiveImportance());
+}
+
+IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest,
+                       TestChildProcessImportanceWithNormalSubframes) {
+  // In this test case, subframe importance is always NORMAL. With that
+  // WebContents never updates subframe importance.
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::MODERATE,
+                                           ChildProcessImportance::NORMAL);
 
   // Construct root page with one child in different domain.
   GURL main_url(embedded_test_server()->GetURL(
@@ -9537,8 +9645,7 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
   ASSERT_EQ(1u, root->child_count());
   FrameTreeNode* child = root->child_at(0);
 
-  // Importance should survive initial navigation. Note importance only affect
-  // main frame, so sub frame process should remain NORMAL throughout.
+  // Importance should survive initial navigation.
   EXPECT_EQ(ChildProcessImportance::MODERATE,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
   EXPECT_EQ(
@@ -9546,14 +9653,15 @@ IN_PROC_BROWSER_TEST_P(SitePerProcessBrowserTest, TestChildProcessImportance) {
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
 
   // Check setting importance.
-  web_contents()->SetPrimaryMainFrameImportance(ChildProcessImportance::NORMAL);
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::NORMAL,
+                                           ChildProcessImportance::NORMAL);
   EXPECT_EQ(ChildProcessImportance::NORMAL,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
   EXPECT_EQ(
       ChildProcessImportance::NORMAL,
       child->current_frame_host()->GetProcess()->GetEffectiveImportance());
-  web_contents()->SetPrimaryMainFrameImportance(
-      ChildProcessImportance::IMPORTANT);
+  web_contents()->SetPrimaryPageImportance(ChildProcessImportance::IMPORTANT,
+                                           ChildProcessImportance::NORMAL);
   EXPECT_EQ(ChildProcessImportance::IMPORTANT,
             root->current_frame_host()->GetProcess()->GetEffectiveImportance());
   EXPECT_EQ(
@@ -14593,6 +14701,9 @@ INSTANTIATE_TEST_SUITE_P(All,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 INSTANTIATE_TEST_SUITE_P(All,
                          AndroidInputBrowserTest,
+                         testing::ValuesIn(RenderDocumentFeatureLevelValues()));
+INSTANTIATE_TEST_SUITE_P(All,
+                         SitePerProcessBrowserTestWithSubframePriority,
                          testing::ValuesIn(RenderDocumentFeatureLevelValues()));
 #endif  // BUILDFLAG(IS_ANDROID)
 INSTANTIATE_TEST_SUITE_P(All,

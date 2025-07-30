@@ -1368,7 +1368,7 @@ class TabImpl implements Tab {
             // the page importance.
             return;
         }
-        webContents.setPrimaryMainFrameImportance(importance);
+        webContents.setPrimaryPageImportance(importance, ChildProcessImportance.NORMAL);
     }
 
     /** Hides the current {@link NativePage}, if any, and shows the {@link WebContents}'s view. */
