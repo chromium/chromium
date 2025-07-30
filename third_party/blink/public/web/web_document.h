@@ -33,6 +33,7 @@
 
 #include <vector>
 
+#include "base/types/expected.h"
 #include "net/cookies/site_for_cookies.h"
 #include "net/storage_access_api/status.h"
 #include "net/url_request/referrer_policy.h"
@@ -207,6 +208,22 @@ class BLINK_EXPORT WebDocument : public WebNode {
   // Returns the number of active resource requests that are being loaded by the
   // document's ResourceFetcher.
   size_t ActiveResourceRequestCount() const;
+
+  // Executes a script tool with the given `name` and `input_arguments`.
+  //
+  // The associated callback is invoked once the async execution of the tool is
+  // finished along with the result of the execution. A null response indicates
+  // a failure in tool execution.
+  enum class ScriptToolError {
+    kInvalidToolName,
+    kInvalidInputArguments,
+    kToolInvocationFailed
+  };
+  using ScriptToolExecutedCallback =
+      base::OnceCallback<void(base::expected<WebString, ScriptToolError>)>;
+  void ExecuteScriptTool(const WebString& name,
+                         const WebString& input_arguments,
+                         ScriptToolExecutedCallback tool_executed_cb);
 
 #if INSIDE_BLINK
   WebDocument(Document*);

@@ -90,6 +90,10 @@ optimization_guide::proto::BrowserAction MakeDragAndRelease(
     const gfx::Point& to_point);
 optimization_guide::proto::BrowserAction MakeWait();
 optimization_guide::proto::BrowserAction MakeAttemptLogin();
+optimization_guide::proto::BrowserAction MakeScriptTool(
+    content::RenderFrameHost& rfh,
+    const std::string& name,
+    const std::string& input_arguments);
 
 /////////////////////////
 // ToolRequest action makers
@@ -130,6 +134,10 @@ std::unique_ptr<ToolRequest> MakeWaitRequest();
 std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
                                                   bool foreground);
 std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(tabs::TabInterface& tab);
+std::unique_ptr<ToolRequest> MakeScriptToolRequest(
+    content::RenderFrameHost& rfh,
+    const std::string& name,
+    const std::string& input_arguments);
 
 // A helper to create a vector of ToolRequests suitable for passing to
 // ExecutionEngine::Act. Note that this will necessarily move the ToolRequest

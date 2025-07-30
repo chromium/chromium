@@ -28,7 +28,7 @@ mojom::ActionResultPtr MakeErrorResult() {
 
 mojom::ActionResultPtr MakeResult(mojom::ActionResultCode code,
                                   std::string_view msg) {
-  return mojom::ActionResult::New(code, std::string(msg));
+  return mojom::ActionResult::New(code, std::string(msg), std::nullopt);
 }
 
 std::string ToDebugString(const mojom::ActionResult& result) {

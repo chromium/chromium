@@ -70,6 +70,7 @@
 #include "third_party/blink/renderer/core/html/plugin_document.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/page/page.h"
+#include "third_party/blink/renderer/core/script_tools/automation_delegate_supplement.h"
 #include "third_party/blink/renderer/core/speculation_rules/document_speculation_rules.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -403,6 +404,15 @@ void WebDocument::SnapshotAccessibilityTree(
 
 size_t WebDocument::ActiveResourceRequestCount() const {
   return ConstUnwrap<Document>()->Fetcher()->ActiveRequestCount();
+}
+
+void WebDocument::ExecuteScriptTool(
+    const WebString& name,
+    const WebString& input_arguments,
+    ScriptToolExecutedCallback tool_executed_cb) {
+  AutomationDelegateSupplement::automationDelegate(
+      *Unwrap<Document>()->domWindow())
+      ->ExecuteTool(name, input_arguments, std::move(tool_executed_cb));
 }
 
 }  // namespace blink

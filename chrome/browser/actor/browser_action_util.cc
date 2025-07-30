@@ -18,6 +18,7 @@
 #include "chrome/browser/actor/tools/history_tool_request.h"
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -50,6 +51,7 @@ using apc::HistoryBackAction;
 using apc::HistoryForwardAction;
 using apc::MoveMouseAction;
 using apc::NavigateAction;
+using apc::ScriptToolAction;
 using apc::ScrollAction;
 using apc::SelectAction;
 using apc::TypeAction;
@@ -419,6 +421,23 @@ std::unique_ptr<ToolRequest> CreateAttemptLoginRequest(
   return std::make_unique<AttemptLoginToolRequest>(tab_handle);
 }
 
+std::unique_ptr<ToolRequest> CreateScriptToolRequest(
+    const ScriptToolAction& action,
+    TabInterface* deprecated_fallback_tab) {
+  const tabs::TabHandle tab_handle =
+      GetTabHandle(action, deprecated_fallback_tab);
+  if (tab_handle == TabHandle::Null()) {
+    return nullptr;
+  }
+
+  return std::make_unique<ScriptToolRequest>(
+      tab_handle,
+      PageTarget(DomNode{.node_id = kRootElementDomNodeId,
+                         .document_identifier =
+                             action.document_identifier().serialized_token()}),
+      action.tool_name(), action.input_arguments());
+}
+
 }  // namespace
 
 std::unique_ptr<ToolRequest> CreateToolRequest(
@@ -482,6 +501,11 @@ std::unique_ptr<ToolRequest> CreateToolRequest(
       const AttemptLoginAction& attempt_login_action = action.attempt_login();
       return CreateAttemptLoginRequest(attempt_login_action,
                                        deprecated_fallback_tab);
+    }
+    case optimization_guide::proto::Action::kScriptTool: {
+      const ScriptToolAction& script_tool_action = action.script_tool();
+      return CreateScriptToolRequest(script_tool_action,
+                                     deprecated_fallback_tab);
     }
     case optimization_guide::proto::Action::kCreateWindow:
     case optimization_guide::proto::Action::kCloseWindow:

@@ -7,6 +7,7 @@
 
 #include "base/functional/callback.h"
 #include "third_party/blink/public/mojom/content_extraction/script_tools.mojom-blink.h"
+#include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_automation_delegate.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_tool_registration_params.h"
@@ -20,7 +21,7 @@ class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  explicit AutomationDelegate();
+  explicit AutomationDelegate(scoped_refptr<base::SingleThreadTaskRunner>);
 
   void ForEachScriptTool(
       base::FunctionRef<void(const mojom::blink::ScriptTool&)>) const;
@@ -32,9 +33,15 @@ class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
                       const String& name,
                       ExceptionState& exception_state);
 
+  void ExecuteTool(const String& name,
+                   const String& input_arguments,
+                   WebDocument::ScriptToolExecutedCallback tool_executed_cb);
+
   void Trace(Visitor*) const override;
 
  private:
+  class ToolFunctionFinishedCallback;
+
   class ToolData : public GarbageCollected<ToolData> {
    public:
     void Trace(Visitor* visitor) const;
@@ -43,7 +50,15 @@ class CORE_EXPORT AutomationDelegate : public ScriptWrappable {
     Member<V8ToolFunction> tool_function;
   };
 
+  void OnToolExecuted(uint32_t execution_id, std::optional<String> result);
+
   HeapHashMap<String, Member<ToolData>> tool_map_;
+
+  uint32_t next_execution_id_ = 0;
+  HashMap<uint32_t, WebDocument::ScriptToolExecutedCallback>
+      pending_executions_;
+
+  scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 };
 
 }  // namespace blink

@@ -21,6 +21,7 @@
 #include "chrome/browser/actor/tools/move_mouse_tool_request.h"
 #include "chrome/browser/actor/tools/navigate_tool_request.h"
 #include "chrome/browser/actor/tools/page_tool_request.h"
+#include "chrome/browser/actor/tools/script_tool_request.h"
 #include "chrome/browser/actor/tools/scroll_tool_request.h"
 #include "chrome/browser/actor/tools/select_tool_request.h"
 #include "chrome/browser/actor/tools/tab_management_tool_request.h"
@@ -256,6 +257,29 @@ BrowserAction MakeAttemptLogin() {
   return action;
 }
 
+TabHandle GetTab(content::RenderFrameHost& rfh) {
+  auto* tab = TabInterface::GetFromContents(
+      content::WebContents::FromRenderFrameHost(&rfh));
+  CHECK(tab);
+  return tab->GetHandle();
+}
+
+BrowserAction MakeScriptTool(content::RenderFrameHost& rfh,
+                             const std::string& name,
+                             const std::string& input_arguments) {
+  BrowserAction action;
+  auto* script_tool = action.add_actions()->mutable_script_tool();
+  script_tool->mutable_document_identifier()->set_serialized_token(
+      *DocumentIdentifierUserData::GetDocumentIdentifier(
+          rfh.GetGlobalFrameToken()));
+  script_tool->set_tool_name(name);
+  script_tool->set_input_arguments(input_arguments);
+
+  script_tool->set_tab_id(GetTab(rfh).raw_value());
+
+  return action;
+}
+
 PageTarget MakeTarget(content::RenderFrameHost& rfh, int content_node_id) {
   std::string document_identifier =
       *DocumentIdentifierUserData::GetDocumentIdentifier(
@@ -266,13 +290,6 @@ PageTarget MakeTarget(content::RenderFrameHost& rfh, int content_node_id) {
 
 PageTarget MakeTarget(const gfx::Point& point) {
   return PageTarget(point);
-}
-
-TabHandle GetTab(content::RenderFrameHost& rfh) {
-  auto* tab = TabInterface::GetFromContents(
-      content::WebContents::FromRenderFrameHost(&rfh));
-  CHECK(tab);
-  return tab->GetHandle();
 }
 
 std::unique_ptr<ToolRequest> MakeClickRequest(content::RenderFrameHost& rfh,
@@ -392,6 +409,15 @@ std::unique_ptr<ToolRequest> MakeCreateTabRequest(SessionID window_id,
 
 std::unique_ptr<ToolRequest> MakeAttemptLoginRequest(TabInterface& tab) {
   return std::make_unique<AttemptLoginToolRequest>(tab.GetHandle());
+}
+
+std::unique_ptr<ToolRequest> MakeScriptToolRequest(
+    content::RenderFrameHost& rfh,
+    const std::string& name,
+    const std::string& input_arguments) {
+  return std::make_unique<ScriptToolRequest>(
+      GetTab(rfh), MakeTarget(rfh, kRootElementDomNodeId), name,
+      input_arguments);
 }
 
 std::vector<std::unique_ptr<ToolRequest>> ToRequestList(

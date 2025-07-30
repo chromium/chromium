@@ -16,6 +16,7 @@
 #include "chrome/renderer/actor/drag_and_release_tool.h"
 #include "chrome/renderer/actor/journal.h"
 #include "chrome/renderer/actor/mouse_move_tool.h"
+#include "chrome/renderer/actor/script_tool.h"
 #include "chrome/renderer/actor/scroll_tool.h"
 #include "chrome/renderer/actor/select_tool.h"
 #include "chrome/renderer/actor/tool_utils.h"
@@ -117,6 +118,16 @@ void ToolExecutor::InvokeTool(mojom::ToolInvocationPtr invocation,
           std::move(invocation->action->get_drag_and_release()),
           std::move(invocation->target),
           std::move(invocation->observed_target));
+      break;
+    }
+    case actor::mojom::ToolAction::Tag::kScriptTool: {
+      // We could consider not waiting for stabilization since the API has an
+      // explicit async hook to know when the tool is done. Or having the
+      // stabilization only delay until a new frame is produced.
+      tool_ = std::make_unique<ScriptTool>(
+          frame_.get(), invocation->task_id, journal_.get(),
+          std::move(invocation->target), std::move(invocation->observed_target),
+          std::move(invocation->action->get_script_tool()));
       break;
     }
     default:

@@ -107,6 +107,12 @@ struct DragAndReleaseAction {
   ToolTarget to_target;
 };
 
+// Executes a script tool associated with the Document.
+struct ScriptToolAction {
+  string name;
+  string input_arguments;
+};
+
 // Union of tool-specific actions.
 union ToolAction {
   ClickAction click;
@@ -115,6 +121,7 @@ union ToolAction {
   ScrollAction scroll;
   SelectAction select;
   TypeAction type;
+  ScriptToolAction script_tool;
 };
 
 
@@ -342,6 +349,10 @@ struct ActionResult {
 
   // If the code is not kOk, an English language message describing the error.
   string message;
+
+  // If the action is a script tool, provides the result of that execution. This
+  // is only populated if the execution was successful.
+  string? script_tool_response;
 };
 
 // The type of the journal entry.

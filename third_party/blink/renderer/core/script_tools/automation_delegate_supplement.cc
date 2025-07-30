@@ -49,7 +49,8 @@ void AutomationDelegateSupplement::Trace(Visitor* visitor) const {
 
 AutomationDelegate* AutomationDelegateSupplement::automationDelegate() {
   if (!automation_delegate_) {
-    automation_delegate_ = MakeGarbageCollected<AutomationDelegate>();
+    automation_delegate_ = MakeGarbageCollected<AutomationDelegate>(
+        GetSupplementable()->GetTaskRunner(TaskType::kUserInteraction));
   }
   return automation_delegate_.Get();
 }
