@@ -10,12 +10,10 @@
 #include <utility>
 
 #include "base/memory/scoped_refptr.h"
-#include "components/invalidation/impl/invalidation_prefs.h"
 #include "components/invalidation/invalidation_listener.h"
 #include "components/invalidation/legacy_topics_cleaner.h"
 #include "components/invalidation/public/identity_provider.h"
 #include "components/keyed_service/core/keyed_service.h"
-#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
@@ -54,12 +52,6 @@ InvalidationListener* ProfileInvalidationProvider::GetInvalidationListener(
 void ProfileInvalidationProvider::Shutdown() {
   project_number_to_invalidation_listener_.clear();
   invalidation_listener_factory_.Reset();
-}
-
-// static
-void ProfileInvalidationProvider::RegisterProfilePrefs(
-    user_prefs::PrefRegistrySyncable* registry) {
-  registry->RegisterDictionaryPref(prefs::kInvalidationClientIDCache);
 }
 
 }  // namespace invalidation

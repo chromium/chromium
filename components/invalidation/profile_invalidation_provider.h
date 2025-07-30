@@ -18,10 +18,6 @@
 
 class PrefService;
 
-namespace user_prefs {
-class PrefRegistrySyncable;
-}
-
 namespace network {
 class SharedURLLoaderFactory;
 }
@@ -63,10 +59,6 @@ class ProfileInvalidationProvider : public KeyedService {
 
   // KeyedService:
   void Shutdown() override;
-
-  // Register prefs to be used by per-Profile instances of this class which
-  // store invalidation state in Profile prefs.
-  static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
  private:
   InvalidationListenerFactory invalidation_listener_factory_;

@@ -12,7 +12,6 @@
 #import "base/no_destructor.h"
 #import "components/gcm_driver/gcm_profile_service.h"
 #import "components/gcm_driver/instance_id/instance_id_profile_service.h"
-#import "components/invalidation/impl/invalidator_registrar_with_memory.h"
 #import "components/invalidation/impl/per_user_topic_subscription_manager.h"
 #import "components/invalidation/profile_invalidation_provider.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
@@ -62,8 +61,6 @@ WebViewProfileInvalidationProviderFactory::BuildServiceInstanceFor(
 
 void WebViewProfileInvalidationProviderFactory::RegisterBrowserStatePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  ProfileInvalidationProvider::RegisterProfilePrefs(registry);
-  invalidation::InvalidatorRegistrarWithMemory::RegisterProfilePrefs(registry);
   invalidation::PerUserTopicSubscriptionManager::RegisterProfilePrefs(registry);
 }
 
