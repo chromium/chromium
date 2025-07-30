@@ -2734,6 +2734,16 @@ useful for Chirp alerts (go/crca-alerts). -->
   </summary>
 </histogram>
 
+<histogram name="PasswordManager.PasswordChange.UserClosedTab"
+    enum="PasswordChangeFlowState" expires_after="2025-11-30">
+  <owner>rgod@google.com</owner>
+  <owner>vsemeniuk@google.com</owner>
+  <summary>
+    Records the state of a password change flow during which the user closed the
+    tab. The metric is recorded when the tab is about to be deleted.
+  </summary>
+</histogram>
+
 <histogram
     name="PasswordManager.PasswordChange.UserHasPasswordSavedOnAPCLaunch"
     enum="Boolean" expires_after="2025-11-30">

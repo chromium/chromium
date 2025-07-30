@@ -309,6 +309,8 @@ void PasswordChangeDelegateImpl::OnTabWillDetach(
     tabs::TabInterface* tab_interface,
     tabs::TabInterface::DetachReason reason) {
   if (reason == tabs::TabInterface::DetachReason::kDelete) {
+    base::UmaHistogramEnumeration(
+        "PasswordManager.PasswordChange.UserClosedTab", current_state_);
     if (logs_uploader_) {
       logs_uploader_->SetFlowInterrupted();
     }
