@@ -2,7 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-load("@chromium-luci//builders.star", "cpu", "os")
+load("@chromium-luci//builders.star", "builders", "cpu", "os")
 load("@chromium-luci//gn_args.star", "gn_args")
 load("@chromium-luci//try.star", "try_")
 load("//lib/siso.star", "siso")
@@ -480,7 +480,7 @@ def gpu_win_builder(*, name, **kwargs):
         max_concurrent_builds = 1,
         os = os.WINDOWS_ANY,
         siso_remote_jobs = siso.remote_jobs.LOW_JOBS_FOR_CQ,
-        ssd = None,
+        ssd = builders.with_expiration(True, expiration = 5 * time.minute),
         free_space = None,
         **kwargs
     )
