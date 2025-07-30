@@ -54,7 +54,7 @@
 #include "third_party/blink/renderer/platform/wtf/wtf_size_t.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace blink {

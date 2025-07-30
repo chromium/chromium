@@ -64,7 +64,7 @@ class RectF;
 }  // namespace gfx
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 class LocalSurfaceId;
 }  // namespace viz
 

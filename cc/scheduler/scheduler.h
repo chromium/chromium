@@ -37,7 +37,7 @@ class SingleThreadTaskRunner;
 }
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {

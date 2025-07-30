@@ -13,7 +13,7 @@
 #include "components/viz/common/hit_test/hit_test_region_list.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {

@@ -25,7 +25,7 @@
 class GURL;
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 class LocalSurfaceId;
 }
 

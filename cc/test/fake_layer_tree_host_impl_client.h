@@ -9,7 +9,7 @@
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {

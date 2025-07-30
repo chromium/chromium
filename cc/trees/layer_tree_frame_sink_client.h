@@ -20,7 +20,7 @@ class Transform;
 
 namespace viz {
 class BeginFrameSource;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 struct HitTestRegionList;
 }
 

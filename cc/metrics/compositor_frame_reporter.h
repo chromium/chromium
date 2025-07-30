@@ -33,7 +33,7 @@
 #include "components/viz/common/frame_timing_details.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {

@@ -19,7 +19,7 @@
 namespace viz {
 class BeginFrameSource;
 class FrameSinkId;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }  // namespace viz
 
 namespace cc {

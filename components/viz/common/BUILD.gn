@@ -113,6 +113,7 @@ viz_component("common") {
     "frame_sinks/copy_output_util.h",
     "frame_sinks/delay_based_time_source.cc",
     "frame_sinks/delay_based_time_source.h",
+    "frame_timing_details.cc",
     "frame_timing_details.h",
     "frame_timing_details_map.h",
     "gpu/context_cache_controller.cc",

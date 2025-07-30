@@ -20,7 +20,7 @@
 #include "components/viz/common/quads/compositor_frame.h"
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc::mojo_embedder {

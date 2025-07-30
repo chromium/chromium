@@ -45,7 +45,7 @@ class Cursor;
 }  // namespace ui
 
 namespace viz {
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }  // namespace viz
 
 namespace blink {

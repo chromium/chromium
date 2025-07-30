@@ -27,7 +27,7 @@
 
 namespace viz {
 class BeginFrameSource;
-struct FrameTimingDetails;
+class FrameTimingDetails;
 }
 
 namespace cc {
