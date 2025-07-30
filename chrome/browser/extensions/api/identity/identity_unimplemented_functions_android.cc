@@ -13,8 +13,5 @@ DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(IdentityGetAuthTokenFunction,
                                         "identity.getAuthToken")
 
-DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(IdentityLaunchWebAuthFlowFunction,
-                                        "identity.launchWebAuthFlow")
-
 DEFINE_UNIMPLEMENTED_EXTENSION_FUNCTION(IdentityRemoveCachedAuthTokenFunction,
                                         "identity.removeCachedAuthToken")

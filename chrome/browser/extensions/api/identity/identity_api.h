@@ -19,6 +19,7 @@
 #include "build/buildflag.h"
 #include "chrome/browser/extensions/api/identity/identity_get_accounts_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_profile_user_info_function.h"
+#include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 #include "chrome/browser/extensions/api/identity/identity_mint_queue.h"
 #include "chrome/browser/extensions/api/identity/identity_token_cache.h"
 #include "components/signin/public/base/signin_buildflags.h"
@@ -32,7 +33,6 @@
 #else
 #include "chrome/browser/extensions/api/identity/identity_clear_all_cached_auth_tokens_function.h"
 #include "chrome/browser/extensions/api/identity/identity_get_auth_token_function.h"
-#include "chrome/browser/extensions/api/identity/identity_launch_web_auth_flow_function.h"
 #include "chrome/browser/extensions/api/identity/identity_remove_cached_auth_token_function.h"
 #endif
 
