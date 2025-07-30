@@ -21,19 +21,6 @@
   ((XrReferenceSpaceType)1000467000U)
 #endif /* XR_ANDROID_unbounded_reference_space */
 
-#ifndef XR_ANDROID_reference_space_bounds_polygon
-#define XR_ANDROID_reference_space_bounds_polygon 1
-#define XR_ANDROID_reference_space_bounds_polygon_SPEC_VERSION 1
-#define XR_ANDROID_REFERENCE_SPACE_BOUNDS_POLYGON_EXTENSION_NAME \
-  "XR_ANDROID_reference_space_bounds_polygon"
-typedef XrResult(XRAPI_PTR* PFN_xrGetReferenceSpaceBoundsPolygonANDROID)(
-    XrSession session,
-    XrReferenceSpaceType referenceSpaceType,
-    uint32_t boundaryVerticesCapacityInput,
-    uint32_t* boundaryVerticesCountOutput,
-    XrVector2f* boundaryVertices);
-#endif /* XR_ANDROID_reference_space_bounds_polygon */
-
 #ifndef XR_ANDROID_light_estimation
 #define XR_ANDROID_light_estimation 1
 XR_DEFINE_HANDLE(XrLightEstimatorANDROID)

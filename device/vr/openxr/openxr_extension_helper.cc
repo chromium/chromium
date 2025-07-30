@@ -129,8 +129,6 @@ OpenXrExtensionHelper::OpenXrExtensionHelper(
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
-  OPENXR_LOAD_FN(xrGetReferenceSpaceBoundsPolygonANDROID);
-
   OPENXR_LOAD_FN(xrCreateTrackableTrackerANDROID);
   OPENXR_LOAD_FN(xrDestroyTrackableTrackerANDROID);
 

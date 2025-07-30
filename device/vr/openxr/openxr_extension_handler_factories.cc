@@ -21,7 +21,6 @@
 #include "device/vr/openxr/android/openxr_depth_sensor_android.h"
 #include "device/vr/openxr/android/openxr_light_estimator_android.h"
 #include "device/vr/openxr/android/openxr_scene_understanding_manager_android.h"
-#include "device/vr/openxr/android/openxr_stage_bounds_provider_android.h"
 #include "device/vr/openxr/android/openxr_unbounded_space_provider_android.h"
 #endif
 
@@ -33,8 +32,6 @@ GetExtensionHandlerFactories() {
   // List platform-specific extensions first as they should generally be
   // preferred on the platforms that they are supported for.
 #if BUILDFLAG(IS_ANDROID)
-          new OpenXrStageBoundsProviderAndroidFactory(),
-
           new OpenXrUnboundedSpaceProviderAndroidFactory(),
 
           new OpenXrSceneUnderstandingManagerAndroidFactory(),

@@ -67,8 +67,6 @@ struct OpenXrExtensionMethods {
   // since the API is still under development we'll try to limit the scope for
   // the time being.
 #if BUILDFLAG(IS_ANDROID)
-  OPENXR_DECLARE_FN(xrGetReferenceSpaceBoundsPolygonANDROID);
-
   // Trackables and Raycasting.
   OPENXR_DECLARE_FN(xrCreateTrackableTrackerANDROID);
   OPENXR_DECLARE_FN(xrDestroyTrackableTrackerANDROID);
