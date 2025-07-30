@@ -545,6 +545,9 @@
         Safety check
       </message>
 
+      <message name="IDS_CONTENT_BOOKMARK_PARSER_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for parsing a bookmarks file.">
+        Content Bookmark Parser Service
+      </message>
       <message name="IDS_PATCH_SERVICE_DISPLAY_NAME" desc="The display name (in the system task manager, etc) of the service process used for patching file operations.">
         Patch Service
       </message>

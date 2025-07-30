@@ -19,6 +19,8 @@
 #include "components/services/patch/public/mojom/file_patcher.mojom.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "components/services/unzip/unzipper_impl.h"
+#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/public/mojom/web_app_origin_association_parser.mojom.h"
 #include "components/webapps/services/web_app_origin_association/web_app_origin_association_parser_impl.h"
 #include "content/public/utility/utility_thread.h"
@@ -165,6 +167,14 @@ auto RunCSVPasswordParser(
     mojo::PendingReceiver<password_manager::mojom::CSVPasswordParser>
         receiver) {
   return std::make_unique<password_manager::CSVPasswordParserImpl>(
+      std::move(receiver));
+}
+
+auto ContentBookmarkParser(
+    mojo::PendingReceiver<user_data_importer::mojom::BookmarkHtmlParser>
+        receiver) {
+  return std::make_unique<
+      user_data_importer::ContentBookmarkParserInUtilityProcess>(
       std::move(receiver));
 }
 
@@ -460,6 +470,7 @@ void RegisterMainThreadServices(mojo::ServiceFactory& services) {
   services.Add(RunUnzipper);
   services.Add(RunWebAppOriginAssociationParser);
   services.Add(RunCSVPasswordParser);
+  services.Add(ContentBookmarkParser);
 
 #if !BUILDFLAG(IS_ANDROID)
   services.Add(RunProfileImporter);

@@ -5,9 +5,10 @@
 #ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_CONTENT_BOOKMARK_PARSER_H_
 #define COMPONENTS_USER_DATA_IMPORTER_CONTENT_CONTENT_BOOKMARK_PARSER_H_
 
-#include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/importer_data_types.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
+#include "mojo/public/cpp/bindings/remote.h"
 
 namespace base {
 class File;
@@ -15,32 +16,46 @@ class FilePath;
 }
 
 namespace user_data_importer {
+namespace mojom {
+class BookmarkHtmlParser;
+}
 
-// Content implementation of the BookmarkParser interface.
+// Content implementation of the BookmarkParser interface. This class reads the
+// bookmarks HTML file contents and then launches, on the utility process, the
+// actual parsing of the file contents, which are from an untrusted data source.
+// TODO(crbug.com/434664541): Add test coverage for ContentBookmarkParser.
 class ContentBookmarkParser : public BookmarkParser {
  public:
   ContentBookmarkParser();
 
+  // BookmarkParser:
+  // Reads the file contents and then launches the actual parsing on the utility
+  // process. Preferably, this method should be called on the background thread.
   void Parse(const base::FilePath& file,
              BookmarkParsingCallback callback) override;
 
   // Same as the Parse() above, but reads from a base::File.
   void Parse(base::File file, BookmarkParsingCallback callback);
 
- private:
+  void SetServiceForTesting(
+      mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+          parser);
+
  private:
   friend class base::RefCountedThreadSafe<ContentBookmarkParser>;
 
   ~ContentBookmarkParser() override;
 
-  void ParseImpl(std::string content, BookmarkParsingCallback callback);
-};
+  void ParseOnUIThread(std::string raw_html,
+                       BookmarkParser::BookmarkParsingCallback callback);
 
-// Returns true if |url| should be imported as a search engine, i.e. because it
-// has replacement terms. Chrome treats such bookmarks as search engines rather
-// than true bookmarks.
-bool CanImportURLAsSearchEngine(const GURL& url,
-                                std::string* search_engine_url);
+  void OnParseFinished(
+      BookmarkParser::BookmarkParsingCallback callback,
+      user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks);
+
+  // The utility process host used to run the parser.
+  mojo::Remote<mojom::BookmarkHtmlParser> html_parser_remote_;
+};
 
 }  // namespace user_data_importer
 

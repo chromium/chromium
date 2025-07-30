@@ -2,6 +2,7 @@ include_rules = [
   "+components/search_engines",
   "+net/base",
   "+components/favicon_base",
+  "+components/strings/grit",
   "+content/public/browser",
   "+content/public/child",
   "+content/public/test",

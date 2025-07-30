@@ -1,0 +1,4 @@
+include_rules = [
+  # Used only for non-iOS.
+  "+content/public/test",
+]

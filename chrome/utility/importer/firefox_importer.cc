@@ -24,6 +24,7 @@
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 #include "components/user_data_importer/content/favicon_reencode.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -114,6 +115,8 @@ void FirefoxImporter::StartImport(
   bridge_ = bridge;
   source_path_ = source_profile.source_path;
   app_path_ = source_profile.app_path;
+  bookmarks_parsed_ = false;
+  all_types_but_bookmarks_parsed_ = false;
 
 #if BUILDFLAG(IS_POSIX)
   locale_ = source_profile.locale;
@@ -143,7 +146,10 @@ void FirefoxImporter::StartImport(
   if ((items & user_data_importer::FAVORITES) && !cancelled()) {
     bridge_->NotifyItemStarted(user_data_importer::FAVORITES);
     ImportBookmarks();
-    bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+    // Bookmarks is asynchronous, wait until until the parsing has occurred to
+    // notify it has ended.
+  } else {
+    bookmarks_parsed_ = true;
   }
 #if !BUILDFLAG(IS_MAC)
   if ((items & user_data_importer::PASSWORDS) && !cancelled()) {
@@ -157,7 +163,15 @@ void FirefoxImporter::StartImport(
     ImportAutofillFormData();
     bridge_->NotifyItemEnded(user_data_importer::AUTOFILL_FORM_DATA);
   }
-  bridge_->NotifyEnded();
+
+  all_types_but_bookmarks_parsed_ = true;
+  MaybeNotifyEnded();
+}
+
+void FirefoxImporter::MaybeNotifyEnded() {
+  if (all_types_but_bookmarks_parsed_ && bookmarks_parsed_) {
+    bridge_->NotifyEnded();
+  }
 }
 
 void FirefoxImporter::ImportHistory() {
@@ -212,6 +226,8 @@ void FirefoxImporter::ImportBookmarks() {
                             .AppendASCII("profile")
                             .AppendASCII("bookmarks.html");
 
+  // TODO(crbug.com/432010608): Use ContentBookmarkParserInUtilityProcess
+  // instead.
   user_data_importer::MakeBookmarkParser()->Parse(
       file, base::BindOnce(&FirefoxImporter::OnBookmarksParsed,
                            weak_ptr_factory_.GetWeakPtr()));
@@ -220,13 +236,18 @@ void FirefoxImporter::ImportBookmarks() {
 void FirefoxImporter::OnBookmarksParsed(
     user_data_importer::BookmarkParser::BookmarkParsingResult
         default_bookmarks) {
+  base::ScopedClosureRunner cleanup_runner(base::BindOnce(
+      &FirefoxImporter::NotifyBookmarksEnded, weak_ptr_factory_.GetWeakPtr()));
+
   base::FilePath file = GetCopiedSourcePath("places.sqlite");
-  if (!base::PathExists(file))
+  if (!base::PathExists(file)) {
     return;
+  }
 
   sql::Database db(kDatabaseTag);
-  if (!db.Open(file))
+  if (!db.Open(file)) {
     return;
+  }
 
   // |moz_favicons| table has been introduced in Firefox 55 and is not available
   // in older Firefox profiles.
@@ -395,6 +416,12 @@ void FirefoxImporter::OnBookmarksParsed(
       bridge_->SetFavicons(favicons);
     }
   }
+}
+
+void FirefoxImporter::NotifyBookmarksEnded() {
+  bookmarks_parsed_ = true;
+  bridge_->NotifyItemEnded(user_data_importer::FAVORITES);
+  MaybeNotifyEnded();
 }
 
 #if !BUILDFLAG(IS_MAC)

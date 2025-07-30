@@ -12,7 +12,6 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/test/run_until.h"
-#include "base/test/scoped_mock_clock_override.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -22,8 +21,15 @@
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
+#include "components/user_data_importer/content/fake_bookmark_html_parser.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
 #include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 #include "content/public/test/browser_task_environment.h"
+#include "mojo/public/cpp/bindings/pending_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
@@ -34,6 +40,9 @@ using testing::IsEmpty;
 namespace user_data_importer {
 
 class StablePortabilityDataImporterTest : public testing::Test {
+ public:
+  StablePortabilityDataImporterTest() : receiver_(&fake_utility_parser_) {}
+
  protected:
   void SetUp() override {
     CHECK(history_dir_.CreateUniqueTempDir());
@@ -50,10 +59,13 @@ class StablePortabilityDataImporterTest : public testing::Test {
         syncer::WipeModelUponSyncDisabledBehavior::kNever,
         base::DefaultClock::GetInstance());
 
+    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+        pending_remote{receiver_.BindNewPipeAndPassRemote()};
+    auto parser = base::MakeRefCounted<ContentBookmarkParser>();
+    parser->SetServiceForTesting(std::move(pending_remote));
     importer_ = std::make_unique<StablePortabilityDataImporter>(
         history_service_.get(), bookmark_model_.get(),
-        reading_list_model_.get(),
-        base::MakeRefCounted<ContentBookmarkParser>());
+        reading_list_model_.get(), std::move(parser));
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
@@ -162,8 +174,6 @@ class StablePortabilityDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return history_callback_called_; }));
   }
 
-  base::ScopedMockClockOverride clock_;
-
  private:
   void OnBookmarksConsumed(int number_imported) {
     bookmarks_callback_called_ = true;
@@ -186,7 +196,10 @@ class StablePortabilityDataImporterTest : public testing::Test {
     history_callback_called_ = false;
   }
 
-  content::BrowserTaskEnvironment task_environment_;
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+  FakeBookmarkHtmlParser fake_utility_parser_;
+  mojo::Receiver<user_data_importer::mojom::BookmarkHtmlParser> receiver_;
   base::ScopedTempDir history_dir_;
   std::unique_ptr<history::HistoryService> history_service_;
   std::unique_ptr<bookmarks::BookmarkModel> bookmark_model_;
@@ -226,7 +239,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Basic) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -257,7 +270,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_NoTopLevelDL) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -317,7 +330,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Folders) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Empty Folder");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -355,7 +368,7 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"The Beach Boys");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -363,7 +376,7 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Brian Wilson");
   // Invalid timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/Brian_Wilson"));
   EXPECT_THAT(entry.path, IsEmpty());
 }
@@ -405,7 +418,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 
@@ -413,7 +426,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Example");
   // Invalid timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.example.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 

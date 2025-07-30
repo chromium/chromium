@@ -102,6 +102,7 @@ source_set("unit_tests") {
     "//components/password_manager/core/browser/ui:credential_ui_entry",
     "//components/password_manager/core/common:constants",
     "//components/reading_list/core:test_support",
+    "//components/user_data_importer/mojom",
     "//mojo/public/cpp/bindings",
     "//testing/gmock",
     "//testing/gtest",
@@ -118,6 +119,8 @@ source_set("unit_tests") {
     deps += [
       "//components/password_manager/services/csv_password:fake_password_parser_service",
       "//components/user_data_importer/content",
+      "//components/user_data_importer/content:test_support",
+      "//content/test:test_support",
     ]
   }
 

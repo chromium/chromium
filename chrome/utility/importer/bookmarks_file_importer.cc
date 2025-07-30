@@ -92,6 +92,8 @@ void BookmarksFileImporter::StartImport(
   bridge->NotifyStarted();
   bridge->NotifyItemStarted(user_data_importer::FAVORITES);
 
+  // TODO(crbug.com/432010608): Use ContentBookmarkParserInUtilityProcess
+  // instead.
   user_data_importer::MakeBookmarkParser()->Parse(
       source_profile.source_path,
       base::BindOnce(&BookmarksFileImporter::OnBookmarksParsed,

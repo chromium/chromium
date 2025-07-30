@@ -61,6 +61,8 @@ include_rules = [
   "+components/services/print_compositor",
   "+components/services/quarantine",
   "+components/services/unzip",
+  "+components/user_data_importer/mojom",
+  "+components/user_data_importer/content",
   "+components/webapps/services/web_app_origin_association",
   "+content/public/child",
   "+content/public/utility",

@@ -1,0 +1,31 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef COMPONENTS_USER_DATA_IMPORTER_CONTENT_FAKE_BOOKMARK_HTML_PARSER_H_
+#define COMPONENTS_USER_DATA_IMPORTER_CONTENT_FAKE_BOOKMARK_HTML_PARSER_H_
+
+#include <string>
+
+#include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
+namespace user_data_importer {
+
+// A wrapper on BookmarkHtmlParser that mimics the sandbox behaviour.
+class FakeBookmarkHtmlParser : public mojom::BookmarkHtmlParser {
+ public:
+  FakeBookmarkHtmlParser();
+  ~FakeBookmarkHtmlParser() override;
+
+  void Parse(const std::string& raw_html, ParseCallback callback) override;
+
+ private:
+  ContentBookmarkParserInUtilityProcess parser_{
+      mojo::PendingReceiver<mojom::BookmarkHtmlParser>()};
+};
+
+}  // namespace user_data_importer
+
+#endif  // COMPONENTS_USER_DATA_IMPORTER_CONTENT_FAKE_BOOKMARK_HTML_PARSER_H_

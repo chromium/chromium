@@ -13,6 +13,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/bind.h"
 #include "build/build_config.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/importer/mock_importer_bridge.h"
@@ -20,43 +21,54 @@
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
 #include "components/user_data_importer/common/importer_data_types.h"
 #include "components/user_data_importer/common/importer_url_row.h"
+#include "content/public/test/browser_task_environment.h"
 #include "sql/database.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace {
+class FirefoxImporterTest : public testing::Test {
+ public:
+  // Imports bookmarks from Firefox profile files into |bookmarks| and
+  // |favicons| containers. |firefox_version| must match the name of
+  // subdirectory where test files are stored.
+  void ImportBookmarksFromVersion(
+      std::string_view firefox_version,
+      std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
+      favicon_base::FaviconUsageDataList* favicons) {
+    using ::testing::_;
+    base::FilePath places_path;
+    ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &places_path));
+    places_path =
+        places_path.AppendASCII("import").AppendASCII("firefox").AppendASCII(
+            firefox_version);
+    ASSERT_TRUE(base::DirectoryExists(places_path));
+    user_data_importer::SourceProfile profile;
+    profile.source_path = places_path;
 
-// Imports bookmarks from Firefox profile files into |bookmarks| and |favicons|
-// containers. |firefox_version| must match the name of subdirectory where test
-// files are stored.
-void ImportBookmarksFromVersion(
-    std::string_view firefox_version,
-    std::vector<user_data_importer::ImportedBookmarkEntry>* bookmarks,
-    favicon_base::FaviconUsageDataList* favicons) {
-  using ::testing::_;
-  base::FilePath places_path;
-  ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &places_path));
-  places_path =
-      places_path.AppendASCII("import").AppendASCII("firefox").AppendASCII(
-          firefox_version);
-  ASSERT_TRUE(base::DirectoryExists(places_path));
-  scoped_refptr<FirefoxImporter> importer = new FirefoxImporter;
-  user_data_importer::SourceProfile profile;
-  profile.source_path = places_path;
-  scoped_refptr<MockImporterBridge> bridge = new MockImporterBridge;
-  EXPECT_CALL(*bridge, NotifyStarted());
-  EXPECT_CALL(*bridge, NotifyItemStarted(user_data_importer::FAVORITES));
-  EXPECT_CALL(*bridge, AddBookmarks(_, _))
-      .WillOnce(::testing::SaveArg<0>(bookmarks));
-  EXPECT_CALL(*bridge, SetFavicons(_))
-      .WillOnce(::testing::SaveArg<0>(favicons));
-  EXPECT_CALL(*bridge, NotifyItemEnded(user_data_importer::FAVORITES));
-  EXPECT_CALL(*bridge, NotifyEnded());
-  importer->StartImport(profile, user_data_importer::FAVORITES, bridge.get());
-}
+    base::RunLoop run_loop;
 
-}  // namespace
+    EXPECT_CALL(*bridge_, NotifyStarted());
+    EXPECT_CALL(*bridge_, NotifyItemStarted(user_data_importer::FAVORITES));
+    EXPECT_CALL(*bridge_, AddBookmarks(_, _))
+        .WillOnce(::testing::SaveArg<0>(bookmarks));
+    EXPECT_CALL(*bridge_, SetFavicons(_))
+        .WillOnce(::testing::SaveArg<0>(favicons));
+    EXPECT_CALL(*bridge_, NotifyItemEnded(user_data_importer::FAVORITES));
+    EXPECT_CALL(*bridge_, NotifyEnded()).WillOnce(testing::Invoke([&]() {
+      run_loop.Quit();
+    }));
+    importer_->StartImport(profile, user_data_importer::FAVORITES,
+                           bridge_.get());
 
-TEST(FirefoxImporterTest, ImportBookmarks_Firefox48) {
+    run_loop.Run();  // Wait for the import to finish.
+  }
+
+ private:
+  content::BrowserTaskEnvironment task_environment_;
+  scoped_refptr<MockImporterBridge> bridge_ = new MockImporterBridge;
+  scoped_refptr<FirefoxImporter> importer_ = new FirefoxImporter;
+};
+
+TEST_F(FirefoxImporterTest, ImportBookmarks_Firefox48) {
   std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   favicon_base::FaviconUsageDataList favicons;
   ImportBookmarksFromVersion("48.0.2", &bookmarks, &favicons);
@@ -86,7 +98,7 @@ TEST(FirefoxImporterTest, ImportBookmarks_Firefox48) {
             favicons[4].favicon_url.spec());
 }
 
-TEST(FirefoxImporterTest, ImportBookmarks_Firefox57) {
+TEST_F(FirefoxImporterTest, ImportBookmarks_Firefox57) {
   std::vector<user_data_importer::ImportedBookmarkEntry> bookmarks;
   favicon_base::FaviconUsageDataList favicons;
   ImportBookmarksFromVersion("57.0.1", &bookmarks, &favicons);
@@ -114,7 +126,7 @@ TEST(FirefoxImporterTest, ImportBookmarks_Firefox57) {
             favicons[3].favicon_url.spec());
 }
 
-TEST(FirefoxImporterTest, ImportHistorySchema) {
+TEST_F(FirefoxImporterTest, ImportHistorySchema) {
   using ::testing::_;
   base::FilePath places_path;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_TEST_DATA, &places_path));

@@ -61,7 +61,16 @@ class FirefoxImporter : public Importer {
   ~FirefoxImporter() override;
 
   FRIEND_TEST_ALL_PREFIXES(FirefoxImporterTest, ImportBookmarksV25);
+
+  // Notifies the `bridge_` if the import has ended.
+  void MaybeNotifyEnded();
+
   void ImportBookmarks();
+
+  // Notifies the `bridge_` that the bookmarks import has ended. It also calls
+  // `MaybeNotifyEnded` to notify that the full import has ended when
+  // appropriate.
+  void NotifyBookmarksEnded();
 
   void OnBookmarksParsed(
       user_data_importer::BookmarkParser::BookmarkParsingResult
@@ -119,6 +128,8 @@ class FirefoxImporter : public Importer {
   // profile. |base_file_name| must be ASCII. Returns empty path on I/O failure.
   base::FilePath GetCopiedSourcePath(std::string_view base_file_name);
 
+  bool bookmarks_parsed_ = false;
+  bool all_types_but_bookmarks_parsed_ = false;
   base::FilePath source_path_;
   base::FilePath app_path_;
   base::ScopedTempDir source_path_copy_;

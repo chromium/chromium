@@ -6,6 +6,8 @@ source_set("content") {
   sources = [
     "content_bookmark_parser.cc",
     "content_bookmark_parser.h",
+    "content_bookmark_parser_in_utility_process.cc",
+    "content_bookmark_parser_in_utility_process.h",
     "favicon_reencode.cc",
     "favicon_reencode.h",
     "stable_portability_data_importer.cc",
@@ -15,7 +17,9 @@ source_set("content") {
     "//base",
     "//components/favicon_base",
     "//components/search_engines",
+    "//components/strings:components_strings_grit",
     "//components/user_data_importer/common",
+    "//components/user_data_importer/mojom",
     "//components/user_data_importer/utility:safari_data_importer",
     "//components/user_data_importer/utility:zip_ffi_glue",
     "//content/public/browser",
@@ -24,15 +28,29 @@ source_set("content") {
     "//url",
   ]
 }
+source_set("test_support") {
+  testonly = true
+
+  sources = [
+    "fake_bookmark_html_parser.cc",
+    "fake_bookmark_html_parser.h",
+  ]
+
+  deps = [
+    "//components/user_data_importer/content",
+    "//components/user_data_importer/mojom",
+  ]
+}
 
 source_set("unit_tests") {
   testonly = true
   sources = [
-    "content_bookmark_parser_unittest.cc",
+    "content_bookmark_parser_in_utility_process_unittest.cc",
     "stable_portability_data_importer_unittest.cc",
   ]
   deps = [
     ":content",
+    ":test_support",
     "//base",
     "//base/test:test_support",
     "//components/bookmarks/browser",
@@ -42,6 +60,7 @@ source_set("unit_tests") {
     "//components/reading_list/core",
     "//components/reading_list/core:test_support",
     "//components/user_data_importer/common",
+    "//components/user_data_importer/mojom",
     "//components/user_data_importer/utility:zip_ffi_glue",
     "//content/test:test_support",
     "//testing/gtest",

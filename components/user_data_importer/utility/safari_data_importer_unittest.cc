@@ -42,6 +42,12 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#if !BUILDFLAG(IS_IOS)
+#include "components/user_data_importer/content/content_bookmark_parser.h"
+#include "components/user_data_importer/content/fake_bookmark_html_parser.h"
+#include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
+#include "content/public/test/browser_task_environment.h"
+#endif  // !BUILDFLAG(IS_IOS)
 
 using bookmarks::test::IsFolder;
 using bookmarks::test::IsUrlBookmark;
@@ -93,13 +99,27 @@ class MockSafariDataImportClient : public SafariDataImportClient {
 
 class SafariDataImporterTest : public testing::Test {
  public:
+#if BUILDFLAG(IS_IOS)
   SafariDataImporterTest() : receiver_{&service_} {}
+#else
+  SafariDataImporterTest()
+      : html_parser_receiver_{&fake_utility_parser_}, receiver_{&service_} {}
+#endif  // BUILDFLAG(IS_IOS)
+
   ~SafariDataImporterTest() override = default;
 
   SafariDataImporterTest(const SafariDataImporterTest&) = delete;
   SafariDataImporterTest& operator=(const SafariDataImporterTest&) = delete;
 
  protected:
+#if BUILDFLAG(IS_IOS)
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+#else
+  content::BrowserTaskEnvironment task_environment_{
+      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
+#endif  // BUILDFLAG(IS_IOS)
+
   void SetUp() override {
     CHECK(history_dir_.CreateUniqueTempDir());
     history_service_ = history::CreateHistoryService(history_dir_.GetPath(),
@@ -122,11 +142,21 @@ class SafariDataImporterTest : public testing::Test {
 
     storage_ptr->TriggerLoadCompletion();
 
+#if BUILDFLAG(IS_IOS)
+    auto parser = MakeBookmarkParser();
+#else
+    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+        html_parser_pending_remote{
+            html_parser_receiver_.BindNewPipeAndPassRemote()};
+    auto parser = base::MakeRefCounted<ContentBookmarkParser>();
+    parser->SetServiceForTesting(std::move(html_parser_pending_remote));
+#endif  // BUILDFLAG(IS_IOS)
+
     importer_ = std::make_unique<SafariDataImporter>(
         &client_, &presenter_,
         &autofill_client_.GetPersonalDataManager().payments_data_manager(),
         history_service_.get(), bookmark_model_.get(),
-        reading_list_model_.get(), MakeBookmarkParser(), "en-US");
+        reading_list_model_.get(), std::move(parser), "en-US");
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -226,8 +256,6 @@ class SafariDataImporterTest : public testing::Test {
 
   testing::StrictMock<MockSafariDataImportClient> client_;
 
-  base::ScopedMockClockOverride clock_;
-
  private:
   void WaitUntilPresenterIsReady() {
     ASSERT_TRUE(base::test::RunUntil([&]() { return presenter_ready_; }));
@@ -251,7 +279,11 @@ class SafariDataImporterTest : public testing::Test {
 #endif  // BUILDFLAG(IS_IOS)
   }
 
-  base::test::TaskEnvironment task_environment_;
+#if !BUILDFLAG(IS_IOS)
+  FakeBookmarkHtmlParser fake_utility_parser_;
+  mojo::Receiver<user_data_importer::mojom::BookmarkHtmlParser>
+      html_parser_receiver_;
+#endif  // !BUILDFLAG(IS_IOS)
 
   password_manager::FakePasswordParserService service_;
   mojo::Receiver<password_manager::mojom::CSVPasswordParser> receiver_;
@@ -310,7 +342,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Basic) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -344,7 +376,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_NoTopLevelDL) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -389,7 +421,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Folder 1");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -421,7 +453,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Empty Folder");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -457,7 +489,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_Folders) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Empty Folder");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -490,7 +522,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
   ImportedBookmarkEntry entry = GetPendingReadingList()[0];
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Reading List");
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -498,7 +530,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_ReadingList) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"The Beach Boys");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"));
   EXPECT_THAT(entry.path, ElementsAre(u"Reading List"));
 
@@ -546,7 +578,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_TRUE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Folder 1");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_TRUE(entry.url.is_empty());
   EXPECT_THAT(entry.path, IsEmpty());
 
@@ -556,7 +588,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 
@@ -564,7 +596,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Example");
   // Invalid timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.example.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 
@@ -580,7 +612,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Chromium");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.chromium.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 
@@ -588,7 +620,7 @@ TEST_F(SafariDataImporterTest, Bookmarks_MiscJunk) {
   EXPECT_FALSE(entry.is_folder);
   EXPECT_EQ(entry.title, u"Example");
   // Invalid timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, clock_.Now());
+  EXPECT_EQ(entry.creation_time, base::Time::Now());
   EXPECT_EQ(entry.url, GURL("https://www.example.org/"));
   EXPECT_THAT(entry.path, ElementsAre(u"Folder 1"));
 

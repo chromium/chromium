@@ -8613,6 +8613,7 @@ test("unit_tests") {
       "//components/sync:test_support",
       "//components/themes",
       "//components/user_data_importer/content",
+      "//components/user_data_importer/content:test_support",
       "//components/user_education/common",
       "//components/user_education/test",
       "//components/webapps/browser",
