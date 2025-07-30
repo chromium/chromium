@@ -1,26 +1,26 @@
-# Tasks Directory
+# Eval Directory
 
 This directory contains prompts for various software engineering tasks that can
 be executed by an agent. Each subdirectory represents a single, self-contained
 task.
 
-In addition to being a reference for new tasks, these are intended to be used as
-an eval set for regression testing on a Chromium CI builder.
+These are intended to be used as an eval set for regression testing on a
+Chromium CI builder in addition to being a reference for new tasks.
 
 ## Subdirectory Structure
 
 Each subdirectory should contain all the necessary files and information for the
 agent to perform the task. This includes:
 
+- `eval.md`: A file describing the task and its outcome.
 - `prompt.md`: The prompt that initiates the task.
-- `README.md`: A file describing the task and its outcome.
 
 ## README.md Format
 
 **Note**: this format is subject to change as a regression test suite is
 implemented.
 
-The `README.md` file in each subdirectory should follow this format:
+The `eval.md` file in each subdirectory should follow this format:
 
 - **Owner**: List or person to contact if the task stops reproducing.
 - **Description**: A brief description of the task.
