@@ -6,6 +6,23 @@ assert(is_win || is_mac || is_linux || is_chromeos)
 
 import("//mojo/public/tools/bindings/mojom.gni")
 
+# This is an experimental API and should not be used outside of its approved
+# implementation. There is a visibility rule that ensures any new dependency on
+# this target must be approved.
+# TODO(crbug.com/433569400) Link to doc for more information.
+mojom("mojom_experiment") {
+  sources = [ "tab_strip_experiment_api.mojom" ]
+
+  deps = [ ":mojom" ]
+
+  webui_module_path = "/"
+  visibility = [
+    ":browser_tests",
+    ":impl",
+    ":tab_strip_api",
+  ]
+}
+
 mojom("mojom") {
   sources = [
     "tab_strip_api.mojom",
@@ -90,7 +107,10 @@ source_set("tab_strip_api") {
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
   ]
 
-  deps = [ "//chrome/browser/ui/tabs/tab_strip_api/events" ]
+  deps = [
+    ":mojom_experiment",
+    "//chrome/browser/ui/tabs/tab_strip_api/events",
+  ]
 }
 
 source_set("impl") {
@@ -103,6 +123,7 @@ source_set("impl") {
   public_deps = [ "//chrome/browser:browser_public_dependencies" ]
 
   deps = [
+    ":mojom_experiment",
     ":tab_strip_api",
     "adapters:impl",
     "converters",
@@ -144,6 +165,7 @@ source_set("browser_tests") {
 
   deps = [
     ":impl",
+    ":mojom_experiment",
     ":tab_strip_api",
     "adapters/tree_builder:browser_tests",
     "//base",

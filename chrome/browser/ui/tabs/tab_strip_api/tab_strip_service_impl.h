@@ -12,8 +12,10 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tab_strip_model_adapter.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/events/tab_strip_event_recorder.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_service_register.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"
 
@@ -24,6 +26,7 @@ class TabStripModel;
 // tabs_api::mojom::TabStripController is an experimental TabStrip Api between
 // any view and the TabStripModel.
 class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
+                            public tabs_api::mojom::TabStripExperimentService,
                             public TabStripModelObserver,
                             public TabStripServiceRegister {
  public:
@@ -39,6 +42,9 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   // TabStripServiceregister overrides
   void Accept(
       mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) override;
+  void AcceptExperimental(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService> client)
+      override;
 
   // tabs_api::mojom::TabStripService overrides
   void GetTabs(GetTabsCallback callback) override;
@@ -54,6 +60,15 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
                const tabs_api::Position& position,
                MoveTabCallback callback) override;
 
+  // tabs_api::mojom::TabStripExperimentalService overrides
+  //
+  // TabStripExperimentalService is intended for quick prototyping for
+  // experimental apis that may not necessarily fit in the standard
+  // TabStripService.
+  void UpdateTabGroupVisual(const tabs_api::NodeId& id,
+                            const tab_groups::TabGroupVisualData& visual_data,
+                            UpdateTabGroupVisualCallback) override;
+
  private:
   void BroadcastEvent(const tabs_api::events::Event& event) const;
 
@@ -62,6 +77,8 @@ class TabStripServiceImpl : public tabs_api::mojom::TabStripService,
   std::unique_ptr<tabs_api::events::TabStripEventRecorder> recorder_;
 
   mojo::ReceiverSet<tabs_api::mojom::TabStripService> clients_;
+  mojo::ReceiverSet<tabs_api::mojom::TabStripExperimentService>
+      experiment_clients_;
   mojo::AssociatedRemoteSet<tabs_api::mojom::TabsObserver> observers_;
 };
 

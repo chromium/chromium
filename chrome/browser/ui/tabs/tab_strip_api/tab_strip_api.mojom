@@ -68,10 +68,8 @@ interface TabStripService {
       => result<mojo_base.mojom.Empty, mojo_base.mojom.Error>;
 };
 
-// TODO (crbug.com/412955607)
-// TabsObserver is not a CheckedObserver. There is a potential UaF if the
-// observer list attempts to call a destroyed TabsObserver that hasn't removed
-// itself from the list.
+// TabsObserver is an interface a client can implement to receive events
+// about changes to the tab strip.
 interface TabsObserver {
   // When new tabs have been created on the tab strip.
   OnTabsCreated(OnTabsCreatedEvent event);

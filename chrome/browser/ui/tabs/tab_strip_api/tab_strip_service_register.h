@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_REGISTER_H_
 
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
+#include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_experiment_api.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 
 // This is a public interface used to accept pending receivers to
@@ -15,6 +16,9 @@ class TabStripServiceRegister {
   virtual ~TabStripServiceRegister() = default;
   virtual void Accept(
       mojo::PendingReceiver<tabs_api::mojom::TabStripService> client) = 0;
+  virtual void AcceptExperimental(
+      mojo::PendingReceiver<tabs_api::mojom::TabStripExperimentService>
+          client) = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_TAB_STRIP_API_TAB_STRIP_SERVICE_REGISTER_H_

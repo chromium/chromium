@@ -84,4 +84,12 @@ ToyTabStripModelAdapter::FindGroupIdFor(
   // purposes.
   return std::nullopt;
 }
+
+void ToyTabStripModelAdapter::UpdateTabGroupVisuals(
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  // TODO(crbug.com/433569400) Integrate with the toy tabstrip.
+  return;
+}
+
 }  // namespace tabs_api::testing

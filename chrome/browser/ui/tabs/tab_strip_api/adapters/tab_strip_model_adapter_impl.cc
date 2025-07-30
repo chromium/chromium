@@ -7,6 +7,7 @@
 #include "base/notimplemented.h"
 #include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/adapters/tree_builder/mojo_tree_builder.h"
+#include "components/tab_groups/tab_group_visual_data.h"
 #include "components/tabs/public/tab_collection.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_interface.h"
@@ -149,6 +150,13 @@ TabStripModelAdapterImpl::FindGroupIdFor(
     const tabs::TabCollection::Handle& collection_handle) {
   return tab_strip_model_->FindGroupIdFor(
       collection_handle, base::PassKey<TabStripModelAdapterImpl>());
+}
+
+void TabStripModelAdapterImpl::UpdateTabGroupVisuals(
+    const tab_groups::TabGroupId& group,
+    const tab_groups::TabGroupVisualData& visual_data) {
+  tab_strip_model_->ChangeTabGroupVisuals(group, visual_data,
+                                          false /*is_customized*/);
 }
 
 }  // namespace tabs_api

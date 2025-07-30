@@ -35,7 +35,9 @@ class TabStripModelAdapterImpl : public TabStripModelAdapter {
   mojom::TabCollectionContainerPtr GetTabStripTopology() override;
   std::optional<const tab_groups::TabGroupId> FindGroupIdFor(
       const tabs::TabCollection::Handle& collection_handle) override;
-
+  void UpdateTabGroupVisuals(
+      const tab_groups::TabGroupId& group,
+      const tab_groups::TabGroupVisualData& visual_data) override;
   // TabStripModelAdapterImpl uses passkeys to access experimental API methods
   // in TabStripModel or TabCollections.
   // PassKeyForTesting provides a passkey for testing purposes. Note that by
