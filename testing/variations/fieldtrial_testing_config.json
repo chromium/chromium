@@ -23124,11 +23124,7 @@
     "ShowSuggestionsOnAutofocus": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
