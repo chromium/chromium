@@ -772,11 +772,17 @@ void ChromeOmniboxClient::OnAutocompleteAccept(
               text, "match", match, "alternative_nav_match",
               alternative_nav_match);
 
+  std::string extra_headers;
+  for (const auto& header : match.extra_headers) {
+    base::StrAppend(&extra_headers,
+                    {header.first, ": ", header.second, "\r\n"});
+  }
+
   // Store the details necessary to open the omnibox match via browser commands.
   location_bar_->set_navigation_params(LocationBar::NavigationParams(
       destination_url, disposition, transition, match_selection_timestamp,
       destination_url_entered_without_scheme,
-      destination_url_entered_with_http_scheme, match.extra_headers));
+      destination_url_entered_with_http_scheme, extra_headers));
 
   if (browser_) {
     auto navigation = chrome::OpenCurrentURL(browser_);

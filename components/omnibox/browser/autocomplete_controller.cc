@@ -1050,8 +1050,7 @@ void AutocompleteController::SetMatchDestinationURL(
       !encoded_search_terms.empty() &&
       net::HttpUtil::IsValidHeaderValue(encoded_search_terms)) {
     DCHECK(net::HttpUtil::IsValidHeaderName(kOmniboxGeminiHeader));
-    match->extra_headers =
-        base::StrCat({kOmniboxGeminiHeader, ":", encoded_search_terms});
+    match->extra_headers.emplace(kOmniboxGeminiHeader, encoded_search_terms);
   }
 
   auto url = ComputeURLFromSearchTermsArgs(turl, *match->search_terms_args);

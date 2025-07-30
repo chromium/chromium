@@ -866,9 +866,10 @@ struct AutocompleteMatch {
   // `ComputeStrippedDestinationURL()` computation.
   GURL stripped_destination_url;
 
-  // Extra headers to add to the navigation. See `NavigateParams::extra_headers`
-  // for how headers should be represented.
-  std::string extra_headers;
+  // Extra headers to add to the navigation. Keys of the map represent the
+  // header name, and values represent header value, e.g.
+  //   extra_headers["Content-Type"] = "application/json";
+  std::map<std::string, std::string> extra_headers;
 
   // Optional image information. Used for some types of suggestions, such as
   // entity suggestions, that want to display an associated image, which will be

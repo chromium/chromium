@@ -42,6 +42,10 @@
 #include "third_party/omnibox_proto/answer_type.pb.h"
 #include "third_party/omnibox_proto/rich_answer_template.pb.h"
 
+using ::testing::ElementsAre;
+using ::testing::Pair;
+using ::testing::WhenSorted;
+
 class AutocompleteControllerTest : public testing::Test {
  public:
   AutocompleteControllerTest() : controller_(&task_environment_) {}
@@ -2183,7 +2187,9 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term");
+    EXPECT_THAT(
+        match.extra_headers,
+        WhenSorted(ElementsAre(Pair("X-Omnibox-Gemini", "search%20term"))));
     EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
@@ -2200,7 +2206,9 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term?");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term%3F");
+    EXPECT_THAT(
+        match.extra_headers,
+        WhenSorted(ElementsAre(Pair("X-Omnibox-Gemini", "search%20term%3F"))));
     EXPECT_EQ(match.destination_url, "https://example.com/");
   }
   {
@@ -2211,7 +2219,9 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term\n");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "X-Omnibox-Gemini:search%20term%0A");
+    EXPECT_THAT(
+        match.extra_headers,
+        WhenSorted(ElementsAre(Pair("X-Omnibox-Gemini", "search%20term%0A"))));
     EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
@@ -2222,8 +2232,10 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         u"what is http://example.com for?");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers,
-              "X-Omnibox-Gemini:what%20is%20http%3A%2F%2Fexample.com%20for%3F");
+    EXPECT_THAT(match.extra_headers,
+                WhenSorted(ElementsAre(
+                    Pair("X-Omnibox-Gemini",
+                         "what%20is%20http%3A%2F%2Fexample.com%20for%3F"))));
     EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
@@ -2234,9 +2246,10 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"こんにちは\n");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(
-        match.extra_headers,
-        "X-Omnibox-Gemini:%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%0A");
+    EXPECT_THAT(match.extra_headers,
+                WhenSorted(ElementsAre(
+                    Pair("X-Omnibox-Gemini",
+                         "%E3%81%93%E3%82%93%E3%81%AB%E3%81%A1%E3%81%AF%0A"))));
     EXPECT_EQ(match.destination_url, expected_gemini_url);
   }
   {
@@ -2247,7 +2260,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
         std::make_unique<TemplateURLRef::SearchTermsArgs>(u"search term");
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "");
+    EXPECT_TRUE(match.extra_headers.empty());
     EXPECT_EQ(match.destination_url, "chrome://bookmarks/?q=search+term");
   }
   {
@@ -2255,7 +2268,7 @@ TEST_F(AutocompleteControllerTest, ExtraHeaders) {
     auto match = CreateSearchMatch("search term", true, 1300);
 
     controller_.SetMatchDestinationURL(&match);
-    EXPECT_EQ(match.extra_headers, "");
+    EXPECT_TRUE(match.extra_headers.empty());
     EXPECT_EQ(match.destination_url, "https://google.com/search?q=search+term");
   }
 }
