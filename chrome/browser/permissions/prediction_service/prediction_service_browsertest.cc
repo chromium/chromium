@@ -725,6 +725,22 @@ class AivXModelPredictionServiceBrowserTest
                                    .Build());
     model_handler()->WaitForModelLoadForTesting();
   }
+
+  // We do not test screenshot handling here; this is so the code does not fail.
+  void set_dummy_screenshot_for_testing() {
+    SkBitmap bitmap;
+    bitmap.allocN32Pixels(64, 64);
+    bitmap.eraseColor(SkColorSetRGB(0x1E, 0x1C, 0x0F));
+    prediction_based_permission_ui_selector()->set_snapshot_for_testing(bitmap);
+  }
+
+  // We do not test inner text content extraction here; this is so the code does
+  // not fail.
+  void set_dummy_inner_text_for_testing() {
+    prediction_based_permission_ui_selector()->set_inner_text_for_testing(
+        {.inner_text =
+             "dummy text that is more than min length characters long"});
+  }
 };
 
 struct ModelMetadata {
@@ -872,10 +888,7 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
   PushModelFileToModelExecutor(ModelFilePath(test_case.model_name));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(64, 64);
-  bitmap.eraseColor(SkColorSetRGB(0x1E, 0x1C, 0x0F));
-  prediction_based_permission_ui_selector()->set_snapshot_for_testing(bitmap);
+  set_dummy_screenshot_for_testing();
 
   GeneratePredictionsResponse prediction_service_response;
   prediction_service_response.mutable_prediction()
@@ -1058,10 +1071,8 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
   PushModelFileToModelExecutor(ModelFilePath(test_case.model_name));
   ASSERT_TRUE(embedded_test_server()->Start());
 
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(64, 64);
-  bitmap.eraseColor(SkColorSetRGB(0x1E, 0x1C, 0x0F));
-  prediction_based_permission_ui_selector()->set_snapshot_for_testing(bitmap);
+  set_dummy_screenshot_for_testing();
+  set_dummy_inner_text_for_testing();
 
   GeneratePredictionsResponse prediction_service_response;
   prediction_service_response.mutable_prediction()

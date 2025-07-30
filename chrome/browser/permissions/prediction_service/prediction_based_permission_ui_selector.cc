@@ -152,17 +152,17 @@ void PredictionBasedPermissionUiSelector::InquireServerModel(
 
 void PredictionBasedPermissionUiSelector::
     InquireOnDeviceAiv1AndServerModelIfAvailable(
-        content::RenderFrameHost* rfh,
+        content::RenderFrameHost* render_frame_host,
         permissions::PredictionRequestFeatures features,
         PredictionRequestMetadata request_metadata) {
   VLOG(1) << "[PermissionsAIv1] On device AI prediction requested";
-  content_extraction::GetInnerText(
-      *rfh, /*node_id=*/std::nullopt,
+  GetInnerText(
+      render_frame_host,
+      ModelExecutionData{std::move(features), std::move(request_metadata),
+                         PredictionModelType::kOnDeviceAiV1Model},
       base::BindOnce(
-          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(),
-          ModelExecutionData{std::move(features), std::move(request_metadata),
-                             PredictionModelType::kOnDeviceAiV1Model}));
+          &PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
@@ -214,11 +214,13 @@ void PredictionBasedPermissionUiSelector::
         permissions::PredictionRequestFeatures features,
         PredictionRequestMetadata request_metadata) {
   VLOG(1) << "[PermissionsAIv4] On device AI prediction requested";
-  TakeSnapshot(web_contents->GetRenderWidgetHostView(),
-               {std::move(features), std::move(request_metadata),
-                PredictionModelType::kOnDeviceAiV4Model});
-  // TODO(crbug.com/422952428) Also call OnGetInnerTextForOnDeviceModel here to
-  // add the text as model input.
+  GetInnerText(
+      web_contents->GetPrimaryMainFrame(),
+      ModelExecutionData{std::move(features), std::move(request_metadata),
+                         PredictionModelType::kOnDeviceAiV4Model},
+      base::BindOnce(&PredictionBasedPermissionUiSelector::TakeSnapshot,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     web_contents->GetRenderWidgetHostView()));
 }
 
 void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
@@ -361,16 +363,16 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
 
 void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     ModelExecutionData model_data,
+    ModelExecutionCallback model_execution_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
-  // TODO(crbug.com/382447738) Adapt textlength checks when calling this for
-  // AIv4
   if (result && result->inner_text.size() > kPageContentMinLength) {
     model_data.inner_text = std::move(result->inner_text);
-    if (model_data.inner_text.size() > kPageContentMaxLength) {
+    if (model_data.model_type == PredictionModelType::kOnDeviceAiV1Model &&
+        model_data.inner_text.size() > kPageContentMaxLength) {
       model_data.inner_text.resize(kPageContentMaxLength);
     }
 
-    return ExecuteOnDeviceAivXModel(std::move(model_data));
+    return std::move(model_execution_callback).Run(std::move(model_data));
   }
 
   VLOG(1) << "[PermissionsAI] The page's content is too short or empty";
@@ -683,6 +685,12 @@ void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
   snapshot_for_testing_ = snapshot;
 }
 
+void PredictionBasedPermissionUiSelector::set_inner_text_for_testing(
+    content_extraction::InnerTextResult inner_text_) {
+  CHECK_IS_TEST();
+  inner_text_for_testing_ = inner_text_;
+}
+
 void PredictionBasedPermissionUiSelector::TakeSnapshot(
     content::RenderWidgetHostView* host_view,
     ModelExecutionData model_data) {
@@ -704,6 +712,25 @@ void PredictionBasedPermissionUiSelector::TakeSnapshot(
                        snapshot_inquire_start_time, std::move(model_data)));
   }
 }
+
+void PredictionBasedPermissionUiSelector::GetInnerText(
+    content::RenderFrameHost* render_frame_host,
+    ModelExecutionData model_data,
+    ModelExecutionCallback model_execution_callback) {
+  if (inner_text_for_testing_.has_value()) {
+    return OnGetInnerTextForOnDeviceModel(
+        std::move(model_data), std::move(model_execution_callback),
+        std::make_unique<content_extraction::InnerTextResult>(
+            std::move(inner_text_for_testing_.value())));
+  }
+  content_extraction::GetInnerText(
+      *render_frame_host, /*node_id=*/std::nullopt,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
+          weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
+          std::move(model_execution_callback)));
+}
+
 void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
     ModelExecutionData model_data) {
   VLOG(1) << "[PermissionsAI] ExecuteOnDeviceAivXModel";

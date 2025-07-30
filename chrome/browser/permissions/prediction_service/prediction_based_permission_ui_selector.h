@@ -70,6 +70,10 @@ class PredictionBasedPermissionUiSelector
 
   using PredictionGrantLikelihood =
       permissions::PermissionUiSelector::PredictionGrantLikelihood;
+
+  using ModelExecutionCallback =
+      base::OnceCallback<void(ModelExecutionData model_data)>;
+
   // Constructs an instance in the context of the given |profile|.
   explicit PredictionBasedPermissionUiSelector(Profile* profile);
   ~PredictionBasedPermissionUiSelector() override;
@@ -101,6 +105,9 @@ class PredictionBasedPermissionUiSelector
   get_permission_request_relevance_for_testing();
 
   void set_snapshot_for_testing(SkBitmap snapshot);
+
+  void set_inner_text_for_testing(
+      content_extraction::InnerTextResult inner_text);
 
  private:
   FRIEND_TEST_ALL_PREFIXES(
@@ -137,12 +144,16 @@ class PredictionBasedPermissionUiSelector
     likelihood_override_for_testing_ = mock_likelihood;
   }
 
-  // Part of the AIv1 model execution chain; provided as a curryed callback to
+  // Part of the AIvX model execution chain; provided as a curryed callback to
   // be submitted to the logic that fetches the current page content text for
-  // the AIv1 model. The first two parameters are set by the callee, to be used
-  // by the server side model later.
+  // the AIvX model. The first two parameters are set by the callee; content of
+  // model_data is used to call the on device model and by the server side model
+  // later. When the text is fetched asynchronously with success,
+  // model_execution_callback will get called to continue the chain of
+  // asynchronously added input data.
   void OnGetInnerTextForOnDeviceModel(
       ModelExecutionData model_data,
+      ModelExecutionCallback model_execution_callback,
       std::unique_ptr<content_extraction::InnerTextResult> result);
 
   bool ShouldHoldBack(const PredictionRequestMetadata& request_metadata) const;
@@ -158,7 +169,7 @@ class PredictionBasedPermissionUiSelector
   // available or is executed with an error, only the server side model will get
   // called.
   void InquireOnDeviceAiv1AndServerModelIfAvailable(
-      content::RenderFrameHost* rfh,
+      content::RenderFrameHost* render_frame_host,
       permissions::PredictionRequestFeatures features,
       PredictionRequestMetadata request_metadata);
 
@@ -207,8 +218,17 @@ class PredictionBasedPermissionUiSelector
       const permissions::PredictionRequestFeatures& features,
       PredictionRequestMetadata request_metadata);
 
+  // Creates a snapshot asynchronously and calls ExecuteOnDeviceAivXModel. Part
+  // of the AivX model workflow.
   void TakeSnapshot(content::RenderWidgetHostView* host_view,
                     ModelExecutionData model_data);
+
+  // Extracts inner text asynchronously and runs the provided model execution
+  // callback, which is meant to be a wrapper around ExecuteOnDeviceAivXModel.
+  // Part of the AivX model workflow.
+  void GetInnerText(content::RenderFrameHost* render_frame_host,
+                    ModelExecutionData model_data,
+                    ModelExecutionCallback model_execution_callback);
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -225,6 +245,7 @@ class PredictionBasedPermissionUiSelector
   DecisionMadeCallback callback_;
 
   std::optional<SkBitmap> snapshot_for_testing_;
+  std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
 
   // Used to asynchronously call the callback during on device model execution.
   base::WeakPtrFactory<PredictionBasedPermissionUiSelector> weak_ptr_factory_{
