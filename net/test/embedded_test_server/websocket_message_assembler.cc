@@ -26,7 +26,7 @@ MessageOrError WebSocketMessageAssembler::HandleFrame(
   switch (opcode) {
     case WebSocketFrameHeader::kOpCodeText:
       if (state_ != MessageState::kIdle) {
-        DVLOG(1) << "Unexpected text frame while expecting continuation";
+        VLOG(1) << "Unexpected text frame while expecting continuation";
         return base::unexpected(ERR_WS_PROTOCOL_ERROR);
       }
       is_text_message_ = true;
@@ -34,7 +34,7 @@ MessageOrError WebSocketMessageAssembler::HandleFrame(
 
     case WebSocketFrameHeader::kOpCodeBinary:
       if (state_ != MessageState::kIdle) {
-        DVLOG(1) << "Unexpected binary frame while expecting continuation";
+        VLOG(1) << "Unexpected binary frame while expecting continuation";
         return base::unexpected(ERR_WS_PROTOCOL_ERROR);
       }
       // Explicitly set to indicate binary handling.
@@ -43,13 +43,13 @@ MessageOrError WebSocketMessageAssembler::HandleFrame(
 
     case WebSocketFrameHeader::kOpCodeContinuation:
       if (state_ == MessageState::kIdle) {
-        DVLOG(1) << "Unexpected continuation frame in idle state";
+        VLOG(1) << "Unexpected continuation frame in idle state";
         return base::unexpected(ERR_WS_PROTOCOL_ERROR);
       }
       break;
 
     default:
-      DVLOG(1) << "Invalid frame opcode: " << opcode;
+      VLOG(1) << "Invalid frame opcode: " << opcode;
       return base::unexpected(ERR_WS_PROTOCOL_ERROR);
   }
 
