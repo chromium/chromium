@@ -64,9 +64,11 @@ NotifyChromeResult AttemptToNotifyRunningChrome(HWND remote_window) {
   // launch mode correctly.
   STARTUPINFOW si = {sizeof(si)};
   ::GetStartupInfoW(&si);
-  if (si.dwFlags & STARTF_TITLEISLINKNAME)
+  if (si.dwFlags & STARTF_TITLEISLINKNAME) {
     new_command_line.AppendSwitchNative(switches::kSourceShortcut, si.lpTitle);
-
+  } else if (si.dwFlags & STARTF_TITLEISAPPID) {
+    new_command_line.AppendSwitch(switches::kSourceAppId);
+  }
   // Send the command line to the remote chrome window.
   // Format is "START\0<<<current directory>>>\0<<<commandline>>>".
   std::wstring to_send = base::StrCat(

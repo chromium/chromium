@@ -67,6 +67,8 @@ int WINAPI wWinMain(HINSTANCE instance,
   if (si.dwFlags & STARTF_TITLEISLINKNAME) {
     chrome_command_line.AppendSwitchNative(switches::kSourceShortcut,
                                            si.lpTitle);
+  } else if (si.dwFlags & STARTF_TITLEISAPPID) {
+    chrome_command_line.AppendSwitch(switches::kSourceAppId);
   }
 
   base::LaunchOptions launch_options;

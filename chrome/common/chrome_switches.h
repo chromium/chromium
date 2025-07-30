@@ -264,6 +264,7 @@ extern const char kNotificationLaunchId[];
 extern const char kPrefetchArgumentBrowserBackground[];
 extern const char kPwaLauncherVersion[];
 extern const char kShowIcons[];
+extern const char kSourceAppId[];
 extern const char kSourceShortcut[];
 extern const char kUninstall[];
 extern const char kUninstallAppId[];
