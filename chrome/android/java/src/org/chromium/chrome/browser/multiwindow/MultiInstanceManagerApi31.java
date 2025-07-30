@@ -198,7 +198,13 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                 (item) -> {
                     RecordUserAction.record("MobileMenuWindowManagerCloseInstance");
                     closeInstance(item.instanceId, item.taskId);
-                    cleanupSyncedTabGroupsIfLastInstance();
+                    if (getCurrentInstanceId() != item.instanceId) {
+                        // Initiate synced tab groups cleanup only if the closed instance is not the
+                        // current one. If after closure of the current, second to last instance, a
+                        // single instance remains, this cleanup will be initiated on activity
+                        // startup of that instance.
+                        cleanupSyncedTabGroupsIfLastInstance();
+                    }
                 },
                 () -> openNewWindow("Android.WindowManager.NewWindow", /* incognito= */ false),
                 MultiWindowUtils.getMaxInstances(),
@@ -517,9 +523,12 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
                             readIncognitoSelected(i),
                             readLastAccessedTime(i)));
         }
-        // Move the current instance always to the top of the list.
-        assert currentItemPos != -1;
-        if (currentItemPos != 0 && result.size() > 1) result.add(0, result.remove(currentItemPos));
+        // Move the current instance always to the top of the list for favorable display on the UI.
+        // It is possible that |currentItemPos| is invalid if this method is invoked early during
+        // app startup or when the current activity is being / already destroyed.
+        if (currentItemPos > 0 && currentItemPos < result.size()) {
+            result.add(0, result.remove(currentItemPos));
+        }
         return result;
     }
 
