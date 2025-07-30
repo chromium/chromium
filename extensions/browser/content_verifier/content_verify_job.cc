@@ -34,23 +34,6 @@ scoped_refptr<ContentVerifyJob::TestObserver>& GetTestObserver() {
   return *instance;
 }
 
-class ScopedElapsedTimer {
- public:
-  explicit ScopedElapsedTimer(base::TimeDelta* total) : total_(total) {
-    DCHECK(total_);
-  }
-
-  ~ScopedElapsedTimer() { *total_ += timer.Elapsed(); }
-
- private:
-  // Some total amount of time we should add our elapsed time to at
-  // destruction.
-  raw_ptr<base::TimeDelta> total_;
-
-  // A timer for how long this object has been alive.
-  base::ElapsedTimer timer;
-};
-
 bool IsIgnorableReadError(MojoResult read_result) {
   // Extension reload, for example, can cause benign MOJO_RESULT_ABORTED error.
   // Do not incorrectly fail content verification in that case.
@@ -103,15 +86,14 @@ void ContentVerifyJob::DidCreateContentHashOnIO(
 void ContentVerifyJob::StartWithContentHash(
     scoped_refptr<const ContentHash> content_hash) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::IO);
-  scoped_refptr<TestObserver> test_observer = GetTestObserver();
-  if (test_observer)
-    test_observer->JobStarted(extension_id_, relative_path_);
   // Build |hash_reader_|.
   hash_reader_ = ContentHashReader::Create(relative_path_, content_hash);
 
   if (g_ignore_verification_for_tests) {
     return;
   }
+
+  scoped_refptr<TestObserver> test_observer = GetTestObserver();
   if (test_observer) {
     test_observer->OnHashesReady(extension_id_, relative_path_, *hash_reader_);
   }
@@ -135,6 +117,9 @@ void ContentVerifyJob::StartWithContentHash(
     }
   }
 
+  // Verification can't actually happen until hashes_ready_, so this object
+  // can't enter a failed state before that point, and the only way for
+  // hashes_ready_ to become true is right below this.
   DCHECK(!failed_);
 
   hashes_ready_ = true;
@@ -148,7 +133,6 @@ void ContentVerifyJob::StartWithContentHash(
     }
   }
   if (done_reading_) {
-    ScopedElapsedTimer timer(&time_spent_);
     OnDoneReadingAndHashesReady();
   }
 }
@@ -162,7 +146,6 @@ void ContentVerifyJob::BytesRead(base::span<const char> data,
 
 void ContentVerifyJob::DoneReading() {
   base::AutoLock auto_lock(lock_);
-  ScopedElapsedTimer timer(&time_spent_);
   if (failed_)
     return;
   if (g_ignore_verification_for_tests)
@@ -225,7 +208,6 @@ void ContentVerifyJob::OnHashMismatch() {
 
 void ContentVerifyJob::BytesReadImpl(base::span<const char> data,
                                      MojoResult read_result) {
-  ScopedElapsedTimer timer(&time_spent_);
   if (failed_)
     return;
   if (g_ignore_verification_for_tests)

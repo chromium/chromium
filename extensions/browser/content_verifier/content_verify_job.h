@@ -34,7 +34,23 @@ class ContentVerifier;
 
 // Objects of this class are responsible for verifying that the actual content
 // read from an extension file matches an expected set of hashes. This class
-// can be created and used on any thread.
+// has complex threading behavior: it can be created on any thread, and some of
+// its methods can be called on any thread, but most of them can only be called
+// on the IO thread.
+//
+// The basic usage flow is like this:
+// 1. Create a ContentVerifyJob on any thread
+// 2. Post a task to the IO thread to call Start() on it
+// 3. If you already have bytes of the data to hash available, pass them in via
+//    BytesRead() (which can be called on any thread)
+// 4. Once verification is done, the failure callback will be run *on an
+//    unspecified thread* - it can be either the IO thread or the thread you
+//    called DoneReading() from. If the failure callback is never run, then
+//    verification succeeded. Your callback must tolerate being run on any
+//    thread and it must tolerate never being run at all.
+//
+// You may want to use BindPostTask() with this class to deal with the
+// unpredictable callback thread.
 class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
  public:
   // Used in UMA metrics. Ensure this stays in sync with
@@ -93,9 +109,6 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
 
   class TestObserver : public base::RefCountedThreadSafe<TestObserver> {
    public:
-    virtual void JobStarted(const ExtensionId& extension_id,
-                            const base::FilePath& relative_path) = 0;
-
     virtual void JobFinished(const ExtensionId& extension_id,
                              const base::FilePath& relative_path,
                              FailureReason failure_reason) = 0;
@@ -155,8 +168,9 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   // Set to true once hash_reader_ has read its expected hashes.
   bool hashes_ready_ = false;
 
-  // While we're waiting for the callback from the ContentHashReader, we need
-  // to queue up bytes any bytes that are read.
+  // In between when the job is created and when it is started, the caller can
+  // call BytesRead() to start pushing in bytes to verify. In that case, we
+  // queue those bytes here.
   std::string queue_;
 
   // The total bytes we've read.
@@ -178,8 +192,6 @@ class ContentVerifyJob : public base::RefCountedThreadSafe<ContentVerifyJob> {
   const ExtensionId extension_id_;
   const base::FilePath extension_root_;
   const base::FilePath relative_path_;
-
-  base::TimeDelta time_spent_;
 
   // The manifest version of the extension associated with the verify job.
   // Used only for metrics purposes.
