@@ -22417,21 +22417,6 @@
             ]
         }
     ],
-    "SecurePaymentConfirmationUxRefresh": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SecurePaymentConfirmationUxRefresh"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecurityPageHats": [
         {
             "platforms": [

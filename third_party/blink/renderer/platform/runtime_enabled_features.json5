@@ -4300,7 +4300,10 @@
     },
     {
       name: "SecurePaymentConfirmationBrowserBoundKeys",
-      status: "stable",
+      status: {
+        "Android": "stable",
+        "default": "test",
+      },
     },
     {
       name: "SecurePaymentConfirmationDebug",
@@ -4318,7 +4321,10 @@
       // Implements new UX for SPC including new output states, payment
       // instrument details and payment entities logos.
       name: "SecurePaymentConfirmationUxRefresh",
-      status: "test",
+      status: {
+        "Android": "stable",
+        "default": "test",
+      },
     },
     {
       // Implements improved accessibility mappings for having an <input>
