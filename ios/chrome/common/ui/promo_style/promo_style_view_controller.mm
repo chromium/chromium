@@ -125,6 +125,9 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   // of buttons changes on scroll.
   NSArray<NSLayoutConstraint*>* _buttonsVerticalAnchorConstraints;
 
+  // The width layout guide for promo content under the banner.
+  UILayoutGuide* _widthLayoutGuide;
+
   // Vertical constraints for banner; used to deactivate these constraints when
   // the banner is hidden.
   NSArray<NSLayoutConstraint*>* _bannerConstraints;
@@ -257,9 +260,7 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
       (self.actionButtonsVisibility == ActionButtonsVisibility::kHidden);
   [view addSubview:_actionButtonsStackView];
 
-  // Create a layout guide to constrain the width of the content, while still
-  // allowing the scroll view to take the full screen width.
-  UILayoutGuide* widthLayoutGuide = AddPromoStyleWidthLayoutGuide(view);
+  [self updatePromoStyleWidth];
 
   if (disclaimerView) {
     [NSLayoutConstraint activateConstraints:@[
@@ -326,10 +327,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     // the buttons.
     [_scrollContentView.topAnchor
         constraintEqualToAnchor:_scrollView.topAnchor],
-    [_scrollContentView.leadingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
-    [_scrollContentView.trailingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
     [_scrollContentView.bottomAnchor
         constraintEqualToAnchor:_scrollView.bottomAnchor],
     [_scrollContentView.heightAnchor
@@ -360,14 +357,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
         constraintEqualToAnchor:_scrollContentView.leadingAnchor],
     [specificContentView.trailingAnchor
         constraintEqualToAnchor:_scrollContentView.trailingAnchor],
-
-    // Action stack view constraints. Constrain the bottom of the action stack
-    // view to both the bottom of the screen and the bottom of the safe area, to
-    // give a nice result whether the device has a physical home button or not.
-    [_actionButtonsStackView.leadingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
-    [_actionButtonsStackView.trailingAnchor
-        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
   ]];
 
   if (self.hideSpecificContentView) {
@@ -561,14 +550,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     [self updateActionButtonsAndPushUpScrollViewIfMandatory];
   }
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = @[
-      UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
-      UITraitPreferredContentSizeCategory.class
-    ];
-    [self registerForTraitChanges:traits
-                       withAction:@selector(updateUIOnTraitChange)];
-  }
+  NSArray<UITrait>* traits = @[
+    UITraitVerticalSizeClass.class, UITraitHorizontalSizeClass.class,
+    UITraitPreferredContentSizeCategory.class
+  ];
+  [self registerForTraitChanges:traits
+                     withAction:@selector(updateUIOnTraitChange)];
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
@@ -742,19 +729,6 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
     self.primaryActionButton.accessibilityLabel = nil;
   }
 }
-
-#pragma mark - UITraitEnvironment
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateUIOnTraitChange];
-}
-#endif
 
 #pragma mark - Accessors
 
@@ -1300,6 +1274,29 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
   }
 }
 
+// Update the width of the content area and action buttons. Should be invoked
+// on `-viewDidLoad` to setup the initial width, and also when the horizontal
+// size class changes.
+- (void)updatePromoStyleWidth {
+  if (_widthLayoutGuide) {
+    [self.view removeLayoutGuide:_widthLayoutGuide];
+  }
+  _widthLayoutGuide = AddPromoStyleWidthLayoutGuide(self.view);
+  [NSLayoutConstraint activateConstraints:@[
+    [_scrollContentView.leadingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
+    [_scrollContentView.trailingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
+    // Action stack view constraints. Constrain the bottom of the action stack
+    // view to both the bottom of the screen and the bottom of the safe area, to
+    // give a nice result whether the device has a physical home button or not.
+    [_actionButtonsStackView.leadingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.leadingAnchor],
+    [_actionButtonsStackView.trailingAnchor
+        constraintEqualToAnchor:_widthLayoutGuide.trailingAnchor],
+  ]];
+}
+
 // This method should be called right before the view is scrolled to the bottom.
 // It updates the primary button's label and adds secondary and/or tertiary
 // buttons, and as a result, pushing the scroll view up by updating the bottom
@@ -1619,9 +1616,12 @@ const CGFloat kHeaderImageShadowShadowInset = 20;
 
   // Update the primary button once the layout changes take effect to have the
   // right measurements to evaluate the scroll position.
+  __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
-    [self updateViewsOnScrollViewUpdate];
-    [self hideHeaderOnTallContentIfNeeded];
+    __strong __typeof(weakSelf) strongSelf = weakSelf;
+    [strongSelf updateViewsOnScrollViewUpdate];
+    [strongSelf updatePromoStyleWidth];
+    [strongSelf hideHeaderOnTallContentIfNeeded];
   });
 }
 

@@ -9,6 +9,7 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/common/ui/confirmation_alert/constants.h"
 #import "ios/chrome/common/ui/elements/gradient_view.h"
+#import "ios/chrome/common/ui/promo_style/utils.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/common/ui/util/dynamic_type_util.h"
@@ -24,9 +25,6 @@ const CGFloat kGradientHeight = 40.;
 const CGFloat kScrollViewBottomInsets = 20;
 const CGFloat kStackViewSpacing = 8;
 const CGFloat kStackViewSpacingAfterIllustration = 27;
-// The multiplier used when in regular horizontal size class.
-const CGFloat kSafeAreaMultiplier = 0.65;
-const CGFloat kContentOptimalWidth = 327;
 
 // The size of the symbol image.
 const CGFloat kSymbolBadgeImagePointSize = 13;
@@ -112,6 +110,9 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
 // References to the UI properties that need to be updated when the trait
 // collection changes.
+@property(nonatomic, strong) UILayoutGuide* widthLayoutGuide;
+@property(nonatomic, strong) UIStackView* stackView;
+@property(nonatomic, strong) UIView* actionStackView;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 @property(nonatomic, strong) UINavigationBar* navigationBar;
 @property(nonatomic, strong) UIImageView* imageView;
@@ -203,11 +204,10 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
   DCHECK(stackSubviews);
 
-  UIStackView* stackView =
-      [self createStackViewWithArrangedSubviews:stackSubviews];
+  self.stackView = [self createStackViewWithArrangedSubviews:stackSubviews];
 
   self.scrollView = [self createScrollView];
-  [self.scrollView addSubview:stackView];
+  [self.scrollView addSubview:self.stackView];
   [self.view addSubview:self.scrollView];
 
   self.view.preservesSuperviewLayoutMargins = YES;
@@ -224,8 +224,9 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   // the content area. No need to contraint horizontally as we don't want
   // horizontal scroll.
   [NSLayoutConstraint activateConstraints:@[
-    [stackView.topAnchor constraintEqualToAnchor:self.scrollView.topAnchor],
-    [stackView.bottomAnchor
+    [self.stackView.topAnchor
+        constraintEqualToAnchor:self.scrollView.topAnchor],
+    [self.stackView.bottomAnchor
         constraintEqualToAnchor:self.scrollView.bottomAnchor
                        constant:-self.customScrollViewBottomInsets]
   ]];
@@ -240,25 +241,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   heightConstraint.priority = UILayoutPriorityDefaultHigh - 1;
   heightConstraint.active = YES;
 
-  [NSLayoutConstraint activateConstraints:@[
-    [stackView.centerXAnchor constraintEqualToAnchor:self.view.centerXAnchor],
-    // Width Scroll View constraint for regular mode.
-    [stackView.widthAnchor
-        constraintGreaterThanOrEqualToAnchor:margins.widthAnchor
-                                  multiplier:kSafeAreaMultiplier],
-    // Disable horizontal scrolling.
-    [stackView.widthAnchor
-        constraintLessThanOrEqualToAnchor:margins.widthAnchor],
-  ]];
-
-  // This constraint is added to enforce that the content width should be as
-  // close to the optimal width as possible, within the range already activated
-  // for "stackView.widthAnchor" previously, with a higher priority.
-  NSLayoutConstraint* contentLayoutGuideWidthConstraint =
-      [stackView.widthAnchor constraintEqualToConstant:kContentOptimalWidth];
-  contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
-  contentLayoutGuideWidthConstraint.active = YES;
-
   // The bottom anchor for the scroll view.
   NSLayoutYAxisAnchor* scrollViewBottomAnchor =
       self.view.safeAreaLayoutGuide.bottomAnchor;
@@ -270,14 +252,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     UIView* actionStackView = [self createActionStackView];
     [self.view addSubview:actionStackView];
 
-    // Add a low priority width constraints to make sure that the buttons are
-    // taking as much width as they can.
-    CGFloat extraBottomMargin =
-        self.secondaryActionString ? 0 : self.actionStackBottomMargin;
-    NSLayoutConstraint* lowPriorityWidthConstraint =
-        [actionStackView.widthAnchor
-            constraintEqualToConstant:kContentOptimalWidth];
-    lowPriorityWidthConstraint.priority = UILayoutPriorityDefaultHigh + 1;
     // Also constrain the bottom of the action stack view to the bottom of the
     // safe area, but with a lower priority, so that the action stack view is
     // put as close to the bottom as possible.
@@ -286,15 +260,9 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     actionBottomConstraint.priority = UILayoutPriorityDefaultLow;
     actionBottomConstraint.active = YES;
 
+    CGFloat extraBottomMargin =
+        self.secondaryActionString ? 0 : self.actionStackBottomMargin;
     [NSLayoutConstraint activateConstraints:@[
-      [actionStackView.leadingAnchor
-          constraintGreaterThanOrEqualToAnchor:self.scrollView.leadingAnchor],
-      [actionStackView.trailingAnchor
-          constraintLessThanOrEqualToAnchor:self.scrollView.trailingAnchor],
-      [actionStackView.centerXAnchor
-          constraintEqualToAnchor:self.view.centerXAnchor],
-      [actionStackView.widthAnchor
-          constraintEqualToAnchor:stackView.widthAnchor],
       [actionStackView.bottomAnchor
           constraintLessThanOrEqualToAnchor:self.view.bottomAnchor
                                    constant:-self.actionStackBottomMargin -
@@ -303,9 +271,10 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
           constraintLessThanOrEqualToAnchor:self.view.safeAreaLayoutGuide
                                                 .bottomAnchor
                                    constant:-extraBottomMargin],
-      lowPriorityWidthConstraint
     ]];
+
     scrollViewBottomAnchor = actionStackView.topAnchor;
+    self.actionStackView = actionStackView;
 
     self.gradientView = [self createGradientView];
     [self.view addSubview:self.gradientView];
@@ -383,19 +352,18 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
     self.imageViewAspectRatioConstraint.active = YES;
   }
   [self updateButtonState];
+  [self updatePromoStyleWidth];
 
-  if (@available(iOS 17, *)) {
-    NSArray<UITrait>* traits = @[
-      UITraitPreferredContentSizeCategory.class,
-      UITraitHorizontalSizeClass.class, UITraitVerticalSizeClass.class
-    ];
-    auto* __weak weakSelf = self;
-    id handler = ^(id<UITraitEnvironment> traitEnvironment,
-                   UITraitCollection* previousCollection) {
-      [weakSelf updateRegisteredTraits:previousCollection];
-    };
-    [self registerForTraitChanges:traits withHandler:handler];
-  }
+  NSArray<UITrait>* traits = @[
+    UITraitPreferredContentSizeCategory.class, UITraitHorizontalSizeClass.class,
+    UITraitVerticalSizeClass.class
+  ];
+  auto* __weak weakSelf = self;
+  id handler = ^(id<UITraitEnvironment> traitEnvironment,
+                 UITraitCollection* previousCollection) {
+    [weakSelf updateRegisteredTraits:previousCollection];
+  };
+  [self.view registerForTraitChanges:traits withHandler:handler];
 }
 
 - (void)setIsLoading:(BOOL)isLoading {
@@ -418,17 +386,6 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   // Flash the scroll indicators when the view appeared.
   [self.scrollView flashScrollIndicators];
 }
-
-#if !defined(__IPHONE_17_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_17_0
-- (void)traitCollectionDidChange:(UITraitCollection*)previousTraitCollection {
-  [super traitCollectionDidChange:previousTraitCollection];
-  if (@available(iOS 17, *)) {
-    return;
-  }
-
-  [self updateRegisteredTraits:previousTraitCollection];
-}
-#endif
 
 - (void)viewSafeAreaInsetsDidChange {
   [super viewSafeAreaInsetsDidChange];
@@ -995,6 +952,32 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
   _tertiaryActionButton.enabled = !showingProgressState;
 }
 
+// Update the width of the content area and action buttons to match
+// `PromoStyleViewController`. Should be invoked on `-viewDidLoad` to setup the
+// initial width, and also when the horizontal size class changes.
+- (void)updatePromoStyleWidth {
+  if (self.widthLayoutGuide) {
+    [self.view removeLayoutGuide:self.widthLayoutGuide];
+  }
+  self.widthLayoutGuide = AddPromoStyleWidthLayoutGuide(self.view);
+  [NSLayoutConstraint activateConstraints:@[
+    [self.stackView.leadingAnchor
+        constraintEqualToAnchor:self.widthLayoutGuide.leadingAnchor],
+    // Width Scroll View constraint for regular mode.
+    [self.stackView.trailingAnchor
+        constraintEqualToAnchor:self.widthLayoutGuide.trailingAnchor],
+  ]];
+  UIView* actionStackView = self.actionStackView;
+  if (actionStackView) {
+    [NSLayoutConstraint activateConstraints:@[
+      [actionStackView.leadingAnchor
+          constraintEqualToAnchor:self.widthLayoutGuide.leadingAnchor],
+      [actionStackView.trailingAnchor
+          constraintEqualToAnchor:self.widthLayoutGuide.trailingAnchor]
+    ]];
+  }
+}
+
 // Checks which trait has been changed and adapts the UI to reflect this new
 // environment.
 - (void)updateRegisteredTraits:(UITraitCollection*)previousTraitCollection {
@@ -1025,6 +1008,7 @@ UIImage* DefaultCheckmarkCircleFillSymbol(CGFloat point_size) {
 
   if (hasNewHorizontalSizeClass || hasNewVerticalSizeClass) {
     [self.view setNeedsUpdateConstraints];
+    [self updatePromoStyleWidth];
   }
 }
 
