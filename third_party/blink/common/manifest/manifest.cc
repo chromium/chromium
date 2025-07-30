@@ -30,7 +30,8 @@ Manifest::ShortcutItem::~ShortcutItem() = default;
 bool Manifest::ShortcutItem::operator==(const ShortcutItem& other) const {
   auto AsTuple = [](const auto& item) {
     return std::tie(item.name, item.short_name, item.description, item.url,
-                    item.icons);
+                    item.icons, item.icons_localized, item.name_localized,
+                    item.short_name_localized, item.description_localized);
   };
   return AsTuple(*this) == AsTuple(other);
 }

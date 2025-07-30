@@ -72,6 +72,26 @@ struct BLINK_COMMON_EXPORT
 };
 
 template <>
+struct BLINK_COMMON_EXPORT StructTraits<
+    blink::mojom::ManifestLocalizedTextObjectDataView,
+    blink::Manifest::ManifestLocalizedTextObject> {
+  static const std::optional<std::u16string>& value(
+      const blink::Manifest::ManifestLocalizedTextObject& obj) {
+    return obj.value;
+  }
+  static const std::optional<std::u16string>& lang(
+      const blink::Manifest::ManifestLocalizedTextObject& obj) {
+    return obj.lang;
+  }
+  static const std::optional<blink::mojom::Manifest_TextDirection>& dir(
+      const blink::Manifest::ManifestLocalizedTextObject& obj) {
+    return obj.dir;
+  }
+  static bool Read(blink::mojom::ManifestLocalizedTextObjectDataView data,
+                   blink::Manifest::ManifestLocalizedTextObject* out);
+};
+
+template <>
 struct BLINK_COMMON_EXPORT
     StructTraits<blink::mojom::ManifestShortcutItemDataView,
                  ::blink::Manifest::ShortcutItem> {
@@ -99,8 +119,30 @@ struct BLINK_COMMON_EXPORT
     return shortcut.icons;
   }
 
+  static const std::map<std::u16string,
+                        std::vector<blink::Manifest::ImageResource>>&
+  icons_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.icons_localized;
+  }
+
   static bool Read(blink::mojom::ManifestShortcutItemDataView data,
                    ::blink::Manifest::ShortcutItem* out);
+
+  static const std::map<std::u16string,
+                        blink::Manifest::ManifestLocalizedTextObject>&
+  name_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.name_localized;
+  }
+  static const std::map<std::u16string,
+                        blink::Manifest::ManifestLocalizedTextObject>&
+  short_name_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.short_name_localized;
+  }
+  static const std::map<std::u16string,
+                        blink::Manifest::ManifestLocalizedTextObject>&
+  description_localized(const blink::Manifest::ShortcutItem& shortcut) {
+    return shortcut.description_localized;
+  }
 };
 
 template <>

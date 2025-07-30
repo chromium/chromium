@@ -4928,6 +4928,10 @@ enum WebFeature {
   kLocalNetworkAccessNonSecureContextAllowedDeprecationTrial = 5617,
   kCSPUrlHashes = 5618,
   kCSPEvalHashes = 5619,
+  kWebAppManifestNameLocalized = 5620,
+  kWebAppManifestShortNameLocalized = 5621,
+  kWebAppManifestDescriptionLocalized = 5622,
+  kWebAppManifestIconsLocalized = 5623,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

@@ -276,6 +276,14 @@ class MODULES_EXPORT ManifestParser {
   Vector<mojom::blink::ManifestImageResourcePtr> ParseIcons(
       const JSONObject* object);
 
+  // Parses the 'icons_localized' field of a Manifest, as defined in:
+  // https://w3c.github.io/manifest/#dfn-process-a-_localized-image-resource-member
+  // Returns a map of locale strings to vectors of ManifestImageResourcePtr with
+  // the successfully parsed localized icons, if any. An empty map is returned
+  // if the field was not present or empty.
+  HashMap<String, Vector<mojom::blink::ManifestImageResourcePtr>>
+  ParseIconsLocalized(const JSONObject* object);
+
   // Parses the 'screenshots' field of a Manifest, as defined in:
   // https://www.w3.org/TR/manifest-app-info/#screenshots-member
   // Returns a vector of ManifestImageResourcePtr with the successfully parsed
@@ -558,6 +566,18 @@ class MODULES_EXPORT ManifestParser {
   // Helper method to parse individual scope patterns.
   std::optional<SafeUrlPattern> ParseScopePattern(const PatternInit& init,
                                                   const KURL& base_url);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseLocalizedField(const JSONObject* object, const String& field_name);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseNameLocalized(const JSONObject* object);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseShortNameLocalized(const JSONObject* object);
+
+  HashMap<String, mojom::blink::ManifestLocalizedTextObjectPtr>
+  ParseDescriptionLocalized(const JSONObject* object);
 
   std::optional<PatternInit> MaybeCreatePatternInit(
       const JSONObject* pattern_object);
