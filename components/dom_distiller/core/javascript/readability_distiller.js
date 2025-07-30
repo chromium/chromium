@@ -12,13 +12,10 @@ try {
     // clang-format on
     window.Readability = Readability;
   }
-  window.setTimeout = function() {};
-  window.clearTimeout = function() {};
   initialize();
 
   const article = new Readability(document.cloneNode(/*deep=*/ true)).parse();
   return article;
-
 } catch (e) {
   window.console.error('Error during distillation: ' + e);
   if (e.stack !== undefined) {

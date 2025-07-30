@@ -6,6 +6,9 @@
 // DomDistillerResults (as a javascript object/dict).
 (function(options) {
 try {
+  const originalSetTimeout = window.setTimeout;
+  const originalClearTimeout = window.clearTimeout;
+
   function initialize() {
     // This include will be processed at build time by grit.
     // clang-format off
@@ -19,8 +22,11 @@ try {
   // The OPTIONS placeholder will be replaced with the DomDistillerOptions at
   // runtime.
   const distiller = window.org.chromium.distiller.DomDistiller;
-  return distiller.applyWithOptions(options);
+  const result = distiller.applyWithOptions(options);
 
+  window.setTimeout = originalSetTimeout;
+  window.clearTimeout = originalClearTimeout;
+  return result;
 } catch (e) {
   window.console.error('Error during distillation: ' + e);
   if (e.stack !== undefined) {
