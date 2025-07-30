@@ -4752,7 +4752,17 @@
       "transitions",
       "view-transition",
       "wpt_internal/scheduler/integration_tests",
-      "wpt_internal/view-transition"
+      "wpt_internal/view-transition",
+      "external/wpt/trusted-types/navigate-to-javascript-url-001.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-002.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-003.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-004.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-005.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-006.sub.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-csp-headers.html",
+      "external/wpt/trusted-types/trusted-types-navigation.html",
+      "external/wpt/trusted-types/trusted-types-reporting.html"
     ],
     "exclusive_tests": [
       "external/wpt/feature-policy/experimental-features/vertical-scroll-touch-block-manual.tentative.html",
@@ -4770,7 +4780,17 @@
       "inspector-protocol/css/css-view-transition-set-style-text.js",
       "inspector-protocol/css/css-get-keyframes-for-view-transitions.js",
       "inspector-protocol/dom/dom-get-dom-for-view-transition.js",
-      "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html"
+      "external/wpt/soft-navigation-heuristics/navigation-api-view-transition.tentative.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-001.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-002.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-003.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-004.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-005.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-006.sub.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-007-crash.html",
+      "external/wpt/trusted-types/navigate-to-javascript-url-csp-headers.html",
+      "external/wpt/trusted-types/trusted-types-navigation.html",
+      "external/wpt/trusted-types/trusted-types-reporting.html"
     ],
     "args": [
       "--disable-features=DeprecateUnload",
