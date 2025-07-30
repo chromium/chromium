@@ -347,6 +347,21 @@ export interface ResultInterface_Method_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
 }
+
+export enum ResultInterface_Method_ResponseParam_ResultFieldTags {
+  SUCCESS,
+  FAILURE,
+}
+
+export function whichResultInterface_Method_ResponseParam_Result(u: ResultInterface_Method_ResponseParam_Result): ResultInterface_Method_ResponseParam_ResultFieldTags {
+  if (u.success !== null && u.success !== undefined) {
+    return ResultInterface_Method_ResponseParam_ResultFieldTags.SUCCESS;
+  }
+  if (u.failure !== null && u.failure !== undefined) {
+    return ResultInterface_Method_ResponseParam_ResultFieldTags.FAILURE;
+  }
+  throw new Error("no union field has been set, this is an illegal state");
+}
 mojo.internal.Union(
     ResultInterface_SyncMethod_ResponseParam_ResultSpec.$, 'ResultInterface_SyncMethod_ResponseParam_Result',
     {
@@ -363,4 +378,19 @@ mojo.internal.Union(
 export interface ResultInterface_SyncMethod_ResponseParam_Result {
   success?: boolean,
   failure?: ResultTestError,
+}
+
+export enum ResultInterface_SyncMethod_ResponseParam_ResultFieldTags {
+  SUCCESS,
+  FAILURE,
+}
+
+export function whichResultInterface_SyncMethod_ResponseParam_Result(u: ResultInterface_SyncMethod_ResponseParam_Result): ResultInterface_SyncMethod_ResponseParam_ResultFieldTags {
+  if (u.success !== null && u.success !== undefined) {
+    return ResultInterface_SyncMethod_ResponseParam_ResultFieldTags.SUCCESS;
+  }
+  if (u.failure !== null && u.failure !== undefined) {
+    return ResultInterface_SyncMethod_ResponseParam_ResultFieldTags.FAILURE;
+  }
+  throw new Error("no union field has been set, this is an illegal state");
 }

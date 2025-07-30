@@ -89,3 +89,22 @@ export interface BasicUnion {
   enumValue?: EnumInUnion,
   structValue?: StructInUnion,
 }
+
+export enum BasicUnionFieldTags {
+  NUMERIC_VALUE,
+  ENUM_VALUE,
+  STRUCT_VALUE,
+}
+
+export function whichBasicUnion(u: BasicUnion): BasicUnionFieldTags {
+  if (u.numericValue !== null && u.numericValue !== undefined) {
+    return BasicUnionFieldTags.NUMERIC_VALUE;
+  }
+  if (u.enumValue !== null && u.enumValue !== undefined) {
+    return BasicUnionFieldTags.ENUM_VALUE;
+  }
+  if (u.structValue !== null && u.structValue !== undefined) {
+    return BasicUnionFieldTags.STRUCT_VALUE;
+  }
+  throw new Error("no union field has been set, this is an illegal state");
+}

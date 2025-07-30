@@ -200,6 +200,10 @@ def _GetTypemapImport(typemap):
   return Path(typemap['converter_import']).with_suffix('.js').name
 
 
+def _NameToFieldTag(name):
+  return generator.ToUpperSnakeCase(name)
+
+
 class TypeScriptStylizer(generator.Stylizer):
   def StylizeConstant(self, mojom_name):
     return generator.ToUpperSnakeCase(mojom_name)
@@ -272,6 +276,7 @@ class Generator(generator.Generator):
         "ts_type": self._TypescriptType,
         "ts_type_maybe_nullable": self._TypescriptTypeMaybeNullable,
         "sanitize_identifier": self._TypeScriptSanitizeIdentifier,
+        "to_union_field_tag_name": _NameToFieldTag,
     }
     return ts_filters
 

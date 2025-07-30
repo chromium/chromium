@@ -4,7 +4,7 @@
 
 import {TypeWithNestedEnumTypemap} from './web_ui_mojo_ts_test_converters.js';
 import {MappedOptionalContainer, StringDictType, TestNode} from './web_ui_mojo_ts_test_mapped_types.js';
-import {MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, TestMoreTypemapCallbackRouter, TypeWithNestedEnum_Enum, WebUITsMojoTestCache} from './web_ui_ts_test.test-mojom-webui.js';
+import {ExtensibleUnion, ExtensibleUnionFieldTags, MojoResultTestCallbackRouter, MojoResultTestReceiver, MojoResultTestRemote, OptionalNumericsStruct, Result, TestEnum, TestMoreTypemapCallbackRouter, TypeWithNestedEnum_Enum, Union, UnionFieldTags, WebUITsMojoTestCache, whichExtensibleUnion, whichUnion} from './web_ui_ts_test.test-mojom-webui.js';
 import {StringWrapper} from './web_ui_ts_test_types.test-mojom-webui.js';
 
 const TEST_DATA: Array<{url: string, contents: string}> = [
@@ -419,6 +419,59 @@ async function doTest(): Promise<boolean> {
               resp.res.value === TypeWithNestedEnum_Enum.kToTest,
               `Expected kToTest, but got: ${resp.res.value}`);
         });
+  }
+
+  {
+    const u: Union = {
+      one: 1,
+    };
+
+    assert(
+        whichUnion(u) === UnionFieldTags.ONE,
+        'unexpected result: ' + whichUnion(u));
+
+    const u3: Union = {
+      three: 'blahblahblah',
+    };
+
+    switch (whichUnion(u3)) {
+      case UnionFieldTags.ONE:
+        assert(false, 'wrongly one');
+        break;
+      case UnionFieldTags.TWO:
+        assert(false, 'wrongly two');
+        break;
+      case UnionFieldTags.THREE:
+        // Great success!
+        break;
+      default:
+        assert(false, 'wrongly default');
+        break;
+    }
+
+    try {
+      const badU: Union = {};
+      whichUnion(badU);
+    } catch (e) {
+      // Expected, passed.
+    }
+  }
+
+  {
+    const u: ExtensibleUnion = {
+      foo: 6,
+    };
+    assert(
+        whichExtensibleUnion(u) === ExtensibleUnionFieldTags.FOO,
+        'unexpected extensible union: ' + whichExtensibleUnion(u));
+
+    const u2: any = {
+      simulatingUnknownField: 9001,
+    };
+    // Should go to default.
+    assert(
+        whichExtensibleUnion(u2) === ExtensibleUnionFieldTags.FOO,
+        'unexpected extensible union: ' + whichExtensibleUnion(u2));
   }
 
   return true;

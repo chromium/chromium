@@ -113,3 +113,13 @@ interface TestMoreTypemap {
   TestNestedEnum(TypeWithNestedEnum req) => (TypeWithNestedEnum res);
 };
 
+union Union {
+  int32 one;
+  uint64 two;
+  string three;
+};
+
+[Extensible]
+union ExtensibleUnion {
+  [Default] int32 foo;
+};
