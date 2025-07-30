@@ -8726,7 +8726,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7181840534454431748">Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" />
             {NUM_OTHER_MEMBERS,plural, =0{Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" />}=1{Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /> și încă # persoană}few{Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /> și încă # persoane}other{Alătură-te grupului de file cu <ph name="OWNER_FIRST_NAME" /> și încă # de persoane}}</translation>
 <translation id="7182051712900867547">Folosește alt cont</translation>
-<translation id="7182063559013288142">Hotspot instant</translation>
+<translation id="7182063559013288142">Hotspot instantaneu</translation>
 <translation id="7182791023900310535">Mută parola</translation>
 <translation id="718427252411067142">Pentru a împiedica alte persoane să-ți folosească parola, deschide aplicația și schimbă parola</translation>
 <translation id="718512729823942418">Niciun microfon disponibil</translation>

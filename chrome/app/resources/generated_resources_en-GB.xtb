@@ -175,7 +175,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1116639326869298217">Your identity couldn't be verified</translation>
 <translation id="1116694919640316211">About</translation>
 <translation id="1116779635164066733">This setting is enforced by the '<ph name="NAME" />' extension.</translation>
-<translation id="1118428905044642028">Passwords and Autofill</translation>
+<translation id="1118428905044642028">Passwords and autofill</translation>
 <translation id="1118738876271697201">The system failed to determine device model or serial number.</translation>
 <translation id="111897705806685148">Use Passkey from another device</translation>
 <translation id="1119447706177454957">Internal error</translation>
@@ -1007,7 +1007,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="167983332380191032">Management service sent HTTP error.</translation>
 <translation id="167997285881077031">Text-to-speech voice settings</translation>
 <translation id="1680849702532889074">An error occurred during installation of your Linux application.</translation>
-<translation id="1682548588986054654">New Incognito Window</translation>
+<translation id="1682548588986054654">New Incognito window</translation>
 <translation id="1682696837763999627">Big mouse cursor</translation>
 <translation id="1682867089915960590">Turn on Caret Browsing?</translation>
 <translation id="1686550358074589746">Enable glide typing</translation>
@@ -2487,7 +2487,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2701737434167469065">Sign in, <ph name="EMAIL" /></translation>
 <translation id="2701960282717219666">Network MAC Address</translation>
 <translation id="2702720509009999256">Check your Internet connection and choose 'Try again', or choose 'Open in basic editor' to use limited view and editing options.</translation>
-<translation id="2702801445560668637">Reading List</translation>
+<translation id="2702801445560668637">Reading list</translation>
 <translation id="270414148003105978">Mobile networks</translation>
 <translation id="2704184184447774363">Microsoft Document Signing</translation>
 <translation id="2704606927547763573">Copied</translation>
@@ -9257,7 +9257,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7553012839257224005">Checking the Linux container</translation>
 <translation id="7553242001898162573">Enter your password</translation>
 <translation id="755472745191515939">Your administrator doesn't allow this language</translation>
-<translation id="7554791636758816595">New Tab</translation>
+<translation id="7554791636758816595">New tab</translation>
 <translation id="7556033326131260574">Smart Lock couldn’t verify your account. Type your password to enter.</translation>
 <translation id="7556242789364317684">Unfortunately, <ph name="SHORT_PRODUCT_NAME" /> is unable to recover your settings. To fix the error, <ph name="SHORT_PRODUCT_NAME" /> must reset your device with Powerwash.</translation>
 <translation id="7557194624273628371">Linux port forwarding</translation>
@@ -11059,7 +11059,7 @@ This can include information about installed software, files, your browser, the 
 <translation id="8793390639824829328">Sites use this feature to scroll and zoom shared tabs</translation>
 <translation id="879413103056696865">While the hotspot is on, your <ph name="PHONE_NAME" /> will:</translation>
 <translation id="8794548468611058947">Instead of entering your Google Account password to sign in, you can create a PIN for this <ph name="DEVICE_TYPE" /></translation>
-<translation id="8795916974678578410">New Window</translation>
+<translation id="8795916974678578410">New window</translation>
 <translation id="8796919761992612392">C&amp;ustomize your Chrome</translation>
 <translation id="8797459392481275117">Never translate this site</translation>
 <translation id="8798099450830957504">Default</translation>

@@ -1864,7 +1864,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4154277373259957087">Chrome agora verificará a túa identidade antes de completar os métodos de pago. Podes actualizar esta opción en calquera momento en <ph name="IDS_AUTOFILL_MANDATORY_REAUTH_CONFIRMATION_SETTINGS_LINK" />.</translation>
 <translation id="415440494507469262">Engadir pestana á táboa comparativa</translation>
 <translation id="4159784952369912983">Púrpura</translation>
-<translation id="4165422751765527461">Abrir un artigo do Centro de Axuda nunha nova pestana</translation>
+<translation id="4165422751765527461">Abrir un artigo do Centro de axuda nunha nova pestana</translation>
 <translation id="4165986682804962316">Configuración do sitio</translation>
 <translation id="4169189393773057143">Xestiona as tarxetas de fidelidade ou desactiva estas suxestións en Google Wallet</translation>
 <translation id="4169535189173047238">Non permitir</translation>
@@ -3751,7 +3751,7 @@ Detalles adicionais:
       &lt;li&gt;En &lt;strong&gt;Tipo de inicio&lt;/strong&gt;, selecciona &lt;strong&gt;Desactivado&lt;/strong&gt;
       &lt;li&gt;En &lt;strong&gt;Estado do servizo&lt;/strong&gt;, fai clic en &lt;strong&gt;Parar&lt;/strong&gt;
       &lt;li&gt;Fai clic en &lt;strong&gt;Aplicar&lt;/strong&gt; e, a continuación, fai clic en &lt;strong&gt;Aceptar&lt;/strong&gt;
-      &lt;li&gt;Accede ao &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centro de Axuda de Chrome&lt;/a&gt; para obter información sobre como eliminar permanentemente o software do ordenador
+      &lt;li&gt;Accede ao &lt;a href="https://support.google.com/chrome/answer/6098869"&gt;Centro de axuda de Chrome&lt;/a&gt; para obter información sobre como eliminar permanentemente o software do ordenador
       &lt;/ol&gt;</translation>
 <translation id="7408613996403626141">Xoguetes</translation>
 <translation id="7410852728357935715">Emitir nun dispositivo</translation>

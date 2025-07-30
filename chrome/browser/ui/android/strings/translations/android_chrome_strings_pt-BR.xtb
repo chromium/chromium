@@ -1146,7 +1146,7 @@ Só uma pessoa com sua senha longa pode ler seus dados criptografados. Essa senh
 <translation id="6232535412751077445">Ao ativar o recurso "Não rastrear" uma solicitação é incluída no tráfego de navegação. O resultado depende da resposta de um site à solicitação e de como a solicitação é interpretada.
 
 Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que não têm qualquer relação com os sites que você costuma visitar. Mesmo assim, alguns websites ainda vão coletar e usar seus dados de navegação para, por exemplo, melhorar a segurança, gerar conteúdo, anúncios, recomendações e relatórios de estatística.</translation>
-<translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
+<translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
 <translation id="6251449557817521191">Acesse seu histórico do Chrome aqui</translation>
 <translation id="6253680439349691381">{ITEMS_COUNT,plural, =1{1 item foi salvo apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usá-lo em outros dispositivos.}one{# item foi salvo apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usá-lo em outros dispositivos.}other{# itens foram salvos apenas neste dispositivo. Salve na sua Conta do Google <ph name="ACCOUNT_EMAIL" /> para usá-los em outros dispositivos.}}</translation>
 <translation id="6254139308321626268">Você está visualizando um arquivo PDF</translation>
@@ -1346,7 +1346,7 @@ Por exemplo, alguns sites podem responder a esse pedido mostrando anúncios que 
 <translation id="6976811588313110624">Adicionar novo atalho.</translation>
 <translation id="6978717888677691380">Sites bloqueados</translation>
 <translation id="6979737339423435258">Todo o período</translation>
-<translation id="6983306615164277634">Você também pode tocar na barra de endereço e mantê-la pressionada para mudar a posição.</translation>
+<translation id="6983306615164277634">Você também pode manter a barra endereço pressionada para mudar a posição dela.</translation>
 <translation id="6987047470128880212">A navegação anônima não está disponível neste dispositivo</translation>
 <translation id="6991701761229081516">Suas senhas serão baixadas como um arquivo CSV. Elas ficarão visíveis para qualquer um que tenha acesso ao arquivo, incluindo apps. As senhas exportadas serão excluídas do Chrome.</translation>
 <translation id="6996145122199359148">Fazer o download desta página</translation>

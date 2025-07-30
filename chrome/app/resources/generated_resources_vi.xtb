@@ -807,7 +807,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1553538517812678578">không giới hạn</translation>
 <translation id="1553947773881524342"><ph name="LINK_BEGIN" />Tìm hiểu thêm<ph name="LINK_END" /> về Microsoft 365 trên Chromebook.</translation>
 <translation id="1554640914375980459">Nháy sáng màn hình khi bạn nhận được thông báo. Hãy thận trọng khi sử dụng tính năng nháy sáng khi có thông báo nếu bạn nhạy cảm với ánh sáng.</translation>
-<translation id="1555130319947370107">Xanh lam</translation>
+<translation id="1555130319947370107">Xanh dương</translation>
 <translation id="1556127816860282890">Hoạt động trong nền và một số hiệu ứng hình ảnh như cuộn mượt có thể bị hạn chế</translation>
 <translation id="1556537182262721003">Không thể di chuyển thư mục tiện ích vào hồ sơ.</translation>
 <translation id="1557939148300698553">Tạo hồ sơ</translation>
@@ -1084,7 +1084,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1731520826054843792">Mẫu Chứng chỉ của Microsoft</translation>
 <translation id="1731911755844941020">Đang gửi yêu cầu…</translation>
 <translation id="1732380773380808394">Bạn cũng có thể sử dụng mật khẩu cùng nhiều dữ liệu khác từ Tài khoản Google của mình.</translation>
-<translation id="1734212868489994726">Xanh lam nhạt</translation>
+<translation id="1734212868489994726">Xanh dương nhạt</translation>
 <translation id="1734230530703461088">Không tải được các tiện ích trong giới hạn thời gian. Vui lòng liên hệ với quản trị viên của bạn.</translation>
 <translation id="1734824808160898225"><ph name="PRODUCT_NAME" /> có thể không tự cập nhật được</translation>
 <translation id="1735983780784385591">Được nhập từ Linux</translation>
@@ -3895,7 +3895,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3704331259350077894">Dừng Hoạt động</translation>
 <translation id="3705722231355495246">-</translation>
 <translation id="3706366828968376544">Tiếp tục truyền màn hình tới <ph name="DEVICE_NAME" /></translation>
-<translation id="3706463572498736864">Số trang mỗi trang tính</translation>
+<translation id="3706463572498736864">Số trang mỗi trang in ra</translation>
 <translation id="370649949373421643">Bật Wi-Fi</translation>
 <translation id="370665806235115550">Đang tải...</translation>
 <translation id="3707034683772193706">Trang web bạn truy cập có thể lưu một lượng nhỏ thông tin với Chrome, chủ yếu để xác thực rằng bạn không phải là bot</translation>
@@ -11653,7 +11653,7 @@ Thông tin này có thể bao gồm thông tin về phần mềm đã cài đặ
 <translation id="9201117361710210082">Từng xem trước đây</translation>
 <translation id="9201220332032049474">Các phương thức khoá màn hình</translation>
 <translation id="9201842707396338580">Đã xảy ra lỗi. Vui lòng liên hệ với quản trị viên hoặc chủ sở hữu thiết bị. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
-<translation id="9203296457393252944">Đỏ – xanh lục, phân biệt màu lục kém (Mù màu lục nhẹ)</translation>
+<translation id="9203296457393252944">Đỏ – xanh lục, khó phân biệt xanh lục (Mù màu lục nhẹ)</translation>
 <translation id="9203398526606335860">&amp;Bật cấu hình</translation>
 <translation id="9203904171912129171">Chọn thiết bị</translation>
 <translation id="920410963177453528">Nhấp vào trình đơn thả xuống để chọn một bảng điều khiển khác</translation>

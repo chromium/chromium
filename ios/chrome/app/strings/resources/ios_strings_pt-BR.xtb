@@ -1114,7 +1114,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="5626245204502895507">Não foi possível fazer download do arquivo neste momento.</translation>
 <translation id="562753339521713441">Executar a Confirmação de segurança</translation>
 <translation id="5628388627414062173">{count,plural, =1{{count} página na sua lista de leitura}one{{count} página na sua lista de leitura}other{{count} páginas na sua lista de leitura}}</translation>
-<translation id="5632485077360054581">Me ajude a fazer isso</translation>
+<translation id="5632485077360054581">Saiba como</translation>
 <translation id="5633237939819267663">{count,plural, =1{Favorito salvo em "{title}"}one{{count} favorito salvo em "{title}"}other{{count} favoritos salvos em "{title}"}}</translation>
 <translation id="564170563478022912">Sair? Os dados da conta não salvos serão excluídos.</translation>
 <translation id="5642707040609478753">Marcar como não lida</translation>
@@ -1276,7 +1276,7 @@ A "Transição" também deve ser ativada na seção "Geral" das configurações.
 <translation id="6234310016144827337">Verifique a conexão e tente de novo</translation>
 <translation id="6234438496206735891">Mostrar downloads</translation>
 <translation id="6236952928980352967">Restaurar aviso</translation>
-<translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
+<translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
 <translation id="6251835855431997163">Preencher <ph name="VALUE" /> automaticamente</translation>
 <translation id="6254066287920239840">Abrir links no app em vez de abrir no navegador.</translation>
 <translation id="6268773951964630964">Pesquisar imagem copiada</translation>
@@ -1481,7 +1481,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="69739764870135975">Se o Google também for seu mecanismo de pesquisa padrão, você vai receber sugestões melhores e relevantes para o contexto</translation>
 <translation id="6979158407327259162">Google Drive</translation>
 <translation id="6979737339423435258">Todo o período</translation>
-<translation id="6983306615164277634">Você também pode tocar na barra de endereço e mantê-la pressionada para mudar a posição.</translation>
+<translation id="6983306615164277634">Você também pode manter a barra endereço pressionada para mudar a posição dela.</translation>
 <translation id="6987201788018524855">Conheça recursos úteis que você pode ter deixado passar</translation>
 <translation id="6990519590575500580">Converse por FaceTime</translation>
 <translation id="6998251471716094661">Monitore os preços dos produtos e receba alertas quando houver uma redução em algum site</translation>

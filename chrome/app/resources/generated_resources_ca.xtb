@@ -8720,7 +8720,7 @@ Tens # contrasenyes més en perill. El gestor de contrasenyes de Google recomana
 <translation id="7181840534454431748">Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" />
               {NUM_OTHER_MEMBERS,plural, =0{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" />}=1{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i # persona més}other{Uneix-te al grup de pestanyes amb <ph name="OWNER_FIRST_NAME" /> i # persones més}}</translation>
 <translation id="7182051712900867547">Utilitza un altre compte</translation>
-<translation id="7182063559013288142">Punt d'accés Wi‑Fi instantani</translation>
+<translation id="7182063559013288142">Punt d'accés instantani</translation>
 <translation id="7182791023900310535">Mou la contrasenya</translation>
 <translation id="718427252411067142">Per evitar que altres persones utilitzin la teva contrasenya, obre l'aplicació i canvia la contrasenya</translation>
 <translation id="718512729823942418">No hi ha cap micròfon disponible</translation>

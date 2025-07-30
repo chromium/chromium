@@ -293,7 +293,7 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="147358896496811705">2A0</translation>
 <translation id="1474576429883213321">Firmy sprzątające</translation>
 <translation id="1476595624592550506">Zmień hasło</translation>
-<translation id="1482372785911828880">Bardzo cienka</translation>
+<translation id="1482372785911828880">Bardzo cienki</translation>
 <translation id="1482879811280872320">Jazda na rowerze</translation>
 <translation id="1483493594462132177">Wyślij</translation>
 <translation id="1484449009683144042">To eksperymentalne narzędzie do pisania oparte na AI, które nie zawsze działa dobrze.
@@ -1386,7 +1386,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="337363190475750230">Anulowano obsługę</translation>
 <translation id="3377144306166885718">Serwer użył przestarzałej wersji protokołu TLS.</translation>
 <translation id="3377188786107721145">Podczas przetwarzania zasady wystąpił błąd</translation>
-<translation id="3377642479079205807">Cienka</translation>
+<translation id="3377642479079205807">Cienki</translation>
 <translation id="3378612801784846695">Tematy są określane na podstawie najnowszej historii przeglądania i są używane przez witryny do wyświetlania reklam spersonalizowanych, przy czym chroniona jest Twoja tożsamość</translation>
 <translation id="3380365263193509176">Nieznany błąd</translation>
 <translation id="3380864720620200369">Identyfikator klienta:</translation>
@@ -2631,7 +2631,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="54817484435770891">Dodaj poprawny adres</translation>
 <translation id="5483838506518938965">Wszystko gotowe</translation>
 <translation id="5484396522446324950">Style</translation>
-<translation id="5485100387355669506">Bardzo gruba</translation>
+<translation id="5485100387355669506">Bardzo gruby</translation>
 <translation id="5485973315555778056">Chmura – urządzenie</translation>
 <translation id="5488367146069768854">Instalacje aplikacji internetowych</translation>
 <translation id="5488590678320979185">Przycisk Utwórz notatkę; aktywuj, aby szybko utworzyć nową notatkę w Google Keep</translation>
@@ -3882,7 +3882,7 @@ Dodatkowe informacje:
 <translation id="7602868996817972616">Zapytaj Google o tę stronę</translation>
 <translation id="7608583484192556132">To, czy wyświetlana reklama jest spersonalizowana, może zależeć od wielu czynników, m.in. od tego ustawienia, od <ph name="BEGIN_LINK_1" />reklam sugerowanych przez witryny<ph name="END_LINK_1" />, od <ph name="BEGIN_LINK_2" />ustawień plików cookie<ph name="END_LINK_2" /> oraz od tego, czy witryna, którą odwiedzasz, personalizuje reklamy. Dowiedz się więcej o <ph name="BEGIN_LINK_3" />zarządzaniu prywatnością w reklamach<ph name="END_LINK_3" />.</translation>
 <translation id="7610193165460212391">Wartość spoza zakresu (<ph name="VALUE" />)</translation>
-<translation id="761261689936461781">Gruba</translation>
+<translation id="761261689936461781">Gruby</translation>
 <translation id="7613889955535752492">Wygasa: <ph name="EXPIRATION_MONTH" />/<ph name="EXPIRATION_YEAR" /></translation>
 <translation id="7614494068621678628"><ph name="MANAGE_PASSWORDS_FOCUSED_FRIENDLY_MATCH_TEXT" />. Naciśnij Tab, a potem Enter, by wyświetlić hasła i zarządzać nimi w ustawieniach Chrome.</translation>
 <translation id="7616645509853975347">Administrator włączył w przeglądarce oprogramowanie sprzęgające Chrome Enterprise. Może ono mieć dostęp do niektórych Twoich danych.</translation>

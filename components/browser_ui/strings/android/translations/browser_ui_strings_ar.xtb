@@ -17,7 +17,7 @@
 <translation id="1181037720776840403">إزالة</translation>
 <translation id="1192844206376121885">سيؤدي هذا الإجراء إلى حذف جميع البيانات وملفات تعريف الارتباط المُخزَّنة من خلال <ph name="ORIGIN" />.</translation>
 <translation id="1201402288615127009">التالي</translation>
-<translation id="1240190568154816272">‏معلومات بشأن استخدام متصفّح Chrome</translation>
+<translation id="1240190568154816272">‏نصائح قيّمة من Chrome</translation>
 <translation id="1242008676835033345">مضمّن في <ph name="WEBSITE_URL" /></translation>
 <translation id="1263609676484797429">انقر على "التطبيقات"  &gt; "التطبيقات التلقائية"</translation>
 <translation id="1272079795634619415">إيقاف</translation>
@@ -84,7 +84,7 @@
 <translation id="2028449514182362831">لن تعمل الميزات التي تحتاج إلى مستشعرات الحركة.</translation>
 <translation id="2030769033451695672">يُرجى النقر للرجوع إلى <ph name="URL_OF_THE_CURRENT_TAB" />.</translation>
 <translation id="2079545284768500474">تراجع</translation>
-<translation id="2080070583977670716">مزيد من الإعدادات</translation>
+<translation id="2080070583977670716">إعدادات إضافية</translation>
 <translation id="2091887806945687916">الصوت</translation>
 <translation id="2096716221239095980">حذف كل البيانات</translation>
 <translation id="2102396546234652240">عدم السماح للمواقع الإلكترونية باستخدام الميكروفون</translation>
@@ -131,7 +131,7 @@
 <translation id="2570922361219980984">‏الوصول إلى الموقع الجغرافي متوقف لهذا الجهاز أيضًا. يمكنك تفعليه في <ph name="BEGIN_LINK" />إعدادات Android<ph name="END_LINK" />.</translation>
 <translation id="257931822824936280">تم التوسيع - انقر للتصغير.</translation>
 <translation id="2586657967955657006">الحافظة</translation>
-<translation id="2588271083332682494">تنظيم علامات التبويب باستخدام "مجموعات علامات التبويب"</translation>
+<translation id="2588271083332682494">نظِّم متصفّحك من خلال "مجموعات علامات التبويب"</translation>
 <translation id="2597457036804169544">عدم تطبيق "المظهر الداكن" على المواقع الإلكترونية</translation>
 <translation id="2606760465469169465">التحقّق التلقائي</translation>
 <translation id="2621115761605608342">‏السماح لموقع إلكتروني معيّن بتشغيل JavaScript</translation>
@@ -330,7 +330,7 @@
 <translation id="5048841907079026162">إدارة بيانات التصفّح</translation>
 <translation id="5050380848339752099">هذا الموقع الإلكتروني على وشك مشاركة معلومات مع أحد التطبيقات خارج وضع التصفُّح المتخفي.</translation>
 <translation id="5063480226653192405">الاستخدام</translation>
-<translation id="5068293087784369013">تخصيص صفحة علامة التبويب الجديدة</translation>
+<translation id="5068293087784369013">خصِّص صفحة علامة التبويب الجديدة</translation>
 <translation id="5091013926750941408">إصدار الموقع الإلكتروني المتوافق مع الأجهزة الجوّالة</translation>
 <translation id="509133520954049755">سيتم طلب عرضه بالإصدار المخصّص لأجهزة الكمبيوتر</translation>
 <translation id="5091663350197390230">‏عندما يكون هذا الإعداد مفعَّلاً، يمكن للمواقع الإلكترونية استخدام JavaScript. وعند إيقافه، لا يمكن للمواقع الإلكترونية استخدام JavaScript.</translation>
@@ -529,7 +529,7 @@
 <translation id="7658239707568436148">إلغاء</translation>
 <translation id="7667547420449112975">ساحر "أوز" العجيب</translation>
 <translation id="7681597159868843240">تستخدم المواقع الإلكترونية عادةً مستشعرات الحركة في جهازك لتتيح ميزات مثل الواقع الافتراضي أو تتبُّع مستوى اللياقة البدنية.</translation>
-<translation id="7688240020069572972">‏إخفاء بطاقة نصائح استخدام Chrome</translation>
+<translation id="7688240020069572972">‏إخفاء بطاقة "نصائح قيّمة من Chrome"</translation>
 <translation id="7719367874908701697">تكبير/تصغير الصفحة</translation>
 <translation id="7759147511335618829">‏التحكّم في أجهزة MIDI وإعادة برمجتها</translation>
 <translation id="7781829728241885113">أمس</translation>

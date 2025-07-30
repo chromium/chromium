@@ -231,7 +231,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1375293861397106342">Tất cả các lựa chọn thường có giá từ <ph name="LOW_PRICE" /> đến <ph name="HIGH_PRICE" /></translation>
 <translation id="1376836354785490390">Ẩn bớt</translation>
 <translation id="1380591466760231819">Gấp dạng phong thư</translation>
-<translation id="138218114945450791">Xanh lam nhạt</translation>
+<translation id="138218114945450791">Xanh dương nhạt</translation>
 <translation id="1382194467192730611">Thiết bị USB được quản trị viên của bạn cho phép</translation>
 <translation id="1382378825779654399">Bạn sẽ nhận được email thông báo nếu có chương trình giảm giá trên một trang web bất kỳ. Trang này sẽ được lưu vào <ph name="LAST_BOOKMARKS_FOLDER" />.</translation>
 <translation id="1384725838384960382">Bảng xác thực thông tin thanh toán an toàn</translation>
@@ -327,7 +327,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="1553152622374372421">Thể thao mùa đông</translation>
 <translation id="1553358976309200471">Cập nhật Chrome</translation>
 <translation id="1554485704925237240">Điều khiển máy đọc có tên <ph name="READERNAME" /> và thẻ thông minh đi kèm</translation>
-<translation id="1555130319947370107">Xanh lam</translation>
+<translation id="1555130319947370107">Xanh dương</translation>
 <translation id="1555191101192706055">Những kẻ tấn công trên trang web bạn đã cố truy cập có thể lừa bạn cài đặt phần mềm độc hại gây ảnh hưởng đến cách bạn duyệt web – chẳng hạn như bằng cách thay đổi trang chủ hoặc hiển thị thêm quảng cáo trên các trang web bạn truy cập.</translation>
 <translation id="1559231233244409191">Bìa cứng (Ba lớp)</translation>
 <translation id="1559447966090556585">Nhận thông báo?</translation>
@@ -1306,7 +1306,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="3229277193950731405">Sao chép chuỗi phiên bản</translation>
 <translation id="323107829343500871">Nhập số CVC cho <ph name="CREDIT_CARD" /></translation>
 <translation id="3234666976984236645">Luôn luôn phát hiện nội dung quan trọng trên trang web này</translation>
-<translation id="323585066388831737">Màu đỏ nhạt</translation>
+<translation id="323585066388831737">Đỏ nhạt</translation>
 <translation id="3235902901585019063">Tệp trên thiết bị sẽ bị xoá vào <ph name="DATE_TIME" />. Đảm bảo rằng mọi dữ liệu quan trọng của doanh nghiệp hoặc cá nhân đều được lưu trữ bên ngoài.</translation>
 <translation id="3236212803136366317">Lợi ích của thẻ</translation>
 <translation id="3238395604961564389">Mở đường liên kết trong cửa sổ ẩn danh</translation>
@@ -1948,7 +1948,7 @@ Nếu bạn từ chối, chế độ cài đặt quyền riêng tư của bạn 
 <translation id="4277937682389409325">Địa chỉ tại địa phương</translation>
 <translation id="4278090321534187713">Thẻ không được nhà bán hàng này chấp nhận sẽ bị vô hiệu hoá</translation>
 <translation id="4278390842282768270">Được cho phép</translation>
-<translation id="4281245629646759298">Màu vàng nhạt</translation>
+<translation id="4281245629646759298">Vàng nhạt</translation>
 <translation id="4281998142035485137">{0,plural, =1{Mở tệp bảo mật?}other{Mở các tệp bảo mật?}}</translation>
 <translation id="4282280603030594840">Mua sắm xe cộ</translation>
 <translation id="4282346679996504092">Thông báo về sản phẩm này đã bị tắt và dấu trang đã bị xoá</translation>

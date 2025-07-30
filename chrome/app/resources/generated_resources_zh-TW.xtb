@@ -1210,7 +1210,7 @@
 <translation id="1826516787628120939">檢查中</translation>
 <translation id="1826657447823925402">已停用反向捲動功能</translation>
 <translation id="1827416268933303617"><ph name="COLOR_NAME" />色</translation>
-<translation id="1827504459960247692">無線基地台名稱</translation>
+<translation id="1827504459960247692">熱點名稱</translation>
 <translation id="1828378091493947763">這部裝置不支援這個外掛程式</translation>
 <translation id="1828879788654007962">{COUNT,plural, =0{開啟所有網址(&amp;O)}=1{開啟書籤(&amp;O)}other{開啟所有 ({COUNT} 個) 網址(&amp;O)}}</translation>
 <translation id="1828901632669367785">使用系統對話方塊進行列印...</translation>
@@ -1608,7 +1608,7 @@
 <translation id="2101225219012730419">版本：</translation>
 <translation id="2102396546234652240">禁止網站使用麥克風</translation>
 <translation id="2102495993840063010">Android 應用程式</translation>
-<translation id="2104166991923847969">自動關閉無線基地台</translation>
+<translation id="2104166991923847969">自動關閉熱點</translation>
 <translation id="2105809836724866556">已隱藏「<ph name="MODULE_TITLE" />」</translation>
 <translation id="2108204112555497972">檢查時間：<ph name="NUM_DAYS_HOURS_MINUTES" />前</translation>
 <translation id="2108349519800154983">{COUNT,plural, =1{電話號碼}other{# 組電話號碼}}</translation>
@@ -8715,7 +8715,7 @@
 <translation id="7181329571386134105">如要讓<ph name="CHILD_NAME" />之後可直接安裝擴充功能，不必經過你的核准，請在你的裝置上開啟 Family Link 應用程式，並更新<ph name="CHILD_NAME" />的 Google Chrome 設定。</translation>
 <translation id="7181840534454431748">加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組{NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的分頁群組}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的分頁群組}}</translation>
 <translation id="7182051712900867547">使用其他帳戶</translation>
-<translation id="7182063559013288142">即時無線基地台</translation>
+<translation id="7182063559013288142">即時熱點</translation>
 <translation id="7182791023900310535">轉移你的密碼</translation>
 <translation id="718427252411067142">如果不希望他人使用你的密碼，請開啟應用程式變更密碼</translation>
 <translation id="718512729823942418">沒有可用的麥克風</translation>

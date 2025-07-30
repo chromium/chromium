@@ -146,7 +146,7 @@
           <ph name="LINE_BREAK" />
           <ph name="LINE_BREAK" />
           AI tạo sinh đang ở giai đoạn thử nghiệm và phát triển ban đầu nên phạm vi cung cấp hiện còn hạn chế.</translation>
-<translation id="1555130319947370107">Xanh lam</translation>
+<translation id="1555130319947370107">Xanh dương</translation>
 <translation id="155865706765934889">Ô di chuột</translation>
 <translation id="1561927818299383735">màu đèn nền</translation>
 <translation id="1564356849266217610">vải tơ sống</translation>
@@ -683,7 +683,7 @@
 <translation id="405181879009056822">Chế độ cài đặt ChromeOS</translation>
 <translation id="4054683689023980771">Đang tải hình ảnh xuống</translation>
 <translation id="4059839844193047929">Nếu bạn rời khỏi trang này, bản ghi âm hiện tại sẽ kết thúc</translation>
-<translation id="4063039537646912479">xanh lam nhạt</translation>
+<translation id="4063039537646912479">xanh dương nhạt</translation>
 <translation id="4070799384363688067">anime</translation>
 <translation id="4086271957099059213">Tạo chế độ điều khiển khác</translation>
 <translation id="4091002263446255071">lãng mạn</translation>
@@ -967,7 +967,7 @@
 <translation id="5234764350956374838">Bỏ qua</translation>
 <translation id="5236119614998611749">Không tạo được bản tóm tắt</translation>
 <translation id="5244638145904800454">{NUM_ROOL_APPS,plural,offset:1 =1{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" tự khởi động mỗi khi bạn đăng nhập.}=2{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và 1 ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}other{Quản trị viên của bạn đã thiết lập để "<ph name="APP_NAME" />" và # ứng dụng khác tự khởi động mỗi khi bạn đăng nhập.}}</translation>
-<translation id="5248419081947706722">xanh lam</translation>
+<translation id="5248419081947706722">xanh dương</translation>
 <translation id="5252456968953390977">Đang chuyển vùng</translation>
 <translation id="5254600740122644523">Giá sách <ph name="SIMPLE_STYLE" /> trong căn phòng màu <ph name="SIMPLE_TONE" /></translation>
 <translation id="5257811368506016604">Bật chế độ màu sáng</translation>
