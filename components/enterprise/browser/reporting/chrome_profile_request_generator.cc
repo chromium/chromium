@@ -244,6 +244,11 @@ void ChromeProfileRequestGenerator::OnAggregatedSignalsReceived(
     }
 #endif  // BUILDFLAG(IS_WIN)
 
+    if (os_signals.distribution_version) {
+      os_report->set_distribution_version(
+          os_signals.distribution_version.value());
+    }
+
     browser_report->set_browser_version(os_signals.browser_version);
   }
 

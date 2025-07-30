@@ -34,6 +34,7 @@ const char kFakeSignalOsVersion[] = "100.0.from_signals";
 const char kFakeSignalDisplayName[] = "user_from_signals";
 const char kFakeSignalHostname[] = "host_name_from_signals";
 const char kFakeProfileId[] = "profile_id_from_signals";
+const char kFakeDistoVersion[] = "1.2.3";
 
 const char kFakeSignalMacAddr1[] = "00-11-22-33-44-55-66";
 const char kFakeSignalMacAddr2[] = "AA-BB-CC-DD-EE-FF";
@@ -95,6 +96,7 @@ void VerifyReportContent(
     EXPECT_EQ(os_report.arch(), policy::GetOSArchitecture());
     EXPECT_EQ(os_report.version(), kFakeSignalOsVersion);
     EXPECT_EQ(os_report.screen_lock_secured(), em::SettingValue::ENABLED);
+    EXPECT_EQ(os_report.distribution_version(), kFakeDistoVersion);
 
     EXPECT_EQ(3, os_report.mac_addresses_size());
     EXPECT_EQ(os_report.mac_addresses(0), kFakeSignalMacAddr1);
@@ -211,7 +213,8 @@ device_signals::SignalsAggregationResponse CreateFilledResponse(
   os_signals.display_name = kFakeSignalDisplayName;
   os_signals.hostname = kFakeSignalHostname;
   os_signals.screen_lock_secured = device_signals::SettingValue::ENABLED;
-  // Test vector field
+  os_signals.distribution_version = kFakeDistoVersion;
+  // Test vector field.
   os_signals.mac_addresses = {kFakeSignalMacAddr1, kFakeSignalMacAddr2,
                               kFakeSignalMacAddr3};
 

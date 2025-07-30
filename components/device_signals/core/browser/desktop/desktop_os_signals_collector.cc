@@ -42,6 +42,11 @@ std::unique_ptr<OsSignalsResponse> AddAsyncOsSignals(
 
     os_signals_response->disk_encryption = device_signals::GetDiskEncrypted();
     os_signals_response->os_firewall = device_signals::GetOSFirewall();
+
+#if BUILDFLAG(IS_LINUX)
+    os_signals_response->distribution_version =
+        device_signals::GetDistributionVersion();
+#endif  // BUILDFLAG(IS_LINUX)
   }
 
   return os_signals_response;

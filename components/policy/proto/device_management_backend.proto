@@ -2405,6 +2405,7 @@ message OSReport {
   optional string arch = 2;
 
   // A string contains OS version.
+  // On Linux, this represents the kernel version.
   optional string version = 3;
 
   enum VersionType {
@@ -2467,6 +2468,10 @@ message OSReport {
 
   // List of enums that represents agents installed on a device.
   repeated Agent detected_agents = 19;
+
+  // A string representing the Linux distribution VERSION_ID contained in
+  // /etc/os-release.
+  optional string distribution_version = 20;
 }
 
 // Report the status of a Chrome installation on non-Chrome OS platform.

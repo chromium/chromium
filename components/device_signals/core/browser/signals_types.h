@@ -239,6 +239,9 @@ struct OsSignalsResponse : BaseSignalResponse {
   std::optional<device_signals::SettingValue> secure_boot_mode = std::nullopt;
   std::optional<std::string> windows_machine_domain = std::nullopt;
   std::optional<std::string> windows_user_domain = std::nullopt;
+
+  // Linux specific
+  std::optional<std::string> distribution_version = std::nullopt;
 };
 
 struct ProfileSignalsResponse : BaseSignalResponse {

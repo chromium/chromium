@@ -165,4 +165,22 @@ std::vector<std::string> internal::GetMacAddressesImpl() {
   return result;
 }
 
+std::optional<std::string> GetDistributionVersion() {
+  base::FilePath os_release_file("/etc/os-release");
+  std::string release_info;
+  base::StringPairs values;
+  if (base::PathExists(os_release_file) &&
+      base::ReadFileToStringWithMaxSize(os_release_file, &release_info, 8192) &&
+      base::SplitStringIntoKeyValuePairs(release_info, '=', '\n', &values)) {
+    auto version_id = std::ranges::find(
+        values, "VERSION_ID", &std::pair<std::string, std::string>::first);
+    if (version_id != values.end()) {
+      return std::string(
+          base::TrimString(version_id->second, "\"", base::TRIM_ALL));
+    }
+  }
+
+  return std::nullopt;
+}
+
 }  // namespace device_signals
