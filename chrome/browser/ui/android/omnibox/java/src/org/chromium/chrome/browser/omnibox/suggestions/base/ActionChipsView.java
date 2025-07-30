@@ -18,8 +18,8 @@ import org.chromium.chrome.browser.omnibox.R;
 import org.chromium.chrome.browser.omnibox.styles.OmniboxResourceProvider;
 import org.chromium.chrome.browser.omnibox.suggestions.RecyclerViewSelectionController;
 import org.chromium.chrome.browser.omnibox.suggestions.SelectionController;
-import org.chromium.chrome.browser.util.KeyNavigationUtil;
 import org.chromium.components.browser_ui.widget.chips.ChipView;
+import org.chromium.ui.base.KeyNavigationUtil;
 
 /**
  * Container view for the {@link ChipView}. Chips should be initially horizontally aligned with the

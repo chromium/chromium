@@ -2,12 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-package org.chromium.chrome.browser.util;
+package org.chromium.ui.base;
 
 import android.view.KeyEvent;
 
 import org.chromium.build.annotations.NullMarked;
-import org.chromium.ui.base.LocalizationUtils;
 
 /** This is a helper class to handle navigation related checks for key events. */
 @NullMarked
@@ -17,6 +16,7 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is any of DPAD down or NUMPAD down.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as a navigation down.
      */
@@ -29,6 +29,7 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is any of DPAD up or NUMPAD up.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as a navigation up.
      */
@@ -126,6 +127,7 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is any DPAD or NUMPAD direction.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as any of navigation direction.
      */
@@ -135,6 +137,7 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is any of ENTER or NUMPAD ENTER.
+     *
      * @param event Event to be checked.
      * @return Whether the event should be processed as ENTER.
      */
@@ -145,6 +148,7 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is an ACTION_DOWN event.
+     *
      * @param event Event to be checked.
      * @return Whether the event is an ACTION_DOWN event.
      */
@@ -154,6 +158,7 @@ public class KeyNavigationUtil {
 
     /**
      * Checks whether the given event is an ACTION_UP event.
+     *
      * @param event Event to be checked.
      * @return Whether the event is an ACTION_UP event.
      */

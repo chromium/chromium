@@ -6,11 +6,11 @@ package org.chromium.chrome.browser.compositor;
 
 import static androidx.core.view.WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE;
 
-import static org.chromium.chrome.browser.util.KeyNavigationUtil.isButtonActivate;
-import static org.chromium.chrome.browser.util.KeyNavigationUtil.isMoveFocusBackward;
-import static org.chromium.chrome.browser.util.KeyNavigationUtil.isMoveFocusForward;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocus;
 import static org.chromium.ui.accessibility.KeyboardFocusUtil.setFocusOnFirstFocusableDescendant;
+import static org.chromium.ui.base.KeyNavigationUtil.isButtonActivate;
+import static org.chromium.ui.base.KeyNavigationUtil.isMoveFocusBackward;
+import static org.chromium.ui.base.KeyNavigationUtil.isMoveFocusForward;
 
 import android.app.Activity;
 import android.content.Context;
