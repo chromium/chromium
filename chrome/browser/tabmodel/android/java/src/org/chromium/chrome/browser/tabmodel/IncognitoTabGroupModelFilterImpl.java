@@ -270,9 +270,10 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab, boolean notify) {
+    public void mergeListOfTabsToGroup(
+            List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, boolean notify) {
         if (mCurrentFilter == null) return;
-        mCurrentFilter.mergeListOfTabsToGroup(tabs, destinationTab, notify);
+        mCurrentFilter.mergeListOfTabsToGroup(tabs, destinationTab, indexInGroup, notify);
     }
 
     @Override

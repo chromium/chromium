@@ -920,7 +920,8 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab, boolean notify) {
+    public void mergeListOfTabsToGroup(
+            List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, boolean notify) {
         mergeListOfTabsToGroupInternal(
                 tabs, destinationTab, notify, /* tabGroupIdForNewGroup= */ null);
     }

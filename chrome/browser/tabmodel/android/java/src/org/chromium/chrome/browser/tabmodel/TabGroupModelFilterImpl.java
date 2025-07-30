@@ -376,7 +376,8 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void mergeListOfTabsToGroup(List<Tab> tabs, Tab destinationTab, boolean notify) {
+    public void mergeListOfTabsToGroup(
+            List<Tab> tabs, Tab destinationTab, @Nullable Integer indexInGroup, boolean notify) {
         // Check whether the destination tab is in a tab group before getOrCreateTabGroupId so we
         // send the correct signal for whether a tab group was newly created.
         List<Tab> tabsToMerge = new ArrayList<>();
@@ -417,7 +418,27 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                     getOrCreateTabGroupIdWithDefault(destinationTab, mergedTabGroupId);
         }
         mGroupIdToRootIdMap.put(destinationTabGroupId, destinationRootId);
-        int lastTabIndexInGroup = getLastTabIndexInGroup(destinationTab);
+
+        int destinationIndexInTabModel;
+        if (wasDestinationTabInAGroup) {
+            List<Tab> tabsInDestGroup = getTabsInGroup(destinationTabGroupId);
+            int groupSize = tabsInDestGroup.size();
+            int insertionIndexInGroup =
+                    (indexInGroup == null)
+                            ? groupSize
+                            : MathUtils.clamp(indexInGroup, 0, groupSize);
+
+            Tab firstTabInGroup = tabsInDestGroup.get(0);
+            int firstTabModelIndex = mTabModel.indexOf(firstTabInGroup);
+            destinationIndexInTabModel = firstTabModelIndex + insertionIndexInGroup;
+        } else {
+            // New group. `position == 0` means before, otherwise after destinationTab.
+            destinationIndexInTabModel =
+                    (indexInGroup != null && indexInGroup == 0)
+                            ? destinationTabIndex
+                            : destinationTabIndex + 1;
+        }
+
         String destinationGroupTitle = TabGroupTitleUtils.getTabGroupTitle(destinationRootId);
         int destinationGroupColorId = TabGroupColorUtils.getTabGroupColor(destinationRootId);
 
@@ -440,13 +461,32 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 observer.willMergeTabToGroup(tab, destinationRootId, destinationTabGroupId);
             }
 
-            if (tab.getId() == destinationTab.getId()) continue;
+            int currentIndex = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
+            assert currentIndex != TabModel.INVALID_TAB_INDEX;
 
-            int index = TabModelUtils.getTabIndexById(getTabModel(), tab.getId());
-            assert index != TabModel.INVALID_TAB_INDEX;
+            int adjustedDestinationIndexInTabModel = destinationIndexInTabModel;
+
+            // A "move" is conceptually a "remove" then an "add". When moving a tab from
+            // a position *before* the destination (e.g., from index 2 to 5), the removal
+            // causes all subsequent elements, including the destination, to shift left by one.
+            // We must decrement the destination index to compensate for this shift and ensure
+            // the tab is inserted at the correct final position.
+            //
+            // This adjustment is not needed when moving a tab backward (e.g., from 5 to 2),
+            // as the removal does not affect the indices of items that come before it.
+            if (currentIndex < destinationIndexInTabModel) {
+                adjustedDestinationIndexInTabModel--;
+            }
+
+            // If tab is already where it should be, skip it.
+            if (tab.getTabGroupId() != null
+                    && tab.getTabGroupId().equals(destinationTabGroupId)
+                    && currentIndex == adjustedDestinationIndexInTabModel) {
+                continue;
+            }
 
             mergedTabs.add(tab);
-            originalIndexes.add(index);
+            originalIndexes.add(currentIndex);
             originalRootIds.add(tab.getRootId());
             originalTabGroupIds.add(tab.getTabGroupId());
             @Nullable Token tabGroupId = tab.getTabGroupId();
@@ -455,19 +495,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                         tabGroupId.equals(destinationTabGroupId) ? null : tabGroupId;
                 removedGroups.add(Pair.create(tab.getRootId(), oldTabGroupId));
             }
-            // Increment the destination index if the moved tab is after the destination index. If
-            // the tab is before the destination index, the location of the end of the tab group
-            // will be unchanged as all the tabs will shuffle forward by one.
-            if (index > lastTabIndexInGroup) ++lastTabIndexInGroup;
 
             setBothGroupIds(tab, destinationRootId, destinationTabGroupId);
-            if (index == lastTabIndexInGroup) {
+            if (currentIndex == adjustedDestinationIndexInTabModel) {
                 // If the tab is not moved TabModelImpl will not invoke
-                // TabModelObserver#didMoveTab() and update events will not be triggered. Call the
-                // event manually.
-                didMoveTab(tab, lastTabIndexInGroup, index);
+                // TabModelObserver#didMoveTab() and update events will not be triggered.
+                didMoveTab(tab, adjustedDestinationIndexInTabModel, currentIndex);
             } else {
-                getTabModel().moveTab(tab.getId(), lastTabIndexInGroup);
+                getTabModel().moveTab(tab.getId(), adjustedDestinationIndexInTabModel);
+            }
+
+            if (currentIndex >= destinationIndexInTabModel) {
+                destinationIndexInTabModel++;
             }
         }
 
