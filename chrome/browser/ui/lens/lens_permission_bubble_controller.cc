@@ -182,8 +182,9 @@ LensPermissionBubbleController::CreateLensPermissionDialogModel(
           l10n_util::GetStringUTF16(lens::GetLensOverlayEntrypointLabelAltIds(
               IDS_LENS_PERMISSION_BUBBLE_DIALOG_TITLE)))
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
-      .SetIcon(ui::ImageModel::FromVectorIcon(vector_icons::kGoogleColorIcon,
-                                              ui::kColorIcon, 20))
+      .SetIcon(ui::ImageModel::FromImageSkia(
+          *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+              IDR_GOOGLE_G_GRADIENT_20)))
       .SetBannerImage(ui::ImageModel::FromImageSkia(
           *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
               lens::features::IsLensOverlayPermissionBubbleAltEnabled()
