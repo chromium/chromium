@@ -470,6 +470,30 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram
+    name="NewTabPage.Composebox.Session.File.DeletedCount.{ComposeboxFileTypes}.{FileState}"
+    units="count" expires_after="2026-01-20">
+  <owner>mfacey@google.com</owner>
+  <owner>chrome-desktop-ntp@google.com</owner>
+  <summary>
+    Count the file deletions from the composebox. This is recorded when a file
+    is uploaded and then deleted from the composebox. Every deletion emits true
+    if it was successful and false if it was not.
+  </summary>
+  <token key="ComposeboxFileTypes" variants="ComposeboxFileTypes">
+    <variant name=""/>
+  </token>
+  <token key="FileState">
+    <variant name="NotUploaded" summary="File not uploaded"/>
+    <variant name="Processing" summary="File upload processing"/>
+    <variant name="Unknown" summary="Unknown"/>
+    <variant name="UploadFailed" summary="File upload failed"/>
+    <variant name="UploadStarted" summary="File upload started"/>
+    <variant name="UploadSuccessful" summary="File upload successful"/>
+    <variant name="ValidationFailed" summary="File validation failed"/>
+  </token>
+</histogram>
+
 <histogram name="NewTabPage.Composebox.Session.QueryCount" units="count"
     expires_after="2026-01-20">
   <owner>jennserrano@google.com</owner>

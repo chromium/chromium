@@ -5,8 +5,12 @@
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "components/lens/lens_overlay_mime_type.h"
+#include "components/omnibox/composebox/composebox_query.mojom.h"
+#include "components/omnibox/composebox/composebox_query_controller.h"
 
 namespace {
+const char kComposeboxFileDeleted[] = "Composebox.Session.File.DeletedCount";
 const char kComposeboxSessionDuration[] = "Composebox.Session.Duration.Total";
 const char kComposeboxSessionDurationQuerySubmitted[] =
     "Composebox.Session.Duration.QuerySubmitted";
@@ -27,6 +31,25 @@ const char kComposeboxQueryFileCount[] = "Composebox.Query.FileCount";
 const char kComposeboxQueryModality[] = "Composebox.Query.Modality";
 const char kComposeboxQueryCount[] = "Composebox.Session.QueryCount";
 const char kComposeboxFileSizePerType[] = "Composebox.File.Size.";
+
+std::string UploadStatusToString(FileUploadStatus status) {
+  switch (status) {
+    case FileUploadStatus::kNotUploaded:
+      return "NotUploaded";
+    case FileUploadStatus::kProcessing:
+      return "Processing";
+    case FileUploadStatus::kValidationFailed:
+      return "ValidationFailed";
+    case FileUploadStatus::kUploadStarted:
+      return "UploadStarted";
+    case FileUploadStatus::kUploadSuccessful:
+      return "UploadSuccessful";
+    case FileUploadStatus::kUploadFailed:
+      return "UploadFailed";
+    default:
+      return "Unknown";
+  }
+}
 }  // namespace
 
 SessionMetrics::SessionMetrics() = default;
@@ -124,6 +147,16 @@ void ComposeboxMetricsRecorder::RecordFileSizeMetric(lens::MimeType mime_type,
                                   kComposeboxFileSizePerType +
                                   MimeTypeToString(mime_type),
                               file_size_bytes);
+}
+
+void ComposeboxMetricsRecorder::RecordFileDeletedMetrics(
+    bool success,
+    lens::MimeType file_type,
+    FileUploadStatus file_status) {
+  base::UmaHistogramBoolean(metric_category_name_ + kComposeboxFileDeleted +
+                                "." + MimeTypeToString(file_type) + "." +
+                                UploadStatusToString(file_status),
+                            success);
 }
 
 void ComposeboxMetricsRecorder::NotifySessionStarted() {

@@ -101,16 +101,6 @@ class TestComposeboxQueryController : public ComposeboxQueryController {
 
   const GURL& last_sent_fetch_url() const { return last_sent_fetch_url_; }
 
-  // Gets the file info pointer for the given client token.
-  ComposeboxQueryController::FileInfo* GetFileInfo(
-      const base::UnguessableToken& client_token) {
-    auto it = active_files_.find(client_token);
-    if (it == active_files_.end()) {
-      return nullptr;
-    }
-    return it->second.get();
-  }
-
   // Gets the last sent file upload request.
   std::optional<lens::LensOverlayServerRequest> last_sent_file_upload_request()
       const {

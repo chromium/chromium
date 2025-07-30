@@ -48,6 +48,8 @@ constexpr int kImageMaxWidth = 1000;
 constexpr char kClientUploadDurationQueryParameter[] = "cud";
 constexpr char kQuerySubmissionTimeQueryParameter[] = "qsubts";
 constexpr char kQueryText[] = "query";
+constexpr char kComposeboxFileDeleted[] =
+    "NewTabPage.Composebox.Session.File.DeletedCount";
 
 class MockPage : public composebox::mojom::Page {
  public:
@@ -100,6 +102,9 @@ class MockQueryController : public TestComposeboxQueryController {
        std::optional<composebox::ImageEncodingOptions> image_options));
   MOCK_METHOD(bool, DeleteFile, (const base::UnguessableToken&));
   MOCK_METHOD(void, ClearFiles, ());
+  MOCK_METHOD(FileInfo*,
+              GetFileInfo,
+              (const base::UnguessableToken& file_token));
 
   void NotifySessionStartedBase() {
     TestComposeboxQueryController::NotifySessionStarted();
@@ -374,6 +379,12 @@ TEST_F(ComposeboxHandlerTest, AddFile_Image) {
 }
 
 TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
+  std::string file_type = ".Image";
+  std::string file_status = ".NotUploaded";
+  std::unique_ptr<ComposeboxQueryController::FileInfo> file_info =
+      std::make_unique<ComposeboxQueryController::FileInfo>();
+  file_info->file_name = "test.png";
+  file_info->mime_type_ = lens::MimeType::kImage;
   base::UnguessableToken delete_file_token = base::UnguessableToken::Create();
   base::UnguessableToken token_arg;
   EXPECT_CALL(query_controller(), DeleteFile)
@@ -382,9 +393,18 @@ TEST_F(ComposeboxHandlerTest, DeleteFile_Success) {
             token_arg = token;
             return true;
           }));
+
+  EXPECT_CALL(query_controller(), GetFileInfo)
+      .WillOnce(
+          testing::Invoke([&file_info](const base::UnguessableToken& token) {
+            return file_info.get();
+          }));
+
   handler().DeleteFile(delete_file_token);
 
   EXPECT_EQ(delete_file_token, token_arg);
+  histogram_tester().ExpectTotalCount(
+      kComposeboxFileDeleted + file_type + file_status, 1);
 }
 
 TEST_F(ComposeboxHandlerTest, DeleteFile_FailureThrowsMessage) {

@@ -105,9 +105,18 @@ void ComposeboxHandler::AddFile(
 }
 
 void ComposeboxHandler::DeleteFile(const base::UnguessableToken& file_token) {
+  ComposeboxQueryController::FileInfo* file_info =
+      query_controller_->GetFileInfo(file_token);
+  lens::MimeType file_type =
+      file_info ? file_info->mime_type_ : lens::MimeType::kUnknown;
+  FileUploadStatus file_status = file_info ? file_info->GetFileUploadStatus()
+                                           : FileUploadStatus::kNotUploaded;
+
   // If an UnguessabledToken that wasn't in the cache was sent, delete fails.
   // Report a bad message.
-  if (!query_controller_->DeleteFile(file_token)) {
+  bool success = query_controller_->DeleteFile(file_token);
+  metrics_recorder_->RecordFileDeletedMetrics(success, file_type, file_status);
+  if (!success) {
     handler_.ReportBadMessage("An invalid file token was sent to DeleteFile");
   }
 }
