@@ -656,7 +656,7 @@ BASE_FEATURE(kAndroidTabDeclutterDedupeTabIdsKillSwitch,
 
 BASE_FEATURE(kAndroidTabDeclutterPerformanceImprovements,
              "AndroidTabDeclutterPerformanceImprovements",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kAndroidTabDeclutterRescueKillswitch,
              "AndroidTabDeclutterRescueKillswitch",

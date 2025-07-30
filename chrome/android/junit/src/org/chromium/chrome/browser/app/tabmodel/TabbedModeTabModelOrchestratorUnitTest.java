@@ -8,6 +8,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -47,6 +49,8 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridge;
 import org.chromium.chrome.browser.tabmodel.TabModelJniBridgeJni;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
+import org.chromium.chrome.browser.tabwindow.TabWindowManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 import java.io.DataInputStream;
@@ -69,6 +73,9 @@ public class TabbedModeTabModelOrchestratorUnitTest {
     @Mock private DeferredStartupHandler mDeferredStartupHandler;
     @Mock private TabModelJniBridge.Natives mTabModelJniBridgeJni;
     @Mock private RecentlyClosedBridge.Natives mRecentlyClosedBridgeJni;
+    @Mock private TabWindowManager mTabWindowManager;
+    @Mock private TabModelSelectorBase mTabModelSelector;
+    @Mock private TabModel mTabModel;
     @Captor private ArgumentCaptor<Runnable> mRunnableCaptor;
     @Captor private ArgumentCaptor<Supplier<TabModel>> mSupplierCaptor;
 
@@ -147,8 +154,14 @@ public class TabbedModeTabModelOrchestratorUnitTest {
 
     @Test
     public void testDestroy() {
+        when(mTabModelSelector.getModel(anyBoolean())).thenReturn(mTabModel);
+        when(mTabModelSelector.isTabStateInitialized()).thenReturn(true);
+        when(mTabWindowManager.requestSelector(any(), any(), any(), any(), any(), any(), anyInt()))
+                .thenReturn(new Pair<>(0, mTabModelSelector));
+        TabWindowManagerSingleton.setTabWindowManagerForTesting(mTabWindowManager);
         ArchivedTabModelOrchestrator.setInstanceForTesting(mArchivedTabModelOrchestrator);
         DeferredStartupHandler.setInstanceForTests(mDeferredStartupHandler);
+
         TabbedModeTabModelOrchestrator orchestrator = new TabbedModeTabModelOrchestratorApi31();
         orchestrator.createTabModels(
                 mChromeActivity,
