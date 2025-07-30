@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import '/strings.m.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
-import '/strings.m.js';
 
 import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
@@ -30,11 +30,19 @@ export class ManagedUserProfileNoticeDataHandlingElement extends CrLitElement {
   static override get properties() {
     return {
       title: {type: String},
+      separateDataChoiceTitle: {type: String},
+      separateDataChoiceDetails: {type: String},
+      mergeDataChoiceTitle: {type: String},
+      mergeDataChoiceDetails: {type: String},
       selectedDataHandling: {type: String, notify: true},
     };
   }
 
   override accessor title: string = '';
+  accessor separateDataChoiceTitle: string = '';
+  accessor separateDataChoiceDetails: string = '';
+  accessor mergeDataChoiceTitle: string = '';
+  accessor mergeDataChoiceDetails: string = '';
   accessor selectedDataHandling: BrowsingDataHandling|null = null;
 
   override firstUpdated() {

@@ -392,7 +392,7 @@ suite('ManagedUserProfileNoticeTest', function() {
 
     // Initial values.
     checkValuePropositionTextValues(
-        app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
+        app.i18n('valuePropTitle'), app.i18n('valuePropSubtitle'),
         'email@email.com', 'account_name', 'continue_as');
     checkImageUrl(targetElement, AVATAR_URL_1);
 
@@ -410,7 +410,7 @@ suite('ManagedUserProfileNoticeTest', function() {
     });
     await microtasksFinished();
     checkValuePropositionTextValues(
-        app.i18n('valuePropositionTitle'), app.i18n('valuePropSubtitle'),
+        app.i18n('valuePropTitle'), app.i18n('valuePropSubtitle'),
         'new_email@email.com', 'new_account_name', 'new_continue_as');
 
     checkImageUrl(targetElement, AVATAR_URL_2);

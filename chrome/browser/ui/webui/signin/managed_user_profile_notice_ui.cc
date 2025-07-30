@@ -146,9 +146,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       "profileDisclosureTitle",
       IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_WORK_TITLE);
   source->AddLocalizedString(
-      "profileOidcDisclosureTitle",
-      IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE);
-  source->AddLocalizedString(
       "profileDisclosureSubtitle",
       IDS_ENTERPRISE_WELCOME_PROFILE_DISCLOSURE_SUBTITLE);
 
@@ -180,7 +177,7 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       "separateBrowsingDataTitle",
       IDS_ENTERPRISE_WELCOME_SEPARATE_BROWSING_WORK_TITLE);
   source->AddLocalizedString(
-      "valuePropositionTitle",
+      "valuePropTitle",
       IDS_ENTERPRISE_VALUE_PROPOSITION_PROFILE_SUGGESTED_TITLE);
   source->AddLocalizedString("valuePropSubtitle",
                              IDS_ENTERPRISE_VALUE_PROPOSITION_WORK_SUBTITLE);
@@ -199,7 +196,6 @@ ManagedUserProfileNoticeUI::ManagedUserProfileNoticeUI(content::WebUI* web_ui)
       IDS_ENTERPRISE_WELCOME_MERGE_BROWSING_DATA_CHOICE_DETAILS);
   source->AddBoolean("showLinkDataCheckbox", false);
   source->AddBoolean("isModalDialog", false);
-  source->AddBoolean("isOidcDialog", false);
   source->AddBoolean("enforcedByPolicy", false);
   source->AddInteger("initialState",
                      ManagedUserProfileNoticeHandler::State::kDisclosure);
@@ -262,10 +258,11 @@ void ManagedUserProfileNoticeUI::Initialize(
     update_data.Set("initialState",
                     ManagedUserProfileNoticeHandler::State::kDisclosure);
     update_data.Set("isModalDialog", true);
-    update_data.Set("isOidcDialog", true);
     update_data.Set(
         "enterpriseProfileWelcomeTitle",
         l10n_util::GetStringUTF16(IDS_ENTERPRISE_WELCOME_PROFILE_SETUP_TITLE));
+    update_data.Set("profileDisclosureTitle",
+                    IDS_ENTERPRISE_WELCOME_PROFILE_OIDC_DISCLOSURE_TITLE);
 
     update_data.Set("showLinkDataCheckbox", false);
   }
