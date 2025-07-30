@@ -40,6 +40,7 @@ rust_static_library("zip_ffi_glue") {
     "parsing_ffi/lib.rs",
     "parsing_ffi/models.rs",
     "parsing_ffi/utils.rs",
+    "parsing_ffi/zip_archive.rs",
   ]
   cxx_bindings = [ "parsing_ffi/lib.rs" ]
   visibility = [
