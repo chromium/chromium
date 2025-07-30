@@ -117,6 +117,9 @@ extern const char kAndroidBookmarkBarDescription[];
 extern const char kAndroidBottomToolbarName[];
 extern const char kAndroidBottomToolbarDescription[];
 
+extern const char kAndroidBottomToolbarV2Name[];
+extern const char kAndroidBottomToolbarV2Description[];
+
 extern const char kAndroidBrowserControlsInVizName[];
 extern const char kAndroidBrowserControlsInVizDescription[];
 

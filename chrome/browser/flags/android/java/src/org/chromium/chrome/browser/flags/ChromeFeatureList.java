@@ -173,6 +173,7 @@ public abstract class ChromeFeatureList {
             "AndroidAppIntegrationWithFavicon";
     public static final String ANDROID_BOOKMARK_BAR = "AndroidBookmarkBar";
     public static final String ANDROID_BOTTOM_TOOLBAR = "AndroidBottomToolbar";
+    public static final String ANDROID_BOTTOM_TOOLBAR_V2 = "AndroidBottomToolbarV2";
     public static final String ANDROID_COMPOSEPLATE = "AndroidComposeplate";
     public static final String ANDROID_DATA_IMPORTER_SERVICE = "AndroidDataImporterService";
     public static final String ANDROID_ELEGANT_TEXT_HEIGHT = "AndroidElegantTextHeight";
@@ -705,6 +706,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_APP_INTEGRATION_WITH_FAVICON, true);
     public static final CachedFlag sAndroidBottomToolbar =
             newCachedFlag(ANDROID_BOTTOM_TOOLBAR, true, true);
+    public static final CachedFlag sAndroidBottomToolbarV2 =
+            newCachedFlag(ANDROID_BOTTOM_TOOLBAR_V2, false, false);
     public static final CachedFlag sAndroidComposeplate =
             newCachedFlag(ANDROID_COMPOSEPLATE, false, true);
     public static final CachedFlag sAndroidDataImporterService =
@@ -1054,6 +1057,7 @@ public abstract class ChromeFeatureList {
                     sAndroidAppIntegrationV2,
                     sAndroidAppIntegrationWithFavicon,
                     sAndroidBottomToolbar,
+                    sAndroidBottomToolbarV2,
                     sAndroidComposeplate,
                     sAndroidDataImporterService,
                     sAndroidElegantTextHeight,

@@ -10123,6 +10123,7 @@ from previous Chrome versions.
   <int value="-1466600231" label="WakeOnWifiAllowed:enabled"/>
   <int value="-1466206556" label="ArcDocumentsProviderUnknownSize:enabled"/>
   <int value="-1466100014" label="EchePhoneHubPermissionsOnboarding:disabled"/>
+  <int value="-1465181562" label="AndroidBottomToolbarV2:disabled"/>
   <int value="-1465172796" label="CCTModule:disabled"/>
   <int value="-1465138299" label="GifRecording:disabled"/>
   <int value="-1464860971" label="BluetoothCoredump:enabled"/>
@@ -14489,6 +14490,7 @@ from previous Chrome versions.
   <int value="139974547" label="ControlledFrame:enabled"/>
   <int value="140257184" label="ChromeOSAmbientModeNewUrl:enabled"/>
   <int value="140427435" label="OmniboxReportSearchboxStats:enabled"/>
+  <int value="140430538" label="AndroidBottomToolbarV2:enabled"/>
   <int value="140778694"
       label="CrOSLateBootAudioSuppressSetRTCAudioActive:enabled"/>
   <int value="141482401" label="ConsumerAutoUpdateToggleAllowed:disabled"/>

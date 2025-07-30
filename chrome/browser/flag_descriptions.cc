@@ -182,6 +182,11 @@ const char kAndroidBottomToolbarName[] = "Bottom Toolbar";
 const char kAndroidBottomToolbarDescription[] =
     "If enabled, displays the toolbar at the bottom.";
 
+const char kAndroidBottomToolbarV2Name[] = "Bottom Toolbar V2";
+const char kAndroidBottomToolbarV2Description[] =
+    "If enabled, allows the Omnibox to be persistently anchored to the bottom "
+    "of the screen.";
+
 const char kAndroidBrowserControlsInVizName[] =
     "Android Browser Controls in Viz";
 const char kAndroidBrowserControlsInVizDescription[] =

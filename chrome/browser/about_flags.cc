@@ -6773,6 +6773,11 @@ const FeatureEntry kFeatureEntries[] = {
                                     kAndroidBottomToolbarVariations,
                                     "AndroidBottomToolbar")},
 
+    {"android-bottom-toolbar-v2",
+     flag_descriptions::kAndroidBottomToolbarV2Name,
+     flag_descriptions::kAndroidBottomToolbarV2Description, kOsAndroid,
+     FEATURE_VALUE_TYPE(chrome::android::kAndroidBottomToolbarV2)},
+
     {"auxiliary-search-donation",
      flag_descriptions::kAuxiliarySearchDonationName,
      flag_descriptions::kAuxiliarySearchDonationDescription, kOsAndroid,

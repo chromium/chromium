@@ -222,8 +222,13 @@
   },
   {
     "name": "android-bottom-toolbar",
-    "owners": [ "pnoland@chromium.org","gangwu@chromium.org","lazzzis@google.com" ],
+    "owners": [ "pnoland@chromium.org","lazzzis@google.com" ],
     "expiry_milestone": 150
+  },
+  {
+      "name": "android-bottom-toolbar-v2",
+      "owners": [ "pnoland@chromium.org", "ender@google.com" ],
+      "expiry_milestone": 155
   },
   {
     "name": "android-browser-controls-in-viz",

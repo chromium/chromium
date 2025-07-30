@@ -29,6 +29,7 @@ BASE_DECLARE_FEATURE(kAndroidAppIntegrationMultiDataSource);
 BASE_DECLARE_FEATURE(kAndroidAppearanceSettings);
 BASE_DECLARE_FEATURE(kAndroidBookmarkBar);
 BASE_DECLARE_FEATURE(kAndroidBottomToolbar);
+BASE_DECLARE_FEATURE(kAndroidBottomToolbarV2);
 BASE_DECLARE_FEATURE(kAndroidDataImporterService);
 BASE_DECLARE_FEATURE(kAndroidElegantTextHeight);
 BASE_DECLARE_FEATURE(kAndroidFirstRunLaunchBounds);
