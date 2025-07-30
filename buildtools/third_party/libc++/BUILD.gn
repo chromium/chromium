@@ -675,7 +675,7 @@ if (use_clang_modules) {
       ":sysroot_locale",
       ":sysroot_pthread",
     ]
-    if (is_mac) {
+    if (is_apple) {
       public_deps += [
         # <locale> includes <nl_types.h> inside an __APPLE__ macro guard which
         # requires nl_types module.
