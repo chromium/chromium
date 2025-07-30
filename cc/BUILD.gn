@@ -13,6 +13,27 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+cc_component("layer_selection_bound") {
+  # Without this separates from :cc, there will be a circular dependency:
+  # :cc -> cc/mojom:mojo_layer_trees -> :cc.
+  sources = [
+    "input/layer_selection_bound.cc",
+    "input/layer_selection_bound.h",
+  ]
+
+  public_deps = [
+    "//cc/base",
+    "//components/viz/common",
+  ]
+  deps = [
+    "//base",
+    "//ui/gfx",
+    "//ui/gfx/geometry",
+  ]
+
+  defines = [ "CC_IMPLEMENTATION=1" ]
+}
+
 cc_component("cc") {
   sources = [
     "benchmarks/benchmark_instrumentation.cc",
@@ -47,8 +68,6 @@ cc_component("cc") {
     "input/hit_test_opaqueness.h",
     "input/input_handler.cc",
     "input/input_handler.h",
-    "input/layer_selection_bound.cc",
-    "input/layer_selection_bound.h",
     "input/main_thread_scrolling_reason.cc",
     "input/main_thread_scrolling_reason.h",
     "input/overscroll_behavior.h",
@@ -459,6 +478,7 @@ cc_component("cc") {
   ]
 
   public_deps = [
+    ":layer_selection_bound",
     "//cc/base",
     "//cc/mojom:mojom_browser_controls",
     "//cc/mojom:mojom_layer_trees",

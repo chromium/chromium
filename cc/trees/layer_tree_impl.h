@@ -381,6 +381,7 @@ class CC_EXPORT LayerTreeImpl {
   void PushPageScaleFromMainThread(float page_scale_factor,
                                    float min_page_scale_factor,
                                    float max_page_scale_factor);
+  const LayerSelection& selection() const { return selection_; }
   float current_page_scale_factor() const {
     return page_scale_factor()->Current(IsActiveTree());
   }

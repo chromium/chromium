@@ -1255,6 +1255,7 @@ void VizLayerContext::UpdateDisplayTreeFrom(
   update->trace_id = tree.trace_id().value();
   update->primary_main_frame_item_sequence_number =
       tree.primary_main_frame_item_sequence_number();
+  update->selection = tree.selection();
   update->page_scale_factor = tree.page_scale_factor()->Current(true);
   update->min_page_scale_factor = tree.min_page_scale_factor();
   update->max_page_scale_factor = tree.max_page_scale_factor();

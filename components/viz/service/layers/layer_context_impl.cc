@@ -1769,6 +1769,8 @@ base::expected<void, std::string> LayerContextImpl::DoUpdateDisplayTree(
       update->primary_main_frame_item_sequence_number);
   layers.SetDeviceViewportRect(update->device_viewport);
 
+  layers.RegisterSelection(update->selection);
+
   if (update->page_scale_factor <= 0 ||
       !std::isfinite(update->page_scale_factor) ||
       update->min_page_scale_factor <= 0 ||

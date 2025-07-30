@@ -695,6 +695,42 @@ TEST_F(LayerContextImplLayerTreePropertiesTest,
   EXPECT_EQ(active_tree->CurrentBottomControlsShownRatio(), kRatio2);
 }
 
+TEST_F(LayerContextImplLayerTreePropertiesTest, UpdateSelection) {
+  cc::LayerTreeImpl* active_tree =
+      layer_context_impl_->host_impl()->active_tree();
+
+  // Initial update.
+  auto update1 = CreateDefaultUpdate();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update1)).has_value());
+  EXPECT_EQ(active_tree->selection(), cc::LayerSelection());
+
+  // Update to a new selection.
+  cc::LayerSelection selection2;
+  selection2.start.type = gfx::SelectionBound::Type::RIGHT;
+  selection2.start.edge_start = gfx::Point(1, 3);
+  selection2.start.edge_end = gfx::Point(2, 4);
+  selection2.start.layer_id = 8;
+  selection2.start.hidden = true;
+  selection2.end.type = gfx::SelectionBound::Type::CENTER;
+  selection2.end.edge_start = gfx::Point(7, 9);
+  selection2.end.edge_end = gfx::Point(6, 11);
+  selection2.end.layer_id = 12;
+  selection2.end.hidden = false;
+  auto update2 = CreateDefaultUpdate();
+  update2->selection = selection2;
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update2)).has_value());
+  EXPECT_EQ(active_tree->selection(), selection2);
+
+  // Update back to an empty selection.
+  auto update3 = CreateDefaultUpdate();
+  update3->selection = cc::LayerSelection();
+  EXPECT_TRUE(
+      layer_context_impl_->DoUpdateDisplayTree(std::move(update3)).has_value());
+  EXPECT_EQ(active_tree->selection(), cc::LayerSelection());
+}
+
 class LayerContextImplBrowserControlsOffsetTagTest
     : public LayerContextImplTest {};
 

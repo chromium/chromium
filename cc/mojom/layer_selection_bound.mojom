@@ -1,0 +1,25 @@
+// Copyright 2025 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module cc.mojom;
+
+import "ui/gfx/geometry/mojom/geometry.mojom";
+import "ui/gfx/mojom/selection_bound.mojom";
+
+// Corresponds to |cc::LayerSelectionBound|.
+struct LayerSelectionBound {
+  gfx.mojom.SelectionBoundType type;
+  gfx.mojom.Point edge_start;
+  gfx.mojom.Point edge_end;
+  int32 layer_id;
+  // Whether this bound is hidden (clipped out/occluded) within the painted
+  // content of the layer (as opposed to being outside of the layer's bounds).
+  bool hidden;
+};
+
+// Corresponds to |cc::LayerSelection|.
+struct LayerSelection {
+  LayerSelectionBound start;
+  LayerSelectionBound end;
+};
