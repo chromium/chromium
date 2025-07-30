@@ -15,6 +15,7 @@
 #include "components/password_manager/core/browser/http_credentials_cleaner.h"
 #include "components/password_manager/core/browser/old_google_credentials_cleaner.h"
 #include "components/password_manager/core/browser/os_crypt_async_migrator.h"
+#include "components/password_manager/core/browser/password_change_backup_password_cleaner.h"
 #include "components/password_manager/core/browser/password_manager_constants.h"
 #include "components/password_manager/core/browser/password_store/login_database.h"
 #include "components/password_manager/core/browser/password_store/password_store_backend.h"
@@ -89,6 +90,10 @@ void SanitizeAndMigrateCredentials(
       std::make_unique<password_manager::OSCryptAsyncMigrator>(
           store, is_account_store, prefs));
 #endif
+
+  cleaning_tasks_runner->MaybeAddCleaningTask(
+      std::make_unique<password_manager::PasswordChangeBackupPasswordCleaner>(
+          is_account_store, store, prefs));
 
   if (cleaning_tasks_runner->HasPendingTasks()) {
     // The runner will delete itself once the clearing tasks are done, thus we

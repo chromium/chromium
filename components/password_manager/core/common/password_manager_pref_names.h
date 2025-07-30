@@ -305,6 +305,13 @@ inline constexpr char kProfileStoreMigratedToOSCryptAsync[] =
 inline constexpr char kAccountStoreMigratedToOSCryptAsync[] =
     "password_manager.account_store_migrated_to_os_crypt_async";
 
+// Timestamp when the last cleaning of backup passwords was performed for a
+// respective password store.
+inline constexpr char kAccountStoreBackupPasswordCleaningLastTimestamp[] =
+    "password_manager.account_store_backup_password_cleaning_last_timestamp";
+inline constexpr char kProfileStoreBackupPasswordCleaningLastTimestamp[] =
+    "password_manager.profile_store_backup_password_cleaning_last_timestamp";
+
 }  // namespace password_manager::prefs
 
 #endif  // COMPONENTS_PASSWORD_MANAGER_CORE_COMMON_PASSWORD_MANAGER_PREF_NAMES_H_

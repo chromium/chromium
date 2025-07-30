@@ -596,6 +596,10 @@ void PasswordManager::RegisterProfilePrefs(
   registry->RegisterBooleanPref(
       prefs::kAutomaticPasskeyUpgrades, true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PRIORITY_PREF);
+  registry->RegisterTimePref(
+      prefs::kAccountStoreBackupPasswordCleaningLastTimestamp, base::Time());
+  registry->RegisterTimePref(
+      prefs::kProfileStoreBackupPasswordCleaningLastTimestamp, base::Time());
 }
 
 // static

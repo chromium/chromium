@@ -267,6 +267,16 @@ void SetNote(std::vector<PasswordNote>& notes,
   note_itr->value = new_note_value;
 }
 
+// Deletes the note with a specified `unique_display_name`.
+void DeleteNote(const std::u16string& unique_display_name,
+                std::vector<PasswordNote>& notes) {
+  auto note_itr = std::ranges::find(notes, unique_display_name,
+                                    &PasswordNote::unique_display_name);
+  if (note_itr != notes.end()) {
+    notes.erase(note_itr);
+  }
+}
+
 }  // namespace
 
 AlternativeElement::AlternativeElement(
@@ -447,6 +457,10 @@ std::optional<base::Time> PasswordForm::GetPasswordBackupDateCreated() const {
 
 void PasswordForm::SetPasswordBackupNote(const std::u16string& new_note_value) {
   SetNote(notes, PasswordNote::kPasswordChangeBackupNoteName, new_note_value);
+}
+
+void PasswordForm::DeletePasswordBackupNote() {
+  DeleteNote(PasswordNote::kPasswordChangeBackupNoteName, notes);
 }
 
 bool ArePasswordFormUniqueKeysEqual(const PasswordForm& left,

@@ -581,6 +581,11 @@ struct PasswordForm {
   // `unique_display_name`.
   void SetPasswordBackupNote(const std::u16string& new_note_value);
 
+  // Deletes the backup note from the password, it uses a specific
+  // `unique_display_name` that indicates this was a backup
+  // saved through the password change flow.
+  void DeletePasswordBackupNote();
+
   PasswordForm();
   PasswordForm(const PasswordForm& other);
   PasswordForm(PasswordForm&& other);
