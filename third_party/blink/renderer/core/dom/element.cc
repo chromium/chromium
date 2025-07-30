@@ -1688,8 +1688,25 @@ void Element::DefaultEventHandler(Event& event) {
       }
     }
 
-    if (IsA<GestureEvent>(event) &&
-        type == event_type_names::kGesturelongpress) {
+    // For long presses on buttons, no context menu will be generated, because
+    // the UA stylesheet adds `user-select:none` in this case. However, this
+    // decision is made on the browser-side, async, which means we can't
+    // explicitly check it here. So we just immediately show interest here for
+    // all buttons that don't yet have interest.
+    // TODO: should <area> elements be handled here also?
+    if (auto* button = DynamicTo<HTMLButtonElement>(this);
+        button && IsA<GestureEvent>(event) &&
+        type == event_type_names::kGesturelongpress &&
+        GetInterestState() == InterestState::kNoInterest) {
+      // The pointer event manager will send a `pointerup` at the end of
+      // this long-press, and (without intervention) that will immediately
+      // light dismiss any target popover. To avoid this problem, set the
+      // pointerdown target to the target popover, which will not match the
+      // `null` target for that pointerup event.
+      if (auto* target_popover = DynamicTo<HTMLElement>(InterestForElement());
+          target_popover && target_popover->IsPopover()) {
+        GetDocument().SetPopoverPointerdownTarget(target_popover);
+      }
       // Delays don't apply to long-press, since the "long press" has a
       // built-in delay. Just show interest immediately in this case. This
       // follows the same path used by context-menu activations on link
