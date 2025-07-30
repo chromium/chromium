@@ -216,8 +216,8 @@ class TraversalListener : public PhysicalFragmentTraversalListener {
     auto mutator = fragment.GetMutableForContainerLayout();
     mutator.SetOffsetFromRootFragmentationContext(new_accumulated_offset);
 
-    const auto* layout_box = DynamicTo<LayoutBox>(fragment.GetLayoutObject());
-    if (layout_box && layout_box->ChildLayoutBlockedByDisplayLock()) {
+    const LayoutObject* layout_object = fragment.GetLayoutObject();
+    if (layout_object && layout_object->ChildLayoutBlockedByDisplayLock()) {
       return kSkipChildren;
     }
 
@@ -225,7 +225,7 @@ class TraversalListener : public PhysicalFragmentTraversalListener {
         force_entire_subtree_update_ + ShouldForceEntireSubtreeUpdate(fragment);
     bool update_children = new_force_entire_subtree_update ||
                            fragment.IsFragmentainerBox() ||
-                           layout_box->ShouldCheckForPaintInvalidation();
+                           layout_object->ShouldCheckForPaintInvalidation();
     if (!update_children) {
       return kSkipChildren;
     }
