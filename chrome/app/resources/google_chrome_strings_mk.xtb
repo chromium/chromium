@@ -270,6 +270,7 @@
 <translation id="4205939740494406371">Chrome не може да ги провери вашите лозинки. Обидете се пак по 24 часа или <ph name="BEGIN_LINK" />проверете ги лозинките во сметката на Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Се откажува...</translation>
 <translation id="4224210481850767180">Инсталирањето е откажано.</translation>
+<translation id="4230631012078055975">Извлечете максимум кога сте најавени на Chrome</translation>
 <translation id="4242034826641750751">На Chrome му треба дозволи за камерата и микрофонот за сајтов</translation>
 <translation id="424864128008805179">Ќе се одјавите од Chrome?</translation>
 <translation id="4251615635259297716">Да се поврзат вашите податоци на Chrome со оваа сметка?</translation>
@@ -593,6 +594,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8321888067342493336">Зачувај како слика</translation>
 <translation id="8336463659890584292">Кога одреден сајт ќе побара приватно вчитување однапред на линковите на неговата страница, Chrome ги користи серверите на Google. Вака се сокрива вашиот идентитет од однапред вчитаниот сајт, но Google учи кои сајтови да се вчитуваат однапред.</translation>
 <translation id="8342675569599923794">Датотекава е опасна, па затоа Chrome ја блокираше.</translation>
+<translation id="8349094670477064572">Ќе ги зачувувате и ќе ги користите лозинките и друго во вашата сметка на Google секогаш кога сте најавени на Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Преведи на</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>
 <translation id="8387459386171870978">Продолжете да користите Chrome</translation>

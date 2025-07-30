@@ -276,6 +276,7 @@ Para mais informações sobre como tratar dados de recursos de IA generativa, co
 <translation id="1202216683470826356">Exibir cards na página Nova guia</translation>
 <translation id="1203676252390737801">Processamento de IPs do WebRTC por URL</translation>
 <translation id="1204263402976895730">Impressoras empresariais ativadas</translation>
+<translation id="120513772363332049">Todos os outros processos não serão programados no mesmo núcleo da CPU quando um processo de renderização estiver em execução nele.</translation>
 <translation id="1207301487141109411">Impedir que o avatar do usuário seja selecionado de imagens no sistema de arquivos local, na câmera e no perfil do Google</translation>
 <translation id="1209096923317019235">Atribui apps como gerenciadores padrão para as extensões de arquivo especificadas</translation>
 <translation id="120937472976628837">Enviar informações sobre o ventilador</translation>
@@ -401,6 +402,7 @@ Para ver mais informações sobre contextos seguros, consulte Secure Contexts (h
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> não for definida, o nome do host especificado pelo URL de pesquisa será usado.</translation>
 <translation id="1312799700549720683">Controla configurações de exibição.</translation>
 <translation id="131353325527891113">Mostrar nomes de usuário na tela de login</translation>
+<translation id="1317158052518324525">Não permitir o preenchimento automático aprimorado.</translation>
 <translation id="1317658068839330898">Não permitir o uso do <ph name="ASSISTANT_PRODUCT_NAME" /> na Web</translation>
 <translation id="1318233005302276244">Permite que os usuários rastreiem encomendas no Chrome.</translation>
 <translation id="1323501563951768821">As configurações F12 usam o atalho que contém a tecla modificadora Shift</translation>
@@ -3909,6 +3911,15 @@ incluir as duas opções em certificados RSA destinados a HTTPS.</translation>
       Se a política for definida como "Desativada", o uso da API Translator não será permitida.</translation>
 <translation id="366494444808132420">Permitir integrações com o Gemini.</translation>
 <translation id="3665437376055221832">Consultar o usuário apenas quando nenhum certificado corresponder à seleção automática.</translation>
+<translation id="3667089394451236198">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes não estão sujeitas a verificações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Se uma origem também for coberta pela política LocalNetworkAccessBlockedForUrls, ela terá precedência.
+
+No caso de origens não cobertas pelos padrões especificados aqui, será aplicada a configuração pessoal do usuário.
+
+Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).</translation>
 <translation id="3671773704245936868">Desativar destaque de foco do teclado</translation>
 <translation id="3674010627788940405">Não oferecer suporte a cabeçalhos de solicitação de CORS sem caractere curinga.</translation>
 <translation id="3675303748198647471">A função setTimeout(…, 0) normalmente é usada para dividir tarefas longas de JavaScript.
@@ -4474,6 +4485,17 @@ Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> não for definida, nenhuma palavra-chave ativará o provedor de pesquisa.</translation>
 <translation id="4090088362777472639">Hash SHA-256 do playbook Ansible.</translation>
 <translation id="4091040199847925434">Desativar relatórios de informações do sistema e conteúdo da página que são usados para ajudar a melhorar a Navegação segura</translation>
+<translation id="4092882308219320847">Lista de padrões de URL. As solicitações iniciadas em sites veiculados por origens correspondentes são impedidas de emitir solicitações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Esta política terá precedência se uma origem também for coberta por LocalNetworkAccessAllowedForUrls.
+
+Dependendo do estágio de lançamento de <ph name="LOCAL_NETWORK_ACCESS" />, é preciso ativar LocalNetworkAccessRestrictionsEnabled para que essa política bloqueie solicitações de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+No caso de origens não cobertas pelos padrões especificados aqui, será aplicada a configuração pessoal do usuário.
+
+Para ver informações detalhadas sobre padrões de URL válidos, consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).</translation>
 <translation id="4093058072421210667">Não permitir imagem inline.</translation>
 <translation id="4098920079809952737">Permitir a impressão com e sem gráficos em segundo plano</translation>
 <translation id="410061592404122032">Perguntar sempre que um site quiser uma permissão para posicionamento de janelas</translation>
@@ -6669,6 +6691,7 @@ Esta política não impede que os usuários salvem arquivos no <ph name="GOOGLE_
 <translation id="5490462588616309068">Se a política for definida como verdadeira ou deixada sem definição, o uso de identificadores de conteúdo protegido será permitido, o que ajuda a ativar uma qualidade maior de reprodução desse tipo de conteúdo.
 
 Se a política for definida como falsa, não será permitido usar identificadores de conteúdo protegido.</translation>
+<translation id="5492713303272131731">Todos os outros processos poderão ser programados no mesmo núcleo da CPU quando um processo de renderização estiver em execução nele.</translation>
 <translation id="5494322570831642650">Especifica se o usuário pode abrir páginas no modo de navegação anônima no <ph name="PRODUCT_NAME" />.
 
       Se a política for definida como "Enabled" ou deixada sem definição, as páginas poderão ser abertas no modo de navegação anônima.
@@ -8574,6 +8597,7 @@ No <ph name="MS_WIN_NAME" />, a política de KDC sempre é respeitada.</translat
 <translation id="6659537776197644458">Não acionar fluxos de autenticação para a sincronização de senhas</translation>
 <translation id="6659877981632400997">O menu de contexto não terá um item de menu para compartilhar imagens no <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Ativar os relatórios de nuvem do perfil gerenciado</translation>
+<translation id="666203515318060501">Permitir o preenchimento automático aprimorado sem melhorar os modelos de IA.</translation>
 <translation id="6665670272107384733">Definir com que frequência o usuário precisa digitar a senha para usar o desbloqueio rápido</translation>
 <translation id="6667586534922258705">Exibir o botão "mostrar senha" na tela de login e de bloqueio</translation>
 <translation id="6667636336079341367">Permitir o Scanner sem melhorar os modelos de IA.</translation>
@@ -8688,6 +8712,13 @@ Quando a política é ativada, os dados são coletados e enviados por upload par
 
 Para o <ph name="PRODUCT_NAME" />, esta política só é eficaz quando a máquina está registrada no <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Para o <ph name="PRODUCT_OS_NAME" />, ela sempre é eficaz.</translation>
+<translation id="6720071484598746942">Se esta política for ativada, a solicitação principal será bloqueada sempre que um aviso precisar ser
+mostrado em <ph name="DEV_TOOLS_NAME" /> devido a falhas nas verificações de <ph name="LOCAL_NETWORK_ACCCESS" />.
+
+Se ela for desativada ou deixada sem definição, as solicitações do <ph name="LOCAL_NETWORK_ACCESS" /> vão usar o
+gerenciamento padrão.
+
+Consulte as restrições de <ph name="LOCAL_NETWORK_ACCESS" /> em https://wicg.github.io/local-network-access/ (em inglês).</translation>
 <translation id="6720330829631914048">Horas decorridas desde o começo do dia (no formato de 24 horas).</translation>
 <translation id="6721252203593581486">O WebSQL em contextos de terceiros (por exemplo, iframes entre sites) fica desativado por padrão a partir do M97 e será totalmente removido no M101.
           Se esta política for definida como "false" (falsa) ou não for definida, o WebSQL permanecerá desativado em contextos de terceiros.
@@ -9964,6 +9995,7 @@ A definição desta política requer que a <ph name="PRIVACY_SANDBOX_PROMPT_ENAB
 <translation id="7657261947024629645">Otimiza o desempenho.</translation>
 <translation id="76580522298425324">Permitir captura de tela sem o gesto anterior do usuário</translation>
 <translation id="7666228839913571182">Permitir cookies de terceiros</translation>
+<translation id="7666782560345386904">Configurações do preenchimento automático aprimorado</translation>
 <translation id="7669630878711068277">Se a política for definida como "Ativada" ou deixada sem definição, os usuários poderão imprimir com o <ph name="PRODUCT_NAME" /> e não poderão mudar esta configuração.
 
       Se a política for definida como "Desativada", os usuários não poderão imprimir usando o <ph name="PRODUCT_NAME" />. A impressão ficará desativada no menu de três pontos, nas extensões e nos aplicativos JavaScript.</translation>
@@ -10919,7 +10951,12 @@ Quando esta política não é definida, o controle facial fica desativado, mas p
 <translation id="8331421240786531350">Bloqueie sites que fazem solicitações a endpoints da rede local.</translation>
 <translation id="8331479227794770304">Ativar tecla aderente</translation>
 <translation id="8332822245414537447">Desativar a verificação de uso da Chave RSA</translation>
+<translation id="8333141477131859004">Permitir o preenchimento automático aprimorado e melhorar os modelos de IA.</translation>
 <translation id="8334685561819743286">Desativar a correção automática do teclado físico durante a digitação</translation>
+<translation id="8336986243404088829">Esta política mitiga ataques de memória em processo cruzado de canal lateral, isolando o processo do renderizador no núcleo da CPU e impedindo que outros processos compartilhem o mesmo núcleo. A mitigação é compatível com o <ph name="MS_WIN_NAME" /> 11 24H2 e versões mais recentes. Se o SO não tiver o suporte de programação necessário, esta política não terá efeito. Esta política pode diminuir o desempenho em alguns cenários exigentes, de forma semelhante à desativação do hyperthreading. Para mais informações, acesse https://learn.microsoft.com/pt-br/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
+      Se esta política estiver ativada, todos os outros processos não serão programados no mesmo núcleo da CPU quando o processo do renderizador estiver em execução.
+      Se ela for desativada, todos os outros processos poderão ser programados no mesmo núcleo da CPU quando um processo de renderização estiver em execução nele.
+      Se a política não for definida, todos os outros processos poderão ser programados no mesmo núcleo da CPU quando um processo de renderização estiver em execução no núcleo. Ela pode variar dependendo da versão do <ph name="PRODUCT_NAME" />, da execução de testes de campo e da plataforma.</translation>
 <translation id="8337114537412769126">Se a <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> estiver ativada, definir <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> especificará os parâmetros durante a pesquisa sugerida com POST. Ele consiste em pares nome-valor separados por vírgula. Se o valor for um parâmetro modelo, como <ph name="SEARCH_TERM_MARKER" />, ele será substituído pelos dados dos termos de pesquisa reais.
 
       Se a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> não for definida, as solicitações de pesquisa sugerida serão enviadas usando o método get.</translation>
@@ -12205,6 +12242,7 @@ Para mais informações sobre contextos seguros, acesse https://www.w3.org/TR/se
 <translation id="9162444960513782569">Não forçar a limitação de timers do JavaScript em segundo plano</translation>
 <translation id="9164656078867027374">Definir os domínios que têm permissão para acessar o <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
 <translation id="9165128017344777105">Autorizar a permissão para fontes locais nesses sites</translation>
+<translation id="9165498643231979857">Restringir o compartilhamento de núcleos da CPU para o processo do renderizador</translation>
 <translation id="9166670902476893480">Esta política controla se o <ph name="PRODUCT_NAME" /> pode consultar mais tipos de registro DNS ao fazer solicitações de DNS não seguras. Ela não afeta consultas DNS realizadas por DNS seguro, que sempre pode consultar mais tipos de DNS.
 
       Se a política for ativada ou deixada sem definição, tipos como <ph name="DNS_TYPE_HTTPS" /> (tipo 65 de DNS) poderão ser consultados com <ph name="DNS_TYPE_A" /> (tipo 1 de DNS) e <ph name="DNS_TYPE_AAAA" /> (tipo 28 de DNS).

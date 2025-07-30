@@ -250,6 +250,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1166583374608765787">Revisar a atualização do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertence ao espaço de trabalho <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Os Apps Isolados da Web seguem essa configuração automaticamente</translation>
+<translation id="116712635768212829">Se o Chrome encontrar uma das suas senhas em uma violação de dados, o Gerenciador de senhas do Google poderá oferecer a opção de mudar a senha se você estiver com a conta conectada.</translation>
 <translation id="1168020859489941584">Abrindo em <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema recente de IA <ph name="INDEX" /> de <ph name="SUBJECT" /> no estilo <ph name="STYLE" /> com o clima <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Mudar o idioma automaticamente para corresponder ao conteúdo selecionado</translation>
@@ -555,6 +556,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1375938286942050085">A configuração está concluída. Nas próximas etapas vamos preparar o dispositivo para jogos</translation>
 <translation id="137651782282853227">Os endereços salvos são exibidos aqui</translation>
 <translation id="1376771218494401509">Nomear a janela…</translation>
+<translation id="1377438103060664754">Se uma das suas senhas é encontrada em uma violação de dados, o Gerenciador de senhas do Google pergunta se você quer trocá-la por uma senha forte</translation>
 <translation id="1377600615067678409">Ignorar por enquanto</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> está controlando essa configuração</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nenhuma senha comprometida}=1{1 senha comprometida}one{{NUM_COMPROMISED} senha comprometida}other{{NUM_COMPROMISED} senhas comprometidas}}</translation>
@@ -940,7 +942,6 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1632293440289326475">Ativar a Economia de energia para prolongar duração da bateria</translation>
 <translation id="1632756664321977232">Ferramenta de corte</translation>
 <translation id="163309982320328737">A largura de caractere inicial é inteira</translation>
-<translation id="1633947793238301227">Desativar o Google Assistente</translation>
 <translation id="1634224622052500893">Rede Wi-Fi encontrada</translation>
 <translation id="1634783886312010422">Você já mudou essa senha em <ph name="WEBSITE" />?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Remover guia e excluir grupo?}=1{Remover guia e excluir grupo?}one{Remover guia e excluir grupo?}other{Remover guias e excluir grupo?}}</translation>
@@ -1374,6 +1375,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1931152874660185993">Nenhum componente instalado.</translation>
 <translation id="1931410639376954712">Instalando o <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Não antes</translation>
+<translation id="1933070475689690969">Atividade nos Apps do Gemini</translation>
 <translation id="1933489278505808700">Com permissão para ler e mudar</translation>
 <translation id="1935303383381416800">Permitir o acesso à localização</translation>
 <translation id="193565226207940518">Ferramenta de suporte</translation>
@@ -2380,7 +2382,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2620245777360407679">Dispositivos conectados ao ponto de acesso no momento</translation>
 <translation id="2620436844016719705">Sistema</translation>
 <translation id="2620900772667816510">Super resolução do Bluetooth</translation>
-<translation id="262154978979441594">Treinar modelo de voz do Google Assistente</translation>
 <translation id="2622280935687585828">Remover <ph name="SITE_NAME" /> dos sites desativados</translation>
 <translation id="26224892172169984">Não permitir que qualquer site trabalhe com protocolos</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2895,6 +2896,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="2981113813906970160">Mostrar cursor grande do mouse</translation>
 <translation id="2983102365694924129">Com base na sua atividade em um site. Esta configuração está desativada.</translation>
 <translation id="2983373101216420412">Nível da bateria do estojo: <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">Configurações...</translation>
 <translation id="2984384421572259426">Limpar guias não usadas?</translation>
 <translation id="2984727013951557074">O arquivo ainda está sendo sincronizado com o Google Drive.</translation>
 <translation id="2985348301114641460">Enviar uma solicitação ao administrador para instalar "<ph name="EXTENSION_NAME" />"?</translation>
@@ -3514,6 +3516,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3435738964857648380">Segurança</translation>
 <translation id="343578350365773421">Sem papel</translation>
 <translation id="3435896845095436175">Ativar</translation>
+<translation id="3437072258256045988">Gerenciar sua Atividade nos Apps do Gemini</translation>
 <translation id="3437397693214267762">Veja seus arquivos do calendário do Outlook, do SharePoint e do OneDrive</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Sempre permitir que <ph name="HOST" /> acesse seu microfone</translation>
@@ -3526,7 +3529,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3443744348829035122">Tempo expirado em <ph name="BRAND" /></translation>
 <translation id="3443754338602062261">Você já tem senhas dessas contas no seu <ph name="BRAND" />. Se decidir importar uma das senhas abaixo, ela vai substituir a atual.</translation>
 <translation id="344449859752187052">Cookies de terceiros bloqueados</translation>
-<translation id="3445047461171030979">Respostas rápidas do Google Assistente</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> minutos</translation>
 <translation id="344537926140058498">Sua organização bloqueou esse arquivo porque ele inclui conteúdo confidencial ou perigoso. Peça para o proprietário corrigir isso.</translation>
 <translation id="3445465968953598059">Controle facial</translation>
@@ -3959,7 +3961,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3732414796052961578">Continuar como <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">O PIN precisa ter no máximo 63 caracteres</translation>
 <translation id="3732706448780793442">Controlar manualmente</translation>
-<translation id="3732857534841813090">Informações relacionadas ao Google Assistente</translation>
 <translation id="3733296813637058299">Instalaremos esses apps para você. Encontre mais apps para seu <ph name="DEVICE_TYPE" /> na Play Store.</translation>
 <translation id="3734547157266039796">Plantação de arroz</translation>
 <translation id="3735039640698208086">Ao reproduzir áudio…</translation>
@@ -4190,7 +4191,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3873315167136380065">Para ativar essa configuração, <ph name="BEGIN_LINK" />redefina a sincronização<ph name="END_LINK" /> e remova sua senha longa de sincronização</translation>
 <translation id="3873423927483480833">Mostrar PINs</translation>
 <translation id="3873915545594852654">Ocorreu um problema com o ARC++.</translation>
-<translation id="3874164307099183178">Ativar o Google Assistente</translation>
 <translation id="3874845889165401548">Esse recurso usa IA e é experimental</translation>
 <translation id="3875511946736639169">Ativar imagens</translation>
 <translation id="3875815154304214043">O app <ph name="APP_NAME" /> está configurado para ser aberto em uma nova guia do navegador. Links compatíveis também serão abertos dessa forma. <ph name="BEGIN_LINK_LEARN_MORE" />Saiba mais<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4780,6 +4780,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4295072614469448764">O aplicativo está disponível no seu terminal. Também pode haver um ícone no acesso rápido.</translation>
 <translation id="4295979599050707005">Faça login novamente para confirmar que sua conta <ph name="USER_EMAIL" /> pode ser usada com sites, apps e extensões no Chrome e no Google Play. Você também pode remover essa conta. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Aplicativos instalados e transmitidos por streaming pelo app <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">Sua senha original para este site foi encontrada em um vazamento de dados público. Em <ph name="DATE" />, você pediu para o <ph name="BRAND" /> mudar sua senha automaticamente.</translation>
 <translation id="4297219207642690536">Reiniciar e redefinir</translation>
 <translation id="4297813521149011456">Rotação da tela</translation>
 <translation id="4298660926525614540">Nomes de armazenamento removíveis</translation>
@@ -4848,7 +4849,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4348766275249686434">Coletar erros</translation>
 <translation id="4349828822184870497">Útil</translation>
 <translation id="4350230709416545141">Sempre bloquear o acesso de <ph name="HOST" /> à localização</translation>
-<translation id="4350782034419308508">Oi Google</translation>
 <translation id="435185728237714178">Acessar o app "<ph name="APP_NAME" />" para gerenciar apps instalados e transmitidos</translation>
 <translation id="4352913519324947509">Sua senha não foi alterada, mas você ainda pode acessar o site com a senha atual</translation>
 <translation id="4354073718307267720">Perguntar quando um site quiser criar um mapa 3D do ambiente a sua volta ou acompanhar a posição da câmera</translation>
@@ -5116,7 +5116,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4545759655004063573">Não é possível salvar devido a permissões insuficientes. Salve em outro local.</translation>
 <translation id="4546345569117159016">Botão direito</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> quer usar esta extensão:</translation>
-<translation id="4546692474302123343">Entrada de texto por voz do Google Assistente</translation>
 <translation id="4547659257713117923">Nenhuma guia de outros dispositivos</translation>
 <translation id="4547672827276975204">Definir automaticamente</translation>
 <translation id="4549791035683739768">Sua chave de segurança não tem nenhuma impressão digital armazenada</translation>
@@ -5492,7 +5491,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4816900689218414104">Criar uma chave de acesso em um smartphone ou tablet</translation>
 <translation id="481917177323309377">Guias que você não usa há <ph name="COUNT" /> dias ou mais</translation>
 <translation id="4819323978093861656">{0,plural, =0{Fechando agora.}=1{Fechando em 1 segundo}one{Fechando em # segundo}other{Fechando em # segundos}}</translation>
-<translation id="4819607494758673676">Notificações do Google Assistente</translation>
 <translation id="4819818293886748542">Receber um link "Ferramenta de suporte"</translation>
 <translation id="4820236583224459650">Definir como tíquete ativo</translation>
 <translation id="4820795723433418303">Usar teclas de função como teclas da linha de cima</translation>
@@ -5541,7 +5539,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4846897209694249040">Não é permitido capturar e usar a entrada do mouse</translation>
 <translation id="4847242508757499006">Escolha "Tentar de novo" ou "Abrir no editor básico" para usar as opções limitadas de edição e visualização.</translation>
 <translation id="4847742514726489375">Movimento reduzido</translation>
-<translation id="4848191975108266266">"Ok Google" do Assistente</translation>
 <translation id="4849286518551984791">Tempo Universal Coordenado (UTC/GMT)</translation>
 <translation id="4849517651082200438">Não instalar</translation>
 <translation id="4849731766219625109">Usar sua conta <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -5555,6 +5552,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4852916668365817106">Cor do mouse</translation>
 <translation id="4853020600495124913">Abrir em &amp;nova janela</translation>
 <translation id="4854317507773910281">Escolha uma conta de familiar responsável para aprovação</translation>
+<translation id="4854603338816296098">O endereço foi removido</translation>
 <translation id="485480310608090163">Mais configurações e permissões</translation>
 <translation id="4857304314344645169">Veja uma explicação detalhada de qualquer problema</translation>
 <translation id="485806788160414322">Tocar ou pausar mídia</translation>
@@ -6231,7 +6229,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="534449933710420173">Pasta sem nome</translation>
 <translation id="5345916423802287046">Iniciar app ao fazer login</translation>
 <translation id="5350116201946341974">Extravagante</translation>
-<translation id="5350293332385664455">Desativar o Google Assistente</translation>
 <translation id="535123479159372765">Texto copiado de outro dispositivo</translation>
 <translation id="5352033265844765294">Carimbo de data/hora</translation>
 <translation id="5352257124367865087">Gerenciar permissões de sites</translation>
@@ -6632,7 +6629,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="5632059346822207074">Permissão solicitada, pressione Ctrl + Avançar para responder</translation>
 <translation id="5632221585574759616">Saiba mais sobre as permissões de extensões</translation>
 <translation id="5632300633605675627">Configurando seu perfil…</translation>
-<translation id="5632485077360054581">Me ajude a fazer isso</translation>
+<translation id="5632485077360054581">Saiba como</translation>
 <translation id="5632566673632479864">Não é mais permitido usar sua conta <ph name="EMAIL" /> como a principal. Como essa conta é gerenciada por <ph name="DOMAIN" />, seus favoritos, histórico, senhas e outras configurações serão excluídos deste dispositivo.</translation>
 <translation id="5633149627228920745">Saiba mais sobre os requisitos do sistema</translation>
 <translation id="563371367637259496">Celular</translation>
@@ -7279,7 +7276,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6108952804512516814">Criar com IA</translation>
 <translation id="6110303766838612983">Enviar relatórios de erros e dados de uso e diagnóstico ao ChromeOS</translation>
 <translation id="6111718295497931251">Remover o acesso ao Google Drive</translation>
-<translation id="6111972606040028426">Ativar o Google Assistente</translation>
 <translation id="6112727384379533756">Adicionar um tíquete</translation>
 <translation id="6112931163620622315">Verifique seu smartphone</translation>
 <translation id="6113434369102685411">Defina seu mecanismo de pesquisa padrão para o navegador Chrome e o acesso rápido do <ph name="DEVICE_TYPE" /></translation>
@@ -7475,7 +7471,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="6243774244933267674">Servidor não disponível</translation>
 <translation id="6244245036423700521">Importar arquivo ONC</translation>
 <translation id="6245523954602476652">Você pode acessá-la no Gerenciador de senhas do Google.</translation>
-<translation id="6247557882553405851">Gerenciador de senhas do Google</translation>
+<translation id="6247557882553405851">Gerenciador de Senhas do Google</translation>
 <translation id="6247620186971210352">Nenhum app encontrado</translation>
 <translation id="6247708409970142803"><ph name="PERCENTAGE" />%</translation>
 <translation id="6247802389331535091">Sistema: <ph name="ARC_PROCESS_NAME" /></translation>
@@ -8437,7 +8433,6 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="6924109527536857168">A sincronização é necessária</translation>
 <translation id="6928650056523249512">Remover automaticamente as permissões de sites não usados</translation>
 <translation id="6929126689972602640">O controle dos pais não é compatível com contas escolares. Se quiser adicionar uma conta escolar que permita o acesso ao Google Sala de Aula e a outros sites para fazer trabalhos escolares em casa, primeiro faça login com a conta pessoal da criança. Você pode adicionar a conta escolar mais tarde na configuração.</translation>
-<translation id="6929760895658557216">Olá Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Uma extensão foi rejeitada}one{# extensão foi rejeitada}other{# extensões foram rejeitadas}}</translation>
 <translation id="6930337524857202955">Novo download disponível</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9341,6 +9336,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7582844466922312471">Dados móveis</translation>
 <translation id="7583948862126372804">Contagem</translation>
 <translation id="7585106857920830898">Verificando com as políticas de segurança da sua organização…</translation>
+<translation id="7585490016012953607">Senha de recuperação: salva temporariamente por até 3 meses</translation>
 <translation id="7586498138629385861">O Google Chrome continuará funcionando enquanto os aplicativos do Chrome estiverem abertos.</translation>
 <translation id="7587806318633605613">Histórico de sugestões</translation>
 <translation id="7589448773774086276">Nova visualização dividida com a guia atual</translation>

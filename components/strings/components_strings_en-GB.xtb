@@ -538,7 +538,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1876399092304384674">By date</translation>
 <translation id="1877026089748256423">Chrome is out of date</translation>
 <translation id="187918866476621466">Open startup pages</translation>
-<translation id="1880901968112404879">To pay faster next time, save your card, security code and billing address in your Google Account</translation>
 <translation id="1883255238294161206">Collapse list</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dino game. A pixelated dinosaur dodges cacti and pterodactyls as it runs across a desolate landscape. When you hear an audio cue, tap to jump over obstacles.</translation>
@@ -716,7 +715,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2183238148268545307">Video software</translation>
 <translation id="2183608646556468874">Phone Number</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 address}other{# addresses}}</translation>
-<translation id="2187317261103489799">Detect (default)</translation>
 <translation id="2188375229972301266">Multiple punch bottom</translation>
 <translation id="218940509700321686">Comma-separated values</translation>
 <translation id="2194856509914051091">Things to consider</translation>
@@ -939,7 +937,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2535659140340599600">{COUNT,plural, =1{and 1 more}other{and # more}}</translation>
 <translation id="2536110899380797252">Add Address</translation>
 <translation id="2537931901612099523">Others who use this device won’t see your activity, so you can browse more privately. This won't change how data is collected by websites that you visit and the services that they use, including Google. Downloads and bookmarks will be saved.</translation>
-<translation id="2539524384386349900">Detect</translation>
 <translation id="2541219929084442027">Pages that you view in Incognito tabs won’t stick around in your browser’s history, cookie store or search history after you’ve closed all of your Incognito tabs. Any files that you download or bookmarks that you create will be kept.</translation>
 <translation id="2542106216580219892">Surfing</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – to exit full screen, press and hold |<ph name="ACCELERATOR" />|</translation>
@@ -1209,6 +1206,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3027915437837548462">SVG image</translation>
 <translation id="3030331669969285614">These flags prevent or revert a breaking change and will only be available for a limited time.</translation>
 <translation id="3030542417256082866">Save vehicle?</translation>
+<translation id="3033200136993730761">Your home address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">Scroll and zoom allowed</translation>
 <translation id="3036894576201005614">Household Cleaning Supplies</translation>
 <translation id="3037177537145227281">Tracking price</translation>
@@ -1331,7 +1329,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3229041911291329567">Version information about your device and browser</translation>
 <translation id="3229277193950731405">Copy version string</translation>
 <translation id="323107829343500871">Enter the CVC for <ph name="CREDIT_CARD" /></translation>
-<translation id="3234666976984236645">Always detect important content on this site</translation>
 <translation id="323585066388831737">Light red</translation>
 <translation id="3235902901585019063">Local files will be deleted on <ph name="DATE_TIME" />. Make sure that any critical business or personal data is stored externally.</translation>
 <translation id="3236212803136366317">Card benefits</translation>
@@ -1891,7 +1888,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese no.4</translation>
-<translation id="4151403195736952345">Use global default (Detect)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Page 1}other{Page {COUNT}}}</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> doesn't support a secure connection with HTTPS</translation>
@@ -2091,6 +2087,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4451135742916150903">Can ask to connect to HID devices</translation>
 <translation id="4451684391620232683">Text presented to user:</translation>
 <translation id="4452328064229197696">The password that you just used was found in a data breach. To secure your accounts, Google Password Manager recommends checking your saved passwords.</translation>
+<translation id="4454620051637646665">Dismiss banner</translation>
 <translation id="4456937135469235202">Adventure travel</translation>
 <translation id="4458013283022578512">Enter a question</translation>
 <translation id="4464826014807964867">Websites with info from your organisation</translation>
@@ -2676,8 +2673,10 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5464236009658034488">Office Supplies</translation>
 <translation id="5465724643247062031">Glass (opaque)</translation>
 <translation id="5466018172325111652">Didn\u2019t receive your code? <ph name="BEGIN_LINK" />Get new code<ph name="END_LINK" /></translation>
+<translation id="5466818462212249084">Payments apps</translation>
 <translation id="5470861586879999274">&amp;Redo edit</translation>
 <translation id="5472588168895083535">Hand tracking blocked</translation>
+<translation id="5477756102936130143">Enable redirection to supported payment apps</translation>
 <translation id="5479505548832623900">Likely ignored by the extension.</translation>
 <translation id="547963486735802022">Try transferring your files again</translation>
 <translation id="5481076368049295676">This content might try to install dangerous software on your device that steals or deletes your information. <ph name="BEGIN_LINK" />Show anyway<ph name="END_LINK" /></translation>
@@ -2787,6 +2786,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Stereo Systems and Components</translation>
 <translation id="5644090287519800334">Side 1 image X shift</translation>
+<translation id="5644128326840674462">Promotion banner</translation>
 <translation id="5645132789250840550">Plastic (semi-gloss)</translation>
 <translation id="5645719697465708351">Party and holiday supplies</translation>
 <translation id="5645854190134202180">Second shift</translation>
@@ -2806,6 +2806,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="567604591393105935">Commerce bottom sheet opened at half height</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Foil</translation>
+<translation id="5679086391497468752">Home address</translation>
 <translation id="5680642791693447368">Thriller, crime and mystery films</translation>
 <translation id="568292603005599551">Image X position</translation>
 <translation id="5684874026226664614">Oops. This page could not be translated.</translation>
@@ -2907,6 +2908,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5879272455334365707">Financial planning and management</translation>
 <translation id="5879989559903563723">Not allowed in Guest mode</translation>
 <translation id="5880050725127890683">Go to Chrome safety check</translation>
+<translation id="5880385758720707152">Autofill your home and work addresses from your Google Account</translation>
 <translation id="5884465125445718607">Envelope Chinese no.6</translation>
 <translation id="5886961930368713749">Send feedback for compare</translation>
 <translation id="5887400589839399685">Card saved</translation>
@@ -2916,6 +2918,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5898767305816764989">Thumbs-up button, press Enter to submit feedback that you like, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Yellow</translation>
 <translation id="5903264686717710770">Title:</translation>
+<translation id="5905671155741555195">Your work address can help you get things done across Google services, like more relevant search results and directions in Google Maps. You can edit or delete your address <ph name="BEGIN_LINK" />in your Google Account <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (synced)</translation>
 <translation id="5910140988253729859">Undo autofill</translation>
 <translation id="5911020115933784199">Events and Listings</translation>
@@ -3300,6 +3303,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6494750904506170417">pop-ups and redirects</translation>
 <translation id="6495664197699704593">This password is saved only to this device. To use it on your other devices, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">To use another autofill service in Chrome, choose your autofill provider in Android settings</translation>
+<translation id="6496888501595572660">Show <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />pay later options<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> at checkout</translation>
 <translation id="6499038740797743453">Reset password?</translation>
 <translation id="6502510275417601303">Alert about new payment setting is closed</translation>
 <translation id="6502991525169604759">Without your changes</translation>
@@ -3813,6 +3817,7 @@ Additional details:
 <translation id="7403392780200267761">Share this tab by sharing the link, creating a QR code, casting and more</translation>
 <translation id="7403591733719184120">Your <ph name="DEVICE_NAME" /> is managed</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> has installed applications for additional functions. Applications have access to some of your data.</translation>
+<translation id="740691708085211707">Remove work address from Chrome autofill?</translation>
 <translation id="7407424307057130981">&lt;p&gt;You'll see this error if you have Superfish software on your Windows computer.&lt;/p&gt;
       &lt;p&gt;Follow these steps to temporarily disable the software so that you can get on the web. You'll need administrator privileges.&lt;/p&gt;
       &lt;ol&gt;
@@ -3909,6 +3914,7 @@ Additional details:
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">Value</translation>
 <translation id="753556296624075801">Powered by Google</translation>
+<translation id="753713322968419914">Remove home address from Chrome autofill?</translation>
 <translation id="7537536606612762813">Mandatory</translation>
 <translation id="7543525346216957623">Ask your parent</translation>
 <translation id="7546409722674205727">Starting <ph name="APP_NAME" /></translation>
@@ -3965,6 +3971,7 @@ Additional details:
 <translation id="7625242817712715120">Administrator policy doesn’t recommend printing this content</translation>
 <translation id="7627785503571172573">Photo (film)</translation>
 <translation id="762844065391966283">One at a time</translation>
+<translation id="7629058630148860366">Work address</translation>
 <translation id="763042426047865637">Fire and Security Services</translation>
 <translation id="7630470133768862132">Consent status:</translation>
 <translation id="7631072086707140121">URL must be https.</translation>
@@ -4650,6 +4657,7 @@ Additional details:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, press tab, then enter to update Chrome from your Chrome settings</translation>
 <translation id="8820817407110198400">Bookmarks</translation>
 <translation id="882338992931677877">Manual slot</translation>
+<translation id="8827067923357481311">Pay later options</translation>
 <translation id="8830320733681313421">Hagaki Postcard</translation>
 <translation id="8830565333350631528">View files in <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8831783793142731637">Available for purchases over <ph name="RANGE_MINIMUM" /></translation>

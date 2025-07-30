@@ -651,7 +651,6 @@
 <translation id="3595252146048399851">Винаги можете да изберете какво да се синхронизира от <ph name="BEGIN_LINK" />настройките<ph name="END_LINK" />. Google може да персонализира Търсене и други услуги въз основа на историята ви.</translation>
 <translation id="3596414637720633074">Блокиране на „бисквитките“ на трети страни в режим „инкогнито“</translation>
 <translation id="3602260545951981695">Изберете „Подобрена защита“.</translation>
-<translation id="3608436266458100337">Режим за четене</translation>
 <translation id="3610041351087301930">Скриване на четеца</translation>
 <translation id="3622175633937495219">История на търсенията (намерени: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да прекарате пръст по края, за да се върнете назад.</translation>
@@ -1333,6 +1332,7 @@
 <translation id="6234310016144827337">Проверете връзката си и опитайте отново</translation>
 <translation id="6234438496206735891">Показване на изтеглянията</translation>
 <translation id="6236952928980352967">Възстановяване на предупреждението</translation>
+<translation id="623755660902014047">Режим на четене</translation>
 <translation id="6247557882553405851">Google Мениджър на паролите</translation>
 <translation id="6251835855431997163">Автоматично попълване на „<ph name="VALUE" />“</translation>
 <translation id="6254066287920239840">Отваряне на връзките в приложението вместо в браузъра.</translation>
@@ -1996,6 +1996,7 @@
 <translation id="8741995161408053644">Възможно е в профила ви в Google да има други видове история на сърфиране, съхранявани на адрес <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Създаване на връзка</translation>
 <translation id="8746155870861185046">Споделяне на открояването</translation>
+<translation id="8748678031495824833">Отваряне на инструментите с AI на страницата</translation>
 <translation id="8750037785291841318">Тук ще се показват разделите ви</translation>
 <translation id="8756969031206844760">Да се актуализира ли паролата?</translation>
 <translation id="8764015330924122850">Прекратяване на следенето на <ph name="DOMAIN_NAME" /></translation>
@@ -2106,6 +2107,7 @@
 <translation id="9144230693397287797">Получаване на актуализации за зададените от вас напомняния и за раздели от други устройства</translation>
 <translation id="914781932147356857">Означаване на всички…</translation>
 <translation id="9148126808321036104">Влезте отново</translation>
+<translation id="9149866541089851383">Редактиране...</translation>
 <translation id="9159628751968616911">Изпращане на уеб страницата</translation>
 <translation id="9162432979321511934">Включете AutoFill Passwords</translation>
 <translation id="9165320910061267720">За да получавате известия за сигнали за понижение на цената, трябва да включите известията от настройките на iOS.</translation>

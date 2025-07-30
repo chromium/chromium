@@ -943,7 +943,6 @@
 <translation id="1632293440289326475">ಬ್ಯಾಟರಿ ಬಾಳಿಕೆಯನ್ನು ವಿಸ್ತರಿಸಲು ಎನರ್ಜಿ ಸೇವರ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="1632756664321977232">ಕ್ರಾಪ್ ಟೂಲ್</translation>
 <translation id="163309982320328737">ಆರಂಭದ ಅಕ್ಷರದ ಅಗಲವು ಪೂರ್ಣವಾಗಿದೆ</translation>
-<translation id="1633947793238301227">Google Assistant ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="1634224622052500893">ವೈ-ಫೈ ನೆಟ್‌ವರ್ಕ್ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="1634783886312010422">ನೀವು ಈಗಾಗಲೇ ಈ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು <ph name="WEBSITE" /> ನಲ್ಲಿ ಬದಲಾಯಿಸಿರುವಿರಾ?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ಟ್ಯಾಬ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೇ?}=1{ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}one{ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}other{ಟ್ಯಾಬ್‌ಗಳನ್ನು ತೆಗೆದುಹಾಕಿ, ಗುಂಪನ್ನು ಅಳಿಸಬೇಕೆ?}}</translation>
@@ -2375,7 +2374,6 @@
 <translation id="2620245777360407679">ಹಾಟ್‌ಸ್ಪಾಟ್‌ಗೆ ಪ್ರಸ್ತುತ ಕನೆಕ್ಟ್ ಆಗಿರುವ ಸಾಧನಗಳು</translation>
 <translation id="2620436844016719705">ಸಿಸ್ಟಂ</translation>
 <translation id="2620900772667816510">ಬ್ಲೂಟೂತ್ ಸೂಪರ್ ರೆಸಲ್ಯೂಷನ್‌‌</translation>
-<translation id="262154978979441594">Google Assistant ಗೆ ವಾಯ್ಸ್ ಮಾಡೆಲ್‌ನ ತರಬೇತಿ ನೀಡಿ</translation>
 <translation id="2622280935687585828">ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ ಸೈಟ್‌ಗಳಿಂದ <ph name="SITE_NAME" /> ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="26224892172169984">ಪ್ರೊಟೋಕಾಲ್‌‌ಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಯಾವ ಸೈಟ್‌ ಅನ್ನು  ಅನುಮತಿಸಬೇಡ</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2891,6 +2889,7 @@
 <translation id="2981113813906970160">ದೊಡ್ಡ ಮೌಸ್ ಕರ್ಸರ್ ತೋರಿಸು</translation>
 <translation id="2983102365694924129">ಸೈಟ್‌ ಒಂದರಲ್ಲಿನ ನಿಮ್ಮ ಚಟುವಟಿಕೆಯನ್ನು ಆಧರಿಸಿ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆಫ್ ಆಗಿದೆ.</translation>
 <translation id="2983373101216420412">ಕೇಸ್ ಬ್ಯಾಟರಿ ಮಟ್ಟ <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">ಸೆಟ್ಟಿಂಗ್‌ಗಳು...</translation>
 <translation id="2984384421572259426">ಬಳಕೆಯಾಗದ ಟ್ಯಾಬ್‌ಗಳನ್ನು ಕ್ಲೀನ್ ಅಪ್ ಮಾಡಿ</translation>
 <translation id="2984727013951557074">ಫೈಲ್ ಅನ್ನು ಇನ್ನೂ Drive ಗೆ ಸಿಂಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಕೆಂದು ನಿಮ್ಮ ನಿರ್ವಾಹಕರಿಗೆ ವಿನಂತಿ ಸಲ್ಲಿಸಬೇಕೇ?</translation>
@@ -3520,7 +3519,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> ಅವಧಿ ಮೀರಿದೆ</translation>
 <translation id="3443754338602062261">ನಿಮ್ಮ <ph name="BRAND" /> ನಲ್ಲಿ ಈ ಖಾತೆಗಳಿಗೆ ನೀವು ಈಗಾಗಲೇ ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ಹೊಂದಿದ್ದೀರಿ. ಕೆಳಗಿನ ಪಾಸ್‌ವರ್ಡ್‌ಗಳಲ್ಲಿ ಒಂದನ್ನು ಆಮದು ಮಾಡಲು ನೀವು ಆರಿಸಿದರೆ, ಅದು ಅಸ್ತಿತ್ವದಲ್ಲಿರುವ ಒಂದನ್ನು ಬದಲಾಯಿಸುತ್ತದೆ.</translation>
 <translation id="344449859752187052">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕೀಗಳನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ</translation>
-<translation id="3445047461171030979">Google Assistant ತ್ವರಿತ ಉತ್ತರಗಳು</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> ನಿಮಿಷ</translation>
 <translation id="344537926140058498">ಈ ಫೈಲ್ ಸೂಕ್ಷ್ಮ ಅಥವಾ ಅಪಾಯಕಾರಿ ವಿಷಯವನ್ನು ಹೊಂದಿರುವ ಕಾರಣ ನಿಮ್ಮ ಸಂಸ್ಥೆಯು ಈ ಫೈಲ್ ಅನ್ನು ನಿರ್ಬಂಧಿಸಿದೆ. ಸರಿಪಡಿಸಲು ಅದರ ಮಾಲೀಕರನ್ನು ಕೇಳಿ.</translation>
 <translation id="3445465968953598059">ಫೇಶಿಯಲ್‌ ಕಂಟ್ರೋಲ್‌</translation>
@@ -3954,7 +3952,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> ಆಗಿ ಮುಂದುವರಿಸಿ</translation>
 <translation id="3732530910372558017">ಪಿನ್ ಗರಿಷ್ಠ 63 ಅಕ್ಷರಗಳಾಗಿರಬೇಕು</translation>
 <translation id="3732706448780793442">ಹಸ್ತಚಾಲಿತವಾಗಿ ನಿಯಂತ್ರಣ ವಹಿಸಿಕೊಳ್ಳಿ</translation>
-<translation id="3732857534841813090">Google Assistant ಸಂಬಂಧಿತ ಮಾಹಿತಿ</translation>
 <translation id="3733296813637058299">ನಿಮಗಾಗಿ ಆ ನಾವು ಆ್ಯಪ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುತ್ತೇವೆ. ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಗಾಗಿ ನೀವು ಹೆಚ್ಚಿನ ಆ್ಯಪ್‌ಗಳನ್ನು Play Store ನಲ್ಲಿ ಕಂಡುಕೊಳ್ಳಬಹುದು.</translation>
 <translation id="3734547157266039796">ಭತ್ತದ ಗದ್ದೆ</translation>
 <translation id="3735039640698208086">ಆಡಿಯೋ ಪ್ಲೇ ಆಗುತ್ತಿರುವಾಗ...</translation>
@@ -4185,7 +4182,6 @@
 <translation id="3873315167136380065">ಇದನ್ನು ಆನ್ ಮಾಡಲು, ನಿಮ್ಮ ಸಿಂಕ್ ಪಾಸ್‌ಫ್ರೇಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು <ph name="BEGIN_LINK" />ಸಿಂಕ್ ಮರುಹೊಂದಿಸಿ<ph name="END_LINK" /></translation>
 <translation id="3873423927483480833">ಪಿನ್‌ಗಳನ್ನು ತೋರಿಸಿ</translation>
 <translation id="3873915545594852654">ARC++ ನಲ್ಲಿ ಸಮಸ್ಯೆ ಸಂಭವಿಸಿದೆ.</translation>
-<translation id="3874164307099183178">Google Assistant ಆನ್ ಮಾಡಿ</translation>
 <translation id="3874845889165401548">ಈ ಫೀಚರ್ AI ಅನ್ನು ಬಳಸುತ್ತದೆ ಹಾಗೂ ಇದು ಪ್ರಾಯೋಗಿಕವಾಗಿದೆ</translation>
 <translation id="3875511946736639169">ಚಿತ್ರಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ಅನ್ನು ಹೊಸ ಬ್ರೌಸರ್ ಟ್ಯಾಬ್‌ನಲ್ಲಿ ತೆರೆಯಲು ಹೊಂದಿಸಲಾಗಿದೆ. ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಬೆಂಬಲಿತ ಲಿಂಕ್‌ಗಳು ಸಹ ತೆರೆಯುತ್ತವೆ. <ph name="BEGIN_LINK_LEARN_MORE" />ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4844,7 +4840,6 @@
 <translation id="4348766275249686434">ದೋಷಗಳನ್ನು ಸಂಗ್ರಹಿಸಿ</translation>
 <translation id="4349828822184870497">ಉಪಯುಕ್ತ</translation>
 <translation id="4350230709416545141">ನಿಮ್ಮ ಸ್ಥಳವನ್ನು ಪ್ರವೇಶಿಸದಂತೆ <ph name="HOST" /> ಅನ್ನು ಯಾವಾಗಲೂ ನಿರ್ಬಂಧಿಸಿ</translation>
-<translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾದ ಹಾಗೂ ಸ್ಟ್ರೀಮ್ ಆದ ಆ್ಯಪ್ ಅನ್ನು ನಿರ್ವಹಿಸಲು "<ph name="APP_NAME" />" ಗೆ ಹೋಗಿ</translation>
 <translation id="4352913519324947509">ನಿಮ್ಮ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಬದಲಾಯಿಸಲಾಗಿಲ್ಲ, ಆದರೆ ನಿಮ್ಮ ಪ್ರಸ್ತುತ ಪಾಸ್‌ವರ್ಡ್ ಮೂಲಕ ನೀವು ಈಗಲೂ ಸೈಟ್ ಅನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು</translation>
 <translation id="4354073718307267720">ಸೈಟ್, ನಿಮ್ಮ ಸುತ್ತಮುತ್ತಲಿನ 3D ನಕ್ಷೆಗಳನ್ನು ರಚಿಸಲು ಅಥವಾ ಕ್ಯಾಮರಾ ಸ್ಥಿತಿಯನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲು ಬಯಸಿದಾಗ ಕೇಳಿ</translation>
@@ -5112,7 +5107,6 @@
 <translation id="4545759655004063573">ಸಾಕಷ್ಟು ಅನುಮತಿಗಳು ಇಲ್ಲದ ಕಾರಣ ಸೇವ್‌ ಮಾಡಲಾಗಿಲ್ಲ. ದಯವಿಟ್ಟು ಮತ್ತೊಂದು ಸ್ಥಳದಲ್ಲಿ ಸೇವ್‌ ಮಾಡಿ.</translation>
 <translation id="4546345569117159016">ಬಲ ಬಟನ್</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> ಅವರು ಈ ವಿಸ್ತರಣೆಯನ್ನು ಬಳಸಲು ಬಯಸುತ್ತಾರೆ:</translation>
-<translation id="4546692474302123343">Google Assistant ಧ್ವನಿ ಇನ್‌ಪುಟ್‌</translation>
 <translation id="4547659257713117923">ಇತರ ಸಾಧನಗಳಿಂದ ಯಾವುದೇ ಟ್ಯಾಬ್‌ಗಳಿಲ್ಲ</translation>
 <translation id="4547672827276975204">ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="4549791035683739768">ನಿಮ್ಮ ಭದ್ರತಾ ಕೀಯಲ್ಲಿ ಯಾವುದೇ ಫಿಂಗರ್‌ಪ್ರಿಂಟ್‌‍ಗಳನ್ನು ಸಂಗ್ರಹಣೆ ಮಾಡಿಲ್ಲ</translation>
@@ -5488,7 +5482,6 @@
 <translation id="4816900689218414104">ಫೋನ್ ಅಥವಾ ಟ್ಯಾಬ್ಲೆಟ್‌ ಒಂದರಲ್ಲಿ ಪಾಸ್‌ಕೀ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="481917177323309377">ನೀವು <ph name="COUNT" /> ಅಥವಾ ಹೆಚ್ಚಿನ ದಿನಗಳಲ್ಲಿ ಬಳಸದಿರುವ ಟ್ಯಾಬ್‌ಗಳು</translation>
 <translation id="4819323978093861656">{0,plural, =0{ಈಗ ಮುಚ್ಚಲಾಗುತ್ತಿದೆ.}=1{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: 1 ಸೆಕೆಂಡಿನಲ್ಲಿ}one{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}other{ಮುಚ್ಚಲಾಗುತ್ತಿದೆ: # ಸೆಕೆಂಡುಗಳಲ್ಲಿ}}</translation>
-<translation id="4819607494758673676">Google Assistant ಅಧಿಸೂಚನೆಗಳು</translation>
 <translation id="4819818293886748542">ಬೆಂಬಲ ಟೂಲ್ ಲಿಂಕ್ ಪಡೆಯಿರಿ</translation>
 <translation id="4820236583224459650">ಸಕ್ರಿಯ ಟಿಕೆಟ್ ಎಂದು ಸೆಟ್ ಮಾಡಿ</translation>
 <translation id="4820795723433418303">ಫಂಕ್ಷನ್ ಕೀಗಳನ್ನು ಮೇಲಿನ ಸಾಲಿನ ಕೀಗಳಾಗಿ ಬಳಸಿರಿ</translation>
@@ -5537,7 +5530,6 @@
 <translation id="4846897209694249040">ನಿಮ್ಮ ಮೌಸ್ ಇನ್‌ಪುಟ್ ಅನ್ನು ಕ್ಯಾಪ್ಚರ್ ಮಾಡಲು ಮತ್ತು ಬಳಸಲು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="4847242508757499006">"ಪುನಃ ಪ್ರಯತ್ನಿಸಿ" ಆಯ್ಕೆಮಾಡಿ ಅಥವಾ ಸೀಮಿತ ವೀಕ್ಷಣೆ ಮತ್ತು ಎಡಿಟಿಂಗ್ ಆಯ್ಕೆಗಳನ್ನು ಬಳಸಲು "ಮೂಲ ಎಡಿಟರ್‌ನಲ್ಲಿ ತೆರೆಯಿರಿ" ಎಂಬುದನ್ನು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="4847742514726489375">ಕಡಿಮೆಯಾದ ಮೋಷನ್</translation>
-<translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">ಕೋಆರ್ಡಿನೇಟೆಡ್ ಜಾಗತಿಕ ಸಮಯ (UTC/GMT)</translation>
 <translation id="4849517651082200438">ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಬೇಡಿ</translation>
 <translation id="4849731766219625109">ನಿಮ್ಮ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ಖಾತೆಯನ್ನು ಬಳಸಿ</translation>
@@ -5551,6 +5543,7 @@
 <translation id="4852916668365817106">ಕರ್ಸರ್‌ನ ಬಣ್ಣ</translation>
 <translation id="4853020600495124913">&amp;ಹೊಸ ವಿಂಡೋನಲ್ಲಿ ತೆರೆಯಿರಿ</translation>
 <translation id="4854317507773910281">ಅನುಮೋದನೆ ಪಡೆಯಲು, ಪೋಷಕರ ಖಾತೆಯನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
+<translation id="4854603338816296098">ವಿಳಾಸವನ್ನು ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="485480310608090163">ಇನ್ನಷ್ಟು ಸೆಟ್ಟಿಂಗ್‌ಗಳು ಹಾಗೂ ಅನುಮತಿಗಳು</translation>
 <translation id="4857304314344645169">ಯಾವುದೇ ಸಮಸ್ಯೆಯ ಕುರಿತು ಹಂತ ಹಂತದ ವಿವರಣೆಯನ್ನು ನೋಡಿ</translation>
 <translation id="485806788160414322">ಮಾಧ್ಯಮವನ್ನು ಪ್ಲೇ ಮಾಡಿ ಅಥವಾ ವಿರಾಮಗೊಳಿಸಿ</translation>
@@ -6226,7 +6219,6 @@
 <translation id="534449933710420173">ಹೆಸರಿಲ್ಲದ ಫೋಲ್ಡರ್</translation>
 <translation id="5345916423802287046">ನೀವು ಸೈನ್ ಇನ್ ಮಾಡಿದಾಗ ಆ್ಯಪ್ ಅನ್ನು ಪ್ರಾರಂಭಿಸಿ</translation>
 <translation id="5350116201946341974">ವಿಚಿತ್ರವಾದ</translation>
-<translation id="5350293332385664455">Google Assistant ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="535123479159372765">ಇತರ ಸಾಧನದಿಂದ ಪಠ್ಯವನ್ನು ಕಾಪಿ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="5352033265844765294">ಸಮಯ ಸ್ಟ್ಯಾಂಪಿಂಗ್</translation>
 <translation id="5352257124367865087">ಸೈಟ್ ಅನುಮತಿಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
@@ -7274,7 +7266,6 @@
 <translation id="6108952804512516814">AI ಮೂಲಕ ರಚಿಸಿ</translation>
 <translation id="6110303766838612983">ChromeOS ಗೆ ಕ್ರ್ಯಾಶ್ ವರದಿಗಳು ಮತ್ತು ಡಯಾಗ್ನಾಸ್ಟಿಕ್ ಹಾಗೂ ಬಳಕೆಯ ಡೇಟಾವನ್ನು ಕಳುಹಿಸಿ</translation>
 <translation id="6111718295497931251">Google Drive ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
-<translation id="6111972606040028426">Google Assistant ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="6112727384379533756">ಟಿಕೆಟ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="6112931163620622315">ನಿಮ್ಮ ಫೋನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
 <translation id="6113434369102685411">Chrome ಬ್ರೌಸರ್ ಅನ್ನು ಮತ್ತು <ph name="DEVICE_TYPE" /> ಲಾಂಚರ್ ಅನ್ನು ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿ ಸೆಟ್ ಮಾಡಿ</translation>
@@ -8432,7 +8423,6 @@
 <translation id="6924109527536857168">ಸಿಂಕ್ ಮಾಡುವ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6928650056523249512">ಬಳಕೆಯಾಗದ ಸೈಟ್‌ಗಳಿಂದ ಅನುಮತಿಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6929126689972602640">ಶಾಲಾ ಖಾತೆಗಳಿಗೆ ಪೋಷಕರ ನಿಯಂತ್ರಣಗಳನ್ನು ಬೆಂಬಲಿಸಲಾಗುವುದಿಲ್ಲ. ಮನೆಯಲ್ಲಿ ಶಾಲಾ ಕೆಲಸ ಮಾಡುವುದಕ್ಕಾಗಿ Google Classroom ಮತ್ತು ಇತರ ವೆಬ್‌ಸೈಟ್‌ಗಳನ್ನು ಪ್ರವೇಶಿಸಲು ಶಾಲಾ ಖಾತೆಯೊಂದನ್ನು ಸೇರಿಸಲು, ಮೊದಲು ಮಗುವಿನ ವೈಯಕ್ತಿಕ ಖಾತೆಯೊಂದಿಗೆ ಸೈನ್ ಇನ್ ಮಾಡಿ. ನೀವು ನಂತರ ಸೆಟಪ್‌ನಲ್ಲಿ ಶಾಲಾ ಖಾತೆಯನ್ನು ಸೇರಿಸಬಹುದು.</translation>
-<translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{ಒಂದು ವಿಸ್ತರಣೆಯನ್ನು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ}one{# ವಿಸ್ತರಣೆಗಳನ್ನು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ}other{# ವಿಸ್ತರಣೆಗಳನ್ನು ತಿರಸ್ಕರಿಸಲಾಗಿದೆ}}</translation>
 <translation id="6930337524857202955">ಹೊಸ ಡೌನ್‌ಲೋಡ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>

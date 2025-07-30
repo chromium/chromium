@@ -363,6 +363,7 @@
 <translation id="236977714248711277">Werwe kan nie webkoekies gebruik om jou blaai-ervaring beter te maak nie, byvoorbeeld, om jou aangemeld te hou of om items in jou inkopiemandjie te onthou nie.
 
 Werwe kan nie webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te sien nie, byvoorbeeld om advertensies te personaliseer nie.</translation>
+<translation id="2377230674627603057">Oortjiegroeprooster</translation>
 <translation id="2377336083033403521">Soek oortjies …</translation>
 <translation id="2381405137052800939">Basiese beginsels</translation>
 <translation id="2384692388811649784">Versteek Incognito-oortjies</translation>
@@ -650,7 +651,6 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3595252146048399851">Jy kan altyd in <ph name="BEGIN_LINK" />instellings<ph name="END_LINK" /> kies wat om te sinkroniseer. Google kan Search en ander dienste op grond van jou geskiedenis personaliseer.</translation>
 <translation id="3596414637720633074">Blokkeer derdepartywebkoekies in Incognito</translation>
 <translation id="3602260545951981695">Kies “Verbeterde beskerming”</translation>
-<translation id="3608436266458100337">Lesermodus</translation>
 <translation id="3610041351087301930">Versteek Leser</translation>
 <translation id="3622175633937495219">Soekgeskiedenis (<ph name="COUNT" /> gevind)</translation>
 <translation id="3625008969091706597">Jy kan die rand swiep om terug te gaan.</translation>
@@ -1332,9 +1332,11 @@ Oorgee moet ook in die Algemene afdeling van Instellings geaktiveer word, en jou
 <translation id="6234310016144827337">Gaan jou verbinding na en probeer weer</translation>
 <translation id="6234438496206735891">Wys aflaaie</translation>
 <translation id="6236952928980352967">Stel waarskuwing terug</translation>
+<translation id="623755660902014047">Leesmodus</translation>
 <translation id="6247557882553405851">Google Wagwoordbestuurder</translation>
 <translation id="6251835855431997163">Outovul <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Maak skakels in die app oop, in plaas van die blaaier.</translation>
+<translation id="6259928806013786178">Leesmodus kon nie aktiveer nie</translation>
 <translation id="6268773951964630964">Soek vir gekopieerde prent</translation>
 <translation id="6271462272606946663">Versteek Versoek mobiele werf</translation>
 <translation id="6271824294945464304">Deel wagwoord</translation>
@@ -2104,6 +2106,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="9144230693397287797">Ontvang opdaterings vir onthounotas wat jy stel, en oortjies van ander toestelle af</translation>
 <translation id="914781932147356857">Merk alles …</translation>
 <translation id="9148126808321036104">Meld weer aan …</translation>
+<translation id="9149866541089851383">Wysig …</translation>
 <translation id="9159628751968616911">Stuur webbladsy</translation>
 <translation id="9162432979321511934">Skakel Outovulwagwoorde aan</translation>
 <translation id="9165320910061267720">Jy sal kennisgewings in jou iOS-instellings moet aanskakel as jy kennisgewings vir prysdalingopletberigte wil ontvang.</translation>

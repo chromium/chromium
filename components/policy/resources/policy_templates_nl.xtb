@@ -278,6 +278,7 @@ Ga naar https://support.google.com/chrome/a?p=generative_ai_settings voor meer i
 <translation id="1202216683470826356">Kaarten tonen op de pagina Nieuw tabblad</translation>
 <translation id="1203676252390737801">IP-verwerking per URL voor WebRTC</translation>
 <translation id="1204263402976895730">Bedrijfsprinters aangezet</translation>
+<translation id="120513772363332049">Alle andere processen worden niet gepland op dezelfde CPU-kern wanneer het renderproces erop wordt uitgevoerd.</translation>
 <translation id="1207301487141109411">Voorkomen dat gebruikers avatars selecteren via het lokale bestandssysteem, de camera en het Google-profiel</translation>
 <translation id="1209096923317019235">Apps toewijzen als standaardhandlers voor gespecificeerde bestandsextensies</translation>
 <translation id="120937472976628837">Ventilatorgegevens rapporteren</translation>
@@ -401,6 +402,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> niet instelt, wordt de hostnaam gebruikt die door de zoek-URL wordt gespecificeerd.</translation>
 <translation id="1312799700549720683">Beheert weergave-instellingen.</translation>
 <translation id="131353325527891113">Gebruikersnamen tonen in het aanmeldscherm</translation>
+<translation id="1317158052518324525">Verbeterd automatisch invullen niet toestaan.</translation>
 <translation id="1317658068839330898">Het gebruik van <ph name="ASSISTANT_PRODUCT_NAME" /> op internet niet toestaan</translation>
 <translation id="1318233005302276244">Hiermee kunnen gebruikers hun pakketten volgen in Chrome.</translation>
 <translation id="1323501563951768821">De instellingen voor F12 gebruiken de sneltoets met de functietoets Shift</translation>
@@ -3733,6 +3735,15 @@ Als je dit beleid instelt, kunnen gebruikers het niet wijzigen. Als je het belei
       Als je het beleid niet toepast, mag de Translator API niet worden gebruikt.</translation>
 <translation id="366494444808132420">Gemini-integraties toestaan</translation>
 <translation id="3665437376055221832">De gebruiker alleen vragen als geen enkel certificaat overeenkomt met de automatische selectie.</translation>
+<translation id="3667089394451236198">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden niet onderworpen aan <ph name="LOCAL_NETWORK_ACCESS" />-controles.
+
+Als een oorsprong onder zowel dit beleid als LocalNetworkAccessBlockedForUrls valt, heeft LocalNetworkAccessBlockedForUrls voorrang.
+
+Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
+
+Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3671773704245936868">Markering toetsenbordfocus uitzetten</translation>
 <translation id="3674010627788940405">CORS-verzoekheaders zonder jokertekens niet ondersteunen.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) wordt vaak gebruikt om lange JavaScript-taken uit te splitsen.
@@ -4291,6 +4302,17 @@ Ga naar https://support.google.com/chrome/a?p=url_blocklist_filter_format voor u
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> niet instelt, wordt de zoekprovider niet geactiveerd door een zoekwoord.</translation>
 <translation id="4090088362777472639">De SHA-256-hash van het Ansible-playbook.</translation>
 <translation id="4091040199847925434">Rapportage van systeeminformatie en paginacontent uitzetten die wordt gebruikt om Safe Browsing te verbeteren</translation>
+<translation id="4092882308219320847">Lijst met URL-patronen. Verzoeken die worden gestart vanaf websites die worden geleverd via overeenkomende oorsprongen, worden geblokkeerd voor het indienen van <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
+
+Als een oorsprong zowel door dit beleid als door LocalNetworkAccessAllowedForUrls wordt gedekt, heeft dit beleid voorrang.
+
+Afhankelijk van de fase van de uitrol van <ph name="LOCAL_NETWORK_ACCESS" /> moet LocalNetworkAccessRestrictionsEnabled misschien ook worden aangezet om te voorkomen dat dit beleid <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken blokkeert.
+
+Voor oorsprongen die niet overeenkomen met de hier genoemde patronen, is de persoonlijke configuratie van de gebruiker van toepassing.
+
+Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige URL-patronen.
+
+Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4093058072421210667">Inline afbeelding niet toestaan.</translation>
 <translation id="4098920079809952737">Afdrukken zowel met als zonder achtergrondbeelden toestaan</translation>
 <translation id="410061592404122032">Altijd toestemming vragen als een site het recht voor vensterbeheer wil hebben</translation>
@@ -6377,6 +6399,7 @@ Dit beleid voorkomt niet dat gebruikers bestanden opslaan in <ph name="GOOGLE_DR
 <translation id="5490462588616309068">Als je het beleid instelt op Waar of niet instelt, is het gebruik van ID's voor beschermde content toegestaan. Zo kan beschermde content met een hogere kwaliteit worden afgespeeld.
 
 Als je het beleid instelt op Onwaar, mogen ID's voor beschermde content niet worden gebruikt.</translation>
+<translation id="5492713303272131731">Alle andere processen kunnen op dezelfde CPU-kern worden gepland wanneer het renderproces erop wordt uitgevoerd.</translation>
 <translation id="5494322570831642650">Specificeert of de gebruiker pagina's mag openen in de incognitomodus in <ph name="PRODUCT_NAME" />.
 
       Als dit beleid wordt toegepast of niet is ingesteld, kunnen pagina's worden geopend in de incognitomodus.
@@ -8177,6 +8200,7 @@ Op <ph name="MS_WIN_NAME" /> wordt het KDC-beleid altijd gerespecteerd.</transla
 <translation id="6659537776197644458">Geen verificatieprocessen voor wachtwoordsynchronisatie activeren</translation>
 <translation id="6659877981632400997">Het contextmenu bevat geen menu-item waarmee je afbeeldingen kunt delen met <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Cloudrapportage voor beheerde profielen aanzetten</translation>
+<translation id="666203515318060501">Verbeterd automatisch invullen toestaan zonder AI-modellen te verbeteren.</translation>
 <translation id="6665670272107384733">Instellen hoe vaak een gebruiker het wachtwoord moet opgeven om de functie voor snel ontgrendelen te kunnen gebruiken</translation>
 <translation id="6667586534922258705">Knop 'Wachtwoord tonen' tonen op het inlog- en vergrendelscherm.</translation>
 <translation id="6667636336079341367">Scanner toestaan zonder AI-modellen te verbeteren.</translation>
@@ -8289,6 +8313,11 @@ Als dit beleid wordt toegepast, worden de gegevens verzameld en geüpload naar <
 
 Voor <ph name="PRODUCT_NAME" /> is dit beleid alleen van kracht als de machine is ingeschreven met <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Voor <ph name="PRODUCT_OS_NAME" /> is dit beleid altijd van kracht.</translation>
+<translation id="6720071484598746942">Als je dit beleid toepast, wordt het hoofdverzoek geblokkeerd als er een waarschuwing moet worden getoond in de <ph name="DEV_TOOLS_NAME" /> omdat de <ph name="LOCAL_NETWORK_ACCCESS" />-controles mislukken.
+
+Als je dit beleid niet toepast of niet instelt, wordt de standaardafhandeling van deze verzoeken gebruikt voor <ph name="LOCAL_NETWORK_ACCESS" />-verzoeken.
+
+Zie https://wicg.github.io/local-network-access/ voor beperkingen voor <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6720330829631914048">Verstreken uren sinds het begin van de dag (in 24-uursnotatie).</translation>
 <translation id="6721252203593581486">WebSQL in contexten van derden (bijv. iframes voor meerdere sites) staat standaard uit vanaf M97 en wordt helemaal verwijderd in M101.
           Als je dit beleid instelt op False of niet instelt, blijft WebSQL in contexten van derden uitstaan.
@@ -9513,6 +9542,7 @@ Als je dit beleid instelt, moet je het beleid <ph name="PRIVACY_SANDBOX_PROMPT_E
 <translation id="7657261947024629645">Optimaliseren voor betere prestaties.</translation>
 <translation id="76580522298425324">Schermopname zonder eerder gebruikersgebaar toestaan</translation>
 <translation id="7666228839913571182">Cookies van derden toestaan</translation>
+<translation id="7666782560345386904">Instellingen voor verbeterd automatisch invullen</translation>
 <translation id="7669630878711068277">Als je dit beleid toepast of niet instelt, kunnen gebruikers afdrukken in <ph name="PRODUCT_NAME" /> en kunnen ze deze instelling niet wijzigen.
 
       Als je het beleid niet hebt toegepast, kunnen gebruikers ook niet afdrukken vanaf <ph name="PRODUCT_NAME" />. Afdrukken is niet mogelijk vanuit het menu met 3 stippen, extensies en JavaScript-apps.</translation>
@@ -10428,7 +10458,12 @@ Als je dit beleid niet instelt, staat gezichtsbediening in eerste instantie uit,
 <translation id="8331421240786531350">Voorkomen dat sites verzoeken naar lokale netwerkeindpunten kunnen sturen.</translation>
 <translation id="8331479227794770304">Plaktoetsen aanzetten</translation>
 <translation id="8332822245414537447">Controle van RSA-sleutelgebruik uitzetten</translation>
+<translation id="8333141477131859004">Verbeterd automatisch invullen toestaan en AI-modellen verbeteren.</translation>
 <translation id="8334685561819743286">Automatische correctie op fysiek toetsenbord als gebruikers typen uitzetten</translation>
+<translation id="8336986243404088829">Dit beleid beperkt geheugenaanvallen tussen processen via zijkanalen door het renderproces te isoleren op de CPU-kern en te voorkomen dat andere processen dezelfde kern delen. De mitigatie wordt ondersteund in <ph name="MS_WIN_NAME" /> 11 24H2 en hoger. Als het OS niet de vereiste planningsondersteuning heeft, heeft dit beleid geen effect. Dit beleid kan de prestaties vertragen in sommige veeleisende scenario's, vergelijkbaar met het uitzetten van hyperthreading. Ga voor meer informatie naar https://learn.microsoft.com/en-us/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
+Als je dit beleid toepast, worden alle andere processen niet gepland op dezelfde CPU-kern wanneer het renderproces wordt uitgevoerd.
+      Als je dit beleid niet toepast, kunnen alle andere processen worden gepland op dezelfde CPU-kern als er een renderproces op de kern wordt uitgevoerd.
+      Als je dit beleid niet instelt, kunnen alle andere processen worden gepland op dezelfde CPU-kern als er een renderproces op de kern wordt uitgevoerd. Dit kan variëren afhankelijk van de release van <ph name="PRODUCT_NAME" />, actieve praktijktests en het platform.</translation>
 <translation id="8337114537412769126">Als <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> is aangezet en je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> instelt, worden de parameters gespecificeerd tijdens voorgestelde zoekopdrachten met POST. Deze bestaan uit door komma's gescheiden naam/waarde-paren. Als een waarde een templateparameter is (zoals <ph name="SEARCH_TERM_MARKER" />), wordt deze vervangen door de echte zoektermen.
 
       Als je <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> niet instelt, worden voorgestelde zoekopdrachten gestuurd met de GET-methode.</translation>
@@ -11667,6 +11702,7 @@ Voor meer informatie over een beveiligde context ga je naar https://www.w3.org/T
 <translation id="9162444960513782569">Geen throttling van JavaScript-timers op de achtergrond afdwingen</translation>
 <translation id="9164656078867027374">Domeinen definiëren die toegang mogen hebben tot <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
 <translation id="9165128017344777105">Het recht voor lokale lettertypen toestaan op deze sites</translation>
+<translation id="9165498643231979857">Het delen van de CPU-kern beperken voor het renderproces</translation>
 <translation id="9166670902476893480">Dit beleid bepaalt of <ph name="PRODUCT_NAME" /> zoekopdrachten voor aanvullende DNS-recordtypen mag uitvoeren als er niet-beveiligde DNS-verzoeken worden gestuurd. Dit beleid heeft geen effect op DNS-zoekopdrachten die worden uitgevoerd via Beveiligde DNS, waarmee altijd zoekopdrachten voor aanvullende DNS-typen mogen worden uitgevoerd.
 
       Als je dit beleid toepast of niet instelt, mogen zoekopdrachten voor aanvullende typen zoals <ph name="DNS_TYPE_HTTPS" /> (DNS-type 65) worden uitgevoerd in aanvulling op <ph name="DNS_TYPE_A" /> (DNS-type 1) en <ph name="DNS_TYPE_AAAA" /> (DNS-type 28).

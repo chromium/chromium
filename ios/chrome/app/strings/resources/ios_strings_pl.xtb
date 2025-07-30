@@ -655,7 +655,6 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3595252146048399851">W <ph name="BEGIN_LINK" />ustawieniach<ph name="END_LINK" /> możesz wybrać, co chcesz synchronizować. Google może korzystać z Twojej historii, aby dostosowywać działanie wyszukiwarki i innych usług.</translation>
 <translation id="3596414637720633074">Blokuj pliki cookie innych firm w trybie incognito</translation>
 <translation id="3602260545951981695">Wybierz opcję „Silniejsza ochrona”</translation>
-<translation id="3608436266458100337">Tryb czytnika</translation>
 <translation id="3610041351087301930">Ukryj czytnik</translation>
 <translation id="3622175633937495219">Historia wyszukiwania (liczba wyników: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Aby wrócić, możesz przesunąć palcem po krawędzi.</translation>
@@ -1338,6 +1337,7 @@ Funkcja Handoff musi być też włączona w sekcji Ogólne w Ustawieniach, a urz
 <translation id="6234310016144827337">Sprawdź połączenie i spróbuj ponownie</translation>
 <translation id="6234438496206735891">Wyświetl pobrane pliki</translation>
 <translation id="6236952928980352967">Przywróć ostrzeżenie</translation>
+<translation id="623755660902014047">Tryb czytania</translation>
 <translation id="6247557882553405851">Menedżer haseł Google</translation>
 <translation id="6251835855431997163">Automatycznie uzupełnij: <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Otwieraj linki w aplikacji, a nie w przeglądarce.</translation>
@@ -2117,6 +2117,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="9144230693397287797">Otrzymuj powiadomienia o przypomnieniach, które ustawiasz, i kartach z innych urządzeń</translation>
 <translation id="914781932147356857">Oznacz wszystko…</translation>
 <translation id="9148126808321036104">Zaloguj się ponownie</translation>
+<translation id="9149866541089851383">Edytuj...</translation>
 <translation id="9159628751968616911">Wyślij stronę internetową</translation>
 <translation id="9162432979321511934">Włącz autouzupełnianie haseł</translation>
 <translation id="9165320910061267720">Aby otrzymywać alerty o obniżkach cen, musisz włączyć powiadomienia w ustawieniach iOS.</translation>

@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">নামের আপডেট দেখে নিন</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" />-এ আছে</translation>
 <translation id="1166644470305877068">আইসোলেটেড ওয়েব অ্যাপ অটোমেটিক এই সেটিংস ফলো করে</translation>
+<translation id="116712635768212829">ডেটার নিরাপত্তা লঙ্ঘন হওয়ার ঘটনাতে, Chrome আপনার কোনও পাসওয়ার্ড দেখতে পেলে, আপনি সাইন-ইন করে থাকাকালীন, Google Password Manager আপনার হয়ে পাসওয়ার্ড পরিবর্তন করে দেওয়ার অফার দিতে পারে।</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" />-এর মধ্যে খুলছে...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> মুড সহ <ph name="STYLE" /> স্টাইল, <ph name="SUBJECT" />-এর <ph name="INDEX" />টি সাম্প্রতিক AI থিম।</translation>
 <translation id="116896278675803795">বেছে নেওয়া কন্টেন্টের সাথে মেলানোর জন্য ভাষা অটোমেটিক পরিবর্তন করুন</translation>
@@ -555,6 +556,7 @@
 <translation id="1375938286942050085">সেট-আপ সম্পূর্ণ হয়েছে! পরবর্তী গেমিংয়ের জন্য আপনার ডিভাইস তৈরি করুন</translation>
 <translation id="137651782282853227">সংরক্ষিত ঠিকানাগুলি এখানে দেখা যাবে</translation>
 <translation id="1376771218494401509">নাম ও উইন্ডো...</translation>
+<translation id="1377438103060664754">ডেটার নিরাপত্তা লঙ্ঘনে আপনার কোনও একটি পাসওয়ার্ড পাওয়া গেলে, Google Password Manager পাসওয়ার্ড পরিবর্তন করে কোনও একটি শক্তিশালী পাসওয়ার্ড তৈরি করতে বলে</translation>
 <translation id="1377600615067678409">এখন ছেড়ে যান</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> এই সেটিংটি নিয়ন্ত্রণ করছে</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{কোনও পাসওয়ার্ড চুরি হয়নি}=1{চুরি হয়ে যাওয়া ১টি পাসওয়ার্ড}one{চুরি হয়ে যাওয়া {NUM_COMPROMISED}টি পাসওয়ার্ড}other{চুরি হয়ে যাওয়া {NUM_COMPROMISED}টি পাসওয়ার্ড}}</translation>
@@ -940,7 +942,6 @@
 <translation id="1632293440289326475">ব্যাটারির আয়ু বাড়াতে 'পাওয়ার সেভার' চালু করতে চান?</translation>
 <translation id="1632756664321977232">ক্রপ করার টুল</translation>
 <translation id="163309982320328737">প্রাথমিক শব্দ বিস্তৃতি পূর্ণ</translation>
-<translation id="1633947793238301227">Google Assistant অ্যাপ বন্ধ করুন</translation>
 <translation id="1634224622052500893">ওয়াই-ফাই নেটওয়ার্ক পাওয়া গেছে</translation>
 <translation id="1634783886312010422">আপনি কি <ph name="WEBSITE" />-এ আগে থেকেই এই পাসওয়ার্ড পরিবর্তন করেছেন?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}=1{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}one{ট্যাব সরিয়ে গ্রুপ মুছে দেবেন?}other{ট্যাব সরিয়ে গ্রুপগুলি মুছে দেবেন?}}</translation>
@@ -1374,6 +1375,7 @@
 <translation id="1931152874660185993">কোনো উপাদান ইনস্টল করা নেই৷</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> ইনস্টল করা হচ্ছে</translation>
 <translation id="1932098463447129402">আগে কখনও নয়</translation>
+<translation id="1933070475689690969">Gemini অ্যাপ অ্যাক্টিভিটি</translation>
 <translation id="1933489278505808700">পড়ার ও পরিবর্তন করার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="1935303383381416800">আপনার লোকেশন দেখার অনুমতি দেওয়া হয়েছে</translation>
 <translation id="193565226207940518">সাপোর্ট টুল</translation>
@@ -2380,7 +2382,6 @@
 <translation id="2620245777360407679">ডিভাইস বর্তমানে হটস্পটের সাথে কানেক্ট করা রয়েছে</translation>
 <translation id="2620436844016719705">সিস্টেম</translation>
 <translation id="2620900772667816510">ব্লুটুথ সুপার রেজোলিউশন</translation>
-<translation id="262154978979441594">Google Assistant-এর ভয়েস মডেলকে প্রশিক্ষণ দিন</translation>
 <translation id="2622280935687585828">বন্ধ করা সাইট থেকে <ph name="SITE_NAME" /> সরান</translation>
 <translation id="26224892172169984">প্রোটোকল পরিচালনার জন্য কোনও সাইটকে মঞ্জুরি দেবেন না</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2896,6 +2897,7 @@
 <translation id="2981113813906970160">বড় মাউস কার্সার দেখান</translation>
 <translation id="2983102365694924129">সাইটে আপনার অ্যাক্টিভিটির উপর ভিত্তি করে। এই সেটিংটি বন্ধ করা আছে।</translation>
 <translation id="2983373101216420412">কেসের ব্যাটারি লেভেল <ph name="PERCENTAGE" />%।</translation>
+<translation id="2983818520079887040">সেটিংস...</translation>
 <translation id="2984384421572259426">অব্যবহৃত ট্যাব ক্লিন-আপ করুন</translation>
 <translation id="2984727013951557074">ফাইল এখনও Drive-এ সিঙ্ক করা হচ্ছে।</translation>
 <translation id="2985348301114641460">আপনার অ্যাডমিনিস্ট্রেটরকে "<ph name="EXTENSION_NAME" />" ইনস্টল করবার জন্য অনুরোধ পাঠাবেন?</translation>
@@ -3514,6 +3516,7 @@
 <translation id="3435738964857648380">নিরাপত্তা</translation>
 <translation id="343578350365773421">কাগজ ফুরিয়ে গেছে</translation>
 <translation id="3435896845095436175">সক্ষম করুন</translation>
+<translation id="3437072258256045988">আপনার Gemini অ্যাপ অ্যাক্টিভিটি ম্যানেজ করুন</translation>
 <translation id="3437397693214267762">আপনার Outlook Calendar, Sharepoint এবং OneDrive ফাইল দেখুন</translation>
 <translation id="3438633801274389918">নিনজা</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> কে সর্বদা আপনার মাইক্রোফোন অ্যাক্সেস করতে অনুমতি দিন</translation>
@@ -3526,7 +3529,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> টাইম-আউট</translation>
 <translation id="3443754338602062261">আপনার <ph name="BRAND" />-এ আগে থেকেই এইসব অ্যাকাউন্টের জন্য পাসওয়ার্ড আছে। আপনি নিচে থেকে কোনও একটি পাসওয়ার্ড ইমপোর্ট করতে চাইলে, আগে থাকা পাসওয়ার্ডটিও পরিবর্তন হয়ে যাবে।</translation>
 <translation id="344449859752187052">থার্ড-পার্টি কুকি ব্লক করা হয়েছে</translation>
-<translation id="3445047461171030979">Google Assistant-এর ঝটপট উত্তর</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> মিনিট</translation>
 <translation id="344537926140058498">এই ফাইলে সংবেদনশীল বা বিপদজনক কন্টেন্ট থাকার জন্য আপনার সংস্থা ফাইলটি ব্লক করে দিয়েছে। ফাইলের মালিককে সেটি ঠিক করতে বলুন।</translation>
 <translation id="3445465968953598059">মুখ ব্যবহার করে কন্ট্রোল</translation>
@@ -3959,7 +3961,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> হিসেবে চালিয়ে যান</translation>
 <translation id="3732530910372558017">পিন সর্বাধিক ৬৩ অক্ষরের হতে পারে</translation>
 <translation id="3732706448780793442">ম্যানুয়ালি প্রসেস সম্পূর্ণ করুন</translation>
-<translation id="3732857534841813090">Google Assistant সম্পর্কিত তথ্য</translation>
 <translation id="3733296813637058299">আমরা আপনার জন্য সেই সেইসব অ্যাপ ইনস্টল করে দেব। Play স্টোরে আপনার <ph name="DEVICE_TYPE" />-এর জন্য আরও অ্যাপ খুঁজে পাবেন।</translation>
 <translation id="3734547157266039796">রাইস প্যাডি</translation>
 <translation id="3735039640698208086">অডিও বাজানোর সময়...</translation>
@@ -4190,7 +4191,6 @@
 <translation id="3873315167136380065">এটি চালু করতে, আপনার সিঙ্ক পাসফ্রেজটি সরিয়ে দিতে <ph name="BEGIN_LINK" />সিঙ্ক রিসেট করুন<ph name="END_LINK" /></translation>
 <translation id="3873423927483480833">পিন দেখুন</translation>
 <translation id="3873915545594852654">ARC++ নিয়ে একটি সমস্যা হয়েছে।</translation>
-<translation id="3874164307099183178">Google Assistant অ্যাপ চালু করুন</translation>
 <translation id="3874845889165401548">এই ফিচার AI ব্যবহার করে এবং এটি পরীক্ষামূলক</translation>
 <translation id="3875511946736639169">ছবি দেখার বিকল্প চালু করুন</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> নতুন ব্রাউজার ট্যাবে খোলার জন্য তৈরি, কাজ করে এমন লিঙ্কও ব্রাউজারে খুলবে। <ph name="BEGIN_LINK_LEARN_MORE" />আরও জানুন<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4780,6 +4780,7 @@
 <translation id="4295072614469448764">অ্যাপ আপনার টার্মিনালে পাওয়া যায়। আপনার লঞ্চারে একটি আইকনও থাকতে পারে।</translation>
 <translation id="4295979599050707005">Chrome ও Google Play-তে ওয়েবসাইট, অ্যাপ ও এক্সটেনশনকে আপনার <ph name="USER_EMAIL" /> অ্যাকাউন্ট ব্যবহার করার অনুমতি দিতে আবার সাইন-ইন করুন। আপনি এই অ্যাকাউন্ট সরিয়েও দিতে পারেন। <ph name="LINK_BEGIN" />আরও জানুন<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> থেকে ইনস্টল ও স্ট্রিম করা অ্যাপ্লিকেশন</translation>
+<translation id="4296632172536745000">এই সাইটের জন্য আপনার আসল পাসওয়ার্ডটি সর্বজনীনভাবে ডেটার নিরাপত্তা লঙ্ঘনের সময় দেখা গেছে। <ph name="DATE" />-এ আপনি <ph name="BRAND" />-কে আপনার হয়ে অটোমেটিক পাসওয়ার্ড পরিবর্তন করে দিতে বলেছিলেন।</translation>
 <translation id="4297219207642690536">রিস্টার্ট করুন এবং রিসেট করুন</translation>
 <translation id="4297813521149011456">সেটিংস বিভিন্ন কোণে ঘুরিয়ে দেখানোর বিকল্প</translation>
 <translation id="4298660926525614540">সরানো যায় এমন স্টোরেজের নাম</translation>
@@ -4848,7 +4849,6 @@
 <translation id="4348766275249686434">ত্রুটিগুলি সংগ্রহ</translation>
 <translation id="4349828822184870497">উপযোগী</translation>
 <translation id="4350230709416545141">আপনার লোকেশন অ্যাক্সেস করা থেকে <ph name="HOST" />-কে সবসময় ব্লক করুন</translation>
-<translation id="4350782034419308508">হ্যালো Google</translation>
 <translation id="435185728237714178">ইনস্টল ও স্ট্রিম করা অ্যাপ ম্যানেজ করতে "<ph name="APP_NAME" />" অ্যাপে যান</translation>
 <translation id="4352913519324947509">আপনার পাসওয়ার্ড পরিবর্তন করা হয়নি, তবে এখনও আপনার বর্তমান পাসওয়ার্ড দিয়ে সাইট অ্যাক্সেস করার সুবিধা থাকা উচিত</translation>
 <translation id="4354073718307267720">কোনও সাইট আপনার আশেপাশের এলাকার একটি 3D ম্যাপ তৈরি করতে বা ক্যামেরার অবস্থান ট্র্যাক করতে চাইলে, একবার জিজ্ঞাসা করে নিন</translation>
@@ -5116,7 +5116,6 @@
 <translation id="4545759655004063573">অপর্যাপ্ত অনুমতির কারণে সংরক্ষণ করতে পারবেন না৷ দয়া করে অন্য কোনো স্থানে সংরক্ষণ করুন৷</translation>
 <translation id="4546345569117159016">ডানদিকের বোতাম</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> এই এক্সটেনশন ব্যবহার করতে চান:</translation>
-<translation id="4546692474302123343">Google Assistant-এর ভয়েস ইনপুট</translation>
 <translation id="4547659257713117923">অন্য ডিভাইসগুলি থেকে কোনো ট্যাব নেই</translation>
 <translation id="4547672827276975204">অটোমেটিক সেট হবে</translation>
 <translation id="4549791035683739768">আপনার 'নিরাপত্তা কী'-তে কোনও ফিঙ্গারপ্রিন্ট সেভ করা নেই</translation>
@@ -5492,7 +5491,6 @@
 <translation id="4816900689218414104">একটি ফোন বা ট্যাবলেটে একটি পাসকি তৈরি করুন</translation>
 <translation id="481917177323309377">যেসব ট্যাব আপনি <ph name="COUNT" /> বা তার বেশি দিন ধরে ব্যবহার করেননি</translation>
 <translation id="4819323978093861656">{0,plural, =0{এখন বন্ধ করা হচ্ছে।}=1{বন্ধ করা হচ্ছে: ১ সেকেন্ডের মধ্যে}one{বন্ধ করা হচ্ছে: # সেকেন্ডের মধ্যে}other{বন্ধ করা হচ্ছে: # সেকেন্ডের মধ্যে}}</translation>
-<translation id="4819607494758673676">Google Assistant বিজ্ঞপ্তি</translation>
 <translation id="4819818293886748542">সাপোর্ট টুলের লিঙ্ক পান</translation>
 <translation id="4820236583224459650">অ্যাক্টিভ টিকিট হিসেবে সেট করুন</translation>
 <translation id="4820795723433418303">উপরের সারির 'কী' হিসেবে ফাংশন 'কী' ব্যবহার করুন</translation>
@@ -5541,7 +5539,6 @@
 <translation id="4846897209694249040">মাউস ইনপুট ক্যাপচার করে ব্যবহার করার অনুমতি দেওয়া হয়নি</translation>
 <translation id="4847242508757499006">"আবার চেষ্টা করুন" বিকল্পটি বেছে নিন, অথবা সীমিত ভিউ এবং এডিটিং বিকল্প ব্যবহার করার জন্য "প্রাথমিক এডিটরে খুলুন" বিকল্পটি বেছে নিন।</translation>
 <translation id="4847742514726489375">স্ক্রিনে কম অ্যানিমেশন</translation>
-<translation id="4848191975108266266">Google Assistant "হ্যালো Google"</translation>
 <translation id="4849286518551984791">সমন্বিত সর্বজনীন সময় (UTC / GMT)</translation>
 <translation id="4849517651082200438">ইনস্টল করবেন না</translation>
 <translation id="4849731766219625109">আপনার <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> অ্যাকাউন্ট ব্যবহার করুন</translation>
@@ -5555,6 +5552,7 @@
 <translation id="4852916668365817106">মাউসের রঙ</translation>
 <translation id="4853020600495124913">&amp;নতুন উইন্ডোতে খুলুন</translation>
 <translation id="4854317507773910281">অনুমোদন করানোর জন্য অভিভাবকের অ্যাকাউন্ট বেছে নিন</translation>
+<translation id="4854603338816296098">ঠিকানা সরিয়ে দেওয়া হয়েছে</translation>
 <translation id="485480310608090163">আরও সেটিংস এবং অনুমতি</translation>
 <translation id="4857304314344645169">কোনও সমস্যা সম্পর্কে ধাপে ধাপে করা ব্যাখ্যা দেখুন</translation>
 <translation id="485806788160414322">মিডিয়া চালান অথবা পজ করুন</translation>
@@ -6231,7 +6229,6 @@
 <translation id="534449933710420173">নামবিহীন ফোল্ডার</translation>
 <translation id="5345916423802287046">সাইন-ইন করলেই অ্যাপ চালু হয়ে যাবে</translation>
 <translation id="5350116201946341974">হুয়িমজিক্যাল</translation>
-<translation id="5350293332385664455">Google Assistant অ্যাপ বন্ধ করুন</translation>
 <translation id="535123479159372765">অন্য ডিভাইস থেকে টেক্সট কপি করা হয়েছে</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
 <translation id="5352257124367865087">সাইট সংক্রান্ত অনুমতি ম্যানেজ করুন</translation>
@@ -7279,7 +7276,6 @@
 <translation id="6108952804512516814">AI-এর মাধ্যমে তৈরি করুন</translation>
 <translation id="6110303766838612983">ক্র্যাশ রিপোর্ট ছাড়াও ডায়াগনস্টিক ও ব্যবহারের ডেটা অটোমেটিক ChromeOS-কে পাঠান</translation>
 <translation id="6111718295497931251">Google Drive-এর অ্যাক্সেস সরিয়ে দিন</translation>
-<translation id="6111972606040028426">Google Assistant অ্যাপ চালু করুন</translation>
 <translation id="6112727384379533756">একটি টিকিট যোগ করুন</translation>
 <translation id="6112931163620622315">আপনার ফোনে দেখুন</translation>
 <translation id="6113434369102685411">Chrome ব্রাউজার এবং <ph name="DEVICE_TYPE" /> লঞ্চারের জন্য আপনার ডিফল্ট সার্চ ইঞ্জিন সেট করুন</translation>
@@ -8437,7 +8433,6 @@
 <translation id="6924109527536857168">সিঙ্ক করতে হবে</translation>
 <translation id="6928650056523249512">ব্যবহার করা হয়নি এমন সাইট থেকে অটোমেটিক অনুমতি সরান</translation>
 <translation id="6929126689972602640">স্কুল অ্যাকাউন্টে অভিভাবকীয় নিয়ন্ত্রণ কাজ করে না। বাড়িতে স্কুলের কাজ করার উদ্দেশ্যে Google Classroom ও অন্যান্য ওয়েবসাইট অ্যাক্সেস করার জন্য স্কুল অ্যাকাউন্ট যোগ করতে, প্রথমে বাচ্চার ব্যক্তিগত অ্যাকাউন্ট দিয়ে সাইন-ইন করুন। পরে আপনি 'ব্যবহারকারী যোগ করুন' বিকল্প থেকে স্কুল অ্যাকাউন্ট যোগ করতে পারবেন।</translation>
-<translation id="6929760895658557216">হ্যালো Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{একটি এক্সটেনশন বাতিল করা হয়েছে}one{#টি এক্সটেনশন বাতিল করা হয়েছে}other{#টি এক্সটেনশন বাতিল করা হয়েছে}}</translation>
 <translation id="6930337524857202955">নতুন ডাউনলোড উপলভ্য আছে</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9341,6 +9336,7 @@
 <translation id="7582844466922312471">মোবাইল ডেটা</translation>
 <translation id="7583948862126372804">সংখ্যা</translation>
 <translation id="7585106857920830898">আপনার সংস্থার সুরক্ষা নীতি মেনে চলছে কিনা তা জানতে চেক করা হচ্ছে...</translation>
+<translation id="7585490016012953607">পাসওয়ার্ড রিকভারি — ৩ মাস পর্যন্ত সাময়িক সময়ের জন্য সেভ করা হয়</translation>
 <translation id="7586498138629385861">Chrome অ্যাপগুলি খোলা থাকার সময় Chrome চালু থাকবে।</translation>
 <translation id="7587806318633605613">সাজেশনের ইতিহাস</translation>
 <translation id="7589448773774086276">বর্তমান ট্যাবে নতুন 'স্প্লিট ভিউ' তৈরি করুন</translation>

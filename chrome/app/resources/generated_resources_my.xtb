@@ -938,7 +938,6 @@
 <translation id="1632293440289326475">ဘက်ထရီသက်တမ်း ရှည်စေရန်အတွက် စွမ်းအင်ချွေတာစနစ်ကို ဖွင့်ရန်</translation>
 <translation id="1632756664321977232">ဖြတ်ညှိရန် တူးလ်</translation>
 <translation id="163309982320328737">ကနဦး စာလုံး အကျယ် ပြည့်နေ</translation>
-<translation id="1633947793238301227">Google Assistant ပိတ်ရန်</translation>
 <translation id="1634224622052500893">Wi-Fi ကွန်ရက် တွေ့ထားသည်</translation>
 <translation id="1634783886312010422"><ph name="WEBSITE" /> တွင် ဤစကားဝှက်ကို ပြောင်းပြီးပြီလား။</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{တဘ်ဖယ်ရှားပြီး အုပ်စုကို ဖျက်မလား။}=1{တဘ်များဖယ်ရှားပြီး အုပ်စုကို ဖျက်မလား။}other{တဘ်များဖယ်ရှားပြီး အုပ်စုများကို ဖျက်မလား။}}</translation>
@@ -2378,7 +2377,6 @@
 <translation id="2620245777360407679">စက်များကို လောလောဆယ် ဟော့စပေါ့နှင့် ချိတ်ဆက်ထားသည်</translation>
 <translation id="2620436844016719705">စနစ်</translation>
 <translation id="2620900772667816510">ဘလူးတုသ် စူပါကြည်လင်ပြတ်သားမှု</translation>
-<translation id="262154978979441594">Google Assistant အသံ နမူနာ လေ့ကျင့်ရန်</translation>
 <translation id="2622280935687585828"><ph name="SITE_NAME" /> ကို ပိတ်ထားသော ဝဘ်ဆိုက်များမှ ဖယ်ရှားရန်</translation>
 <translation id="26224892172169984">ဘယ်ဆိုက်ကိုမှ ပရိုတိုကောများကို ကိုင်တွယ်ခွင့် မပြုပါနှင့်</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2895,6 +2893,7 @@
 <translation id="2981113813906970160">ကြီးမားသည့် မောက်စ်ညွှန်ပြကိရိယာ ပြရန်</translation>
 <translation id="2983102365694924129">ဝဘ်ဆိုက်ရှိ သင့်လုပ်ဆောင်ချက်ပေါ် အခြေခံထားသည်။ ဤဆက်တင်ကို ပိတ်ထားသည်။</translation>
 <translation id="2983373101216420412">နားကြပ်ဘူး ဘက်ထရီအား <ph name="PERCENTAGE" />%။</translation>
+<translation id="2983818520079887040">ဆက်တင်များ...</translation>
 <translation id="2984384421572259426">အသုံးမပြုသောတဘ်များ ရှင်းရန်</translation>
 <translation id="2984727013951557074">ဖိုင်ကို Drive နှင့် စင့်ခ်လုပ်နေဆဲဖြစ်သည်။</translation>
 <translation id="2985348301114641460">သင့်စီမံခန့်ခွဲသူထံ "<ph name="EXTENSION_NAME" />" ထည့်သွင်းရန် တောင်းဆိုချက်ပို့မလား။</translation>
@@ -3526,7 +3525,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> အချိန်ကုန်သွားသည်</translation>
 <translation id="3443754338602062261">သင်၏ <ph name="BRAND" /> ရှိ ဤအကောင့်များအတွက် သင့်တွင် စကားဝှက်များ ရှိပြီးဖြစ်သည်။ အောက်ရှိ စကားဝှက်များအနက်တစ်ခုကို ထည့်သွင်းရန်ရွေးပါက ၎င်းသည် လက်ရှိတစ်ခုကို အစားထိုးလိုက်မည်။</translation>
 <translation id="344449859752187052">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီးများ ပိတ်ထားသည်</translation>
-<translation id="3445047461171030979">Google Assistant အမြန်အဖြေများ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> မိနစ်</translation>
 <translation id="344537926140058498">ဤဖိုင်တွင် အကဲဆတ်သော (သို့) အန္တရာယ်ရှိသော အကြောင်းအရာများ ပါသဖြင့် သင့်အဖွဲ့အစည်းက ပိတ်ထားသည်။ ၎င်း၏ပိုင်ရှင်ကို ပြင်ခိုင်းပါ။</translation>
 <translation id="3445465968953598059">မျက်နှာဖြင့် ထိန်းချုပ်မှု</translation>
@@ -3959,7 +3957,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> အဖြစ် ရှေ့ဆက်ရန်</translation>
 <translation id="3732530910372558017">ပင်နံပါတ်သည် အများဆုံးအက္ခရာ ၆၃ လုံး ရှိရမည်</translation>
 <translation id="3732706448780793442">ကိုယ်တိုင်လွှဲယူရန်</translation>
-<translation id="3732857534841813090">Google Assistant နှင့် ဆက်စပ်သော အချက်အလက်များ</translation>
 <translation id="3733296813637058299">သင့်အတွက် ထိုအက်ပ်များကို ထည့်သွင်းပေးပါမည်။ Play Store တွင် သင့် <ph name="DEVICE_TYPE" /> အတွက် နောက်ထပ်အက်ပ်များကို ရှာဖွေနိုင်သည်။</translation>
 <translation id="3734547157266039796">စပါးခင်း</translation>
 <translation id="3735039640698208086">အသံဖွင့်နေသည့်အခါ...</translation>
@@ -4190,7 +4187,6 @@
 <translation id="3873315167136380065">၎င်းကိုဖွင့်ရန်အတွက် <ph name="BEGIN_LINK" />စင့်ခ်လုပ်ခြင်းကို ပြင်ဆင်သတ်မှတ်<ph name="END_LINK" /> ပြီး သင်၏ စင့်ခ်စကားဝှက်စာကို ဖယ်ရှားပါ</translation>
 <translation id="3873423927483480833">ပင်နံပါတ်များ ပြရန်</translation>
 <translation id="3873915545594852654">ARC++ နှင့်ပက်သတ်၍ ပြဿနာရှိနေသည်။</translation>
-<translation id="3874164307099183178">Google Assistant ဖွင့်ရန်</translation>
 <translation id="3874845889165401548">ဤဝန်ဆောင်မှုသည် AI ကို အသုံးပြုပြီး စမ်းသပ်ဆဲဖြစ်သည်</translation>
 <translation id="3875511946736639169">ပုံများ ပြပါ</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ကို ဘရောင်ဇာတဘ်အသစ်တွင် ဖွင့်ရန် သတ်မှတ်ထားသည်။ ပံ့ပိုးထားသည့်လင့်ခ်များကိုလည်း ဘရောင်ဇာတွင် ဖွင့်ပါမည်။ <ph name="BEGIN_LINK_LEARN_MORE" />ပိုမိုလေ့လာရန်<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4848,7 +4844,6 @@
 <translation id="4348766275249686434">အမှားများကို စုစည်းရန်</translation>
 <translation id="4349828822184870497">အထောက်အကူဖြစ်စေသည်</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> ကို သင့်တည်နေရာအသုံးပြုခြင်းမှ အမြဲပိတ်ရန်</translation>
-<translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">ထည့်သွင်းပြီး တိုက်ရိုက်လွှင့်ထားသော အက်ပ်များကို စီမံရန် “<ph name="APP_NAME" />” အက်ပ်သို့ သွားပါ</translation>
 <translation id="4352913519324947509">သင့်စကားဝှက်ကို ပြောင်းမထားသော်လည်း လက်ရှိစကားဝှက်ဖြင့် သင့်ဝဘ်ဆိုက်ကို သုံးနိုင်ပါသေးသည်</translation>
 <translation id="4354073718307267720">ဝဘ်ဆိုက်က သင့်ပတ်ဝန်းကျင်၏ 3D မြေပုံဆွဲခြင်း သို့မဟုတ် ကင်မရာအနေအထား ခြေရာခံခြင်းတို့ ပြုလုပ်လိုသည့်အခါ မေးမြန်းရန်</translation>
@@ -5116,7 +5111,6 @@
 <translation id="4545759655004063573">ခွင့်ပြုချက် မလုံလောက်သောကြောင့် သိမ်းဆည်းမရပါ။ အခြားနေရာတစ်ခုတွင် သိမ်းဆည်းပါ။</translation>
 <translation id="4546345569117159016">ညာခလုတ်</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> က ဤနောက်ဆက်တွဲကို သုံးလိုသည်-</translation>
-<translation id="4546692474302123343">Google Assistant အသံဖြင့် ထည့်သွင်းရန်</translation>
 <translation id="4547659257713117923">အခြားစက်ပစ္စည်းများမှ တဲဘ်များ မရှိပါ</translation>
 <translation id="4547672827276975204">အလိုအလျောက် သတ်မှတ်ရန်</translation>
 <translation id="4549791035683739768">သင့်လုံခြုံရေးကီးတွင် လက်ဗွေရာများ သိမ်းမထားပါ</translation>
@@ -5492,7 +5486,6 @@
 <translation id="4816900689218414104">ဖုန်း (သို့) တက်ဘလက်တွင် လျှို့ဝှက်ကီးပြုလုပ်ခြင်း</translation>
 <translation id="481917177323309377"><ph name="COUNT" /> ရက်နှင့်အထက် အသုံးမပြုသည့် တဘ်များ</translation>
 <translation id="4819323978093861656">{0,plural, =0{ယခု ပိတ်နေသည်။}=1{ပိတ်ပါတော့မည်- ၁ စက္ကန့်}other{ပိတ်ပါတော့မည်- # စက္ကန့်}}</translation>
-<translation id="4819607494758673676">Google Assistant အကြောင်းကြားချက်များ</translation>
 <translation id="4819818293886748542">‘အကူအညီတူးလ်’ လင့်ခ်ရယူရန်</translation>
 <translation id="4820236583224459650">လက်ရှိအသုံးပြုနေသည့် လက်မှတ်သတ်မှတ်ရန်</translation>
 <translation id="4820795723433418303">လုပ်ဆောင်ချက်ကီးများကို ထိပ်ဆုံးအတန်းကီးများအဖြစ် သုံးရန်</translation>
@@ -5541,7 +5534,6 @@
 <translation id="4846897209694249040">သင့်မောက်စ်ဖြည့်သွင်းမှုကို မှတ်တမ်းတင်ပြီး သုံးရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="4847242508757499006">“ထပ်စမ်းကြည့်ရန်” ကိုရွေးပါ (သို့) ကန့်သတ်ထားသည့် ကြည့်ရှုခြင်းနှင့် တည်းဖြတ်ခြင်း ရွေးစရာများသုံးရန်အတွက် “အခြေခံတည်းဖြတ်စနစ်တွင် ဖွင့်ရန်” ကိုရွေးပါ။</translation>
 <translation id="4847742514726489375">လှုပ်ရှားမှုကို လျှော့ထားသည်</translation>
-<translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">ညှိထားသည့် ကမ္ဘာ့ စံတော်ချိန် (UTC / ဂရင်းနစ်စံတော်ချိန်)</translation>
 <translation id="4849517651082200438">မသွင်းပါနှင့်</translation>
 <translation id="4849731766219625109">သင်၏ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> အကောင့် သုံးရန်</translation>
@@ -5555,6 +5547,7 @@
 <translation id="4852916668365817106">မောက်စ်အရောင်</translation>
 <translation id="4853020600495124913">ဝင်ဒိုးအသစ် &amp;ထဲမှာ &amp;ဖွင့်ရန်</translation>
 <translation id="4854317507773910281">အတည်ပြုရန်အတွက် မိဘအကောင့်ကို ရွေးပါ</translation>
+<translation id="4854603338816296098">လိပ်စာကို ဖယ်ရှားလိုက်သည်</translation>
 <translation id="485480310608090163">နောက်ထပ် ဆက်တင်များနှင့် ခွင့်ပြုချက်များ</translation>
 <translation id="4857304314344645169">မည်သည့်ပြဿနာအတွက်မဆို တစ်ဆင့်ချင်းပြ ရှင်းပြချက်ကို ကြည့်ပါ</translation>
 <translation id="485806788160414322">မီဒီယာ ဖွင့်ရန် (သို့) ခဏရပ်ရန်</translation>
@@ -6231,7 +6224,6 @@
 <translation id="534449933710420173">အမည်မရှိဖိုင်တွဲ</translation>
 <translation id="5345916423802287046">သင်လက်မှတ်ထိုးဝင်သောအခါ အက်ပ်စတင်ရန်</translation>
 <translation id="5350116201946341974">စိတ်ကစားခြင်း</translation>
-<translation id="5350293332385664455">Google Assistant ပိတ်ရန်</translation>
 <translation id="535123479159372765">အခြားစက်မှ မိတ္တူကူးထားသည့် စာသား</translation>
 <translation id="5352033265844765294">အချိန် တံဆိပ်ထုနေ</translation>
 <translation id="5352257124367865087">ဝဘ်ဆိုက်ခွင့်ပြုချက်များ စီမံရန်</translation>
@@ -7277,7 +7269,6 @@
 <translation id="6108952804512516814">AI ဖြင့် ဖန်တီးရန်</translation>
 <translation id="6110303766838612983">အမှားရှာဖွေမှုနှင့် သုံးစွဲမှုဒေတာအပြင် ပျက်စီးမှု အစီရင်ခံစာများကို ChromeOS သို့ ပို့ရန်</translation>
 <translation id="6111718295497931251">Google Drive အသုံးပြုမှု ဖယ်ရှားရန်</translation>
-<translation id="6111972606040028426">Google Assistant ဖွင့်ရန်</translation>
 <translation id="6112727384379533756">လက်မှတ်တစ်ခု ထည့်ရန်</translation>
 <translation id="6112931163620622315">သင့်ဖုန်းကို စစ်ဆေးပါ</translation>
 <translation id="6113434369102685411">Chrome ဘရောင်ဇာနှင့် <ph name="DEVICE_TYPE" /> Launcher အတွက် မူရင်းရှာဖွေရေး အင်ဂျင် သတ်မှတ်နိုင်သည်</translation>
@@ -8432,7 +8423,6 @@
 <translation id="6924109527536857168">စင့်ခ်လုပ်ခြင်း လိုအပ်သည်</translation>
 <translation id="6928650056523249512">အသုံးမပြုသော ဝဘ်ဆိုက်များမှ ခွင့်ပြုချက်များကို အလိုအလျောက် ဖယ်ရှားရန်</translation>
 <translation id="6929126689972602640">မိဘအထိန်းအချုပ်များကို ကျောင်းအကောင့်များအတွက် အသုံးပြု၍မရပါ။ အိမ်တွင် ကျောင်းစာအတွက် Google Classroom နှင့် အခြားဝဘ်ဆိုက်များသို့ ဝင်ကြည့်ရန်အတွက် ကျောင်းအကောင့်ထည့်သွင်းရန် ကလေး၏ ကိုယ်ပိုင်အကောင့်ဖြင့် ဦးစွာ လက်မှတ်ထိုးဝင်ပါ။ စနစ်ထည့်သွင်းမှုတွင် ကျောင်းအကောင့်ကို နောင်အခါ ထည့်နိုင်သည်။</translation>
-<translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{နောက်ဆက်တွဲကို ပယ်ချလိုက်သည်}other{နောက်ဆက်တွဲ # ခုကို ပယ်ချလိုက်သည်}}</translation>
 <translation id="6930337524857202955">ဒေါင်းလုဒ်အသစ် ရနိုင်သည်</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>

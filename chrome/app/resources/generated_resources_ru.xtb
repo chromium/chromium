@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Проверьте новое название</translation>
 <translation id="1166596238782048887">Вкладка "<ph name="TAB_TITLE" />" находится на рабочем столе "<ph name="DESK_TITLE" />"</translation>
 <translation id="1166644470305877068">Изолированные веб-приложения используют этот параметр автоматически.</translation>
+<translation id="116712635768212829">Если Chrome обнаружит, что один из ваших паролей раскрыт в результате утечки данных, Google Менеджер паролей может предложить изменить его. Для этого нужно войти в аккаунт.</translation>
 <translation id="1168020859489941584">Открытие через <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Недавняя тема, созданная искусственным интеллектом: <ph name="INDEX" />. Объект: <ph name="SUBJECT" />. Стиль: <ph name="STYLE" />. Настроение: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Автоматически устанавливать язык, соответствующий выбранному контенту</translation>
@@ -557,6 +558,7 @@
 <translation id="1375938286942050085">Настройка завершена. Можно начинать играть!</translation>
 <translation id="137651782282853227">Здесь появятся адреса, которые вы сохраните.</translation>
 <translation id="1376771218494401509">Добавить название окна</translation>
+<translation id="1377438103060664754">Если обнаружится, что один из ваших паролей раскрыт в результате утечки данных, Google Менеджер паролей предложит изменить его на более надежный.</translation>
 <translation id="1377600615067678409">Пропустить</translation>
 <translation id="1378613616312864539">Расширение "<ph name="NAME" />" контролирует этот параметр</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Нет раскрытых паролей}=1{1 раскрытый пароль}one{{NUM_COMPROMISED} раскрытый пароль}few{{NUM_COMPROMISED} раскрытых пароля}many{{NUM_COMPROMISED} раскрытых паролей}other{{NUM_COMPROMISED} раскрытого пароля}}</translation>
@@ -940,7 +942,6 @@
 <translation id="1632293440289326475">Включить режим энергосбережения, чтобы продлить время работы от батареи</translation>
 <translation id="1632756664321977232">Инструмент "Кадрирование"</translation>
 <translation id="163309982320328737">Первоначальная ширина символа – полная</translation>
-<translation id="1633947793238301227">Выключить Google Ассистента</translation>
 <translation id="1634224622052500893">Найдена сеть Wi-Fi</translation>
 <translation id="1634783886312010422">Вы уже поменяли пароль на сайте <ph name="WEBSITE" />?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Удалить вкладки и группу?}=1{Удалить вкладку и группу?}one{Удалить вкладки и группы?}few{Удалить вкладки и группы?}many{Удалить вкладки и группы?}other{Удалить вкладки и группы?}}</translation>
@@ -2369,7 +2370,6 @@
 <translation id="2620245777360407679">Устройства, подключенные к точке доступа</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
-<translation id="262154978979441594">Записать образец голоса для Ассистента</translation>
 <translation id="2622280935687585828">Удалить <ph name="SITE_NAME" /> из списка сайтов, на которых не предлагается генератор текстов</translation>
 <translation id="26224892172169984">Запретить обработку протоколов на всех сайтах</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2885,6 +2885,7 @@
 <translation id="2981113813906970160">Показывать большой курсор мыши</translation>
 <translation id="2983102365694924129">Подбираются на основе ваших действий на сайте. Параметр отключен.</translation>
 <translation id="2983373101216420412">Чехол заряжен на <ph name="PERCENTAGE" /> %.</translation>
+<translation id="2983818520079887040">Настройки...</translation>
 <translation id="2984384421572259426">Закрыть неиспользуемые вкладки</translation>
 <translation id="2984727013951557074">Файл по-прежнему синхронизируется с Диском.</translation>
 <translation id="2985348301114641460">Отправить администратору запрос на установку расширения "<ph name="EXTENSION_NAME" />"?</translation>
@@ -3516,7 +3517,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" />: превышено время ожидания</translation>
 <translation id="3443754338602062261">Учетные данные для этих аккаунтов уже сохранены в сервисе "<ph name="BRAND" />". Если вы импортируете один из паролей ниже, существующий пароль будет заменен.</translation>
 <translation id="344449859752187052">Сторонние файлы cookie заблокированы</translation>
-<translation id="3445047461171030979">Быстрые ответы Google Ассистента</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин.</translation>
 <translation id="344537926140058498">Ваша организация заблокировала файл, так как он содержит конфиденциальный или опасный контент. Попросите владельца его исправить.</translation>
 <translation id="3445465968953598059">Управление мимикой</translation>
@@ -3949,7 +3949,6 @@
 <translation id="3732414796052961578">Продолжить как <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN-код должен содержать не более 63 символов.</translation>
 <translation id="3732706448780793442">Ввести вручную</translation>
-<translation id="3732857534841813090">Подсказки от Google Ассистента</translation>
 <translation id="3733296813637058299">Эти приложения будут установлены на ваше устройство. Ещё больше приложений для <ph name="DEVICE_TYPE" /> вы найдете в Google Play.</translation>
 <translation id="3734547157266039796">Рисовое поле</translation>
 <translation id="3735039640698208086">При воспроизведении аудио…</translation>
@@ -4180,7 +4179,6 @@
 <translation id="3873315167136380065">Чтобы включить эту настройку, <ph name="BEGIN_LINK" />сбросьте настройки синхронизации<ph name="END_LINK" /> и удалите кодовую фразу.</translation>
 <translation id="3873423927483480833">Показать PIN-коды</translation>
 <translation id="3873915545594852654">Не удалось запустить ARC++.</translation>
-<translation id="3874164307099183178">Включить Google Ассистента</translation>
 <translation id="3874845889165401548">Это экспериментальная функция, использующая искусственный интеллект.</translation>
 <translation id="3875511946736639169">Показывать изображения</translation>
 <translation id="3875815154304214043">Приложение "<ph name="APP_NAME" />" и поддерживаемые ссылки будут открываться в новой вкладке браузера. <ph name="BEGIN_LINK_LEARN_MORE" />Подробнее…<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4770,6 +4768,7 @@
 <translation id="4295072614469448764">Приложение доступно в терминале. Кроме того, на панель запуска мог быть добавлен значок.</translation>
 <translation id="4295979599050707005">Если вы разрешаете сайтам, приложениям и расширениям в Chrome и Google Play использовать данные аккаунта <ph name="USER_EMAIL" />, войдите ещё раз. Вы также можете удалить этот аккаунт. <ph name="LINK_BEGIN" />Подробнее…<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Установленные и транслируемые приложения из приложения "<ph name="APP_NAME" />"</translation>
+<translation id="4296632172536745000">Ваш старый пароль оказался в открытом доступе из-за утечки данных. <ph name="DATE" /> вы попросили <ph name="BRAND" /> автоматически сменить пароль.</translation>
 <translation id="4297219207642690536">Перезапустить и сбросить настройки</translation>
 <translation id="4297813521149011456">Поворот экрана</translation>
 <translation id="4298660926525614540">Названия съемных накопителей</translation>
@@ -4838,7 +4837,6 @@
 <translation id="4348766275249686434">Собирать данные об ошибках</translation>
 <translation id="4349828822184870497">Полезно</translation>
 <translation id="4350230709416545141">Не сообщать сайту <ph name="HOST" />, где я нахожусь</translation>
-<translation id="4350782034419308508">Фраза "Окей, Google"</translation>
 <translation id="435185728237714178">Для управления установленными и транслируемыми приложениями откройте приложение "<ph name="APP_NAME" />".</translation>
 <translation id="4352913519324947509">Не удалось обновить пароль. Однако вы можете войти на сайт, используя текущий пароль.</translation>
 <translation id="4354073718307267720">Запрашивать для сайтов разрешение на создание 3D-карты места, в котором вы находитесь, и отслеживание положения камеры</translation>
@@ -5106,7 +5104,6 @@
 <translation id="4545759655004063573">Не удается сохранить файл: нет прав. Выберите другой каталог.</translation>
 <translation id="4546345569117159016">Правая кнопка</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> просит разрешить использовать это расширение:</translation>
-<translation id="4546692474302123343">Голосовой ввод в Google Ассистенте</translation>
 <translation id="4547659257713117923">Нет вкладок с других устройств</translation>
 <translation id="4547672827276975204">Автоматическое определение</translation>
 <translation id="4549791035683739768">На вашем электронном ключе нет сохраненных отпечатков пальцев.</translation>
@@ -5482,7 +5479,6 @@
 <translation id="4816900689218414104">Создайте ключ доступа на телефоне или планшете</translation>
 <translation id="481917177323309377">Вкладки, которые вы не открывали несколько дней (<ph name="COUNT" /> и более)</translation>
 <translation id="4819323978093861656">{0,plural, =0{Браузер закрыт.}=1{Браузер будет закрыт через 1 секунду.}one{Браузер будет закрыт через # секунду.}few{Браузер будет закрыт через # секунды.}many{Браузер будет закрыт через # секунд.}other{Браузер будет закрыт через # секунды.}}</translation>
-<translation id="4819607494758673676">Уведомления Google Ассистента</translation>
 <translation id="4819818293886748542">Ссылка для получения инструмента поддержки</translation>
 <translation id="4820236583224459650">Выбрать в качестве активного билета</translation>
 <translation id="4820795723433418303">Использовать функциональные клавиши как клавиши верхнего ряда</translation>
@@ -5530,7 +5526,6 @@
 <translation id="4846897209694249040">Запрещено захватывать ввод, выполняемый с помощью мыши, и управлять им</translation>
 <translation id="4847242508757499006">Выберите "Повторить". Если вам достаточно ограниченных возможностей просмотра и редактирования, нажмите "Открыть в базовом редакторе".</translation>
 <translation id="4847742514726489375">Меньше движения</translation>
-<translation id="4848191975108266266">Фраза "Окей, Google" для Google Ассистента</translation>
 <translation id="4849286518551984791">Всемирное координированное время (UTC/GMT)</translation>
 <translation id="4849517651082200438">Не устанавливать</translation>
 <translation id="4849731766219625109">Использовать аккаунт <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -5544,6 +5539,7 @@
 <translation id="4852916668365817106">Цвет курсора</translation>
 <translation id="4853020600495124913">Открыть в &amp;новом окне</translation>
 <translation id="4854317507773910281">Выберите родителя, который должен одобрить расширение:</translation>
+<translation id="4854603338816296098">Адрес удален</translation>
 <translation id="485480310608090163">Дополнительные настройки и разрешения</translation>
 <translation id="4857304314344645169">Смотрите пошаговое решение любой задачи.</translation>
 <translation id="485806788160414322">Начать или приостановить воспроизведение</translation>
@@ -6220,7 +6216,6 @@
 <translation id="534449933710420173">Папка без названия</translation>
 <translation id="5345916423802287046">Запускать при входе</translation>
 <translation id="5350116201946341974">Экстравагантное</translation>
-<translation id="5350293332385664455">Выключить Google Ассистента</translation>
 <translation id="535123479159372765">Текст скопирован с другого устройства</translation>
 <translation id="5352033265844765294">Штамп времени</translation>
 <translation id="5352257124367865087">Управление разрешениями сайтов</translation>
@@ -7267,7 +7262,6 @@
 <translation id="6108952804512516814">Создать с помощью ИИ</translation>
 <translation id="6110303766838612983">Отправлять в ChromeOS отчеты о сбоях и данные об использовании и диагностике</translation>
 <translation id="6111718295497931251">Закрыть доступ к Google Диску</translation>
-<translation id="6111972606040028426">Включить Google Ассистента</translation>
 <translation id="6112727384379533756">Добавить билет</translation>
 <translation id="6112931163620622315">Проверьте телефон</translation>
 <translation id="6113434369102685411">Выберите поисковую систему по умолчанию для браузера Chrome и панели запуска на устройстве <ph name="DEVICE_TYPE" />.</translation>
@@ -8429,7 +8423,6 @@
 <translation id="6924109527536857168">Включите синхронизацию</translation>
 <translation id="6928650056523249512">Автоматически удалять разрешения для неиспользуемых сайтов</translation>
 <translation id="6929126689972602640">Учебные аккаунты не поддерживают функцию родительского контроля. Чтобы добавить учебный аккаунт для доступа к Google Классу и другим учебным ресурсам, сначала войдите в личный аккаунт Google ребенка. Вы сможете добавить учебный аккаунт позже в настройках.</translation>
-<translation id="6929760895658557216">Окей, Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Расширение отклонено}one{# расширение отклонено}few{# расширения отклонено}many{# расширений отклонено}other{# расширения отклонено}}</translation>
 <translation id="6930337524857202955">Файл скачан</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9332,6 +9325,7 @@
 <translation id="7582844466922312471">Мобильный интернет</translation>
 <translation id="7583948862126372804">Количество</translation>
 <translation id="7585106857920830898">Проверка на соответствие правилам безопасности вашей организации…</translation>
+<translation id="7585490016012953607">Пароль для восстановления временно сохранен на срок до трех месяцев</translation>
 <translation id="7586498138629385861">Браузер будет продолжать работать, пока вы не закроете приложения Chrome.</translation>
 <translation id="7587806318633605613">История подсказок</translation>
 <translation id="7589448773774086276">Перейти в режим Split View с текущей вкладкой</translation>

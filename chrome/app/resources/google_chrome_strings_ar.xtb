@@ -221,7 +221,7 @@
 <translation id="3597003331831379823">تعذَّر إجراء عملية الإعداد باستخدام أذونات مميزة وعالية المستوى. <ph name="METAINSTALLER_ERROR" /></translation>
 <translation id="3622716124581627104">‏يمكنك التعرّف على الصور أو الأماكن ونسخ النصوص أو ترجمتها. عند استخدام "عدسة Google"، يتم إرسال لقطة شاشة للصفحة إلى Google. <ph name="LEARN_MORE" /></translation>
 <translation id="3622797965165704966">‏الآن أصبح استخدام Chrome مع حسابك في Google وفي أجهزة الكمبيوتر المشتركة أكثر سهولة.</translation>
-<translation id="3635073343384702370">‏لا يستطيع Chrome التحقّق من كلمات المرور إلا عند حفظها.</translation>
+<translation id="3635073343384702370">‏يستطيع Chrome التحقّق من كلمات المرور التي حفظتها فقط</translation>
 <translation id="3667616615096815454">يتعذّر تثبيت التطبيق لأنّه غير معروف لدى الخادم.</translation>
 <translation id="3673813398384385993">‏رصد Chrome أنّ الإضافة "<ph name="EXTENSION_NAME" />" تحتوي على برامج ضارة.</translation>
 <translation id="3697952514309507634">‏الملفات الشخصية الأخرى على Chrome</translation>
@@ -268,6 +268,7 @@
 <translation id="4205939740494406371">‏يتعذّر على Chrome التحقُّق من كلمات المرور. يُرجى إعادة المحاولة بعد 24 ساعة أو <ph name="BEGIN_LINK" />التحقُّق من كلمات المرور في حسابك على Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">جارٍ الإلغاء...</translation>
 <translation id="4224210481850767180">تم إلغاء عملية التثبيت.</translation>
+<translation id="4230631012078055975">‏مزايا إضافية عند تسجيل الدخول إلى Chrome</translation>
 <translation id="4242034826641750751">‏يحتاج Chrome إلى إذن للوصول إلى الكاميرا والميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="424864128008805179">‏هل تريد تسجيل الخروج من Chrome؟</translation>
 <translation id="4251615635259297716">‏هل ترغب في ربط بياناتك في Chrome بهذا الحساب؟</translation>
@@ -589,6 +590,7 @@
 <translation id="8321888067342493336">حفظ كصورة</translation>
 <translation id="8336463659890584292">‏عندما يطلب موقع إلكتروني أن يحمِّل مُسبقًا الروابط في صفحته بخصوصية تامة، يستخدم متصفِّح Chrome خوادم Google. يؤدي هذا الإجراء إلى إخفاء هويتك عن الموقع الإلكتروني الذي يتم تحميله مسبقًا، ولكنّ تكون Google على اطّلاع بالمواقع الإلكترونية التي يتم تحميلها مُسبقًا.</translation>
 <translation id="8342675569599923794">‏هذا الملف ضار، لذلك فقد حظره Chrome.</translation>
+<translation id="8349094670477064572">‏يمكنك حفظ كلمات المرور وغيرها من البيانات في حسابك على Google واستخدامها في أي وقت من خلال تسجيل الدخول إلى متصفِّح Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">الترجمة إلى</translation>
 <translation id="8370517070665726704">‏حقوق الطبع والنشر لعام <ph name="YEAR" /> لشركة Google LLC. جميع الحقوق محفوظة.</translation>
 <translation id="8387459386171870978">‏مواصلة استخدام Chrome</translation>

@@ -538,7 +538,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="1876399092304384674">Volgens datum</translation>
 <translation id="1877026089748256423">Chrome is verouderd</translation>
 <translation id="187918866476621466">Maak afskopbladsye oop</translation>
-<translation id="1880901968112404879">Stoor jou kaart, geënkripteerde sekuriteitskode en faktureringadres in jou Google-rekening om volgende keer vinniger te betaal</translation>
 <translation id="1883255238294161206">Vou lys in</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Dinosourusspeletjie. 'n Gepiekseleerde dinosourus systap kaktusse en pterodaktiele terwyl dit oor 'n verlate landskap hardloop. Tik om oor hindernisse te spring wanneer jy 'n oudiowenk hoor.</translation>
@@ -716,7 +715,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2183238148268545307">Videosagteware</translation>
 <translation id="2183608646556468874">Foonnommer</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 adres}other{# adresse}}</translation>
-<translation id="2187317261103489799">Bespeur (verstek)</translation>
 <translation id="2188375229972301266">Veelvuldige pons onder</translation>
 <translation id="218940509700321686">Kommageskeide waardes</translation>
 <translation id="2194856509914051091">Dinge om in ag te neem</translation>
@@ -939,7 +937,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2535659140340599600">{COUNT,plural, =1{en nog 1}other{en nog #}}</translation>
 <translation id="2536110899380797252">Voeg adres by</translation>
 <translation id="2537931901612099523">Ander wat hierdie toestel gebruik, sal nie jou aktiwiteit sien nie, so jy kan meer privaat blaai. Dit sal nie verander hoe data ingesamel word deur webwerwe wat jy besoek en die dienste wat hulle gebruik nie, insluitend Google. Aflaaie en boekmerke sal gestoor word.</translation>
-<translation id="2539524384386349900">Bespeur</translation>
 <translation id="2541219929084442027">Bladsye wat jy in Incognito-oortjies bekyk, sal nie in jou blaaier se geskiedenis, webkoekiestoor of soekgeskiedenis bly nadat jy al jou Incognito-oortjies toegemaak het nie. Enige lêers wat jy aflaai of boekmerke wat jy skep, sal gehou word.</translation>
 <translation id="2542106216580219892">Branderry</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – Druk en hou |<ph name="ACCELERATOR" />| om volskerm te verlaat</translation>
@@ -1209,6 +1206,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3027915437837548462">SVG-prent</translation>
 <translation id="3030331669969285614">Hierdie vlae verhoed of stel ’n breekverandering terug en sal net vir ’n beperkte tyd beskikbaar wees.</translation>
 <translation id="3030542417256082866">Stoor voertuig?</translation>
+<translation id="3033200136993730761">Jou huisadres kan help om dinge in Google-dienste gedoen te kry, soos meer relevante soekresultate en rigtingaanwysings in Google Maps. Jy kan jou adres <ph name="BEGIN_LINK" />in jou Google-rekening <ph name="ACCOUNT" /><ph name="END_LINK" /> wysig of uitvee.</translation>
 <translation id="3034526003882782781">Rollees en zoem word toegelaat</translation>
 <translation id="3036894576201005614">Huishoudelike skoonmaakbenodigdhede</translation>
 <translation id="3037177537145227281">Spoor tans prys na</translation>
@@ -1331,7 +1329,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3229041911291329567">Weergawe-inligting oor jou toestel en blaaier</translation>
 <translation id="3229277193950731405">Kopieer weergawestring</translation>
 <translation id="323107829343500871">Voer die CVC vir <ph name="CREDIT_CARD" /> in</translation>
-<translation id="3234666976984236645">Bespeur altyd belangrike inhoud op hierdie werf</translation>
 <translation id="323585066388831737">Ligrooi</translation>
 <translation id="3235902901585019063">Plaaslike lêers sal op <ph name="DATE_TIME" /> uitgevee word. Maak seker dat enige kritieke besigheid- of persoonlike data ekstern geberg word.</translation>
 <translation id="3236212803136366317">Kaartvoordele</translation>
@@ -1891,7 +1888,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4147897805161313378">Google Foto's</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Koevert Chinees #4</translation>
-<translation id="4151403195736952345">Gebruik globale verstek (Bespeur)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Bladsy 1}other{Bladsy {COUNT}}}</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> steun nie ’n veilige verbinding met HTTPS nie</translation>
@@ -2907,6 +2903,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5879272455334365707">Finansiële beplanning en bestuur</translation>
 <translation id="5879989559903563723">Word nie in Gasmodus toegelaat nie</translation>
 <translation id="5880050725127890683">Gaan na Chrome-veiligheidskontrole</translation>
+<translation id="5880385758720707152">Outovul jou huis- en werkadres vanaf jou Google-rekening</translation>
 <translation id="5884465125445718607">Koevert Chinees #6</translation>
 <translation id="5886961930368713749">Stuur terugvoer oor Vergelyk</translation>
 <translation id="5887400589839399685">Kaart is gestoor</translation>
@@ -2916,6 +2913,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5898767305816764989">Opduimknoppie; druk Enter om terugvoer in te dien dat jy van <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> hou</translation>
 <translation id="5901630391730855834">Geel</translation>
 <translation id="5903264686717710770">Titel:</translation>
+<translation id="5905671155741555195">Jou werkadres kan help om dinge in Google-dienste gedoen te kry, soos meer relevante soekresultate en rigtingaanwysings in Google Maps. Jy kan jou adres <ph name="BEGIN_LINK" />in jou Google-rekening <ph name="ACCOUNT" /><ph name="END_LINK" /> wysig of uitvee.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (gesinkroniseer)</translation>
 <translation id="5910140988253729859">Ontdoen outovul</translation>
 <translation id="5911020115933784199">Geleenthede en lysinskrywings</translation>
@@ -3812,6 +3810,7 @@ Bykomende besonderhede:
 <translation id="7403392780200267761">Deel hierdie oortjie deur die skakel te deel, 'n QR-kode te skep, uit te saai, en meer</translation>
 <translation id="7403591733719184120">Jou <ph name="DEVICE_NAME" /> word bestuur</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> het apps vir bykomende funksies geïnstalleer. Apps het toegang tot sommige van jou data.</translation>
+<translation id="740691708085211707">Wil jy jou werkadres uit Chrome-outovul verwyder?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Jy sal hierdie fout sien as jy Superfish-sagteware op jou Windows-rekenaar het.&lt;/p&gt;
       &lt;p&gt;Volg hierdie stappe om die sagteware tydelik te deaktiveer sodat jy aan die web kan koppel. Jy het administrateursvoorregte nodig.&lt;/p&gt;
       &lt;ol&gt;
@@ -3908,6 +3907,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="7534987659046836932">Koevert C7</translation>
 <translation id="7535087603100972091">Waarde</translation>
 <translation id="753556296624075801">Aangedryf deur Google</translation>
+<translation id="753713322968419914">Wil jy jou huisadres uit Chrome-outovul verwyder?</translation>
 <translation id="7537536606612762813">Verplig</translation>
 <translation id="7543525346216957623">Vra jou ouer</translation>
 <translation id="7546409722674205727">Begin <ph name="APP_NAME" /></translation>

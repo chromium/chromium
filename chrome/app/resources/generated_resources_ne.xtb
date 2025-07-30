@@ -248,6 +248,7 @@
 <translation id="1166583374608765787">परिवर्तन गरिएको नामको समीक्षा गर्नुहोस्</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ट्याब <ph name="DESK_TITLE" /> डेस्कअन्तर्गत पर्छ</translation>
 <translation id="1166644470305877068">आइसोलेटेड वेब एपहरूले यो सेटिङ स्वतः लागू गर्छन्</translation>
+<translation id="116712635768212829">Chrome ले तपाईंको कुनै पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेट्टाएका खण्डमा Google पासवर्ड म्यानेजरले तपाईं साइन इन अवस्थामा भएका बेला तपाईंका तर्फबाट तपाईंको पासवर्ड परिवर्तन गरिदिने प्रस्ताव गर्न सक्छ।</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> मा खुल्दै...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> शैली र <ph name="MOOD" /> भएको <ph name="SUBJECT" /> को हालसालै AI प्रयोग गरी सिर्जना गरिएको थिम <ph name="INDEX" />।</translation>
 <translation id="116896278675803795">चयन गरिएको सामग्रीका आधारमा स्वतः भाषा बदलियोस्</translation>
@@ -552,6 +553,7 @@
 <translation id="1375938286942050085">सेटअप गर्ने कार्य पूरा भयो! अब आफ्नो डिभाइस गेमिङका लागि तयार पार्नुहोस्</translation>
 <translation id="137651782282853227">सुरक्षित गरिएका पासवर्डहरू यहाँ देखापर्ने छन्</translation>
 <translation id="1376771218494401509">यो &amp;विन्डोको नाम राख्नुहोस्...</translation>
+<translation id="1377438103060664754">तपाईंको कुनै पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएका खण्डमा Google पासवर्ड म्यानेजरले तपाईंलाई उक्त पासवर्ड बदलेर भरपर्दो पासवर्ड प्रयोग गर्न चाहनुहुन्छ कि चाहनुहुन्न भन्ने कुरा सोध्छ</translation>
 <translation id="1377600615067678409">अहिलेको लागि छाड्नुहोस्</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> ले यस सेटिङलाई नियन्त्रण गर्दैछ</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{अरूले कुनै पनि पासवर्ड देखेका छैनन्}=1{अरूले देखेका एउटा पासवर्ड फेला पर्‍यो}other{अरूले देखेका {NUM_COMPROMISED} वटा पासवर्ड फेला परे}}</translation>
@@ -935,7 +937,6 @@
 <translation id="1632293440289326475">ब्याट्रीको आयु बढाउन इनर्जी सेभर अन गर्नुहोस्</translation>
 <translation id="1632756664321977232">क्रप गर्ने टुल</translation>
 <translation id="163309982320328737">प्रारम्भिक वर्ण चौडाइ पूर्ण छ</translation>
-<translation id="1633947793238301227">Google सहायक असक्षम पार्नुहोस्</translation>
 <translation id="1634224622052500893">WiFi नेटवर्क भेटिएको छ</translation>
 <translation id="1634783886312010422">तपाईंले <ph name="WEBSITE" /> मा यो पासवर्ड परिवर्तन गरिसक्नुभयो?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{ट्याब हटाउने र समूह मेटाउने हो?}=1{ट्याबहरू हटाउने र समूह मेटाउने हो?}other{ट्याबहरू हटाउने र समूहहरू मेटाउने हो?}}</translation>
@@ -1360,6 +1361,7 @@
 <translation id="1931152874660185993">अवयवहरू स्थापित छैनन्।</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> इन्स्टल गरिँदै छ</translation>
 <translation id="1932098463447129402">यसभन्दा अघि होइन</translation>
+<translation id="1933070475689690969">Gemini एपहरूमा गरिएका गतिविधि</translation>
 <translation id="1933489278505808700">रिड गर्ने तथा बदल्ने अनुमति दिइएको छ</translation>
 <translation id="1935303383381416800">तपाईंको स्थान हेर्ने अनुमति दिइएका साइटहरू</translation>
 <translation id="193565226207940518">सहायता टुल</translation>
@@ -2363,7 +2365,6 @@
 <translation id="2620245777360407679">हाल हटस्पटमा कनेक्ट भएका डिभाइसहरू</translation>
 <translation id="2620436844016719705">सिस्टम</translation>
 <translation id="2620900772667816510">ब्लुटुथ सुपर रिजोल्युसन</translation>
-<translation id="262154978979441594">Google सहायकको आवाजको मोडेललाई आफ्नो आवाज चिन्न सिकाउनुहोस्</translation>
 <translation id="2622280935687585828">अफ गरिएका साइटहरूबाट <ph name="SITE_NAME" /> हटाउनुहोस्</translation>
 <translation id="26224892172169984">कुनै पनि साइटलाई प्रोटोकलहरू ह्यान्डल गर्न अनुमति नदिनुहोस्</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2880,6 +2881,7 @@
 <translation id="2981113813906970160">ठुलो माउस कर्सर देखाउँनुहोस्</translation>
 <translation id="2983102365694924129">तपाईंले कुनै साइटमा गरेका गतिविधिका आधारमा। यो सेटिङ अफ छ।</translation>
 <translation id="2983373101216420412">केसमा <ph name="PERCENTAGE" />% ब्याट्री बाँकी छ।</translation>
+<translation id="2983818520079887040">सेटिङहरू...</translation>
 <translation id="2984384421572259426">प्रयोग नगरिएका ट्याबहरू हटाउनुहोस्</translation>
 <translation id="2984727013951557074">यो फाइल अझै पनि Drive मा सिंक भइरहेको छ।</translation>
 <translation id="2985348301114641460">आफ्ना प्रशासकलाई "<ph name="EXTENSION_NAME" />" स्थापना गरिदिन आग्रह गर्दै एउटा अनुरोध पठाउने हो?</translation>
@@ -3496,6 +3498,7 @@
 <translation id="3435738964857648380">सुरक्षा</translation>
 <translation id="343578350365773421">पाना सकियो</translation>
 <translation id="3435896845095436175">सक्षम बनाउनुहोस्</translation>
+<translation id="3437072258256045988">आफ्ना Gemini एपहरूमा गरिएका गतिविधि व्यवस्थापन गर्नुहोस्</translation>
 <translation id="3437397693214267762">आफ्ना Outlook पात्रो र SharePoint तथा OneDrive मा भएका फाइलहरू हेर्नुहोस्</translation>
 <translation id="3438633801274389918">निन्जा</translation>
 <translation id="3439153939049640737"><ph name="HOST" /> लाई जहिले पनि तपाइँको माइक्रोफोन पहुँच गर्ने अनुमति दिनुहोस्</translation>
@@ -3508,7 +3511,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> टाइम आउट भयो</translation>
 <translation id="3443754338602062261">तपाईंको <ph name="BRAND" /> मा यी खाताहरूको पासवर्ड सेभ गरिसकिएको छ। तपाईंले तल सूचीकृत कुनै पासवर्ड इम्पोर्ट गर्नुभयो भने सो पासवर्डले हालको पासवर्ड प्रतिस्थापन गर्ने छ।</translation>
 <translation id="344449859752187052">तेस्रो पक्षीय कुकीहरू ब्लक गरिएका छन्</translation>
-<translation id="3445047461171030979">Google सहायकका द्रुत जवाफहरू</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> मिनेट</translation>
 <translation id="344537926140058498">यो फाइलमा संवेदनशील वा खतरनाक सामग्री भएकाले तपाईंको संस्थाले यो फाइल ब्लक गरेको छ। यसका मालिकलाई उक्त समस्या समाधान गर्न लगाउनुहोस्।</translation>
 <translation id="3445465968953598059">फेसियल कन्ट्रोल</translation>
@@ -3941,7 +3943,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> का रूपमा जारी राख्नुहोस्</translation>
 <translation id="3732530910372558017">PIN मा बढीमा ६३ वर्णहरू मात्र हुनु पर्छ</translation>
 <translation id="3732706448780793442">म्यानुअल तरिकाले गर्नुहोस्</translation>
-<translation id="3732857534841813090">Google सहायकसम्बन्धी जानकारी</translation>
 <translation id="3733296813637058299">हामी तपाईंका लागि ती एपहरू इन्स्टल गरिदिने छौँ। तपाईं Play स्टोरमा गई आफ्नो <ph name="DEVICE_TYPE" /> मा चल्ने थप एपहरू फेला पार्न सक्नुहुन्छ।</translation>
 <translation id="3734547157266039796">धान खेत</translation>
 <translation id="3735039640698208086">अडियो बजाइरहेको बेला...</translation>
@@ -4172,7 +4173,6 @@
 <translation id="3873315167136380065">यसलाई सक्रिय गर्ने प्रयोजनका लागि आफ्नो सिंकसम्बन्धी पासफ्रेज हटाउन <ph name="BEGIN_LINK" />सिंक गर्ने सेवा रिसेट गर्नुहोस्<ph name="END_LINK" />।</translation>
 <translation id="3873423927483480833">PIN हरू देखाउनुहोस्</translation>
 <translation id="3873915545594852654">ARC++ सम्बन्धी कुनै समस्या भयो।</translation>
-<translation id="3874164307099183178">Google सहायक अन गर्नुहोस्</translation>
 <translation id="3874845889165401548">यो सुविधाले AI प्रयोग गर्छ र यो सुविधा परीक्षणका क्रममा छ</translation>
 <translation id="3875511946736639169">फोटोहरू अन गर्नुहोस्</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ब्राउजरको नयाँ ट्याबमा खुल्ने बनाइएको छ। खोल्न मिल्ने लिंकहरू पनि ब्राउजरमा नै खुल्ने छन्। <ph name="BEGIN_LINK_LEARN_MORE" />थप जान्नुहोस्<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4761,6 +4761,7 @@
 <translation id="4295072614469448764">यो एप तपाईंको टर्मिनलमा उपलब्ध छ। तपाईंको लन्चरमा कुनै आइकन पनि हुन सक्छ।</translation>
 <translation id="4295979599050707005">तपाईंको खाता <ph name="USER_EMAIL" /> Chrome तथा Google Play का वेबसाइट, एप र विस्तारहरूमा प्रयोग गर्न सकिने कुरा पुष्टि गर्न कृपया फेरि साइन इन गर्नुहोस्। तपाईं यो खाता हटाउन पनि सक्नुहुन्छ। <ph name="LINK_BEGIN" />थप जान्नुहोस्<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> ले इन्स्टल र स्ट्रिम गरेका एपहरू</translation>
+<translation id="4296632172536745000">यो साइटको मूल पासवर्ड चोरी भएको डेटाको सार्वजनिक सङ्ग्रहमा भेटिएको थियो। तपाईंले <ph name="DATE" /> मा <ph name="BRAND" /> लाई तपाईंका निम्ति तपाईंको पासवर्ड स्वतः परिवर्तन गरिदिन अनुरोध गर्नुभएको थियो।</translation>
 <translation id="4297219207642690536">पुनः सुरु गरी रिसेट गर्नुहोस्</translation>
 <translation id="4297813521149011456">डिस्प्ले रोटेसन</translation>
 <translation id="4298660926525614540">हटाउन मिल्ने भण्डारण डिभाइसहरूको नाम</translation>
@@ -4829,7 +4830,6 @@
 <translation id="4348766275249686434">त्रुटिहरू सङ्कलन गर्नुहोस्</translation>
 <translation id="4349828822184870497">उपयोगी लाग्यो</translation>
 <translation id="4350230709416545141"><ph name="HOST" /> लाई कहिल्यै पनि आफ्नो स्थानसम्बन्धी जानकारी प्रयोग नदिनुहोस्</translation>
-<translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">इन्स्टल र स्ट्रिम गरिएका एपहरू व्यवस्थापन गर्न "<ph name="APP_NAME" />" एपमा जानुहोस्</translation>
 <translation id="4352913519324947509">तपाईंको पासवर्ड परिवर्तन गरिएन तर तपाईंले अझै पनि आफ्नो हालको पासवर्ड प्रयोग गरेर यो साइट एक्सेस गर्न मिल्नु पर्ने हो</translation>
 <translation id="4354073718307267720">कुनै साइटले आफू वरपरको ठाउँको 3D नक्सा बनाउन वा क्यामेराको अवस्था पत्ता लगाउन खोज्दा मलाई सोध्नुहोस्</translation>
@@ -5097,7 +5097,6 @@
 <translation id="4545759655004063573">अपुग्दो अनुमतिहरूको कारणले गर्दा बचत गर्न सक्दैन। कृपया अर्को स्थानमा बचत गर्नुहोस्।</translation>
 <translation id="4546345569117159016">दायाँतिरको बटन</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> यो एक्स्टेन्सन प्रयोग गर्न चाहनुहुन्छ:</translation>
-<translation id="4546692474302123343">Google सहायकमा बोलेर टाइप गर्ने सुविधा</translation>
 <translation id="4547659257713117923">अन्य यन्त्रहरूबाट कुनै ट्याबहरू छैनन्</translation>
 <translation id="4547672827276975204">स्वतः सेट गर्नुहोस्</translation>
 <translation id="4549791035683739768">तपाईंको सुरक्षा साँचोमा कुनै पनि फिंगरप्रिन्ट भण्डारण गरिएको छैन</translation>
@@ -5473,7 +5472,6 @@
 <translation id="4816900689218414104">फोन वा ट्याब्लेटमा पासकी सेट गर्नुहोस्</translation>
 <translation id="481917177323309377">तपाईंले <ph name="COUNT" /> दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरेका ट्याबहरू</translation>
 <translation id="4819323978093861656">{0,plural, =0{अहिले बन्द गरिँदै छन्।}=1{निम्न समयपछि बन्द गरिन्छन्: १ सेकेन्ड}other{निम्न समयपछि बन्द गरिन्छन्: # सेकेन्ड}}</translation>
-<translation id="4819607494758673676">Google सहायकका सूचनाहरू</translation>
 <translation id="4819818293886748542">सहायता टुलको लिंक प्राप्त गर्नुहोस्</translation>
 <translation id="4820236583224459650">सक्रिय टिकटको रूपमा सेट गर्नुहोस्</translation>
 <translation id="4820795723433418303">फङ्सन कीलाई माथिल्लो लहरका कीका रूपमा प्रयोग गर्नुहोस्</translation>
@@ -5522,7 +5520,6 @@
 <translation id="4846897209694249040">माउस इन्पुट क्याप्चर तथा प्रयोग गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="4847242508757499006">"फेरि प्रयास गर्नुहोस्" छनौट गर्नुहोस् वा डकुमेन्ट हेर्ने र सम्पादन गर्ने सीमित सुविधा प्रयोग गर्न "बेसिक एडिटरमा खोल्नुहोस्" छनौट गर्नुहोस्।</translation>
 <translation id="4847742514726489375">मोसन कम गर्ने सेटिङ</translation>
-<translation id="4848191975108266266">"Ok Google" भनेर Google सहायक अन गर्नुहोस्</translation>
 <translation id="4849286518551984791">समन्वयित विश्वव्यापी समय (UTC/GMT)</translation>
 <translation id="4849517651082200438">स्थापित नगर्नुहोस्</translation>
 <translation id="4849731766219625109">आफ्नो <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> खाता प्रयोग गर्नुहोस्</translation>
@@ -5536,6 +5533,7 @@
 <translation id="4852916668365817106">माउसको रङ</translation>
 <translation id="4853020600495124913">&amp;नयाँ विण्डो खोल्नुहोस्</translation>
 <translation id="4854317507773910281">अनुमोदनका लागि अभिभावकको खाता चयन गर्नुहोस्</translation>
+<translation id="4854603338816296098">ठेगाना हटाइयो</translation>
 <translation id="485480310608090163">थप सेटिङ तथा अनुमति</translation>
 <translation id="4857304314344645169">गणितसम्बन्धी जुनसुकै समस्या हल गर्ने चरणबद्ध व्याख्या हेर्नुहोस्</translation>
 <translation id="485806788160414322">मिडिया प्ले वा पज गर्नुहोस्</translation>
@@ -6212,7 +6210,6 @@
 <translation id="534449933710420173">नाम नभएको फोल्डर</translation>
 <translation id="5345916423802287046">मैले साइन इन गर्दा यो एप खोलियोस्</translation>
 <translation id="5350116201946341974">मनमौजी</translation>
-<translation id="5350293332385664455">Google सहायक अफ गर्नुहोस्</translation>
 <translation id="535123479159372765">अर्को यन्त्रबाट पाठ कपी गरियो</translation>
 <translation id="5352033265844765294">समय स्याम्पिङ</translation>
 <translation id="5352257124367865087">साइटलाई दिइएका अनुमतिहरू व्यवस्थापन गर्नुहोस्</translation>
@@ -7258,7 +7255,6 @@
 <translation id="6108952804512516814">AI प्रयोग गरी सिर्जना गर्नुहोस्</translation>
 <translation id="6110303766838612983">ChromeOS मा क्र्यास रिपोर्टका साथसाथै डाइग्नोस्टिक तथा प्रयोगसम्बन्धी डेटा पठाउनुहोस्</translation>
 <translation id="6111718295497931251">Google Drive को एक्सेस हटाउनुहोस्</translation>
-<translation id="6111972606040028426">Google सहायक सक्षम पार्नुहोस्</translation>
 <translation id="6112727384379533756">एउटा टिकट थप्नुहोस्</translation>
 <translation id="6112931163620622315">आफ्नो फोन जाँच गर्नुहोस्</translation>
 <translation id="6113434369102685411">Chrome ब्राउजर र <ph name="DEVICE_TYPE" /> लन्चरका हकमा डिफल्ट सर्च इन्जिन तोक्नुहोस्</translation>
@@ -8414,7 +8410,6 @@
 <translation id="6924109527536857168">सिंक गर्नु पर्ने हुन्छ</translation>
 <translation id="6928650056523249512">प्रयोग नगरिएका साइटलाई दिइएका अनुमति स्वतः रद्द गर्नुहोस्</translation>
 <translation id="6929126689972602640">अभिभावकीय नियन्त्रणहरू विद्यालयका खाताहरूमा प्रयोग गर्ने मिल्दैनन्। घरमा विद्यालयको कार्य गर्न सघाउन Google Classroom र अन्य वेबसाइटहरू प्रयोग गर्नका निम्ति विद्यालयको खाता हाल्नु पर्छ। विद्यालयको खाता हाल्न सर्वप्रथम सम्बन्धित बच्चाको व्यक्तिगत खाता प्रयोग गरी साइन इन गर्नुहोस्। तपाईं पछि सेटअप गर्ने क्रममा विद्यालयको खाता हाल्न सक्नुहुन्छ।</translation>
-<translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{एउटा एक्स्टेन्सन अस्वीकार गरिएको छ}other{# वटा एक्स्टेन्सन अस्वीकार गरिएको छ}}</translation>
 <translation id="6930337524857202955">डाउनलोड गरिएको नयाँ फाइल उपलब्ध छ</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9317,6 +9312,7 @@
 <translation id="7582844466922312471">मोबाइल डाटा</translation>
 <translation id="7583948862126372804">गणना</translation>
 <translation id="7585106857920830898">तपाईंको सङ्गठनका सुरक्षासम्बन्धी नीतिहरू अनुकूल छन् कि छैनन् भन्ने कुरा जाँच गरिँदै छ...</translation>
+<translation id="7585490016012953607">रिकभरी पासवर्ड — ३ महिनासम्म अस्थायी रूपमा सेभ गरिन्छ</translation>
 <translation id="7586498138629385861">Chrome एपहरू खुल्ला हुँदा Chrome चालू भइरहन्छ।</translation>
 <translation id="7587806318633605613">सुझावको हिस्ट्री</translation>
 <translation id="7589448773774086276">हालको ट्याब भएको नयाँ स्प्लिट भ्यू</translation>

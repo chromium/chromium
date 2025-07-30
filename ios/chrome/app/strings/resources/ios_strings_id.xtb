@@ -363,6 +363,7 @@
 <translation id="236977714248711277">Situs tidak dapat menggunakan cookie untuk menyempurnakan pengalaman penjelajahan Anda, misalnya untuk membuat Anda tetap login atau untuk mengingat item di keranjang belanja Anda.
 
 Situs tidak dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berbagai situs, misalnya untuk mempersonalisasi iklan.</translation>
+<translation id="2377230674627603057">Petak grup tab</translation>
 <translation id="2377336083033403521">Menelusuri tab…</translation>
 <translation id="2381405137052800939">Dasar</translation>
 <translation id="2384692388811649784">Sembunyikan tab Samaran</translation>
@@ -650,7 +651,6 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3595252146048399851">Anda dapat memilih jenis data yang akan disinkronkan di <ph name="BEGIN_LINK" />setelan<ph name="END_LINK" /> kapan saja. Google dapat mempersonalisasi Penelusuran dan layanan lainnya berdasarkan histori Anda.</translation>
 <translation id="3596414637720633074">Blokir cookie pihak ketiga dalam mode Samaran</translation>
 <translation id="3602260545951981695">Pilih "Perlindungan yang Ditingkatkan"</translation>
-<translation id="3608436266458100337">Mode pembaca</translation>
 <translation id="3610041351087301930">Sembunyikan Pembaca</translation>
 <translation id="3622175633937495219">Histori Penelusuran (<ph name="COUNT" /> ditemukan)</translation>
 <translation id="3625008969091706597">Anda dapat menggeser tepi untuk kembali.</translation>
@@ -1332,9 +1332,11 @@ Handoff juga harus diaktifkan pada bagian General di Settings, dan perangkat And
 <translation id="6234310016144827337">Periksa koneksi Anda, lalu coba lagi</translation>
 <translation id="6234438496206735891">Menampilkan download</translation>
 <translation id="6236952928980352967">Pulihkan Peringatan</translation>
+<translation id="623755660902014047">Mode baca</translation>
 <translation id="6247557882553405851">Pengelola Sandi Google</translation>
 <translation id="6251835855431997163">Isi Otomatis <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Buka link di aplikasi, bukan di browser.</translation>
+<translation id="6259928806013786178">Gagal mengaktifkan mode baca</translation>
 <translation id="6268773951964630964">Telusuri gambar yang disalin</translation>
 <translation id="6271462272606946663">Sembunyikan Minta Situs Seluler</translation>
 <translation id="6271824294945464304">Berbagi sandi</translation>
@@ -2104,6 +2106,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="9144230693397287797">Dapatkan info terbaru untuk pengingat yang Anda tetapkan dan tab dari perangkat lain</translation>
 <translation id="914781932147356857">Tandai semua…</translation>
 <translation id="9148126808321036104">Login sekali lagi</translation>
+<translation id="9149866541089851383">Edit...</translation>
 <translation id="9159628751968616911">Kirim halaman web</translation>
 <translation id="9162432979321511934">Aktifkan Isi Otomatis Sandi</translation>
 <translation id="9165320910061267720">Untuk mendapatkan notifikasi diskon, Anda harus mengaktifkan notifikasi di setelan iOS.</translation>

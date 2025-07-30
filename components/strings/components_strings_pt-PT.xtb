@@ -538,7 +538,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="1876399092304384674">Por data</translation>
 <translation id="1877026089748256423">O Chrome está desatualizado</translation>
 <translation id="187918866476621466">Abrir páginas iniciais</translation>
-<translation id="1880901968112404879">Para pagar mais rapidamente da próxima vez, guarde o cartão, o código de segurança encriptado e a morada de faturação na sua Conta Google</translation>
 <translation id="1883255238294161206">Fechar lista</translation>
 <translation id="1884843295353628214">Jazz</translation>
 <translation id="1890171020361705182">Jogo Dino. Um dinossauro pixelizado desvia-se de catos e de pterodáctilos enquanto corre numa paisagem deserta. Quando ouvir uma pista de áudio, toque para saltar sobre os obstáculos.</translation>
@@ -716,7 +715,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2183238148268545307">Software de vídeo</translation>
 <translation id="2183608646556468874">Número de telefone</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 endereço}other{# endereços}}</translation>
-<translation id="2187317261103489799">Detetar (predefinição)</translation>
 <translation id="2188375229972301266">Perfuração múltipla na parte inferior</translation>
 <translation id="218940509700321686">Valores separados por vírgulas</translation>
 <translation id="2194856509914051091">Aspetos a considerar</translation>
@@ -939,7 +937,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2535659140340599600">{COUNT,plural, =1{e mais 1}other{e mais #}}</translation>
 <translation id="2536110899380797252">Adicionar endereço</translation>
 <translation id="2537931901612099523">As outras pessoas que usam este dispositivo não veem a sua atividade, por isso pode navegar de forma mais privada. Esta ação não altera a forma como os dados são recolhidos pelos Websites que visita nem os serviços que usam, incluindo o Google. As transferências e os marcadores são guardados.</translation>
-<translation id="2539524384386349900">Detetar</translation>
 <translation id="2541219929084442027">As páginas que visualizar em separadores de navegação anónima não são memorizadas no histórico do navegador, no armazenamento de cookies ou no histórico de pesquisas depois de fechar todos os separadores de navegação anónima. Todos os ficheiros transferidos ou os marcadores criados são guardados.</translation>
 <translation id="2542106216580219892">Surf</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – Para sair do modo de ecrã inteiro, prima sem soltar |<ph name="ACCELERATOR" />|</translation>
@@ -1209,6 +1206,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3027915437837548462">Imagem SVG</translation>
 <translation id="3030331669969285614">Estas sinalizações evitam ou revertem uma alteração interruptiva e estão disponíveis apenas por tempo limitado.</translation>
 <translation id="3030542417256082866">Guardar o veículo?</translation>
+<translation id="3033200136993730761">A sua morada de casa pode ajudar a realizar tarefas nos serviços Google, como resultados da pesquisa mais relevantes e direções no Google Maps. Pode editar ou eliminar a sua morada na <ph name="BEGIN_LINK" />Conta Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="3034526003882782781">É permitido deslocar e fazer zoom</translation>
 <translation id="3036894576201005614">Produtos de limpeza domésticos</translation>
 <translation id="3037177537145227281">Monitorizar o preço</translation>
@@ -1331,7 +1329,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3229041911291329567">Informações da versão do dispositivo e do navegador.</translation>
 <translation id="3229277193950731405">Copiar string da versão</translation>
 <translation id="323107829343500871">Introduzir o Código de Segurança/CVC de <ph name="CREDIT_CARD" /></translation>
-<translation id="3234666976984236645">Detetar sempre conteúdo importante neste site</translation>
 <translation id="323585066388831737">Vermelho claro</translation>
 <translation id="3235902901585019063">Os ficheiros locais vão ser eliminados a <ph name="DATE_TIME" />. Certifique-se de que todos os dados pessoais ou da empresa importantes são armazenados externamente.</translation>
 <translation id="3236212803136366317">Vantagens do cartão</translation>
@@ -1534,6 +1531,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3570079787344939099">Deslocar e fazer zoom</translation>
 <translation id="357244642999988503">Remover coluna</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Adicione novas informações à morada</translation>
 <translation id="3575121482199441727">Permitir neste site</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Opção de nome da rua selecionada</translation>
@@ -1891,7 +1889,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4147897805161313378">Google Fotos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese n.º 4</translation>
-<translation id="4151403195736952345">Usar predefinição global (Detetar)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Página 1}other{Página {COUNT}}}</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="4153446078232988116">O site <ph name="SITE" /> não é compatível com uma ligação segura com HTTPS</translation>
@@ -2917,6 +2914,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5898767305816764989">Botão Gosto, prima Enter para enviar feedback a indicar que gosta, <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /></translation>
 <translation id="5901630391730855834">Amarelo</translation>
 <translation id="5903264686717710770">Título:</translation>
+<translation id="5905671155741555195">A sua morada do trabalho pode ajudar a realizar tarefas nos serviços Google, como resultados da pesquisa mais relevantes e direções no Google Maps. Pode editar ou eliminar a sua morada na <ph name="BEGIN_LINK" />Conta Google <ph name="ACCOUNT" /><ph name="END_LINK" />.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (sincronizados)</translation>
 <translation id="5910140988253729859">Anular preenchimento automático</translation>
 <translation id="5911020115933784199">Eventos e agendas</translation>
@@ -3814,6 +3812,7 @@ Detalhes adicionais:
 <translation id="7403392780200267761">Partilhe este separador ao partilhar o link, criar um código QR, transmitir e muito mais</translation>
 <translation id="7403591733719184120">O seu <ph name="DEVICE_NAME" /> é gerido</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> instalou aplicações para funções adicionais. As aplicações têm acesso a alguns dos seus dados.</translation>
+<translation id="740691708085211707">Remova a morada do trabalho do preenchimento automático do Chrome?</translation>
 <translation id="7407424307057130981">&lt;p&gt;Este erro é apresentado se tiver software Superfish no seu computador com Windows.&lt;/p&gt;
       &lt;p&gt;Siga estes passos para desativar temporariamente o software para que possa aceder à Web. Vai precisar de privilégios de administrador.&lt;/p&gt;
       &lt;ol&gt;
@@ -3909,6 +3908,7 @@ Detalhes adicionais:
 <translation id="7534987659046836932">Envelope C7</translation>
 <translation id="7535087603100972091">Valor</translation>
 <translation id="753556296624075801">Tecnologia da Google</translation>
+<translation id="753713322968419914">Remover a morada de casa do preenchimento automático do Chrome?</translation>
 <translation id="7537536606612762813">Obrigatório</translation>
 <translation id="7543525346216957623">Pede aos teus pais</translation>
 <translation id="7546409722674205727">A iniciar a app <ph name="APP_NAME" /></translation>
@@ -4128,6 +4128,7 @@ Detalhes adicionais:
 <translation id="7908648876066812348">A ativar o cartão virtual</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, prima Tab e, em seguida, Enter para aceder à página de verificação de segurança do Chrome nas definições</translation>
 <translation id="791107458486222637">A refazer o resultado</translation>
+<translation id="7912924955815015552">Importado do Safari</translation>
 <translation id="791551905239004656">Desenhar e colorir</translation>
 <translation id="7916162853251942238">Base flexo</translation>
 <translation id="791698251820376781">A sua organização não lhe permite iniciar sessão</translation>

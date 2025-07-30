@@ -655,7 +655,6 @@
 <translation id="3595252146048399851">Увек можете да одаберете шта ћете синхронизовати у <ph name="BEGIN_LINK" />подешавањима<ph name="END_LINK" />. Google може да персонализује Претрагу и друге услуге на основу историје.</translation>
 <translation id="3596414637720633074">Блокира колачиће трећих страна у режиму без архивирања</translation>
 <translation id="3602260545951981695">Одаберите Побољшана заштита</translation>
-<translation id="3608436266458100337">Режим читаоца</translation>
 <translation id="3610041351087301930">Сакриј читач</translation>
 <translation id="3622175633937495219">Историја претраге (пронађених: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Можете да превучете ивицу да бисте ишли назад.</translation>
@@ -1338,6 +1337,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="6234310016144827337">Проверите везу и пробајте поново</translation>
 <translation id="6234438496206735891">Приказивање преузимања</translation>
 <translation id="6236952928980352967">Врати упозорење</translation>
+<translation id="623755660902014047">Режим читања</translation>
 <translation id="6247557882553405851">Google менаџеру лозинки</translation>
 <translation id="6251835855431997163">Аутоматски попуните <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Отварајте ликнове у апликацији уместо у прегледачу.</translation>
@@ -2118,6 +2118,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="9144230693397287797">Добијајте новости о подсетницима које подесите и картице са других уређаја</translation>
 <translation id="914781932147356857">Означи све…</translation>
 <translation id="9148126808321036104">Пријави ме поново</translation>
+<translation id="9149866541089851383">Измени...</translation>
 <translation id="9159628751968616911">Пошаљите веб-страницу</translation>
 <translation id="9162432979321511934">Укључите Аутоматско попуњавање лозинки</translation>
 <translation id="9165320910061267720">Да бисте добијали обавештења о снижењима, треба да укључите обавештења у iOS подешавањима.</translation>

@@ -250,6 +250,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1166583374608765787">Review name update</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> belongs to desk <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Isolated web apps automatically follow this setting</translation>
+<translation id="116712635768212829">If Chrome finds one of your passwords in a data breach, Google Password Manager can offer to change your password for you if you're signed in.</translation>
 <translation id="1168020859489941584">Opening in <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Recent AI theme <ph name="INDEX" /> of <ph name="SUBJECT" />, in <ph name="STYLE" /> style, with <ph name="MOOD" /> mood.</translation>
 <translation id="116896278675803795">Automatically change language to match selected content</translation>
@@ -554,6 +555,7 @@ Check your passwords at any time in <ph name="GOOGLE_PASSWORD_MANAGER" />.</tran
 <translation id="1375938286942050085">Setup is complete! Get your device ready for gaming next</translation>
 <translation id="137651782282853227">Saved addresses will appear here</translation>
 <translation id="1376771218494401509">Name &amp;Window…</translation>
+<translation id="1377438103060664754">If one of your passwords is found in a data breach, Google Password Manager asks if you want it changed to a strong password</translation>
 <translation id="1377600615067678409">Skip for now</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> is controlling this setting</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{No compromised passwords}=1{1 compromised password}other{{NUM_COMPROMISED} compromised passwords}}</translation>
@@ -939,7 +941,6 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1632293440289326475">Turn on Energy Saver to extend battery life</translation>
 <translation id="1632756664321977232">Crop tool</translation>
 <translation id="163309982320328737">Initial character width is Full</translation>
-<translation id="1633947793238301227">Disable Google Assistant</translation>
 <translation id="1634224622052500893">Wi-Fi network found</translation>
 <translation id="1634783886312010422">Have you already changed this password on <ph name="WEBSITE" />?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Remove tab and delete group?}=1{Remove tab and delete group?}other{Remove tabs and delete groups?}}</translation>
@@ -1373,6 +1374,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1931152874660185993">No components installed.</translation>
 <translation id="1931410639376954712">Installing <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Not Before</translation>
+<translation id="1933070475689690969">Gemini Apps activity</translation>
 <translation id="1933489278505808700">Allowed to read and change</translation>
 <translation id="1935303383381416800">Allowed to see your location</translation>
 <translation id="193565226207940518">Support Tool</translation>
@@ -2379,7 +2381,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2620245777360407679">Devices currently connected to hotspot</translation>
 <translation id="2620436844016719705">System</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
-<translation id="262154978979441594">Train Google Assistant voice model</translation>
 <translation id="2622280935687585828">Remove <ph name="SITE_NAME" /> from disabled sites</translation>
 <translation id="26224892172169984">Do not allow any site to handle protocols</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2895,6 +2896,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="2981113813906970160">Show large mouse cursor</translation>
 <translation id="2983102365694924129">Based on your activity on a site. This setting is off.</translation>
 <translation id="2983373101216420412">Case battery level <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">Settings...</translation>
 <translation id="2984384421572259426">Clean up unused tabs</translation>
 <translation id="2984727013951557074">The file is still being synced to Drive.</translation>
 <translation id="2985348301114641460">Send a request to your administrator to install '<ph name="EXTENSION_NAME" />'?</translation>
@@ -3513,6 +3515,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3435738964857648380">Security</translation>
 <translation id="343578350365773421">Out of paper</translation>
 <translation id="3435896845095436175">Enable</translation>
+<translation id="3437072258256045988">Manage your Gemini Apps activity</translation>
 <translation id="3437397693214267762">See your Outlook Calendar, SharePoint and OneDrive files</translation>
 <translation id="3438633801274389918">Ninja</translation>
 <translation id="3439153939049640737">Always allow <ph name="HOST" /> to access your microphone</translation>
@@ -3525,7 +3528,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3443744348829035122"><ph name="BRAND" /> timed out</translation>
 <translation id="3443754338602062261">You already have passwords for these accounts in your <ph name="BRAND" />. If you choose to import one of the passwords below, it will replace the existing one.</translation>
 <translation id="344449859752187052">Third-party cookies blocked</translation>
-<translation id="3445047461171030979">Google Assistant quick answers</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> min</translation>
 <translation id="344537926140058498">Your organisation has blocked this file because it has sensitive or dangerous content. Ask its owner to fix it.</translation>
 <translation id="3445465968953598059">Facial control</translation>
@@ -3958,7 +3960,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3732414796052961578">Continue as <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">PIN must be at most 63 characters</translation>
 <translation id="3732706448780793442">Take over manually</translation>
-<translation id="3732857534841813090">Google Assistant related information</translation>
 <translation id="3733296813637058299">We'll install those apps for you. You can find more apps for your <ph name="DEVICE_TYPE" /> in the Play Store.</translation>
 <translation id="3734547157266039796">Rice paddy</translation>
 <translation id="3735039640698208086">When playing audio...</translation>
@@ -4189,7 +4190,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3873315167136380065">To turn this on, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" /> to remove your sync passphrase</translation>
 <translation id="3873423927483480833">Show PINs</translation>
 <translation id="3873915545594852654">A problem with ARC++ occurred.</translation>
-<translation id="3874164307099183178">Turn on Google Assistant</translation>
 <translation id="3874845889165401548">This feature uses AI and is experimental</translation>
 <translation id="3875511946736639169">Enable images</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> is set to open in a new browser tab. Supported links will also open in the browser. <ph name="BEGIN_LINK_LEARN_MORE" />Learn more<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4779,6 +4779,7 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4295072614469448764">App is available in your terminal. There may also be an icon in your Launcher.</translation>
 <translation id="4295979599050707005">Please sign in again to confirm that your account <ph name="USER_EMAIL" /> can be used with websites, apps and extensions in Chrome and Google Play. You may also remove this account. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Installed and streamed applications from <ph name="APP_NAME" /></translation>
+<translation id="4296632172536745000">Your original password for this site was found in a public data breach. On <ph name="DATE" />, you asked <ph name="BRAND" /> to automatically change your password for you.</translation>
 <translation id="4297219207642690536">Restart and reset</translation>
 <translation id="4297813521149011456">Display rotation</translation>
 <translation id="4298660926525614540">Removable Storage Names</translation>
@@ -4847,7 +4848,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4348766275249686434">Collect errors</translation>
 <translation id="4349828822184870497">Helpful</translation>
 <translation id="4350230709416545141">Always block <ph name="HOST" /> from accessing your location</translation>
-<translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">Go to the '<ph name="APP_NAME" />' app to manage installed and streamed apps</translation>
 <translation id="4352913519324947509">Your password wasn't changed, but you should still be able to access the site with your current password</translation>
 <translation id="4354073718307267720">Ask when a site wants to create a 3D map of your surroundings or track camera position</translation>
@@ -5115,7 +5115,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="4545759655004063573">Cannot save due to insufficient permissions. Please save to another location.</translation>
 <translation id="4546345569117159016">Right button</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> wants to use this extension:</translation>
-<translation id="4546692474302123343">Google Assistant voice input</translation>
 <translation id="4547659257713117923">No Tabs From Other Devices</translation>
 <translation id="4547672827276975204">Set automatically</translation>
 <translation id="4549791035683739768">Your security key has no fingerprints stored</translation>
@@ -5491,7 +5490,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4816900689218414104">Create a passkey on a phone or tablet</translation>
 <translation id="481917177323309377">Tabs that you haven't used in <ph name="COUNT" /> or more days</translation>
 <translation id="4819323978093861656">{0,plural, =0{Closing now.}=1{Closing in: 1 second}other{Closing in: # seconds}}</translation>
-<translation id="4819607494758673676">Google Assistant notifications</translation>
 <translation id="4819818293886748542">Get a Support Tool link</translation>
 <translation id="4820236583224459650">Set as active ticket</translation>
 <translation id="4820795723433418303">Use function keys as Chromebook top row keys</translation>
@@ -5540,7 +5538,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4846897209694249040">Not allowed to capture and use your mouse input</translation>
 <translation id="4847242508757499006">Choose 'Try again' or choose 'Open in basic editor' to use limited view and editing options.</translation>
 <translation id="4847742514726489375">Reduced motion</translation>
-<translation id="4848191975108266266">Google Assistant "Ok Google"</translation>
 <translation id="4849286518551984791">Coordinated Universal Time (UTC/GMT)</translation>
 <translation id="4849517651082200438">Don't Install</translation>
 <translation id="4849731766219625109">Use your <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> account</translation>
@@ -5554,6 +5551,7 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="4852916668365817106">Mouse colour</translation>
 <translation id="4853020600495124913">Open in &amp;new window</translation>
 <translation id="4854317507773910281">Choose parent account for approval</translation>
+<translation id="4854603338816296098">Address removed</translation>
 <translation id="485480310608090163">More settings and permissions</translation>
 <translation id="4857304314344645169">See a step-by-step explanation of any problem</translation>
 <translation id="485806788160414322">Play or pause media</translation>
@@ -6230,7 +6228,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="534449933710420173">Unnamed folder</translation>
 <translation id="5345916423802287046">Start app when you sign in</translation>
 <translation id="5350116201946341974">Whimsical</translation>
-<translation id="5350293332385664455">Turn off Google Assistant</translation>
 <translation id="535123479159372765">Text copied from other device</translation>
 <translation id="5352033265844765294">Time Stamping</translation>
 <translation id="5352257124367865087">Manage site permissions</translation>
@@ -7277,7 +7274,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="6108952804512516814">Create with AI</translation>
 <translation id="6110303766838612983">Send crash reports as well as diagnostic and usage data to ChromeOS</translation>
 <translation id="6111718295497931251">Remove Google Drive access</translation>
-<translation id="6111972606040028426">Enable Google Assistant</translation>
 <translation id="6112727384379533756">Add a ticket</translation>
 <translation id="6112931163620622315">Check your phone</translation>
 <translation id="6113434369102685411">Set your default search engine for Chrome browser and <ph name="DEVICE_TYPE" /> Launcher</translation>
@@ -8433,7 +8429,6 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="6924109527536857168">Sync is needed</translation>
 <translation id="6928650056523249512">Automatically remove permissions from unused sites</translation>
 <translation id="6929126689972602640">Parental controls are not supported for school accounts. To add a school account to access Google Classroom and other websites for schoolwork at home, sign in with the child's personal account first. You can add the school account later in setup.</translation>
-<translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{An extension has been rejected}other{# extensions have been rejected}}</translation>
 <translation id="6930337524857202955">New download available</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9337,6 +9332,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7582844466922312471">Mobile Data</translation>
 <translation id="7583948862126372804">Count</translation>
 <translation id="7585106857920830898">Checking with your organisation's security policies…</translation>
+<translation id="7585490016012953607">Recovery password – temporarily saved for up to 3 months</translation>
 <translation id="7586498138629385861">Chrome will keep running while Chrome Apps are open.</translation>
 <translation id="7587806318633605613">Suggestion history</translation>
 <translation id="7589448773774086276">New split view with current tab</translation>

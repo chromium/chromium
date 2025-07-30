@@ -302,7 +302,7 @@
 <translation id="1195210374336998651">앱 설정으로 이동</translation>
 <translation id="1195447618553298278">알 수 없는 오류</translation>
 <translation id="1195558154361252544">허용한 사이트를 제외한 모든 사이트의 알림이 자동으로 차단됩니다.</translation>
-<translation id="1197088940767939838">오렌지색</translation>
+<translation id="1197088940767939838">주황색</translation>
 <translation id="11978075283960463">앱에 저장된 데이터: <ph name="APP_SIZE" /></translation>
 <translation id="1198066799963193307">저시력 음성 도구</translation>
 <translation id="119944043368869598">모두 삭제</translation>
@@ -939,7 +939,6 @@
 <translation id="1632293440289326475">에너지 절약 모드를 사용 설정하여 배터리 수명 늘리기</translation>
 <translation id="1632756664321977232">자르기 도구</translation>
 <translation id="163309982320328737">초기 글자 폭을 최대로 설정</translation>
-<translation id="1633947793238301227">Google 어시스턴트 사용 안함</translation>
 <translation id="1634224622052500893">Wi-Fi 네트워크 발견됨</translation>
 <translation id="1634783886312010422"><ph name="WEBSITE" />에서 비밀번호를 이미 변경하셨나요?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{탭 및 그룹을 삭제하시겠습니까?}=1{탭 및 그룹을 삭제하시겠습니까?}other{탭 및 그룹을 삭제하시겠습니까?}}</translation>
@@ -1373,6 +1372,7 @@
 <translation id="1931152874660185993">설치된 구성요소가 없습니다.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> 설치 중</translation>
 <translation id="1932098463447129402">시작:</translation>
+<translation id="1933070475689690969">Gemini 앱 활동</translation>
 <translation id="1933489278505808700">읽고 변경할 수 있도록 허용됨</translation>
 <translation id="1935303383381416800">사용자 위치 확인이 허용됨</translation>
 <translation id="193565226207940518">지원 도구</translation>
@@ -2381,7 +2381,6 @@
 <translation id="2620245777360407679">현재 핫스팟에 연결된 기기</translation>
 <translation id="2620436844016719705">시스템</translation>
 <translation id="2620900772667816510">블루투스 초해상도</translation>
-<translation id="262154978979441594">Google 어시스턴트 음성 모델 학습시키기</translation>
 <translation id="2622280935687585828">사용 중지된 사이트에서 <ph name="SITE_NAME" /> 삭제</translation>
 <translation id="26224892172169984">모든 사이트에서 프로토콜 처리 허용 안함</translation>
 <translation id="262373406453641243">콜맥</translation>
@@ -2897,6 +2896,7 @@
 <translation id="2981113813906970160">큰 마우스 커서 표시</translation>
 <translation id="2983102365694924129">사이트 내 활동을 기반으로 추천됩니다. 설정이 사용 중지되어 있습니다.</translation>
 <translation id="2983373101216420412">케이스 배터리 잔량 <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">설정...</translation>
 <translation id="2984384421572259426">사용하지 않는 탭을 정리하시겠습니까?</translation>
 <translation id="2984727013951557074">아직 Drive에 파일을 동기화하는 중입니다.</translation>
 <translation id="2985348301114641460">관리자에게 '<ph name="EXTENSION_NAME" />' 설치 요청을 전송하시겠습니까?</translation>
@@ -3515,6 +3515,7 @@
 <translation id="3435738964857648380">보안</translation>
 <translation id="343578350365773421">용지 부족</translation>
 <translation id="3435896845095436175">사용</translation>
+<translation id="3437072258256045988">Gemini 앱 활동 관리</translation>
 <translation id="3437397693214267762">Outlook Calendar 및 SharePoint/OneDrive 파일 보기</translation>
 <translation id="3438633801274389918">닌자</translation>
 <translation id="3439153939049640737"><ph name="HOST" />에서 마이크에 액세스하도록 항상 허용</translation>
@@ -3527,7 +3528,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> 시간 초과됨</translation>
 <translation id="3443754338602062261"><ph name="BRAND" />에 이미 이 계정의 비밀번호가 있습니다. 아래 비밀번호 중 하나를 가져오면 기존 비밀번호가 대체됩니다.</translation>
 <translation id="344449859752187052">서드 파티 쿠키 차단됨</translation>
-<translation id="3445047461171030979">Google 어시스턴트 빠른 답변</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" />분</translation>
 <translation id="344537926140058498">파일에 민감하거나 위험한 콘텐츠가 포함되어 있기 때문에 조직에서 파일을 차단했습니다. 소유자에게 수정을 요청하세요.</translation>
 <translation id="3445465968953598059">얼굴 제어</translation>
@@ -3960,7 +3960,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> 계정으로 로그인</translation>
 <translation id="3732530910372558017">PIN은 63자 이하여야 합니다.</translation>
 <translation id="3732706448780793442">수동으로 전환</translation>
-<translation id="3732857534841813090">Google 어시스턴트 관련 정보</translation>
 <translation id="3733296813637058299">앱은 자동으로 설치됩니다. Play 스토어에서 <ph name="DEVICE_TYPE" />에 설치할 앱을 더 찾아보세요.</translation>
 <translation id="3734547157266039796">논</translation>
 <translation id="3735039640698208086">오디오 재생 시...</translation>
@@ -4191,7 +4190,6 @@
 <translation id="3873315167136380065">사용하려면 <ph name="BEGIN_LINK" />동기화를 재설정<ph name="END_LINK" />하여 동기화 암호를 삭제하세요.</translation>
 <translation id="3873423927483480833">PIN 표시</translation>
 <translation id="3873915545594852654">ARC++에 문제가 발생했습니다.</translation>
-<translation id="3874164307099183178">Google 어시스턴트 사용 설정</translation>
 <translation id="3874845889165401548">이 기능은 AI를 사용하며 실험 단계입니다.</translation>
 <translation id="3875511946736639169">이미지 표시</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> 앱이 새 브라우저 탭에서 열리도록 설정되어 있습니다. 지원되는 링크도 브라우저에서 열립니다. <ph name="BEGIN_LINK_LEARN_MORE" />자세히 알아보기<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4779,6 +4777,7 @@
 <translation id="4295072614469448764">단말기에서 앱을 사용할 수 있습니다. 런처에 아이콘이 있을 수도 있습니다.</translation>
 <translation id="4295979599050707005">웹사이트, 앱, Chrome 확장 프로그램 및 Google Play에서 계정(<ph name="USER_EMAIL" />)을 사용하도록 확인하려면 다시 로그인하세요. 계정을 삭제할 수도 있습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" />에서 설치 및 스트리밍된 애플리케이션</translation>
+<translation id="4296632172536745000">이 사이트의 원래 비밀번호가 공개 정보 유출로 인해 노출되었습니다. <ph name="DATE" />에 비밀번호를 자동으로 변경해 달라고 <ph name="BRAND" />에 요청했습니다.</translation>
 <translation id="4297219207642690536">다시 시작 및 재설정</translation>
 <translation id="4297813521149011456">화면 회전</translation>
 <translation id="4298660926525614540">이동식 저장소 이름</translation>
@@ -4847,7 +4846,6 @@
 <translation id="4348766275249686434">오류 수집</translation>
 <translation id="4349828822184870497">유용함</translation>
 <translation id="4350230709416545141"><ph name="HOST" />의 위치 액세스 항상 차단</translation>
-<translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">설치 및 스트리밍된 앱을 관리하려면 "<ph name="APP_NAME" />" 앱으로 이동하세요.</translation>
 <translation id="4352913519324947509">비밀번호가 변경되지 않았으며, 계속해서 현재 비밀번호로 사이트에 액세스할 수 있습니다.</translation>
 <translation id="4354073718307267720">사이트에서 주변 환경의 3D 지도를 생성하거나 카메라 위치를 추적하려고 할 때 확인</translation>
@@ -5116,7 +5114,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4545759655004063573">권한이 부족하여 저장할 수 없습니다. 다른 위치에 저장하세요.</translation>
 <translation id="4546345569117159016">오른쪽 버튼</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />님이 다음 확장 프로그램을 사용하려고 함</translation>
-<translation id="4546692474302123343">Google 어시스턴트 음성 입력</translation>
 <translation id="4547659257713117923">다른 기기의 탭 없음</translation>
 <translation id="4547672827276975204">자동 설정</translation>
 <translation id="4549791035683739768">보안 키에 저장된 지문이 없습니다.</translation>
@@ -5492,7 +5489,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4816900689218414104">휴대전화 또는 태블릿에서 패스키 만들기</translation>
 <translation id="481917177323309377"><ph name="COUNT" />일 이상 사용하지 않은 탭</translation>
 <translation id="4819323978093861656">{0,plural, =0{지금 종료 중입니다.}=1{1초 후 종료됨}other{#초 후 종료됨}}</translation>
-<translation id="4819607494758673676">Google 어시스턴트 알림</translation>
 <translation id="4819818293886748542">지원 도구 링크 가져오기</translation>
 <translation id="4820236583224459650">활성 티켓으로 설정</translation>
 <translation id="4820795723433418303">기능 키를 맨 위 키로 사용</translation>
@@ -5541,7 +5537,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4846897209694249040">마우스 입력을 캡처하고 사용하도록 허용하지 않음</translation>
 <translation id="4847242508757499006">'다시 시도'를 선택하거나 '기본 편집기에서 열기'를 선택하여 제한된 보기 및 수정 옵션을 사용하세요.</translation>
 <translation id="4847742514726489375">모션 감소</translation>
-<translation id="4848191975108266266">Google 어시스턴트 'Ok Google'</translation>
 <translation id="4849286518551984791">협정세계시(UTC/GMT)</translation>
 <translation id="4849517651082200438">설치 안함</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 계정 사용</translation>
@@ -5555,6 +5550,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4852916668365817106">마우스 색상</translation>
 <translation id="4853020600495124913">새 창에서 열기(&amp;N)</translation>
 <translation id="4854317507773910281">승인을 요청할 부모 계정 선택</translation>
+<translation id="4854603338816296098">주소 삭제됨</translation>
 <translation id="485480310608090163">추가 설정 및 권한</translation>
 <translation id="4857304314344645169">문제에 대한 단계별 설명을 확인하세요.</translation>
 <translation id="485806788160414322">미디어 재생 또는 일시중지</translation>
@@ -6231,7 +6227,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="534449933710420173">이름이 없는 폴더</translation>
 <translation id="5345916423802287046">로그인 시 앱 실행</translation>
 <translation id="5350116201946341974">엉뚱함</translation>
-<translation id="5350293332385664455">Google 어시스턴트 사용 중지</translation>
 <translation id="535123479159372765">다른 기기에서 텍스트가 복사됨</translation>
 <translation id="5352033265844765294">시간 기록</translation>
 <translation id="5352257124367865087">사이트 권한 관리</translation>
@@ -6318,7 +6313,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5413640305322530561">진단 및 사용 데이터 자세히 알아보기</translation>
 <translation id="5414198321558177633">프로필 목록을 새로고침하는 중입니다. 몇 분 정도 소요될 수 있습니다.</translation>
 <translation id="5414566801737831689">방문하는 웹사이트의 아이콘 조회</translation>
-<translation id="5414836363063783498">확인 중...</translation>
+<translation id="5414836363063783498">인증 중...</translation>
 <translation id="5415328625985164836">이 프로그램은 베타 버전입니다. 이제 Chromebook에서 Steam을 사용하여 게임을 즐길 수 있습니다.</translation>
 <translation id="5415497281076257439">구문</translation>
 <translation id="5417312524372586921">브라우저 테마</translation>
@@ -7278,7 +7273,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6108952804512516814">AI로 만들기</translation>
 <translation id="6110303766838612983">ChromeOS에 비정상 종료 보고서, 진단 및 사용 데이터 전송</translation>
 <translation id="6111718295497931251">Google Drive 액세스 권한 삭제</translation>
-<translation id="6111972606040028426">Google 어시스턴트 사용</translation>
 <translation id="6112727384379533756">티켓 추가</translation>
 <translation id="6112931163620622315">휴대전화 확인</translation>
 <translation id="6113434369102685411">Chrome 브라우저 및 <ph name="DEVICE_TYPE" /> 런처에서 사용할 기본 검색엔진을 설정하세요.</translation>
@@ -8434,7 +8428,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="6924109527536857168">동기화 필요</translation>
 <translation id="6928650056523249512">사용하지 않는 사이트의 권한 자동 삭제</translation>
 <translation id="6929126689972602640">학교 계정에서는 자녀 보호 기능이 지원되지 않습니다. 집에서 학교 과제를 위해 Google 클래스룸 및 다른 웹사이트에 액세스할 수 있는 학교 계정을 추가하려면 먼저 자녀의 개인 계정으로 로그인하세요. 설정에서 학교 계정을 나중에 추가할 수 있습니다.</translation>
-<translation id="6929760895658557216">Hey Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{확장 프로그램 1개 거부됨}other{확장 프로그램 #개 거부됨}}</translation>
 <translation id="6930337524857202955">새 다운로드 사용 가능</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9337,6 +9330,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="7582844466922312471">모바일 데이터</translation>
 <translation id="7583948862126372804">득표 수</translation>
 <translation id="7585106857920830898">조직 보안 정책을 준수하는지 확인 중</translation>
+<translation id="7585490016012953607">복구 비밀번호 - 최대 3개월 동안 임시로 저장됨</translation>
 <translation id="7586498138629385861">Chrome 앱이 열려 있을 때 Chrome이 계속 실행됩니다.</translation>
 <translation id="7587806318633605613">추천 기록</translation>
 <translation id="7589448773774086276">현재 탭이 포함된 새 분할 보기</translation>

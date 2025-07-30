@@ -278,6 +278,7 @@ Para obtener más información sobre el tratamiento de datos en las funciones de
 <translation id="1202216683470826356">Mostrar tarjetas en la página Nueva pestaña</translation>
 <translation id="1203676252390737801">Gestión de IPs por URL de WebRTC</translation>
 <translation id="1204263402976895730">Impresoras de empresa habilitadas</translation>
+<translation id="120513772363332049">El resto de los procesos no se programarán en el mismo núcleo de CPU cuando el proceso de renderizado se esté ejecutando en él.</translation>
 <translation id="1207301487141109411">Impedir que se seleccione el avatar del usuario desde el sistema de archivos local, la cámara o el perfil de Google.</translation>
 <translation id="1209096923317019235">Asigna aplicaciones como controladores predeterminados de extensiones de archivo especificadas</translation>
 <translation id="120937472976628837">Enviar información sobre ventiladores</translation>
@@ -3750,6 +3751,15 @@ Si una conexión no supera esta comprobación, se producirá el error ERR_SSL_KE
       Si se inhabilita esta política, no se permitirá el uso de la API Translator.</translation>
 <translation id="366494444808132420">Permitir integraciones de Gemini.</translation>
 <translation id="3665437376055221832">Pedirle al usuario que realice una acción solo si no hay ningún certificado que coincida con la selección automática.</translation>
+<translation id="3667089394451236198">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no están sujetas a comprobaciones de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si un origen está cubierto tanto por esta política como por LocalNetworkAccessBlockedForUrls, prevalecerá LocalNetworkAccessBlockedForUrls.
+
+En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
+
+Para consultar información detallada sobre los patrones de URL válidos, visita https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="3671773704245936868">Inhabilitar el resaltado del foco del teclado</translation>
 <translation id="3674010627788940405">No admitir encabezados de solicitud CORS sin comodín.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) se suele usar para dividir tareas largas de JavaScript.
@@ -4311,6 +4321,17 @@ Para obtener información detallada sobre los patrones válidos de <ph name="URL
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" />, el proveedor de búsqueda no se activará con ninguna palabra clave.</translation>
 <translation id="4090088362777472639">El hash SHA-256 del playbook de Ansible.</translation>
 <translation id="4091040199847925434">Inhabilitar los informes sobre datos del sistema y contenido de páginas que se usan para ayudar a mejorar la función Navegación segura</translation>
+<translation id="4092882308219320847">Lista de patrones de URL. Las solicitudes iniciadas desde sitios web servidos por orígenes coincidentes no pueden enviar solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si un origen está cubierto tanto por esta política como por LocalNetworkAccessAllowedForUrls, esta política tendrá prioridad.
+
+Según la fase de lanzamiento de <ph name="LOCAL_NETWORK_ACCESS" />, es posible que también deba habilitarse LocalNetworkAccessRestrictionsEnabled para que esta política bloquee las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" />.
+
+En el caso de los orígenes no incluidos en los patrones aquí indicados, se aplicará la configuración personal del usuario.
+
+Para consultar información detallada sobre los patrones de URL válidos, visita https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="4093058072421210667">No permitir Inserción de imágenes.</translation>
 <translation id="4098920079809952737">Permitir imprimir con y sin gráficos de fondo</translation>
 <translation id="410061592404122032">Preguntar siempre que un sitio quiera obtener el permiso de gestión de ventanas</translation>
@@ -6437,6 +6458,7 @@ Esta política no impide que los usuarios puedan guardar archivos en <ph name="G
 <translation id="5490462588616309068">Si se le asigna el valor true a esta política o no se define, se permitirá el uso de identificadores de contenido protegido, lo que puede ayudar a ofrecer una mayor calidad de reproducción de contenido protegido.
 
 Si se le asigna el valor false, no se podrán usar identificadores de contenido protegido.</translation>
+<translation id="5492713303272131731">El resto de los procesos se podrán programar en el mismo núcleo de CPU cuando el proceso de renderizado se esté ejecutando en él.</translation>
 <translation id="5494322570831642650">Especifica si el usuario podrá abrir páginas en modo Incógnito en <ph name="PRODUCT_NAME" />.
 
       Si se habilita esta política o no se le asigna ningún valor, se podrán abrir páginas en modo Incógnito.
@@ -8380,6 +8402,11 @@ Si se habilita, se recogerán y subirán los datos a la <ph name="GOOGLE_ADMIN_C
 
 En el caso de <ph name="PRODUCT_NAME" />, esta política solo es efectiva si el equipo está registrado en <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 En el caso de <ph name="PRODUCT_OS_NAME" />, esta política siempre es efectiva.</translation>
+<translation id="6720071484598746942">Si se habilita esta política, cuando deba mostrarse una advertencia en <ph name="DEV_TOOLS_NAME" /> debido a un fallo en las comprobaciones de <ph name="LOCAL_NETWORK_ACCCESS" />, se bloqueará la solicitud principal.
+
+Si se inhabilita esta política o no se define, las solicitudes de <ph name="LOCAL_NETWORK_ACCESS" /> usarán el tratamiento predeterminado de estas solicitudes.
+
+Consulta https://wicg.github.io/local-network-access/ para conocer las restricciones de <ph name="LOCAL_NETWORK_ACCESS" />.</translation>
 <translation id="6720330829631914048">Horas que han pasado desde el inicio del día, en formato de 24 horas.</translation>
 <translation id="6721252203593581486">WebSQL está desactivada en contextos de terceros (por ejemplo, iframes entre sitios) de forma predeterminada desde la versión M97 y se eliminará por completo en la versión M101.
           Si se asigna el valor false a esta política o no se establece, WebSQL permanecerá desactivada en contextos de terceros.
@@ -10539,6 +10566,10 @@ Si no se le asigna ningún valor, el control con gestos faciales se inhabilitar�
 <translation id="8331479227794770304">Habilitar teclas persistentes</translation>
 <translation id="8332822245414537447">Inhabilitar la comprobación de uso de claves RSA</translation>
 <translation id="8334685561819743286">Inhabilitar la autocorrección en el teclado físico cuando los usuarios escriban</translation>
+<translation id="8336986243404088829">Esta política mitiga los ataques de memoria de procesos cruzados de canal lateral aislando el proceso de renderizado en el núcleo de la CPU e impidiendo que otros procesos compartan el mismo núcleo. La mitigación es compatible con <ph name="MS_WIN_NAME" /> 11 24H2 y versiones posteriores. Si el SO no admite la programación necesaria, esta política no tendrá ningún efecto. Esta política puede ralentizar el rendimiento en algunas situaciones exigentes, de forma similar a inhabilitar Hyper-Threading. Para obtener más información, consulta https://learn.microsoft.com/es-es/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy.
+      Si se habilita esta política, no se programará ningún otro proceso en el mismo núcleo de CPU cuando se esté ejecutando el proceso de renderizado.
+      Si se inhabilita esta política, todos los demás procesos se podrán programar en el mismo núcleo de CPU cuando se esté ejecutando un proceso de renderizado en él.
+      Si no se define esta política, todos los demás procesos se podrán programar en el mismo núcleo de CPU cuando se esté ejecutando un proceso de renderizado en el núcleo. Esta configuración puede variar en función de la versión de <ph name="PRODUCT_NAME" />, de las pruebas de campo que se estén ejecutando en ese momento y de la plataforma.</translation>
 <translation id="8337114537412769126">Si <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> está activada y se asigna un valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, se especificarán los parámetros utilizados al buscar sugerencias con POST. Se compone de pares de nombre-valor separados por comas. Si un valor es un parámetro de plantilla, como <ph name="SEARCH_TERM_MARKER" />, se sustituirá por datos de términos de búsqueda reales.
 
       Si no se asigna ningún valor a <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" />, las solicitudes de búsqueda de sugerencias se enviarán mediante el método GET.</translation>
@@ -11786,6 +11817,7 @@ Para obtener más información sobre contextos seguros, consulta la página http
 <translation id="9162444960513782569">No forzar ninguna limitación de los temporizadores de JavaScript en segundo plano</translation>
 <translation id="9164656078867027374">Definir dominios con permiso para acceder a <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
 <translation id="9165128017344777105">Permitir el permiso de fuentes locales en estos sitios</translation>
+<translation id="9165498643231979857">Restringir el uso compartido de núcleos de CPU para el proceso de renderizado</translation>
 <translation id="9166670902476893480">Esta política controla si <ph name="PRODUCT_NAME" /> puede consultar tipos de registro DNS adicionales al hacer solicitudes DNS no seguras. Esta política no afecta a las consultas de DNS realizadas a través de la función DNS seguro, que puede consultar tipos de DNS adicionales en cualquier momento.
 
       Si se le asigna el valor Enabled a esta política o no se establece, se podrán consultar tipos adicionales, como <ph name="DNS_TYPE_HTTPS" /> (tipo de DNS 65), además de <ph name="DNS_TYPE_A" /> (tipo de DNS 1) y <ph name="DNS_TYPE_AAAA" /> (tipo de DNS 28).

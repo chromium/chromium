@@ -655,7 +655,6 @@
 <translation id="3595252146048399851">എന്തൊക്കെ സമന്വയിപ്പിക്കണമെന്ന് നിങ്ങൾക്ക് എല്ലായ്‌പ്പോഴും <ph name="BEGIN_LINK" />ക്രമീകരണത്തിൽ<ph name="END_LINK" /> തിരഞ്ഞെടുക്കാം. നിങ്ങളുടെ ചരിത്രത്തെ അടിസ്ഥാനമാക്കി, Search, മറ്റ് സേവനങ്ങൾ എന്നിവ Google വ്യക്തിപരമാക്കിയേക്കാം.</translation>
 <translation id="3596414637720633074">അദൃശ്യ മോഡിൽ മൂന്നാം കക്ഷി കുക്കികളെ ബ്ലോക്ക് ചെയ്യുക</translation>
 <translation id="3602260545951981695">"മെച്ചപ്പെടുത്തിയ പരിരക്ഷ" തിരഞ്ഞെടുക്കുക</translation>
-<translation id="3608436266458100337">റീഡർ മോഡ്</translation>
 <translation id="3610041351087301930">റീഡർ മറയ്‌ക്കുക</translation>
 <translation id="3622175633937495219">തിരയൽ ചരിത്രം (<ph name="COUNT" /> കണ്ടെത്തി)</translation>
 <translation id="3625008969091706597">പിന്നിലേക്ക് പോകാൻ അറ്റത്ത് സ്വൈപ്പ് ചെയ്യാം.</translation>
@@ -1338,6 +1337,7 @@
 <translation id="6234310016144827337">നിങ്ങളുടെ കണക്ഷൻ പരിശോധിച്ച് വീണ്ടും ശ്രമിക്കുക</translation>
 <translation id="6234438496206735891">ഡൗൺലോഡുകൾ കാണിക്കുക</translation>
 <translation id="6236952928980352967">മുന്നറിയിപ്പ് പുനഃസ്ഥാപിക്കുക</translation>
+<translation id="623755660902014047">റീഡിംഗ് മോഡ്</translation>
 <translation id="6247557882553405851">Google Password Manager</translation>
 <translation id="6251835855431997163">സ്വയമേവ പൂരിപ്പിക്കൽ <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">ബ്രൗസറിന് പകരം ആപ്പിൽ ലിങ്കുകൾ തുറക്കുക.</translation>
@@ -2007,6 +2007,7 @@
 <translation id="8741995161408053644">നിങ്ങളുടെ Google അക്കൗണ്ടിന് <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> എന്നതിൽ മറ്റ് തരത്തിലുള്ള ബ്രൗസിംഗ് ചരിത്രമുണ്ടായിരിക്കാം.</translation>
 <translation id="874599634440689554">ലിങ്ക് സൃഷ്‌ടിക്കുക</translation>
 <translation id="8746155870861185046">ഹൈലൈറ്റ് പങ്കിടുക</translation>
+<translation id="8748678031495824833">പേജിലെ AI ടൂളുകൾ തുറക്കുക</translation>
 <translation id="8750037785291841318">നിങ്ങളുടെ ടാബുകൾ ഇവിടെ കാണാം</translation>
 <translation id="8756969031206844760">പാസ്‌വേഡ് അപ്‌ഡേറ്റ് ചെയ്യണോ?</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> അൺഫോളോ ചെയ്യൂ</translation>
@@ -2117,6 +2118,7 @@
 <translation id="9144230693397287797">നിങ്ങൾ സജ്ജീകരിച്ച റിമൈൻഡറുകൾക്കും മറ്റ് ഉപകരണങ്ങളിൽ നിന്നുള്ള ടാബുകൾക്കും ഉള്ള അപ്ഡേറ്റുകൾ സ്വീകരിക്കുക</translation>
 <translation id="914781932147356857">എല്ലാം അടയാളപ്പെടുത്തുക…</translation>
 <translation id="9148126808321036104">വീണ്ടും പ്രവേശിക്കുക</translation>
+<translation id="9149866541089851383">എഡിറ്റ്...</translation>
 <translation id="9159628751968616911">വെബ്‌പേജ് അയയ്‌ക്കുക</translation>
 <translation id="9162432979321511934">'പാസ്‌വേഡുകൾ സ്വയമേവ പൂരിപ്പിക്കുക' ഓണാക്കുക</translation>
 <translation id="9165320910061267720">വിലക്കുറവിനെക്കുറിച്ചുള്ള അറിയിപ്പുകൾ ലഭിക്കാൻ, നിങ്ങളുടെ iOS ക്രമീകരണത്തിൽ അറിയിപ്പുകൾ ഓണാക്കേണ്ടതുണ്ട്.</translation>

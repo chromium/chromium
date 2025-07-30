@@ -539,7 +539,6 @@
 <translation id="1876399092304384674">तारीख के हिसाब से</translation>
 <translation id="1877026089748256423">Chrome पुराना हो गया है</translation>
 <translation id="187918866476621466">शुरुआती पन्ना खोलें</translation>
-<translation id="1880901968112404879">अगली बार तेज़ी से पेमेंट करने के लिए, अपने कार्ड की जानकारी, एन्क्रिप्ट किए गए सुरक्षा कोड, और बिलिंग पते को अपने Google खाते में सेव करें</translation>
 <translation id="1883255238294161206">सूची छोटी करें</translation>
 <translation id="1884843295353628214">जैज़</translation>
 <translation id="1890171020361705182">डायनो गेम. पिक्सलेट किया हुआ डायनासोर, जो कटीले पौधों और उड़ने वाले जीवों से बचते हुए, ज़मीन पर भागता है. जब आप ऑडियो क्यू सुनते हैं, तो बाधाएं आने पर कूदने के लिए, टैप करें.</translation>
@@ -717,7 +716,6 @@
 <translation id="2183238148268545307">वीडियो सॉफ़्टवेयर</translation>
 <translation id="2183608646556468874">फ़ोन नंबर</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 पता}one{# पते}other{# पते}}</translation>
-<translation id="2187317261103489799">पता लगाएं (डिफ़ॉल्ट)</translation>
 <translation id="2188375229972301266">नीचे की ओर एक से ज़्यादा पंच</translation>
 <translation id="218940509700321686">कॉमा लगाकर अलग की गई वैल्यू</translation>
 <translation id="2194856509914051091">इन बातों का ध्यान रखें</translation>
@@ -940,7 +938,6 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{और 1 और व्यक्ति}one{और # और लोग}other{और # और लोग}}</translation>
 <translation id="2536110899380797252">पता जोड़ें</translation>
 <translation id="2537931901612099523">इस डिवाइस का इस्तेमाल करने वाले अन्य लोगों को आपकी गतिविधि नहीं दिखेगी. इसलिए, ज़्यादा निजी तौर पर ब्राउज़ किया जा सकता है इससे, आपकी विज़िट की गई वेबसाइटों और इस्तेमाल की जाने वाली सेवाओं का डेटा इकट्ठा करने के तरीके पर कोई असर नहीं पड़ेगा. इनमें Google भी शामिल है. डाउनलोड की गई चीज़ें और बुकमार्क सेव हो जाएंगे.</translation>
-<translation id="2539524384386349900">पता लगाएं</translation>
 <translation id="2541219929084442027">आप गुप्त टैब का इस्तेमाल करके जो पेज देखते हैं वे आपके गुप्त टैब बंद कर देने के बाद, आपके ब्राउज़र के इतिहास, कुकी संग्रह, या खोज इतिहास में नहीं रहेंगे. आपकी डाउनलोड की गई सभी फ़ाइलें या बनाए गए बुकमार्क रहेंगे.</translation>
 <translation id="2542106216580219892">सर्फ़िंग</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" /> – फ़ुल स्क्रीन से बाहर निकलने के लिए |<ph name="ACCELERATOR" />| को दबाकर रखें</translation>
@@ -1210,6 +1207,7 @@
 <translation id="3027915437837548462">SVG इमेज</translation>
 <translation id="3030331669969285614">ये फ़्लैग, नुकसान पहुंचा सकने वाले बदलाव को रोकते या उन्हें पहले जैसा करते हैं. साथ ही, ये फ़्लैग सिर्फ़ कुछ समय के लिए उपलब्ध रहते हैं.</translation>
 <translation id="3030542417256082866">क्या आपको वाहन से जुड़ी जानकारी सेव करनी है?</translation>
+<translation id="3033200136993730761">अगर आपने Chrome में अपने घर का पता सेट किया है, तो Google की अलग-अलग सेवाओं का आसानी से फ़ायदा लिया जा सकता है. जैसे, ज़्यादा काम के नतीजे पाना और Google Maps में घर जाने का रास्ता देखना. <ph name="BEGIN_LINK" />Google खाते <ph name="ACCOUNT" /><ph name="END_LINK" /> में जाकर, अपने पते में बदलाव किया जा सकता है या उसे मिटाया जा सकता है.</translation>
 <translation id="3034526003882782781">स्क्रोल और ज़ूम करने की अनुमति है</translation>
 <translation id="3036894576201005614">घर की साफ़-सफ़ाई में इस्तेमाल होने वाली चीज़ें</translation>
 <translation id="3037177537145227281">कीमत ट्रैक की जा रही है</translation>
@@ -1331,7 +1329,6 @@
 <translation id="3229041911291329567">आपके डिवाइस और ब्राउज़र के वर्शन के बारे में जानकारी</translation>
 <translation id="3229277193950731405">वर्शन स्ट्रिंग को कॉपी करें</translation>
 <translation id="323107829343500871"><ph name="CREDIT_CARD" /> का CVC डालें.</translation>
-<translation id="3234666976984236645">इस साइट पर हमेशा महत्‍वपूर्ण सामग्री का पता लगाएं</translation>
 <translation id="323585066388831737">हल्का लाल</translation>
 <translation id="3235902901585019063">लोकल फ़ाइलें <ph name="DATE_TIME" /> को मिटा दी जाएंगी. पक्का करें कि कारोबार से जुड़ा या निजी अहम डेटा, बाहरी फ़ाइलों में सेव किया गया हो.</translation>
 <translation id="3236212803136366317">कार्ड के फ़ायदे</translation>
@@ -1891,7 +1888,6 @@
 <translation id="4147897805161313378">Google Photos</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">चाइनीज़ #4 साइज़ का लिफ़ाफ़ा</translation>
-<translation id="4151403195736952345">वैश्‍विक डिफ़ॉल्‍ट का उपयोग करें (पता करें)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{पेज 1}one{पेज {COUNT}}other{पेज {COUNT}}}</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 टैब}one{# टैब}other{# टैब}}</translation>
 <translation id="4153446078232988116">एचटीटीपीएस वाली इस साइट (<ph name="SITE" />) पर सुरक्षित कनेक्शन की सुविधा काम नहीं करती</translation>
@@ -2907,6 +2903,7 @@
 <translation id="5879272455334365707">फ़ाइनेंशियल प्लानिंग और मैनेजमेंट</translation>
 <translation id="5879989559903563723">मेहमान मोड में अनुमति नहीं है</translation>
 <translation id="5880050725127890683">Chrome की सुरक्षा जांच पर जाएं</translation>
+<translation id="5880385758720707152">अपने Google खाते से, घर और ऑफ़िस के पते ऑटोमैटिक तरीके से भरें</translation>
 <translation id="5884465125445718607">चाइनीज़ #6 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="5886961930368713749">तुलना करने की सुविधा के बारे में सुझाव/राय दें या शिकायत करें</translation>
 <translation id="5887400589839399685">कार्ड सेव किया गया</translation>
@@ -2916,6 +2913,7 @@
 <translation id="5898767305816764989">'पसंद है' बटन. आपको <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> पसंद आया, इस बारे में जानकारी देने के लिए Enter दबाएं</translation>
 <translation id="5901630391730855834">पीला</translation>
 <translation id="5903264686717710770">टाइटल :</translation>
+<translation id="5905671155741555195">अगर आपने Chrome में अपने ऑफ़िस का पता सेट किया है, तो Google की अलग-अलग सेवाओं का आसानी से फ़ायदा लिया जा सकता है. जैसे, ज़्यादा काम के नतीजे पाना और Google Maps में ऑफ़िस जाने का रास्ता देखना. <ph name="BEGIN_LINK" />Google खाते <ph name="ACCOUNT" /> में<ph name="END_LINK" /> जाकर, अपने पते में बदलाव किया जा सकता है या उसे मिटाया जा सकता है.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (सिंक किया गया)</translation>
 <translation id="5910140988253729859">ऑटोमैटिक भरने की सुविधा को पहले जैसा करें</translation>
 <translation id="5911020115933784199">इवेंट और लिस्टिंग</translation>
@@ -3582,6 +3580,7 @@
 <translation id="6989763994942163495">अतिरिक्त सेटिंग दिखाएं...</translation>
 <translation id="6991376411634620997">पासकी • Windows Hello</translation>
 <translation id="6997288673234694149">बेसबॉल और सॉफ़्टबॉल इक्विपमेंट</translation>
+<translation id="6998512609912910179">फ़ॉर्म में तेज़ी से जानकारी भरें</translation>
 <translation id="6999480632062519056">फ़िटनेस से जुड़े निर्देश और पर्सनल ट्रेनिंग</translation>
 <translation id="7003278537452757231">दरी और कालीन</translation>
 <translation id="7003322000677139268">वाहनों के पुर्ज़े और ऐक्सेसरी</translation>
@@ -3813,6 +3812,7 @@
 <translation id="7403392780200267761">लिंक शेयर करके, क्यूआर कोड बनाकर, कास्ट करके, और अन्य विकल्पों की मदद से इस टैब को शेयर करें</translation>
 <translation id="7403591733719184120">आपका <ph name="DEVICE_NAME" /> प्रबंधित है</translation>
 <translation id="7405878640835614059"><ph name="ENROLLMENT_DOMAIN" /> ने अन्य फ़ंक्शन के लिए ऐप्लिकेशन इंस्टॉल किए हैं. ऐप्लिकेशन आपका कुछ डेटा ऐक्सेस कर सकते हैं.</translation>
+<translation id="740691708085211707">क्या Chrome में जानकारी ऑटोमैटिक तरीके से भरने की सुविधा से, ऑफ़िस का पता हटाना है?</translation>
 <translation id="7407424307057130981">&lt;p&gt;अगर आपके Windows कंप्यूटर पर Superfish सॉफ़्टवेयर है, तो आपको यह गड़बड़ी दिखाई देगी.&lt;/p&gt;
       &lt;p&gt;आगे बताए गए कदम उठाकर सॉफ़्टवेयर को कुछ देर के लिए बंद कर दें, ताकि आप वेब पर जा सकें. आपको एडमिन विशेषाधिकार चाहिए होंगे.&lt;/p&gt;
       &lt;ol&gt;
@@ -3909,6 +3909,7 @@
 <translation id="7534987659046836932">C7 साइज़ का लिफ़ाफ़ा</translation>
 <translation id="7535087603100972091">मान</translation>
 <translation id="753556296624075801">Google की ओर से</translation>
+<translation id="753713322968419914">क्या Chrome में जानकारी ऑटोमैटिक तरीके से भरने की सुविधा से, घर का पता हटाना है?</translation>
 <translation id="7537536606612762813">ज़रूरी है</translation>
 <translation id="7543525346216957623">अपने अभिभावक से पूछें</translation>
 <translation id="7546409722674205727"><ph name="APP_NAME" /> शुरू हो रहा है</translation>

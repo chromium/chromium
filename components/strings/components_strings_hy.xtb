@@ -542,7 +542,6 @@
 <translation id="1876399092304384674">Ըստ ամսաթվի</translation>
 <translation id="1877026089748256423">Chrome-ը հնացած է</translation>
 <translation id="187918866476621466">Բացել մեկնարկի էջերը</translation>
-<translation id="1880901968112404879">Հաջորդ անգամ ավելի արագ վճարելու համար պահեք ձեր քարտը, անվտանգության գաղտնագրված կոդը և վճարային հասցեն ձեր Google հաշվում</translation>
 <translation id="1883255238294161206">Ծալել ցանկը</translation>
 <translation id="1884843295353628214">Ջազ</translation>
 <translation id="1890171020361705182">Dino խաղ։ Պիքսելային դինոզավրը վազում է անապատով՝ խուսափելով կակտուսներից և պտերոդակտիլներից։ Երբ լսեք ձայնային հուշում, հպեք էկրանին՝ խոչընդոտի վրայով ցատկելու համար։</translation>
@@ -720,7 +719,6 @@
 <translation id="2183238148268545307">Տեսանյութերի մշակման ծրագիր</translation>
 <translation id="2183608646556468874">Հեռախոսահամար</translation>
 <translation id="2184405333245229118">{COUNT,plural, =1{1 հասցե}one{# հասցե}other{# հասցե}}</translation>
-<translation id="2187317261103489799">Որոշել (կանխադրված)</translation>
 <translation id="2188375229972301266">Մի քանի անցք ներքևում</translation>
 <translation id="218940509700321686">Ստորակետերով բաժանված արժեքներ</translation>
 <translation id="2194856509914051091">Կարևոր տեղեկություններ</translation>
@@ -943,7 +941,6 @@
 <translation id="2535659140340599600">{COUNT,plural, =1{ու ևս 1 տիրույթ}one{ու ևս # տիրույթ}other{ու ևս # տիրույթ}}</translation>
 <translation id="2536110899380797252">Ավելացնել հասցե</translation>
 <translation id="2537931901612099523">Այս սարքի մյուս օգտատերերը չեն տեսնի ձեր գործողությունները, այնպես որ կարող եք ավելի ապահով դիտարկել։ Սա չի ազդի ձեր այցելած կայքերի և դրանց օգտագործած ծառայությունների (այդ թվում՝ Google-ի) կողմից տվյալների հավաքման եղանակի վրա։ Ներբեռնումներն ու էջանիշները կպահվեն։</translation>
-<translation id="2539524384386349900">Ճանաչել</translation>
 <translation id="2541219929084442027">Բոլոր ինկոգնիտո ներդիրները փակելուց հետո դիտված էջերը չեն պահվում ձեր դիտարկիչի պատմության, քուքիների պահոցի կամ որոնման պատմության մեջ։ Ներբեռնումները կամ ստեղծած էջանիշները կպահպանվեն։</translation>
 <translation id="2542106216580219892">Սերֆինգ</translation>
 <translation id="2543236854123609690"><ph name="ORIGIN" />․ լիաէկրան ռեժիմից դուրս գալու համար սեղմեք և պահեք |<ph name="ACCELERATOR" />|</translation>
@@ -1338,7 +1335,6 @@
 <translation id="3229041911291329567">Ձեր սարքի և դիտարկիչի տարբերակի մասին տեղեկությունները</translation>
 <translation id="3229277193950731405">Պատճենել տարբերակի տողը</translation>
 <translation id="323107829343500871">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի CVC կոդը</translation>
-<translation id="3234666976984236645">Միշտ հատկորոշել կարևոր բովանդակությունը այս կայքում</translation>
 <translation id="323585066388831737">Բաց կարմիր</translation>
 <translation id="3235902901585019063">Տեղական ֆայլերը կջնջվեն հետևյալ ամսաթվին՝ <ph name="DATE_TIME" />։ Համոզվեք, որ ցանկացած կարևոր բիզնես կամ անձնական տվյալներ պահվում են դրսում։</translation>
 <translation id="3236212803136366317">Քարտի առավելություններ</translation>
@@ -1898,7 +1894,6 @@
 <translation id="4147897805161313378">Google Լուսանկարներ</translation>
 <translation id="4148925816941278100">American Express</translation>
 <translation id="4150099059797363385">Envelope Chinese #4</translation>
-<translation id="4151403195736952345">Օգտագործել համընդհանուր կանխադրվածը (Հատկորոշել)</translation>
 <translation id="4152318981910038897">{COUNT,plural, =1{Էջ 1}one{Էջ {COUNT}}other{Էջ {COUNT}}}</translation>
 <translation id="4152670763139331043">{NUM_TABS,plural, =1{1 ներդիր}one{# ներդիր}other{# ներդիր}}</translation>
 <translation id="4153446078232988116"><ph name="SITE" /> կայքը չի աջակցում ապահով միացում HTTPS-ի միջոցով</translation>
@@ -2917,6 +2912,7 @@
 <translation id="5879272455334365707">Ֆինանսական պլանավորում և կառավարում</translation>
 <translation id="5879989559903563723">Թույլատրված չէ հյուրի ռեժիմում</translation>
 <translation id="5880050725127890683">Անցնել «Chrome-ի անվտանգության ստուգում» էջ</translation>
+<translation id="5880385758720707152">Ավտոմատ լրացրեք ձեր տան և աշխատավայրի հասցեները Google հաշվում պահված տվյալների միջոցով</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
 <translation id="5886961930368713749">Կարծիք հայտնեք համեմատության գործառույթի մասին</translation>
 <translation id="5887400589839399685">Քարտը պահվեց</translation>

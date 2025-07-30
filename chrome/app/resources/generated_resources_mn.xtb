@@ -935,7 +935,6 @@
 <translation id="1632293440289326475">Батарейн ажиллах хугацааг уртасгахын тулд Эрчим хүч хэмнэгчийг асаана уу</translation>
 <translation id="1632756664321977232">Тайралтын хэрэгсэл</translation>
 <translation id="163309982320328737">Эхний тэмдэгтийн өргөн Бүрэн</translation>
-<translation id="1633947793238301227">Google Туслахыг идэвхгүй болгох</translation>
 <translation id="1634224622052500893">Wi-Fi сүлжээ олдлоо</translation>
 <translation id="1634783886312010422">Та энэ нууц үгийг <ph name="WEBSITE" /> дээр аль хэдийн өөрчилсөн үү?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Табыг хасаж, бүлгийг устгах уу?}=1{Табуудыг хасаж, бүлгийг устгах уу?}other{Табуудыг хасаж, бүлгүүдийг устгах уу?}}</translation>
@@ -1369,6 +1368,7 @@
 <translation id="1931152874660185993">Ямар ч бүрэлдэхүүн хэсэг суугдаагүй байна.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" />-г суулгаж байна</translation>
 <translation id="1932098463447129402">Өмнө нь биш</translation>
+<translation id="1933070475689690969">Gemini-тай харилцдаг аппын үйл ажиллагаа</translation>
 <translation id="1933489278505808700">Унших, өөрчлөхийг зөвшөөрсөн</translation>
 <translation id="1935303383381416800">Таны байршлыг харахыг зөвшөөрсөн</translation>
 <translation id="193565226207940518">Тусламжийн хэрэгсэл</translation>
@@ -2375,7 +2375,6 @@
 <translation id="2620245777360407679">Сүлжээний цэгт одоогоор холбогдсон төхөөрөмжүүд</translation>
 <translation id="2620436844016719705">Систем</translation>
 <translation id="2620900772667816510">Bluetooth-н супер нягтрал</translation>
-<translation id="262154978979441594">Google Туслахын дуу хоолойн загварыг сургах</translation>
 <translation id="2622280935687585828"><ph name="SITE_NAME" />-г идэвхгүй болгосон сайтуудаас хасах</translation>
 <translation id="26224892172169984">Ямар ч сайтад мэдээлэл дамжуулахыг бүү зөвшөөр</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2891,6 +2890,7 @@
 <translation id="2981113813906970160">Том хулганын заагч сумыг харуулах</translation>
 <translation id="2983102365694924129">Таны сайт дээрх үйл ажиллагаанд тулгуурласан. Энэ тохиргоо унтраалттай байна.</translation>
 <translation id="2983373101216420412">Гэрийн батарейн түвшин <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">Тохиргоо...</translation>
 <translation id="2984384421572259426">Ашиглаагүй табуудыг цэвэрлэх</translation>
 <translation id="2984727013951557074">Файлыг Драйвт синк хийсэн хэвээр байна.</translation>
 <translation id="2985348301114641460">Таны администраторт "<ph name="EXTENSION_NAME" />"-г суулгах хүсэлтийг илгээх үү?</translation>
@@ -3509,6 +3509,7 @@
 <translation id="3435738964857648380">Нууцлал</translation>
 <translation id="343578350365773421">Цаас дууссан</translation>
 <translation id="3435896845095436175">Идэвхжүүл</translation>
+<translation id="3437072258256045988">Gemini-тай харилцдаг аппын үйл ажиллагаагаа удирдана уу</translation>
 <translation id="3437397693214267762">Outlook Календарь, SharePoint, OneDrive-н файлуудаа харна уу</translation>
 <translation id="3438633801274389918">Нинжа</translation>
 <translation id="3439153939049640737"><ph name="HOST" />-д таны микрофон руу нэвтрэхийг үргэлж зөвшөөрөх</translation>
@@ -3521,7 +3522,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" /> завсарласан</translation>
 <translation id="3443754338602062261">Таны <ph name="BRAND" />-н эдгээр бүртгэлд аль хэдийн нууц үгнүүд байна. Хэрэв та доорх нууц үгнүүдийн нэгийг импорт хийхээр сонговол энэ нь одоо байгааг солино.</translation>
 <translation id="344449859752187052">Гуравдагч талын күүкинүүдийг блоклосон</translation>
-<translation id="3445047461171030979">Google Туслахын шуурхай хариултууд</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344537926140058498">Энэ файлд эмзэг эсвэл аюултай контент байгаа тул танай байгууллага үүнийг блоклосон. Өмчлөгчөөс нь үүнийг засахыг хүснэ үү.</translation>
 <translation id="3445465968953598059">Нүүрний хяналт</translation>
@@ -3954,7 +3954,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" />-р үргэлжлүүлэх</translation>
 <translation id="3732530910372558017">ПИН хамгийн ихдээ 63 тэмдэгттэй байх ёстой</translation>
 <translation id="3732706448780793442">Гар аргаар хянах</translation>
-<translation id="3732857534841813090">Google Туслахтай холбоотой мэдээлэл</translation>
 <translation id="3733296813637058299">Бид эдгээр аппыг танд суулгаж өгнө. Та <ph name="DEVICE_TYPE" />-д суулгаж болох бусад аппыг Play Store-с олох боломжтой.</translation>
 <translation id="3734547157266039796">Тутрагын талбай</translation>
 <translation id="3735039640698208086">Аудио тоглуулж байх үед...</translation>
@@ -4185,7 +4184,6 @@
 <translation id="3873315167136380065">Үүнийг асаахын тулд <ph name="BEGIN_LINK" />синкийг шинэчилж<ph name="END_LINK" /> синкийн нэвтрэх үгийг устгана уу</translation>
 <translation id="3873423927483480833">ПИН харуулах</translation>
 <translation id="3873915545594852654">ARC++-д асуудал гарлаа.</translation>
-<translation id="3874164307099183178">Google Туслахыг асаах</translation>
 <translation id="3874845889165401548">Энэ онцлог ХОУ-ыг ашигладаг бөгөөд туршилтынх юм</translation>
 <translation id="3875511946736639169">Зургуудыг идэвхжүүлэх</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" />-г хөтчийн шинэ табд нээхээр тохируулсан бөгөөд дэмжигдсэн холбооснуудыг мөн хөтчид нээнэ. <ph name="BEGIN_LINK_LEARN_MORE" />Нэмэлт мэдээлэл авах<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4843,7 +4841,6 @@
 <translation id="4348766275249686434">Алдааг цуглуул</translation>
 <translation id="4349828822184870497">Хэрэгтэй</translation>
 <translation id="4350230709416545141">Байршилд тань хандахыг <ph name="HOST" />-д үргэлж хориглох</translation>
-<translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">Суулгасан болон дамжуулсан аппуудыг удирдахын тулд "<ph name="APP_NAME" />" апп руу очно уу</translation>
 <translation id="4352913519324947509">Таны нууц үгийг өөрчлөөгүй ч та одоогийн нууц үгээрээ сайтад хандах боломжтой хэвээр байх ёстой</translation>
 <translation id="4354073718307267720">Сайт таны эргэн тойрны 3D газрын зургийг үүсгэх эсвэл камерын хөдөлгөөнийг хянах хүсэлтэй үед асуух</translation>
@@ -5111,7 +5108,6 @@
 <translation id="4545759655004063573">Холбогдох зөвшөөрөл дутуу байаа тул хадгалах боломжгүй байна. Та өөр хэсэгт хадгална уу.</translation>
 <translation id="4546345569117159016">Баруун товч</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> энэ өргөтгөлийг ашиглахыг хүсэж байна:</translation>
-<translation id="4546692474302123343">Google Туслахын дуу хоолойгоор оруулах</translation>
 <translation id="4547659257713117923">Бусад төхөөрөмжөөс ирсэн цонх байхгүй байна</translation>
 <translation id="4547672827276975204">Автоматаар тохируулах</translation>
 <translation id="4549791035683739768">Таны аюулгүй байдлын түлхүүр дээр хадгалсан хурууны хээ байхгүй байна</translation>
@@ -5487,7 +5483,6 @@
 <translation id="4816900689218414104">Утас эсвэл таблетад passkey үүсгэнэ үү</translation>
 <translation id="481917177323309377">Таны <ph name="COUNT" /> эсвэл түүнээс олон хоног ашиглаагүй табууд</translation>
 <translation id="4819323978093861656">{0,plural, =0{Одоо хааж байна.}=1{Дараах хугацааны дараа хаана: 1 секунд}other{Дараах хугацааны дараа хаана: # секунд}}</translation>
-<translation id="4819607494758673676">Google Туслахын мэдэгдэл</translation>
 <translation id="4819818293886748542">Тусламжийн хэрэгслийн холбоосыг авах</translation>
 <translation id="4820236583224459650">Идэвхтэй тасалбар болгож тохируулах</translation>
 <translation id="4820795723433418303">Функцийн түлхүүрүүдийг дээд мөрийн түлхүүрүүдээр ашиглах</translation>
@@ -5536,7 +5531,6 @@
 <translation id="4846897209694249040">Таны хулганын оролтын мэдээллийг авч, ашиглахыг зөвшөөрөөгүй</translation>
 <translation id="4847242508757499006">"Дахин оролдох"-ыг сонгох эсвэл хязгаарлагдмал харагдах байдал болон засах сонголтуудыг ашиглахын тулд "Үндсэн засварлагчид нээх"-ийг сонгоно уу.</translation>
 <translation id="4847742514726489375">Хөдөлгөөнийг багасгасан</translation>
-<translation id="4848191975108266266">Google Туслахын "Ok Google"</translation>
 <translation id="4849286518551984791">Олон Улсын Зохицуулсан Цаг (UTC/GMT)</translation>
 <translation id="4849517651082200438">Битгий суурьлуул</translation>
 <translation id="4849731766219625109"><ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> бүртгэлээ ашиглах</translation>
@@ -5550,6 +5544,7 @@
 <translation id="4852916668365817106">Хулганын өнгө</translation>
 <translation id="4853020600495124913">&amp; Шинэ цонхонд нээх</translation>
 <translation id="4854317507773910281">Зөвшөөрөл хүсэх эцэг эхийн бүртгэлийг сонгоно уу</translation>
+<translation id="4854603338816296098">Хаягийг хассан</translation>
 <translation id="485480310608090163">Бусад тохиргоо болон зөвшөөрөл</translation>
 <translation id="4857304314344645169">Аливаа асуудлын дэлгэрэнгүй тайлбарыг харна уу</translation>
 <translation id="485806788160414322">Медиаг тоглуулах эсвэл түр зогсоох</translation>
@@ -6226,7 +6221,6 @@
 <translation id="534449933710420173">Нэрлэгдээгүй фолдер</translation>
 <translation id="5345916423802287046">Нэвтрэх үедээ аппыг эхлүүлэх</translation>
 <translation id="5350116201946341974">Хачин</translation>
-<translation id="5350293332385664455">Google Туслахыг унтраах</translation>
 <translation id="535123479159372765">Өөр төхөөрөмжөөс хуулсан текст</translation>
 <translation id="5352033265844765294">Цагаар тамгалах</translation>
 <translation id="5352257124367865087">Сайтын зөвшөөрлүүдийг удирдах</translation>
@@ -7273,7 +7267,6 @@
 <translation id="6108952804512516814">ХОУ-аар үүсгэх</translation>
 <translation id="6110303766838612983">Гэмтлийн тайлангаас гадна оношилгоо, ашиглалтын өгөгдлийг ChromeOS-д илгээх</translation>
 <translation id="6111718295497931251">Google Драйвын хандалтыг хасах</translation>
-<translation id="6111972606040028426">Google Туслахыг идэвхжүүлэх</translation>
 <translation id="6112727384379533756">Тасалбар нэмэх</translation>
 <translation id="6112931163620622315">Утсаа шалгана уу</translation>
 <translation id="6113434369102685411">Chrome хөтөч болон <ph name="DEVICE_TYPE" />-н эхлүүлэгчид өгөгдмөл хайлтын системээ тохируулна уу</translation>
@@ -8429,7 +8422,6 @@
 <translation id="6924109527536857168">Синк хийх шаардлагатай</translation>
 <translation id="6928650056523249512">Ашигладаггүй сайтуудаас зөвшөөрлүүдийг автоматаар хасах</translation>
 <translation id="6929126689972602640">Эцэг эхийн хяналтыг сургуулийн бүртгэлүүдэд дэмждэггүй. Гэртээ хичээл хийх зорилгоор Google Анги болон бусад вебсайтад хандахын тулд сургуулийн бүртгэлийг нэмэх бол эхлээд хүүхдийн хувийн бүртгэлээр нэвтэрнэ үү. Та дараа нь тохируулга хэсэгт сургуулийн бүртгэл нэмэх боломжтой.</translation>
-<translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Өргөтгөлийг зөвшөөрөөгүй}other{# өргөтгөлийг зөвшөөрөөгүй}}</translation>
 <translation id="6930337524857202955">Шинээр татсан зүйлийг ашиглах боломжтой байна</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>

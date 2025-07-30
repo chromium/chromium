@@ -210,7 +210,7 @@
 <translation id="1815941218935345331">密碼</translation>
 <translation id="1818687879307252150">{count,plural, =0{沒有任何密碼外洩}=1{有 {count} 組密碼外洩}other{有 {count} 組密碼外洩}}</translation>
 <translation id="1819374301217551116">價格追蹤和深入分析</translation>
-<translation id="1820195936249950412">使用有效帳戶登入</translation>
+<translation id="1820195936249950412">請使用有效帳戶登入</translation>
 <translation id="1820259098641718022">已加入閱讀清單</translation>
 <translation id="1823768272150895732">字型</translation>
 <translation id="1824490729233982311">收到其他裝置的分頁時顯示快訊。</translation>
@@ -363,6 +363,7 @@
 <translation id="236977714248711277">網站無法使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品。
 
 網站無法使用 Cookie 查看你在各網站的瀏覽活動，也無法提供個人化廣告等服務。</translation>
+<translation id="2377230674627603057">分頁群組方格</translation>
 <translation id="2377336083033403521">搜尋分頁…</translation>
 <translation id="2381405137052800939">基本</translation>
 <translation id="2384692388811649784">隱藏無痕分頁</translation>
@@ -650,7 +651,6 @@
 <translation id="3595252146048399851">你隨時可以在<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />中選擇要同步處理的資料。Google 可能會根據你的歷史記錄在 Google 搜尋等其他服務中提供個人化體驗。</translation>
 <translation id="3596414637720633074">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="3602260545951981695">選擇「強化防護」</translation>
-<translation id="3608436266458100337">閱讀器模式</translation>
 <translation id="3610041351087301930">隱藏閱讀器模式</translation>
 <translation id="3622175633937495219">搜尋歷史記錄 (找到 <ph name="COUNT" /> 項結果)</translation>
 <translation id="3625008969091706597">只要在邊緣滑動即可返回上一個畫面。</translation>
@@ -1332,9 +1332,11 @@
 <translation id="6234310016144827337">請檢查連線狀態，然後再試一次</translation>
 <translation id="6234438496206735891">顯示下載內容</translation>
 <translation id="6236952928980352967">取消忽略警告</translation>
+<translation id="623755660902014047">閱讀模式</translation>
 <translation id="6247557882553405851">Google 密碼管理工具</translation>
 <translation id="6251835855431997163">自動填入「<ph name="VALUE" />」</translation>
 <translation id="6254066287920239840">使用應用程式開啟連結，而不要在瀏覽器中開啟。</translation>
+<translation id="6259928806013786178">無法使用閱讀模式</translation>
 <translation id="6268773951964630964">搜尋複製的圖片</translation>
 <translation id="6271462272606946663">隱藏「切換為行動版網站」</translation>
 <translation id="6271824294945464304">即將分享密碼</translation>
@@ -2104,6 +2106,7 @@
 <translation id="9144230693397287797">接收你在其他裝置上設定的提醒和分頁最新動態</translation>
 <translation id="914781932147356857">全部標示…</translation>
 <translation id="9148126808321036104">重新登入</translation>
+<translation id="9149866541089851383">編輯...</translation>
 <translation id="9159628751968616911">傳送網頁</translation>
 <translation id="9162432979321511934">開啟「自動填寫密碼」</translation>
 <translation id="9165320910061267720">如要接收降價快訊通知，請在 iOS 設定中開啟通知功能。</translation>

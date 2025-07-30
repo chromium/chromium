@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1166644470305877068">「隔離的網絡應用程式」會自動採用此設定</translation>
+<translation id="116712635768212829">如果 Chrome 發現你的密碼在資料外洩事件中外洩，「Google 密碼管理工具」可能會在你登入時提議為你更改密碼。</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 後開啟…</translation>
 <translation id="1168704243733734901">最近嘅<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格係<ph name="STYLE" />，情境係<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">設定完成！下一步只需裝置即可玩遊戲</translation>
 <translation id="137651782282853227">已儲存的地址會在這裡顯示</translation>
 <translation id="1376771218494401509">為視窗命名…(&amp;W)</translation>
+<translation id="1377438103060664754">如果你的密碼在資料外洩事件中外洩，「Google 密碼管理工具」會詢問你是否要改用安全度高的密碼</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1378613616312864539">此設定目前受「<ph name="NAME" />」控制</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有密碼被盜用}=1{1 個密碼被盜用}other{{NUM_COMPROMISED} 個密碼被盜用}}</translation>
@@ -939,7 +941,6 @@
 <translation id="1632293440289326475">開啟「省電模式」可延長電池壽命</translation>
 <translation id="1632756664321977232">裁剪工具</translation>
 <translation id="163309982320328737">初始字元寬度為全形</translation>
-<translation id="1633947793238301227">停用「Google 助理」</translation>
 <translation id="1634224622052500893">找到 Wi-Fi 網絡</translation>
 <translation id="1634783886312010422">您是否已在 <ph name="WEBSITE" /> 上變更此密碼？</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{要移除分頁並刪除群組嗎？}=1{要移除分頁並刪除群組嗎？}other{要移除分頁並刪除群組嗎？}}</translation>
@@ -1373,6 +1374,7 @@
 <translation id="1931152874660185993">未安裝任何組件。</translation>
 <translation id="1931410639376954712">正在安裝 <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">此日期之後</translation>
+<translation id="1933070475689690969">Gemini 應用程式活動</translation>
 <translation id="1933489278505808700">已允許讀取並變更</translation>
 <translation id="1935303383381416800">已允許查看您的位置</translation>
 <translation id="193565226207940518">支援工具</translation>
@@ -2379,7 +2381,6 @@
 <translation id="2620245777360407679">裝置目前已連線至熱點</translation>
 <translation id="2620436844016719705">系統</translation>
 <translation id="2620900772667816510">超解像度藍牙</translation>
-<translation id="262154978979441594">訓練「Google 助理」語音模型</translation>
 <translation id="2622280935687585828">將 <ph name="SITE_NAME" /> 由已經停用嘅網站度移除</translation>
 <translation id="26224892172169984">不允許任何網站處理通訊協定</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2894,6 +2895,7 @@
 <translation id="2981113813906970160">顯示大型滑鼠游標</translation>
 <translation id="2983102365694924129">根據您在網站上的活動推薦。此設定已關閉。</translation>
 <translation id="2983373101216420412">充電盒電量係 <ph name="PERCENTAGE" />%。</translation>
+<translation id="2983818520079887040">設定…</translation>
 <translation id="2984384421572259426">清理未使用的分頁</translation>
 <translation id="2984727013951557074">檔案仍在同步至「雲端硬碟」。</translation>
 <translation id="2985348301114641460">要向管理員傳送「<ph name="EXTENSION_NAME" />」的安裝要求嗎？</translation>
@@ -3510,6 +3512,7 @@
 <translation id="3435738964857648380">安全性</translation>
 <translation id="343578350365773421">紙張用完</translation>
 <translation id="3435896845095436175">啟用</translation>
+<translation id="3437072258256045988">管理 Gemini 應用程式活動</translation>
 <translation id="3437397693214267762">查看 Outlook 日曆、SharePoint 和 OneDrive 檔案</translation>
 <translation id="3438633801274389918">忍者</translation>
 <translation id="3439153939049640737">永遠允許 <ph name="HOST" /> 存取您的麥克風</translation>
@@ -3522,7 +3525,6 @@
 <translation id="3443744348829035122">「<ph name="BRAND" />」逾時</translation>
 <translation id="3443754338602062261">您的「<ph name="BRAND" />」中已有這些帳戶的密碼。如果選擇匯入以下其中一個密碼，將會取代現有密碼。</translation>
 <translation id="344449859752187052">已封鎖第三方 Cookie</translation>
-<translation id="3445047461171030979">「Google 助理」快速解答</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> 分鐘</translation>
 <translation id="344537926140058498">由於此檔案含有敏感或不安全的內容，因此已被機構封鎖。請要求擁有者修正。</translation>
 <translation id="3445465968953598059">人臉操控</translation>
@@ -3955,7 +3957,6 @@
 <translation id="3732414796052961578">以<ph name="ACCOUNT_NAME" />的身分繼續</translation>
 <translation id="3732530910372558017">PIN 不可超出 63 個字元</translation>
 <translation id="3732706448780793442">接手處理</translation>
-<translation id="3732857534841813090">「Google 助理」相關資料</translation>
 <translation id="3733296813637058299">我們將為您安裝這些應用程式。您可以在「Play 商店」中發掘更多適用於 <ph name="DEVICE_TYPE" /> 的應用程式。</translation>
 <translation id="3734547157266039796">稻田</translation>
 <translation id="3735039640698208086">播放音訊時…</translation>
@@ -4186,7 +4187,6 @@
 <translation id="3873315167136380065">如要啟用此功能，請<ph name="BEGIN_LINK" />重設同步功能<ph name="END_LINK" />以移除同步密碼短語</translation>
 <translation id="3873423927483480833">顯示 PIN</translation>
 <translation id="3873915545594852654">ARC++ 發生問題。</translation>
-<translation id="3874164307099183178">開啟「Google 助理」</translation>
 <translation id="3874845889165401548">此實驗版功能採用 AI</translation>
 <translation id="3875511946736639169">顯示圖片</translation>
 <translation id="3875815154304214043">「<ph name="APP_NAME" />」已設定為在新瀏覽器分頁中開啟，支援的連結亦會在瀏覽器中開啟。<ph name="BEGIN_LINK_LEARN_MORE" />瞭解詳情<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4773,6 +4773,7 @@
 <translation id="4295072614469448764">應用程式已在終端機上完成安裝，其圖示可能會在啟動器中顯示。</translation>
 <translation id="4295979599050707005">請再次登入，確認您的帳戶 <ph name="USER_EMAIL" /> 可用於 Chrome 和 Google Play 的網站、應用程式和擴充程式。您亦可以移除此帳戶。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">已透過「<ph name="APP_NAME" />」安裝及串流的應用程式</translation>
+<translation id="4296632172536745000">你在這個網站的原密碼在公開資料外洩事件中外洩。你於 <ph name="DATE" />要求「<ph name="BRAND" />」自動為你更改密碼。</translation>
 <translation id="4297219207642690536">重新啟動並重設</translation>
 <translation id="4297813521149011456">螢幕旋轉</translation>
 <translation id="4298660926525614540">卸除式儲存裝置名稱</translation>
@@ -4841,7 +4842,6 @@
 <translation id="4348766275249686434">收集錯誤資訊</translation>
 <translation id="4349828822184870497">有幫助</translation>
 <translation id="4350230709416545141">一律禁止 <ph name="HOST" /> 存取您的位置</translation>
-<translation id="4350782034419308508">Hey Google</translation>
 <translation id="435185728237714178">請前往「<ph name="APP_NAME" />」應用程式，管理已安裝和串流的應用程式</translation>
 <translation id="4352913519324947509">你的密碼並未變更，但你應該仍能使用當前密碼存取網站</translation>
 <translation id="4354073718307267720">在網站要求建立您身處環境的 3D 地圖或追蹤攝錄機位置時詢問您</translation>
@@ -5109,7 +5109,6 @@
 <translation id="4545759655004063573">權限不足，無法儲存，請儲存到其他位置。</translation>
 <translation id="4546345569117159016">右鍵</translation>
 <translation id="4546509872654834602">「<ph name="SUPERVISED_USER_NAME" />」要求使用此擴充程式：</translation>
-<translation id="4546692474302123343">「Google 助理」語音輸入</translation>
 <translation id="4547659257713117923">沒有其他裝置的分頁</translation>
 <translation id="4547672827276975204">自動設定</translation>
 <translation id="4549791035683739768">您的安全密鑰並未儲存任何指紋</translation>
@@ -5485,7 +5484,6 @@
 <translation id="4816900689218414104">在手機或平板電腦上建立密鑰</translation>
 <translation id="481917177323309377">至少 <ph name="COUNT" /> 天未用過的分頁</translation>
 <translation id="4819323978093861656">{0,plural, =0{立即關閉。}=1{關閉時間：1 秒後}other{關閉時間：# 秒後}}</translation>
-<translation id="4819607494758673676">「Google 助理」通知</translation>
 <translation id="4819818293886748542">取得「支援工具」連結</translation>
 <translation id="4820236583224459650">設定為有效票證</translation>
 <translation id="4820795723433418303">將最上排按鍵當作功能鍵使用</translation>
@@ -5533,7 +5531,6 @@
 <translation id="4846897209694249040">不允許擷取和使用你的滑鼠輸入</translation>
 <translation id="4847242508757499006">你可選擇「再試一次」或「在基本編輯器中開啟」。如果選擇後者，可使用有限的查看和編輯選項。</translation>
 <translation id="4847742514726489375">減少動態效果</translation>
-<translation id="4848191975108266266">Google 助理及「Ok Google」</translation>
 <translation id="4849286518551984791">世界標準時間 (UTC/GMT)</translation>
 <translation id="4849517651082200438">不要安裝</translation>
 <translation id="4849731766219625109">使用 <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> 帳戶</translation>
@@ -5547,6 +5544,7 @@
 <translation id="4852916668365817106">滑鼠顏色</translation>
 <translation id="4853020600495124913">在新視窗中開啟(&amp;N)</translation>
 <translation id="4854317507773910281">選擇執行審核的家長帳戶</translation>
+<translation id="4854603338816296098">移除咗地址</translation>
 <translation id="485480310608090163">更多設定和權限</translation>
 <translation id="4857304314344645169">查看任何題目的逐步說明</translation>
 <translation id="485806788160414322">播放或暫停媒體</translation>
@@ -6222,7 +6220,6 @@
 <translation id="534449933710420173">未命名的資料夾</translation>
 <translation id="5345916423802287046">當您登入時啟動應用程式</translation>
 <translation id="5350116201946341974">異想天開</translation>
-<translation id="5350293332385664455">關閉「Google 助理」</translation>
 <translation id="535123479159372765">從其他裝置複製的文字</translation>
 <translation id="5352033265844765294">時間戳記</translation>
 <translation id="5352257124367865087">管理網站權限</translation>
@@ -7266,7 +7263,6 @@
 <translation id="6108952804512516814">以 AI 製作</translation>
 <translation id="6110303766838612983">將當機報告、診斷和使用情況資料自動傳送給 ChromeOS</translation>
 <translation id="6111718295497931251">移除「Google 雲端硬碟」存取權</translation>
-<translation id="6111972606040028426">啟用「Google 助理」</translation>
 <translation id="6112727384379533756">新增票證</translation>
 <translation id="6112931163620622315">請檢查手機</translation>
 <translation id="6113434369102685411">設定 Chrome 瀏覽器和 <ph name="DEVICE_TYPE" /> 啟動器的預設搜尋引擎</translation>
@@ -8422,7 +8418,6 @@
 <translation id="6924109527536857168">需要同步</translation>
 <translation id="6928650056523249512">自動移除未使用網站的權限</translation>
 <translation id="6929126689972602640">學校帳戶不支援家長監控設定。如要新增學校帳戶，以便在家中存取 Google Classroom 和其他學校作業用的網站，請先使用子女的個人帳戶登入。您稍後可在設定新增學校帳戶。</translation>
-<translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{已拒絕 1 個擴充程式}other{已拒絕 # 個擴充程式}}</translation>
 <translation id="6930337524857202955">有新下載項目</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9325,6 +9320,7 @@
 <translation id="7582844466922312471">流動數據</translation>
 <translation id="7583948862126372804">計數</translation>
 <translation id="7585106857920830898">正在檢查是否符合您機構的安全性政策…</translation>
+<translation id="7585490016012953607">復原密碼 (臨時儲存最多 3 個月)</translation>
 <translation id="7586498138629385861">Chrome 會在 Chrome 應用程式開啟的狀態下持續運作。</translation>
 <translation id="7587806318633605613">建議記錄</translation>
 <translation id="7589448773774086276">使用目前分頁建立新的分割檢視畫面</translation>

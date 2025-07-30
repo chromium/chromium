@@ -363,6 +363,7 @@
 <translation id="236977714248711277">Nettsteder kan ikke bruke informasjonskapsler for å gi deg en bedre surfeopplevelse, for eksempel for å holde deg pålogget eller huske varene i handlekurven din.
 
 Nettsteder kan ikke bruke informasjonskapsler til å se nettleseraktiviteten din på andre nettsteder, for eksempel for å vise deg personlig tilpassede annonser.</translation>
+<translation id="2377230674627603057">Rutenett for fanegrupper</translation>
 <translation id="2377336083033403521">Søk i faner…</translation>
 <translation id="2381405137052800939">Grunninnstillinger</translation>
 <translation id="2384692388811649784">Skjul inkognitofaner</translation>
@@ -650,7 +651,6 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="3595252146048399851">Du kan når som helst velge hva du vil synkronisere, i <ph name="BEGIN_LINK" />innstillingene<ph name="END_LINK" />. Google kan gi Søk og andre tjenester personlig preg basert på loggen din.</translation>
 <translation id="3596414637720633074">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="3602260545951981695">Velg «Økt beskyttelse»</translation>
-<translation id="3608436266458100337">Lesermodus</translation>
 <translation id="3610041351087301930">Skjul leser</translation>
 <translation id="3622175633937495219">Søkelogg (fant <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Du kan sveipe på kanten for å gå tilbake.</translation>
@@ -1332,9 +1332,11 @@ Handoff må også være aktivert i Generelt-delen av Innstillinger, og enhetene 
 <translation id="6234310016144827337">Sjekk tilkoblingen og prøv igjen</translation>
 <translation id="6234438496206735891">Vis nedlastinger</translation>
 <translation id="6236952928980352967">Gjenopprett varsel</translation>
+<translation id="623755660902014047">Lesemodus</translation>
 <translation id="6247557882553405851">Google Passordlagring</translation>
 <translation id="6251835855431997163">Autofyll <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Åpne linker i appen i stedet for i nettleseren.</translation>
+<translation id="6259928806013786178">Lesemodus mislyktes</translation>
 <translation id="6268773951964630964">Søk etter bildet du kopierte</translation>
 <translation id="6271462272606946663">Skjul Be om mobilversjonen av nettstedet</translation>
 <translation id="6271824294945464304">Deler passordet</translation>
@@ -2104,6 +2106,7 @@ Nettsteder kan bruke informasjonskapsler til å se nettleseraktiviteten din på 
 <translation id="9144230693397287797">Motta oppdateringer om påminnelser du har stilt inn, og faner fra andre enheter</translation>
 <translation id="914781932147356857">Merk alle…</translation>
 <translation id="9148126808321036104">Logg på igjen</translation>
+<translation id="9149866541089851383">Endre</translation>
 <translation id="9159628751968616911">Send nettside</translation>
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9165320910061267720">For å få varsler om avslag må du slå på varsler i iOS-innstillingene.</translation>

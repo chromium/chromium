@@ -936,7 +936,6 @@
 <translation id="1632293440289326475">බැටරි ආයු කාලය දීර්ඝ කිරීමට බලශක්ති සුරැකුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="1632756664321977232">කප්පාදු කිරීමේ මෙවලම</translation>
 <translation id="163309982320328737">මූලික අනුලකුණු පළල පිරී ඇත</translation>
-<translation id="1633947793238301227">Google සහකරු අබල කරන්න</translation>
 <translation id="1634224622052500893">WiFi ජාලය හමු විය</translation>
 <translation id="1634783886312010422">ඔබ දැනටමත් <ph name="WEBSITE" /> මත මෙම මුරපදය වෙනස් කර තිබේද?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{පටිත්ත ඉවත් කර සමූහය මකන්න ද?}=1{පටිති ඉවත් කර සමූහය මකන්න ද?}one{පටිති ඉවත් කර සමූහය මකන්න ද?}other{පටිති ඉවත් කර සමූහය මකන්න ද?}}</translation>
@@ -1362,6 +1361,7 @@
 <translation id="1931152874660185993">කිසිදු උපාංගයක් හමු නොවීය.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> ස්ථාපනය කරමින්</translation>
 <translation id="1932098463447129402">මීට පසු</translation>
+<translation id="1933070475689690969">Gemini යෙදුම් ක්‍රියාකාරකම</translation>
 <translation id="1933489278505808700">කියවීමට සහ වෙනස් කිරීමට ඉඩ ඇත</translation>
 <translation id="1935303383381416800">ඔබගේ ස්ථානය බැලීමට ඉඩ දේ</translation>
 <translation id="193565226207940518">සහාය මෙවලම</translation>
@@ -2368,7 +2368,6 @@
 <translation id="2620245777360407679">දැනට හොට්ස්පොට් වෙත සම්බන්ධිත උපාංග</translation>
 <translation id="2620436844016719705">පද්ධතිය</translation>
 <translation id="2620900772667816510">බ්ලූටූත් සුපිරි විභේදනය</translation>
-<translation id="262154978979441594">Google සහකරු හඬ මාදිලිය පුහුණු කරන්න</translation>
 <translation id="2622280935687585828">අවල කළ අඩවිවලින් <ph name="SITE_NAME" /> ඉවත් කරන්න</translation>
 <translation id="26224892172169984">ප්‍රොටොකෝල මෙහෙයවීමට කිසිදු අඩවියකට ඉඩ නොදෙන්න</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2884,6 +2883,7 @@
 <translation id="2981113813906970160">විශාල මුසික කර්සරය පෙන්වන්න</translation>
 <translation id="2983102365694924129">අඩවියක ඔබේ ක්‍රියාකාරකම් මත පදනම්ව. මෙම සැකසීම ක්‍රියාවිරහිතයි.</translation>
 <translation id="2983373101216420412">කොපු බැටරි මට්ටම <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">සැකසුම්:...</translation>
 <translation id="2984384421572259426">භාවිතයට නොගත් පටිති පිරිසිදු කරන්න</translation>
 <translation id="2984727013951557074">ගොනුව තවමත් Drive වෙත සමමුහූර්ත කෙරේ.</translation>
 <translation id="2985348301114641460">"<ph name="EXTENSION_NAME" />" ස්ථාපන කිරීමට ඔබේ පරිපාලකයාට ඉල්ලීමක් යවන්නේද?</translation>
@@ -3500,6 +3500,7 @@
 <translation id="3435738964857648380">ආරක්ෂක</translation>
 <translation id="343578350365773421">කඩදාසි නැත</translation>
 <translation id="3435896845095436175">සක්‍රිය කරන්න</translation>
+<translation id="3437072258256045988">ඔබේ Gemini යෙදුම් ක්‍රියාකාරකම් කළමනාකරණය කරන්න</translation>
 <translation id="3437397693214267762">ඔබේ Outlook දින දර්ශනය සහ SharePoint සහ OneDrive ගොනු බලන්න</translation>
 <translation id="3438633801274389918">නින්ජා</translation>
 <translation id="3439153939049640737">ඔබේ මයික්‍රෆෝනය වෙත පිවිසීමට<ph name="HOST" /> හට ඉඩ දෙන්න</translation>
@@ -3512,7 +3513,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" />කාලය නිමා විය</translation>
 <translation id="3443754338602062261">ඔබට දැනටමත් ඔබේ <ph name="BRAND" /> තුළ මෙම ගිණුම් සඳහා මුරපද ඇත. ඔබ පහත මුරපදවලින් එකක් ආයාත කිරීමට තෝරා ගන්නේ නම්, එය පවතින මුරපදය ප්‍රතිස්ථාපන කරයි.</translation>
 <translation id="344449859752187052">තෙවන පාර්ශ්ව කුකීස් අවහිර කර ඇත</translation>
-<translation id="3445047461171030979">Google සහකරු ක්‍ෂණික පිළිතුරු</translation>
 <translation id="3445288400492335833">මිනි <ph name="MINUTES" /></translation>
 <translation id="344537926140058498">ඔබගේ සංවිධානය මෙම ගොනුවේ සංවේදී හෝ භයානක අන්තර්ගත ඇති නිසා අවහිර කර ඇත. එය නිවැරදි කරන ලෙස එහි හිමිකරුගෙන් ඉල්ලන්න.</translation>
 <translation id="3445465968953598059">මුහුණ පාලනය</translation>
@@ -3945,7 +3945,6 @@
 <translation id="3732414796052961578"><ph name="ACCOUNT_NAME" /> ලෙස ඉදිරියට යන්න</translation>
 <translation id="3732530910372558017">රහස් අංකය උපරිමයෙන් අනුලකුණු 63 ක් විය යුතුමයි</translation>
 <translation id="3732706448780793442">හස්තීයව පවරා ගන්න</translation>
-<translation id="3732857534841813090">Google සහකරු ආශ්‍රිත තොරතුරු</translation>
 <translation id="3733296813637058299">ඔබ වෙනුවෙන් අපි එම යෙදුම් ස්ථාපනය කරන්නෙමු. ඔබට ඔබගේ <ph name="DEVICE_TYPE" /> සඳහා තවත් යෙදුම් Play Store හි සොයා ගත හැකිය.</translation>
 <translation id="3734547157266039796">බත් වී</translation>
 <translation id="3735039640698208086">ශ්‍රව්‍ය වාදනය කරන විට...</translation>
@@ -4177,7 +4176,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="3873315167136380065">මෙය ක්‍රියාත්මක කිරීමට, ඔබගේ සමමුහුර්ත මුර-වැකිකඩ ඉවත් කිරීමට <ph name="BEGIN_LINK" />සමමුහුර්තය යළි පිහිටුවන්න<ph name="END_LINK" /></translation>
 <translation id="3873423927483480833">රහස් අංක පෙන්වන්න</translation>
 <translation id="3873915545594852654">ARC++ සමඟ ගැටලුවක් ඇති විය.</translation>
-<translation id="3874164307099183178">Google සහකරු සක්‍රීය කරන්න</translation>
 <translation id="3874845889165401548">මෙම විශේෂාංගය AI භාවිතා කරන අතර එය පර්යේෂණාත්මක වේ</translation>
 <translation id="3875511946736639169">රූප සබල කරන්න</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> නව බ්‍රව්සර ටැබයක විවෘත කිරීමට සකසා ඇති අතර, සහාය දක්වන සබැඳි බ්‍රව්සරයේද විවෘත වනු ඇත. <ph name="BEGIN_LINK_LEARN_MORE" />තව දැන ගන්න<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4767,6 +4765,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4295072614469448764">යෙදුම ඔබගේ පර්යන්තයෙහි ලබා ගත හැක. ඔබගේ දියත්කරණයේ ද නිරූපකයක් තිබෙනු ඇත.</translation>
 <translation id="4295979599050707005">Chrome සහ Google Play තුළ වෙබ් අඩවි, යෙදුම්, සහ දිගු සමඟ ඔබේ <ph name="USER_EMAIL" /> ගිණුම භාවිත කළ හැකි බව තහවුරු කිරීමට නැවත පුරන්න. ඔබට මෙම ගිණුම ද ඉවත් කළ හැක. <ph name="LINK_BEGIN" />තව දැන ගන්න<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304"><ph name="APP_NAME" /> වෙතින් යෙදුම් ස්ථාපනය කර ප්‍රවාහය කෙරිණි</translation>
+<translation id="4296632172536745000">මෙම අඩවිය සඳහා ඔබේ මුල් මුරපදය පොදු දත්ත කඩ කිරීමක දී හමු විය. <ph name="DATE" /> හි ඔබ <ph name="BRAND" /> වෙතින් ඔබේ මුරපදය ස්වයංක්‍රීයව වෙනස් කරන ලෙස විමසා සිටියේ ය.</translation>
 <translation id="4297219207642690536">නැවත ඇරඹීම සහ නැවත සැකසීම</translation>
 <translation id="4297813521149011456">සංදර්ශක කරකැවීම</translation>
 <translation id="4298660926525614540">ඉවත් කළ හැකි ආචයන නම්</translation>
@@ -4835,7 +4834,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4348766275249686434">දෝශ එක්රැස් කරන්න</translation>
 <translation id="4349828822184870497">උපකාරී</translation>
 <translation id="4350230709416545141">ඔබගේ ස්ථානයට ප්‍රවේශ වීමෙන් <ph name="HOST" /> සැම විට අවහිර කරන්න</translation>
-<translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">ස්ථාපිත සහ ප්‍රවාහ කෙරෙන යෙදුම් කළමනා කිරීමට "<ph name="APP_NAME" />" වෙත යන්න</translation>
 <translation id="4352913519324947509">ඔබේ මුරපදය වෙනස් කර නැත, නමුත් ඔබට තවමත් ඔබේ වත්මන් මුරපදය සමග අඩවියට ප්‍රවේශ විය හැක</translation>
 <translation id="4354073718307267720">වෙබ් අඩවියකට ඔබේ වටපිටාවේ ත්‍රිමාන සිතියමක් සෑදීමට හෝ කැමරා ස්ථානය හඹා යෑමට ඉඩ දීමට පෙර අසන්න</translation>
@@ -5103,7 +5101,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4545759655004063573">අප්‍රමාණවත් අවසර හේතුවෙන් සුරැකීමට නොහැකිය. කරුණාකර වෙනත් පිහිටීමක් වෙත සුරකින්න.</translation>
 <translation id="4546345569117159016">දකුණු බොත්තම</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> හට මෙම දිගුව භාවිතා කිරීමට අවශ්‍යයි:</translation>
-<translation id="4546692474302123343">Google සහකරු හඬ ආදානය</translation>
 <translation id="4547659257713117923">වෙනත් උපාංග වෙතින් පටිති නොමැත</translation>
 <translation id="4547672827276975204">ස්වයංක්‍රීයව සකසන්න</translation>
 <translation id="4549791035683739768">ඔබේ ආරක්‍ෂක යතුරට ගබඩ කළ ඇඟිලි සලකුණු නැත</translation>
@@ -5479,7 +5476,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4816900689218414104">දුරකථනයක හෝ ටැබ්ලටයක මුරයතුරක් තනන්න</translation>
 <translation id="481917177323309377">ඔබ දින <ph name="COUNT" />ක් හෝ ඊට වැඩි කාලයක් භාවිත නොකළ පටිති</translation>
 <translation id="4819323978093861656">{0,plural, =0{දැන් වැසෙයි.}=1{වසන්නේ: තත්පර 1කින්}one{වසන්නේ: තත්පර #කින්}other{වසන්නේ: තත්පර #කින්}}</translation>
-<translation id="4819607494758673676">Google සහකරු දැනුම්දීම්</translation>
 <translation id="4819818293886748542">සහාය මෙවලම් සබැඳියක් ලබා ගන්න</translation>
 <translation id="4820236583224459650">ක්‍රියාත්මක ප්‍රවේශපත්‍රය ලෙස සකසන්න</translation>
 <translation id="4820795723433418303">කාර්යය යතුරු ඉහළ පේළි යතුරු ලෙස භාවිතා කරන්න</translation>
@@ -5528,7 +5524,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4846897209694249040">ඔබේ මූසික ආදානය ග්‍රහණ කර භාවිත කිරීමට ඉඩ නොදෙනු ලැබේ</translation>
 <translation id="4847242508757499006">සීමිත බැලීම් සහ සංස්කරණ විකල්ප භාවිතා කිරීමට "නැවත උත්සාහ කරන්න" තෝරන්න, නැතහොත් "මූලික සංස්කාරකයේ විවෘත කරන්න" තෝරා ගන්න.</translation>
 <translation id="4847742514726489375">අඩු කළ චලනය</translation>
-<translation id="4848191975108266266">Google සහකරු "Ok Google"</translation>
 <translation id="4849286518551984791">සමකක්ෂ විශ්වීය වේලාව (UTC/GMT)</translation>
 <translation id="4849517651082200438">ස්ථාපනය නොකරන්න</translation>
 <translation id="4849731766219625109">ඔබේ <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> ගිණුම භාවිතා කරන්න</translation>
@@ -5542,6 +5537,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="4852916668365817106">මූසික වර්ණය</translation>
 <translation id="4853020600495124913">&amp;නව කවුළුවක විවෘත කරන්න</translation>
 <translation id="4854317507773910281">අනුමැතිය සඳහා මාපිය ගිණුම තෝරන්න</translation>
+<translation id="4854603338816296098">ලිපිනය ඉවත් කරන ලදි</translation>
 <translation id="485480310608090163">තවත් සැකසීම් සහ අවසර</translation>
 <translation id="4857304314344645169">ඕනෑම ගැටලුවක් සඳහා පියවරෙන් පියවර පැහැදිලි කිරීමක් බලන්න</translation>
 <translation id="485806788160414322">මාධ්‍ය වාදනය හෝ විරාම කරන්න</translation>
@@ -6217,7 +6213,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="534449933710420173">නම් නොකළ ෆෝල්ඩරය</translation>
 <translation id="5345916423802287046">ඔබ පිරූ විට යෙදුම ආරම්භ කරන්න</translation>
 <translation id="5350116201946341974">විකාර සහගතයි</translation>
-<translation id="5350293332385664455">Google සහකරු අක්‍රිය කරන්න</translation>
 <translation id="535123479159372765">අනෙකුත් උපාංගයෙන් පිටපත් කළ පාඨය</translation>
 <translation id="5352033265844765294">කාල මුද්‍රා තැබීම</translation>
 <translation id="5352257124367865087">අඩවි අවසර කළමනාකරණය කරන්න</translation>
@@ -7265,7 +7260,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6108952804512516814">AI සමග නිර්මාණය කරන්න</translation>
 <translation id="6110303766838612983">දෝෂ නිර්ණ සහ භාවිත දත්ත මෙන්ම බිඳ වැටීම් වාර්තා ChromeOS වෙත යවන්න</translation>
 <translation id="6111718295497931251">Google Drive ප්‍රවේශය ඉවත් කරන්න</translation>
-<translation id="6111972606040028426">Google සහකරු සබල කරන්න</translation>
 <translation id="6112727384379533756">ප්‍රවේශපත්‍රයක් එක් කරන්න</translation>
 <translation id="6112931163620622315">ඔබේ දුරකථනය පරික්ෂා කරන්න</translation>
 <translation id="6113434369102685411">Chrome බ්‍රව්සරය සහ <ph name="DEVICE_TYPE" /> දියත්කරණය සඳහා ඔබගේ පෙරනිමි සෙවුම් යන්ත්‍රය සකසන්න</translation>
@@ -8421,7 +8415,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="6924109527536857168">සමමුහුර්ත කිරීම අවශ්‍ය වේ</translation>
 <translation id="6928650056523249512">භාවිතයට නොගත් අඩවිවලින් අවසර ස්වයංක්‍රීයව ඉවත් කරන්න</translation>
 <translation id="6929126689972602640">පාසල් ගිණුම් සඳහා මාපිය පාලන සහාය නොදක්වයි. නිවසේ පාසැල් වැඩ සඳහා Google පන්ති කාමරය සහ වෙනත් වෙබ් අඩවිවලට ප්‍රවේශ වීම සඳහා පාසල් ගිණුමක් එක් කිරීමට, පළමුව ළමයාගේ පුද්ගලික ගිණුම සමඟ පුරන්න. පිහිටුවීමේදී ඔබට පසුව පාසල් ගිණුම එක් කළ හැකිය.</translation>
-<translation id="6929760895658557216">ඕකේ Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{දිගුවක් ප්‍රතික්‍ෂේප විය}one{දිගු # ක් ප්‍රතික්‍ෂේප විය}other{දිගු # ක් ප්‍රතික්‍ෂේප විය}}</translation>
 <translation id="6930337524857202955">නව බාගැනීමක් තිබේ</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9324,6 +9317,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7582844466922312471">ජංගම දත්ත</translation>
 <translation id="7583948862126372804">ගණන</translation>
 <translation id="7585106857920830898">ඔබගේ සංවිධානයේ ආරක්ෂක ප්‍රතිපත්ති සමඟ පරීක්ෂා කරමින්...</translation>
+<translation id="7585490016012953607">ප්‍රතිසාධන මුරපදය — මාස 3ක් දක්වා තාවකාලිකව සුරකින ලදී.</translation>
 <translation id="7586498138629385861">Chrome යෙදුම් විවෘත අතරතුර Chrome දිගටම ධාවනය වනු ඇත.</translation>
 <translation id="7587806318633605613">යෝජනා ඉතිහාසය</translation>
 <translation id="7589448773774086276">වත්මන් පටිත්ත සමග නව බෙදීම් දසුන</translation>

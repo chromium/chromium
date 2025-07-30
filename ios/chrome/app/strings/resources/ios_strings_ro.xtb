@@ -363,6 +363,7 @@
 <translation id="236977714248711277">Site-urile nu pot folosi cookie-uri pentru a-ți îmbunătăți experiența de navigare, de exemplu, pentru a te menține conectat(ă) sau pentru a reține articolele din coșul de cumpărături.
 
 Site-urile nu pot folosi cookie-uri pentru a-ți vedea activitatea de navigare de pe diferite site-uri, de exemplu, pentru a personaliza anunțurile.</translation>
+<translation id="2377230674627603057">Grila cu grupuri de file</translation>
 <translation id="2377336083033403521">Caută în file…</translation>
 <translation id="2381405137052800939">Setări de bază</translation>
 <translation id="2384692388811649784">Ascunde filele incognito</translation>
@@ -650,7 +651,6 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3595252146048399851">Poți să alegi oricând ce să sincronizezi în <ph name="BEGIN_LINK" />setări<ph name="END_LINK" />. Google poate personaliza Căutarea și alte servicii pe baza istoricului.</translation>
 <translation id="3596414637720633074">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="3602260545951981695">Alege Protecție îmbunătățită</translation>
-<translation id="3608436266458100337">Modul Cititor</translation>
 <translation id="3610041351087301930">Ascunde modul Cititor</translation>
 <translation id="3622175633937495219">Istoricul căutărilor (găsite: <ph name="COUNT" />)</translation>
 <translation id="3625008969091706597">Poți să glisezi pe margine pentru a te deplasa înapoi.</translation>
@@ -1332,9 +1332,11 @@ Trebuie să activezi Handoff în secțiunea General din Setări, iar dispozitive
 <translation id="6234310016144827337">Verifică-ți conexiunea și încearcă din nou</translation>
 <translation id="6234438496206735891">Afișează descărcările</translation>
 <translation id="6236952928980352967">Restabilește avertismentul</translation>
+<translation id="623755660902014047">Modul de lectură</translation>
 <translation id="6247557882553405851">Manager de parole Google</translation>
 <translation id="6251835855431997163">Completează automat <ph name="VALUE" /></translation>
 <translation id="6254066287920239840">Deschide linkurile în aplicație, nu în browser.</translation>
+<translation id="6259928806013786178">Modul de lectură nu a reușit</translation>
 <translation id="6268773951964630964">Caută imaginea copiată</translation>
 <translation id="6271462272606946663">Ascunde opțiunea Solicită versiunea site-ului mobil</translation>
 <translation id="6271824294945464304">Se permite accesul la parolă</translation>
@@ -2104,6 +2106,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="9144230693397287797">Primește actualizări pentru mementourile pe care le-ai setat și filele de pe alte dispozitive</translation>
 <translation id="914781932147356857">Marchează-le pe toate…</translation>
 <translation id="9148126808321036104">Conectează-te din nou</translation>
+<translation id="9149866541089851383">Editează...</translation>
 <translation id="9159628751968616911">Trimite pagina web</translation>
 <translation id="9162432979321511934">Activează opțiunea Completează automat parolele</translation>
 <translation id="9165320910061267720">Pentru a primi notificări privind alertele de scădere de preț, trebuie să activezi notificările din setările iOS.</translation>

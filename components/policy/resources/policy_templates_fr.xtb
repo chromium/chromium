@@ -278,6 +278,7 @@ Pour en savoir plus sur la gestion des données pour les fonctionnalités d'IA 
 <translation id="1202216683470826356">Afficher les fiches sur la page Nouvel onglet</translation>
 <translation id="1203676252390737801">Gestion des adresses IP WebRTC par URL</translation>
 <translation id="1204263402976895730">Imprimantes d'entreprise activées</translation>
+<translation id="120513772363332049">Aucun autre processus ne sera planifié sur le même cœur de processeur lorsque le processus de rendu y est exécuté.</translation>
 <translation id="1207301487141109411">Empêcher la sélection de l'avatar de l'utilisateur à partir du système de fichiers local, de l'appareil photo et du profil Google</translation>
 <translation id="1209096923317019235">Affecte les applis en tant que gestionnaires par défaut pour les extensions de fichier spécifiées</translation>
 <translation id="120937472976628837">Transmettre des infos sur le ventilateur</translation>
@@ -3738,6 +3739,15 @@ Si le résultat de la vérification n'est pas concluant pour une connexion, l'er
       Si cette règle est désactivée, l'utilisation de l'API Translator n'est pas autorisée.</translation>
 <translation id="366494444808132420">Autoriser les intégrations de Gemini.</translation>
 <translation id="3665437376055221832">N'inviter l'utilisateur que si la règle de sélection automatique n'établit de correspondance avec aucun certificat.</translation>
+<translation id="3667089394451236198">Liste de formats d'URL. Les requêtes initiées à partir de sites desservis par des origines qui figurent sur la liste ne sont pas soumises aux contrôles d‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Si une origine est couverte à la fois par cette règle et par LocalNetworkAccessBlockedForUrls, cette dernière prévaut.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.</translation>
 <translation id="3671773704245936868">Désactiver la mise en surbrillance des éléments sélectionnés au clavier</translation>
 <translation id="3674010627788940405">Ne prend pas en charge les en-têtes de requêtes CORS sans caractères génériques.</translation>
 <translation id="3675303748198647471">setTimeout(…, 0) est souvent utilisée pour décomposer les longues tâches JavaScript.
@@ -4296,6 +4306,17 @@ Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides, veuillez co
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_KEYWORD_POLICY_NAME" /> n'est pas configurée, aucun mot clé n'active le moteur de recherche.</translation>
 <translation id="4090088362777472639">Hachage SHA-256 du playbook Ansible.</translation>
 <translation id="4091040199847925434">Désactiver les rapports sur les informations système et le contenu de pages utilisés pour améliorer la navigation sécurisée</translation>
+<translation id="4092882308219320847">Liste de formats d'URL. Les requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" /> initiées à partir de sites desservis par des origines qui figurent sur la liste sont bloquées.
+
+Si une origine est couverte à la fois par cette règle et par LocalNetworkAccessAllowedForUrls, la présente règle prévaut.
+
+Selon le stade de déploiement de l‘<ph name="LOCAL_NETWORK_ACCESS" />, il peut aussi être nécessaire d'activer LocalNetworkAccessRestrictionsEnabled pour que cette règle bloque les requêtes d‘<ph name="LOCAL_NETWORK_ACCESS" />.
+
+Pour les origines autres que celles représentées par les formats spécifiés ici, la configuration personnelle de l'utilisateur s'applique.
+
+Pour en savoir plus sur les formats d'URL valides, veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.</translation>
 <translation id="4093058072421210667">Ne pas autoriser Inline Image.</translation>
 <translation id="4098920079809952737">Autoriser l'impression à la fois avec et sans graphiques d'arrière-plan</translation>
 <translation id="410061592404122032">Demander chaque fois qu'un site souhaite obtenir l'autorisation de gestion des fenêtres</translation>
@@ -6412,6 +6433,7 @@ Elle n'empêche pas les utilisateurs d'enregistrer des fichiers dans <ph name="G
 <translation id="5490462588616309068">Si cette règle est définie sur "true" ou n'est pas configurée, l'utilisation d'identifiants pour le contenu protégé est autorisée, ce qui peut contribuer à améliorer la qualité de lecture de ce type de contenu.
 
 Si cette règle est définie sur "false", l'utilisation d'identifiants n'est pas autorisée pour le contenu protégé.</translation>
+<translation id="5492713303272131731">Tous les autres processus peuvent être planifiés sur le même cœur de processeur lorsque le processus de rendu y est exécuté.</translation>
 <translation id="5494322570831642650">Permet de spécifier si l'utilisateur peut ouvrir ou non des pages en mode navigation privée dans <ph name="PRODUCT_NAME" />.
 
       Si la règle est activée ou n'est pas définie, l'utilisateur peut ouvrir des pages en mode navigation privée.
@@ -8336,6 +8358,11 @@ Si elle est activée, les données sont collectées et importées dans la <ph na
 
 Concernant <ph name="PRODUCT_NAME" />, cette règle n'est appliquée que si l'appareil est enregistré avec la règle <ph name="CLOUD_MANAGEMENT_ENROLLMENT_TOKEN" />.
 Cette règle est toujours appliquée pour <ph name="PRODUCT_OS_NAME" />.</translation>
+<translation id="6720071484598746942">Lorsque cette règle est activée, la requête principale est bloquée chaque fois qu'un avertissement est censé s'afficher dans <ph name="DEV_TOOLS_NAME" /> en raison de l'échec des vérifications <ph name="LOCAL_NETWORK_ACCCESS" />.
+
+Si cette règle est désactivée ou n'est pas configurée, les requêtes <ph name="LOCAL_NETWORK_ACCESS" /> utiliseront le traitement par défaut.
+
+Pour connaître les restrictions concernant <ph name="LOCAL_NETWORK_ACCESS" />, consultez https://wicg.github.io/local-network-access/.</translation>
 <translation id="6720330829631914048">Heures écoulées depuis le début de la journée (format 24 heures).</translation>
 <translation id="6721252203593581486">WebSQL dans des contextes tiers (ex. : les cadres iFrame intersites) est désactivé par défaut à partir de M97 et sera entièrement supprimé dans M101.
           Si cette règle est définie sur "False" ou n'est pas configurée, WebSQL dans des contextes tiers restera désactivé.
@@ -10482,6 +10509,10 @@ Si cette règle n'est pas configurée, la commande par le visage est désactivé
 <translation id="8331479227794770304">Activer les touches rémanentes</translation>
 <translation id="8332822245414537447">Désactiver la vérification de l'utilisation des clés RSA</translation>
 <translation id="8334685561819743286">Désactiver la correction automatique lors de la saisie au clavier physique</translation>
+<translation id="8336986243404088829">Cette règle atténue les attaques de mémoire en traitement croisé par canal auxiliaire en isolant le processus de rendu sur le cœur de processeur et en empêchant d'autres processus de partager le même cœur. L'atténuation est compatible avec <ph name="MS_WIN_NAME" /> 11 24H2 et versions ultérieures. Si l'OS ne dispose pas de la prise en charge de la planification requise, cette règle n'aura aucun effet. Cette règle peut ralentir les performances dans certains scénarios exigeants analogues à la désactivation de l'hyperthreading. Pour en savoir plus, consultez https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
+      Si cette règle est activée, aucun autre processus ne sera planifié sur le même cœur de processeur lorsque le processus de rendu est en cours d'exécution.
+      Si cette règle est désactivée, tous les autres processus peuvent être planifiés sur le même cœur de processeur, même si un processus de rendu y est exécuté.
+      Si cette règle n'est pas configurée, tous les autres processus peuvent être planifiés sur le même cœur de processeur, même si un processus de rendu y est exécuté. Celle-ci peut varier en fonction de la version de <ph name="PRODUCT_NAME" />, des tests en conditions réelles en cours et de la plate-forme.</translation>
 <translation id="8337114537412769126">Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_ENABLED_POLICY_NAME" /> est activée, la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> vous permet de définir les paramètres d'une recherche suggérée à l'aide de la méthode POST. Il s'agit de paires de noms et de valeurs séparées par une virgule. Si une valeur correspond à un paramètre modèle, comme <ph name="SEARCH_TERM_MARKER" />, elle est remplacée par des termes de recherches réels.
 
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_SUGGEST_URL_POST_PARAMS_POLICY_NAME" /> n'est pas configurée, les requêtes de recherche suggérée sont envoyées à l'aide de la méthode GET.</translation>
@@ -11720,6 +11751,7 @@ Si cette règle n'est pas configurée, ce paramètre est activé et l'utilisateu
 <translation id="9162444960513782569">Ne pas appliquer de limitation des minuteurs JavaScript en arrière-plan</translation>
 <translation id="9164656078867027374">Définir les domaines autorisés à accéder à <ph name="GOOGLE_WORKSPACE_PRODUCT_NAME" /></translation>
 <translation id="9165128017344777105">Accorder l'autorisation des polices locales pour ces sites</translation>
+<translation id="9165498643231979857">Restreindre le partage de cœur de processeur pour le processus de rendu</translation>
 <translation id="9166670902476893480">Cette règle permet d'autoriser <ph name="PRODUCT_NAME" /> à demander d'autres types d'enregistrements DNS en cas d'envois de requêtes DNS à risque, ou de l'en empêcher. Cette règle n'a aucune incidence sur les requêtes DNS envoyées via DNS sécurisé, qui peut toujours envoyer d'autres types de requêtes DNS.
 
       Si cette règle n'est pas configurée ou si elle est activée, d'autres types de requêtes, par exemple <ph name="DNS_TYPE_HTTPS" /> (type de DNS 65), peuvent être demandés en plus des types <ph name="DNS_TYPE_A" /> (type de DNS 1) et <ph name="DNS_TYPE_AAAA" /> (type de DNS 28).

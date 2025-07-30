@@ -937,7 +937,6 @@
 <translation id="1632293440289326475">با روشن کردن «بهینه‌سازی انرژی»، عمر باتری بیشتر می‌شود</translation>
 <translation id="1632756664321977232">ابزار برش</translation>
 <translation id="163309982320328737">دامنه نویسه اولیه پر است</translation>
-<translation id="1633947793238301227">‏غیرفعال کردن «دستیار Google»</translation>
 <translation id="1634224622052500893">‏شبکه Wi-Fi پیدا شد</translation>
 <translation id="1634783886312010422">آیا قبلاً این گذرواژه را در <ph name="WEBSITE" /> تغییر داده‌اید؟</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{برگه برداشته و گروه حذف شود؟}=1{برگه برداشته و گروه حذف شود؟}one{برگه برداشته و گروه حذف شود؟}other{برگه‌ها برداشته و گروه‌ها حذف شود؟}}</translation>
@@ -2377,7 +2376,6 @@
 <translation id="2620245777360407679">دستگاه‌هایی که درحال‌حاضر به نقطه اتصال متصل هستند</translation>
 <translation id="2620436844016719705">سیستم</translation>
 <translation id="2620900772667816510">وضوح فوق‌العاده با بلوتوث</translation>
-<translation id="262154978979441594">‏آموزش مدل صوتی «دستیار Google»</translation>
 <translation id="2622280935687585828">برداشتن <ph name="SITE_NAME" /> از سایت‌های غیرفعال</translation>
 <translation id="26224892172169984">به هیچ سایتی برای کنترل پروتکل ها اجازه داده نشود</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2893,6 +2891,7 @@
 <translation id="2981113813906970160">نمایش نشانگر موشواره بزرگ</translation>
 <translation id="2983102365694924129">براساس فعالیت شما در سایت. این تنظیم خاموش است.</translation>
 <translation id="2983373101216420412">سطح باتری قاب <ph name="PERCENTAGE" />٪.</translation>
+<translation id="2983818520079887040">تنظیمات...</translation>
 <translation id="2984384421572259426">پاک‌سازی کردن برگه‌های بدون استفاده</translation>
 <translation id="2984727013951557074">‏فایل همچنان درحال همگام‌سازی با Drive است.</translation>
 <translation id="2985348301114641460">می‌خواهید برای نصب «<ph name="EXTENSION_NAME" />»، درخواستی برای سرپرستتان ارسال کنید؟</translation>
@@ -3524,7 +3523,6 @@
 <translation id="3443744348829035122">مهلت <ph name="BRAND" /> تمام شد</translation>
 <translation id="3443754338602062261">درحال‌حاضر گذرواژه این حساب‌ها را در <ph name="BRAND" /> خود دارید. اگر بخواهید یکی از گذرواژه‌های زیر را وارد کنید، آن گذرواژه جایگزین گذرواژه موجود می‌شود.</translation>
 <translation id="344449859752187052">کوکی‌های طرف سوم مسدود شده است</translation>
-<translation id="3445047461171030979">‏پاسخ‌های سریع «دستیار Google»</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> دقیقه</translation>
 <translation id="344537926140058498">سازمانتان این فایل را مسدود کرده است زیرا محتوای حساس یا خطرناک دارد. از مالک فایل بخواهید مشکل آن را برطرف کند.</translation>
 <translation id="3445465968953598059">کنترل با چهره</translation>
@@ -3957,7 +3955,6 @@
 <translation id="3732414796052961578">ادامه دادن با حساب <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">پین باید حداکثر ۶۳ نویسه داشته باشد</translation>
 <translation id="3732706448780793442">تحت‌کنترل گرفتن به‌صورت دستی</translation>
-<translation id="3732857534841813090">‏اطلاعات مربوط به «دستیار Google»</translation>
 <translation id="3733296813637058299">‏این برنامه‌ها را برایتان نصب می‌کنیم. در «فروشگاه Play» می‌توانید برنامه‌های بیشتری برای <ph name="DEVICE_TYPE" /> پیدا کنید.</translation>
 <translation id="3734547157266039796">شالیزار</translation>
 <translation id="3735039640698208086">هنگام پخش صدا...</translation>
@@ -4188,7 +4185,6 @@
 <translation id="3873315167136380065">برای روشن کردن این گزینه، <ph name="BEGIN_LINK" />همگام‌سازی را بازنشانی کنید<ph name="END_LINK" /> تا گذرعبارت همگام‌سازی حذف شود</translation>
 <translation id="3873423927483480833">نمایش پین‌ها</translation>
 <translation id="3873915545594852654">‏در رابطه با ++ARC مشکلی پیش آمد.</translation>
-<translation id="3874164307099183178">‏روشن کردن «دستیار Google»</translation>
 <translation id="3874845889165401548">این ویژگی از هوش مصنوعی استفاده می‌کند و در مرحله آزمایش است</translation>
 <translation id="3875511946736639169">فعال کردن تصاویر</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> طوری تنظیم شده که در برگه مرورگر جدید باز شود، پیوندهای پشتیبانی‌شده نیز در مرورگر باز خواهد شد. <ph name="BEGIN_LINK_LEARN_MORE" />بیشتر بدانید<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4847,7 +4843,6 @@
 <translation id="4348766275249686434">جمع‌آوری خطاها</translation>
 <translation id="4349828822184870497">مفید</translation>
 <translation id="4350230709416545141">دسترسی <ph name="HOST" /> به مکان شما همیشه مسدود شود</translation>
-<translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">برای مدیریت برنامه‌های جاری‌سازی و نصب‌شده به برنامه «<ph name="APP_NAME" />» بروید</translation>
 <translation id="4352913519324947509">گذرواژه شما تغییر نکرد اما همچنان باید بتوانید با گذرواژه فعلی خود به سایت دسترسی داشته باشید</translation>
 <translation id="4354073718307267720">وقتی سایتی می‌خواهد نقشه سه‌بعدی از محیط ایجاد کند یا موقعیت دوربین را ردیابی کند سؤال شود</translation>
@@ -5115,7 +5110,6 @@
 <translation id="4545759655004063573">به دلیل مجوزهای ناکافی ذخیره امکان‌پذیر نیست. لطفاً در محل دیگری ذخیره کنید.</translation>
 <translation id="4546345569117159016">دکمه راست</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> می‌خواهد از این افزونه استفاده کند:</translation>
-<translation id="4546692474302123343">‏ورودی گفتاری «دستیار Google»</translation>
 <translation id="4547659257713117923">برگه‌ای از دیگر دستگاه‌ها وجود ندارد</translation>
 <translation id="4547672827276975204">تنظیم خودکار</translation>
 <translation id="4549791035683739768">هیچ اثر انگشتی برای کلید امنیتی‌تان ذخیره نشده است</translation>
@@ -5491,7 +5485,6 @@
 <translation id="4816900689218414104">گذرکلیدی در تلفن یا رایانه لوحی ایجاد کنید</translation>
 <translation id="481917177323309377">برگه‌هایی که <ph name="COUNT" /> روز یا بیشتر از آن‌ها استفاده نکرده‌اید</translation>
 <translation id="4819323978093861656">{0,plural, =0{اکنون بسته می‌شود.}=1{یک ثانیه دیگر بسته می‌شود}one{# ثانیه دیگر بسته می‌شود}other{# ثانیه دیگر بسته می‌شود}}</translation>
-<translation id="4819607494758673676">‏اعلان‌های «دستیار Google»</translation>
 <translation id="4819818293886748542">دریافت پیوند «ابزار پشتیبانی»</translation>
 <translation id="4820236583224459650">تنظیم به‌عنوان بلیت فعال</translation>
 <translation id="4820795723433418303">استفاده از کلیدهای کار به‌عنوان کلیدهای ردیف بالا</translation>
@@ -5540,7 +5533,6 @@
 <translation id="4846897209694249040">سایت‌هایی که اجازه ندارند ورودی موشواره را ضبط و از آن استفاده کنند</translation>
 <translation id="4847242508757499006">«امتحان مجدد» را انتخاب کنید یا برای استفاده از نمای محدود و گزینه‌های ویرایش، «باز کردن در ویرایشگر پایه» را انتخاب کنید.</translation>
 <translation id="4847742514726489375">کاهش یافتن حرکت</translation>
-<translation id="4848191975108266266">‏دستیار Google «‏Ok Google»</translation>
 <translation id="4849286518551984791">‏زمان هماهنگ جهانی (UTC/GMT)</translation>
 <translation id="4849517651082200438">نصب نشود</translation>
 <translation id="4849731766219625109">استفاده از حساب <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -5554,6 +5546,7 @@
 <translation id="4852916668365817106">رنگ موشواره</translation>
 <translation id="4853020600495124913">باز کردن در پنجره &amp;جدید</translation>
 <translation id="4854317507773910281">حساب ولی را برای تأیید انتخاب کنید</translation>
+<translation id="4854603338816296098">نشانی برداشته شد</translation>
 <translation id="485480310608090163">تنظیمات و اجازه‌های بیشتر</translation>
 <translation id="4857304314344645169">توضیح گام‌به‌گام هر مشکلی را ببینید</translation>
 <translation id="485806788160414322">پخش یا مکث رسانه</translation>
@@ -6230,7 +6223,6 @@
 <translation id="534449933710420173">پوشه بدون نام</translation>
 <translation id="5345916423802287046">راه‌اندازی برنامه هنگام ورود به سیستم</translation>
 <translation id="5350116201946341974">عجیب‌غریب</translation>
-<translation id="5350293332385664455">‏خاموش کردن «دستیار Google»</translation>
 <translation id="535123479159372765">نوشتار از دستگاه دیگری کپی شده است</translation>
 <translation id="5352033265844765294">مهر زمان</translation>
 <translation id="5352257124367865087">مدیریت اجازه‌های سایت</translation>
@@ -7277,7 +7269,6 @@
 <translation id="6108952804512516814">ساخت با هوش مصنوعی</translation>
 <translation id="6110303766838612983">‏ارسال گزارش‌های خرابی و داده‌های استفاده و عیب‌یابی به ChromeOS</translation>
 <translation id="6111718295497931251">‏برداشتن دسترسی به Google Drive</translation>
-<translation id="6111972606040028426">‏فعال‌ کردن «دستیار Google»</translation>
 <translation id="6112727384379533756">افزودن بلیت</translation>
 <translation id="6112931163620622315">تلفن را بررسی کنید</translation>
 <translation id="6113434369102685411">‏تنظیم موتور جستجوی پیش‌فرض برای مرورگر Chrome و «راه‌انداز <ph name="DEVICE_TYPE" />»</translation>
@@ -8435,7 +8426,6 @@
 <translation id="6924109527536857168">همگام‌سازی لازم است</translation>
 <translation id="6928650056523249512">برداشتن خودکار اجازه‌ها از سایت‌های استفاده‌نشده</translation>
 <translation id="6929126689972602640">‏حساب‌های محل تحصیل از «کنترل‌های والدین» پشتیبانی نمی‌کنند. برای افزودن حساب محل تحصیل جهت دسترسی به Google Classroom و وب‌سایت‌های دیگر به‌منظور انجام تکالیف مدرسه در خانه، ابتدا با حساب شخصی فرزند به سیستم وارد شوید. می‌توانید حساب محل تحصیل را بعداً در راه‌اندازی اضافه کنید.</translation>
-<translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{یک افزونه رد شد}one{# افزونه رد شد}other{# افزونه رد شد}}</translation>
 <translation id="6930337524857202955">بارگیری جدید دردسترس است</translation>
 <translation id="6931539787433490713">‫<ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>

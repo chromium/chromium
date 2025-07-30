@@ -936,7 +936,6 @@
 <translation id="1632293440289326475">Включете функцията „Икономия на енергия“, за да удължите живота на батерията</translation>
 <translation id="1632756664321977232">Инструмент за подрязване</translation>
 <translation id="163309982320328737">Първоначалната ширина на знаците да бъде цяла</translation>
-<translation id="1633947793238301227">Деактивиране на Google Асистент</translation>
 <translation id="1634224622052500893">Намерена е Wi-Fi мрежа</translation>
 <translation id="1634783886312010422">Променихте ли вече тази парола в(ъв) <ph name="WEBSITE" />?</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Искате ли да премахнете раздела и да изтриете групата?}=1{Искате ли да премахнете разделите и да изтриете групата?}other{Искате ли да премахнете разделите и да изтриете групите?}}</translation>
@@ -1369,6 +1368,7 @@
 <translation id="1931152874660185993">Няма инсталирани компоненти.</translation>
 <translation id="1931410639376954712"><ph name="DEVICE_OS" /> се инсталира</translation>
 <translation id="1932098463447129402">Не преди</translation>
+<translation id="1933070475689690969">Активност в приложенията Gemini</translation>
 <translation id="1933489278505808700">Има разрешение да чете и променя</translation>
 <translation id="1935303383381416800">Сайтове с разрешение за преглед на местоположението ви</translation>
 <translation id="193565226207940518">Инструмент за поддръжка</translation>
@@ -2375,7 +2375,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2620245777360407679">Устройства, свързани понастоящем с точката за достъп</translation>
 <translation id="2620436844016719705">Система</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
-<translation id="262154978979441594">Обучаване на гласовия модел на Google Асистент</translation>
 <translation id="2622280935687585828">Премахване на <ph name="SITE_NAME" /> от деактивираните сайтове</translation>
 <translation id="26224892172169984">Забраняване на сайтовете да обработват протоколи</translation>
 <translation id="262373406453641243">Коулмак</translation>
@@ -2891,6 +2890,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2981113813906970160">Показване на голям курсор на мишката</translation>
 <translation id="2983102365694924129">Въз основа на активността ви в даден сайт. Тази настройка е изключена.</translation>
 <translation id="2983373101216420412">Нивото на батерията на калъфа е <ph name="PERCENTAGE" />%.</translation>
+<translation id="2983818520079887040">Настройки...</translation>
 <translation id="2984384421572259426">Изчистване на неизползваните раздели</translation>
 <translation id="2984727013951557074">Файлът още се синхронизира с Диск.</translation>
 <translation id="2985348301114641460">Да се изпрати ли заявка до администратора ви за инсталиране на <ph name="EXTENSION_NAME" />?</translation>
@@ -3509,6 +3509,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3435738964857648380">Сигурност</translation>
 <translation id="343578350365773421">Няма хартия</translation>
 <translation id="3435896845095436175">Активиране</translation>
+<translation id="3437072258256045988">Управление на активността ви в приложенията Gemini</translation>
 <translation id="3437397693214267762">Преглед на календара ви в Outlook и на файловете ви в SharePoint и OneDrive</translation>
 <translation id="3438633801274389918">Нинджа</translation>
 <translation id="3439153939049640737">Достъпът на <ph name="HOST" /> до микрофона ви винаги да е разрешен</translation>
@@ -3521,7 +3522,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3443744348829035122">Времето за изчакване на <ph name="BRAND" /> изтече</translation>
 <translation id="3443754338602062261">Вече има пароли за тези профили в(ъв) <ph name="BRAND" />. Ако решите да импортирате една от паролите по-долу, тя ще замени съществуващата.</translation>
 <translation id="344449859752187052">„Бисквитките“ на трети страни са блокирани</translation>
-<translation id="3445047461171030979">Кратки отговори на Google Асистент</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> мин</translation>
 <translation id="344537926140058498">Организацията ви блокира този файл, защото в него има поверително или опасно съдържание. Помолете собственика му да отстрани проблема.</translation>
 <translation id="3445465968953598059">Контролиране посредством мимики</translation>
@@ -3954,7 +3954,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3732414796052961578">Продължаване като <ph name="ACCOUNT_NAME" /></translation>
 <translation id="3732530910372558017">ПИН кодът трябва да е с дължина най-много 63 знака</translation>
 <translation id="3732706448780793442">Продължаване ръчно</translation>
-<translation id="3732857534841813090">Информация, свързана с Google Асистент</translation>
 <translation id="3733296813637058299">Ще инсталираме тези приложения за вас. В Google Play Магазин можете да намерите още приложения за устройството си <ph name="DEVICE_TYPE" />.</translation>
 <translation id="3734547157266039796">Оризище</translation>
 <translation id="3735039640698208086">При възпроизвеждане на звук...</translation>
@@ -4186,7 +4185,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3873315167136380065">За да включите тази настройка, <ph name="BEGIN_LINK" />нулирайте синхронизирането<ph name="END_LINK" />, така че да премахнете съответния си пропуск</translation>
 <translation id="3873423927483480833">Показване на ПИН кодовете</translation>
 <translation id="3873915545594852654">Възникна проблем със СИПС++.</translation>
-<translation id="3874164307099183178">Включване на Google Асистент</translation>
 <translation id="3874845889165401548">Тази функция използва AI и е експериментална</translation>
 <translation id="3875511946736639169">Активиране на изображенията</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> ще се отваря в нов раздел на браузъра. Поддържаните връзки също ще се отварят в браузъра. <ph name="BEGIN_LINK_LEARN_MORE" />Научете повече<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4845,7 +4843,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4348766275249686434">Събиране на грешките</translation>
 <translation id="4349828822184870497">Полезно</translation>
 <translation id="4350230709416545141">Достъпът до местоположението ви винаги да е блокиран за <ph name="HOST" /></translation>
-<translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Отворете приложението <ph name="APP_NAME" />, за да управлявате инсталираните и поточно предаваните приложения</translation>
 <translation id="4352913519324947509">Паролата ви не бе променена. Би трябвало да имате достъп до сайта с текущата си парола</translation>
 <translation id="4354073718307267720">Извеждане на запитване, когато сайт иска да създаде триизмерна карта на заобикалящата ви среда или да следи позицията на камерата</translation>
@@ -5113,7 +5110,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4545759655004063573">Не може да се запази поради недостатъчни разрешения. Моля, запазете на друго място.</translation>
 <translation id="4546345569117159016">Десен бутон</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" /> иска да използва това разширение:</translation>
-<translation id="4546692474302123343">Гласово въвеждане с Google Асистент</translation>
 <translation id="4547659257713117923">Няма раздели от други устройства</translation>
 <translation id="4547672827276975204">Автоматично задаване</translation>
 <translation id="4549791035683739768">В ключа ви за сигурност няма съхранени отпечатъци</translation>
@@ -5489,7 +5485,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4816900689218414104">Създаване на ключ за достъп на телефон или таблет</translation>
 <translation id="481917177323309377">Раздели, които не сте използвали от <ph name="COUNT" /> или повече дни</translation>
 <translation id="4819323978093861656">{0,plural, =0{Затваря се сега.}=1{Затваря се след 1 секунда}other{Затваря се след # секунди}}</translation>
-<translation id="4819607494758673676">Известия от Google Асистент</translation>
 <translation id="4819818293886748542">Получаване на връзка към инструмента за поддръжка</translation>
 <translation id="4820236583224459650">Задаване като активен пропуск</translation>
 <translation id="4820795723433418303">Използване на функционалните клавиши като клавиши на най-горния ред</translation>
@@ -5538,7 +5533,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4846897209694249040">Сайтове без разрешение за записване и използване на въведеното с мишката</translation>
 <translation id="4847242508757499006">Изберете „Нов опит“ или „Отваряне в основния редактор“, за да използвате ограничените опции за преглед и редактиране.</translation>
 <translation id="4847742514726489375">Ограничено движение</translation>
-<translation id="4848191975108266266">„Ok Google“ на Google Асистент</translation>
 <translation id="4849286518551984791">Координирано универсално време (UTC/GMT)</translation>
 <translation id="4849517651082200438">Да не се инсталира</translation>
 <translation id="4849731766219625109">Използване на профила ви в(ъв) <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /></translation>
@@ -5552,6 +5546,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="4852916668365817106">Цвят на курсора на мишката</translation>
 <translation id="4853020600495124913">Отваряне в &amp;нов прозорец</translation>
 <translation id="4854317507773910281">Изберете профил на родител за одобрение</translation>
+<translation id="4854603338816296098">Адресът бе премахнат</translation>
 <translation id="485480310608090163">Още настройки и разрешения</translation>
 <translation id="4857304314344645169">Вижте подробно обяснение за която и да е задача</translation>
 <translation id="485806788160414322">Пускане или поставяне на пауза на мултимедия</translation>
@@ -6228,7 +6223,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="534449933710420173">Папка без име</translation>
 <translation id="5345916423802287046">Стартиране на приложението, когато влезете в профила си</translation>
 <translation id="5350116201946341974">Причудливо</translation>
-<translation id="5350293332385664455">Изключване на Google Асистент</translation>
 <translation id="535123479159372765">Текст, копиран от друго устройство</translation>
 <translation id="5352033265844765294">Поставяне на времево клеймо</translation>
 <translation id="5352257124367865087">Управление на разрешенията за сайтовете</translation>
@@ -7276,7 +7270,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6108952804512516814">Създаване с AI</translation>
 <translation id="6110303766838612983">Изпращане до ChromeOS на сигнали за сривове, диагностична информация и данни за употребата</translation>
 <translation id="6111718295497931251">Премахване на достъпа до Google Диск</translation>
-<translation id="6111972606040028426">Активиране на Google Асистент</translation>
 <translation id="6112727384379533756">Добавяне на пропуск</translation>
 <translation id="6112931163620622315">Проверете телефона си</translation>
 <translation id="6113434369102685411">Задайте основната търсеща машина за браузъра Chrome и стартовия панел на <ph name="DEVICE_TYPE" /></translation>
@@ -8432,7 +8425,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="6924109527536857168">Необходимо е синхронизиране</translation>
 <translation id="6928650056523249512">Автоматично премахване на разрешенията за неизползваните сайтове</translation>
 <translation id="6929126689972602640">Родителските контроли не се поддържат за училищни профили. За да добавите училищен профил за достъп до Google Classroom и други уебсайтове за изпълнение на училищни задачи у дома, първо влезте с личния профил на детето. Можете да добавите училищния профил по-късно при настройването.</translation>
-<translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Разширение бе отхвърлено}other{# разширения бяха отхвърлени}}</translation>
 <translation id="6930337524857202955">Налице е ново изтегляне</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>

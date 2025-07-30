@@ -940,7 +940,6 @@
 <translation id="1632293440289326475">Միացրեք էներգիայի խնայումը՝ մարտկոցի աշխատաժամանակը երկարացնելու համար</translation>
 <translation id="1632756664321977232">«Եզրատում» գործիք</translation>
 <translation id="163309982320328737">Գրանշանի սկզբնական լայնությունը՝ լիալայնք</translation>
-<translation id="1633947793238301227">Անջատել Google Օգնականը</translation>
 <translation id="1634224622052500893">Գտնվել է Wi-Fi ցանց</translation>
 <translation id="1634783886312010422">Դուք արդեն փոխե՞լ եք այս գաղտնաբառը <ph name="WEBSITE" /> կայքում</translation>
 <translation id="1634946671922651819">{MULTI_GROUP_TAB_COUNT,plural, =0{Հեռացնե՞լ ներդիրը և ջնջել խումբը}=1{Հեռացնե՞լ ներդիրները և ջնջել խումբը}one{Հեռացնե՞լ ներդիրները և ջնջել խումբը}other{Հեռացնե՞լ ներդիրները և ջնջել խմբերը}}</translation>
@@ -2367,7 +2366,6 @@
 <translation id="2620245777360407679">Թեժ կետին միացված սարքեր</translation>
 <translation id="2620436844016719705">Համակարգ</translation>
 <translation id="2620900772667816510">Bluetooth Super Resolution</translation>
-<translation id="262154978979441594">Ձայնագրել ձայնի մոդել Google Օգնականի համար</translation>
 <translation id="2622280935687585828">Հեռացնել <ph name="SITE_NAME" /> կայքն անջատված կայքերից</translation>
 <translation id="26224892172169984">Թույլ չտալ որևէ կայքի մշակել հաղորդակարգերը</translation>
 <translation id="262373406453641243">Colemak</translation>
@@ -2883,6 +2881,7 @@
 <translation id="2981113813906970160">Ցույց տալ մկնիկի մեծ նշորդը</translation>
 <translation id="2983102365694924129">Կայքում ձեր գործողությունների հիման վրա։ Այս կարգավորումն անջատված է։</translation>
 <translation id="2983373101216420412">Պատյանի մարտկոցի լիցքի մակարդակը՝ <ph name="PERCENTAGE" />%։</translation>
+<translation id="2983818520079887040">Կարգավորումներ…</translation>
 <translation id="2984384421572259426">Մաքրե՞լ չօգտագործվող ներդիրները</translation>
 <translation id="2984727013951557074">Ֆայլը դեռ համաժամացվում է Drive-ում։</translation>
 <translation id="2985348301114641460">«<ph name="EXTENSION_NAME" />» ընդլայնումը տեղադրելու հայտ ուղարկե՞լ ձեր ադմինիստրատորին</translation>
@@ -3512,7 +3511,6 @@
 <translation id="3443744348829035122"><ph name="BRAND" />ի սպասման ժամանակը սպառվել է</translation>
 <translation id="3443754338602062261">Այս հաշիվների գաղտնաբառերն արդեն պահվել են «<ph name="BRAND" />» ծառայությունում։ Եթե դուք ներմուծեք ստորև նշված գաղտնաբառերից որևէ մեկը, գոյություն ունեցող գաղտնաբառը կփոխարինվի։</translation>
 <translation id="344449859752187052">Երրորդ կողմի քուքիներն արգելափակված են</translation>
-<translation id="3445047461171030979">Google Օգնականի արագ պատասխաններ</translation>
 <translation id="3445288400492335833"><ph name="MINUTES" /> րոպե</translation>
 <translation id="344537926140058498">Ձեր կազմակերպությունն արգելափակել է այս ֆայլը, քանի որ այն պարունակում է խիստ անձնական կամ վտանգավոր բովանդակություն։ Խնդրեք սեփականատիրոջը շտկել այդ խնդիրը։</translation>
 <translation id="3445465968953598059">Դեմքով կառավարում</translation>
@@ -3945,7 +3943,6 @@
 <translation id="3732414796052961578">Շարունակել <ph name="ACCOUNT_NAME" /> հաշվով</translation>
 <translation id="3732530910372558017">PIN կոդը պետք է կազմված լինի առավելագույնը 63 նիշից</translation>
 <translation id="3732706448780793442">Մուտքագրել ձեռքով</translation>
-<translation id="3732857534841813090">Google Օգնականին առնչվող տեղեկություններ</translation>
 <translation id="3733296813637058299">Մենք կտեղադրենք այս հավելվածները ձեզ համար։ Ձեր <ph name="DEVICE_TYPE" /> սարքի համար այլ հավելվածներ կարող եք գտնել Play Խանութում։</translation>
 <translation id="3734547157266039796">Բրնձի դաշտ</translation>
 <translation id="3735039640698208086">Աուդիո նվագարկելիս...</translation>
@@ -4176,7 +4173,6 @@
 <translation id="3873315167136380065">Սա միացնելու համար <ph name="BEGIN_LINK" />վերակայեք համաժամացումը<ph name="END_LINK" />, որպեսզի հեռացնեք համաժամացման անցաբառը</translation>
 <translation id="3873423927483480833">Ցուցադրել PIN կոդերը</translation>
 <translation id="3873915545594852654">Չհաջողվեց գործարկել ARC++ը։</translation>
-<translation id="3874164307099183178">Միացնել Google Օգնականը</translation>
 <translation id="3874845889165401548">Այս գործառույթը փորձնական է և օգտագործում է ԱԲ</translation>
 <translation id="3875511946736639169">Միացնել պատկերները</translation>
 <translation id="3875815154304214043"><ph name="APP_NAME" /> հավելվածը և աջակցվող հղումները կբացվեն դիտարկիչի նոր ներդիրում։ <ph name="BEGIN_LINK_LEARN_MORE" />Իմանալ ավելին<ph name="END_LINK_LEARN_MORE" /></translation>
@@ -4766,6 +4762,7 @@
 <translation id="4295072614469448764">Հավելվածը հասանելի է ձեր տերմինալում: Հնարավոր է նաև պատկերակ լինի ձեր գործարկիչում:</translation>
 <translation id="4295979599050707005">Նորից մուտք գործեք, որպեսզի հաստատեք, որ ձեր <ph name="USER_EMAIL" /> հաշիվը կարող է օգտագործվել Chrome-ի և Google Play-ի կայքերում, հավելվածներում և ընդլայնումներում։ Դուք կարող եք նաև ջնջել այս հաշիվը։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="4296424230850377304">Տեղադրված կամ հեռարձակվող հավելվածներ <ph name="APP_NAME" /> հավելվածից</translation>
+<translation id="4296632172536745000">Այս կայքի ձեր հին գաղտնաբառը տվյալների հրապարակային արտահոսքի արդյունքում բացահայտվել է։ <ph name="DATE" />-ին դուք խնդրել եք «<ph name="BRAND" />» ծառայությանը ավտոմատ կերպով փոխել ձեր գաղտնաբառը։</translation>
 <translation id="4297219207642690536">Վերագործարկել և վերակայել</translation>
 <translation id="4297813521149011456">Էկրանի պտտում</translation>
 <translation id="4298660926525614540">Հանովի կրիչների անվանումները</translation>
@@ -4834,7 +4831,6 @@
 <translation id="4348766275249686434">Հավաքել տվյալներ սխալների մասին</translation>
 <translation id="4349828822184870497">Օգտակար էր</translation>
 <translation id="4350230709416545141">Արգելափակել տեղադրության տվյալների հասանելիությունը <ph name="HOST" /> կայքի համար</translation>
-<translation id="4350782034419308508">Ok Google</translation>
 <translation id="435185728237714178">Բացեք «<ph name="APP_NAME" />» հավելվածը՝ տեղադրված և հոսքային փոխանցման հավելվածները կառավարելու համար</translation>
 <translation id="4352913519324947509">Գաղտնաբառը չի հաջողվել փոխել։ Այդուհանդերձ, դուք կարող եք մուտք գործել կայք ձեր ընթացիկ գաղտնաբառի միջոցով։</translation>
 <translation id="4354073718307267720">Հարցնել, երբ որևէ կայք ուզում է ստեղծել շրջակայքի եռաչափ քարտեզը և հետագծել տեսախցիկի դիրքը</translation>
@@ -5102,7 +5098,6 @@
 <translation id="4545759655004063573">Հնարավոր չէ պահել ոչ բավարար թույլտվությունների պատճառով: Պահեք մեկ այլ տեղադրությունում:</translation>
 <translation id="4546345569117159016">«Աջ» կոճակ</translation>
 <translation id="4546509872654834602"><ph name="SUPERVISED_USER_NAME" />-ն ուզում է օգտագործել այս ընդլայնումը՝</translation>
-<translation id="4546692474302123343">Google Օգնականի ձայնային ներածում</translation>
 <translation id="4547659257713117923">Այլ սարքերից ներդիրներ չկան</translation>
 <translation id="4547672827276975204">Ավտոմատ որոշում</translation>
 <translation id="4549791035683739768">Անվտանգության բանալու վրա պահված մատնահետքեր չկան</translation>
@@ -5478,7 +5473,6 @@
 <translation id="4816900689218414104">Ստեղծեք մուտքի բանալի ձեր հեռախոսում կամ պլանշետում</translation>
 <translation id="481917177323309377">Ներդիրներ, որոնք <ph name="COUNT" /> օր և ավել չեք օգտագործել</translation>
 <translation id="4819323978093861656">{0,plural, =0{Փակում է հիմա}=1{Կփակի 1 վայրկյանից}one{Կփակի # վայրկյանից}other{Կփակի # վայրկյանից}}</translation>
-<translation id="4819607494758673676">Google Օգնականի ծանուցումներ</translation>
 <translation id="4819818293886748542">Ստանալ աջակցման գործիքի հղում</translation>
 <translation id="4820236583224459650">Նշել որպես ակտիվ տոմս</translation>
 <translation id="4820795723433418303">Գործառնական ստեղներն օգտագործել որպես վերևի շարքի ստեղներ</translation>
@@ -5526,7 +5520,6 @@
 <translation id="4846897209694249040">Արգելված է ստանալ և օգտագործել մկնիկի կառավարման տվյալները</translation>
 <translation id="4847242508757499006">Սեղմեք «Նորից փորձել» կամ ընտրեք «Բացել հիմնական խմբագրիչում»՝ դիտման և խմբագրման սահմանափակ ընտրանքներից օգտվելու համար։</translation>
 <translation id="4847742514726489375">Շարժման նվազեցում</translation>
-<translation id="4848191975108266266">Google Օգնականի «Ok Google» գործառույթ</translation>
 <translation id="4849286518551984791">Համընդհանուր կոորդինացված ժամանակ (UTC/GMT)</translation>
 <translation id="4849517651082200438">Չտեղադրել</translation>
 <translation id="4849731766219625109">Օգտագործել <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> հաշիվը</translation>
@@ -5540,6 +5533,7 @@
 <translation id="4852916668365817106">Մկնիկի գույնը</translation>
 <translation id="4853020600495124913">Բացել &amp;նոր պատուհանում</translation>
 <translation id="4854317507773910281">Հաստատման համար ընտրեք ծնողի հաշիվը</translation>
+<translation id="4854603338816296098">Հասցեն հեռացվեց</translation>
 <translation id="485480310608090163">Այլ կարգավորումներ և թույլտվություններ</translation>
 <translation id="4857304314344645169">Տեսեք ցանկացած խնդրի քայլ առ քայլ բացատրությունը</translation>
 <translation id="485806788160414322">Նվագարկել/դադարեցնել մեդիաֆայլը</translation>
@@ -6216,7 +6210,6 @@
 <translation id="534449933710420173">Անանուն պանակ</translation>
 <translation id="5345916423802287046">Գործարկել հավելվածը մուտք գործելիս</translation>
 <translation id="5350116201946341974">Տարօրինակ</translation>
-<translation id="5350293332385664455">Անջատել Google Օգնականը</translation>
 <translation id="535123479159372765">Տեքստը պատճենվեց այլ սարքից</translation>
 <translation id="5352033265844765294">Ժամադրոշմ</translation>
 <translation id="5352257124367865087">Կառավարել կայքի թույլտվությունները</translation>
@@ -7260,7 +7253,6 @@
 <translation id="6108952804512516814">Ստեղծեք արհեստական բանականության օգնությամբ</translation>
 <translation id="6110303766838612983">Ուղարկել խափանման մասին հաշվետվությունները, ինչպես նաև օգտագործման և դիագնոստիկ տվյալները ChromeOS-ին</translation>
 <translation id="6111718295497931251">Հեռացնել Google Drive-ի օգտագործման թույլտվությունը</translation>
-<translation id="6111972606040028426">Միացնել Google Օգնականը</translation>
 <translation id="6112727384379533756">Ավելացնել տոմս</translation>
 <translation id="6112931163620622315">Ստուգեք հեռախոսը</translation>
 <translation id="6113434369102685411">Ընտրեք կանխադրված որոնողական համակարգ Chrome դիտարկիչի և <ph name="DEVICE_TYPE" />-ի գործարկիչի համար</translation>
@@ -8418,7 +8410,6 @@
 <translation id="6924109527536857168">Միացրեք համաժամացումը</translation>
 <translation id="6928650056523249512">Ավտոմատ հեռացնել թույլտվությունները չօգտագործվող կայքերից</translation>
 <translation id="6929126689972602640">Ծնողական վերահսկողության գործառույթներն այժմ հասանելի են դպրոցական հաշիվների համար։ Մտեք երեխայի հաշիվ, որպեսզի ավելացնեք դպրոցական հաշիվ՝ Google Classroom և դպրոցական տնային աշխատանքների կայքեր մտնելու համար։ Դուք ավելի ուշ կարող եք ավելացնել դպրոցական հաշիվ։</translation>
-<translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Ընդլայնումը մերժվել է}one{# ընդլայնում մերժվել է}other{# ընդլայնում մերժվել է}}</translation>
 <translation id="6930337524857202955">Հասանելի է նոր ներբեռնում</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
@@ -9321,6 +9312,7 @@
 <translation id="7582844466922312471">Բջջային մոդեմ</translation>
 <translation id="7583948862126372804">Քանակ</translation>
 <translation id="7585106857920830898">Ստուգվում է՝ արդյոք ֆայլը համապատասխանում է ձեր կազմակերպության անվտանգության կանոններին...</translation>
+<translation id="7585490016012953607">Վերականգնման գաղտնաբառը ժամանակավորապես պահվել է մինչև 3 ամսով</translation>
 <translation id="7586498138629385861">Chrome-ը կշարունակի աշխատել, երբ հավելվածները բաց են:</translation>
 <translation id="7587806318633605613">Հուշումների պատմություն</translation>
 <translation id="7589448773774086276">Տրոհված նոր էկրան ընթացիկ ներդիրով</translation>
