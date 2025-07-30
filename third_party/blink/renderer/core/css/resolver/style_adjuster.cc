@@ -1079,6 +1079,14 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     AdjustStyleForHTMLElement(builder, *html_element);
   }
 
+  bool is_transition_scope = false;
+  if (element) {
+    if (const ViewTransition* view_transition =
+            ViewTransitionUtils::GetTransition(*element)) {
+      is_transition_scope = (view_transition->Scope() == element);
+    }
+  }
+
   if (builder.Display() != EDisplay::kNone) {
     bool is_document_element =
         element && element->GetDocument().documentElement() == element;
@@ -1153,6 +1161,10 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
         builder.HasBackdropFilter()) {
       builder.SetBackdropFilter(FilterOperations());
     }
+
+    if (is_transition_scope && !is_document_element) {
+      builder.SetContain(builder.Contain() | kContainsLayout);
+    }
   } else {
     AdjustStyleForFirstLetter(builder, parent_style);
   }
@@ -1176,16 +1188,8 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
       builder.StyleType() == kPseudoIdBackdrop ||
       builder.StyleType() == kPseudoIdViewTransition ||
       IsCanvasWithDrawElements(element) ||
-      (builder.Contain() & kContainsViewTransition)) {
+      (builder.Contain() & kContainsViewTransition) || is_transition_scope) {
     builder.SetForcesStackingContext(true);
-  } else if (element) {
-    // The scoped element of a view transition requires a stacking context.
-    if (const ViewTransition* view_transition =
-            ViewTransitionUtils::GetTransition(*element)) {
-      if (view_transition->Scope() == element) {
-        builder.SetForcesStackingContext(true);
-      }
-    }
   }
 
   if (builder.OverflowX() != EOverflow::kVisible ||
