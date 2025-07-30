@@ -15,6 +15,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "components/content_extraction/content/browser/inner_text.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -135,7 +136,6 @@ class PageContextFetcher : public content::WebContentsObserver {
     Observe(&aweb_contents);
     // TODO(crbug.com/391851902): implement kSensitiveContentAttribute error
     // checking and signaling.
-    start_time_ = base::TimeTicks::Now();
     callback_ = std::move(callback);
 
     if (options.include_viewport_screenshot) {
@@ -256,7 +256,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     pending_result_->screenshot_result.emplace(
         gfx::SkISizeToSize(bitmap.dimensions()));
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetScreenshot",
-                            base::TimeTicks::Now() - start_time_);
+                            elapsed_timer_.Elapsed());
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
         base::BindOnce(
@@ -281,7 +281,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     if (screenshot_done_) {
       return;
     }
-    auto elapsed = base::TimeTicks::Now() - start_time_;
+    auto elapsed = elapsed_timer_.Elapsed();
     screenshot_done_ = true;
     capture_count_lock_ = {};
     if (screenshot_jpeg_data) {
@@ -313,7 +313,7 @@ class PageContextFetcher : public content::WebContentsObserver {
         std::move(trimmed_text), std::move(result->node_offset), truncated);
     inner_text_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetInnerText",
-                            base::TimeTicks::Now() - start_time_);
+                            elapsed_timer_.Elapsed());
     RunCallbackIfComplete();
   }
 
@@ -322,7 +322,7 @@ class PageContextFetcher : public content::WebContentsObserver {
     pending_result_->annotated_page_content_result = std::move(content);
     annotated_page_content_done_ = true;
     base::UmaHistogramTimes("Glic.PageContextFetcher.GetAnnotatedPageContent",
-                            base::TimeTicks::Now() - start_time_);
+                            elapsed_timer_.Elapsed());
     RunCallbackIfComplete();
   }
 
@@ -339,7 +339,7 @@ class PageContextFetcher : public content::WebContentsObserver {
       return;
     }
     base::UmaHistogramTimes("Glic.PageContextFetcher.Total",
-                            base::TimeTicks::Now() - start_time_);
+                            elapsed_timer_.Elapsed());
 
     if (primary_page_changed_ || !web_contents() ||
         !web_contents()->GetPrimaryMainFrame()) {
@@ -371,7 +371,7 @@ class PageContextFetcher : public content::WebContentsObserver {
   // Whether the primary page has changed since context fetching began.
   bool primary_page_changed_ = false;
   std::unique_ptr<FetchPageContextResult> pending_result_;
-  base::TimeTicks start_time_;
+  base::ElapsedTimer elapsed_timer_;
   base::ScopedClosureRunner capture_count_lock_;
 
   base::WeakPtrFactory<PageContextFetcher> weak_ptr_factory_{this};
