@@ -35,6 +35,7 @@ source_set("eg2_tests") {
     "//ios/chrome/browser/infobars/ui_bundled/banners:public",
     "//ios/chrome/browser/infobars/ui_bundled/modals:public",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:constants",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/translate/model:eg_test_support+eg2",

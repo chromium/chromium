@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/translate/model/translate_app_interface.h"
@@ -303,6 +304,16 @@ void TestResponseProvider::GetLanguageResponse(
   NSString* translateScriptSwitchValue =
       base::SysUTF8ToNSString(translateScriptURL.spec());
   [TranslateAppInterface setUpWithScriptServer:translateScriptSwitchValue];
+}
+
+- (AppLaunchConfiguration)appConfigurationForTestCase {
+  AppLaunchConfiguration config;
+  if ([self isRunningTest:@selector(testTranslateAfterReaderMode)]) {
+    config.features_enabled.push_back(kEnableReaderMode);
+    config.features_enabled.push_back(
+        kEnableReaderModePageEligibilityForToolsMenu);
+  }
+  return config;
 }
 
 - (void)tearDownHelper {
