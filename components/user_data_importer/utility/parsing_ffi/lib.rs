@@ -4,12 +4,13 @@
 
 mod json;
 mod models;
+mod utils;
 
 use crate::models::{
     PaymentCardJSONEntry, SafariHistoryJSONEntry, StablePortabilityHistoryJSONEntry,
 };
-
 use crate::json::{STREAM_BUFFER_SIZE, ZipEntryBufReader};
+use crate::utils::has_extension;
 
 use anyhow::{anyhow, Error, Result};
 use cxx::{CxxString, CxxVector};
@@ -170,26 +171,6 @@ fn batch_and_send<T, U, C>(
         let batch_to_send = std::mem::replace(history, CxxVector::<U>::new());
         callback.import_entries(batch_to_send, /* completed= */ false);
     }
-}
-
-// Returns the expected extension for the provided file type.
-fn expected_extension(file_type: ffi::FileType) -> Result<&'static str> {
-    match file_type {
-        ffi::FileType::Bookmarks => Ok("html"),
-        ffi::FileType::SafariHistory => Ok("json"),
-        ffi::FileType::Passwords => Ok("csv"),
-        ffi::FileType::PaymentCards => Ok("json"),
-        _ => Err(anyhow!("Unknown file type")),
-    }
-}
-
-// Verifies if the file in the provided path has the desired extension.
-fn has_extension(path: &Path, file_type: ffi::FileType) -> bool {
-    let Ok(ext) = expected_extension(file_type) else {
-        return false;
-    };
-
-    path.extension().map_or(false, |actual_extension| actual_extension.eq_ignore_ascii_case(ext))
 }
 
 // Attempts to parse the history file. Returns whether parsing was successful.

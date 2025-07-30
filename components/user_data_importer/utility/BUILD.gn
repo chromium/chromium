@@ -38,6 +38,7 @@ rust_static_library("zip_ffi_glue") {
     "parsing_ffi/json.rs",
     "parsing_ffi/lib.rs",
     "parsing_ffi/models.rs",
+    "parsing_ffi/utils.rs",
   ]
   cxx_bindings = [ "parsing_ffi/lib.rs" ]
   visibility = [
