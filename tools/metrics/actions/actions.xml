@@ -6266,6 +6266,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="BottomSheet_Password_SuggestionAccepted_Backup">
+  <owner>noemies@google.com</owner>
+  <description>
+    The user tapped on the &quot;Continue&quot; button from the Password
+    Suggestion Bottom Sheet to fill the current form with the selected backup
+    password suggestion. iOS only.
+  </description>
+</action>
+
 <action name="BrowserActions.MenuOpened">
   <obsolete>Deprecated in M77 with the removal of Browser Actions.</obsolete>
   <owner>ltian@chromium.org</owner>
@@ -16623,6 +16632,15 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="KeyboardAccessory_SuggestionAccepted_BackupPassword">
+  <owner>noemies@google.com</owner>
+  <owner>sugoi@google.com</owner>
+  <description>
+    The user tapped on a backup password suggestion from the Keyboard Accessory
+    to fill the current form. iOS only.
+  </description>
+</action>
+
 <action name="KeyboardShortcutViewer.CreateWindow">
   <owner>wutao@chromium.org</owner>
   <description>
@@ -21330,9 +21348,19 @@ should be able to be added at any place in this file.
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <description>
-    The user tapped on the &quot;Autofill Form&quot; button of a password
+    The user tapped on the &quot;Autofill form&quot; button of a password
     suggestion from the All Passwords Manual Fallback view, which is opened by
-    tapping on the &quot;Select Password...&quot; button in the Password Manual
+    tapping on the &quot;Select password...&quot; button in the Password Manual
+    Fallback view, to fill the current form with the suggestion. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_AllPasswords_SuggestionAccepted_Backup">
+  <owner>noemies@google.com</owner>
+  <description>
+    The user tapped on the &quot;Autofill form&quot; button of a backup password
+    suggestion from the All Passwords Manual Fallback view, which is opened by
+    tapping on the &quot;Select password...&quot; button in the Password Manual
     Fallback view, to fill the current form with the suggestion. iOS only.
   </description>
 </action>
@@ -21532,6 +21560,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="ManualFallback_Password_SelectBackupPassword">
+  <owner>noemies@google.com</owner>
+  <description>
+    The user tapped on a backup password chip in the Password Manual Fallback
+    view.
+  </description>
+</action>
+
 <action name="ManualFallback_Password_SelectPassword">
   <owner>tmartino@chromium.org</owner>
   <owner>olivierrobin@chromium.org</owner>
@@ -21552,7 +21588,16 @@ should be able to be added at any place in this file.
   <owner>noemies@google.com</owner>
   <owner>sugoi@google.com</owner>
   <description>
-    The user tapped on the &quot;Autofill Form&quot; button of a password
+    The user tapped on the &quot;Autofill form&quot; button of a password
+    suggestion from the Password Manual Fallback view to fill the current form
+    with the suggestion. iOS only.
+  </description>
+</action>
+
+<action name="ManualFallback_Password_SuggestionAccepted_Backup">
+  <owner>noemies@google.com</owner>
+  <description>
+    The user tapped on the &quot;Autofill form&quot; button of a backup password
     suggestion from the Password Manual Fallback view to fill the current form
     with the suggestion. iOS only.
   </description>

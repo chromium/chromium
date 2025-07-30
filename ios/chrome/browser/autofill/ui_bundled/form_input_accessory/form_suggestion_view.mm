@@ -218,8 +218,10 @@ void LogSelectedSuggestionIndexMetric(SuggestionType suggestion_type,
   NSUInteger index = formSuggestionLabel.suggestionIndex;
   FormSuggestion* suggestion = formSuggestionLabel.suggestion;
   LogSelectedSuggestionIndexMetric(suggestion.type, index);
-  base::RecordAction(
-      base::UserMetricsAction("KeyboardAccessory_SuggestionAccepted"));
+  base::RecordAction(base::UserMetricsAction(
+      suggestion.type == SuggestionType::kBackupPasswordEntry
+          ? "KeyboardAccessory_SuggestionAccepted_BackupPassword"
+          : "KeyboardAccessory_SuggestionAccepted"));
   [self.formSuggestionViewDelegate formSuggestionView:self
                                   didAcceptSuggestion:suggestion
                                               atIndex:index];

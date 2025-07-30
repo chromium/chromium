@@ -30,6 +30,8 @@
 #import "ui/base/l10n/l10n_util_mac.h"
 #import "url/gurl.h"
 
+using autofill::SuggestionType;
+
 namespace {
 
 // Spacing use for the spacing before the logo title in the bottom sheet.
@@ -47,6 +49,25 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   return ([username length] == 0)
              ? l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME)
              : username;
+}
+
+// Logs the relevant metrics for when a password suggestion is accepted from the
+// bottom sheet.
+void LogSuggestionAcceptedMetrics(BOOL is_backup_suggestion,
+                                  NSInteger index,
+                                  NSUInteger suggestion_count) {
+  const char* backup_string = is_backup_suggestion ? "_Backup" : "";
+  std::string user_action =
+      base::StrCat({"BottomSheet_Password_SuggestionAccepted", backup_string});
+  base::RecordAction(base::UserMetricsAction(user_action.c_str()));
+
+  base::UmaHistogramSparse(
+      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", index);
+
+  if (suggestion_count > 1) {
+    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
+                                (int)index);
+  }
 }
 
 }  // namespace
@@ -208,8 +229,7 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
       // passwords as they are not displayed in the Password Manager for now.
       FormSuggestion* formSuggestion =
           [strongSelf.suggestions objectAtIndex:indexPath.row];
-      if (formSuggestion.type !=
-          autofill::SuggestionType::kBackupPasswordEntry) {
+      if (formSuggestion.type != SuggestionType::kBackupPasswordEntry) {
         [menuElements
             addObject:[UIMenu
                           menuWithTitle:@""
@@ -254,18 +274,14 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  base::RecordAction(
-      base::UserMetricsAction("BottomSheet_Password_SuggestionAccepted"));
   NSInteger index = [self selectedRow];
-  base::UmaHistogramSparse(
-      "Autofill.UserAcceptedSuggestionAtIndex.Password.BottomSheet", index);
-  [self.handler primaryButtonTappedForSuggestion:_suggestions[index]
-                                         atIndex:index];
+  FormSuggestion* suggestion = _suggestions[index];
+  BOOL isBackupSuggestion =
+      suggestion.type == SuggestionType::kBackupPasswordEntry;
 
-  if ([self rowCount] > 1) {
-    base::UmaHistogramCounts100("PasswordManager.TouchToFill.CredentialIndex",
-                                (int)index);
-  }
+  LogSuggestionAcceptedMetrics(isBackupSuggestion, index, [self rowCount]);
+
+  [self.handler primaryButtonTappedForSuggestion:suggestion atIndex:index];
 }
 
 - (void)confirmationAlertSecondaryAction {
@@ -422,7 +438,7 @@ NSString* GetSuggestionDisplayUsername(FormSuggestion* suggestion) {
   cell.URLLabel.lineBreakMode = NSLineBreakByTruncatingMiddle;
   cell.URLLabel.numberOfLines = 1;
   cell.URLLabel.hidden = NO;
-  if (formSuggestion.type == autofill::SuggestionType::kBackupPasswordEntry) {
+  if (formSuggestion.type == SuggestionType::kBackupPasswordEntry) {
     cell.thirdRowLabel.text = l10n_util::GetNSString(
         IDS_IOS_PASSWORD_BOTTOM_SHEET_RECOVERY_PASSWORD_LABEL);
     cell.thirdRowLabel.hidden = NO;
