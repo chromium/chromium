@@ -665,10 +665,9 @@ TEST_P(FeaturePromoControllerQueueTest, CustomActionCallbackPassesOnContext) {
       promo_controller().MaybeShowPromo(std::move(params), promo_context()));
   auto* const help_bubble = GetHelpBubble();
   ASSERT_NE(nullptr, help_bubble);
-  EXPECT_ASYNC_CALL_IN_SCOPE(
-      custom_action_callback_,
-      Run(promo_context()->GetElementContext(), testing::_),
-      help_bubble->SimulateButtonPress(0));
+  EXPECT_ASYNC_CALL_IN_SCOPE(custom_action_callback_,
+                             Run(testing::Eq(promo_context()), testing::_),
+                             help_bubble->SimulateButtonPress(0));
 }
 
 TEST_P(FeaturePromoControllerQueueTest,
@@ -709,10 +708,9 @@ TEST_P(FeaturePromoControllerQueueTest,
       promo_controller().MaybeShowPromo(std::move(params), promo_context()));
   auto* const help_bubble = GetHelpBubble();
   ASSERT_NE(nullptr, help_bubble);
-  EXPECT_ASYNC_CALL_IN_SCOPE(
-      custom_action_callback_,
-      Run(help_bubble_context->GetElementContext(), testing::_),
-      help_bubble->SimulateButtonPress(0));
+  EXPECT_ASYNC_CALL_IN_SCOPE(custom_action_callback_,
+                             Run(testing::Eq(help_bubble_context), testing::_),
+                             help_bubble->SimulateButtonPress(0));
 }
 
 TEST_P(FeaturePromoControllerQueueTest,
@@ -736,10 +734,9 @@ TEST_P(FeaturePromoControllerQueueTest,
   ASSERT_NE(nullptr, help_bubble);
   EXPECT_CALL(*help_bubble_context, IsValid)
       .WillRepeatedly(testing::Return(false));
-  EXPECT_ASYNC_CALL_IN_SCOPE(
-      custom_action_callback_,
-      Run(promo_context()->GetElementContext(), testing::_),
-      help_bubble->SimulateButtonPress(0));
+  EXPECT_ASYNC_CALL_IN_SCOPE(custom_action_callback_,
+                             Run(testing::Eq(promo_context()), testing::_),
+                             help_bubble->SimulateButtonPress(0));
 }
 
 TEST_P(
@@ -763,10 +760,9 @@ TEST_P(
   auto* const help_bubble = GetHelpBubble();
   ASSERT_NE(nullptr, help_bubble);
   EXPECT_CALL(*promo_context(), IsValid).WillRepeatedly(testing::Return(false));
-  EXPECT_ASYNC_CALL_IN_SCOPE(
-      custom_action_callback_,
-      Run(help_bubble_context->GetElementContext(), testing::_),
-      help_bubble->SimulateButtonPress(0));
+  EXPECT_ASYNC_CALL_IN_SCOPE(custom_action_callback_,
+                             Run(testing::Eq(help_bubble_context), testing::_),
+                             help_bubble->SimulateButtonPress(0));
 }
 
 TEST_P(

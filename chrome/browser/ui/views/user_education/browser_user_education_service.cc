@@ -54,6 +54,7 @@
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_20.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_controller_25.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_feature_promo_preconditions.h"
+#include "chrome/browser/ui/views/user_education/impl/browser_user_education_context.h"
 #include "chrome/browser/ui/views/web_apps/web_app_install_dialog_delegate.h"
 #include "chrome/browser/ui/webui/new_tab_page/new_tab_page_ui.h"
 #include "chrome/browser/ui/webui/password_manager/password_manager_ui.h"
@@ -94,6 +95,7 @@
 #include "components/user_education/common/new_badge/new_badge_specification.h"
 #include "components/user_education/common/tutorial/tutorial_description.h"
 #include "components/user_education/common/tutorial/tutorial_registry.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_features.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "components/user_education/views/help_bubble_delegate.h"
@@ -158,16 +160,27 @@ bool HasTabGroups(const BrowserView* browser_view) {
               .empty();
 }
 
+using ContextPtr = const user_education::UserEducationContextPtr&;
+
+// Convenience method to get the browser view from the context.
+BrowserView& GetBrowserView(ContextPtr context) {
+  auto* const browser_context = context->AsA<BrowserUserEducationContext>();
+  CHECK(browser_context);
+  return browser_context->GetBrowserView();
+}
+
+// Convenience method to get the browser from the context.
+Browser* GetBrowser(ContextPtr context) {
+  return GetBrowserView(context).browser();
+}
+
 // Returns a `CustomActionCallback` that navigates to `target` in a new tab.
 user_education::FeaturePromoSpecification::CustomActionCallback
 CreateNavigationAction(GURL target) {
   return base::BindRepeating(
-      [](GURL url, ui::ElementContext ctx,
+      [](GURL url, ContextPtr ctx,
          user_education::FeaturePromoHandle promo_handle) {
-        auto* const browser = chrome::FindBrowserWithUiElementContext(ctx);
-        if (!browser) {
-          return;
-        }
+        auto* browser = GetBrowser(ctx);
         NavigateParams params(browser->profile(), url,
                               ui::PAGE_TRANSITION_LINK);
         params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
@@ -306,13 +319,9 @@ void MaybeRegisterChromeFeaturePromos(
             }
           }(),
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* const browser =
-                    chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
+                Browser* const browser = GetBrowser(ctx);
                 TabStripModel* const tab_strip_model =
                     browser->tab_strip_model();
                 if (!tab_strip_model) {
@@ -478,12 +487,9 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_TUTORIAL_CUSTOMIZE_CHROME_START_TUTORIAL_IPH,
           IDS_PROMO_SHOW_TUTORIAL_BUTTON,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
+                Browser* const browser = GetBrowser(ctx);
                 if (!search::DefaultSearchProviderIsGoogle(
                         browser->profile())) {
                   return;
@@ -513,7 +519,8 @@ void MaybeRegisterChromeFeaturePromos(
                 user_education::TutorialIdentifier tutorial_id =
                     kSidePanelCustomizeChromeTutorialId;
 
-                tutorial_service->StartTutorial(tutorial_id, ctx);
+                tutorial_service->StartTutorial(tutorial_id,
+                                                ctx->GetElementContext());
                 tutorial_service->LogIPHLinkClicked(tutorial_id, true);
               }))
           .SetBubbleArrow(HelpBubbleArrow::kNone)
@@ -536,12 +543,8 @@ void MaybeRegisterChromeFeaturePromos(
           kTopContainerElementId, IDS_IPH_CUSTOMIZE_CHROME_REFRESH_BODY,
           IDS_IPH_CUSTOMIZE_CHROME_REFRESH_CUSTOM_ACTION,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
                 ShowPromoInPage::Params params;
                 params.bubble_anchor_id =
                     NewTabPageUI::kCustomizeChromeButtonElementId;
@@ -549,7 +552,7 @@ void MaybeRegisterChromeFeaturePromos(
                     user_education::HelpBubbleArrow::kBottomRight;
                 params.bubble_text = l10n_util::GetStringUTF16(
                     IDS_IPH_CUSTOMIZE_CHROME_REFRESH_POINTER_BODY);
-                ShowPromoInPage::Start(browser, std::move(params));
+                ShowPromoInPage::Start(GetBrowser(ctx), std::move(params));
               }))
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetCustomActionIsDefault(false)
@@ -873,12 +876,13 @@ void MaybeRegisterChromeFeaturePromos(
           kCookieControlsIconElementId, IDS_COOKIE_CONTROLS_PROMO_TEXT,
           IDS_COOKIE_CONTROLS_PROMO_SEE_HOW_BUTTON_TEXT,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
                 auto* cookie_controls_icon_view =
                     views::ElementTrackerViews::GetInstance()
                         ->GetFirstMatchingViewAs<CookieControlsIconView>(
-                            kCookieControlsIconElementId, ctx);
+                            kCookieControlsIconElementId,
+                            ctx->GetElementContext());
                 if (cookie_controls_icon_view != nullptr) {
                   cookie_controls_icon_view->ShowCookieControlsBubble();
                 }
@@ -1070,15 +1074,11 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_SUPERVISED_USER_PROFILE_SIGNIN_IPH_TEXT,
           IDS_PROMO_LEARN_MORE_BUTTON,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
                 // Open parental controls page.
                 ShowSingletonTab(
-                    browser,
+                    GetBrowser(ctx),
                     GURL(supervised_user::kManagedByParentUiMoreInfoUrl));
                 base::RecordAction(base::UserMetricsAction(
                     "SupervisedUserProfileSignIn_IPHPromo_"
@@ -1164,9 +1164,9 @@ void MaybeRegisterChromeFeaturePromos(
           IDS_BATTERY_SAVER_MODE_PROMO_TEXT,
           IDS_BATTERY_SAVER_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
+                auto* browser = GetBrowser(ctx);
                 if (browser) {
                   chrome::ShowSettingsSubPage(browser,
                                               chrome::kPerformanceSubPage);
@@ -1185,7 +1185,7 @@ void MaybeRegisterChromeFeaturePromos(
           kToolbarAppMenuButtonElementId, IDS_MEMORY_SAVER_MODE_PROMO_TEXT,
           IDS_MEMORY_SAVER_MODE_PROMO_ACTION_TEXT,
           base::BindRepeating(
-              [](ui::ElementContext context,
+              [](ContextPtr context,
                  user_education::FeaturePromoHandle promo_handle) {
                 performance_manager::user_tuning::UserPerformanceTuningManager::
                     GetInstance()
@@ -1207,12 +1207,8 @@ void MaybeRegisterChromeFeaturePromos(
           feature_engagement::kIPHDiscardRingFeature, kTabIconElementId,
           IDS_DISCARD_RING_PROMO_TEXT, IDS_DISCARD_RING_PROMO_ACTION_TEXT,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
                 ShowPromoInPage::Params params;
                 params.target_url =
                     chrome::GetSettingsUrl(chrome::kPerformanceSubPage);
@@ -1223,7 +1219,7 @@ void MaybeRegisterChromeFeaturePromos(
                     l10n_util::GetStringUTF16(IDS_DISCARD_RING_SETTINGS_TOAST);
                 params.close_button_alt_text_id = IDS_CLOSE_PROMO;
 
-                ShowPromoInPage::Start(browser, std::move(params));
+                ShowPromoInPage::Start(GetBrowser(ctx), std::move(params));
               }))
           .SetAnchorElementFilter(base::BindRepeating(
               [](const ui::ElementTracker::ElementList& elements)
@@ -1274,15 +1270,12 @@ void MaybeRegisterChromeFeaturePromos(
           kToolbarDownloadButtonElementId, IDS_DOWNLOAD_BUBBLE_ESB_PROMO,
           IDS_DOWNLOAD_BUBBLE_ESB_PROMO_CUSTOM_ACTION,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* browser = chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
                 chrome::ShowSafeBrowsingEnhancedProtectionWithIph(
-                    browser, safe_browsing::SafeBrowsingSettingReferralMethod::
-                                 kDownloadButtonIphPromo);
+                    GetBrowser(ctx),
+                    safe_browsing::SafeBrowsingSettingReferralMethod::
+                        kDownloadButtonIphPromo);
               }))
           .SetCustomActionIsDefault(true)
           .SetBubbleArrow(HelpBubbleArrow::kTopRight)
@@ -1327,13 +1320,9 @@ void MaybeRegisterChromeFeaturePromos(
           kToolbarAppMenuButtonElementId, IDS_DESKTOP_PWA_LINK_CAPTURING_TEXT,
           IDS_DESKTOP_PWA_LINK_CAPTURING_SETTINGS,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* const browser =
-                    chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
+                auto* const browser = GetBrowser(ctx);
                 TabStripModel* const tab_strip_model =
                     browser->tab_strip_model();
                 if (!tab_strip_model) {
@@ -1370,13 +1359,9 @@ void MaybeRegisterChromeFeaturePromos(
           kLocationIconElementId, IDS_DESKTOP_PWA_LINK_CAPTURING_TEXT,
           IDS_DESKTOP_PWA_LINK_CAPTURING_SETTINGS,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* const browser =
-                    chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
+                auto* const browser = GetBrowser(ctx);
                 TabStripModel* const tab_strip_model =
                     browser->tab_strip_model();
                 if (!tab_strip_model) {
@@ -1412,14 +1397,9 @@ void MaybeRegisterChromeFeaturePromos(
           kHistorySearchInputElementId, IDS_HISTORY_EMBEDDINGS_IPH_BODY,
           IDS_HISTORY_EMBEDDINGS_IPH_ACTION,
           base::BindRepeating(
-              [](ui::ElementContext ctx,
+              [](ContextPtr ctx,
                  user_education::FeaturePromoHandle promo_handle) {
-                auto* const browser =
-                    chrome::FindBrowserWithUiElementContext(ctx);
-                if (!browser) {
-                  return;
-                }
-                chrome::ShowSettingsSubPage(browser,
+                chrome::ShowSettingsSubPage(GetBrowser(ctx),
                                             chrome::kHistorySearchSubpage);
               }))
           .SetCustomActionIsDefault(true)

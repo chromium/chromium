@@ -34,7 +34,7 @@ template <typename T>
   requires IsCustomHelpBubbleView<T>
 using CustomHelpBubbleViewFactoryCallback =
     base::RepeatingCallback<std::unique_ptr<T>(
-        ui::ElementContext from_context,
+        const UserEducationContextPtr& from_context,
         FeaturePromoSpecification::BuildHelpBubbleParams build_params)>;
 
 // Convenience method that creates the callback to feed to
@@ -63,7 +63,7 @@ CreateCustomHelpBubbleViewFactoryCallback(
       [](const CustomHelpBubbleViewFactoryCallback<T>& bubble_factory_callback,
          std::optional<CustomHelpBubbleUi::UserAction> accept_button_action,
          std::optional<CustomHelpBubbleUi::UserAction> cancel_button_action,
-         ui::ElementContext from_context,
+         const UserEducationContextPtr& from_context,
          FeaturePromoSpecification::BuildHelpBubbleParams build_params) {
         auto* const anchor_element = build_params.anchor_element.get();
         const auto arrow = build_params.arrow;

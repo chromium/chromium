@@ -314,8 +314,7 @@ std::unique_ptr<HelpBubble> FeaturePromoControllerCommon::ShowPromoBubbleImpl(
   bool had_screen_reader_promo = false;
   std::unique_ptr<HelpBubble> help_bubble;
   if (spec.promo_type() == FeaturePromoSpecification::PromoType::kCustomUi) {
-    auto result = spec.BuildCustomHelpBubble(context->GetElementContext(),
-                                             std::move(params));
+    auto result = spec.BuildCustomHelpBubble(context, std::move(params));
     help_bubble = std::move(std::get<std::unique_ptr<HelpBubble>>(result));
     CHECK(help_bubble);
     auto* const ui = std::get<base::WeakPtr<CustomHelpBubbleUi>>(result).get();
@@ -542,7 +541,7 @@ void FeaturePromoControllerCommon::OnCustomAction(
     const UserEducationContextPtr& bubble_context,
     FeaturePromoSpecification::CustomActionCallback callback) {
   if (auto actual_context = ResolveContext(context, bubble_context)) {
-    callback.Run(actual_context->GetElementContext(),
+    callback.Run(actual_context,
                  CloseBubbleAndContinuePromoWithReason(
                      *feature, FeaturePromoClosedReason::kAction));
   }

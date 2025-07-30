@@ -296,6 +296,8 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
   DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(kCallbackEvent);
   std::unique_ptr<CustomWebUIHelpBubble> help_bubble;
   base::CallbackListSubscription sub;
+  auto context = BrowserUserEducationInterface::From(browser())
+                     ->GetUserEducationContextForTesting();
   RunTestSequence(
       CheckElement(
           kToolbarAppMenuButtonElementId,
@@ -304,8 +306,8 @@ IN_PROC_BROWSER_TEST_F(CustomWebUIHelpBubbleUiTest,
                 params;
             params.anchor_element = el;
             help_bubble = CustomWebUIHelpBubble::CreateForController<
-                TestWebUIHelpBubbleController>(GURL(kTestWebUIHostUrl),
-                                               el->context(), params);
+                TestWebUIHelpBubbleController>(GURL(kTestWebUIHostUrl), context,
+                                               params);
             sub = help_bubble->custom_bubble_ui()->AddUserActionCallback(
                 base::BindLambdaForTesting(
                     [=](user_education::CustomHelpBubbleUi::UserAction action) {

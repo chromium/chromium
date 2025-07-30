@@ -492,14 +492,16 @@ class BrowserFeaturePromoController2xTestBase
         FeaturePromoSpecification::AcceleratorInfo());
   }
 
-  void OnCustomPromoAction(const base::Feature* feature,
-                           ui::ElementContext context,
-                           FeaturePromoHandle promo_handle) {
+  void OnCustomPromoAction(
+      const base::Feature* feature,
+      const user_education::UserEducationContextPtr& context,
+      FeaturePromoHandle promo_handle) {
     ++custom_callback_count_;
     EXPECT_TRUE(promo_handle.is_valid());
     EXPECT_EQ(FeaturePromoStatus::kContinued,
               controller_->GetPromoStatus(*feature));
-    EXPECT_EQ(browser()->window()->GetElementContext(), context);
+    EXPECT_EQ(browser()->window()->GetElementContext(),
+              context->GetElementContext());
     promo_handle.Release();
     EXPECT_EQ(FeaturePromoStatus::kNotRunning,
               controller_->GetPromoStatus(*feature));
@@ -1514,9 +1516,11 @@ TEST_P(BrowserFeaturePromoController2xTrackerInitializedTest,
       kCustomActionIPHFeature2, kToolbarAppMenuButtonElementId, IDS_CHROME_TIP,
       IDS_CHROME_TIP,
       base::BindLambdaForTesting(
-          [&](ui::ElementContext context, FeaturePromoHandle handle) {
+          [&](const user_education::UserEducationContextPtr& context,
+              FeaturePromoHandle handle) {
             views::ElementTrackerViews::GetInstance()
-                ->GetUniqueView(kToolbarAppMenuButtonElementId, context)
+                ->GetUniqueView(kToolbarAppMenuButtonElementId,
+                                context->GetElementContext())
                 ->SetVisible(false);
             promo_handle = std::move(handle);
           })));
@@ -1998,9 +2002,8 @@ TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, TwoPromosRotating) {
           kRotatingPromoIPHFeature, kTopContainerElementId, IDS_OK,
           IDS_CHROME_TIP,
           base::BindLambdaForTesting(
-              [&call_count](ui::ElementContext, FeaturePromoHandle) {
-                ++call_count;
-              })));
+              [&call_count](const user_education::UserEducationContextPtr&,
+                            FeaturePromoHandle) { ++call_count; })));
 
   // Show the rotating promo three times, verifying that it wraps around to the,
   // first promo after the second.
@@ -2036,9 +2039,8 @@ TEST_P(BrowserFeaturePromoController2xRotatingPromoTest, SnoozeButtonRepeats) {
           kRotatingPromoIPHFeature, kTopContainerElementId, IDS_OK,
           IDS_CHROME_TIP,
           base::BindLambdaForTesting(
-              [&call_count](ui::ElementContext, FeaturePromoHandle) {
-                ++call_count;
-              })));
+              [&call_count](const user_education::UserEducationContextPtr&,
+                            FeaturePromoHandle) { ++call_count; })));
 
   // Show the rotating promo three times, snoozing the first time. Verify that
   // snoozing re-shows the same promo.

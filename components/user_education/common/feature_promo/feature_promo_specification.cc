@@ -631,7 +631,7 @@ FeaturePromoSpecification::CreateRotatingPromoForTesting(
 
 FeaturePromoSpecification::CustomHelpBubbleResult
 FeaturePromoSpecification::BuildCustomHelpBubble(
-    ui::ElementContext from_context,
+    const UserEducationContextPtr& from_context,
     BuildHelpBubbleParams params) const {
   CHECK_EQ(PromoType::kCustomUi, promo_type_);
   return custom_ui_factory_callback_.Run(from_context, std::move(params));

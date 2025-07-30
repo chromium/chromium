@@ -24,6 +24,7 @@
 #include "components/user_education/common/help_bubble/custom_help_bubble.h"
 #include "components/user_education/common/help_bubble/help_bubble_params.h"
 #include "components/user_education/common/tutorial/tutorial_identifier.h"
+#include "components/user_education/common/user_education_context.h"
 #include "components/user_education/common/user_education_metadata.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
@@ -132,7 +133,7 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // similar promos from being able to trigger in the interim. If you do not
   // care, simply let `promo_handle` expire at the end of the callback.
   using CustomActionCallback =
-      base::RepeatingCallback<void(ui::ElementContext context,
+      base::RepeatingCallback<void(const UserEducationContextPtr& context,
                                    FeaturePromoHandle promo_handle)>;
 
   // Callback that retrieves the arrow for a help bubble based on the anchor
@@ -300,7 +301,7 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
     requires IsCustomHelpBubble<T>
   using CustomHelpBubbleFactoryCallback =
       base::RepeatingCallback<std::unique_ptr<T>(
-          ui::ElementContext from_context,
+          const UserEducationContextPtr& from_context,
           BuildHelpBubbleParams build_params)>;
 
   FeaturePromoSpecification();
@@ -622,7 +623,7 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   using CustomHelpBubbleResult = std::tuple<std::unique_ptr<HelpBubble>,
                                             base::WeakPtr<CustomHelpBubbleUi>>;
   CustomHelpBubbleResult BuildCustomHelpBubble(
-      ui::ElementContext from_context,
+      const UserEducationContextPtr& from_context,
       BuildHelpBubbleParams params) const;
 
  private:
@@ -632,8 +633,9 @@ class FeaturePromoSpecification : public AnchorElementProviderCommon {
   // This is the non-template version of `CustomHelpBubbleFactoryCallback` used
   // internally.
   using WrappedCustomHelpBubbleFactoryCallback =
-      base::RepeatingCallback<CustomHelpBubbleResult(ui::ElementContext,
-                                                     BuildHelpBubbleParams)>;
+      base::RepeatingCallback<CustomHelpBubbleResult(
+          const UserEducationContextPtr&,
+          BuildHelpBubbleParams)>;
 
   // Converts a `CustomHelpBubbleFactoryCallback` to a
   // `WrappedCustomHelpBubbleFactoryCallback`.
@@ -746,7 +748,7 @@ FeaturePromoSpecification::WrapCustomHelpBubbleFactoryCallback(
   CHECK(callback);
   return base::BindRepeating(
       [](const CustomHelpBubbleFactoryCallback<T>& callback,
-         ui::ElementContext ctx, BuildHelpBubbleParams params) {
+         const UserEducationContextPtr& ctx, BuildHelpBubbleParams params) {
         std::unique_ptr<T> result = callback.Run(ctx, std::move(params));
         auto ui_ptr = static_cast<CustomHelpBubble*>(result.get())
                           ->custom_bubble_ui()
