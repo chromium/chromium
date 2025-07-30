@@ -262,7 +262,7 @@ std::unique_ptr<MockPasswordFormManagerForUI> CreateFormManagerWithBestMatches(
   auto form_manager =
       std::make_unique<testing::StrictMock<MockPasswordFormManagerForUI>>();
   EXPECT_CALL(*form_manager, GetBestMatches())
-      .Times(AtMost(2))
+      .Times(AtMost(3))
       .WillRepeatedly(Return(best_matches));
   EXPECT_CALL(*form_manager, GetFederatedMatches())
       .Times(AtMost(2))
@@ -593,6 +593,7 @@ TEST_F(ManagePasswordsUIControllerTest, BackupPasswordSaved) {
   auto test_form_manager = CreateFormManagerWithBestMatches(
       /*best_matches=*/{stored_matching_form}, &submitted_form);
 
+  EXPECT_CALL(*test_form_manager, OnRemovePasswordBackupNote()).Times(1);
   EXPECT_CALL(*test_form_manager, Save());
   controller()->OnUpdatePasswordSubmitted(std::move(test_form_manager));
 

@@ -32,6 +32,31 @@ TEST(PasswordFormTest, EmptyPasswordBackupNote) {
   EXPECT_FALSE(form.GetPasswordBackupDateCreated().has_value());
 }
 
+TEST(PasswordFormTest, ShouldIncludeEmptyPasswordBackupNote) {
+  PasswordForm form;
+
+  form.SetPasswordBackupNote(u"");
+
+  EXPECT_EQ(form.notes[0].unique_display_name,
+            PasswordNote::kPasswordChangeBackupNoteName);
+  std::optional<std::u16string> password_backup =
+      form.GetPasswordBackupOrEmpty();
+  EXPECT_TRUE(password_backup.has_value());
+  EXPECT_EQ(password_backup.value(), u"");
+}
+
+TEST(PasswordFormTest, DeletePasswordBackupNote) {
+  PasswordForm form;
+  form.SetPasswordBackupNote(u"backuppassword");
+  EXPECT_EQ(form.notes[0].unique_display_name,
+            PasswordNote::kPasswordChangeBackupNoteName);
+  EXPECT_EQ(form.GetPasswordBackup(), u"backuppassword");
+
+  form.DeletePasswordBackupNote();
+  EXPECT_EQ(form.notes.size(), 0U);
+  EXPECT_FALSE(form.GetPasswordBackup().has_value());
+}
+
 TEST(PasswordFormTest, RegularNote) {
   PasswordForm form;
 

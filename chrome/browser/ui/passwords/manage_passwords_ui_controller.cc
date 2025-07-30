@@ -957,20 +957,17 @@ void ManagePasswordsUIController::OnPasswordsRevealed() {
   passwords_data_.form_manager()->OnPasswordsRevealed();
 }
 
-void ManagePasswordsUIController::MaybeHandlePasswordRecoveryFinished(
+void ManagePasswordsUIController::HandlePasswordRecoveryFinished(
     const std::u16string& username,
-    const std::u16string& password) const {
+    const std::u16string& password,
+    const std::u16string& password_backup) const {
   auto pending_credentials = GetPendingPassword();
   if (pending_credentials.password_value != password ||
       pending_credentials.username_value != username) {
     return;
   }
 
-  const password_manager::PasswordForm* changed_password_credentials =
-      password_manager_util::FindLoginWithChangedPassword(
-          *passwords_data_.form_manager());
-  if (changed_password_credentials &&
-      changed_password_credentials->GetPasswordBackup() == password) {
+  if (password_backup == password) {
     base::UmaHistogramEnumeration(
         "PasswordManager.PasswordChangeRecoveryFlow",
         password_manager::PasswordChangeRecoveryFlowState::
@@ -987,7 +984,18 @@ void ManagePasswordsUIController::MaybeHandlePasswordRecoveryFinished(
 
 void ManagePasswordsUIController::SavePassword(const std::u16string& username,
                                                const std::u16string& password) {
-  MaybeHandlePasswordRecoveryFinished(username, password);
+  if (const password_manager::PasswordForm* changed_password_credentials =
+          password_manager_util::FindLoginWithChangedPassword(
+              *passwords_data_.form_manager());
+      changed_password_credentials &&
+      changed_password_credentials->GetPasswordBackup().has_value()) {
+    // If the new password to be saved should override a backup password,
+    // this function sets an empty backup to the submitted form.
+    passwords_data_.form_manager()->OnRemovePasswordBackupNote();
+    HandlePasswordRecoveryFinished(
+        username, password,
+        changed_password_credentials->GetPasswordBackup().value());
+  }
   UpdatePasswordFormUsernameAndPassword(username, password,
                                         passwords_data_.form_manager());
 

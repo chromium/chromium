@@ -841,6 +841,39 @@ TEST_P(PasswordSaveManagerImplTest, UpdatePasswordOnChangePasswordForm) {
   EXPECT_EQ(new_password, updated_form.password_value);
 }
 
+TEST_P(PasswordSaveManagerImplTest, UpdatePasswordWithBackup) {
+  std::u16string backup_password = u"backup_password";
+  saved_match_.SetPasswordBackupNote(backup_password);
+  SetNonFederatedAndNotifyFetchCompleted({saved_match_});
+
+  FormData submitted_form = observed_form_;
+  std::u16string username = saved_match_.username_value;
+  std::u16string new_password = saved_match_.password_value + u"1";
+  test_api(submitted_form).field(kUsernameFieldIndex).set_value(username);
+  test_api(submitted_form).field(kPasswordFieldIndex).set_value(new_password);
+
+  password_save_manager_impl()->CreatePendingCredentials(
+      Parse(submitted_form), &observed_form_only_password_fields_,
+      submitted_form,
+      /*is_http_auth=*/false,
+      /*is_credential_api_save=*/false);
+
+  EXPECT_FALSE(password_save_manager_impl()->IsNewLogin());
+  EXPECT_TRUE(password_save_manager_impl()->IsPasswordUpdate());
+
+  PasswordForm updated_form;
+  EXPECT_CALL(*mock_profile_form_saver(),
+              Update(_, ElementsAre(Pointee(saved_match_)),
+                     saved_match_.password_value))
+      .WillOnce(SaveArg<0>(&updated_form));
+
+  password_save_manager_impl()->Save(&observed_form_only_password_fields_,
+                                     Parse(submitted_form));
+
+  EXPECT_EQ(new_password, updated_form.password_value);
+  EXPECT_EQ(updated_form.GetPasswordBackup().value(), backup_password);
+}
+
 TEST_P(PasswordSaveManagerImplTest, UpdateUsernameToAnotherFieldValue) {
   TestMockTimeTaskRunner::ScopedContext scoped_context(task_runner());
   fetcher()->NotifyFetchCompleted();

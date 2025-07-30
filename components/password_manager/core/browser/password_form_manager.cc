@@ -545,6 +545,11 @@ void PasswordFormManager::OnUpdateUsernameFromPrompt(
   CreatePendingCredentials();
 }
 
+void PasswordFormManager::OnRemovePasswordBackupNote() {
+  parsed_submitted_form_->SetPasswordBackupNote(u"");
+  CreatePendingCredentials();
+}
+
 void PasswordFormManager::OnUpdatePasswordFromPrompt(
     const std::u16string& new_password) {
   DCHECK(parsed_submitted_form_);

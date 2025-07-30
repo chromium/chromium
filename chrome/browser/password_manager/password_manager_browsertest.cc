@@ -2391,6 +2391,53 @@ class PasswordManagerBrowserTestWithAutofillDisabled
   base::test::ScopedFeatureList feature_list_;
 };
 
+IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTest,
+                       DeleteBackUpPasswordUpdateBubbleAccepted) {
+  // At first let us save credentials to the PasswordManager.
+  scoped_refptr<password_manager::TestPasswordStore> password_store =
+      static_cast<password_manager::TestPasswordStore*>(
+          ProfilePasswordStoreFactory::GetForProfile(
+              browser()->profile(), ServiceAccessType::IMPLICIT_ACCESS)
+              .get());
+  password_manager::PasswordForm signin_form;
+  signin_form.signon_realm = embedded_test_server()->base_url().spec();
+  signin_form.password_value = u"random";
+  signin_form.username_value = u"temp";
+  signin_form.SetPasswordBackupNote(u"backup_password");
+  signin_form.type = PasswordForm::Type::kChangeSubmission;
+  password_store->AddLogin(signin_form);
+
+  // Check that password update bubble is shown.
+  NavigateToFile("/password/password_form.html");
+  PasswordsNavigationObserver observer(WebContents());
+  BubbleObserver prompt_observer(WebContents());
+  std::string fill_and_submit_change_password =
+      "document.getElementById('chg_password_wo_username_field').value = "
+      "'random';"
+      "document.getElementById('chg_new_password_wo_username_1').value = "
+      "'new_pw';"
+      "document.getElementById('chg_new_password_wo_username_2').value = "
+      "'new_pw';"
+      "document.getElementById('chg_submit_wo_username_button').click()";
+  ASSERT_TRUE(content::ExecJs(WebContents(), fill_and_submit_change_password));
+  ASSERT_TRUE(observer.Wait());
+  prompt_observer.WaitForAutomaticUpdatePrompt();
+
+  // We emulate that the user clicks "Update" button.
+  prompt_observer.AcceptUpdatePrompt();
+  WaitForPasswordStore();
+  // Check that there is no backup password stored.
+  auto& passwords_map = password_store->stored_passwords();
+  ASSERT_EQ(1u, passwords_map.size());
+  auto& passwords_vector = passwords_map.begin()->second;
+  EXPECT_THAT(
+      passwords_vector,
+      ElementsAre(AllOf(
+          Field(&password_manager::PasswordForm::username_value, u"temp"),
+          Field(&password_manager::PasswordForm::password_value, u"new_pw"),
+          Field(&password_manager::PasswordForm::notes, testing::IsEmpty()))));
+}
+
 IN_PROC_BROWSER_TEST_F(PasswordManagerBrowserTestWithAutofillDisabled,
                        PasswordOverriddenUpdateBubbleShown) {
   // At first let us save credentials to the PasswordManager.

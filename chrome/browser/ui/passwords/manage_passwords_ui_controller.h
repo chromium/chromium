@@ -364,9 +364,10 @@ class ManagePasswordsUIController
   // existing credential, then records the end of the password recovery flow and
   // attempts to display a hats survey. Has to be called before `SavePassword`
   // because otherwise we cannot tell if the credentials were modified manually.
-  void MaybeHandlePasswordRecoveryFinished(
+  void HandlePasswordRecoveryFinished(
       const std::u16string& username,
-      const std::u16string& password) const;
+      const std::u16string& password,
+      const std::u16string& password_backup) const;
 
   // Timeout in seconds for the manual fallback for saving.
   static int save_fallback_timeout_in_seconds_;
