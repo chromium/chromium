@@ -60,12 +60,15 @@ class OpenXrViewProperties {
   uint32_t Height() const;
   uint32_t RecommendedSwapchainSampleCount() const;
   uint32_t MaxSwapchainSampleCount() const;
+  float RecommendedViewportScale() const;
 
   XrViewConfigurationView GetPropertiesForTest() const {
     return xr_properties_;
   }
 
  private:
+  uint32_t ClampWidth(uint32_t val) const;
+  uint32_t ClampHeight(uint32_t val) const;
   XrViewConfigurationView xr_properties_;
 
   // Because our textures are created as single side-by-side textures, this

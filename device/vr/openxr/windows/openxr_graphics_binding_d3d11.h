@@ -55,9 +55,12 @@ class OpenXrGraphicsBindingD3D11 : public OpenXrGraphicsBinding {
                          const gfx::RectF& right) override;
   gfx::Size GetMaxTextureSize() override;
 
- private:
+ protected:
+  // OpenXrGraphicsBinding
   void OnSwapchainImageSizeChanged() override;
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
+  void ResizeSharedBuffer(OpenXrSwapchainInfo& swap_chain_info,
+                          gpu::SharedImageInterface* sii) override;
 
   bool initialized_ = false;
   std::unique_ptr<D3D11TextureHelper> texture_helper_;

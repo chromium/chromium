@@ -61,10 +61,11 @@ class DEVICE_VR_EXPORT OpenXrGraphicsBindingOpenGLES
                          const gfx::RectF& right) override;
   gfx::Size GetMaxTextureSize() override;
 
- private:
+ protected:
+  // OpenXrGraphicsBinding
   void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) override;
   void ResizeSharedBuffer(OpenXrSwapchainInfo& swap_chain_info,
-                          gpu::SharedImageInterface* sii);
+                          gpu::SharedImageInterface* sii) override;
 
   bool gl_initialized_ = false;
   bool initialized_ = false;

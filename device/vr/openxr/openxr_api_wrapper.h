@@ -103,6 +103,7 @@ class OpenXrApiWrapper {
   std::vector<mojom::XRInputSourceStatePtr> GetInputState();
 
   std::vector<mojom::XRViewPtr> GetDefaultViews() const;
+  float RecommendedViewportScale() const;
   XrTime GetPredictedDisplayTime() const;
   bool GetStageParameters(std::vector<gfx::Point3F>& stage_bounds,
                           gfx::Transform& local_from_stage);

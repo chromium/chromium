@@ -264,6 +264,8 @@ class OpenXrRenderLoop : public XRThread,
                             GLuint id,
                             std::unique_ptr<gfx::GpuFence> gpu_fence);
 
+  void PopulateSharedImageData(mojom::XRFrameData& frame_data);
+
   void MaybeRejectSessionCallback();
 
   gfx::Transform mojo_from_local() {

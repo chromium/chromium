@@ -1310,6 +1310,15 @@ std::vector<mojom::XRViewPtr> OpenXrApiWrapper::GetDefaultViews() const {
   return views;
 }
 
+float OpenXrApiWrapper::RecommendedViewportScale() const {
+  float recommended_scale = 1.0f;
+  for (const auto& property : primary_view_config_.Properties()) {
+    recommended_scale =
+        std::min(recommended_scale, property.RecommendedViewportScale());
+  }
+  return recommended_scale;
+}
+
 mojom::VRPosePtr OpenXrApiWrapper::GetViewerPose() const {
   TRACE_EVENT0("xr", "GetViewerPose");
   XrSpaceLocation local_from_viewer = {XR_TYPE_SPACE_LOCATION};

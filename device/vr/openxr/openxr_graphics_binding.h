@@ -129,6 +129,10 @@ class OpenXrGraphicsBinding {
   // performed as necessary.
   void SetTransferSize(const gfx::Size& transfer_size);
 
+  // Updates the active swapchain image size if the transfer size has changed.
+  // No-ops if there is currently no active swapchain image.
+  void UpdateActiveSwapchainImageSize(gpu::SharedImageInterface* sii);
+
   // Returns the maximum texture size allowed to be created with the current
   // graphics binding. Textures larger than this size may be truncated during
   // cross-process transportation of the textures and result in one viewport
@@ -218,6 +222,11 @@ class OpenXrGraphicsBinding {
   // appropriate image to be rendered to by, e.g. Render calls, if that needs
   // to happen ahead of time.
   virtual void OnSwapchainImageActivated(gpu::SharedImageInterface* sii) = 0;
+
+  // Resizes the shared buffer for the given swapchain info if the transfer size
+  // has changed.
+  virtual void ResizeSharedBuffer(OpenXrSwapchainInfo& swap_chain_info,
+                                  gpu::SharedImageInterface* sii) = 0;
 
   // Used to access the active swapchain index as returned by the system. This
   // class does not attempt to use the index in conjunction with

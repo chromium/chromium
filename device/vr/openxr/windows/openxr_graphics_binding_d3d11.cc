@@ -399,4 +399,10 @@ gfx::Size OpenXrGraphicsBindingD3D11::GetMaxTextureSize() {
           D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION};
 }
 
+void OpenXrGraphicsBindingD3D11::ResizeSharedBuffer(
+    OpenXrSwapchainInfo& swap_chain_info,
+    gpu::SharedImageInterface* sii) {
+  // TODO(crbug.com/40918787): Current texture size needs to be updated.
+}
+
 }  // namespace device

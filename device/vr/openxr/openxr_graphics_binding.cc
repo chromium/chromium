@@ -121,6 +121,13 @@ void OpenXrGraphicsBinding::SetTransferSize(const gfx::Size& transfer_size) {
   transfer_size_ = transfer_size;
 }
 
+void OpenXrGraphicsBinding::UpdateActiveSwapchainImageSize(
+    gpu::SharedImageInterface* sii) {
+  if (has_active_swapchain_image()) {
+    ResizeSharedBuffer(GetSwapChainImages()[active_swapchain_index()], sii);
+  }
+}
+
 void OpenXrGraphicsBinding::DestroySwapchainImages(
     viz::ContextProvider* context_provider) {
   // As long as we have a context provider we need to destroy any SharedImages
