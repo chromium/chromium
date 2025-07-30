@@ -52,6 +52,7 @@ struct MenuItemInfo {
   MenuItemInfo() = default;
 
   std::u16string label;
+  std::u16string feature_name;
   std::optional<AcceleratorContainer> accelerator;
   bool is_experimental_feature = false;
   std::u16string tool_tip;

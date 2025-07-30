@@ -256,6 +256,20 @@ class RenderViewContextMenu
 #endif
   void NotifyMenuShown() override;
 
+  // Returns whether the feature is new and should be shown with a "new" badge.
+  //
+  // When generating context menu items, we want to show a "new" badge next to
+  // the item if the feature is new. Some of these items are generated
+  // by this base class, and there we don't have direct access to the user
+  // education service. Instead, we need to delegate to the platform-specific
+  // implementation of this method to determine if the item should be marked
+  // as "new".
+  // This method accepts the feature name, and not the base::Feature.
+  // The reason is that in DevTools, we don't have access to base::Features
+  // directly, so features are stored by name and will be mapped accordingly.
+  ui::IsNewFeatureAtValue GetIsNewFeatureAtValue(
+      const std::string& feature_name) const override;
+
   // Gets the extension (if any) associated with the WebContents that we're in.
   const extensions::Extension* GetExtension() const;
 

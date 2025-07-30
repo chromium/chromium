@@ -109,6 +109,7 @@ class TestRenderViewContextMenu : public RenderViewContextMenu {
   }
 
   using RenderViewContextMenu::AppendImageItems;
+  using RenderViewContextMenu::GetIsNewFeatureAtValue;
 
   // RenderViewContextMenu:
   void Show() override;

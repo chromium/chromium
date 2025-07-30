@@ -44,6 +44,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/devtools/devtools_window.h"
+#include "chrome/browser/devtools/features.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/download/download_stats.h"
 #include "chrome/browser/glic/glic_enabling.h"
@@ -112,6 +113,7 @@
 #include "chrome/browser/ui/webauthn/context_menu_helper.h"
 #include "chrome/browser/ui/webui/history/foreign_session_handler.h"
 #include "chrome/browser/user_education/user_education_service.h"
+#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "chrome/browser/web_applications/mojom/user_display_mode.mojom.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
@@ -1018,6 +1020,22 @@ void RenderViewContextMenu::IssuePreconnectionToUrl(
   loading_predictor->PreconnectURLIfAllowed(GURL(preconnect_url),
                                             /*allow_credentials=*/true,
                                             network_anonymization_key);
+}
+
+ui::IsNewFeatureAtValue RenderViewContextMenu::GetIsNewFeatureAtValue(
+    const std::string& feature_name) const {
+  Profile* profile = Profile::FromBrowserContext(browser_context_);
+  auto& feature_data =
+      UserEducationServiceFactory::GetForBrowserContext(profile)
+          ->new_badge_registry()
+          ->feature_data();
+  for (const auto& [feature, spec] : feature_data) {
+    if (feature_name == feature->name) {
+      return UserEducationService::MaybeShowNewBadge(browser_context_,
+                                                     *feature);
+    }
+  }
+  return ui::IsNewFeatureAtValue();
 }
 
 bool RenderViewContextMenu::IsInProgressiveWebApp() const {

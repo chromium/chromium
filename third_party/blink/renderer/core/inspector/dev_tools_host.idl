@@ -39,6 +39,7 @@ dictionary ShowContextMenuItem {
   required DOMString type;
   [EnforceRange] unsigned short id;
   DOMString? label;
+  DOMString? featureName;
   boolean isExperimentalFeature = false;
   boolean enabled = true;
   boolean checked = false;

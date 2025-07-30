@@ -224,6 +224,9 @@ static std::vector<MenuItemInfo> PopulateContextMenuItems(
         item_info.type = MenuItemInfo::kOption;
       }
       item_info.label = GetLabel(item);
+      String feature_name = item->getFeatureNameOr(String());
+      feature_name.Ensure16Bit();
+      item_info.feature_name = std::u16string(feature_name.View16());
       if (item->hasAccelerator()) {
         AcceleratorContainer accelerator;
         accelerator.key_code = item->accelerator()->keyCode();
