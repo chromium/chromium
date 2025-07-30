@@ -39,6 +39,8 @@ constexpr base::Time kLastShownTime1 = kSessionTime + base::Minutes(45);
 constexpr base::Time kLastShownTime2 = kSessionTime + base::Minutes(75);
 constexpr int kFirstSessionNumber = 5;
 constexpr char kNtpPromoId[] = "promo";
+constexpr char kNtpPromo2Id[] = "promo2";
+
 }  // namespace
 
 // Repeats some of the tests in UserEducationStorageServiceTest except that a
@@ -446,6 +448,9 @@ TEST_F(BrowserUserEducationStorageServiceTest, NtpPromoDataReset) {
   user_education::KeyedNtpPromoData data;
   data.last_top_spot_session = 3;
   service().SaveNtpPromoData(kNtpPromoId, data);
-  service().ResetNtpPromoData();
+  service().SaveNtpPromoData(kNtpPromo2Id, data);
+  service().ResetNtpPromoData(kNtpPromoId);
+  // Ensure only the specified promo is cleared.
   EXPECT_FALSE(service().ReadNtpPromoData(kNtpPromoId).has_value());
+  EXPECT_TRUE(service().ReadNtpPromoData(kNtpPromo2Id).has_value());
 }

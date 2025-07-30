@@ -85,6 +85,7 @@ export class UserEducationInternalsElement extends
   protected newBadges_: FeaturePromoDemoPageInfo[] = [];
   protected whatsNewModules_: WhatsNewModuleDemoPageInfo[] = [];
   protected whatsNewEditions_: WhatsNewEditionDemoPageInfo[] = [];
+  protected ntpPromos_: FeaturePromoDemoPageInfo[] = [];
   protected accessor featurePromoErrorMessage_: string = '';
   protected accessor narrow_: boolean = false;
   protected accessor sessionExpanded_: boolean = false;
@@ -141,6 +142,10 @@ export class UserEducationInternalsElement extends
 
     this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
       this.whatsNewEditions_ = whatsNewEditions;
+    });
+
+    this.handler_.getNtpPromos().then(({ntpPromos}) => {
+      this.ntpPromos_ = ntpPromos;
     });
   }
 
@@ -273,6 +278,22 @@ export class UserEducationInternalsElement extends
         });
         this.handler_.getWhatsNewEditions().then(({whatsNewEditions}) => {
           this.whatsNewEditions_ = whatsNewEditions;
+          this.requestUpdate();
+        });
+      }
+    });
+  }
+
+  protected clearNtpPromoData_(e: CustomEvent) {
+    const id = e.detail;
+    this.featurePromoErrorMessage_ = '';
+    this.handler_.clearNtpPromoData(id).then(({errorMessage}) => {
+      this.featurePromoErrorMessage_ = errorMessage;
+      if (errorMessage !== '') {
+        this.$.errorMessageToast.show();
+      } else {
+        this.handler_.getNtpPromos().then(({ntpPromos}) => {
+          this.ntpPromos_ = ntpPromos;
           this.requestUpdate();
         });
       }

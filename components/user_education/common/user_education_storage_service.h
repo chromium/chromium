@@ -115,7 +115,7 @@ class UserEducationStorageService : public UserEducationTimeProvider {
       const NtpPromoIdentifier& id) const = 0;
   virtual void SaveNtpPromoData(const NtpPromoIdentifier& id,
                                 const KeyedNtpPromoData& data) = 0;
-  virtual void ResetNtpPromoData() = 0;
+  virtual void ResetNtpPromoData(const NtpPromoIdentifier& id) = 0;
 
  protected:
   friend UserEducationInternalsPageHandlerImpl;

@@ -38,6 +38,9 @@ export function getHtml(this: UserEducationInternalsElement) {
         <a role="menuitem" href="#whatsNew" class="cr-nav-menu-item">
           What's New
         </a>
+        <a role="menuitem" href="#ntpPromos" class="cr-nav-menu-item">
+          NTP Promos
+        </a>
         <a role="menuitem" href="#advanced" class="cr-nav-menu-item">
           Advanced
         </a>
@@ -95,6 +98,17 @@ export function getHtml(this: UserEducationInternalsElement) {
               ?hidden="${!this.promoFilter_(item)}"
               .promo="${item}"
               @clear-promo-data="${this.clearNewBadgeData_}">
+          </user-education-internals-card>`)}
+      </div>
+      <div id="ntpPromos">
+        <a name="ntpPromos"></a>
+        <h2>NTP Promos</h2>
+        ${this.ntpPromos_.map(item => html`
+          <user-education-internals-card
+              id="${item.internalName}"
+              ?hidden="${!this.promoFilter_(item)}"
+              .promo="${item}"
+              @clear-promo-data="${this.clearNtpPromoData_}">
           </user-education-internals-card>`)}
       </div>
       <div id="whatsNew">

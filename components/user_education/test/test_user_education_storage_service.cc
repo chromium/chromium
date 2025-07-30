@@ -101,8 +101,9 @@ void TestUserEducationStorageService::SaveNtpPromoData(
   ntp_promo_data_.promos[id] = ntp_promo_data;
 }
 
-void TestUserEducationStorageService::ResetNtpPromoData() {
-  ntp_promo_data_ = user_education::NtpPromoData();
+void TestUserEducationStorageService::ResetNtpPromoData(
+    const NtpPromoIdentifier& id) {
+  ntp_promo_data_.promos.erase(id);
 }
 
 }  // namespace user_education::test

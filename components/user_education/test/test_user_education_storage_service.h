@@ -46,7 +46,7 @@ class TestUserEducationStorageService : public UserEducationStorageService {
       const NtpPromoIdentifier& id) const override;
   void SaveNtpPromoData(const NtpPromoIdentifier& id,
                         const KeyedNtpPromoData& data) override;
-  void ResetNtpPromoData() override;
+  void ResetNtpPromoData(const NtpPromoIdentifier& id) override;
 
  private:
   std::map<const base::Feature*, FeaturePromoData> promo_data_;

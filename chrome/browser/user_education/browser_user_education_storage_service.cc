@@ -489,8 +489,10 @@ void BrowserUserEducationStorageService::SaveNtpPromoData(
   pref_data.Set(id, std::move(promo_pref));
 }
 
-void BrowserUserEducationStorageService::ResetNtpPromoData() {
-  profile_->GetPrefs()->ClearPref(kKeyedNtpPromosPath);
+void BrowserUserEducationStorageService::ResetNtpPromoData(
+    const user_education::NtpPromoIdentifier& id) {
+  ScopedDictPrefUpdate update(profile_->GetPrefs(), kKeyedNtpPromosPath);
+  update->Remove(id);
 }
 
 RecentSessionData BrowserUserEducationStorageService::ReadRecentSessionData()

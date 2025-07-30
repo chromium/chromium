@@ -58,6 +58,9 @@ class UserEducationInternalsPageHandlerImpl
   void GetWhatsNewEditions(GetWhatsNewEditionsCallback callback) override;
   void ClearWhatsNewData(ClearWhatsNewDataCallback callback) override;
   void LaunchWhatsNewStaging() override;
+  void GetNtpPromos(GetNtpPromosCallback callback) override;
+  void ClearNtpPromoData(const std::string& id,
+                         ClearNtpPromoDataCallback callback) override;
 
  private:
   void OnFeaturePromoShowResult(user_education::FeaturePromoResult show_result);
