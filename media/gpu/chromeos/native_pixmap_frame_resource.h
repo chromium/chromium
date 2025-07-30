@@ -92,9 +92,7 @@ class NativePixmapFrameResource : public FrameResource {
   scoped_refptr<const gfx::NativePixmapDmaBuf> GetNativePixmapDmaBuf()
       const override;
   // CreateGpuMemoryBufferHandle() will duplicate file descriptors to make a
-  // gfx::GpuMemoryBufferHandle. The GpuMemoryBufferId will be set to a
-  // consistent value in subsequent calls for |this| or for any wrapping frame
-  // of |this|.
+  // gfx::GpuMemoryBufferHandle.
   gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferHandle() const override;
   // Always returns nullptr.
   std::unique_ptr<VideoFrame::ScopedMapping> MapGMBOrSharedImage()

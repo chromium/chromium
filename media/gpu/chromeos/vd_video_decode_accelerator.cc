@@ -583,8 +583,7 @@ void VdVideoDecodeAccelerator::ImportBufferForPicture(
   CHECK(res.second);
 
   // |wrapped_frame| is used to keep |origin_frame| alive until everyone
-  // released |wrapped_frame|. Then GpuMemoryBufferId will be available at
-  // OnFrameReleased().
+  // released |wrapped_frame|.
   scoped_refptr<FrameResource> wrapped_frame =
       origin_frame->CreateWrappingFrame();
   wrapped_frame->AddDestructionObserver(
