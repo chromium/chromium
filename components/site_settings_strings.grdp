@@ -122,7 +122,7 @@
     javascript
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_JAVASCRIPT_OPTIMIZER" desc="The label for the JavaScript optimizer site settings controls.">
-    V8 optimizer
+    JavaScript optimization &amp; security
   </message>
   <message name="IDS_SITE_SETTINGS_TYPE_LOCATION" desc="The label used for geolocation site settings controls." meaning="Geolocation">
     Location
