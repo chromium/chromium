@@ -394,6 +394,9 @@ void ToolbarView::Init() {
     toolbar_divider_->SetPreferredSize(
         gfx::Size(GetLayoutConstant(TOOLBAR_DIVIDER_WIDTH),
                   GetLayoutConstant(TOOLBAR_DIVIDER_HEIGHT)));
+    toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
+        kColorToolbarExtensionSeparatorEnabled,
+        GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
   }
 
   pinned_toolbar_actions_container_ = container_view_->AddChildView(
@@ -852,14 +855,6 @@ void ToolbarView::OnThemeChanged() {
 
   if (display_mode_ == DisplayMode::NORMAL) {
     LoadImages();
-
-    if (toolbar_divider_) {
-      const SkColor toolbar_extension_separator_color =
-          GetColorProvider()->GetColor(kColorToolbarExtensionSeparatorEnabled);
-      toolbar_divider_->SetBackground(views::CreateRoundedRectBackground(
-          toolbar_extension_separator_color,
-          GetLayoutConstant(TOOLBAR_DIVIDER_CORNER_RADIUS)));
-    }
   }
 
   SchedulePaint();
