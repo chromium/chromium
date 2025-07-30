@@ -4,13 +4,16 @@
 
 #include "chrome/browser/dom_distiller/tab_utils.h"
 
+#include <optional>
 #include <utility>
 
 #include "base/functional/bind.h"
+#include "base/functional/callback.h"
 #include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/dom_distiller/dom_distiller_service_factory.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
@@ -47,12 +50,18 @@ using dom_distiller::ViewRequestDelegate;
 
 // An no-op ViewRequestDelegate which holds a ViewerHandle and deletes itself
 // after the WebContents navigates or goes away. This class is a band-aid to
-// keep a TaskTracker around until the distillation starts from the viewer.
+// keep a TaskTracker around until the distillation starts from the viewer. An
+// optional callback can be provided which will be called when the article
+// content is ready. The callback will be invoked with false if the object is
+// destroyed before the callback is invoked.
 class SelfDeletingRequestDelegate : public ViewRequestDelegate,
                                     public content::WebContentsObserver {
  public:
-  explicit SelfDeletingRequestDelegate(content::WebContents* web_contents);
+  explicit SelfDeletingRequestDelegate(
+      content::WebContents* web_contents,
+      std::optional<base::OnceCallback<void(bool)>> callback = std::nullopt);
   ~SelfDeletingRequestDelegate() override;
+  void DeleteSelf();
 
   // ViewRequestDelegate implementation.
   void OnArticleReady(const DistilledArticleProto* article_proto) override;
@@ -67,47 +76,76 @@ class SelfDeletingRequestDelegate : public ViewRequestDelegate,
   // Takes ownership of the ViewerHandle to keep distillation alive until |this|
   // is deleted.
   void TakeViewerHandle(std::unique_ptr<ViewerHandle> viewer_handle);
+  void SetCallback(base::OnceCallback<void(bool)> callback);
 
  private:
   // The handle to the view request towards the DomDistillerService. It
   // needs to be kept around to ensure the distillation request finishes.
   std::unique_ptr<ViewerHandle> viewer_handle_;
+  std::optional<base::OnceCallback<void(bool)>> callback_;
+  base::Time start_time_;
 };
+
+SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
+    content::WebContents* web_contents,
+    std::optional<base::OnceCallback<void(bool)>> callback)
+    : WebContentsObserver(web_contents),
+      callback_(std::move(callback)),
+      start_time_(base::Time::Now()) {}
+
+SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() = default;
+
+void SelfDeletingRequestDelegate::DeleteSelf() {
+  // Ensure the callback is executed if the delegate is deleted before the
+  // aricle distillation finishes (e.g. the user navigates away).
+  if (callback_ && !callback_->is_null()) {
+    std::move(callback_.value()).Run(false);
+  }
+  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
+                                                                this);
+}
+
+void SelfDeletingRequestDelegate::OnArticleReady(
+    const DistilledArticleProto* article_proto) {
+  if (callback_ && !callback_->is_null()) {
+    bool has_title =
+        article_proto->has_title() && !article_proto->title().empty();
+    bool has_content = article_proto->pages_size() > 0 &&
+                       article_proto->pages(0).has_html() &&
+                       !article_proto->pages(0).html().empty();
+    bool success = article_proto != nullptr && has_title && has_content;
+    std::move(callback_.value()).Run(success);
+    DeleteSelf();
+  }
+}
+
+void SelfDeletingRequestDelegate::OnArticleUpdated(
+    ArticleDistillationUpdate article_update) {}
 
 void SelfDeletingRequestDelegate::PrimaryPageChanged(content::Page& page) {
   Observe(nullptr);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  DeleteSelf();
 }
 
 void SelfDeletingRequestDelegate::PrimaryMainFrameRenderProcessGone(
     base::TerminationStatus status) {
   Observe(nullptr);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  DeleteSelf();
 }
 
 void SelfDeletingRequestDelegate::WebContentsDestroyed() {
   Observe(nullptr);
-  base::SingleThreadTaskRunner::GetCurrentDefault()->DeleteSoon(FROM_HERE,
-                                                                this);
+  DeleteSelf();
 }
-
-SelfDeletingRequestDelegate::SelfDeletingRequestDelegate(
-    content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
-
-SelfDeletingRequestDelegate::~SelfDeletingRequestDelegate() = default;
-
-void SelfDeletingRequestDelegate::OnArticleReady(
-    const DistilledArticleProto* article_proto) {}
-
-void SelfDeletingRequestDelegate::OnArticleUpdated(
-    ArticleDistillationUpdate article_update) {}
 
 void SelfDeletingRequestDelegate::TakeViewerHandle(
     std::unique_ptr<ViewerHandle> viewer_handle) {
   viewer_handle_ = std::move(viewer_handle);
+}
+
+void SelfDeletingRequestDelegate::SetCallback(
+    base::OnceCallback<void(bool)> callback) {
+  callback_ = std::move(callback);
 }
 
 // Start loading the viewer URL of the current page in |web_contents|.
@@ -127,8 +165,9 @@ void MaybeStartDistillation(
     SelfDeletingRequestDelegate* view_request_delegate) {
   const GURL& last_committed_url =
       source_page_handle->web_contents()->GetLastCommittedURL();
-  if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url))
+  if (!dom_distiller::url_utils::IsUrlDistillable(last_committed_url)) {
     return;
+  }
 
   // Disable back-forward cache when the distillation is in progress as it would
   // be cancelled and would not be restarted when the page is restored from the
@@ -159,6 +198,31 @@ void OnReadabilityHeuristicResult(base::OnceCallback<void(bool)> callback,
 }
 
 }  // namespace
+
+void DistillCurrentPageAndViewIfSuccessful(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback) {
+  DCHECK(web_contents);
+  SelfDeletingRequestDelegate* view_request_delegate =
+      new SelfDeletingRequestDelegate(
+          web_contents,
+          base::BindOnce(
+              [](base::OnceCallback<void(bool)> callback,
+                 content::WebContents* web_contents,
+                 SelfDeletingRequestDelegate* delegate, bool success) {
+                std::move(callback).Run(success);
+                if (success) {
+                  StartNavigationToDistillerViewer(
+                      web_contents, web_contents->GetLastCommittedURL());
+                }
+              },
+              std::move(callback), web_contents, view_request_delegate));
+
+  std::unique_ptr<SourcePageHandleWebContents> source_page_handle(
+      new SourcePageHandleWebContents(web_contents, false));
+
+  MaybeStartDistillation(std::move(source_page_handle), view_request_delegate);
+}
 
 void DistillCurrentPageAndView(content::WebContents* old_web_contents) {
   DCHECK(old_web_contents);

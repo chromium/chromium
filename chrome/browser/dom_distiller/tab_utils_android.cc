@@ -28,6 +28,22 @@ using base::android::ScopedJavaLocalRef;
 
 namespace android {
 
+void JNI_DomDistillerTabUtils_DistillCurrentPageAndViewIfSuccessful(
+    JNIEnv* env,
+    const JavaParamRef<jobject>& j_web_contents,
+    const JavaParamRef<jobject>& j_callback) {
+  content::WebContents* web_contents =
+      content::WebContents::FromJavaWebContents(j_web_contents);
+  ::DistillCurrentPageAndViewIfSuccessful(
+      web_contents,
+      base::BindOnce(
+          [](const jni_zero::ScopedJavaGlobalRef<jobject>& callback,
+             bool success) {
+            base::android::RunBooleanCallbackAndroid(callback, success);
+          },
+          jni_zero::ScopedJavaGlobalRef<jobject>(j_callback)));
+}
+
 void JNI_DomDistillerTabUtils_DistillCurrentPageAndView(
     JNIEnv* env,
     const JavaParamRef<jobject>& j_web_contents) {

@@ -36,6 +36,18 @@ public class DomDistillerTabUtils {
     private DomDistillerTabUtils() {}
 
     /**
+     * Distills the given WebContents and waits for the result. If the distillation succeeds, then
+     * the Viewer is opened via a navigation.
+     *
+     * @param webContents The WebContents to distill.
+     * @param callback The callback which will be called upon success/failure of the distillation.
+     */
+    public static void distillCurrentPageAndViewIfSuccessful(
+            WebContents webContents, Callback<Boolean> callback) {
+        DomDistillerTabUtilsJni.get().distillCurrentPageAndViewIfSuccessful(webContents, callback);
+    }
+
+    /**
      * Creates a new WebContents and navigates the {@link WebContents} to view the URL of the
      * current page, while in the background starts distilling the current page. This method takes
      * ownership over the old WebContents after swapping in the new one.
@@ -169,6 +181,9 @@ public class DomDistillerTabUtils {
 
     @NativeMethods
     public interface Natives {
+        void distillCurrentPageAndViewIfSuccessful(
+                WebContents webContents, Callback<Boolean> callback);
+
         void distillCurrentPageAndView(WebContents webContents);
 
         void distillCurrentPage(WebContents webContents);

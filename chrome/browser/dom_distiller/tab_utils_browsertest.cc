@@ -21,6 +21,7 @@
 #include "chrome/browser/dom_distiller/test_distillation_observers.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/web_applications/isolated_web_apps/test/isolated_web_app_builder.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/back_forward_cache/back_forward_cache_disable.h"
@@ -51,6 +52,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/prerender_test_util.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/test_utils.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "net/test/embedded_test_server/request_handler_util.h"
@@ -134,6 +136,8 @@ class DomDistillerTabUtilsBrowserTest : public InProcessBrowserTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kEnableDomDistiller);
   }
+
+  net::EmbeddedTestServer& server() { return *https_server_.get(); }
 
  protected:
   DomDistillerTabUtilsBrowserTest() = default;
@@ -358,6 +362,64 @@ IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
 
   gfx::Image distilled_favicon = browser()->GetCurrentPageIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(article_favicon, distilled_favicon));
+}
+
+IN_PROC_BROWSER_TEST_F(DomDistillerTabUtilsBrowserTest,
+                       DistillCurrentPageAndNavigateToViewer) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // This blocks until the navigation has completely finished.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), article_url()));
+
+  content::TestNavigationObserver navigation_observer(web_contents);
+  base::RunLoop run_loop;
+  DistillCurrentPageAndViewIfSuccessful(
+      web_contents, base::BindOnce(
+                        [](base::RunLoop* run_loop, bool success) {
+                          EXPECT_TRUE(success);
+                          run_loop->Quit();
+                        },
+                        &run_loop));
+  run_loop.Run();
+  navigation_observer.Wait();
+
+  // The same web contents should be used to distill and navigate to the viewer.
+  EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+  // On success, the function will navigate to the distillation viewer.
+  EXPECT_TRUE(
+      web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
+  EXPECT_EQ(kExpectedDocumentTitle, GetDocumentTitle(web_contents));
+  EXPECT_EQ(kExpectedArticleHeading, GetArticleHeading(web_contents));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    DomDistillerTabUtilsBrowserTest,
+    DistillCurrentPageAndNavigateToViewer_NoNavigationOnFailure) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  // This blocks until the navigation has completely finished.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), server().GetURL("/dom_distiller/undistillable_page.html")));
+
+  base::RunLoop run_loop;
+  DistillCurrentPageAndViewIfSuccessful(
+      web_contents, base::BindOnce(
+                        [](base::RunLoop* run_loop, bool success) {
+                          EXPECT_FALSE(success);
+                          run_loop->Quit();
+                        },
+                        &run_loop));
+  run_loop.Run();
+
+  // The same web contents should be used to distill and navigate to the viewer.
+  EXPECT_EQ(web_contents, browser()->tab_strip_model()->GetActiveWebContents());
+  // On failure, the function won't navigate to the distillation viewer.
+  EXPECT_FALSE(
+      web_contents->GetLastCommittedURL().SchemeIs(kDomDistillerScheme));
+  EXPECT_FALSE(web_contents->IsLoading());
+  content::RunAllTasksUntilIdle();
 }
 
 class DomDistillerTabUtilsMPArchTest : public DomDistillerTabUtilsBrowserTest {

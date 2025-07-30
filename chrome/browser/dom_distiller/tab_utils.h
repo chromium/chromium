@@ -6,9 +6,17 @@
 #define CHROME_BROWSER_DOM_DISTILLER_TAB_UTILS_H_
 
 #include "base/functional/callback_forward.h"
+
 namespace content {
 class WebContents;
 }  // namespace content
+
+// Distills the current WebContents, waits for the result and continues to the
+// Viewer via a navigation if successful. This does not create any web
+// contents, or take ownership of the `web_contents` passed in.
+void DistillCurrentPageAndViewIfSuccessful(
+    content::WebContents* web_contents,
+    base::OnceCallback<void(bool)> callback);
 
 // Creates a new WebContents and navigates it to view the URL of the current
 // page, while in the background starts distilling the current page. This method
