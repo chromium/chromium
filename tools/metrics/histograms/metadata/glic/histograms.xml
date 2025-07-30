@@ -405,6 +405,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Media.TimestampRangeCount" units="count"
+    expires_after="2026-01-15">
+  <owner>liberato@chromium.org</owner>
+  <owner>chrome-media-ux@google.com</owner>
+  <summary>
+    Recorded when a speech recognition result is received. Records the number of
+    media timestamp ranges in the result. This can be greater than one, for
+    example, around seeks. Zero means that there was no timing information, or
+    the list of ranges was empty.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Metrics.Error" enum="GlicMetricsError"
     expires_after="2026-01-15">
   <owner>dewittj@google.com</owner>
