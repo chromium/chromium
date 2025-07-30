@@ -824,7 +824,7 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
   for (String text : {text_default, emoji_default}) {
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(*mono_font, text)),
-              String(kNotoEmojiFontName));
+              StringView(kNotoEmojiFontName));
     const char* system_mono_font_name = kSystemMonoEmojiFont;
 #if BUILDFLAG(IS_MAC)
     if (text == text_default) {
@@ -833,7 +833,7 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS15) {
 #endif
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-              String(system_mono_font_name));
+              StringView(system_mono_font_name));
   }
 }
 
@@ -853,10 +853,10 @@ TEST_F(HarfBuzzShaperTest, SystemEmojiVS16) {
   for (String text : {text_default, emoji_default}) {
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(*mono_font, text)),
-              kSystemColorEmojiFont);
+              StringView(kSystemColorEmojiFont));
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-              kNotoColorEmojiFontName);
+              StringView(kNotoColorEmojiFontName));
   }
 }
 
@@ -904,10 +904,10 @@ TEST_P(FontVariantEmojiTest, FontVariantEmojiSystemFallback) {
 
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(*mono_font, text)),
-              String(expected_name_for_mono_requested_font));
+              StringView(expected_name_for_mono_requested_font));
     EXPECT_EQ(MaybeStripFontationsSuffix(
                   GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-              String(expected_name_for_color_requested_font));
+              StringView(expected_name_for_color_requested_font));
   }
 }
 
@@ -927,13 +927,13 @@ TEST_F(HarfBuzzShaperTest, VSOverrideFontVariantEmoji) {
   EXPECT_EQ(run_font_data.size(), 3u);
   EXPECT_EQ(MaybeStripFontationsSuffix(
                 run_font_data[0].font_data_->PlatformData().FontFamilyName()),
-            kSystemColorEmojiFont);
+            StringView(kSystemColorEmojiFont));
   EXPECT_EQ(MaybeStripFontationsSuffix(
                 run_font_data[1].font_data_->PlatformData().FontFamilyName()),
-            kSystemMonoEmojiFont);
+            StringView(kSystemMonoEmojiFont));
   EXPECT_EQ(MaybeStripFontationsSuffix(
                 run_font_data[2].font_data_->PlatformData().FontFamilyName()),
-            kSystemColorEmojiFont);
+            StringView(kSystemColorEmojiFont));
 }
 
 TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
@@ -951,7 +951,7 @@ TEST_F(HarfBuzzShaperTest, FontVariantEmojiTextSystemFallback) {
   Font* color_font = CreateNotoColorEmoji(FontVariantEmoji::kTextVariantEmoji);
   EXPECT_EQ(MaybeStripFontationsSuffix(
                 GetShapedFontFamilyNameForEmojiVS(*color_font, text)),
-            mono_font_name);
+            StringView(mono_font_name));
 }
 
 #endif
