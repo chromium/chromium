@@ -204,7 +204,8 @@ void AudioToolboxAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
   limiter_queue_->Push(
       *output_bus_, num_frames, buffer->timestamp(),
       base::BindOnce(&AudioToolboxAudioDecoder::OnOutputReady,
-                     base::Unretained(this), buffer->time_info()));
+                     base::Unretained(this),
+                     AudioDiscardHelper::TimeInfo::FromBuffer(*buffer)));
 
   std::move(decode_cb_bound).Run(OkStatus());
 }
@@ -418,7 +419,7 @@ bool AudioToolboxAudioDecoder::CreateDecoder(const AudioDecoderConfig& config) {
 }
 
 void AudioToolboxAudioDecoder::OnOutputReady(
-    DecoderBuffer::TimeInfo time_info,
+    AudioDiscardHelper::TimeInfo time_info,
     scoped_refptr<AudioBuffer> output_buffer) {
   if (discard_helper_->ProcessBuffers(time_info, output_buffer.get())) {
     base::BindPostTaskToCurrentDefault(output_cb_)

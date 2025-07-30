@@ -7,6 +7,8 @@
 
 #include <stddef.h>
 
+#include <optional>
+
 #include "base/time/time.h"
 #include "media/base/audio_timestamp_helper.h"
 #include "media/base/decoder_buffer.h"
@@ -20,6 +22,27 @@ class AudioBuffer;
 // Helper class for managing timestamps and discard events around decoding.
 class MEDIA_EXPORT AudioDiscardHelper {
  public:
+  // TimeInfo structure moved from DecoderBuffer to AudioDiscardHelper where
+  // it's used.
+  struct MEDIA_EXPORT TimeInfo {
+    // Presentation time of the frame.
+    base::TimeDelta timestamp;
+
+    // Presentation duration of the frame.
+    base::TimeDelta duration;
+
+    // Duration of (audio) samples from the beginning and end of this frame
+    // which should be discarded after decoding. A value of kInfiniteDuration
+    // for the first value indicates the entire frame should be discarded; the
+    // second value must be base::TimeDelta() in this case.
+    std::optional<DecoderBuffer::DiscardPadding> discard_padding;
+
+    // Factory method to create TimeInfo.
+    static TimeInfo FromBuffer(const DecoderBuffer& buffer) {
+      return {buffer.timestamp(), buffer.duration(), buffer.discard_padding()};
+    }
+  };
+
   AudioDiscardHelper() = delete;
 
   // |sample_rate| is the sample rate of decoded data which will be handed into
@@ -64,8 +87,7 @@ class MEDIA_EXPORT AudioDiscardHelper {
   // |time_info| will be used as the basis for all future timestamps set on
   // |decoded_buffer|s.  If the first |time_info| has a negative timestamp it
   // will be clamped to zero.
-  bool ProcessBuffers(const DecoderBuffer::TimeInfo& time_info,
-                      AudioBuffer* decoded_buffer);
+  bool ProcessBuffers(const TimeInfo& time_info, AudioBuffer* decoded_buffer);
 
   // Whether any buffers have been processed.
   bool initialized() const {

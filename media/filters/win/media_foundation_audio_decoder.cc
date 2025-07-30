@@ -286,7 +286,7 @@ void MediaFoundationAudioDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
     return;
   }
 
-  current_buffer_time_info_ = buffer->time_info();
+  current_buffer_time_info_ = AudioDiscardHelper::TimeInfo::FromBuffer(*buffer);
 
   bool decoded_frame_this_loop = false;
   OutputStatus rc;

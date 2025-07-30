@@ -260,8 +260,8 @@ bool SymphoniaAudioDecoder::SymphoniaDecode(const DecoderBuffer& buffer) {
   CHECK(decoded_audio);
 
   // Process potential discards.
-  const bool processed =
-      discard_helper_->ProcessBuffers(buffer.time_info(), decoded_audio.get());
+  const bool processed = discard_helper_->ProcessBuffers(
+      AudioDiscardHelper::TimeInfo::FromBuffer(buffer), decoded_audio.get());
 
   // Output the frame if it wasn't discarded.
   if (processed) {
