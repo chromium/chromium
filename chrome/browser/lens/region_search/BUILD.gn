@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/lens/features.gni")
+
 # Contained Lens dependencies are currently for desktop platforms only
 assert(!is_android, "Lens Region Search is for desktop platforms only")
 
@@ -35,4 +37,8 @@ static_library("region_search") {
     "//components/paint_preview/buildflags",
     "//components/translate/content/common",
   ]
+
+  if (enable_lens_desktop_google_branded_features) {
+    deps += [ "//chrome/browser/ui/views/lens" ]
+  }
 }

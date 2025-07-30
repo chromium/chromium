@@ -5094,10 +5094,7 @@ static_library("ui") {
 
   # TODO(https://crbug.com/330808104): Delete this code.
   if (enable_lens_desktop_google_branded_features) {
-    sources += [
-      "views/lens/lens_region_search_instructions_view.cc",
-      "views/lens/lens_region_search_instructions_view.h",
-    ]
+    deps += [ "//chrome/browser/ui/views/lens" ]
   }
 
   if (use_aura) {

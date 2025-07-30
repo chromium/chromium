@@ -14,7 +14,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
-#include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_entrypoints.h"
 #include "components/lens/lens_features.h"
@@ -22,11 +21,15 @@
 #include "components/lens/lens_metrics.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
-#include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/widget/widget.h"
 
-namespace {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
+#include "chrome/browser/ui/views/chrome_layout_provider.h"
+#include "chrome/browser/ui/views/lens/lens_region_search_instructions_view.h"
+#include "ui/views/bubble/bubble_dialog_delegate_view.h"
+
+namespace {
+
 views::Widget* OpenLensRegionSearchInstructions(
     Browser* browser,
     base::OnceClosure close_callback,
@@ -36,12 +39,29 @@ views::Widget* OpenLensRegionSearchInstructions(
   // Our anchor should be the browser view's top container view. This makes sure
   // that we account for side panel width and the top container view.
   views::View* anchor = browser_view->contents_web_view();
+
+  ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
+  lens::LensRegionSearchInstructionsView::LayoutParams layout_params{
+      .left_margin = layout_provider->GetDistanceMetric(
+          views::DistanceMetric::DISTANCE_RELATED_CONTROL_HORIZONTAL),
+      .label_button_insets = layout_provider->GetInsetsMetric(
+          views::InsetsMetric::INSETS_LABEL_BUTTON),
+      .close_button_margin = layout_provider->GetDistanceMetric(
+          views::DistanceMetric::DISTANCE_CLOSE_BUTTON_MARGIN),
+      .vector_icon_size = layout_provider->GetDistanceMetric(
+          views::DISTANCE_BUBBLE_HEADER_VECTOR_ICON_SIZE),
+      .label_horizontal_distance = layout_provider->GetDistanceMetric(
+          views::DistanceMetric::DISTANCE_RELATED_LABEL_HORIZONTAL),
+      .vertical_distance = layout_provider->GetDistanceMetric(
+          DISTANCE_RELATED_CONTROL_VERTICAL_SMALL)};
+
   return views::BubbleDialogDelegateView::CreateBubble(
       std::make_unique<lens::LensRegionSearchInstructionsView>(
-          anchor, std::move(close_callback), std::move(escape_callback)));
+          anchor, std::move(close_callback), std::move(escape_callback),
+          layout_params));
 }
-#endif // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 }  // namespace
+#endif  // BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
 
 namespace lens {
 
