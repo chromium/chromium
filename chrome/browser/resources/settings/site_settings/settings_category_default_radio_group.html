@@ -30,7 +30,8 @@
       id="settingsCategoryDefaultRadioGroup"
       pref="{{pref_}}"
       selectable-elements="settings-collapse-radio-button"
-      on-change="onSelectedChanged_">
+      on-change="onSelectedChanged_"
+      group-aria-label=[[header]]>
     <settings-collapse-radio-button
         id="enabledRadioOption"
         class$="[[getEnabledButtonClass_(allowOptionSubLabel)]]"
