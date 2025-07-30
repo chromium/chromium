@@ -4,6 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
 
+#include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
 #include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
@@ -14,7 +15,16 @@
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
+namespace {
 using ::tabs::TabInterface;
+
+void LogAndIgnoreCallbackError(const std::string_view source_name,
+                               bool result) {
+  if (!result) {
+    LOG(DFATAL) << "Unexpected error in callback from " << source_name;
+  }
+}
+}  // namespace
 
 ActorUiTabController::ActorUiTabController(
     tabs::TabInterface& tab,
@@ -59,7 +69,9 @@ void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
 
 void ActorUiTabController::OnTabActiveStatusChanged(bool tab_active_status,
                                                     tabs::TabInterface* tab) {
-  UpdateState(current_ui_tab_state_, tab_active_status, base::DoNothing());
+  UpdateState(
+      current_ui_tab_state_, tab_active_status,
+      base::BindOnce(&LogAndIgnoreCallbackError, "OnTabActiveStatusChanged"));
 }
 
 void ActorUiTabController::OnTabWillDetach(TabInterface* tab,
