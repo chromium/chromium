@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_MANIFEST_WEB_DATA_SERVICE_ANDROID_H_
-#define COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_MANIFEST_WEB_DATA_SERVICE_ANDROID_H_
+#ifndef COMPONENTS_PAYMENTS_CONTENT_ANDROID_WEB_PAYMENTS_WEB_DATA_SERVICE_ANDROID_H_
+#define COMPONENTS_PAYMENTS_CONTENT_ANDROID_WEB_PAYMENTS_WEB_DATA_SERVICE_ANDROID_H_
 
 #include <map>
 #include <memory>
@@ -23,20 +23,20 @@ class WebContents;
 
 namespace payments {
 
-// Android wrapper of the PaymentManifestWebDataService which provides access
+// Android wrapper of the WebPaymentsWebDataService which provides access
 // from the Java layer.
-class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
+class WebPaymentsWebDataServiceAndroid : public WebDataServiceConsumer {
  public:
-  PaymentManifestWebDataServiceAndroid(JNIEnv* env,
-                                       const jni_zero::JavaRef<jobject>& obj,
-                                       content::WebContents* web_contents);
+  WebPaymentsWebDataServiceAndroid(JNIEnv* env,
+                                   const jni_zero::JavaRef<jobject>& obj,
+                                   content::WebContents* web_contents);
 
-  PaymentManifestWebDataServiceAndroid(
-      const PaymentManifestWebDataServiceAndroid&) = delete;
-  PaymentManifestWebDataServiceAndroid& operator=(
-      const PaymentManifestWebDataServiceAndroid&) = delete;
+  WebPaymentsWebDataServiceAndroid(const WebPaymentsWebDataServiceAndroid&) =
+      delete;
+  WebPaymentsWebDataServiceAndroid& operator=(
+      const WebPaymentsWebDataServiceAndroid&) = delete;
 
-  ~PaymentManifestWebDataServiceAndroid() override;
+  ~WebPaymentsWebDataServiceAndroid() override;
 
   // Override WebDataServiceConsumer interface.
   void OnWebDataServiceRequestDone(
@@ -96,4 +96,4 @@ class PaymentManifestWebDataServiceAndroid : public WebDataServiceConsumer {
 
 }  // namespace payments
 
-#endif  // COMPONENTS_PAYMENTS_CONTENT_ANDROID_PAYMENT_MANIFEST_WEB_DATA_SERVICE_ANDROID_H_
+#endif  // COMPONENTS_PAYMENTS_CONTENT_ANDROID_WEB_PAYMENTS_WEB_DATA_SERVICE_ANDROID_H_

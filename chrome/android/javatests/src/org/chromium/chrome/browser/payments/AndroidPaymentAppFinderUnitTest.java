@@ -51,8 +51,8 @@ import org.chromium.components.payments.PaymentAppFactoryParams;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
-import org.chromium.components.payments.PaymentManifestWebDataService;
 import org.chromium.components.payments.WebAppManifestSection;
+import org.chromium.components.payments.WebPaymentsWebDataService;
 import org.chromium.components.payments.intent.WebPaymentIntentHelper;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.NativeLibraryTestUtils;
@@ -90,7 +90,7 @@ public class AndroidPaymentAppFinderUnitTest {
     @Rule public MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Rule public ChromeBrowserTestRule mTestRule = new ChromeBrowserTestRule();
 
-    @Mock private PaymentManifestWebDataService mPaymentManifestWebDataService;
+    @Mock private WebPaymentsWebDataService mWebPaymentsWebDataService;
     @Mock private PaymentManifestDownloader mPaymentManifestDownloader;
     @Mock private PaymentManifestParser mPaymentManifestParser;
     @Mock private PackageManagerDelegate mPackageManagerDelegate;
@@ -199,7 +199,7 @@ public class AndroidPaymentAppFinderUnitTest {
                                 }));
         AndroidPaymentAppFinder finder =
                 new AndroidPaymentAppFinder(
-                        mPaymentManifestWebDataService,
+                        mWebPaymentsWebDataService,
                         downloader,
                         parser,
                         packageManagerDelegate,

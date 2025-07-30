@@ -31,18 +31,18 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * Verifies that the discovered native Android payment apps have the sufficient privileges
- * to handle a single payment method. Downloads and parses the manifest to compare package
- * names, versions, and signatures to the apps.
+ * Verifies that the discovered native Android payment apps have the sufficient privileges to handle
+ * a single payment method. Downloads and parses the manifest to compare package names, versions,
+ * and signatures to the apps.
  *
- * Spec:
+ * <p>Spec:
  * https://docs.google.com/document/d/1izV4uC-tiRJG3JLooqY3YRLU22tYOsLTNq0P_InPJeE/edit#heading=h.cjp3jlnl47h5
  */
 @NullMarked
 public class PaymentManifestVerifier
         implements ManifestDownloadCallback,
                 ManifestParseCallback,
-                PaymentManifestWebDataService.PaymentManifestWebDataServiceCallback {
+                WebPaymentsWebDataService.WebPaymentsWebDataServiceCallback {
     /** Interface for the callback to invoke when finished verification. */
     public interface ManifestVerifyCallback {
         /**
@@ -130,7 +130,7 @@ public class PaymentManifestVerifier
     /** A list of web app manifests to cache. */
     private final List<WebAppManifestSection[]> mWebAppManifestsToCache = new ArrayList<>();
 
-    private final PaymentManifestWebDataService mCache;
+    private final WebPaymentsWebDataService mCache;
     private final PaymentManifestDownloader mDownloader;
     private final PaymentManifestParser mParser;
     private final PackageManagerDelegate mPackageManagerDelegate;
@@ -155,27 +155,26 @@ public class PaymentManifestVerifier
     /**
      * Builds the manifest verifier.
      *
-     * @param merchantOrigin         The origin of the iframe that invoked the PaymentRequest API.
-     * @param methodName             The name of the payment method name that apps offer to handle.
-     *                               Must be an absolute URL with HTTPS scheme or HTTP localhost.
-     * @param defaultApplications    The identifying information for the native Android payment apps
-     *                               that offer to handle this payment method as a default app,
-     *                               i.e., as one of the "default_applications". Can be null.
-     * @param supportedOrigins       The origins of the apps that claim support of this payment
-     *                               method as their non-default, i.e., as one of the
-     *                               "supported_origins". Can be null.
-     * @param webDataService         The web data service to cache manifest.
-     * @param downloader             The manifest downloader.
-     * @param parser                 The manifest parser.
+     * @param merchantOrigin The origin of the iframe that invoked the PaymentRequest API.
+     * @param methodName The name of the payment method name that apps offer to handle. Must be an
+     *     absolute URL with HTTPS scheme or HTTP localhost.
+     * @param defaultApplications The identifying information for the native Android payment apps
+     *     that offer to handle this payment method as a default app, i.e., as one of the
+     *     "default_applications". Can be null.
+     * @param supportedOrigins The origins of the apps that claim support of this payment method as
+     *     their non-default, i.e., as one of the "supported_origins". Can be null.
+     * @param webDataService The web data service to cache manifest.
+     * @param downloader The manifest downloader.
+     * @param parser The manifest parser.
      * @param packageManagerDelegate The package information retriever.
-     * @param callback               The callback to be notified of verification result.
+     * @param callback The callback to be notified of verification result.
      */
     public PaymentManifestVerifier(
             Origin merchantOrigin,
             GURL methodName,
             @Nullable Set<ResolveInfo> defaultApplications,
             @Nullable Set<GURL> supportedOrigins,
-            PaymentManifestWebDataService webDataService,
+            WebPaymentsWebDataService webDataService,
             PaymentManifestDownloader downloader,
             PaymentManifestParser parser,
             PackageManagerDelegate packageManagerDelegate,

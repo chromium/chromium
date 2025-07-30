@@ -25,7 +25,7 @@ public class AndroidPaymentAppFactory implements PaymentAppFactoryInterface {
     public void create(PaymentAppFactoryDelegate delegate) {
         AndroidPaymentAppFinder finder =
                 new AndroidPaymentAppFinder(
-                        new PaymentManifestWebDataService(delegate.getParams().getWebContents()),
+                        new WebPaymentsWebDataService(delegate.getParams().getWebContents()),
                         new PaymentManifestDownloader(),
                         new PaymentManifestParser(),
                         new PackageManagerDelegate(),

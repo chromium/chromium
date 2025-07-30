@@ -77,7 +77,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
     private final Set<GURL> mMerchantRequestedUrlPaymentMethods = new HashSet<>();
 
     private final PaymentManifestDownloader mDownloader;
-    private final PaymentManifestWebDataService mWebDataService;
+    private final WebPaymentsWebDataService mWebDataService;
     private final PaymentManifestParser mParser;
     private final PackageManagerDelegate mPackageManagerDelegate;
     private final PaymentAppFactoryDelegate mFactoryDelegate;
@@ -213,7 +213,7 @@ public class AndroidPaymentAppFinder implements ManifestVerifyCallback {
      *     call.
      */
     public AndroidPaymentAppFinder(
-            PaymentManifestWebDataService webDataService,
+            WebPaymentsWebDataService webDataService,
             PaymentManifestDownloader downloader,
             PaymentManifestParser parser,
             PackageManagerDelegate packageManagerDelegate,

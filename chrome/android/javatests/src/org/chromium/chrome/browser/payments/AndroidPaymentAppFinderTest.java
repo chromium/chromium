@@ -38,7 +38,7 @@ import org.chromium.components.payments.PaymentAppFactoryParams;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.PaymentManifestDownloader;
 import org.chromium.components.payments.PaymentManifestParser;
-import org.chromium.components.payments.PaymentManifestWebDataService;
+import org.chromium.components.payments.WebPaymentsWebDataService;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.payments.mojom.PaymentDetailsModifier;
@@ -1827,7 +1827,7 @@ public class AndroidPaymentAppFinderTest
                 () -> {
                     AndroidPaymentAppFinder finder =
                             new AndroidPaymentAppFinder(
-                                    new PaymentManifestWebDataService(getWebContents()),
+                                    new WebPaymentsWebDataService(getWebContents()),
                                     mDownloader,
                                     new PaymentManifestParser(),
                                     mPackageManager,
