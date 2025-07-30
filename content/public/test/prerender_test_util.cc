@@ -382,6 +382,10 @@ class PrerenderHostObserverImpl : public PrerenderHost::Observer {
 
   bool was_activated() const { return was_activated_; }
 
+  bool WasHostReused() const {
+    return last_status_ == PrerenderFinalStatus::kPrerenderHostReused;
+  }
+
  private:
   void OnTrigger(WebContents& web_contents, const GURL& url) {
     PrerenderHost* host =
@@ -439,6 +443,10 @@ void PrerenderHostObserver::WaitForDestroyed() {
 
 bool PrerenderHostObserver::was_activated() const {
   return impl_->was_activated();
+}
+
+bool PrerenderHostObserver::WasHostReused() const {
+  return impl_->WasHostReused();
 }
 
 PrerenderHostCreationWaiter::PrerenderHostCreationWaiter() {

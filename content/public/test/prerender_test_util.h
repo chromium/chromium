@@ -89,6 +89,9 @@ class PrerenderHostObserver {
   // True if the PrerenderHost was activated to be the primary page.
   bool was_activated() const;
 
+  // Returns true if the PrerenderHost is reused.
+  bool WasHostReused() const;
+
  private:
   std::unique_ptr<PrerenderHostObserverImpl> impl_;
 };

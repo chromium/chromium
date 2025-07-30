@@ -337,6 +337,8 @@ PreloadingEligibility ToEligibility(PrerenderFinalStatus status) {
     case PrerenderFinalStatus::kPrerenderFailedDuringPrefetch:
     case PrerenderFinalStatus::kBrowsingDataRemoved:
       NOTREACHED();
+    case PrerenderFinalStatus::kPrerenderHostReused:
+      NOTREACHED();
   }
 
   NOTREACHED();

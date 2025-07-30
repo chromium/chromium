@@ -13248,6 +13248,7 @@ experimental domain Preload
       V8OptimizerDisabled
       PrerenderFailedDuringPrefetch
       BrowsingDataRemoved
+      PrerenderHostReused
 
   # Fired when a preload enabled state is updated.
   event preloadEnabledStateUpdated

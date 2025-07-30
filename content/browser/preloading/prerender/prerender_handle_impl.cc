@@ -141,6 +141,9 @@ bool ShouldFireErrorCallback(PrerenderFinalStatus status) {
     // option or with Clear-Site-Data response headers.
     case PrerenderFinalStatus::kBrowsingDataRemoved:
       return false;
+    // The PrerenderHost is reused by another prerender request.
+    case PrerenderFinalStatus::kPrerenderHostReused:
+      return false;
   }
 }
 

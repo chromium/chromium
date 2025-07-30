@@ -1007,9 +1007,13 @@ IN_PROC_BROWSER_TEST_F(PrerenderPrewarmDefaultSearchEngineTest,
   ASSERT_TRUE(host_id);
   prerender_helper().WaitForPrerenderLoadCompletion(host_id);
 
+  content::test::PrerenderHostObserver prerender_observer(
+      *GetActiveWebContents(), host_id);
   // Trigger a new prerender under the same site
   GURL prerender_url = embedded_test_server()->GetURL("/simple.html?1");
   prerender_helper().AddPrerender(prerender_url);
+  prerender_observer.WaitForDestroyed();
+  ASSERT_TRUE(prerender_observer.WasHostReused());
   auto reuse_host_id = prerender_helper().GetHostForUrl(prerender_url);
   ASSERT_EQ(host_id, reuse_host_id);
 
