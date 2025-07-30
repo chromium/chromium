@@ -35,6 +35,7 @@
 #include "components/content_settings/browser/ui/cookie_controls_util.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/browser/permission_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_constraints.h"
 #include "components/content_settings/core/common/content_settings_types.h"
@@ -158,17 +159,21 @@ void GetOrigins(JNIEnv* env,
   ContentSettingsForOneType embargo_settings =
       content_settings_map->GetSettingsForOneType(
           ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA);
-  ContentSetting default_content_setting =
-      content_settings_map->GetDefaultContentSetting(content_type, nullptr);
+  PermissionSetting default_content_setting =
+      content_settings_map->GetDefaultPermissionSetting(content_type);
 
   // Use a vector since the overall number of origins should be small.
   std::vector<std::string> seen_origins;
+
+  auto* info = content_settings::PermissionSettingsRegistry::GetInstance()->Get(
+      content_type);
 
   // Now add all origins that have a non-default setting to the list.
   for (const auto& settings_it : all_settings) {
     if (!base::FeatureList::IsEnabled(
             permissions::features::kPermissionSiteSettingsRadioButton) &&
-        settings_it.GetContentSetting() == default_content_setting) {
+        content_settings::ValueToPermissionSetting(
+            info, settings_it.setting_value) == default_content_setting) {
       continue;
     }
     if (managedOnly &&

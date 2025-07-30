@@ -34,6 +34,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.site_settings.GeolocationSetting;
 import org.chromium.components.browser_ui.site_settings.PermissionInfo;
+import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
@@ -328,6 +329,15 @@ public class PermissionInfoTest {
                     assertEquals(allowApproximate, info.getGeolocationSetting(regularProfile));
                     info.setGeolocationSetting(regularProfile, allowPrecise);
                     assertEquals(allowPrecise, info.getGeolocationSetting(regularProfile));
+
+                    var permissions =
+                            new WebsitePreferenceBridge()
+                                    .getPermissionInfo(
+                                            regularProfile,
+                                            ContentSettingsType.GEOLOCATION_WITH_OPTIONS);
+                    assertEquals(1, permissions.size());
+                    assertEquals(
+                            allowPrecise, permissions.get(0).getGeolocationSetting(regularProfile));
                 });
     }
 

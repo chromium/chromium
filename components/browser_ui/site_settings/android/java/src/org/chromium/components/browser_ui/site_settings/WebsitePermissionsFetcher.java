@@ -323,11 +323,6 @@ public class WebsitePermissionsFetcher {
                 return;
             }
 
-            if (contentSettingsType == ContentSettingsType.GEOLOCATION_WITH_OPTIONS) {
-                // TODO(crbug.com/425642101): Re-enable when permission fetching works.
-                return;
-            }
-
             // Remove this check after the flag is removed.
             // The Bluetooth Scanning permission controls access to the Web Bluetooth
             // Scanning API, which enables sites to scan for and receive events for
