@@ -62,6 +62,7 @@ per-file tab_groups_strings.grdp=file://components/tab_groups/OWNERS
 per-file translate_strings.grdp=file://components/translate/OWNERS
 per-file tab_resume_strings.grdp=file://components/visited_url_ranking/OWNERS
 per-file undo_strings.grdp=file://components/undo/OWNERS
+per-file user_data_importer_strings.grdp=file://components/user_data_importer/OWNERS
 per-file user_education_strings.grdp=file://components/user_education/OWNERS
 per-file version_ui_strings.grdp=file://components/webui/version/OWNERS
 per-file web_contents_delegate_android_strings.grdp=file://components/embedder_support/android/delegate/OWNERS
