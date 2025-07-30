@@ -77,7 +77,7 @@ XRSession* XRView::session() const {
 }
 
 NotShared<DOMFloat32Array> XRView::projectionMatrix() const {
-  if (!projection_matrix_ || !projection_matrix_->Data()) {
+  if (!projection_matrix_ || projection_matrix_->IsDetached()) {
     // A page may take the projection matrix value and detach it so
     // projection_matrix_ is a detached array buffer.  This breaks the
     // inspector, so return an empty array instead.
