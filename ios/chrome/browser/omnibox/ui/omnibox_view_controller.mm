@@ -461,7 +461,6 @@ using base::UserMetricsAction;
       !!self.view.thumbnailImage ||
       [self.popupKeyboardDelegate
           canPerformKeyboardAction:OmniboxKeyboardAction::kReturnKey];
-  [self.textField reloadInputViews];
 }
 
 - (void)setPlaceholderText:(NSString*)placeholderText {
