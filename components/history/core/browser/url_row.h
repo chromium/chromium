@@ -319,8 +319,6 @@ class URLResult : public URLRow {
     return title_match_positions_;
   }
 
-  void SwapResult(URLResult* other);
-
   static bool CompareVisitTime(const URLResult& lhs, const URLResult& rhs);
 
  private:
