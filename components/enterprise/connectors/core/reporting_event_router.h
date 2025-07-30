@@ -121,6 +121,7 @@ class ReportingEventRouter : public KeyedService {
                                 const download::DownloadDangerType danger_type,
                                 const std::string& mime_type,
                                 const std::string& trigger,
+                                const std::string& scan_id,
                                 const int64_t content_size,
                                 const ReferrerChain& referrer_chain,
                                 EventResult event_result);

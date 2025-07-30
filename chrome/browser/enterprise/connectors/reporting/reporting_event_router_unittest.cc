@@ -1128,6 +1128,48 @@ TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Blocked) {
   run_loop.Run();
 }
 
+TEST_P(ReportingEventRouterTest, TestOnDangerousDownloadEvent_Bypassed) {
+  EnableEnhancedFieldsForSecOps();
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeyDangerousDownloadEvent},
+      /*enabled_opt_in_events=*/{});
+
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  validator.ExpectDangerousDeepScanningResult(
+      /*url*/ "https://example.com/download.exe",
+      /*tab_url*/ "https://example.com/",
+      /*source*/ "",
+      /*destination*/ "",
+      /*filename*/ "encrypted.zip",
+      /*sha256*/ "sha256_of_data",
+      /*threat_type*/ "DANGEROUS",
+      /*trigger*/ "FILE_DOWNLOAD",
+      /*mimetypes*/ ZipMimeType(),
+      /*size*/ 12345,
+      /*result*/ "EVENT_RESULT_BYPASSED",
+      /*username*/ profile_->GetProfileUserName(),
+      /*profile_identifier*/ GetProfileIdentifier(),
+      /*scan_id*/ "123");
+
+  ReferrerChain referrer_chain;
+  referrer_chain.Add(test::MakeReferrerChainEntry());
+  reporting_event_router_->OnDangerousDownloadEvent(
+      GURL("https://example.com/download.exe"), GURL("https://example.com/"),
+      "encrypted.zip", "sha256_of_data",
+      download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
+      "FILE_DOWNLOAD", "123", 12345, std::move(referrer_chain),
+      EventResult::BYPASSED);
+  run_loop.Run();
+}
+
 TEST_P(ReportingEventRouterTest,
        TestOnDangerousDownloadEvent_WarnedFromSafeBrowsing) {
   EnableEnhancedFieldsForSecOps();
@@ -1166,7 +1208,8 @@ TEST_P(ReportingEventRouterTest,
       GURL("https://example.com/download.exe"), GURL("https://example.com/"),
       "encrypted.zip", "sha256_of_data",
       download::DOWNLOAD_DANGER_TYPE_DANGEROUS_CONTENT, "application/zip",
-      "FILE_DOWNLOAD", 12345, std::move(referrer_chain), EventResult::WARNED);
+      "FILE_DOWNLOAD", "", 12345, std::move(referrer_chain),
+      EventResult::WARNED);
   run_loop.Run();
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)

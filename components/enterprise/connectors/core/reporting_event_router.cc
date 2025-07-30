@@ -570,13 +570,14 @@ void ReportingEventRouter::OnDangerousDownloadEvent(
     const download::DownloadDangerType danger_type,
     const std::string& mime_type,
     const std::string& trigger,
+    const std::string& scan_id,
     const int64_t content_size,
     const ReferrerChain& referrer_chain,
     EventResult event_result) {
   OnDangerousDownloadEvent(url, tab_url, /*source=*/"", /*destination=*/"",
                            file_name, download_digest_sha256,
                            DangerTypeToThreatType(danger_type), mime_type,
-                           trigger, /*scan_id=*/"",
+                           trigger, scan_id,
                            /*content_transfer_method*/ "", content_size,
                            referrer_chain, event_result);
 }

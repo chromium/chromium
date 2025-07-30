@@ -3041,9 +3041,11 @@ TEST_F(DownloadProtectionServiceTest,
   enterprise_connectors::test::EventReportValidator validator(client_.get());
   base::RunLoop run_loop;
   validator.SetDoneClosure(run_loop.QuitClosure());
-  validator.ExpectDangerousDownloadEvent(
+  validator.ExpectDangerousDeepScanningResult(
       "",                          // URL, not set in this test
       "",                          // Tab URL, not set in this test
+      "",                          // Source, not set in this test
+      "",                          // Destination, not set in this test
       final_path_.AsUTF8Unsafe(),  // Full path, including the directory
       "68617368",                  // SHA256 of the fake download
       "DANGEROUS_FILE_TYPE",       // expected_threat_type
@@ -3054,7 +3056,8 @@ TEST_F(DownloadProtectionServiceTest,
       enterprise_connectors::EventResultToString(
           enterprise_connectors::EventResult::BYPASSED),  // expected_result
       "",                                                 // expected_username
-      profile()->GetPath().AsUTF8Unsafe()  // expected_profile_identifier
+      profile()->GetPath().AsUTF8Unsafe(),  // expected_profile_identifier
+      std::nullopt                          // scan_id
   );
 
   download_service_->ReportDelayedBypassEvent(
