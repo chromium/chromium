@@ -27,7 +27,7 @@ namespace controlled_frame {
 
 namespace {
 
-#define IS_LINUX_OR_CROS BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#define IS_LINUX_OR_CROS (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
 
 // TODO(crbug.com/423697478): frame_event_handlers_part_1 and webrequest_auth
 // times out on win-asan bots and linux / chromeos bots.
