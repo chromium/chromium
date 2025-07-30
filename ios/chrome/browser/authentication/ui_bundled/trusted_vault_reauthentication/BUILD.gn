@@ -11,6 +11,7 @@ source_set("trusted_vault_reauthentication") {
     "trusted_vault_reauthentication_coordinator_delegate.h",
   ]
   deps = [
+    "//components/signin/public/identity_manager/objc",
     "//components/strings",
     "//components/sync",
     "//ios/chrome/app/strings",
@@ -18,6 +19,7 @@ source_set("trusted_vault_reauthentication") {
     "//ios/chrome/browser/shared/coordinator/alert",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/profile",
+    "//ios/chrome/browser/signin/model",
     "//ios/chrome/browser/signin/model:authentication_service",
     "//ios/chrome/browser/signin/model:authentication_service_factory",
     "//ios/chrome/browser/signin/model:trusted_vault",

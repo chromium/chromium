@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/trusted_vault_reauthentication/trusted_vault_reauthentication_coordinator.h"
 
 #import "base/strings/sys_string_conversions.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/trusted_vault/trusted_vault_server_constants.h"
@@ -14,6 +15,7 @@
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend.h"
 #import "ios/chrome/browser/signin/model/trusted_vault_client_backend_factory.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -23,7 +25,8 @@ using base::SysNSStringToUTF16;
 using l10n_util::GetNSString;
 using l10n_util::GetNSStringF;
 
-@interface TrustedVaultReauthenticationCoordinator ()
+@interface TrustedVaultReauthenticationCoordinator () <
+    IdentityManagerObserverBridgeDelegate>
 
 @property(nonatomic, strong) AlertCoordinator* errorAlertCoordinator;
 @property(nonatomic, strong) id<SystemIdentity> identity;
@@ -35,6 +38,10 @@ using l10n_util::GetNSStringF;
   base::OnceCallback<void(BOOL animated, ProceduralBlock cancel_done)>
       _dialogCancelCallback;
   trusted_vault::SecurityDomainId _securityDomainID;
+  raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
+  raw_ptr<AuthenticationService> _authService;
 }
 
 - (instancetype)
@@ -49,6 +56,11 @@ using l10n_util::GetNSStringF;
   if (self) {
     _intent = intent;
     _securityDomainID = securityDomainID;
+    _identityManager = IdentityManagerFactory::GetForProfile(self.profile);
+    _authService = AuthenticationServiceFactory::GetForProfile(self.profile);
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
     switch (intent) {
       case SigninTrustedVaultDialogIntentFetchKeys:
         syncer::RecordKeyRetrievalTrigger(trigger);
@@ -70,17 +82,14 @@ using l10n_util::GetNSStringF;
 
 - (void)start {
   [super start];
-  AuthenticationService* authenticationService =
-      AuthenticationServiceFactory::GetForProfile(self.profile);
-  DCHECK(
-      authenticationService->HasPrimaryIdentity(signin::ConsentLevel::kSignin));
   // TODO(crbug.com/40105436): Should test if reauth is still needed. If still
   // needed, the reauth should be really started.
   // If not, the coordinator can be closed successfuly, by calling
   // -[TrustedVaultReauthenticationCoordinator
   // reauthentificationCompletedWithSuccess:]
-  self.identity = AuthenticationServiceFactory::GetForProfile(self.profile)
-                      ->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  self.identity =
+      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  CHECK(self.identity, base::NotFatalUntil::M145);
   __weak __typeof(self) weakSelf = self;
   void (^callback)(BOOL success, NSError* error) =
       ^(BOOL success, NSError* error) {
@@ -110,8 +119,22 @@ using l10n_util::GetNSStringF;
     std::move(_dialogCancelCallback).Run(NO, nil);
   }
   [super stop];
+  _identityManagerObserver.reset();
+  _identityManager = nullptr;
   self.identity = nil;
   self.delegate = nil;
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  id<SystemIdentity> identity =
+      _authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  if (![identity isEqual:self.identity]) {
+    [self.delegate
+        trustedVaultReauthenticationCoordinatorWantsToBeStopped:self];
+  }
 }
 
 #pragma mark - Private
