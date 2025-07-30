@@ -305,7 +305,7 @@ TEST_F(GetFillValueForEntityTest, FillingLocalizedCountries) {
     auto country_field = std::make_unique<AutofillField>();
     country_field->set_server_predictions(
         {CreatePrediction(PASSPORT_ISSUING_COUNTRY)});
-    country_field->SetTypeTo(AutofillType(ADDRESS_HOME_COUNTRY),
+    country_field->SetTypeTo(AutofillType(PASSPORT_ISSUING_COUNTRY),
                              AutofillPredictionSource::kServerCrowdsourcing);
     // The passport number needs to be added in order for a form/set of fields
     // to be pass the passport entity requirements.
