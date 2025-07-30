@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
 #include <vector>
 
 #include "base/check.h"
@@ -40,7 +41,7 @@ using ::testing::Not;
 TEST(LibcppHardeningTest, Assertions) {
   std::vector<int> vec = {0, 1, 2};
 #if CHECK_WILL_STREAM()
-  EXPECT_DEATH_IF_SUPPORTED(vec[3], ".*assertion.*failed:");
+  EXPECT_DEATH_IF_SUPPORTED(std::ignore = vec[3], ".*assertion.*failed:");
 #else
 // We have to explicitly check for the GTEST_HAS_DEATH_TEST macro instead of
 // using EXPECT_DEATH_IF_SUPPORTED(...) for the following reasons:
@@ -55,7 +56,8 @@ TEST(LibcppHardeningTest, Assertions) {
 // death tests are supported on Android, GTest death tests don't work with
 // base::ImmediateCrash() (https://crbug.com/1353549#c2).
 #if GTEST_HAS_DEATH_TEST && !GTEST_OS_LINUX_ANDROID
-  EXPECT_DEATH(vec[3], Not(ContainsRegex(".*assertion.*failed:")));
+  EXPECT_DEATH(std::ignore = vec[3],
+               Not(ContainsRegex(".*assertion.*failed:")));
 #else
   GTEST_UNSUPPORTED_DEATH_TEST(vec[3], "", );
 #endif  // GTEST_HAS_DEATH_TEST && !GTEST_OS_LINUX_ANDROID
