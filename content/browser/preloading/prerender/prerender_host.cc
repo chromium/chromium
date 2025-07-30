@@ -1726,4 +1726,10 @@ void PrerenderHost::AddAdditionalRequestHeaders(
   }
 }
 
+void PrerenderHost::NotifyReused() {
+  for (auto& observer : observers_) {
+    observer.OnHostReused();
+  }
+}
+
 }  // namespace content

@@ -18354,6 +18354,28 @@
             ]
         }
     ],
+    "Prerender2ReuseSearchResultHost": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "params": {
+                        "reuse_search_host": "true"
+                    },
+                    "enable_features": [
+                        "Prerender2ReuseHost"
+                    ]
+                }
+            ]
+        }
+    ],
     "PreserveDiscardableImageMapQuality": [
         {
             "platforms": [

@@ -156,6 +156,10 @@ class CONTENT_EXPORT PrerenderHost {
     // Called from the PrerenderHost's destructor. The observer should drop any
     // reference to the host.
     virtual void OnHostDestroyed(PrerenderFinalStatus status) {}
+
+    // Called when the PrerenderHost is reused for another prerender. The
+    // observer shall not cancel the host if OnHostReused is called.
+    virtual void OnHostReused() {}
   };
 
   // Returns the PrerenderHost that the given `frame_tree_node` is in, if it is
@@ -418,6 +422,8 @@ class CONTENT_EXPORT PrerenderHost {
 
   void AddAdditionalRequestHeaders(net::HttpRequestHeaders& headers,
                                    FrameTreeNode& navigating_frame_tree_node);
+
+  void NotifyReused();
 
  private:
   // The helper class to make the frame tree movable among different

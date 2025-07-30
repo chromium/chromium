@@ -42,6 +42,7 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   // PrerenderHost::Observer:
   void OnActivated() override;
   void OnFailed(PrerenderFinalStatus status) override;
+  void OnHostReused() override;
 
   FrameTreeNodeId frame_tree_node_id_for_testing() const {
     return frame_tree_node_id_;
@@ -55,7 +56,7 @@ class PrerenderHandleImpl final : public PrerenderHandle,
   base::WeakPtr<PrerenderHostRegistry> prerender_host_registry_;
   // `frame_tree_node_id_` is the root FrameTreeNode id of the prerendered
   // page.
-  const FrameTreeNodeId frame_tree_node_id_;
+  FrameTreeNodeId frame_tree_node_id_;
 
   const GURL prerendering_url_;
   const std::optional<net::HttpNoVarySearchData> no_vary_search_hint_;

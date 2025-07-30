@@ -369,7 +369,7 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
 
   // Find a prerender host that is marked as reusable and under the
   // same site as attributes.prerendering_url.
-  std::unique_ptr<PrerenderHost> FindPrerenderHostToReuse(
+  std::unique_ptr<PrerenderHost> FindAndTakePrerenderHostToReuse(
       const PrerenderAttributes& attributes);
 
   scoped_refptr<base::SingleThreadTaskRunner> GetTimerTaskRunner();

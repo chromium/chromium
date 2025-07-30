@@ -15,6 +15,7 @@
 #include "components/search_engines/template_url_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/preloading_test_util.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/web_contents_tester.h"
@@ -32,7 +33,10 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
             content::BrowserTaskEnvironment::REAL_IO_THREAD),
         prerender_helper_(
             base::BindRepeating(&PrerenderManagerTest::GetActiveWebContents,
-                                base::Unretained(this))) {}
+                                base::Unretained(this))) {
+    reuse_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPrerender2ReuseHost, {{"reuse_search_host", "true"}});
+  }
 
   void SetUp() override {
     prerender_helper_.RegisterServerRequestMonitor(&test_server_);
@@ -118,6 +122,7 @@ class PrerenderManagerTest : public ChromeRenderViewHostTestHarness {
   content::test::PrerenderTestHelper prerender_helper_;
   test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
       test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+  base::test::ScopedFeatureList reuse_feature_list_;
   std::unique_ptr<content::test::ScopedPrerenderWebContentsDelegate>
       web_contents_delegate_;
 
@@ -162,6 +167,9 @@ TEST_F(PrerenderManagerTest, StartNewSuggestionPrerender) {
   EXPECT_TRUE(prerender_manager()->HasSearchResultPagePrerendered());
   EXPECT_EQ(canonical_url2,
             prerender_manager()->GetPrerenderCanonicalSearchURLForTesting());
+  content::FrameTreeNodeId prerender_host_id2 =
+      prerender_helper().GetHostForUrl(prerendering_url2);
+  EXPECT_EQ(prerender_host_id1, prerender_host_id2);
 }
 
 // Tests that the old prerender is not destroyed when starting prerendering the

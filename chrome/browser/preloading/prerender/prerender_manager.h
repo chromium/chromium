@@ -118,16 +118,6 @@ class PrerenderManager : public content::WebContentsObserver,
   void ResetPrerenderHandlesOnPrimaryPageChanged(
       content::NavigationHandle* navigation_handle);
 
-  // Maybe cancel the ongoing search prerender to restart a new one if this
-  // finds the callers' intentions changed. The number of concurrence search
-  // prerender is limited to 1, so it is needed to cancel the old one in order
-  // to start a new one. Returns true if this finds the caller wants to
-  // prerender another search result. Here `attempt` represents the
-  // PreloadingAttempt corresponding to this prerender attempt to log metrics.
-  bool ResetSearchPrerenderTaskIfNecessary(
-      const GURL& canonical_search_url,
-      base::WeakPtr<content::PreloadingAttempt> attempt);
-
   std::unique_ptr<content::PrerenderHandle> search_prewarm_handle_;
   std::optional<GURL> prewarm_url_for_testing_;
 
