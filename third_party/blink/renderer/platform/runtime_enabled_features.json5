@@ -3249,7 +3249,7 @@
     },
     {
       name: "NestedViewTransition",
-      status: "experimental",
+      status: "stable",
     },
     {
       name: "NetInfoConstantType",
