@@ -116,6 +116,12 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsType content_type,
       ProviderType* provider_id = nullptr) const;
 
+  // Like GetDefaultContentSetting but returns a permission setting.
+  // Returns null if no default setting is set.
+  PermissionSetting GetDefaultPermissionSetting(
+      ContentSettingsType content_type,
+      ProviderType* provider_id = nullptr) const;
+
   // Returns a single |ContentSetting| which applies to the given URLs.  Note
   // that certain internal schemes are allowlisted. For |CONTENT_TYPE_COOKIES|,
   // |CookieSettings| should be used instead. For content types that can't be
@@ -422,13 +428,13 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   ~HostContentSettingsMap() override;
 
-  ContentSetting GetDefaultContentSettingFromProvider(
+  std::optional<PermissionSetting> GetDefaultPermissionSettingFromProvider(
       ContentSettingsType content_type,
       content_settings::ProviderInterface* provider) const;
 
   // Retrieves default content setting for |content_type|, and writes the
   // provider's type to |provider_type| (must not be null).
-  ContentSetting GetDefaultContentSettingInternal(
+  PermissionSetting GetDefaultPermissionSettingInternal(
       ContentSettingsType content_type,
       ProviderType* provider_type) const;
 

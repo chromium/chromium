@@ -767,7 +767,7 @@ std::string ProviderToDefaultSettingSourceString(const ProviderType provider) {
     case ProviderType::kNotificationAndroidProvider:
     case ProviderType::kProviderForTests:
     case ProviderType::kOtherProviderForTests:
-      NOTREACHED();
+      NOTREACHED() << provider;
   }
 }
 

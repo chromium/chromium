@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <optional>
 #include <utility>
 #include <variant>
 #include <vector>
@@ -100,6 +101,16 @@ bool SchemeCanBeAllowlisted(const std::string& scheme) {
          scheme == content_settings::kChromeUIUntrustedScheme;
 }
 
+PermissionSetting ProcessIncognitoInheritanceBehavior(
+    ContentSettingsType content_type,
+    PermissionSetting setting) {
+  auto* permission_info =
+      PermissionSettingsRegistry::GetInstance()->Get(content_type);
+  DCHECK(permission_info) << content_type;
+
+  return permission_info->delegate().InheritInIncognito(setting);
+}
+
 // Handles inheritance of settings from the regular profile into the incognito
 // profile.
 base::Value ProcessIncognitoInheritanceBehavior(
@@ -117,13 +128,12 @@ base::Value ProcessIncognitoInheritanceBehavior(
   auto* permission_info =
       PermissionSettingsRegistry::GetInstance()->Get(content_type);
   if (permission_info) {
-    auto setting = permission_info->delegate().FromValue(value);
-    if (setting) {
-      auto inherited_setting =
-          permission_info->delegate().InheritInIncognito(setting.value());
-      return permission_info->delegate().ToValue(inherited_setting);
-    }
-    return base::Value();
+    PermissionSetting permission_setting =
+        content_settings::ValueToPermissionSetting(permission_info, value);
+    PermissionSetting inherited =
+        ProcessIncognitoInheritanceBehavior(content_type, permission_setting);
+    return content_settings::PermissionSettingToValue(permission_info,
+                                                      inherited);
   }
 
   return value;
@@ -361,7 +371,8 @@ void HostContentSettingsMap::RegisterProvider(
                           ContentSettingsTypeSet::AllTypes());
 }
 
-ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
+std::optional<PermissionSetting>
+HostContentSettingsMap::GetDefaultPermissionSettingFromProvider(
     ContentSettingsType content_type,
     content_settings::ProviderInterface* provider) const {
   std::unique_ptr<content_settings::RuleIterator> rule_iterator(
@@ -375,14 +386,16 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingFromProvider(
       std::unique_ptr<content_settings::Rule> rule = rule_iterator->Next();
       if (rule->primary_pattern == wildcard &&
           rule->secondary_pattern == wildcard) {
-        return content_settings::ValueToContentSetting(rule->value);
+        auto* info =
+            PermissionSettingsRegistry::GetInstance()->Get(content_type);
+        return ValueToPermissionSetting(info, rule->value);
       }
     }
   }
-  return CONTENT_SETTING_DEFAULT;
+  return std::nullopt;
 }
 
-ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
+PermissionSetting HostContentSettingsMap::GetDefaultPermissionSettingInternal(
     ContentSettingsType content_type,
     ProviderType* provider_type) const {
   DCHECK(provider_type);
@@ -394,34 +407,48 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSettingInternal(
     if (provider_pair.first == ProviderType::kPrefProvider) {
       continue;
     }
-    ContentSetting default_setting = GetDefaultContentSettingFromProvider(
-        content_type, provider_pair.second.get());
-    if (is_off_the_record_) {
-      default_setting = content_settings::ValueToContentSetting(
-          ProcessIncognitoInheritanceBehavior(
-              content_type,
-              content_settings::ContentSettingToValue(default_setting)));
+    std::optional<PermissionSetting> default_setting =
+        GetDefaultPermissionSettingFromProvider(content_type,
+                                                provider_pair.second.get());
+    if (is_off_the_record_ && default_setting) {
+      default_setting =
+          ProcessIncognitoInheritanceBehavior(content_type, *default_setting);
     }
-    if (default_setting != CONTENT_SETTING_DEFAULT) {
+    if (default_setting) {
       *provider_type = provider_pair.first;
-      return default_setting;
+      return *default_setting;
     }
   }
-  *provider_type = content_settings::ProviderType::kNone;
-  return CONTENT_SETTING_DEFAULT;
+  // PROTOCOL_HANDLERS are not a real setting and don't define a default value.
+  if (content_type == ContentSettingsType::PROTOCOL_HANDLERS) {
+    *provider_type = ProviderType::kDefaultProvider;
+    return CONTENT_SETTING_DEFAULT;
+  }
+  // All other settings should define a default value.
+  NOTREACHED() << content_type;
 }
 
 ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
     ContentSettingsType content_type,
     ProviderType* provider_id) const {
   CheckContentTypeRegistration(content_type);
+  ContentSetting content_setting = std::get<ContentSetting>(
+      GetDefaultPermissionSetting(content_type, provider_id));
+  return content_setting;
+}
+
+PermissionSetting HostContentSettingsMap::GetDefaultPermissionSetting(
+    ContentSettingsType content_type,
+    ProviderType* provider_id) const {
+  CheckPermissionTypeRegistration(content_type);
   ProviderType provider_type = ProviderType::kNone;
-  ContentSetting content_setting =
-      GetDefaultContentSettingInternal(content_type, &provider_type);
-  if (content_setting != CONTENT_SETTING_DEFAULT && provider_id) {
+  auto permission_setting =
+      GetDefaultPermissionSettingInternal(content_type, &provider_type);
+
+  if (provider_id) {
     *provider_id = provider_type;
   }
-  return content_setting;
+  return permission_setting;
 }
 
 ContentSetting HostContentSettingsMap::GetContentSetting(
@@ -1130,22 +1157,22 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
 
       if (permission_setting_info &&
           permission_setting_info->delegate().ShouldCoalesceEphemeralState()) {
-        auto current_setting =
-            permission_setting_info->delegate().FromValue(current_value);
+        auto current_setting = content_settings::ValueToPermissionSetting(
+            permission_setting_info, current_value);
         // Coalesce the first ephemeral value with the first non-ephemeral
         // value.
         if (current_provider_type == ProviderType::kOneTimePermissionProvider) {
-          ephemeral_setting =
-              permission_setting_info->delegate().FromValue(current_value);
+          ephemeral_setting = current_setting;
         } else if (!first_persistent_setting.has_value()) {
           first_persistent_setting = current_setting;
         }
 
         if (ephemeral_setting.has_value() &&
             first_persistent_setting.has_value()) {
-          return permission_setting_info->delegate().ToValue(
+          return content_settings::PermissionSettingToValue(
+              permission_setting_info,
               permission_setting_info->delegate().CoalesceEphemeralState(
-                  first_persistent_setting.value(), ephemeral_setting.value()));
+                  *first_persistent_setting, *ephemeral_setting));
         }
       } else {
         return current_value;
@@ -1159,7 +1186,8 @@ base::Value HostContentSettingsMap::GetWebsiteSettingInternal(
     // a setting for one of the two states.
     auto result = ephemeral_setting.has_value() ? ephemeral_setting
                                                 : first_persistent_setting;
-    return permission_setting_info->delegate().ToValue(result.value());
+    return content_settings::PermissionSettingToValue(permission_setting_info,
+                                                      *result);
   }
 
   if (info) {

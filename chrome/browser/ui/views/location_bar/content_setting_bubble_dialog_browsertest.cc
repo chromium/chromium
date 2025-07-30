@@ -28,6 +28,7 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/blocked_content/popup_blocker_tab_helper.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
+#include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/content_settings/core/common/features.h"
@@ -221,6 +222,21 @@ void ContentSettingBubbleDialogTest::OverrideContentSettingsProvider(
   auto provider = std::make_unique<content_settings::MockProvider>();
   HostContentSettingsMap* map =
       HostContentSettingsMapFactory::GetForProfile(browser()->profile());
+
+  // All settings should have a default value defined.
+  if (GetParam() == content_settings::ProviderType::kDefaultProvider) {
+    for (auto* info :
+         *content_settings::WebsiteSettingsRegistry::GetInstance()) {
+      provider->SetWebsiteSetting(
+          ContentSettingsPattern::Wildcard(),
+          ContentSettingsPattern::Wildcard(), info->type(),
+          info->initial_default_value().Clone(),
+          /*constraints=*/{},
+          content_settings::PartitionKey::GetDefaultForTesting());
+    }
+  }
+
+  // Override specified types.
   for (ContentSettingsType type : types) {
     provider->SetWebsiteSetting(
         ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
