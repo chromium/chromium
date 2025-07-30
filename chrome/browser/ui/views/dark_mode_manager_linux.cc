@@ -75,11 +75,9 @@ void DarkModeManagerLinux::OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(kSettingsNamespace);
     writer.AppendString(kColorSchemeKey);
-    settings_proxy_->CallMethodWithErrorCallback(
+    settings_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DarkModeManagerLinux::OnReadColorSchemeResponse,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&DarkModeManagerLinux::OnReadError,
+        base::BindOnce(&DarkModeManagerLinux::OnReadColorScheme,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -89,11 +87,9 @@ void DarkModeManagerLinux::OnSystemdUnitStarted(dbus_xdg::SystemdUnitStatus) {
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(kSettingsNamespace);
     writer.AppendString(kAccentColorKey);
-    settings_proxy_->CallMethodWithErrorCallback(
+    settings_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&DarkModeManagerLinux::OnReadAccentColorResponse,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&DarkModeManagerLinux::OnReadError,
+        base::BindOnce(&DarkModeManagerLinux::OnReadAccentColor,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 }
@@ -136,7 +132,9 @@ void DarkModeManagerLinux::OnPortalSettingChanged(dbus::Signal* signal) {
   }
 }
 
-void DarkModeManagerLinux::OnReadColorSchemeResponse(dbus::Response* response) {
+void DarkModeManagerLinux::OnReadColorScheme(
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
   if (!response) {
     // Continue using the toolkit setting.
     return;
@@ -164,7 +162,9 @@ void DarkModeManagerLinux::OnReadColorSchemeResponse(dbus::Response* response) {
   SetColorScheme(new_color_scheme == kFreedesktopColorSchemeDark, false);
 }
 
-void DarkModeManagerLinux::OnReadAccentColorResponse(dbus::Response* response) {
+void DarkModeManagerLinux::OnReadAccentColor(
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
   if (!response) {
     // Continue using the toolkit setting.
     return;
@@ -184,10 +184,6 @@ void DarkModeManagerLinux::OnReadAccentColorResponse(dbus::Response* response) {
   }
 
   SetAccentColor(&inner_variant_reader);
-}
-
-void DarkModeManagerLinux::OnReadError(dbus::ErrorResponse* error) {
-  // Ignore errors.  It's expected that the settings portal may not exist.
 }
 
 void DarkModeManagerLinux::SetColorScheme(bool prefer_dark_theme,

@@ -81,9 +81,10 @@ class DarkModeManagerLinux : public NativeThemeObserver {
                          const std::string& signal_name,
                          bool connected);
   void OnPortalSettingChanged(dbus::Signal* signal);
-  void OnReadColorSchemeResponse(dbus::Response* response);
-  void OnReadAccentColorResponse(dbus::Response* response);
-  void OnReadError(dbus::ErrorResponse* error);
+  void OnReadColorScheme(dbus::Response* response,
+                         dbus::ErrorResponse* error_response);
+  void OnReadAccentColor(dbus::Response* response,
+                         dbus::ErrorResponse* error_response);
 
   // Sets `prefer_dark_theme_` and propagates to the web theme.
   void SetColorScheme(bool prefer_dark_theme, bool from_toolkit_theme);
