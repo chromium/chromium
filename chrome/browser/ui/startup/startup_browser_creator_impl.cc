@@ -440,7 +440,8 @@ void StartupBrowserCreatorImpl::DetermineURLsAndLaunch(
   AddInfoBarsIfNecessary(browser, profile_, *command_line_, is_first_run_,
                          /*is_web_app=*/false);
 
-  tab_groups::MaybeShowSharedTabGroupVersionUpgradeModal(browser);
+  tab_groups::MaybeShowSharedTabGroupVersionOutOfDateModal(browser);
+  tab_groups::MaybeShowSharedTabGroupVersionUpToDateToast(browser);
 
   if (base::FeatureList::IsEnabled(features::kNonMilestoneUpdateToast)) {
     std::string current_version_string =

@@ -20,7 +20,7 @@ source_set("commerce") {
     "//base",
     "//chrome/browser/commerce",
     "//chrome/browser/ui/page_action:icon_type",
-    "//chrome/browser/ui/tabs",
+    "//chrome/browser/ui/tabs:features",
     "//chrome/browser/ui/tabs:tab_strip_model_observer",
     "//chrome/browser/ui/views/page_action",
     "//chrome/browser/ui/webui/commerce",

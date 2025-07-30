@@ -52,6 +52,15 @@ source_set("tab_list_interface") {
 }
 
 if (!is_android) {
+  source_set("features") {
+    sources = [
+      "features.cc",
+      "features.h",
+    ]
+    public_deps = [ "//base" ]
+    deps = [ "//chrome/browser/ui:ui_features" ]
+  }
+
   source_set("tab_menu") {
     sources = [
       "tab_menu_model.h",
@@ -161,6 +170,8 @@ if (!is_android) {
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/color:color_headers",
       "//chrome/browser/ui/tabs:tab_strip",
+      "//chrome/browser/ui/toasts",
+      "//chrome/browser/ui/toasts/api:toasts",
 
       # TODO(370883612): depends on //chrome/browser/ui/tabs instead.
       "//components/saved_tab_groups/internal:tab_group_sync_bridge",
@@ -342,6 +353,7 @@ if (!is_android) {
     }
 
     public_deps = [
+      ":features",
       ":tab_enums",
       ":tab_group",
       ":tab_strip_model_observer",
@@ -375,7 +387,6 @@ if (!is_android) {
 
     sources = [
       "contents_observing_tab_feature.cc",
-      "features.cc",
       "hover_tab_selector.cc",
       "pinned_tab_codec.cc",
       "pinned_tab_service.cc",

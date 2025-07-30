@@ -9,9 +9,13 @@ class Browser;
 
 namespace tab_groups {
 
-// Checks if the shared tab group version upgrade modal should be shown and
-// displays it if necessary.
-void MaybeShowSharedTabGroupVersionUpgradeModal(Browser* browser);
+// Displays a modal dialog prompting the user to update Chrome when their client
+// is too old to open a shared tab group.
+void MaybeShowSharedTabGroupVersionOutOfDateModal(Browser* browser);
+
+// Displays a toast notification after a successful Chrome update, indicating
+// that the user can now see and use shared tab groups.
+void MaybeShowSharedTabGroupVersionUpToDateToast(Browser* browser);
 
 }  // namespace tab_groups
 

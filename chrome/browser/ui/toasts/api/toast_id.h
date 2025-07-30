@@ -38,7 +38,8 @@ enum class ToastId {
   kClosePinnedTab = 16,
   kGeminiWorkingOnTask = 17,
   kDiceUserMigrated = 18,
-  kMaxValue = kDiceUserMigrated
+  kTabGroupSharingVersionUpToDate = 19,
+  kMaxValue = kTabGroupSharingVersionUpToDate
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/toasts/enums.xml:ToastId)
 

@@ -251,6 +251,16 @@ void ToastService::RegisterToasts(
                                     IDS_DATA_SHARING_TOAST_BLOCK_LEAVE)
             .AddGlobalScoped()
             .Build());
+
+    // The version has been updated and shared tab groups is enabled again.
+    toast_registry_->RegisterToast(
+        ToastId::kTabGroupSharingVersionUpToDate,
+        ToastSpecification::Builder(
+            kTabGroupSharingIcon,
+            IDS_COLLABORATION_SHARED_TAB_GROUPS_AVAILABLE_AGAIN_IPH_MESSAGE)
+            .AddCloseButton()
+            .AddGlobalScoped()
+            .Build());
   }
 
   if (toast_features::IsEnabled(toast_features::kPinnedTabToastOnClose)) {

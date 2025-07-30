@@ -5,7 +5,6 @@
 #include "chrome/browser/ui/tabs/features.h"
 
 #include "base/feature_list.h"
-#include "chrome/browser/buildflags.h"
 #include "chrome/browser/ui/ui_features.h"
 
 namespace tabs {
