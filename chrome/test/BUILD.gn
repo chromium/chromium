@@ -6936,6 +6936,7 @@ test("unit_tests") {
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/profiles:unit_tests",
     "//chrome/browser/ui/safety_hub:test_support",
+    "//chrome/browser/ui/save_to_drive:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
     "//chrome/browser/ui/serial:unit_tests",
     "//chrome/browser/ui/sync:unit_tests",

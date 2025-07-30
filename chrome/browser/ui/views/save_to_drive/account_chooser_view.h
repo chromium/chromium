@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SAVE_TO_DRIVE_ACCOUNT_CHOOSER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SAVE_TO_DRIVE_ACCOUNT_CHOOSER_VIEW_H_
 
+#include "chrome/browser/ui/save_to_drive/account_chooser_controller_delegate.h"
+#include "chrome/browser/ui/save_to_drive/account_chooser_view_delegate.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/label.h"
@@ -14,16 +16,20 @@
 #include "ui/views/view.h"
 
 namespace save_to_drive {
+
 class AccountChooserView : public views::FlexLayoutView {
   METADATA_HEADER(AccountChooserView, views::FlexLayoutView)
 
  public:
-  explicit AccountChooserView(const std::vector<AccountInfo>& accounts,
-                              std::optional<CoreAccountId> primary_account_id);
+  explicit AccountChooserView(
+      AccountChooserControllerDelegate* account_chooser_controller_delegate,
+      AccountChooserViewDelegate* parent_dialog,
+      const std::vector<AccountInfo>& accounts,
+      std::optional<CoreAccountId> primary_account_id);
   ~AccountChooserView() override;
-  void UpdateHeaderView(const std::vector<AccountInfo>& accounts);
-  void UpdateBodyView(const std::vector<AccountInfo>& accounts,
-                      std::optional<CoreAccountId> primary_account_id);
+  // Updates the view with the new accounts and primary account id.
+  void UpdateView(const std::vector<AccountInfo>& accounts,
+                  std::optional<CoreAccountId> primary_account_id);
 
  private:
   // Creates the view containing the account rows based on the number of
@@ -58,6 +64,16 @@ class AccountChooserView : public views::FlexLayoutView {
   bool IsMultiAccount(const std::vector<AccountInfo>& accounts);
   bool IsSingleAccount(const std::vector<AccountInfo>& accounts);
   void SetLabelProperties(views::Label* label);
+
+  // Updates the body view with the new accounts and primary account id.
+  void UpdateBodyView(const std::vector<AccountInfo>& accounts,
+                      std::optional<CoreAccountId> primary_account_id);
+  // Updates the header view with the new accounts.
+  void UpdateHeaderView(const std::vector<AccountInfo>& accounts);
+
+  raw_ptr<AccountChooserControllerDelegate>
+      account_chooser_controller_delegate_ = nullptr;
+  raw_ptr<AccountChooserViewDelegate> parent_dialog_ = nullptr;
 
   // View containing the logo of the identity provider and the title.
   raw_ptr<views::View> header_view_ = nullptr;

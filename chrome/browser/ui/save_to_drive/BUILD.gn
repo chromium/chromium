@@ -1,0 +1,27 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chrome_build.gni")
+
+source_set("save_to_drive") {
+  sources = [
+    "account_chooser_controller_delegate.h",
+    "account_chooser_view_delegate.h",
+  ]
+  public_deps = [ "//components/signin/public/identity_manager" ]
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "mock_account_chooser_controller_delegate.cc",
+    "mock_account_chooser_controller_delegate.h",
+    "mock_account_chooser_view_delegate.cc",
+    "mock_account_chooser_view_delegate.h",
+  ]
+  deps = [
+    ":save_to_drive",
+    "//testing/gmock",
+  ]
+}

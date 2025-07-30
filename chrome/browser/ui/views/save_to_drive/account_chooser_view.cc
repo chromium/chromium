@@ -15,6 +15,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/md_text_button.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
@@ -23,11 +24,16 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/widget/widget.h"
 
 namespace save_to_drive {
 AccountChooserView::AccountChooserView(
+    AccountChooserControllerDelegate* account_chooser_controller_delegate,
+    AccountChooserViewDelegate* parent_dialog,
     const std::vector<AccountInfo>& accounts,
-    std::optional<CoreAccountId> primary_account_id) {
+    std::optional<CoreAccountId> primary_account_id)
+    : account_chooser_controller_delegate_(account_chooser_controller_delegate),
+      parent_dialog_(parent_dialog) {
   SetOrientation(views::LayoutOrientation::kVertical);
   header_view_ = AddChildView(CreateHeaderView(accounts));
   body_view_ = AddChildView(CreateBodyView(accounts, primary_account_id));
@@ -35,29 +41,27 @@ AccountChooserView::AccountChooserView(
 }
 AccountChooserView::~AccountChooserView() = default;
 
-void AccountChooserView::UpdateHeaderView(
-    const std::vector<AccountInfo>& accounts) {
-  std::optional<size_t> index = GetIndexOf(header_view_);
-  CHECK(index.has_value());
-  RemoveChildViewT(header_view_.ExtractAsDangling());
-  header_view_ = AddChildViewAt(CreateHeaderView(accounts), index.value());
-}
-
-void AccountChooserView::UpdateBodyView(
+void AccountChooserView::UpdateView(
     const std::vector<AccountInfo>& accounts,
     std::optional<CoreAccountId> primary_account_id) {
-  std::optional<size_t> index = GetIndexOf(body_view_);
-  CHECK(index.has_value());
-  RemoveChildViewT(body_view_.ExtractAsDangling());
-  body_view_ = AddChildViewAt(CreateBodyView(accounts, primary_account_id),
-                              index.value());
+  UpdateHeaderView(accounts);
+  UpdateBodyView(accounts, primary_account_id);
 }
 
 std::unique_ptr<views::View> AccountChooserView::CreateBodyMultiAccount(
     const std::vector<AccountInfo>& accounts,
     std::optional<CoreAccountId> primary_account_id) {
-  return std::make_unique<AccountChooserRadioGroupView>(accounts,
-                                                        primary_account_id);
+  auto scroll_view = std::make_unique<views::ScrollView>();
+  scroll_view->SetHorizontalScrollBarMode(
+      views::ScrollView::ScrollBarMode::kDisabled);
+  views::View* const content =
+      scroll_view->SetContents(std::make_unique<AccountChooserRadioGroupView>(
+          accounts, primary_account_id));
+
+  int per_account_size = content->GetPreferredSize().height() / accounts.size();
+  scroll_view->ClipHeightTo(
+      0, static_cast<int>(per_account_size * kMaxAccountsToShow));
+  return scroll_view;
 }
 
 std::unique_ptr<views::View> AccountChooserView::CreateBodySingleAccount(
@@ -90,6 +94,7 @@ std::unique_ptr<views::View> AccountChooserView::CreateBodyView(
       << "Account chooser view should "
          "only be used if there are one or more accounts.";
   if (IsSingleAccount(accounts)) {
+    parent_dialog_->OnAccountSelected(accounts.front());
     return CreateBodySingleAccount(accounts.front());
   } else {
     return CreateBodyMultiAccount(accounts, primary_account_id);
@@ -136,7 +141,9 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
   // Add the "Use a different account" button.
   auto add_account_button_container = std::make_unique<views::FlexLayoutView>();
   auto use_other_account_button = std::make_unique<views::MdTextButton>(
-      HoverButton::PressedCallback(),
+      base::BindRepeating(
+          &AccountChooserControllerDelegate::ShowAddAccountDialog,
+          base::Unretained(account_chooser_controller_delegate_)),
       l10n_util::GetStringUTF16(IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT));
   use_other_account_button->SetStyle(ui::ButtonStyle::kDefault);
   use_other_account_button->SetAppearDisabledInInactiveWidget(true);
@@ -151,14 +158,22 @@ std::unique_ptr<views::View> AccountChooserView::CreateFooterView() {
 
   // Add the "Cancel" button.
   auto cancel_button = std::make_unique<views::MdTextButton>(
-      HoverButton::PressedCallback(), l10n_util::GetStringUTF16(IDS_CANCEL));
+      base::BindRepeating(
+          &AccountChooserViewDelegate::OnUserClosedDialog,
+          base::Unretained(parent_dialog_),
+          static_cast<int32_t>(
+              views::Widget::ClosedReason::kCancelButtonClicked)),
+      l10n_util::GetStringUTF16(IDS_CANCEL));
   cancel_button->SetStyle(ui::ButtonStyle::kTonal);
   cancel_button->SetAppearDisabledInInactiveWidget(true);
   footer->AddChildView(std::move(cancel_button));
 
   // Add the "Save" button.
   auto save_button = std::make_unique<views::MdTextButton>(
-      HoverButton::PressedCallback(), l10n_util::GetStringUTF16(IDS_SAVE));
+      // Save button eventually calls a OnceCallback
+      base::BindOnce(&AccountChooserViewDelegate::OnSaveButtonClicked,
+                     base::Unretained(parent_dialog_)),
+      l10n_util::GetStringUTF16(IDS_SAVE));
   save_button->SetStyle(ui::ButtonStyle::kProminent);
   save_button->SetAppearDisabledInInactiveWidget(true);
   footer->AddChildView(std::move(save_button));
@@ -267,6 +282,24 @@ void AccountChooserView::SetLabelProperties(views::Label* label) {
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
                                views::MinimumFlexSizeRule::kScaleToZero,
                                views::MaximumFlexSizeRule::kUnbounded));
+}
+
+void AccountChooserView::UpdateBodyView(
+    const std::vector<AccountInfo>& accounts,
+    std::optional<CoreAccountId> primary_account_id) {
+  std::optional<size_t> index = GetIndexOf(body_view_);
+  CHECK(index.has_value());
+  RemoveChildViewT(body_view_.ExtractAsDangling());
+  body_view_ = AddChildViewAt(CreateBodyView(accounts, primary_account_id),
+                              index.value());
+}
+
+void AccountChooserView::UpdateHeaderView(
+    const std::vector<AccountInfo>& accounts) {
+  std::optional<size_t> index = GetIndexOf(header_view_);
+  CHECK(index.has_value());
+  RemoveChildViewT(header_view_.ExtractAsDangling());
+  header_view_ = AddChildViewAt(CreateHeaderView(accounts), index.value());
 }
 
 BEGIN_METADATA(AccountChooserView)
