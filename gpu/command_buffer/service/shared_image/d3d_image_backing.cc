@@ -429,6 +429,31 @@ D3DImageBacking::CreateGLTexture(
 }
 
 // static
+std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffers(
+    const Mailbox& mailbox,
+    viz::SharedImageFormat format,
+    const gfx::Size& size,
+    const gfx::ColorSpace& color_space,
+    GrSurfaceOrigin surface_origin,
+    SkAlphaType alpha_type,
+    gpu::SharedImageUsageSet usage,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture,
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture,
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain,
+    const GLFormatCaps& gl_format_caps) {
+  DCHECK(format.is_single_plane());
+  auto backing = base::WrapUnique(new D3DImageBacking(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "SwapChainBuffer", std::move(back_buffer_texture),
+      /*dxgi_shared_handle_state=*/nullptr, gl_format_caps, GL_TEXTURE_2D,
+      /*array_slice=*/0u));
+  backing->swap_chain_ = std::move(swap_chain);
+  backing->swap_chain_front_buffer_texture_ = std::move(front_buffer_texture);
+  backing->is_back_buffer_ = true;
+  return backing;
+}
+
+// static
 std::unique_ptr<D3DImageBacking> D3DImageBacking::CreateFromSwapChainBuffer(
     const Mailbox& mailbox,
     viz::SharedImageFormat format,
@@ -1616,6 +1641,16 @@ void D3DImageBacking::EndAccessDawnBuffer(const wgpu::Device& device,
 }
 
 bool D3DImageBacking::ValidateBeginAccess(bool write_access) const {
+  if (usage().Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    // If this backing is being used for concurrent read/write, the only
+    // access pattern that's not allowed is concurrent writes.
+    if (in_write_access_ && write_access) {
+      LOG(ERROR) << "Already being accessed for write";
+      return false;
+    }
+    return true;
+  }
+
   if (in_write_access_) {
     LOG(ERROR) << "Already being accessed for write";
     return false;
@@ -1657,6 +1692,24 @@ void D3DImageBacking::EndAccessCommon(
     DCHECK(read_fences_.empty());
     in_write_access_ = false;
     write_fences_ = signaled_fences;
+
+    // If this backing is holding both buffers of a swapchain (i.e., being used
+    // for concurrent read/write), ensure that the contents of the write are
+    // presented as soon as possible by calling Present() on the swapchain. Note
+    // that it is necessary to do this here rather than in EndAccessD3D11() to
+    // ensure that this executes if Graphite is being used.
+    if (swap_chain_front_buffer_texture_) {
+      PresentSwapChain();
+
+      // Copy from front buffer to back buffer to ensure that contents are
+      // preserved for subsequent reads from the back buffer.
+      // TODO(crbug.com/415968760): Determine whether the D3D11 Present()
+      // implementation takes care of this for us and remove this code if so.
+      Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
+      texture_d3d11_device_->GetImmediateContext(&device_context);
+      device_context->CopyResource(d3d11_texture_.Get(),
+                                   swap_chain_front_buffer_texture_.Get());
+    }
   } else {
     num_readers_--;
     for (const auto& signaled_fence : signaled_fences) {
@@ -1695,6 +1748,8 @@ bool D3DImageBacking::PresentSwapChain() {
 
   // we're rebinding to ensure that underlying D3D11 resource views are
   // recreated in ANGLE.
+  // TODO(crbug.com/40074896): Determine whether we need to do something similar
+  // for Dawn when using Graphite.
   if (gl_texture_holders_[0]) {
     gl_texture_holders_[0]->set_needs_rebind(true);
   }

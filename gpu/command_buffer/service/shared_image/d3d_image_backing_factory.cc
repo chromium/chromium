@@ -174,7 +174,7 @@ constexpr SharedImageUsageSet kSupportedUsage =
     SHARED_IMAGE_USAGE_RASTER_OVER_GLES2_ONLY |
     SHARED_IMAGE_USAGE_OOP_RASTERIZATION | SHARED_IMAGE_USAGE_SCANOUT |
     SHARED_IMAGE_USAGE_WEBGPU_READ | SHARED_IMAGE_USAGE_WEBGPU_WRITE |
-    SHARED_IMAGE_USAGE_VIDEO_DECODE |
+    SHARED_IMAGE_USAGE_VIDEO_DECODE | SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE |
     SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE |
     SHARED_IMAGE_USAGE_HIGH_PERFORMANCE_GPU | SHARED_IMAGE_USAGE_CPU_UPLOAD |
     SHARED_IMAGE_USAGE_WEBGPU_STORAGE_TEXTURE |
@@ -443,6 +443,27 @@ std::unique_ptr<SharedImageBacking> D3DImageBackingFactory::CreateSharedImage(
     SharedImageUsageSet usage,
     std::string debug_label,
     bool is_thread_safe) {
+  if (usage.Has(SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE)) {
+    Microsoft::WRL::ComPtr<IDXGISwapChain1> swap_chain;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> back_buffer_texture;
+    Microsoft::WRL::ComPtr<ID3D11Texture2D> front_buffer_texture;
+    if (!CreateSwapChainInternal(swap_chain, back_buffer_texture,
+                                 front_buffer_texture, format, size)) {
+      return nullptr;
+    }
+
+    auto backing = D3DImageBacking::CreateFromSwapChainBuffers(
+        mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+        std::move(back_buffer_texture), std::move(front_buffer_texture),
+        swap_chain, gl_format_caps_);
+    if (!backing) {
+      return nullptr;
+    }
+    backing->SetCleared();
+
+    return std::move(backing);
+  }
+
   return CreateSharedImage(mailbox, format, size, color_space, surface_origin,
                            alpha_type, usage, std::move(debug_label),
                            is_thread_safe, base::span<const uint8_t>());
@@ -902,13 +923,17 @@ bool D3DImageBackingFactory::IsSupported(SharedImageUsageSet usage,
 
   const bool is_scanout = usage.Has(gpu::SHARED_IMAGE_USAGE_SCANOUT);
   const bool is_video_decode = usage.Has(gpu::SHARED_IMAGE_USAGE_VIDEO_DECODE);
+  const bool is_concurrent_read_write =
+      usage.Has(gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE);
   const bool is_buffer =
       usage.Has(gpu::SHARED_IMAGE_USAGE_WEBGPU_SHARED_BUFFER);
   if (is_scanout) {
-    if (is_video_decode || gmb_type == gfx::DXGI_SHARED_HANDLE) {
+    if (is_video_decode || gmb_type == gfx::DXGI_SHARED_HANDLE ||
+        is_concurrent_read_write) {
       // Video decode and video frames via GMBs are handled specially in
       // |SwapChainPresenter|, so we must assume it's safe to create a scanout
-      // image backing for it.
+      // image backing for it. Concurrent read/write is handled specially by
+      // creating a swapchain backing.
     } else if (gmb_type == gfx::EMPTY_BUFFER) {
       return gl::DirectCompositionTextureSupported() &&
              IsFormatSupportedForDCompTexture(
