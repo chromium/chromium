@@ -8,6 +8,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "media/base/media_switches.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/gpu/h264_dpb.h"
 #include "media/gpu/windows/d3d12_helpers.h"
@@ -118,6 +119,8 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
     // TODO(crbug.com/40275246): support L1T2/L1T3.
     supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
     supported_profile.is_software_codec = false;
+    supported_profile.supports_gpu_shared_images =
+        base::FeatureList::IsEnabled(kD3D12SharedImageEncode);
 
     std::vector<std::pair<VideoCodecProfile, std::vector<VideoPixelFormat>>>
         profiles;

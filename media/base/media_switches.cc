@@ -1770,6 +1770,10 @@ BASE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64,
 #endif
 
 #if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kD3D12SharedImageEncode,
+             "D3D12SharedImageEncode",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 BASE_FEATURE(kMediaFoundationD3DVideoProcessing,
              "MediaFoundationD3DVideoProcessing",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -533,6 +533,9 @@ MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationAcceleratedEncodeOnArm64);
 #endif
 
 #if BUILDFLAG(IS_WIN)
+// Enables D3D12 video encode accelerator taking shared image as input.
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kD3D12SharedImageEncode);
+
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationD3DVideoProcessing);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kMediaFoundationSharedImageEncode);
 #endif
