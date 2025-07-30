@@ -73,5 +73,5 @@ Chrome Headless Mode supports headless screen configuration using `--screen-info
 ./chrome --headless --screen-info={1600x1200}{1200x1600}
 ```
 
-Please refer to [components/headless/screen_info/README.md](components/headless/screen_info/README.md) document for more information about `--screen-info` command line switch.
+Please refer to [components/headless/screen_info/README.md](/components/headless/screen_info/README.md) document for more information about `--screen-info` command line switch.
 
