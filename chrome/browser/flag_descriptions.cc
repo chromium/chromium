@@ -1010,6 +1010,11 @@ const char kBlockCrossPartitionBlobUrlFetchingName[] =
 const char kBlockCrossPartitionBlobUrlFetchingDescription[] =
     "Blocks fetching of cross-partitioned Blob URL.";
 
+const char kBookmarkTabGroupConversionName[] =
+    "Bookmark and tab group conversion";
+const char kBookmarkTabGroupConversionDescription[] =
+    "Enable conversion between bookmark and tab group";
+
 const char kBorealisBigGlName[] = "Borealis Big GL";
 const char kBorealisBigGlDescription[] = "Enable Big GL when running Borealis.";
 

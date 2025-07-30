@@ -607,6 +607,9 @@ extern const char kBindCookiesToSchemeDescription[];
 extern const char kBlockCrossPartitionBlobUrlFetchingName[];
 extern const char kBlockCrossPartitionBlobUrlFetchingDescription[];
 
+extern const char kBookmarkTabGroupConversionName[];
+extern const char kBookmarkTabGroupConversionDescription[];
+
 extern const char kBorealisBigGlName[];
 extern const char kBorealisBigGlDescription[];
 

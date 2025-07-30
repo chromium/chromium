@@ -611,4 +611,12 @@ BASE_FEATURE(kNonMilestoneUpdateToast,
              "NonMilestoneUpdateToast",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kBookmarkTabGroupConversion,
+             "BookmarkTabGroupConversion",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsBookmarkTabGroupConversionEnabled() {
+  return base::FeatureList::IsEnabled(kBookmarkTabGroupConversion);
+}
+
 }  // namespace features

@@ -1189,6 +1189,11 @@
     "expiry_milestone": 145
   },
   {
+    "name": "bookmark-tab-group-conversion",
+    "owners": [ "yuhengh@google.com", "top-chrome-desktop-ui@google.com" ],
+    "expiry_milestone": 145
+  },
+  {
     "name": "bookmarks-and-reading-list-behind-opt-in",
     "owners": [ "wylieb@google.com", "bsazonov@chromium.org" ],
     "expiry_milestone": 126

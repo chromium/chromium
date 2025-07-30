@@ -367,6 +367,11 @@ bool HasTabSearchToolbarButton();
 // Controls whether to show a toast for Chrome non milestone update.
 BASE_DECLARE_FEATURE(kNonMilestoneUpdateToast);
 
+// Controls whether the updated bookmark and tab group conversion is enabled.
+BASE_DECLARE_FEATURE(kBookmarkTabGroupConversion);
+
+bool IsBookmarkTabGroupConversionEnabled();
+
 }  // namespace features
 
 #endif  // CHROME_BROWSER_UI_UI_FEATURES_H_

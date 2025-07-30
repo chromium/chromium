@@ -17348,6 +17348,7 @@ from previous Chrome versions.
   <int value="1201008500"
       label="EnableAmbientAuthenticationInIncognito:enabled"/>
   <int value="1201619786" label="ShoppingIconColorVariant:disabled"/>
+  <int value="1202058349" label="BookmarkTabGroupConversion:disabled"/>
   <int value="1203002682"
       label="CmdDecoderAlwaysGetSizeFromSourceTexture:disabled"/>
   <int value="1203084856"
@@ -17699,6 +17700,7 @@ from previous Chrome versions.
   <int value="1314067176" label="FederatedService:disabled"/>
   <int value="1314407143"
       label="SafeBrowsingSyncCheckerCheckAllowlist:enabled"/>
+  <int value="1314617754" label="BookmarkTabGroupConversion:enabled"/>
   <int value="1314681756" label="NoStatePrefetch:disabled"/>
   <int value="1314797690"
       label="CCTRealTimeEngagementSignalsAlternativeImpl:disabled"/>

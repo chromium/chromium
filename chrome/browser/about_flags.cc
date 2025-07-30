@@ -13060,6 +13060,13 @@ const FeatureEntry kFeatureEntries[] = {
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
+    {"bookmark-tab-group-conversion",
+     flag_descriptions::kBookmarkTabGroupConversionName,
+     flag_descriptions::kBookmarkTabGroupConversionDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(features::kBookmarkTabGroupConversion)},
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+#if !BUILDFLAG(IS_ANDROID)
     {"enable-lens-overlay-straight-to-srp",
      flag_descriptions::kLensOverlayStraightToSrpName,
      flag_descriptions::kLensOverlayStraightToSrpDescription, kOsDesktop,
