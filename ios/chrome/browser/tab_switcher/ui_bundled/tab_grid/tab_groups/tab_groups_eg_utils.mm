@@ -91,6 +91,8 @@ void CreateTabGroupAtIndex(int index, NSString* group_name, bool first_group) {
   SetTabGroupCreationName(group_name);
 
   // Validate the creation.
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:CreateTabGroupCreateButton()];
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey

@@ -39,6 +39,7 @@ using chrome_test_util::CloseGroupButton;
 using chrome_test_util::CloseTabGroupButton;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabel;
 using chrome_test_util::ContextMenuItemWithAccessibilityLabelId;
+using chrome_test_util::CreateTabGroupAtIndex;
 using chrome_test_util::CreateTabGroupCancelButton;
 using chrome_test_util::CreateTabGroupCreateButton;
 using chrome_test_util::CreateTabGroupTextField;
@@ -334,15 +335,7 @@ void TapTabGridEditButton() {
 - (void)testCompleteTabGroupCreation {
   [ChromeEarlGreyUI openTabGrid];
 
-  // Open the creation view.
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(kGroup1Name);
-
-  // Valid the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+  CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Open the group.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
@@ -1083,12 +1076,7 @@ void TapTabGridEditButton() {
 
   // Create a group with title `1group`.
   [ChromeEarlGreyUI openTabGrid];
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(kGroup1Name);
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+  CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Enter the selection mode.
   TapTabGridEditButton();
@@ -1111,6 +1099,8 @@ void TapTabGridEditButton() {
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
   SetTabGroupCreationName(kGroup2Name);
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:CreateTabGroupCreateButton()];
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -1250,12 +1240,7 @@ void TapTabGridEditButton() {
 
   // Create a group and open it.
   [ChromeEarlGreyUI openTabGrid];
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(kGroup1Name);
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+  CreateTabGroupAtIndex(0, kGroup1Name);
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
       performAction:grey_tap()];
 
@@ -1285,12 +1270,7 @@ void TapTabGridEditButton() {
 
   // Create a first group.
   [ChromeEarlGreyUI openTabGrid];
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-  SetTabGroupCreationName(kGroup1Name);
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+  CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Create a second group.
   [ChromeEarlGrey openNewTab];
@@ -1305,6 +1285,8 @@ void TapTabGridEditButton() {
       performAction:grey_tap()];
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupCreationView()];
   SetTabGroupCreationName(kGroup2Name);
+  [ChromeEarlGrey
+      waitForUIElementToAppearWithMatcher:CreateTabGroupCreateButton()];
   [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey
@@ -1789,18 +1771,9 @@ void TapTabGridEditButton() {
   // Create a pinned tab.
   CreatePinnedTabs(1, self.testServer);
 
-  // Open the creation view.
+  // Create a tab group.
   [ChromeEarlGreyUI openTabGrid];
-  OpenTabGroupCreationViewUsingLongPressForCellAtIndex(0);
-
-  // Set the group name.
-  SetTabGroupCreationName(kGroup1Name);
-
-  // Valid the creation.
-  [[EarlGrey selectElementWithMatcher:CreateTabGroupCreateButton()]
-      performAction:grey_tap()];
-  [ChromeEarlGrey
-      waitForUIElementToDisappearWithMatcher:TabGroupCreationView()];
+  CreateTabGroupAtIndex(0, kGroup1Name);
 
   // Ensure that the group is created and the pinned tab is visible.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellWithName(kGroup1Name, 1)]
