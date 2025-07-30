@@ -213,7 +213,9 @@ ScriptPromise<MediaKeys> MediaKeySystemAccess::createMediaKeys(
   WebMediaKeySystemConfiguration configuration = access_->GetConfiguration();
 
   // 1. Let promise be a new promise.
-  MediaKeysConfig config = {keySystem(), UseHardwareSecureCodecs()};
+  // Note that the key system is used in the CDM so we should use the internal
+  // key system (base key system if exists).
+  MediaKeysConfig config = {GetInternalKeySystem(), UseHardwareSecureCodecs()};
   auto* resolver =
       MakeGarbageCollected<ScriptPromiseResolver<MediaKeys>>(script_state);
   NewCdmResultPromise* helper = MakeGarbageCollected<NewCdmResultPromise>(
@@ -231,7 +233,7 @@ ScriptPromise<MediaKeys> MediaKeySystemAccess::createMediaKeys(
       helper->Result(),
       execution_context->GetTaskRunner(TaskType::kInternalMedia));
 
-  ReportMetrics(execution_context, keySystem());
+  ReportMetrics(execution_context, GetInternalKeySystem());
 
   // 3. Return promise.
   return promise;

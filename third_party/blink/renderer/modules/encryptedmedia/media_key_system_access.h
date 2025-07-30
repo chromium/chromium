@@ -23,12 +23,20 @@ class MediaKeySystemAccess final : public ScriptWrappable {
       std::unique_ptr<WebContentDecryptionModuleAccess>);
   ~MediaKeySystemAccess() override;
 
-  String keySystem() const { return access_->GetKeySystem(); }
+  // This is only used for the JavaScript API.
+  String keySystem() const { return access_->GetRequestedKeySystem(); }
   MediaKeySystemConfiguration* getConfiguration() const;
   ScriptPromise<MediaKeys> createMediaKeys(ScriptState*);
 
   bool UseHardwareSecureCodecs() const {
     return access_->UseHardwareSecureCodecs();
+  }
+
+  // Used internally and returns the internal key system (base key system if it
+  // exists). Note that this is different from `keySystem()` which returns the
+  // key system that was requested by JS.
+  String GetInternalKeySystem() const {
+    return access_->GetInternalKeySystem();
   }
 
  private:

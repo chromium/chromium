@@ -46,7 +46,8 @@ class PLATFORM_EXPORT WebContentDecryptionModuleAccessImpl
   ~WebContentDecryptionModuleAccessImpl() override;
 
   // WebContentDecryptionModuleAccess interface.
-  WebString GetKeySystem() override;
+  WebString GetRequestedKeySystem() override;
+  WebString GetInternalKeySystem() override;
   WebMediaKeySystemConfiguration GetConfiguration() override;
   void CreateContentDecryptionModule(
       WebContentDecryptionModuleResult result,

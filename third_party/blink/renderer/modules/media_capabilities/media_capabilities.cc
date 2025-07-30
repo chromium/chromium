@@ -1421,7 +1421,10 @@ void MediaCapabilities::GetPerfInfo(
   bool use_hw_secure_codecs = false;
 
   if (access) {
-    key_system = access->keySystem();
+    // Use the internal/base key system to keep the perf database simple, e.g.
+    // different key system names may share the same internal/base key system
+    // and the same CDM implementation, and hence the same performance.
+    key_system = access->GetInternalKeySystem();
     use_hw_secure_codecs = access->UseHardwareSecureCodecs();
   }
 
