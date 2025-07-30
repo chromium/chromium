@@ -31,21 +31,19 @@ class TokenizedOutput {
 // If `exclude_nonalphaspace_tokens` is enabled, the tokenization ignores
 // non-alphanumeric tokens, and replaces them with a replacement token (" ").
 //
+// If `lower_case_input` is enabled, the tokenization replaces alphanumeric
+// tokens with their lower case equivalent if available.
+//
 // The method returns the output in the `TokenizedOutput` struct, which stores
 // both, the processed input string, and the indices and sizes of each token
 // within that string.
-TokenizedOutput Tokenize(const char* input_str,
-                         size_t len,
+TokenizedOutput Tokenize(std::string_view input_str,
                          size_t max_tokens,
-                         bool exclude_nonalphaspace_tokens);
+                         bool exclude_nonalphaspace_tokens,
+                         bool lower_case_input);
 
-// Converts the given unicode string (`input_str`) with the specified length
-// (`len`) to a lowercase string.
-//
-// The method populates the lowercased string in `output_str`.
-void LowercaseUnicodeStr(const char* input_str,
-                         int len,
-                         std::string* output_str);
+// Converts the given unicode string (`input_str`) to a lowercase string.
+std::string LowercaseUnicodeStr(std::string_view input_str);
 
 }  // namespace language_detection
 

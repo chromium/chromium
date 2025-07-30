@@ -85,16 +85,9 @@ class NGramHashParams {
     }
     // Obtain and tokenize the input.
     StringRef input_ref = GetString(input_t, /*string_index=*/0);
-    if (lower_case_input_) {
-      std::string lower_cased_str;
-      LowercaseUnicodeStr(input_ref.str, input_ref.len, &lower_cased_str);
-      tokenized_output_ =
-          Tokenize(lower_cased_str.c_str(), input_ref.len, max_splits_,
-                   /*exclude_nonalphaspace_tokens=*/true);
-    } else {
-      tokenized_output_ = Tokenize(input_ref.str, input_ref.len, max_splits_,
-                                   /*exclude_nonalphaspace_tokens=*/true);
-    }
+    tokenized_output_ =
+        Tokenize({input_ref.str, input_ref.len}, max_splits_,
+                 /*exclude_nonalphaspace_tokens=*/true, lower_case_input_);
     return kTfLiteOk;
   }
   uint64_t GetSeed() const { return seed_; }
