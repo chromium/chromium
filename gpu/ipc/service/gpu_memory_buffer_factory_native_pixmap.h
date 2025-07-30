@@ -30,7 +30,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
   ~GpuMemoryBufferFactoryNativePixmap() override;
 
   // Overridden from GpuMemoryBufferFactory:
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override;
@@ -39,7 +39,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryNativePixmap
       base::UnsafeSharedMemoryRegion shared_memory) override;
 
  private:
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferFromNativePixmap(
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandleFromNativePixmap(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage,

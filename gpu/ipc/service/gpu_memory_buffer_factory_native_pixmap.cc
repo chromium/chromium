@@ -33,7 +33,7 @@ GpuMemoryBufferFactoryNativePixmap::~GpuMemoryBufferFactoryNativePixmap() =
     default;
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
+GpuMemoryBufferFactoryNativePixmap::CreateNativeGmbHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
@@ -42,7 +42,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBuffer(
           ->GetSurfaceFactoryOzone()
           ->CreateNativePixmap(gpu::kNullSurfaceHandle, GetVulkanDeviceQueue(),
                                size, format, usage, size);
-  return CreateGpuMemoryBufferFromNativePixmap(size, format, usage,
+  return CreateNativeGmbHandleFromNativePixmap(size, format, usage,
                                                std::move(pixmap));
 }
 
@@ -63,7 +63,7 @@ VulkanDeviceQueue* GpuMemoryBufferFactoryNativePixmap::GetVulkanDeviceQueue() {
 }
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryNativePixmap::CreateGpuMemoryBufferFromNativePixmap(
+GpuMemoryBufferFactoryNativePixmap::CreateNativeGmbHandleFromNativePixmap(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage,

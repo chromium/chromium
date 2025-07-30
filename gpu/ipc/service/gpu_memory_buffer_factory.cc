@@ -36,7 +36,7 @@ class GpuMemoryBufferFactoryStub : public GpuMemoryBufferFactory {
   ~GpuMemoryBufferFactoryStub() override = default;
 
   // GpuMemoryBufferFactory:
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
@@ -73,13 +73,6 @@ GpuMemoryBufferFactory::CreateNativeType(
 #else
   return nullptr;
 #endif
-}
-
-gfx::GpuMemoryBufferHandle GpuMemoryBufferFactory::CreateNativeGmbHandle(
-    const gfx::Size& size,
-    gfx::BufferFormat format,
-    gfx::BufferUsage usage) {
-  return CreateGpuMemoryBuffer(size, format, usage);
 }
 
 }  // namespace gpu

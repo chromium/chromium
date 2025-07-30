@@ -91,7 +91,7 @@ GpuMemoryBufferFactoryDXGI::GetOrCreateD3D11Device() {
 }
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(const gfx::Size& size,
+GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandleOnIO(const gfx::Size& size,
                                                       gfx::BufferFormat format,
                                                       gfx::BufferUsage usage) {
   DCHECK(io_runner_);
@@ -107,7 +107,7 @@ GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(const gfx::Size& size,
              GpuMemoryBufferFactoryDXGI* factory, const gfx::Size& size,
              gfx::BufferFormat format, gfx::BufferUsage usage) {
             *out_gmb_handle =
-                factory->CreateGpuMemoryBuffer(size, format, usage);
+                factory->CreateNativeGmbHandle(size, format, usage);
 
             waitable_event->Signal();
           },
@@ -118,16 +118,16 @@ GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBufferOnIO(const gfx::Size& size,
   return result;
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer(
+gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {
   if (io_runner_ && !io_runner_->BelongsToCurrentThread()) {
     // Thread-hop is required!
-    return CreateGpuMemoryBufferOnIO(size, format, usage);
+    return CreateNativeGmbHandleOnIO(size, format, usage);
   }
 
-  TRACE_EVENT0("gpu", "GpuMemoryBufferFactoryDXGI::CreateGpuMemoryBuffer");
+  TRACE_EVENT0("gpu", "GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle");
 
   gfx::GpuMemoryBufferHandle handle;
 

@@ -22,7 +22,7 @@ GpuMemoryBufferFactoryIOSurface::GpuMemoryBufferFactoryIOSurface() = default;
 GpuMemoryBufferFactoryIOSurface::~GpuMemoryBufferFactoryIOSurface() = default;
 
 gfx::GpuMemoryBufferHandle
-GpuMemoryBufferFactoryIOSurface::CreateGpuMemoryBuffer(const gfx::Size& size,
+GpuMemoryBufferFactoryIOSurface::CreateNativeGmbHandle(const gfx::Size& size,
                                                        gfx::BufferFormat format,
                                                        gfx::BufferUsage usage) {
   bool should_clear = true;

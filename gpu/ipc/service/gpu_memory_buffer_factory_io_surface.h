@@ -22,7 +22,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryIOSurface
   ~GpuMemoryBufferFactoryIOSurface() override;
 
   // Overridden from GpuMemoryBufferFactory:
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override;

@@ -36,7 +36,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
       delete;
 
   // Overridden from GpuMemoryBufferFactory:
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBuffer(
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override;
@@ -47,7 +47,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactoryDXGI
  private:
   Microsoft::WRL::ComPtr<ID3D11Device> GetOrCreateD3D11Device();
 
-  gfx::GpuMemoryBufferHandle CreateGpuMemoryBufferOnIO(const gfx::Size& size,
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandleOnIO(const gfx::Size& size,
                                                        gfx::BufferFormat format,
                                                        gfx::BufferUsage usage);
 
