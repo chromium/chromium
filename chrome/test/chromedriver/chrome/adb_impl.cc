@@ -252,6 +252,12 @@ Status AdbImpl::CheckAppInstalled(
     const std::string& device_serial, const std::string& package) {
   std::string response;
   std::string command = "pm path --user cur " + package;
+  ExecuteHostShellCommand(device_serial, "getprop ro.build.version.release",
+                          &response);
+  int android_version = stoi(response);
+  if (android_version <= 10) {
+    command = "pm path " + package;
+  }
   Status status = ExecuteHostShellCommand(device_serial, command, &response);
   if (!status.IsOk())
     return status;
