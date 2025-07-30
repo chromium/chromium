@@ -33,6 +33,8 @@ const CGFloat kBubbleViewTopMargin = 10.0;
 const CGFloat kScrollViewTopMargin = 45.0;
 // Animation duration for the tip bubble.
 const CGFloat kBubbleViewAnimationDuration = 0.3;
+// Margin below the action button.
+const CGFloat kButtonBottomMargin = 45.0;
 }  // namespace
 
 @interface InteractiveLensOverlayPromoViewController () <
@@ -53,6 +55,14 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
   NSLayoutConstraint* _bubbleViewBottomConstraint;
   // Whether the bubble is currently being hidden.
   BOOL _isBubbleHiding;
+  // The primary action button.
+  UIButton* _actionButton;
+  // The button's centered constraint for its initial state.
+  NSLayoutConstraint* _buttonCenteredConstraint;
+  // Whether the action button has been transformed to the primary style.
+  BOOL _buttonTransformed;
+  // The footer view containing the action button.
+  UIView* _footerContainerView;
   // A list of gesture recognizers that were disabled.
   NSMutableArray<UIGestureRecognizer*>* _disabledGestures;
 }
@@ -111,10 +121,10 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
   heightConstraint.active = YES;
 
   // Create and constrain the footer view containing the action button.
-  UIView* footerContainerView = [self footerContainerView];
-  [view addSubview:footerContainerView];
+  _footerContainerView = [self footerContainerView];
+  [view addSubview:_footerContainerView];
   AddSameConstraintsToSides(
-      footerContainerView, view,
+      _footerContainerView, view,
       LayoutSides::kLeading | LayoutSides::kTrailing | LayoutSides::kBottom);
 
   // Add and constrain the Lens view.
@@ -146,7 +156,7 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
         constraintEqualToAnchor:widthLayoutGuide.trailingAnchor
                        constant:-kLensViewHorizontalMargin],
     [lensView.bottomAnchor
-        constraintEqualToAnchor:footerContainerView.topAnchor],
+        constraintEqualToAnchor:_footerContainerView.topAnchor],
     [lensView.topAnchor
         constraintGreaterThanOrEqualToAnchor:_textScrollView.bottomAnchor
                                     constant:kLensViewTopMargin],
@@ -218,9 +228,14 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
 
 #pragma mark - LensOverlayPromoContainerViewControllerDelegate
 
-- (void)lensOverlayPromoContainerViewControllerDidReceiveInteraction:
+- (void)lensOverlayPromoContainerViewControllerDidBeginInteraction:
     (LensOverlayPromoContainerViewController*)viewController {
   [self handleHideBubbleAnimation];
+}
+
+- (void)lensOverlayPromoContainerViewControllerDidEndInteraction:
+    (LensOverlayPromoContainerViewController*)viewController {
+  [self transformButtonToPrimaryAction];
 }
 
 #pragma mark - Private
@@ -360,14 +375,16 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
   UIButton* button = [self buttonView];
   [footerContainerView addSubview:button];
 
+  _buttonCenteredConstraint = [button.centerXAnchor
+      constraintEqualToAnchor:footerContainerView.centerXAnchor];
+
   [NSLayoutConstraint activateConstraints:@[
-    [button.centerXAnchor
-        constraintEqualToAnchor:footerContainerView.centerXAnchor],
+    _buttonCenteredConstraint,
     [button.topAnchor constraintEqualToAnchor:separatorLine.bottomAnchor
                                      constant:kButtonVerticalInsets],
     [button.bottomAnchor
         constraintEqualToAnchor:footerContainerView.bottomAnchor
-                       constant:-kButtonVerticalInsets],
+                       constant:-kButtonBottomMargin],
   ]];
 
   return footerContainerView;
@@ -375,37 +392,60 @@ const CGFloat kBubbleViewAnimationDuration = 0.3;
 
 // Creates and returns the action button.
 - (UIButton*)buttonView {
-  UIButton* button = [UIButton buttonWithType:UIButtonTypeSystem];
-  NSString* buttonTitle = l10n_util::GetNSString(
-      IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_SKIP_BUTTON);
+  _actionButton = [UIButton buttonWithType:UIButtonTypeSystem];
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration plainButtonConfiguration];
-  buttonConfiguration.title = buttonTitle;
   buttonConfiguration.background.backgroundColor = [UIColor clearColor];
   buttonConfiguration.baseForegroundColor = [UIColor colorNamed:kBlueColor];
   buttonConfiguration.contentInsets = NSDirectionalEdgeInsetsMake(
       kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
-  UIFont* font = [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
-  NSDictionary* attributes = @{NSFontAttributeName : font};
-  NSMutableAttributedString* string =
-      [[NSMutableAttributedString alloc] initWithString:buttonTitle];
-  [string addAttributes:attributes range:NSMakeRange(0, string.length)];
-  buttonConfiguration.attributedTitle = string;
-  buttonConfiguration.titleLineBreakMode = NSLineBreakByTruncatingTail;
-  button.configuration = buttonConfiguration;
-  button.translatesAutoresizingMaskIntoConstraints = NO;
-  button.titleLabel.adjustsFontForContentSizeCategory = YES;
-  button.pointerInteractionEnabled = YES;
-  button.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
-  [button addTarget:self
-                action:@selector(buttonTapped)
-      forControlEvents:UIControlEventTouchUpInside];
-  return button;
+  _actionButton.configuration = buttonConfiguration;
+  NSString* buttonTitle = l10n_util::GetNSString(
+      IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_SKIP_BUTTON);
+  SetConfigurationTitle(_actionButton, buttonTitle);
+  SetConfigurationFont(_actionButton,
+                       [UIFont preferredFontForTextStyle:UIFontTextStyleBody]);
+
+  _actionButton.translatesAutoresizingMaskIntoConstraints = NO;
+  _actionButton.titleLabel.adjustsFontForContentSizeCategory = YES;
+  _actionButton.pointerInteractionEnabled = YES;
+  _actionButton.pointerStyleProvider = CreateOpaqueButtonPointerStyleProvider();
+  [_actionButton addTarget:self
+                    action:@selector(buttonTapped)
+          forControlEvents:UIControlEventTouchUpInside];
+  return _actionButton;
 }
 
 // Handles taps on the action button.
 - (void)buttonTapped {
   [self.delegate didTapContinueButton];
+}
+
+// Transforms the action button from its initial plain style to a primary
+// action button style.
+- (void)transformButtonToPrimaryAction {
+  if (_buttonTransformed) {
+    return;
+  }
+  _buttonTransformed = YES;
+
+  // Create a temporary primary action button to copy its configuration.
+  UIButton* primaryButton = PrimaryActionButton(YES);
+  _actionButton.configuration = primaryButton.configuration;
+  NSString* continueButtonTitle = l10n_util::GetNSString(
+      IDS_IOS_INTERACTIVE_LENS_OVERLAY_PROMO_START_BROWSING_BUTTON);
+  SetConfigurationTitle(_actionButton, continueButtonTitle);
+
+  // Update constraints to make the button full-width.
+  _buttonCenteredConstraint.active = NO;
+  UILayoutGuide* widthLayoutGuide =
+      AddPromoStyleWidthLayoutGuide(_footerContainerView);
+  [NSLayoutConstraint activateConstraints:@[
+    [_actionButton.leadingAnchor
+        constraintEqualToAnchor:widthLayoutGuide.leadingAnchor],
+    [_actionButton.trailingAnchor
+        constraintEqualToAnchor:widthLayoutGuide.trailingAnchor],
+  ]];
 }
 
 // Hides the bubble view with a fade-out effect.

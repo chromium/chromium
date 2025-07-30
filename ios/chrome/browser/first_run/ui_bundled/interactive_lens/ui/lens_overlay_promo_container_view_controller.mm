@@ -26,10 +26,10 @@ const CGFloat kLensViewCornerRadius = 45.0;
   // Add gesture recognizers to the Lens view to detect interaction.
   UITapGestureRecognizer* tapGesture = [[UITapGestureRecognizer alloc]
       initWithTarget:self
-              action:@selector(handleLensInteraction)];
+              action:@selector(handleLensInteraction:)];
   UIPanGestureRecognizer* panGesture = [[UIPanGestureRecognizer alloc]
       initWithTarget:self
-              action:@selector(handleLensInteraction)];
+              action:@selector(handleLensInteraction:)];
   panGesture.cancelsTouchesInView = NO;
   tapGesture.delegate = self;
   panGesture.delegate = self;
@@ -48,9 +48,33 @@ const CGFloat kLensViewCornerRadius = 45.0;
 #pragma mark - Private
 
 // Informs the delegate that the user has interacted with the Lens view.
-- (void)handleLensInteraction {
-  [self.delegate
-      lensOverlayPromoContainerViewControllerDidReceiveInteraction:self];
+- (void)handleLensInteraction:(UIGestureRecognizer*)gestureRecognizer {
+  if ([gestureRecognizer isKindOfClass:[UITapGestureRecognizer class]]) {
+    // A tap event starts and ends simultaneously.
+    [self.delegate
+        lensOverlayPromoContainerViewControllerDidBeginInteraction:self];
+    [self.delegate
+        lensOverlayPromoContainerViewControllerDidEndInteraction:self];
+    return;
+  }
+
+  if ([gestureRecognizer isKindOfClass:[UIPanGestureRecognizer class]]) {
+    switch (gestureRecognizer.state) {
+      case UIGestureRecognizerStateBegan:
+        [self.delegate
+            lensOverlayPromoContainerViewControllerDidBeginInteraction:self];
+        break;
+      case UIGestureRecognizerStateEnded:
+      case UIGestureRecognizerStateCancelled:
+      case UIGestureRecognizerStateFailed:
+        [self.delegate
+            lensOverlayPromoContainerViewControllerDidEndInteraction:self];
+        break;
+      case UIGestureRecognizerStatePossible:
+      case UIGestureRecognizerStateChanged:
+        break;
+    }
+  }
 }
 
 @end
