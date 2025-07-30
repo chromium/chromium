@@ -37,7 +37,7 @@ TrustedTypesCheckFor(SpecificTrustedType type,
                      const V8TrustedType* trusted,
                      const ExecutionContext* execution_context,
                      const char* interface_name,
-                     const char* property_name,
+                     const AtomicString& property_name,
                      ExceptionState& exception_state);
 [[nodiscard]] CORE_EXPORT String TrustedTypesCheckForHTML(
     const V8UnionStringLegacyNullToEmptyStringOrTrustedHTML* value,
@@ -78,7 +78,7 @@ TrustedTypesCheckForScriptURL(const V8UnionTrustedScriptURLOrUSVString* value,
                                           String,
                                           const ExecutionContext*,
                                           const char* interface_name,
-                                          const char* property_name,
+                                          const AtomicString& property_name,
                                           ExceptionState&);
 [[nodiscard]] CORE_EXPORT String
 TrustedTypesCheckForHTML(const String&,

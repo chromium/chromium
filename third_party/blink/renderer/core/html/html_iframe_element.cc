@@ -95,7 +95,8 @@ HTMLIFrameElement::~HTMLIFrameElement() = default;
 const AttrNameToTrustedType& HTMLIFrameElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"srcdoc", SpecificTrustedType::kHTML}}));
+                      ({{"srcdoc", std::pair{SpecificTrustedType::kHTML,
+                                             "HTMLIFrameElement"}}}));
   return attribute_map;
 }
 

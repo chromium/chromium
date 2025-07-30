@@ -52,7 +52,8 @@ HTMLEmbedElement::HTMLEmbedElement(Document& document,
 const AttrNameToTrustedType& HTMLEmbedElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kScriptURL}}));
+                      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
+                                          "HTMLEmbedElement"}}}));
   return attribute_map;
 }
 

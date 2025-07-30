@@ -66,7 +66,8 @@ HTMLScriptElement::HTMLScriptElement(Document& document,
 const AttrNameToTrustedType& HTMLScriptElement::GetCheckedAttributeTypes()
     const {
   DEFINE_STATIC_LOCAL(AttrNameToTrustedType, attribute_map,
-                      ({{"src", SpecificTrustedType::kScriptURL}}));
+                      ({{"src", std::pair{SpecificTrustedType::kScriptURL,
+                                          "HTMLScriptElement"}}}));
   return attribute_map;
 }
 
