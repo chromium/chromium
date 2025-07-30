@@ -43,6 +43,7 @@
 #include "chrome/browser/ui/views/autofill/popup/popup_view_views.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/frame/contents_web_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/tabs/glic_button.h"
 #include "chrome/browser/ui/views/tabs/tab_icon.h"
@@ -78,6 +79,7 @@
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/lens/lens_features.h"
 #include "components/password_manager/core/browser/features/password_features.h"
+#include "components/pdf/browser/pdf_document_helper.h"
 #include "components/plus_addresses/features.h"
 #include "components/plus_addresses/grit/plus_addresses_strings.h"
 #include "components/safe_browsing/core/common/safebrowsing_referral_methods.h"
@@ -771,7 +773,30 @@ void MaybeRegisterChromeFeaturePromos(
           .SetBubbleArrow(HelpBubbleArrow::kNone)
           .SetBubbleTitleText(IDS_PDF_SEARCHIFY_IPH_TITLE)
           .SetMetadata(132, "rhalavati@chromium.org",
-                       "Triggered once when user opens a PDF with images.")));
+                       "Triggered once when user opens a PDF which gets OCRed.")
+          .SetAnchorElementFilter(base::BindRepeating(
+              [](const ui::ElementTracker::ElementList& elements)
+                  -> ui::TrackedElement* {
+                if (elements.empty()) {
+                  return nullptr;
+                }
+                // Ensure a searchified PDF is visible before showing the IPH.
+                auto* const browser_view =
+                    views::ElementTrackerViews::GetInstance()
+                        ->GetFirstMatchingViewAs<BrowserView>(
+                            kBrowserViewElementId, elements[0]->context());
+                std::vector<ContentsWebView*> contents_web_views =
+                    browser_view->GetAllVisibleContentsWebViews();
+                for (auto* contents_web_view : contents_web_views) {
+                  auto* pdf_doc_helper =
+                      pdf::PDFDocumentHelper::MaybeGetForWebContents(
+                          contents_web_view->GetWebContents());
+                  if (pdf_doc_helper && pdf_doc_helper->SearchifyStarted()) {
+                    return elements[0];
+                  }
+                }
+                return nullptr;
+              }))));
 
   // kIPHLensOverlayFeature:
   registry.RegisterFeature(std::move(

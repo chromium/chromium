@@ -117,6 +117,10 @@ class PDFDocumentHelper
   // should be made.
   void RegisterForDocumentLoadComplete(base::OnceClosure callback);
 
+#if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
+  // Returns whether document is searchified.
+  bool SearchifyStarted() const { return searchify_started_; }
+#endif
  private:
   friend class content::DocumentUserData<PDFDocumentHelper>;
 

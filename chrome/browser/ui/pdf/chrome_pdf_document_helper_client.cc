@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/common/content_restriction.h"
 #include "components/pdf/browser/pdf_frame_util.h"
+#include "components/tabs/public/tab_interface.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -30,13 +31,24 @@ content::WebContents* GetWebContentsToUse(
              : content::WebContents::FromRenderFrameHost(render_frame_host);
 }
 
-void MaybeShowFeaturePromo(content::WebContents* contents) {
-  BrowserUserEducationInterface* user_education_interface =
+bool MaybeShowFeaturePromo(content::WebContents* contents) {
+  auto* user_education_interface =
       BrowserUserEducationInterface::MaybeGetForWebContentsInTab(contents);
+  if (!user_education_interface) {
+    return false;
+  }
+  user_education_interface->MaybeShowFeaturePromo(
+      user_education::FeaturePromoParams(
+          feature_engagement::kIPHPdfSearchifyFeature));
+  return true;
+}
+
+void MaybeHideFeaturePromo(tabs::TabInterface* tab_interface) {
+  auto* user_education_interface = BrowserUserEducationInterface::From(
+      tab_interface->GetBrowserWindowInterface());
   if (user_education_interface) {
-    user_education_interface->MaybeShowFeaturePromo(
-        user_education::FeaturePromoParams(
-            feature_engagement::kIPHPdfSearchifyFeature));
+    user_education_interface->AbortFeaturePromo(
+        feature_engagement::kIPHPdfSearchifyFeature);
   }
 }
 
@@ -99,7 +111,17 @@ void ChromePDFDocumentHelperClient::OnSearchifyStarted(
     content::RenderFrameHost* render_frame_host) {
   // Show the promo only when ScreenAI component is available and OCR can be
   // done.
-  if (screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
-    MaybeShowFeaturePromo(GetWebContentsToUse(render_frame_host));
+  if (!screen_ai::ScreenAIInstallState::GetInstance()->IsComponentAvailable()) {
+    return;
   }
+  content::WebContents* web_contents = GetWebContentsToUse(render_frame_host);
+  if (!MaybeShowFeaturePromo(web_contents)) {
+    return;
+  }
+  auto* const tab = tabs::TabInterface::MaybeGetFromContents(web_contents);
+  if (!tab) {
+    return;
+  }
+  tab_subscriptions_.push_back(
+      tab->RegisterWillDeactivate(base::BindRepeating(&MaybeHideFeaturePromo)));
 }
