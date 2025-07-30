@@ -4389,6 +4389,8 @@ static_library("ui") {
       "views/save_to_drive/account_chooser_radio_group_view.h",
       "views/save_to_drive/account_chooser_util.cc",
       "views/save_to_drive/account_chooser_util.h",
+      "views/save_to_drive/account_chooser_view.cc",
+      "views/save_to_drive/account_chooser_view.h",
       "views/select_audio_output/select_audio_output_dialog.cc",
       "views/select_audio_output/select_audio_output_dialog.h",
       "views/select_audio_output/select_audio_output_views.cc",

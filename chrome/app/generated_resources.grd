@@ -19157,6 +19157,26 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Save to Drive -->
+    <message name="IDS_ACCOUNT_CHOOSER_SINGLE_ACCOUNT_TITLE" desc="Text to prompt a user to save a file to their account.">
+      Save to your account
+    </message>
+    <message name="IDS_ACCOUNT_CHOOSER_MULTI_ACCOUNT_TITLE" desc="Text to prompt a user to choose an account to save a file to.">
+      Choose your account
+    </message>
+    <message name="IDS_ACCOUNT_CHOOSER_SUBTITLE" desc="Text description for saving files to Drive via Chrome PDF viewer.">
+      Find your file in the <ph name="FEATURE_NAME">$1<ex>Saved from Chrome</ex></ph> folder
+    </message>
+    <message name="IDS_ACCOUNT_CHOOSER_SAVED_FROM_CHROME" desc="Text to describe the feature.">
+      Saved from Chrome
+    </message>
+    <message name="IDS_ACCOUNT_CHOOSER_DRIVE" desc="Google Drive product name.">
+      Drive
+    </message>
+    <message name="IDS_ACCOUNT_CHOOSER_ADD_ACCOUNT" desc="Text for the button to add an account.">
+      Use a different account
+    </message>
+
   </messages>
 </release>
 </grit>
