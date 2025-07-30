@@ -27,6 +27,7 @@
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/version_info/version_info.h"
 #include "services/on_device_model/public/cpp/cpu.h"
@@ -245,6 +246,12 @@ void OnDeviceModelComponentStateManager::OnPerformanceClassAvailable() {
   BeginUpdateRegistration();
 }
 
+void OnDeviceModelComponentStateManager::
+    OnGenAILocalFoundationalModelEnterprisePolicyChanged() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BeginUpdateRegistration();
+}
+
 void OnDeviceModelComponentStateManager::OnStartup() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   model_execution::prefs::PruneOldUsagePrefs(local_state_);
@@ -319,25 +326,21 @@ void OnDeviceModelComponentStateManager::CompleteUpdateRegistration(
     NotifyStateChanged();
   }
 
-  if (component_installer_registered_) {
-    return;
-  }
-
   if (criteria.should_uninstall()) {
     // Don't allow UpdateRegistration to do anything until after
     // UninstallComplete.
     component_installer_registered_ = true;
     delegate_->Uninstall(GetWeakPtr());
-  } else if (criteria.should_install() || criteria.is_already_installing) {
+  } else if (!component_installer_registered_ &&
+             (criteria.should_install() || criteria.is_already_installing)) {
     component_installer_registered_ = true;
     delegate_->RegisterInstaller(GetWeakPtr(), criteria.is_already_installing);
   }
 
   // Log metrics only for first registration attempt.
-  if (!first_registration_attempt) {
-    return;
+  if (first_registration_attempt) {
+    LogInstallCriteria(criteria, "AtRegistration");
   }
-  LogInstallCriteria(criteria, "AtRegistration");
 }
 
 OnDeviceModelComponentStateManager::RegistrationCriteria
@@ -381,6 +384,14 @@ OnDeviceModelComponentStateManager::OnDeviceModelComponentStateManager(
       performance_classifier_(std::move(performance_classifier)),
       delegate_(std::move(delegate)) {
   CHECK(local_state);  // Useful to catch poor test setup.
+  pref_change_registrar_.Init(local_state);
+  pref_change_registrar_.Add(
+      model_execution::prefs::localstate::
+          kGenAILocalFoundationalModelEnterprisePolicySettings,
+      base::BindRepeating(
+          &OnDeviceModelComponentStateManager::
+              OnGenAILocalFoundationalModelEnterprisePolicyChanged,
+          weak_ptr_factory_.GetWeakPtr()));
 }
 
 OnDeviceModelComponentStateManager::~OnDeviceModelComponentStateManager() =

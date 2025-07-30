@@ -40,6 +40,13 @@ namespace {
 using ::testing::UnorderedElementsAre;
 
 using ::on_device_model::mojom::PerformanceClass;
+using model_execution::prefs::GenAILocalFoundationalModelEnterprisePolicySettings;
+using model_execution::prefs::localstate::
+    kGenAILocalFoundationalModelEnterprisePolicySettings;
+using model_execution::prefs::localstate::
+    kLastTimeEligibleForOnDeviceModelDownload;
+using model_execution::prefs::localstate::kLastUsageByFeature;
+using model_execution::prefs::localstate::kOnDevicePerformanceClassVersion;
 
 class StubObserver : public OnDeviceModelComponentStateManager::Observer {
  public:
@@ -135,11 +142,9 @@ TEST_F(OnDeviceModelComponentTest, InstallsWhenEligible) {
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_TRUE(WaitUntilInstallerRegistered());
-  EXPECT_GE(local_state_.GetTime(model_execution::prefs::localstate::
-                                     kLastTimeEligibleForOnDeviceModelDownload),
+  EXPECT_GE(local_state_.GetTime(kLastTimeEligibleForOnDeviceModelDownload),
             time_at_start);
-  EXPECT_LE(local_state_.GetTime(model_execution::prefs::localstate::
-                                     kLastTimeEligibleForOnDeviceModelDownload),
+  EXPECT_LE(local_state_.GetTime(kLastTimeEligibleForOnDeviceModelDownload),
             base::Time::Now());
   histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
@@ -214,20 +219,42 @@ TEST_F(OnDeviceModelComponentTest, DoesNotInstallWhenFeatureNotEnabled) {
 TEST_F(OnDeviceModelComponentTest,
        DoesNotInstallWhenDisabledByEnterprisePolicy) {
   // It should not install when disabled by enterprise policy.
-  base::HistogramTester histogram_tester;
-  local_state_.SetInteger(
-      model_execution::prefs::localstate::
-          kGenAILocalFoundationalModelEnterprisePolicySettings,
-      static_cast<int>(model_execution::prefs::
-                           GenAILocalFoundationalModelEnterprisePolicySettings::
-                               kDisallowed));
+  local_state_.SetInteger(kGenAILocalFoundationalModelEnterprisePolicySettings,
+                          static_cast<int>(
+                              GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
-  histogram_tester.ExpectUniqueSample(
+  histograms_.ExpectUniqueSample(
       "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
       "AtRegistration.EnabledByEnterprisePolicy",
       false, 1);
+}
+
+// Dynamically change the enterprise policy and ensure the component is
+// installed/uninstalled accordingly.
+TEST_F(OnDeviceModelComponentTest, DynamicEnterprisePolicyChange) {
+  DoStartup();
+  EnsurePerformanceClassAvailable();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
+  histograms_.ExpectUniqueSample(
+      "OptimizationGuide.ModelExecution.OnDeviceModelInstallCriteria."
+      "AtRegistration.EnabledByEnterprisePolicy",
+      true, 1);
+
+  // Disabling the policy should trigger uninstallation.
+  local_state_.SetInteger(kGenAILocalFoundationalModelEnterprisePolicySettings,
+                          static_cast<int>(
+                              GenAILocalFoundationalModelEnterprisePolicySettings::kDisallowed));
+  EXPECT_TRUE(base::test::RunUntil(
+      [&]() { return test_component_state_.uninstall_called(); }));
+
+  // Enabling the policy should trigger installation.
+  local_state_.SetInteger(kGenAILocalFoundationalModelEnterprisePolicySettings,
+                          static_cast<int>(GenAILocalFoundationalModelEnterprisePolicySettings::
+                                               kAllowed));
+  task_environment_.RunUntilIdle();
+  ASSERT_TRUE(WaitUntilInstallerRegistered());
 }
 
 TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
@@ -251,8 +278,7 @@ TEST_F(OnDeviceModelComponentTest, NotEnoughDiskSpaceToInstall) {
 }
 
 TEST_F(OnDeviceModelComponentTest, NoEligibleFeatureUse) {
-  local_state_.ClearPref(
-      model_execution::prefs::localstate::kLastUsageByFeature);
+  local_state_.ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
@@ -268,10 +294,7 @@ TEST_F(OnDeviceModelComponentTest, EligibleFeatureUseTooOld) {
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());
   // The usage should also get pruned from the pref.
-  ASSERT_TRUE(
-      local_state_
-          .GetDict(model_execution::prefs::localstate::kLastUsageByFeature)
-          .empty());
+  ASSERT_TRUE(local_state_.GetDict(kLastUsageByFeature).empty());
 }
 
 TEST_F(OnDeviceModelComponentTest, NoPerformanceClass) {
@@ -294,12 +317,10 @@ TEST_F(OnDeviceModelComponentTest, PerformanceClassTooLow) {
 TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
   // This pref records that the model was eligible for download previously,
   // and hasn't been cleaned up yet.
-  local_state_.SetTime(model_execution::prefs::localstate::
-                           kLastTimeEligibleForOnDeviceModelDownload,
+  local_state_.SetTime(kLastTimeEligibleForOnDeviceModelDownload,
                        base::Time::Now() - base::Minutes(1) -
                            features::GetOnDeviceModelRetentionTime());
-  local_state_.ClearPref(
-      model_execution::prefs::localstate::kLastUsageByFeature);
+  local_state_.ClearPref(kLastUsageByFeature);
 
   // Should uninstall the first time, and skip uninstallation the next time.
   DoStartup();
@@ -317,9 +338,7 @@ TEST_F(OnDeviceModelComponentTest, UninstallNeeded) {
 }
 
 TEST_F(OnDeviceModelComponentTest, UninstallNeededDueToDiskSpace) {
-  local_state_.SetTime(model_execution::prefs::localstate::
-                           kLastTimeEligibleForOnDeviceModelDownload,
-                       base::Time::Now());
+  local_state_.SetTime(kLastTimeEligibleForOnDeviceModelDownload, base::Time::Now());
 
   // 10gb is the default in `IsFreeDiskSpaceTooLowForOnDeviceModelInstall`.
   test_component_state_.SetFreeDiskSpace(10ll * 1024 * 1024 * 1024 - 1);
@@ -343,8 +362,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotEligible) {
   SimulateShutdown();
 
   // Clear usage prefs so that the model is no longer eligible for download.
-  local_state_.ClearPref(
-      model_execution::prefs::localstate::kLastUsageByFeature);
+  local_state_.ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
 
@@ -364,9 +382,7 @@ TEST_F(OnDeviceModelComponentTest, KeepInstalledWhileNotAllowed) {
   test_component_state_.Install(std::make_unique<FakeBaseModelAsset>());
   SimulateShutdown();
 
-  local_state_.SetString(
-      model_execution::prefs::localstate::kOnDevicePerformanceClassVersion,
-      "0.0.0.1");
+  local_state_.SetString(kOnDevicePerformanceClassVersion, "0.0.0.1");
   fake_settings_.performance_class = PerformanceClass::kVeryLow;
   DoStartup();
   EnsurePerformanceClassAvailable();
@@ -457,8 +473,7 @@ TEST_F(OnDeviceModelComponentTest, SetReady) {
 }
 
 TEST_F(OnDeviceModelComponentTest, InstallAfterEligibleFeatureWasUsed) {
-  local_state_.ClearPref(
-      model_execution::prefs::localstate::kLastUsageByFeature);
+  local_state_.ClearPref(kLastUsageByFeature);
   DoStartup();
   EnsurePerformanceClassAvailable();
   ASSERT_FALSE(WaitForUnexpectedInstallerRegistered());

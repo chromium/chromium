@@ -24,6 +24,7 @@
 #include "components/optimization_guide/core/model_execution/performance_class.h"
 #include "components/optimization_guide/core/optimization_guide_enums.h"
 #include "components/optimization_guide/proto/on_device_base_model_metadata.pb.h"
+#include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
 
@@ -181,7 +182,8 @@ class OnDeviceModelComponentStateManager final {
 
     bool should_uninstall() const {
       return (is_already_installing &&
-              (running_out_of_disk_space || out_of_retention));
+              (running_out_of_disk_space || out_of_retention ||
+               !enabled_by_enterprise_policy));
     }
   };
 
@@ -272,6 +274,8 @@ class OnDeviceModelComponentStateManager final {
   // Continuation of `UpdateRegistration()` after async work.
   void CompleteUpdateRegistration(int64_t disk_space_free_bytes);
 
+  void OnGenAILocalFoundationalModelEnterprisePolicyChanged();
+
   void NotifyStateChanged();
 
   // Notifies the observers of the `feature` used for the first time.
@@ -284,6 +288,8 @@ class OnDeviceModelComponentStateManager final {
   base::ObserverList<Observer> observers_ GUARDED_BY_CONTEXT(sequence_checker_);
   bool component_installer_registered_ GUARDED_BY_CONTEXT(sequence_checker_) =
       false;
+  PrefChangeRegistrar pref_change_registrar_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
   bool is_model_allowed_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
   std::unique_ptr<OnDeviceModelComponentState> state_
