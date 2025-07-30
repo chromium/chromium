@@ -200,7 +200,13 @@ id<GREYMatcher> CarouselMatcher() {
 }
 
 // Tests the "Share" action of the carousel context menu.
+// TODO(crbug.com/435093465): Reenable this test.
 - (void)testMostVisitedShare {
+  if (![ChromeEarlGrey isIPadIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator iOS 17");
+    }
+  }
   [self addNumberOfMostVisitedTiles:1];
   Page page1 = Page(1);
   id<GREYMatcher> tile1 = TileWithTitle(PageTitle(page1));
