@@ -11,27 +11,42 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/signin/model/authentication_service_observer_bridge.h"
 
 using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
-@interface InstantSigninMediator () <AuthenticationFlowDelegate>
+@interface InstantSigninMediator () <AuthenticationFlowDelegate,
+                                     AuthenticationServiceObserving>
 @end
 
 @implementation InstantSigninMediator {
   AuthenticationFlow* _authenticationFlow;
   AccessPoint _accessPoint;
   ChangeProfileContinuationProvider _continuationProvider;
+  raw_ptr<AuthenticationService> _authenticationService;
+
+  // Observer for auth service status changes.
+  std::unique_ptr<AuthenticationServiceObserverBridge>
+      _authServiceObserverBridge;
 }
 
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
-               continuationProvider:(const ChangeProfileContinuationProvider&)
-                                        continuationProvider {
+- (instancetype)
+      initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+    authenticationService:(AuthenticationService*)authenticationService
+     continuationProvider:
+         (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super init];
   if (self) {
     CHECK(continuationProvider);
+    CHECK(authenticationService);
+    CHECK(authenticationService->SigninEnabled());
     _continuationProvider = continuationProvider;
     _accessPoint = accessPoint;
+    _authenticationService = authenticationService;
+    _authServiceObserverBridge =
+        std::make_unique<AuthenticationServiceObserverBridge>(
+            authenticationService, self);
   }
   return self;
 }
@@ -48,6 +63,7 @@ using signin_metrics::PromoAction;
 }
 
 - (void)disconnect {
+  _authServiceObserverBridge.reset();
   [_authenticationFlow interrupt];
 }
 
@@ -64,6 +80,19 @@ using signin_metrics::PromoAction;
   _authenticationFlow = nil;
   [self.delegate instantSigninMediatorWillSwitchProfile:self];
   std::move(readyCompletion).Run(_continuationProvider.Run());
+}
+
+#pragma mark - AuthenticationServiceObserving
+
+- (void)onServiceStatusChanged {
+  if (!_authenticationService->SigninEnabled()) {
+    // Signin is now disabled, so the consistency default account must be
+    // stopped.
+    [self.delegate
+        instantSigninMediator:self
+          didSigninWithResult:SigninCoordinatorResult::
+                                  SigninCoordinatorResultInterrupted];
+  }
 }
 
 @end

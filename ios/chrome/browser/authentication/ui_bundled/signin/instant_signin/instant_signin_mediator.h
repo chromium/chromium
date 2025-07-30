@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 
 @class AuthenticationFlow;
+class AuthenticationService;
 @class InstantSigninMediator;
 
 namespace signin_metrics {
@@ -32,9 +33,11 @@ enum class AccessPoint;
 @interface InstantSigninMediator : NSObject
 
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
-               continuationProvider:(const ChangeProfileContinuationProvider&)
-                                        continuationProvider
+- (instancetype)
+      initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
+    authenticationService:(AuthenticationService*)authenticationService
+     continuationProvider:
+         (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;
 
 @property(nonatomic, weak) id<InstantSigninMediatorDelegate> delegate;
