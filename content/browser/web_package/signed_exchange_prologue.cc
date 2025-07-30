@@ -7,6 +7,7 @@
 #include <string_view>
 
 #include "base/compiler_specific.h"
+#include "base/containers/span.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/trace_event/trace_event.h"
@@ -60,8 +61,7 @@ BeforeFallbackUrl BeforeFallbackUrl::Parse(
       sizeof(kSignedExchangeMagic), kFallbackUrlLengthFieldSizeInBytes);
 
   bool is_valid = true;
-  if (UNSAFE_TODO(memcmp(magic_string.data(), kSignedExchangeMagic,
-                         sizeof(kSignedExchangeMagic))) != 0) {
+  if (magic_string != base::span_with_nul_from_cstring(kSignedExchangeMagic)) {
     signed_exchange_utils::ReportErrorAndTraceEvent(devtools_proxy,
                                                     "Wrong magic string");
     is_valid = false;
