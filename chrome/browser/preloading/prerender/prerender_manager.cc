@@ -234,7 +234,11 @@ bool PrerenderManager::MaybeStartPrewarmSearchResult() {
 
   const GURL prewarm_url =
       prewarm_url_for_testing_.value_or(GURL(features::kPrewarmUrl.Get()));
-  CHECK(prewarm_url.is_valid());
+  if (!prewarm_url.is_valid()) {
+    // A valid URL would not be provided if the feature is enabled from
+    // chrome://flags, or arbitrary command line options.
+    return false;
+  }
 
   auto* preloading_data =
       content::PreloadingData::GetOrCreateForWebContents(web_contents());
