@@ -343,7 +343,7 @@ struct AutocompleteMatch {
   // Update the Java object with clipboard content.
   void UpdateClipboardContent(JNIEnv* env);
   // Update the Java object with new destination URL.
-  void UpdateJavaDestinationUrl();
+  void UpdateJavaNavigationDetails();
   // Update the Java object with new Answer-in-Suggest.
   void UpdateJavaAnswer();
   // Update the Java object description.

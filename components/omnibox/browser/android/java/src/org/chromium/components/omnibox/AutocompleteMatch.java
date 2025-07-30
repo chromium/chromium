@@ -303,8 +303,14 @@ public class AutocompleteMatch {
     }
 
     @CalledByNative
-    private void setDestinationUrl(GURL url) {
+    @VisibleForTesting
+    void updateNavigationDetails(GURL url, String[] headerKeys, String[] headerVals) {
         mUrl = url;
+        assert headerKeys.length == headerVals.length;
+
+        for (int i = 0; i < headerKeys.length; i++) {
+            mExtraHeaders.put(headerKeys[i], headerVals[i]);
+        }
     }
 
     @CalledByNative

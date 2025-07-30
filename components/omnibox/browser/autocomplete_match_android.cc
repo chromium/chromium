@@ -223,12 +223,22 @@ void AutocompleteMatch::UpdateClipboardContent(JNIEnv* env) {
       ToJavaByteArray(env, clipboard_image_data));
 }
 
-void AutocompleteMatch::UpdateJavaDestinationUrl() {
+void AutocompleteMatch::UpdateJavaNavigationDetails() {
   if (java_match_) {
     JNIEnv* env = base::android::AttachCurrentThread();
-    Java_AutocompleteMatch_setDestinationUrl(
+
+    std::vector<std::string> header_keys(extra_headers.size());
+    std::vector<std::string> header_vals(extra_headers.size());
+    for (const auto& [key, val] : extra_headers) {
+      header_keys.emplace_back(key);
+      header_vals.emplace_back(val);
+    }
+
+    Java_AutocompleteMatch_updateNavigationDetails(
         env, *java_match_,
-        url::GURLAndroid::FromNativeGURL(env, destination_url));
+        url::GURLAndroid::FromNativeGURL(env, destination_url),
+        ToJavaArrayOfStrings(env, header_keys),
+        ToJavaArrayOfStrings(env, header_vals));
   }
 }
 
