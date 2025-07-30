@@ -146,13 +146,10 @@ class IOSChromePaymentsAutofillClient : public PaymentsAutofillClient {
   }
 
  private:
-  // Shows save card UI offering upload or local save. If
-  // `should_show_save_card_bottomsheet` is true shows bottomsheet otherwise
-  // shows infobar.
+  // Shows save card UI offering upload or local save.
   void ShowSaveCreditCard(
       AutofillSaveCardUiInfo ui_info,
-      std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate,
-      bool should_show_save_card_bottomsheet);
+      std::unique_ptr<AutofillSaveCardDelegate> save_card_delegate);
 
   const raw_ref<autofill::ChromeAutofillClientIOS> client_;
 

@@ -48,6 +48,8 @@ struct AutofillSaveCardUiInfo {
   // Accessibility description when a loading spinner is shown.
   std::u16string loading_description;
   bool is_google_pay_branding_enabled;
+  // True if this UI info is for a bottom sheet on IOS.
+  bool is_for_bottom_sheet = false;
 
   AutofillSaveCardUiInfo();
   ~AutofillSaveCardUiInfo();

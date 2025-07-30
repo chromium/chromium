@@ -47,16 +47,26 @@ static std::u16string GetConfirmButtonText(
     }
   }
 #elif BUILDFLAG(IS_IOS)
-  // TODO(crbug.com/407742057): Update confirm button's string id
-  // `IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT` to not be UI specific.
-  if (base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet) ||
-      base::FeatureList::IsEnabled(
-          features::kAutofillLocalSaveCardBottomSheet)) {
-    return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+  switch (options.card_save_type) {
+    case CardSaveType::kCardSaveOnly:
+    case CardSaveType::kCardSaveWithCvc: {
+      // TODO(crbug.com/407742057): Update confirm button's string id
+      // `IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT` to not be UI specific.
+      if (base::FeatureList::IsEnabled(
+              features::kAutofillSaveCardBottomSheet) ||
+          base::FeatureList::IsEnabled(
+              features::kAutofillLocalSaveCardBottomSheet)) {
+        return l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+      }
+      return l10n_util::GetStringUTF16(
+          prompt_continue ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
+                          : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
+    }
+    case CardSaveType::kCvcSaveOnly: {
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT);
+    }
   }
-  return l10n_util::GetStringUTF16(prompt_continue
-                                       ? IDS_AUTOFILL_SAVE_CARD_PROMPT_CONTINUE
-                                       : IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT);
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();
 #endif
@@ -90,7 +100,8 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
     const std::u16string& cancel_text,
     const std::u16string& description_text,
     const std::u16string& loading_description,
-    bool is_google_pay_branding_enabled) {
+    bool is_google_pay_branding_enabled,
+    bool is_for_bottom_sheet = false) {
   AutofillSaveCardUiInfo ui_info;
   ui_info.is_for_upload = is_for_upload;
   ui_info.logo_icon_id = logo_icon_id;
@@ -117,6 +128,7 @@ static AutofillSaveCardUiInfo CreateAutofillSaveCardUiInfo(
   ui_info.description_text = description_text;
   ui_info.loading_description = loading_description;
   ui_info.is_google_pay_branding_enabled = is_google_pay_branding_enabled;
+  ui_info.is_for_bottom_sheet = is_for_bottom_sheet;
   return ui_info;
 }
 
@@ -127,6 +139,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
   int save_card_icon_id;
   int save_card_prompt_title_id;
   std::u16string description_text;
+  bool is_for_bottom_sheet = false;
 #if BUILDFLAG(IS_ANDROID)
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveOnly: {
@@ -158,13 +171,51 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
     }
   }
 #elif BUILDFLAG(IS_IOS)
-  // CVC storage is not available on iOS as of now.
-  CHECK_NE(options.card_save_type, CardSaveType::kCardSaveWithCvc);
-  CHECK_NE(options.card_save_type, CardSaveType::kCvcSaveOnly);
-  save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
-  save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
-  description_text = l10n_util::GetStringUTF16(
-      IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
+  // On iOS, the UI (infobar vs. bottom sheet) and title are determined by
+  // whether the feature is enabled and the card's strike count. This logic
+  // mirrors the check in `ShouldShowSaveCardBottomSheetForLocalSave`.
+  is_for_bottom_sheet =
+      options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
+      base::FeatureList::IsEnabled(
+          autofill::features::kAutofillLocalSaveCardBottomSheet);
+
+  switch (options.card_save_type) {
+    case CardSaveType::kCardSaveOnly: {
+      save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
+      save_card_prompt_title_id =
+          base::FeatureList::IsEnabled(
+              features::kAutofillEnableCvcStorageAndFilling) &&
+                  !is_for_bottom_sheet
+              ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE
+              : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL);
+      break;
+    }
+    case CardSaveType::kCardSaveWithCvc: {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling));
+
+      save_card_icon_id = IDR_INFOBAR_AUTOFILL_CC;
+      save_card_prompt_title_id =
+          !is_for_bottom_sheet
+              ? IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE
+              : IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL;
+
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL);
+      break;
+    }
+    case CardSaveType::kCvcSaveOnly: {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling));
+      save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
+      save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL;
+      description_text = l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL);
+      break;
+    }
+  }
 #else  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   NOTREACHED();
 #endif
@@ -175,7 +226,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForLocalSave(
       GetConfirmButtonText(options),
       l10n_util::GetStringUTF16(IDS_AUTOFILL_NO_THANKS_MOBILE_LOCAL_SAVE),
       description_text, /*loading_description=*/std::u16string(),
-      /*is_google_pay_branding_enabled=*/false);
+      /*is_google_pay_branding_enabled=*/false, is_for_bottom_sheet);
 }
 
 // static
@@ -200,6 +251,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
   std::u16string save_card_icon_description_text;
   int save_card_prompt_title_id;
   std::u16string description_text;
+  bool is_for_bottom_sheet = false;
 #if BUILDFLAG(IS_ANDROID)
   switch (options.card_save_type) {
     case CardSaveType::kCardSaveOnly: {
@@ -243,9 +295,19 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
     }
   }
 #elif BUILDFLAG(IS_IOS)
+  is_for_bottom_sheet =
+      options.num_strikes.has_value() && options.num_strikes.value() == 0 &&
+      !options.should_request_name_from_user &&
+      !options.should_request_expiration_date_from_user &&
+      base::FeatureList::IsEnabled(features::kAutofillSaveCardBottomSheet);
+
   switch (options.card_save_type) {
-    case CardSaveType::kCardSaveOnly:
     case CardSaveType::kCardSaveWithCvc: {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling));
+      [[fallthrough]];
+    }
+    case CardSaveType::kCardSaveOnly: {
       if (is_google_pay_branding_enabled) {
         save_card_icon_id = IDR_AUTOFILL_GOOGLE_PAY;
         save_card_icon_description_text = l10n_util::GetStringUTF16(
@@ -268,6 +330,8 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       break;
     }
     case CardSaveType::kCvcSaveOnly: {
+      CHECK(base::FeatureList::IsEnabled(
+          features::kAutofillEnableCvcStorageAndFilling));
       save_card_icon_id = IDR_AUTOFILL_CC_GENERIC_PRIMARY_OLD;
       save_card_prompt_title_id = IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_TO_CLOUD;
       description_text = l10n_util::GetStringUTF16(
@@ -288,7 +352,7 @@ AutofillSaveCardUiInfo AutofillSaveCardUiInfo::CreateForUploadSave(
       description_text,
       l10n_util::GetStringUTF16(
           IDS_AUTOFILL_SAVE_CARD_PROMPT_LOADING_THROBBER_ACCESSIBLE_NAME),
-      is_google_pay_branding_enabled);
+      is_google_pay_branding_enabled, is_for_bottom_sheet);
 }
 
 }  // namespace autofill

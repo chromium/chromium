@@ -104,9 +104,14 @@
       </message>
     </else>
   </if>
-  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on both the Desktop bubble and the Android infobar.">
+  <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on both the Desktop bubble, the Android infobar and IOS payments bottom sheet.">
     Save card?
   </message>
+  <if expr="is_ios">
+   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE" desc="Title text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt title is shown on IOS infobar.">
+    Save card on this device?
+  </message>
+  </if>
   <if expr="is_ios">
     <then>
       <message name="IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL" desc="Explanation text for the Autofill save card prompt to save a card locally. It is shown when a new card is used during checkout, and sync is not enabled. This prompt description is shown on iOS bottomsheet.">
@@ -193,8 +198,8 @@
   <message name="IDS_AUTOFILL_SAVE_CARD_PROMPT_UPLOAD_EXPLANATION_SECURITY" desc="Explanation of the benefit of credit card upload save on Desktop, using security-focused messaging. Became the new default for Desktop in Dec. 2024 and new default for Android and IOS (bottomsheet only) in H1 2025.">
     Pay faster when your card is saved. Card details are encrypted in your Google Account.
   </message>
-  <if expr="is_android">
-    <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown in a Message UI on Android devices.">
+  <if expr="is_android or is_ios">
+    <message name="IDS_AUTOFILL_SAVE_CVC_MESSAGE_SAVE_ACCEPT" desc="Positive button label for the Autofill save CVC prompt that offers to save CVC for existing server cards. This prompt is shown if a CVC is detected for an existing server card on form submission. The prompt is shown on Android and IOS devices.">
       Save
     </message>
   </if>

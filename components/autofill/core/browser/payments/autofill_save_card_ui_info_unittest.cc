@@ -93,22 +93,6 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyCommonAttributes) {
   EXPECT_EQ(ui_info.is_google_pay_branding_enabled, false);
 }
 
-// Verify that AutofillSaveCardUiInfo attributes are correctly set for the
-// local-card-only-save prompt.
-TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyAttributesForCardSaveOnly) {
-  auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
-      /*options=*/{.card_save_type = CardSaveType::kCardSaveOnly},
-      test::GetCreditCard());
-
-  EXPECT_EQ(ui_info.logo_icon_id, IDR_INFOBAR_AUTOFILL_CC);
-  EXPECT_EQ(ui_info.logo_icon_description, u"");
-  EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
-                                    IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
-  EXPECT_EQ(ui_info.description_text,
-            l10n_util::GetStringUTF16(
-                IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL));
-}
-
 #if BUILDFLAG(IS_IOS)
 // Only applicable for local save bottomsheet since AutofillSaveCardUiInfo's
 // `confirm_text` is not used by local save card infobar.
@@ -170,6 +154,92 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
   EXPECT_EQ(ui_info.confirm_text,
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_CARD_INFOBAR_ACCEPT));
 }
+
+// Tests that the new title is shown for card save only when the UI update
+// feature is enabled and the infobar is shown.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     VerifyUiForCardSaveOnlyWithNewTitleOnInfobar) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type = CardSaveType::kCardSaveOnly;
+  options.num_strikes = 1;
+
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      options, test::GetCreditCard());
+
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL));
+}
+
+// Tests that the original title is shown for card save only when the bottom
+// sheet is shown, even when the UI update feature is enabled.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     VerifyUiForCardSaveOnlyWithOldTitleOnBottomSheet) {
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      /*enabled_features=*/{features::kAutofillSaveCardBottomSheet},
+      /*disabled_features=*/{features::kAutofillEnableCvcStorageAndFilling});
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type = CardSaveType::kCardSaveOnly;
+  options.num_strikes = 0;
+
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      options, test::GetCreditCard());
+
+  EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
+                                    IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_ONLY_PROMPT_EXPLANATION_LOCAL));
+}
+
+// Tests that the description for saving a card with CVC is present when the
+// corresponding feature flag is enabled.
+TEST(AutofillSaveCardUiInfoTestForLocalSave,
+     VerifyUiForCardSaveWithCvcAndDescription) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type = CardSaveType::kCardSaveWithCvc;
+  // Set num_strikes to ensure an infobar is shown.
+  options.num_strikes = 1;
+
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      options, test::GetCreditCard());
+
+  // Expect the new infobar title.
+  EXPECT_EQ(ui_info.title_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL_ON_THIS_DEVICE));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CARD_WITH_CVC_PROMPT_EXPLANATION_LOCAL));
+}
+
+// Tests that the correct title and description are shown for CVC-only saves.
+TEST(AutofillSaveCardUiInfoTestForLocalSave, VerifyUiForCvcSaveOnly) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+  payments::PaymentsAutofillClient::SaveCreditCardOptions options;
+  options.card_save_type = CardSaveType::kCvcSaveOnly;
+
+  AutofillSaveCardUiInfo ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
+      options, test::GetCreditCard());
+
+  EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
+                                    IDS_AUTOFILL_SAVE_CVC_PROMPT_TITLE_LOCAL));
+  EXPECT_EQ(ui_info.description_text,
+            l10n_util::GetStringUTF16(
+                IDS_AUTOFILL_SAVE_CVC_PROMPT_EXPLANATION_LOCAL));
+}
 #endif  // #BUILDFLAG(IS_IOS)
 
 #if BUILDFLAG(IS_ANDROID)
@@ -185,6 +255,7 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
       test::GetCreditCard());
 
   EXPECT_EQ(ui_info.logo_icon_id, IDR_INFOBAR_AUTOFILL_CC);
+  EXPECT_EQ(ui_info.logo_icon_description, u"");
   EXPECT_EQ(ui_info.title_text, l10n_util::GetStringUTF16(
                                     IDS_AUTOFILL_SAVE_CARD_PROMPT_TITLE_LOCAL));
   EXPECT_EQ(ui_info.description_text,
@@ -219,6 +290,9 @@ TEST(AutofillSaveCardUiInfoTestForLocalSave,
 // local-CVC-only-save Message.
 TEST(AutofillSaveCardUiInfoTestForLocalSave,
      VerifyAttributesForCvcSaveOnlyMessage) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
   auto ui_info = AutofillSaveCardUiInfo::CreateForLocalSave(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       test::GetCreditCard());
@@ -425,6 +499,9 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-CVC-only-save message.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       is_gpay_branded());
@@ -500,6 +577,9 @@ TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
 // upload-CVC-only-save message.
 TEST_P(AutofillSaveCardUiInfoTestForUploadSave,
        VerifyAttributesForCvcSaveOnlyMessage) {
+  base::test::ScopedFeatureList features(
+      features::kAutofillEnableCvcStorageAndFilling);
+
   auto ui_info = AutofillSaveCardUiInfoForUploadSaveForTest(
       /*options=*/{.card_save_type = CardSaveType::kCvcSaveOnly},
       is_gpay_branded());
