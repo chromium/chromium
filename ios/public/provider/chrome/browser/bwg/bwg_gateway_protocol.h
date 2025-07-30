@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol BWGLinkOpeningDelegate;
+@protocol BWGPageStateChangeDelegate;
 @protocol BWGSessionDelegate;
 
 // Protocol for the BWG gateway, exposing what's needed upstream.
@@ -15,6 +16,8 @@
 
 // Handlers for BWG protocols.
 @property(nonatomic, weak) id<BWGLinkOpeningDelegate> linkOpeningHandler;
+@property(nonatomic, weak) id<BWGPageStateChangeDelegate>
+    pageStateChangeHandler;
 @property(nonatomic, weak) id<BWGSessionDelegate> sessionHandler;
 
 @end
