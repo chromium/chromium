@@ -1322,7 +1322,7 @@ void SyncServiceImpl::PassphraseTypeChanged(PassphraseType passphrase_type) {
   if (!sync_prefs_.GetCachedPassphraseType().has_value() &&
       IsExplicitPassphrase(passphrase_type) &&
       GetSyncAccountStateForPrefs() ==
-          SyncPrefs::SyncAccountState::kSignedInNotSyncing &&
+          SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent &&
       sync_prefs_.DoesTypeHaveDefaultValueForAccount(
           UserSelectableType::kAutofill, GetAccountInfo().gaia) &&
       base::FeatureList::IsEnabled(kReplaceSyncPromosWithSignInPromos)) {
@@ -1365,8 +1365,9 @@ SyncPrefs::SyncAccountState SyncServiceImpl::GetSyncAccountStateForPrefs()
   }
   // This doesn't check IsSyncFeatureEnabled() so it covers the case of advanced
   // sync setup, where IsInitialSyncFeatureSetupComplete() is not true yet.
-  return HasSyncConsent() ? SyncPrefs::SyncAccountState::kSyncing
-                          : SyncPrefs::SyncAccountState::kSignedInNotSyncing;
+  return HasSyncConsent()
+             ? SyncPrefs::SyncAccountState::kSyncing
+             : SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent;
 }
 
 CoreAccountInfo SyncServiceImpl::GetSyncAccountInfoForPrefs() const {

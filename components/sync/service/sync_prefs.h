@@ -46,10 +46,13 @@ class SyncPrefObserver {
 class SyncPrefs {
  public:
   enum class SyncAccountState {
-    kNotSignedIn = 0,
-    // In transport mode.
-    kSignedInNotSyncing = 1,
-    kSyncing = 2
+    kNotSignedIn,
+    kSignedInWithoutSyncConsent,
+    // Note that kSyncing is also used for local sync (an enterprise feature
+    // known as roaming profiles) as well as in some advanced transport-mode
+    // scenarios such as the advanced sync setup flow interrupted case or, on
+    // ChromeOS, after sync is reset from the sync dashboard.
+    kSyncing,
   };
 
   // `pref_service` must not be null and must outlive this object.

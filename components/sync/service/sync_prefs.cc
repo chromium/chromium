@@ -827,7 +827,7 @@ bool SyncPrefs::MaybeMigratePrefsForSyncToSigninPart1(
                                 kMigratedPart2AndFullyDone);
       return false;
     }
-    case SyncAccountState::kSignedInNotSyncing: {
+    case SyncAccountState::kSignedInWithoutSyncConsent: {
       pref_service_->SetInteger(prefs::internal::kSyncToSigninMigrationState,
                                 kMigratedPart1ButNot2);
       CHECK(!gaia_id.empty());

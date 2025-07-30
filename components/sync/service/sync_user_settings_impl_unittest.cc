@@ -130,7 +130,7 @@ class SyncUserSettingsImplTest : public testing::Test {
         .WillByDefault(Return(sync_account_state));
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
     if (sync_account_state ==
-        SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
+        SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent) {
       pref_service_.SetBoolean(prefs::kExplicitBrowserSignin, true);
     }
 #endif
@@ -180,7 +180,7 @@ TEST_F(SyncUserSettingsImplTest, PreferredTypesSyncEverything) {
 
 TEST_F(SyncUserSettingsImplTest, GetSelectedTypesWhileSignedOut) {
   // Sanity check: signed-in there are selected types.
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
   ASSERT_FALSE(
       MakeSyncUserSettings(GetUserTypes())->GetSelectedTypes().empty());
 
@@ -206,7 +206,7 @@ TEST_F(SyncUserSettingsImplTest,
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
 
   UserSelectableTypeSet expected_types = {UserSelectableType::kPasswords,
                                           UserSelectableType::kAutofill,
@@ -249,7 +249,7 @@ TEST_F(SyncUserSettingsImplTest,
 
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
 
   const UserSelectableTypeSet registered_types =
       sync_user_settings->GetRegisteredSelectableTypes();
@@ -272,7 +272,7 @@ TEST_F(SyncUserSettingsImplTest,
 }
 
 TEST_F(SyncUserSettingsImplTest, SetSelectedTypeInTransportMode) {
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
   const UserSelectableTypeSet default_types =
@@ -643,7 +643,7 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccountSignedOut) {
 }
 
 TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccount) {
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());
@@ -654,7 +654,7 @@ TEST_F(SyncUserSettingsImplTest, EncryptionBootstrapTokenPerAccount) {
 }
 
 TEST_F(SyncUserSettingsImplTest, ClearEncryptionBootstrapTokenPerAccount) {
-  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SetSyncAccountState(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent);
   std::unique_ptr<SyncUserSettingsImpl> sync_user_settings =
       MakeSyncUserSettings(GetUserTypes());
   ASSERT_TRUE(sync_user_settings->GetEncryptionBootstrapToken().empty());

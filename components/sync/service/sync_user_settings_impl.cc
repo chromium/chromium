@@ -129,7 +129,7 @@ UserSelectableTypeSet SyncUserSettingsImpl::GetSelectedTypes() const {
     case SyncPrefs::SyncAccountState::kNotSignedIn: {
       return UserSelectableTypeSet();
     }
-    case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
+    case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent: {
       types = prefs_->GetSelectedTypesForAccount(
           delegate_->GetSyncAccountInfoForPrefs().gaia);
       break;
@@ -158,7 +158,7 @@ SyncUserSettings::UserSelectableTypePrefState
 SyncUserSettingsImpl::GetTypePrefStateForAccount(
     UserSelectableType type) const {
   if (delegate_->GetSyncAccountStateForPrefs() !=
-      SyncPrefs::SyncAccountState::kSignedInNotSyncing) {
+      SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent) {
     return SyncUserSettings::UserSelectableTypePrefState::kNotApplicable;
   }
   if (prefs_->IsTypeDisabledByUserForAccount(
@@ -178,7 +178,7 @@ void SyncUserSettingsImpl::SetSelectedTypes(bool sync_everything,
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn:
       NOTREACHED();
-    case SyncPrefs::SyncAccountState::kSignedInNotSyncing:
+    case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent:
       for (UserSelectableType type : registered_types) {
         SetSelectedType(type, types.Has(type) || sync_everything);
       }
@@ -198,7 +198,7 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
   switch (delegate_->GetSyncAccountStateForPrefs()) {
     case SyncPrefs::SyncAccountState::kNotSignedIn:
       NOTREACHED();
-    case SyncPrefs::SyncAccountState::kSignedInNotSyncing: {
+    case SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent: {
       prefs_->SetSelectedTypeForAccount(
           type, is_type_on, delegate_->GetSyncAccountInfoForPrefs().gaia);
       break;
@@ -215,7 +215,7 @@ void SyncUserSettingsImpl::SetSelectedType(UserSelectableType type,
 }
 
 void SyncUserSettingsImpl::ResetSelectedType(UserSelectableType type) {
-  CHECK_EQ(SyncPrefs::SyncAccountState::kSignedInNotSyncing,
+  CHECK_EQ(SyncPrefs::SyncAccountState::kSignedInWithoutSyncConsent,
            delegate_->GetSyncAccountStateForPrefs());
   prefs_->ResetSelectedTypeForAccount(
       type, delegate_->GetSyncAccountInfoForPrefs().gaia);
