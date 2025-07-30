@@ -108,9 +108,7 @@ class OnDeviceModelAdaptationLoader
     : public OptimizationTargetModelObserver,
       public OnDeviceModelComponentStateManager::Observer {
  public:
-  using OnLoadFn = base::RepeatingCallback<void(
-      base::expected<OnDeviceModelAdaptationMetadata,
-                     AdaptationUnavailability>)>;
+  using OnLoadFn = base::RepeatingCallback<void(MaybeAdaptationMetadata)>;
 
   OnDeviceModelAdaptationLoader(
       ModelBasedCapabilityKey feature,

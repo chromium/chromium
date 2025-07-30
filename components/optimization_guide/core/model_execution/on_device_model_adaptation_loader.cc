@@ -4,6 +4,7 @@
 
 #include "components/optimization_guide/core/model_execution/on_device_model_adaptation_loader.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
@@ -43,7 +44,7 @@ void RecordAdaptationModelAvailability(
 
 base::expected<OnDeviceModelAdaptationMetadata,
                OnDeviceModelAdaptationAvailability>
-CreateAdaptatonMetadataFromModelExecutionConfig(
+CreateAdaptationMetadataFromModelExecutionConfig(
     ModelBasedCapabilityKey feature,
     std::unique_ptr<on_device_model::AdaptationAssetPaths> asset_paths,
     int64_t version,
@@ -83,17 +84,15 @@ bool ArePerformanceHintsCompatible(
     const proto::OnDeviceBaseModelMetadata& adaptation_metadata,
     const OnDeviceBaseModelSpec& base_spec) {
   // If the adaptation model has no specific hints, it supports all.
-  if (adaptation_metadata.supported_performance_hints_size() == 0) {
+  if (adaptation_metadata.supported_performance_hints().empty()) {
     return true;
   }
-
   // Check if the adaptation model supports any of the base model's hints.
-  for (const auto hint : adaptation_metadata.supported_performance_hints()) {
-    if (base::Contains(base_spec.supported_performance_hints, hint)) {
-      return true;
-    }
-  }
-  return false;
+  return std::ranges::any_of(
+      adaptation_metadata.supported_performance_hints(), [&](int hint) {
+        return base_spec.supported_performance_hints.Has(
+            static_cast<proto::OnDeviceModelPerformanceHint>(hint));
+      });
 }
 
 std::optional<OnDeviceModelAdaptationAvailability>
@@ -305,8 +304,8 @@ void OnDeviceModelAdaptationLoader::OnModelUpdated(
   background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&ReadOnDeviceModelExecutionConfig, *execution_config_file),
-      base::BindOnce(&CreateAdaptatonMetadataFromModelExecutionConfig, feature_,
-                     MaybeGetAdaptationPaths(*model_info),
+      base::BindOnce(&CreateAdaptationMetadataFromModelExecutionConfig,
+                     feature_, MaybeGetAdaptationPaths(*model_info),
                      model_info->GetVersion())
           .Then(
               base::BindOnce(&OnDeviceModelAdaptationMetadataCreated, feature_))

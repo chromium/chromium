@@ -58,7 +58,7 @@ void LogInstallCriteria(std::string_view event_name,
 }
 
 void LogInstallCriteria(
-    OnDeviceModelComponentStateManager::RegistrationCriteria& criteria,
+    const OnDeviceModelComponentStateManager::RegistrationCriteria& criteria,
     std::string_view event_name) {
   // Keep optimization/histograms.xml in sync with these criteria names.
   LogInstallCriteria(event_name, "DiskSpace", criteria.disk_space_available);

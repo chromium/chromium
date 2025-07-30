@@ -20,6 +20,7 @@
 #include "base/strings/strcat.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/containers/contains.h"
 #include "components/optimization_guide/core/delivery/model_util.h"
 #include "components/optimization_guide/core/model_execution/feature_keys.h"
 #include "components/optimization_guide/core/model_execution/model_execution_features.h"
@@ -477,10 +478,8 @@ void OnDeviceModelServiceController::BaseModelController::RequireAdaptationRank(
     // Older configs may not specify rank, and should be covered by defaults.
     return;
   }
-  for (uint32_t rank : supported_adaptation_ranks_) {
-    if (rank == required_rank) {
-      return;
-    }
+  if (base::Contains(supported_adaptation_ranks_, required_rank)) {
+    return;
   }
   // Add the rank and reset all remotes to force a reload.
   supported_adaptation_ranks_.push_back(required_rank);

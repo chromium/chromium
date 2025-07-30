@@ -364,11 +364,11 @@ class OnDeviceModelServiceController final : public mojom::ModelBroker {
 
   std::map<ModelBasedCapabilityKey, SolutionProvider> solution_providers_;
 
-  SEQUENCE_CHECKER(sequence_checker_);
-
   std::optional<BaseModelController> base_model_controller_;
 
   mojo::ReceiverSet<mojom::ModelBroker> receivers_;
+
+  SEQUENCE_CHECKER(sequence_checker_);
 
   // Used to get `weak_ptr_` to self.
   base::WeakPtrFactory<OnDeviceModelServiceController> weak_ptr_factory_{this};
