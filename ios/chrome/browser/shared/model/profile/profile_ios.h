@@ -31,15 +31,15 @@ class Time;
 
 namespace sync_preferences {
 class PrefServiceSyncable;
-}
+}  // namespace sync_preferences
 
 namespace web {
 class WebUIIOS;
-}
+}  // namespace web
 
 namespace policy {
 class UserCloudPolicyManager;
-}
+}  // namespace policy
 
 enum class ProfileIOSType {
   REGULAR_PROFILE,
@@ -173,7 +173,7 @@ class ProfileIOS : public web::BrowserState {
   void UpdateCorsExemptHeader(
       network::mojom::NetworkContextParams* params) final;
 
-  // Register callback to be invoked when the Profile is destroyed.
+  // Registers callback to be invoked when the Profile is destroyed.
   base::CallbackListSubscription RegisterProfileDestroyedCallback(
       base::OnceClosure callback);
 

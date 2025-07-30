@@ -83,6 +83,18 @@ source_set("incognito_session_tracker") {
   ]
 }
 
+source_set("utils") {
+  sources = [
+    "profile_ios_util.h",
+    "profile_ios_util.mm",
+  ]
+  deps = [
+    ":profile",
+    "//base",
+    "//ios/chrome/browser/shared/model/application_context",
+  ]
+}
+
 source_set("unit_tests") {
   testonly = true
   sources = [

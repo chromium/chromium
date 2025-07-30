@@ -17,6 +17,7 @@
 class AuthenticationService;
 class Browser;
 class PrefService;
+class ProfileIOS;
 
 namespace signin {
 class IdentityManager;
@@ -121,7 +122,7 @@ SignedInUserState GetSignedInUserState(
 // there is no unsynced data.
 bool ForceLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
-    std::string_view profile_name);
+    ProfileIOS* profile);
 
 // Returns a dialog for the user to confirm to sign out, switch account.
 // `anchorView` and `anchorRect` is the position that triggered sign-in.

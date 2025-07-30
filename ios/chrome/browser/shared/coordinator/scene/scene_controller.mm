@@ -152,6 +152,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
@@ -893,13 +894,7 @@ void OnListFamilyMembersResponse(
     return;
   }
   // If sign-in is disabled, switch to personal profile and sign-out.
-  ProfileIOS* profile = self.sceneState.profileState.profile;
-  const std::string& profileName = profile->GetProfileName();
-  BOOL isPersonalProfile = GetApplicationContext()
-                               ->GetProfileManager()
-                               ->GetProfileAttributesStorage()
-                               ->GetPersonalProfileName() == profileName;
-  if (!isPersonalProfile) {
+  if (!IsPersonalProfile(self.profile)) {
     auto signoutSource = signin_metrics::ProfileSignout::kPrefChanged;
     ChangeProfileContinuation continuation =
         CreateChangeProfileSignoutContinuation(

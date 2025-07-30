@@ -45,6 +45,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -131,11 +132,8 @@ bool IsStrictSubset(NSArray<NSString*>* recorded_gaia_ids,
 // Returns true if profile separation is enabled and the current profile is not
 // the personal one (a managed profile).
 bool ShouldSwitchProfileAtSignout(AuthenticationService* authentication_service,
-                                  const std::string& profile_name) {
-  ProfileManagerIOS* profile_manager =
-      GetApplicationContext()->GetProfileManager();
-  bool is_work_profile = profile_manager->GetProfileAttributesStorage()
-                             ->GetPersonalProfileName() != profile_name;
+                                  ProfileIOS* profile) {
+  bool is_work_profile = !IsPersonalProfile(profile);
   return AreSeparateProfilesForManagedAccountsEnabled() &&
          authentication_service->HasPrimaryIdentityManaged(
              signin::ConsentLevel::kSignin) &&
@@ -474,8 +472,7 @@ void ProfileSignoutRequest::Run(Browser* browser) && {
         std::move(continuation), std::move(postSignoutContinuation));
   }
 
-  if (!ShouldSwitchProfileAtSignout(authentication_service,
-                                    profile->GetProfileName())) {
+  if (!ShouldSwitchProfileAtSignout(authentication_service, profile)) {
     std::move(prepare_callback_).Run(/*will_change_profile=*/false);
     std::move(continuation).Run(scene_state, base::DoNothing());
     return;
@@ -501,8 +498,7 @@ void MultiProfileSignOutForProfile(
   // Simply sign out if no profile switching is needed.
   AuthenticationService* authentication_service =
       AuthenticationServiceFactory::GetForProfile(profile);
-  if (!ShouldSwitchProfileAtSignout(authentication_service,
-                                    profile->GetProfileName())) {
+  if (!ShouldSwitchProfileAtSignout(authentication_service, profile)) {
     authentication_service->SignOut(
         signout_source,
         base::CallbackToBlock(std::move(signout_completion_closure)));

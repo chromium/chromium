@@ -25,6 +25,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/account_profile_mapper.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
@@ -296,7 +297,7 @@ SignedInUserState GetSignedInUserState(
 
 bool ForceLeavingPrimaryAccountConfirmationDialog(
     SignedInUserState signed_in_user_state,
-    std::string_view profile_name) {
+    ProfileIOS* profile) {
   switch (signed_in_user_state) {
     case SignedInUserState::kNotSyncingAndReplaceSyncWithSignin:
       return false;
@@ -309,10 +310,7 @@ bool ForceLeavingPrimaryAccountConfirmationDialog(
       // Show the dialog only if a managed account is signing out from the
       // personal profile. (This can only happen for managed accounts that were
       // already signed in before there was multi-profile support.)
-      return GetApplicationContext()
-                 ->GetProfileManager()
-                 ->GetProfileAttributesStorage()
-                 ->GetPersonalProfileName() == profile_name;
+      return IsPersonalProfile(profile);
   }
   NOTREACHED();
 }

@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/shared/model/profile/features.h"
 #import "ios/chrome/browser/shared/model/profile/profile_attributes_storage_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/shared/model/profile/profile_ios_util.h"
 #import "ios/chrome/browser/shared/model/profile/profile_manager_ios.h"
 #import "ios/chrome/browser/signin/model/identity_manager_factory.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -55,14 +56,6 @@ base::Time GetMostRecentActivityTime(const web::WebState* web_state) {
     }
   }
   return result;
-}
-
-// Returns whether the given `profile` is the personal profile.
-bool IsPersonalProfile(ProfileIOS* profile) {
-  return profile->GetProfileName() == GetApplicationContext()
-                                          ->GetProfileManager()
-                                          ->GetProfileAttributesStorage()
-                                          ->GetPersonalProfileName();
 }
 
 // Returns whether the primary identity for `profile` is managed.
