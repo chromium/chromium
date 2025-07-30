@@ -25,6 +25,7 @@
 #include "chrome/browser/ash/app_mode/kiosk_controller.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_mixin.h"
 #include "chrome/browser/ash/app_mode/test/kiosk_test_utils.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/ui/web_applications/test/isolated_web_app_test_utils.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_apply_task.h"
 #include "chrome/browser/web_applications/isolated_web_apps/isolated_web_app_update_discovery_task.h"
@@ -302,6 +303,11 @@ class KioskIwaVersionManagementBaseTest
   KioskIwaVersionManagementBaseTest& operator=(
       const KioskIwaVersionManagementBaseTest&) = delete;
 
+  void SetUpOnMainThread() override {
+    MixinBasedInProcessBrowserTest::SetUpOnMainThread();
+    OverrideCacheDir();
+  }
+
   void AddTestBundle(std::string_view version,
                      std::optional<std::vector<web_app::UpdateChannel>>
                          channels = std::nullopt) {
@@ -335,9 +341,21 @@ class KioskIwaVersionManagementBaseTest
     return iwa_server_mixin_.GetUpdateManifestUrl(GetTestWebBundleId());
   }
 
+  void OverrideCacheDir() {
+    // `IsolatedWebAppUpdateManager` saves the updated version to cache, if the
+    // cache directory is not set, it will result with a failure.
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    EXPECT_TRUE(profile_manager);
+    cache_root_dir_ = profile_manager->user_data_dir();
+    cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
+        ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_);
+  }
+
   base::test::ScopedFeatureList feature_list_;
   web_app::IsolatedWebAppUpdateServerMixin iwa_server_mixin_;
   KioskMixin kiosk_mixin_;
+  base::FilePath cache_root_dir_;
+  std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
 };
 
 struct KioskIwaUpdateChannelTestParams {

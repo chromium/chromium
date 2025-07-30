@@ -127,8 +127,8 @@ class IsolatedWebAppPolicyManagerTestBase : public IsolatedWebAppTest {
         is_mgs_session_install_enabled_(is_mgs_session_install_enabled),
         is_user_session_(is_user_session) {
 #if BUILDFLAG(IS_CHROMEOS)
-    if (is_mgs_session_install_enabled_) {
-      scoped_feature_list_.InitAndEnableFeature(
+    if (!is_mgs_session_install_enabled_) {
+      scoped_feature_list_.InitAndDisableFeature(
           features::kIsolatedWebAppManagedGuestSessionInstall);
     }
 #endif  // BUILDFLAG(IS_CHROMEOS)

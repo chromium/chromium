@@ -4,8 +4,11 @@
 
 #include "chrome/browser/web_applications/isolated_web_apps/commands/cleanup_bundle_cache_command.h"
 
+#include <memory>
+
 #include "ash/constants/ash_paths.h"
 #include "base/files/file_util.h"
+#include "base/task/current_thread.h"
 #include "base/test/gmock_expected_support.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
@@ -56,6 +59,8 @@ class CleanupBundleCacheCommandTest
     ASSERT_TRUE(cache_root_dir_.CreateUniqueTempDir());
     cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_.GetPath());
+
+    WaitForInitialBundleCleanupAndCleanMetric();
   }
 
   const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
@@ -120,29 +125,42 @@ class CleanupBundleCacheCommandTest
 
   SessionType GetSessionType() { return GetParam(); }
 
+  void WaitForInitialBundleCleanupAndCleanMetric() {
+    // On the session start `IwaBundleCacheManager` automatically cleans the
+    // cache. Wait for it to finish and cleanup the metric to test it.
+    ASSERT_TRUE(base::test::RunUntil([&]() {
+      return (histogram_tester_->GetTotalSum(
+                  kCleanupBundleCacheSuccessMetric) == 2);
+    }));
+    histogram_tester_.reset();
+    histogram_tester_ = std::make_unique<base::HistogramTester>();
+  }
+
   void ExpectEmptyCleanupBundleCacheMetrics() {
-    histogram_tester_.ExpectTotalCount(kCleanupBundleCacheSuccessMetric, 0);
-    histogram_tester_.ExpectTotalCount(kCleanupBundleCacheErrorMetric, 0);
+    histogram_tester_->ExpectTotalCount(kCleanupBundleCacheSuccessMetric, 0);
+    histogram_tester_->ExpectTotalCount(kCleanupBundleCacheErrorMetric, 0);
   }
 
   void ExpectSuccessCleanupBundleCacheMetric() {
     EXPECT_THAT(
-        histogram_tester_.GetAllSamples(kCleanupBundleCacheSuccessMetric),
+        histogram_tester_->GetAllSamples(kCleanupBundleCacheSuccessMetric),
         BucketsAre(base::Bucket(true, 1)));
-    histogram_tester_.ExpectTotalCount(kCleanupBundleCacheErrorMetric, 0);
+    histogram_tester_->ExpectTotalCount(kCleanupBundleCacheErrorMetric, 0);
   }
 
   void ExpectErrorCleanupBundleCacheMetric(
       const CleanupBundleCacheError::Type& error) {
     EXPECT_THAT(
-        histogram_tester_.GetAllSamples(kCleanupBundleCacheSuccessMetric),
+        histogram_tester_->GetAllSamples(kCleanupBundleCacheSuccessMetric),
         BucketsAre(base::Bucket(false, 1)));
-    EXPECT_THAT(histogram_tester_.GetAllSamples(kCleanupBundleCacheErrorMetric),
-                BucketsAre(base::Bucket(error, 1)));
+    EXPECT_THAT(
+        histogram_tester_->GetAllSamples(kCleanupBundleCacheErrorMetric),
+        BucketsAre(base::Bucket(error, 1)));
   }
 
  private:
-  base::HistogramTester histogram_tester_;
+  std::unique_ptr<base::HistogramTester> histogram_tester_ =
+      std::make_unique<base::HistogramTester>();
   base::ScopedTempDir cache_root_dir_;
   std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
 };
