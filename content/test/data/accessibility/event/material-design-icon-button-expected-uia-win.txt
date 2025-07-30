@@ -1,0 +1,8 @@
+AriaProperties changed on role=button, name=Toggle favorite
+ToggleToggleState changed on role=button, name=Toggle favorite
+=== Start Continuation ===
+AriaProperties changed on role=button, name=Toggle favorite
+ToggleToggleState changed on role=button, name=Toggle favorite
+=== Start Continuation ===
+AriaProperties changed on role=button, name=Toggle favorite
+ToggleToggleState changed on role=button, name=Toggle favorite

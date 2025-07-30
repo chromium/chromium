@@ -1,0 +1,5 @@
+AXValueChanged on AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1
+=== Start Continuation ===
+AXValueChanged on AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=0
+=== Start Continuation ===
+AXValueChanged on AXCheckBox AXSubrole=AXSwitch AXDescription='Test Switch' AXValue=1

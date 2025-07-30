@@ -1,0 +1,10 @@
+EVENT_OBJECT_SHOW on <div#status> role=ROLE_SYSTEM_GROUPING name="Ready"
+EVENT_OBJECT_SHOW on <md-menu#test-menu> role=ROLE_SYSTEM_MENUPOPUP IA2_STATE_VERTICAL SetSize=3
+EVENT_SYSTEM_MENUPOPUPSTART on <md-menu#test-menu> role=ROLE_SYSTEM_MENUPOPUP IA2_STATE_VERTICAL SetSize=3
+IA2_EVENT_TEXT_INSERTED on <#document> role=ROLE_SYSTEM_DOCUMENT name="Material Web Menu Events" value~=[doc-url] FOCUSED,FOCUSABLE new_text={'<obj>' start=0 end=1}
+IA2_EVENT_TEXT_INSERTED on <div> role=ROLE_SYSTEM_GROUPING new_text={'<obj>' start=1 end=2}
+=== Start Continuation ===
+EVENT_OBJECT_FOCUS on <li#item.list-item > role=ROLE_SYSTEM_MENUITEM name="Menu Item 1" FOCUSED,FOCUSABLE PosInSet=1 SetSize=3
+EVENT_OBJECT_HIDE on role=ROLE_SYSTEM_GROUPING INVISIBLE
+IA2_EVENT_TEXT_INSERTED on <div.menu animating> role=ROLE_SYSTEM_GROUPING new_text={'<obj><obj><obj>' start=0 end=3}
+IA2_EVENT_TEXT_REMOVED on <div.menu animating> role=ROLE_SYSTEM_GROUPING old_text={'<obj>' start=0 end=1}

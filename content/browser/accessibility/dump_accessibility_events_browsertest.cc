@@ -195,6 +195,23 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPassesExceptUIA()),
     DumpAccessibilityEventsTestPassToString());
 
+#if !BUILDFLAG(IS_ANDROID)
+class DumpAccessibilityEventsWithMaterialDesignTest
+    : public DumpAccessibilityEventsTest {
+ public:
+  void SetUpOnMainThread() override {
+    SetUpMaterialDesignRequestHandler();
+    DumpAccessibilityEventsTest::SetUpOnMainThread();
+  }
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    DumpAccessibilityEventsWithMaterialDesignTest,
+    ::testing::ValuesIn(DumpAccessibilityTestBase::EventTestPasses()),
+    DumpAccessibilityEventsTestPassToString());
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 class DumpAccessibilityEventsWithExperimentalWebFeaturesTest
     : public DumpAccessibilityEventsTest {
   void SetUpCommandLine(base::CommandLine* command_line) override {
@@ -218,6 +235,8 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(DumpAccessibilityEventsTest);
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
     DumpAccessibilityEventsTestExceptUIA);
+GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
+    DumpAccessibilityEventsWithMaterialDesignTest);
 
 IN_PROC_BROWSER_TEST_P(
     DumpAccessibilityEventsTest,
@@ -812,6 +831,70 @@ IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTest,
                        AccessibilityEventsMenuListFocus) {
   RunEventTest(FILE_PATH_LITERAL("menulist-focus.html"));
 }
+
+// The Material Design tests are not supported on Android.
+// In the case of Windows, many DumpAccessibility* tests fail due to
+// crrev.com/c/6620083 which causes tests to fail if there is a leaked COM
+// object. The Material Design tests are not special; just more tests that
+// fail due to the leak.
+// TODO(crbug.com/424781310): Re-enable these tests on Windows once the leak
+// issue is resolved.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignCheckboxEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-checkbox.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignMenuEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-menu.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignRadioEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-radio.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignSwitchEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-switch.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignSliderEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-slider.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignProgressEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-progress.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignTabsEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-tabs.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignTextFieldEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-text-field.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignSelectEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-select.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignDialogEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-dialog.html"));
+}
+
+IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsWithMaterialDesignTest,
+                       MaterialDesignIconButtonEvents) {
+  RunEventTest(FILE_PATH_LITERAL("material-design-icon-button.html"));
+}
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_WIN)
 
 // TODO(crbug.com/40841326): disabled on UIA
 IN_PROC_BROWSER_TEST_P(DumpAccessibilityEventsTestExceptUIA,

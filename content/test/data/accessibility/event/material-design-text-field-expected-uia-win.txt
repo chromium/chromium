@@ -1,0 +1,10 @@
+Text_TextChanged on role=textbox, name=Test Text Field
+Text_TextChanged on role=textbox, name=Test Text Field
+ValueValue changed on role=textbox, name=Test Text Field
+ValueValue changed on role=textbox, name=Test Text Field
+=== Start Continuation ===
+Text_TextChanged on role=textbox, name=Test Text Field
+ValueValue changed on role=textbox, name=Test Text Field
+=== Start Continuation ===
+Text_TextChanged on role=textbox, name=Test Text Field
+ValueValue changed on role=textbox, name=Test Text Field

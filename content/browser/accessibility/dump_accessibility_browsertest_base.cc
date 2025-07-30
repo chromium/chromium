@@ -38,6 +38,8 @@
 #include "content/test/content_browser_test_utils_internal.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "net/test/embedded_test_server/http_request.h"
+#include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/frame/frame_owner_element_type.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_node.h"
@@ -779,6 +781,58 @@ void DumpAccessibilityTestBase::UseHttpsTestServer() {
   https_test_server_.get()->AddDefaultHandlers(GetTestDataFilePath());
   https_test_server_.get()->SetSSLConfig(
       net::EmbeddedTestServer::CERT_TEST_NAMES);
+}
+
+void DumpAccessibilityTestBase::SetUpMaterialDesignRequestHandler() {
+  base::FilePath src_root;
+  base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root);
+  node_modules_dir_ = src_root.AppendASCII("third_party")
+                          .AppendASCII("material_web_components")
+                          .AppendASCII("components-chromium")
+                          .AppendASCII("node_modules");
+  embedded_test_server()->RegisterRequestHandler(base::BindRepeating(
+      &DumpAccessibilityTestBase::HandleMaterialDesignRequest,
+      base::Unretained(this)));
+}
+
+std::unique_ptr<net::test_server::HttpResponse>
+DumpAccessibilityTestBase::HandleMaterialDesignRequest(
+    const net::test_server::HttpRequest& request) {
+  std::string path = request.relative_url;
+  if (path.empty() || path[0] != '/') {
+    return nullptr;
+  }
+
+  // Only handle Material Design component requests.
+  if (!base::StartsWith(path, "/@material/") &&
+      !base::StartsWith(path, "/lit") && !base::StartsWith(path, "/@lit/") &&
+      !base::StartsWith(path, "/tslib/")) {
+    return nullptr;
+  }
+
+  base::FilePath full_path = node_modules_dir_.AppendASCII(path.substr(1));
+  base::ScopedAllowBlockingForTesting allow_blocking;
+  if (!base::PathExists(full_path)) {
+    return nullptr;
+  }
+
+  std::string content;
+  if (!base::ReadFileToString(full_path, &content)) {
+    return nullptr;
+  }
+
+  auto response = std::make_unique<net::test_server::BasicHttpResponse>();
+  response->set_code(net::HTTP_OK);
+  response->set_content(content);
+
+  if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII)) {
+    response->set_content_type("application/javascript");
+  } else if (base::EndsWith(path, ".css",
+                            base::CompareCase::INSENSITIVE_ASCII)) {
+    response->set_content_type("text/css");
+  }
+
+  return response;
 }
 
 }  // namespace content

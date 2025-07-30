@@ -1,0 +1,5 @@
+EVENT_OBJECT_VALUECHANGE on <input#end. end > role=ROLE_SYSTEM_SLIDER name="Test Slider" value="25" FOCUSABLE IA2_STATE_HORIZONTAL
+=== Start Continuation ===
+EVENT_OBJECT_VALUECHANGE on <input#end. end > role=ROLE_SYSTEM_SLIDER name="Test Slider" value="75" FOCUSABLE IA2_STATE_HORIZONTAL
+=== Start Continuation ===
+EVENT_OBJECT_VALUECHANGE on <input#end. end > role=ROLE_SYSTEM_SLIDER name="Test Slider" value="50" FOCUSABLE IA2_STATE_HORIZONTAL

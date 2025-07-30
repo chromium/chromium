@@ -1,0 +1,62 @@
+<!--
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@AURALINUX-DENY:PARENT-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+@WIN-DENY:IA2_EVENT_TEXT_REMOVED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Dialog Events</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-dialog",
+            "md-text-button"
+        ];
+
+        setupEventTestRunner();
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const dialog = document.createElement("md-dialog");
+            dialog.id = "test-dialog";
+            dialog.innerHTML = `
+                <div slot="headline">Test Dialog</div>
+                <form slot="content" method="dialog">
+                    <p>This is a test dialog.</p>
+                </form>
+                <div slot="actions">
+                    <md-text-button value="ok">OK</md-text-button>
+                </div>
+            `;
+            statusDiv.appendChild(dialog);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        () => {
+            const dialog = document.getElementById("test-dialog");
+            if (dialog) {
+                dialog.addEventListener('opened', () => {
+                    setTimeout(() => {
+                        dialog.close();
+                    }, 50);
+                }, { once: true });
+                dialog.show();
+            }
+        }
+    ];
+
+</script>
+</html>

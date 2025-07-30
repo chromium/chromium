@@ -1,0 +1,5 @@
+AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=25
+=== Start Continuation ===
+AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=75
+=== Start Continuation ===
+AXValueChanged on AXSlider AXDescription='Test Slider' AXValue=50

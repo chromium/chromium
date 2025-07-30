@@ -1,0 +1,4 @@
+=== Start Continuation ===
+AXValueChanged on AXProgressIndicator AXDescription='Test Progress' AXValue=0
+=== Start Continuation ===
+AXValueChanged on AXProgressIndicator AXDescription='Test Progress' AXValue=1

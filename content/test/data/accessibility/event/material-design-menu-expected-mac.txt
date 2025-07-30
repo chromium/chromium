@@ -1,0 +1,3 @@
+AXMenuOpened on AXGroup
+=== Start Continuation ===
+AXFocusedUIElementChanged on AXMenuItem AXDescription='Menu Item 1'

@@ -1,0 +1,5 @@
+AXTitleChanged on AXStaticText AXValue='Option 2'
+=== Start Continuation ===
+AXTitleChanged on AXStaticText AXValue='Option 3'
+=== Start Continuation ===
+AXTitleChanged on AXStaticText AXValue='Option 1'

@@ -1,0 +1,9 @@
+AXValueChanged on AXTextField AXDescription='Test Text Field'
+AXValueChanged on AXTextField AXDescription='Test Text Field' AXValue='Hello'
+AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
+=== Start Continuation ===
+AXValueChanged on AXTextField AXDescription='Test Text Field' AXValue='Hello World'
+AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'
+=== Start Continuation ===
+AXValueChanged on AXTextField AXDescription='Test Text Field'
+AXValueChanged on AXWebArea AXTitle='Material Web Text Field Events'

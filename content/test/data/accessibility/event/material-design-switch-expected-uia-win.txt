@@ -1,0 +1,8 @@
+AriaProperties changed on role=switch, name=Test Switch
+ToggleToggleState changed on role=switch, name=Test Switch
+=== Start Continuation ===
+AriaProperties changed on role=switch, name=Test Switch
+ToggleToggleState changed on role=switch, name=Test Switch
+=== Start Continuation ===
+AriaProperties changed on role=switch, name=Test Switch
+ToggleToggleState changed on role=switch, name=Test Switch

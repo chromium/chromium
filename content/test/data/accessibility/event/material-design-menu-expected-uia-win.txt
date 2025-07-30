@@ -1,0 +1,5 @@
+AriaProperties changed on role=menu
+MenuOpened on role=menu
+=== Start Continuation ===
+AriaProperties changed on role=menu
+AutomationFocusChanged on role=menuitem, name=Menu Item 1

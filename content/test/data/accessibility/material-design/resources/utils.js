@@ -136,6 +136,12 @@ async function waitForStable(element) {
     await new Promise(resolve => requestAnimationFrame(resolve));
     await element.updateComplete;
   }
+
+  // Dialogs need extra time.
+  if (element.tagName === "MD-DIALOG") {
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await element.updateComplete;
+  }
 }
 
 /**
@@ -261,4 +267,55 @@ export function loadAndWaitForReady(components, callback) {
             targetDiv.style.visibility = "visible";
             callback();
         });
+}
+
+/**
+ * Sets up the global go function that the test framework expects.
+ * This is needed so that we can do additional checks to be sure we're ready
+ * to run a given Material Design test (which we might not be due to loading
+ * components, waiting for animations, etc.).
+ */
+export function setupEventTestRunner() {
+    window.go = function() {
+        if (typeof window.go_passes === "undefined") {
+            console.error("go_passes not found in global scope");
+            return false;
+        }
+
+        if (typeof window.current_pass === "undefined") {
+            window.current_pass = 0;
+        }
+
+        function checkReady() {
+            const statusDiv = document.getElementById("status");
+            document.body.offsetHeight; // Force layout
+            const isReady = statusDiv &&
+                           statusDiv.getAttribute("aria-label") === "Ready" &&
+                           statusDiv.style.visibility === "visible" &&
+                           statusDiv.offsetParent !== null;
+
+            if (isReady) {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        if (window.current_pass < window.go_passes.length) {
+                            try {
+                                window.go_passes[window.current_pass++].call();
+                            } catch (error) {
+                                console.error(`Error in go_passes[${window.current_pass - 1}]:`, error);
+                            }
+                        }
+
+                        resolve(window.current_pass < window.go_passes.length);
+                    }, 50);
+                });
+            } else {
+                return new Promise(resolve => {
+                    setTimeout(() => {
+                        resolve(checkReady());
+                    }, 50);
+                });
+            }
+        }
+        return checkReady();
+    };
 }

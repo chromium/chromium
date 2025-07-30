@@ -1,0 +1,5 @@
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=1
+=== Start Continuation ===
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=0
+=== Start Continuation ===
+AXValueChanged on AXCheckBox AXDescription='Test Checkbox' AXValue=2

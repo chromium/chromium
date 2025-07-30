@@ -1,0 +1,7 @@
+EVENT_OBJECT_SHOW on <div#status> role=ROLE_SYSTEM_GROUPING name="Ready"
+EVENT_OBJECT_STATECHANGE on <button#button.icon-button standard selected> role=ROLE_SYSTEM_PUSHBUTTON name="Toggle favorite" PRESSED,FOCUSABLE
+IA2_EVENT_TEXT_INSERTED on <#document> role=ROLE_SYSTEM_DOCUMENT name="Material Web Icon Button Events" value~=[doc-url] FOCUSED,FOCUSABLE new_text={'<obj>' start=0 end=1}
+=== Start Continuation ===
+EVENT_OBJECT_STATECHANGE on <button#button.icon-button standard> role=ROLE_SYSTEM_PUSHBUTTON name="Toggle favorite" FOCUSABLE
+=== Start Continuation ===
+EVENT_OBJECT_STATECHANGE on <button#button.icon-button standard selected> role=ROLE_SYSTEM_PUSHBUTTON name="Toggle favorite" PRESSED,FOCUSABLE

@@ -1,0 +1,5 @@
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1
+=== Start Continuation ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=0
+=== Start Continuation ===
+AXValueChanged on AXCheckBox AXSubrole=AXToggleButton AXDescription='Toggle favorite' AXValue=1

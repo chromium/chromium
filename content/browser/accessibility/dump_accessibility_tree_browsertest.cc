@@ -22,9 +22,6 @@
 #include "content/public/test/accessibility_notification_waiter.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
-#include "net/test/embedded_test_server/embedded_test_server.h"
-#include "net/test/embedded_test_server/http_request.h"
-#include "net/test/embedded_test_server/http_response.h"
 #include "third_party/blink/public/common/features.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_mode.h"
@@ -164,62 +161,9 @@ class DumpAccessibilityTreeWithMaterialDesignTest
     : public DumpAccessibilityTreeTest {
  public:
   void SetUpOnMainThread() override {
-    // Get path to Material Design components in third_party
-    base::FilePath src_root;
-    base::PathService::Get(base::DIR_SRC_TEST_DATA_ROOT, &src_root);
-    node_modules_dir_ = src_root.AppendASCII("third_party")
-                            .AppendASCII("material_web_components")
-                            .AppendASCII("components-chromium")
-                            .AppendASCII("node_modules");
-    embedded_test_server()->RegisterRequestHandler(
-        base::BindRepeating(&DumpAccessibilityTreeWithMaterialDesignTest::
-                                HandleMaterialDesignRequest,
-                            base::Unretained(this)));
-
+    SetUpMaterialDesignRequestHandler();
     DumpAccessibilityTreeTest::SetUpOnMainThread();
   }
-
- private:
-  std::unique_ptr<net::test_server::HttpResponse> HandleMaterialDesignRequest(
-      const net::test_server::HttpRequest& request) {
-    std::string path = request.relative_url;
-    if (path.empty() || path[0] != '/') {
-      return nullptr;
-    }
-
-    // Only handle Material Design component requests.
-    if (!base::StartsWith(path, "/@material/") &&
-        !base::StartsWith(path, "/lit") && !base::StartsWith(path, "/@lit/") &&
-        !base::StartsWith(path, "/tslib/")) {
-      return nullptr;
-    }
-
-    base::FilePath full_path = node_modules_dir_.AppendASCII(path.substr(1));
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    if (!base::PathExists(full_path)) {
-      return nullptr;
-    }
-
-    std::string content;
-    if (!base::ReadFileToString(full_path, &content)) {
-      return nullptr;
-    }
-
-    auto response = std::make_unique<net::test_server::BasicHttpResponse>();
-    response->set_code(net::HTTP_OK);
-    response->set_content(content);
-
-    if (base::EndsWith(path, ".js", base::CompareCase::INSENSITIVE_ASCII)) {
-      response->set_content_type("application/javascript");
-    } else if (base::EndsWith(path, ".css",
-                              base::CompareCase::INSENSITIVE_ASCII)) {
-      response->set_content_type("text/css");
-    }
-
-    return response;
-  }
-
-  base::FilePath node_modules_dir_;
 };
 #endif
 

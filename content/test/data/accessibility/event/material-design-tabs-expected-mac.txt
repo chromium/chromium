@@ -1,0 +1,5 @@
+AXSelectedChildrenChanged on AXTabGroup
+=== Start Continuation ===
+AXSelectedChildrenChanged on AXTabGroup
+=== Start Continuation ===
+AXSelectedChildrenChanged on AXTabGroup

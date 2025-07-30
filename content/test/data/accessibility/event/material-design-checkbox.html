@@ -1,0 +1,60 @@
+<!--
+@AURALINUX-DENY:CHILDREN-CHANGED*
+@UIA-WIN-DENY:*StructureChanged*
+@WIN-DENY:EVENT_OBJECT_LOCATIONCHANGE*
+@WIN-DENY:EVENT_OBJECT_REORDER*
+@WIN-DENY:EVENT_OBJECT_SHOW*
+@WIN-DENY:IA2_EVENT_TEXT_INSERTED*
+-->
+<!doctype html>
+<html>
+<head>
+    <title>Material Web Checkbox Toggle Event</title>
+    <script type="module">
+        import { injectImportMap, loadAndWaitForReady, setupEventTestRunner } from "../material-design/resources/utils.js";
+        injectImportMap();
+
+        const components = [
+            "md-checkbox"
+        ];
+
+        setupEventTestRunner();
+        loadAndWaitForReady(components, () => {
+            const statusDiv = document.getElementById("status");
+            const checkbox = document.createElement("md-checkbox");
+            checkbox.id = "test-checkbox";
+            checkbox.textContent = "Test Checkbox";
+            checkbox.setAttribute("aria-label", "Test Checkbox");
+            checkbox.checked = false;
+            statusDiv.appendChild(checkbox);
+            statusDiv.setAttribute("aria-label", "Ready");
+        });
+    </script>
+</head>
+<body>
+    <div id="status" aria-label="Loading">
+    </div>
+</body>
+<script>
+    window.go_passes = [
+        () => {
+            const checkbox = document.getElementById("test-checkbox");
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        },
+        () => {
+            const checkbox = document.getElementById("test-checkbox");
+            if (checkbox) {
+                checkbox.checked = false;
+            }
+        },
+        () => {
+            const checkbox = document.getElementById("test-checkbox");
+            if (checkbox) {
+                checkbox.indeterminate = true;
+            }
+        }
+    ];
+</script>
+</html>
