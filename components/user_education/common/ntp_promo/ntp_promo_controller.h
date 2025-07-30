@@ -84,6 +84,9 @@ class NtpPromoController {
   // Returns the duration for which a promo can be shown after completion.
   static base::TimeDelta GetCompletedPromoShowDurationForTest();
 
+  // Returns the duration for which a promo will be hidden after being clicked.
+  static base::TimeDelta GetClickedPromoHideDurationForTest();
+
  private:
   // Updates the data on the promo shown in the top spot.
   void OnPromoShownInTopSpot(NtpPromoIdentifier id);

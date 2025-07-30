@@ -4,6 +4,7 @@
 
 #include "components/user_education/common/ntp_promo/ntp_promo_controller.h"
 
+#include "base/test/bind.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
@@ -27,6 +28,8 @@ constexpr char kPromo2Id[] = "promo2";
 
 constexpr int kSessionNumber = 10;
 
+constexpr auto kEligible = NtpPromoSpecification::Eligibility::kEligible;
+
 class NtpPromoControllerTest : public testing::Test {
  public:
   NtpPromoControllerTest() : controller_(registry_, storage_service_) {
@@ -36,6 +39,7 @@ class NtpPromoControllerTest : public testing::Test {
   }
 
  protected:
+  // Register a promo with the supplied callbacks.
   void RegisterPromo(
       NtpPromoIdentifier id,
       NtpPromoSpecification::EligibilityCallback eligibility_callback,
@@ -47,10 +51,21 @@ class NtpPromoControllerTest : public testing::Test {
         /*show_after=*/{}, user_education::Metadata()));
   }
 
-  // Register a promo with empty callbacks.
-  void RegisterPromo(NtpPromoIdentifier id) {
-    RegisterPromo(id, NtpPromoSpecification::EligibilityCallback(),
+  // Register a promo of the the specified eligibility.
+  void RegisterPromo(NtpPromoIdentifier id,
+                     NtpPromoSpecification::Eligibility eligibility) {
+    RegisterPromo(id, base::BindLambdaForTesting([=](Profile* profile) {
+                    return eligibility;
+                  }),
                   base::DoNothing(), base::DoNothing());
+  }
+
+  // Register an eligible promo with otherwise empty callbacks.
+  void RegisterPromo(NtpPromoIdentifier id) { RegisterPromo(id, kEligible); }
+
+  int ShowablePendingPromoCount() {
+    const auto showable_promos = controller_.GenerateShowablePromos(nullptr);
+    return showable_promos.pending.size();
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -62,7 +77,6 @@ class NtpPromoControllerTest : public testing::Test {
 
 }  // namespace
 
-// Note: Parameterize these eligibility tests when there are more of them.
 TEST_F(NtpPromoControllerTest, IneligiblePromoHidden) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
@@ -190,6 +204,18 @@ TEST_F(NtpPromoControllerTest, PromoClicked) {
 
   const auto prefs = storage_service_.ReadNtpPromoData(kPromoId);
   EXPECT_EQ(prefs.value().last_clicked, base::Time::Now());
+}
+
+TEST_F(NtpPromoControllerTest, ClickedPromoHiddenTemporarily) {
+  RegisterPromo(kPromoId, kEligible);
+  EXPECT_EQ(ShowablePendingPromoCount(), 1);
+
+  controller_.OnPromoClicked(kPromoId, nullptr);
+  EXPECT_EQ(ShowablePendingPromoCount(), 0);
+
+  task_environment_.AdvanceClock(
+      controller_.GetClickedPromoHideDurationForTest());
+  EXPECT_EQ(ShowablePendingPromoCount(), 1);
 }
 
 TEST_F(NtpPromoControllerTest, CompletedPromoShown) {

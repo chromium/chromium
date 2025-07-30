@@ -16,12 +16,43 @@ namespace user_education {
 
 namespace {
 
+using Eligibility = NtpPromoSpecification::Eligibility;
+
 constexpr int kNumSessionsBetweenTopPromoRotation = 3;
 constexpr base::TimeDelta kCompletedPromoShowDuration = base::Days(7);
+constexpr base::TimeDelta kClickedPromoHideDuration = base::Days(90);
+
+// Decides whether a promo should be shown or not, based on the supplied
+// data. If this logic becomes more complex, consider pulling it out to a
+// separate file (crbug.com/435159508).
+bool ShouldShowPromo(const KeyedNtpPromoData& prefs,
+                     Eligibility eligibility,
+                     const base::Time& now) {
+  // If an eligible promo has been clicked recently, don't show it again for
+  // a period of time.
+  if (eligibility == Eligibility::kEligible && !prefs.last_clicked.is_null() &&
+      ((now - prefs.last_clicked) < kClickedPromoHideDuration)) {
+    return false;
+  }
+
+  // If the promo reports itself as complete, but was never invoked by the
+  // user, don't show it (eg. user is already signed in).
+  if (eligibility == Eligibility::kCompleted && prefs.last_clicked.is_null()) {
+    return false;
+  }
+
+  // If the promo was marked complete sufficiently long ago, don't show it.
+  // Likewise if the completion time is nonsense (in the future).
+  if (!prefs.completed.is_null() &&
+      ((now - prefs.completed >= kCompletedPromoShowDuration) ||
+       (now < prefs.completed))) {
+    return false;
+  }
+
+  return true;
+}
 
 }  // namespace
-
-using Eligibility = NtpPromoSpecification::Eligibility;
 
 NtpShowablePromo::NtpShowablePromo() = default;
 NtpShowablePromo::NtpShowablePromo(std::string_view id_,
@@ -85,13 +116,6 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
     auto prefs =
         storage_service_->ReadNtpPromoData(id).value_or(KeyedNtpPromoData());
 
-    // If the promo reports itself as complete, but was never invoked by the
-    // user, don't show it (eg. user is already signed in).
-    if (eligibility == Eligibility::kCompleted &&
-        prefs.last_clicked.is_null()) {
-      continue;
-    }
-
     // Record the first evidence of completion. In the future, promos may
     // explicitly notify of completion, but we'll also use this opportunity.
     if (eligibility == Eligibility::kCompleted &&
@@ -100,11 +124,7 @@ NtpShowablePromos NtpPromoController::GenerateShowablePromos(Profile* profile) {
       storage_service_->SaveNtpPromoData(id, prefs);
     }
 
-    // If the promo was marked complete sufficiently long ago, don't show it.
-    // Likewise if the completion time is nonsense (in the future).
-    if (!prefs.completed.is_null() &&
-        ((now - prefs.completed >= kCompletedPromoShowDuration) ||
-         (now < prefs.completed))) {
+    if (!ShouldShowPromo(prefs, eligibility, now)) {
       continue;
     }
 
@@ -151,6 +171,11 @@ void NtpPromoController::OnPromoClicked(NtpPromoIdentifier id,
 // static
 base::TimeDelta NtpPromoController::GetCompletedPromoShowDurationForTest() {
   return kCompletedPromoShowDuration;
+}
+
+// static
+base::TimeDelta NtpPromoController::GetClickedPromoHideDurationForTest() {
+  return kClickedPromoHideDuration;
 }
 
 void NtpPromoController::OnPromoShownInTopSpot(NtpPromoIdentifier id) {
