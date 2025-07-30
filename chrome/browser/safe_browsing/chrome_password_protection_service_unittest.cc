@@ -262,7 +262,7 @@ class MockChromePasswordProtectionService
     account_info.email = username;
     account_info.hosted_domain = hosted_domain;
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(hosted_domain !=
+        .set_is_subject_to_enterprise_features(hosted_domain !=
                                                kNoHostedDomainFound);
     account_info_ = account_info;
   }

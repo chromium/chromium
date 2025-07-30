@@ -345,7 +345,7 @@ class DiceWebSigninInterceptionBubblePixelTest
                                             ? "intercepted.com"
                                             : kNoHostedDomainFound;
     AccountCapabilitiesTestMutator mutator(&intercepted_account.capabilities);
-    mutator.set_is_subject_to_enterprise_policies(
+    mutator.set_is_subject_to_enterprise_features(
         is_managed_intercepted_account);
     if (GetParam().intercepted_account_management_state ==
         ManagedAccountState::kSupervisedAccount) {
@@ -364,7 +364,7 @@ class DiceWebSigninInterceptionBubblePixelTest
             ? "primary.com"
             : kNoHostedDomainFound;
     AccountCapabilitiesTestMutator(&primary_account.capabilities)
-        .set_is_subject_to_enterprise_policies(
+        .set_is_subject_to_enterprise_features(
             GetParam().primary_account_management_state ==
             ManagedAccountState::kEnterpriseAccount);
     bool show_managed_disclaimer =

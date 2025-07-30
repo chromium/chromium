@@ -126,7 +126,7 @@ void AccountCapabilitiesTestMutator::
       [kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice] = value;
 }
 
-void AccountCapabilitiesTestMutator::set_is_subject_to_enterprise_policies(
+void AccountCapabilitiesTestMutator::set_is_subject_to_enterprise_features(
     bool value) {
   capabilities_
       ->capabilities_map_[kIsSubjectToEnterprisePoliciesCapabilityName] = value;

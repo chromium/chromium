@@ -239,7 +239,7 @@ class ProfileOAuth2TokenServiceDelegateChromeOSTest : public testing::Test {
     account_info.account_id = account_tracker_service_.PickAccountIdForAccount(
         account_info.gaia, account_info.email);
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(true);
+        .set_is_subject_to_enterprise_features(true);
 
     // Cannot use |ASSERT_TRUE| due to a |void| return type in an |ASSERT_TRUE|
     // branch.

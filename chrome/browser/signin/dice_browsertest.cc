@@ -742,7 +742,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
     // Fill in the required account capabilities for the sign in intercept.
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_is_subject_to_parental_controls(false);
-    mutator.set_is_subject_to_enterprise_policies(false);
+    mutator.set_is_subject_to_enterprise_features(false);
 
     CHECK(account_info.IsValid());
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);

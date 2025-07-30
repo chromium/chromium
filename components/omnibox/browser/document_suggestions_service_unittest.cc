@@ -135,34 +135,30 @@ TEST_F(DocumentSuggestionsServiceTest, EnsurePrimaryAccount) {
   EXPECT_TRUE(document_suggestions_service_->HasPrimaryAccount());
 }
 
-TEST_F(DocumentSuggestionsServiceTest, EnsureIsSubjectToEnterprisePolicies) {
+TEST_F(DocumentSuggestionsServiceTest, EnsureIsSubjectToEnterpriseFeatures) {
   EXPECT_EQ(signin::Tribool::kFalse,
-            document_suggestions_service_
-                ->account_is_subject_to_enterprise_policies());
+            document_suggestions_service_->account_is_workspace_managed());
 
   // Make the primary account available.
   auto account_info = SetUpPrimaryAccount();
 
   EXPECT_EQ(signin::Tribool::kUnknown,
-            document_suggestions_service_
-                ->account_is_subject_to_enterprise_policies());
+            document_suggestions_service_->account_is_workspace_managed());
 
   // Make the the primary account subject to Enterprise policies.
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_is_subject_to_enterprise_policies(true);
+  mutator.set_is_subject_to_enterprise_features(true);
   identity_test_env_.UpdateAccountInfoForAccount(account_info);
 
   EXPECT_EQ(signin::Tribool::kTrue,
-            document_suggestions_service_
-                ->account_is_subject_to_enterprise_policies());
+            document_suggestions_service_->account_is_workspace_managed());
 
   // Make the the primary account NOT subject to Enterprise policies.
-  mutator.set_is_subject_to_enterprise_policies(false);
+  mutator.set_is_subject_to_enterprise_features(false);
   identity_test_env_.UpdateAccountInfoForAccount(account_info);
 
   EXPECT_EQ(signin::Tribool::kFalse,
-            document_suggestions_service_
-                ->account_is_subject_to_enterprise_policies());
+            document_suggestions_service_->account_is_workspace_managed());
 }
 
 }  // namespace

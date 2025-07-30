@@ -546,7 +546,7 @@ class TurnSyncOnHelperTest : public testing::Test {
     EXPECT_FALSE(account_info.IsEmpty());
     account_info.hosted_domain = kEnterpriseHostedDomain;
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(true);
+        .set_is_subject_to_enterprise_features(true);
     signin::UpdateAccountInfoForAccount(identity_manager(), account_info);
   }
 

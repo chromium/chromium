@@ -125,7 +125,7 @@ public class AccountManagedStatusFinderIntegrationTest {
                         .hostedDomain(SigninConstants.NO_HOSTED_DOMAIN_FOUND)
                         .accountCapabilities(
                                 new AccountCapabilitiesBuilder()
-                                        .setIsSubjectToEnterprisePolicies(false)
+                                        .setIsSubjectToEnterpriseFeatures(false)
                                         .build())
                         .build();
         mSigninTestRule.updateAccount(accountWithNoHostedDomainFound);
@@ -170,7 +170,7 @@ public class AccountManagedStatusFinderIntegrationTest {
                         .hostedDomain("example.com")
                         .accountCapabilities(
                                 new AccountCapabilitiesBuilder()
-                                        .setIsSubjectToEnterprisePolicies(true)
+                                        .setIsSubjectToEnterpriseFeatures(true)
                                         .build())
                         .build();
         mSigninTestRule.updateAccount(accountWithHostedDomain);

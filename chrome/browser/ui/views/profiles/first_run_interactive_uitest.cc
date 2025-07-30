@@ -350,7 +350,7 @@ class FirstRunInteractiveUiTest
     if (account_email == kTestEnterpriseEmail) {
       account_info.hosted_domain = "chromium.org";
     }
-    mutator.set_is_subject_to_enterprise_policies(account_email ==
+    mutator.set_is_subject_to_enterprise_features(account_email ==
                                                   kTestEnterpriseEmail);
 
     if (params_.with_supervision.has_value()) {

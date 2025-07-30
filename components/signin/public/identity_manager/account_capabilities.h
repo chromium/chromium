@@ -121,8 +121,11 @@ class AccountCapabilities {
   signin::Tribool
   is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const;
 
-  // Chrome applies enterprise policies to accounts with this capability.
-  signin::Tribool is_subject_to_enterprise_policies() const;
+  // Chrome applies enterprise features to accounts with this capability.
+  // This capability returns true all managed accounts and does not reflect
+  // whether the account will receive account level enterprise policies or not
+  // when signed in to Chrome.
+  signin::Tribool is_subject_to_enterprise_features() const;
 
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_subject_to_parental_controls() const;

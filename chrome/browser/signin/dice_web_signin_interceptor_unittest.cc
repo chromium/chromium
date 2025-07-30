@@ -130,7 +130,7 @@ MatchBubbleParameters(
 void MakeValidAccountCapabilities(AccountInfo* info) {
   AccountCapabilitiesTestMutator mutator(&info->capabilities);
   mutator.set_is_subject_to_parental_controls(true);
-  mutator.set_is_subject_to_enterprise_policies(info->hosted_domain !=
+  mutator.set_is_subject_to_enterprise_features(info->hosted_domain !=
                                                 kNoHostedDomainFound);
 }
 
@@ -392,7 +392,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   MakeValidAccountInfo(&other_account_info);
   other_account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&other_account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(other_account_info);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
@@ -410,7 +410,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   EXPECT_FALSE(interceptor()->ShouldShowEnterpriseBubble(account_info));
   account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   EXPECT_TRUE(interceptor()->ShouldShowEnterpriseBubble(account_info));
 
@@ -422,13 +422,13 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubble) {
   // Two consumer accounts.
   account_info.hosted_domain = kNoHostedDomainFound;
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(false);
+      .set_is_subject_to_enterprise_features(false);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   EXPECT_FALSE(interceptor()->ShouldShowEnterpriseBubble(account_info));
   // The primary account is enterprise.
   primary_account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
   EXPECT_TRUE(interceptor()->ShouldShowEnterpriseBubble(account_info));
 }
@@ -451,7 +451,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
       identity_test_env()->MakeAccountAvailable("dummy@example.com");
   other_account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&other_account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(other_account_info);
   AccountInfo account_info =
       identity_test_env()->MakeAccountAvailable("bob@example.com");
@@ -466,7 +466,7 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldEnforceEnterpriseProfileSeparation) {
       interceptor()->ShouldEnforceEnterpriseProfileSeparation(account_info));
   account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
   // Managed account intercepted.
   EXPECT_TRUE(
@@ -483,7 +483,7 @@ TEST_F(DiceWebSigninInterceptorTest,
       identity_test_env()->MakeAccountAvailable("bob@example.com");
   MakeValidAccountInfo(&account_info_1, "example.com");
   AccountCapabilitiesTestMutator(&account_info_1.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info_1);
 
   interceptor()->state_->new_account_interception_ = true;
@@ -503,7 +503,7 @@ TEST_F(DiceWebSigninInterceptorTest,
           "alice@example.com", signin::ConsentLevel::kSignin);
   MakeValidAccountInfo(&primary_account_info, "example.com");
   AccountCapabilitiesTestMutator(&primary_account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
 
   // Primary account is set.
@@ -995,14 +995,14 @@ TEST_F(DiceWebSigninInterceptorTest, ShouldShowEnterpriseBubbleWithoutUPA) {
   MakeValidAccountInfo(&account_info_1);
   account_info_1.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&account_info_1.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info_1);
   AccountInfo account_info_2 =
       identity_test_env()->MakeAccountAvailable("alice@example.com");
   MakeValidAccountInfo(&account_info_2);
   account_info_2.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&account_info_2.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info_2);
 
   // Primary account is not set.
@@ -1790,7 +1790,7 @@ TEST_F(DiceWebSigninInterceptorTest,
           "bob@example.com", signin::ConsentLevel::kSignin);
   primary_account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&primary_account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(primary_account_info);
 
   AccountInfo account_info =
@@ -1920,7 +1920,7 @@ TEST_P(DiceWebSigninInterceptorTestSupervisionMetrics, RecordMetrics) {
   // Set supervised user capabilities and expectations.
   AccountCapabilitiesTestMutator mutator(
       &intercepted_account_info.capabilities);
-  mutator.set_is_subject_to_enterprise_policies(false);
+  mutator.set_is_subject_to_enterprise_features(false);
   SinginInterceptSupervisionState expected_state;
   switch (IsSupervisedUser()) {
     case (signin::Tribool::kTrue):

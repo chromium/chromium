@@ -57,7 +57,7 @@ AccountInfo GetFakeAccountInfo(
                   signin::constants::kNoHostedDomainFound;
   }
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(managed);
+      .set_is_subject_to_enterprise_features(managed);
   return account_info;
 }
 

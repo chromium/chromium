@@ -88,7 +88,7 @@ class UserCloudPolicyStatusProviderTest
         kTestUsername, signin::ConsentLevel::kSignin);
 
     AccountCapabilitiesTestMutator mutator(&account.capabilities);
-    mutator.set_is_subject_to_enterprise_policies(true);
+    mutator.set_is_subject_to_enterprise_features(true);
     account.hosted_domain = kNoHostedDomainFound;
     identity_test_env_.UpdateAccountInfoForAccount(account);
   }

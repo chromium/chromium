@@ -353,7 +353,7 @@ class ManagedProfileCreationBrowserTest
     account_info.picture_url = "https://example.com";
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_enterprise_policies(hosted_domain !=
+    mutator.set_is_subject_to_enterprise_features(hosted_domain !=
                                                   kNoHostedDomainFound);
 
     DCHECK(account_info.IsValid());

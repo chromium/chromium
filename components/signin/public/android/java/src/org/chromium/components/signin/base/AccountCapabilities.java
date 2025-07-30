@@ -209,9 +209,9 @@ public class AccountCapabilities {
     }
 
     /**
-     * @return isSubjectToEnterprisePolicies capability value.
+     * @return isSubjectToEnterpriseFeatures capability value.
      */
-    public @Tribool int isSubjectToEnterprisePolicies() {
+    public @Tribool int isSubjectToEnterpriseFeatures() {
         return getCapabilityByName(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME);
     }

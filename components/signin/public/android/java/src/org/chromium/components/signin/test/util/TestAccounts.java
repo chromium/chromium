@@ -146,7 +146,7 @@ public class TestAccounts {
                     .accountImage(createAvatar())
                     .accountCapabilities(
                             new AccountCapabilitiesBuilder()
-                                    .setIsSubjectToEnterprisePolicies(true)
+                                    .setIsSubjectToEnterpriseFeatures(true)
                                     .build())
                     .build();
 

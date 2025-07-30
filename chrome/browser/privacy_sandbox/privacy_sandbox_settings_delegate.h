@@ -55,7 +55,7 @@ class PrivacySandboxSettingsDelegate
 
  private:
   bool PrivacySandboxRestrictedNoticeRequired() const;
-  bool IsSubjectToEnterprisePolicies() const;
+  bool IsSubjectToEnterpriseFeatures() const;
   raw_ptr<Profile> profile_;
   // TODO(linnan): Remove this field when
   // `IsCookieDeprecationExperimentEligible()` consults `ExperimentManager`.

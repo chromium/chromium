@@ -252,7 +252,7 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
 
   // Whether it's a dasher account.
   if (tpcd::experiment::kExcludeDasherAccount.Get() &&
-      IsSubjectToEnterprisePolicies()) {
+      IsSubjectToEnterpriseFeatures()) {
     return TpcdExperimentEligibility(
         TpcdExperimentEligibility::Reason::kEnterpriseUser);
   }
@@ -286,7 +286,7 @@ TpcdExperimentEligibility PrivacySandboxSettingsDelegate::
       TpcdExperimentEligibility::Reason::kEligible);
 }
 
-bool PrivacySandboxSettingsDelegate::IsSubjectToEnterprisePolicies() const {
+bool PrivacySandboxSettingsDelegate::IsSubjectToEnterpriseFeatures() const {
   auto* identity_manager = IdentityManagerFactory::GetForProfile(profile_);
   if (!identity_manager ||
       !identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
@@ -299,7 +299,7 @@ bool PrivacySandboxSettingsDelegate::IsSubjectToEnterprisePolicies() const {
       identity_manager->FindExtendedPrimaryAccountInfo(
           signin::ConsentLevel::kSignin);
   auto capability =
-      account_info.capabilities.is_subject_to_enterprise_policies();
+      account_info.capabilities.is_subject_to_enterprise_features();
   return capability == signin::Tribool::kTrue;
 }
 

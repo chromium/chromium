@@ -162,7 +162,7 @@ class EnterpriseReportingPrivateApiTest : public extensions::ExtensionApiTest {
           ->set_policy_data_for_testing(std::move(profile_policy_data));
     }
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(as_managed);
+        .set_is_subject_to_enterprise_features(as_managed);
 
     return account_info;
   }

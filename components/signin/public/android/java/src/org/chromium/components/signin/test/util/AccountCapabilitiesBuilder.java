@@ -35,8 +35,8 @@ public final class AccountCapabilitiesBuilder {
         return this;
     }
 
-    /** Sets the isSubjectToEnterprisePolicies capability value. */
-    public AccountCapabilitiesBuilder setIsSubjectToEnterprisePolicies(boolean value) {
+    /** Sets the isSubjectToEnterpriseFeatures capability value. */
+    public AccountCapabilitiesBuilder setIsSubjectToEnterpriseFeatures(boolean value) {
         mCapabilities.put(
                 AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME,
                 value);

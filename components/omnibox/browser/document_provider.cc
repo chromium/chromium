@@ -379,7 +379,7 @@ bool DocumentProvider::IsDocumentProviderAllowed(
           omnibox::kDocumentProviderEnterpriseEligibility)) {
     const auto& entrprise_account_state =
         client_->GetDocumentSuggestionsService()
-            ->account_is_subject_to_enterprise_policies();
+            ->account_is_workspace_managed();
     is_enterprise_eligible =
         base::FeatureList::IsEnabled(
             omnibox::kDocumentProviderEnterpriseEligibilityWhenUnknown)
@@ -586,14 +586,12 @@ void DocumentProvider::OnURLLoadComplete(
                            response_code);
 
   // Also log the response code sliced by the enterprise account capability.
-  const auto& account_is_subject_to_enterprise_policies =
-      signin::TriboolToString(
-          client_->GetDocumentSuggestionsService()
-              ->account_is_subject_to_enterprise_policies());
+  const auto& account_is_workspace_managed = signin::TriboolToString(
+      client_->GetDocumentSuggestionsService()->account_is_workspace_managed());
   base::UmaHistogramSparse(
       base::StringPrintf("Omnibox.DocumentSuggest.HttpResponseCode."
                          "IsSubjectToEnterprisePolicies.%s",
-                         account_is_subject_to_enterprise_policies),
+                         account_is_workspace_managed),
       response_code);
 
   // The following are codes that we believe indicate non-transient failures,

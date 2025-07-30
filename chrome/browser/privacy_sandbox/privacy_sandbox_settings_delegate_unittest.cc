@@ -284,7 +284,7 @@ struct CookieDeprecationExperimentEligibilityTestCase {
 #if BUILDFLAG(IS_ANDROID)
   bool exclude_pwa_twa_installed = true;
 #endif
-  std::optional<bool> is_subject_to_enterprise_policies;
+  std::optional<bool> is_subject_to_enterprise_features;
   content_settings::CookieControlsMode cookie_controls_mode_pref =
       content_settings::CookieControlsMode::kOff;
   ContentSetting cookie_content_setting = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -394,7 +394,7 @@ const CookieDeprecationExperimentEligibilityTestCase
                 TpcdExperimentEligibility::Reason::kEligible,
         },
         {
-            .is_subject_to_enterprise_policies = true,
+            .is_subject_to_enterprise_features = true,
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
             .expected_eligible = false,
             .expected_current_eligibility =
@@ -402,14 +402,14 @@ const CookieDeprecationExperimentEligibilityTestCase
         },
         {
             .exclude_dasher_account = false,
-            .is_subject_to_enterprise_policies = true,
+            .is_subject_to_enterprise_features = true,
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
             .expected_eligible = true,
             .expected_current_eligibility =
                 TpcdExperimentEligibility::Reason::kEligible,
         },
         {
-            .is_subject_to_enterprise_policies = false,
+            .is_subject_to_enterprise_features = false,
             .privacy_sandbox_eea_notice_acknowledged_pref = true,
             .expected_eligible = true,
             .expected_current_eligibility =
@@ -458,7 +458,7 @@ class CookieDeprecationExperimentEligibilityTest
                             ->identity_manager()
                             ->FindExtendedAccountInfoByEmailAddress(kTestEmail);
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_enterprise_policies(enabled);
+    mutator.set_is_subject_to_enterprise_features(enabled);
     signin::UpdateAccountInfoForAccount(identity_test_env()->identity_manager(),
                                         account_info);
   }
@@ -542,12 +542,12 @@ TEST_P(CookieDeprecationExperimentEligibilityTest, IsEligible) {
               *test_case.expected_eligible_before);
   }
 
-  if (test_case.is_subject_to_enterprise_policies.has_value()) {
+  if (test_case.is_subject_to_enterprise_features.has_value()) {
     // Sign the user in.
     identity_test_env()->MakePrimaryAccountAvailable(
         kTestEmail, signin::ConsentLevel::kSignin);
     SetSubjectToEnterprisePoliciesCapability(
-        kTestEmail, *test_case.is_subject_to_enterprise_policies);
+        kTestEmail, *test_case.is_subject_to_enterprise_features);
   }
 
   prefs()->SetInteger(prefs::kCookieControlsMode,

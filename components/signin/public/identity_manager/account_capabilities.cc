@@ -159,7 +159,7 @@ signin::Tribool AccountCapabilities::
       kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice);
 }
 
-signin::Tribool AccountCapabilities::is_subject_to_enterprise_policies() const {
+signin::Tribool AccountCapabilities::is_subject_to_enterprise_features() const {
   return GetCapabilityByName(kIsSubjectToEnterprisePoliciesCapabilityName);
 }
 

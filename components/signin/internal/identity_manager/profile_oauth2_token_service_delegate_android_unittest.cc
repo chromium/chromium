@@ -88,7 +88,7 @@ class OAuth2TokenServiceDelegateAndroidTest : public testing::Test {
     account_info.given_name = "givenname";
     account_info.hosted_domain = "example.com";
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(true);
+        .set_is_subject_to_enterprise_features(true);
     account_info.locale = "en";
     account_info.picture_url = "https://example.com";
     account_info.account_id = account_tracker_service_.PickAccountIdForAccount(

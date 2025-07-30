@@ -84,7 +84,7 @@ public final class AccountCapabilitiesTest {
                     .IS_SUBJECT_TO_CHROME_PRIVACY_SANDBOX_RESTRICTED_MEASUREMENT_NOTICE:
                 return capabilities.isSubjectToChromePrivacySandboxRestrictedMeasurementNotice();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME:
-                return capabilities.isSubjectToEnterprisePolicies();
+                return capabilities.isSubjectToEnterpriseFeatures();
             case AccountCapabilitiesConstants.IS_SUBJECT_TO_PARENTAL_CONTROLS_CAPABILITY_NAME:
                 return capabilities.isSubjectToParentalControls();
             /** keep-sorted end */
@@ -160,7 +160,7 @@ public final class AccountCapabilitiesTest {
                                         AccountCapabilitiesConstants
                                                 .IS_ALLOWED_FOR_MACHINE_LEARNING_CAPABILITY_NAME),
                         new ParameterSet()
-                                .name("IsSubjectToEnterprisePolicies")
+                                .name("IsSubjectToEnterpriseFeatures")
                                 .value(
                                         AccountCapabilitiesConstants
                                                 .IS_SUBJECT_TO_ENTERPRISE_POLICIES_CAPABILITY_NAME),

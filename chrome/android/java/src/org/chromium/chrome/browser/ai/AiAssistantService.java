@@ -471,7 +471,7 @@ public class AiAssistantService {
                                             != Tribool.FALSE) {
                                 enabled = false;
                             } else if (shouldDisableForEnterprise()
-                                    && capabilities.isSubjectToEnterprisePolicies()
+                                    && capabilities.isSubjectToEnterpriseFeatures()
                                             != Tribool.FALSE) {
                                 enabled = false;
                             }

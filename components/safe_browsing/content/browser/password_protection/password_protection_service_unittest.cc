@@ -1125,7 +1125,7 @@ TEST_P(PasswordProtectionServiceBaseTest,
   account_info.gaia = GaiaId("gaia");
   account_info.hosted_domain = "example.com";
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   EXPECT_CALL(*password_protection_service_, GetAccountInfoForUsername(_))
       .WillRepeatedly(Return(account_info));
 

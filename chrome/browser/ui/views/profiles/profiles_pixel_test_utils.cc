@@ -48,7 +48,7 @@ AccountInfo FillAccountInfo(
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
   AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-  mutator.set_is_subject_to_enterprise_policies(
+  mutator.set_is_subject_to_enterprise_features(
       management_status == AccountManagementStatus::kManaged);
 
   if (can_show_history_sync_opt_ins_without_minor_mode_restrictions !=

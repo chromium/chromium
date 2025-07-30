@@ -69,7 +69,7 @@ class DiceWebSigninInterceptionBubbleViewTestBase : public testing::Test {
         identity_test_env->MakeAccountAvailable("bob@example.com");
     enterprise_account_.hosted_domain = "example.com";
     AccountCapabilitiesTestMutator(&enterprise_account_.capabilities)
-        .set_is_subject_to_enterprise_policies(true);
+        .set_is_subject_to_enterprise_features(true);
     identity_test_env->UpdateAccountInfoForAccount(enterprise_account_);
     personal_account_ =
         identity_test_env->MakeAccountAvailable("alice@gmail.com");

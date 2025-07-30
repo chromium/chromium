@@ -241,7 +241,7 @@ TEST_P(PlusAddressSubmissionTestWithParam, SubmittingFormRecordsUkm) {
   if (input.is_managed_profile) {
     account_info.hosted_domain = kManagedDomain;
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_policies(true);
+        .set_is_subject_to_enterprise_features(true);
     identity_env().UpdateAccountInfoForAccount(account_info);
   }
   autofill_client().set_last_committed_primary_main_frame_url(

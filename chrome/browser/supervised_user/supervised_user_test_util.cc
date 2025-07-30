@@ -100,7 +100,7 @@ void PopulateAccountInfoWithName(AccountInfo& info,
   info.locale = "en";
   info.picture_url = "https://example.com";
   AccountCapabilitiesTestMutator(&info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
 
   CHECK(info.IsValid());
 }

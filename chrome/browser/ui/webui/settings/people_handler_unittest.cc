@@ -1590,7 +1590,7 @@ TEST_F(PeopleHandlerTest, HandleStartSigninManaged) {
   // Make the account managed and disallow signout.
   account.hosted_domain = "managedchrome.com";
   AccountCapabilitiesTestMutator(&account.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account);
   SigninClient* client = ChromeSigninClientFactory::GetForProfile(profile());
   client->set_is_clear_primary_account_allowed_for_testing(

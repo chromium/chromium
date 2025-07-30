@@ -443,7 +443,7 @@ TEST_F(AccountInvestigatorTest, TryPeriodicReportWithEnterprisePrimary) {
       email, signin::ConsentLevel::kSignin);
   account_info.hosted_domain = "bar.com";
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_policies(true);
+      .set_is_subject_to_enterprise_features(true);
   identity_test_env()->UpdateAccountInfoForAccount(account_info);
 
   const HistogramTester histogram_tester;
