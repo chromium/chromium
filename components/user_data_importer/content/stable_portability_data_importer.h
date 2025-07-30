@@ -28,7 +28,6 @@ class ReadingListModel;
 
 namespace user_data_importer {
 
-struct ImportedBookmarkEntry;
 struct StablePortabilityHistoryEntry;
 
 // Main model-layer object for extracting the data exported by browsers in the
@@ -152,11 +151,6 @@ class StablePortabilityDataImporter {
   const raw_ptr<ReadingListModel> reading_list_model_;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  // Reading List items which have been parsed, but not yet committed to
-  // permanent storage.
-  std::vector<ImportedBookmarkEntry> pending_reading_list_
-      GUARDED_BY_CONTEXT(sequence_checker_);
 
   // History entries which have been parsed, but not yet committed to permanent
   // storage.

@@ -19,6 +19,7 @@
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/bookmarks/browser/bookmark_test_util.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
@@ -47,6 +48,7 @@ using bookmarks::test::IsFolder;
 using bookmarks::test::IsUrlBookmark;
 using testing::ElementsAre;
 using testing::IsEmpty;
+using testing::UnorderedElementsAre;
 
 namespace user_data_importer {
 
@@ -63,10 +65,12 @@ class StablePortabilityDataImporterTest : public testing::Test {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();
+    auto* storage_raw = storage.get();
     reading_list_model_ = std::make_unique<ReadingListModelImpl>(
         std::move(storage), syncer::StorageType::kUnspecified,
         syncer::WipeModelUponSyncDisabledBehavior::kNever,
         base::DefaultClock::GetInstance());
+    storage_raw->TriggerLoadCompletion();
 
     mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -93,9 +97,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     return bookmark_model_->other_node();
   }
 
-  const std::vector<ImportedBookmarkEntry>& GetPendingReadingList() const {
-    return importer_->pending_reading_list_;
-  }
+  const ReadingListModel& GetReadingListModel() { return *reading_list_model_; }
 
   const std::vector<StablePortabilityHistoryEntry>& GetPendingHistory() const {
     return importer_->pending_history_entries_;
@@ -247,7 +249,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Basic) {
               IsUrlBookmark(u"Chromium", GURL("https://www.chromium.org/"),
                             base::Time::Now())))));
 
-  EXPECT_EQ(GetPendingReadingList().size(), 0u);
+  EXPECT_EQ(GetReadingListModel().size(), 0u);
 }
 
 // Identical to the above test, but without the top-level <DL> tag enclosing it.
@@ -273,7 +275,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_NoTopLevelDL) {
               IsUrlBookmark(u"Chromium", GURL("https://www.chromium.org/"),
                             base::Time::Now())))));
 
-  EXPECT_EQ(GetPendingReadingList().size(), 0u);
+  EXPECT_EQ(GetReadingListModel().size(), 0u);
 }
 
 // Tests parsing an HTML file with folders, both empty and with bookmarks.
@@ -322,7 +324,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_Folders) {
                                   1674205200)))))),
               IsFolder(u"Empty Folder", ElementsAre())))));
 
-  EXPECT_EQ(GetPendingReadingList().size(), 0u);
+  EXPECT_EQ(GetReadingListModel().size(), 0u);
 }
 
 // Tests parsing a simple HTML file with three reading list items.
@@ -340,35 +342,52 @@ TEST_F(StablePortabilityDataImporterTest, ReadingList) {
       </DL>)");
   EXPECT_EQ(GetNumberOfReadingListImported(), 3);
 
-  EXPECT_EQ(GetPendingReadingList().size(), 3u);
+  EXPECT_EQ(GetReadingListModel().size(), 3u);
 
   // "Imported" bookmarks folder should *not* have been created.
   const bookmarks::BookmarkNode* other_node = GetOtherBookmarkNode();
   EXPECT_THAT(other_node->children(), ElementsAre());
 
-  ImportedBookmarkEntry entry = GetPendingReadingList()[0];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Google");
-  EXPECT_EQ(entry.creation_time,
-            base::Time::FromSecondsSinceUnixEpoch(904914000));
-  EXPECT_EQ(entry.url, GURL("https://www.google.com/"));
-  EXPECT_THAT(entry.path, IsEmpty());
+  EXPECT_THAT(
+      GetReadingListModel().GetKeys(),
+      UnorderedElementsAre(GURL("https://www.google.com/"),
+                           GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"),
+                           GURL("https://en.wikipedia.org/wiki/Brian_Wilson")));
 
-  entry = GetPendingReadingList()[1];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"The Beach Boys");
+  const ReadingListEntry* entry1 =
+      GetReadingListModel()
+          .GetEntryByURL(GURL("https://www.google.com/"))
+          .get();
+  ASSERT_TRUE(entry1);
+  EXPECT_EQ(entry1->Title(), "Google");
+  // TODO(crbug.com/431203204): Implement actually importing the creation time.
+  // Then the expectation should become
+  // `base::Time::FromSecondsSinceUnixEpoch(904914000)`.
+  EXPECT_EQ(
+      base::Time::UnixEpoch() + base::Microseconds(entry1->CreationTime()),
+      base::Time::Now());
+
+  const ReadingListEntry* entry2 =
+      GetReadingListModel()
+          .GetEntryByURL(GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"))
+          .get();
+  ASSERT_TRUE(entry2);
+  EXPECT_EQ(entry2->Title(), "The Beach Boys");
   // No timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/The_Beach_Boys"));
-  EXPECT_THAT(entry.path, IsEmpty());
+  EXPECT_EQ(
+      base::Time::UnixEpoch() + base::Microseconds(entry2->CreationTime()),
+      base::Time::Now());
 
-  entry = GetPendingReadingList()[2];
-  EXPECT_FALSE(entry.is_folder);
-  EXPECT_EQ(entry.title, u"Brian Wilson");
+  const ReadingListEntry* entry3 =
+      GetReadingListModel()
+          .GetEntryByURL(GURL("https://en.wikipedia.org/wiki/Brian_Wilson"))
+          .get();
+  ASSERT_TRUE(entry3);
+  EXPECT_EQ(entry3->Title(), "Brian Wilson");
   // Invalid timestamp maps to current time.
-  EXPECT_EQ(entry.creation_time, base::Time::Now());
-  EXPECT_EQ(entry.url, GURL("https://en.wikipedia.org/wiki/Brian_Wilson"));
-  EXPECT_THAT(entry.path, IsEmpty());
+  EXPECT_EQ(
+      base::Time::UnixEpoch() + base::Microseconds(entry3->CreationTime()),
+      base::Time::Now());
 }
 
 // Tests parsing an HTML with several not valid formats. The parser should still

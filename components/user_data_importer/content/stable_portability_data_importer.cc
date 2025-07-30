@@ -151,17 +151,22 @@ void StablePortabilityDataImporter::OnReadingListParsed(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  if (!reading_list_model_) {
+    PostCallback(std::move(reading_list_callback), 0);
+    return;
+  }
+
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
                    [this, &reading_list_callback](auto) {
                      // TODO(crbug.com/414604427): Log error to UMA.
                      PostCallback(std::move(reading_list_callback), 0);
                    });
 
-  // TODO(crbug.com/414604427): Add the parsed reading list to the user's
-  // storage.
-  pending_reading_list_ = std::move(value.bookmarks);
+  // Add the parsed reading list entries to the user's storage.
+  size_t imported_count = ::user_data_importer::ImportReadingList(
+      reading_list_model_, std::move(value.bookmarks));
 
-  PostCallback(std::move(reading_list_callback), pending_reading_list_.size());
+  PostCallback(std::move(reading_list_callback), imported_count);
 }
 
 void StablePortabilityDataImporter::TransferHistoryEntries(
