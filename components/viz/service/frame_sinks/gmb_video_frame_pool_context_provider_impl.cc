@@ -96,8 +96,7 @@ class GmbVideoFramePoolContext
     // Create a native GMB handle first.
     gfx::GpuMemoryBufferHandle buffer_handle =
         gpu_memory_buffer_factory_->CreateNativeGmbHandle(
-            gpu::MappableSIClientGmbId::kGmbVideoFramePoolContext, size,
-            gpu::ToBufferFormat(si_format), buffer_usage);
+            size, gpu::ToBufferFormat(si_format), buffer_usage);
     if (buffer_handle.is_null()) {
       return nullptr;
     }

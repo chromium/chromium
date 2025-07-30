@@ -22,16 +22,6 @@ class VulkanContextProvider;
 
 namespace gpu {
 
-// This enums will be used by clients when creating native gmb handles via
-// GpuMemoryBufferFactory::CreateNativeGmbHandle(). This ensure each client uses
-// a unique id.
-enum class MappableSIClientGmbId : int {
-  kGpuChannel = 1,
-  kGmbVideoFramePoolContext = 2,
-  kGpuServiceImpl = 3,
-  kLast = 2
-};
-
 class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
  public:
   GpuMemoryBufferFactory(const GpuMemoryBufferFactory&) = delete;
@@ -45,13 +35,8 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryBufferFactory {
       viz::VulkanContextProvider* vulkan_context_provider,
       scoped_refptr<base::SingleThreadTaskRunner> io_runner = nullptr);
 
-  // Creates a native GpuMemoryBufferHandle for MappableSI work. Note that
-  // every client should use a different |id| here otherwise it can result in
-  // errors due to multiple clients creating and destroying GMBs with same |id|
-  // from multiple threads. Using MappableSIClientGmbId here ensures that every
-  // client uses unique id assigned to it and also makes it easier to track.
-  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(MappableSIClientGmbId id,
-                                                   const gfx::Size& size,
+  // Creates a native GpuMemoryBufferHandle for MappableSI work.
+  gfx::GpuMemoryBufferHandle CreateNativeGmbHandle(const gfx::Size& size,
                                                    gfx::BufferFormat format,
                                                    gfx::BufferUsage usage);
 

@@ -76,9 +76,8 @@ TYPED_TEST_P(GpuMemoryBufferFactoryTest, CreateGpuMemoryBuffer) {
       }
 
       gfx::GpuMemoryBufferHandle handle =
-          TestFixture::factory_.CreateNativeGmbHandle(
-              gpu::MappableSIClientGmbId::kGpuServiceImpl, gfx::Size(2, 2),
-              format, usage);
+          TestFixture::factory_.CreateNativeGmbHandle(gfx::Size(2, 2), format,
+                                                      usage);
       EXPECT_NE(handle.type, gfx::EMPTY_BUFFER);
     }
   }

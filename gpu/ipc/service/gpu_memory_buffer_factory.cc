@@ -78,7 +78,6 @@ GpuMemoryBufferFactory::CreateNativeType(
 }
 
 gfx::GpuMemoryBufferHandle GpuMemoryBufferFactory::CreateNativeGmbHandle(
-    MappableSIClientGmbId id,
     const gfx::Size& size,
     gfx::BufferFormat format,
     gfx::BufferUsage usage) {

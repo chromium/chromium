@@ -1277,9 +1277,7 @@ bool GpuServiceImpl::IsGMBNV12Supported() {
   auto size = gfx::Size(2, 2);
 
   return !gpu_memory_buffer_factory_
-              ->CreateNativeGmbHandle(
-                  gpu::MappableSIClientGmbId::kGpuServiceImpl, size,
-                  buffer_format, buffer_usage)
+              ->CreateNativeGmbHandle(size, buffer_format, buffer_usage)
               .is_null();
 }
 #endif

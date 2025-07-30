@@ -454,7 +454,7 @@ void GpuChannelMessageFilter::CreateGpuMemoryBuffer(
 
   if (IsNativeBufferSupported(buffer_format, buffer_usage)) {
     handle = gpu_memory_buffer_factory_->CreateNativeGmbHandle(
-        MappableSIClientGmbId::kGpuChannel, size, buffer_format, buffer_usage);
+        size, buffer_format, buffer_usage);
   } else {
     if (SharedMemoryImageBackingFactory::IsBufferUsageSupported(buffer_usage) &&
         SharedMemoryImageBackingFactory::IsSizeValidForFormat(size, format)) {

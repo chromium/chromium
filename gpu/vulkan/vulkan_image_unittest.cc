@@ -161,9 +161,8 @@ TEST_F(VulkanImageTest, CreateFromGpuMemoryBufferHandle) {
   };
   for (const auto format : formats) {
     gfx::BufferUsage buffer_usage = gfx::BufferUsage::SCANOUT;
-    auto gmb_handle = factory->CreateNativeGmbHandle(
-        gpu::MappableSIClientGmbId::kGpuServiceImpl, size, format.buffer,
-        buffer_usage);
+    auto gmb_handle =
+        factory->CreateNativeGmbHandle(size, format.buffer, buffer_usage);
     EXPECT_TRUE(!gmb_handle.is_null());
     EXPECT_EQ(gmb_handle.type,
               gfx::GpuMemoryBufferType::ANDROID_HARDWARE_BUFFER);
