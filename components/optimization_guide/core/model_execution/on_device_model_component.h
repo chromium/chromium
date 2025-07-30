@@ -245,12 +245,6 @@ class OnDeviceModelComponentStateManager final {
     return GetDebugState();
   }
 
-  // Returns the performance hint for this device based on the supported
-  // performance hints in the manifest.
-  std::optional<proto::OnDeviceModelPerformanceHint>
-  GetSupportedPerformanceHintForDeviceFromManifest(
-      const base::Value::List* manifest_performance_hints) const;
-
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -282,11 +276,6 @@ class OnDeviceModelComponentStateManager final {
 
   // Notifies the observers of the `feature` used for the first time.
   void NotifyOnDeviceEligibleFeatureFirstUsed(ModelBasedCapabilityKey feature);
-
-  // Reads the base model spec from the component manifest and potentially
-  // filters values to make it compatible with this device.
-  const std::optional<OnDeviceBaseModelSpec> ProcessBaseModelSpecFromManifest(
-      const base::Value::Dict& manifest);
 
   raw_ptr<PrefService> local_state_ GUARDED_BY_CONTEXT(sequence_checker_);
   base::SafeRef<PerformanceClassifier> performance_classifier_

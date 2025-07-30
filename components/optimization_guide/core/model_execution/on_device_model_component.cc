@@ -72,6 +72,63 @@ void LogInstallCriteria(
   LogInstallCriteria(event_name, "All", criteria.should_install());
 }
 
+// Returns the best performance hint for this device based on the supported
+// performance hints in the manifest. `prioritized_hints` is the
+// list of performance hints in priority order, with highest priority first.
+std::optional<proto::OnDeviceModelPerformanceHint>
+GetBestPerformanceHintForDevice(
+    const base::Value::List* manifest_performance_hints,
+    const std::vector<proto::OnDeviceModelPerformanceHint>& prioritized_hints) {
+  if (!manifest_performance_hints) {
+    return std::nullopt;
+  }
+
+  absl::flat_hash_set<int> supported_hints;
+  for (const auto& supported_performance_hint_val :
+       *manifest_performance_hints) {
+    std::optional<int> supported_performance_hint_int =
+        supported_performance_hint_val.GetIfInt();
+    if (supported_performance_hint_int) {
+      supported_hints.insert(*supported_performance_hint_int);
+    }
+  }
+  for (auto hint : prioritized_hints) {
+    if (supported_hints.contains(base::to_underlying(hint))) {
+      return hint;
+    }
+  }
+  return std::nullopt;
+}
+
+// Reads the base model spec from the component manifest and potentially
+// filters values to make it compatible with this device. `prioritized_hints`
+// is the list of performance hints in priority order, with highest priority
+// first.
+std::optional<OnDeviceBaseModelSpec> GetOnDeviceBaseModelSpecFromManifest(
+    const base::Value::Dict& manifest,
+    const std::vector<proto::OnDeviceModelPerformanceHint>& prioritized_hints) {
+  auto* model_spec = manifest.FindDict("BaseModelSpec");
+  if (!model_spec) {
+    return std::nullopt;
+  }
+  auto* name = model_spec->FindString("name");
+  auto* version = model_spec->FindString("version");
+  if (!name || !version) {
+    return std::nullopt;
+  }
+  auto* supported_performance_hints =
+      model_spec->FindList("supported_performance_hints");
+  std::optional<proto::OnDeviceModelPerformanceHint>
+      supported_performance_hint_enum = GetBestPerformanceHintForDevice(
+          supported_performance_hints, prioritized_hints);
+  return OnDeviceBaseModelSpec(
+      *name, *version,
+      supported_performance_hint_enum
+          ? OnDeviceBaseModelSpec::PerformanceHints(
+                {*supported_performance_hint_enum})
+          : OnDeviceBaseModelSpec::PerformanceHints({}));
+}
+
 }  // namespace
 
 std::ostream& operator<<(std::ostream& out, OnDeviceModelStatus status) {
@@ -367,7 +424,8 @@ void OnDeviceModelComponentStateManager::SetReady(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   state_.reset();
 
-  if (auto model_spec = ProcessBaseModelSpecFromManifest(manifest)) {
+  if (auto model_spec = GetOnDeviceBaseModelSpecFromManifest(
+          manifest, performance_classifier_->GetPossibleHints())) {
     state_ = base::WrapUnique(new OnDeviceModelComponentState);
     state_->install_dir_ = install_dir;
     // This version refers to the component version specifically, not the model
@@ -393,61 +451,6 @@ void OnDeviceModelComponentStateManager::NotifyOnDeviceEligibleFeatureFirstUsed(
   for (auto& o : observers_) {
     o.OnDeviceEligibleFeatureFirstUsed(feature);
   }
-}
-
-const std::optional<OnDeviceBaseModelSpec>
-OnDeviceModelComponentStateManager::ProcessBaseModelSpecFromManifest(
-    const base::Value::Dict& manifest) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  auto* model_spec = manifest.FindDict("BaseModelSpec");
-  if (!model_spec) {
-    return std::nullopt;
-  }
-  auto* name = model_spec->FindString("name");
-  auto* version = model_spec->FindString("version");
-  if (!name || !version) {
-    return std::nullopt;
-  }
-  auto* supported_performance_hints =
-      model_spec->FindList("supported_performance_hints");
-  std::optional<proto::OnDeviceModelPerformanceHint>
-      supported_performance_hint_enum =
-          GetSupportedPerformanceHintForDeviceFromManifest(
-              supported_performance_hints);
-  return OnDeviceBaseModelSpec(
-      *name, *version,
-      supported_performance_hint_enum
-          ? OnDeviceBaseModelSpec::PerformanceHints(
-                {*supported_performance_hint_enum})
-          : OnDeviceBaseModelSpec::PerformanceHints({}));
-}
-
-std::optional<proto::OnDeviceModelPerformanceHint>
-OnDeviceModelComponentStateManager::
-    GetSupportedPerformanceHintForDeviceFromManifest(
-        const base::Value::List* manifest_performance_hints) const {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
-  if (!manifest_performance_hints) {
-    return std::nullopt;
-  }
-
-  absl::flat_hash_set<int> supported_hints;
-  for (const auto& supported_performance_hint_val :
-       *manifest_performance_hints) {
-    std::optional<int> supported_performance_hint_int =
-        supported_performance_hint_val.GetIfInt();
-    if (supported_performance_hint_int) {
-      supported_hints.insert(*supported_performance_hint_int);
-    }
-  }
-  for (auto hint : performance_classifier_->GetPossibleHints()) {
-    if (supported_hints.contains(hint)) {
-      return hint;
-    }
-  }
-  return std::nullopt;
 }
 
 OnDeviceModelComponentState::OnDeviceModelComponentState() = default;
