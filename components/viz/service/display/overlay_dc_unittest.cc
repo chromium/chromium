@@ -482,7 +482,7 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
         ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
-      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size();
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0});
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}).size());
 
@@ -491,7 +491,7 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
 
     // After some number of frames with no movement, we expect an overlay again
     for (int i = 0; i < 10; i++) {
-      ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size();
+      ProcessForOverlaysSingleVideoRectWithOffset({1, 0});
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset({1, 0}).size());
   }
