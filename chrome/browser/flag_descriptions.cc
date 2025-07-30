@@ -4872,11 +4872,6 @@ const char kCCTSignInPromptDescription[] =
 const char kCCTToolbarRefactorName[] = "CCT Toolbar Refactor";
 const char kCCTToolbarRefactorDescription[] = "CCT Toolbar Refactor";
 
-const char kBottomBrowserControlsRefactorName[] =
-    "BottomBrowserControlsRefactor";
-const char kBottomBrowserControlsRefactorDescription[] =
-    "Use BottomControlsStacker to position bottom controls layers.";
-
 const char kBrowsingDataModelName[] = "Browsing Data Model";
 const char kBrowsingDataModelDescription[] = "Enables BDM on Android.";
 

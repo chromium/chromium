@@ -53,22 +53,6 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateObserver =
             new BrowserControlsStateProvider.Observer() {
                 @Override
-                public void onControlsOffsetChanged(
-                        int topOffset,
-                        int topControlsMinHeightOffset,
-                        boolean topControlsMinHeightChanged,
-                        int bottomOffset,
-                        int bottomControlsMinHeightOffset,
-                        boolean bottomControlsMinHeightChanged,
-                        boolean requestNewFrame,
-                        boolean isVisibilityForced) {
-                    // Direct the call to BottomControlsLayer#onBrowserControlsOffsetUpdate.
-                    if (BottomControlsStacker.isDispatchingYOffset()) return;
-
-                    MiniPlayerMediator.this.onControlsOffsetChanged(bottomControlsMinHeightOffset);
-                }
-
-                @Override
                 public void onBottomControlsHeightChanged(
                         int bottomControlContainerHeight, int bottomControlsMinHeight) {
                     MiniPlayerMediator.this.onBottomControlsHeightChanged();
@@ -315,8 +299,6 @@ public class MiniPlayerMediator implements BottomControlsLayer {
 
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-        assert BottomControlsStacker.isDispatchingYOffset();
-
         // yOffset for the mini player is a negative number if it has to move up. This value *can*
         // be positive when we are going through an animation; in which case the player view should
         // stay invisible.

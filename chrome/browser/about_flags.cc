@@ -3849,14 +3849,6 @@ const FeatureEntry::FeatureVariation kEdgeToEdgeTabletVariations[] = {
      std::size(kEdgeToEdgeTabletFeatureParams), nullptr},
 };
 
-const FeatureEntry::FeatureParam kBottomBrowserControlsRefactorParams[] = {
-    {"disable_bottom_controls_stacker_y_offset", "false"}};
-const FeatureEntry::FeatureVariation
-    kBottomBrowserControlsRefactorVariations[] = {
-        {"Dispatch yOffset", kBottomBrowserControlsRefactorParams,
-         std::size(kBottomBrowserControlsRefactorParams), nullptr},
-};
-
 const FeatureEntry::FeatureParam sAndroidThemeModuleParams[] = {
     {"force_theme_module_dependencies", "true"}};
 const FeatureEntry::FeatureVariation kAndroidThemeModuleVariations[] = {
@@ -6086,13 +6078,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDynamicSafeAreaInsetsOnScrollName,
      flag_descriptions::kDynamicSafeAreaInsetsOnScrollDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(blink::features::kDynamicSafeAreaInsetsOnScroll)},
-    {"bottom-browser-controls-refactor",
-     flag_descriptions::kBottomBrowserControlsRefactorName,
-     flag_descriptions::kBottomBrowserControlsRefactorDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(
-         chrome::android::kBottomBrowserControlsRefactor,
-         kBottomBrowserControlsRefactorVariations,
-         "BottomBrowserControlsRefactor")},
 
     // Android floating snackbar
     {"floating-snackbar", flag_descriptions::kFloatingSnackbarName,

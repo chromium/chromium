@@ -46,10 +46,6 @@ import org.chromium.ui.display.DisplayAndroid;
 @Config(
         manifest = Config.NONE,
         shadows = {ShadowLooper.class})
-@EnableFeatures({
-    ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
-            + ":disable_bottom_controls_stacker_y_offset/false",
-})
 public class BottomControlsStackerUnitTest {
     private static final @LayerType int ZERO_HEIGHT_TOP_LAYER = LayerType.PROGRESS_BAR;
     private static final @LayerType int TOP_LAYER = LayerType.READ_ALOUD_PLAYER;

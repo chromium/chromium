@@ -252,12 +252,10 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * @param animate Whether animate the browser controls size change.
      */
     public void requestLayerUpdate(boolean animate) {
-        assert isEnabled();
-
         updateLayerVisibilitiesAndSizes();
         updateBrowserControlsHeight(animate);
         updateBackgroundColorFromLayers();
-        if (mBrowserControlsSizer.offsetOverridden() && isDispatchingYOffset()) {
+        if (mBrowserControlsSizer.offsetOverridden()) {
             repositionLayers(
                     mBrowserControlsSizer.getBottomControlOffset(),
                     mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
@@ -295,23 +293,20 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
      * @see BrowserControlsSizer#setBottomControlsHeight(int, int)
      * @see BrowserControlsSizer#setAnimateBrowserControlsHeightChanges(boolean)
      */
+    @Deprecated
     public void setBottomControlsHeight(int height, int minHeight, boolean animate) {
         mTotalHeightFromSetter = height;
         mTotalMinHeightFromSetter = minHeight;
 
-        if (!isEnabled()) {
-            mBrowserControlsSizer.setBottomControlsHeight(height, minHeight);
-        } else {
-            requestLayerUpdate(animate);
-            // Verify the height and min height match the layer setup.
-            logIfHeightMismatch(
-                    /* expected= */ "HeightFromSetter",
-                    mTotalHeightFromSetter,
-                    mTotalMinHeightFromSetter,
-                    /* actual= */ "LayerHeightCalc",
-                    mTotalHeight,
-                    mTotalMinHeight);
-        }
+        requestLayerUpdate(animate);
+        // Verify the height and min height match the layer setup.
+        logIfHeightMismatch(
+                /* expected= */ "HeightFromSetter",
+                mTotalHeightFromSetter,
+                mTotalMinHeightFromSetter,
+                /* actual= */ "LayerHeightCalc",
+                mTotalHeight,
+                mTotalMinHeight);
     }
 
     /**
@@ -380,27 +375,23 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
                 bottomControlsHeight,
                 bottomControlsMinHeight);
 
-        // Verification when we are using layers.
-        if (isEnabled()) {
-            logIfHeightMismatch(
-                    /* expected= */ "LayerHeightCalc",
-                    mTotalHeight,
-                    mTotalMinHeight,
-                    /* actual= */ "onBottomControlsHeightChanged",
-                    bottomControlsHeight,
-                    bottomControlsMinHeight);
+        logIfHeightMismatch(
+                /* expected= */ "LayerHeightCalc",
+                mTotalHeight,
+                mTotalMinHeight,
+                /* actual= */ "onBottomControlsHeightChanged",
+                bottomControlsHeight,
+                bottomControlsMinHeight);
 
-            // If animations are enabled, calls to #onControlsOffsetChanged will reposition the
-            // layers. If animations aren't enabled, no such calls will occur, and #repositionLayers
-            // should be triggered here.
-            if (isDispatchingYOffset()
-                    && !mBrowserControlsSizer.shouldAnimateBrowserControlsHeightChanges()) {
-                repositionLayers(
-                        mBrowserControlsSizer.getBottomControlOffset(),
-                        mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
-                        false,
-                        isVisibilityForced());
-            }
+        // If animations are enabled, calls to #onControlsOffsetChanged will reposition the
+        // layers. If animations aren't enabled, no such calls will occur, and #repositionLayers
+        // should be triggered here.
+        if (!mBrowserControlsSizer.shouldAnimateBrowserControlsHeightChanges()) {
+            repositionLayers(
+                    mBrowserControlsSizer.getBottomControlOffset(),
+                    mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
+                    false,
+                    isVisibilityForced());
         }
     }
 
@@ -432,7 +423,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             offsetTagsInfo.mBottomControlsConstraints =
                     new OffsetTagConstraints(0, 0, 0, totalHeight + additionalHeight);
 
-            if (shouldUpdateOffsets && isDispatchingYOffset()) {
+            if (shouldUpdateOffsets) {
                 repositionLayers(
                         mBrowserControlsSizer.getBottomControlOffset(),
                         mBrowserControlsSizer.getBottomControlsMinHeightOffset(),
@@ -452,7 +443,7 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
             boolean bottomControlsMinHeightChanged,
             boolean requestNewFrame,
             boolean isVisibilityForced) {
-        if (mLayers.size() == 0 || !isDispatchingYOffset()) return;
+        if (mLayers.size() == 0) return;
         repositionLayers(
                 bottomOffset,
                 bottomControlsMinHeightOffset,
@@ -759,18 +750,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
         return (scrollOffBehavior == LayerScrollBehavior.ALWAYS_SCROLL_OFF)
                 || (totalMinHeight == 0
                         && scrollOffBehavior == LayerScrollBehavior.DEFAULT_SCROLL_OFF);
-    }
-
-    /** Returns whether bottom controls stacker is calculating height. */
-    public static boolean isEnabled() {
-        return ChromeFeatureList.sBottomBrowserControlsRefactor.isEnabled();
-    }
-
-    /** Whether Bottom Controls Stacker is dispatching yOffset. */
-    public static boolean isDispatchingYOffset() {
-        // This method is used as a kill switch to fallback to the previous behavior.
-        return isEnabled()
-                && !ChromeFeatureList.sDisableBottomControlsStackerYOffsetDispatching.getValue();
     }
 
     /**

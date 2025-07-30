@@ -300,8 +300,6 @@ class EdgeToEdgeBottomChinMediator
 
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-        assert BottomControlsStacker.isDispatchingYOffset();
-
         mYOffset = layerYOffset;
 
         if (isVisible()) {

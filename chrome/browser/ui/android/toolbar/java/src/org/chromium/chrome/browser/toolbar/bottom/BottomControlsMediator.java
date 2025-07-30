@@ -184,22 +184,6 @@ class BottomControlsMediator
     }
 
     @Override
-    public void onControlsOffsetChanged(
-            int topOffset,
-            int topControlsMinHeightOffset,
-            boolean topControlsMinHeightChanged,
-            int bottomOffset,
-            int bottomControlsMinHeightOffset,
-            boolean bottomControlsMinHeightChanged,
-            boolean requestNewFrame,
-            boolean isVisibilityForced) {
-        // Method call routed to onBrowserControlsOffsetUpdate.
-        if (BottomControlsStacker.isDispatchingYOffset()) return;
-
-        setYOffset(bottomOffset - getBrowserControls().getBottomControlsMinHeight());
-    }
-
-    @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
         // TODO(331829509): Set position in a way that doesn't rely on browser controls size system.
@@ -348,7 +332,6 @@ class BottomControlsMediator
 
     @Override
     public void onBrowserControlsOffsetUpdate(int layerYOffset) {
-        assert BottomControlsStacker.isDispatchingYOffset();
         setYOffset(layerYOffset);
     }
 

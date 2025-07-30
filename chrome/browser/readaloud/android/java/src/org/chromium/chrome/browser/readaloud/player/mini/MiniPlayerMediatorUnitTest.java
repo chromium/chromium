@@ -25,42 +25,23 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
-import org.robolectric.ParameterizedRobolectricTestRunner;
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameter;
-import org.robolectric.ParameterizedRobolectricTestRunner.Parameters;
 import org.robolectric.annotation.Config;
 import org.robolectric.shadows.ShadowLooper;
 
-import org.chromium.base.FeatureOverrides;
-import org.chromium.base.test.BaseRobolectricTestRule;
+import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker;
 import org.chromium.chrome.browser.browser_controls.BottomControlsStacker.LayerType;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.readaloud.player.VisibilityState;
 import org.chromium.ui.modelutil.PropertyModel;
 
-import java.util.Arrays;
-import java.util.Collection;
-
 /** Unit tests for {@link MiniPlayerMediator}. */
-@RunWith(ParameterizedRobolectricTestRunner.class)
+@RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 public class MiniPlayerMediatorUnitTest {
     private static final int HEIGHT_PX = 187;
 
-    @Parameters
-    public static Collection<Object[]> data() {
-        return Arrays.asList(new Object[][] {{true}, {false}});
-    }
-
-    @Parameter(0)
-    public boolean mTestBottomControlsStacker;
-
     @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
-
-    @Rule(order = -2)
-    public BaseRobolectricTestRule mBaseRule = new BaseRobolectricTestRule();
 
     private PropertyModel mModel;
     private MiniPlayerMediator mMediator;
@@ -75,9 +56,6 @@ public class MiniPlayerMediatorUnitTest {
 
     @Before
     public void setUp() {
-        // By default, test behavior of using yOffset from bottom stacker.
-        setBottomControlsStackerYOffset(mTestBottomControlsStacker);
-
         doReturn(0).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(mBrowserControlsStateProvider).when(mBottomControlsStacker).getBrowserControls();
         mMediator = new MiniPlayerMediator(mBottomControlsStacker);
@@ -586,21 +564,7 @@ public class MiniPlayerMediatorUnitTest {
                 .when(mBrowserControlsStateProvider)
                 .getBottomControlsMinHeightOffset();
 
-        if (mTestBottomControlsStacker) {
-            mMediator.onBrowserControlsOffsetUpdate(layerYOffset);
-        } else {
-            mBrowserControlsObserverCaptor
-                    .getValue()
-                    .onControlsOffsetChanged(
-                            /* topOffset= */ 0,
-                            /* topControlsMinHeightOffset= */ 0,
-                            /* topControlsMinHeightChanged= */ false,
-                            bottomOffset,
-                            bottomControlsMinHeightOffset,
-                            /* bottomControlsMinHeightChanged= */ false,
-                            requestNewFrame,
-                            false);
-        }
+        mMediator.onBrowserControlsOffsetUpdate(layerYOffset);
     }
 
     private void onBottomControlsHeightChanged(
@@ -609,15 +573,5 @@ public class MiniPlayerMediatorUnitTest {
                 .getValue()
                 .onBottomControlsHeightChanged(
                         bottomControlContainerHeight, bottomControlMinHeight);
-    }
-
-    private void setBottomControlsStackerYOffset(boolean doTestYOffset) {
-        FeatureOverrides.newBuilder()
-                .flag(ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR, doTestYOffset)
-                .param(
-                        ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR,
-                        "disable_bottom_controls_stacker_y_offset",
-                        !mTestBottomControlsStacker)
-                .apply();
     }
 }

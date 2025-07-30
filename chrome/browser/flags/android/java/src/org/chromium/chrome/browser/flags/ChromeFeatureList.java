@@ -282,7 +282,6 @@ public abstract class ChromeFeatureList {
     public static final String BLOCK_INTENTS_WHILE_LOCKED = "BlockIntentsWhileLocked";
     public static final String BOARDING_PASS_DETECTOR = "BoardingPassDetector";
     public static final String BOOKMARK_PANE_ANDROID = "BookmarkPaneAndroid";
-    public static final String BOTTOM_BROWSER_CONTROLS_REFACTOR = "BottomBrowserControlsRefactor";
     public static final String BROWSER_CONTROLS_DEBUGGING = "BrowserControlsDebugging";
     public static final String BROWSER_CONTROLS_EARLY_RESIZE = "BrowserControlsEarlyResize";
     public static final String BROWSER_CONTROLS_IN_VIZ = "AndroidBrowserControlsInViz";
@@ -1232,8 +1231,6 @@ public abstract class ChromeFeatureList {
             newMutableFlagWithSafeDefault(ANDROID_TAB_HIGHLIGHTING, false);
     public static final MutableFlagWithSafeDefault sBcivBottomControls =
             newMutableFlagWithSafeDefault(BCIV_BOTTOM_CONTROLS, true);
-    public static final MutableFlagWithSafeDefault sBottomBrowserControlsRefactor =
-            newMutableFlagWithSafeDefault(BOTTOM_BROWSER_CONTROLS_REFACTOR, true);
     public static final MutableFlagWithSafeDefault sBrowserControlsEarlyResize =
             newMutableFlagWithSafeDefault(BROWSER_CONTROLS_EARLY_RESIZE, false);
     public static final MutableFlagWithSafeDefault sBrowserControlsInViz =
@@ -1806,10 +1803,6 @@ public abstract class ChromeFeatureList {
             sAndroidNativePagesInNewTabRecentTabsEnabled =
                     sAndroidNativePagesInNewTab.newBooleanParam(
                             "android_native_pages_in_new_tab_recent_tabs_enabled", true);
-    public static final MutableBooleanParamWithSafeDefault
-            sDisableBottomControlsStackerYOffsetDispatching =
-                    sBottomBrowserControlsRefactor.newBooleanParam(
-                            "disable_bottom_controls_stacker_y_offset", false);
     public static final MutableIntParamWithSafeDefault
             sAndroidTabDeclutterAutoDeleteTimeDeltaHours =
                     sAndroidTabDeclutterAutoDelete.newIntParam(

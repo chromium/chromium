@@ -46,8 +46,6 @@ import org.chromium.ui.test.util.DeviceRestriction;
     ChromeSwitches.DISABLE_MINIMUM_SHOW_DURATION
 })
 @EnableFeatures({
-    ChromeFeatureList.BOTTOM_BROWSER_CONTROLS_REFACTOR
-            + ":disable_bottom_controls_stacker_y_offset/false",
     "DynamicSafeAreaInsets",
     "DynamicSafeAreaInsetsOnScroll",
     "DrawCutoutEdgeToEdge",
