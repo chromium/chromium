@@ -180,6 +180,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
   // CanvasRenderingContext implementation
+  bool IsComposited() const override;
   scoped_refptr<CanvasResource> PaintRenderingResultsToResource(
       SourceDrawingBuffer source_buffer,
       FlushReason reason) override;
@@ -347,7 +348,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   void DrawFocusRing(const Path&, Element*);
   void UpdateElementAccessibility(const Path&, Element*);
 
-  bool IsComposited() const override;
   bool HasAlpha() const override { return CreationAttributes().alpha; }
   bool IsDesynchronized() const override {
     return CreationAttributes().desynchronized;
