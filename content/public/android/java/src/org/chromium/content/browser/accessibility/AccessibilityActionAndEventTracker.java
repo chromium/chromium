@@ -11,6 +11,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 
 import java.util.LinkedList;
+import java.util.concurrent.CountDownLatch;
 
 /** Helper class for tracking accessibility actions and events for end-to-end tests. */
 @NullMarked
@@ -18,6 +19,7 @@ public class AccessibilityActionAndEventTracker {
     private final LinkedList<String> mEvents;
     private final boolean mShouldFilterTrivialEvents;
     private boolean mTestComplete;
+    private @Nullable CountDownLatch mEventLatch;
 
     public AccessibilityActionAndEventTracker() {
         mEvents = new LinkedList<String>();
@@ -32,6 +34,10 @@ public class AccessibilityActionAndEventTracker {
         mEvents = new LinkedList<String>();
         mTestComplete = false;
         mShouldFilterTrivialEvents = shouldFilterTrivialEvents;
+    }
+
+    public void setEventLatch(@Nullable CountDownLatch latch) {
+        mEventLatch = latch;
     }
 
     public void addEvent(AccessibilityEvent event) {
@@ -83,6 +89,10 @@ public class AccessibilityActionAndEventTracker {
     /** Helper method to signal the end of a given unit test. */
     public void signalEndOfTest() {
         mTestComplete = true;
+        // If a latch is waiting, signal it.
+        if (mEventLatch != null) {
+            mEventLatch.countDown();
+        }
     }
 
     /**

@@ -4,6 +4,7 @@
 
 package org.chromium.content.browser.accessibility;
 
+import static org.chromium.base.test.util.CriteriaHelper.DEFAULT_MAX_TIME_TO_POLL;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.ANP_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.END_OF_TEST_ERROR;
 import static org.chromium.content.browser.accessibility.AccessibilityContentShellTestUtils.NODE_TIMEOUT_ERROR;
@@ -30,6 +31,8 @@ import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.UrlUtils;
+import org.chromium.build.annotations.Nullable;
+import org.chromium.content_public.browser.test.util.TestCallbackHelperContainer;
 import org.chromium.content_shell_apk.ContentShellActivityTestRule;
 import org.chromium.ui.accessibility.AccessibilityState;
 
@@ -39,7 +42,10 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 /** Custom activity test rule for any content shell tests related to accessibility. */
 @SuppressLint("VisibleForTests")
@@ -57,6 +63,9 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     protected static final String MISSING_FILE_ERROR =
             "Input file could not be read, perhaps the file is missing?";
 
+    protected static final String EVENT_WAITING_ERROR =
+            "prepareToWaitForNextEvent must be called before waitForNextEventToFire";
+
     // Member variables required for testing framework. Although they are the same object, we will
     // instantiate an object of type |AccessibilityNodeProvider| for convenience.
     protected static final String BASE_DIRECTORY = "/chromium_tests_root";
@@ -66,15 +75,38 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
     // Tracker for all events and actions performed during a given test.
     private AccessibilityActionAndEventTracker mTracker;
 
+    private @Nullable CountDownLatch mEventLatch;
+
     public AccessibilityContentShellActivityTestRule() {
         super();
+    }
+
+    /** Wait until the event tracked by prepareToWaitForNextEvent() has been received. */
+    public void waitForNextEventToFire() {
+        Assert.assertNotNull(EVENT_WAITING_ERROR, mEventLatch);
+        ThreadUtils.runOnUiThreadBlocking(() -> {
+            try {
+                mEventLatch.await(DEFAULT_MAX_TIME_TO_POLL, TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                Assert.fail("Interrupted while waiting for event: " + e);
+            }
+        });
+    }
+
+    /**
+     * Enable the latch and wait for the next accessibility event. This should be called right
+     * before the action that is expected to trigger an event.
+     */
+    public void prepareToWaitForNextEvent() {
+        mEventLatch = new CountDownLatch(1);
+        mTracker.setEventLatch(mEventLatch);
     }
 
     /**
      * Helper methods for setup of a basic web contents accessibility unit test.
      *
      * <p>Equivalent to calling {@link #setupTestFromFile(String, boolean)} with true
-     *
      */
     /* @Before */
     protected void setupTestFromFile(String file) {
@@ -321,11 +353,23 @@ public class AccessibilityContentShellActivityTestRule extends ContentShellActiv
                 () -> getWebContents().evaluateJavaScriptForTests(method, null));
     }
 
+    public String executeJSAndGetResult(String method) throws TimeoutException {
+        TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper javascriptHelper =
+                new TestCallbackHelperContainer.OnEvaluateJavaScriptResultHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    javascriptHelper.evaluateJavaScriptForTests(getWebContents(), method);
+                });
+        javascriptHelper.waitUntilHasValue();
+        return javascriptHelper.getJsonResultAndClear();
+    }
+
     /**
      * Helper method to focus a given node.
      *
-     * @param virtualViewId     The virtualViewId of the node to focus
-     * @throws Throwable        Error
+     * @param virtualViewId The virtualViewId of the node to focus
+     * @throws Throwable Error
      */
     public void focusNode(int virtualViewId) throws Throwable {
         // Focus given node, assert actions were performed, then poll until node is updated.
