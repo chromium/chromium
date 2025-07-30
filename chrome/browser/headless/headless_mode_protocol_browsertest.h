@@ -54,7 +54,6 @@ class HeadlessModeProtocolBrowserTest
 
   void OnLoadEventFired(const base::Value::Dict& params);
   void OnEvaluateResult(base::Value::Dict params);
-  void OnConsoleAPICalled(const base::Value::Dict& params);
 
   void ProcessTestResult(const std::string& test_result);
 

@@ -32,7 +32,6 @@ namespace headless {
 
 namespace switches {
 static const char kResetResults[] = "reset-results";
-static const char kDumpConsoleMessages[] = "dump-console-messages";
 static const char kDumpDevToolsProtocol[] = "dump-devtools-protocol";
 }  // namespace switches
 
@@ -124,16 +123,6 @@ void HeadlessProtocolBrowserTest::RunDevTooledTest() {
                           base::Unretained(this)));
   devtools_client_.SendCommand("Page.enable");
 
-  if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kDumpConsoleMessages)) {
-    // Set up Runtime domain to intercept console messages.
-    devtools_client_.AddEventHandler(
-        "Runtime.consoleAPICalled",
-        base::BindRepeating(&HeadlessProtocolBrowserTest::OnConsoleAPICalled,
-                            base::Unretained(this)));
-    devtools_client_.SendCommand("Runtime.enable");
-  }
-
   // Expose DevTools protocol to the target.
   browser_devtools_client_.SendCommand(
       "Target.exposeDevToolsProtocol", Param("targetId", agent_host->GetId()),
@@ -205,29 +194,6 @@ void HeadlessProtocolBrowserTest::ProcessTestResult(
   }
 
   EXPECT_EQ(expectation, test_result);
-}
-
-void HeadlessProtocolBrowserTest::OnConsoleAPICalled(
-    const base::Value::Dict& params) {
-  ASSERT_THAT(params, DictHasValue("method", "Runtime.consoleAPICalled"));
-
-  const base::Value::List* args = params.FindListByDottedPath("params.args");
-  if (!args || args->empty())
-    return;
-
-  const base::Value* value = args->front().GetDict().Find("value");
-  switch (value->type()) {
-    case base::Value::Type::NONE:
-    case base::Value::Type::BOOLEAN:
-    case base::Value::Type::INTEGER:
-    case base::Value::Type::DOUBLE:
-    case base::Value::Type::STRING:
-      LOG(INFO) << value->DebugString();
-      return;
-    default:
-      LOG(INFO) << "Unhandled value type: " << value->type();
-      return;
-  }
 }
 
 void HeadlessProtocolBrowserTest::FinishTest() {
