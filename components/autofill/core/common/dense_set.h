@@ -656,6 +656,22 @@ template <typename Range, typename Proj>
 DenseSet(Range, Proj) -> DenseSet<std::remove_cvref_t<
     std::invoke_result_t<Proj, std::ranges::range_value_t<Range>>>>;
 
+template <typename T, typename Traits, typename... Ts>
+  requires((std::same_as<Ts, DenseSet<T, Traits>>) && ...)
+[[nodiscard]] constexpr DenseSet<T, Traits> Intersection(DenseSet<T, Traits> s,
+                                                         const Ts... ts) {
+  (s.intersect(ts), ...);
+  return s;
+}
+
+template <typename T, typename Traits, typename... Ts>
+  requires((std::same_as<Ts, DenseSet<T, Traits>>) && ...)
+[[nodiscard]] constexpr DenseSet<T, Traits> Union(DenseSet<T, Traits> s,
+                                                  const Ts... ts) {
+  (s.insert_all(ts), ...);
+  return s;
+}
+
 }  // namespace autofill
 
 #endif  // COMPONENTS_AUTOFILL_CORE_COMMON_DENSE_SET_H_

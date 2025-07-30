@@ -1109,5 +1109,25 @@ TEST(DenseSetTest, std_set) {
   expect_equivalence();
 }
 
+TEST(DenseSetTest, Intersection) {
+  constexpr uint64_t kMaxValue = 5;
+  IntDenseSet<uint64_t, 0, kMaxValue> s = {1, 3, 4};
+  IntDenseSet<uint64_t, 0, kMaxValue> t = {1, 2, 4};
+  IntDenseSet<uint64_t, 0, kMaxValue> u = {1, 4, 5};
+  IntDenseSet<uint64_t, 0, kMaxValue> set_intersection = Intersection(s, t, u);
+  IntDenseSet<uint64_t, 0, kMaxValue> expectation = {1, 4};
+  EXPECT_EQ(set_intersection, expectation);
+}
+
+TEST(DenseSetTest, Union) {
+  constexpr uint64_t kMaxValue = 5;
+  IntDenseSet<uint64_t, 0, kMaxValue> s = {1, 3, 4};
+  IntDenseSet<uint64_t, 0, kMaxValue> t = {1, 2, 4};
+  IntDenseSet<uint64_t, 0, kMaxValue> u = {1, 5};
+  IntDenseSet<uint64_t, 0, kMaxValue> set_union = Union(s, t, u);
+  IntDenseSet<uint64_t, 0, kMaxValue> expectation = {1, 2, 3, 4, 5};
+  EXPECT_EQ(set_union, expectation);
+}
+
 }  // namespace
 }  // namespace autofill
