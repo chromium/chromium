@@ -109,6 +109,21 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       std::optional<net::CookieSettingOverrides> devtools_cookie_overrides,
       std::optional<net::CookieSettingOverrides> cookie_overrides);
 
+  // NavigationURLLoader implementation:
+  // Starts the loader by finalizing loader factories initialization and
+  // calling Restart().
+  // This is called only once (while Restart can be called multiple times).
+  // Sets `started_` true.
+  void Start() override;
+  void FollowRedirect(
+      std::vector<std::string> removed_headers,
+      net::HttpRequestHeaders modified_headers,
+      net::HttpRequestHeaders modified_cors_exempt_headers) override;
+  bool SetNavigationTimeout(base::TimeDelta timeout) override;
+  void CancelNavigationTimeout() override;
+
+  const network::ResourceRequest& GetResourceRequestForTesting() const;
+
  private:
   FRIEND_TEST_ALL_PREFIXES(NavigationURLLoaderImplTest,
                            OnAcceptCHFrameReceivedUKM);
@@ -261,19 +276,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       OnAcceptCHFrameReceivedCallback callback) override;
   void Clone(mojo::PendingReceiver<network::mojom::AcceptCHFrameObserver>
                  listener) override;
-
-  // NavigationURLLoader implementation:
-  // Starts the loader by finalizing loader factories initialization and
-  // calling Restart().
-  // This is called only once (while Restart can be called multiple times).
-  // Sets `started_` true.
-  void Start() override;
-  void FollowRedirect(
-      std::vector<std::string> removed_headers,
-      net::HttpRequestHeaders modified_headers,
-      net::HttpRequestHeaders modified_cors_exempt_headers) override;
-  bool SetNavigationTimeout(base::TimeDelta timeout) override;
-  void CancelNavigationTimeout() override;
 
   // Records UKM for the navigation load.
   void RecordReceivedResponseUkmForOutermostMainFrame();

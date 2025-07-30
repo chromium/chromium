@@ -1125,6 +1125,11 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
       &request_info_->common_params->initiator_origin_trial_features);
 }
 
+const network::ResourceRequest&
+NavigationURLLoaderImpl::GetResourceRequestForTesting() const {
+  return *resource_request_;
+}
+
 void NavigationURLLoaderImpl::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   // Early Hints should not come after actual response.

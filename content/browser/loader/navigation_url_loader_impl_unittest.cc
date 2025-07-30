@@ -74,10 +74,8 @@ using testing::Optional;
 
 class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
  public:
-  explicit TestNavigationLoaderInterceptor(
-      std::optional<network::ResourceRequest>* most_recent_resource_request)
-      : most_recent_resource_request_(most_recent_resource_request),
-        shared_resource_checker_(empty_cookie_settings_) {
+  explicit TestNavigationLoaderInterceptor()
+      : shared_resource_checker_(empty_cookie_settings_) {
     net::URLRequestContextBuilder url_request_context_builder;
     url_request_context_builder.set_proxy_resolution_service(
         net::ConfiguredProxyResolutionService::CreateDirect());
@@ -118,7 +116,6 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-    *most_recent_resource_request_ = resource_request;
     url_loader_ = std::make_unique<network::URLLoader>(
         url_loader_context_,
         base::BindOnce(&TestNavigationLoaderInterceptor::DeleteURLLoader,
@@ -165,8 +162,6 @@ class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
     url_loader_.reset();
   }
 
-  raw_ptr<std::optional<network::ResourceRequest>>
-      most_recent_resource_request_;  // NOT OWNED.
   network::ResourceScheduler resource_scheduler_;
   network::URLLoaderContextForTests url_loader_context_;
   std::unique_ptr<net::URLRequestContext> url_request_context_;
@@ -227,7 +222,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
     rvh_test_enabler_.reset();
   }
 
-  std::unique_ptr<NavigationURLLoader> CreateTestLoader(
+  std::unique_ptr<NavigationURLLoaderImpl> CreateTestLoader(
       const GURL& url,
       const std::string& headers,
       const std::string& method,
@@ -306,9 +301,7 @@ class NavigationURLLoaderImplTest : public testing::Test {
             is_ad_tagged /* is_ad_tagged */,
             false /* force_no_https_upgrade */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
-    most_recent_resource_request_ = std::nullopt;
-    interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>(
-        &most_recent_resource_request_));
+    interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>());
 
     return std::make_unique<NavigationURLLoaderImpl>(
         browser_context_.get(), browser_context_->GetDefaultStoragePartition(),
@@ -331,13 +324,15 @@ class NavigationURLLoaderImplTest : public testing::Test {
   // the second request, after redirection.
   // |expected_origin_value| is the expected value for the Origin header after
   // redirection. If empty, expects that there will be no Origin header.
-  void HTTPRedirectOriginHeaderTest(const GURL& redirect_url,
-                                    const std::string& request_method,
-                                    const std::string& expected_redirect_method,
-                                    const std::string& expected_origin_value,
-                                    bool expect_request_fail = false) {
+  // Returns the last `network::ResourceRequest` used.
+  network::ResourceRequest HTTPRedirectOriginHeaderTest(
+      const GURL& redirect_url,
+      const std::string& request_method,
+      const std::string& expected_redirect_method,
+      const std::string& expected_origin_value,
+      bool expect_request_fail = false) {
     TestNavigationURLLoaderDelegate delegate;
-    std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+    auto loader = CreateTestLoader(
         redirect_url,
         base::StringPrintf(
             "%s: %s", net::HttpRequestHeaders::kOrigin,
@@ -354,7 +349,9 @@ class NavigationURLLoaderImplTest : public testing::Test {
     } else {
       delegate.WaitForResponseStarted();
     }
-    ASSERT_TRUE(most_recent_resource_request_);
+
+    network::ResourceRequest resource_request =
+        loader->GetResourceRequestForTesting();
 
     // Note that there is no check for request success here because, for
     // purposes of testing, the request very well may fail. For example, if the
@@ -363,20 +360,21 @@ class NavigationURLLoaderImplTest : public testing::Test {
     // request would fail. However, that's fine, as long as the request headers
     // are in order and pass the checks below.
     if (expected_origin_value.empty()) {
-      EXPECT_FALSE(most_recent_resource_request_->headers.HasHeader(
-          net::HttpRequestHeaders::kOrigin));
+      EXPECT_FALSE(
+          resource_request.headers.HasHeader(net::HttpRequestHeaders::kOrigin));
     } else {
-      EXPECT_THAT(most_recent_resource_request_->headers.GetHeader(
-                      net::HttpRequestHeaders::kOrigin),
-                  Optional(expected_origin_value));
+      EXPECT_THAT(
+          resource_request.headers.GetHeader(net::HttpRequestHeaders::kOrigin),
+          Optional(expected_origin_value));
     }
+    return resource_request;
   }
 
   net::RedirectInfo NavigateAndReturnRedirectInfo(const GURL& url,
                                                   bool upgrade_if_insecure,
                                                   bool expect_request_fail) {
     TestNavigationURLLoaderDelegate delegate;
-    std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+    auto loader = CreateTestLoader(
         url,
         base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
                            url.DeprecatedGetOriginAsURL().spec().c_str()),
@@ -412,7 +410,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
       client_hints_controller_delegate_;
   std::unique_ptr<TestBrowserContext> browser_context_;
   net::EmbeddedTestServer http_test_server_;
-  std::optional<network::ResourceRequest> most_recent_resource_request_;
   std::unique_ptr<RenderViewHostTestEnabler> rvh_test_enabler_;
   std::unique_ptr<TestWebContents> web_contents_;
   // NavigationURLLoaderImpl relies on the existence of the
@@ -427,7 +424,7 @@ TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
   const url::Origin origin = url::Origin::Create(url);
 
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+  auto loader = CreateTestLoader(
       url,
       base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
                          url.DeprecatedGetOriginAsURL().spec().c_str()),
@@ -436,14 +433,12 @@ TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
   loader->Start();
   delegate.WaitForResponseStarted();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-  ASSERT_TRUE(most_recent_resource_request_->trusted_params);
-  EXPECT_TRUE(
-      net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
-                                 origin, origin,
-                                 net::SiteForCookies::FromOrigin(origin))
-          .IsEqualForTesting(
-              most_recent_resource_request_->trusted_params->isolation_info));
+  ASSERT_TRUE(loader->GetResourceRequestForTesting().trusted_params);
+  EXPECT_TRUE(net::IsolationInfo::Create(
+                  net::IsolationInfo::RequestType::kMainFrame, origin, origin,
+                  net::SiteForCookies::FromOrigin(origin))
+                  .IsEqualForTesting(loader->GetResourceRequestForTesting()
+                                         .trusted_params->isolation_info));
 }
 
 TEST_F(NavigationURLLoaderImplTest,
@@ -454,16 +449,15 @@ TEST_F(NavigationURLLoaderImplTest,
   const GURL final_url = http_test_server_.GetURL("/echo");
   const url::Origin origin = url::Origin::Create(url);
 
-  HTTPRedirectOriginHeaderTest(url, "GET", "GET",
-                               url.DeprecatedGetOriginAsURL().spec());
+  network::ResourceRequest resource_request = HTTPRedirectOriginHeaderTest(
+      url, "GET", "GET", url.DeprecatedGetOriginAsURL().spec());
 
-  ASSERT_TRUE(most_recent_resource_request_->trusted_params);
+  ASSERT_TRUE(resource_request.trusted_params);
   EXPECT_TRUE(
       net::IsolationInfo::Create(net::IsolationInfo::RequestType::kMainFrame,
                                  origin, origin,
                                  net::SiteForCookies::FromOrigin(origin))
-          .IsEqualForTesting(
-              most_recent_resource_request_->trusted_params->isolation_info));
+          .IsEqualForTesting(resource_request.trusted_params->isolation_info));
 }
 
 TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHints) {
@@ -480,22 +474,21 @@ TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHints) {
   };
   SetupClientHintsControllerDelegate(expected_client_hints);
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader =
+  auto loader =
       CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
   loader->Start();
   delegate.WaitForResponseStarted();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-  ASSERT_TRUE(most_recent_resource_request_->trusted_params);
-  EXPECT_TRUE(most_recent_resource_request_->trusted_params
-                  ->enabled_client_hints.has_value());
+  ASSERT_TRUE(loader->GetResourceRequestForTesting().trusted_params);
+  EXPECT_TRUE(loader->GetResourceRequestForTesting()
+                  .trusted_params->enabled_client_hints.has_value());
   // The default types are added in addition, and that is why `IsSupersetOf()`
   // is used.
-  EXPECT_THAT(most_recent_resource_request_->trusted_params
-                  ->enabled_client_hints->hints,
+  EXPECT_THAT(loader->GetResourceRequestForTesting()
+                  .trusted_params->enabled_client_hints->hints,
               testing::IsSupersetOf(expected_client_hints));
-  EXPECT_EQ(origin, most_recent_resource_request_->trusted_params
-                        ->enabled_client_hints->origin);
+  EXPECT_EQ(origin, loader->GetResourceRequestForTesting()
+                        .trusted_params->enabled_client_hints->origin);
 }
 
 TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsDisabled) {
@@ -514,15 +507,14 @@ TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsDisabled) {
   SetupClientHintsControllerDelegate(client_hints);
   blink::UserAgentMetadata ua_metadata;
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader =
+  auto loader =
       CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
   loader->Start();
   delegate.WaitForResponseStarted();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-  ASSERT_TRUE(most_recent_resource_request_->trusted_params);
-  EXPECT_FALSE(most_recent_resource_request_->trusted_params
-                   ->enabled_client_hints.has_value());
+  ASSERT_TRUE(loader->GetResourceRequestForTesting().trusted_params);
+  EXPECT_FALSE(loader->GetResourceRequestForTesting()
+                   .trusted_params->enabled_client_hints.has_value());
 }
 
 TEST_F(NavigationURLLoaderImplTest, Redirect301Tests) {
@@ -608,19 +600,20 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
 
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+  auto loader = CreateTestLoader(
       redirect_url, "Header1: Value1\r\nHeader2: Value2", "GET", &delegate);
   loader->Start();
   delegate.WaitForRequestRedirected();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-
   // Initial request should only have initial headers.
-  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header1"),
-              Optional(std::string("Value1")));
-  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header2"),
-              Optional(std::string("Value2")));
-  EXPECT_FALSE(most_recent_resource_request_->headers.HasHeader("Header3"));
+  EXPECT_THAT(
+      loader->GetResourceRequestForTesting().headers.GetHeader("Header1"),
+      Optional(std::string("Value1")));
+  EXPECT_THAT(
+      loader->GetResourceRequestForTesting().headers.GetHeader("Header2"),
+      Optional(std::string("Value2")));
+  EXPECT_FALSE(
+      loader->GetResourceRequestForTesting().headers.HasHeader("Header3"));
 
   // Overwrite Header2 and add Header3.
   net::HttpRequestHeaders redirect_headers;
@@ -630,12 +623,15 @@ TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
   delegate.WaitForResponseStarted();
 
   // Redirected request should also have modified headers.
-  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header1"),
-              Optional(std::string("Value1")));
-  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header2"),
-              Optional(std::string("")));
-  EXPECT_THAT(most_recent_resource_request_->headers.GetHeader("Header3"),
-              Optional(std::string("Value3")));
+  EXPECT_THAT(
+      loader->GetResourceRequestForTesting().headers.GetHeader("Header1"),
+      Optional(std::string("Value1")));
+  EXPECT_THAT(
+      loader->GetResourceRequestForTesting().headers.GetHeader("Header2"),
+      Optional(std::string("")));
+  EXPECT_THAT(
+      loader->GetResourceRequestForTesting().headers.GetHeader("Header3"),
+      Optional(std::string("Value3")));
 }
 
 // Tests that the Upgrade If Insecure flag is obeyed.
@@ -666,8 +662,7 @@ TEST_F(NavigationURLLoaderImplTest, NavigationTimeoutTest) {
   ASSERT_TRUE(http_test_server_.Start());
   const GURL url = http_test_server_.GetURL("/hung");
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader =
-      CreateTestLoader(url, std::string(), "GET", &delegate);
+  auto loader = CreateTestLoader(url, std::string(), "GET", &delegate);
   loader->Start();
   loader->SetNavigationTimeout(base::Seconds(3));
   delegate.WaitForRequestFailed();
@@ -689,8 +684,7 @@ TEST_F(NavigationURLLoaderImplTest, MAYBE_NavigationTimeoutRedirectTest) {
   const GURL redirect_url =
       http_test_server_.GetURL("/server-redirect?" + hang_url.spec());
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader =
-      CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
+  auto loader = CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
   loader->Start();
   loader->SetNavigationTimeout(base::Seconds(3));
   delegate.WaitForRequestRedirected();
@@ -704,7 +698,7 @@ TEST_F(NavigationURLLoaderImplTest, OnAcceptCHFrameReceivedUKM) {
   const GURL url = http_test_server_.GetURL("/foo");
   const url::Origin origin = url::Origin::Create(url);
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+  auto loader = CreateTestLoader(
       url,
       base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
                          url.DeprecatedGetOriginAsURL().spec().c_str()),
@@ -775,16 +769,15 @@ TEST_F(NavigationURLLoaderImplTest, AdTaggedNavigation) {
   const GURL redirect_url = http_test_server_.GetURL("/foo");
 
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
-      redirect_url, "", "GET", &delegate, blink::NavigationDownloadPolicy(),
-      /*is_main_frame=*/true,
-      /*upgrade_if_insecure=*/false,
-      /*is_ad_tagged=*/true);
+  auto loader = CreateTestLoader(redirect_url, "", "GET", &delegate,
+                                 blink::NavigationDownloadPolicy(),
+                                 /*is_main_frame=*/true,
+                                 /*upgrade_if_insecure=*/false,
+                                 /*is_ad_tagged=*/true);
   loader->Start();
   delegate.WaitForResponseStarted();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-  EXPECT_TRUE(most_recent_resource_request_->is_ad_tagged);
+  EXPECT_TRUE(loader->GetResourceRequestForTesting().is_ad_tagged);
 }
 
 TEST_F(NavigationURLLoaderImplTest, PopulatePermissionsPolicyOnRequest) {
@@ -799,7 +792,7 @@ TEST_F(NavigationURLLoaderImplTest, PopulatePermissionsPolicyOnRequest) {
   const url::Origin origin = url::Origin::Create(url);
 
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+  auto loader = CreateTestLoader(
       url,
       base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
                          url.DeprecatedGetOriginAsURL().spec().c_str()),
@@ -808,8 +801,7 @@ TEST_F(NavigationURLLoaderImplTest, PopulatePermissionsPolicyOnRequest) {
   loader->Start();
   delegate.WaitForResponseStarted();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-  EXPECT_EQ(most_recent_resource_request_->permissions_policy,
+  EXPECT_EQ(loader->GetResourceRequestForTesting().permissions_policy,
             std::make_optional(
                 *web_contents_->GetPrimaryMainFrame()->GetPermissionsPolicy()));
 }
@@ -827,7 +819,7 @@ TEST_F(NavigationURLLoaderImplTest,
   const url::Origin origin = url::Origin::Create(url);
 
   TestNavigationURLLoaderDelegate delegate;
-  std::unique_ptr<NavigationURLLoader> loader = CreateTestLoader(
+  auto loader = CreateTestLoader(
       url,
       base::StringPrintf("%s: %s", net::HttpRequestHeaders::kOrigin,
                          url.DeprecatedGetOriginAsURL().spec().c_str()),
@@ -836,8 +828,7 @@ TEST_F(NavigationURLLoaderImplTest,
   loader->Start();
   delegate.WaitForResponseStarted();
 
-  ASSERT_TRUE(most_recent_resource_request_);
-  EXPECT_FALSE(most_recent_resource_request_->permissions_policy);
+  EXPECT_FALSE(loader->GetResourceRequestForTesting().permissions_policy);
 }
 
 }  // namespace content
