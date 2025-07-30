@@ -53,7 +53,8 @@ class RenderWidgetHostOwnerDelegate {
   // the renderer's background is forced to be opaque.
   virtual void SetBackgroundOpaque(bool opaque) = 0;
 
-  // Returns true if the main frame is active, false if it is swapped out.
+  // Returns true if the main frame is active, false if the widget is not for
+  // the main frame.
   virtual bool IsMainFrameActive() = 0;
 
   // Returns the WebkitPreferences for the page. The preferences are shared

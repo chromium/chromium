@@ -651,6 +651,9 @@ bool RenderViewHostImpl::CreateRenderView(
 void RenderViewHostImpl::SetMainFrameRoutingId(int routing_id) {
   main_frame_routing_id_ = routing_id;
   render_widget_host_->ClearVisualProperties();
+  // RenderWidgetHostImpl changes its contribution to the process priority based
+  // on whether the main frame is active. UpdatePriority() to reflect the
+  // change.
   GetWidget()->UpdatePriority();
   // TODO(crbug.com/40387047): If a local main frame is no longer attached to
   // this `blink::WebView` then the RenderWidgetHostImpl owned by this class

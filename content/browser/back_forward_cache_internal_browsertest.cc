@@ -16,6 +16,7 @@
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_navigation_policy.h"
 #include "content/common/features.h"
@@ -2241,6 +2242,64 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
             rfh_a->GetProcess()->GetEffectiveImportance());
 }
 #endif
+
+class BackForwardCacheInternalSubframePriorityBrowserTest
+    : public BackForwardCacheBrowserTest {
+ protected:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    BackForwardCacheBrowserTest::SetUpCommandLine(command_line);
+    feature_list_.InitAndEnableFeature(features::kSubframePriorityContribution);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(BackForwardCacheInternalSubframePriorityBrowserTest,
+                       FrameDepthInBackForwardCache) {
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a(embedded_test_server()->GetURL(
+      "a.com", "/cross_site_iframe_factory.html?a(b)"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+
+  FrameTreeNode* root = web_contents()->GetPrimaryFrameTree().root();
+  RenderFrameHostImpl* rfh_a = root->current_frame_host();
+  RenderWidgetHostImpl* rwh_a = rfh_a->GetRenderWidgetHost();
+
+  FrameTreeNode* child = root->child_at(0);
+  RenderFrameHostImpl* rfh_b = child->current_frame_host();
+  RenderWidgetHostImpl* rwh_b = rfh_b->GetRenderWidgetHost();
+
+  // Check initial frame depths.
+  EXPECT_EQ(0u, rfh_a->GetFrameDepth());
+  EXPECT_EQ(0u, rwh_a->GetPriority().frame_depth);
+  EXPECT_EQ(1u, rfh_b->GetFrameDepth());
+  EXPECT_EQ(1u, rwh_b->GetPriority().frame_depth);
+
+  // Navigate away to put the first page into the back-forward cache.
+  GURL url_c(embedded_test_server()->GetURL("c.com", "/title1.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_c));
+
+  // Check that page A is in the back-forward cache.
+  EXPECT_TRUE(rfh_a->IsInBackForwardCache());
+  EXPECT_TRUE(rfh_b->IsInBackForwardCache());
+
+  // Check that the frame depths of the widgets in the back-forward cached
+  // page are now `RenderProcessHostImpl::kMaxFrameDepthForPriority`.
+  EXPECT_EQ(RenderProcessHostImpl::kMaxFrameDepthForPriority,
+            rwh_a->GetPriority().frame_depth);
+  EXPECT_EQ(RenderProcessHostImpl::kMaxFrameDepthForPriority,
+            rwh_b->GetPriority().frame_depth);
+
+  // Navigate back to the first page.
+  EXPECT_TRUE(HistoryGoBack(web_contents()));
+
+  // Check that the frame depths of the widgets back from the back-forward cache
+  // are recovered.
+  EXPECT_EQ(0u, rwh_a->GetPriority().frame_depth);
+  EXPECT_EQ(1u, rwh_b->GetPriority().frame_depth);
+}
 
 IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, PageshowMetrics) {
   // TODO(crbug.com/40702446): Do not check for unexpected messages
