@@ -111,7 +111,7 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
   }
 
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
-  if (features::kGlicActorUiHandoffButton.Get() && handoff_button_controller_) {
+  if (features::kGlicActorUiHandoffButton.Get()) {
     // TODO(crbug.com/433568221): Update the visibility logic when ActorOverlay
     // is integrated into the Tab Controller (For now it's set to true when the
     // tab is active).
