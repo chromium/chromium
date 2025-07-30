@@ -4332,6 +4332,39 @@ public class TabListMediatorUnitTest {
     }
 
     @Test
+    @EnableFeatures({ChromeFeatureList.ANDROID_PINNED_TABS})
+    public void testIsTabPinned_TabSwitcher() {
+        mMediator.setComponentNameForTesting(TabSwitcherPaneCoordinator.COMPONENT_NAME);
+
+        List<Tab> tabsInModel = new ArrayList<>();
+        for (int i = 0; i < mTabModel.getCount(); i++) {
+            tabsInModel.add(mTabModel.getTabAt(i));
+        }
+        Tab tabToTest = tabsInModel.get(POSITION1);
+
+        // Scenario 1: Tab is UNPINNED
+        // Mock the tab at POSITION1 as unpinned.
+        doReturn(false).when(tabToTest).getIsPinned();
+
+        mMediator.resetWithListOfTabs(tabsInModel, null, false);
+
+        assertEquals(
+                TabActionButtonType.CLOSE,
+                mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+
+        // Scenario 2: Tab is PINNED
+        // Mock the tab at POSITION1 as pinned.
+        doReturn(true).when(tabToTest).getIsPinned();
+
+        // Re-process the tabs. The mediator should pick up the changed pinned state.
+        mMediator.resetWithListOfTabs(tabsInModel, null, false);
+
+        assertEquals(
+                TabActionButtonType.PIN,
+                mModelList.get(POSITION1).model.get(TabProperties.TAB_ACTION_BUTTON_DATA).type);
+    }
+
+    @Test
     public void testOnMenuItemClickedCallback_CloseGroupInTabSwitcher_NullListViewTouchTracker() {
         testOnMenuItemClickedCallback_CloseOrDeleteGroupInTabSwitcher(
                 R.id.close_tab_group,

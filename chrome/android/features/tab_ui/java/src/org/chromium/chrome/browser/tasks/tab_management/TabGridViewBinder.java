@@ -210,9 +210,9 @@ class TabGridViewBinder {
             setNullablePeripheralClickListener(
                     tabActionListener, view.fastFindViewById(R.id.action_button), model);
 
-            boolean showOverflowButton =
-                    data == null ? false : data.type == TabActionButtonType.OVERFLOW;
-            ((TabGridView) view).setTabActionButtonDrawable(showOverflowButton);
+            @TabActionButtonType
+            int actionButtonType = data != null ? data.type : TabActionButtonType.OVERFLOW;
+            ((TabGridView) view).setTabActionButtonDrawable(actionButtonType);
         } else if (TabProperties.TAB_CLICK_LISTENER == propertyKey) {
             setNullableClickListener(model.get(TabProperties.TAB_CLICK_LISTENER), view, model);
         } else if (TabProperties.TAB_LONG_CLICK_LISTENER == propertyKey) {

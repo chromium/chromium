@@ -156,11 +156,12 @@ found in the LICENSE file.
             android:layout_width="@dimen/tab_list_card_action_button_size"
             android:layout_height="@dimen/tab_list_card_action_button_size"
             android:layout_margin="@dimen/tab_list_card_action_button_margin"
-            android:scaleType="center"
             android:layout_gravity="end"
             android:tint="@macro/default_icon_color"
             android:importantForAccessibility="no"
+            android:cropToPadding="true"
+            android:padding="@dimen/tab_list_card_action_button_padding"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
+            app:layout_constraintEnd_toEndOf="parent"/>
     </androidx.constraintlayout.widget.ConstraintLayout>
 </merge>

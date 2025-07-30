@@ -232,13 +232,15 @@ class TabListMediator implements TabListNotificationHandler {
         @IntDef({
             TabActionButtonType.CLOSE,
             TabActionButtonType.SELECT,
-            TabActionButtonType.OVERFLOW
+            TabActionButtonType.OVERFLOW,
+            TabActionButtonType.PIN
         })
         @Retention(RetentionPolicy.SOURCE)
         @interface TabActionButtonType {
             int CLOSE = 0;
             int SELECT = 1;
             int OVERFLOW = 2;
+            int PIN = 3;
         }
 
         public final @TabActionButtonType int type;
@@ -1969,6 +1971,12 @@ class TabListMediator implements TabListNotificationHandler {
                     TabActionButtonData.TabActionButtonType.OVERFLOW,
                     getTabGroupOverflowMenuClickListener());
         }
+
+        if (tab.getIsPinned()) {
+            return new TabActionButtonData(
+                    TabActionButtonData.TabActionButtonType.PIN, /* tabActionListener= */ null);
+        }
+
         return new TabActionButtonData(
                 TabActionButtonData.TabActionButtonType.CLOSE, mTabClosedListener);
     }
