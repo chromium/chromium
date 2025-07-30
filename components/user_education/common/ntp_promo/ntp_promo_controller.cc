@@ -130,6 +130,11 @@ void NtpPromoController::OnPromosShown(
   // way.
   if (!eligible_shown.empty()) {
     OnPromoShownInTopSpot(eligible_shown[0]);
+
+    for (const auto& id : eligible_shown) {
+      const auto* spec = registry_->GetNtpPromoSpecification(id);
+      spec->show_callback().Run();
+    }
   }
 }
 
@@ -170,7 +175,6 @@ std::vector<NtpShowablePromo> NtpPromoController::MakeShowablePromos(
   for (const auto& id : ids) {
     const auto* spec = registry_->GetNtpPromoSpecification(id);
     promos.emplace_back(
-
         spec->id(), spec->content().icon_name(),
         l10n_util::GetStringUTF8(spec->content().body_text_string_id()),
         l10n_util::GetStringUTF8(

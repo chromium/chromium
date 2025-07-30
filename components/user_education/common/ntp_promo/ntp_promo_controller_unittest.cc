@@ -39,17 +39,18 @@ class NtpPromoControllerTest : public testing::Test {
   void RegisterPromo(
       NtpPromoIdentifier id,
       NtpPromoSpecification::EligibilityCallback eligibility_callback,
+      NtpPromoSpecification::ShowCallback show_callback,
       NtpPromoSpecification::ActionCallback action_callback) {
-    registry_.AddPromo(
-        NtpPromoSpecification(id, NtpPromoContent("", IDS_OK, IDS_CANCEL),
-                              eligibility_callback, action_callback,
-                              /*show_after=*/{}, user_education::Metadata()));
+    registry_.AddPromo(NtpPromoSpecification(
+        id, NtpPromoContent("", IDS_OK, IDS_CANCEL), eligibility_callback,
+        show_callback, action_callback,
+        /*show_after=*/{}, user_education::Metadata()));
   }
 
   // Register a promo with empty callbacks.
   void RegisterPromo(NtpPromoIdentifier id) {
     RegisterPromo(id, NtpPromoSpecification::EligibilityCallback(),
-                  NtpPromoSpecification::ActionCallback());
+                  base::DoNothing(), base::DoNothing());
   }
 
   base::test::TaskEnvironment task_environment_{
@@ -65,8 +66,8 @@ class NtpPromoControllerTest : public testing::Test {
 TEST_F(NtpPromoControllerTest, IneligiblePromoHidden) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kIneligible));
 
@@ -78,8 +79,8 @@ TEST_F(NtpPromoControllerTest, IneligiblePromoHidden) {
 TEST_F(NtpPromoControllerTest, EligiblePromoShows) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kEligible));
 
@@ -93,8 +94,8 @@ TEST_F(NtpPromoControllerTest, EligiblePromoShows) {
 TEST_F(NtpPromoControllerTest, UnclickedCompletedPromoHidden) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kCompleted));
 
@@ -106,8 +107,8 @@ TEST_F(NtpPromoControllerTest, UnclickedCompletedPromoHidden) {
 TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kCompleted));
   // Simulate that the user clicked on the promo.
@@ -129,8 +130,8 @@ TEST_F(NtpPromoControllerTest, ClickedCompletedPromoShows) {
 TEST_F(NtpPromoControllerTest, PreviouslyCompletedPromoShows) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kEligible));
 
@@ -146,8 +147,8 @@ TEST_F(NtpPromoControllerTest, PreviouslyCompletedPromoShows) {
 TEST_F(NtpPromoControllerTest, OldCompletedPromoHidden) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kEligible));
 
@@ -164,8 +165,8 @@ TEST_F(NtpPromoControllerTest, OldCompletedPromoHidden) {
 TEST_F(NtpPromoControllerTest, FutureCompletedPromoHidden) {
   base::MockRepeatingCallback<NtpPromoSpecification::Eligibility(Profile*)>
       eligibility_callback;
-  RegisterPromo(kPromoId, eligibility_callback.Get(),
-                NtpPromoSpecification::ActionCallback());
+  RegisterPromo(kPromoId, eligibility_callback.Get(), base::DoNothing(),
+                base::DoNothing());
   EXPECT_CALL(eligibility_callback, Run(_))
       .WillOnce(Return(NtpPromoSpecification::Eligibility::kEligible));
 
@@ -183,7 +184,7 @@ TEST_F(NtpPromoControllerTest, FutureCompletedPromoHidden) {
 TEST_F(NtpPromoControllerTest, PromoClicked) {
   base::MockRepeatingCallback<void(BrowserWindowInterface*)> action_callback;
   RegisterPromo(kPromoId, NtpPromoSpecification::EligibilityCallback(),
-                action_callback.Get());
+                base::DoNothing(), action_callback.Get());
   EXPECT_CALL(action_callback, Run(_));
   controller_.OnPromoClicked(kPromoId, nullptr);
 
@@ -260,6 +261,8 @@ TEST_F(NtpPromoControllerTest, TopSpotPromoShownReclaimsTopSpot) {
 }
 
 TEST_F(NtpPromoControllerTest, OnMultiplePromosShown) {
+  RegisterPromo(kPromoId);
+  RegisterPromo(kPromo2Id);
   const auto old_value2 = storage_service_.ReadNtpPromoData(kPromo2Id);
   controller_.OnPromosShown({kPromoId, kPromo2Id}, {});
   const auto new_value = storage_service_.ReadNtpPromoData(kPromoId);
@@ -267,6 +270,14 @@ TEST_F(NtpPromoControllerTest, OnMultiplePromosShown) {
   EXPECT_EQ(10, new_value->last_top_spot_session);
   EXPECT_EQ(1, new_value->top_spot_session_count);
   EXPECT_EQ(old_value2, new_value2);
+}
+
+TEST_F(NtpPromoControllerTest, ShownCallbackInvoked) {
+  base::MockRepeatingCallback<void()> show_callback;
+  RegisterPromo(kPromoId, NtpPromoSpecification::EligibilityCallback(),
+                show_callback.Get(), base::DoNothing());
+  EXPECT_CALL(show_callback, Run());
+  controller_.OnPromosShown({kPromoId}, {});
 }
 
 }  // namespace user_education

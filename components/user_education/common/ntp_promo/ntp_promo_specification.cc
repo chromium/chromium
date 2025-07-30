@@ -29,12 +29,14 @@ NtpPromoSpecification::NtpPromoSpecification(
     NtpPromoIdentifier id,
     NtpPromoContent content,
     EligibilityCallback eligibility_callback,
+    ShowCallback show_callback,
     ActionCallback action_callback,
     base::flat_set<NtpPromoIdentifier> show_after,
     Metadata metadata)
     : id_(id),
       content_(std::move(content)),
       eligibility_callback_(eligibility_callback),
+      show_callback_(show_callback),
       action_callback_(action_callback),
       show_after_(std::move(show_after)),
       metadata_(std::move(metadata)) {}

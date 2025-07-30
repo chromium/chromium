@@ -7,6 +7,7 @@
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo_util.h"
 #include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/browser/signin/signin_util.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -52,6 +53,13 @@ NtpPromoSpecification::Eligibility CheckSignInPromoEligibility(
       // All other cases are considered completed.
       return NtpPromoSpecification::Eligibility::kCompleted;
   }
+}
+
+void SignInPromoShown() {
+  signin_metrics::LogSignInOffered(
+      signin_metrics::AccessPoint::kNtpFeaturePromo,
+      signin_metrics::PromoAction::
+          PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
 }
 
 void InvokeSignInPromo(BrowserWindowInterface* browser) {
@@ -104,6 +112,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
                           : IDS_NTP_SIGN_IN_PROMO,
                       IDS_NTP_SIGN_IN_PROMO_ACTION_BUTTON),
       base::BindRepeating(&CheckSignInPromoEligibility),
+      base::BindRepeating(&SignInPromoShown),
       base::BindRepeating(&InvokeSignInPromo),
       /*show_after=*/{},
       user_education::Metadata(
@@ -115,6 +124,7 @@ void MaybeRegisterNtpPromos(user_education::NtpPromoRegistry& registry) {
       NtpPromoContent("my_extensions", IDS_NTP_EXTENSIONS_PROMO,
                       IDS_NTP_EXTENSIONS_PROMO_ACTION_BUTTON),
       base::BindRepeating(&CheckExtensionsPromoEligibility),
+      /*show_callback=*/base::DoNothing(),
       base::BindRepeating(&InvokeExtensionsPromo),
       /*show_after=*/{},
       user_education::Metadata(

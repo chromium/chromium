@@ -55,6 +55,8 @@ class NtpPromoSpecification {
   // Receives the profile to be evaluated for eligibility.
   using EligibilityCallback = base::RepeatingCallback<Eligibility(Profile*)>;
 
+  using ShowCallback = base::RepeatingCallback<void()>;
+
   // Receives a browser in which the action can be taken, and an object
   // to be held by the invoked flow until termination.
   using ActionCallback = base::RepeatingCallback<void(BrowserWindowInterface*)>;
@@ -65,6 +67,7 @@ class NtpPromoSpecification {
   NtpPromoSpecification(NtpPromoIdentifier id,
                         NtpPromoContent content,
                         EligibilityCallback eligibility_callback,
+                        ShowCallback show_callback,
                         ActionCallback action_callback,
                         base::flat_set<NtpPromoIdentifier> show_after,
                         user_education::Metadata);
@@ -73,6 +76,7 @@ class NtpPromoSpecification {
   EligibilityCallback eligibility_callback() const {
     return eligibility_callback_;
   }
+  ShowCallback show_callback() const { return show_callback_; }
   ActionCallback action_callback() const { return action_callback_; }
   const std::string& id() const { return id_; }
   const base::flat_set<NtpPromoIdentifier>& show_after() const {
@@ -88,6 +92,10 @@ class NtpPromoSpecification {
 
   // Called to test the eligibility of the promo (ie. can it be shown or not).
   EligibilityCallback eligibility_callback_;
+
+  // Called when the promo is shown, for purposes of promo-specific metrics
+  // collection.
+  ShowCallback show_callback_;
 
   // Called to invoke the promoted action flow.
   ActionCallback action_callback_;

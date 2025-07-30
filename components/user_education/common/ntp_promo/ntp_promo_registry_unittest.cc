@@ -29,9 +29,9 @@ NtpPromoSpecification CreateTestPromoSpec(const NtpPromoIdentifier& id) {
       base::BindRepeating([](Profile* profile) {
         return NtpPromoSpecification::Eligibility::kEligible;
       }),
+      base::DoNothing(),
       base::BindRepeating([](BrowserWindowInterface* browser) {}),
-      base::flat_set<NtpPromoIdentifier>{kShowFirstPromoId},
-      user_education::Metadata());
+      base::flat_set<NtpPromoIdentifier>{kShowFirstPromoId}, Metadata());
 }
 
 }  // namespace
@@ -52,8 +52,9 @@ TEST_F(NtpPromoRegistryTest, RegisterPromo) {
       base::BindRepeating([](Profile* profile) {
         return NtpPromoSpecification::Eligibility::kEligible;
       }),
+      base::DoNothing(),
       base::BindRepeating([](BrowserWindowInterface* browser) {}),
-      {kShowFirstPromoId}, user_education::Metadata()));
+      {kShowFirstPromoId}, Metadata()));
 
   const auto* spec = registry_.GetNtpPromoSpecification(kPromoId);
   ASSERT_NE(spec, nullptr);

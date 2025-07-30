@@ -42,9 +42,8 @@ class NtpPromoOrderTest : public testing::Test {
                      base::Time completed_time) {
     registry_.AddPromo(NtpPromoSpecification(
         id, NtpPromoContent("", 0, 0),
-        NtpPromoSpecification::EligibilityCallback(),
-        NtpPromoSpecification::ActionCallback(), std::move(show_after),
-        user_education::Metadata()));
+        NtpPromoSpecification::EligibilityCallback(), base::DoNothing(),
+        base::DoNothing(), std::move(show_after), user_education::Metadata()));
 
     KeyedNtpPromoData pref;
     pref.last_top_spot_session = last_top_spot_session;
