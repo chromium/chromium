@@ -415,12 +415,11 @@ class CrasAudioClientTest : public testing::Test {
     EXPECT_CALL(*mock_cras_proxy_.get(), DoCallMethod(_, _, _))
         .WillRepeatedly(Invoke(this, &CrasAudioClientTest::OnCallMethod));
 
-    // Set an expectation so mock_cras_proxy's CallMethodWithErrorCallback()
+    // Set an expectation so mock_cras_proxy's CallMethodWithErrorResponse()
     // will use OnCallMethodWithErrorCallback() to return responses.
-    EXPECT_CALL(*mock_cras_proxy_.get(),
-                DoCallMethodWithErrorCallback(_, _, _, _))
+    EXPECT_CALL(*mock_cras_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
         .WillRepeatedly(
-            Invoke(this, &CrasAudioClientTest::OnCallMethodWithErrorCallback));
+            Invoke(this, &CrasAudioClientTest::OnCallMethodWithErrorResponse));
 
     // Set an expectation so mock_cras_proxy's monitoring OutputMuteChanged
     // ConnectToSignal will use OnConnectToOutputMuteChanged() to run the
@@ -1081,12 +1080,18 @@ class CrasAudioClientTest : public testing::Test {
 
   // Checks the content of the method call and returns the response.
   // Used to implement the mock cras proxy.
-  void OnCallMethodWithErrorCallback(
+  void OnCallMethodWithErrorResponse(
       dbus::MethodCall* method_call,
       int timeout_ms,
-      dbus::ObjectProxy::ResponseCallback* response_callback,
-      dbus::ObjectProxy::ErrorCallback* error_callback) {
-    OnCallMethod(method_call, timeout_ms, response_callback);
+      dbus::ObjectProxy::ResponseOrErrorCallback* response_callback) {
+    // Adapt the ResponseOrErrorCallback to a ResponseCallback.
+    auto callback = base::BindOnce(
+        [](dbus::ObjectProxy::ResponseOrErrorCallback* response_callback,
+           dbus::Response* response) {
+          std::move(*response_callback).Run(response, nullptr);
+        },
+        response_callback);
+    OnCallMethod(method_call, timeout_ms, &callback);
   }
 };
 

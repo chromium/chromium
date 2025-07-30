@@ -185,11 +185,6 @@ class ShillClientUnittestBase : public testing::Test {
       dbus::MethodCall* method_call,
       int timeout_ms,
       dbus::ObjectProxy::ResponseOrErrorCallback* response_callback);
-  void OnCallMethodWithErrorCallback(
-      dbus::MethodCall* method_call,
-      int timeout_ms,
-      dbus::ObjectProxy::ResponseCallback* response_callback,
-      dbus::ObjectProxy::ErrorCallback* error_callback);
 
   // The interface name.
   const std::string interface_name_;

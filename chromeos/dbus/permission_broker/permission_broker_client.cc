@@ -72,12 +72,10 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     dbus::MethodCall method_call(kPermissionBrokerInterface, kOpenPath);
     dbus::MessageWriter writer(&method_call);
     writer.AppendString(path);
-    proxy_->CallMethodWithErrorCallback(
+    proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&PermissionBrokerClientImpl::OnOpenPathResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&PermissionBrokerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -91,12 +89,10 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     writer.AppendString(path);
     writer.AppendUint32(allowed_interfaces_mask);
     writer.AppendFileDescriptor(lifeline_fd);
-    proxy_->CallMethodWithErrorCallback(
+    proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(&PermissionBrokerClientImpl::OnOpenPathResponse,
-                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&PermissionBrokerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                        std::move(error_callback)));
   }
 
@@ -111,14 +107,12 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     writer.AppendString(path);
     writer.AppendUint32(allowed_interfaces_mask);
     writer.AppendFileDescriptor(lifeline_fd);
-    proxy_->CallMethodWithErrorCallback(
+    proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
         base::BindOnce(
             &PermissionBrokerClientImpl::OpenPathAndRegisterClientResponse,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-        base::BindOnce(&PermissionBrokerClientImpl::OnError,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(error_callback)));
+            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+            std::move(error_callback)));
   }
 
   void DetachInterface(const std::string& client_id,
@@ -297,29 +291,43 @@ class PermissionBrokerClientImpl : public PermissionBrokerClient {
     std::move(callback).Run(result);
   }
 
-  void OnOpenPathResponse(OpenPathCallback callback, dbus::Response* response) {
-    base::ScopedFD fd;
-    dbus::MessageReader reader(response);
-    if (!reader.PopFileDescriptor(&fd))
-      LOG(WARNING) << "Could not parse response: " << response->ToString();
-    std::move(callback).Run(std::move(fd));
+  void OnOpenPathResponse(OpenPathCallback callback,
+                          ErrorCallback error_callback,
+                          dbus::Response* response,
+                          dbus::ErrorResponse* error_response) {
+    if (response) {
+      base::ScopedFD fd;
+      dbus::MessageReader reader(response);
+      if (!reader.PopFileDescriptor(&fd)) {
+        LOG(WARNING) << "Could not parse response: " << response->ToString();
+      }
+      std::move(callback).Run(std::move(fd));
+    } else {
+      OnError(std::move(error_callback), error_response);
+    }
   }
 
   void OpenPathAndRegisterClientResponse(
       OpenPathAndRegisterClientCallback callback,
-      dbus::Response* response) {
-    base::ScopedFD fd;
-    std::string client_id;
-    dbus::MessageReader reader(response);
-    if (!reader.PopFileDescriptor(&fd)) {
-      LOG(WARNING) << "Could not parse response for fd: "
-                   << response->ToString();
+      ErrorCallback error_callback,
+      dbus::Response* response,
+      dbus::ErrorResponse* error_response) {
+    if (response) {
+      base::ScopedFD fd;
+      std::string client_id;
+      dbus::MessageReader reader(response);
+      if (!reader.PopFileDescriptor(&fd)) {
+        LOG(WARNING) << "Could not parse response for fd: "
+                     << response->ToString();
+      }
+      if (!reader.PopString(&client_id)) {
+        LOG(WARNING) << "Could not parse response for client_id: "
+                     << response->ToString();
+      }
+      std::move(callback).Run(client_id, std::move(fd));
+    } else {
+      OnError(std::move(error_callback), error_response);
     }
-    if (!reader.PopString(&client_id)) {
-      LOG(WARNING) << "Could not parse response for client_id: "
-                   << response->ToString();
-    }
-    std::move(callback).Run(client_id, std::move(fd));
   }
 
   void OnError(ErrorCallback callback, dbus::ErrorResponse* response) {

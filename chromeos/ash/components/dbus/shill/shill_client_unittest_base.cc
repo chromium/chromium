@@ -114,9 +114,6 @@ void ShillClientUnittestBase::SetUp() {
   EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorResponse(_, _, _))
       .WillRepeatedly(Invoke(
           this, &ShillClientUnittestBase::OnCallMethodWithErrorResponse));
-  EXPECT_CALL(*mock_proxy_.get(), DoCallMethodWithErrorCallback(_, _, _, _))
-      .WillRepeatedly(Invoke(
-          this, &ShillClientUnittestBase::OnCallMethodWithErrorCallback));
 
   // Set an expectation so mock_proxy's ConnectToSignal() will use
   // OnConnectToPropertyChanged() to run the callback.
@@ -391,14 +388,6 @@ void ShillClientUnittestBase::OnCallMethodWithErrorResponse(
   task_environment_.GetMainThreadTaskRunner()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(*response_callback), response_, nullptr));
-}
-
-void ShillClientUnittestBase::OnCallMethodWithErrorCallback(
-    dbus::MethodCall* method_call,
-    int timeout_ms,
-    dbus::ObjectProxy::ResponseCallback* response_callback,
-    dbus::ObjectProxy::ErrorCallback* error_callback) {
-  OnCallMethod(method_call, timeout_ms, response_callback);
 }
 
 }  // namespace ash

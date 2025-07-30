@@ -313,11 +313,9 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     // after the interface changed.
     dbus::MethodCall method_call(update_engine::kUpdateEngineInterface,
                                  update_engine::kGetStatusAdvanced);
-    update_engine_proxy_->CallMethodWithErrorCallback(
+    update_engine_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(&UpdateEngineClientImpl::OnGetStatus,
-                       weak_ptr_factory_.GetWeakPtr()),
-        base::BindOnce(&UpdateEngineClientImpl::OnGetStatusError,
+        base::BindOnce(&UpdateEngineClientImpl::OnGetStatusResponse,
                        weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -396,7 +394,13 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
   }
 
   // Called when a response for GetStatus is received.
-  void OnGetStatus(dbus::Response* response) {
+  void OnGetStatusResponse(dbus::Response* response,
+                           dbus::ErrorResponse* error_response) {
+    if (error_response) {
+      LOG(ERROR) << "GetStatus request failed with error: "
+                 << error_response->ToString();
+      return;
+    }
     if (!response) {
       LOG(ERROR) << "Failed to get response for GetStatus request.";
       return;
@@ -412,12 +416,6 @@ class UpdateEngineClientImpl : public UpdateEngineClient {
     last_status_ = status;
     for (auto& observer : observers_)
       observer.UpdateStatusChanged(status);
-  }
-
-  // Called when GetStatus call failed.
-  void OnGetStatusError(dbus::ErrorResponse* error) {
-    LOG(ERROR) << "GetStatus request failed with error: "
-               << (error ? error->ToString() : "");
   }
 
   // Called when a response for SetReleaseChannel() is received.
