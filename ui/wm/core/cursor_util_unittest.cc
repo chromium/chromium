@@ -93,8 +93,11 @@ TEST(CursorUtil, GetCursorData) {
        {gfx::Size(25, 25), gfx::Size(25, 25)},
        {{gfx::Point(6, 4), gfx::Point(12, 8)},
         {gfx::Point(6, 4), gfx::Point(12, 8)}}},
-      // TODO(crbug.com/416095366): Add CursorType::kWait testcase back after
-      // the lottie asset is added.
+      {CursorType::kWait,
+       {gfx::Size(25, 25), gfx::Size(25, 25)},
+       {{gfx::Point(12, 12), gfx::Point(24, 24)},
+        {gfx::Point(12, 12), gfx::Point(24, 24)}}},
+
   };
 
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
@@ -137,8 +140,8 @@ TEST(CursorUtil, GetCursorDataWithTargetCursorSize) {
                            gfx::Size(25, 25),
                            {gfx::Point(6, 4), gfx::Point(12, 8)}},
                           {CursorType::kWait,
-                           gfx::Size(16, 16),
-                           {gfx::Point(7, 7), gfx::Point(14, 14)}}};
+                           gfx::Size(25, 25),
+                           {gfx::Point(12, 12), gfx::Point(24, 24)}}};
 
   for (const float scale : {0.8f, 1.0f, 1.3f, 1.5f, 2.0f, 2.5f}) {
     SCOPED_TRACE(testing::Message() << "scale " << scale);
