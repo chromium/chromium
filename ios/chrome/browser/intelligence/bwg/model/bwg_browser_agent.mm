@@ -10,7 +10,6 @@
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_configuration.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_link_opening_handler.h"
-#import "ios/chrome/browser/intelligence/bwg/model/bwg_page_state_change_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_session_handler.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
@@ -52,10 +51,6 @@ BwgBrowserAgent::BwgBrowserAgent(Browser* browser) : BrowserUserData(browser) {
         initWithURLLoader:UrlLoadingBrowserAgent::FromBrowser(browser_)];
     bwg_gateway_.linkOpeningHandler = bwg_link_opening_handler_;
 
-    bwg_page_state_change_handler_ = [[BWGPageStateChangeHandler alloc]
-        initWithPrefService:browser_->GetProfile()->GetPrefs()];
-    bwg_gateway_.pageStateChangeHandler = bwg_page_state_change_handler_;
-
     bwg_session_handler_ = [[BWGSessionHandler alloc]
         initWithWebStateList:browser_->GetWebStateList()];
     bwg_gateway_.sessionHandler = bwg_session_handler_;
@@ -69,7 +64,6 @@ void BwgBrowserAgent::PresentBwgOverlay(
     base::expected<std::unique_ptr<optimization_guide::proto::PageContext>,
                    PageContextWrapperError> expected_page_context) {
   SetSessionCommandHandlers();
-  [bwg_page_state_change_handler_ setBaseViewController:base_view_controller];
 
   web::WebState* web_state = browser_->GetWebStateList()->GetActiveWebState();
 

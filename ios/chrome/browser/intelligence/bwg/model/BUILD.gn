@@ -7,18 +7,13 @@ source_set("model") {
     "bwg_link_opening_delegate.h",
     "bwg_link_opening_handler.h",
     "bwg_link_opening_handler.mm",
-    "bwg_page_state_change_delegate.h",
-    "bwg_page_state_change_handler.h",
-    "bwg_page_state_change_handler.mm",
     "bwg_session_delegate.h",
     "bwg_session_handler.h",
     "bwg_session_handler.mm",
   ]
   deps = [
     ":tab_helper",
-    "//ios/chrome/app/strings:ios_strings",
     "//ios/chrome/browser/shared/model/browser",
-    "//ios/chrome/browser/shared/model/prefs:pref_names",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
     "//ios/chrome/browser/url_loading/model",

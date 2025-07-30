@@ -1120,18 +1120,6 @@
       <message name="IDS_IOS_BWG_PAGE_ACTION_MENU_ENTRY_POINT_ACCESSIBILITY_LABEL" desc="Accessibility label for the page action menu entry point.">
           Open on-page AI tools
       </message>
-      <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_ACCEPT_BUTTON" desc="The accept button for the alert asking a user to turn on Page Content sharing.">
-          Turn on
-      </message>
-      <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_DECLINE_BUTTON" desc="The decline button for the alert asking a user to turn on Page Content sharing.">
-          No thanks
-      </message>
-      <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_MESSAGE" desc="The body/message of the alert asking a user to turn on Page Content sharing with Gemini so they can get more relevant results. This asks them if they would like to share the contents of webpages with Gemini.">
-          Share page content with Gemini to get more relevant answers
-      </message>
-      <message name="IDS_IOS_BWG_PAGE_CONTENT_SHARING_ALERT_TITLE" desc="The title of the alert asking a user to turn on Page Content sharing.">
-          Turn on page content sharing
-      </message>
       <message name="IDS_IOS_BWG_PROMO_FIRST_BOX_BODY" desc="First box body text for the Gemini Promo page.">
           Get relevant answers based on the content of the page you're on
       </message>
