@@ -252,7 +252,7 @@ function createRoutes(): SettingsRoutes {
     r.ADDRESSES.hasMigratedToPlugin = true;
 
     if (loadTimeData.getBoolean('showAutofillAiControl')) {
-      r.AUTOFILL_AI = r.AUTOFILL.createChild('/autofillAi');
+      r.AUTOFILL_AI = r.AUTOFILL.createChild('/enhancedAutofill');
       r.AUTOFILL_AI.hasMigratedToPlugin = true;
     }
 
