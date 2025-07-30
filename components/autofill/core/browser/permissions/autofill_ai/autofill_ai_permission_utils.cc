@@ -213,14 +213,36 @@ using FeatureCheck = base::FunctionRef<bool(const base::Feature&)>;
 
   // All other states (sign-in and sync including their paused/error states)
   // are sufficient for us to validate the user's account information.
-  // TODO(crbug.com/397881703): Decide whether to implement overrides similar
-  // to `kModelExecutionCapabilityDisable`.
-  bool result =
-      identity_manager
-          ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
-              signin::ConsentLevel::kSignin))
-          .capabilities.can_use_model_execution_features() ==
-      signin::Tribool::kTrue;
+  const bool result = [&]() {
+    if (identity_manager
+            ->FindExtendedAccountInfo(identity_manager->GetPrimaryAccountInfo(
+                signin::ConsentLevel::kSignin))
+            .capabilities.can_use_model_execution_features() ==
+        signin::Tribool::kTrue) {
+      return true;
+    }
+    switch (action) {
+      case AutofillAiAction::kAddEntityInstanceInSettings:
+      case AutofillAiAction::kCrowdsourcingVote:
+      case AutofillAiAction::kEditAndDeleteEntityInstanceInSettings:
+      case AutofillAiAction::kFilling:
+      case AutofillAiAction::kImport:
+      case AutofillAiAction::kIphForOptIn:
+      case AutofillAiAction::kListEntityInstancesInSettings:
+      case AutofillAiAction::kOptIn:
+        return base::FeatureList::IsEnabled(
+            features::kAutofillAiIgnoreCapabilityCheck);
+      case AutofillAiAction::kLogToMqls:
+      case AutofillAiAction::kServerClassificationModel:
+      case AutofillAiAction::kUseCachedServerClassificationModelResults:
+        return base::FeatureList::IsEnabled(
+                   features::kAutofillAiIgnoreCapabilityCheck) &&
+               !features::kAutofillAiIgnoreCapabilityCheckOnlyForNonModelActions
+                    .Get();
+    }
+    NOTREACHED();
+  }();
+
   if (!result) {
     MaybeOutputReason(debug_message,
                       "User cannot use model execution features.");

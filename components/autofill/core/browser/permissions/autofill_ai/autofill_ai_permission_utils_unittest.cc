@@ -132,10 +132,10 @@ TEST_P(AutofillAiMayPerformActionTest, ModelFeatureOff) {
   // The opt-in IPH cannot be run either since we simulate a state in which the
   // user has opted into the feature.
   const bool is_allowed =
-      (GetParam() != AutofillAiAction::kServerClassificationModel) &&
-      (GetParam() !=
-       AutofillAiAction::kUseCachedServerClassificationModelResults) &&
-      (GetParam() != AutofillAiAction::kIphForOptIn);
+      GetParam() != AutofillAiAction::kServerClassificationModel &&
+      GetParam() !=
+          AutofillAiAction::kUseCachedServerClassificationModelResults &&
+      GetParam() != AutofillAiAction::kIphForOptIn;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -151,9 +151,9 @@ TEST_P(AutofillAiMayPerformActionTest, FeatureParamForModelCacheUseOff) {
   // The opt-in IPH cannot be run either since we simulate a state in which the
   // user has opted into the feature.
   const bool is_allowed =
-      (GetParam() !=
-       AutofillAiAction::kUseCachedServerClassificationModelResults) &&
-      (GetParam() != AutofillAiAction::kIphForOptIn);
+      GetParam() !=
+          AutofillAiAction::kUseCachedServerClassificationModelResults &&
+      GetParam() != AutofillAiAction::kIphForOptIn;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -200,9 +200,8 @@ TEST_P(AutofillAiMayPerformActionTest,
   AddEntity();
   client().SetAutofillProfileEnabled(false);
   const bool is_allowed =
-      (GetParam() ==
-       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -211,9 +210,9 @@ TEST_P(AutofillAiMayPerformActionTest,
 TEST_P(AutofillAiMayPerformActionTest, ActionsWhenNotOptedIntoAutofillAi) {
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
-      (GetParam() == AutofillAiAction::kOptIn) ||
-      (GetParam() == AutofillAiAction::kIphForOptIn) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kOptIn ||
+      GetParam() == AutofillAiAction::kIphForOptIn ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -224,11 +223,10 @@ TEST_P(AutofillAiMayPerformActionTest,
   AddEntity();
   SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
   const bool is_allowed =
-      (GetParam() == AutofillAiAction::kOptIn) ||
-      (GetParam() == AutofillAiAction::kIphForOptIn) ||
-      (GetParam() ==
-       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kOptIn ||
+      GetParam() == AutofillAiAction::kIphForOptIn ||
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -239,9 +237,8 @@ TEST_P(AutofillAiMayPerformActionTest, SignedOut) {
   AddEntity();
   client().identity_test_environment().ClearPrimaryAccount();
   const bool is_allowed =
-      (GetParam() ==
-       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -252,9 +249,54 @@ TEST_P(AutofillAiMayPerformActionTest, MayNotRunModel) {
   AddEntity();
   client().SetCanUseModelExecutionFeatures(false);
   const bool is_allowed =
-      (GetParam() ==
-       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that enabling `kAutofillAiIgnoreCapabilityCheck` skips the check
+// whether a client can use model execution features.
+TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverride) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiIgnoreCapabilityCheck};
+  AddEntity();
+  client().SetCanUseModelExecutionFeatures(false);
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that enabling `kAutofillAiIgnoreCapabilityCheck` and setting
+// `kAutofillAiIgnoreCapabilityCheckOnlyForNonModelActions` to true only
+// overrides the capability check for actions that do not involve MQLS or MES.
+TEST_P(AutofillAiMayPerformActionTest,
+       CapabilityCheckOverrideForNonModelActions) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      features::kAutofillAiIgnoreCapabilityCheck,
+      {{"autofill_ai_ignore_capability_check_only_for_non_model_actions",
+        "true"}});
+
+  client().SetCanUseModelExecutionFeatures(false);
+  using enum AutofillAiAction;
+  const bool is_allowed =
+      GetParam() != kIphForOptIn && GetParam() != kServerClassificationModel &&
+      GetParam() != kLogToMqls &&
+      GetParam() != kUseCachedServerClassificationModelResults;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+
+// Tests that enabling `kAutofillAiIgnoreCapabilityCheck` skips the check
+// whether a client can use model execution features before opt-in or IPH.
+TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverrideOptedOut) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiIgnoreCapabilityCheck};
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
+  client().SetCanUseModelExecutionFeatures(false);
+
+  const bool is_allowed =
+      GetParam() == AutofillAiAction::kOptIn ||
+      GetParam() == AutofillAiAction::kIphForOptIn ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -262,9 +304,9 @@ TEST_P(AutofillAiMayPerformActionTest, MayNotRunModel) {
 TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
   client().set_is_off_the_record(true);
   const bool is_allowed =
-      (GetParam() == AutofillAiAction::kFilling) ||
-      (GetParam() ==
-       AutofillAiAction::kUseCachedServerClassificationModelResults);
+      GetParam() == AutofillAiAction::kFilling ||
+      GetParam() ==
+          AutofillAiAction::kUseCachedServerClassificationModelResults;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -328,9 +370,8 @@ TEST_P(AutofillAiMayPerformActionTest, CountryCodeWithBlocklistAndSavedData) {
   AddEntity();
   client().SetVariationConfigCountryCode(GeoIpCountryCode("IN"));
   const bool is_allowed =
-      (GetParam() ==
-       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
@@ -382,9 +423,8 @@ TEST_P(AutofillAiMayPerformActionTest, AppLocaleWithDataSaved) {
   AddEntity();
   client().set_app_locale("de-DE");
   const bool is_allowed =
-      (GetParam() ==
-       AutofillAiAction::kEditAndDeleteEntityInstanceInSettings) ||
-      (GetParam() == AutofillAiAction::kListEntityInstancesInSettings);
+      GetParam() == AutofillAiAction::kEditAndDeleteEntityInstanceInSettings ||
+      GetParam() == AutofillAiAction::kListEntityInstancesInSettings;
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
