@@ -319,6 +319,9 @@ class CONTENT_EXPORT RenderWidgetHostViewEventHandler
   const raw_ptr<Delegate> delegate_;
   raw_ptr<aura::Window> window_ = nullptr;
   MouseWheelPhaseHandler mouse_wheel_phase_handler_;
+
+  // Used to identify pointing device that can fire fling events.
+  base::flat_set<int> fling_capable_device_ids_;
 };
 
 }  // namespace content

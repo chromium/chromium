@@ -62,7 +62,8 @@ class MouseWheelPhaseHandler {
 
   void AddPhaseIfNeededAndScheduleEndEvent(
       blink::WebMouseWheelEvent& mouse_wheel_event,
-      bool should_route_event);
+      bool should_route_event,
+      bool is_fling_capable);
   void DispatchPendingWheelEndEvent();
   void IgnorePendingWheelEndEvent();
   void ResetTouchpadScrollSequence();

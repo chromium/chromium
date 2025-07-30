@@ -305,7 +305,7 @@ void RenderWidgetHostViewEventHandler::HandleMouseWheelEvent(
         should_route_event);
 
     mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
-        mouse_wheel_event, should_route_event);
+        mouse_wheel_event, should_route_event, /*is_fling_capable=*/false);
     if (should_route_event) {
       host_->delegate()->GetInputEventRouter()->RouteMouseWheelEvent(
           host_view_, &mouse_wheel_event, *event->latency());
@@ -401,6 +401,21 @@ void RenderWidgetHostViewEventHandler::OnMouseEvent(ui::MouseEvent* event) {
 void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
   TRACE_EVENT0("input", "RenderWidgetHostViewBase::OnScrollEvent");
   const bool should_route_event = ShouldRouteEvents();
+
+  // MouseWheelPhaseHandler needs to know if the device supports fling gensture.
+  // Such device always generates FlingCancel first, so that it can interrupt
+  // and stop potentially ongoing fling scroll. (e.g. TouchPad does support
+  // while TrackPoint does not) Please see AddPhaseIfNeededAndScheduleEndEvent
+  // for more details.
+  bool is_fling_capable_device = false;
+  if (event->IsFlingScrollEvent()) {
+    fling_capable_device_ids_.emplace(event->source_device_id());
+    is_fling_capable_device = true;
+  } else {
+    is_fling_capable_device =
+        fling_capable_device_ids_.contains(event->source_device_id());
+  }
+
   if (event->type() == ui::EventType::kScroll) {
 #if !BUILDFLAG(IS_WIN)
     // TODO(ananta)
@@ -411,7 +426,7 @@ void RenderWidgetHostViewEventHandler::OnScrollEvent(ui::ScrollEvent* event) {
     blink::WebMouseWheelEvent mouse_wheel_event =
         ui::MakeWebMouseWheelEvent(*event);
     mouse_wheel_phase_handler_.AddPhaseIfNeededAndScheduleEndEvent(
-        mouse_wheel_event, should_route_event);
+        mouse_wheel_event, should_route_event, is_fling_capable_device);
 
     std::optional<blink::WebGestureEvent> maybe_synthetic_fling_cancel;
     if (mouse_wheel_event.phase == blink::WebMouseWheelEvent::kPhaseBegan) {

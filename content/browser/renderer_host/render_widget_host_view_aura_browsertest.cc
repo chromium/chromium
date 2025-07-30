@@ -8,12 +8,16 @@
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "content/browser/devtools/protocol/devtools_protocol_test_support.h"
 #include "content/browser/renderer_host/delegated_frame_host.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/input/mouse_wheel_phase_handler.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
+#include "content/browser/renderer_host/render_widget_host_view_event_handler.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -27,6 +31,7 @@
 #include "content/shell/common/shell_switches.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
+#include "third_party/blink/public/common/features.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
@@ -92,6 +97,10 @@ class RenderWidgetHostViewAuraBrowserTest : public ContentBrowserTest {
   RenderWidgetHostViewAura* GetRenderWidgetHostView() const {
     return static_cast<RenderWidgetHostViewAura*>(
         GetRenderViewHost()->GetWidget()->GetView());
+  }
+
+  RenderWidgetHost* GetRenderWidgetHost() const {
+    return GetRenderWidgetHostView()->GetRenderWidgetHost();
   }
 
   DelegatedFrameHost* GetDelegatedFrameHost() const {
@@ -723,5 +732,113 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
   ASSERT_EQ(4200, control_bounds->origin().y());
 }
 #endif
+
+// Make sure that scroll sequence produces kGestureScrollEnd event even if
+// it starts with FlingCancel but never received FlingStart, which can
+// happen with a track point device.
+namespace {
+class InputEventWaiter : public RenderWidgetHost::InputEventObserver {
+ public:
+  explicit InputEventWaiter(RenderWidgetHost* host) {
+    observation_.Observe(host);
+  }
+  InputEventWaiter(const InputEventWaiter&) = delete;
+  InputEventWaiter& operator=(const InputEventWaiter&) = delete;
+  ~InputEventWaiter() override = default;
+
+  // RenderWidgetHost::InputEventObserver:
+  void OnInputEvent(const RenderWidgetHost& host,
+                    const blink::WebInputEvent& event) override {
+    if (event.GetType() == target_state_) {
+      future_->SetValue(event.GetType());
+    }
+  }
+
+  void Wait(blink::WebInputEvent::Type target_state) {
+    target_state_ = target_state;
+    future_ =
+        std::make_unique<base::test::TestFuture<blink::WebInputEvent::Type>>();
+    CHECK(future_->Wait());
+    future_.reset();
+    target_state_ = blink::WebInputEvent::Type::kUndefined;
+  }
+
+ private:
+  blink::WebInputEvent::Type target_state_ =
+      blink::WebInputEvent::Type::kUndefined;
+  std::unique_ptr<base::test::TestFuture<blink::WebInputEvent::Type>> future_;
+  base::ScopedObservation<RenderWidgetHost,
+                          RenderWidgetHost::InputEventObserver>
+      observation_{this};
+};
+
+class RenderWidgetHostViewAuraEventBrowserTest
+    : public RenderWidgetHostViewAuraBrowserTest {
+ public:
+  RenderWidgetHostViewAuraEventBrowserTest() {
+    // Disable this feature because paint won't happen in the test.
+    scoped_feature_list.InitAndDisableFeature(
+        blink::features::kDropInputEventsWhilePaintHolding);
+  }
+  RenderWidgetHostViewAuraEventBrowserTest(
+      const RenderWidgetHostViewAuraEventBrowserTest&) = delete;
+  RenderWidgetHostViewAuraEventBrowserTest& operator=(
+      const RenderWidgetHostViewAuraEventBrowserTest&) = delete;
+  ~RenderWidgetHostViewAuraEventBrowserTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list;
+};
+
+}  // namespace
+
+IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraEventBrowserTest,
+                       TrackPointResetsFlingState) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  // Load a page that draws new frames infinitely.
+  EXPECT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
+
+  auto* web_contents = static_cast<WebContentsImpl*>(shell()->web_contents());
+  auto* root = web_contents->GetNativeView()->GetRootWindow();
+
+  ui::test::EventGenerator generator(root, web_contents->GetNativeView());
+  gfx::Point location = generator.current_screen_location();
+
+  constexpr int kTouchpadDeviceId = 1;
+  constexpr int kTrackpointDeviceId = 2;
+
+  auto* rwhv = GetRenderWidgetHostView();
+  auto& mouse_wheel_phase_handler =
+      rwhv->event_handler()->mouse_wheel_phase_handler();
+
+  InputEventWaiter waiter(GetRenderWidgetHost());
+  // Starting scroll with Track Point may touch touch pad, which generates fling
+  // cancel event. Emulate that sequence, by generating FlingCancel with
+  // Touchpad's ID first.
+  generator.set_mouse_source_device_id(kTouchpadDeviceId);
+  generator.ScrollSequence(
+      location, base::Milliseconds(16), /*x_offset=*/0, /*y_offset=*/5,
+      /*steps=*/0, /*num_fingers=*/1,
+      ui::test::EventGenerator::ScrollSequenceType::StartAndScroll);
+
+  EXPECT_EQ(content::TouchpadScrollPhaseState::TOUCHPAD_SCROLL_MAY_BEGIN,
+            mouse_wheel_phase_handler.touchpad_scroll_phase_state_for_test());
+
+  // Then generate scroll events using TrackPoint's ID.
+  generator.set_mouse_source_device_id(kTrackpointDeviceId);
+  generator.ScrollSequence(
+      location, base::Milliseconds(16), /*x_offset=*/0, /*y_offset=*/5,
+      /*steps=*/10, /*num_fingers=*/2,
+      ui::test::EventGenerator::ScrollSequenceType::ScrollOnly);
+
+  EXPECT_EQ(content::TouchpadScrollPhaseState::TOUCHPAD_SCROLL_STATE_UNKNOWN,
+            mouse_wheel_phase_handler.touchpad_scroll_phase_state_for_test());
+  waiter.Wait(blink::WebInputEvent::Type::kGestureScrollBegin);
+  waiter.Wait(blink::WebInputEvent::Type::kGestureScrollEnd);
+
+  EXPECT_EQ(content::TouchpadScrollPhaseState::TOUCHPAD_SCROLL_STATE_UNKNOWN,
+            mouse_wheel_phase_handler.touchpad_scroll_phase_state_for_test());
+}
 
 }  // namespace content
