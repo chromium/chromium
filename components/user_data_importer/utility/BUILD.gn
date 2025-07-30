@@ -35,6 +35,7 @@ rust_static_library("zip_ffi_glue") {
   allow_unsafe = true
   crate_root = "parsing_ffi/lib.rs"
   sources = [
+    "parsing_ffi/json.rs",
     "parsing_ffi/lib.rs",
     "parsing_ffi/models.rs",
   ]
