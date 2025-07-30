@@ -302,12 +302,24 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                         return;
                     }
                 case BROWSER_FILE_TYPE_BROWSING_HISTORY:
-                    // TODO(crbug.com/430254294): Hook up to the actual import logic (i.e. to
-                    // StablePortabilityDataImporter from components/user_data_importer/) via JNI.
-                    importResults.ignoredItemCount++;
-                    responseObserver.onNext(ImportItemResponse.newBuilder().build());
-                    responseObserver.onCompleted();
-                    return;
+                    {
+                        // Note: Use `detachFd()` (rather than `getFd()`) in order to pass ownership
+                        // to the native side.
+                        final StreamObserver<ImportItemResponse> responseObserverForUiThread =
+                                responseObserver;
+                        // `responseObserver` is now "owned by" the UI thread, so must not be used
+                        // here anymore.
+                        responseObserver = null;
+                        PostTask.postTask(
+                                TaskTraits.UI_DEFAULT,
+                                () ->
+                                        importHistoryOnUiThread(
+                                                pfd.detachFd(), responseObserverForUiThread));
+                        // TODO(crbug.com/431218724): Plumb the actual import result (success or
+                        // failure) back here, so it can be properly reported in importItemsDone().
+                        importResults.successItemCount++;
+                        return;
+                    }
                 case UNRECOGNIZED:
                 case BROWSER_FILE_TYPE_UNSPECIFIED:
                     responseObserver.onError(
@@ -411,6 +423,22 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "ReadingList imported: %d", count);
+                        responseObserver.onNext(ImportItemResponse.newBuilder().build());
+                        responseObserver.onCompleted();
+                    });
+        }
+
+        private void importHistoryOnUiThread(
+                int ownedFd, StreamObserver<ImportItemResponse> responseObserver) {
+            ThreadUtils.assertOnUiThread();
+
+            prepareForImport();
+            assert mBridge != null;
+
+            mBridge.importHistory(
+                    ownedFd,
+                    (count) -> {
+                        Log.i(TAG, "History imported: %d", count);
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });

@@ -62,6 +62,21 @@ void DataImporterBridge::ImportReadingList(
                      weak_ptr_factory_.GetWeakPtr(), callback));
 }
 
+void DataImporterBridge::ImportHistory(
+    JNIEnv* env,
+    jint owned_fd,
+    const base::android::JavaRef<jobject>& j_callback) {
+  base::android::ScopedJavaGlobalRef<jobject> callback(j_callback);
+  base::File file(owned_fd, base::File::FLAG_OPEN | base::File::FLAG_READ);
+  // TODO(crbug.com/430254294): Hook up to the importer once it supports taking
+  // a base::File.
+  ImportHistoryDone(callback, 0);
+  // importer_->ImportHistory(
+  //     std::move(file),
+  //     base::BindOnce(&DataImporterBridge::ImportHistoryDone,
+  //                    weak_ptr_factory_.GetWeakPtr(), callback));
+}
+
 void DataImporterBridge::ImportBookmarksDone(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     int count) {
@@ -69,6 +84,12 @@ void DataImporterBridge::ImportBookmarksDone(
 }
 
 void DataImporterBridge::ImportReadingListDone(
+    base::android::ScopedJavaGlobalRef<jobject> callback,
+    int count) {
+  base::android::RunIntCallbackAndroid(callback, count);
+}
+
+void DataImporterBridge::ImportHistoryDone(
     base::android::ScopedJavaGlobalRef<jobject> callback,
     int count) {
   base::android::RunIntCallbackAndroid(callback, count);

@@ -33,6 +33,10 @@ class DataImporterBridge {
                          jint owned_fd,
                          const base::android::JavaRef<jobject>& j_callback);
 
+  void ImportHistory(JNIEnv* env,
+                     jint owned_fd,
+                     const base::android::JavaRef<jobject>& j_callback);
+
  private:
   void ImportBookmarksDone(base::android::ScopedJavaGlobalRef<jobject> callback,
                            int count);
@@ -40,6 +44,9 @@ class DataImporterBridge {
   void ImportReadingListDone(
       base::android::ScopedJavaGlobalRef<jobject> callback,
       int count);
+
+  void ImportHistoryDone(base::android::ScopedJavaGlobalRef<jobject> callback,
+                         int count);
 
   raw_ptr<Profile> profile_;
 

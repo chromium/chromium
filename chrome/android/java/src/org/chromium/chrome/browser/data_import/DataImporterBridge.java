@@ -52,6 +52,14 @@ public class DataImporterBridge {
         DataImporterBridgeJni.get().importReadingList(mNativeDataImporterBridge, ownedFd, callback);
     }
 
+    /**
+     * Imports history entries from the specified fd (file descriptor). This assumes ownership of
+     * the fd, meaning it must not be used in Java anymore; the native side will close it once done.
+     */
+    public void importHistory(int ownedFd, Callback<Integer> callback) {
+        DataImporterBridgeJni.get().importHistory(mNativeDataImporterBridge, ownedFd, callback);
+    }
+
     @NativeMethods
     interface Natives {
         long init(@JniType("Profile*") @Nullable Profile profile);
@@ -63,5 +71,7 @@ public class DataImporterBridge {
 
         void importReadingList(
                 long nativeDataImporterBridge, int ownedFd, Callback<Integer> callback);
+
+        void importHistory(long nativeDataImporterBridge, int ownedFd, Callback<Integer> callback);
     }
 }
