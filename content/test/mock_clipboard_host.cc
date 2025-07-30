@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/342213636): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "content/test/mock_clipboard_host.h"
 
 #include <vector>
@@ -214,7 +209,7 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   if (needs_reset_)
     Reset();
   // Simulate the underlying platform copying this data.
-  std::vector<uint8_t> data_copy(data.data(), data.data() + data.size());
+  std::vector<uint8_t> data_copy(data.begin(), data.end());
   // Append the "web " prefix since it is removed by the clipboard writer during
   // write.
   std::u16string web_format =
