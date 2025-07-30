@@ -1703,6 +1703,10 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)verifyCopyLinkActionWithText:(NSString*)text {
   [ChromeEarlGreyAppInterface clearPasteboardURLs];
+#if TARGET_OS_SIMULATOR
+  // Synchronization off due to an infinite spinner.
+  ScopedSynchronizationDisabler disabler;
+#endif
   [[EarlGrey selectElementWithMatcher:CopyLinkButton()]
       performAction:grey_tap()];
   [self verifyStringCopied:text];
