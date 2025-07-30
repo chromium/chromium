@@ -98,15 +98,10 @@ class CONTENT_EXPORT PageLifecycleStateManager {
       blink::mojom::PageRestoreParamsPtr page_restore_params,
       base::OnceClosure done_cb);
 
-  // TODO(https://crbug.com/427316606): Remove this.
-  void DumpWithoutCrashForBug427316606();
-
   // Called when a new acknowledged state is available. This new state can come
   // from several paths.
   void OnPageLifecycleStateChanged(
-      blink::mojom::PageLifecycleStatePtr acknowledged_state,
-      // TODO(https://crbug.com/427316606): Remove this.
-      bool set_page_lifecycle_state_response);
+      blink::mojom::PageLifecycleStatePtr acknowledged_state);
   void OnSetPageLifecycleStateResponse(
       blink::mojom::PageLifecycleStatePtr acknowledged_state,
       base::OnceClosure done_cb);
@@ -126,10 +121,7 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   friend std::ostream& operator<<(std::ostream&,
                                   const BackForwardCacheEntered&);
 
-  // TODO(https://crbug.com/427316606): Remove `context_for_bug_427316606` after
-  // debugging.
-  void SetBackForwardCacheEntered(BackForwardCacheEntered entered,
-                                  char context_for_bug_427316606);
+  void SetBackForwardCacheEntered(BackForwardCacheEntered entered);
 
   BackForwardCacheEntered back_forward_cache_entered_ =
       BackForwardCacheEntered::kNo;
@@ -159,9 +151,6 @@ class CONTENT_EXPORT PageLifecycleStateManager {
   base::OneShotTimer back_forward_cache_timeout_monitor_;
 
   raw_ptr<TestDelegate> test_delegate_{nullptr};
-
-  // TODO(https://crbug.com/427316606): Remove this after debugging.
-  std::string back_forward_cache_state_tracker_;
 
   // NOTE: This must be the last member.
   base::WeakPtrFactory<PageLifecycleStateManager> weak_ptr_factory_{this};
