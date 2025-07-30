@@ -2027,8 +2027,9 @@ NSUInteger GetPageIndexFromPage(TabGridPage page) {
       [pinnedView.widthAnchor
           constraintEqualToAnchor:self.view.widthAnchor
                        multiplier:kPinnedViewMaxWidthInPercent],
-      [pinnedView.topAnchor
-          constraintEqualToAnchor:self.bottomToolbar.topAnchor],
+      [pinnedView.bottomAnchor
+          constraintEqualToAnchor:self.view.bottomAnchor
+                         constant:-kPinnedViewBottomPadding],
     ]];
   }
 
