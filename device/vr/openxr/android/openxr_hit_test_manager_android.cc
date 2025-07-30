@@ -11,7 +11,6 @@
 #include "device/vr/openxr/android/openxr_plane_manager_android.h"
 #include "device/vr/openxr/openxr_extension_helper.h"
 #include "device/vr/openxr/openxr_util.h"
-#include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace {

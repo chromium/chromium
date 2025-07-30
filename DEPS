@@ -2595,7 +2595,7 @@ deps = {
     Var('chromium_git') + '/openscreen' + '@' + 'f51be2dd676c855bc588a439f002bc941b87db6b',
 
   'src/third_party/openxr/src': {
-    'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + '977f6675bc0057d5a54ed290cb5c71c699b1c0ab',
+    'url': Var('chromium_git') + '/external/github.com/KhronosGroup/OpenXR-SDK' + '@' + '57572a0e91890fe7183de25a62153aec955d64ba',
     'condition': 'checkout_openxr',
   },
 

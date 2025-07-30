@@ -54,20 +54,12 @@ OpenXrAnchorManagerAndroid::GetAnchorFromMojom(
     XrSpace anchor_space,
     XrTime predicted_display_time) const {
   XrSpaceLocation anchor_from_mojo = {XR_TYPE_SPACE_LOCATION};
-  XrAnchorStateANDROID anchor_state{XR_TYPE_ANCHOR_STATE_ANDROID};
-  anchor_from_mojo.next = &anchor_state;
   XrResult result = xrLocateSpace(anchor_space, mojo_space_,
                                   predicted_display_time, &anchor_from_mojo);
   if (XR_FAILED(result)) {
     DVLOG(3) << __func__ << " xrLocateSpace returned: " << result;
     return base::unexpected(
         OpenXrAnchorManager::AnchorTrackingErrorType::kTemporary);
-  }
-
-  if (anchor_state.trackingState == XR_TRACKING_STATE_STOPPED_ANDROID) {
-    DVLOG(3) << __func__ << " Anchor is no longer tracked";
-    return base::unexpected(
-        OpenXrAnchorManager::AnchorTrackingErrorType::kPermanent);
   }
 
   if (!IsPoseValid(anchor_from_mojo.locationFlags)) {

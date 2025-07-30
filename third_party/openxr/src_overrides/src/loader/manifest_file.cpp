@@ -20,6 +20,7 @@
 #include "filesystem_utils.hpp"
 #include "loader_init_data.hpp"
 #include "loader_platform.hpp"
+#include "loader_properties.hpp"
 #include "platform_utils.hpp"
 #include "loader_logger.hpp"
 #include "unique_asset.h"
@@ -192,7 +193,7 @@ static void ReadDataFilesInSearchPaths(const std::string &override_env_var, cons
         }
 #endif
         if (permit_override) {
-            override_path = PlatformUtilsGetSecureEnv(override_env_var.c_str());
+            override_path = LoaderProperty::GetSecure(override_env_var);
         }
     }
 
@@ -206,10 +207,10 @@ static void ReadDataFilesInSearchPaths(const std::string &override_env_var, cons
 
         // Determine how much space is needed to generate the full search path
         // for the current manifest files.
-        std::string xdg_conf_dirs = PlatformUtilsGetSecureEnv("XDG_CONFIG_DIRS");
-        std::string xdg_data_dirs = PlatformUtilsGetSecureEnv("XDG_DATA_DIRS");
-        std::string xdg_data_home = PlatformUtilsGetSecureEnv("XDG_DATA_HOME");
-        std::string home = PlatformUtilsGetSecureEnv("HOME");
+        std::string xdg_conf_dirs = LoaderProperty::GetSecure("XDG_CONFIG_DIRS");
+        std::string xdg_data_dirs = LoaderProperty::GetSecure("XDG_DATA_DIRS");
+        std::string xdg_data_home = LoaderProperty::GetSecure("XDG_DATA_HOME");
+        std::string home = LoaderProperty::GetSecure("HOME");
 
         if (xdg_conf_dirs.empty()) {
             CopyIncludedPaths(true, FALLBACK_CONFIG_DIRS, relative_path, search_path);
@@ -254,11 +255,11 @@ static void ReadDataFilesInSearchPaths(const std::string &override_env_var, cons
 
 // Get an XDG environment variable with a $HOME-relative default
 static std::string GetXDGEnvHome(const char *name, const char *fallback_path) {
-    std::string result = PlatformUtilsGetSecureEnv(name);
+    std::string result = LoaderProperty::GetSecure(name);
     if (!result.empty()) {
         return result;
     }
-    result = PlatformUtilsGetSecureEnv("HOME");
+    result = LoaderProperty::GetSecure("HOME");
     if (result.empty()) {
         return result;
     }
@@ -269,7 +270,7 @@ static std::string GetXDGEnvHome(const char *name, const char *fallback_path) {
 
 // Get an XDG environment variable with absolute defaults
 static std::string GetXDGEnvAbsolute(const char *name, const char *fallback_paths) {
-    std::string result = PlatformUtilsGetSecureEnv(name);
+    std::string result = LoaderProperty::GetSecure(name);
     if (!result.empty()) {
         return result;
     }
@@ -649,7 +650,7 @@ void RuntimeManifestFile::CreateIfValid(const Json::Value &root_node, const std:
 XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_command,
                                                 std::vector<std::unique_ptr<RuntimeManifestFile>> &manifest_files) {
     XrResult result = XR_SUCCESS;
-    std::string filename = PlatformUtilsGetSecureEnv(OPENXR_RUNTIME_JSON_ENV_VAR);
+    std::string filename = LoaderProperty::GetSecure(OPENXR_RUNTIME_JSON_ENV_VAR);
     if (!filename.empty()) {
         LoaderLogger::LogInfoMessage(
             openxr_command,
@@ -724,7 +725,7 @@ void ApiLayerManifestFile::AddManifestFilesAndroid(const std::string &openxr_com
         return;
     }
 
-    AAssetManager *assetManager = (AAssetManager *)Android_Get_Asset_Manager();
+    AAssetManager *assetManager = (AAssetManager *)GetAndroidAssetManager();
     std::vector<std::string> filenames;
     {
         std::string search_path = "";
@@ -825,14 +826,14 @@ void ApiLayerManifestFile::CreateIfValid(ManifestFileType type, const std::strin
         if (!layer_root_node["enable_environment"].isNull() && layer_root_node["enable_environment"].isString()) {
             std::string env_var = layer_root_node["enable_environment"].asString();
             // If it's not set in the environment, disable the layer
-            if (!PlatformUtilsGetEnvSet(env_var.c_str())) {
+            if (!LoaderProperty::IsSet(env_var)) {
                 enabled = false;
             }
         }
         // Check for the disable environment variable, which must be provided in the JSON
         std::string env_var = layer_root_node["disable_environment"].asString();
         // If the env var is set, disable the layer. Disable env var overrides enable above
-        if (PlatformUtilsGetEnvSet(env_var.c_str())) {
+        if (LoaderProperty::IsSet(env_var)) {
             enabled = false;
         }
 

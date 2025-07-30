@@ -9,7 +9,6 @@
 #include "device/vr/openxr/openxr_extension_handler_factory.h"
 #include "device/vr/openxr/openxr_scene_understanding_manager.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
-#include "third_party/openxr/dev/xr_android.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
 
 namespace device {

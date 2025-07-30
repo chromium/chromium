@@ -1,7 +1,7 @@
-From e8cde84e1b619cb516eb3f62159c4aed5ad11306 Mon Sep 17 00:00:00 2001
+From 68e5330abe00696562f6ccc23559562ef7b329a6 Mon Sep 17 00:00:00 2001
 From: Alexander Cooper <alcooper@chromium.org>
 Date: Fri, 25 Jul 2025 15:55:26 -0700
-Subject: [PATCH 1/2] Ignore Android Content Provider Paths
+Subject: [PATCH] Ignore Android Content Provider Paths
 
 ---
  .../openxr/src_overrides/src/loader/android_utilities.cpp   | 6 ++++++
@@ -42,10 +42,10 @@ index 54db54fffdb0b..7aa148bd2a4de 100644
  }  // namespace openxr_android
  
 diff --git a/third_party/openxr/src_overrides/src/loader/manifest_file.cpp b/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
-index 83b468855ca73..5de0ba3b1cb4f 100644
+index fa22ebb56c1b7..221ff4519252a 100644
 --- a/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
 +++ b/third_party/openxr/src_overrides/src/loader/manifest_file.cpp
-@@ -680,14 +680,14 @@ XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_comman
+@@ -681,14 +681,14 @@ XrResult RuntimeManifestFile::FindManifestFiles(const std::string &openxr_comman
          }
  #else  // !defined(XR_OS_WINDOWS) && !defined(XR_OS_LINUX)
  
@@ -63,5 +63,5 @@ index 83b468855ca73..5de0ba3b1cb4f 100644
              LoaderLogger::LogErrorMessage(
                  openxr_command,
 -- 
-2.50.1.470.g6ba607880d-goog
+2.50.1.552.g942d659e1b-goog
 
