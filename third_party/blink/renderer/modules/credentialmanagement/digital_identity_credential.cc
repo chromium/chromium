@@ -130,6 +130,13 @@ void OnCompleteRequest(ScriptPromiseResolver<IDLNullable<Credential>>* resolver,
     }
   }
 }
+bool IsSerializable(ScriptState* script_state, ScriptObject data) {
+  v8::Local<v8::String> data_string;
+  v8::TryCatch try_catch(script_state->GetIsolate());
+  return v8::JSON::Stringify(script_state->GetContext(), data.V8Object())
+             .ToLocal(&data_string) &&
+         !try_catch.HasCaught();
+}
 
 }  // anonymous namespace
 
@@ -167,7 +174,13 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
       Platform::Current()->CreateWebV8ValueConverter();
 
   Vector<blink::mojom::blink::DigitalCredentialGetRequestPtr> requests;
+  ScriptState* script_state = resolver->GetScriptState();
   for (const auto& request : options.digital()->requests()) {
+    if (!IsSerializable(script_state, request->data())) {
+      resolver->RejectWithTypeError(
+          "Digital identity API requires valid JSON in the request.");
+      return;
+    }
     blink::mojom::blink::DigitalCredentialGetRequestPtr
         digital_credential_request =
             blink::mojom::blink::DigitalCredentialGetRequest::New();
@@ -192,7 +205,6 @@ void DiscoverDigitalIdentityCredentialFromExternalSource(
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);
 
-  ScriptState* script_state = resolver->GetScriptState();
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (auto* signal = options.getSignalOr(nullptr)) {
     auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));
@@ -224,7 +236,13 @@ void CreateDigitalIdentityCredentialInExternalSource(
       Platform::Current()->CreateWebV8ValueConverter();
 
   Vector<blink::mojom::blink::DigitalCredentialCreateRequestPtr> requests;
+  ScriptState* script_state = resolver->GetScriptState();
   for (const auto& request : options.digital()->requests()) {
+    if (!IsSerializable(script_state, request->data())) {
+      resolver->RejectWithTypeError(
+          "Digital identity API requires valid JSON in the request.");
+      return;
+    }
     blink::mojom::blink::DigitalCredentialCreateRequestPtr
         digital_credential_request =
             blink::mojom::blink::DigitalCredentialCreateRequest::New();
@@ -250,7 +268,6 @@ void CreateDigitalIdentityCredentialInExternalSource(
   UseCounter::Count(resolver->GetExecutionContext(),
                     WebFeature::kIdentityDigitalCredentials);
 
-  ScriptState* script_state = resolver->GetScriptState();
   std::unique_ptr<ScopedAbortState> scoped_abort_state;
   if (auto* signal = options.getSignalOr(nullptr)) {
     auto callback = WTF::BindOnce(&AbortRequest, WrapPersistent(script_state));

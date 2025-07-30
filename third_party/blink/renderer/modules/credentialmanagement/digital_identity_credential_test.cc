@@ -11,6 +11,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webid/digital_identity_request.mojom.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_credential_creation_options.h"
@@ -84,6 +85,16 @@ CredentialRequestOptions* CreateGetOptionsWithRequests(
   return options;
 }
 
+CredentialCreationOptions* CreateCreateOptionsWithRequests(
+    const HeapVector<Member<DigitalCredentialCreateRequest>>& requests) {
+  DigitalCredentialCreationOptions* digital_credential_request =
+      DigitalCredentialCreationOptions::Create();
+  digital_credential_request->setRequests(requests);
+  CredentialCreationOptions* options = CredentialCreationOptions::Create();
+  options->setDigital(digital_credential_request);
+  return options;
+}
+
 CredentialRequestOptions* CreateValidGetOptions(ScriptState* script_state) {
   v8::Local<v8::Context> context = script_state->GetContext();
   DigitalCredentialGetRequest* request = DigitalCredentialGetRequest::Create();
@@ -110,14 +121,7 @@ CredentialCreationOptions* CreateValidCreateOptions() {
   request->setData(ScriptObject(isolate, v8::Object::New(isolate)));
   HeapVector<Member<DigitalCredentialCreateRequest>> requests;
   requests.push_back(request);
-
-  DigitalCredentialCreationOptions* digital_credential_creation_options =
-      DigitalCredentialCreationOptions::Create();
-  digital_credential_creation_options->setRequests(requests);
-
-  CredentialCreationOptions* options = CredentialCreationOptions::Create();
-  options->setDigital(digital_credential_creation_options);
-  return options;
+  return CreateCreateOptionsWithRequests(requests);
 }
 
 }  // namespace
@@ -216,6 +220,100 @@ TEST_F(DigitalIdentityCredentialTest,
   // Otherwise, it wll be bound already.
   context.GetWindow().GetBrowserInterfaceBroker().SetBinderForTesting(
       mojom::DigitalIdentityRequest::Name_, {});
+}
+
+// Test that navigator.credentials.get() throws when at least one identity
+// request contains data that cannot be JSON-stringified.
+// TODO(crbug.com/427885787): add Symbol case and handle them properly.
+TEST_F(DigitalIdentityCredentialTest,
+       IdentityDigitalCredentialGetThrowsOnUnstringifiableData) {
+  V8TestingScope context(::blink::KURL("https://example.test"));
+
+  ScopedWebIdentityDigitalCredentialsForTest scoped_digital_credentials(
+      /*enabled=*/true);
+
+  ScriptState* script_state = context.GetScriptState();
+  v8::Local<v8::Value> bad_bigint = v8::BigIntObject::New(
+      script_state->GetIsolate(), static_cast<int64_t>(123));
+
+  v8::Local<v8::Object> bad_circular =
+      v8::Object::New(script_state->GetIsolate());
+  v8::Maybe<bool> maybe = bad_circular->Set(
+      script_state->GetContext(), V8String(script_state->GetIsolate(), "self"),
+      bad_circular);
+  ASSERT_TRUE(maybe.IsJust() || maybe.FromJust());
+
+  std::vector<v8::Local<v8::Value>> bad_values = {bad_bigint, bad_circular};
+
+  for (const auto& value : bad_values) {
+    HeapVector<Member<DigitalCredentialGetRequest>> requests;
+    DigitalCredentialGetRequest* request =
+        DigitalCredentialGetRequest::Create();
+    request->setProtocol("openid4vp");
+    request->setData(ScriptObject(script_state->GetIsolate(), value));
+    requests.push_back(request);
+
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
+            script_state);
+
+    DiscoverDigitalIdentityCredentialFromExternalSource(
+        resolver, *CreateGetOptionsWithRequests(requests),
+        context.GetExceptionState());
+
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+
+    tester.WaitUntilSettled();
+
+    ASSERT_TRUE(tester.IsRejected());
+  }
+}
+
+// Test that navigator.credentials.create() throws when at least one identity
+// provider request contains data that cannot be JSON-stringified.
+// TODO(crbug.com/427885787): add Symbol case and handle them properly.
+TEST_F(DigitalIdentityCredentialTest,
+       IdentityDigitalCredentialCreateThrowsOnUnstringifiableData) {
+  V8TestingScope context(::blink::KURL("https://example.test"));
+
+  ScopedWebIdentityDigitalCredentialsCreationForTest scoped_digital_credentials(
+      /*enabled=*/true);
+
+  ScriptState* script_state = context.GetScriptState();
+  v8::Local<v8::Value> bad_bigint = v8::BigIntObject::New(
+      script_state->GetIsolate(), static_cast<int64_t>(123));
+
+  v8::Local<v8::Object> bad_circular =
+      v8::Object::New(script_state->GetIsolate());
+  v8::Maybe<bool> maybe = bad_circular->Set(
+      script_state->GetContext(), V8String(script_state->GetIsolate(), "self"),
+      bad_circular);
+  ASSERT_TRUE(maybe.IsJust() || maybe.FromJust());
+
+  std::vector<v8::Local<v8::Value>> bad_values = {bad_bigint, bad_circular};
+
+  for (const auto& value : bad_values) {
+    HeapVector<Member<DigitalCredentialCreateRequest>> requests;
+    DigitalCredentialCreateRequest* request =
+        DigitalCredentialCreateRequest::Create();
+    request->setProtocol("openid4vci");
+    request->setData(ScriptObject(script_state->GetIsolate(), value));
+    requests.push_back(request);
+
+    auto* resolver =
+        MakeGarbageCollected<ScriptPromiseResolver<IDLNullable<Credential>>>(
+            script_state);
+
+    CreateDigitalIdentityCredentialInExternalSource(
+        resolver, *CreateCreateOptionsWithRequests(requests),
+        context.GetExceptionState());
+
+    ScriptPromiseTester tester(script_state, resolver->Promise());
+
+    tester.WaitUntilSettled();
+
+    ASSERT_TRUE(tester.IsRejected());
+  }
 }
 
 }  // namespace blink
