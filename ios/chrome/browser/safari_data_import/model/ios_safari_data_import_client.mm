@@ -5,9 +5,32 @@
 #import "ios/chrome/browser/safari_data_import/model/ios_safari_data_import_client.h"
 
 #import "base/notreached.h"
+#import "base/strings/sys_string_conversions.h"
 #import "components/password_manager/core/browser/import/import_results.h"
+#import "ios/chrome/browser/safari_data_import/public/password_import_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item.h"
 #import "ios/chrome/browser/safari_data_import/public/safari_data_item_consumer.h"
+
+namespace {
+
+using password_manager::ImportEntry;
+using password_manager::ImportResults;
+
+// Converts `ImportResults` to a list of `PasswordImportItem`s.
+NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
+    const ImportResults& results) {
+  NSMutableArray* password_items = [NSMutableArray array];
+  for (const ImportEntry& entry : results.displayed_entries) {
+    PasswordImportItem* item = [[PasswordImportItem alloc]
+        initWithURL:base::SysUTF8ToNSString(entry.url)
+           username:base::SysUTF8ToNSString(entry.username)
+           password:base::SysUTF8ToNSString(entry.password)];
+    [password_items addObject:item];
+  }
+  return password_items;
+}
+
+}  // namespace
 
 IOSSafariDataImportClient::IOSSafariDataImportClient() = default;
 IOSSafariDataImportClient::~IOSSafariDataImportClient() = default;
@@ -21,6 +44,15 @@ void IOSSafariDataImportClient::RegisterCallbackOnImportFailure(
     ImportFailureCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   failure_callbacks_subscription_ = failure_callbacks_.Add(std::move(callback));
+}
+
+NSArray<PasswordImportItem*>*
+IOSSafariDataImportClient::GetConflictingPasswords() {
+  return conflicting_passwords_;
+}
+
+NSArray<PasswordImportItem*>* IOSSafariDataImportClient::GetInvalidPasswords() {
+  return invalid_passwords_;
 }
 
 #pragma mark - IOSSafariDataImportClient
@@ -51,11 +83,12 @@ void IOSSafariDataImportClient::OnHistoryReady(
 void IOSSafariDataImportClient::OnPasswordsReady(
     const password_manager::ImportResults& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/420703283): Extrapolate password details.
+  conflicting_passwords_ = GetPasswordImportItemsFromImportResults(results);
   [consumer_ populateItem:[[SafariDataItem alloc]
                               initWithType:SafariDataItemType::kPasswords
                                     status:SafariDataItemImportStatus::kReady
-                                     count:results.number_to_import]];
+                                     count:results.number_to_import +
+                                           results.displayed_entries.size()]];
 }
 
 void IOSSafariDataImportClient::OnPaymentCardsReady(size_t count) {
@@ -85,12 +118,12 @@ void IOSSafariDataImportClient::OnHistoryImported(size_t count) {
 void IOSSafariDataImportClient::OnPasswordsImported(
     const password_manager::ImportResults& results) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // TODO(crbug.com/420703283): Extrapolate password details.
+  invalid_passwords_ = GetPasswordImportItemsFromImportResults(results);
   SafariDataItem* item =
       [[SafariDataItem alloc] initWithType:SafariDataItemType::kPasswords
                                     status:SafariDataItemImportStatus::kImported
                                      count:results.number_imported];
-  item.invalidCount = static_cast<int>(results.displayed_entries.size());
+  item.invalidCount = static_cast<int>(invalid_passwords_.count);
   [consumer_ populateItem:item];
 }
 

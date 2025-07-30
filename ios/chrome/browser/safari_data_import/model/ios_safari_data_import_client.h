@@ -5,12 +5,15 @@
 #ifndef IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_MODEL_IOS_SAFARI_DATA_IMPORT_CLIENT_H_
 #define IOS_CHROME_BROWSER_SAFARI_DATA_IMPORT_MODEL_IOS_SAFARI_DATA_IMPORT_CLIENT_H_
 
+#import <Foundation/Foundation.h>
+
 #import "base/callback_list.h"
 #import "base/memory/weak_ptr.h"
 #import "base/sequence_checker.h"
 #import "components/user_data_importer/utility/safari_data_import_client.h"
 
 @protocol SafariDataItemConsumer;
+@class PasswordImportItem;
 
 // A C++ class that provides a platform-specific implementation for
 // `SafariDataImportClient` on iOS.
@@ -32,6 +35,14 @@ class IOSSafariDataImportClient : public SafariDataImportClient {
   // Register callback function invoked when no Safari data item could be
   // loaded.
   void RegisterCallbackOnImportFailure(ImportFailureCallback callback);
+
+  // List of password conflicts with the information retrieved from the source
+  // of import. Only available `OnPasswordsReady` is invoked.
+  NSArray<PasswordImportItem*>* GetConflictingPasswords();
+
+  // List of passwords failed to be imported. Only available
+  // `OnPasswordsImported` is invoked.
+  NSArray<PasswordImportItem*>* GetInvalidPasswords();
 
   // SafariDataImportClient:
   void OnTotalFailure() override;
@@ -58,6 +69,10 @@ class IOSSafariDataImportClient : public SafariDataImportClient {
   // List of registered callbacks, and the object managing its lifetime.
   ImportFailureCallbackList failure_callbacks_;
   base::CallbackListSubscription failure_callbacks_subscription_;
+
+  // Lists of conflicting and invalid passwords.
+  NSArray<PasswordImportItem*>* conflicting_passwords_;
+  NSArray<PasswordImportItem*>* invalid_passwords_;
 
   // Weak pointer factory.
   base::WeakPtrFactory<IOSSafariDataImportClient> weak_factory_{this};

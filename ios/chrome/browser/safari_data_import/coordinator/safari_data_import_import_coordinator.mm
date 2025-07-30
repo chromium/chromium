@@ -169,8 +169,6 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
 #pragma mark - PromoStyleViewControllerDelegate
 
 - (void)didTapPrimaryActionButton {
-  /// TODO(crbug.com/420703283): Use real data from mediator.
-  BOOL hasConflicts = YES;
   switch (_containerViewController.importStage) {
     case SafariDataImportStage::kNotStarted:
       if ([self showFilePicker]) {
@@ -180,14 +178,13 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
     case SafariDataImportStage::kFileLoading:
       NOTREACHED() << "button should be disabled";
     case SafariDataImportStage::kReadyForImport:
-      if (hasConflicts) {
-        [self showPasswordConflictResolutionModal];
-      } else {
-        /// TODO(crbug.com/420703283): call the mediator's import method.
-      }
+      [self initiateImport];
       break;
     case SafariDataImportStage::kImporting:
+      NOTREACHED() << "button should be disabled";
     case SafariDataImportStage::kImported:
+      [self.delegate safariDataImportCoordinatorWillDismissWorkflow:self];
+      break;
     default:
       break;
   }
@@ -244,18 +241,17 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   return [self presentViewController:_documentProvider];
 }
 
-/// Presents the modal for the user to handle password conflicts. If it cannot
-/// be shown, return NO.
-- (BOOL)showPasswordConflictResolutionModal {
-  /// TODO(crbug.com/420703283): Use real data from mediator.
-  NSArray<PasswordImportItem*>* passwordConflicts = @[
-    [[PasswordImportItem alloc] initWithURL:@"test.org"
-                                   username:@"tester"
-                                   password:@"te$t"],
-    [[PasswordImportItem alloc] initWithURL:@"ryanputn.am"
-                                   username:@"ryanputnam"
-                                   password:@"ry@npUtn@m"]
-  ];
+/// Initiates the import process. If there are conflicting passwords, show them
+/// the modal to resolve it. Otherwise,
+- (void)initiateImport {
+  NSArray<PasswordImportItem*>* passwordConflicts =
+      [self.mediator conflictingPasswords];
+  CHECK(passwordConflicts);
+  if (passwordConflicts.count == 0) {
+    [self transitionToNextImportStage];
+    [self.mediator importItems];
+    return;
+  }
   /// Wraps the password conflict view in a navigation controller to display
   /// navigation bar and toolbar.
   UINavigationController* wrapper = [[UINavigationController alloc]
@@ -263,7 +259,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
           [[SafariDataImportPasswordConflictResolutionViewController alloc]
               initWithPasswordConflicts:passwordConflicts]];
   wrapper.toolbarHidden = NO;
-  return [self presentViewController:wrapper];
+  [self presentViewController:wrapper];
 }
 
 /// Presents `viewController` and returns `YES` if no other view controller is

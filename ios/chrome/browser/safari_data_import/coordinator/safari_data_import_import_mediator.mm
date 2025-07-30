@@ -47,6 +47,7 @@
   if (self) {
     _importClient = std::make_unique<IOSSafariDataImportClient>();
     _savedPasswordsPresenter = std::move(savedPasswordsPresenter);
+    _savedPasswordsPresenter->Init();
     scoped_refptr<user_data_importer::IOSBookmarkParser> bookmarkParser =
         base::MakeRefCounted<user_data_importer::IOSBookmarkParser>();
     std::string locale =
@@ -65,6 +66,18 @@
 
 - (void)reset {
   _disableFileSelection = NO;
+}
+
+- (void)importItems {
+  _importer->CompleteImport(/*selected_password_ids=*/std::vector<int>());
+}
+
+- (NSArray<PasswordImportItem*>*)conflictingPasswords {
+  return _importClient->GetConflictingPasswords();
+}
+
+- (NSArray<PasswordImportItem*>*)invalidPasswords {
+  return _importClient->GetInvalidPasswords();
 }
 
 - (void)disconnect {

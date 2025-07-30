@@ -20,6 +20,7 @@ class BookmarkModel;
 namespace history {
 class HistoryService;
 }
+@class PasswordImportItem;
 class ReadingListModel;
 @protocol SafariDataImportImportStageTransitionHandler;
 @protocol SafariDataItemConsumer;
@@ -52,6 +53,18 @@ class ReadingListModel;
 
 /// Resets the mediator to the state before any file is selected or processed.
 - (void)reset;
+
+/// Imports the items that are ready for import. Should only be invoked when
+/// items are ready.
+- (void)importItems;
+
+/// List of password conflicts with the information retrieved from the source
+/// of import. Only available when passwords are ready.
+- (NSArray<PasswordImportItem*>*)conflictingPasswords;
+
+/// List of passwords failed to be imported. Only available when passwords are
+/// imported.
+- (NSArray<PasswordImportItem*>*)invalidPasswords;
 
 /// Disconnect mediator dependencies; needs to be invoked before deallocating
 /// the coordinator.
