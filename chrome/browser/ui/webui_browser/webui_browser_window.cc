@@ -5,12 +5,50 @@
 #include "chrome/browser/ui/webui_browser/webui_browser_window.h"
 
 #include "base/notimplemented.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/browser/ui/webui_browser/webui_location_bar.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
+#include "ui/views/controls/webview/webview.h"
+#include "ui/views/widget/widget.h"
+
+namespace {
+
+// Copied from chrome/browser/ui/views/frame/browser_frame.cc.
+bool IsUsingLinuxSystemTheme(Profile* profile) {
+#if BUILDFLAG(IS_LINUX)
+  return ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme();
+#else
+  return false;
+#endif
+}
+
+}  // namespace
 
 WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
-    : browser_(std::move(browser)) {}
+    : browser_(std::move(browser)) {
+  location_bar_ = std::make_unique<WebUILocationBar>(browser_.get());
+  widget_ = std::make_unique<views::Widget>();
+  views::Widget::InitParams params(
+      views::Widget::InitParams::CLIENT_OWNS_WIDGET);
+  params.name = "WebUIBrowserWindow";
+  params.bounds = gfx::Rect(0, 0, 800, 600);
+  widget_->Init(std::move(params));
+  auto web_view = std::make_unique<views::WebView>(browser_->profile());
+
+  web_view->LoadInitialURL(GURL("chrome://dino"));
+  // Sets the weview as the content view of the default ClientView.
+  // TODO(webium): make a subclass of ClientView so that non-client hit testing
+  // can be customized.
+  web_view_ = widget_->SetClientContentsView(std::move(web_view));
+
+  widget_->Show();
+}
 
 WebUIBrowserWindow::~WebUIBrowserWindow() = default;
 
@@ -98,13 +136,39 @@ ui::NativeTheme* WebUIBrowserWindow::GetNativeTheme() {
 }
 
 const ui::ThemeProvider* WebUIBrowserWindow::GetThemeProvider() const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  // Copied from BrowserFrame::GetThemeProvider().
+  auto* app_controller = browser_->app_controller();
+  // Ignore the system theme for web apps with window-controls-overlay as the
+  // display_override so the web contents can blend with the overlay by using
+  // the developer-provided theme color for a better experience. Context:
+  // https://crbug.com/1219073.
+  if (app_controller && (!IsUsingLinuxSystemTheme(browser_->profile()) ||
+                         app_controller->AppUsesWindowControlsOverlay())) {
+    return app_controller->GetThemeProvider();
+  }
+  return &ThemeService::GetThemeProviderForProfile(browser_->profile());
 }
 
 const ui::ColorProvider* WebUIBrowserWindow::GetColorProvider() const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return ui::ColorProviderManager::Get().GetColorProviderFor(
+      GetColorProviderKey());
+}
+
+ui::ColorProviderKey WebUIBrowserWindow::GetColorProviderKey() const {
+  return ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
+      nullptr);
+}
+
+ui::RendererColorMap WebUIBrowserWindow::GetRendererColorMap(
+    ui::ColorProviderKey::ColorMode color_mode,
+    ui::ColorProviderKey::ForcedColors forced_colors) const {
+  auto key = GetColorProviderKey();
+  key.color_mode = color_mode;
+  key.forced_colors = forced_colors;
+  ui::ColorProvider* color_provider =
+      ui::ColorProviderManager::Get().GetColorProviderFor(key);
+  CHECK(color_provider);
+  return ui::CreateRendererColorMap(*color_provider);
 }
 
 ui::ElementContext WebUIBrowserWindow::GetElementContext() {
@@ -222,8 +286,7 @@ void WebUIBrowserWindow::ExecutePageActionIconForTesting(
 }
 
 LocationBar* WebUIBrowserWindow::GetLocationBar() const {
-  NOTIMPLEMENTED();
-  return nullptr;
+  return location_bar_.get();
 }
 
 void WebUIBrowserWindow::SetFocusToLocationBar(bool select_all) {

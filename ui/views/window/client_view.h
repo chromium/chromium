@@ -82,6 +82,8 @@ class VIEWS_EXPORT ClientView : public View {
   }
 
  private:
+  friend class Widget;
+
   // The View that this ClientView contains. This can temporarily dangle during
   // teardown of the Widget in some hard-to-resolve cases. Specifically, if the
   // contents view is also a WidgetDelegate (which happens with the

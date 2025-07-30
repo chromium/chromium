@@ -189,11 +189,15 @@ void CastToolbarButtonController::MaybeToggleIconVisibility() {
               actions::ActionPinnableState::kPinnable));
     }
     // Update the toolbar button's visibility.
-    if (auto* container = BrowserView::GetBrowserViewForBrowser(browser)
-                              ->toolbar()
-                              ->pinned_toolbar_actions_container()) {
-      container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
-                                                ShouldEnableAction());
+    // WebUIBrowser does not have a BrowserView.
+    // TODO(webium): make an pinned toolbar actions container for WebUIBrowser.
+    auto* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+    if (browser_view) {
+      if (auto* container =
+              browser_view->toolbar()->pinned_toolbar_actions_container()) {
+        container->ShowActionEphemerallyInToolbar(kActionRouteMedia,
+                                                  ShouldEnableAction());
+      }
     }
   }
 }

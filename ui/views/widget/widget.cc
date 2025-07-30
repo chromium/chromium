@@ -2789,6 +2789,7 @@ void Widget::SetClientContentsViewInternal(std::unique_ptr<View> view) {
     if (!client_view->children().empty()) {
       client_view->RemoveAllChildViews();
     }
+    client_view->set_contents_view(view.get());
     client_view->AddChildView(std::move(view));
   } else {
     SetContentsView(view.release());

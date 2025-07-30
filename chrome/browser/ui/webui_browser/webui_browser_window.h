@@ -7,13 +7,23 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_source.h"
 
+namespace views {
+class WebView;
+class Widget;
+}  // namespace views
+
+class WebUILocationBar;
 class Browser;
 
 // A BrowserWindow implementation that uses WebUI for its primary UI. It still
 // uses views::Widget for windowing management.
-class WebUIBrowserWindow : public BrowserWindow {
+class WebUIBrowserWindow : public BrowserWindow,
+                           public ui::ColorProviderSource {
  public:
   explicit WebUIBrowserWindow(std::unique_ptr<Browser> browser);
   ~WebUIBrowserWindow() override;
@@ -28,7 +38,6 @@ class WebUIBrowserWindow : public BrowserWindow {
       const content::WebContents* contents) const override;
   ui::NativeTheme* GetNativeTheme() override;
   const ui::ThemeProvider* GetThemeProvider() const override;
-  const ui::ColorProvider* GetColorProvider() const override;
   ui::ElementContext GetElementContext() override;
   int GetTopControlsHeight() const override;
   void SetTopControlsGestureScrollInProgress(bool in_progress) override;
@@ -203,11 +212,21 @@ class WebUIBrowserWindow : public BrowserWindow {
   ui::ZOrderLevel GetZOrderLevel() const override;
   void SetZOrderLevel(ui::ZOrderLevel order) override;
 
+  // ui::ColorProviderSource:
+  const ui::ColorProvider* GetColorProvider() const override;
+  ui::ColorProviderKey GetColorProviderKey() const override;
+  ui::RendererColorMap GetRendererColorMap(
+      ui::ColorProviderKey::ColorMode color_mode,
+      ui::ColorProviderKey::ForcedColors forced_colors) const override;
+
  protected:
   void DestroyBrowser() override;
 
  private:
   std::unique_ptr<Browser> browser_;
+  std::unique_ptr<views::Widget> widget_;
+  raw_ptr<views::WebView> web_view_ = nullptr;
+  std::unique_ptr<WebUILocationBar> location_bar_;
 };
 
 #endif  // CHROME_BROWSER_UI_WEBUI_BROWSER_WEBUI_BROWSER_WINDOW_H_
