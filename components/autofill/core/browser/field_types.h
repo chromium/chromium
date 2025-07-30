@@ -651,7 +651,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            (194 <= t && t <= 200);
   };
   return is_invalid(raw_value) ? fallback_value
-                               : static_cast<FieldType>(raw_value);
+                               : static_cast<FieldType>(raw_value);  // nocheck
 }
 
 constexpr HtmlFieldType ToSafeHtmlFieldType(

@@ -14,7 +14,7 @@ TEST(FieldTypesTest, TypeStringConversion) {
   EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(NO_SERVER_DATA)),
             NO_SERVER_DATA);
   for (int i = 0; i < MAX_VALID_FIELD_TYPE; ++i) {
-    if (FieldType raw_value = static_cast<FieldType>(i);
+    if (FieldType raw_value = static_cast<FieldType>(i);  // nocheck
         ToSafeFieldType(raw_value, NO_SERVER_DATA) != NO_SERVER_DATA) {
       EXPECT_EQ(TypeNameToFieldType(FieldTypeToStringView(raw_value)),
                 raw_value);

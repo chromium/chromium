@@ -137,10 +137,10 @@ bool AreCollapsible(const AutocompleteAttributeFieldLogEvent& event1,
 // Events recorded after autofill server prediction happened.
 struct ServerPredictionFieldLogEvent {
   std::optional<FieldType> server_type1 =
-      static_cast<FieldType>(internal::IsRequired());
+      static_cast<FieldType>(internal::IsRequired());  // nocheck
   FieldPrediction::Source prediction_source1 = internal::IsRequired();
   std::optional<FieldType> server_type2 =
-      static_cast<FieldType>(internal::IsRequired());
+      static_cast<FieldType>(internal::IsRequired());  // nocheck
   FieldPrediction::Source prediction_source2 = internal::IsRequired();
   bool server_type_prediction_is_override = internal::IsRequired();
   size_t rank_in_field_signature_group = internal::IsRequired();

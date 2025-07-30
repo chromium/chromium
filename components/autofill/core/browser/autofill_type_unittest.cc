@@ -74,12 +74,13 @@ TEST(AutofillTypeTest, FieldTypes) {
   EXPECT_EQ(FieldTypeGroup::kNoGroup, boundary.group());
 
   // Beyond the boundary (error) condition.
-  AutofillType beyond(static_cast<FieldType>(MAX_VALID_FIELD_TYPE + 10));
+  AutofillType beyond(
+      static_cast<FieldType>(MAX_VALID_FIELD_TYPE + 10));  // nocheck
   EXPECT_EQ(UNKNOWN_TYPE, beyond.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNoGroup, beyond.group());
 
   // In-between value.  Missing from enum but within range.  Error condition.
-  AutofillType between(static_cast<FieldType>(16));
+  AutofillType between(static_cast<FieldType>(16));  // nocheck
   EXPECT_EQ(UNKNOWN_TYPE, between.GetStorableType());
   EXPECT_EQ(FieldTypeGroup::kNoGroup, between.group());
 }

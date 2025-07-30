@@ -45,17 +45,46 @@ def CheckNoAutofillClockTimeCalls(input_api, output_api):
   return []
 
 def CheckNoFieldTypeCasts(input_api, output_api):
-  """Checks that no files cast (e.g., raw integers to) FieldTypes."""
-  pattern = input_api.re.compile(
-      r'_cast<\s*FieldType\b',
-      input_api.re.MULTILINE)
-  files = []
-  for f in input_api.AffectedSourceFiles(input_api.FilterSourceFile):
-    if (f.LocalPath().startswith('components/autofill/') and
-        not f.LocalPath().endswith("PRESUBMIT.py")):
-      contents = input_api.ReadFile(f)
-      if pattern.search(contents):
-        files.append(f)
+  """Makes sure that raw integers aren't cast to FieldTypes."""
+  explanation = """
+Do not cast raw integers to FieldType to prevent values that
+have no corresponding enum constant or are deprecated. Use
+ToSafeFieldType() instead.
+Add "// nocheck" to the end of the line to suppress this error."""
+  errors = []
+  file_filter = lambda f: (
+    f.LocalPath().startswith('components/autofill/')
+    and f.LocalPath().endswith(('.h', '.cc'))
+  )
+  # There may be a line break in the cast, so we test multiple patterns.
+  pattern_full = input_api.re.compile(r'_cast<\s*FieldType\b')
+  pattern_prefix = input_api.re.compile(r'_cast<\s*$')
+  pattern_postfix = input_api.re.compile(r'^\s*FieldType\b')
+  for f in input_api.AffectedSourceFiles(file_filter):
+    contents = f.ChangedContents()
+    # We look at each line and their successor to check if
+    # - the line contains the full `static_cast<FieldType>` or similar, or
+    # - the line ends with `static_cast<` and the next line begins with
+    #   `FieldType` or similar.
+    for i in range(len(contents)):
+      line_num = contents[i][0]
+      line = contents[i][1]
+      next_line = contents[i+1][1] if i+1 < len(contents) else ''
+      if line.endswith("// nocheck"):
+        continue
+      if next_line.endswith("// nocheck"):
+        next_line = ''
+      line = line.split('//')[0]
+      next_line = next_line.split('//')[0]
+      if pattern_full.search(line) or (
+          pattern_prefix.search(line) and pattern_postfix.search(next_line)
+      ):
+        errors.append(
+            output_api.PresubmitError(
+                f'{f.LocalPath()}:{line_num}: {explanation}'
+            )
+        )
+  return errors
 
   if len(files):
     return [ output_api.PresubmitPromptWarning(

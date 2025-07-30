@@ -656,7 +656,7 @@ TEST_P(PredictionQualityMetricsTest, Classification) {
   // Validate the individual histogram counter values.
   for (int i = 0; i < NUM_FIELD_TYPE_QUALITY_METRICS; ++i) {
     // The metric enum value we're currently examining.
-    auto metric = static_cast<FieldTypeQualityMetric>(i);
+    auto metric = static_cast<FieldTypeQualityMetric>(i);  // nocheck
 
     // The type specific expected count is 1 if (predicted, actual) is an
     // example
