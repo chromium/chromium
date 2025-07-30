@@ -460,6 +460,8 @@ TEST_F(ChangePasswordFormFinderTest, PasswordLoginFormFound) {
   ChangePasswordFormFinder form_finder(
       pass_key(), web_contents(), client(), &logs_uploader, GURL(kUrlString),
       completion_callback.Get(), capture_annotated_page_content.Get());
+  // Simulate a delay between the page load and the form detection.
+  task_environment()->FastForwardBy(base::Seconds(1));
 
   ASSERT_TRUE(form_finder.form_waiter());
   EXPECT_CALL(capture_annotated_page_content, Run).Times(0);
@@ -471,8 +473,10 @@ TEST_F(ChangePasswordFormFinderTest, PasswordLoginFormFound) {
       ->OnPasswordFormParsed(form_manager.get());
   static_cast<content::WebContentsObserver*>(form_finder.form_waiter())
       ->DocumentOnLoadCompletedInPrimaryMainFrame();
+  // Finding a login form resets the timer, so even after
+  // kFormWaitingTimeout + 1 seconds, we shouldn't time out.
   task_environment()->FastForwardBy(
-      PasswordFormWaiter::kChangePasswordFormWaitingTimeout);
+      ChangePasswordFormFinder::kFormWaitingTimeout);
 
   // Verify there was navigation to change-pwd url
   EXPECT_EQ(GURL(kUrlString), web_contents()->GetURL());

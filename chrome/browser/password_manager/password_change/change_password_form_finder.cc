@@ -66,11 +66,9 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
       base::BindOnce(&ChangePasswordFormFinder::OnInitialFormWaitingResult,
                      weak_ptr_factory_.GetWeakPtr()));
 
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-      FROM_HERE,
-      base::BindOnce(&ChangePasswordFormFinder::OnFormNotFound,
-                     weak_ptr_factory_.GetWeakPtr()),
-      kFormWaitingTimeout);
+  timeout_timer_.Start(FROM_HERE, kFormWaitingTimeout,
+                       base::BindOnce(&ChangePasswordFormFinder::OnFormNotFound,
+                                      weak_ptr_factory_.GetWeakPtr()));
 }
 
 ChangePasswordFormFinder::ChangePasswordFormFinder(
@@ -113,6 +111,7 @@ void ChangePasswordFormFinder::OnInitialFormWaitingResult(
   // Login form detected, refresh page and wait again. User hasn't fully signed
   // in.
   if (result.login_form_manager) {
+    timeout_timer_.Reset();
     web_contents_->GetController().LoadURLWithParams(
         content::NavigationController::LoadURLParams(change_password_url_));
 

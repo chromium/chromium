@@ -8,6 +8,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/password_manager/password_change/change_password_form_waiter.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
@@ -97,6 +98,8 @@ class ChangePasswordFormFinder {
   std::unique_ptr<PasswordFormWaiter> form_waiter_;
 
   std::unique_ptr<ButtonClickHelper> click_helper_;
+
+  base::OneShotTimer timeout_timer_;
 
   base::WeakPtrFactory<ChangePasswordFormFinder> weak_ptr_factory_{this};
 };
