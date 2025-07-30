@@ -96,6 +96,8 @@ constexpr auto kLikelihoodUnspecified =
     PermissionUiSelector::PredictionGrantLikelihood::
         PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
 
+constexpr std::string kNoHoldbackChance = "0";
+
 // This is the only server side reply that will trigger quiet UI at the
 // moment.
 constexpr auto kLikelihoodVeryUnlikely =
@@ -617,6 +619,73 @@ IN_PROC_BROWSER_TEST_P(SignatureModelPredictionServiceBrowserTest,
 // -----------------------------------------------------------------------------
 // --------------- Prediction Service On Device Permissions AIv3 ---------------
 // -----------------------------------------------------------------------------
+// Since AivX models will call the server side mock in the end, we need to
+// prevent holdback from suppressing the result of model evaluation randomly.
+// For this we set holdback chance to 0 (no holdback).
+#define CONFIGURE_NO_HOLDBACK_CHANCE                                        \
+  {                                                                         \
+    permissions::features::kPermissionPredictionsV2, {                      \
+      {                                                                     \
+        permissions::feature_params::kPermissionPredictionsV2HoldbackChance \
+            .name,                                                          \
+            kNoHoldbackChance                                               \
+      }                                                                     \
+    }                                                                       \
+  }
+
+template <class AivXHandler>
+class AivXModelPredictionServiceBrowserTest
+    : public PredictionServiceBrowserTestBase {
+ public:
+  AivXModelPredictionServiceBrowserTest(
+      const std::vector<FeatureRefAndParams>& enabled_features,
+      const std::vector<FeatureRef>& disabled_features)
+      : PredictionServiceBrowserTestBase(enabled_features, disabled_features) {}
+
+  virtual OptimizationTarget optimization_target() = 0;
+  virtual AivXHandler* model_handler() = 0;
+  virtual void set_model_handler(AivXHandler* handler) = 0;
+
+  virtual void UpdateAivXHandlerInModelProvider(
+      std::unique_ptr<AivXHandler> handler) = 0;
+
+  void SetUpOnMainThread() override {
+    PredictionServiceBrowserTestBase::SetUpOnMainThread();
+
+    // AIvX model workflows end with calling the CPSSv3 server side model,
+    // providing it with the additional AIvX permission relevance field. Because
+    // of this we only provide those workflows to users that agreed to data
+    // collection.
+    browser()->profile()->GetPrefs()->SetBoolean(
+        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
+
+    // Only one model_handler can be registered for the same optimization
+    // target at the same time. Registering happens in the constructor,
+    // deregistering in the destructor of each ModelHandler. We therefore
+    // destroy the object kept in the ModelHandlerProvider class, before we
+    // create our fake handler.
+    UpdateAivXHandlerInModelProvider(nullptr);
+
+    std::unique_ptr<AivXHandler> model_handler = std::make_unique<AivXHandler>(
+        opt_guide(), optimization_target(), request_type());
+    set_model_handler(model_handler.get());
+
+    UpdateAivXHandlerInModelProvider(std::move(model_handler));
+  }
+
+  void TearDownOnMainThread() override {
+    PredictionServiceBrowserTestBase::TearDownOnMainThread();
+    set_model_handler(nullptr);
+  }
+
+  void PushModelFileToModelExecutor(const base::FilePath& model_file_path) {
+    opt_guide()->OverrideTargetModelForTesting(
+        optimization_target(), optimization_guide::TestModelInfoBuilder()
+                                   .SetModelFilePath(model_file_path)
+                                   .Build());
+    model_handler()->WaitForModelLoadForTesting();
+  }
+};
 
 struct ModelMetadata {
   std::string test_name;
@@ -641,85 +710,47 @@ struct PermissionRequestMetadata {
 using Aiv3ModelTestCase = std::tuple<ModelMetadata, PermissionRequestMetadata>;
 
 class Aiv3ModelPredictionServiceBrowserTest
-    : public PredictionServiceBrowserTestBase,
+    : public AivXModelPredictionServiceBrowserTest<PermissionsAiv3HandlerFake>,
       public testing::WithParamInterface<Aiv3ModelTestCase> {
  public:
   Aiv3ModelPredictionServiceBrowserTest()
-      : PredictionServiceBrowserTestBase(/*enabled_features=*/
-                                         {
-                                             {permissions::features::
-                                                  kPermissionPredictionsV2,
-                                              {{permissions::feature_params::
-                                                    kPermissionPredictionsV2HoldbackChance
-                                                        .name,
-                                                "0"}}},
-                                             {permissions::features::
-                                                  kPermissionOnDeviceNotificationPredictions,
-                                              {}},
-                                             {permissions::features::
-                                                  kPermissionOnDeviceGeolocationPredictions,
-                                              {}},
-                                             {::features::
-                                                  kQuietNotificationPrompts,
-                                              {}},
-                                             {permissions::features::
-                                                  kPermissionsAIv1,
-                                              {}},
-                                             {permissions::features::
-                                                  kPermissionsAIv3,
-                                              {}},
-                                         }, /*disabled_features=*/
-                                         {permissions::features::
-                                              kPermissionsAIv4}) {}
+      : AivXModelPredictionServiceBrowserTest(/*enabled_features=*/
+                                              {
+                                                  CONFIGURE_NO_HOLDBACK_CHANCE,
+                                                  {permissions::features::
+                                                       kPermissionsAIv1,
+                                                   {}},
+                                                  {permissions::features::
+                                                       kPermissionsAIv3,
+                                                   {}},
+                                              }, /*disabled_features=*/
+                                              {permissions::features::
+                                                   kPermissionsAIv4}) {}
 
   RequestType request_type() const override {
     return get<1>(GetParam()).request_type;
   }
-  OptimizationTarget optimization_target() const {
+
+  OptimizationTarget optimization_target() override {
     return get<1>(GetParam()).optimization_target;
   }
 
-  void SetUpOnMainThread() override {
-    PredictionServiceBrowserTestBase::SetUpOnMainThread();
-
-    browser()->profile()->GetPrefs()->SetBoolean(
-        unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled, true);
-
-    // Only one model_handler can be registered for the same optimization
-    // target at the same time. Registering happens in the constructor,
-    // deregistering in the destructor of each ModelHandler. We can either
-    // deregister explicitly in the opt_guide service or just destroy the
-    // object. Either way, we need to do this before we create our fake
-    // handler.
+  void UpdateAivXHandlerInModelProvider(
+      std::unique_ptr<PermissionsAiv3HandlerFake> handler) override {
     model_handler_provider()->set_permissions_aiv3_handler_for_testing(
-        request_type(), nullptr);
-
-    std::unique_ptr<PermissionsAiv3HandlerFake> model_handler =
-        std::make_unique<PermissionsAiv3HandlerFake>(
-            opt_guide(), optimization_target(), request_type());
-    aiv3_model_handler_ = model_handler.get();
-
-    model_handler_provider()->set_permissions_aiv3_handler_for_testing(
-        request_type(), std::move(model_handler));
+        request_type(), std::move(handler));
   }
 
-  void TearDownOnMainThread() override {
-    PredictionServiceBrowserTestBase::TearDownOnMainThread();
-    aiv3_model_handler_ = nullptr;
+  PermissionsAiv3HandlerFake* model_handler() override {
+    return aiv3_model_handler_;
   }
 
-  void PushModelFileToModelExecutor(const base::FilePath& model_file_path) {
-    opt_guide()->OverrideTargetModelForTesting(
-        optimization_target(), optimization_guide::TestModelInfoBuilder()
-                                   .SetModelFilePath(model_file_path)
-                                   .Build());
-    aiv3_model_handler_->WaitForModelLoadForTesting();
+  void set_model_handler(PermissionsAiv3HandlerFake* handler) override {
+    aiv3_model_handler_ = handler;
   }
-
- private:
 };
 
-std::vector<ModelMetadata> model_data_testcase = {
+std::vector<ModelMetadata> aiv3_model_data_testcase = {
     {
         /*test_name=*/"OnDeviceVeryLowAndServerSideUnspecifiedResponse"
                       "ReturnsDefaultUI",
@@ -777,7 +808,7 @@ std::vector<PermissionRequestMetadata> aiv3_request_data_testcase = {
 INSTANTIATE_TEST_SUITE_P(
     Aiv3ModelTest,
     Aiv3ModelPredictionServiceBrowserTest,
-    Combine(ValuesIn(model_data_testcase),
+    Combine(ValuesIn(aiv3_model_data_testcase),
             ValuesIn(aiv3_request_data_testcase)),
     /*name_generator=*/
     [](const testing::TestParamInfo<

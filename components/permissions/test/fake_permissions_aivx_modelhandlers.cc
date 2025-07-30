@@ -10,8 +10,31 @@
 
 namespace test {
 using permissions::PermissionsAiv3Encoder;
+using permissions::PermissionsAiv3Handler;
 
 inline PermissionsAiv3HandlerFake::~PermissionsAiv3HandlerFake() = default;
+
+void PermissionsAivXHandlerFakeBase::ExecuteModelWrapper(
+    PermissionsAivXHandlerFakeBase::ExecutionCallback callback,
+    const std::optional<PermissionsAiv3Encoder::ModelOutput>& output) {
+  std::move(callback).Run(output);
+  model_execute_run_loop_for_testing_.Quit();
+}
+
+void PermissionsAivXHandlerFakeBase::WaitForModelLoadForTesting() {
+  model_load_run_loop_for_testing_.Run();
+}
+
+void PermissionsAivXHandlerFakeBase::WaitForModelExecutionForTesting() {
+  model_execute_run_loop_for_testing_.Run();
+}
+
+void PermissionsAivXHandlerFakeBase::OnModelUpdated(
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  if (model_info.has_value()) {
+    model_load_run_loop_for_testing_.Quit();
+  }
+}
 
 PermissionsAiv3HandlerFake::PermissionsAiv3HandlerFake(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -27,32 +50,15 @@ void PermissionsAiv3HandlerFake::OnModelUpdated(
     optimization_guide::proto::OptimizationTarget optimization_target,
     base::optional_ref<const optimization_guide::ModelInfo> model_info) {
   PermissionsAiv3Handler::OnModelUpdated(optimization_target, model_info);
-  if (model_info.has_value()) {
-    model_load_run_loop_for_testing_.Quit();
-  }
-}
-
-void PermissionsAiv3HandlerFake::ExecuteModelWrapper(
-    PermissionsAiv3Handler::ExecutionCallback callback,
-    const std::optional<PermissionsAiv3Encoder::ModelOutput>& output) {
-  std::move(callback).Run(output);
-  model_execute_run_loop_for_testing_.Quit();
+  PermissionsAivXHandlerFakeBase::OnModelUpdated(model_info);
 }
 
 void PermissionsAiv3HandlerFake::ExecuteModel(
     PermissionsAiv3Handler::ExecutionCallback callback,
     std::unique_ptr<SkBitmap> snapshot) {
   PermissionsAiv3Handler::ExecuteModel(
-      base::BindOnce(&PermissionsAiv3HandlerFake::ExecuteModelWrapper,
+      base::BindOnce(&PermissionsAivXHandlerFakeBase::ExecuteModelWrapper,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       std::move(snapshot));
 }
-
-void PermissionsAiv3HandlerFake::WaitForModelLoadForTesting() {
-  model_load_run_loop_for_testing_.Run();
-}
-void PermissionsAiv3HandlerFake::WaitForModelExecutionForTesting() {
-  model_execute_run_loop_for_testing_.Run();
-}
-
 }  // namespace test

@@ -15,7 +15,31 @@
 // Contains fake classes to be used in tests for AIvX model handlers.
 namespace test {
 
-class PermissionsAiv3HandlerFake : public permissions::PermissionsAiv3Handler {
+class PermissionsAivXHandlerFakeBase {
+ public:
+  // All AivX models share the same model execution callback for now
+  using ExecutionCallback =
+      permissions::PermissionsAiv3Handler::ExecutionCallback;
+  PermissionsAivXHandlerFakeBase() = default;
+
+  void ExecuteModelWrapper(
+      ExecutionCallback callback,
+      const std::optional<permissions::PermissionsAiv3Encoder::ModelOutput>&
+          output);
+
+  void OnModelUpdated(
+      base::optional_ref<const optimization_guide::ModelInfo> model_info);
+
+  void WaitForModelLoadForTesting();
+  void WaitForModelExecutionForTesting();
+
+ protected:
+  base::RunLoop model_execute_run_loop_for_testing_;
+  base::RunLoop model_load_run_loop_for_testing_;
+};
+
+class PermissionsAiv3HandlerFake : public permissions::PermissionsAiv3Handler,
+                                   public PermissionsAivXHandlerFakeBase {
  public:
   PermissionsAiv3HandlerFake(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -29,20 +53,10 @@ class PermissionsAiv3HandlerFake : public permissions::PermissionsAiv3Handler {
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  void ExecuteModelWrapper(
-      PermissionsAiv3Handler::ExecutionCallback callback,
-      const std::optional<permissions::PermissionsAiv3Encoder::ModelOutput>&
-          output);
-
   void ExecuteModel(PermissionsAiv3Handler::ExecutionCallback callback,
                     std::unique_ptr<SkBitmap> snapshot) override;
 
-  void WaitForModelLoadForTesting();
-  void WaitForModelExecutionForTesting();
-
  private:
-  base::RunLoop model_execute_run_loop_for_testing_;
-  base::RunLoop model_load_run_loop_for_testing_;
   base::WeakPtrFactory<PermissionsAiv3HandlerFake> weak_ptr_factory_{this};
 };
 
