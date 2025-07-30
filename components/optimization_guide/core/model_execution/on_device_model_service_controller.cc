@@ -565,7 +565,9 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
 
   // TODO(crbug.com/400998489): Cache files are experimental for now.
   if (base::FeatureList::IsEnabled(
-          on_device_model::features::kOnDeviceModelForceCpuBackend)) {
+          on_device_model::features::kOnDeviceModelForceCpuBackend) ||
+      base::FeatureList::IsEnabled(
+          on_device_model::features::kOnDeviceModelCpuBackend)) {
     model_paths.cache =
         model_metadata_->model_path().Append(kExperimentalCacheFile);
   }

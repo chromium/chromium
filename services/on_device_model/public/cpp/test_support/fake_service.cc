@@ -412,7 +412,7 @@ void FakeOnDeviceModelService::LoadModel(
     LoadModelCallback callback) {
   FakeOnDeviceModel::Data data;
   data.base_weight = ReadFile(params->assets.weights.file());
-  if (params->assets.cache.IsValid()) {
+  if (params->assets.cache.IsValid() && params->assets.cache.GetLength() > 0) {
     data.cache_weight = ReadFile(params->assets.cache);
   }
   data.adaptation_ranks = params->adaptation_ranks;
