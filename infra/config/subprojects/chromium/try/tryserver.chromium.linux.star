@@ -934,6 +934,9 @@ try_.orchestrator_builder(
             "minimal_symbols",
         ],
     ),
+    # TODO (crbug.com/410653528): Reenable for TSAN when fixes are appropriate.
+    check_for_flakiness = False,
+    check_for_flakiness_with_resultdb = False,
     compilator = "linux_chromium_tsan_rel_ng-compilator",
     experiments = {
         # go/nplus1shardsproposal

@@ -82,10 +82,6 @@
       "targets_spec_directory": "src/infra/config/generated/builders/try/linux_chromium_tsan_rel_ng/targets"
     }
   },
-  "$build/flakiness": {
-    "check_for_flakiness": true,
-    "check_for_flakiness_with_resultdb": true
-  },
   "$build/siso": {
     "configs": [
       "builder",
