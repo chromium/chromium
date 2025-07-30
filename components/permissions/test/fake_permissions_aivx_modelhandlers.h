@@ -60,6 +60,29 @@ class PermissionsAiv3HandlerFake : public permissions::PermissionsAiv3Handler,
   base::WeakPtrFactory<PermissionsAiv3HandlerFake> weak_ptr_factory_{this};
 };
 
+class PermissionsAiv4HandlerFake : public permissions::PermissionsAiv4Handler,
+                                   public PermissionsAivXHandlerFakeBase {
+ public:
+  PermissionsAiv4HandlerFake(
+      optimization_guide::OptimizationGuideModelProvider* model_provider,
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      permissions::RequestType request_type);
+
+  ~PermissionsAiv4HandlerFake() override;
+
+  void OnModelUpdated(
+      optimization_guide::proto::OptimizationTarget optimization_target,
+      base::optional_ref<const optimization_guide::ModelInfo> model_info)
+      override;
+
+  void ExecuteModel(PermissionsAiv4Handler::ExecutionCallback callback,
+                    std::unique_ptr<SkBitmap> snapshot,
+                    std::string rendered_text) override;
+
+ private:
+  base::WeakPtrFactory<PermissionsAiv4HandlerFake> weak_ptr_factory_{this};
+};
+
 }  // namespace test
 
 #endif  // COMPONENTS_PERMISSIONS_TEST_FAKE_PERMISSIONS_AIVX_MODELHANDLERS_H_

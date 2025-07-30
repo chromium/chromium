@@ -43,6 +43,7 @@
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
+#include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
@@ -52,6 +53,7 @@ using ::permissions::PermissionRequest;
 using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv1Handler;
 using ::permissions::PermissionsAiv3Handler;
+using ::permissions::PermissionsAiv4Handler;
 using ::permissions::PermissionUmaUtil;
 using ::permissions::PredictionModelHandlerProvider;
 using ::permissions::PredictionModelType;
@@ -206,6 +208,19 @@ void PredictionBasedPermissionUiSelector::
                            PredictionModelType::kOnDeviceAiV3Model});
 }
 
+void PredictionBasedPermissionUiSelector::
+    InquireOnDeviceAiv4AndServerModelIfAvailable(
+        content::WebContents* web_contents,
+        permissions::PredictionRequestFeatures features,
+        PredictionRequestMetadata request_metadata) {
+  VLOG(1) << "[PermissionsAIv4] On device AI prediction requested";
+  TakeSnapshot(web_contents->GetRenderWidgetHostView(),
+               {std::move(features), std::move(request_metadata),
+                PredictionModelType::kOnDeviceAiV4Model});
+  // TODO(crbug.com/422952428) Also call OnGetInnerTextForOnDeviceModel here to
+  // add the text as model input.
+}
+
 void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
     base::TimeTicks snapshot_inquire_start_time,
     ModelExecutionData model_data,
@@ -231,8 +246,8 @@ void PredictionBasedPermissionUiSelector::
         PredictionRequestMetadata request_metadata,
         permissions::PredictionModelType model_type,
         const std::optional<PermissionRequestRelevance>& relevance) {
-  PermissionUmaUtil::RecordPredictionModelInquireTime(
-      model_inquire_start_time, PredictionModelType::kOnDeviceAiV3Model);
+  PermissionUmaUtil::RecordPredictionModelInquireTime(model_inquire_start_time,
+                                                      model_type);
   VLOG(1) << "[PermissionsAI]: Model execution callback called "
           << (relevance.has_value() ? "with value" : "without value");
   if (relevance.has_value()) {
@@ -276,7 +291,8 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
     return;
   }
 
-  PredictionRequestFeatures features = BuildPredictionRequestFeatures(request);
+  PredictionRequestFeatures features =
+      BuildPredictionRequestFeatures(request, prediction_source);
   if (prediction_source == PredictionSource::kOnDeviceCpssV1Model) {
     if (features.requested_permission_counts.total() <
         kRequestedPermissionMinimumHistoricalActions) {
@@ -317,6 +333,9 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
           web_contents->GetPrimaryMainFrame(), std::move(features),
           std::move(request_metadata));
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    case PredictionSource::kOnDeviceAiv4AndServerSideModel:
+      return InquireOnDeviceAiv4AndServerModelIfAvailable(
+          web_contents, std::move(features), std::move(request_metadata));
     case PredictionSource::kOnDeviceAiv3AndServerSideModel:
       return InquireOnDeviceAiv3AndServerModelIfAvailable(
           web_contents->GetRenderWidgetHostView(), std::move(features),
@@ -388,7 +407,8 @@ PredictionBasedPermissionUiSelector::WasSelectorDecisionHeldback() {
 
 PredictionRequestFeatures
 PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
-    PermissionRequest* request) {
+    PermissionRequest* request,
+    PredictionSource prediction_source) {
   PredictionRequestFeatures features;
   features.gesture = request->GetGestureType();
   features.type = request->request_type();
@@ -404,20 +424,26 @@ PredictionBasedPermissionUiSelector::BuildPredictionRequestFeatures(
   }
 #endif
 
-  features.experiment_id =
-      PredictionRequestFeatures::ExperimentId::kNoExperimentId;
-
   // Init `permission_relevance` here to avoid a crash during
   // `ConvertToProtoRelevance` execution.
   features.permission_relevance = PermissionRequestRelevance::kUnspecified;
-  // if both Aiv3 and Aiv1 are enabled, we want to chose Aiv3.
-  if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
-    features.experiment_id =
-        PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
-  } else if (base::FeatureList::IsEnabled(
-                 permissions::features::kPermissionsAIv1)) {
-    features.experiment_id =
-        PredictionRequestFeatures::ExperimentId::kAiV1ExperimentId;
+
+  switch (prediction_source) {
+    case PredictionSource::kOnDeviceAiv1AndServerSideModel:
+      features.experiment_id =
+          PredictionRequestFeatures::ExperimentId::kAiV1ExperimentId;
+      break;
+    case PredictionSource::kOnDeviceAiv3AndServerSideModel:
+      features.experiment_id =
+          PredictionRequestFeatures::ExperimentId::kAiV3ExperimentId;
+      break;
+    case PredictionSource::kOnDeviceAiv4AndServerSideModel:
+      features.experiment_id =
+          PredictionRequestFeatures::ExperimentId::kAiV4ExperimentId;
+      break;
+    default:
+      features.experiment_id =
+          PredictionRequestFeatures::ExperimentId::kNoExperimentId;
   }
 
   base::Time cutoff = base::Time::Now() - kPermissionActionCutoffAge;
@@ -535,8 +561,11 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
   // Holdback probability for this request.
   const double holdback_chance = base::RandDouble();
   bool should_holdback = false;
-  PredictionModelType prediction_model =
-      PredictionModelType::kServerSideCpssV3Model;
+  PredictionModelType prediction_model;
+
+  should_holdback =
+      holdback_chance <
+      permissions::feature_params::kPermissionPredictionsV2HoldbackChance.Get();
 
   switch (prediction_source) {
     case PredictionSource::kOnDeviceCpssV1Model:
@@ -546,18 +575,18 @@ bool PredictionBasedPermissionUiSelector::ShouldHoldBack(
       break;
       // For on-device model + server-side model requests we will use the
       // holdback logic for the server-side model execution.
+    case PredictionSource::kOnDeviceAiv4AndServerSideModel:
+      prediction_model = PredictionModelType::kOnDeviceAiV4Model;
+      break;
     case PredictionSource::kOnDeviceAiv3AndServerSideModel:
       prediction_model = PredictionModelType::kOnDeviceAiV3Model;
-      [[fallthrough]];
+      break;
     case PredictionSource::kOnDeviceAiv1AndServerSideModel:
       // We don't analyse holdback UMA results separately for aiv1, so we
       // don't set the model type for this one.
       [[fallthrough]];
     case PredictionSource::kServerSideCpssV3Model:
-      should_holdback =
-          holdback_chance <
-          permissions::feature_params::kPermissionPredictionsV2HoldbackChance
-              .Get();
+      prediction_model = PredictionModelType::kServerSideCpssV3Model;
       break;
     default:
       NOTREACHED();
@@ -609,8 +638,13 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
 #endif  // BUILDFLAG(IS_ANDROID)
   }
   if (use_server_side) {
-    // Aiv3 takes priority over Aiv1 if both are enabled.
+    // AIvX models take priority over each other in the following order:
+    // AIv4, AIv3, AIv1
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    if (PredictionModelHandlerProvider::IsAiv4ModelAvailable()) {
+      VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv4";
+      return PredictionSource::kOnDeviceAiv4AndServerSideModel;
+    }
     if (base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv3)) {
       VLOG(1) << "[CPSS] GetPredictionTypeToUse AIv3";
       return PredictionSource::kOnDeviceAiv3AndServerSideModel;
@@ -716,6 +750,24 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
               std::move(model_data.snapshot));
         } else {
           VLOG(1) << "[PermissionsAI] No AIv3 handler";
+        }
+        break;
+      }
+      case PredictionModelType::kOnDeviceAiV4Model: {
+        if (PermissionsAiv4Handler* aiv4_handler =
+                prediction_model_handler_provider->GetPermissionsAiv4Handler(
+                    request_type)) {
+          VLOG(1) << "[PermissionsAIv4] Inquire model";
+          return aiv4_handler->ExecuteModel(
+              base::BindOnce(
+                  &PredictionBasedPermissionUiSelector::
+                      OnDeviceTfliteAivXModelExecutionCallback,
+                  weak_ptr_factory_.GetWeakPtr(),
+                  /*model_inquire_start_time=*/base::TimeTicks::Now(),
+                  std::move(model_data.features),
+                  std::move(model_data.request_metadata),
+                  model_data.model_type),
+              std::move(model_data.snapshot), std::move(model_data.inner_text));
         }
         break;
       }

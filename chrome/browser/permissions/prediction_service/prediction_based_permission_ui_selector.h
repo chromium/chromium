@@ -47,6 +47,7 @@ class PredictionBasedPermissionUiSelector
     kOnDeviceCpssV1Model,
     kOnDeviceAiv1AndServerSideModel,
     kOnDeviceAiv3AndServerSideModel,
+    kOnDeviceAiv4AndServerSideModel,
   };
 
   // Contains information that are not important as features for the
@@ -121,7 +122,8 @@ class PredictionBasedPermissionUiSelector
       std::optional<optimization_guide::proto::PermissionsAiResponse> response);
 
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
-      permissions::PermissionRequest* request);
+      permissions::PermissionRequest* request,
+      PredictionSource prediction_source);
   void LookupResponseReceived(
       base::TimeTicks model_inquire_start_time,
       PredictionRequestMetadata request_metadata,
@@ -173,9 +175,19 @@ class PredictionBasedPermissionUiSelector
       permissions::PredictionRequestFeatures features,
       PredictionRequestMetadata request_metadata);
 
-  // Part of the AIv3 model execution chain; provided as a curryed callback to
+  // As the first part of the AIv4 model execution chain, this function triggers
+  // AIv4 input collection and model execution, with its output being input of
+  // the follow-up CPSSv3 server side model execution. If the AIv4 model is not
+  // available or is executed with an error, only the server side model will get
+  // called.
+  void InquireOnDeviceAiv4AndServerModelIfAvailable(
+      content::WebContents* web_contents,
+      permissions::PredictionRequestFeatures features,
+      PredictionRequestMetadata request_metadata);
+
+  // Part of the AIvX model execution chain; provided as a curryed callback to
   // be submitted to the logic that fetches a snapshot that serves as the input
-  // for the AIv3 model. The first three parameters are set by the callee, to
+  // for the AIvX models. The first three parameters are set by the callee, to
   // be used by the server side model later and for logging.
   void OnSnapshotTakenForOnDeviceModel(
       base::TimeTicks snapshot_inquire_start_time,

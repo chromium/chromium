@@ -275,7 +275,9 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseCpssV1) {
       base::BindRepeating(decided));
 
   permissions::PredictionRequestFeatures features =
-      prediction_selector.BuildPredictionRequestFeatures(&permission_request);
+      prediction_selector.BuildPredictionRequestFeatures(
+          &permission_request,
+          PredictionSource::kOnDeviceAiv1AndServerSideModel);
 
   auto proto_request = GetPredictionRequestProto(features);
 }
@@ -334,6 +336,14 @@ INSTANTIATE_TEST_SUITE_P(
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv3AndServerSideModel},
+        {/*test_name=*/"UsePermissionsAiv4OverAivXOnDesktop",
+         /*enabled_features=*/
+         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv1,
+          permissions::features::kPermissionsAIv3,
+          permissions::features::kPermissionsAIv4},
+         /*disabled_features=*/{},
+         /*expected_prediction_source=*/
+         PredictionSource::kOnDeviceAiv4AndServerSideModel},
 #endif
     }),
     /*name_generator=*/

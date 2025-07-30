@@ -11,8 +11,11 @@
 namespace test {
 using permissions::PermissionsAiv3Encoder;
 using permissions::PermissionsAiv3Handler;
+using permissions::PermissionsAiv4Encoder;
+using permissions::PermissionsAiv4Handler;
 
 inline PermissionsAiv3HandlerFake::~PermissionsAiv3HandlerFake() = default;
+inline PermissionsAiv4HandlerFake::~PermissionsAiv4HandlerFake() = default;
 
 void PermissionsAivXHandlerFakeBase::ExecuteModelWrapper(
     PermissionsAivXHandlerFakeBase::ExecutionCallback callback,
@@ -52,7 +55,6 @@ void PermissionsAiv3HandlerFake::OnModelUpdated(
   PermissionsAiv3Handler::OnModelUpdated(optimization_target, model_info);
   PermissionsAivXHandlerFakeBase::OnModelUpdated(model_info);
 }
-
 void PermissionsAiv3HandlerFake::ExecuteModel(
     PermissionsAiv3Handler::ExecutionCallback callback,
     std::unique_ptr<SkBitmap> snapshot) {
@@ -61,4 +63,30 @@ void PermissionsAiv3HandlerFake::ExecuteModel(
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
       std::move(snapshot));
 }
+
+PermissionsAiv4HandlerFake::PermissionsAiv4HandlerFake(
+    optimization_guide::OptimizationGuideModelProvider* model_provider,
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    permissions::RequestType request_type)
+    : PermissionsAiv4Handler(model_provider,
+                             optimization_target,
+                             request_type) {}
+
+void PermissionsAiv4HandlerFake::OnModelUpdated(
+    optimization_guide::proto::OptimizationTarget optimization_target,
+    base::optional_ref<const optimization_guide::ModelInfo> model_info) {
+  PermissionsAiv4Handler::OnModelUpdated(optimization_target, model_info);
+  PermissionsAivXHandlerFakeBase::OnModelUpdated(model_info);
+}
+
+void PermissionsAiv4HandlerFake::ExecuteModel(
+    PermissionsAiv4Handler::ExecutionCallback callback,
+    std::unique_ptr<SkBitmap> snapshot,
+    std::string rendered_string) {
+  PermissionsAiv4Handler::ExecuteModel(
+      base::BindOnce(&PermissionsAivXHandlerFakeBase::ExecuteModelWrapper,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
+      std::move(snapshot), std::move(rendered_string));
+}
+
 }  // namespace test
