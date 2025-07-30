@@ -174,8 +174,25 @@ void SaveAndFillManagerImpl::PopulateInitialUploadDetails() {
 
   // Calculate the unique address from the most recently used
   // addresses. Can be empty if there is none.
-  // TODO(crbug.com/378164165): This part is rather complex. Do it in a
-  // separate CL.
+  auto comparator = [](AutofillProfile a, AutofillProfile b) {
+    return a.GetAddress() != b.GetAddress();
+  };
+  std::set<AutofillProfile, decltype(comparator)> candidate_profiles;
+  constexpr base::TimeDelta fifteen_minutes = base::Minutes(15);
+  for (const AutofillProfile* profile :
+       autofill_client_->GetPersonalDataManager()
+           .address_data_manager()
+           .GetProfiles()) {
+    if ((base::Time::Now() - profile->usage_history().use_date()) <=
+            fifteen_minutes ||
+        (base::Time::Now() - profile->usage_history().modification_date()) <=
+            fifteen_minutes) {
+      candidate_profiles.emplace(*profile);
+    }
+  }
+  if (candidate_profiles.size() == 1U) {
+    upload_details_.profiles.emplace_back(*candidate_profiles.begin());
+  }
 }
 
 void SaveAndFillManagerImpl::OfferUploadSaveAndFill(
