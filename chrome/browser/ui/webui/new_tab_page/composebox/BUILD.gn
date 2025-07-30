@@ -8,8 +8,6 @@ assert(!is_android)
 
 source_set("composebox") {
   sources = [
-    "composebox_fieldtrial.cc",
-    "composebox_fieldtrial.h",
     "composebox_handler.cc",
     "composebox_handler.h",
   ]
@@ -19,6 +17,7 @@ source_set("composebox") {
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
+    "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
     "//components/application_locale_storage",
     "//components/omnibox/common",
     "//components/omnibox/composebox",
@@ -41,29 +40,15 @@ mojom("mojo_bindings") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "composebox_fieldtrial_config_unittest.cc",
-    "composebox_handler_unittest.cc",
-  ]
+  sources = [ "composebox_handler_unittest.cc" ]
   deps = [
     ":composebox",
     "//base/test:test_support",
     "//chrome/browser/search_engines",
+    "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
     "//chrome/test:test_support",
     "//components/omnibox/composebox:test_support",
     "//services/network:test_support",
     "//services/network/public/cpp",
-  ]
-}
-
-source_set("browser_tests") {
-  testonly = true
-  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
-  sources = [ "composebox_fieldtrial_entrypoint_browsertest.cc" ]
-  deps = [
-    ":composebox",
-    "//chrome/browser:browser_process",
-    "//chrome/test:test_support",
-    "//components/variations/service",
   ]
 }

@@ -5,7 +5,7 @@
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
 #include "base/time/time.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
 

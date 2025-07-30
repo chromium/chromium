@@ -1,0 +1,44 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("variations") {
+  sources = [
+    "composebox_fieldtrial.cc",
+    "composebox_fieldtrial.h",
+  ]
+  deps = [
+    "//base",
+    "//chrome/app:generated_resources",
+    "//chrome/browser:browser_process",
+    "//chrome/browser:global_features",
+    "//components/application_locale_storage",
+    "//components/omnibox/common",
+    "//components/variations/service",
+    "//third_party/omnibox_proto",
+    "//ui/base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "composebox_fieldtrial_config_unittest.cc" ]
+  deps = [
+    ":variations",
+    "//base/test:test_support",
+    "//chrome/browser/search_engines",
+    "//chrome/test:test_support",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  sources = [ "composebox_fieldtrial_entrypoint_browsertest.cc" ]
+  deps = [
+    ":variations",
+    "//chrome/browser:browser_process",
+    "//chrome/test:test_support",
+    "//components/variations/service",
+  ]
+}
