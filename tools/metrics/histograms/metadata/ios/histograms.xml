@@ -2696,7 +2696,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="IOS.MagicStack.ScrollActionToIndex" units="index"
-    expires_after="2025-09-07">
+    expires_after="2026-09-07">
   <owner>thegreenfrog@chromium.org</owner>
   <owner>bling-pandamonium@google.com</owner>
   <summary>
@@ -4793,16 +4793,6 @@ chromium-metrics-reviews@google.com.
     this invariant violation, and is logged each time that a main-frame
     navigation response is received after a server redirect. True means that the
     request and response URLs have the same host.
-  </summary>
-</histogram>
-
-<histogram name="IOS.SafetyCheck.FreshnessTrigger"
-    enum="IOSSafetyCheckFreshnessTrigger" expires_after="2025-09-07">
-  <owner>bwwilliams@google.com</owner>
-  <owner>thegreenfrog@google.com</owner>
-  <summary>
-    This histogram logs the reason for signaling freshness to the Segmentation
-    Platform when the Safety Check Manager updates the freshness status.
   </summary>
 </histogram>
 

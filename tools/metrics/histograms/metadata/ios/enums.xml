@@ -975,11 +975,6 @@ chromium-metrics-reviews@google.com.
   <int value="6" label="Success"/>
 </enum>
 
-<enum name="IOSSafetyCheckFreshnessTrigger">
-  <int value="0" label="Password Check - State Changed"/>
-  <int value="1" label="Update Chrome Check - State Changed"/>
-</enum>
-
 <enum name="IOSSafetyCheckHiddenReason">
   <int value="0" label="Manually disabled"/>
   <int value="1" label="No issues"/>

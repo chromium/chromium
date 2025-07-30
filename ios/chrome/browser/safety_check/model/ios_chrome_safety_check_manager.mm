@@ -443,24 +443,6 @@ void IOSChromeSafetyCheckManager::SetPasswordCheckState(
     return;
   }
 
-  // Only log that there was a freshness signal if the new state has a different
-  // end result (a password issue, safe).
-  bool should_log_freshness =
-      state != PasswordSafetyCheckState::kDefault &&
-      state != previous_password_check_state_ &&
-      (state == PasswordSafetyCheckState::kUnmutedCompromisedPasswords ||
-       state == PasswordSafetyCheckState::kReusedPasswords ||
-       state == PasswordSafetyCheckState::kWeakPasswords ||
-       state == PasswordSafetyCheckState::kSafe);
-
-  if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
-                                pref_service_);
-    base::UmaHistogramEnumeration(
-        "IOS.SafetyCheck.FreshnessTrigger",
-        IOSSafetyCheckFreshnessTrigger::kPasswordCheckStateChanged);
-  }
-
   password_check_state_ = state;
 
   pref_service_->SetString(prefs::kIosSafetyCheckManagerPasswordCheckResult,
@@ -504,22 +486,6 @@ void IOSChromeSafetyCheckManager::SetUpdateChromeCheckState(
 
   if (update_chrome_check_state_ == state || ignore_omaha_changes_) {
     return;
-  }
-
-  // Only log that there was a freshness signal if the new state has a different
-  // end result (out of date, up to date).
-  bool should_log_freshness =
-      state != UpdateChromeSafetyCheckState::kDefault &&
-      state != previous_update_chrome_check_state_ &&
-      (state == UpdateChromeSafetyCheckState::kOutOfDate ||
-       state == UpdateChromeSafetyCheckState::kUpToDate);
-
-  if (should_log_freshness) {
-    RecordModuleFreshnessSignal(ContentSuggestionsModuleType::kSafetyCheck,
-                                pref_service_);
-    base::UmaHistogramEnumeration(
-        "IOS.SafetyCheck.FreshnessTrigger",
-        IOSSafetyCheckFreshnessTrigger::kUpdateChromeCheckStateChanged);
   }
 
   update_chrome_check_state_ = state;

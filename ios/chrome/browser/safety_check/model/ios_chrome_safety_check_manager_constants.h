@@ -17,17 +17,6 @@ const base::TimeDelta kOmahaNetworkWaitTime = base::Seconds(30);
 // automatic run can be triggered.
 const base::TimeDelta kSafetyCheckAutorunDelay = base::Days(30);
 
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-//
-// LINT.IfChange(IOSSafetyCheckFreshnessTrigger)
-enum class IOSSafetyCheckFreshnessTrigger {
-  kPasswordCheckStateChanged = 0,
-  kUpdateChromeCheckStateChanged = 1,
-  kMaxValue = kUpdateChromeCheckStateChanged,
-};
-// LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:IOSSafetyCheckFreshnessTrigger)
-
 // Enum with all possible states of the update check.
 enum class UpdateChromeSafetyCheckState {
   // When the check has not been run yet.
