@@ -19,7 +19,6 @@ static const size_t kMaxDigestSize = 64;
 typedef Vector<uint8_t, kMaxDigestSize> DigestValue;
 
 enum HashAlgorithm {
-  kHashAlgorithmSha1,
   kHashAlgorithmSha256,
   kHashAlgorithmSha384,
   kHashAlgorithmSha512

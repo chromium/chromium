@@ -16,9 +16,6 @@ Digestor::Digestor(HashAlgorithm algorithm) {
 
   const EVP_MD* evp_md = nullptr;
   switch (algorithm) {
-    case kHashAlgorithmSha1:
-      evp_md = EVP_sha1();
-      break;
     case kHashAlgorithmSha256:
       evp_md = EVP_sha256();
       break;

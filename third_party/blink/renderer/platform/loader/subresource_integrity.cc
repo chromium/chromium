@@ -134,8 +134,6 @@ String IntegrityAlgorithmsForConsole(const FeatureContext* feature_context) {
 
 String HashAlgorithmToString(HashAlgorithm algorithm) {
   switch (algorithm) {
-    case kHashAlgorithmSha1:
-      NOTREACHED();
     case kHashAlgorithmSha256:
       return "sha256-";
     case kHashAlgorithmSha384:
