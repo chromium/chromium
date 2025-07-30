@@ -24,7 +24,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/utility/bookmark_util.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
-#include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
+#include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace {

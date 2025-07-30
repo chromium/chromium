@@ -9,8 +9,8 @@
 #include "base/threading/sequence_bound.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
+#include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
 #include "components/user_data_importer/utility/safari_data_import_client.h"
-#include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
 
 namespace autofill {
 class CreditCard;

@@ -25,7 +25,7 @@
 #include "components/user_data_importer/content/content_bookmark_parser_in_utility_process.h"
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
-#include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
+#include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"

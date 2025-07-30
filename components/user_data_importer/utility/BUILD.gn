@@ -33,9 +33,12 @@ source_set("safari_data_importer") {
 
 rust_static_library("zip_ffi_glue") {
   allow_unsafe = true
-  crate_root = "zip_ffi_glue.rs"
-  sources = [ "zip_ffi_glue.rs" ]
-  cxx_bindings = [ "zip_ffi_glue.rs" ]
+  crate_root = "parsing_ffi/lib.rs"
+  sources = [
+    "parsing_ffi/lib.rs",
+    "parsing_ffi/models.rs",
+  ]
+  cxx_bindings = [ "parsing_ffi/lib.rs" ]
   visibility = [
     ":safari_data_importer",
     "//components/user_data_importer/content",

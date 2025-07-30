@@ -11,7 +11,7 @@
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
-#include "components/user_data_importer/utility/zip_ffi_glue.rs.h"
+#include "components/user_data_importer/utility/parsing_ffi/lib.rs.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace user_data_importer {
