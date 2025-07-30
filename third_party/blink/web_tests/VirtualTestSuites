@@ -925,26 +925,6 @@
     ],
     "expires": "Jun 1, 2026"
   },
-  {
-    "prefix": "echo-cancellation-mode-all",
-    "platforms": [
-      "Win11",
-      "Mac"
-    ],
-    "bases": [
-      "external/wpt/mediacapture-streams/GUM-echoCancellation-all.https.html"
-    ],
-    "exclusive_tests": "ALL",
-    "args": [
-      "--enable-features=SystemLoopbackAsAecReference,GetUserMediaEchoCancellationModes"
-    ],
-    "owners": [
-      "guidou@chromium.org",
-      "olka@chromium.org"
-    ],
-    "expires": "Nov 29, 2025"
-  },
-
   "The elastic-overscroll virtual suite is testing a feature that is enabled",
   "or not based on platform and settings, so it should not expire.",
   {

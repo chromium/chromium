@@ -1920,6 +1920,3 @@ virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/cross-origin-cookies
 
 # The behavior is only available on Windows and Mac.
 [ Linux ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
-
-# EchoCancellation mode "all" is not supported on Linux
-[ Linux ] external/wpt/mediacapture-streams/GUM-echoCancellation-all.https.html [ Skip ]
