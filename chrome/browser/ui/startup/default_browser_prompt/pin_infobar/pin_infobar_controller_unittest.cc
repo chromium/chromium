@@ -190,7 +190,10 @@ TEST_F(PinInfoBarControllerTest, DontShowIfShownRecently) {
 }
 
 // Don't show the infobar if it was shown the maximum number of times.
-TEST_F(PinInfoBarControllerTest, DontShowIfShownMaxTimes) {
+//
+// Disabled because it's broken on multiple bots and very flaky on every other
+// bot it runs on; see https://crbug.com/435215855 for links and more info.
+TEST_F(PinInfoBarControllerTest, DISABLED_DontShowIfShownMaxTimes) {
   auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
       tab_strip_model()->GetActiveWebContents());
   ASSERT_TRUE(infobar_manager);
