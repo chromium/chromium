@@ -1369,7 +1369,8 @@ void NewSplitTab(Browser* browser, split_tabs::SplitTabCreatedSource source) {
   const int active_index = tab_strip_model->active_index();
   tab_strip_model->delegate()->AddTabAt(
       GURL(chrome::kChromeUISplitViewNewTabPageURL), active_index + 1, true,
-      tab_strip_model->GetTabGroupForTab(active_index));
+      tab_strip_model->GetTabGroupForTab(active_index),
+      tab_strip_model->IsTabPinned(active_index));
   tab_strip_model->AddToNewSplit({active_index},
                                  split_tabs::SplitTabVisualData(), source);
 }

@@ -40,7 +40,8 @@ class TestTabStripModelDelegate : public TabStripModelDelegate {
   void AddTabAt(const GURL& url,
                 int index,
                 bool foregroud,
-                std::optional<tab_groups::TabGroupId> group) override;
+                std::optional<tab_groups::TabGroupId> group,
+                bool pinned) override;
   Browser* CreateNewStripWithTabs(std::vector<NewStripContents> tabs,
                                   const gfx::Rect& window_bounds,
                                   bool maximize) override;

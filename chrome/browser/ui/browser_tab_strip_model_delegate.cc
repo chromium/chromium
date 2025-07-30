@@ -72,8 +72,9 @@ void BrowserTabStripModelDelegate::AddTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    std::optional<tab_groups::TabGroupId> group) {
-  chrome::AddTabAt(browser_, url, index, foreground, group);
+    std::optional<tab_groups::TabGroupId> group,
+    bool pinned) {
+  chrome::AddTabAt(browser_, url, index, foreground, group, pinned);
 }
 
 Browser* BrowserTabStripModelDelegate::CreateNewStripWithTabs(

@@ -63,7 +63,8 @@ class TabStripModelDelegate {
       const GURL& url,
       int index,
       bool foreground,
-      std::optional<tab_groups::TabGroupId> group = std::nullopt) = 0;
+      std::optional<tab_groups::TabGroupId> group = std::nullopt,
+      bool pinned = false) = 0;
 
   // Asks for a new TabStripModel to be created and the given web contentses to
   // be added to it. Its size and position are reflected in |window_bounds|.

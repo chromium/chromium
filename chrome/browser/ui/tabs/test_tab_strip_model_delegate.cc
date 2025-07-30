@@ -19,7 +19,8 @@ void TestTabStripModelDelegate::AddTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    std::optional<tab_groups::TabGroupId> group) {}
+    std::optional<tab_groups::TabGroupId> group,
+    bool pinned) {}
 
 Browser* TestTabStripModelDelegate::CreateNewStripWithTabs(
     std::vector<NewStripContents> tabs,

@@ -37,14 +37,16 @@ content::WebContents* AddAndReturnTabAt(
     const GURL& url,
     int index,
     bool foreground,
-    std::optional<tab_groups::TabGroupId> group = std::nullopt);
+    std::optional<tab_groups::TabGroupId> group = std::nullopt,
+    bool pinned = false);
 
 // Same as above, but eats the return value to make Bind*() easier.
 void AddTabAt(Browser* browser,
               const GURL& url,
               int index,
               bool foreground,
-              std::optional<tab_groups::TabGroupId> group = std::nullopt);
+              std::optional<tab_groups::TabGroupId> group = std::nullopt,
+              bool pinned = false);
 
 // Adds a selected tab with the specified URL and transition, returns the
 // created WebContents.
