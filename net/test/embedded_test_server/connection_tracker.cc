@@ -77,8 +77,8 @@ void ConnectionTracker::WaitUntilConnectionRead() {
 // expects the server will not accept more than |num_connections| connections.
 // |num_connections| must be greater than 0.
 void ConnectionTracker::WaitForAcceptedConnections(size_t num_connections) {
-  CHECK(!num_accepted_connections_loop_);
-  CHECK_GT(num_connections, 0u);
+  DCHECK(!num_accepted_connections_loop_);
+  DCHECK_GT(num_connections, 0u);
   base::RunLoop run_loop;
   EXPECT_GE(num_connections, num_connected_sockets_);
   num_accepted_connections_loop_ = &run_loop;
@@ -97,8 +97,8 @@ void ConnectionTracker::WaitForAcceptedConnections(size_t num_connections) {
 void ConnectionTracker::CheckAccepted() {
   // |num_accepted_connections_loop_| null implies
   // |num_accepted_connections_needed_| == 0.
-  CHECK(num_accepted_connections_loop_ ||
-        num_accepted_connections_needed_ == 0);
+  DCHECK(num_accepted_connections_loop_ ||
+         num_accepted_connections_needed_ == 0);
   if (!num_accepted_connections_loop_ ||
       num_accepted_connections_needed_ != num_connected_sockets_) {
     return;

@@ -20,12 +20,12 @@ void WebSocketCheckOriginHandler::OnHandshake(const HttpRequest& request) {
 
   CHECK(it != request.headers.end());
   origin_ = it->second;
-  VLOG(3) << "Stored WebSocket origin: " << origin_;
+  DVLOG(3) << "Stored WebSocket origin: " << origin_;
 }
 
 void WebSocketCheckOriginHandler::OnHandshakeComplete() {
   CHECK(connection());
-  VLOG(3) << "Sending stored origin after handshake completion: " << origin_;
+  DVLOG(3) << "Sending stored origin after handshake completion: " << origin_;
   connection()->SendTextMessage(origin_);
   connection()->StartClosingHandshake(1000, "Goodbye");
 }

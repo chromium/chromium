@@ -93,13 +93,13 @@ void WebSocketConnection::StartClosingHandshake(std::optional<uint16_t> code,
                                                 std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!stream_socket_) {
-    VLOG(2) << "Attempted to start closing handshake, but socket is null.";
+    DVLOG(2) << "Attempted to start closing handshake, but socket is null.";
     return;
   }
 
-  VLOG(3) << "Starting closing handshake. Code: "
-          << (code ? base::NumberToString(*code) : "none")
-          << ", Message: " << message;
+  DVLOG(3) << "Starting closing handshake. Code: "
+           << (code ? base::NumberToString(*code) : "none")
+           << ", Message: " << message;
 
   if (!code) {
     CHECK(base::IsStringUTF8AllowingNoncharacters(message));
@@ -120,8 +120,8 @@ void WebSocketConnection::RespondToCloseFrame(std::optional<uint16_t> code,
                                               std::string_view message) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (state_ == WebSocketState::kClosed) {
-    VLOG(2) << "Attempted to respond to close frame, but connection is "
-               "already closed.";
+    DVLOG(2) << "Attempted to respond to close frame, but connection is "
+                "already closed.";
     return;
   }
 
@@ -155,7 +155,7 @@ void WebSocketConnection::SendPong(base::span<const uint8_t> payload) {
 void WebSocketConnection::DisconnectAfterAnyWritesDone() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!stream_socket_) {
-    VLOG(3) << "Socket is already disconnected.";
+    DVLOG(3) << "Socket is already disconnected.";
     return;
   }
 
@@ -172,7 +172,7 @@ void WebSocketConnection::DisconnectAfterAnyWritesDone() {
 void WebSocketConnection::DisconnectImmediately() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!stream_socket_) {
-    VLOG(3) << "Socket is already disconnected.";
+    DVLOG(3) << "Socket is already disconnected.";
     handler_.reset();
     return;
   }
@@ -239,7 +239,7 @@ void WebSocketConnection::PerformWrite()
 void WebSocketConnection::OnWriteComplete(int result)
     VALID_CONTEXT_REQUIRED(sequence_checker_) {
   if (result < 0) {
-    VLOG(1) << "Failed to write to WebSocket connection, error: " << result;
+    DVLOG(1) << "Failed to write to WebSocket connection, error: " << result;
     DisconnectImmediately();
     return;
   }
@@ -281,13 +281,13 @@ void WebSocketConnection::Read() VALID_CONTEXT_REQUIRED(sequence_checker_) {
 void WebSocketConnection::OnReadComplete(int result)
     VALID_CONTEXT_REQUIRED(sequence_checker_) {
   if (result <= 0) {
-    VLOG(1) << "Failed to read from WebSocket connection, error: " << result;
+    DVLOG(1) << "Failed to read from WebSocket connection, error: " << result;
     DisconnectImmediately();
     return;
   }
 
   if (!handler_) {
-    VLOG(1) << "No handler set, ignoring read.";
+    DVLOG(1) << "No handler set, ignoring read.";
     return;
   }
 
@@ -311,7 +311,7 @@ void WebSocketConnection::OnReadComplete(int result)
     }
 
     if (assemble_result.error() == ERR_WS_PROTOCOL_ERROR) {
-      VLOG(1) << "Protocol error while handling frame.";
+      DVLOG(1) << "Protocol error while handling frame.";
       StartClosingHandshake(1002, "Protocol error");
       DisconnectAfterAnyWritesDone();
       return;
@@ -352,8 +352,8 @@ void WebSocketConnection::HandleFrame(WebSocketFrameHeader::OpCode opcode,
     case WebSocketFrameHeader::kOpCodeClose: {
       auto parse_close_frame_result = ParseCloseFrame(payload);
       if (parse_close_frame_result.error.has_value()) {
-        VLOG(1) << "Failed to parse close frame: "
-                << parse_close_frame_result.error.value();
+        DVLOG(1) << "Failed to parse close frame: "
+                 << parse_close_frame_result.error.value();
         StartClosingHandshake(1002, "Protocol error");
         DisconnectAfterAnyWritesDone();
       } else {
@@ -369,7 +369,7 @@ void WebSocketConnection::HandleFrame(WebSocketFrameHeader::OpCode opcode,
       handler_->OnPong(base::as_bytes(payload));
       break;
     default:
-      VLOG(2) << "Unknown frame opcode: " << opcode;
+      DVLOG(2) << "Unknown frame opcode: " << opcode;
       StartClosingHandshake(1002, "Protocol error");
       DisconnectAfterAnyWritesDone();
       break;
@@ -380,7 +380,7 @@ void WebSocketConnection::SendHandshakeResponse() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!stream_socket_) {
-    VLOG(2) << "Stream socket is already null. Returning early.";
+    DVLOG(2) << "Stream socket is already null. Returning early.";
     return;
   }
 
@@ -402,7 +402,8 @@ void WebSocketConnection::SendHandshakeResponse() {
   if (handler_) {
     handler_->OnHandshakeComplete();
   } else {
-    VLOG(2) << "Handler is null after starting Read. Connection likely closed.";
+    DVLOG(2)
+        << "Handler is null after starting Read. Connection likely closed.";
   }
 }
 
@@ -418,9 +419,9 @@ scoped_refptr<IOBufferWithSize> CreateBinaryFrame(
 
 scoped_refptr<IOBufferWithSize> CreateCloseFrame(std::optional<uint16_t> code,
                                                  std::string_view message) {
-  VLOG(3) << "Creating close frame with code: "
-          << (code ? base::NumberToString(*code) : "none")
-          << ", Message: " << message;
+  DVLOG(3) << "Creating close frame with code: "
+           << (code ? base::NumberToString(*code) : "none")
+           << ", Message: " << message;
   CHECK(message.empty() || code);
   CHECK(base::IsStringUTF8AllowingNoncharacters(message));
 
