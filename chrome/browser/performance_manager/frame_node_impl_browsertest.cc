@@ -11,6 +11,7 @@
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -55,7 +56,16 @@ void SimulateKeyPress(content::WebContents* web_contents) {
                             /*shift=*/false, /*alt=*/false, /*command=*/false);
 }
 
-using FrameNodeImplBrowserTest = InProcessBrowserTest;
+class FrameNodeImplBrowserTest : public InProcessBrowserTest {
+ public:
+  ~FrameNodeImplBrowserTest() override = default;
+
+ private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+};
 
 class ParameterizedFrameNodeImplBrowserTest
     : public FrameNodeImplBrowserTest,

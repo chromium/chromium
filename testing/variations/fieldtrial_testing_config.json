@@ -7408,6 +7408,28 @@
             ]
         }
     ],
+    "DSEPrewarm": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20260624_Dogfood",
+                    "params": {
+                        "url": "https://www.google.com/",
+                        "zero_suggest_trigger": "true"
+                    },
+                    "enable_features": [
+                        "Prewarm"
+                    ]
+                }
+            ]
+        }
+    ],
     "DTCAntivirusSignalEnabled": [
         {
             "platforms": [
