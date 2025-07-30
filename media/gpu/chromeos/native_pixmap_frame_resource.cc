@@ -5,6 +5,7 @@
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 
 #include <atomic>
+#include <limits>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -26,10 +27,11 @@ namespace media {
 
 namespace {
 gfx::GenericSharedMemoryId GetNextSharedMemoryId() {
-  // This uses the same ID generator that is used for creating ID's for GPU
-  // memory buffers. Doing so avoids overlapping ID's. No cast is necessary
-  // since gfx::GpuMemoryBufferId is an alias of gfx::GenericSharedMemoryId.
-  return GetNextGpuMemoryBufferId();
+  static base::NoDestructor<base::Lock> id_lock;
+  static int next_id = 0;
+  base::AutoLock lock(*id_lock);
+  CHECK_LT(next_id, std::numeric_limits<int>::max());
+  return gfx::GenericSharedMemoryId(next_id++);
 }
 
 // IsValidSize() performs size validity checks similar to those in

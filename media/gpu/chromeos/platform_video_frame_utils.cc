@@ -380,14 +380,6 @@ void UniqueTrackingTokenHelper::SetUniqueTrackingToken(
   metadata.tracking_token = GenerateToken();
 }
 
-gfx::GpuMemoryBufferId GetNextGpuMemoryBufferId() {
-  static base::NoDestructor<base::Lock> id_lock;
-  static int next_gpu_memory_buffer_id = 0;
-  base::AutoLock lock(*id_lock);
-  CHECK_LT(next_gpu_memory_buffer_id, std::numeric_limits<int>::max());
-  return gfx::GpuMemoryBufferId(next_gpu_memory_buffer_id++);
-}
-
 scoped_refptr<VideoFrame> CreateMappableVideoFrame(
     VideoPixelFormat pixel_format,
     const gfx::Size& coded_size,
