@@ -23,6 +23,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "skia/ext/codec_utils.h"
 #include "skia/ext/font_utils.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/skia/include/codec/SkPngDecoder.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkFontMgr.h"
@@ -408,9 +409,7 @@ sk_sp<SkData> SerializeRasterImage(SkImage* img, void* ctx) {
 
   // SAFETY: The span is used as a view to avoid direct pointer access.
   auto [id_span, data_span] =
-      UNSAFE_BUFFERS(base::span(static_cast<uint8_t*>(data->writable_data()),
-                                data->size()))
-          .split_at<sizeof(img_id)>();
+      skia::as_writable_byte_span(*data).split_at<sizeof(img_id)>();
   id_span.copy_from(base::byte_span_from_ref(img_id));
   data_span.copy_from(gfx::SkDataToSpan(img_data));
 

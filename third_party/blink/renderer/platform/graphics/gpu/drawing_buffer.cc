@@ -59,6 +59,7 @@
 #include "gpu/config/gpu_feature_info.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "media/base/video_frame.h"
+#include "skia/ext/skia_utils_base.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_graphics_shared_image_interface_provider.h"
@@ -1784,8 +1785,7 @@ DrawingBuffer::GetUnacceleratedStaticBitmapImage(
   if (!dst_buffer)
     return nullptr;
 
-  auto pixels = base::span<uint8_t>(
-      static_cast<uint8_t*>(dst_buffer->writable_data()), dst_buffer->size());
+  auto pixels = skia::as_writable_byte_span(*dst_buffer);
   ReadBackFramebuffer(pixels, format, alpha_type, origin, source_buffer);
 
   return StaticBitmapImage::Create(
