@@ -144,12 +144,17 @@ ProxyImpl::~ProxyImpl() {
   DCHECK(IsImplThread());
   DCHECK(IsMainThreadBlocked());
 
-  // Prevent the scheduler from performing actions while we're in an
+  // Prevent the scheduler from performing scheduled actions while we're in an
   // inconsistent state.
   scheduler_->Stop();
+
   // Take away the LayerTreeFrameSink before destroying things so it doesn't
   // try to call into its client mid-shutdown.
   host_impl_->ReleaseLayerTreeFrameSink();
+
+  // The `Scheduler` has a raw_ptr to the CompositorFrameReportingController
+  // that is owned by the LTHI.
+  scheduler_->TearDown();
 
   // It is important to destroy LTHI before the Scheduler since it can make
   // callbacks that access it during destruction cleanup.

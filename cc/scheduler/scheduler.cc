@@ -70,6 +70,14 @@ Scheduler::~Scheduler() {
   SetBeginFrameSource(nullptr);
 }
 
+void Scheduler::TearDown() {
+  DCHECK(stopped_);
+
+  // CFRC is owned by the LayerTreeHostImpl, which gets destroyed before the
+  // scheduler. Must clear it to avoid a dangling ptr.
+  compositor_frame_reporting_controller_ = nullptr;
+}
+
 void Scheduler::Stop() {
   stopped_ = true;
 }

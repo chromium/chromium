@@ -613,15 +613,18 @@ class SchedulerTest : public testing::Test {
   std::unique_ptr<viz::SyntheticBeginFrameSource> unthrottled_frame_source_;
   SchedulerSettings scheduler_settings_;
   std::unique_ptr<FakeSchedulerClient> client_;
-  std::unique_ptr<TestScheduler> scheduler_;
-  raw_ptr<FakeCompositorTimingHistory> fake_compositor_timing_history_;
   FrameSequenceTrackerCollection tracker_collection_;
   FrameSorter frame_sorter;
-  // Since CFRC destructor cleans up the FrameSorter's
-  // registered observers (in this case FSTC)
-  // it needs to be declared last so that it will be
-  // cleaned up first.
+  // Since CFRC destructor cleans up the FrameSorter's registered observers (in
+  // this case FSTC) it needs to be declared last so that it will be cleaned up
+  // first.
   std::unique_ptr<CompositorFrameReportingController> reporting_controller;
+  // Scheduler must be destroyed before reporting_controller since it has a
+  // raw_ptr to the reporting controller.
+  std::unique_ptr<TestScheduler> scheduler_;
+  // FakeCompositorTimingHistory is owned by the Scheduler, so must be released
+  // before the scheduler is destroyed to avoid a dangling ptr.
+  raw_ptr<FakeCompositorTimingHistory> fake_compositor_timing_history_;
 };
 
 TEST_F(SchedulerTest, InitializeLayerTreeFrameSinkDoesNotBeginImplFrame) {
