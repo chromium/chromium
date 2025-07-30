@@ -297,6 +297,16 @@ export class SettingsSyncControlsElement extends
     const router = Router.getInstance();
     if (router.getCurrentRoute() === routes.SYNC_ADVANCED &&
         this.syncControlsHidden_()) {
+      // <if expr="not is_chromeos">
+      // Try to navigate the user to the account page, where they can find the
+      // toggles. If the page does not exist, they will be redirected to the
+      // people settings page from there.
+      if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+        router.navigateTo(routes.ACCOUNT);
+        return;
+      }
+      // </if>
+
       router.navigateTo(routes.SYNC);
     }
   }

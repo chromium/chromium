@@ -5,7 +5,7 @@
 import 'chrome://settings/lazy_load.js';
 
 import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
-import type {SettingsAccountPageElement} from 'chrome://settings/lazy_load.js';
+import type {SettingsGoogleServicesPageElement} from 'chrome://settings/lazy_load.js';
 import {loadTimeData, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {microtasksFinished} from 'chrome://webui-test/test_util.js';
@@ -13,8 +13,8 @@ import {microtasksFinished} from 'chrome://webui-test/test_util.js';
 import {TestSyncBrowserProxy} from './test_sync_browser_proxy.js';
 
 
-suite('AccountPageTests', function() {
-  let accountSettingsPage: SettingsAccountPageElement;
+suite('GoogleServicesPage', function() {
+  let googleServicesPage: SettingsGoogleServicesPageElement;
   let testSyncBrowserProxy: TestSyncBrowserProxy;
 
   setup(function() {
@@ -26,37 +26,31 @@ suite('AccountPageTests', function() {
     testSyncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(testSyncBrowserProxy);
 
-    accountSettingsPage = createSettingsAccountPageElement();
-    Router.getInstance().navigateTo(routes.ACCOUNT);
-
-    return microtasksFinished();
-  });
-
-  function createSettingsAccountPageElement(): SettingsAccountPageElement {
-    const element = document.createElement('settings-account-page');
+    googleServicesPage =
+        document.createElement('settings-google-services-page');
     testSyncBrowserProxy.testSyncStatus = {
       signedInState: SignedInState.SIGNED_IN,
       statusAction: StatusAction.NO_ACTION,
     };
-    document.body.appendChild(element);
-    return element;
-  }
+    document.body.appendChild(googleServicesPage);
+    Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
+
+    return microtasksFinished();
+  });
 
   // Tests that all elements are visible.
   test('ShowCorrectRows', function() {
-    assertEquals(routes.ACCOUNT, Router.getInstance().getCurrentRoute());
+    assertEquals(
+        routes.GOOGLE_SERVICES, Router.getInstance().getCurrentRoute());
 
-    assertTrue(!!accountSettingsPage.shadowRoot!.querySelector(
-        'settings-sync-account-control'));
-    assertTrue(!!accountSettingsPage.shadowRoot!.querySelector(
-        'settings-sync-controls'));
+    assertTrue(!!googleServicesPage.shadowRoot!.querySelector(
+        'settings-personalization-options'));
   });
 
-  // Tests that we navigate back to the people page if the user is not signed
-  // in.
-  test('accountSettingsPageUnavailableWhenNotSignedIn', async function() {
+  // Tests that we navigate back to the people page if the user is syncing.
+  test('RedirectToPeopleRoute', async function() {
     webUIListenerCallback('sync-status-changed', {
-      signedInState: SignedInState.SIGNED_OUT,
+      signedInState: SignedInState.SYNCING,
       statusAction: StatusAction.NO_ACTION,
     });
     await microtasksFinished();

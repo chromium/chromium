@@ -29,19 +29,20 @@
     </div>
 </if>
 
-    <div id="sync-data-radio" class="cr-row first"
-        hidden="[[isAccountSettingsPage_()]]">
-      <cr-radio-group
-          selected="[[selectedSyncDataRadio_(syncPrefs)]]"
-          on-selected-changed="onSyncDataRadioSelectionChanged_">
-        <cr-radio-button name="sync-everything">
-          $i18n{syncEverythingCheckboxLabel}
-        </cr-radio-button>
-        <cr-radio-button name="customize-sync">
-          $i18n{customizeSyncLabel}
-        </cr-radio-button>
-      </cr-radio-group>
-    </div>
+    <template is="dom-if" if="[[!isAccountSettingsPage_()]]" restamp>
+      <div id="sync-data-radio" class="cr-row first">
+        <cr-radio-group
+            selected="[[selectedSyncDataRadio_(syncPrefs)]]"
+            on-selected-changed="onSyncDataRadioSelectionChanged_">
+          <cr-radio-button name="sync-everything">
+            $i18n{syncEverythingCheckboxLabel}
+          </cr-radio-button>
+          <cr-radio-button name="customize-sync">
+            $i18n{customizeSyncLabel}
+          </cr-radio-button>
+        </cr-radio-group>
+      </div>
+    </template>
 
 <if expr="not is_chromeos">
     <div hidden="[[!showSyncDisabledInformation]]">
@@ -60,7 +61,7 @@
       <h2 class="cr-title-text flex">$i18n{syncData}</h2>
     </div>
 <if expr="not is_chromeos">
-    <div hidden="[[!isAccountSettingsPage_()]]" id='toggles-header'>
+    <div id="toggles-header" hidden="[[!isAccountSettingsPage_()]]">
       <div class="cr-row first">
         <h2 class="cr-title-text flex">$i18n{accountDataTypesHeading}</h2>
       </div>
@@ -72,23 +73,26 @@
 
     <div class="list-frame" id="sync-data-types">
 <if expr="not is_chromeos">
-      <div class="list-item" hidden="[[!isAccountSettingsPage_()]]">
-        <div id="historyTabsCheckboxLabel">
-          $i18n{historyTabsCheckboxLabel}
+      <template is="dom-if" if="[[isAccountSettingsPage_()]]" restamp>
+        <div class="list-item">
+          <div id="historyTabsCheckboxLabel">
+            $i18n{historyTabsCheckboxLabel}
+          </div>
+          <cr-policy-indicator id="mergedHistoryTabsToggleIndicator"
+              indicator-type="userPolicy"
+              hidden="[[!mergedHistoryTabsTogglePolicyIndicatorShown_(
+                  syncStatus, syncPrefs.tabsManaged,
+                  syncPrefs.typedUrlsManaged)]]">
+          </cr-policy-indicator>
+          <cr-toggle id="mergedHistoryTabsToggle"
+              checked="[[mergedHistoryTabsToggleChecked_(syncPrefs)]]"
+              on-change="onMergedHistoryTabsToggleChanged_"
+              disabled="[[mergedHistoryTabsToggleDisabled_(syncStatus,
+                  syncPrefs.tabsManaged, syncPrefs.typedUrlsManaged)]]"
+              aria-labelledby="historyTabsCheckboxLabel">
+          </cr-toggle>
         </div>
-        <cr-policy-indicator id="mergedHistoryTabsToggleIndicator"
-            indicator-type="userPolicy"
-            hidden="[[!mergedHistoryTabsTogglePolicyIndicatorShown_(syncStatus,
-                syncPrefs.tabsManaged, syncPrefs.typedUrlsManaged)]]">
-        </cr-policy-indicator>
-        <cr-toggle id="mergedHistoryTabsToggle"
-            checked="{{mergedHistoryTabsToggleChecked_(syncPrefs)}}"
-            on-change="onMergedHistoryTabsToggleChanged_"
-            disabled="[[mergedHistoryTabsToggleDisabled_(syncStatus,
-                syncPrefs.tabsManaged, syncPrefs.typedUrlsManaged)]]"
-            aria-labelledby="historyTabsCheckboxLabel">
-        </cr-toggle>
-      </div>
+      </template>
 </if>
 
       <div class="list-item" hidden="[[!syncPrefs.appsRegistered]]">

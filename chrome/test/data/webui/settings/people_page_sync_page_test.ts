@@ -23,6 +23,7 @@ import {isChildVisible, microtasksFinished, eventToPromise} from 'chrome://webui
 
 // <if expr="not is_chromeos">
 import {simulateStoredAccounts} from './sync_test_util.js';
+import {resetRouterForTesting} from 'chrome://settings/settings.js';
 // </if>
 
 import {getSyncAllPrefs} from './sync_test_util.js';
@@ -990,6 +991,35 @@ suite('SyncSettings', function() {
   });
   // </if>
 });
+
+// <if expr="not is_chromeos">
+suite('SyncSettingsWithReplaceSyncPromosWithSignInPromos', function() {
+  suiteSetup(function() {
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+    });
+    resetRouterForTesting();
+  });
+
+  setup(function() {
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    const syncPage = document.createElement('settings-sync-page');
+    document.body.appendChild(syncPage);
+
+    Router.getInstance().navigateTo(routes.SYNC);
+
+    webUIListenerCallback('sync-status-changed', {
+      signedInState: SignedInState.SIGNED_IN,
+      statusAction: StatusAction.NO_ACTION,
+    });
+    flush();
+  });
+
+  test('DontShowPageWhenReplacingWithSigninPromoAndNotSyncing', function() {
+    assertEquals(routes.PEOPLE, Router.getInstance().getCurrentRoute());
+  });
+});
+// </if>
 
 suite('EEAChoiceCountry', function() {
   let syncPage: SettingsSyncPageElement;

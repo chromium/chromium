@@ -365,6 +365,18 @@ suite('Basic', function() {
     resetRouterForTesting();
     assertTrue(!!routes.ACCOUNT);
   });
+
+  test('google services route existence', function() {
+    resetPageVisibilityForTesting({people: true});
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+    assertFalse(!!routes.GOOGLE_SERVICES);
+
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetRouterForTesting();
+    assertTrue(!!routes.GOOGLE_SERVICES);
+  });
   // </if>
 });
 

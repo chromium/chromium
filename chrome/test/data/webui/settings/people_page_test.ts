@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {loadTimeData} from 'chrome://settings/settings.js';
 import type {SettingsPeoplePageElement} from 'chrome://settings/settings.js';
-import {ProfileInfoBrowserProxyImpl, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {ProfileInfoBrowserProxyImpl, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {simulateSyncStatus} from './sync_test_util.js';
@@ -35,6 +35,11 @@ let syncBrowserProxy: TestSyncBrowserProxy;
 
 function reset() {
   peoplePage.remove();
+  loadTimeData.overrideValues({
+    signinAllowed: true,
+    replaceSyncPromosWithSignInPromos: false,
+  });
+  resetRouterForTesting();
   Router.getInstance().navigateTo(routes.BASIC);
 }
 
@@ -136,8 +141,6 @@ suite('SigninDisallowedTests', function() {
 
 suite('SyncStatusTests', function() {
   setup(function() {
-    loadTimeData.overrideValues(
-        {signinAllowed: true, replaceSyncPromosWithSignInPromos: false});
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
 
@@ -420,6 +423,7 @@ suite('SyncSettings', function() {
   test('ShowCorrectSyncRow', function() {
     assertTrue(!!peoplePage.shadowRoot!.querySelector('#sync-setup'));
     assertFalse(!!peoplePage.shadowRoot!.querySelector('#sync-status'));
+    assertFalse(!!peoplePage.shadowRoot!.querySelector('#google-services'));
 
     // Make sures the subpage opens even when logged out or has errors.
     simulateSyncStatus({
@@ -437,8 +441,8 @@ suite('SyncSettings', function() {
 // <if expr="not is_chromeos">
 suite('PeoplePageAccountSettings', function() {
   setup(function() {
-    loadTimeData.overrideValues(
-        {signinAllowed: true, replaceSyncPromosWithSignInPromos: true});
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetRouterForTesting();
 
     syncBrowserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(syncBrowserProxy);
@@ -481,8 +485,11 @@ suite('PeoplePageAccountSettings', function() {
     assertFalse(isChildVisible(peoplePage, '#profile-row'));
     assertTrue(isChildVisible(peoplePage, '#account-subpage-row'));
 
+    // There is a link to the Google services, not to the sync settings.
+    assertTrue(isChildVisible(peoplePage, '#google-services'));
+    assertFalse(isChildVisible(peoplePage, '#sync-setup'));
+
     // The other rows are shown correctly.
-    assertTrue(isChildVisible(peoplePage, '#sync-setup'));
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
     assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
@@ -496,8 +503,11 @@ suite('PeoplePageAccountSettings', function() {
     assertFalse(isChildVisible(peoplePage, '#profile-row'));
     assertFalse(isChildVisible(peoplePage, '#account-subpage-row'));
 
+    // There is a link to the Google services, not to the sync settings.
+    assertTrue(isChildVisible(peoplePage, '#google-services'));
+    assertFalse(isChildVisible(peoplePage, '#sync-setup'));
+
     // The other rows are shown correctly.
-    assertTrue(isChildVisible(peoplePage, '#sync-setup'));
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
     assertFalse(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
@@ -512,8 +522,11 @@ suite('PeoplePageAccountSettings', function() {
     assertFalse(isChildVisible(peoplePage, '#profile-row'));
     assertFalse(isChildVisible(peoplePage, '#account-subpage-row'));
 
-    // The other rows are shown correctly.
+    // There is a link to the sync settings, not to the Google services.
+    assertFalse(isChildVisible(peoplePage, '#google-services'));
     assertTrue(isChildVisible(peoplePage, '#sync-setup'));
+
+    // The other rows are shown correctly.
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
     assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
@@ -523,13 +536,15 @@ suite('PeoplePageAccountSettings', function() {
     await simulateSignedInState(
         SignedInState.SIGNED_IN_PAUSED, [{email: 'foo@foo.com'}]);
 
-    // The first item should be an account card.
     assertTrue(isChildVisible(peoplePage, 'settings-sync-account-control'));
     assertFalse(isChildVisible(peoplePage, '#profile-row'));
     assertFalse(isChildVisible(peoplePage, '#account-subpage-row'));
 
+    // There is a link to the Google services, not to the sync settings.
+    assertTrue(isChildVisible(peoplePage, '#google-services'));
+    assertFalse(isChildVisible(peoplePage, '#sync-setup'));
+
     // The other rows are shown correctly.
-    assertTrue(isChildVisible(peoplePage, '#sync-setup'));
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
     assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
@@ -541,11 +556,12 @@ suite('PeoplePageAccountSettings', function() {
 
     // The first item should be an account card.
     assertTrue(isChildVisible(peoplePage, 'settings-sync-account-control'));
-    assertFalse(isChildVisible(peoplePage, '#profile-row'));
-    assertFalse(isChildVisible(peoplePage, '#account-subpage-row'));
+
+    // There is a link to the Google services, not to the sync settings.
+    assertTrue(isChildVisible(peoplePage, '#google-services'));
+    assertFalse(isChildVisible(peoplePage, '#sync-setup'));
 
     // The other rows are shown correctly.
-    assertTrue(isChildVisible(peoplePage, '#sync-setup'));
     assertTrue(isChildVisible(peoplePage, '#edit-profile'));
     assertTrue(isChildVisible(peoplePage, '#manage-google-account'));
     assertTrue(isChildVisible(peoplePage, '#importDataDialogTrigger'));
@@ -558,6 +574,15 @@ suite('PeoplePageAccountSettings', function() {
     peoplePage.shadowRoot!.querySelector<HTMLElement>(
                               '#account-subpage-row')!.click();
     assertEquals(routes.ACCOUNT, Router.getInstance().getCurrentRoute());
+  });
+
+  test('ClickingGoogleServicesLeadsToGoogleServicesPage', async function() {
+    await simulateSignedInState(SignedInState.SIGNED_OUT, []);
+
+    peoplePage.shadowRoot!.querySelector<HTMLElement>(
+                              '#google-services')!.click();
+    assertEquals(
+        routes.GOOGLE_SERVICES, Router.getInstance().getCurrentRoute());
   });
 
   test('AccountLinkRowHasAccountInfo', async function() {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
 import '//resources/js/util.js';
 import '//resources/cr_elements/cr_button/cr_button.js';
 import '//resources/cr_elements/cr_collapse/cr_collapse.js';
@@ -48,12 +49,14 @@ import type {SettingsPersonalizationOptionsElement} from '../privacy_page/person
 // </if>
 
 import type {Route} from '../router.js';
+import {routes} from '../route.js';
 import {RouteObserverMixin, Router} from '../router.js';
 import {SettingsViewMixin} from '../settings_page/settings_view_mixin.js';
 
 // <if expr="is_chromeos">
 import type {SettingsSyncEncryptionOptionsElement} from './sync_encryption_options.js';
 // </if>
+// clang-format on
 
 import {getTemplate} from './sync_page.html.js';
 
@@ -305,11 +308,6 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
         this.onSyncStatusChanged_.bind(this));
     this.addWebUiListener(
         'sync-status-changed', this.onSyncStatusChanged_.bind(this));
-
-    const router = Router.getInstance();
-    if (router.getCurrentRoute() === router.getRoutes().SYNC) {
-      this.onNavigateToPage_();
-    }
   }
 
   override disconnectedCallback() {
@@ -332,6 +330,14 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
   private onSyncStatusChanged_(syncStatus: SyncStatus) {
     this.syncStatus_ = syncStatus;
+
+    // <if expr="not is_chromeos">
+    if (Router.getInstance().getCurrentRoute() === routes.SYNC &&
+        !this.shouldShowSyncPage_()) {
+      this.onNavigateAwayFromPage_();
+      Router.getInstance().navigateTo(routes.PEOPLE);
+    }
+    // </if>
   }
 
   // <if expr="is_chromeos">
@@ -393,6 +399,12 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
   private onSetupCancelDialogClose_() {
     this.showSetupCancelDialog_ = false;
   }
+
+  private shouldShowSyncPage_(): boolean {
+    return !loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos') ||
+        !this.syncStatus_ ||
+        this.syncStatus_.signedInState === SignedInState.SYNCING;
+  }
   // </if>
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -400,6 +412,14 @@ export class SettingsSyncPageElement extends SettingsSyncPageElementBase {
 
     const router = Router.getInstance();
     if (router.getCurrentRoute() === router.getRoutes().SYNC) {
+      // <if expr="not is_chromeos">
+      if (!this.shouldShowSyncPage_()) {
+        this.onNavigateAwayFromPage_();
+        Router.getInstance().navigateTo(routes.PEOPLE);
+        return;
+      }
+      // </if>
+
       this.onNavigateToPage_();
       return;
     }

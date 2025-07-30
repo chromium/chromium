@@ -67,6 +67,7 @@
     </style>
     <settings-section>
       <div>
+
 <if expr="not is_chromeos">
         <template is="dom-if" if="[[shouldShowSyncAccountControl_(
             syncStatus.syncSystemEnabled, syncStatus.signedInStatus)]]" restamp>
@@ -122,6 +123,45 @@
             </cr-link-row>
           </template>
         </template> <!-- if="[[!shouldShowSyncAccountControl_()]]" -->
+
+        <cr-link-row id="sync-setup"
+            label="$i18n{syncAndNonPersonalizedServices}"
+            on-click="onSyncClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            hidden="[[shouldHideSyncSetupLinkRow_(syncStatus)]]">
+        </cr-link-row>
+        <template is="dom-if" if="[[shouldHideSyncSetupLinkRow_(syncStatus)]]"
+            restamp>
+          <cr-link-row id="google-services"
+              label="$i18n{googleServicesPageTitle}"
+              on-click="onGoogleServicesClick_"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+        </template>
+
+        <template is="dom-if" if="[[signinAllowed_]]">
+          <cr-link-row id="manage-google-account"
+              label="$i18n{manageGoogleAccount}"
+              hidden="[[!shouldShowGoogleAccount_]]"
+              on-click="openGoogleAccount_" external></cr-link-row>
+
+          <cr-link-row id="edit-profile"
+              label="$i18n{profileNameAndPicture}"
+              on-click="onProfileClick_" ></cr-link-row>
+        </template>
+
+        <cr-link-row id="importDataDialogTrigger"
+            label="$i18n{importTitle}"
+            on-click="onImportDataClick_"></cr-link-row>
+
+        <template is="dom-if" if="[[isDasherlessProfile_]]">
+          <div id="sync-not-allowed" class="cr-row continuation">
+            <cr-icon id="info-icon" icon="cr:info-outline"></cr-icon>
+            <div id="sync-not-allowed-text" class="flex cr-padded-text">
+              $i18n{syncUnavailableForNonGoogleAccount}
+            </div>
+          </div>
+        </template>
 </if>
 
 <if expr="is_chromeos">
@@ -146,38 +186,12 @@
                 aria-describedby="profile-name"></cr-icon-button>
           </template>
         </div>
-</if>
 
         <cr-link-row id="sync-setup"
             label="$i18n{syncAndNonPersonalizedServices}"
             on-click="onSyncClick_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
-
-<if expr="not is_chromeos">
-        <template is="dom-if" if="[[signinAllowed_]]">
-          <cr-link-row id="manage-google-account"
-              label="$i18n{manageGoogleAccount}"
-              hidden="[[!shouldShowGoogleAccount_]]"
-              on-click="openGoogleAccount_" external></cr-link-row>
-
-          <cr-link-row id="edit-profile"
-              label="$i18n{profileNameAndPicture}"
-              on-click="onProfileClick_" ></cr-link-row>
-        </template>
-
-        <cr-link-row id="importDataDialogTrigger"
-            label="$i18n{importTitle}"
-            on-click="onImportDataClick_"></cr-link-row>
-
-        <template is="dom-if" if="[[isDasherlessProfile_]]">
-          <div id="sync-not-allowed" class="cr-row continuation">
-            <cr-icon id="info-icon" icon="cr:info-outline"></cr-icon>
-            <div id="sync-not-allowed-text" class="flex cr-padded-text">
-              $i18n{syncUnavailableForNonGoogleAccount}
-            </div>
-          </div>
-        </template>
 </if>
 
       </div>

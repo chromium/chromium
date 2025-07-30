@@ -6,10 +6,7 @@ import 'chrome://settings/settings.js';
 import 'chrome://settings/lazy_load.js';
 
 import type {SettingsPeoplePageIndexElement} from 'chrome://settings/settings.js';
-import {CrSettingsPrefs, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
-
-// <if expr="not is_chromeos">
-import {loadTimeData} from 'chrome://settings/settings.js';
+import {CrSettingsPrefs, loadTimeData, resetRouterForTesting, Router, routes, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 // </if>
 
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
@@ -33,11 +30,9 @@ suite('PeoplePageIndex', function() {
   }
 
   setup(function() {
-    // <if expr="not is_chromeos">
     loadTimeData.overrideValues({
-      replaceSyncPromosWithSignInPromos: true,
+      replaceSyncPromosWithSignInPromos: false,
     });
-    // </if>
     resetRouterForTesting();
 
     // Set SignedInState.SIGNED_IN otherwise navigating to routes.SYNC_ADVANCED
@@ -49,17 +44,17 @@ suite('PeoplePageIndex', function() {
       statusAction: StatusAction.NO_ACTION,
     };
 
+    Router.getInstance().navigateTo(routes.BASIC);
     return createPeoplePageIndex();
   });
 
-  test('Routing', async function() {
-    function assertActiveView(id: string) {
-      assertTrue(
-          !!index.$.viewManager.querySelector(`#${id}.active[slot=view]`));
-      assertFalse(!!index.$.viewManager.querySelector(
-          `.active[slot=view]:not(#${id})`));
-    }
+  function assertActiveView(id: string) {
+    assertTrue(!!index.$.viewManager.querySelector(`#${id}.active[slot=view]`));
+    assertFalse(
+        !!index.$.viewManager.querySelector(`.active[slot=view]:not(#${id})`));
+  }
 
+  test('Routing', async function() {
     assertEquals(routes.BASIC, Router.getInstance().getCurrentRoute());
     assertActiveView('parent');
 
@@ -75,10 +70,6 @@ suite('PeoplePageIndex', function() {
     Router.getInstance().navigateTo(routes.MANAGE_PROFILE);
     await microtasksFinished();
     assertActiveView('manageProfile');
-
-    Router.getInstance().navigateTo(routes.ACCOUNT);
-    await microtasksFinished();
-    assertActiveView('account');
     // </if>
 
     Router.getInstance().navigateTo(routes.PEOPLE);
@@ -91,7 +82,7 @@ suite('PeoplePageIndex', function() {
     const childViewsId = [
       'sync', 'syncControls',
       // <if expr="not is_chromeos">
-      'manageProfile', 'account',
+      'manageProfile',
       // </if>
     ];
     for (const id of childViewsId) {
@@ -109,4 +100,42 @@ suite('PeoplePageIndex', function() {
     assertTrue(result.matchCount >= 2);
     assertFalse(result.wasClearSearch);
   });
+
+  // <if expr="not is_chromeos">
+  test('RoutingWithReplaceSyncPromosWithSignInPromos', async function() {
+    loadTimeData.overrideValues({
+      replaceSyncPromosWithSignInPromos: true,
+    });
+    resetRouterForTesting();
+    await createPeoplePageIndex();
+
+    Router.getInstance().navigateTo(routes.ACCOUNT);
+    await microtasksFinished();
+    assertActiveView('account');
+
+    Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
+    await microtasksFinished();
+    assertActiveView('googleServices');
+  });
+
+  // Test that the child views are properly annotated.
+  test(
+      'DataParentViewIdWithReplaceSyncPromosWithSignInPromos',
+      async function() {
+        loadTimeData.overrideValues({
+          replaceSyncPromosWithSignInPromos: true,
+        });
+        resetRouterForTesting();
+        await createPeoplePageIndex();
+
+        const childViewsId = [
+          'account',
+          'googleServices',
+        ];
+        for (const id of childViewsId) {
+          assertTrue(!!index.$.viewManager.querySelector(
+              `#${id}[slot=view][data-parent-view-id=parent]`));
+        }
+      });
+  // </if>
 });

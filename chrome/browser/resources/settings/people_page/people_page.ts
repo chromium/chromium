@@ -173,7 +173,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
             'storedAccounts.length, syncStatus.signedIn, syncStatus.hasError)',
       },
 
-      shouldShowAccountSettingsPage_: {
+      replaceSyncPromosWithSignInPromos_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
@@ -204,7 +204,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   // <if expr="not is_chromeos">
   declare storedAccounts: StoredAccount[]|null;
   declare private shouldShowGoogleAccount_: boolean;
-  declare private shouldShowAccountSettingsPage_: boolean;
+  declare private replaceSyncPromosWithSignInPromos_: boolean;
   declare private showImportDataDialog_: boolean;
   declare private showSignoutDialog_: boolean;
   declare private primaryAccountName_: string;
@@ -374,6 +374,10 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     Router.getInstance().navigateTo(routes.ACCOUNT);
   }
 
+  private onGoogleServicesClick_() {
+    Router.getInstance().navigateTo(routes.GOOGLE_SERVICES);
+  }
+
   private onImportDataClick_() {
     Router.getInstance().navigateTo(routes.IMPORT_DATA);
   }
@@ -384,7 +388,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private shouldLinkToAccountSettingsPage_(): boolean {
-    return this.shouldShowAccountSettingsPage_ && !!this.syncStatus &&
+    return this.replaceSyncPromosWithSignInPromos_ && !!this.syncStatus &&
         this.syncStatus.signedInState === SignedInState.SIGNED_IN;
   }
 
@@ -432,6 +436,14 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         this.syncStatus.signedInState === SignedInState.SYNCING;
   }
 
+  // <if expr="not is_chromeos">
+  private shouldHideSyncSetupLinkRow_() {
+    return this.replaceSyncPromosWithSignInPromos_ &&
+        (!this.syncStatus ||
+         this.syncStatus.signedInState !== SignedInState.SYNCING);
+  }
+  // </if>
+
   // SettingsViewMixin implementation.
   override getFocusConfig() {
     const map = new Map();
@@ -449,6 +461,9 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     if (routes.ACCOUNT) {
       map.set(routes.ACCOUNT.path, '#account-subpage-row');
     }
+    if (routes.GOOGLE_SERVICES) {
+      map.set(routes.GOOGLE_SERVICES.path, '#google-services');
+    }
     // </if>
     return map;
   }
@@ -458,7 +473,7 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     const ids = [
       'sync', 'syncControls',
       // <if expr="not is_chromeos">
-      'manageProfile', 'account',
+      'manageProfile', 'account', 'googleServices',
       // </if>
     ];
     assert(ids.includes(childViewId));
@@ -474,6 +489,12 @@ export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
         triggerId = this.signinAllowed_ ? 'edit-profile' : 'profile-row';
         break;
       case 'account':
+        assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
+        // TODO(crbug.com/429139804): Replace with actual entry point once
+        // implemented.
+        triggerId = 'sync-setup';
+        break;
+      case 'googleServices':
         assert(loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'));
         // TODO(crbug.com/429139804): Replace with actual entry point once
         // implemented.

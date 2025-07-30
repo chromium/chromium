@@ -45,7 +45,7 @@ export class SettingsPeoplePageIndexElement extends
       prefs: Object,
 
       // <if expr="not is_chromeos">
-      shouldShowAccountSettingsPage_: {
+      replaceSyncPromosWithSignInPromos_: {
         type: Boolean,
         value: () =>
             loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos'),
@@ -57,7 +57,7 @@ export class SettingsPeoplePageIndexElement extends
   declare prefs: {[key: string]: any};
 
   // <if expr="not is_chromeos">
-  declare private shouldShowAccountSettingsPage_: boolean;
+  declare private replaceSyncPromosWithSignInPromos_: boolean;
   // </if>
 
   override currentRouteChanged(newRoute: Route, oldRoute?: Route) {
@@ -92,9 +92,14 @@ export class SettingsPeoplePageIndexElement extends
               'parent', 'no-animation', 'no-animation');
           break;
         case routes.ACCOUNT:
-          assert(this.shouldShowAccountSettingsPage_);
+          assert(this.replaceSyncPromosWithSignInPromos_);
           this.$.viewManager.switchView(
               'account', 'no-animation', 'no-animation');
+          break;
+        case routes.GOOGLE_SERVICES:
+          assert(this.replaceSyncPromosWithSignInPromos_);
+          this.$.viewManager.switchView(
+              'googleServices', 'no-animation', 'no-animation');
           break;
         case routes.MANAGE_PROFILE:
           this.$.viewManager.switchView(

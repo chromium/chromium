@@ -59,6 +59,7 @@ import './site_settings/zoom_levels.js';
 import './a11y_page/live_caption_section.js';
 import './people_page/import_data_dialog.js';
 import './people_page/account_page.js';
+import './people_page/google_services_page.js';
 import './people_page/manage_profile.js';
 // </if>
 import './people_page/signout_dialog.js';
@@ -169,6 +170,7 @@ export {LanguageHelper, LanguagesModel} from './languages_page/languages_types.j
 export {SettingsSpellCheckPageElement} from './languages_page/spell_check_page.js';
 export {SettingsTranslatePageElement} from './languages_page/translate_page.js';
 export {SettingsAccountPageElement} from './people_page/account_page.js';
+export {SettingsGoogleServicesPageElement} from './people_page/google_services_page.js';
 export {BrowserProfile, ImportDataBrowserProxy, ImportDataBrowserProxyImpl, ImportDataStatus} from './people_page/import_data_browser_proxy.js';
 export {SettingsImportDataDialogElement} from './people_page/import_data_dialog.js';
 export {SettingsManageProfileElement} from './people_page/manage_profile.js';

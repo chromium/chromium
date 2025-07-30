@@ -194,6 +194,8 @@ function createRoutes(): SettingsRoutes {
     if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
       r.ACCOUNT = r.PEOPLE.createChild('/account');
       r.ACCOUNT.hasMigratedToPlugin = true;
+      r.GOOGLE_SERVICES = r.PEOPLE.createChild('/googleServices');
+      r.GOOGLE_SERVICES.hasMigratedToPlugin = true;
     }
     r.MANAGE_PROFILE = r.PEOPLE.createChild('/manageProfile');
     r.MANAGE_PROFILE.hasMigratedToPlugin = true;

@@ -23,10 +23,15 @@
        data-parent-view-id="parent" profile-name="[[profileName_]]">
    </settings-manage-profile>
 
-   <template is="dom-if" if="[[shouldShowAccountSettingsPage_]]" restamp>
+   <template is="dom-if" if="[[replaceSyncPromosWithSignInPromos_]]"
+      restamp>
      <settings-account-page slot="view" id="account"
          data-parent-view-id="parent" prefs="{{prefs}}">
      </settings-account-page>
+
+     <settings-google-services-page slot="view" id="googleServices"
+         data-parent-view-id="parent" prefs="{{prefs}}">
+     </settings-google-services-page>
    </template>
 </if>
 </cr-view-manager>

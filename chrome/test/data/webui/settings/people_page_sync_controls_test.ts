@@ -9,7 +9,7 @@ import {webUIListenerCallback} from 'chrome://resources/js/cr.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {SettingsSyncControlsElement} from 'chrome://settings/lazy_load.js';
 import type {CrRadioButtonElement, CrToggleElement, SyncPrefs} from 'chrome://settings/settings.js';
-import {loadTimeData, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {loadTimeData, Router, resetRouterForTesting, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertDeepEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
@@ -222,6 +222,9 @@ suite('SyncControlsSubpageTest', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
 
     syncControls = document.createElement('settings-sync-controls');
@@ -273,6 +276,27 @@ suite('SyncControlsSubpageTest', function() {
     const router = Router.getInstance();
     assertEquals(router.getRoutes().SYNC.path, router.getCurrentRoute().path);
   });
+
+  // <if expr="not is_chromeos">
+  test(
+      'NavigateToAccountSettingsWhenReplacingWithSigninPromoAndNotSyncing',
+      function() {
+        loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+        resetRouterForTesting();
+        const router = Router.getInstance();
+        router.navigateTo(routes.SYNC_ADVANCED);
+
+        syncControls.syncStatus = {
+          disabled: false,
+          hasError: false,
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+        flush();
+
+        assertEquals(routes.ACCOUNT, router.getCurrentRoute());
+      });
+  // </if>
 });
 
 // <if expr="not is_chromeos">
@@ -285,6 +309,7 @@ suite('SyncControlsAccountSettingsTest', function() {
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
     loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+    resetRouterForTesting();
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const router = Router.getInstance();
@@ -302,6 +327,11 @@ suite('SyncControlsAccountSettingsTest', function() {
 
     assertEquals(routes.ACCOUNT, router.getCurrentRoute());
     await browserProxy.whenCalled('didNavigateToAccountSettingsPage');
+  });
+
+  teardown(function() {
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
   });
 
   async function setupPrefs() {
@@ -675,8 +705,6 @@ suite('SyncControlsManagedTest', function() {
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
-
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     syncControls = document.createElement('settings-sync-controls');
     document.body.appendChild(syncControls);
@@ -772,8 +800,6 @@ suite('AutofillAndPaymentsToggles', function() {
   setup(async function() {
     const browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
-
-    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
 
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     const syncControls = document.createElement('settings-sync-controls');

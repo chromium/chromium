@@ -116,6 +116,7 @@ export interface SettingsRoutes {
 
   // <if expr="not is_chromeos">
   ACCOUNT: Route;
+  GOOGLE_SERVICES: Route;
   IMPORT_DATA: Route;
   SIGN_OUT: Route;
   // </if>
