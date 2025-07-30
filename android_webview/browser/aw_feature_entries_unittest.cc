@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/browser/aw_feature_entries.h"
 
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_params.h"
@@ -77,9 +73,9 @@ flags_ui::FeatureEntry kWebViewTestFeatureEntries[] = {
 void VerifyFeatureParameters(
     const flags_ui::FeatureEntry::FeatureVariation& variation) {
   for (int i = 0; i < variation.num_params; i++) {
-    base::FeatureParam<std::string> param{&kTestFeature,
-                                          variation.params[i].param_name, ""};
-    EXPECT_EQ(variation.params[i].param_value, param.Get());
+    base::FeatureParam<std::string> param{
+        &kTestFeature, UNSAFE_TODO(variation.params[i]).param_name, ""};
+    UNSAFE_TODO(EXPECT_EQ(variation.params[i].param_value, param.Get()));
   }
 }
 

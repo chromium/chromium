@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40284755): Remove this and spanify to fix the errors.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "android_webview/browser/gfx/browser_view_renderer.h"
 
 #include <map>
@@ -18,6 +13,7 @@
 #include "android_webview/browser/gfx/compositor_frame_consumer.h"
 #include "android_webview/browser/gfx/render_thread_manager.h"
 #include "android_webview/browser/gfx/test/rendering_test.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/task/single_thread_task_runner.h"
@@ -506,16 +502,16 @@ class SwitchLayerTreeFrameSinkIdTest : public ResourceRenderingTest {
     std::unique_ptr<content::SynchronousCompositor::Frame> frame(
         new content::SynchronousCompositor::Frame);
     frame->layer_tree_frame_sink_id =
-        infos[frame_number].layer_tree_frame_sink_id;
-    frame->frame = ConstructFrame(infos[frame_number].resource_id);
+        UNSAFE_TODO(infos[frame_number]).layer_tree_frame_sink_id;
+    frame->frame = ConstructFrame(UNSAFE_TODO(infos[frame_number]).resource_id);
 
     if (last_layer_tree_frame_sink_id_ !=
-        infos[frame_number].layer_tree_frame_sink_id) {
+        UNSAFE_TODO(infos[frame_number]).layer_tree_frame_sink_id) {
       expected_return_count_.clear();
       last_layer_tree_frame_sink_id_ =
-          infos[frame_number].layer_tree_frame_sink_id;
+          UNSAFE_TODO(infos[frame_number]).layer_tree_frame_sink_id;
     }
-    ++expected_return_count_[infos[frame_number].resource_id];
+    ++expected_return_count_[UNSAFE_TODO(infos[frame_number]).resource_id];
     return frame;
   }
 
