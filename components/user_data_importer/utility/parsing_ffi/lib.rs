@@ -2,20 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+mod history;
 mod json;
 mod models;
 mod utils;
 
-use crate::models::{
-    PaymentCardJSONEntry, SafariHistoryJSONEntry, StablePortabilityHistoryJSONEntry,
-};
-use crate::json::{STREAM_BUFFER_SIZE, ZipEntryBufReader};
+use crate::json::ZipEntryBufReader;
+use crate::models::PaymentCardJSONEntry;
 use crate::utils::has_extension;
 
 use anyhow::{anyhow, Error, Result};
 use cxx::{CxxString, CxxVector};
 use std::fs;
-use std::io::{BufReader, Read};
+use std::io::{Read};
 use std::path::Path;
 use std::pin::Pin;
 
@@ -111,122 +110,18 @@ mod ffi {
     }
 }
 
-// A trait for history callbacks to allow for generic implementation of
-// batching.
-trait HistoryCallback<T: cxx::vector::VectorElement> {
-    fn import_entries(self: Pin<&mut Self>, entries: cxx::UniquePtr<CxxVector<T>>, completed: bool);
-}
-
-impl HistoryCallback<ffi::SafariHistoryEntry> for ffi::SafariHistoryCallbackFromRust {
-    fn import_entries(
-        self: Pin<&mut Self>,
-        entries: cxx::UniquePtr<CxxVector<ffi::SafariHistoryEntry>>,
-        completed: bool,
-    ) {
-        self.ImportSafariHistoryEntries(entries, completed);
-    }
-}
-
-impl HistoryCallback<ffi::StablePortabilityHistoryEntry>
-    for ffi::StablePortabilityHistoryCallbackFromRust
-{
-    fn import_entries(
-        self: Pin<&mut Self>,
-        entries: cxx::UniquePtr<CxxVector<ffi::StablePortabilityHistoryEntry>>,
-        completed: bool,
-    ) {
-        self.ImportStablePortabilityHistoryEntries(entries, completed);
-    }
-}
-
-// Adds an item to a history batch, sending a batch if the threshold is reached.
-//
-// Type Parameters:
-//
-// - `T`: The type of the history item to be added to the batch. For example,
-//   `SafariHistoryJSONEntry` or `StablePortabilityHistoryJSONEntry`.
-// - `U`: The type of the element stored in the C++ vector. This is the same as
-//   `T` but with the `cxx::ExternType` trait.
-// - `C`: The type of the callback object, which must implement
-//   `HistoryCallback<U>`.
-//
-// Arguments:
-//
-// - `item`: The history item to add to the batch.
-// - `history`: The vector where history items are accumulated.
-// - `threshold`: The size at which the batch is sent to the callback.
-// - `callback`: The C++ callback to invoke with the batch of history items.
-fn batch_and_send<T, U, C>(
-    item: T,
-    history: &mut cxx::UniquePtr<CxxVector<U>>,
-    threshold: usize,
-    callback: Pin<&mut C>,
-) where
-    T: Into<U>,
-    U: 'static + cxx::vector::VectorElement + cxx::ExternType<Kind = cxx::kind::Trivial>,
-    C: HistoryCallback<U> + ?Sized,
-{
-    history.as_mut().unwrap().push(item.into());
-    if history.len() >= threshold {
-        let batch_to_send = std::mem::replace(history, CxxVector::<U>::new());
-        callback.import_entries(batch_to_send, /* completed= */ false);
-    }
-}
-
-// Attempts to parse the history file. Returns whether parsing was successful.
-fn parse_history_file<'a, R: Read>(
-    stream_reader: ZipEntryBufReader<'a, R>,
-    callback: impl FnMut(SafariHistoryJSONEntry) + 'a,
-) -> bool {
-    return json::deserialize_top_level(
-        stream_reader.inner,
-        ffi::FileType::SafariHistory,
-        callback,
-        /* metadata_only= */ false,
-    )
-    .is_ok();
-}
-
 // Attempts to parse a Chrome history file. Returns whether parsing was
 // successful.
 fn parse_stable_portability_history(
     json_filename: &[u8],
-    mut history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
+    history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
     history_size_threshold: usize,
 ) -> bool {
-    let mut history = CxxVector::<ffi::StablePortabilityHistoryEntry>::new();
-    let result = (|| -> Result<()> {
-        let path_str = std::str::from_utf8(json_filename)?;
-        let file = fs::File::open(path_str)?;
-        let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
-        json::deserialize_top_level::<StablePortabilityHistoryJSONEntry, std::fs::File>(
-            stream_reader,
-            ffi::FileType::StablePortabilityHistory,
-            |history_item| {
-                batch_and_send(
-                    history_item,
-                    &mut history,
-                    history_size_threshold,
-                    history_callback.as_mut().unwrap(),
-                );
-            },
-            /* metadata_only= */ false,
-        )
-    })();
-    // Send final batch if any, and completion signal.
-    history_callback.as_mut().unwrap().import_entries(history, true);
-    return result.is_ok();
-}
-
-// Returns whether the file used by the stream reader is a history file.
-fn is_history_file<'a, R: Read>(stream_reader: ZipEntryBufReader<'a, R>) -> bool {
-    return json::deserialize_top_level::<SafariHistoryJSONEntry, zip::read::ZipFile<'a, R>>(
-        stream_reader.inner,
-        ffi::FileType::SafariHistory,
-        |_| {},
-        /* metadata_only= */ true,
+    history::parse_stable_portability_history(
+        json_filename,
+        history_callback,
+        history_size_threshold,
     )
-    .is_ok();
 }
 
 // Attempts to parse the payment cards file. Returns whether parsing was
@@ -335,7 +230,7 @@ impl ZipFileArchive {
                 if has_extension(outpath, file_type) {
                     let file_size_bytes = file.size();
                     let stream_reader = ZipEntryBufReader::new(file);
-                    if is_history_file(stream_reader) {
+                    if history::is_safari_history_file(stream_reader) {
                         total_file_size_bytes += file_size_bytes;
                     }
                 }
@@ -395,25 +290,10 @@ impl ZipFileArchive {
 
     fn parse_safari_history(
         self: &mut ZipFileArchive,
-        mut history_callback: cxx::UniquePtr<ffi::SafariHistoryCallbackFromRust>,
+        history_callback: cxx::UniquePtr<ffi::SafariHistoryCallbackFromRust>,
         history_size_threshold: usize,
     ) {
-        let mut history = CxxVector::<ffi::SafariHistoryEntry>::new();
-        self.fold_files((), |(), file, outpath| {
-            if has_extension(outpath, ffi::FileType::SafariHistory) {
-                let stream_reader = ZipEntryBufReader::new(file);
-                parse_history_file(stream_reader, |history_item| {
-                    batch_and_send(
-                        history_item,
-                        &mut history,
-                        history_size_threshold,
-                        history_callback.as_mut().unwrap(),
-                    );
-                });
-            }
-        });
-
-        history_callback.as_mut().unwrap().import_entries(history, /* completed= */ true);
+        history::parse_safari_history(self, history_callback, history_size_threshold);
     }
 
     fn parse_payment_cards(
