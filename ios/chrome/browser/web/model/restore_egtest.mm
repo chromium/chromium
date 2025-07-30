@@ -156,7 +156,13 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored.
-- (void)testRestoreHistory {
+// TODO(crbug.com/435144099): Reenable test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreHistory testRestoreHistory
+#else
+#define MAYBE_testRestoreHistory FLAKY_testRestoreHistory
+#endif
+- (void)MAYBE_testRestoreHistory {
   [self setUpRestoreServers];
   [self loadTestPages];
   [self verifyRestoredTestPages:YES];
@@ -164,7 +170,13 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
 
 // Navigates to a set of cross-domains, chrome URLs and error pages, and then
 // tests that they are properly restored in airplane mode.
-- (void)testRestoreNoNetwork {
+// TODO(crbug.com/435144099): Reenable test.
+#if TARGET_OS_SIMULATOR
+#define MAYBE_testRestoreNoNetwork testRestoreNoNetwork
+#else
+#define MAYBE_testRestoreNoNetwork FLAKY_testRestoreNoNetwork
+#endif
+- (void)MAYBE_testRestoreNoNetwork {
   [self setUpRestoreServers];
   [self loadTestPages];
   self.serverRespondsWithContent = false;
