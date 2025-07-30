@@ -100,6 +100,9 @@ message AutofillQueryResponse {
           // The prediction is a crowdsourced Autofill AI prediction based on
           // client type votes.
           SOURCE_AUTOFILL_AI_CROWDSOURCING = 9;
+
+          // Experiments with stable signatures.
+          reserved 10, 11, 12;
         }
 
         // The predicted field type.
