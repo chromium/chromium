@@ -9,9 +9,6 @@
 
 #include "base/files/file.h"
 
-#include "base/files/file_util.h"
-#include "base/notimplemented.h"
-
 // The only 32-bit platform that uses this file is Android. On Android APIs
 // >= 21, this standard define is the right way to express that you want a
 // 64-bit offset in struct stat, and the stat64 struct and functions aren't
@@ -32,7 +29,6 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "base/check_op.h"
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
-#include "base/notimplemented.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/posix/eintr_wrapper.h"
@@ -44,7 +40,12 @@ static_assert(sizeof(base::stat_wrapper_t::st_size) >= 8);
 #include "base/android/content_uri_utils.h"
 #include "base/android/virtual_document_path.h"
 #include "base/files/file_android.h"
+#include "base/files/file_util.h"
 #include "base/os_compat_android.h"
+#endif
+
+#if BUILDFLAG(IS_AIX)
+#include "base/notimplemented.h"
 #endif
 
 namespace base {

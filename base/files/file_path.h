@@ -104,7 +104,6 @@
 
 #include <cstddef>
 #include <iosfwd>
-#include <optional>
 #include <string>
 #include <string_view>
 #include <vector>

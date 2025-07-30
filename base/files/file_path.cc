@@ -13,7 +13,6 @@
 
 #include <algorithm>
 #include <atomic>
-#include <optional>
 #include <string_view>
 
 #include "base/check_op.h"

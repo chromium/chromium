@@ -640,10 +640,7 @@ bool PathExists(const FilePath& path) {
 #if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri() || path.IsVirtualDocumentPath()) {
     std::optional<FilePath> content_uri = base::ResolveToContentUri(path);
-    if (!content_uri) {
-      return false;
-    }
-    return internal::ContentUriExists(*content_uri);
+    return content_uri && internal::ContentUriExists(*content_uri);
   }
 #endif
   return access(path.value().c_str(), F_OK) == 0;
@@ -1151,10 +1148,7 @@ bool WriteFile(const FilePath& filename, span<const uint8_t> data) {
   if (filename.IsVirtualDocumentPath()) {
     std::optional<files_internal::VirtualDocumentPath> vp =
         files_internal::VirtualDocumentPath::Parse(filename.value());
-    if (!vp) {
-      return false;
-    }
-    return vp->WriteFile(data);
+    return vp && vp->WriteFile(data);
   }
 #endif
 
