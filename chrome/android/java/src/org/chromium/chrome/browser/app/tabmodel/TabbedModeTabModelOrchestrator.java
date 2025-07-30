@@ -11,6 +11,7 @@ import android.util.Pair;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.OneshotSupplier;
 import org.chromium.base.supplier.Supplier;
@@ -26,6 +27,13 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
+import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabStateAttributes;
+import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
+import org.chromium.chrome.browser.tab.TabStateStorageService;
+import org.chromium.chrome.browser.tab.TabStateStorageServiceFactory;
+import org.chromium.chrome.browser.tab.WebContentsState;
 import org.chromium.chrome.browser.tab_ui.TabContentManager;
 import org.chromium.chrome.browser.tabmodel.MismatchedIndicesHandler;
 import org.chromium.chrome.browser.tabmodel.NextTabPolicy.NextTabPolicySupplier;
@@ -35,6 +43,7 @@ import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorBase;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorImpl;
+import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelUtils;
 import org.chromium.chrome.browser.tabmodel.TabPersistentStore;
 import org.chromium.chrome.browser.tabmodel.TabbedModeTabPersistencePolicy;
@@ -216,6 +225,68 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
                     });
         } else {
             createArchivedTabModelInDeferredTask(tabContentManager);
+        }
+
+        // TODO(https://crbug.com/430996004): Move this logic into another file.
+        if (ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled()) {
+            assert mProfileProviderSupplier.hasValue();
+            ProfileProvider profileProvider = mProfileProviderSupplier.get();
+            Profile profile = profileProvider.getOriginalProfile();
+            assert profile != null;
+            TabStateStorageService tabStateStorageService =
+                    TabStateStorageServiceFactory.getForProfile(profile);
+
+            Callback<Tab> saveTab =
+                    (Tab tab) -> {
+                        WebContentsState state = tab.getWebContentsState();
+                        tabStateStorageService.saveTabData(
+                                tab.getId(),
+                                // TODO(https://crbug.com/427254267): Provide a parentCollectionId.
+                                0,
+                                // TODO(https://crbug.com/427254267): Provide a position.
+                                "",
+                                tab.getParentId(),
+                                tab.getRootId(),
+                                tab.getTimestampMillis(),
+                                state == null ? null : state.buffer(),
+                                assumeNonNull(TabAssociatedApp.getAppId(tab)),
+                                tab.getThemeColor(),
+                                tab.getTabLaunchTypeAtCreation(),
+                                tab.getUserAgent(),
+                                tab.getLastNavigationCommittedTimestampMillis(),
+                                tab.getTabGroupId(),
+                                tab.getTabHasSensitiveContent(),
+                                tab.getIsPinned());
+                    };
+
+            TabStateAttributes.Observer attributesObserver =
+                    (Tab tab, @DirtinessState int dirtiness) -> {
+                        if (dirtiness == DirtinessState.DIRTY && !tab.isDestroyed()) {
+                            saveTab.onResult(tab);
+                        }
+                    };
+
+            TabModelSelectorTabRegistrationObserver tabRegistrationObserver =
+                    new TabModelSelectorTabRegistrationObserver(mTabModelSelector);
+            tabRegistrationObserver.addObserverAndNotifyExistingTabRegistration(
+                    new TabModelSelectorTabRegistrationObserver.Observer() {
+                        @Override
+                        public void onTabRegistered(Tab tab) {
+                            TabStateAttributes attributes = TabStateAttributes.from(tab);
+                            assumeNonNull(attributes);
+                            if (attributes.addObserver(attributesObserver)
+                                    == DirtinessState.DIRTY) {
+                                saveTab.onResult(tab);
+                            }
+                        }
+
+                        @Override
+                        public void onTabUnregistered(Tab tab) {
+                            assumeNonNull(TabStateAttributes.from(tab))
+                                    .removeObserver(attributesObserver);
+                            // TODO(https://crbug.com/430996004): Delete the tab record.
+                        }
+                    });
         }
     }
 

@@ -306,8 +306,10 @@ public class TabStateAttributes extends TabWebContentsUserData {
         if (mNumberOpenBatchEdits > 0) {
             updatePendingDirty(mDirtinessState);
         } else {
+            // All observers should see the new state, even if it's not the current state anymore.
+            @DirtinessState int newState = mDirtinessState;
             for (Observer observer : mObservers) {
-                observer.onTabStateDirtinessChanged(mTab, mDirtinessState);
+                observer.onTabStateDirtinessChanged(mTab, newState);
             }
         }
     }
