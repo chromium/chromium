@@ -834,6 +834,11 @@ void NavigationURLLoaderImpl::StartInterceptedRequest(
       GetUIThreadTaskRunner({BrowserTaskType::kNavigationNetworkResponse})));
 
   default_loader_used_ = false;
+
+  // The receiver should be already reset at `Restart()`.
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!loader_holder_.receiver_is_bound_for_check());
+
   // If `url_loader_` already exists, this means we are following a redirect
   // using an interceptor. In this case we should make sure to reset the
   // loader, similar to what is done in Restart().
@@ -851,10 +856,6 @@ NavigationURLLoaderImpl::LoaderHolder::~LoaderHolder() = default;
 
 void NavigationURLLoaderImpl::LoaderHolder::Reset() {
   response_loader_receiver_.reset();
-  url_loader_.reset();
-}
-
-void NavigationURLLoaderImpl::LoaderHolder::ResetLoader() {
   url_loader_.reset();
 }
 
@@ -916,8 +917,7 @@ void NavigationURLLoaderImpl::LoaderHolder::ResetForFollowRedirect(
         modified_headers_on_redirect_->modified_cors_exempt_headers_);
     modified_headers_on_redirect_.reset();
   }
-  // TODO(https://crbug.com/40943077): Call `Reset()` instead.
-  ResetLoader();
+  Reset();
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::FollowRedirect() {
@@ -927,6 +927,11 @@ void NavigationURLLoaderImpl::LoaderHolder::FollowRedirect() {
       std::move(modified_headers_on_redirect_->removed_headers_),
       std::move(modified_headers_on_redirect_->modified_headers_),
       std::move(modified_headers_on_redirect_->modified_cors_exempt_headers_));
+}
+
+bool NavigationURLLoaderImpl::LoaderHolder::receiver_is_bound_for_check()
+    const {
+  return response_loader_receiver_.is_bound();
 }
 
 void NavigationURLLoaderImpl::StartNonInterceptedRequest(
@@ -1557,7 +1562,13 @@ void NavigationURLLoaderImpl::OnAcceptCHFrameReceived(
   // If the request is restarted, all of the client hints should be replaced
   // the "original"/non-edited values.
   resource_request_->headers.MergeFrom(modified_headers);
-  loader_holder_.ResetLoader();
+
+  // Calling `OnAcceptCHFrameReceived()` implies the loading is ongoing via
+  // `url_loader_` and thus the receiver should be unbound.
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!loader_holder_.receiver_is_bound_for_check());
+
+  loader_holder_.Reset();
   Restart();
 }
 

@@ -365,11 +365,6 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // are not cancelled. Actually cancel them.
     void Reset();
 
-    // Resets `url_loader_`.
-    // TODO(https://crbug.com/434182226): Use `Reset()` instead to always reset
-    // `response_loader_receiver_` as well.
-    void ResetLoader();
-
     // For starting loading via `url_loader` (transitioning from `kNone` to
     // `kLoadingViaLoader`). THe caller should actually start the loading by
     // calling `url_loader->Start()`.
@@ -414,6 +409,8 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // Similar to `ResetLoader()`, but also calls
     // `URLLoader::ResetForFollowRedirect()` if needed.
     void ResetForFollowRedirect(network::ResourceRequest& resource_request);
+
+    bool receiver_is_bound_for_check() const;
 
    private:
     // `NavigationURLLoaderImpl`'s `URLLoaderClient` methods are called either
