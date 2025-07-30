@@ -4900,11 +4900,6 @@ const char kClankDefaultBrowserPromoRoleManagerDescription[] =
     "Sets the Role Manager Default Browser Promo for testing the new "
     "Default Browser Promo Feature";
 
-const char kTabStateFlatBufferName[] = "Enable TabState FlatBuffer";
-const char kTabStateFlatBufferDescription[] =
-    "Migrates TabState from a pickle based schema to a FlatBuffer based "
-    "schema.";
-
 const char kContextualSearchSuppressShortViewName[] =
     "Contextual Search suppress short view";
 const char kContextualSearchSuppressShortViewDescription[] =

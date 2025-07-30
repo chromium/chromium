@@ -3568,15 +3568,6 @@ const FeatureEntry::FeatureVariation
          std::size(kTPCPhaseOutFacilitatedTestingForceControl2), nullptr},
 };
 
-#if BUILDFLAG(IS_ANDROID)
-const FeatureEntry::FeatureParam kTabStateFlatBufferMigrateStaleTabs[] = {
-    {"migrate_stale_tabs", "true"}};
-
-const FeatureEntry::FeatureVariation kTabStateFlatBufferVariations[] = {
-    {"Migrate Stale Tabs", kTabStateFlatBufferMigrateStaleTabs,
-     std::size(kTabStateFlatBufferMigrateStaleTabs), nullptr}};
-#endif
-
 const FeatureEntry::FeatureParam
     kTpcdHeuristicsGrants_CurrentInteraction_ShortRedirect_MainFrameInitiator
         [] = {
@@ -7933,12 +7924,6 @@ const FeatureEntry kFeatureEntries[] = {
          chrome::android::kSearchResumptionModuleAndroid,
          kSearchResumptionModuleAndroidVariations,
          "kSearchResumptionModuleAndroid")},
-
-    {"enable-tabstate-flatbuffer", flag_descriptions::kTabStateFlatBufferName,
-     flag_descriptions::kTabStateFlatBufferDescription, kOsAndroid,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kTabStateFlatBuffer,
-                                    kTabStateFlatBufferVariations,
-                                    "TabStateFlatBuffer")},
 
     {"price-insights", commerce::flag_descriptions::kPriceInsightsName,
      commerce::flag_descriptions::kPriceInsightsDescription, kOsAndroid,

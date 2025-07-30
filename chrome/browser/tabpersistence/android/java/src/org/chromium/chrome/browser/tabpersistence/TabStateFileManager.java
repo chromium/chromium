@@ -150,29 +150,24 @@ public class TabStateFileManager {
     public static @Nullable TabState restoreTabState(
             File stateFolder, int id, CipherFactory cipherFactory) {
         recordTabStateMigrationStatus(stateFolder, id);
-        // If the FlatBuffer schema is enabled, try to restore using that. There are no guarantees,
-        // however - for example if the flag was just turned on there won't have been the
-        // opportunity to save any FlatBuffer based {@link TabState} files yet. So we
-        // always have a fallback to regular hand-written based TabState.
-        if (isFlatBufferSchemaEnabled()) {
-            TabState tabState = null;
-            try {
-                tabState = restoreTabState(stateFolder, id, cipherFactory, true);
-            } catch (Exception e) {
-                // TODO(crbug.com/341122002) Add in metrics
-                Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
-            }
-            if (tabState != null) {
-                RecordHistogram.recordEnumeratedHistogram(
-                        "Tabs.TabState.RestoreMethod",
-                        TabStateRestoreMethod.FLATBUFFER,
-                        TabStateRestoreMethod.NUM_ENTRIES);
-                return tabState;
-            }
+        // Try to restore using FlatBuffer file first.
+        TabState tabState = null;
+        try {
+            tabState = restoreTabState(stateFolder, id, cipherFactory, true);
+        } catch (Exception e) {
+            // TODO(crbug.com/341122002) Add in metrics
+            Log.d(TAG, "Error restoring TabState using FlatBuffer", e);
         }
-        // Flatbuffer flag is off or we couldn't restore the TabState using a FlatBuffer based
-        // file e.g. file doesn't exist for the Tab or is corrupt.
-        TabState tabState = restoreTabState(stateFolder, id, cipherFactory, false);
+        if (tabState != null) {
+            RecordHistogram.recordEnumeratedHistogram(
+                    "Tabs.TabState.RestoreMethod",
+                    TabStateRestoreMethod.FLATBUFFER,
+                    TabStateRestoreMethod.NUM_ENTRIES);
+            return tabState;
+        }
+        // If we couldn't restore using the FlatBuffer file it's possible we need to
+        // restore the legacy TabState file (i.e. the Tab has not been migrated yet).
+        tabState = restoreTabState(stateFolder, id, cipherFactory, false);
         if (tabState == null) {
             RecordHistogram.recordEnumeratedHistogram(
                     "Tabs.TabState.RestoreMethod",
@@ -482,9 +477,7 @@ public class TabStateFileManager {
             }
             // If TabState was restored using legacy format and the FlatBuffer flag is on, that
             // indicates the TabState hasn't been migrated yet and should be.
-            if (isMigrateStaleTabsToFlatBufferEnabled()) {
-                tabState.shouldMigrate = true;
-            }
+            tabState.shouldMigrate = true;
             return tabState;
         } finally {
             StreamUtil.closeQuietly(stream);
@@ -859,25 +852,6 @@ public class TabStateFileManager {
                 });
     }
 
-    /**
-     * Cleanup FlatBuffer files while the experiment is turned off. This ensures when the user
-     * re-enters the FlatBuffer migration experiment we don't attempt to restore their Tabs using
-     * out of date FlatBuffer files.
-     *
-     * @param stateDirectory directory where TabState files are saved.
-     */
-    public static void cleanupUnusedFiles(File stateDirectory) {
-        if (isFlatBufferSchemaEnabled()) {
-            return;
-        }
-        PostTask.postTask(
-                TaskTraits.BEST_EFFORT_MAY_BLOCK,
-                () -> {
-                    ThreadUtils.assertOnBackgroundThread();
-                    deleteFlatBufferFiles(stateDirectory);
-                });
-    }
-
     @VisibleForTesting
     protected static void deleteFlatBufferFiles(File stateDirectory) {
         if (stateDirectory == null || stateDirectory.listFiles() == null) {
@@ -946,13 +920,5 @@ public class TabStateFileManager {
     public static void setChannelNameOverrideForTest(String name) {
         sChannelNameOverrideForTest = name;
         ResettersForTesting.register(() -> sChannelNameOverrideForTest = null);
-    }
-
-    private static boolean isFlatBufferSchemaEnabled() {
-        return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
-    }
-
-    private static boolean isMigrateStaleTabsToFlatBufferEnabled() {
-        return ChromeFeatureList.sTabStateFlatBufferMigrateStaleTabs.getValue();
     }
 }

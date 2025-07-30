@@ -504,7 +504,6 @@ public class TabPersistentStore {
                         TabStateFileManager.saveState(
                                 getStateDirectory(), state, id, incognito, mCipherFactory);
                         if (!ChromeFeatureList.sLegacyTabStateDeprecation.isEnabled()
-                                && isFlatBufferSchemaEnabled()
                                 && TabStateFileManager.isMigrated(
                                         getStateDirectory(), id, incognito)) {
                             // Ensure parity between the FlatBuffer TabState file and legacy.
@@ -519,9 +518,7 @@ public class TabPersistentStore {
                 } catch (OutOfMemoryError e) {
                     Log.e(TAG, "Out of memory error while attempting to save tab state. Erasing.");
                     deleteTabState(id, incognito);
-                    if (isFlatBufferSchemaEnabled()) {
-                        TabStateFileManager.deleteMigratedFile(getStateDirectory(), id, incognito);
-                    }
+                    TabStateFileManager.deleteMigratedFile(getStateDirectory(), id, incognito);
                 }
             }
             // Now all pending saves (and migrations, if applicable) are complete we are ok to
@@ -1294,8 +1291,7 @@ public class TabPersistentStore {
         // - FlatBuffer schema flag is enabled
         // - We haven't hit the limit of sMaxMigrationsPerSave migrations per save yet
         // - Deferred startup is complete (to reduce the risk of jank).
-        if (!isFlatBufferSchemaEnabled()
-                || mTabsToMigrate.isEmpty()
+        if (mTabsToMigrate.isEmpty()
                 || numMigration > MAX_MIGRATIONS_PER_SAVE
                 || !sDeferredStartupComplete) {
             return;
@@ -1770,7 +1766,6 @@ public class TabPersistentStore {
                     }
                 });
         performPersistedTabDataMaintenance(null);
-        TabStateFileManager.cleanupUnusedFiles(getStateDirectory());
     }
 
     @VisibleForTesting
@@ -2135,10 +2130,6 @@ public class TabPersistentStore {
 
     public static void onDeferredStartup() {
         sDeferredStartupComplete = true;
-    }
-
-    private static boolean isFlatBufferSchemaEnabled() {
-        return ChromeFeatureList.sTabStateFlatBuffer.isEnabled();
     }
 
     // Static and instanced ForTest/Testing functions:

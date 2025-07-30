@@ -626,7 +626,6 @@ public abstract class ChromeFeatureList {
     public static final String TAB_GROUP_PARITY_BOTTOM_SHEET_ANDROID =
             "TabGroupParityBottomSheetAndroid";
     public static final String TAB_MODEL_INIT_FIXES = "TabModelInitFixes";
-    public static final String TAB_STATE_FLAT_BUFFER = "TabStateFlatBuffer";
     public static final String TAB_STORAGE_SQLITE_PROTOTYPE = "TabStorageSqlitePrototype";
     public static final String TAB_STRIP_DENSITY_CHANGE_ANDROID = "TabStripDensityChangeAndroid";
     public static final String TAB_STRIP_GROUP_DRAG_DROP_ANDROID = "TabStripGroupDragDropAndroid";
@@ -996,11 +995,6 @@ public abstract class ChromeFeatureList {
                     TAB_MODEL_INIT_FIXES,
                     /* defaultValue= */ false,
                     /* defaultValueInTests= */ true);
-    public static final CachedFlag sTabStateFlatBuffer =
-            newCachedFlag(
-                    TAB_STATE_FLAT_BUFFER,
-                    /* defaultValue= */ true,
-                    /* defaultValueInTests= */ true);
     public static final CachedFlag sTabStripDensityChangeAndroid =
             newCachedFlag(TAB_STRIP_DENSITY_CHANGE_ANDROID, false);
     public static final CachedFlag sTabStripIncognitoMigration =
@@ -1175,7 +1169,6 @@ public abstract class ChromeFeatureList {
                     sStartSurfaceReturnTime,
                     sTabClosureMethodRefactor,
                     sTabModelInitFixes,
-                    sTabStateFlatBuffer,
                     sTabStripDensityChangeAndroid,
                     sTabStripIncognitoMigration,
                     sTabStripLayoutOptimization,
@@ -1665,8 +1658,6 @@ public abstract class ChromeFeatureList {
                     START_SURFACE_RETURN_TIME,
                     "start_surface_return_time_on_tablet_seconds",
                     14400); // 4 hours
-    public static final BooleanCachedFeatureParam sTabStateFlatBufferMigrateStaleTabs =
-            newBooleanCachedFeatureParam(TAB_STATE_FLAT_BUFFER, "migrate_stale_tabs", true);
 
     public static final StringCachedFeatureParam sTabStripLayoutOptimizationOemAllowlist =
             newStringCachedFeatureParam(
@@ -1783,7 +1774,6 @@ public abstract class ChromeFeatureList {
                     sSearchinCctOmniboxAllowedPackageNames,
                     sStartSurfaceReturnTimeTabletSecs,
                     sTabGroupListContainment,
-                    sTabStateFlatBufferMigrateStaleTabs,
                     sTabStripLayoutOptimizationOemAllowlist,
                     sTabStripLayoutOptimizationOemDenylist,
                     sTabStripLayoutOptimizationOnExternalDisplay,

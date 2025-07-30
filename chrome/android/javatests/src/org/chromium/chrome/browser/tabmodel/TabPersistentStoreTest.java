@@ -572,7 +572,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
     public void testFlatBufferMigration() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
@@ -675,7 +674,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
     @DisabledTest(message = "crbug.com/406258165")
     public void testSaveStateNoFlatBufferPrior() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
@@ -721,7 +719,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
     public void testSaveStateFlatBufferParityRootIdChange() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
@@ -762,7 +759,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
     public void testInFlightMigration() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
@@ -790,7 +786,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
     public void testUpdateMigratedFiles() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
@@ -900,7 +895,6 @@ public class TabPersistentStoreTest {
     @Test
     @SmallTest
     @Feature("TabPersistentStore")
-    @EnableFeatures(ChromeFeatureList.TAB_STATE_FLAT_BUFFER + ":migrate_stale_tabs/true")
     public void testRemoveMigration_crbug_340580707() throws Exception {
         Pair<TabPersistentStore, Tab[]> storeAndRestoredTabs = createStoreAndRestoreTabs();
         TabPersistentStore store = storeAndRestoredTabs.first;
