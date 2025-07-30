@@ -107,9 +107,11 @@ class ClientSideDetectionHost
     struct IntelligentScanResult {
       std::string brand;
       std::string intent;
+      int model_version;
+      bool execution_success;
     };
     using InquireOnDeviceModelDoneCallback =
-        base::OnceCallback<void(std::optional<IntelligentScanResult>)>;
+        base::OnceCallback<void(IntelligentScanResult)>;
 
     ~IntelligentScanDelegate() override = default;
 
@@ -390,7 +392,7 @@ class ClientSideDetectionHost
   void OnInquireOnDeviceModelDone(
       std::unique_ptr<ClientPhishingRequest> verdict,
       std::optional<bool> did_match_high_confidence_allowlist,
-      std::optional<IntelligentScanDelegate::IntelligentScanResult> response);
+      IntelligentScanDelegate::IntelligentScanResult response);
 
   // Returns bool if for a |client_side_detection_Type|, the last URL is the
   // same as the last committed URL on the RenderFrameHost.

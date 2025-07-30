@@ -2517,15 +2517,17 @@ class ClientSideDetectionHostScamDetectionTest
         .WillOnce(testing::Invoke(
             [=, this](std::string rendered_text,
                       base::OnceCallback<void(
-                          std::optional<
-                              ClientSideDetectionHost::IntelligentScanDelegate::
-                                  IntelligentScanResult>)> callback) {
-              if (!should_return_response) {
-                std::move(callback).Run(std::nullopt);
-                return;
-              }
+                          ClientSideDetectionHost::IntelligentScanDelegate::
+                              IntelligentScanResult)> callback) {
               ClientSideDetectionHost::IntelligentScanDelegate::
                   IntelligentScanResult scam_detection_response;
+              scam_detection_response.execution_success = false;
+              if (!should_return_response) {
+                std::move(callback).Run(scam_detection_response);
+                return;
+              }
+              scam_detection_response.execution_success = true;
+              scam_detection_response.model_version = example_model_version_;
               scam_detection_response.brand = example_brand_;
               scam_detection_response.intent = example_intent_;
               std::move(callback).Run(scam_detection_response);
@@ -2551,6 +2553,8 @@ class ClientSideDetectionHostScamDetectionTest
                           example_brand_);
                 EXPECT_EQ(request->intelligent_scan_info().intent(),
                           example_intent_);
+                EXPECT_EQ(request->intelligent_scan_info().model_version(),
+                          example_model_version_);
               } else {
                 EXPECT_FALSE(request->intelligent_scan_info().has_brand());
                 EXPECT_FALSE(request->intelligent_scan_info().has_intent());
@@ -2681,6 +2685,7 @@ class ClientSideDetectionHostScamDetectionTest
   GURL example_url_{"http://suspiciousurl.com/"};
   std::string example_brand_ = "Example Brand";
   std::string example_intent_ = "Example Intent";
+  int example_model_version_ = 123;
 };
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
