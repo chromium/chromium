@@ -15,24 +15,14 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "chrome/browser/autocomplete/autocomplete_classifier_factory.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_provider_client.h"
-#include "chrome/browser/autocomplete/chrome_autocomplete_scheme_classifier.h"
-#include "chrome/browser/bookmarks/bookmark_model_factory.h"
-#include "chrome/browser/omnibox/autocomplete_controller_emitter_factory.h"
-#include "chrome/browser/predictors/autocomplete_action_predictor.h"
-#include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service.h"
-#include "chrome/browser/preloading/prefetch/search_prefetch/search_prefetch_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ui/bookmarks/bookmark_stats.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/omnibox/omnibox_pedal_implementations.h"
 #include "chrome/browser/ui/search/omnibox_utils.h"
 #include "chrome/browser/ui/webui/metrics_reporter/metrics_reporter.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
 #include "chrome/grit/new_tab_page_resources.h"
-#include "components/bookmarks/browser/bookmark_model.h"
 #include "components/lens/lens_features.h"
 #include "components/navigation_metrics/navigation_metrics.h"
 #include "components/omnibox/browser/autocomplete_classifier.h"
@@ -55,7 +45,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/search_engines/template_url_service.h"
-#include "components/sessions/content/session_tab_helper.h"
 #include "components/strings/grit/components_strings.h"
 #include "net/cookies/cookie_util.h"
 #include "searchbox_handler.h"
@@ -66,205 +55,31 @@
 #include "ui/base/window_open_disposition_utils.h"
 
 namespace {
-// TODO(crbug.com/40263573): Consider inheriting from `ChromeOmniboxClient`
-//  to avoid reimplementation of methods like `OnBookmarkLaunched`.
-class RealboxOmniboxClient final : public OmniboxClient {
+class RealboxOmniboxClient final : public SearchboxOmniboxClient {
  public:
   RealboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
   ~RealboxOmniboxClient() override;
 
   // OmniboxClient:
-  std::unique_ptr<AutocompleteProviderClient> CreateAutocompleteProviderClient()
-      override;
-  bool IsPasteAndGoEnabled() const override;
-  SessionID GetSessionID() const override;
-  PrefService* GetPrefs() override;
-  const PrefService* GetPrefs() const override;
-  bookmarks::BookmarkModel* GetBookmarkModel() override;
-  AutocompleteControllerEmitter* GetAutocompleteControllerEmitter() override;
-  TemplateURLService* GetTemplateURLService() override;
-  const AutocompleteSchemeClassifier& GetSchemeClassifier() const override;
-  AutocompleteClassifier* GetAutocompleteClassifier() override;
-  bool ShouldDefaultTypedNavigationsToHttps() const override;
-  int GetHttpsPortForTesting() const override;
-  bool IsUsingFakeHttpsForHttpsUpgradeTesting() const override;
-  gfx::Image GetSizedIcon(const gfx::VectorIcon& vector_icon_type,
-                          SkColor vector_icon_color) const override;
-  std::u16string GetFormattedFullURL() const override;
-  std::u16string GetURLForDisplay() const override;
-  GURL GetNavigationEntryURL() const override;
   metrics::OmniboxEventProto::PageClassification GetPageClassification(
       bool is_prefetch) const override;
-  security_state::SecurityLevel GetSecurityLevel() const override;
-  net::CertStatus GetCertStatus() const override;
-  const gfx::VectorIcon& GetVectorIcon() const override;
-  gfx::Image GetFaviconForPageUrl(
-      const GURL& page_url,
-      FaviconFetchedCallback on_favicon_fetched) override;
   void OnBookmarkLaunched() override;
-  void OnURLOpenedFromOmnibox(OmniboxLog* log) override;
-  void OnAutocompleteAccept(
-      const GURL& destination_url,
-      TemplateURLRef::PostContent* post_content,
-      WindowOpenDisposition disposition,
-      ui::PageTransition transition,
-      AutocompleteMatchType::Type match_type,
-      base::TimeTicks match_selection_timestamp,
-      bool destination_url_entered_without_scheme,
-      bool destination_url_entered_with_http_scheme,
-      const std::u16string& text,
-      const AutocompleteMatch& match,
-      const AutocompleteMatch& alternative_nav_match) override;
-  base::WeakPtr<OmniboxClient> AsWeakPtr() override;
-
- private:
-  raw_ptr<Profile> profile_;
-  raw_ptr<content::WebContents> web_contents_;
-  // Owns RealboxHandler which owns this.
-  ChromeAutocompleteSchemeClassifier scheme_classifier_;
-  // This is unused, but needed for `GetVectorIcon()`.
-  gfx::VectorIcon vector_icon_{nullptr, 0u, ""};
-  base::WeakPtrFactory<RealboxOmniboxClient> weak_factory_{this};
 };
 
 RealboxOmniboxClient::RealboxOmniboxClient(Profile* profile,
                                            content::WebContents* web_contents)
-    : profile_(profile),
-      web_contents_(web_contents),
-      scheme_classifier_(ChromeAutocompleteSchemeClassifier(profile)) {}
+    : SearchboxOmniboxClient(profile, web_contents) {}
 
 RealboxOmniboxClient::~RealboxOmniboxClient() = default;
-
-std::unique_ptr<AutocompleteProviderClient>
-RealboxOmniboxClient::CreateAutocompleteProviderClient() {
-  return std::make_unique<ChromeAutocompleteProviderClient>(profile_);
-}
-
-bool RealboxOmniboxClient::IsPasteAndGoEnabled() const {
-  return false;
-}
-
-SessionID RealboxOmniboxClient::GetSessionID() const {
-  return sessions::SessionTabHelper::IdForTab(web_contents_);
-}
-
-PrefService* RealboxOmniboxClient::GetPrefs() {
-  return profile_->GetPrefs();
-}
-
-const PrefService* RealboxOmniboxClient::GetPrefs() const {
-  return profile_->GetPrefs();
-}
-
-bookmarks::BookmarkModel* RealboxOmniboxClient::GetBookmarkModel() {
-  return BookmarkModelFactory::GetForBrowserContext(profile_);
-}
-
-AutocompleteControllerEmitter*
-RealboxOmniboxClient::GetAutocompleteControllerEmitter() {
-  return AutocompleteControllerEmitterFactory::GetForBrowserContext(profile_);
-}
-
-TemplateURLService* RealboxOmniboxClient::GetTemplateURLService() {
-  return TemplateURLServiceFactory::GetForProfile(profile_);
-}
-
-const AutocompleteSchemeClassifier& RealboxOmniboxClient::GetSchemeClassifier()
-    const {
-  return scheme_classifier_;
-}
-
-AutocompleteClassifier* RealboxOmniboxClient::GetAutocompleteClassifier() {
-  return AutocompleteClassifierFactory::GetForProfile(profile_);
-}
-
-bool RealboxOmniboxClient::ShouldDefaultTypedNavigationsToHttps() const {
-  return false;
-}
-
-int RealboxOmniboxClient::GetHttpsPortForTesting() const {
-  return 0;
-}
-
-bool RealboxOmniboxClient::IsUsingFakeHttpsForHttpsUpgradeTesting() const {
-  return false;
-}
-
-gfx::Image RealboxOmniboxClient::GetSizedIcon(
-    const gfx::VectorIcon& vector_icon_type,
-    SkColor vector_icon_color) const {
-  return gfx::Image();
-}
-
-std::u16string RealboxOmniboxClient::GetFormattedFullURL() const {
-  return u"";
-}
-
-std::u16string RealboxOmniboxClient::GetURLForDisplay() const {
-  return u"";
-}
-
-GURL RealboxOmniboxClient::GetNavigationEntryURL() const {
-  return GURL();
-}
 
 metrics::OmniboxEventProto::PageClassification
 RealboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
   return metrics::OmniboxEventProto::NTP_REALBOX;
 }
 
-security_state::SecurityLevel RealboxOmniboxClient::GetSecurityLevel() const {
-  return security_state::SecurityLevel::NONE;
-}
-
-net::CertStatus RealboxOmniboxClient::GetCertStatus() const {
-  return 0;
-}
-
-const gfx::VectorIcon& RealboxOmniboxClient::GetVectorIcon() const {
-  return vector_icon_;
-}
-
-gfx::Image RealboxOmniboxClient::GetFaviconForPageUrl(
-    const GURL& page_url,
-    FaviconFetchedCallback on_favicon_fetched) {
-  return gfx::Image();
-}
-
 void RealboxOmniboxClient::OnBookmarkLaunched() {
   RecordBookmarkLaunch(BookmarkLaunchLocation::kOmnibox,
                        profile_metrics::GetBrowserProfileType(profile_));
-}
-
-void RealboxOmniboxClient::OnURLOpenedFromOmnibox(OmniboxLog* log) {
-  if (auto* search_prefetch_service =
-          SearchPrefetchServiceFactory::GetForProfile(profile_)) {
-    search_prefetch_service->OnURLOpenedFromOmnibox(log);
-  }
-  predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->OnOmniboxOpenedUrl(*log);
-}
-
-void RealboxOmniboxClient::OnAutocompleteAccept(
-    const GURL& destination_url,
-    TemplateURLRef::PostContent* post_content,
-    WindowOpenDisposition disposition,
-    ui::PageTransition transition,
-    AutocompleteMatchType::Type match_type,
-    base::TimeTicks match_selection_timestamp,
-    bool destination_url_entered_without_scheme,
-    bool destination_url_entered_with_http_scheme,
-    const std::u16string& text,
-    const AutocompleteMatch& match,
-    const AutocompleteMatch& alternative_nav_match) {
-  web_contents_->OpenURL(
-      content::OpenURLParams(destination_url, content::Referrer(), disposition,
-                             transition, false),
-      /*navigation_handle_callback=*/{});
-}
-
-base::WeakPtr<OmniboxClient> RealboxOmniboxClient::AsWeakPtr() {
-  return weak_factory_.GetWeakPtr();
 }
 
 }  // namespace

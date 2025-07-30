@@ -13,6 +13,8 @@ source_set("searchbox") {
     "realbox_handler.h",
     "searchbox_handler.cc",
     "searchbox_handler.h",
+    "searchbox_omnibox_client.cc",
+    "searchbox_omnibox_client.h",
   ]
   public_deps = [
     "//base",
