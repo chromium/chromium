@@ -1261,7 +1261,9 @@ void TestResponseProvider::GetLanguageResponse(
 }
 
 // Tests that triggering translate after opening and closing reader mode works.
-- (void)testTranslateAfterReaderMode {
+// TODO(crbug.com/430489596): `kTranslateInfobarModalTranslateButtonAXId` cannot
+// be found occasionally. This test should be reenabled.
+- (void)DISABLED_testTranslateAfterReaderMode {
 #if !TARGET_OS_SIMULATOR
   if ([ChromeEarlGrey isIPadIdiom]) {
     EARL_GREY_TEST_DISABLED(@"Disabled on iPad devices");
