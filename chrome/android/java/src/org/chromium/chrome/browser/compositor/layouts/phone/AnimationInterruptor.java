@@ -45,7 +45,7 @@ class AnimationInterruptor implements Destroyable {
                 }
             };
 
-    private final Callback<Tab> mCurrentTabObserver = this::onCurrentTabChanged;
+    private final Callback<@Nullable Tab> mCurrentTabObserver = this::onCurrentTabChanged;
 
     private final TabObserver mTabObserver =
             new EmptyTabObserver() {
@@ -58,7 +58,7 @@ class AnimationInterruptor implements Destroyable {
     private final Callback<Boolean> mScrimVisibilityObserver = this::onScrimVisibilityChanged;
 
     private final LayoutStateProvider mLayoutStateProvider;
-    private final ObservableSupplier<Tab> mCurrentTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mCurrentTabSupplier;
     private final Tab mAnimationTab;
     private final ObservableSupplier<Boolean> mScrimVisibilitySupplier;
     private final ObservableSupplier<Boolean> mContextMenuVisibilitySupplier;
@@ -73,7 +73,7 @@ class AnimationInterruptor implements Destroyable {
      */
     AnimationInterruptor(
             LayoutStateProvider layoutStateProvider,
-            ObservableSupplier<Tab> currentTabSupplier,
+            ObservableSupplier<@Nullable Tab> currentTabSupplier,
             Tab animationTab,
             ObservableSupplier<Boolean> scrimVisibilitySupplier,
             Runnable interruptAnimationRunnable) {
@@ -106,7 +106,7 @@ class AnimationInterruptor implements Destroyable {
         mContextMenuVisibilitySupplier.removeObserver(mScrimVisibilityObserver);
     }
 
-    private void onCurrentTabChanged(Tab tab) {
+    private void onCurrentTabChanged(@Nullable Tab tab) {
         if (mAnimationTab == tab) return;
         interruptAnimation();
     }

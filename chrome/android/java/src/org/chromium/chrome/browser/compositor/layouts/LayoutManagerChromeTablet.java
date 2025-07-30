@@ -8,13 +8,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewStub;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-
 import org.chromium.base.Log;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.browser_controls.TopControlsStacker;
 import org.chromium.chrome.browser.compositor.LayerTitleCache;
@@ -44,6 +44,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 import org.chromium.ui.xr.scenecore.XrSceneCoreSessionManager;
 
 /** LayoutManagerChromeTablet is the specialization of LayoutManagerChrome for the tablet. */
+@NullMarked
 public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     private static final String TAG = "LayoutManagerChrome";
     // Tab Strip
@@ -54,7 +55,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     // This cache should not be cleared in LayoutManagerImpl#emptyCachesExcept(), since that method
     // is currently called when returning to the static layout, which is when these titles will be
     // visible. See https://crbug.com/1329293.
-    protected LayerTitleCache mLayerTitleCache;
+    protected @Nullable LayerTitleCache mLayerTitleCache;
 
     protected ObservableSupplierImpl<LayerTitleCache> mLayerTitleCacheSupplier =
             new ObservableSupplierImpl<>();
@@ -103,14 +104,14 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
             MultiInstanceManager multiInstanceManager,
             DragAndDropDelegate dragAndDropDelegate,
             View toolbarContainerView,
-            @NonNull ViewStub tabHoverCardViewStub,
-            @NonNull WindowAndroid windowAndroid,
-            @NonNull ToolbarManager toolbarManager,
+            ViewStub tabHoverCardViewStub,
+            WindowAndroid windowAndroid,
+            ToolbarManager toolbarManager,
             @Nullable DesktopWindowStateManager desktopWindowStateManager,
             ActionConfirmationManager actionConfirmationManager,
             DataSharingTabManager dataSharingTabManager,
-            @NonNull BottomSheetController bottomSheetController,
-            @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
+            BottomSheetController bottomSheetController,
+            Supplier<ShareDelegate> shareDelegateSupplier,
             @Nullable XrSceneCoreSessionManager xrSceneCoreSessionManager,
             TopControlsStacker topControlsStacker) {
         super(
@@ -161,6 +162,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         super.destroy();
 
@@ -192,10 +194,11 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     }
 
     @Override
+    @Initializer
     public void init(
             TabModelSelector selector,
             TabCreatorManager creator,
-            ControlContainer controlContainer,
+            @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
             ObservableSupplier<Integer> bottomControlsOffsetSupplier) {
@@ -225,7 +228,9 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
     @Override
     public void releaseResourcesForTab(int tabId) {
         super.releaseResourcesForTab(tabId);
-        mLayerTitleCache.removeTabTitle(tabId);
+        if (mLayerTitleCache != null) {
+            mLayerTitleCache.removeTabTitle(tabId);
+        }
     }
 
     @Override
@@ -275,7 +280,7 @@ public class LayoutManagerChromeTablet extends LayoutManagerChrome {
         super.doneHiding();
     }
 
-    private boolean isTabSwitcher(Layout layout) {
+    private boolean isTabSwitcher(@Nullable Layout layout) {
         return layout != null && layout.getLayoutType() == LayoutType.TAB_SWITCHER;
     }
 }

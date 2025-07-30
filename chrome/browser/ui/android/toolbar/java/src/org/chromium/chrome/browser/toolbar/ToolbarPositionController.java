@@ -583,7 +583,7 @@ public class ToolbarPositionController implements OnSharedPreferenceChangeListen
     }
 
     /** Returns whether the toolbar will be shown on top for the supplied tab. */
-    public static boolean shouldShowToolbarOnTop(Tab tab) {
+    public static boolean shouldShowToolbarOnTop(@Nullable Tab tab) {
         // TODO(https://g-issues.chromium.org/issues/420271795): consider fakebox presence here.
         boolean isRegularNtp =
                 (tab != null)

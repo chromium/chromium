@@ -29,7 +29,8 @@ class TopToolbarSceneLayer extends SceneOverlayLayer {
     private final Supplier<ResourceManager> mResourceManagerSupplier;
 
     /** A simple view binder that pushes the whole model to the view updater. */
-    public static void bind(PropertyModel model, TopToolbarSceneLayer view, PropertyKey key) {
+    public static void bind(
+            PropertyModel model, TopToolbarSceneLayer view, @Nullable PropertyKey key) {
         view.pushProperties(model);
     }
 

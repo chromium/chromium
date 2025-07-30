@@ -9,6 +9,9 @@ import android.view.ViewGroup;
 
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.compositor.layouts.phone.NewTabAnimationLayout;
 import org.chromium.chrome.browser.compositor.layouts.phone.SimpleAnimationLayout;
@@ -29,6 +32,7 @@ import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
  * {@link LayoutManagerChromePhone} is the specialization of {@link LayoutManagerChrome} for the
  * phone.
  */
+@NullMarked
 public class LayoutManagerChromePhone extends LayoutManagerChrome {
     // TODO(crbug.com/40282469): Rename SimpleAnimationLayout to NewTabAnimationLayout once it is
     // rolled out.
@@ -88,10 +92,11 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
     }
 
     @Override
+    @Initializer
     public void init(
             TabModelSelector selector,
             TabCreatorManager creator,
-            ControlContainer controlContainer,
+            @Nullable ControlContainer controlContainer,
             DynamicResourceLoader dynamicResourceLoader,
             TopUiThemeColorProvider topUiColorProvider,
             ObservableSupplier<Integer> bottomControlsOffsetSupplier) {

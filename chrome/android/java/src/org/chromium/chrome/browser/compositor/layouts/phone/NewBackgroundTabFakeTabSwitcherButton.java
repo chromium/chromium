@@ -23,6 +23,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.build.BuildConfig;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.TabSwitcherDrawable;
@@ -43,6 +44,7 @@ import java.lang.annotation.RetentionPolicy;
  * the animation don't have a visible toolbar so this fake representation would need to exist
  * regardless.
  */
+@NullMarked
 public class NewBackgroundTabFakeTabSwitcherButton extends FrameLayout implements RunOnNextLayout {
     @VisibleForTesting /* package */ static final long TRANSLATE_DURATION_MS = 200L;
     @VisibleForTesting /* package */ static final long SHRINK_DURATION_MS = 300L;

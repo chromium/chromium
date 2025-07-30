@@ -25,13 +25,14 @@ import org.chromium.ui.modelutil.PropertyModel;
 public class StaticTabSceneLayer extends SceneLayer {
     /**
      * ViewBinder for the StaticTabSceneLayer.
+     *
      * @param model The model to bind.
      * @param view The View that the model bind to.
      * @param propertyKey The property of the view that changed. This is NULL until SceneLayer is
-     *                    able to do partial update.
+     *     able to do partial update.
      */
     public static void bind(
-            PropertyModel model, StaticTabSceneLayer view, PropertyKey propertyKey) {
+            PropertyModel model, StaticTabSceneLayer view, @Nullable PropertyKey propertyKey) {
         view.update(model);
     }
 

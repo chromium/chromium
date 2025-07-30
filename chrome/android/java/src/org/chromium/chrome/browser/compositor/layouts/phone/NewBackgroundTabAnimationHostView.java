@@ -21,6 +21,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.core.content.ContextCompat;
 
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.toolbar.top.ToggleTabStackButton;
@@ -39,6 +40,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /** Host view for the new background tab animation. */
+@NullMarked
 public class NewBackgroundTabAnimationHostView extends FrameLayout implements RunOnNextLayout {
     /* package */ static final long CROSS_FADE_DURATION_MS = 150L;
     private static final long PATH_ARC_DURATION_MS = 400L;

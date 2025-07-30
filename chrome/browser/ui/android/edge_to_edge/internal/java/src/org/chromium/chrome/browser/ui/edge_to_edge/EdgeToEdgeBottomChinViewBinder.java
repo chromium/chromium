@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -85,7 +86,7 @@ class EdgeToEdgeBottomChinViewBinder {
     static void bindCompositorMCP(
             PropertyModel model,
             EdgeToEdgeBottomChinSceneLayer sceneLayer,
-            PropertyKey propertyKey) {
+            @Nullable PropertyKey propertyKey) {
         assert propertyKey == null;
     }
 }

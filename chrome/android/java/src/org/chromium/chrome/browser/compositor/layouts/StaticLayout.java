@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor.layouts;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.RectF;
@@ -11,6 +13,8 @@ import android.graphics.RectF;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.cc.input.BrowserControlsState;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsOffsetTagsInfo;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
@@ -46,8 +50,11 @@ import java.util.Collections;
  * #tabSelecting(long, int)} call, and is used to show a thumbnail of a {@link Tab} until that
  * {@link Tab} is ready to be shown.
  */
+@NullMarked
 public class StaticLayout extends Layout {
     public static final String TAG = "StaticLayout";
+
+    private static @Nullable Integer sToolbarTextBoxBackgroundColorForTesting;
 
     private final boolean mHandlesTabLifecycles;
     private final boolean mNeedsOffsetTag;
@@ -61,8 +68,8 @@ public class StaticLayout extends Layout {
 
     private StaticTabSceneLayer mSceneLayer;
 
-    private TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
-    private TabModelSelectorTabObserver mTabModelSelectorTabObserver;
+    private @Nullable TabModelSelectorTabModelObserver mTabModelSelectorTabModelObserver;
+    private @Nullable TabModelSelectorTabObserver mTabModelSelectorTabObserver;
 
     private final BrowserControlsStateProvider mBrowserControlsStateProvider;
     private final BrowserControlsStateProvider.Observer mBrowserControlsStateProviderObserver;
@@ -71,7 +78,6 @@ public class StaticLayout extends Layout {
 
     private boolean mIsShowing;
 
-    private static Integer sToolbarTextBoxBackgroundColorForTesting;
 
     private final float mPxToDp;
 
@@ -126,7 +132,7 @@ public class StaticLayout extends Layout {
             TabContentManager tabContentManager,
             BrowserControlsStateProvider browserControlsStateProvider,
             Supplier<TopUiThemeColorProvider> topUiThemeColorProvider,
-            StaticTabSceneLayer testSceneLayer,
+            @Nullable StaticTabSceneLayer testSceneLayer,
             boolean needsOffsetTag) {
         super(context, updateHost, renderHost);
 
@@ -218,6 +224,7 @@ public class StaticLayout extends Layout {
         } else {
             mSceneLayer = new StaticTabSceneLayer();
         }
+        assumeNonNull(mTabContentManager);
         mSceneLayer.setTabContentManager(mTabContentManager);
 
         mMcp =
@@ -306,6 +313,7 @@ public class StaticLayout extends Layout {
         super.show(time, animate);
 
         mIsShowing = true;
+        assumeNonNull(mTabModelSelector);
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab == null) return;
         setStaticTab(tab);
@@ -320,6 +328,7 @@ public class StaticLayout extends Layout {
     @Override
     public void doneShowing() {
         super.doneShowing();
+        assumeNonNull(mTabModelSelector);
         Tab tab = mTabModelSelector.getCurrentTab();
         if (tab == null) return;
         requestFocus(tab);
@@ -438,7 +447,7 @@ public class StaticLayout extends Layout {
     }
 
     @Override
-    protected EventFilter getEventFilter() {
+    protected @Nullable EventFilter getEventFilter() {
         return null;
     }
 
@@ -471,6 +480,7 @@ public class StaticLayout extends Layout {
     }
 
     @Override
+    @SuppressWarnings("NullAway")
     public void destroy() {
         if (mSceneLayer != null) {
             mSceneLayer.destroy();
@@ -490,11 +500,11 @@ public class StaticLayout extends Layout {
         return mModel;
     }
 
-    TabModelSelector getTabModelSelectorForTesting() {
+    @Nullable TabModelSelector getTabModelSelectorForTesting() {
         return mTabModelSelector;
     }
 
-    TabContentManager getTabContentManagerForTesting() {
+    @Nullable TabContentManager getTabContentManagerForTesting() {
         return mTabContentManager;
     }
 
