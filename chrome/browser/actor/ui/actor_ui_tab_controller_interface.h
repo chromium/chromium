@@ -28,11 +28,6 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
-enum class TabScopedUiComponentType {
-  ActorOverlay,
-  HandoffButton,
-};
-
 class ActorUiTabControllerInterface {
  public:
   virtual ~ActorUiTabControllerInterface() = default;

@@ -95,6 +95,8 @@ source_set("event_dispatcher") {
 
 source_set("test_support") {
   sources = [
+    "mock_actor_overlay_view_controller.cc",
+    "mock_actor_overlay_view_controller.h",
     "mock_actor_ui_state_manager.cc",
     "mock_actor_ui_state_manager.h",
     "mock_actor_ui_tab_controller.cc",

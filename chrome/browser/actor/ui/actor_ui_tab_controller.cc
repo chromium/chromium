@@ -101,28 +101,32 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
     current_tab_active_status_ = tab_active_status;
   }
 
+  // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiOverlay.Get()) {
-    // TODO(crbug.com/425952887): Simplify the is_visible logic to a helper
-    // function that both UI components can use.
     actor_overlay_view_controller_->UpdateState(
-        current_ui_tab_state_.actor_overlay,
-        current_tab_active_status_ &&
-            current_ui_tab_state_.actor_overlay.is_active);
+        current_ui_tab_state_.actor_overlay, ComputeAgentOverlayVisibility());
   }
 
   // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiHandoffButton.Get()) {
-    // TODO(crbug.com/433568221): Update the visibility logic when ActorOverlay
-    // is integrated into the Tab Controller (For now it's set to true when the
-    // tab is active).
+    // The Handoff Button's visibility is always false through this entrypoint.
+    // It's visibility will only be updated via  SetHandoffButtonVisibility().
+    // TODO(crbug.com/435172659): Set the visibility based on a unified hover
+    // state for the tab components.
     handoff_button_controller_->UpdateState(
-        current_ui_tab_state_.handoff_button, current_tab_active_status_);
+        current_ui_tab_state_.handoff_button, false);
   }
 
   // TODO(crbug.com/425952887): Change this once ui components are implemented,
   // for now always return true.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), true));
+}
+
+bool ActorUiTabController::ComputeAgentOverlayVisibility() {
+  // Only visible when its state and the associated tab are both active.
+  return current_ui_tab_state_.actor_overlay.is_active &&
+         current_tab_active_status_;
 }
 
 void ActorUiTabController::SetActiveTaskId(TaskId task_id) {

@@ -33,7 +33,7 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
 
   // Binds the Mojo receiver to enable communication from the WebUI. Called by
   // ActorUiTabController.
-  void BindOverlay(
+  virtual void BindOverlay(
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver);
 
   // Returns the tab-specific ActorUiTabController.
@@ -43,19 +43,19 @@ class ActorOverlayViewController : public mojom::ActorOverlayPageHandler {
   // by ActorUiTabController when the tab's active status or foreground status
   // changes. It orchestrates the creation, showing, or hiding of the overlay
   // WebView.
-  void UpdateState(const ActorOverlayState& state, bool is_visible);
+  virtual void UpdateState(const ActorOverlayState& state, bool is_visible);
 
   // Updates the associated window controller for this tab's overlay. Called by
   // ActorUiTabController when the tab is inserted into a window. Re-attaches a
   // previously detached WebView if one exists. This is important when tab's
   // that are being actuated, move between different windows.
-  void SetWindowController(ActorOverlayWindowController* controller);
+  virtual void SetWindowController(ActorOverlayWindowController* controller);
 
   // Detaches the overlay's WebView from its current window controller and
   // reclaims its ownership. Called by ActorUiTabController when the tab is
   // about to detach from a window. This is important when tab's that are being
   // actuated, move between different windows.
-  void NullifyWebView();
+  virtual void NullifyWebView();
 
   // mojom::ActorOverlayPageHandler
   // Notifies the ActorUiTabController that the user's hovering status over the
