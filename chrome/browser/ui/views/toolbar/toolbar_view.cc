@@ -1266,8 +1266,8 @@ void ToolbarView::OnTabStripModelChanged(
 
 void ToolbarView::UpdateRecedingCornerRadius() {
   bool tab_strip_has_trailing_frame_buttons =
-      (browser_view_->tabstrip()->controller()->IsFrameButtonsRightAligned() ^
-       base::i18n::IsRTL());
+      browser_view_->tabstrip()->controller()->IsFrameButtonsRightAligned() ^
+      base::i18n::IsRTL();
   bool tab_strip_has_leading_action_buttons =
       (!tabs::GetTabSearchTrailingTabstrip(browser()->profile()) &&
        !features::HasTabSearchToolbarButton());

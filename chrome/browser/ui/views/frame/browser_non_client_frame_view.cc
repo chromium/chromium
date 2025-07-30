@@ -76,11 +76,8 @@ bool BrowserNonClientFrameView::HasVisibleBackgroundTabShapes(
     BrowserFrameActiveState active_state) const {
   DCHECK(browser_view_->GetSupportsTabStrip());
 
-  TabStrip* const tab_strip = browser_view_->tabstrip();
-
   const bool active = ShouldPaintAsActiveForState(active_state);
-  const std::optional<int> bg_id =
-      tab_strip->GetCustomBackgroundId(active_state);
+  const std::optional<int> bg_id = GetCustomBackgroundId(active_state);
   if (bg_id.has_value()) {
     // If the theme has a custom tab background image, assume tab shapes are
     // visible.  This is pessimistic; the theme may use the same image as the
