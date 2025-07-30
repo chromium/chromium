@@ -8,8 +8,13 @@
 #include <fontconfig/fontconfig.h>
 
 #include "base/component_export.h"
+#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "ui/gfx/font_render_params.h"
+
+namespace features {
+BASE_DECLARE_FEATURE(kFontConfigFontationsIndexing);
+}
 
 namespace gfx {
 
