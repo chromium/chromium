@@ -120,6 +120,15 @@ pub enum DependencyKind {
     Build,
 }
 
+impl From<DependencyKind> for guppy::DependencyKind {
+    fn from(value: DependencyKind) -> guppy::DependencyKind {
+        match value {
+            DependencyKind::Build => guppy::DependencyKind::Build,
+            DependencyKind::Normal => guppy::DependencyKind::Normal,
+        }
+    }
+}
+
 /// A dependency of a `Package`. Cross-references another `Package` entry in the
 /// resolved list.
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -379,17 +388,16 @@ impl MemoizationTables {
     }
 
     fn get_package_condition_unmemoized(&mut self, package: &PackageMetadata) -> Condition {
-        if package.is_proc_macro() {
-            return Condition::always_true();
-        }
-
         package
             .reverse_direct_links()
             .flat_map(|link| {
-                [
-                    self.get_link_condition(&link, guppy::DependencyKind::Normal),
-                    self.get_link_condition(&link, guppy::DependencyKind::Build),
-                ]
+                [DependencyKind::Normal, DependencyKind::Build]
+                    .into_iter()
+                    .map(|kind| {
+                        let condition = self.get_link_condition(&link, kind.into());
+                        adjust_reverse_condition_if_crossing_target_to_host(condition, &link, kind)
+                    })
+                    .collect_vec()
             })
             .reduce(Condition::or)
             .unwrap_or_else(Condition::always_true)
@@ -452,6 +460,28 @@ impl<'g> guppy::graph::PackageResolver<'g> for PackageResolver<'_> {
     }
 }
 
+/// Link conditions are evaluated from the perspective of `link.from()`.
+/// Therefore if the link crosses from target to host, then the condition should
+/// not follow.
+fn adjust_reverse_condition_if_crossing_target_to_host(
+    mut condition: Condition,
+    link: &PackageLink,
+    kind: DependencyKind,
+) -> Condition {
+    let link_is_present = link.req_for_kind(kind.into()).is_present();
+    let link_crosses_from_target_to_host = match kind {
+        DependencyKind::Build => true,
+        DependencyKind::Normal => link.to().is_proc_macro(),
+    };
+    let link_applies_to_chromium = !condition.is_always_false();
+    if link_applies_to_chromium && link_is_present && link_crosses_from_target_to_host {
+        // Reverse condition for `link.to()` needs to support it on all host platforms.
+        condition = Condition::always_true();
+    }
+
+    condition
+}
+
 fn get_reverse_dependency_kinds(
     package: &PackageMetadata,
     cargo_set: &CargoSet,
@@ -466,11 +496,8 @@ fn get_reverse_dependency_kinds(
     };
     let mut result = HashMap::new();
     let mut insert_if_present = |link: PackageLink, kind: DependencyKind| {
-        let condition = if kind == DependencyKind::Normal && link.to().is_proc_macro() {
-            Condition::always_true()
-        } else {
-            condition_getter(&link, kind)
-        };
+        let condition = condition_getter(&link, kind);
+        let condition = adjust_reverse_condition_if_crossing_target_to_host(condition, &link, kind);
         if !condition.is_always_false() {
             let features = match kind {
                 // ... => `build.rs` deps only care about host-side features.
