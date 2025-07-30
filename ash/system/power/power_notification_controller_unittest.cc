@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/377326291): Fix and remove.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/system/power/power_notification_controller.h"
 
 #include <map>
@@ -15,6 +10,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/test/ash_test_base.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
@@ -225,7 +221,8 @@ class PowerNotificationControllerWithBatterySaverTest
       : PowerNotificationControllerTest(
             {{features::kBatterySaver,
               {{features::kBatterySaverNotificationBehavior.name,
-                features::kBatterySaverNotificationBehavior.options[GetParam()]
+                UNSAFE_TODO(features::kBatterySaverNotificationBehavior
+                                .options[GetParam()])
                     .name}}}},
             {}) {}
 

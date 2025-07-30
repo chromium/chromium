@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 
 #include "ash/quick_pair/fast_pair_handshake/fast_pair_key_pair.h"
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/types/fixed_array.h"
 #include "chromeos/ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "components/cross_device/logging/logging.h"
@@ -127,7 +123,8 @@ std::optional<KeyPair> GenerateKeysWithEcdhKeyAgreement(
 
   // Take first 16 bytes from secret as the private key.
   std::array<uint8_t, kPrivateKeyByteSize> private_key;
-  std::copy(secret, secret + kPrivateKeyByteSize, std::begin(private_key));
+  std::copy(secret, UNSAFE_TODO(secret + kPrivateKeyByteSize),
+            std::begin(private_key));
 
   // Ignore the first byte since it is 0x04, from the above uncompressed X9 .62
   // format.
@@ -144,12 +141,13 @@ const std::array<uint8_t, kHmacSizeBytes> GenerateHmacSha256(
     const std::vector<uint8_t>& data) {
   int nonce_data_concat_size = kNonceSizeBytes + data.size();
   base::FixedArray<uint8_t> nonce_data_concat(nonce_data_concat_size);
-  std::memcpy(nonce_data_concat.data(), nonce.data(), kNonceSizeBytes);
-  std::memcpy(nonce_data_concat.data() + kNonceSizeBytes, data.data(),
-              data.size());
+  UNSAFE_TODO(
+      std::memcpy(nonce_data_concat.data(), nonce.data(), kNonceSizeBytes));
+  UNSAFE_TODO(std::memcpy(nonce_data_concat.data() + kNonceSizeBytes,
+                          data.data(), data.size()));
 
   std::array<uint8_t, kHmacKeySizeBytes> K = {};
-  std::memcpy(K.data(), secret_key.data(), kSecretKeySizeBytes);
+  UNSAFE_TODO(std::memcpy(K.data(), secret_key.data(), kSecretKeySizeBytes));
 
   std::array<uint8_t, kHmacSizeBytes> output;
   unsigned int output_size;
@@ -201,12 +199,12 @@ const std::vector<uint8_t> EncryptAdditionalData(
   while (bytes_to_encrypt > 0) {
     int block_size =
         bytes_to_encrypt >= AES_BLOCK_SIZE ? AES_BLOCK_SIZE : bytes_to_encrypt;
-    std::memset(ivec, 0, AES_BLOCK_SIZE);
-    std::memcpy(ivec + 8, nonce.data(), kNonceSizeBytes);
+    UNSAFE_TODO(std::memset(ivec, 0, AES_BLOCK_SIZE));
+    UNSAFE_TODO(std::memcpy(ivec + 8, nonce.data(), kNonceSizeBytes));
     ivec[0] = i;
     uint offset = data.size() - bytes_to_encrypt;
-    AES_ctr128_encrypt(/*in=*/data.data() + offset,
-                       /*out=*/encrypted_data.data() + offset,
+    AES_ctr128_encrypt(/*in=*/UNSAFE_TODO(data.data() + offset),
+                       /*out=*/UNSAFE_TODO(encrypted_data.data() + offset),
                        /*len=*/block_size, &aes_key, /*ivec=*/ivec,
                        /*ecount_buf=*/ecount, &bytes_read);
 

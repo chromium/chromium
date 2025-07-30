@@ -2,11 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ui/events/ash/top_row_action_keys.h"
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 
 #include <fcntl.h>
 #include <linux/input.h>
@@ -20,10 +16,10 @@
 #include "ash/shell.h"
 #include "ash/system/diagnostics/mojom/input.mojom-shared.h"
 #include "ash/webui/diagnostics_ui/backend/input/input_data_provider.h"
-#include "ash/webui/diagnostics_ui/backend/input/input_data_provider_keyboard.h"
 #include "ash/webui/diagnostics_ui/mojom/input_data_provider.mojom-shared.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/containers/fixed_flat_set.h"
 #include "base/files/file_util.h"
@@ -31,6 +27,7 @@
 #include "base/strings/string_util.h"
 #include "chromeos/ash/components/system/statistics_provider.h"
 #include "ui/events/ash/keyboard_capability.h"
+#include "ui/events/ash/top_row_action_keys.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 #include "ui/events/ozone/evdev/event_device_info.h"
@@ -295,7 +292,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
                           std::end(kSystemKeysWilco));
 
       for (size_t i = 0; i < top_row_keys.size(); i++)
-        top_row_key_scancode_indexes[kScancodesWilco[i]] = i;
+        top_row_key_scancode_indexes[UNSAFE_TODO(kScancodesWilco[i])] = i;
       break;
 
     case ui::KeyboardCapability::KeyboardTopRowLayout::kKbdTopRowLayoutDrallion:
@@ -303,7 +300,7 @@ void InputDataProviderKeyboard::ProcessKeyboardTopRowLayout(
                           std::end(kSystemKeysDrallion));
 
       for (size_t i = 0; i < top_row_keys.size(); i++)
-        top_row_key_scancode_indexes[kScancodesDrallion[i]] = i;
+        top_row_key_scancode_indexes[UNSAFE_TODO(kScancodesDrallion[i])] = i;
 
       // On some Drallion devices, the F12 key is used for the Privacy Screen.
 
