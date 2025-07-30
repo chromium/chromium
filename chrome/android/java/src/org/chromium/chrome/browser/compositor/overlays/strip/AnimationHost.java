@@ -8,6 +8,7 @@ import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimationHandler;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
@@ -36,5 +37,5 @@ public interface AnimationHost {
      * @param animationList The {@link Animator} list to start.
      * @param listener The {@link AnimatorListener} for the given animations.
      */
-    void startAnimations(List<Animator> animationList, AnimatorListener listener);
+    void startAnimations(List<Animator> animationList, @Nullable AnimatorListener listener);
 }

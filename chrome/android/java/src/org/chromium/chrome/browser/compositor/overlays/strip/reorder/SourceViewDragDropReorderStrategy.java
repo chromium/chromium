@@ -43,6 +43,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     private final TabStripDragHandler mTabStripDragHandler;
     private final ActionConfirmationManager mActionConfirmationManager;
     private final ReorderSubStrategy mTabSubStrategy;
+    private final ReorderSubStrategy mMultiTabSubStrategy;
     private final ReorderSubStrategy mGroupSubStrategy;
 
     // View on strip being dragged.
@@ -69,6 +70,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             @NonNull TabStripDragHandler tabStripDragHandler,
             @NonNull ActionConfirmationManager actionConfirmationManager,
             ReorderStrategy tabStrategy,
+            ReorderStrategy multiTabStrategy,
             ReorderStrategy groupStrategy) {
         super(
                 reorderDelegate,
@@ -84,6 +86,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
         mTabStripDragHandler = tabStripDragHandler;
         mActionConfirmationManager = actionConfirmationManager;
         mTabSubStrategy = new TabReorderSubStrategy(tabStrategy);
+        mMultiTabSubStrategy = new MultiTabReorderSubStrategy(multiTabStrategy);
         mGroupSubStrategy = new GroupReorderSubStrategy(groupStrategy);
     }
 
@@ -101,12 +104,19 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
 
         // Set the correct sub-strategy.
         if (interactingView instanceof StripLayoutTab) {
-            mActiveSubStrategy = mTabSubStrategy;
+            StripLayoutTab tab = (StripLayoutTab) interactingView;
+            if (mModel.isTabMultiSelected(tab.getTabId())
+                    && mModel.getMultiSelectedTabsCount() > 1) {
+                mActiveSubStrategy = mMultiTabSubStrategy;
+            } else {
+                mActiveSubStrategy = mTabSubStrategy;
+            }
         } else if (interactingView instanceof StripLayoutGroupTitle) {
             mActiveSubStrategy = mGroupSubStrategy;
         }
 
         // Attempt to start a drag and drop action. If the drag successfully started, early-out.
+        // Drag and drop for multi tab selection will be added later.
         if (mActiveSubStrategy != null
                 && mActiveSubStrategy.startViewDragAction(stripTabs, startPoint)) {
             return;
@@ -164,7 +174,7 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
     }
 
     boolean isReorderingTab() {
-        return mActiveSubStrategy == mTabSubStrategy;
+        return mActiveSubStrategy == mTabSubStrategy || mActiveSubStrategy == mMultiTabSubStrategy;
     }
 
     private void removeViewOutOfStrip(StripLayoutView draggedView) {
@@ -370,6 +380,20 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
                         /* animate= */ true, draggedTab, /* animateTabAdded= */ true);
             }
             super.onStopViewDragAction(stripViews, groupTitles);
+        }
+    }
+
+    private static class MultiTabReorderSubStrategy extends ReorderSubStrategy {
+        MultiTabReorderSubStrategy(ReorderStrategy multiTabReorderStrategy) {
+            super(multiTabReorderStrategy);
+        }
+
+        @Override
+        boolean startViewDragAction(StripLayoutTab[] stripTabs, PointF startPoint) {
+            // Do not start a system-level drag and drop for multi-tab reorder.
+            // Return false to indicate that the drag should be handled internally.
+            // TODO(crbug.com/404074503): Add drag and drop functionality.
+            return false;
         }
     }
 

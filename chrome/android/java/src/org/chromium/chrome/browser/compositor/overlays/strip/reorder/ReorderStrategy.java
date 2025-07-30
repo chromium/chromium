@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 import android.graphics.PointF;
 
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
@@ -58,5 +59,5 @@ public interface ReorderStrategy {
     void stopReorderMode(StripLayoutView[] stripViews, StripLayoutGroupTitle[] groupTitles);
 
     /** Returns the dragged {@link StripLayoutView} for the reorder. */
-    StripLayoutView getInteractingView();
+    @Nullable StripLayoutView getInteractingView();
 }

@@ -43,6 +43,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
     // Dependencies
     @Mock private TabStripDragHandler mTabStripDragHandler;
     @Mock protected ReorderStrategy mTabStrategy;
+    @Mock protected ReorderStrategy mMultiTabStrategy;
     @Mock protected ReorderStrategy mGroupStrategy;
 
     // Data
@@ -70,6 +71,7 @@ public class SourceViewDragDropReorderStrategyTest extends ReorderStrategyTestBa
                         mTabStripDragHandler,
                         mActionConfirmationManager,
                         mTabStrategy,
+                        mMultiTabStrategy,
                         mGroupStrategy);
     }
 
