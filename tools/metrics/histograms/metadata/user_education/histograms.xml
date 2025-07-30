@@ -34,7 +34,13 @@ chromium-metrics-reviews@google.com.
   <variant name="ComposeProactiveNudge"
       summary="For Compose feature; shown on autofill popup."/>
   <variant name="DevToolsAiAssistanceFileAgent"
-      summary="Promotion forDevTools AI Assistance File Agent."/>
+      summary="Promotion for DevTools AI Assistance File Agent."/>
+  <variant name="DevToolsAiAssistanceNetworkAgent"
+      summary="Promotion for DevTools AI Assistance Network Agent."/>
+  <variant name="DevToolsAiAssistancePerformanceAgent"
+      summary="Promotion for DevTools AI Assistance Performance Agent."/>
+  <variant name="DevToolsFreestyler"
+      summary="Promotion for DevTools AI Assistance Freestyler Agent."/>
   <variant name="Glic" summary="Glic toggle on settings page."/>
   <variant name="GlicAppMenuNewBadge"
       summary="Glic menu item in the three dot menu."/>
