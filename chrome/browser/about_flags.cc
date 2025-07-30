@@ -13338,10 +13338,10 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if !BUILDFLAG(IS_ANDROID)
-  // Only show Webium flag for Canary channel and developer builds.
+  // The Webium flag is only for dev testing at the moment.
+  // TODO(crbug.com/394476530): make the flag available on Canary again.
   if (!strcmp(kWebiumFlag, entry.internal_name)) {
-    return chrome::GetChannel() != version_info::Channel::CANARY &&
-           version_info::IsOfficialBuild();
+    return version_info::IsOfficialBuild();
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
