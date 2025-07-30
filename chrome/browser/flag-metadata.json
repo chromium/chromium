@@ -2101,6 +2101,14 @@
     "expiry_milestone": 125
   },
   {
+    "name": "default-search-engine-prewarm",
+    "owners": [
+      "toyoshim@chromium.org",
+      "//content/browser/preloading/prerender/OWNERS"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "default-site-instance-groups",
     "owners": [ "yangsharon@chromium.org", "chrome-security-architecture@google.com" ],
     "expiry_milestone": 150

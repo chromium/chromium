@@ -280,6 +280,9 @@ extern const char kDataSharingSharedDataTypesEnabledWithUi[];
 extern const char kDbdRevampDesktopName[];
 extern const char kDbdRevampDesktopDescription[];
 
+extern const char kDefaultSearchEnginePrewarmName[];
+extern const char kDefaultSearchEnginePrewarmDescription[];
+
 extern const char kDisableAutofillStrikeSystemName[];
 extern const char kDisableAutofillStrikeSystemDescription[];
 

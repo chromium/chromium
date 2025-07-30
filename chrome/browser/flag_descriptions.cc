@@ -419,6 +419,10 @@ const char kDbdRevampDesktopDescription[] =
     "UI changes and removal of the bulk password deletion option from the "
     "dialog.";
 
+const char kDefaultSearchEnginePrewarmName[] = "Default search engine prewarm";
+const char kDefaultSearchEnginePrewarmDescription[] =
+        "Performance optimization to prewarm the default search engine used in the Omnibox";
+
 const char kDisableAutofillStrikeSystemName[] =
     "Disable the Autofill strike system";
 const char kDisableAutofillStrikeSystemDescription[] =
