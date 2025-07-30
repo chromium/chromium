@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/chromeos/app_mode/kiosk_web_contents_logs_collector.h"
+#include "chrome/browser/chromeos/app_mode/kiosk_web_contents_observer.h"
 
 #include <cstdint>
 #include <memory>
 #include <optional>
 #include <string>
-#include <utility>
 
 #include "base/test/repeating_test_future.h"
 #include "chrome/browser/chromeos/app_mode/kiosk_app_level_logs_saver.h"
@@ -25,15 +24,17 @@ namespace chromeos {
 namespace {
 
 const auto* kDefaultMessage = u"This is the default message.";
+const auto* kDefaultMessage2 = u"This is the second default message";
 const auto* kDefaultSource =
     u"chrome-extension://efdahhfldoeikfglgolhibmdidbnpneo/background.js";
+const auto* kDefaultSource2 =
+    u"chrome-extension://bbbbbbbbbbbbbbbbbbbbbbbbb/background.js";
 constexpr int kDefaultLineNumber = 0;
-const auto* kWebContent1Message = u"This message is from web contents1";
-const auto* kWebContent2Message = u"This message is from web contents2";
+constexpr int kDefaultLineNumber2 = 100;
 
 }  // namespace
 
-class KioskWebContentsLogsCollectorTest : public ::testing::Test {
+class KioskWebContentsObserverTest : public ::testing::Test {
  public:
   void SetUp() override {
     testing::Test::SetUp();
@@ -41,10 +42,9 @@ class KioskWebContentsLogsCollectorTest : public ::testing::Test {
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
   }
 
-  void CreateLogCollector(
-      KioskWebContentsLogsCollector::LoggerCallback callback) {
-    log_collector_ = std::make_unique<KioskWebContentsLogsCollector>(
-        profile(), std::move(callback));
+  void CreateLogsObserver(KioskWebContentsObserver::LoggerCallback callback) {
+    observer_ = std::make_unique<KioskWebContentsObserver>(web_contents(),
+                                                           std::move(callback));
   }
 
   void AddMessageToConsole(
@@ -63,9 +63,7 @@ class KioskWebContentsLogsCollectorTest : public ::testing::Test {
 
   content::WebContents* web_contents() { return web_contents_.get(); }
 
-  KioskWebContentsLogsCollector* log_collector() {
-    return log_collector_.get();
-  }
+  KioskWebContentsObserver* log_observer() { return observer_.get(); }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -74,17 +72,15 @@ class KioskWebContentsLogsCollectorTest : public ::testing::Test {
   TestingProfile profile_;
   std::unique_ptr<content::WebContents> web_contents_;
 
-  std::unique_ptr<KioskWebContentsLogsCollector> log_collector_;
+  std::unique_ptr<KioskWebContentsObserver> observer_;
 };
 
-TEST_F(KioskWebContentsLogsCollectorTest,
-       ShouldSaveLogWhenMessageAddedToConsole) {
+TEST_F(KioskWebContentsObserverTest, ShouldSaveLogWhenMessageAddedToConsole) {
   base::test::RepeatingTestFuture<
       const KioskAppLevelLogsSaver::KioskLogMessage&>
       result_future;
 
-  CreateLogCollector(result_future.GetCallback());
-  log_collector()->AddWebContentsToObserve(web_contents());
+  CreateLogsObserver(result_future.GetCallback());
 
   AddMessageToConsole(web_contents(), blink::mojom::ConsoleMessageLevel::kInfo,
                       kDefaultMessage, kDefaultLineNumber, kDefaultSource,
@@ -96,35 +92,17 @@ TEST_F(KioskWebContentsLogsCollectorTest,
   EXPECT_EQ(log.source(), kDefaultSource);
   EXPECT_EQ(log.untrusted_stack_trace(), std::nullopt);
   EXPECT_EQ(log.severity(), blink::mojom::ConsoleMessageLevel::kInfo);
-}
 
-TEST_F(KioskWebContentsLogsCollectorTest,
-       ShouldSaveLogsFromDifferentWebContents) {
-  base::test::RepeatingTestFuture<
-      const KioskAppLevelLogsSaver::KioskLogMessage&>
-      result_future;
-  std::unique_ptr<content::WebContents> web_contents1 =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-  std::unique_ptr<content::WebContents> web_contents2 =
-      content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
-
-  CreateLogCollector(result_future.GetCallback());
-  log_collector()->AddWebContentsToObserve(web_contents1.get());
-  log_collector()->AddWebContentsToObserve(web_contents2.get());
-
-  AddMessageToConsole(
-      web_contents1.get(), blink::mojom::ConsoleMessageLevel::kInfo,
-      kWebContent1Message, kDefaultLineNumber, kDefaultSource, std::nullopt);
-
-  auto log1 = result_future.Take();
-  EXPECT_EQ(log1.message(), kWebContent1Message);
-
-  AddMessageToConsole(
-      web_contents2.get(), blink::mojom::ConsoleMessageLevel::kInfo,
-      kWebContent2Message, kDefaultLineNumber, kDefaultSource, std::nullopt);
+  AddMessageToConsole(web_contents(), blink::mojom::ConsoleMessageLevel::kError,
+                      kDefaultMessage2, kDefaultLineNumber2, kDefaultSource2,
+                      std::nullopt);
 
   auto log2 = result_future.Take();
-  EXPECT_EQ(log2.message(), kWebContent2Message);
+  EXPECT_EQ(log2.line_no(), kDefaultLineNumber2);
+  EXPECT_EQ(log2.message(), kDefaultMessage2);
+  EXPECT_EQ(log2.source(), kDefaultSource2);
+  EXPECT_EQ(log2.untrusted_stack_trace(), std::nullopt);
+  EXPECT_EQ(log2.severity(), blink::mojom::ConsoleMessageLevel::kError);
 }
 
 }  // namespace chromeos
