@@ -10,12 +10,15 @@
 #include "ui/gtk/gtk_ui.h"
 
 #include <cairo.h>
+#include <glib.h>
 #include <pango/pango.h>
 
+#include <array>
 #include <cmath>
 #include <memory>
 #include <optional>
 #include <set>
+#include <string_view>
 #include <unordered_set>
 #include <utility>
 
@@ -198,6 +201,100 @@ double FontScale() {
   return std::round(font_scale * 64) / 64;
 }
 
+// Some misconfigured systems have missing or corrupted schemas, see
+// https://crbug.com/434763642. Avoid initializing GTK in this case to prevent
+// a crash.
+bool IsValidSchema(ui::LinuxUiBackend backend) {
+  struct GFreeDeleter {
+    void operator()(gchar* ptr) const { g_free(ptr); }
+  };
+  struct GVariantDeleter {
+    void operator()(GVariant* ptr) const { g_variant_unref(ptr); }
+  };
+  struct GSettingsSchemaKeyDeleter {
+    void operator()(GSettingsSchemaKey* ptr) const {
+      g_settings_schema_key_unref(ptr);
+    }
+  };
+  struct GSettingsSchemaDeleter {
+    void operator()(GSettingsSchema* ptr) const {
+      g_settings_schema_unref(ptr);
+    }
+  };
+
+  struct {
+    const char* interface;
+    std::array<const char*, 3> keys;
+  } static constexpr kInterfaces[] = {
+      {"org.gnome.desktop.interface",
+       {"font-antialiasing", "font-hinting", "font-rgba-order"}},
+      {"org.gnome.settings-daemon.plugins.xsettings",
+       {"antialiasing", "hinting", "rgba-order"}},
+  };
+
+  if (backend != ui::LinuxUiBackend::kWayland) {
+    // The GTK codepath using these schemas is only used on Wayland.
+    return true;
+  }
+
+  auto* source = g_settings_schema_source_get_default();
+  if (!source) {
+    return true;
+  }
+
+  for (const auto& interface : kInterfaces) {
+    std::unique_ptr<GSettingsSchema, GSettingsSchemaDeleter> schema(
+        g_settings_schema_source_lookup(source, interface.interface,
+                                        /*recursive=*/true));
+    if (!schema) {
+      // Not an error, try the next schema.
+      continue;
+    }
+
+    for (const char* key_string : interface.keys) {
+      // Checking for the key first is required, otherwise
+      // g_settings_schema_get_key() could crash.
+      if (!g_settings_schema_has_key(schema.get(), key_string)) {
+        LOG(ERROR) << "Schema " << interface.interface << " does not have key "
+                   << key_string;
+        return false;
+      }
+
+      std::unique_ptr<GSettingsSchemaKey, GSettingsSchemaKeyDeleter> key(
+          g_settings_schema_get_key(schema.get(), key_string));
+      if (!key) {
+        LOG(ERROR) << "Schema " << interface.interface << " has key "
+                   << key_string << ", but g_settings_schema_get_key() failed";
+        return false;
+      }
+
+      std::unique_ptr<GVariant, GVariantDeleter> range(
+          g_settings_schema_key_get_range(key.get()));
+      if (!range) {
+        LOG(ERROR) << "Schema " << interface.interface << " key " << key_string
+                   << " has no range, but it is required";
+        return false;
+      }
+
+      char* type_string = nullptr;
+      g_variant_get(range.get(), "(sv)", &type_string, nullptr);
+      std::unique_ptr<gchar, GFreeDeleter> type_string_deleter(type_string);
+      if (!type_string || type_string != std::string_view("enum")) {
+        LOG(ERROR) << "Schema " << interface.interface << " key " << key_string
+                   << " must be an enum";
+        return false;
+      }
+    }
+
+    // Valid schema. Return now since GTK uses the first present schema.
+    return true;
+  }
+
+  // No schema found. This is acceptable, because GTK will fallback to using
+  // default values.
+  return true;
+}
+
 }  // namespace
 
 GtkUi::GtkUi() : window_frame_actions_() {
@@ -221,12 +318,17 @@ bool GtkUi::Initialize() {
   DCHECK(delegate);
   const auto backend = delegate->GetBackend();
 
+  if (!IsValidSchema(backend)) {
+    return false;
+  }
+
   if (!LoadGtk(backend) || !GtkCheckVersion(3, 20)) {
     return false;
   }
 
   // Gtk initialization through pango may call FcInit() before we get to that.
-  // Retrieve global FontConfig config here to call FcInit() with configuration we control.
+  // Retrieve global FontConfig config here to call FcInit() with configuration
+  // we control.
   gfx::GetGlobalFontConfig();
 
   platform_ = CreateGtkUiPlatform(backend);
