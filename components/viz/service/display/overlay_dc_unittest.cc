@@ -502,8 +502,7 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
       ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/false,
-                                                  /*is_sdr_to_hdr*/ true)
-          .size();
+                                                  /*is_sdr_to_hdr*/ true);
     }
     EXPECT_EQ(1U, ProcessForOverlaysSingleVideoRectWithOffset(
                       {0, 0}, /*is_hdr=*/false, /*is_sdr_to_hdr*/ true)
@@ -521,8 +520,7 @@ TEST_F(DCLayerOverlayProcessorTest, DisableVideoOverlayIfMovingWorkaround) {
         ->set_disable_video_overlay_if_moving_for_testing(true);
     // We expect an overlay promotion after a couple frames of no movement
     for (int i = 0; i < 10; i++) {
-      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
-          .size();
+      ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true);
     }
     EXPECT_EQ(
         1U, ProcessForOverlaysSingleVideoRectWithOffset({0, 0}, /*is_hdr=*/true)
