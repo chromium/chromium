@@ -1788,14 +1788,11 @@ MLOperand* MLGraphBuilder::batchNormalization(
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   HeapVector<Member<MLOperand>> inputs = {input, mean, variance};
-  // Adding the optional operands into inputs ensures the graph traversal
-  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
-  // optional operands should be retrieved from the options instead of inputs.
   if (options->hasScale()) {
-    inputs.push_back(options->scale());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->scale()), nullptr);
   }
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()), nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -1903,7 +1900,7 @@ MLOperand* MLGraphBuilder::conv2d(MLOperand* input,
 
   HeapVector<Member<MLOperand>> inputs = {input, filter};
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()), nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -1938,7 +1935,7 @@ MLOperand* MLGraphBuilder::convTranspose2d(MLOperand* input,
 
   HeapVector<Member<MLOperand>> inputs = {input, filter};
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()), nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -2263,7 +2260,7 @@ MLOperand* MLGraphBuilder::gemm(MLOperand* a,
 
   HeapVector<Member<MLOperand>> inputs = {a, b};
   if (options->hasC()) {
-    inputs.push_back(options->c());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->c()), nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -2295,13 +2292,16 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::gru(
 
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight};
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasRecurrentBias()) {
-    inputs.push_back(options->recurrentBias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->recurrentBias()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasInitialHiddenState()) {
-    inputs.push_back(options->initialHiddenState());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->initialHiddenState()),
+                                   HeapVector<Member<MLOperand>>());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<MLOperand>>());
@@ -2338,10 +2338,11 @@ MLOperand* MLGraphBuilder::gruCell(MLOperand* input,
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight,
                                           hidden_state};
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()), nullptr);
   }
   if (options->hasRecurrentBias()) {
-    inputs.push_back(options->recurrentBias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->recurrentBias()),
+                                   nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -2400,14 +2401,11 @@ MLOperand* MLGraphBuilder::instanceNormalization(
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   HeapVector<Member<MLOperand>> inputs = {input};
-  // Adding the optional operands into inputs ensures the graph traversal
-  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
-  // optional operands should be retrieved from the options instead of inputs.
   if (options->hasScale()) {
-    inputs.push_back(options->scale());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->scale()), nullptr);
   }
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()), nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -2434,14 +2432,11 @@ MLOperand* MLGraphBuilder::layerNormalization(
   THROW_AND_RETURN_IF_ERROR(ValidateGraphBuilderState(), nullptr);
 
   HeapVector<Member<MLOperand>> inputs = {input};
-  // Adding the optional operands into inputs ensures the graph traversal
-  // algorithm GetOperatorsInTopologicalOrder() works. For backends, the
-  // optional operands should be retrieved from the options instead of inputs.
   if (options->hasScale()) {
-    inputs.push_back(options->scale());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->scale()), nullptr);
   }
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()), nullptr);
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs), nullptr);
 
@@ -2513,19 +2508,24 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::lstm(
 
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight};
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasRecurrentBias()) {
-    inputs.push_back(options->recurrentBias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->recurrentBias()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasPeepholeWeight()) {
-    inputs.push_back(options->peepholeWeight());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->peepholeWeight()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasInitialHiddenState()) {
-    inputs.push_back(options->initialHiddenState());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->initialHiddenState()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasInitialCellState()) {
-    inputs.push_back(options->initialCellState());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->initialCellState()),
+                                   HeapVector<Member<MLOperand>>());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<MLOperand>>());
@@ -2577,13 +2577,16 @@ HeapVector<Member<MLOperand>> MLGraphBuilder::lstmCell(
   HeapVector<Member<MLOperand>> inputs = {input, weight, recurrent_weight,
                                           hidden_state, cell_state};
   if (options->hasBias()) {
-    inputs.push_back(options->bias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->bias()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasRecurrentBias()) {
-    inputs.push_back(options->recurrentBias());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->recurrentBias()),
+                                   HeapVector<Member<MLOperand>>());
   }
   if (options->hasPeepholeWeight()) {
-    inputs.push_back(options->peepholeWeight());
+    THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInput(options->peepholeWeight()),
+                                   HeapVector<Member<MLOperand>>());
   }
   THROW_AND_RETURN_TYPE_IF_ERROR(ValidateInputs(inputs),
                                  HeapVector<Member<MLOperand>>());

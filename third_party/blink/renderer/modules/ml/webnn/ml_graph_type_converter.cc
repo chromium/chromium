@@ -209,10 +209,10 @@ using OperandToIdMap = HeapHashMap<Member<const MLOperand>, webnn::OperandId>;
 
 webnn::OperandId GetOperatorInputId(const MLOperator* op,
                                     const OperandToIdMap& operand_to_id_map,
-                                    wtf_size_t index = 0) {
+                                    wtf_size_t positional_index = 0) {
   CHECK(op);
-  CHECK_LT(index, op->Inputs().size());
-  const auto* input = op->Inputs()[index].Get();
+  CHECK_LT(positional_index, op->PositionalInputs().size());
+  const auto* input = op->PositionalInputs()[positional_index].Get();
   return operand_to_id_map.at(input);
 }
 
@@ -338,7 +338,7 @@ OperationPtr CreateBatchNormalizationOperation(
         operand_to_id_map.at(options->bias());
   }
 
-  const MLOperand* input_operand = batch_normalization->Inputs()[0];
+  const MLOperand* input_operand = batch_normalization->PositionalInputs()[0];
   webnn::OperandId input_operand_id = operand_to_id_map.at(input_operand);
 
   const MLOperand* output_operand = batch_normalization->Outputs()[0];
@@ -401,14 +401,14 @@ OperationPtr CreateConv2dOperation(const OperandToIdMap& operand_to_id_map,
     conv2d_mojo->bias_operand_id = operand_to_id_map.at(options->bias());
   }
 
-  const MLOperand* input_operand = conv2d->Inputs()[0];
+  const MLOperand* input_operand = conv2d->PositionalInputs()[0];
   const MLOperand* output_operand = conv2d->Outputs()[0];
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
   conv2d_mojo->input_operand_id = operand_to_id_map.at(input_operand);
   conv2d_mojo->output_operand_id = output_operand_id;
 
-  const MLOperand* filter_operand = conv2d->Inputs()[1];
+  const MLOperand* filter_operand = conv2d->PositionalInputs()[1];
 
   if constexpr (std::is_same<MLConv2dOptionsType, MLConv2dOptions>::value) {
     conv2d_mojo->kind = blink_mojom::Conv2d::Kind::kDirect;
@@ -724,7 +724,7 @@ OperationPtr CreateLayerNormalizationOperation(
 
   layer_normalization_mojo->axes =
       options->getAxesOr(CreateLayerNormalizationDefaultAxes(
-          layer_normalization->Inputs()[0]->Rank()));
+          layer_normalization->PositionalInputs()[0]->Rank()));
 
   layer_normalization_mojo->epsilon = options->epsilon();
   layer_normalization_mojo->label = options->label();
@@ -737,7 +737,8 @@ OperationPtr CreateInstanceNormalizationOperation(
     const MLOperator* instance_normalization) {
   auto instance_normalization_mojo =
       webnn::mojom::blink::InstanceNormalization::New();
-  const MLOperand* input_operand = instance_normalization->Inputs()[0];
+  const MLOperand* input_operand =
+      instance_normalization->PositionalInputs()[0];
   const MLOperand* output_operand = instance_normalization->Outputs()[0];
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
 
@@ -935,7 +936,7 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
                                    const blink_mojom::Pool2d::Kind& kind) {
   auto pool2d_mojo = blink_mojom::Pool2d::New();
   pool2d_mojo->kind = kind;
-  const MLOperand* input_operand = pool2d->Inputs()[0];
+  const MLOperand* input_operand = pool2d->PositionalInputs()[0];
   const MLOperand* output_operand = pool2d->Outputs()[0];
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
   const auto* options =
@@ -956,8 +957,8 @@ OperationPtr CreatePool2dOperation(const OperandToIdMap& operand_to_id_map,
   pool2d_mojo->dilations = Size2d::New(dilations[0], dilations[1]);
 
   // Get height and width of input for calculating padding.
-  auto input_size = mojo::GetInputOperandSize2d(pool2d->Inputs()[0].Get(),
-                                                options->layout().AsEnum());
+  auto input_size = mojo::GetInputOperandSize2d(
+      pool2d->PositionalInputs()[0].Get(), options->layout().AsEnum());
   // The dimensions of the sliding window are the height and width of input
   // operand if they are not supplied by user.
   uint32_t window_height = input_size.height;
@@ -1025,7 +1026,7 @@ OperationPtr CreateReduceOperator(const OperandToIdMap& operand_to_id_map,
   const auto* options =
       static_cast<const blink::MLReduceOptions*>(reduce->Options());
   CHECK(options);
-  const wtf_size_t input_rank = reduce->Inputs()[0]->Rank();
+  const wtf_size_t input_rank = reduce->PositionalInputs()[0]->Rank();
   const auto axes = options->getAxesOr(CreateAllAxes(input_rank));
   CHECK_LE(axes.size(), input_rank);
   reduce_mojo->axes = axes;
@@ -1062,7 +1063,7 @@ OperationPtr CreateResample2dOperation(const OperandToIdMap& operand_to_id_map,
     resample2d_mojo->scales = scales;
   }
 
-  const MLOperand* input_operand = resample2d->Inputs()[0];
+  const MLOperand* input_operand = resample2d->PositionalInputs()[0];
   const MLOperand* output_operand = resample2d->Outputs()[0];
   webnn::OperandId input_operand_id = operand_to_id_map.at(input_operand);
   webnn::OperandId output_operand_id = operand_to_id_map.at(output_operand);
@@ -1243,7 +1244,7 @@ OperationPtr CreateTransposeOperation(const OperandToIdMap& operand_to_id_map,
       static_cast<const MLTransposeOptions*>(transpose->Options());
   CHECK(options);
 
-  wtf_size_t input_rank = transpose->Inputs()[0]->Rank();
+  wtf_size_t input_rank = transpose->PositionalInputs()[0]->Rank();
   transpose_mojo->permutation =
       options->getPermutationOr(CreateDefaultPermutation(input_rank));
   CHECK_EQ(transpose_mojo->permutation.size(), input_rank);
