@@ -172,6 +172,11 @@ public class HubManagerImpl implements HubManager, HubController {
     }
 
     @Override
+    public HubContainerView getContainerViewUnchecked() {
+        return mHubContainerView;
+    }
+
+    @Override
     public @Nullable View getPaneHostView() {
         assert mHubCoordinator != null : "Access of a Hub pane host view that doesn't exist";
         return mHubContainerView.findViewById(R.id.hub_pane_host);

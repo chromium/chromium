@@ -318,6 +318,7 @@ public class HubLayoutUnitTest {
 
         View paneHostView = hubLayout.findViewById(R.id.hub_pane_host);
         when(mHubController.getContainerView()).thenReturn(mHubContainerView);
+        when(mHubController.getContainerViewUnchecked()).thenReturn(mHubContainerView);
         when(mHubController.getPaneHostView()).thenReturn(paneHostView);
 
         LazyOneshotSupplier<HubManager> hubManagerSupplier =
