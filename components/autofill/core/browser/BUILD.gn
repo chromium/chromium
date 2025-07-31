@@ -3,12 +3,25 @@
 # found in the LICENSE file.
 
 import("//build/buildflag_header.gni")
+import("//build/compiled_action.gni")
 import("//build/config/chrome_build.gni")
 import("//build/config/features.gni")
 import("//components/optimization_guide/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/protobuf/proto_library.gni")
 import("//tools/grit/grit_rule.gni")
+
+source_set("country_data") {
+  sources = [
+    "geo/country_data.cc",
+    "geo/country_data.h",
+  ]
+  deps = [
+    "//base",
+    "//components/strings",
+    "//third_party/icu",
+  ]
+}
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
@@ -68,6 +81,26 @@ action("entity_schema_enums_and_functions") {
   ]
   args = [ "--input" ] + rebase_path(sources, root_build_dir) + [ "--output" ] +
          rebase_path(outputs, root_build_dir)
+}
+
+executable("country_native_names_generator") {
+  sources = [ "geo/generate_country_native_names.cc" ]
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//components/autofill/core/browser:country_data",
+    "//third_party/icu",
+  ]
+}
+
+compiled_action("generate_country_native_names") {
+  tool = ":country_native_names_generator"
+  outputs = [ "$target_gen_dir/geo/country_native_names_inl.h" ]
+  args = [
+    "--output-file-path=" +
+        rebase_path("$target_gen_dir/geo/country_native_names_inl.h",
+                    root_build_dir),
+  ]
 }
 
 proto_library("amount_extraction_heuristic_regexes_proto") {
@@ -316,8 +349,6 @@ static_library("browser") {
     "geo/alternative_state_name_map_updater.h",
     "geo/autofill_country.cc",
     "geo/autofill_country.h",
-    "geo/country_data.cc",
-    "geo/country_data.h",
     "geo/country_names.cc",
     "geo/country_names.h",
     "geo/country_names_for_locale.cc",
@@ -774,6 +805,7 @@ static_library("browser") {
     "webdata/valuables/valuables_table.h",
   ]
 
+  sources += get_target_outputs(":generate_country_native_names")
   sources += get_target_outputs(":regex_patterns_inl_h")
   sources += get_target_outputs(":entity_schema_enums_and_functions")
 
@@ -866,6 +898,7 @@ static_library("browser") {
 
   public_deps = [
     ":amount_extraction_heuristic_regexes_proto",
+    ":country_data",
     ":legal_message_line",
     "//components/autofill/core/browser/payments:card_unmask_challenge_option",
     "//components/autofill/core/browser/proto",
@@ -901,6 +934,7 @@ static_library("browser") {
     ":autofill_address_rewriter_resources",
     ":buildflags",
     ":entity_schema_enums_and_functions",
+    ":generate_country_native_names",
     ":regex_patterns_inl_h",
     "//base",
     "//base:i18n",

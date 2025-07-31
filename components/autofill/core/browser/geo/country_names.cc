@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/i18n/rtl.h"
+#include "base/i18n/case_conversion.h"
 #include "base/lazy_instance.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -17,6 +18,7 @@
 #include "build/build_config.h"
 #include "components/autofill/core/browser/geo/country_data.h"
 #include "components/autofill/core/browser/geo/country_names_for_locale.h"
+#include "components/autofill/core/browser/geo/country_native_names_inl.h"
 
 namespace autofill {
 
@@ -45,8 +47,6 @@ std::map<std::string, std::string> GetCommonNames() {
   common_names.insert(std::make_pair("U.S.A.", "US"));
   common_names.insert(std::make_pair("GREAT BRITAIN", "GB"));
   common_names.insert(std::make_pair("UK", "GB"));
-  common_names.insert(std::make_pair("BRASIL", "BR"));
-  common_names.insert(std::make_pair("DEUTSCHLAND", "DE"));
   // For some reason this is not provided by ICU:
   common_names.insert(std::make_pair("CZECH REPUBLIC", "CZ"));
 #if BUILDFLAG(IS_IOS)
@@ -82,6 +82,13 @@ const std::string& CountryNames::GetCountryCode(
   const auto result = common_names_.find(country_utf8);
   if (result != common_names_.end())
     return result->second;
+
+  // Next, check country native names.
+  const auto native_result =
+      kCountryNativeNames.find(base::i18n::ToUpper(country));
+  if (native_result != kCountryNativeNames.end()) {
+    return native_result->second;
+  }
 
   // Next, check country names localized to the current locale.
   const std::string& country_code =
