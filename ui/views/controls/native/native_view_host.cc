@@ -20,9 +20,6 @@
 
 namespace views {
 
-// static
-const char kWidgetNativeViewHostKey[] = "WidgetNativeViewHost";
-
 ////////////////////////////////////////////////////////////////////////////////
 // NativeViewHost, public:
 

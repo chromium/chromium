@@ -13,7 +13,7 @@ namespace views {
 
 // The default value for how long to wait before showing a menu button on hover.
 // This value is used if the OS doesn't supply one.
-extern const int kDefaultMenuShowDelay;
+inline constexpr int kDefaultMenuShowDelay = 400;
 
 // Returns the amount of time between double clicks.
 VIEWS_EXPORT int GetDoubleClickInterval();

@@ -25,8 +25,6 @@
 
 namespace views {
 
-const int kComboboxArrowPaddingWidth = 4;
-
 int GetComboboxArrowContainerWidthAndMargins() {
   // add extra margins between combobox arrow container and edge of the
   // combobox.
