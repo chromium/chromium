@@ -156,6 +156,8 @@ void UndoPasswordChangeController::OnPasswordFormParsed(
         password_manager_util::FindFormByUsername(
             form_manager->GetBestMatches(), failed_login_form_->username_value);
     if (!form_best_match || !form_best_match->GetPasswordBackup() ||
+        form_best_match->GetPasswordBackup() ==
+            failed_login_form_->password_value ||
         !base::FeatureList::IsEnabled(features::kShowRecoveryPassword)) {
       FinishObserving();
       return;
