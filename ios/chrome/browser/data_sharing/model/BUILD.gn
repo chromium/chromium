@@ -63,10 +63,14 @@ source_set("ui_delegate") {
 
 source_set("context") {
   sources = [
-    "ios_share_url_interception_context.cc",
     "ios_share_url_interception_context.h",
+    "ios_share_url_interception_context.mm",
   ]
-  deps = [ "//components/data_sharing/public" ]
+  deps = [
+    "//base",
+    "//components/data_sharing/public",
+    "//ios/chrome/browser/shared/model/browser",
+  ]
 }
 
 source_set("observer_bridge") {

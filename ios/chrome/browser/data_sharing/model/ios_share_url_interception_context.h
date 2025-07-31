@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_DATA_SHARING_MODEL_IOS_SHARE_URL_INTERCEPTION_CONTEXT_H_
 #define IOS_CHROME_BROWSER_DATA_SHARING_MODEL_IOS_SHARE_URL_INTERCEPTION_CONTEXT_H_
 
-#import "base/memory/raw_ptr.h"
+#import "base/memory/weak_ptr.h"
 #import "components/data_sharing/public/share_url_interception_context.h"
 
 class Browser;
@@ -16,9 +16,14 @@ namespace data_sharing {
 // in the right window.
 struct IOSShareURLInterceptionContext : public ShareURLInterceptionContext {
   explicit IOSShareURLInterceptionContext(Browser* browser);
-  ~IOSShareURLInterceptionContext() override = default;
+  ~IOSShareURLInterceptionContext() override;
 
-  raw_ptr<Browser> browser;
+  IOSShareURLInterceptionContext(const IOSShareURLInterceptionContext&) =
+      delete;
+  IOSShareURLInterceptionContext& operator=(
+      const IOSShareURLInterceptionContext&) = delete;
+
+  base::WeakPtr<Browser> weak_browser;
 };
 
 }  // namespace data_sharing

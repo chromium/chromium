@@ -37,7 +37,8 @@ class DataSharingUIDelegateIOS : public DataSharingUIDelegate {
 
  private:
   // Called when the app is ready to present the join flow.
-  void OnJoinFlowReadyToBePresented(GURL url, Browser* browser);
+  void OnJoinFlowReadyToBePresented(GURL url,
+                                    base::WeakPtr<Browser> weak_browser);
 
   raw_ptr<ShareKitService> share_kit_service_;
   raw_ptr<collaboration::CollaborationService> collaboration_service_;
