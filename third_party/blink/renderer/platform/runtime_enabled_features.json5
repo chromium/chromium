@@ -4238,10 +4238,6 @@
       status: "stable",
     },
     {
-      name: "ScrollEndEvents",
-      status: "stable",
-    },
-    {
       name: "ScrollIntoViewNearest",
       status: "stable"
     },

@@ -1163,9 +1163,7 @@ void ScrollableArea::OnScrollFinished(bool scroll_did_end) {
         // TODO(https://crbug.com/41406914): This is temporary. Remove once we
         // start to migrate to scroll-promises.
         node->GetDocument().Markers().StartGlicMarkerAnimationIfNeeded();
-        if (RuntimeEnabledFeatures::ScrollEndEventsEnabled()) {
-          node->GetDocument().EnqueueScrollEndEventForNode(node);
-        }
+        node->GetDocument().EnqueueScrollEndEventForNode(node);
       }
     }
     GetLayoutBox()
