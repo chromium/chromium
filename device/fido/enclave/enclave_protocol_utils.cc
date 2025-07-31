@@ -232,6 +232,91 @@ std::optional<std::vector<uint8_t>> ParsePrfResponse(const cbor::Value& v) {
   return ret;
 }
 
+// Redacts `path` from `cbor` using the semantics described below for
+// `RedactCbor`. Mutates `cbor` in place.
+void RedactPath(cbor::Value* cbor, base::span<const char*> path) {
+  if (cbor->is_array()) {
+    // Mutate all the elements in the array.
+    cbor::Value::ArrayValue& array =
+        const_cast<cbor::Value::ArrayValue&>(cbor->GetArray());
+    for (cbor::Value& value : array) {
+      RedactPath(&value, path);
+    }
+    return;
+  }
+  if (!cbor->is_map()) {
+    // Only maps and arrays are supported.
+    return;
+  }
+  cbor::Value::MapValue& map =
+      const_cast<cbor::Value::MapValue&>(cbor->GetMap());
+  const char* field = path.take_first_elem();
+  const auto it = map.find(cbor::Value(field));
+  if (it == map.end()) {
+    // Could not find some part of the path, bail out.
+    return;
+  }
+  if (path.empty()) {
+    // Found the leaf, replace the map value regardless of its type.
+    it->second = cbor::Value("[redacted]");
+    return;
+  }
+  RedactPath(&it->second, path);
+}
+
+// Redacts `paths_to_redact` from `cbor` by finding the corresponding keys and
+// replacing them by the cbor string "redacted". Nested paths should correspond
+// to nested maps under the same key name. The redaction is applied to all array
+// elements for a matching key.
+// If a path is not found, a clone of `cbor` is returned.
+//
+// Example:
+//
+// Given a `cbor` value...
+// {
+//   characters: [
+//     {
+//       name: "Reimu",
+//       occupation: ["Shrine maiden"]
+//     },
+//     {
+//       name: "Marisa",
+//       occupation: ["Witch", "Troublemaker"]
+//     }
+//   ]
+// }
+//
+// ...and a `paths_to_redact` value...
+//
+// [
+//   ["characters", "occupation"],
+//   ["characters", "date-of-birth"],
+// ]
+//
+// ...the returned cbor will be:
+//
+// {
+//   characters: [
+//     {
+//       name: "Reimu",
+//       occupation: "redacted"
+//     },
+//     {
+//       name: "Marisa",
+//       occupation: "redacted"
+//     }
+//   ]
+// }
+cbor::Value RedactCbor(
+    const cbor::Value& cbor,
+    base::span<const std::vector<const char*>> paths_to_redact) {
+  cbor::Value response = cbor.Clone();
+  for (std::vector<const char*> field_to_redact : paths_to_redact) {
+    RedactPath(&response, field_to_redact);
+  }
+  return response;
+}
+
 }  // namespace
 
 ErrorResponse::ErrorResponse(std::string error)
@@ -665,6 +750,19 @@ void BuildCommandRequestBody(
            base::BindOnce(append_signature_and_finish,
                           std::move(request_body_map),
                           std::move(complete_callback)));
+}
+
+cbor::Value RedactEnclaveRequest(const cbor::Value& cbor) {
+  const std::array redacted_fields = {std::vector{"secret"}};
+  return RedactCbor(cbor, redacted_fields);
+}
+
+cbor::Value RedactEnclaveResponse(const cbor::Value& cbor) {
+  const std::array redacted_fields = {
+      std::vector{"ok", "ok", "largeBlob"},
+      std::vector{"ok", "ok", "prf"},
+  };
+  return RedactCbor(cbor, redacted_fields);
 }
 
 }  // namespace device::enclave

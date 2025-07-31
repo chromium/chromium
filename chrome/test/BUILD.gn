@@ -2570,6 +2570,7 @@ if (!is_android) {
       "//components/cookie_config",
       "//components/country_codes",
       "//components/data_sharing/public",
+      "//components/device_event_log",
       "//components/dom_distiller/content/browser",
       "//components/dom_distiller/content/browser:test_support",
       "//components/dom_distiller/content/renderer",

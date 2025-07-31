@@ -60,6 +60,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/device_event_log/device_event_log.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_store/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
@@ -604,6 +605,13 @@ bool IsReady(GPMEnclaveController::AccountState state) {
   }
 }
 
+std::string GetDeviceLog() {
+  return device_event_log::GetAsString(
+      device_event_log::NEWEST_FIRST, /*format=*/"level",
+      /*types=*/"fido",
+      /*max_level=*/device_event_log::LOG_LEVEL_EVENT, /*max_events=*/0);
+}
+
 bool IsMechanismEnclaveCredential(
     const AuthenticatorRequestDialogModel::Mechanism& mechanism) {
   if (std::holds_alternative<
@@ -1013,6 +1021,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   std::string script_result;
   ASSERT_TRUE(message_queue.WaitForMessage(&script_result));
   EXPECT_EQ(script_result, "\"webauthn: OK\"");
+
+  // Ensure the security domain secret is redacted from logs.
+  EXPECT_THAT(GetDeviceLog(), testing::HasSubstr("\"secret\": \"[redacted]\""));
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, NonWebauthnRequest) {
@@ -1115,6 +1126,9 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, MakeCredentialWithPrf) {
   EXPECT_TRUE(enabled);
   EXPECT_EQ(first, "none");
   EXPECT_EQ(second, "none");
+
+  // Ensure the PRF is redacted from logs.
+  EXPECT_THAT(GetDeviceLog(), testing::HasSubstr("\"prf\": \"[redacted]\""));
 }
 
 IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest, GetAssertionWithPrf) {
@@ -4316,6 +4330,10 @@ IN_PROC_BROWSER_TEST_F(EnclaveAuthenticatorBrowserTest,
   histogram_tester.ExpectBucketCount(
       "WebAuthentication.GPM.GetAssertion.LargeBlobSucceeded.Read",
       /*sample=*/true, /*expected_count=*/1);
+
+  // Ensure the large blob is redacted from logs.
+  EXPECT_THAT(GetDeviceLog(),
+              testing::HasSubstr("\"largeBlob\": \"[redacted]\""));
 }
 
 // Disable large blob for GPM feature flag.
