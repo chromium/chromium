@@ -830,9 +830,12 @@ void DeepScanningRequest::FinishRequest(DownloadCheckResult result) {
   // Bypassed verdicts are given when a user continues a download after being
   // warned by WP, so it is considered safe here.
   // For obfuscated download files, deobfuscate it if the scan returns a safe
-  // verdict.
+  // verdict or result is unknown.
+  // TODO(crbug.com/378490429): Add support in obfuscation module for skipping
+  // malware scan for password protected files.
   if ((event_result == enterprise_connectors::EventResult::ALLOWED ||
-       event_result == enterprise_connectors::EventResult::BYPASSED) &&
+       event_result == enterprise_connectors::EventResult::BYPASSED ||
+       result == DownloadCheckResult::UNKNOWN) &&
       metadata_->IsObfuscated()) {
     base::ThreadPool::PostTaskAndReplyWithResult(
         FROM_HERE, {base::MayBlock(), base::TaskPriority::USER_VISIBLE},
