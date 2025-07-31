@@ -961,6 +961,8 @@ class ChromeFileSystemAccessPermissionContext::PermissionGrantImpl
           base::Value::Dict grant = AsValue();
           context_->GrantObjectPermission(origin_, std::move(grant));
         }
+        // Update visibility of icon when permission status is granted.
+        context_->ScheduleUsageIconUpdate();
       } else if (object) {
         // Permission is not granted anymore. Remove the grant object entirely
         // if only this grant type exists in the grant object; otherwise, remove
