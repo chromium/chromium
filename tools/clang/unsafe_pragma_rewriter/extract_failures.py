@@ -14,12 +14,12 @@ def extract_failed_files(log_content):
   # Regex to match lines like '../../ipc/ipc_logging.cc:265:5: error:'
   # It captures the path and filename.
   error_pattern = re.compile(
-      r"^(?P<filepath>[^:]+):\d+:\d+:.*\s*(error|warning):")
+      rb"^(?P<filepath>[^:]+):\d+:\d+:.*\s*(error|warning):")
 
   for line in log_content.splitlines():
     match = error_pattern.match(line)
     if match:
-      filepath = match.group('filepath')
+      filepath = match.group('filepath').decode('ascii')
       failed_files.add(filepath)
   return failed_files
 
@@ -27,7 +27,7 @@ def extract_failed_files(log_content):
 def main():
   """Reads the compile log from standard input, extracts failed files,
   and prints them one per line to standard output."""
-  log_content = sys.stdin.read()
+  log_content = sys.stdin.buffer.read()
   failed_files = extract_failed_files(log_content)
   for filename in sorted(list(failed_files)):
     print(filename.removeprefix("../../"))

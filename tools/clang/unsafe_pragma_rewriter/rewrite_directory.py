@@ -62,8 +62,13 @@ def main():
   tmpdir = tempfile.mkdtemp(None, "unsafe_pragma_rewriter.")
   print(f"Temporary files will be written to {tmpdir}\n")
 
-  grep_cmd = ["git", "grep", "-l", "^#pragma allow_unsafe_", directory]
-  grep = subprocess.check_output(grep_cmd, text=True).strip()
+  try:
+    grep_cmd = ["git", "grep", "-l", "^#pragma allow_unsafe_", directory]
+    grep = subprocess.check_output(grep_cmd, text=True).strip()
+  except Exception as e:
+    print("No candidates found")
+    sys.exit(1)
+
   grep_lines = grep.splitlines() if grep else []
   source_files = [x for x in grep_lines if re.match(r".*\.cc$", x)]
   if not source_files:
@@ -166,9 +171,14 @@ def main():
                    check=True)
 
   if source_files:
-    needs_header = subprocess.check_output(
-        ["git", "grep", "-l", "UNSAFE_TODO"] + source_files, text=True).strip()
-    needs_header_files = needs_header.splitlines() if needs_header else []
+    try:
+      needs_header_cmd = ["git", "grep", "-l", "UNSAFE_TODO"] + source_files
+      needs_header = subprocess.check_output(needs_header_cmd,
+                                             text=True).strip()
+      needs_header_files = needs_header.splitlines() if needs_header else []
+    except Exception as e:
+      needs_header_files = []
+
     if needs_header_files:
       subprocess.run(
           ["tools/add_header.py", "--header", '"base/compiler_specific.h"'] +

@@ -19,7 +19,7 @@ import os
 
 def process_file(filepath):
   try:
-    with open(filepath, 'r', encoding='utf-8') as f:
+    with open(filepath, 'r') as f:
       lines = f.readlines()
   except Exception as e:
     print(f"Error: Could not read file {filepath}: {e}", file=sys.stderr)
@@ -65,7 +65,7 @@ def process_file(filepath):
 
   if len(lines_to_write) != original_line_count:
     try:
-      with open(filepath, 'w', encoding='utf-8') as f:
+      with open(filepath, 'w') as f:
         f.writelines(lines_to_write)
     except Exception as e:
       print(f"Error: Could not write to file {filepath}: {e}", file=sys.stderr)

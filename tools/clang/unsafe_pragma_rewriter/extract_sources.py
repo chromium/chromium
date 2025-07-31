@@ -14,12 +14,12 @@ def extract_tried_files(log_content):
   # Regex to match lines like:
   # '[1688/67026] 11.01s ... clang++ ... -c ./../ipc/ipc_logging.cc'
   # It captures the path and filename.
-  pattern = re.compile(r"^\[\d+/\d+\] .*clang\+\+ .* -c ([^ ]+) -o [^ ]+")
+  pattern = re.compile(rb"^\[\d+/\d+\] .*clang\+\+ .* -c ([^ ]+) -o [^ ]+")
 
   for line in log_content.splitlines():
     match = pattern.match(line)
     if match:
-      filepath = match.group(1)
+      filepath = match.group(1).decode('ascii')
       tried_files.add(filepath)
   return tried_files
 
@@ -27,7 +27,7 @@ def extract_tried_files(log_content):
 def main():
   """Reads the compile log from standard input, extracts tried files,
   and prints them one per line to standard output."""
-  log_content = sys.stdin.read()
+  log_content = sys.stdin.buffer.read()
   tried_files = extract_tried_files(log_content)
   for filename in sorted(list(tried_files)):
     print(filename.removeprefix("../../"))
