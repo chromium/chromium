@@ -923,7 +923,8 @@ mojom::URLResponseHeadPtr URLLoader::BuildResponseHead() const {
           mojom::IPAddressSpace::kUnknown),
       options_, ShouldSetLoadWithStorageAccess(), is_load_timing_enabled_,
       include_load_timing_internal_info_with_response_,
-      /*response_start=*/base::TimeTicks::Now());
+      /*response_start=*/base::TimeTicks::Now(), devtools_observer_.get(),
+      devtools_request_id().value_or(""));
 }
 
 void URLLoader::OnReceivedRedirect(net::URLRequest* url_request,

@@ -6,7 +6,9 @@
 #define SERVICES_NETWORK_PUBLIC_CPP_UNENCODED_DIGESTS_H_
 
 #include "base/component_export.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
 #include "services/network/public/mojom/unencoded_digest.mojom.h"
+#include "url/gurl.h"
 
 namespace net {
 class HttpResponseHeaders;
@@ -20,6 +22,13 @@ namespace network {
 COMPONENT_EXPORT(NETWORK_CPP)
 mojom::UnencodedDigestsPtr ParseUnencodedDigestsFromHeaders(
     const net::HttpResponseHeaders& headers);
+
+COMPONENT_EXPORT(NETWORK_CPP)
+void ReportUnencodedDigestIssuesToDevtools(
+    const mojom::UnencodedDigestsPtr& digests,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id,
+    const GURL& request_url);
 
 }  // namespace network
 

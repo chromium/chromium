@@ -21,6 +21,7 @@ import "services/network/public/mojom/request_priority.mojom";
 import "services/network/public/mojom/service_worker_router_info.mojom";
 import "services/network/public/mojom/shared_dictionary_error.mojom";
 import "services/network/public/mojom/sri_message_signature.mojom";
+import "services/network/public/mojom/unencoded_digest.mojom";
 import "services/network/public/mojom/trust_tokens.mojom";
 import "services/network/public/mojom/ip_endpoint.mojom";
 import "services/network/public/mojom/url_loader_completion_status.mojom";
@@ -220,6 +221,12 @@ interface DevToolsObserver {
     string devtool_request_id,
     url.mojom.Url url,
     array<SRIMessageSignatureIssue> issues);
+
+  // Called when an error occurs when parsing the `Unencoded-Digest` header.
+  OnUnencodedDigestError(
+    string devtool_request_id,
+    url.mojom.Url url,
+    UnencodedDigestIssue issue);
 
   // Used by the NetworkService to create a copy of this observer.
   // (e.g. when creating an observer for URLLoader from URLLoaderFactory's

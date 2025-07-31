@@ -124,6 +124,13 @@ class MockDevToolsObserver : public mojom::DevToolsObserver {
                std::vector<network::mojom::SRIMessageSignatureIssuePtr> issues),
               (override));
 
+  MOCK_METHOD(void,
+              OnUnencodedDigestError,
+              (const std::string& devtool_request_id,
+               const GURL& url,
+               network::mojom::UnencodedDigestIssue issue),
+              (override));
+
   void OnCorsError(const std::optional<std::string>& devtool_request_id,
                    const std::optional<::url::Origin>& initiator_origin,
                    mojom::ClientSecurityStatePtr client_security_state,

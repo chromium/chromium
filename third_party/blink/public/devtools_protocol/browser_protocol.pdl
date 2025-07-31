@@ -825,6 +825,13 @@ experimental domain Audits
       ValidationFailedSignatureMismatch
       ValidationFailedIntegrityMismatch
 
+  type UnencodedDigestError extends string
+    enum
+      MalformedDictionary
+      UnknownAlgorithm
+      IncorrectDigestType
+      IncorrectDigestLength
+
   # Details for issues around "Attribution Reporting API" usage.
   # Explainer: https://github.com/WICG/attribution-reporting-api
   type AttributionReportingIssueDetails extends object
@@ -861,6 +868,11 @@ experimental domain Audits
       SRIMessageSignatureError error
       string signatureBase
       array of string integrityAssertions
+      AffectedRequest request
+
+  type UnencodedDigestIssueDetails extends object
+    properties
+      UnencodedDigestError error
       AffectedRequest request
 
   type GenericIssueErrorType extends string
@@ -1123,6 +1135,7 @@ experimental domain Audits
       SharedDictionaryIssue
       ElementAccessibilityIssue
       SRIMessageSignatureIssue
+      UnencodedDigestIssue
       UserReidentificationIssue
 
   # This struct holds a list of optional fields with additional information
@@ -1154,6 +1167,7 @@ experimental domain Audits
       optional SharedDictionaryIssueDetails sharedDictionaryIssueDetails
       optional ElementAccessibilityIssueDetails elementAccessibilityIssueDetails
       optional SRIMessageSignatureIssueDetails sriMessageSignatureIssueDetails
+      optional UnencodedDigestIssueDetails unencodedDigestIssueDetails
       optional UserReidentificationIssueDetails userReidentificationIssueDetails
 
   # A unique id for a DevTools inspector issue. Allows other entities (e.g.

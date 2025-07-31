@@ -12,6 +12,8 @@
 #include "net/http/http_response_headers.h"
 #include "net/http/structured_headers.h"
 #include "services/network/public/cpp/integrity_metadata.h"
+#include "services/network/public/mojom/devtools_observer.mojom.h"
+#include "url/gurl.h"
 
 namespace network {
 
@@ -83,6 +85,21 @@ mojom::UnencodedDigestsPtr ParseUnencodedDigestsFromHeaders(
   }
 
   return parsed_headers;
+}
+
+void ReportUnencodedDigestIssuesToDevtools(
+    const mojom::UnencodedDigestsPtr& digests,
+    const raw_ptr<mojom::DevToolsObserver> devtools_observer,
+    const std::string& devtools_request_id,
+    const GURL& request_url) {
+  if (!devtools_observer || devtools_request_id.empty()) {
+    return;
+  }
+
+  for (const mojom::UnencodedDigestIssue issue : digests->issues) {
+    devtools_observer->OnUnencodedDigestError(devtools_request_id, request_url,
+                                              issue);
+  }
 }
 
 }  // namespace network
