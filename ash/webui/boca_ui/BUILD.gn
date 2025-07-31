@@ -17,6 +17,8 @@ static_library("boca_ui") {
     "boca_app_page_handler.h",
     "boca_ui.cc",
     "boca_ui.h",
+    "boca_util.cc",
+    "boca_util.h",
     "provider/classroom_page_handler_impl.cc",
     "provider/classroom_page_handler_impl.h",
     "provider/content_settings_handler.cc",
