@@ -81,6 +81,13 @@ class WebAppIconManager : public WebAppInstallManagerObserver {
   bool HasIcons(const webapps::AppId& app_id,
                 IconPurpose purpose,
                 const SortedSizesPx& icon_sizes) const;
+
+  // Returns false if any icon in |icon_sizes_in_px| is missing from stored
+  // trusted icons for a given app and |purpose|.
+  bool HasTrustedIcons(const webapps::AppId& app_id,
+                       IconPurpose purpose,
+                       const SortedSizesPx& icon_sizes) const;
+
   struct IconSizeAndPurpose {
     SquareSizePx size_px = 0;
     IconPurpose purpose = IconPurpose::ANY;

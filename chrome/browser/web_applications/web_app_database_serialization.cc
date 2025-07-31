@@ -1405,6 +1405,21 @@ std::unique_ptr<WebApp> ParseWebAppProto(const proto::WebApp& proto) {
   }
   web_app->SetTrustedIcons(std::move(parsed_trusted_icons.value()));
 
+  std::vector<SquareSizePx> trusted_icon_sizes_any;
+  for (int32_t size : proto.stored_trusted_icon_sizes_any()) {
+    trusted_icon_sizes_any.push_back(size);
+  }
+  web_app->SetStoredTrustedIconSizes(
+      IconPurpose::ANY, SortedSizesPx(std::move(trusted_icon_sizes_any)));
+
+  std::vector<SquareSizePx> trusted_icon_sizes_maskable;
+  for (int32_t size : proto.stored_trusted_icon_sizes_maskable()) {
+    trusted_icon_sizes_maskable.push_back(size);
+  }
+  web_app->SetStoredTrustedIconSizes(
+      IconPurpose::MASKABLE,
+      SortedSizesPx(std::move(trusted_icon_sizes_maskable)));
+
   return web_app;
 }
 
@@ -1947,6 +1962,15 @@ std::unique_ptr<proto::WebApp> WebAppToProto(const WebApp& web_app) {
   for (const apps::IconInfo& trusted_icon_info : web_app.trusted_icons()) {
     *(local_data->add_trusted_icons()) =
         AppIconInfoToSyncProto(trusted_icon_info);
+  }
+
+  for (SquareSizePx size :
+       web_app.stored_trusted_icon_sizes(IconPurpose::ANY)) {
+    local_data->add_stored_trusted_icon_sizes_any(size);
+  }
+  for (SquareSizePx size :
+       web_app.stored_trusted_icon_sizes(IconPurpose::MASKABLE)) {
+    local_data->add_stored_trusted_icon_sizes_maskable(size);
   }
 
   return local_data;

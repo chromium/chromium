@@ -295,6 +295,13 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifestTrustedIcons) {
 #endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
 
   apps::IconInfo trusted_icon = prefer_maskable ? icon_info3 : icon_info2;
+  IconPurpose trusted_icon_purpose =
+      prefer_maskable ? IconPurpose::MASKABLE : IconPurpose::ANY;
+  std::set<SquareSizePx> sizes = web_app::SizesToGenerate();
+  sizes.emplace(icon_size::k512);
+  SortedSizesPx sizes_to_use(sizes.begin(), sizes.end());
+  EXPECT_TRUE(provider()->icon_manager().HasTrustedIcons(
+      kWebAppId, trusted_icon_purpose, sizes_to_use));
 
   EXPECT_THAT(provider()->registrar_unsafe().GetAppIconInfos(kWebAppId),
               testing::ElementsAre(icon_info1, icon_info2, icon_info3));

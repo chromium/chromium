@@ -57,6 +57,10 @@
    "shortcuts_menu_item_infos": [  ],
    "sources": [  ],
    "start_url": "",
+   "stored_trusted_icon_sizes": {
+      "ANY": [  ],
+      "MASKABLE": [  ]
+   },
    "supported_links_offer_dismiss_count": 0,
    "supported_links_offer_ignore_count": 0,
    "sync_proto": {

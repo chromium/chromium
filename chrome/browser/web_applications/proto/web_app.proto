@@ -477,4 +477,14 @@ message WebApp {
   // Contains the metadata for the trusted icons to be shown on security
   // sensitive surfaces by the web app.
   repeated sync_pb.WebAppIconInfo trusted_icons = 74;
+
+  // A list of icon sizes for trusted icons stored on disk that are suitable for
+  // any purpose (ie. IconPurpose::ANY). See also:
+  // |stored_trusted_icon_sizes_maskable|.
+  repeated int32 stored_trusted_icon_sizes_any = 75;
+
+  // A list of icon sizes for trusted icons stored on disk that are designed for
+  // masking (ie. IconPurpose::MASKABLE). See also:
+  // |stored_trusted_icon_sizes_any|.
+  repeated int32 stored_trusted_icon_sizes_maskable = 76;
 }

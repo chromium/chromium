@@ -1071,6 +1071,23 @@ bool WebAppIconManager::HasIcons(const webapps::AppId& app_id,
                                icon_sizes);
 }
 
+bool WebAppIconManager::HasTrustedIcons(const webapps::AppId& app_id,
+                                        IconPurpose purpose,
+                                        const SortedSizesPx& icon_sizes) const {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  // There can never be monochrome trusted icons.
+  if (purpose == IconPurpose::MONOCHROME) {
+    return false;
+  }
+
+  const WebApp* web_app = provider_->registrar_unsafe().GetAppById(app_id);
+  if (!web_app) {
+    return false;
+  }
+  return std::ranges::includes(web_app->stored_trusted_icon_sizes(purpose),
+                               icon_sizes);
+}
+
 std::optional<WebAppIconManager::IconSizeAndPurpose>
 WebAppIconManager::FindIconMatchBigger(const webapps::AppId& app_id,
                                        const std::vector<IconPurpose>& purposes,

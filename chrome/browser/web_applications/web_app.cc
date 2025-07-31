@@ -309,6 +309,18 @@ webapps::ManifestId WebApp::manifest_id() const {
   return manifest_id_;
 }
 
+const SortedSizesPx& WebApp::stored_trusted_icon_sizes(
+    IconPurpose purpose) const {
+  switch (purpose) {
+    case IconPurpose::ANY:
+      return stored_trusted_icon_sizes_any_;
+    case IconPurpose::MASKABLE:
+      return stored_trusted_icon_sizes_maskable_;
+    case IconPurpose::MONOCHROME:
+      NOTREACHED();
+  }
+}
+
 void WebApp::AddSource(WebAppManagement::Type source) {
   sources_.Put(source);
 }
@@ -828,6 +840,20 @@ void WebApp::SetTrustedIcons(std::vector<apps::IconInfo> trusted_icons) {
   trusted_icons_ = std::move(trusted_icons);
 }
 
+void WebApp::SetStoredTrustedIconSizes(IconPurpose purpose,
+                                       SortedSizesPx sizes) {
+  switch (purpose) {
+    case IconPurpose::ANY:
+      stored_trusted_icon_sizes_any_ = std::move(sizes);
+      break;
+    case IconPurpose::MASKABLE:
+      stored_trusted_icon_sizes_maskable_ = std::move(sizes);
+      break;
+    case IconPurpose::MONOCHROME:
+      NOTREACHED();
+  }
+}
+
 WebApp::ClientData::ClientData() = default;
 
 WebApp::ClientData::~ClientData() = default;
@@ -973,7 +999,9 @@ bool WebApp::operator==(const WebApp& other) const {
         app.related_applications_,
         app.diy_app_icons_masked_on_mac_,
         app.pending_update_info_,
-        app.trusted_icons_
+        app.trusted_icons_,
+        app.stored_trusted_icon_sizes_any_,
+        app.stored_trusted_icon_sizes_maskable_
         // clang-format on
     );
   };
@@ -1193,6 +1221,19 @@ base::Value WebApp::AsDebugValueWithOnlyPlatformAgnosticFields() const {
   proto::MaybeSerialize(pending_update_info_, "pending_update_info", root);
 
   root.Set("trusted_icons", ConvertDebugValueList(trusted_icons_));
+
+  base::Value::Dict stored_trusted_icon_sizes_json;
+  for (IconPurpose purpose : kIconPurposes) {
+    // There can never be trusted monochrome icons.
+    if (purpose == IconPurpose::MONOCHROME) {
+      continue;
+    }
+    stored_trusted_icon_sizes_json.Set(
+        base::ToString(purpose),
+        ConvertList(stored_trusted_icon_sizes(purpose)));
+  }
+  root.Set("stored_trusted_icon_sizes",
+           std::move(stored_trusted_icon_sizes_json));
 
   return base::Value(std::move(root));
 }

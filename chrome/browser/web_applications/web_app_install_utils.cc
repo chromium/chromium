@@ -847,6 +847,13 @@ void SetWebAppProductIconFields(const WebAppInstallInfo& web_app_info,
   }
   web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
   web_app.SetTrustedIcons(web_app_info.trusted_icons);
+  for (IconPurpose purpose : kIconPurposes) {
+    if (purpose == IconPurpose::MONOCHROME) {
+      continue;
+    }
+    web_app.SetStoredTrustedIconSizes(
+        purpose, GetSquareSizePxs(web_app_info.trusted_icon_bitmaps, purpose));
+  }
 }
 
 bool CanWebAppUpdateIdentity(const WebApp* web_app) {

@@ -399,6 +399,11 @@ class WebApp {
     return trusted_icons_;
   }
 
+  // Represents which icon sizes have been successfully stored on the disk from
+  // |trusted_icons| for the given |purpose|. `Monochrome` is not available
+  // here.
+  const SortedSizesPx& stored_trusted_icon_sizes(IconPurpose purpose) const;
+
   // A Web App can be installed from multiple sources simultaneously. Installs
   // add a source to the app. Uninstalls remove a source from the app.
   void AddSource(WebAppManagement::Type source);
@@ -536,6 +541,8 @@ class WebApp {
   void SetGeneratedIconFix(
       std::optional<proto::GeneratedIconFix> generated_icon_fix);
 
+  void SetStoredTrustedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
+
   // For logging and debug purposes.
   bool operator==(const WebApp&) const;
   // Used by the WebAppTest suite to cover only platform agnostic fields to
@@ -652,7 +659,14 @@ class WebApp {
 
   std::optional<proto::PendingUpdateInfo> pending_update_info_;
 
+  // Metadata required for trusted icons stored in web_app.h
   std::vector<apps::IconInfo> trusted_icons_;
+
+  // Cache information about stored trusted icon bitmaps on disk to make reading
+  // using the WebAppIconManager less intensive by not having to resort to file
+  // enumeration.
+  SortedSizesPx stored_trusted_icon_sizes_any_;
+  SortedSizesPx stored_trusted_icon_sizes_maskable_;
 
   // New fields must be added to:
   //  - |operator==|

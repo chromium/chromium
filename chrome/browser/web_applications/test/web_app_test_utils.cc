@@ -1196,6 +1196,14 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   }
 
   app->SetTrustedIcons(CreateRandomIconMetadata(random, params.base_url));
+  if (random.next_bool()) {
+    app->SetStoredTrustedIconSizes(IconPurpose::ANY,
+                                   {icon_sizes[random.next_uint(8)]});
+  }
+  if (random.next_bool()) {
+    app->SetStoredTrustedIconSizes(IconPurpose::MASKABLE,
+                                   {icon_sizes[random.next_uint(8)]});
+  }
 
   return app;
 }
