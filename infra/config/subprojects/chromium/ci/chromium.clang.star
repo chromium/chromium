@@ -1126,10 +1126,9 @@ clang_tot_linux_builder(
             "all",
         ],
         mixins = [
-            "linux-focal",
+            "linux-jammy",
         ],
     ),
-    os = os.LINUX_FOCAL,
     short_name = "msn",
 )
 

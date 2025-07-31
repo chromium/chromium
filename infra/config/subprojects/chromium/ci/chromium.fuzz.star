@@ -715,7 +715,6 @@ def browser_msan_builder(**kwargs):
         target_bits = 64,
         target_platform = builder_config.target_platform.LINUX,
         clusterfuzz_gs_bucket = "chromium-browser-msan",
-        os = os.LINUX_FOCAL,
         console_category = "linux msan",
         contact_team_email = "chrome-sanitizer-builder-owners@google.com",
         siso_remote_jobs = 250,
@@ -972,7 +971,6 @@ libfuzzer_linux_asan_builder(
 
 libfuzzer_linux_builder(
     name = "Libfuzzer Upload Linux MSan",
-    os = os.LINUX_FOCAL,
     build_config = builder_config.build_config.RELEASE,
     target_bits = 64,
     chromium_extra_apply_configs = ["msan"],

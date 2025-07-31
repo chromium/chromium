@@ -11,7 +11,7 @@
         "name": "base_unittests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -25,7 +25,7 @@
         "name": "highway_tests",
         "swarming": {
           "dimensions": {
-            "os": "Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
