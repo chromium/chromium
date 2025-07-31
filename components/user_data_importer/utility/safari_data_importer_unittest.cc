@@ -46,7 +46,7 @@
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/content/fake_bookmark_html_parser.h"
 #include "components/user_data_importer/mojom/bookmark_html_parser.mojom.h"
-#include "content/public/test/browser_task_environment.h"
+#include "content/public/test/browser_task_environment.h"  // nogncheck
 #endif  // !BUILDFLAG(IS_IOS)
 
 using bookmarks::test::IsFolder;
