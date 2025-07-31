@@ -311,6 +311,16 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                 }
             }
         }
+
+        /**
+         * Records a histogram entry with a manual histogram name.
+         *
+         * @param histogramName The histogram name.
+         * @param action The action that the user selected (e.g. ACTION_SAVE_IMAGE).
+         */
+        static void recordWithManualName(String histogramName, @Action int action) {
+            RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);
+        }
     }
 
     /** A wrapper class for PendingIntent.send() to allow for easier mocking in tests. */
@@ -453,6 +463,10 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
                     // item to show interest in the link. This item will only be created if the
                     // HTMLInterestForAttribute runtime flag is enabled.
                     linkGroup.add(createListItem(Item.SHOW_INTEREST_IN_ELEMENT));
+                    // Additionally record `interestfor` activations in a separate category,
+                    // "LinkWithInterestFor", which only records activations from links that
+                    // have the `interestfor` attribute.
+                    maybeRecordBooleanUkm("ContextMenuAndroid.Shown", "LinkWithInterestFor");
                 }
                 if ((mMode == ContextMenuMode.NORMAL || mMode == ContextMenuMode.CUSTOM_TAB)
                         && EphemeralTabCoordinator.isSupported()) {
@@ -1266,6 +1280,13 @@ public class ChromeContextMenuPopulator implements ContextMenuPopulator {
         ContextMenuUma.record(mParams, actionId);
         if (LensUtils.shouldLogUkmForLensContextMenuFeatures()) {
             maybeRecordActionUkm("ContextMenuAndroid.Selected", actionId);
+        }
+        if (mParams.getOpenedFromInterestFor()) {
+          // Additionally record `interestfor` activations in a separate category,
+          // "LinkWithInterestFor", which only records activations from links that
+          // have the `interestfor` attribute.
+          String histogramName = "ContextMenu.SelectedOptionAndroid.LinkWithInterestFor";
+          ContextMenuUma.recordWithManualName(histogramName, actionId);
         }
     }
 
