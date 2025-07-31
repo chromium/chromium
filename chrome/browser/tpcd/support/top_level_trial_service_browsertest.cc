@@ -122,22 +122,43 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
         GetProfile(), url, GURL(), ContentSettingsType::TOP_LEVEL_TPCD_TRIAL);
   }
 
+  // URLLoader just to wait for FollowRedirect().
+  class RedirectURLLoader final : public network::mojom::URLLoader {
+   public:
+    explicit RedirectURLLoader(
+        mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+        base::OnceClosure callback)
+        : receiver_(this, std::move(receiver)),
+          callback_(std::move(callback)) {}
+
+   private:
+    void FollowRedirect(
+        const std::vector<std::string>& removed_headers,
+        const net::HttpRequestHeaders& modified_headers,
+        const net::HttpRequestHeaders& modified_cors_exempt_headers,
+        const std::optional<GURL>& new_url) override {
+      std::move(callback_).Run();
+    }
+    void SetPriority(net::RequestPriority priority,
+                     int32_t intra_priority_value) override {}
+
+    mojo::Receiver<network::mojom::URLLoader> receiver_;
+    base::OnceClosure callback_;
+  };
+
   bool OnRequest(content::URLLoaderInterceptor::RequestParams* params) {
     std::string host = params->url_request.url.host();
     std::string path = params->url_request.url.path().substr(1);
-    std::string query = params->url_request.url.query();
 
     if (host != kTrialEnabledDomain && host != kTrialEnabledSubdomain &&
         host != kOtherTrialEnabledDomain) {
       return false;
     }
 
-    bool should_use_meta_tag = path.starts_with("meta_tag");
     // Redirects are fixed from `kTrialEnabledDomain` to
     // `kOtherTrialEnabledDomain`.
     bool should_redirect =
         path.starts_with("redirect") && host == kTrialEnabledDomain;
-    bool should_include_critical_header = query == "critical";
 
     // To simulate a followed redirect, we have to first notify the client of
     // the redirect, and then also commit the response for the redirect's
@@ -145,6 +166,32 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
     if (should_redirect) {
       NotifyClientOfRedirect(params);
     }
+    auto serve_response = base::BindOnce(
+        &TopLevelTpcdTrialBrowserTest::ServeResponse, base::Unretained(this),
+        should_redirect, params->url_request.url, std::move(params->client));
+
+    if (should_redirect) {
+      // We should wait for `FollowRedirect()` before proceeding after
+      // redirects.
+      CHECK(!redirect_url_loader_);
+      redirect_url_loader_ = std::make_unique<RedirectURLLoader>(
+          std::move(params->receiver), std::move(serve_response));
+    } else {
+      std::move(serve_response).Run();
+    }
+    return true;
+  }
+
+  void ServeResponse(bool should_redirect,
+                     GURL url,
+                     mojo::Remote<network::mojom::URLLoaderClient> client) {
+    redirect_url_loader_.reset();
+    std::string host = url.host();
+    std::string path = url.path().substr(1);
+    std::string query = url.query();
+
+    bool should_use_meta_tag = path.starts_with("meta_tag");
+    bool should_include_critical_header = query == "critical";
 
     // For redirects, we need to commit the response for the redirect's
     // destination page, so we should get the token for the destination page,
@@ -174,9 +221,7 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
                                  "</html>\n"
                            : "";
 
-    content::URLLoaderInterceptor::WriteResponse(headers, body,
-                                                 params->client.get());
-    return true;
+    content::URLLoaderInterceptor::WriteResponse(headers, body, client.get());
   }
 
   ukm::TestAutoSetUkmRecorder& ukm_recorder() { return ukm_recorder_.value(); }
@@ -244,6 +289,8 @@ class TopLevelTpcdTrialBrowserTest : public InProcessBrowserTest {
     // The host isn't one of our trial-enabled domains, so return no token.
     return "";
   }
+
+  std::unique_ptr<RedirectURLLoader> redirect_url_loader_;
 };
 
 IN_PROC_BROWSER_TEST_F(TopLevelTpcdTrialBrowserTest, EnabledAfterHttpResponse) {
