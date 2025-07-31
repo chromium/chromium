@@ -6249,11 +6249,6 @@ các chính sách cụ thể.
 
 Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</translation>
 <translation id="5297948043665200363">Cho phép người dùng tiếp tục đăng nhập sau khi tài khoản của họ không còn được xác thực</translation>
-<translation id="5298594338496226089">Nếu bạn đặt chính sách này thì các nguồn gốc có trong danh sách sẽ có thể lấy thông tin về thuộc tính của thiết bị (ví dụ: số sê-ri, tên máy chủ) bằng Device Attributes API.
-
-Các nguồn gốc phải tương ứng với các ứng dụng web bị buộc cài đặt bằng chính sách <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> hoặc <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (kể từ phiên bản 125) hoặc được thiết lập dưới dạng ứng dụng kiosk. Để xem thông số kỹ thuật của Device Attributes API, vui lòng truy cập https://wicg.github.io/WebApiDevice/device_attributes.
-
-Để biết thông tin chi tiết về các mẫu <ph name="URL_LABEL" /> hợp lệ (kể từ phiên bản 127), vui lòng truy cập https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. Chúng tôi không chấp nhận giá trị <ph name="WILDCARD_VALUE" /> đối với chính sách này.</translation>
 <translation id="5298949392804966105">Không có các quy định hạn chế đối với tài khoản được quản lý</translation>
 <translation id="530111809849214840">Ẩn lựa chọn <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Thời điểm trong ngày (theo giờ địa phương) để gia hạn hạn mức sử dụng.</translation>

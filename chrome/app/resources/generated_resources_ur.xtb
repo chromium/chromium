@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">نام میں ہوئی اپ ڈیٹ کا جائزہ لیں</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> ڈیسک سے تعلق رکھتی ہے</translation>
 <translation id="1166644470305877068">عیلحدہ کردہ ویب ایپس خودکار طور پر اس ترتیب کی پیروی کرتی ہیں</translation>
+<translation id="116712635768212829">‏اگر Chrome کو ڈیٹا کی خلاف ورزی میں آپ کے پاس ورڈز میں سے کوئی ایک مل جاتا ہے تو آپ کے سائن ان ہونے پر Google پاس ورڈ مینیجر آپ کے لیے آپ کا پاس ورڈ تبدیل کرنے کی پیشکش کر سکتا ہے۔</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> میں کھولا جا رہا ہے…</translation>
 <translation id="1168704243733734901">‏<ph name="MOOD" /> موڈ کے ساتھ <ph name="STYLE" /> کی اسٹائل میں <ph name="SUBJECT" /> کی حالیہ AI تھیم <ph name="INDEX" />۔</translation>
 <translation id="116896278675803795">زبان کو منتخب کردہ مواد سے مماثل کرنے کے لیے خودکار طور پر تبدیل کریں</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">سیٹ اپ مکمل ہو گیا ہے! اپنے آلے کو اگلی گیمنگ کے لیے تیار کریں</translation>
 <translation id="137651782282853227">محفوظ کردہ پتے یہاں ظاہر ہوں گے</translation>
 <translation id="1376771218494401509">ونڈو کا نام رکھیں...</translation>
+<translation id="1377438103060664754">‏اگر آپ کے پاس ورڈز میں سے کوئی ڈیٹا کی خلاف ورزی میں پایا جاتا ہے تو Google پاس ورڈ مینیجر پوچھتا ہے کہ کیا آپ اسے مضبوط پاس ورڈ میں تبدیل کرنا چاہتے ہیں</translation>
 <translation id="1377600615067678409">ابھی نظر انداز کریں</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> اس ترتیب کو کنٹرول کر رہا ہے</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{کوئی متاثرہ پاس ورڈ نہیں}=1{1 متاثرہ پاس ورڈ}other{{NUM_COMPROMISED} متاثرہ پاس ورڈز}}</translation>
@@ -2525,7 +2527,6 @@
 <translation id="2730647855013151888">تمام ذاتی معلومات شامل کریں</translation>
 <translation id="2730901670247399077">ایموجی کی تجاویز</translation>
 <translation id="273093730430620027">یہ صفحہ آپ کے کیمرا تک رسائی حاصل کر رہا ہے۔</translation>
-<translation id="2730956943403103181">‏V8 کو بہتر بنانے والا استعمال کرنے کی اجازت نہیں ہے</translation>
 <translation id="2731392572903530958">بند ونڈوز د&amp;وبارہ کھولیں</translation>
 <translation id="2731700343119398978">براہ کرم انتظار کریں…</translation>
 <translation id="2731971182069536520">اگلی بار جب آپ اپنا آلہ دوبارہ شروع کریں گے تو آپ کا منتظم یک وقتی اپ ڈیٹ کرے گا جس سے آپ کا مقامی ڈیٹا حذف ہو جائے گا۔</translation>
@@ -3124,7 +3125,6 @@
 <translation id="3160928651883997588">‏VPN کی ترجیحات</translation>
 <translation id="3161522574479303604">سبھی زبانیں</translation>
 <translation id="3162070126914310576">اس آلے کو ابھی اندراج نہیں کیا جا سکتا کیونکہ آپ کا تنظیم یونٹ اپنے اندراج کی ابتدائی حد کو پہنچ گیا ہے۔ مدد کے لیے اپنے منتظم سے رابطہ کریں۔</translation>
-<translation id="3162766632262775911">‏V8 کو بہتر بنانے والا استعمال کرنے کے لیے ہمیشہ اجازت ہے</translation>
 <translation id="3162853326462195145">اسکول کا اکاؤنٹ</translation>
 <translation id="3162899666601560689">سائٹس آپ کے براؤزنگ کے تجربہ کو، مثال کے طور پر، آپ کو سائن ان رکھنے یا آپ کی شاپنگ کارٹ میں آئٹمز کو یاد رکھنے کے لیے، بہتر بنانے کے لیے کوکیز کا استعمال کر سکتی ہیں</translation>
 <translation id="3163085718713826852">سرٹیفکیٹ پاس ورڈ درج کریں</translation>
@@ -3838,7 +3838,6 @@
 <translation id="3666971425390608309">ڈاؤن لوڈ موقوف ہے: <ph name="FILE_NAME" />۔</translation>
 <translation id="3670113805793654926">کسی بھی وینڈر کے آلات</translation>
 <translation id="3670229581627177274">بلوٹوتھ آن کریں</translation>
-<translation id="3670480940339182416">‏سائٹس V8 کو بہتر بنانے والا استعمال کر سکتی ہیں</translation>
 <translation id="3671982238795754537">پاس کیز کے بارے میں مزید جانیں</translation>
 <translation id="3672681487849735243">ایک فیکٹری کی خرابی کا پتہ لگا ہے</translation>
 <translation id="3673097791729989571">سائن ان کی میزبانی <ph name="SAML_DOMAIN" /> کے ذریعے کی گئی</translation>
@@ -5738,6 +5737,7 @@
 <translation id="5001526427543320409">فریق ثالث کوکیز</translation>
 <translation id="5003070249435823986">اسکرول موڈ میں داخل ہونے کے لیے اشارہ کا استعمال کریں، پھر اس سمت کی طرف سر کو لے جائیں جس طرف آپ اسکرول کرنا چاہتے ہیں۔ اسکرول موڈ سے باہر نکلنے کے لیے دوبارہ اشارہ کا استعمال کریں۔</translation>
 <translation id="5003993274120026347">اگلا جملہ</translation>
+<translation id="5005311809885666699">‏Chrome سے محفوظ کیا گیا</translation>
 <translation id="5005498671520578047">پاس ورڈ کاپی کریں</translation>
 <translation id="5006218871145547804">‏Crostini Android ایپ ADB</translation>
 <translation id="5006778209728626987">روشنی</translation>
@@ -9702,6 +9702,7 @@
 <translation id="784475655832336580">‏ChromeVox آن ہونے پر کی بورڈ فوکس کے ساتھ آئٹم کو ہائی لائٹ کریں دستیاب نہیں ہے</translation>
 <translation id="7844992432319478437">مختلف کو اپ ڈیٹ کیا جا رہا ہے</translation>
 <translation id="7846161022626028328">ایک خرابی پیش آ گئی۔ دوبارہ کوشش کریں۔</translation>
+<translation id="7846296061357476882">‏Google سروسز</translation>
 <translation id="7846634333498149051">کی بورڈ</translation>
 <translation id="7847212883280406910">‏<ph name="IDS_SHORT_PRODUCT_OS_NAME" /> پر سوئچ کرنے کیلئے Ctrl + Alt + S دبائیں</translation>
 <translation id="7848244988854036372">سبھی (<ph name="URL_COUNT" />) کو نئے ٹیب گروپ میں کھولیں</translation>
@@ -9721,7 +9722,6 @@
 <translation id="7853747251428735">مزید ٹولز</translation>
 <translation id="7855258394151767387">‏ماؤس کے بٹن کو دبانے کیلئے "w" کا استعمال کریں</translation>
 <translation id="7855678561139483478">ٹیب کو نئی ونڈو میں منتقل کریں</translation>
-<translation id="7856798637819639676">‏اپنے Android آلہ سے ID کو محفوظ طریقے سے استعمال کریں</translation>
 <translation id="7857004848504343806">‏آپ کے کمپیوٹر میں ایک محفوظ ماڈیول شامل ہے جو سیکیورٹی کی کئی اہم خصوصیات کو ChromeOS Flex میں لاگو کرنے کیلئے استعمال ہوتا ہے۔ مزید جاننے کیلئے Chromebook کا ہیلپ سینٹر ملاحظہ کریں: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">متنی تجاویز</translation>
 <translation id="7858120906780498731">‏ChromeOS سے منسلک ان پٹ آلات</translation>
@@ -9979,7 +9979,6 @@
 <translation id="8026784703228858744">مطابقت پذیری کے ساتھ اپنے بُک مارکس پاس ورڈز اور بہت کچھ کو اسٹور کریں</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{‫0 دن قبل ملاحظہ کیا گیا}=1{‫1 دن قبل ملاحظہ کیا گیا}other{‫# دن قبل ملاحظہ کیا گیا}}</translation>
 <translation id="8028060951694135607">‏Microsoft کلید کی بازیابی</translation>
-<translation id="8028138772801251745">‏‫AI کے ساتھ آٹو فل کریں</translation>
 <translation id="8028803902702117856">ڈاؤن لوڈ جاری ہے <ph name="SIZE" />، <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">سائز</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{پڑھنے کی فہرست}=1{پڑھنے کی فہرست ({SELECTED_ITEMS})}other{پڑھنے کی فہرست ({SELECTED_ITEMS})}}</translation>
@@ -10076,7 +10075,6 @@
 <translation id="808894953321890993">پاس ورڈ تبدیل کریں</translation>
 <translation id="8090234456044969073">جو ویب سائٹس آپ سب سے زیادہ کثرت سے ملاحظہ کرتے ہیں ان کی ایک فہرست پڑھیں</translation>
 <translation id="8090513782447872344">آپ کسی بھی وقت واپس آ کر ایک اور نظر ڈال سکتے ہیں</translation>
-<translation id="8090579562279016251">‏اس سے کارکردگی کم ہو جاتی ہے لیکن V8 حملوں کا مزید مزاحم ہو جاتا ہے</translation>
 <translation id="8090686009202681725">‏AI کے ذریعے تھیم تخلیق کریں</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> جواب نہیں دے رہی ہے</translation>
 <translation id="8094536695728193970">خوبانی</translation>
@@ -10130,7 +10128,6 @@
 <translation id="8125651784723647184">پاس ورڈ کا اشتراک آپ کے منتظم کے زیر انتظام ہے</translation>
 <translation id="8126355825906412872">مسکرائیں</translation>
 <translation id="8129265306888404830">‏اپنی تنظیم (<ph name="EMAIL_DOMAIN" />) کے اپنے ای میل پتے کا استعمال کرنے کے لیے، آپ کو انٹرپرائز اندراج کو استعمال کرنے کی ضرورت ہے۔ اگر یہ آلہ آپ کے ذاتی استعمال کے لیے تو اپنے ذاتی Google اکاؤنٹ سے سائن ان کریں۔</translation>
-<translation id="8130476996317833777">‏سائٹس کو V8 کو بہتر بنانے والا استعمال کرنے کی اجازت نہ دیں</translation>
 <translation id="813082847718468539">سائٹ کی معلومات دیکھیں</translation>
 <translation id="8131740175452115882">تصدیق کریں</translation>
 <translation id="8133297578569873332">‏قابل قبول - FM</translation>

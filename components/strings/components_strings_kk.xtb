@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Басқа</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Chinese #7 хатқалтасы</translation>
-<translation id="1269045546668906972">Көбірек өрісті автоматты түрде толтыру үшін жасанды интеллект арқылы автотолтыру функциясын қосыңыз.</translation>
 <translation id="1269516672602708785">Google Sites-та жылдам жаңа сайт жасау</translation>
 <translation id="1270328905573953738">Көшу және орын ауыстыру</translation>
 <translation id="1270502636509132238">Таңдау әдісі</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Басқа бетбелгілер</translation>
 <translation id="2355395290879513365">Шабуылдаушылар бұл сайтта көріп жатқан кескіндеріңізді біліп, оларды өзгерту арқылы сізді алдауы мүмкін.</translation>
 <translation id="2356070529366658676">Сұрау</translation>
-<translation id="2356926036049612643">V8 оңтайландырғышы</translation>
 <translation id="2356941001189392209">Бұрынғы технология оқиғалары орын алатын сіз кіретін беттердің URL мекенжайларының шектеулі тізімі.</translation>
 <translation id="2357481397660644965">Құрылғыңызды <ph name="DEVICE_MANAGER" />, ал аккаунтыңызды <ph name="ACCOUNT_MANAGER" /> басқарады.</translation>
 <translation id="2359629602545592467">Бірнеше</translation>
@@ -1784,13 +1782,13 @@
 <translation id="3984581365661308170">#11 хатқалта</translation>
 <translation id="398470910934384994">Құстар</translation>
 <translation id="3985750352229496475">Мекенжайларды басқару...</translation>
-<translation id="3986506998755860149">Жасанды интеллектімен автоматты түрде толтыру функциясы туралы толық ақпаратты параметрлерден қараңыз</translation>
 <translation id="3986557181852957825">Google Pay, Klarna логотипі</translation>
 <translation id="3986705137476756801">Live Caption функциясын қазір өшіру</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 МБ-тан аз</translation>
 <translation id="3990250421422698716">Бірқалыпты ығысу</translation>
 <translation id="3990532701115075684">Қолыңызды бақылау</translation>
+<translation id="399179161741278232">Импортталған</translation>
 <translation id="3992684624889376114">Осы бет туралы ақпарат</translation>
 <translation id="3995639283717357522">Саясаттарды қолдану</translation>
 <translation id="3996683183117168945"><ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" /> дәйексөз, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2398,7 +2396,6 @@
 <translation id="5002932099480077015">Құсбелгі қойылса, Chrome нысанды жылдамырақ толтыру үшін картаңыздың көшірмесін осы құрылғыға сақтап қояды.</translation>
 <translation id="5007344584818503324">Ортақ қойындылар топтарындағы әрекет</translation>
 <translation id="5007392906805964215">Көру</translation>
-<translation id="5010599530303458903">Ай сайын төлеңіз немесе пайызсыз 4 бөлікпен (сәйкестік талаптарына байланысты) төлеңіз.</translation>
 <translation id="5011561501798487822">Анықталған тіл</translation>
 <translation id="5015510746216210676">Құрылғы атауы:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3079,7 +3076,6 @@
 <translation id="6151417162996330722">Сервер сертификатының жарамдылық мерзімі тым ұзақ.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Жүгіру және жүру</translation>
-<translation id="6157079899699705880">Жасанды интеллект көмегімен автоматты түрде толтыру функциясы үлгілерді жақсы түсінеді және сіздің орныңызға жылдам толтыра алады.</translation>
 <translation id="6157754950574419155">Барлығын тарихтан өшіру</translation>
 <translation id="6157877588268064908">Жөнелту әдістері мен талаптарын көру үшін мекенжайды таңдаңыз</translation>
 <translation id="6159554577634054750">Зиянкестермен күрес жүргізу</translation>

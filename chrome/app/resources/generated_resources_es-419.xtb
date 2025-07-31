@@ -250,6 +250,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1166583374608765787">Revisar actualización del nombre</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertenece al escritorio <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Las apps web aisladas siguen automáticamente esta configuración</translation>
+<translation id="116712635768212829">Si Chrome encuentra una de tus contraseñas en una violación de la seguridad de los datos, el Administrador de contraseñas de Google puede ofrecerte cambiarla por ti si accediste.</translation>
 <translation id="1168020859489941584">Abriendo en <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema reciente de IA <ph name="INDEX" /> de <ph name="SUBJECT" />, en el estilo <ph name="STYLE" />, con el estado de ánimo <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambiar automáticamente el idioma para que coincida con el contenido seleccionado</translation>
@@ -554,6 +555,7 @@ Puedes revisar las contraseñas en cualquier momento, en <ph name="GOOGLE_PASSWO
 <translation id="1375938286942050085">Se completó la configuración; prepara tu dispositivo para jugar</translation>
 <translation id="137651782282853227">Las direcciones guardadas aparecerán aquí</translation>
 <translation id="1376771218494401509">Nombrar la &amp;ventana…</translation>
+<translation id="1377438103060664754">Si se encuentra una de tus contraseñas en una violación de la seguridad de los datos, el Administrador de contraseñas de Google te pregunta si quieres cambiarla por una contraseña segura.</translation>
 <translation id="1377600615067678409">Omitir por ahora</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> controla esta configuración</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{No tienes contraseñas hackeadas}=1{1 contraseña hackeada}other{{NUM_COMPROMISED} contraseñas hackeadas}}</translation>
@@ -2520,7 +2522,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2730647855013151888">Incluir toda la información personal</translation>
 <translation id="2730901670247399077">Sugerencias de emojis</translation>
 <translation id="273093730430620027">Esta página está accediendo a la cámara.</translation>
-<translation id="2730956943403103181">No se permite usar el optimizador V8</translation>
 <translation id="2731392572903530958">Volv&amp;er a abrir una ventana cerrada</translation>
 <translation id="2731700343119398978">Espera...</translation>
 <translation id="2731971182069536520">La próxima vez que reinicies el dispositivo, tu administrador realizará una actualización única que borrará tus datos locales.</translation>
@@ -3119,7 +3120,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3160928651883997588">Preferencias de VPN</translation>
 <translation id="3161522574479303604">Todos los idiomas</translation>
 <translation id="3162070126914310576">No se puede inscribir este dispositivo en este momento porque tu unidad organizativa alcanzó su límite de inscripción inicial. Comunícate con tu administrador para obtener asistencia.</translation>
-<translation id="3162766632262775911">Siempre se puede usar el optimizador V8</translation>
 <translation id="3162853326462195145">Cuenta de una institución educativa</translation>
 <translation id="3162899666601560689">Los sitios pueden usar cookies para mejorar la experiencia de navegación, por ejemplo, para mantener el acceso a ellos o recordar artículos del carrito de compras.</translation>
 <translation id="3163085718713826852">Ingresa la contraseña del certificado</translation>
@@ -3835,7 +3835,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3666971425390608309">Descarga en pausa: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de cualquier proveedor</translation>
 <translation id="3670229581627177274">Activar Bluetooth</translation>
-<translation id="3670480940339182416">Permitir que los sitios usen el optimizador V8</translation>
 <translation id="3671982238795754537">Obtén más información sobre las llaves de acceso</translation>
 <translation id="3672681487849735243">Se detectó un error de fábrica.</translation>
 <translation id="3673097791729989571">El acceso a la cuenta está alojado en <ph name="SAML_DOMAIN" /></translation>
@@ -5736,6 +5735,7 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
 <translation id="5003070249435823986">Usa el gesto para ingresar al modo de desplazamiento y, luego, mueve la cabeza en la dirección en la que quieras desplazarte. Vuelve a usar el gesto para salir del modo de desplazamiento.</translation>
 <translation id="5003993274120026347">Oración siguiente</translation>
+<translation id="5005311809885666699">Guardados de Chrome</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006218871145547804">ADB de apps para Android en Crostini</translation>
 <translation id="5006778209728626987">Relámpago</translation>
@@ -9703,6 +9703,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="784475655832336580">La función para destacar el elemento con el enfoque del teclado no está disponible cuando ChromeVox está activado</translation>
 <translation id="7844992432319478437">Actualizando diff</translation>
 <translation id="7846161022626028328">Se produjo un error. Vuelve a intentarlo.</translation>
+<translation id="7846296061357476882">Servicios de Google</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7847212883280406910">Presiona Ctrl + Alt + S para cambiar a <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7848244988854036372">Abrir todo (<ph name="URL_COUNT" />) en un grupo nuevo de pestañas</translation>
@@ -9722,7 +9723,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7853747251428735">&amp;Más herramientas</translation>
 <translation id="7855258394151767387">Usa “w” para presionar un botón del mouse</translation>
 <translation id="7855678561139483478">Mueve la pestaña a una ventana nueva</translation>
-<translation id="7856798637819639676">Usa un documento de identidad desde tu dispositivo Android de forma segura</translation>
 <translation id="7857004848504343806">Tu computadora cuenta con un módulo de seguridad que se usa para implementar varias funciones clave de seguridad en ChromeOS Flex. Para obtener más información, visita el Centro de ayuda de Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Sugerencias de texto</translation>
 <translation id="7858120906780498731">Dispositivos de entrada conectados a ChromeOS</translation>
@@ -9981,7 +9981,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8026784703228858744">Guarda tus favoritos y mucho más con la sincronización</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Última visita: Hace 0 días}=1{Última visita: Hace 1 día}other{Última visita: Hace # días}}</translation>
 <translation id="8028060951694135607">Recuperación de claves de Microsoft</translation>
-<translation id="8028138772801251745">Autocompletar con IA</translation>
 <translation id="8028803902702117856">Descargando <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamaño</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lista de lectura}=1{Lista de lectura ({SELECTED_ITEMS})}other{Lista de lectura ({SELECTED_ITEMS})}}</translation>
@@ -10078,7 +10077,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="808894953321890993">Cambiar contraseña</translation>
 <translation id="8090234456044969073">Leer una lista de los sitios web que visitas con más frecuencia</translation>
 <translation id="8090513782447872344">Puedes volver en cualquier momento para echar un vistazo</translation>
-<translation id="8090579562279016251">Reduce el rendimiento, pero hace que V8 sea más resistente a los ataques</translation>
 <translation id="8090686009202681725">Crea un tema con IA</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> no responde</translation>
 <translation id="8094536695728193970">Albaricoque</translation>
@@ -10132,7 +10130,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8125651784723647184">Tu administrador gestiona el uso compartido de contraseñas</translation>
 <translation id="8126355825906412872">Sonreir</translation>
 <translation id="8129265306888404830">Para usar la dirección de correo electrónico de tu organización (<ph name="EMAIL_DOMAIN" />), debes usar la inscripción empresarial. Si este dispositivo es para uso personal, accede con tu Cuenta de Google personal.</translation>
-<translation id="8130476996317833777">No permitir que los sitios usen el optimizador V8</translation>
 <translation id="813082847718468539">Ver la información del sitio</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133297578569873332">Aceptable (FM)</translation>

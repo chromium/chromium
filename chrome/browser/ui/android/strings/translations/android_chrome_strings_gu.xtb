@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">જો આ સમસ્યા આવવાનું ચાલુ રહે, તો તમે <ph name="SITE_ETLD_PLUS_ONE" /> પર ચાલુ રાખવા માટે અન્ય રીતો અજમાવી શકો છો.</translation>
 <translation id="4384468725000734951">શોધ માટે Sogouનો ઉપયોગ કરી રહ્યાં છીએ</translation>
 <translation id="4387647248986092471">કાર પ્રોફાઇલ લૉક બનાવો</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{1 દિવસ કે તેથી વધુ સમયથી ઉપયોગ ન કર્યો હોય તેવા ટૅબ ગ્રૂપ}one{# દિવસ કે તેથી વધુ સમયથી ઉપયોગ ન કર્યો હોય તેવા ટૅબ અને ગ્રૂપ}other{# દિવસ કે તેથી વધુ સમયથી ઉપયોગ ન કર્યો હોય તેવા ટૅબ અને ગ્રૂપ}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> ડાઉનલોડ કરી રહ્યાં છીએ…</translation>
 <translation id="4404568932422911380">કોઈ બુકમાર્ક નથી</translation>
 <translation id="4405224443901389797">આમાં ખસેડો…</translation>

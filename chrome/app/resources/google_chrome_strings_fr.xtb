@@ -269,6 +269,7 @@ Certaines fonctionnalités ne seront peut-être pas disponibles, et les modifica
 <translation id="4205939740494406371">Chrome ne parvient pas à vérifier vos mots de passe. Réessayez dans 24 heures ou <ph name="BEGIN_LINK" />vérifiez les mots de passe enregistrés dans votre compte Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annulation…</translation>
 <translation id="4224210481850767180">L'installation a été annulée.</translation>
+<translation id="4230631012078055975">Faites plus avec Chrome en vous connectant</translation>
 <translation id="4242034826641750751">Chrome a besoin de l'autorisation d'accéder au micro et à la caméra pour ce site</translation>
 <translation id="424864128008805179">Se déconnecter de Chrome ?</translation>
 <translation id="4251615635259297716">Associer vos données Chrome à ce compte ?</translation>
@@ -592,6 +593,7 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8321888067342493336">Enregistrer en tant qu'image</translation>
 <translation id="8336463659890584292">Lorsqu'un site demande à précharger en mode privé des liens sur sa page, Chrome utilise les serveurs Google. Le site préchargé ignore votre identité, mais Google sait quels sites sont préchargés.</translation>
 <translation id="8342675569599923794">Chrome a bloqué ce fichier, car ce dernier est dangereux.</translation>
+<translation id="8349094670477064572">Vous enregistrerez et utiliserez des mots de passe et d'autres éléments de votre compte Google chaque fois que vous serez connecté à Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Langue cible</translation>
 <translation id="8370517070665726704">© <ph name="YEAR" /> Google LLC. Tous droits réservés.</translation>
 <translation id="8387459386171870978">Continuer à utiliser Chrome</translation>
@@ -630,7 +632,6 @@ Google Chrome ne peut pas récupérer vos paramètres.</translation>
 <translation id="8781673607513845160">Pour que Chrome puisse utiliser votre caméra, autorisez-le à y accéder dans les <ph name="BEGIN_LINK" />paramètres système<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Erreur d'installation : votre administrateur réseau a appliqué une stratégie de groupe qui empêche de procéder à l'installation : <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Votre organisation peut voir et gérer les données de navigation, telles que vos favoris, votre historique et vos mots de passe. Elle ne peut pas voir les données de navigation d'autres profils Chrome.</translation>
-<translation id="8801657293260363985">V8 est le moteur JavaScript et WebAssembly de Chrome qui permet d'améliorer les performances des sites</translation>
 <translation id="8821043148920470810">Pour recevoir les futures mises à jour de Google Chrome, vous devez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur utilise Windows 7.</translation>
 <translation id="8823341990149967727">Version de Chrome obsolète</translation>
 <translation id="8825634023950448068">Pour protéger votre confidentialité, nous supprimons automatiquement vos centres d'intérêt s'ils datent de plus de quatre semaines. Au fil de votre navigation, un centre d'intérêt peut réapparaître dans la liste. Si Chrome se trompe ou que vous ne voulez pas voir certaines annonces, vous pouvez supprimer un centre d'intérêt.</translation>

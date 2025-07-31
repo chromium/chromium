@@ -2541,7 +2541,6 @@
 <translation id="2730647855013151888">Включити всю особисту інформацію</translation>
 <translation id="2730901670247399077">Пропозиції смайлів</translation>
 <translation id="273093730430620027">Ця сторінка має доступ до вашої камери.</translation>
-<translation id="2730956943403103181">Заборонено використовувати оптимізатор V8</translation>
 <translation id="2731392572903530958">В&amp;ідкрити закрите вікно знову</translation>
 <translation id="2731700343119398978">Зачекайте...</translation>
 <translation id="2731971182069536520">Під час наступного перезапуску пристрою адміністратор виконає одноразове оновлення, що призведе до видалення локальних даних.</translation>
@@ -3140,7 +3139,6 @@
 <translation id="3160928651883997588">Параметри VPN</translation>
 <translation id="3161522574479303604">Усі мови</translation>
 <translation id="3162070126914310576">Зараз не можна зареєструвати цей пристрій, оскільки ваш організаційний підрозділ досяг ліміту для початкової реєстрації. Зверніться по допомогу до свого адміністратора.</translation>
-<translation id="3162766632262775911">Завжди дозволено використовувати оптимізатор V8</translation>
 <translation id="3162853326462195145">Обліковий запис закладу освіти</translation>
 <translation id="3162899666601560689">Сайти можуть використовувати файли cookie, щоб покращувати веб-перегляд, наприклад не виходити з облікового запису чи запам'ятовувати товари в кошику для покупок</translation>
 <translation id="3163085718713826852">Введіть пароль сертифіката</translation>
@@ -3856,7 +3854,6 @@
 <translation id="3666971425390608309">Завантаження файлу "<ph name="FILE_NAME" />" призупинено.</translation>
 <translation id="3670113805793654926">Пристрої від усіх постачальників</translation>
 <translation id="3670229581627177274">Увімкніть Bluetooth</translation>
-<translation id="3670480940339182416">Сайти можуть використовувати оптимізатор V8</translation>
 <translation id="3671982238795754537">Докладніше про ключі доступу</translation>
 <translation id="3672681487849735243">Виявлено заводську помилку</translation>
 <translation id="3673097791729989571">Вхід через <ph name="SAML_DOMAIN" /></translation>
@@ -5756,6 +5753,7 @@
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
 <translation id="5003070249435823986">Увімкніть режим прокручування за допомогою жесту, а потім поверніть голову в тому напрямку, куди потрібно прокрутити сторінку. Щоб вийти з режиму прокручування, повторіть жест.</translation>
 <translation id="5003993274120026347">Наступне речення</translation>
+<translation id="5005311809885666699">Збережено з Chrome</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5006218871145547804">ADB в додатках для Android у Crostini</translation>
 <translation id="5006778209728626987">Блискавка</translation>
@@ -9724,6 +9722,7 @@
 <translation id="784475655832336580">Функція виділення на клавіатурі недоступна, коли ввімкнено ChromeVox</translation>
 <translation id="7844992432319478437">Оновлення відмінностей</translation>
 <translation id="7846161022626028328">Сталася помилка. Повторіть спробу.</translation>
+<translation id="7846296061357476882">Сервіси Google</translation>
 <translation id="7846634333498149051">Клавіатура</translation>
 <translation id="7847212883280406910">Натисніть Ctrl+Alt+S, щоб переключитися на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Відкрити всі (<ph name="URL_COUNT" />) у новій групі вкладок</translation>
@@ -9743,7 +9742,6 @@
 <translation id="7853747251428735">Інші інструменти</translation>
 <translation id="7855258394151767387">Щоб натиснути кнопку миші, натисніть клавішу "w"</translation>
 <translation id="7855678561139483478">Перемістити вкладку в нове вікно</translation>
-<translation id="7856798637819639676">Безпечно використовуйте ідентифікатор із пристрою Android</translation>
 <translation id="7857004848504343806">Ваш комп’ютер містить модуль безпеки, який виконує багато важливих функцій захисту в ОС Chrome Flex. Щоб дізнатися більше, відвідайте Довідковий центр Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Підказки тексту</translation>
 <translation id="7858120906780498731">Підключені до ChromeOS пристрої введення</translation>
@@ -10002,7 +10000,6 @@
 <translation id="8026784703228858744">Зберігайте закладки й інший контент завдяки синхронізації</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Відвідано 0 днів тому}=1{Відвідано 1 день тому}one{Відвідано # день тому}few{Відвідано # дні тому}many{Відвідано # днів тому}other{Відвідано # дня тому}}</translation>
 <translation id="8028060951694135607">Відновлення ключів Microsoft</translation>
-<translation id="8028138772801251745">Автозаповнення за допомогою ШІ</translation>
 <translation id="8028803902702117856">Завантаження <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Розмір</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список читання}=1{Список читання ({SELECTED_ITEMS})}one{Список читання ({SELECTED_ITEMS})}few{Список читання ({SELECTED_ITEMS})}many{Список читання ({SELECTED_ITEMS})}other{Список читання ({SELECTED_ITEMS})}}</translation>
@@ -10099,7 +10096,6 @@
 <translation id="808894953321890993">Змінити пароль</translation>
 <translation id="8090234456044969073">Переглядати список ваших найчастіше відвідуваних веб-сайтів</translation>
 <translation id="8090513782447872344">Посібник із конфіденційності можна будь-коли перечитати</translation>
-<translation id="8090579562279016251">Знижує продуктивність, але робить систему V8 стійкішою до атак</translation>
 <translation id="8090686009202681725">Створити тему за допомогою ШІ</translation>
 <translation id="8093359998839330381">Плагін <ph name="PLUGIN_NAME" /> не відповідає</translation>
 <translation id="8094536695728193970">Абрикос</translation>
@@ -10153,7 +10149,6 @@
 <translation id="8125651784723647184">Надсиланням паролів керує адміністратор</translation>
 <translation id="8126355825906412872">Усміхнутися</translation>
 <translation id="8129265306888404830">Щоб використовувати електронну адресу організації (<ph name="EMAIL_DOMAIN" />), потрібно виконати корпоративну реєстрацію. Якщо ви користуєтеся цим пристроєм для власних цілей, увійдіть в особистий обліковий запис Google.</translation>
-<translation id="8130476996317833777">Заборонити сайтам використовувати оптимізатор V8</translation>
 <translation id="813082847718468539">Перегляд інформації про сайт</translation>
 <translation id="8131740175452115882">Підтвердити</translation>
 <translation id="8133297578569873332">Прийнятна – FM</translation>

@@ -266,6 +266,7 @@
 <translation id="4205939740494406371">Chrome nu îți poate verifica parolele. Încearcă din nou după 24 de ore sau <ph name="BEGIN_LINK" />verifică parolele din Contul Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Se anulează…</translation>
 <translation id="4224210481850767180">Instalarea a fost anulată.</translation>
+<translation id="4230631012078055975">Beneficiază de mai multe când te conectezi la Chrome</translation>
 <translation id="4242034826641750751">Chrome are nevoie de acces la cameră și microfon pentru acest site</translation>
 <translation id="424864128008805179">Te deconectezi de la Chrome?</translation>
 <translation id="4251615635259297716">Vă conectați datele Chrome cu acest cont?</translation>
@@ -585,6 +586,7 @@
 <translation id="8321888067342493336">Salvează ca imagine</translation>
 <translation id="8336463659890584292">Când un site îți solicită să preîncarci în mod privat linkurile pe pagină, Chrome folosește serverele Google. Astfel, identitatea ta este ascunsă pentru site-ul preîncărcat, dar Google află ce site-uri se preîncarcă.</translation>
 <translation id="8342675569599923794">Fișierul este periculos, așadar Chrome l-a blocat.</translation>
+<translation id="8349094670477064572">Vei salva și vei folosi parole și multe altele în Contul Google ori de câte ori te conectezi la Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Tradu în</translation>
 <translation id="8370517070665726704">Drept de autor <ph name="YEAR" /> Google LLC. Toate drepturile rezervate.</translation>
 <translation id="8387459386171870978">Continuă să folosești Chrome</translation>
@@ -623,7 +625,6 @@
 <translation id="8781673607513845160">Pentru a folosi camera foto, permite accesul browserului Chrome în <ph name="BEGIN_LINK" />setările de sistem<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Eroare la instalare: administratorul de rețea a aplicat o Politică de grup care împiedică instalarea: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Organizația ta poate să vadă și să gestioneze datele de navigare, cum ar fi marcajele, istoricul și parolele. Nu poate să vadă datele de navigare din alte profiluri Chrome</translation>
-<translation id="8801657293260363985">V8 este motorul JavaScript și WebAssembly din Chrome, folosit pentru a îmbunătăți performanța site-ului</translation>
 <translation id="8821043148920470810">Pentru a primi actualizările Google Chrome viitoare, vei avea nevoie de Windows 10 sau o versiune ulterioară. Acest computer folosește Windows 7.</translation>
 <translation id="8823341990149967727">Chrome nu este actualizat</translation>
 <translation id="8825634023950448068">Pentru a-ți proteja confidențialitatea, ștergem automat categoriile de interese mai vechi de patru săptămâni. Pe măsură ce navighezi, o categorie de interese poate să reapară în listă. Iar dacă Chrome alege opțiunea greșită sau nu vrei să vezi anumite anunțuri, poți să elimini o categorie de interese.</translation>

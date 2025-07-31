@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">مرور به‌روزرسانی نام</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> به میز کار <ph name="DESK_TITLE" /> تعلق دارد</translation>
 <translation id="1166644470305877068">«برنامه‌های وب مجزا» به‌طور خودکار از این تنظیم پیروی می‌کنند</translation>
+<translation id="116712635768212829">‏اگر Chrome یکی از گذرواژه‌هایتان را در سرقت اطلاعات شبکه پیدا کند، «مدیر گذرواژه Google» می‌تواند درصورتی‌که به سیستم وارد شده باشید پیشنهاد دهد گذرواژه را برای شما تغییر دهد.</translation>
 <translation id="1168020859489941584">باز کردن با <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">مضمون اخیر هوش مصنوعی <ph name="INDEX" /> از <ph name="SUBJECT" />، در سبک <ph name="STYLE" />، با حال‌وهوای <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">تغییر خودکار زبان برای مطابقت با محتوای انتخاب‌شده</translation>
@@ -555,6 +556,7 @@
 <translation id="1375938286942050085">راه‌اندازی کامل شد! سپس، دستگاهتان را برای بازی آماده کنید</translation>
 <translation id="137651782282853227">نشانی‌های ذخیره‌شده در اینجا نشان داده خواهند شد</translation>
 <translation id="1376771218494401509">نام‌گذاری پنجره…</translation>
+<translation id="1377438103060664754">‏اگر یکی از گذرواژه‌هایتان در یک سرقت اطلاعات شبکه پیدا شود، «مدیر گذرواژه Google» می‌پرسد آیا مایلید آن را به یک گذرواژه قوی تغییر دهید</translation>
 <translation id="1377600615067678409">فعلاً گذشتن</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> در حال کنترل این تنظیمات است</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{گذرواژه لورفته‌ای وجود ندارد}=1{۱ گذرواژه لورفته}one{{NUM_COMPROMISED} گذرواژه لورفته}other{{NUM_COMPROMISED} گذرواژه لورفته}}</translation>
@@ -2533,7 +2535,6 @@
 <translation id="2730647855013151888">اضافه کردن همه اطلاعات شخصی</translation>
 <translation id="2730901670247399077">پیشنهادهای اموجی</translation>
 <translation id="273093730430620027">این صفحه به دوربین شما دسترسی دارد.</translation>
-<translation id="2730956943403103181">‏اجازه ندارد از بهینه‌ساز V8 استفاده کند</translation>
 <translation id="2731392572903530958">با&amp;ز کردن مجدد پنجره بسته</translation>
 <translation id="2731700343119398978">لطفاً صبر کنید...</translation>
 <translation id="2731971182069536520">دفعه بعد که دستگاهتان را بازراه‌اندازی می‌کنید، سرپرستتان به‌روزرسانی یک‌باره‌ای انجام می‌دهد که داده‌های محلی شما را حذف خواهد کرد.</translation>
@@ -3132,7 +3133,6 @@
 <translation id="3160928651883997588">‏اولویت‌های VPN</translation>
 <translation id="3161522574479303604">همه زبان‌ها</translation>
 <translation id="3162070126914310576">درحال‌حاضر نمی‌توان این دستگاه را ثبت‌نام کرد زیرا واحد سازمانی‌تان به حداکثر تعداد ثبت‌نام اولیه خود رسیده است. برای دریافت کمک با سرپرستتان تماس بگیرید.</translation>
-<translation id="3162766632262775911">‏همیشه اجازه دارد از بهینه‌ساز V8 استفاده کند</translation>
 <translation id="3162853326462195145">حساب محل تحصیل</translation>
 <translation id="3162899666601560689">سایت‌ها می‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند</translation>
 <translation id="3163085718713826852">گذرواژه گواهینامه را وارد کنید</translation>
@@ -3848,7 +3848,6 @@
 <translation id="3666971425390608309">بارگیری <ph name="FILE_NAME" /> موقتاً متوقف شد.</translation>
 <translation id="3670113805793654926">دستگاه‌های همه فروشنده‌ها</translation>
 <translation id="3670229581627177274">روشن کردن بلوتوث</translation>
-<translation id="3670480940339182416">‏سایت‌ها می‌توانند از بهینه‌ساز V8 استفاده کنند</translation>
 <translation id="3671982238795754537">درباره گذرکلیدها بیشتر بدانید</translation>
 <translation id="3672681487849735243">یک خطای کارخانه شناسایی شده است</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> ورود به سیستم را میزبانی می‌کند</translation>
@@ -5749,6 +5748,7 @@
 <translation id="5001526427543320409">کوکی‌های طرف سوم</translation>
 <translation id="5003070249435823986">بااستفاده از اشاره به حالت پیمایش وارد شوید، سپس سرتان را به جهت موردنظر برای پیمایش حرکت دهید. برای خروج از حالت پیمایش، دوباره از اشاره استفاده کنید.</translation>
 <translation id="5003993274120026347">جمله بعدی</translation>
+<translation id="5005311809885666699">‏ذخیره‌شده از Chrome</translation>
 <translation id="5005498671520578047">کپی گذرواژه</translation>
 <translation id="5006218871145547804">‏پُل اشکال‌زدایی برنامه Android در Crostini</translation>
 <translation id="5006778209728626987">آذرخش</translation>
@@ -9717,6 +9717,7 @@
 <translation id="784475655832336580">‏هنگام روشن بودن ChromeVox، برجسته کردن مورد با ناحیه تمرکز صفحه‌کلید دردسترس نیست</translation>
 <translation id="7844992432319478437">به‌روزرسانی تفاوت</translation>
 <translation id="7846161022626028328">خطایی وجود داشت. دوباره امتحان کنید.</translation>
+<translation id="7846296061357476882">‏سرویس‌های Google</translation>
 <translation id="7846634333498149051">صفحه‌کلید</translation>
 <translation id="7847212883280406910">‏برای رفتن به <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> کلیدهای Ctrl + Alt + S را فشار دهید.</translation>
 <translation id="7848244988854036372">باز کردن همه (<ph name="URL_COUNT" />) در گروه برگه جدید</translation>
@@ -9736,7 +9737,6 @@
 <translation id="7853747251428735">‏ابزارهای بیشتر (‎&amp;L)</translation>
 <translation id="7855258394151767387">‏از «w» برای فشار دادن دکمه موشواره استفاده کنید</translation>
 <translation id="7855678561139483478">انتقال برگه به پنجره جدید</translation>
-<translation id="7856798637819639676">‏با خیال راحت از مدرک شناسایی ذخیره‌شده در دستگاه Android خود استفاده کنید</translation>
 <translation id="7857004848504343806">‏رایانه شما دارای پودمان امنیتی است که برای پیاده‌سازی بسیاری از ویژگی‌های امنیتی ضروری در ChromeOS Flex استفاده می‌شود. برای کسب اطلاعات بیشتر، از «مرکز راهنمایی Chromebook» بازدید کنید: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">پیشنهادهای نوشتار</translation>
 <translation id="7858120906780498731">‏دستگاه‌های ورودی متصل ChromeOS</translation>
@@ -9995,7 +9995,6 @@
 <translation id="8026784703228858744">با همگام‌سازی، نشانک‌ها و اطلاعات دیگر را ذخیره کنید</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{‫۰ روز قبل بازدید کردید}=1{‫۱ روز قبل بازدید کردید}one{‫# روز قبل بازدید کردید}other{‫# روز قبل بازدید کردید}}</translation>
 <translation id="8028060951694135607">‏بازیابی کلید Microsot</translation>
-<translation id="8028138772801251745">تکمیل خودکار با هوش مصنوعی</translation>
 <translation id="8028803902702117856">درحال بارگیری <ph name="SIZE" />، <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">اندازه</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{فهرست خواندن}=1{فهرست خواندن ({SELECTED_ITEMS})}one{فهرست خواندن ({SELECTED_ITEMS})}other{فهرست خواندن ({SELECTED_ITEMS})}}</translation>
@@ -10092,7 +10091,6 @@
 <translation id="808894953321890993">تغییر گذرواژه</translation>
 <translation id="8090234456044969073">خواندن فهرستی از وب‌سایت‌های غالباً بازدید شده شما</translation>
 <translation id="8090513782447872344">هرزمان بخواهید می‌توانید به اینجا برگردید و نگاه دیگری بیندازید</translation>
-<translation id="8090579562279016251">‏عملکرد را کاهش می‌دهد اما V8 را در برابر حملات مقاوم‌تر می‌کند</translation>
 <translation id="8090686009202681725">ساختن مضمون با هوش مصنوعی</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> پاسخ نمی‌دهد</translation>
 <translation id="8094536695728193970">زرد پرتقالی</translation>
@@ -10146,7 +10144,6 @@
 <translation id="8125651784723647184">سرپرست شما هم‌رسانی گذرواژه را مدیریت می‌کند</translation>
 <translation id="8126355825906412872">لبخند زدن</translation>
 <translation id="8129265306888404830">‏برای استفاده از نشانی ایمیل سازمانتان (<ph name="EMAIL_DOMAIN" />)، باید از ثبت‌نام شرکتی استفاده کنید. اگر این دستگاه برای استفاده شخصی شما است، با «حساب Google» شخصی خود به سیستم وارد شوید.</translation>
-<translation id="8130476996317833777">‏به سایت‌ها اجازه نمی‌دهد از بهینه‌ساز V8 استفاده کنند</translation>
 <translation id="813082847718468539">مشاهدهٔ اطلاعات سایت</translation>
 <translation id="8131740175452115882">تأیید</translation>
 <translation id="8133297578569873332">‏قابل قبول - FM</translation>

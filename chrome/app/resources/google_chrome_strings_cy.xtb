@@ -270,6 +270,7 @@ Mae'n bosib na fydd rhai nodweddion ar gael ac ni fydd newidiadau o ran dewisiad
 <translation id="4205939740494406371">Ni all Chrome wirio'ch cyfrineiriau. Rhowch gynnig arall arni ar ôl 24 awr neu <ph name="BEGIN_LINK" />gwiriwch gyfrineiriau yn eich Cyfrif Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Wrthi'n canslo...</translation>
 <translation id="4224210481850767180">Mae'r gosodiad wedi'i ganslo.</translation>
+<translation id="4230631012078055975">Cael rhagor pan fyddwch wedi mewngofnodi i Chrome</translation>
 <translation id="4242034826641750751">Mae angen caniatâd camera a meicroffon ar Chrome ar gyfer y wefan hon</translation>
 <translation id="424864128008805179">Allgofnodi o Chrome?</translation>
 <translation id="4251615635259297716">Cysylltu eich data Chrome â'r cyfrif hwn?</translation>
@@ -593,6 +594,7 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8321888067342493336">Cadw fel llun</translation>
 <translation id="8336463659890584292">Pan fydd gwefan yn gofyn i chi raglwytho dolenni ar ei thudalen yn breifat, mae Chrome yn defnyddio gweinyddion Google. Mae hyn yn cuddio eich hunaniaeth o'r wefan sydd wedi'i rhaglwytho, ond mae Google yn dysgu pa wefannau sy'n cael eu rhaglwytho.</translation>
 <translation id="8342675569599923794">Mae'r ffeil hon yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
+<translation id="8349094670477064572">Byddwch yn cadw ac yn defnyddio cyfrineiriau a rhagor yn eich Cyfrif Google pryd bynnag y byddwch wedi mewngofnodi i Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Cyfieithu i</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>
 <translation id="8387459386171870978">Parhau i ddefnyddio Chrome</translation>
@@ -631,7 +633,6 @@ Nid yw Google Chrome yn gallu adfer eich gosodiadau.</translation>
 <translation id="8781673607513845160">I ddefnyddio'ch camera, rhowch fynediad i Chrome yn y <ph name="BEGIN_LINK" />gosodiadau system<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Gwall gosod: Mae gweinyddwr eich rhwydwaith wedi defnyddio Polisi Grŵp sy'n atal gosod: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Gall eich sefydliad weld a rheoli data pori, megis eich nodau tudalen, hanes a chyfrineiriau. Ni all weld data pori mewn proffiliau Chrome eraill</translation>
-<translation id="8801657293260363985">V8 yw injan JavaScript a WebAssembly Chrome a ddefnyddir i wella perfformiad gwefan</translation>
 <translation id="8821043148920470810">I gael diweddariadau Google Chrome yn y dyfodol, bydd angen Windows 10 neu ddiweddarach arnoch. Mae'r cyfrifiadur hwn yn defnyddio Windows 7.</translation>
 <translation id="8823341990149967727">Mae Chrome yn hen</translation>
 <translation id="8825634023950448068">Er mwyn amddiffyn eich preifatrwydd, rydym yn awtoddileu eich diddordebau sy'n hŷn na 4 wythnos. Wrth i chi barhau i bori, mae'n bosib y bydd diddordeb yn ymddangos ar y rhestr eto. Ac os yw Chrome yn ei chael yn anghywir neu os nad ydych am weld rhai hysbysebion, gallwch ddileu diddordeb.</translation>

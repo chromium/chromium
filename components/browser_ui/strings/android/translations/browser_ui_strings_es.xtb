@@ -448,6 +448,7 @@ Protección Avanzada controla estos ajustes de Chrome:
 <translation id="6064125863973209585">Descargas completadas</translation>
 <translation id="6071501408666570960">Puede que se cierre tu sesión en este sitio</translation>
 <translation id="6085954183010297841">¿Eliminar autorización para editar archivos? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Cuando esta opción está activada, los sitios pueden activar la función Imagen en imagen automáticamente. Si está desactivada, los sitios no pueden activar la función automáticamente.</translation>
 <translation id="6120483543004435978">Cuando esta opción está activada, los sitios pueden solicitar permiso para saber cuándo usas activamente tu dispositivo. Si está desactivada, los sitios no pueden saber cuándo usas activamente tu dispositivo.</translation>
 <translation id="615886654739818377">No permitir que los sitios gestionen las ventanas en ninguna de tus pantallas</translation>
 <translation id="6165508094623778733">Más información</translation>

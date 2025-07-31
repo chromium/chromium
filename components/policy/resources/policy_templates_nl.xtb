@@ -6098,11 +6098,6 @@ Algemene jokertekens (zoals '*' of '[*]') zijn niet toegestaan. In plaats daarva
 
 Opmerking: Dit beleid is niet van toepassing op HSTS-upgrades.</translation>
 <translation id="5297948043665200363">Toestaan dat de gebruiker ingelogd blijft nadat de verificatie van het account is ingetrokken</translation>
-<translation id="5298594338496226089">Als je het beleid instelt, kunnen vermelde oorsprongen apparaatkenmerken (zoals serienummer, hostnaam) ophalen via de Device Attributes API.
-
-Oorsprongen moeten overeenkomen met web-apps die afgedwongen geïnstalleerd zijn met het beleid <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> of <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (sinds versie 125) of die zijn ingesteld als kiosk-app. Ga naar https://wicg.github.io/WebApiDevice/device_attributes voor de specificaties van de Device Attributes API.
-
-Ga naar https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns voor gedetailleerde informatie over geldige <ph name="URL_LABEL" />-patronen (sinds versie 127). <ph name="WILDCARD_VALUE" /> is geen geaccepteerde waarde voor dit beleid.</translation>
 <translation id="5298949392804966105">Geen beperkingen voor beheerde accounts</translation>
 <translation id="530111809849214840">De optie <ph name="GOOGLE_DRIVE_NAME" /> verbergen.</translation>
 <translation id="530134925949808452">De tijd van de dag in lokale tijd wanneer het gebruiksquotum wordt vernieuwd.</translation>

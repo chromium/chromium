@@ -2525,7 +2525,6 @@
 <translation id="2730647855013151888">รวมข้อมูลส่วนบุคคลทั้งหมด</translation>
 <translation id="2730901670247399077">คำแนะนำอีโมจิ</translation>
 <translation id="273093730430620027">หน้านี้กำลังเข้าถึงกล้องของคุณ</translation>
-<translation id="2730956943403103181">ไม่ได้รับอนุญาตให้ใช้เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="2731392572903530958">เ&amp;ปิดหน้าต่างที่ถูกปิดขึ้นใหม่</translation>
 <translation id="2731700343119398978">โปรดรอสักครู่...</translation>
 <translation id="2731971182069536520">ครั้งถัดไปที่คุณรีสตาร์ทอุปกรณ์ ผู้ดูแลระบบจะดำเนินการอัปเดตแบบครั้งเดียวซึ่งจะลบข้อมูลในเครื่อง</translation>
@@ -3124,7 +3123,6 @@
 <translation id="3160928651883997588">ค่ากำหนดของ VPN</translation>
 <translation id="3161522574479303604">ทุกภาษา</translation>
 <translation id="3162070126914310576">ลงทะเบียนอุปกรณ์นี้ไม่ได้ในตอนนี้เนื่องจากหน่วยขององค์กรถึงขีดจำกัดการลงทะเบียนเริ่มต้นแล้ว โปรดติดต่อผู้ดูแลระบบเพื่อขอความช่วยเหลือ</translation>
-<translation id="3162766632262775911">ได้รับอนุญาตให้ใช้เครื่องมือเพิ่มประสิทธิภาพ V8 เสมอ</translation>
 <translation id="3162853326462195145">บัญชีโรงเรียน</translation>
 <translation id="3162899666601560689">เว็บไซต์สามารถใช้คุกกี้เพื่อปรับปรุงประสบการณ์การท่องเว็บ เช่น คงสถานะลงชื่อเข้าใช้ไว้ให้คุณ หรือจดจำสินค้าที่คุณใส่ไว้ในรถเข็นช็อปปิ้ง</translation>
 <translation id="3163085718713826852">ป้อนรหัสผ่านใบรับรอง</translation>
@@ -3838,7 +3836,6 @@
 <translation id="3666971425390608309">หยุดดาวน์โหลด <ph name="FILE_NAME" /> ชั่วคราวแล้ว</translation>
 <translation id="3670113805793654926">อุปกรณ์จากผู้ให้บริการรายใดก็ได้</translation>
 <translation id="3670229581627177274">เปิดบลูทูธ</translation>
-<translation id="3670480940339182416">เว็บไซต์สามารถใช้เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="3671982238795754537">ดูข้อมูลเพิ่มเติมเกี่ยวกับพาสคีย์</translation>
 <translation id="3672681487849735243">ตรวจพบข้อผิดพลาดจากโรงงาน</translation>
 <translation id="3673097791729989571">การลงชื่อเข้าใช้ที่โฮสต์โดย <ph name="SAML_DOMAIN" /></translation>
@@ -5738,6 +5735,7 @@
 <translation id="5001526427543320409">คุกกี้ของบุคคลที่สาม</translation>
 <translation id="5003070249435823986">ใช้ท่าทางสัมผัสเพื่อเข้าสู่โหมดเลื่อน จากนั้นขยับศีรษะไปในทิศทางที่ต้องการเลื่อน ใช้ท่าทางสัมผัสอีกครั้งเพื่อออกจากโหมดเลื่อน</translation>
 <translation id="5003993274120026347">ประโยคถัดไป</translation>
+<translation id="5005311809885666699">บันทึกจาก Chrome แล้ว</translation>
 <translation id="5005498671520578047">คัดลอกรหัสผ่าน</translation>
 <translation id="5006218871145547804">ADB ของแอป Android ใน Crostini</translation>
 <translation id="5006778209728626987">สายฟ้า</translation>
@@ -9700,6 +9698,7 @@
 <translation id="784475655832336580">การไฮไลต์รายการที่มีโฟกัสแป้นพิมพ์ไม่พร้อมใช้งานเมื่อ ChromeVox เปิดอยู่</translation>
 <translation id="7844992432319478437">กำลังอัปเดตความต่าง</translation>
 <translation id="7846161022626028328">เกิดข้อผิดพลาด โปรดลองอีกครั้ง</translation>
+<translation id="7846296061357476882">บริการของ Google</translation>
 <translation id="7846634333498149051">แป้นพิมพ์</translation>
 <translation id="7847212883280406910">กด Ctrl + Alt + S เพื่อสลับไปยัง <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">เปิดทั้งหมด (<ph name="URL_COUNT" />)ในกลุ่มแท็บใหม่</translation>
@@ -9719,7 +9718,6 @@
 <translation id="7853747251428735">เครื่องมือเ&amp;พิ่มเติม</translation>
 <translation id="7855258394151767387">ใช้ปุ่ม "w" เพื่อกดปุ่มเมาส์</translation>
 <translation id="7855678561139483478">ย้ายแท็บไปที่หน้าต่างใหม่</translation>
-<translation id="7856798637819639676">ใช้รหัสจากอุปกรณ์ Android ได้อย่างปลอดภัย</translation>
 <translation id="7857004848504343806">คอมพิวเตอร์ของคุณมีโมดูลความปลอดภัย ซึ่งใช้เพื่อนำฟีเจอร์การรักษาความปลอดภัยที่สำคัญจำนวนมากมาใช้ใน Chrome OS Flex ดูข้อมูลเพิ่มเติมได้จากศูนย์ช่วยเหลือของ Chromebook ที่ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">คำแนะนำข้อความ</translation>
 <translation id="7858120906780498731">อุปกรณ์อินพุตที่เชื่อมต่อกับ ChromeOS</translation>
@@ -9978,7 +9976,6 @@
 <translation id="8026784703228858744">บันทึกบุ๊กมาร์กและอื่นๆ ด้วยการซิงค์</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{เข้าชมเมื่อ 0 วันที่ผ่านมา}=1{เข้าชมเมื่อ 1 วันที่ผ่านมา}other{เข้าชมเมื่อ # วันที่ผ่านมา}}</translation>
 <translation id="8028060951694135607">การกู้คืนคีย์ของ Microsoft</translation>
-<translation id="8028138772801251745">ป้อนข้อความอัตโนมัติด้วย AI</translation>
 <translation id="8028803902702117856">กำลังดาวน์โหลด <ph name="SIZE" /> <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ขนาด</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{เรื่องรออ่าน}=1{เรื่องรออ่าน ({SELECTED_ITEMS})}other{เรื่องรออ่าน ({SELECTED_ITEMS})}}</translation>
@@ -10075,7 +10072,6 @@
 <translation id="808894953321890993">เปลี่ยนรหัสผ่าน</translation>
 <translation id="8090234456044969073">อ่านรายชื่อของเว็บไซต์ที่คุณเข้าชมบ่อยที่สุด</translation>
 <translation id="8090513782447872344">คุณกลับมาดูอีกครั้งได้ทุกเมื่อ</translation>
-<translation id="8090579562279016251">ลดประสิทธิภาพแต่ทำให้ V8 ต้านทานการโจมตีได้มากขึ้น</translation>
 <translation id="8090686009202681725">สร้างธีมด้วย AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ไม่ตอบสนอง</translation>
 <translation id="8094536695728193970">แอปริคอท</translation>
@@ -10129,7 +10125,6 @@
 <translation id="8125651784723647184">การแชร์รหัสผ่านจัดการโดยผู้ดูแลระบบ</translation>
 <translation id="8126355825906412872">ยิ้ม</translation>
 <translation id="8129265306888404830">หากต้องการใช้อีเมลจากองค์กร (<ph name="EMAIL_DOMAIN" />) คุณต้องใช้การลงทะเบียนองค์กร หากอุปกรณ์นี้มีไว้เพื่อใช้งานส่วนบุคคล ให้ลงชื่อเข้าใช้ด้วยบัญชี Google ส่วนบุคคล</translation>
-<translation id="8130476996317833777">ไม่อนุญาตให้เว็บไซต์ใช้เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="813082847718468539">ดูข้อมูลเว็บไซต์</translation>
 <translation id="8131740175452115882">ยืนยัน</translation>
 <translation id="8133297578569873332">พอใช้ - FM</translation>

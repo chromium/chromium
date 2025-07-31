@@ -182,7 +182,6 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="3258596308407688501">Chromium не може читати та писати дані у свій каталог даних:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 – це система JavaScript і WebAssembly для Chromium, яка використовується, щоб покращувати ефективність сайтів.</translation>
 <translation id="3286538390144397061">Перезапустити зараз</translation>
 <translation id="328888136576916638">Ключі API Google відсутні. Деякі функції Chromium буде вимкнено.</translation>
 <translation id="3296368748942286671">Продовжувати роботу фонових програм, коли Chromium закрито</translation>

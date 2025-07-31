@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 8.</translation>
 <translation id="2094648590148273905">Syarat Chrome OS Flex</translation>
 <translation id="2094919256425865063">Keluar daripada Chrome juga?</translation>
+<translation id="2096213354152647998">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" />tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Lumpuhkan Chrome yang Berjalan pada Latar untuk Apl</translation>
 <translation id="2120620239521071941">Tindakan ini akan memadamkan <ph name="ITEMS_COUNT" /> item daripada peranti ini. Untuk mendapatkan kembali data anda kemudian, log masuk ke Chrome sebagai <ph name="USER_EMAIL" />.</translation>
@@ -455,6 +456,7 @@
 <translation id="6696915334902295848">Chrome memerlukan kebenaran mikrofon untuk laman ini</translation>
 <translation id="6712881677154121168">Ralat muat turun: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Jadikan Chrome lebih pantas</translation>
+<translation id="6734827584173583205">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> dan <ph name="COUNT" /> lagi.</translation>
 <translation id="6735387454586646204">Sistem Chrome OS Flex</translation>
 <translation id="6750954913813541382">Untuk membetulkan kesalahan ejaan, Chrome akan menghantar teks yang anda taip dalam penyemak imbas kepada Google</translation>
 <translation id="6760235774835597023">Mempercepat laman dengan enjin V8 Chrome tetapi Chrome menjadi kurang tahan sedikit terhadap serangan. Tetapan ini dihidupkan.</translation>
@@ -480,6 +482,7 @@
 <translation id="7024536598735240744">Ralat penyahpadatan: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Pemasangan Dihentikan.</translation>
 <translation id="7025800014283535195">Anda boleh beralih antara profil Chrome di sini</translation>
+<translation id="7051685429025310665">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Peribadikan Chrome Anda</translation>
 <translation id="7060643578009939353">Cari video ini dengan Google Lens</translation>
 <translation id="7071827361006050863">Chrome akan memadamkan data semakan imbas sebentar lagi</translation>
@@ -541,6 +544,7 @@
 <translation id="77283119132245232">Menyediakan perkhidmatan penyurihan sistem untuk <ph name="BROWSER_NAME" />. Jika perkhidmatan ini dilumpuhkan, penyurihan prestasi yang dibuat oleh penyemak imbas tidak akan menyertakan peristiwa seluruh sistem seperti peristiwa suis konteks dan urutan tersedia.</translation>
 <translation id="7736869414036750079">Organisasi anda menghendaki anda untuk log masuk ke Chrome</translation>
 <translation id="7747138024166251722">Pemasang tidak dapat mencipta direktori sementara. Sila semak ruang cakera kosong dan kebenaran untuk memasang perisian.</translation>
+<translation id="7748969056734910029">Anda belum melawati laman web ini baru-baru ini. Chrome mengalih keluar <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Klik nama anda untuk membuka Chrome dan mula menyemak imbas.</translation>
 <translation id="7777080907402804672">Jika imej tiada perihalan yang berguna, Chrome akan cuba memberikan perihalan untuk anda. Untuk membuat perihalan, imej dihantar kepada Google. Anda boleh mematikan pilihan ini dalam tetapan pada bila-bila masa.</translation>
 <translation id="778331955594035129">Chrome memerlukan kebenaran lokasi untuk laman ini</translation>
@@ -625,7 +629,6 @@
 <translation id="8781673607513845160">Untuk menggunakan kamera anda, berikan akses kepada Chrome dalam <ph name="BEGIN_LINK" />tetapan sistem<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Ralat pemasangan: Pentadbir rangkaian anda telah menggunakan Dasar Kumpulan yang menghalang pemasangan: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Organisasi anda dapat melihat dan mengurus data penyemakan imbas, seperti penanda halaman, sejarah dan kata laluan anda. Organisasi anda tidak dapat melihat data semakan imbas dalam profil Chrome peribadi yang lain</translation>
-<translation id="8801657293260363985">V8 ialah JavaScript Chrome dan enjin WebAssembly yang digunakan untuk meningkatkan prestasi laman</translation>
 <translation id="8821043148920470810">Untuk mendapatkan kemaskinian Google Chrome yang akan datang, anda memerlukan Windows 10 atau yang lebih baharu. Komputer ini menggunakan Windows 7.</translation>
 <translation id="8823341990149967727">Chrome sudah Usang</translation>
 <translation id="8825634023950448068">Untuk melindungi privasi anda, kami memadamkan minat anda yang disimpan melebihi 4 minggu secara automatik. Semasa anda terus menyemak imbas, minat itu mungkin muncul semula dalam senarai. Jika Chrome tersilap atau anda tidak mahu melihat iklan tertentu, anda boleh mengalih keluar minat itu.</translation>

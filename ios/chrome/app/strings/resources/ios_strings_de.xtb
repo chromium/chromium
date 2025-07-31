@@ -65,6 +65,7 @@
 <translation id="1263433075299269530">Zuletzt geöffneter Tab</translation>
 <translation id="1264156759663453185">Der ausgewählte Text ist für eine teilweise Übersetzung zu lang.</translation>
 <translation id="1264974993859112054">Sport</translation>
+<translation id="126737128831326059">Export erfolgreich</translation>
 <translation id="1272079795634619415">Stoppen</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} Passwort}other{{count} Passwörter}}</translation>
 <translation id="1275718070701477396">Ausgewählt</translation>
@@ -168,6 +169,7 @@
 <translation id="1641113438599504367">Safe Browsing</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="164673457281113247">{count,plural, =1{Lesezeichen wurde gespeichert}other{Lesezeichen wurden gespeichert}}</translation>
+<translation id="1651260071709244114">Apps</translation>
 <translation id="1652051421944182562">„Sicherheitscheck“-Benachrichtigungen aktivieren…</translation>
 <translation id="1652333207707886577">Menü anpassen</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Verbleibende Zeit: {TIME} Sekunden}=1{Verbleibende Zeit: {TIME} Sekunde}other{Verbleibende Zeit: {TIME} Sekunden}}</translation>
@@ -310,6 +312,7 @@
 <translation id="218350106843433823">Passwörter und Passkeys automatisch ausfüllen lassen</translation>
 <translation id="2184272387334793084">Melde dich an, um Passwörter und mehr auf allen Geräten abzurufen</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2188993354115194873">Tippe auf <ph name="BEGIN_BOLD" />In Downloads speichern<ph name="END_BOLD" /></translation>
 <translation id="219283042927675668">Tabs in Gruppe</translation>
 <translation id="2194856509914051091">Wichtige Punkte</translation>
 <translation id="2196428379625389579">Im Web suchen</translation>
@@ -560,6 +563,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3174662312949010067">Du kannst gespeicherte Passwörter auch auf deinen anderen Geräten verwenden.</translation>
 <translation id="3177338796769255211">Melde dich an, damit du deine Lesezeichen und andere Daten auf allen deinen Geräten abrufen kannst</translation>
 <translation id="3181954750937456830">Safe Browsing (mich und mein Gerät vor schädlichen Websites schützen)</translation>
+<translation id="3186796054637504691">Verlauf und Websitedaten löschen</translation>
 <translation id="3190736958609431397">Nicht mehr beobachten</translation>
 <translation id="3208260410153224535">Deine Organisation hat die Anmeldung deaktiviert. Neue Lesezeichen, Passwörter und weitere Informationen werden nur auf diesem Gerät gespeichert.</translation>
 <translation id="3213807041830307252">Kaufe ein, übersetze und finde mit deiner Kamera und Fotogalerie heraus, was du gerade siehst.</translation>
@@ -700,6 +704,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3851938967634752633">Passwörter für <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> und <ph name="NUMBER_OF_ACCOUNTS" /> weitere werden gelöscht. Deine Konten werden nicht gelöscht.</translation>
 <translation id="3853162385423733133">Du kannst deine Passwörter weiterhin in deinem Google-Konto <ph name="EMAIL" /> speichern und verwenden</translation>
 <translation id="3853873210696342070">Importieren</translation>
+<translation id="3857113360369572832">Öffne die <ph name="BEGIN_BOLD" />Safari-Einstellungen<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Name</translation>
 <translation id="3868495844258915202">Vollständige URL anzeigen</translation>
 <translation id="3875783148670536197">So gehts</translation>
@@ -1592,6 +1597,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7215621211572884440">Pop-ups erlaubt</translation>
 <translation id="7218491361283758048">Postleitzahl</translation>
 <translation id="7221173315674413369">Entdecke unter „Neue Funktionen“ Tipps und neue Funktionen</translation>
+<translation id="7223134495231529579">In Downloads speichern</translation>
 <translation id="722339453342442311">Jetzt prüfen</translation>
 <translation id="7227235818314667565">Freigaben verwalten</translation>
 <translation id="7233006041370588369">Wähle ein Passwort für das automatische Ausfüllen aus.</translation>
@@ -1729,6 +1735,7 @@ Wenn der Inkognitomodus aktiviert ist, können Websites keine Cookies verwenden,
 <translation id="7781829728241885113">Gestern</translation>
 <translation id="7788868432173225918">Erweiterte Ansicht schließen</translation>
 <translation id="7791543448312431591">Hinzufügen</translation>
+<translation id="7795253248079882669">Tippe auf <ph name="BEGIN_BOLD" />Exportieren<ph name="END_BOLD" /></translation>
 <translation id="7801064017114765401">Computer</translation>
 <translation id="7802239711290932774">Vorgeschlagenes Passwort verwenden:</translation>
 <translation id="780301667611848630">Nein, danke</translation>
@@ -1839,6 +1846,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8161614462829037225">Mit <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> entsperren</translation>
 <translation id="8173034266693057059">Länge</translation>
 <translation id="8182037667962849780">{count,plural, =1{Für {website_1}}=2{Für {website_1} und {website_2}}=3{Für {website_1}, {website_2} und 1 weitere}other{Für {website_1}, {website_2} und {more_count} weitere}}</translation>
+<translation id="8185076488803799132">Importieren</translation>
 <translation id="8189615296021678665">Tippe auf „Speichern“, um bei der nächsten Anmeldung einfach auf dieses Passwort zuzugreifen.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Passwort hinzufügen</translation>
@@ -1855,6 +1863,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8230355548492839438">Vorherige suchen</translation>
 <translation id="8232956427053453090">Daten aufbewahren</translation>
 <translation id="8233237502828137700">Werbebanner schließen</translation>
+<translation id="8258734532103758067">Ich habe meine Daten exportiert</translation>
 <translation id="8258999165172757081">Hinzugefügt</translation>
 <translation id="8261506727792406068">Löschen</translation>
 <translation id="82619448491672958">Andere Tabs anzeigen</translation>
@@ -1923,6 +1932,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8505361906966222822">Speichern unter…</translation>
 <translation id="850600235656508448">Im Inkognitomodus öffnen</translation>
 <translation id="8511141513131731477">Zum ersten Tab</translation>
+<translation id="8515534223594179607">Browserdaten exportieren</translation>
 <translation id="852075982791215701">Zum letzten Tab</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} Passwort und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}other{{count} Passwörter und andere Elemente werden nur auf diesem Gerät gespeichert. Wenn du sie auf deinen anderen Geräten verwenden möchtest, speichere sie in deinem Google-Konto {email}.}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />-Tabs <ph name="FIRST_VISIBLE_TAB" /> bis <ph name="LAST_VISIBLE_TAB" /> von <ph name="NUMBER_OF_OPEN_TABS" /></translation>
@@ -1974,6 +1984,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
 <translation id="8690752723634292147">Löschen bestätigen</translation>
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
+<translation id="8692897097252418799">Wähle die Informationen aus, die du exportieren möchtest</translation>
 <translation id="8694281486652655615">Dieses Element wird angezeigt</translation>
 <translation id="8696297579102085705">An mein Gerät senden</translation>
 <translation id="8697136149718343437">Adressleiste nach unten verschieben</translation>
@@ -2128,6 +2139,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="939598580284253335">Passphrase eingeben</translation>
 <translation id="939736085109172342">Neuer Ordner</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Hier siehst du, was du synchronisieren kannst<ph name="END_LINK" /></translation>
+<translation id="942624946817804130">Exportieren</translation>
 <translation id="945522503751344254">Feedback geben</translation>
 <translation id="94870150074703282">Gruppe löschen?</translation>
 <translation id="952704832371081537">Abbrechen</translation>

@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Праверце новае імя</translation>
 <translation id="1166596238782048887">"<ph name="TAB_TITLE" />" гэта ўкладка з працоўнага стала "<ph name="DESK_TITLE" />"</translation>
 <translation id="1166644470305877068">Гэта налада будзе аўтаматычна прыменена да ізаляваных вэб-праграм</translation>
+<translation id="116712635768212829">Калі Chrome выявіць, што адбылася ўцечка аднаго з вашых пароляў, Менеджар пароляў Google прапануе вам змяніць пароль на больш надзейны (калі вы выканалі ўваход).</translation>
 <translation id="1168020859489941584">Адкрыецца праз <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Нядаўняя тэма <ph name="INDEX" />, створаная з дапамогай AI, тэма: <ph name="SUBJECT" />, стыль: <ph name="STYLE" />, настрой: <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Аўтаматычна змяняць мову ў адпаведнасці з выбраным змесцівам</translation>
@@ -557,6 +558,7 @@
 <translation id="1375938286942050085">Наладжванне завершана! Цяпер вы зможаце падрыхтаваць прыладу для гульняў</translation>
 <translation id="137651782282853227">Захаваныя адрасы з’явяцца тут</translation>
 <translation id="1376771218494401509">Дадаць назву &amp;акна...</translation>
+<translation id="1377438103060664754">Калі адбудзецца ўцечка аднаго з вашых пароляў, Менеджар пароляў Google прапануе вам змяніць пароль на больш надзейны</translation>
 <translation id="1377600615067678409">Прапусціць</translation>
 <translation id="1378613616312864539">Гэту наладу кантралюе <ph name="NAME" /></translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Раскрытых пароляў няма}=1{1 раскрыты пароль}one{{NUM_COMPROMISED} раскрыты пароль}few{{NUM_COMPROMISED} раскрытыя паролі}many{{NUM_COMPROMISED} раскрытых пароляў}other{{NUM_COMPROMISED} раскрытага пароля}}</translation>
@@ -2524,7 +2526,6 @@
 <translation id="2730647855013151888">Уключыць усю асабістую інфармацыю</translation>
 <translation id="2730901670247399077">Прапановы эмодзі</translation>
 <translation id="273093730430620027">Гэта старонка выкарыстоўвае камеру.</translation>
-<translation id="2730956943403103181">Забаронена выкарыстоўваць аптымізатар V8</translation>
 <translation id="2731392572903530958">Паў&amp;торна адкрыць закрытае акно</translation>
 <translation id="2731700343119398978">Пачакайце...</translation>
 <translation id="2731971182069536520">Пры наступным перазапуску прылады адміністратар выканае разавае абнаўленне, пры якім выдаляцца вашы лакальныя даныя.</translation>
@@ -3122,7 +3123,6 @@
 <translation id="3160928651883997588">Параметры VPN</translation>
 <translation id="3161522574479303604">Усе мовы</translation>
 <translation id="3162070126914310576">На гэты момант гэту прыладу немагчыма зарэгістраваць, бо ваша арганізацыйная адзінка выкарыстала пачатковы ліміт рэгістрацый. Звярніцеся да адміністратара па дапамогу.</translation>
-<translation id="3162766632262775911">Заўсёды дазволена выкарыстоўваць аптымізатар V8</translation>
 <translation id="3162853326462195145">Навучальны ўліковы запіс</translation>
 <translation id="3162899666601560689">Сайты могуць выкарыстоўваць файлы cookie для паляпшэння сваёй функцыянальнасці – напрыклад, для захавання інфармацыі пра тое, што вы ўвайшлі ва ўліковы запіс, або каб запамінаць тавары ў кошыку</translation>
 <translation id="3163085718713826852">Увядзіце пароль сертыфіката</translation>
@@ -3838,7 +3838,6 @@
 <translation id="3666971425390608309">Спампоўванне файла "<ph name="FILE_NAME" />" прыпынена.</translation>
 <translation id="3670113805793654926">Прылады ад любога пастаўшчыка</translation>
 <translation id="3670229581627177274">Уключыць Bluetooth</translation>
-<translation id="3670480940339182416">Сайты могуць выкарыстоўваць аптымізатар V8</translation>
 <translation id="3671982238795754537">Даведацца больш пра ключы доступу</translation>
 <translation id="3672681487849735243">Выяўлена заводская памылка</translation>
 <translation id="3673097791729989571">Уваход праз <ph name="SAML_DOMAIN" /></translation>
@@ -5737,6 +5736,7 @@
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
 <translation id="5003070249435823986">Скарыстайце гэты жэст, каб уключыць рэжым гартання. А потым рухайце галавой у той бок, у які трэба гартаць. Каб выйсці з рэжыму гартання, зноў скарыстайце той жа жэст.</translation>
 <translation id="5003993274120026347">Наступны сказ</translation>
+<translation id="5005311809885666699">Захавана з Chrome</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5006218871145547804">ADB у праграмах для Android у Crostini</translation>
 <translation id="5006778209728626987">Маланка</translation>
@@ -9708,6 +9708,7 @@
 <translation id="784475655832336580">Калі праграма ChromeVox уключана, функцыя вылучэння аб’ектаў з дапамогай клавіятуры недаступная</translation>
 <translation id="7844992432319478437">Абнаўленне розніцы</translation>
 <translation id="7846161022626028328">Узнікла памылка. Паўтарыце спробу.</translation>
+<translation id="7846296061357476882">Сэрвісы Google</translation>
 <translation id="7846634333498149051">Клавіятура</translation>
 <translation id="7847212883280406910">Націсніце Ctrl + Alt + S, каб пераключыцца на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Адкрыць усе ўкладкі (<ph name="URL_COUNT" />) у новай групе</translation>
@@ -9727,7 +9728,6 @@
 <translation id="7853747251428735">Іншыя &amp;інструменты</translation>
 <translation id="7855258394151767387">Каб націснуць кнопку мышы, выкарыстайце "w"</translation>
 <translation id="7855678561139483478">Перамясціць укладку ў новае акно</translation>
-<translation id="7856798637819639676">Вы можаце бяспечна выкарыстоўваць пасведчанне асобы з прылады Android</translation>
 <translation id="7857004848504343806">У вашым камп’ютары ўсталяваны модуль бяспекі, які выкарыстоўваецца для рэалізацыі многіх крытычна важных функцый бяспекі ў Chrome OS Flex. Каб даведацца больш, адкрыйце Даведачны цэнтр Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Тэкставыя прапановы</translation>
 <translation id="7858120906780498731">Падключаныя прылады ўводу ChromeOS</translation>
@@ -9985,7 +9985,6 @@
 <translation id="8026784703228858744">Захаванне закладак і іншых даных з дапамогай сінхранізацыі</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Наведана 0 дзён таму}=1{Наведана 1 дзень таму}one{Наведана # дзень таму}few{Наведана # дні таму}many{Наведана # дзён таму}other{Наведана # дня таму}}</translation>
 <translation id="8028060951694135607">Аднаўленне ключоў Microsoft</translation>
-<translation id="8028138772801251745">Аўтазапаўненне з дапамогай AI</translation>
 <translation id="8028803902702117856">Спампоўваецца файл "<ph name="FILE_NAME" />": <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">Памер</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Спіс на прагляд}=1{Спіс на прагляд ({SELECTED_ITEMS})}one{Спіс на прагляд ({SELECTED_ITEMS})}few{Спіс на прагляд ({SELECTED_ITEMS})}many{Спіс на прагляд ({SELECTED_ITEMS})}other{Спіс на прагляд ({SELECTED_ITEMS})}}</translation>
@@ -10082,7 +10081,6 @@
 <translation id="808894953321890993">Змяніць пароль</translation>
 <translation id="8090234456044969073">Прагледзець спіс вэб-сайтаў, якія вы наведваеце часцей за ўсё</translation>
 <translation id="8090513782447872344">Вы можаце вярнуцца ў любы час, і прагледзець Дапаможнік па прыватнасці яшчэ раз</translation>
-<translation id="8090579562279016251">Зніжае прадукцыйнасць, але павышае ўстойлівасць V8 супраць атак</translation>
 <translation id="8090686009202681725">Стварэнне тэмы з дапамогай AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не адказвае</translation>
 <translation id="8094536695728193970">Абрыкос</translation>
@@ -10136,7 +10134,6 @@
 <translation id="8125651784723647184">Абагульваннем пароляў кіруе адміністратар</translation>
 <translation id="8126355825906412872">Усміхніцеся</translation>
 <translation id="8129265306888404830">Каб выкарыстоўваць атрыманы ад арганізацыі адрас электроннай пошты (<ph name="EMAIL_DOMAIN" />), вам неабходна прайсці рэгістрацыю для арганізацый. Калі вы збіраецеся выкарыстоўваць гэту прыладу ў сваіх уласных мэтах, увайдзіце праз асабісты Уліковы запіс Google.</translation>
-<translation id="8130476996317833777">Не дазваляць сайтам выкарыстоўваць аптымізатар V8</translation>
 <translation id="813082847718468539">Прагляд звестак пра сайт</translation>
 <translation id="8131740175452115882">Пацвердзіць</translation>
 <translation id="8133297578569873332">Прымальная – FM</translation>

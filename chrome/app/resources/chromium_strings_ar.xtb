@@ -182,7 +182,6 @@
 <translation id="3258596308407688501">‏يتعذر على Chromium القراءة والكتابة في دليل البيانات الخاص به:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">‏V8 هو محرك JavaScript وWebAssembly من Chromium يُستخدَم لتحسين أداء المواقع الإلكترونية.</translation>
 <translation id="3286538390144397061">إعادة التشغيل الآن</translation>
 <translation id="328888136576916638">‏مفاتيح واجهة برمجة تطبيقات Google مفقودة. وسيترتب على ذلك توقف بعض وظائف Chromium عن العمل.</translation>
 <translation id="3296368748942286671">‏استمرار تشغيل تطبيقات الخلفية عند إغلاق Chromium</translation>

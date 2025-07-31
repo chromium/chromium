@@ -184,7 +184,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 is Chromium’s JavaScript and WebAssembly engine used to improve site performance</translation>
 <translation id="3286538390144397061">Restart Now</translation>
 <translation id="328888136576916638">Google API keys are missing. Some functionality of Chromium will be disabled.</translation>
 <translation id="3296368748942286671">Continue running background apps when Chromium is closed</translation>

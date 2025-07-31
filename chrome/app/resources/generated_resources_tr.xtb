@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Ad güncellemesini inceleyin</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> sekmesi, <ph name="DESK_TITLE" /> masasına ait</translation>
 <translation id="1166644470305877068">Yalıtılmış web uygulamaları bu ayarı otomatik olarak uygular</translation>
+<translation id="116712635768212829">Chrome, şifrelerinizden birinin veri ihlalinde yer aldığını tespit ederse ve oturumunuz açıksa Google Şifre Yöneticisi şifrenizi sizin için değiştirmeyi önerebilir.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> içinde açılacak...</translation>
 <translation id="1168704243733734901"><ph name="STYLE" /> stilini ve <ph name="MOOD" /> ruh halini içeren son <ph name="SUBJECT" /> yapay zeka temasından <ph name="INDEX" />.</translation>
 <translation id="116896278675803795">Dili, seçilen içerikle eşleşecek şekilde otomatik olarak değiştir</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">Kurulum tamamlandı. Sonraki adımda cihazınızı oyun oynamaya hazırlayın</translation>
 <translation id="137651782282853227">Kayıtlı adresler burada görünür</translation>
 <translation id="1376771218494401509">&amp;Pencereye ad ver...</translation>
+<translation id="1377438103060664754">Google Şifre Yöneticisi, şifrelerinizden biri veri ihlaline karışırsa şifrenin güçlü bir şifreyle değiştirilmesini isteyip istemediğinizi sorar</translation>
 <translation id="1377600615067678409">Şimdilik atla</translation>
 <translation id="1378613616312864539">Bu ayarı, <ph name="NAME" /> adlı uzantı kontrol ediyor</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Sızdırılmış şifre yok}=1{Sızdırılmış 1 şifre var}other{Sızdırılmış {NUM_COMPROMISED} şifre var}}</translation>
@@ -2521,7 +2523,6 @@ Cihazınızda Family Link uygulamasını yükleyerek bu hesabın ayarlarını y�
 <translation id="2730647855013151888">Tüm kişisel bilgileri dahil edin</translation>
 <translation id="2730901670247399077">Emoji önerileri</translation>
 <translation id="273093730430620027">Bu sayfa kameranıza erişiyor.</translation>
-<translation id="2730956943403103181">V8 optimize ediciyi kullanmasına izin verilmeyenler</translation>
 <translation id="2731392572903530958">Kapatılan Pencereyi T&amp;ekrar Aç</translation>
 <translation id="2731700343119398978">Lütfen bekleyin...</translation>
 <translation id="2731971182069536520">Cihazınızı yeniden başlattığınızda, yerel verilerinizi silecek olan bir seferlik güncelleme yapılır.</translation>
@@ -3120,7 +3121,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3160928651883997588">VPN Tercihleri</translation>
 <translation id="3161522574479303604">Tüm diller</translation>
 <translation id="3162070126914310576">Kuruluş biriminiz ilk kayıt sınırına ulaştığı için bu cihaz şu anda kaydedilemiyor. Yardım için yöneticinizle iletişime geçin.</translation>
-<translation id="3162766632262775911">V8 optimize ediciyi kullanmasına her zaman izin verilenler</translation>
 <translation id="3162853326462195145">Okul hesabı</translation>
 <translation id="3162899666601560689">Siteler size daha iyi bir göz atma deneyimi sunmak, örneğin, oturumunuzu açık tutmak veya alışveriş sepetinizdeki ürünleri hatırlamak için çerez kullanabilir.</translation>
 <translation id="3163085718713826852">Sertifika şifresini girin</translation>
@@ -3834,7 +3834,6 @@ Sunucunun mesajı: <ph name="SERVER_MSG" /></translation>
 <translation id="3666971425390608309"><ph name="FILE_NAME" /> dosyasını indirme işlemi duraklatıldı.</translation>
 <translation id="3670113805793654926">Herhangi bir tedarikçinin cihazları</translation>
 <translation id="3670229581627177274">Bluetooth'u aç</translation>
-<translation id="3670480940339182416">Siteler, V8 optimize ediciyi kullanabilir</translation>
 <translation id="3671982238795754537">Geçiş anahtarları hakkında daha fazla bilgi edinin</translation>
 <translation id="3672681487849735243">Bir fabrika hatası saptandı</translation>
 <translation id="3673097791729989571">Oturum açma işlemini <ph name="SAML_DOMAIN" /> barındırıyor</translation>
@@ -5735,6 +5734,7 @@ Uzaklaştırmak için Ctrl + Alt + Parlaklığı Azalt tuşlarını kullanın.</
 <translation id="5001526427543320409">Üçüncü taraf çerezleri</translation>
 <translation id="5003070249435823986">Kaydırma moduna girmek için hareketi kullandıktan sonra başınızı, ekranı kaydırmak istediğiniz yöne doğru hareket ettirin. Kaydırma modundan çıkmak için hareketi tekrar yapın.</translation>
 <translation id="5003993274120026347">Sonraki cümle</translation>
+<translation id="5005311809885666699">Chrome'dan kaydedildi</translation>
 <translation id="5005498671520578047">Şifreyi kopyalayın</translation>
 <translation id="5006218871145547804">Crostini Android uygulaması ADB'si</translation>
 <translation id="5006778209728626987">Yıldırım</translation>
@@ -9701,6 +9701,7 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="784475655832336580">ChromeVox açıkken öğeyi klavye odağıyla vurgulama özelliği kullanılamaz</translation>
 <translation id="7844992432319478437">Fark güncelleniyor</translation>
 <translation id="7846161022626028328">Hata oluştu. Tekrar deneyin.</translation>
+<translation id="7846296061357476882">Google hizmetleri</translation>
 <translation id="7846634333498149051">Klavye</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> ürününe geçmek için Ctrl + Alt + S tuşlarına basın.</translation>
 <translation id="7848244988854036372">Tümünü (<ph name="URL_COUNT" />) yeni sekme grubunda aç</translation>
@@ -9720,7 +9721,6 @@ Atamayı kaldırmak için atanmış bir anahtara veya tuşa basın.</translation
 <translation id="7853747251428735">&amp;Diğer Araçlar</translation>
 <translation id="7855258394151767387">Bir fare düğmesine basmak için "w" tuşunu kullanın</translation>
 <translation id="7855678561139483478">Sekmeyi yeni pencereye taşı</translation>
-<translation id="7856798637819639676">Android cihazınızdaki kimliği güvenle kullanın</translation>
 <translation id="7857004848504343806">Bilgisayarınızda, ChromeOS Flex'teki pek çok kritik güvenlik özelliğini uygulamak için kullanılan bir güvenli modül bulunmaktadır. Daha fazla bilgi edinmek için Chromebook Yardım Merkezi'ni ziyaret edin: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Metin önerileri</translation>
 <translation id="7858120906780498731">ChromeOS Bağlı Giriş Cihazları</translation>
@@ -9979,7 +9979,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8026784703228858744">Senkronize ederek yer işaretlerinizi ve diğer öğelerinizi kaydedin</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 gün önce ziyaret edildi}=1{1 gün önce ziyaret edildi}other{# gün önce ziyaret edildi}}</translation>
 <translation id="8028060951694135607">Microsoft Anahtar Kurtarma</translation>
-<translation id="8028138772801251745">Yapay zeka ile otomatik doldurma</translation>
 <translation id="8028803902702117856">İndiriliyor <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Boyut</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Okuma listesi}=1{Okuma listesi ({SELECTED_ITEMS})}other{Okuma listesi ({SELECTED_ITEMS})}}</translation>
@@ -10076,7 +10075,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="808894953321890993">Şifreyi değiştir</translation>
 <translation id="8090234456044969073">En sık ziyaret ettiğiniz web sitelerinin listesini okuma</translation>
 <translation id="8090513782447872344">İstediğiniz zaman geri gelerek tekrar göz atabilirsiniz</translation>
-<translation id="8090579562279016251">Performansı düşürür ancak V8'i saldırılara karşı daha dirençli hale getirir</translation>
 <translation id="8090686009202681725">Yapay zeka ile tema üret</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> yanıt vermiyor</translation>
 <translation id="8094536695728193970">Kayısı rengi</translation>
@@ -10130,7 +10128,6 @@ Anahtar dosyanızı güvenli bir yerde saklayın. Uzantınızın yeni sürümler
 <translation id="8125651784723647184">Şifre paylaşımı, yöneticiniz tarafından yönetiliyor</translation>
 <translation id="8126355825906412872">Gülümseyin</translation>
 <translation id="8129265306888404830">Kuruluşunuzun e-posta adresini (<ph name="EMAIL_DOMAIN" />) kullanmak için kurumsal kayıt yapmanız gerekir. Bu cihaz kişisel kullanımınız içinse kişisel Google Hesabınızla oturum açın.</translation>
-<translation id="8130476996317833777">Sitelerin V8 optimize ediciyi kullanmasına izin verme</translation>
 <translation id="813082847718468539">Site bilgilerini görüntüle</translation>
 <translation id="8131740175452115882">Onayla</translation>
 <translation id="8133297578569873332">Kabul Edilebilir Düzeyde-FM</translation>

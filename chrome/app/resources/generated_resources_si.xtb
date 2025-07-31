@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">නම යාවත්කාලීන කිරීම සමාලෝචනය කරන්න</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> <ph name="DESK_TITLE" /> මේසයට අයත් වේ</translation>
 <translation id="1166644470305877068">එකලා වෙබ් යෙදුම් ස්වයංක්‍රීයව මෙම සැකසීම අනුගමනය කරයි</translation>
+<translation id="116712635768212829">Chrome ඔබේ මුරපදයක් දත්ත කඩ කිරීමක දී සොයා ගන්නේ නම්, ඔබ පුරනය වී ඇත්නම් Google මුරපද කළමනාකරුට ඔබේ මුරපදය වෙනස් කිරීමට ඉදිරිපත් විය හැක.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> කින් විවෘත වේ...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> මනෝභාවය සමග <ph name="STYLE" /> විලාසය තුළ <ph name="SUBJECT" /> න් <ph name="INDEX" /> මෑත AI තේමාව.</translation>
 <translation id="116896278675803795">තෝරන ලද අන්තර්ගතයට ගැළපීමට භාෂාව ස්වයංක්‍රීයව වෙනස් කරන්න</translation>
@@ -555,6 +556,7 @@
 <translation id="1375938286942050085">සැකසීම සම්පූර්ණයි! මීළඟට ක්‍රීඩා කිරීමට ඔබේ උපාංගය සූදානම් කර ගන්න</translation>
 <translation id="137651782282853227">සුරැකි ලිපින මෙහි දිස් වනු ඇත</translation>
 <translation id="1376771218494401509">&amp;කවුළුව නම් කරන්න...</translation>
+<translation id="1377438103060664754">ඔබේ මුරපදයක් දත්ත කඩ කිරීමක තිබී හමු වන්නේ නම්, එය ශක්තිමත් මුරපදයකට වෙනස් කිරීමට ඔබට අවශ්‍ය දැයි Google මුරපද කළමනාකරු අසයි</translation>
 <translation id="1377600615067678409">දැනට මඟ හරින්න</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> මෙම සැකසීම පාලනය කරමින් සිටී</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{අවදානමට පත් වූ මුරපද නැත}=1{අවදානමට පත් වූ මුරපද 1}one{අවදානමට පත් වූ මුරපද {NUM_COMPROMISED}}other{අවදානමට පත් වූ මුරපද {NUM_COMPROMISED}}}</translation>
@@ -2525,7 +2527,6 @@
 <translation id="2730647855013151888">සියලු පුද්ගලික තොරතුරු ඇතුළත් කරන්න</translation>
 <translation id="2730901670247399077">ඉමොජි යෝජනා</translation>
 <translation id="273093730430620027">මෙම පිටුව ඔබේ කැමරාව වෙත පිවිසේ.</translation>
-<translation id="2730956943403103181">V8 ප්‍රශස්තකය භාවිත කිරීමට ඉඩ නොදෙනු ලැබේ</translation>
 <translation id="2731392572903530958">වැසූ කවුළු (&amp;e) නැවත විවෘත කරන්න</translation>
 <translation id="2731700343119398978">කරුණාකර රැඳෙන්න..</translation>
 <translation id="2731971182069536520">ඔබ මීළඟ වරට ඔබේ උපාංගය යළි අරඹන විට, ඔබේ පරිපාලකයා ඔබේ අභ්‍යන්තර දත්ත මකා දමන එක් වරක යාවත්කාලීනයක් සිදු කරයි.</translation>
@@ -3124,7 +3125,6 @@
 <translation id="3160928651883997588">VPN මනාප</translation>
 <translation id="3161522574479303604">සියලු භාෂා</translation>
 <translation id="3162070126914310576">ඔබේ සංවිධාන ඒකකය එහි මූලික ලියාපදිංචි වීමේ සීමාවට ළඟා වී ඇති නිසා මෙම උපාංගය දැන් ලියාපදිංචි කළ නොහැක. සහාය සඳහා ඔබේ පරිපාලක සම්බන්ධ කර ගන්න.</translation>
-<translation id="3162766632262775911">V8 ප්‍රශස්තකය භාවිත කිරීමට සැම විටම ඉඩ දෙනු ලැබේ</translation>
 <translation id="3162853326462195145">පාසල් ගිණුම</translation>
 <translation id="3162899666601560689">වෙබ් අඩවි ඔබේ බ්‍රවුස කිරීමේ අත්දැකීම වැඩිදියුණු කිරීමට, උදාහරණයක් වශයෙන්, ඔබව පුරනය කර තබා ගැනීමට හෝ ඔබේ සාප්පු සවාරි කරත්තයේ අයිතම මතක තබා ගැනීමට කුකී භාවිත කළ හැක</translation>
 <translation id="3163085718713826852">සහතික මුරපදය ඇතුළත් කරන්න</translation>
@@ -3838,7 +3838,6 @@
 <translation id="3666971425390608309">බාගැනීම විරාම කරන ලදි: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ඕනෑම විකුණුම්කරු වෙතින් උපාංග</translation>
 <translation id="3670229581627177274">බ්ලූටූත් ක්‍රියාත්මක කරන්න</translation>
-<translation id="3670480940339182416">අඩවිවලට V8 ප්‍රශස්තකය භාවිත කළ හැක</translation>
 <translation id="3671982238795754537">මුරයතුරු ගැන තව දැන ගන්න</translation>
 <translation id="3672681487849735243">නිශ්පාදක දෝශයක් හඳුනා ගැනින</translation>
 <translation id="3673097791729989571">පිරීමට සංග්‍රාහකත්වය දක්වන ලද්දේ <ph name="SAML_DOMAIN" /></translation>
@@ -5740,6 +5739,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="5001526427543320409">තෙවන පාර්ශ්ව කුකීස්</translation>
 <translation id="5003070249435823986">අනුචලන ප්‍රකාරයට ඇතුළු වීමට ඉංගිතය භාවිත කරන්න, ඉන්පසු ඔබ අනුචලනය කිරීමට කැමති දිශාවට ඔබේ හිස ගෙන යන්න. අනුචලන ප්‍රකාරයෙන් පිටවීමට ඉංගිතය නැවත භාවිත කරන්න.</translation>
 <translation id="5003993274120026347">ඊළඟ වාක්‍යය</translation>
+<translation id="5005311809885666699">Chrome වෙතින් සුරකින ලදි</translation>
 <translation id="5005498671520578047">මුරපදය පිටපත් කරන්න</translation>
 <translation id="5006218871145547804">Crostini Android යෙදුම් ADB</translation>
 <translation id="5006778209728626987">අකුණු ගැසීම</translation>
@@ -9705,6 +9705,7 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="784475655832336580">ChromeVox සක්‍රීයව ඇති විට යතුරුපුවරු නාභිගත කිරීම සමග අයිතමය උද්දීපන කිරීම ලද නොහැක</translation>
 <translation id="7844992432319478437">diff යාවත්කාලීන කරමින්</translation>
 <translation id="7846161022626028328">දෝෂයක් සිදු විය. නැවත උත්සාහ කරන්න.</translation>
+<translation id="7846296061357476882">Google සේවා</translation>
 <translation id="7846634333498149051">යතුරු පුවරුව</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> වෙත මාරු වීමට Ctrl + Alt + S ඔබන්න</translation>
 <translation id="7848244988854036372">නව පටිති සමූහයක සියල්ල (<ph name="URL_COUNT" />) විවෘත කරන්න</translation>
@@ -9724,7 +9725,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="7853747251428735">තවත් මෙවලම්</translation>
 <translation id="7855258394151767387">මූසික බොත්තම එබීමට "w" භාවිත කරන්න</translation>
 <translation id="7855678561139483478">පටිත්ත නව කවුළුවට ගෙන යන්න</translation>
-<translation id="7856798637819639676">ඔබේ Android උපාංගයෙන් ID එකක් ආරක්ෂිතව භාවිතා කරන්න</translation>
 <translation id="7857004848504343806">ඔබගේ පරිගණකයේ ආරක්ෂිත මොඩියුලයක් අඩංගු වන අතර, එය ChromeOS Flex හි බාෙහෝ තීරණාත්මක ආරක්ෂක විශේෂාංග ක්‍රියාත්මක කිරීමට භාවිත වේ. තව දැන ගැනීමට Chromebook උදවු මධ්‍යස්ථානය වෙත යන්න: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">පෙළ යෝජනා</translation>
 <translation id="7858120906780498731">ChromeOS සම්බන්ධිත ආදාන උපාංග</translation>
@@ -9982,7 +9982,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8026784703228858744">සමමුහූර්තය සමග ඔබේ පිටුසන් සහ තවත් දේ සුරකින්න</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{දින 0කට පෙර පිවිසුණි}=1{1 දිනකට පෙර පිවිසුණි}one{දින #කට පෙර පිවිසුණි}other{දින #කට පෙර පිවිසුණි}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
-<translation id="8028138772801251745">AI සමග ස්වයං පුරවන්න</translation>
 <translation id="8028803902702117856">බාගනිමින් <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ප්‍රමාණය</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{කියවීම් ලැයිස්තුව}=1{කියවීම් ලැයිස්තුව ({SELECTED_ITEMS})}one{කියවීම් ලැයිස්තුව ({SELECTED_ITEMS})}other{කියවීම් ලැයිස්තුව ({SELECTED_ITEMS})}}</translation>
@@ -10079,7 +10078,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="808894953321890993">මුරපදය වෙනස් කරන්න</translation>
 <translation id="8090234456044969073">ඔබේ වඩා මෑත පිවිසි වෙබ් අඩවි ලැයිස්තුවක් කියවන්න</translation>
 <translation id="8090513782447872344">ඔබට තවත් බැල්මකට ඕනෑම වේලාවක ආපසු පැමිණිය හැකිය</translation>
-<translation id="8090579562279016251">කාර්යසාධනය අඩු කරන නමුත් V8 ප්‍රහාරවලට ඉතා විරුද්ධයි</translation>
 <translation id="8090686009202681725">AI සමග තේමාව සාදන්න</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ප්‍රතිචාර නොදක්වයි</translation>
 <translation id="8094536695728193970">එප්‍රිකට්</translation>
@@ -10133,7 +10131,6 @@ Linux ස්ථාපනය කිරීම දත්තවලින් <ph name
 <translation id="8125651784723647184">මුරපද බෙදා ගැනීම ඔබේ පරිපාලක විසින් කළමනාකරණය කරනු ලැබේ</translation>
 <translation id="8126355825906412872">සිනාසෙන්න</translation>
 <translation id="8129265306888404830">ඔබේ සංවිධානයෙන් (<ph name="EMAIL_DOMAIN" />) ඔබේ ඉ-තැපැල් ලිපිනය භාවිතය සඳහා, ඔබට ව්‍යවසාය ලියාපදිංචිය භාවිතා කිරීමට අවශ්‍ය වේ. මෙම උපාංගය ඔබේ පුද්ගලික භාවිතය සඳහා නම්, ඔබේ පුද්ගලික Google ගිණුම සමග පුරන්න.</translation>
-<translation id="8130476996317833777">අඩවිවලට V8 ප්‍රශස්තකය භාවිත කිරීමට ඉඩ නොදෙන්න</translation>
 <translation id="813082847718468539">අඩවි තොරතුරු පෙන්වන්න</translation>
 <translation id="8131740175452115882">තහවුරු කරන්න</translation>
 <translation id="8133297578569873332">පිළිගත හැකි - FM</translation>

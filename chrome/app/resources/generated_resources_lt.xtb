@@ -2541,7 +2541,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2730647855013151888">Įtraukti visą asmens informaciją</translation>
 <translation id="2730901670247399077">Jaustukų pasiūlymai</translation>
 <translation id="273093730430620027">Šis puslapis gali pasiekti jūsų fotoaparatą.</translation>
-<translation id="2730956943403103181">Neleidžiama naudoti V8 optimizavimo priemonės</translation>
 <translation id="2731392572903530958">I&amp;š naujo atidaryti uždarytą langą</translation>
 <translation id="2731700343119398978">Palaukite...</translation>
 <translation id="2731971182069536520">Kai kitą kartą iš naujo paleisite įrenginį, administratorius pritaikys vienkartinį naujinį ir bus ištrinti jūsų vietiniai duomenys.</translation>
@@ -3140,7 +3139,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3160928651883997588">VPN nuostatos</translation>
 <translation id="3161522574479303604">Visos kalbos</translation>
 <translation id="3162070126914310576">Dabar šio įrenginio negalima užregistruoti, nes jūsų organizacinis vienetas pasiekė pradinį registracijos apribojimą. Jei reikia pagalbos, susisiekite su administratoriumi.</translation>
-<translation id="3162766632262775911">Visada leidžiama naudoti V8 optimizavimo priemonę</translation>
 <translation id="3162853326462195145">Mokyklos paskyra</translation>
 <translation id="3162899666601560689">Svetainės gali naudoti slapukus naršymo kokybei pagerinti, pavyzdžiui, kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės</translation>
 <translation id="3163085718713826852">Įveskite sertifikato slaptažodį</translation>
@@ -3856,7 +3854,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3666971425390608309">Atsisiuntimas pristabdytas: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Įrenginiai iš bet kurio paslaugos teikėjo</translation>
 <translation id="3670229581627177274">Įjungti „Bluetooth“</translation>
-<translation id="3670480940339182416">Svetainėse galima naudoti V8 optimizavimo priemonę</translation>
 <translation id="3671982238795754537">Sužinokite daugiau apie prieigos raktus</translation>
 <translation id="3672681487849735243">Aptikta gamyklos klaida</translation>
 <translation id="3673097791729989571">Prisijungimo prieglobą teikia <ph name="SAML_DOMAIN" /></translation>
@@ -5757,6 +5754,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5001526427543320409">Trečiųjų šalių slapukai</translation>
 <translation id="5003070249435823986">Atlikite gestą, kad įjungtumėte slinkimo režimą, tada pasukite galvą norima slinkimo kryptimi. Dar kartą atlikite gestą, kad išeitumėte iš slinkimo režimo.</translation>
 <translation id="5003993274120026347">Kitas sakinys</translation>
+<translation id="5005311809885666699">Išsaugota iš „Chrome“</translation>
 <translation id="5005498671520578047">Kopijuoti slaptažodį</translation>
 <translation id="5006218871145547804">„Android“ programų ADB „Crostini“</translation>
 <translation id="5006778209728626987">Žaibas</translation>
@@ -9731,6 +9729,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="784475655832336580">Elemento paryškinimas suaktyvinus klaviatūra nepasiekiamas, kai įjungta „ChromeVox“</translation>
 <translation id="7844992432319478437">Atnaujinamas skirt.</translation>
 <translation id="7846161022626028328">Įvyko klaida. Bandykite dar kartą.</translation>
+<translation id="7846296061357476882">„Google“ paslaugos</translation>
 <translation id="7846634333498149051">Klaviatūra</translation>
 <translation id="7847212883280406910">Paspauskite „Ctrl“ + „Alt“ + S, kad perjungtumėte į „<ph name="IDS_SHORT_PRODUCT_OS_NAME" />“</translation>
 <translation id="7848244988854036372">Atidaryti viską (<ph name="URL_COUNT" />) naujoje skirtukų grupėje</translation>
@@ -9750,7 +9749,6 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7853747251428735">Daugiau įrank&amp;ių</translation>
 <translation id="7855258394151767387">Naudokite „w“, kad paspaustumėte pelės mygtuką</translation>
 <translation id="7855678561139483478">Skirtuko perkėlimas į naują langą</translation>
-<translation id="7856798637819639676">Saugiai naudokite ID iš „Android“ įrenginio</translation>
 <translation id="7857004848504343806">Jūsų kompiuteryje yra saugus modulis, kuris naudojamas „ChromeOS Flex“ įdiegiant daug svarbių saugos funkcijų. Jei norite sužinoti daugiau, apsilankykite „Chromebook“ pagalbos centre adresu https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Teksto pasiūlymai</translation>
 <translation id="7858120906780498731">„ChromeOS“ prijungti įvesties įrenginiai</translation>
@@ -10009,7 +10007,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8026784703228858744">Saugokite žymes ir atlikite daugiau veiksmų naudodami sinchronizavimą</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Lankėtės prieš 0 dienų}=1{Lankėtės prieš 1 dieną}one{Lankėtės prieš # dieną}few{Lankėtės prieš # dienas}many{Lankėtės prieš # dienos}other{Lankėtės prieš # dienų}}</translation>
 <translation id="8028060951694135607">„Microsoft“ rakto atkūrimas</translation>
-<translation id="8028138772801251745">Automatinis pildymas naudojant DI</translation>
 <translation id="8028803902702117856">Atsisiunčiama: <ph name="SIZE" /> (<ph name="FILE_NAME" />)</translation>
 <translation id="8028993641010258682">Dydis</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Skaitymo sąrašas}=1{Skaitymo sąrašas ({SELECTED_ITEMS})}one{Skaitymo sąrašas ({SELECTED_ITEMS})}few{Skaitymo sąrašas ({SELECTED_ITEMS})}many{Skaitymo sąrašas ({SELECTED_ITEMS})}other{Skaitymo sąrašas ({SELECTED_ITEMS})}}</translation>
@@ -10106,7 +10103,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="808894953321890993">Keisti slaptažodį</translation>
 <translation id="8090234456044969073">Skaityti jūsų dažniausiai lankomų svetainių sąrašą</translation>
 <translation id="8090513782447872344">Galite bet kada grįžti ir vėl peržiūrėti</translation>
-<translation id="8090579562279016251">Sumažinamas našumas, bet V8 tampa atsparesnis atakoms</translation>
 <translation id="8090686009202681725">Temos kūrimas naudojant DI</translation>
 <translation id="8093359998839330381">Papildinys „<ph name="PLUGIN_NAME" />“ neatsako</translation>
 <translation id="8094536695728193970">Abrikosų</translation>
@@ -10160,7 +10156,6 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8125651784723647184">Slaptažodžio bendrinimą tvarko administratorius</translation>
 <translation id="8126355825906412872">Nusišypsoti</translation>
 <translation id="8129265306888404830">Kad galėtumėte naudoti organizacijos el. pašto adresą (<ph name="EMAIL_DOMAIN" />), turite naudoti įmonės registracijos funkciją. Jei šis įrenginys skirtas naudoti asmeninėms reikmėms, prisijunkite naudodami asmeninę „Google“ paskyrą.</translation>
-<translation id="8130476996317833777">Neleisti svetainėms naudoti V8 optimizavimo priemonės</translation>
 <translation id="813082847718468539">Žiūrėti svetainės informaciją</translation>
 <translation id="8131740175452115882">Patvirtinti</translation>
 <translation id="8133297578569873332">Priimtina – FM</translation>

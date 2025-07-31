@@ -162,7 +162,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Kinesiskt nr 7-kuvert</translation>
-<translation id="1269045546668906972">Aktivera autofyll med AI för att automatiskt fylla i fler fält</translation>
 <translation id="1269516672602708785">Skapa en ny webbplats i Google Sites snabbt</translation>
 <translation id="1270328905573953738">Flyttjänster</translation>
 <translation id="1270502636509132238">Alternativ för utlämning</translation>
@@ -819,7 +818,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2354001756790975382">Övriga bokmärken</translation>
 <translation id="2355395290879513365">Det är möjligt att hackare kan se vilka bilder du visar på den här webbplatsen och att de försöker lura dig genom att modifiera dem.</translation>
 <translation id="2356070529366658676">Fråga</translation>
-<translation id="2356926036049612643">V8-optimerare</translation>
 <translation id="2356941001189392209">En begränsad lista över webbadresser till sidor som du besöker där äldre teknikhändelser inträffar</translation>
 <translation id="2357481397660644965">Enheten hanteras av <ph name="DEVICE_MANAGER" /> och kontot hanteras av <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Flera</translation>
@@ -1785,13 +1783,13 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3984581365661308170">Kuvert nr 11</translation>
 <translation id="398470910934384994">Fåglar</translation>
 <translation id="3985750352229496475">Hantera adresser …</translation>
-<translation id="3986506998755860149">Läs mer om autofyll med AI i inställningarna</translation>
 <translation id="3986557181852957825">Google Pay- och Klarna-logotyp</translation>
 <translation id="3986705137476756801">Inaktivera Live Caption tills vidare</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Mindre än 1 MB</translation>
 <translation id="3990250421422698716">Stötvis förskjutning</translation>
 <translation id="3990532701115075684">Spåra dina händer</translation>
+<translation id="399179161741278232">Importerade</translation>
 <translation id="3992684624889376114">Om den här sidan</translation>
 <translation id="3995639283717357522">Tillämpa principer</translation>
 <translation id="3996683183117168945">Citat <ph name="CURRENT_CITATION" /> av <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5002932099480077015">Om alternativet är aktiverat sparar Chrome en kopia av kortet på enheten så att det går snabbare att fylla i formulär.</translation>
 <translation id="5007344584818503324">Aktivitet i delade flikgrupper</translation>
 <translation id="5007392906805964215">Granska</translation>
-<translation id="5010599530303458903">Betala månadsvis eller i fyra räntefria avbetalningar (omfattas av kvalifikationskrav)</translation>
 <translation id="5011561501798487822">upptäckt språk</translation>
 <translation id="5015510746216210676">Datornamn:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6151417162996330722">Servercertifikatet har för lång giltighetstid.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> tum (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Löpning och gång</translation>
-<translation id="6157079899699705880">Autofyll med AI förstår formulär bättre och kan autofylla dem åt dig snabbare</translation>
 <translation id="6157754950574419155">Ta bort alla från historiken</translation>
 <translation id="6157877588268064908">Välj en adress för att visa fraktalternativ och krav</translation>
 <translation id="6159554577634054750">Skadedjursbekämpning</translation>

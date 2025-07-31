@@ -2539,7 +2539,6 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2730647855013151888">Isama ang lahat ng personal na impormasyon</translation>
 <translation id="2730901670247399077">Mga suhestyon sa emoji</translation>
 <translation id="273093730430620027">Ina-access ng pahinang ito ang iyong camera.</translation>
-<translation id="2730956943403103181">Hindi pinapayagang gamitin ang V8 optimizer</translation>
 <translation id="2731392572903530958">M&amp;uling Buksan ang Nakasarang Window</translation>
 <translation id="2731700343119398978">Mangyaring maghintay...</translation>
 <translation id="2731971182069536520">Sa susunod na i-restart mo ang iyong device, magsasagawa ang administrator mo ng isang beses na pag-update na magde-delete sa iyong lokal na data.</translation>
@@ -3138,7 +3137,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3160928651883997588">Mga kagustuhan sa VPN</translation>
 <translation id="3161522574479303604">Lahat ng wika</translation>
 <translation id="3162070126914310576">Hindi mae-enroll ang device na ito sa ngayon dahil naabot na ng iyong unit ng organisasyon ang inisyal na limitasyon nito sa pag-enroll. Makipag-ugnayan sa iyong administrator para sa tulong.</translation>
-<translation id="3162766632262775911">Palaging pinapayagang gamitin ang V8 optimizer</translation>
 <translation id="3162853326462195145">Pampaaralang account</translation>
 <translation id="3162899666601560689">Puwedeng gumamit ng cookies ang mga site para pahusayin ang iyong karanasan sa pag-browse, halimbawa, para mapanatili kang naka-sign in o para maalala ang mga item sa shopping cart mo</translation>
 <translation id="3163085718713826852">Ilagay ang password ng certificate</translation>
@@ -3854,7 +3852,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="3666971425390608309">Na-pause ang pag-download: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Mga device mula sa anumang vendor</translation>
 <translation id="3670229581627177274">I-on ang Bluetooth</translation>
-<translation id="3670480940339182416">Puwedeng gamitin ng mga site ang V8 optimizer</translation>
 <translation id="3671982238795754537">Matuto pa tungkol sa mga passkey</translation>
 <translation id="3672681487849735243">Nakakita ng factory error</translation>
 <translation id="3673097791729989571">Hino-host ng <ph name="SAML_DOMAIN" /> ang pag-sign in</translation>
@@ -5755,6 +5752,7 @@ Gamitin ang Ctrl + Alt + Bawasan ang Liwanag para mag-zoom out.</translation>
 <translation id="5001526427543320409">Mga third-party na cookie</translation>
 <translation id="5003070249435823986">Gamitin ang galaw para pumasok sa scroll mode, pagkatapos ay igalaw ang iyong ulo papunta sa direksyon kung saan mo gustong mag-scroll. Gamitin ulit ang galaw para lumabas sa scroll mode.</translation>
 <translation id="5003993274120026347">Susunod na pangungusap</translation>
+<translation id="5005311809885666699">Na-save mula sa Chrome</translation>
 <translation id="5005498671520578047">Kopyahin password</translation>
 <translation id="5006218871145547804">ADB ng Android app sa Crostini</translation>
 <translation id="5006778209728626987">Kidlat</translation>
@@ -9724,6 +9722,7 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="784475655832336580">Hindi available ang i-highlight ang item gamit ang keyboard focus kapag naka-on ang ChromeVox</translation>
 <translation id="7844992432319478437">Ina-update ang diff</translation>
 <translation id="7846161022626028328">Nagka-error. Subukan ulit.</translation>
+<translation id="7846296061357476882">Mga serbisyo ng Google</translation>
 <translation id="7846634333498149051">Keyboard</translation>
 <translation id="7847212883280406910">Pindutin ang Ctrl + Alt + S upang lumipat sa <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Buksan lahat (<ph name="URL_COUNT" />) sa bagong grupo ng tab</translation>
@@ -9743,7 +9742,6 @@ Pumindot ng nakatalagang switch o key para alisin ang pagtatalaga.</translation>
 <translation id="7853747251428735">Higit Pang Mga Too&amp;l</translation>
 <translation id="7855258394151767387">Gamitin ang “w” para pindutin ang button ng mouse</translation>
 <translation id="7855678561139483478">Ilipat ang tab sa bagong window</translation>
-<translation id="7856798637819639676">Ligtas na gumamit ng ID mula sa iyong Android device</translation>
 <translation id="7857004848504343806">Naglalaman ng secure na module ang iyong computer, na ginagamit para magpatupad ng maraming kritikal na panseguridad na feature sa ChromeOS Flex. Bisitahin ang Help Center ng Chromebook para matuto pa: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Mga suhestyong text</translation>
 <translation id="7858120906780498731">Mga Input Device na Nakakonekta sa ChromeOS</translation>
@@ -10002,7 +10000,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8026784703228858744">I-save ang iyong mga bookmark at higit pa sa pamamagitan ng pag-sync</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Binisita 0 na araw ang nakalipas}=1{Binisita 1 araw ang nakalipas}one{Binisita # araw ang nakalipas}other{Binisita # na araw ang nakalipas}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
-<translation id="8028138772801251745">I-autofill gamit ang AI</translation>
 <translation id="8028803902702117856">Dina-download ang <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Laki</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Listahan ng babasahin}=1{Listahan ng babasahin ({SELECTED_ITEMS})}one{Listahan ng babasahin ({SELECTED_ITEMS})}other{Listahan ng babasahin ({SELECTED_ITEMS})}}</translation>
@@ -10099,7 +10096,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="808894953321890993">Palitan ang password</translation>
 <translation id="8090234456044969073">Basahin ang isang listahan ng iyong mga pinakamadalas bisitahing website</translation>
 <translation id="8090513782447872344">Puwede kang bumalik anumang oras para tingnan ulit</translation>
-<translation id="8090579562279016251">Pinapahina ang performance pero ginagawang mas matatag ang V8 laban sa mga attack</translation>
 <translation id="8090686009202681725">Gumawa ng tema gamit ang AI</translation>
 <translation id="8093359998839330381">Hindi tumutugon ang <ph name="PLUGIN_NAME" /></translation>
 <translation id="8094536695728193970">Apricot</translation>
@@ -10153,7 +10149,6 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8125651784723647184">Pinapamahalaan ng iyong administrator ang pag-share ng password</translation>
 <translation id="8126355825906412872">Ngumiti</translation>
 <translation id="8129265306888404830">Para magamit ang email address mo mula sa iyong organisasyon (<ph name="EMAIL_DOMAIN" />), kailangan mong gumamit ng pag-enroll sa enterprise. Kung ang device na ito ay para sa iyong personal na paggamit, mag-sign in gamit ang personal na Google Account mo.</translation>
-<translation id="8130476996317833777">Huwag payagan ang mga site na gamitin ang V8 optimizer</translation>
 <translation id="813082847718468539">Tingnan ang impormasyon ng site</translation>
 <translation id="8131740175452115882">Kumpirmahin</translation>
 <translation id="8133297578569873332">Katanggap-tanggap - FM</translation>

@@ -65,7 +65,7 @@
 <translation id="1263433075299269530">הכרטיסייה הפתוחה האחרונה</translation>
 <translation id="1264156759663453185">נבחר יותר מדי טקסט לתרגום חלקי.</translation>
 <translation id="1264974993859112054">ספורט</translation>
-<translation id="126737128831326059">הייצוא הסתיים בהצלחה</translation>
+<translation id="126737128831326059">הייצוא הסתיים</translation>
 <translation id="1272079795634619415">הפסקה</translation>
 <translation id="1273416271143914096">{count,plural, =1{סיסמה אחת ({count})}one{{count} סיסמאות}two{{count} סיסמאות}other{{count} סיסמאות}}</translation>
 <translation id="1275718070701477396">נבחר</translation>
@@ -164,6 +164,7 @@
 <translation id="1612754831519568745">הגלישה הבטוחה מושבתת כרגע. כדאי להפעיל אותה כדי לקבל הגנה מפני אתרים, הורדות ותוספים מסוכנים.</translation>
 <translation id="1620510694547887537">מצלמה</translation>
 <translation id="1622717322707146952">‏בוחרים באפשרות 'הוספה ליומן Google' או 'הוספה ל-Apple Calendar'.</translation>
+<translation id="1625502944725673937">לא הצלחנו לייבא את הקובץ</translation>
 <translation id="1629162218487290695">אימות הזהות שלך…</translation>
 <translation id="1636234353664774105">קבלת מסלול מפורט ליעד בעזרת תכונת הניווט</translation>
 <translation id="1641113438599504367">גלישה בטוחה</translation>
@@ -1041,6 +1042,7 @@
 <translation id="5128788795241319992">האפשרויות בתפריט החדש</translation>
 <translation id="5132942445612118989">סנכרון הסיסמאות, ההיסטוריה ונתונים נוספים בכל המכשירים</translation>
 <translation id="5141363746588976328">הסתרת הכרטיס "ירידות במחיר"</translation>
+<translation id="514154868070499296">גופן: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">יציאה מהכלי למעבר בין כרטיסיות</translation>
 <translation id="5148717509369231739">‏ייבוא מ-Safari</translation>
 <translation id="5157638238828697074">משהו השתבש. לא ניתן לפתוח את האפליקציה.</translation>
@@ -1558,6 +1560,7 @@
 <translation id="7015418667643980944">תצוגה מפוצלת</translation>
 <translation id="7016070607649558507">יש לך סיסמה חלשה אחת. עליך לשפר אותה עכשיו כדי לשמור על הבטיחות.</translation>
 <translation id="7016958933495968912">‏אפשרויות של Discover</translation>
+<translation id="7017863468226238797">הקובץ ריק או שהנתונים בו בפורמט שגוי</translation>
 <translation id="7029809446516969842">סיסמאות</translation>
 <translation id="7035825883570480307">להפעיל את ההתראות?</translation>
 <translation id="7039345315346323556">מהזמן האחרון</translation>
@@ -2007,6 +2010,7 @@
 <translation id="8741995161408053644">‏ייתכן שיהיה אפשר לגשת לסוגים אחרים של היסטוריית גלישה בחשבון Google בכתובת <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">יצירת קישור</translation>
 <translation id="8746155870861185046">שיתוף של הטקסט המודגש</translation>
+<translation id="8748678031495824833">‏פתיחת כלי ה-AI בדף</translation>
 <translation id="8750037785291841318">הכרטיסיות זמינות כאן</translation>
 <translation id="8756969031206844760">לעדכן את הסיסמה?</translation>
 <translation id="8764015330924122850">ביטול המעקב אחר <ph name="DOMAIN_NAME" /></translation>

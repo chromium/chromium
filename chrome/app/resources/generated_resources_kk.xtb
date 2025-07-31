@@ -2522,7 +2522,6 @@
 <translation id="2730647855013151888">Барлық жеке ақпаратты қосу</translation>
 <translation id="2730901670247399077">Эмоджи ұсыныстары</translation>
 <translation id="273093730430620027">Бұл бет камераңызды пайдалануда.</translation>
-<translation id="2730956943403103181">V8 оңтайландырғышын пайдалану рұқсаты жоқ</translation>
 <translation id="2731392572903530958">Жабылған терезені қ&amp;айта ашу</translation>
 <translation id="2731700343119398978">Күтіңіз…</translation>
 <translation id="2731971182069536520">Құрылғы келесіде қосылған кезде, әкімші жергілікті деректерді жоятын бір реттік жаңарту әрекетін жасайды.</translation>
@@ -3121,7 +3120,6 @@
 <translation id="3160928651883997588">VPN параметрлері</translation>
 <translation id="3161522574479303604">Барлық тіл</translation>
 <translation id="3162070126914310576">Бұл құрылғыны дәл қазір тіркеу мүмкін емес, себебі ұйым бөлімі бастапқы тіркеу шегіне жетті. Көмек алу үшін әкімшіге хабарласыңыз.</translation>
-<translation id="3162766632262775911">V8 оңтайландырғышын пайдалануға әрдайым рұқсаты бар</translation>
 <translation id="3162853326462195145">Оқу аккаунты</translation>
 <translation id="3162899666601560689">Сайттар шолуды жақсарту (мысалы, аккаунттан шығармау не сатып алу себетіңіздегі нәрселерді есте сақтау) үшін cookie файлдарын пайдалана алады.</translation>
 <translation id="3163085718713826852">Сертификат құпия сөзін енгізіңіз</translation>
@@ -3835,7 +3833,6 @@
 <translation id="3666971425390608309">Жүктеп алу кідіртілді: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Басқа жеткізушінің құрылғылары</translation>
 <translation id="3670229581627177274">Bluetooth функциясын қосу</translation>
-<translation id="3670480940339182416">Сайттар V8 оңтайландырғышын пайдалана алады</translation>
 <translation id="3671982238795754537">Кіру кілттері туралы толық ақпарат алыңыз.</translation>
 <translation id="3672681487849735243">Зауыттық қате анықталды</translation>
 <translation id="3673097791729989571">Кіру хосы: <ph name="SAML_DOMAIN" /></translation>
@@ -5735,6 +5732,7 @@
 <translation id="5001526427543320409">Үшінші тарап cookie файлдары</translation>
 <translation id="5003070249435823986">Айналдыру режиміне кіру үшін қимылды қолданыңыз. Содан кейін айналдыру қажет бағытта басыңызды қозғалтыңыз. Айналдыру режимінен шығу үшін қимылды қайта қолданыңыз.</translation>
 <translation id="5003993274120026347">Келесі сөйлем</translation>
+<translation id="5005311809885666699">Chrome-нан сақталған</translation>
 <translation id="5005498671520578047">Құпия сөзді көшіру</translation>
 <translation id="5006218871145547804">Crostini жүйесіндегі Android қолданбаларына арналған ADB құралы</translation>
 <translation id="5006778209728626987">Найзағай</translation>
@@ -9696,6 +9694,7 @@
 <translation id="784475655832336580">ChromeVox қосулы кезде, элементті пернетақта фокусымен ерекшелеу қолжетімді емес</translation>
 <translation id="7844992432319478437">diff жаңартылуда</translation>
 <translation id="7846161022626028328">Қате пайда болды. Қайталап көріңіз.</translation>
+<translation id="7846296061357476882">Google қызметтері</translation>
 <translation id="7846634333498149051">Пернетақта</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> жүйесіне ауысу үшін Ctrl + Alt + S тіркесімін басыңыз</translation>
 <translation id="7848244988854036372">Барлығын (<ph name="URL_COUNT" />) жаңа қойындылар тобында ашу</translation>
@@ -9715,7 +9714,6 @@
 <translation id="7853747251428735">Қосымша құрал&amp;дар</translation>
 <translation id="7855258394151767387">Тінтуір түймесін басу үшін "w" пернесін басыңыз.</translation>
 <translation id="7855678561139483478">Қойындыны жаңа терезеден ашу</translation>
-<translation id="7856798637819639676">Android құрылғысындағы жеке куәлікті қауіпсіз түрде пайдаланыңыз.</translation>
 <translation id="7857004848504343806">Компьютерде қауіпсіздік модулі бар, ол ChromeOS Flex операциялық жүйесінде көптеген маңызды қауіпсіздік функцияларын ендіру үшін пайдаланылады. Толығырақ ақпарат алу үшін Chromebook Анықтамалық орталығына кіріңіз: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Мәтіндік ұсыныстар</translation>
 <translation id="7858120906780498731">ChromeOS қосылған енгізу құрылғылары</translation>
@@ -9973,7 +9971,6 @@
 <translation id="8026784703228858744">Бетбелгілерді және т.б. ақпаратты синхрондап сақтаңыз.</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 күн бұрын кірдіңіз}=1{1 күн бұрын кірдіңіз}other{# күн бұрын кірдіңіз}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
-<translation id="8028138772801251745">Жасанды интеллект көмегімен автотолтыру</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> (<ph name="SIZE" />) жүктеп алынуда</translation>
 <translation id="8028993641010258682">Көлемі</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Оқу тізімі}=1{Оқу тізімі ({SELECTED_ITEMS})}other{Оқу тізімі ({SELECTED_ITEMS})}}</translation>
@@ -10070,7 +10067,6 @@
 <translation id="808894953321890993">Кұпия сөзді өзгерту</translation>
 <translation id="8090234456044969073">Ең жиі қаралатын веб-сайттар тізімін оқу</translation>
 <translation id="8090513782447872344">Құпиялық нұсқаулығын кез келген уақытта қайта қарауыңызға болады.</translation>
-<translation id="8090579562279016251">Өнімділік азаяды, бірақ V8 оңтайландырғышы шабуылдарға төзімді болады.</translation>
 <translation id="8090686009202681725">AI көмегімен тақырып жасау</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> жауап бермей жатыр</translation>
 <translation id="8094536695728193970">Өрік</translation>
@@ -10124,7 +10120,6 @@
 <translation id="8125651784723647184">Құпия сөзді бөлісу әрекетін әкімші басқарады.</translation>
 <translation id="8126355825906412872">Жымиыңыз.</translation>
 <translation id="8129265306888404830">Ұйымның электрондық пошта мекенжайын (<ph name="EMAIL_DOMAIN" />) пайдалану үшін кәсіпорынды тіркеуді пайдалануыңыз керек. Бұл құрылғы жеке пайдалануыңызға арналған болса, жеке Google аккаунтыңызбен кіріңіз.</translation>
-<translation id="8130476996317833777">Сайттарға V8 оңтайландырғышын пайдалануға рұқсат бермеу</translation>
 <translation id="813082847718468539">Сайт ақпаратын көру</translation>
 <translation id="8131740175452115882">Растау</translation>
 <translation id="8133297578569873332">Жарамды – FM</translation>

@@ -2530,7 +2530,6 @@
 <translation id="2730647855013151888">تضمين جميع المعلومات الشخصية</translation>
 <translation id="2730901670247399077">اقتراحات رموز إيموجي</translation>
 <translation id="273093730430620027">هذه الصفحة تحاول الدخول إلى الكاميرا.</translation>
-<translation id="2730956943403103181">‏المواقع الإلكترونية التي لا يُسمح لها باستخدام مُحسِّن V8</translation>
 <translation id="2731392572903530958">إعادة ف&amp;تح النافذة المغلقة</translation>
 <translation id="2731700343119398978">يرجى الانتظار...</translation>
 <translation id="2731971182069536520">في المرة القادمة التي يتم فيها إعادة تشغيل الجهاز، سيُجري مشرفك تحديثًا لمرة واحدة، ما سيؤدي إلى حذف البيانات المحلية.</translation>
@@ -3129,7 +3128,6 @@
 <translation id="3160928651883997588">‏الإعدادات المفضّلة لشبكة VPN</translation>
 <translation id="3161522574479303604">كل اللغات</translation>
 <translation id="3162070126914310576">يتعذّر تسجيل هذا الجهاز في الوقت الحالي لأنّ الوحدة التنظيمية قد وصلت إلى الحدّ الأقصى المسموح به للتسجيل الأولي. يُرجى التواصل مع المشرف للحصول على المساعدة.</translation>
-<translation id="3162766632262775911">‏يُسمح دائمًا للمواقع الإلكترونية باستخدام مُحسِّن V8</translation>
 <translation id="3162853326462195145">حساب المؤسسة التعليمية</translation>
 <translation id="3162899666601560689">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط لتحسين تجربة التصفُّح، مثل إبقائك مُسجِّلاً الدخول أو تذكُّر عناصر في سلة التسوق.</translation>
 <translation id="3163085718713826852">يُرجى إدخال كلمة مرور الشهادة</translation>
@@ -3845,7 +3843,6 @@
 <translation id="3666971425390608309">تم إيقاف تنزيل <ph name="FILE_NAME" /> مؤقتًا.</translation>
 <translation id="3670113805793654926">أجهزة من أي مورّد</translation>
 <translation id="3670229581627177274">تفعيل البلوتوث</translation>
-<translation id="3670480940339182416">‏يمكن للمواقع الإلكترونية استخدام مُحسِّن V8</translation>
 <translation id="3671982238795754537">مزيد من المعلومات حول مفاتيح المرور</translation>
 <translation id="3672681487849735243">تم اكتشاف خطأ من المصنع</translation>
 <translation id="3673097791729989571">يستضيف النطاق <ph name="SAML_DOMAIN" /> عملية تسجيل الدخول.</translation>
@@ -5744,6 +5741,7 @@
 <translation id="5001526427543320409">ملفات تعريف الارتباط الخارجية</translation>
 <translation id="5003070249435823986">استخدِم الإيماءة للدخول إلى وضع الانتقال، ثم حرِّك رأسك في الاتجاه الذي تريد الانتقال إليه. استخدِم الإيماءة مرة أخرى للخروج من وضع الانتقال.</translation>
 <translation id="5003993274120026347">الجملة التالية</translation>
+<translation id="5005311809885666699">‏الصور والفيديوهات المحفوظة من Chrome</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5006218871145547804">‏أداة ADB في تطبيق Android لنظام التشغيل Crostini</translation>
 <translation id="5006778209728626987">برق</translation>
@@ -9719,6 +9717,7 @@
 <translation id="784475655832336580">‏عندما يكون ChromeVox مفعَّلاً، لا يمكن تفعيل ميزة تمييز العناصر باستخدام تركيز لوحة المفاتيح.</translation>
 <translation id="7844992432319478437">تحديث الاختلافات</translation>
 <translation id="7846161022626028328">حدث خطأ. يُرجى إعادة المحاولة.</translation>
+<translation id="7846296061357476882">‏خدمات Google</translation>
 <translation id="7846634333498149051">لوحة المفاتيح</translation>
 <translation id="7847212883280406910">‏اضغط على Ctrl + Alt + S للتبديل إلى <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">‏فتح كل عناوين URL (يبلغ عددها <ph name="URL_COUNT" />) في مجموعة علامات تبويب جديدة</translation>
@@ -9738,7 +9737,6 @@
 <translation id="7853747251428735">المزيد من الأد&amp;وات</translation>
 <translation id="7855258394151767387">‏للضغط على زر الماوس، يجب استخدام مفتاح "w"</translation>
 <translation id="7855678561139483478">نقل علامة التبويب إلى نافذة جديدة</translation>
-<translation id="7856798637819639676">‏استخدام رقم تعريف من جهاز Android بأمان</translation>
 <translation id="7857004848504343806">‏يحتوي الكمبيوتر على وحدة آمنة يتم استخدامها لتنفيذ العديد من ميزات الأمان المُهمة في نظام التشغيل ChromeOS Flex. ويُمكنك الانتقال إلى مركز مساعدة Chromebook للتعرّف على مزيد من المعلومات: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">اقتراحات نصية</translation>
 <translation id="7858120906780498731">‏أجهزة الإدخال المتصلة بنظام ChromeOS</translation>
@@ -9997,7 +9995,6 @@
 <translation id="8026784703228858744">يمكنك حفظ إشاراتك المرجعية وغيرها باستخدام ميزة المزامنة</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{تمّت زيارة علامة التبويب قبل 0 يوم}=1{تمّت زيارة علامة التبويب قبل يوم واحد}two{تمّت زيارة علامة التبويب قبل يومَين}few{تمّت زيارة علامة التبويب قبل # أيام}many{تمّت زيارة علامة التبويب قبل # يومًا}other{تمّت زيارة علامة التبويب قبل # يوم}}</translation>
 <translation id="8028060951694135607">‏استرداد مفتاح Microsoft</translation>
-<translation id="8028138772801251745">الملء التلقائي باستخدام الذكاء الاصطناعي</translation>
 <translation id="8028803902702117856">جارٍ تنزيل <ph name="SIZE" />، <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">الحجم</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{قائمة القراءة}=1{قائمة القراءة (عنصر واحد "{SELECTED_ITEMS}")}two{قائمة القراءة (عنصران "{SELECTED_ITEMS}")}few{قائمة القراءة ({SELECTED_ITEMS} عناصر)}many{قائمة القراءة ({SELECTED_ITEMS} عنصرًا)}other{قائمة القراءة ({SELECTED_ITEMS} عنصر)}}</translation>
@@ -10094,7 +10091,6 @@
 <translation id="808894953321890993">تغيير كلمة المرور</translation>
 <translation id="8090234456044969073">قراءة قائمة بمواقع الويب التي تتردد عليها بكثرة</translation>
 <translation id="8090513782447872344">يمكنك الرجوع في أي وقت للاطّلاع مرة أخرى على دليل الخصوصية.</translation>
-<translation id="8090579562279016251">‏يقلِّل هذا الخيار من مستوى الأداء ويعزِّز من مقاومة مُحسِّن V8 للهجمات.</translation>
 <translation id="8090686009202681725">إنشاء مظهر باستخدام الذكاء الاصطناعي</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> لا يستجيب.</translation>
 <translation id="8094536695728193970">مِشمشي</translation>
@@ -10148,7 +10144,6 @@
 <translation id="8125651784723647184">يدير المشرف ميزة مشاركة كلمات المرور.</translation>
 <translation id="8126355825906412872">ابتسام</translation>
 <translation id="8129265306888404830">‏لاستخدام عنوان البريد الإلكتروني التابع لمؤسستك (<ph name="EMAIL_DOMAIN" />)، عليك استخدام ميزة تسجيل المؤسسة. إذا كان هذا الجهاز للاستخدام الشخصي، سجِّل الدخول باستخدام حسابك الشخصي على Google.</translation>
-<translation id="8130476996317833777">‏عدم السماح للمواقع الإلكترونية باستخدام مُحسِّن V8</translation>
 <translation id="813082847718468539">عرض معلومات الموقع</translation>
 <translation id="8131740175452115882">تأكيد</translation>
 <translation id="8133297578569873332">‏مقبولة - FM</translation>

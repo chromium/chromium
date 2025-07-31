@@ -179,7 +179,6 @@
 <translation id="3224847870593914902">Google Hesabınızı Chromium'dan kaldırmak için Ayarlar sayfasında Chromium oturumunu kapatın</translation>
 <translation id="3234316605225071811">Daha sonra Chromium, formlarınızın otomatik olarak doldurulması için kayıtlı bilgileri kullanmak isteyip istemediğinizi sorabilir</translation>
 <translation id="3258596308407688501">Chromium veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">Chromium'un JavaScript ve WebAssembly motoru olan V8, site performansını iyileştirmek için kullanılır</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
 <translation id="328888136576916638">Google API anahtarları eksik. Chromium'un bazı işlevleri devre dışı bırakılacak.</translation>
 <translation id="3296368748942286671">Chromium kapandığında arka plan uygulamaları çalıştırmaya devam et</translation>
@@ -497,6 +496,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="7461356015007898716">Gelecekteki Chromium güncellemelerini almak için Windows 10 veya sonraki bir sürümün yüklü olması gerekir. Bu bilgisayar Windows 7 kullanıyor.</translation>
 <translation id="7467949745582939695">Chromium yeniden başlatılsın mı?</translation>
 <translation id="7483335560992089831">Şu anda çalışan aynı Chromium sürümünü yükleyemezsiniz. Lütfen Chromium'u kapatın ve yeniden deneyin.</translation>
+<translation id="7517403744065880907">Chromium'da oturum açtığınız her zaman şifreleri ve diğer öğeleri Google Hesabınıza kaydedip kullanabilirsiniz. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Siteler muhtemelen beklendiği gibi çalışır. Tüm Chromium pencerelerini kapattığınızda çoğu sitedeki oturumunuz kapatılır. Chromium'da oturum açtıysanız Google Hesabınız buna dahil değildir.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium 1 dakika içinde yeniden başlatılacak}other{Chromium # dakika içinde yeniden başlatılacak}}</translation>
 <translation id="7565444033145385702">Verilerinizin korunması için Chromium'un, yakın zamanda ziyaret etmediğiniz sitelerin izinlerini kaldırmasına izin verin.</translation>
@@ -621,6 +621,7 @@ Chromium ayarlarınızı kurtaramıyor.</translation>
 <translation id="9158494823179993217">Sistem yöneticiniz, Chromium'u, <ph name="TARGET_URL_HOSTNAME" /> sitesini alternatif bir tarayıcıda açacak şekilde yapılandırmış.</translation>
 <translation id="9185526690718004400">&amp;Chromium'u güncellemek için yeniden başlat</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Chromium'da oturum açarak daha fazla avantajdan yararlanın</translation>
 <translation id="924957577793602335">Chromium'u kendinize uyarlayın</translation>
 <translation id="93478295209880648">Chromium artık Windows XP veya Windows Vista üzerinde desteklenmediği için doğru şekilde çalışmayabilir</translation>
 <translation id="945522503751344254">Geri bildirim gönder</translation>

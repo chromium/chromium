@@ -715,6 +715,7 @@ Twoje zaszyfrowane dane może odczytać tylko osoba znająca hasło. Nie jest on
 <translation id="4380055775103003110">Jeśli problem będzie się powtarzał, możesz wypróbować inne sposoby logowania w witrynie <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Korzystam z wyszukiwarki Sogou</translation>
 <translation id="4387647248986092471">Utwórz blokadę profilu samochodu</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Karty i grupy nieużywane od co najmniej 1 dnia}few{Karty i grupy nieużywane od co najmniej # dni}many{Karty i grupy nieużywane od co najmniej # dni}other{Karty i grupy nieużywane od co najmniej # dnia}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – pobieram…</translation>
 <translation id="4404568932422911380">Brak zakładek</translation>
 <translation id="4405224443901389797">Przenieś do…</translation>

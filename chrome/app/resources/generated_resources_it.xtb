@@ -250,6 +250,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1166583374608765787">Controlla l'aggiornamento del nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> appartiene alla scrivania <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Le app web isolate seguono automaticamente questa impostazione</translation>
+<translation id="116712635768212829">Se Chrome rileva una delle tue password in una violazione dei dati, Gestore delle password di Google può offrirti di cambiarla automaticamente se hai eseguito l'accesso.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> all'apertura del file...</translation>
 <translation id="1168704243733734901">Tema IA recente <ph name="INDEX" /> di <ph name="SUBJECT" />, in stile <ph name="STYLE" />, con stato d'animo <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Cambia automaticamente la lingua in base ai contenuti selezionati</translation>
@@ -554,6 +555,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1375938286942050085">Configurazione completata. Dopodiché prepara il tuo dispositivo per giocare</translation>
 <translation id="137651782282853227">Gli indirizzi salvati verranno visualizzati qui</translation>
 <translation id="1376771218494401509">Assegna nome alla &amp;finestra…</translation>
+<translation id="1377438103060664754">Se una delle tue password viene rilevata in una violazione dei dati, Gestore delle password di Google ti chiede se vuoi cambiarla con una password efficace</translation>
 <translation id="1377600615067678409">Salta per ora</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> controlla questa impostazione</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nessuna password compromessa}=1{1 password compromessa}other{{NUM_COMPROMISED} password compromesse}}</translation>
@@ -2523,7 +2525,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2730647855013151888">Includi tutte le informazioni personali</translation>
 <translation id="2730901670247399077">Suggerimenti di emoji</translation>
 <translation id="273093730430620027">Questa pagina sta accedendo alla webcam.</translation>
-<translation id="2730956943403103181">Non autorizzati a utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="2731392572903530958">R&amp;iapri finestra chiusa</translation>
 <translation id="2731700343119398978">Attendi...</translation>
 <translation id="2731971182069536520">La prossima volta che riavvii il dispositivo, il tuo amministratore eseguirà un aggiornamento una tantum che eliminerà i tuoi dati locali.</translation>
@@ -3122,7 +3123,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3160928651883997588">Preferenze VPN</translation>
 <translation id="3161522574479303604">Tutte le lingue</translation>
 <translation id="3162070126914310576">Al momento non è possibile registrare questo dispositivo perché l'unità organizzativa ha raggiunto il limite di registrazione iniziale. Per ricevere assistenza, contatta l'amministratore.</translation>
-<translation id="3162766632262775911">Sempre autorizzati a utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="3162853326462195145">Account della scuola</translation>
 <translation id="3162899666601560689">I siti possono utilizzare i cookie per migliorare la tua esperienza di navigazione, ad esempio per mantenere l'accesso o memorizzare gli articoli aggiunti al carrello.</translation>
 <translation id="3163085718713826852">Inserisci password del certificato</translation>
@@ -3838,7 +3838,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3666971425390608309">Download in pausa: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivi di qualsiasi fornitore</translation>
 <translation id="3670229581627177274">Attiva il Bluetooth</translation>
-<translation id="3670480940339182416">I siti possono utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="3671982238795754537">Scopri di più sulle passkey</translation>
 <translation id="3672681487849735243">È stato rilevato un errore di fabbrica</translation>
 <translation id="3673097791729989571">Accesso ospitato da <ph name="SAML_DOMAIN" /></translation>
@@ -5738,6 +5737,7 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
 <translation id="5003070249435823986">Utilizza il gesto per attivare la modalità di scorrimento, quindi muovi la testa nella direzione in cui vuoi scorrere. Utilizza di nuovo il gesto per uscire dalla modalità di scorrimento.</translation>
 <translation id="5003993274120026347">Frase successiva</translation>
+<translation id="5005311809885666699">Foto e video salvati da Chrome</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5006218871145547804">ADB app Android su Crostini</translation>
 <translation id="5006778209728626987">Fulmine</translation>
@@ -9702,6 +9702,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="784475655832336580">Evidenzia l'elemento con rvidenziazioee dell'elemento attivo tramite tastiera non è disponibile quando ChromeVox è attivo</translation>
 <translation id="7844992432319478437">Aggiornamento differenze in corso...</translation>
 <translation id="7846161022626028328">Si è verificato un errore. Riprova.</translation>
+<translation id="7846296061357476882">Servizi Google</translation>
 <translation id="7846634333498149051">Tastiera</translation>
 <translation id="7847212883280406910">Premi Ctrl+Alt+S per passare a <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Apri tutto (<ph name="URL_COUNT" />) in un nuovo gruppo di schede</translation>
@@ -9721,7 +9722,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7853747251428735">Altri strume&amp;nti</translation>
 <translation id="7855258394151767387">Usa il tasto "W" per premere un tasto del mouse</translation>
 <translation id="7855678561139483478">Sposta scheda in una nuova finestra</translation>
-<translation id="7856798637819639676">Utilizza in sicurezza un ID dal tuo dispositivo Android</translation>
 <translation id="7857004848504343806">Il computer contiene un modulo di sicurezza che viene utilizzato per implementare in ChromeOS Flex molte funzionalità di sicurezza fondamentali. Per saperne di più, visita il Centro assistenza Chromebook all'indirizzo: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Suggerimenti testuali</translation>
 <translation id="7858120906780498731">Dispositivi di input collegati a ChromeOS</translation>
@@ -9980,7 +9980,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8026784703228858744">Salva i tuoi preferiti e altro ancora con la sincronizzazione</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visitato 0 giorni fa}=1{Visitato 1 giorno fa}other{Visitato # giorni fa}}</translation>
 <translation id="8028060951694135607">Recupero chiavi Microsoft</translation>
-<translation id="8028138772801251745">Compilazione automatica con l'AI</translation>
 <translation id="8028803902702117856">Download in corso di <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Dimensioni</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Elenco di lettura}=1{Elenco di lettura ({SELECTED_ITEMS})}other{Elenco di lettura ({SELECTED_ITEMS})}}</translation>
@@ -10077,7 +10076,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="808894953321890993">Cambia password</translation>
 <translation id="8090234456044969073">Lettura di un elenco di siti web più visitati</translation>
 <translation id="8090513782447872344">Puoi tornare a consultarla in qualsiasi momento</translation>
-<translation id="8090579562279016251">Riduce le prestazioni, ma rende V8 più resistente agli attacchi</translation>
 <translation id="8090686009202681725">Crea tema con l'AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> non risponde</translation>
 <translation id="8094536695728193970">Albicocca</translation>
@@ -10131,7 +10129,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8125651784723647184">La condivisione delle password è gestita dall'amministratore</translation>
 <translation id="8126355825906412872">Sorridi</translation>
 <translation id="8129265306888404830">Per utilizzare il tuo indirizzo email della tua organizzazione (<ph name="EMAIL_DOMAIN" />), devi usare la registrazione aziendale. Se questo dispositivo è per uso personale, accedi con il tuo Account Google personale.</translation>
-<translation id="8130476996317833777">Non consentire ai siti di utilizzare lo strumento di ottimizzazione V8</translation>
 <translation id="813082847718468539">Visualizza informazioni sul sito</translation>
 <translation id="8131740175452115882">Conferma</translation>
 <translation id="8133297578569873332">Accettabile - FM</translation>

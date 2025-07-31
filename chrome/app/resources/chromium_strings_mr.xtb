@@ -183,7 +183,6 @@
 <translation id="3258596308407688501">Chromium त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 हे Chromium चे JavaScript आणि WebAssembly इंजीन आहे, जे साइटच्या परफॉर्मन्समध्ये सुधारणा करण्यासाठी वापरले जाते</translation>
 <translation id="3286538390144397061">त्वरित रीस्टार्ट करा</translation>
 <translation id="328888136576916638">Google API की गहाळ आहेत. Chromium ची काही कार्यक्षमता अक्षम केली जाईल.</translation>
 <translation id="3296368748942286671">Chromium बंद असताना पार्श्वभूमी ॲप्लिकेशन चालवणे सुरू ठेवा</translation>

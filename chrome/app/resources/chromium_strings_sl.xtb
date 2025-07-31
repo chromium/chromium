@@ -184,7 +184,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3258596308407688501">Chromium ne more brati svojega imenika s podatki ali pisati vanj:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 je mehanizem za JavaScript in WebAssembly za Chromium, ki se uporablja za izboljšanje učinkovitosti delovanja spletnih mest</translation>
 <translation id="3286538390144397061">Znova zaženi</translation>
 <translation id="328888136576916638">Manjkajo ključi za Google API. Nekatere funkcije Chromiuma bodo onemogočene.</translation>
 <translation id="3296368748942286671">Nadaljuj izvajanje aplikacij v ozadju, ko je Chromium zaprt</translation>

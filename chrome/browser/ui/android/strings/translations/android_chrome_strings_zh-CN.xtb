@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">如果此问题仍然存在，您可以尝试在 <ph name="SITE_ETLD_PLUS_ONE" /> 上通过其他方法继续操作。</translation>
 <translation id="4384468725000734951">目前使用的搜索引擎是搜狗</translation>
 <translation id="4387647248986092471">设置车载系统个人资料锁定方式</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{1 天或更长时间未使用的标签页和标签页分组}other{# 天或更长时间未使用的标签页和标签页分组}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - 正在下载…</translation>
 <translation id="4404568932422911380">没有书签</translation>
 <translation id="4405224443901389797">移动到…</translation>

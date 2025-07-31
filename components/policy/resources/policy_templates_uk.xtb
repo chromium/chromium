@@ -6175,11 +6175,6 @@ WebSQL було вилучено у версії M112.</translation>
 
 Примітка: це правило не застосовується до примусового використання механізму захисту HSTS.</translation>
 <translation id="5297948043665200363">Дозволити користувачу залишатися в обліковому записі, коли автентифікація стає недійсною</translation>
-<translation id="5298594338496226089">За допомогою цього правила можна дозволити переліченим джерелам отримувати атрибути пристрою (наприклад, серійний номер, ім’я хоста) через Device Attributes API.
-
-Джерела мають збігатися з примусово встановленими вебдодатками, указаними в правилі <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> чи <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (починаючи з версії 125) або налаштованими як додатки-термінали. Специфікацію Device Attributes API можна переглянути на сторінці https://wicg.github.io/WebApiDevice/device_attributes.
-
-Докладніше про дійсні шаблони <ph name="URL_LABEL" /> (починаючи з версії 127) можна дізнатися на сторінці https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> – недопустиме значення для цього правила.</translation>
 <translation id="5298949392804966105">Обмежень для керованих облікових записів немає</translation>
 <translation id="530111809849214840">Сховати опцію "<ph name="GOOGLE_DRIVE_NAME" />".</translation>
 <translation id="530134925949808452">Час дня (місцевий), коли поновлюється квота на використання.</translation>

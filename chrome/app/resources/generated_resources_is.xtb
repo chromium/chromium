@@ -250,6 +250,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166583374608765787">Fara yfir uppfærslu heitis</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilheyrir skrifborðinu <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Einangruð vefforrit fylgja þessari stillingu sjálfkrafa</translation>
+<translation id="116712635768212829">Ef Chrome finnur aðgangsorð frá þér í öryggisbroti getur Google-aðgangsorðastjórnun boðist til að breyta aðgangsorðinu ef þú ert með innskráningu.</translation>
 <translation id="1168020859489941584">Opnar í <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Nýlegt gervigreindarþema <ph name="INDEX" /> af <ph name="SUBJECT" /> í <ph name="STYLE" />-stíl með <ph name="MOOD" />-stemningu.</translation>
 <translation id="116896278675803795">Skipta sjálfkrafa um tungumál í samræmi við valið efni</translation>
@@ -555,6 +556,7 @@ Athugaðu aðgangsorðin þín hvenær sem er í <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1375938286942050085">Uppsetningu er lokið! Undirbúðu tækið þitt fyrir leikjaspilun næst</translation>
 <translation id="137651782282853227">Vistuð heimilisföng birtast hér</translation>
 <translation id="1376771218494401509">Nefna &amp;glugga...</translation>
+<translation id="1377438103060664754">Ef aðgangsorð frá þér finnst í öryggisbroti spyr Google-aðgangsorðastjórnun hvort þú viljir breyta því í traust aðgangsorð</translation>
 <translation id="1377600615067678409">Sleppa þessu í bili</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> stýrir þessari stillingu</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Engin aðgangsorð í hættu}=1{1 aðgangsorð í hættu}one{{NUM_COMPROMISED} aðgangsorð í hættu}other{{NUM_COMPROMISED} aðgangsorð í hættu}}</translation>
@@ -2537,7 +2539,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="2730647855013151888">Hafa allar persónuupplýsingar með</translation>
 <translation id="2730901670247399077">Tillögur að emoji</translation>
 <translation id="273093730430620027">Þessi síða hefur aðgang að myndavélinni.</translation>
-<translation id="2730956943403103181">Ekki heimilt að nota fínstillingu V8</translation>
 <translation id="2731392572903530958">Opna lokaðan glugga aftur</translation>
 <translation id="2731700343119398978">Augnablik...</translation>
 <translation id="2731971182069536520">Næst þegar þú endurræsir tækið þitt keyrir kerfisstjóri staka uppfærslu sem eyðir staðbundnu gögnunum þínum.</translation>
@@ -3136,7 +3137,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3160928651883997588">VPN-stillingar</translation>
 <translation id="3161522574479303604">Öll tungumál</translation>
 <translation id="3162070126914310576">Ekki er hægt að skrá þetta tæki eins og er vegna þess að notendaskipanin þín hefur náð upphaflegu skráningarhámarki. Hafðu samband við kerfisstjórann þinn til að fá aðstoð.</translation>
-<translation id="3162766632262775911">Alltaf heimilt að nota fínstillingu V8</translation>
 <translation id="3162853326462195145">Skólareikningur</translation>
 <translation id="3162899666601560689">Vefsvæði geta notað fótspor til að bjóða þér upp á betri vefnotkun, til dæmis að vera áfram skráð(ur) inn eða muna hvað þú setur í innkaupakörfuna</translation>
 <translation id="3163085718713826852">Sláðu inn aðgangsorð vottorðs</translation>
@@ -3852,7 +3852,6 @@ Annars skaltu skrá þig út núna svo breytingarnar á þessum reikningi taki g
 <translation id="3666971425390608309">Hlé gert á niðurhali: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">Tæki frá hvaða framleiðanda sem er</translation>
 <translation id="3670229581627177274">Kveikja á Bluetooth</translation>
-<translation id="3670480940339182416">Vefsvæðum er heimilt að nota fínstillingu V8</translation>
 <translation id="3671982238795754537">Nánar um aðgangslykla</translation>
 <translation id="3672681487849735243">Framleiðsluvilla kom upp</translation>
 <translation id="3673097791729989571">Innskráning hýst hjá <ph name="SAML_DOMAIN" /></translation>
@@ -5753,6 +5752,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5001526427543320409">Fótspor þriðju aðila</translation>
 <translation id="5003070249435823986">Notaðu þessa bendingu til að opna flettistillingu og síðan skaltu hreyfa höfuðið í þá átt sem þú vilt fletta. Notaðu bendinguna aftur til að loka flettistillingu.</translation>
 <translation id="5003993274120026347">Næsta setning</translation>
+<translation id="5005311809885666699">Vistað frá Chrome</translation>
 <translation id="5005498671520578047">Afrita aðgangsorð</translation>
 <translation id="5006218871145547804">ADB Android forrita í Crostini</translation>
 <translation id="5006778209728626987">Elding</translation>
@@ -9721,6 +9721,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="784475655832336580">Ekki er hægt að nota áhersluyfirstrikun lyklaborðs þegar kveikt er á ChromeVox</translation>
 <translation id="7844992432319478437">Uppfærir breytingaskrá</translation>
 <translation id="7846161022626028328">Villa kom upp. Reyndu aftur.</translation>
+<translation id="7846296061357476882">Google þjónusta</translation>
 <translation id="7846634333498149051">Lyklaborð</translation>
 <translation id="7847212883280406910">Ýttu á Ctrl + Alt + S til að skipta yfir í <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Opna allt (<ph name="URL_COUNT" />) í nýjum flipahóp</translation>
@@ -9740,7 +9741,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="7853747251428735">F&amp;leiri verkfæri</translation>
 <translation id="7855258394151767387">Notaðu „w“ til að ýta á músarhnapp</translation>
 <translation id="7855678561139483478">Færa flipa í nýjan glugga</translation>
-<translation id="7856798637819639676">Notaðu auðkenni Android-tækisins þíns með öruggum hætti</translation>
 <translation id="7857004848504343806">Tölvan inniheldur örugga einingu sem er notuð til að innleiða fjölda mikilvægra öryggiseiginleika í ChromeOS Flex. Farðu í hjálparmiðstöð Chromebook til að fá frekari upplýsingar: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textatillögur</translation>
 <translation id="7858120906780498731">Inntakstæki tengd við ChromeOS</translation>
@@ -9998,7 +9998,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8026784703228858744">Vistaðu bókamerki og fleira með samstillingu</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Heimsótt fyrir núll dögum}=1{Heimsótt fyrir einum degi}one{Heimsótt fyrir # degi}other{Heimsótt fyrir # dögum}}</translation>
 <translation id="8028060951694135607">Microsoft-lyklaendurheimt</translation>
-<translation id="8028138772801251745">Sjálfvirk útfylling með gervigreind</translation>
 <translation id="8028803902702117856">Sækir <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Stærð</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Leslisti}=1{Leslisti ({SELECTED_ITEMS})}one{Leslisti ({SELECTED_ITEMS})}other{Leslisti ({SELECTED_ITEMS})}}</translation>
@@ -10095,7 +10094,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="808894953321890993">Breyta aðgangsorði</translation>
 <translation id="8090234456044969073">Lesa lista yfir vefsvæðin sem þú heimsækir oftast</translation>
 <translation id="8090513782447872344">Þú getur komið aftur hvenær sem er til að skoða þetta betur</translation>
-<translation id="8090579562279016251">Dregur úr afköstum en auðveldar V8 að verjast árásum</translation>
 <translation id="8090686009202681725">Búa til þema með gervigreind</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> svarar ekki</translation>
 <translation id="8094536695728193970">Apríkósa</translation>
@@ -10149,7 +10147,6 @@ Geymdu lykilskrána á öruggum stað. Þú þarft hana til að búa til nýjar 
 <translation id="8125651784723647184">Stjórnandinn hefur umsjón með aðgangsorðadeilingu</translation>
 <translation id="8126355825906412872">Brostu</translation>
 <translation id="8129265306888404830">Til að geta notað netfangið þitt frá fyrirtækinu (<ph name="EMAIL_DOMAIN" />) þarftu að nota fyrirtækjaskráningu. Ef þetta tæki er til einkanota skaltu skrá þig inn með Google-reikningi til einkanota.</translation>
-<translation id="8130476996317833777">Ekki heimila vefsvæðum að nota fínstillingu V8</translation>
 <translation id="813082847718468539">Skoða upplýsingar um vefsvæði</translation>
 <translation id="8131740175452115882">Staðfesta</translation>
 <translation id="8133297578569873332">Ásættanleg – FM</translation>

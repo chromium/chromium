@@ -181,7 +181,6 @@
 <translation id="3258596308407688501">Chromium 无法读写其数据目录：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，用于提升网站性能</translation>
 <translation id="3286538390144397061">立即重新启动</translation>
 <translation id="328888136576916638">缺少 Google API 密钥，因此 Chromium 的部分功能将无法使用。</translation>
 <translation id="3296368748942286671">关闭 Chromium 后继续运行后台应用</translation>

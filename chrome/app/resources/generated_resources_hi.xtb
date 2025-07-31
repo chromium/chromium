@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">नाम में हुआ बदलाव देखें</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" />, <ph name="DESK_TITLE" /> डेस्क से जुड़ा हुआ है</translation>
 <translation id="1166644470305877068">आइसोलेटेड वेब ऐप्लिकेशन अपने-आप इस सेटिंग को फ़ॉलो करते हैं</translation>
+<translation id="116712635768212829">अगर Chrome को, लीक हुए किसी डेटा में आपका कोई पासवर्ड मिलता है, तो Google Password Manager आपको पासवर्ड बदलने का विकल्प दे सकता है. हालांकि, ऐसा तब होगा, जब आपने साइन इन किया हो.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> में खुल रहा है ...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> मूड के साथ <ph name="STYLE" /> स्टाइल में <ph name="SUBJECT" /> की हाल ही में बनाई गई एआई थीम <ph name="INDEX" />.</translation>
 <translation id="116896278675803795">चुने गए कॉन्टेंट के हिसाब से, अपने-आप भाषा बदलें</translation>
@@ -555,6 +556,7 @@
 <translation id="1375938286942050085">सेट अप पूरा हो गया है! अब अपने डिवाइस को गेमिंग के लिए तैयार करें</translation>
 <translation id="137651782282853227">सेव किए गए पते यहां दिखेंगे</translation>
 <translation id="1376771218494401509">&amp;विंडो को कोई नाम दें...</translation>
+<translation id="1377438103060664754">अगर लीक हुए किसी डेटा में आपका कोई पासवर्ड मिलता है, तो Google Password Manager आपसे यह पूछता है कि क्या आपको इसे एक मज़बूत पासवर्ड में बदलना है</translation>
 <translation id="1377600615067678409">अभी के लिए छोड़ें</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> इस सेटिंग को कंट्रोल कर रहा है</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{कोई भी पासवर्ड हैक या चोरी नहीं हुआ}=1{1 पासवर्ड हैक या चोरी हुआ है}one{{NUM_COMPROMISED} पासवर्ड हैक या चोरी हुआ है}other{{NUM_COMPROMISED} पासवर्ड हैक या चोरी हुए हैं}}</translation>
@@ -2537,7 +2539,6 @@
 <translation id="2730647855013151888">सारी निजी जानकारी शामिल करें</translation>
 <translation id="2730901670247399077">इमोजी के सुझाव</translation>
 <translation id="273093730430620027">यह पेज आपका कैमरा ऐक्सेस कर रहा है.</translation>
-<translation id="2730956943403103181">V8 ऑप्टिमाइज़र का इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="2731392572903530958">बंद की गई विंडो पु&amp;न: खोलें</translation>
 <translation id="2731700343119398978">कृपया इंतज़ार करें...</translation>
 <translation id="2731971182069536520">जब आप अगली बार डिवाइस रीस्टार्ट करेंगे, तो आपका एडमिन एक बार किया जाने वाला अपडेट करेगा जिससे आपका स्थानीय डेटा मिट जाएगा.</translation>
@@ -3136,7 +3137,6 @@
 <translation id="3160928651883997588">वीपीएन की सेटिंग</translation>
 <translation id="3161522574479303604">सभी भाषाएं</translation>
 <translation id="3162070126914310576">इस डिवाइस को अभी रजिस्टर नहीं किया जा सकता, क्योंकि आपके संगठन की इकाई में रजिस्टर करने की तय सीमा पूरी हो चुकी है. सहायता के लिए, अपने एडमिन से संपर्क करें.</translation>
-<translation id="3162766632262775911">ये हमेशा V8 ऑप्टिमाइज़र का इस्तेमाल कर सकती हैं</translation>
 <translation id="3162853326462195145">स्कूल वाला खाता</translation>
 <translation id="3162899666601560689">ब्राउज़ करने के आपके अनुभव को बेहतर बनाने के लिए साइटें, कुकी इस्तेमाल कर सकती हैं. जैसे, आपको साइन इन रखने के लिए या शॉपिंग कार्ट में सेव किए गए आइटम को याद रखने के लिए</translation>
 <translation id="3163085718713826852">सर्टिफ़िकेट का पासवर्ड डालें</translation>
@@ -3852,7 +3852,6 @@
 <translation id="3666971425390608309">डाउनलोड रोका गया: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">किसी भी विक्रेता के डिवाइस</translation>
 <translation id="3670229581627177274">ब्लूटूथ चालू करें</translation>
-<translation id="3670480940339182416">साइटें, V8 ऑप्टिमाइज़र का इस्तेमाल कर सकती हैं</translation>
 <translation id="3671982238795754537">पासकी के बारे में ज़्यादा जानें</translation>
 <translation id="3672681487849735243">फ़ैक्टरी गड़बड़ी का पता लगाया गया है</translation>
 <translation id="3673097791729989571">साइन इन करने की यह सेवा <ph name="SAML_DOMAIN" /> की मदद से होस्ट की गई है</translation>
@@ -5751,6 +5750,7 @@
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
 <translation id="5003070249435823986">स्क्रोल मोड में जाने के लिए, जेस्चर का इस्तेमाल करें. इसके बाद, अपने सिर को उस तरफ़ घुमाएं जिस तरफ़ आपको स्क्रोल करना है. स्क्रोल मोड से बाहर निकलने के लिए, जेस्चर का फिर से इस्तेमाल करें.</translation>
 <translation id="5003993274120026347">अगले वाक्य पर जाएं</translation>
+<translation id="5005311809885666699">Chrome से सेव किया गया एल्बम</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
 <translation id="5006218871145547804">Crostini में Android ऐप्लिकेशन ADB की सेटिंग</translation>
 <translation id="5006778209728626987">चमकती बिजली</translation>
@@ -9717,6 +9717,7 @@
 <translation id="784475655832336580">ChromeVox के चालू होने पर, कीबोर्ड फ़ोकस की मदद से आइटम को हाइलाइट करने की सुविधा उपलब्ध नहीं होती</translation>
 <translation id="7844992432319478437">अंतर अपडेट हो रहा है</translation>
 <translation id="7846161022626028328">कोई गड़बड़ी हुई. फिर से कोशिश करें.</translation>
+<translation id="7846296061357476882">Google की सेवाएं</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> पर स्विच करने के लिए Ctrl + Alt + S दबाएं</translation>
 <translation id="7848244988854036372">सभी यूआरएल (<ph name="URL_COUNT" />) को नए टैब ग्रुप में खोलें</translation>
@@ -9736,7 +9737,6 @@
 <translation id="7853747251428735">ज़्यादा टू&amp;ल</translation>
 <translation id="7855258394151767387">माउस बटन को दबाने के लिए, “w” का इस्तेमाल करें</translation>
 <translation id="7855678561139483478">टैब को नई विंडो पर ले जाएं</translation>
-<translation id="7856798637819639676">अपने Android डिवाइस से सुरक्षित तरीके से आईडी का इस्तेमाल करें</translation>
 <translation id="7857004848504343806">आपके कंप्यूटर में एक ऐसा सुरक्षित मॉड्यूल है जिसे ChromeOS Flex की सुरक्षा से जुड़ी कई अहम सुविधाओं को लागू करने में इस्तेमाल किया जाता है. ज़्यादा जानने के लिए Chromebook सहायता केंद्र पर जाएं: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">टाइपिंग के समय मिलने वाले शब्दों के सुझाव</translation>
 <translation id="7858120906780498731">ChromeOS से कनेक्ट किए गए इनपुट डिवाइस</translation>
@@ -9995,7 +9995,6 @@
 <translation id="8026784703228858744">सिंक करने की सुविधा की मदद से, अपने बुकमार्क वगैरह सेव करें</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{इस पर आज विज़िट किया गया}=1{इस पर 1 दिन पहले विज़िट किया गया}one{इस पर # दिन पहले विज़िट किया गया}other{इस पर # दिन पहले विज़िट किया गया}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
-<translation id="8028138772801251745">एआई (AI) की मदद से, ऑटोमैटिक भरने की सुविधा</translation>
 <translation id="8028803902702117856">डाउनलोड हो रही है <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{रीडिंग लिस्ट}=1{रीडिंग लिस्ट ({SELECTED_ITEMS})}one{रीडिंग लिस्ट ({SELECTED_ITEMS})}other{रीडिंग लिस्ट ({SELECTED_ITEMS})}}</translation>
@@ -10092,7 +10091,6 @@
 <translation id="808894953321890993">पासवर्ड बदलें</translation>
 <translation id="8090234456044969073">अपनी सबसे ज़्यादा देखी गई वेबसाइटों की सूची पढ़ें</translation>
 <translation id="8090513782447872344">आपके पास, इस जानकारी को किसी भी समय देखने का विकल्प होता है</translation>
-<translation id="8090579562279016251">इससे परफ़ॉर्मेंस कम होती है, लेकिन V8 की सायबर हमलों से बचने की क्षमता बढ़ जाती है</translation>
 <translation id="8090686009202681725">एआई की मदद से थीम बनाएं</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> जवाब नहीं दे रहा है</translation>
 <translation id="8094536695728193970">ऐप्रिकॉट</translation>
@@ -10146,7 +10144,6 @@
 <translation id="8125651784723647184">पासवर्ड शेयर करने की सुविधा को आपका एडमिन मैनेज करता है</translation>
 <translation id="8126355825906412872">मुस्कुराएं</translation>
 <translation id="8129265306888404830">अपने संगठन (<ph name="EMAIL_DOMAIN" />) के ईमेल पते का इस्तेमाल करने के लिए, आपको एंटरप्राइज़ रजिस्ट्रेशन की ज़रूरत होगी. अगर यह डिवाइस आपके निजी इस्तेमाल के लिए है, तो अपने निजी Google खाते से साइन इन करें.</translation>
-<translation id="8130476996317833777">साइटों को V8 ऑप्टिमाइज़र का इस्तेमाल करने की अनुमति नहीं है</translation>
 <translation id="813082847718468539">साइट जानकारी देखें</translation>
 <translation id="8131740175452115882">पुष्टि करें</translation>
 <translation id="8133297578569873332">स्वीकार करने लायक - FM</translation>

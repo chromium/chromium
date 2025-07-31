@@ -184,7 +184,6 @@
 <translation id="3258596308407688501">Chromium non pode ler e escribir no seu directorio de datos:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 é o motor de Chromium para JavaScript e WebAssembly que se usa para mellorar o rendemento dos sitios</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">Non se atopan as claves da API de Google. Desactivaranse algunhas funcións de Chromium.</translation>
 <translation id="3296368748942286671">Continuar executando aplicacións en segundo plano cando se peche Chromium</translation>

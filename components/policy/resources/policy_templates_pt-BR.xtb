@@ -6386,11 +6386,6 @@ políticas específicas correspondentes.
 
 Observação: esta política não se aplica a HSTS Upgrades.</translation>
 <translation id="5297948043665200363">Permitir que o usuário permaneça conectado depois que a conta perder a autenticação</translation>
-<translation id="5298594338496226089">Se a política for definida, as origens listadas poderão acessar atributos do dispositivo, como o número de série ou o nome do host, usando a API Device Attributes.
-
-As origens precisam corresponder a aplicativos da Web de instalação forçada usando a política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (da versão 125 em diante) ou configurados como um aplicativo de quiosque. Para conferir a especificação da API Device Attributes, consulte https://wicg.github.io/WebApiDevice/device_attributes (em inglês).
-
-Para informações detalhadas sobre padrões de <ph name="URL_LABEL" /> válidos (da versão 127 em diante), consulte https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. O valor <ph name="WILDCARD_VALUE" /> não é aceito para esta política.</translation>
 <translation id="5298949392804966105">Nenhuma restrição em contas gerenciadas</translation>
 <translation id="530111809849214840">Ocultar a opção <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">A hora do dia, no horário local, em que a cota de uso é renovada.</translation>

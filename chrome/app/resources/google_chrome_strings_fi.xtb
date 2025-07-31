@@ -266,6 +266,7 @@
 <translation id="4205939740494406371">Chrome ei voi tarkistaa salasanojasi. Yritä uudelleen 24 tunnin kuluttua tai <ph name="BEGIN_LINK" />tarkista salasanat Google-tililtä<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Peruutetaan…</translation>
 <translation id="4224210481850767180">Asennus on peruutettu.</translation>
+<translation id="4230631012078055975">Enemmän ominaisuuksia, kun olet kirjautuneena Chromeen</translation>
 <translation id="4242034826641750751">Chrome tarvitsee kameran ja mikrofonin luvan tällä sivustolla</translation>
 <translation id="424864128008805179">Kirjaudutaanko ulos Chromesta?</translation>
 <translation id="4251615635259297716">Linkitetäänkö Chrome-tiedot tähän tiliin?</translation>
@@ -585,6 +586,7 @@
 <translation id="8321888067342493336">Tallenna kuvana</translation>
 <translation id="8336463659890584292">Kun sivusto pyytää lupaa esiladata sen sivulla olevia linkkejä yksityisesti, Chrome käyttää Googlen palvelimia. Henkilöllisyytesi piilotetaan esiladatulta sivustolta, mutta Google oppii, mitä sivustoja esiladataan.</translation>
 <translation id="8342675569599923794">Tämä tiedosto on vaarallinen, joten Chrome on estänyt sen.</translation>
+<translation id="8349094670477064572">Voit tallentaa ja käyttää esimerkiksi Google-tilin salasanoja aina, kun olet kirjautuneena Chromeen. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Käännä kielelle</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Kaikki oikeudet pidätetään.</translation>
 <translation id="8387459386171870978">Jatka Chromen käyttöä</translation>
@@ -623,7 +625,6 @@
 <translation id="8781673607513845160">Anna Chromelle pääsyoikeus <ph name="BEGIN_LINK" />järjestelmäasetuksista<ph name="END_LINK" />, jotta voit käyttää kameraa.</translation>
 <translation id="878572486461146056">Asennusvirhe: Verkon järjestelmänvalvojan käyttämä ryhmäkäytäntö estää asennuksen: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Organisaatiosi voi nähdä ja hallinnoida selausdataa, esimerkiksi kirjanmerkkejä, historiaa ja salasanoja. Se ei näe muiden Chrome-profiilien selausdataa</translation>
-<translation id="8801657293260363985">V8 on Chromen JavaScript- ja WebAssembly-moottori, jota käytetään sivuston suorituskyvyn parantamiseen</translation>
 <translation id="8821043148920470810">Jotta saat tulevia Google Chromen päivityksiä, sinulla on oltava Windows 10 tai uudempi. Tietokoneen käyttöjärjestelmä on Windows 7.</translation>
 <translation id="8823341990149967727">Chrome on vanhentunut</translation>
 <translation id="8825634023950448068">Yksityisyytesi suojaamiseksi poistamme automaattisesti yli neljä viikkoa vanhat kiinnostuksen kohteet. Kun jatkat selaamista, kiinnostuksen kohde voi näkyä listalla uudelleen. Jos Chromen arvio menee pieleen tai jos et halua nähdä tiettyjä mainoksia, voit poistaa tietyn kiinnostuksen kohteen.</translation>

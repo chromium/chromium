@@ -448,6 +448,7 @@ La protection avancée contrôle ces paramètres Chrome :
 <translation id="6064125863973209585">Téléchargements terminés</translation>
 <translation id="6071501408666570960">Vous pouvez être déconnecté de ce site</translation>
 <translation id="6085954183010297841">Supprimer l'autorisation de modification de fichier? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Lorsque cette option est activée, les sites peuvent entrer automatiquement en mode Incrustation d'image. Lorsqu'elle est désactivée, les sites ne peuvent pas entrer automatiquement en mode Incrustation d'image.</translation>
 <translation id="6120483543004435978">Lorsque cette option est activée, les sites peuvent vous demander si vous utilisez activement votre appareil. Lorsqu'elle est désactivée, les sites ne peuvent pas savoir si vous utilisez activement votre appareil.</translation>
 <translation id="615886654739818377">Ne pas autoriser les sites à gérer les fenêtres sur tous vos écrans</translation>
 <translation id="6165508094623778733">En savoir plus</translation>

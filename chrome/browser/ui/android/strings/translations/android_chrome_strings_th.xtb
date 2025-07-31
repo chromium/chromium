@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">หากปัญหานี้ยังเกิดขึ้นอยู่ คุณสามารถลองดำเนินการต่อใน <ph name="SITE_ETLD_PLUS_ONE" /> ด้วยวิธีอื่นๆ ได้</translation>
 <translation id="4384468725000734951">กำลังใช้ Sogou ในการค้นหา</translation>
 <translation id="4387647248986092471">สร้างการล็อกโปรไฟล์รถยนต์</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{แท็บและกลุ่มแท็บที่ไม่ได้ใช้งานเป็นเวลา 1 วันขึ้นไป}other{แท็บและกลุ่มแท็บที่ไม่ได้ใช้งานเป็นเวลา # วันขึ้นไป}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - กำลังดาวน์โหลด…</translation>
 <translation id="4404568932422911380">ไม่มีบุ๊กมาร์ก</translation>
 <translation id="4405224443901389797">ย้ายไปที่…</translation>

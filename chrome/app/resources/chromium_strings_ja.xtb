@@ -181,7 +181,6 @@
 <translation id="3258596308407688501">Chromium はこのデータ ディレクトリへの読み書きを実行できません:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 は、サイトのパフォーマンスを向上させるために使用される Chromium の JavaScript エンジンおよび WebAssembly エンジンです</translation>
 <translation id="3286538390144397061">今すぐ再起動</translation>
 <translation id="328888136576916638">Google API キーが欠落しています。Chromium の一部の機能は無効になります。</translation>
 <translation id="3296368748942286671">Chromium を閉じた際にバックグラウンド アプリの処理を続行する</translation>

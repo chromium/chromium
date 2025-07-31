@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Другой</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Конверт Chinese 7</translation>
-<translation id="1269045546668906972">Включите функцию "Автозаполнение с помощью ИИ". Она поддерживает больше типов полей.</translation>
 <translation id="1269516672602708785">Быстро создать сайт в Google Сайтах</translation>
 <translation id="1270328905573953738">Переезды</translation>
 <translation id="1270502636509132238">Способ получения</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Другие закладки</translation>
 <translation id="2355395290879513365">Злоумышленники могут видеть изображения, которые видны вам, и изменять их в целях мошенничества.</translation>
 <translation id="2356070529366658676">Спрашивать</translation>
-<translation id="2356926036049612643">Оптимизатор V8</translation>
 <translation id="2356941001189392209">URL только тех посещенных вами страниц, на которых зафиксированы события, связанные с устаревшими технологиями.</translation>
 <translation id="2357481397660644965">Вашим устройством управляет <ph name="DEVICE_MANAGER" />, а аккаунтом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Несколько</translation>
@@ -1784,13 +1782,13 @@
 <translation id="3984581365661308170">Конверт 11</translation>
 <translation id="398470910934384994">Птицы</translation>
 <translation id="3985750352229496475">Настроить адреса</translation>
-<translation id="3986506998755860149">об автозаполнении с помощью ИИ</translation>
 <translation id="3986557181852957825">Логотипы Google Pay и Klarna</translation>
 <translation id="3986705137476756801">Отключить автоматические субтитры</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Менее 1 МБ</translation>
 <translation id="3990250421422698716">Смещение</translation>
 <translation id="3990532701115075684">Отслеживание рук</translation>
+<translation id="399179161741278232">Выполнен импорт</translation>
 <translation id="3992684624889376114">Об этой странице</translation>
 <translation id="3995639283717357522">Применить правила</translation>
 <translation id="3996683183117168945">Ссылка на источник <ph name="CURRENT_CITATION" /> из <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2398,7 +2396,6 @@
 <translation id="5002932099480077015">Chrome будет хранить на этом устройстве данные карты для быстрого заполнения форм.</translation>
 <translation id="5007344584818503324">История действий в общих группах вкладок</translation>
 <translation id="5007392906805964215">Посмотреть</translation>
-<translation id="5010599530303458903">Оплата ежемесячно или с разделением суммы на четыре части без процентов (есть требования)</translation>
 <translation id="5011561501798487822">Автоматически определенный язык</translation>
 <translation id="5015510746216210676">Имя компьютера:</translation>
 <translation id="5016205925109358554">С засечками</translation>
@@ -3079,7 +3076,6 @@
 <translation id="6151417162996330722">Слишком долгий срок действия сертификата, предоставленного сервером.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Бег и ходьба</translation>
-<translation id="6157079899699705880">Автозаполнение с помощью ИИ лучше анализирует формы и быстрее их заполняет.</translation>
 <translation id="6157754950574419155">Удалить все из истории</translation>
 <translation id="6157877588268064908">Выберите адрес, чтобы посмотреть способы и условия доставки.</translation>
 <translation id="6159554577634054750">Борьба с вредителями</translation>

@@ -183,7 +183,6 @@
 <translation id="3258596308407688501">Chromium 無法讀取及寫入數據目錄：
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 是 Chromium 的 JavaScript 和 WebAssembly 引擎，可提升網站效能</translation>
 <translation id="3286538390144397061">立即重新啟動</translation>
 <translation id="328888136576916638">缺少 Google API 金鑰，系統將停用 Chromium 的部分功能。</translation>
 <translation id="3296368748942286671">在 Chromium 關閉時繼續執行背景應用程式</translation>

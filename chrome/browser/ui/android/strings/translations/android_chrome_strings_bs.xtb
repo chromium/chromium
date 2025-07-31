@@ -715,6 +715,7 @@ Vaše šifrirane podatke može čitati samo osoba koja ima vaš pristupni izraz.
 <translation id="4380055775103003110">Ako se taj problem nastavi pojavljivati, možete isprobati druge načine da nastavite na web lokaciji <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Za pretraživanje se koristi Sogou</translation>
 <translation id="4387647248986092471">Kreirajte zaključavanje profila za automobil</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Kartice i grupe kartica koje se ne upotrebljavaju 1 dan ili dulje}one{Kartice i grupe kartica koje se ne upotrebljavaju # dan ili dulje}few{Kartice i grupe kartica koje se ne upotrebljavaju # dana ili dulje}other{Kartice i grupe kartica koje se ne upotrebljavaju # dana ili dulje}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Preuzimanje…</translation>
 <translation id="4404568932422911380">Nema oznaka</translation>
 <translation id="4405224443901389797">Premjesti u…</translation>

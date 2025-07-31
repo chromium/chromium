@@ -162,7 +162,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="1264309058268477500">Alterno</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Busta Chinese #7</translation>
-<translation id="1269045546668906972">Attiva la compilazione automatica con l'AI per compilare automaticamente più campi</translation>
 <translation id="1269516672602708785">Crea rapidamente un nuovo sito in Google Sites</translation>
 <translation id="1270328905573953738">Traslochi e trasferimenti</translation>
 <translation id="1270502636509132238">Metodo di ritiro</translation>
@@ -819,7 +818,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="2354001756790975382">Altri preferiti</translation>
 <translation id="2355395290879513365">Gli utenti malintenzionati potrebbero riuscire a vedere le immagini che visualizzi in questo sito e ingannarti modificandole.</translation>
 <translation id="2356070529366658676">Chiedi</translation>
-<translation id="2356926036049612643">Strumento di ottimizzazione V8</translation>
 <translation id="2356941001189392209">Un elenco limitato di URL di pagine visitate in cui si verificano eventi tecnologici legacy</translation>
 <translation id="2357481397660644965">Il tuo dispositivo è gestito da <ph name="DEVICE_MANAGER" /> e il tuo account da <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
@@ -1782,13 +1780,13 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3984581365661308170">Busta #11</translation>
 <translation id="398470910934384994">Uccelli</translation>
 <translation id="3985750352229496475">Gestisci indirizzi…</translation>
-<translation id="3986506998755860149">Scopri di più sulla compilazione automatica con l'AI nelle impostazioni</translation>
 <translation id="3986557181852957825">Logo di Google Pay e Klarna</translation>
 <translation id="3986705137476756801">Disattiva Sottotitoli in tempo reale per ora</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Meno di 1 MB</translation>
 <translation id="3990250421422698716">Offset jog</translation>
 <translation id="3990532701115075684">Monitorare le tue mani</translation>
+<translation id="399179161741278232">Importati</translation>
 <translation id="3992684624889376114">Informazioni su questa pagina</translation>
 <translation id="3995639283717357522">Applica policy</translation>
 <translation id="3996683183117168945">Citazione <ph name="CURRENT_CITATION" /> di <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2084,6 +2082,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="4451135742916150903">Può chiedere di connettersi ai dispositivi HID</translation>
 <translation id="4451684391620232683">Testo presentato all'utente:</translation>
 <translation id="4452328064229197696">La password appena usata è stata compromessa nell'ambito di una violazione dei dati. Per proteggere i tuoi account, Gestore delle password di Google consiglia di controllare le password salvate.</translation>
+<translation id="4454620051637646665">Ignora banner</translation>
 <translation id="4456937135469235202">Viaggi avventura</translation>
 <translation id="4458013283022578512">Inserisci una domanda</translation>
 <translation id="4464826014807964867">Siti web con informazioni della tua organizzazione</translation>
@@ -2395,7 +2394,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5002932099480077015">Se questa opzione viene attivata, Chrome memorizza una copia della carta sul dispositivo per velocizzare la compilazione dei moduli.</translation>
 <translation id="5007344584818503324">Attività dei gruppi di schede condivisi</translation>
 <translation id="5007392906805964215">Visualizza</translation>
-<translation id="5010599530303458903">Paga mensilmente o in 4 rate senza interessi (soggette a idoneità)</translation>
 <translation id="5011561501798487822">Lingua rilevata</translation>
 <translation id="5015510746216210676">Nome macchina:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2669,8 +2667,10 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5464236009658034488">Forniture per uffici</translation>
 <translation id="5465724643247062031">Vetro (opaco)</translation>
 <translation id="5466018172325111652">Non hai ricevuto il codice? <ph name="BEGIN_LINK" />Ricevi nuovo codice<ph name="END_LINK" /></translation>
+<translation id="5466818462212249084">App per pagamenti</translation>
 <translation id="5470861586879999274">&amp;Ripeti modifica</translation>
 <translation id="5472588168895083535">Tracciamento delle mani bloccato</translation>
+<translation id="5477756102936130143">Attiva il reindirizzamento alle app di pagamento supportate</translation>
 <translation id="5479505548832623900">Probabilmente ignorate dall'estensione.</translation>
 <translation id="547963486735802022">Prova a trasferire nuovamente i file</translation>
 <translation id="5481076368049295676">Questi contenuti potrebbero cercare di installare sul tuo dispositivo software pericoloso che si impossessa delle tue informazioni o le elimina. <ph name="BEGIN_LINK" />Mostra comunque<ph name="END_LINK" /></translation>
@@ -2780,6 +2780,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Sistemi e componenti stereo</translation>
 <translation id="5644090287519800334">Spostamento X lato 1 immagine</translation>
+<translation id="5644128326840674462">Banner di promozione</translation>
 <translation id="5645132789250840550">Plastica (semilucida)</translation>
 <translation id="5645719697465708351">Articoli per feste e festività</translation>
 <translation id="5645854190134202180">Secondo turno</translation>
@@ -2799,6 +2800,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="567604591393105935">Riquadro inferiore di informazioni sul prodotto aperto nella parte inferiore dello schermo</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Alluminio</translation>
+<translation id="5679086391497468752">Indirizzo di casa</translation>
 <translation id="5680642791693447368">Film gialli, polizieschi e del mistero</translation>
 <translation id="568292603005599551">Posizione X immagine</translation>
 <translation id="5684874026226664614">Spiacenti. Impossibile tradurre questa pagina.</translation>
@@ -3071,7 +3073,6 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6151417162996330722">Il certificato del server ha un periodo di validità troppo lungo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Corsa e camminata</translation>
-<translation id="6157079899699705880">La compilazione automatica con l'AI comprende meglio i moduli e può compilarli automaticamente per te in modo più rapido</translation>
 <translation id="6157754950574419155">Rimuovi tutto dalla cronologia</translation>
 <translation id="6157877588268064908">Seleziona un indirizzo per conoscere i requisiti e i metodi di spedizione</translation>
 <translation id="6159554577634054750">Disinfestazione</translation>
@@ -3294,6 +3295,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6494750904506170417">popup e reindirizzamenti</translation>
 <translation id="6495664197699704593">La password viene salvata solo su questo dispositivo. Per usarla sugli altri tuoi dispositivi, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">Per usare un altro servizio di compilazione automatica in Chrome, scegli il tuo nelle impostazioni di Android</translation>
+<translation id="6496888501595572660">Mostra le <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />opzioni di pagamento posticipato<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> al momento del checkout</translation>
 <translation id="6499038740797743453">Reimpostare la password?</translation>
 <translation id="6502510275417601303">Avviso relativo a chiusura nuova impostazione di pagamento</translation>
 <translation id="6502991525169604759">Senza le tue modifiche</translation>
@@ -3961,6 +3963,7 @@ Ulteriori dettagli:
 <translation id="7625242817712715120">La policy dell'amministratore sconsiglia la stampa di questi contenuti</translation>
 <translation id="7627785503571172573">Foto (pellicola)</translation>
 <translation id="762844065391966283">Un oggetto alla volta</translation>
+<translation id="7629058630148860366">Indirizzo di lavoro</translation>
 <translation id="763042426047865637">Servizi antincendio e di sicurezza</translation>
 <translation id="7630470133768862132">Stato del consenso:</translation>
 <translation id="7631072086707140121">L'URL deve essere HTTPS.</translation>
@@ -4646,6 +4649,7 @@ Ulteriori dettagli:
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />, premi Tab poi Invio per aggiornare Chrome dalle relative impostazioni</translation>
 <translation id="8820817407110198400">Preferiti</translation>
 <translation id="882338992931677877">Slot manuale</translation>
+<translation id="8827067923357481311">Opzioni di pagamento differito</translation>
 <translation id="8830320733681313421">Hagaki (cartolina)</translation>
 <translation id="8830565333350631528">Visualizza i file in <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8831783793142731637">Disponibile per acquisti superiori a <ph name="RANGE_MINIMUM" /></translation>

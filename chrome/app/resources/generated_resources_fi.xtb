@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Katso nimen muutos</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> kuuluu tälle työpöydälle: <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Eristetyt verkkosovellukset noudattavat tätä asetusta automaattisesti</translation>
+<translation id="116712635768212829">Jos Chrome löytää yhden salasanoistasi tietosuojaloukkauksesta, Google Salasanat voi tarjota salasanan vaihtamista ollessasi sisäänkirjautuneena.</translation>
 <translation id="1168020859489941584">Avautuu ajassa <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Viimeaikainen AI-teema <ph name="INDEX" /> / <ph name="SUBJECT" />, tyyli: <ph name="STYLE" />, tunnelma: <ph name="MOOD" /></translation>
 <translation id="116896278675803795">Vaihda kieli automaattisesti vastaamaan valittua sisältöä</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">Käyttöönotto on valmis. Valmistele laite pelaamista varten</translation>
 <translation id="137651782282853227">Tässä näytetään tallennetut osoitteet.</translation>
 <translation id="1376771218494401509">Nimeä &amp;ikkuna…</translation>
+<translation id="1377438103060664754">Jos yksi salasanoistasi löytyy tietosuojaloukkauksen yhteydessä, Google Salasanat kysyy, haluatko vaihtaa sen vahvaan salasanaan</translation>
 <translation id="1377600615067678409">Ohita toistaiseksi</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> hallinnoi tätä asetusta.</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ei vaarantuneita salasanoja}=1{1 vaarantunut salasana}other{{NUM_COMPROMISED} vaarantunutta salasanaa}}</translation>
@@ -2535,7 +2537,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="2730647855013151888">Sisällytä kaikki henkilökohtaiset tiedot</translation>
 <translation id="2730901670247399077">Emojiehdotukset</translation>
 <translation id="273093730430620027">Tämä sivu käyttää kameraasi.</translation>
-<translation id="2730956943403103181">V8-optimoijan käyttö kielletty</translation>
 <translation id="2731392572903530958">Avaa suljettu ikkuna uud&amp;elleen</translation>
 <translation id="2731700343119398978">Odota...</translation>
 <translation id="2731971182069536520">Seuraavan kerran kun käynnistät laitteen uudelleen, järjestelmänvalvoja tekee kertaluontoisen päivityksen, joka poistaa paikallisen datasi.</translation>
@@ -3134,7 +3135,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3160928651883997588">VPN-asetukset</translation>
 <translation id="3161522574479303604">Kaikki kielet</translation>
 <translation id="3162070126914310576">Tätä laitetta ei voi rekisteröidä nyt, koska organisaatioyksikön alkuperäinen rekisteröintiraja on saavutettu. Pyydä apua järjestelmänvalvojalta.</translation>
-<translation id="3162766632262775911">V8-optimoijan käyttö on aina sallittu</translation>
 <translation id="3162853326462195145">Koulutili</translation>
 <translation id="3162899666601560689">Sivustot voivat käyttää evästeitä selauskokemuksesi parantamiseen, esimerkiksi pitää sinut kirjautuneena tai muistaa ostoskorisi sisällön</translation>
 <translation id="3163085718713826852">Lisää varmenteen salasana</translation>
@@ -3850,7 +3850,6 @@ Voit ylläpitää tilin asetuksia asentamalla laitteellesi Family Link ‑sovell
 <translation id="3666971425390608309">Lataus keskeytetty: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Kaikkien toimittajien laitteet</translation>
 <translation id="3670229581627177274">Ota Bluetooth käyttöön</translation>
-<translation id="3670480940339182416">Sivustot voivat käyttää V8-optimoijaa</translation>
 <translation id="3671982238795754537">Lue lisää avainkoodeista</translation>
 <translation id="3672681487849735243">Tehdasvirhe on havaittu</translation>
 <translation id="3673097791729989571">Sisäänkirjautuminen tapahtuu täällä: <ph name="SAML_DOMAIN" /></translation>
@@ -5748,6 +5747,7 @@ Loitonna painamalla Ctrl + Alt + kirkkauden vähennys.</translation>
 <translation id="5001526427543320409">Kolmannen osapuolen evästeet</translation>
 <translation id="5003070249435823986">Siirry eleellä vieritystilaan ja liikuta sitten päätäsi vierityssuuntaan. Poistu vieritystilasta käyttämällä samaa elettä uudelleen.</translation>
 <translation id="5003993274120026347">Seuraava lause</translation>
+<translation id="5005311809885666699">Tallennettu Chromesta</translation>
 <translation id="5005498671520578047">Kopioi salasana</translation>
 <translation id="5006218871145547804">Crostinin Android-sovellusten ADB</translation>
 <translation id="5006778209728626987">Salama</translation>
@@ -9714,6 +9714,7 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="784475655832336580">Tekstin korostaminen näppäimistöllä ei ole käytettävissä, kun ChromeVox on päällä</translation>
 <translation id="7844992432319478437">Päivitetään muutostiedostoa</translation>
 <translation id="7846161022626028328">Tapahtui virhe. Yritä uudelleen.</translation>
+<translation id="7846296061357476882">Googlen palvelut</translation>
 <translation id="7846634333498149051">Näppäimistö</translation>
 <translation id="7847212883280406910">Valitse <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> painamalla Ctrl + Alt + S</translation>
 <translation id="7848244988854036372">Avaa kaikki (<ph name="URL_COUNT" />) uudelle välilehtiryhmälle</translation>
@@ -9733,7 +9734,6 @@ Poista määritys painamalla määritettyä kytkintä tai näppäintä.</transla
 <translation id="7853747251428735">&amp;Lisää työkaluja</translation>
 <translation id="7855258394151767387">Paina hiiren painiketta painamalla "w"</translation>
 <translation id="7855678561139483478">Siirrä välilehti uuteen ikkunaan</translation>
-<translation id="7856798637819639676">Käytä henkilötodistusta turvallisesti Android-laitteella</translation>
 <translation id="7857004848504343806">Tietokoneesi sisältää suojausmoduulin, jonka avulla käytetään monia tärkeitä turvallisuusominaisuuksia ChromeOS Flexissä. Lisätietoja on Chromebook-ohjekeskuksessa: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstiehdotukset</translation>
 <translation id="7858120906780498731">ChromeOS:n yhdistetyt syöttölaitteet</translation>
@@ -9992,7 +9992,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8026784703228858744">Tallenna esimerkiksi kirjanmerkit synkronoimalla</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Avattu 0 päivää sitten}=1{Avattu 1 päivä sitten}other{Avattu # päivää sitten}}</translation>
 <translation id="8028060951694135607">Microsoftin avaimen palautus</translation>
-<translation id="8028138772801251745">Tekoälyä hyödyntävä automaattinen täyttö</translation>
 <translation id="8028803902702117856">Lataus käynnissä: <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Koko</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Lukulista}=1{Lukulista ({SELECTED_ITEMS})}other{Lukulista ({SELECTED_ITEMS})}}</translation>
@@ -10089,7 +10088,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="808894953321890993">Vaihda salasana</translation>
 <translation id="8090234456044969073">Lukea useimmin käyttämiesi verkkosivustojen luettelo</translation>
 <translation id="8090513782447872344">Voit palata tänne milloin tahansa</translation>
-<translation id="8090579562279016251">Rajoittaa suorituskykyä, mutta tekee V8:sta suojatumman hyökkäyksiä vastaan</translation>
 <translation id="8090686009202681725">Luo teema tekoälyn avulla</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ei vastaa.</translation>
 <translation id="8094536695728193970">Aprikoosi</translation>
@@ -10143,7 +10141,6 @@ Tallenna avaintiedosto suojattuun sijaintiin. Tarvitset sitä, jos haluat luoda 
 <translation id="8125651784723647184">Järjestelmänvalvoja ylläpitää salasanojen jakamista</translation>
 <translation id="8126355825906412872">Hymyile</translation>
 <translation id="8129265306888404830">Jos haluat käyttää organisaatiosi (<ph name="EMAIL_DOMAIN" />) sähköpostiosoitetta, sinun on rekisteröidyttävä yritysversion kautta. Jos laite on tarkoitettu henkilökohtaiseen käyttöön, kirjaudu sisään henkilökohtaisella Google-tililläsi.</translation>
-<translation id="8130476996317833777">Älä salli sivustojen käyttää V8-optimoijaa</translation>
 <translation id="813082847718468539">Näytä sivuston tiedot</translation>
 <translation id="8131740175452115882">Vahvista</translation>
 <translation id="8133297578569873332">Hyväksyttävä – FM</translation>

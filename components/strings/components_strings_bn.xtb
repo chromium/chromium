@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">বিকল্প</translation>
 <translation id="1264974993859112054">খেলাধূলা</translation>
 <translation id="1268480293435976622">এনভেলপ চিনা #৭</translation>
-<translation id="1269045546668906972">আরও ফিল্ড অটোমেটিক পূরণ করতে AI-এর সাহায্যে অটোফিল চালু করুন</translation>
 <translation id="1269516672602708785">Google Sites-এ চটপট নতুন সাইট তৈরি করুন</translation>
 <translation id="1270328905573953738">মালপত্র অন্য জায়গায় নিয়ে যাওয়ার পরিষেবা</translation>
 <translation id="1270502636509132238">পিক-আপের পদ্ধতি</translation>
@@ -820,7 +819,6 @@
 <translation id="2354001756790975382">অন্য বুকমার্ক</translation>
 <translation id="2355395290879513365">আপনি এই সাইটে যেসব ছবি দেখছেন, আক্রমণকারীরা সেগুলি দেখতে পেতে পারে এবং সেগুলি পরিবর্তন করে আপনাকে বোকা বানাতে পারে।</translation>
 <translation id="2356070529366658676">জিজ্ঞাসা করুন</translation>
-<translation id="2356926036049612643">ভি৮ অপ্টিমাইজার</translation>
 <translation id="2356941001189392209">পুরনো টেকনোলজি ইভেন্ট হচ্ছে এমন যেসব পৃষ্ঠা আপনি দেখেন, তার URL-এর সীমিত তালিকা</translation>
 <translation id="2357481397660644965">আপনার ডিভাইস <ph name="DEVICE_MANAGER" />-এর মাধ্যমে এবং আপনার অ্যাকাউন্ট <ph name="ACCOUNT_MANAGER" />-এর মাধ্যমে ম্যানেজ করা হয়।</translation>
 <translation id="2359629602545592467">একাধিক</translation>
@@ -1786,13 +1784,13 @@
 <translation id="3984581365661308170">এনভেলপ #১১</translation>
 <translation id="398470910934384994">পাখি</translation>
 <translation id="3985750352229496475">ঠিকানাগুলি ম্যানেজ করুন...</translation>
-<translation id="3986506998755860149">সেটিংস থেকে AI-এর মাধ্যমে অটোফিল করার সুবিধা সম্পর্কে আরও জানুন</translation>
 <translation id="3986557181852957825">Google Pay, Klarna লোগো</translation>
 <translation id="3986705137476756801">এখনকার মতো লাইভ ক্যাপশন বন্ধ করে দিন</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">১ এমবির কম</translation>
 <translation id="3990250421422698716">জগ অফসেট</translation>
 <translation id="3990532701115075684">হ্যান্ড ট্র্যাক করার অনুমতি দিন</translation>
+<translation id="399179161741278232">আমদানিকৃত</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠা সম্পর্কে</translation>
 <translation id="3995639283717357522">নীতি প্রয়োগ করুন</translation>
 <translation id="3996683183117168945"><ph name="MAX_CITATIONS" />-টির মধ্যে উদ্ধৃতি <ph name="CURRENT_CITATION" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />। <ph name="PAGE_TITLE" />। <ph name="PAGE_PREVIEW" />।</translation>
@@ -2400,7 +2398,6 @@
 <translation id="5002932099480077015">সক্রিয় করা হলে, ফর্ম পূরণের কাজ দ্রুত করতে Chrome এই ডিভাইসে আপনার কার্ডের একটি কপি স্টোর করবে।</translation>
 <translation id="5007344584818503324">শেয়ার করা ট্যাব গ্রুপের অ্যাক্টিভিটি</translation>
 <translation id="5007392906805964215">পর্যালোচনা করুন</translation>
-<translation id="5010599530303458903">প্রতি মাসে অথবা ৪টি সুদ ছাড়া ইনস্টলমেন্টে পেমেন্ট করুন (যোগ্যতা সাপেক্ষ)</translation>
 <translation id="5011561501798487822">শনাক্ত করা ভাষা</translation>
 <translation id="5015510746216210676">মেশিনের নাম:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@
 <translation id="6151417162996330722">সার্ভারের সার্টিফিকেটের বৈধতার সময়সীমা আছে যা খুবই দীর্ঘ।</translation>
 <translation id="6153243098246946146">(<ph name="ORIENTATION" />)-এ <ph name="WIDTH" /> × <ph name="HEIGHT" /></translation>
 <translation id="615506061184576470">দৌড়ানো ও হাঁটা</translation>
-<translation id="6157079899699705880">AI-এর সাহায্যে অটোফিল করার সুবিধা ফর্ম আরও ভালো বুঝতে পারে এবং আপনার জন্য আরও দ্রুত তা অটোফিল করতে পারে।</translation>
 <translation id="6157754950574419155">ইতিহাস থেকে সব সরান</translation>
 <translation id="6157877588268064908">শিপিং এর পদ্ধতি এবং প্রয়োজনীয়তা দেখতে একটি ঠিকানা বেছে নিন</translation>
 <translation id="6159554577634054750">পেস্ট কন্ট্রোল</translation>

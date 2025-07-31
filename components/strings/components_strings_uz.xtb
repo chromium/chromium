@@ -162,7 +162,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1264309058268477500">Muqobil</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
-<translation id="1269045546668906972">AI bilan avtomatik kiritishni yoqib, koʻproq axborotlarni avtomatik kiriting</translation>
 <translation id="1269516672602708785">Google Sitesda yangi saytni tez yaratish</translation>
 <translation id="1270328905573953738">Koʻchish va koʻchirish</translation>
 <translation id="1270502636509132238">Olib ketish usuli</translation>
@@ -557,6 +556,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="1927439846988093361">Soch parvarishi</translation>
 <translation id="1935353813610900265">AI yordamida brauzer tarixidan qidirish yuzasidan fikr-mulohaza yuborish</translation>
 <translation id="1935995810530254458">Baribir nusxalansin</translation>
+<translation id="1938580037092872316">Saqlangan manzilga yangi axborot kiritish</translation>
 <translation id="1939059826036755332">Avtomatik tasvir ustida tasvir</translation>
 <translation id="1939175642807587452">Bildirishnomalar yuborish uchun ruxsat soʻrashi mumkin</translation>
 <translation id="1940441167050915935">Saqlangan xavfsizlik kodlarini oʻchirish</translation>
@@ -818,7 +818,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="2354001756790975382">Boshqa xatcho‘plar</translation>
 <translation id="2355395290879513365">Firibgarlar bu saytda siz ochgan rasmlarni ko‘rishi va bu rasmlarni qalbakilashtirib, o‘zgartirishi mumkin.</translation>
 <translation id="2356070529366658676">So‘ralsin</translation>
-<translation id="2356926036049612643">V8 optimizer</translation>
 <translation id="2356941001189392209">Eski texnologiya voqealari yuz berayotgan sahifalar URL manzillarining cheklangan roʻyxati</translation>
 <translation id="2357481397660644965">Qurilma <ph name="DEVICE_MANAGER" /> domenida va hisobingiz <ph name="ACCOUNT_MANAGER" /> tomonidan boshqariladi.</translation>
 <translation id="2359629602545592467">Bir nechta</translation>
@@ -1781,13 +1780,13 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">Qushlar</translation>
 <translation id="3985750352229496475">Manzillarni boshqarish...</translation>
-<translation id="3986506998755860149">sozlamalarda AI bilan avtomatik kiritish haqida batafsil axborot olish mumkin.</translation>
 <translation id="3986557181852957825">Google Pay, Klarna logotipi</translation>
 <translation id="3986705137476756801">Jonli izohni hozircha faolsizlantirish</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MBdan kam</translation>
 <translation id="3990250421422698716">Qogʻozlarni ajratib toʻplash</translation>
 <translation id="3990532701115075684">Qoʻllaringiz holatini kuzatish</translation>
+<translation id="399179161741278232">Import qilindi</translation>
 <translation id="3992684624889376114">Bu sahifa haqida</translation>
 <translation id="3995639283717357522">Siyosatlarni qoʻllash</translation>
 <translation id="3996683183117168945">Iqtibos: <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2395,7 +2394,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="5002932099480077015">Chrome shakllarni tezroq to‘ldirish uchun karta ma’lumotlarini ushbu qurilmaga saqlaydi.</translation>
 <translation id="5007344584818503324">Umumiy varaqlar guruhi faolligi</translation>
 <translation id="5007392906805964215">Tekshirish</translation>
-<translation id="5010599530303458903">Oyiga yoki 4 qismda foizsiz toʻlash (muvofiqlik sharti bilan)</translation>
 <translation id="5011561501798487822">Til aniqlandi</translation>
 <translation id="5015510746216210676">Kompyuter nomi:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3075,7 +3073,6 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6151417162996330722">Server taqdim qilgan sertifikat yaroqlilik muddati juda uzoq.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> duym (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Yugurish va piyoda yurish</translation>
-<translation id="6157079899699705880">AI bilan avtomatik kiritish shakllarni yaxshiroq tushunadi va ularni tezroq toʻldirishi mumkin</translation>
 <translation id="6157754950574419155">Barchasini tarixdan olib tashlash</translation>
 <translation id="6157877588268064908">Yetkazib berish usuli va talablari bilan tanishish uchun manzilni tanlang</translation>
 <translation id="6159554577634054750">Zararkunandalarga qarshi kurash</translation>
@@ -3541,6 +3538,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6935082727755903526">Buxgalteriya va moliya sohasidagi vakansiyalar</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Ayrim saytlar keyingi kirishda sekinroq yuklanishi mumkin.</translation>
 <translation id="6936976777388162184">Bu majmuadagi qurilma. Kiosk va Signage Upgrade bilan roʻyxatdan oʻtib boʻlmaydi.</translation>
+<translation id="6942444979237658241">Fikrlar - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Strategiya oʻyinlari</translation>
 <translation id="6944692733090228304">Siz parol kiritgan sayt <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> tomonidan boshqarilmaydi. Hisobingizni himoya qilish uchun boshqa ilova va saytlarda bu paroldan foydalanmang.</translation>
 <translation id="6946949206576443118">Chrome orqali internetdan qidirish</translation>
@@ -3998,6 +3996,7 @@ Batafsil axborot:
 <translation id="7668654391829183341">Noma‘lum qurilma</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> / <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Maʼlumotlar bilan bajariladigan amallar maxfiy hisoblanadi (oxirgi kirishdan keyin 1 ta amal xabar qilingan). <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" />}other{Maʼlumotlar bilan bajariladigan amallar maxfiy hisoblanadi (oxirgi kirishdan keyin # ta amal xabar qilingan). <ph name="BEGIN_LINK" />Batafsil<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Google hisobingizdagi (<ph name="USER_EMAIL" />) axborotlar Chrome orqali shakllarda tezroq kiritilishi mumkin</translation>
 <translation id="7673278391011283842">Pochta qutisi 6</translation>
 <translation id="7675325315208090829">Toʻlov usullarini boshqarish...</translation>
 <translation id="767550629621587224">Kesilgan qogʻoz</translation>
@@ -4265,6 +4264,7 @@ Batafsil axborot:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{1 oy oldin yaratilgan}other{{NUM_MONTHS} oy oldin yaratilgan}}</translation>
 <translation id="8148608574971654810">PDF versiyasi:</translation>
 <translation id="8149426793427495338">Kompyuteringiz uyqu rejimiga o‘tib qoldi.</translation>
+<translation id="815036624016370447">Google hisobingizdagi (<ph name="ACCOUNT" />) axborotlar Chrome orqali shakllarda tezroq kiritilishi mumkin</translation>
 <translation id="8150722005171944719"><ph name="URL" /> manzilidagi faylni o‘qib bo‘lmadi. U o‘chirilgan, ko‘chirilgan yoki ko‘rishni taqiqlovchi ruxsat cheklamalariga ega bo‘lishi mumkin.</translation>
 <translation id="8151185429379586178">Dasturchi vositalari</translation>
 <translation id="8153865548451212769">{0,plural, =1{Administrator bu faylni <ph name="DESTINATION_NAME" />ga yuklab olishni tavsiya qilmaydi}other{Administrator bu fayllarni <ph name="DESTINATION_NAME" />ga yuklab olishni tavsiya qilmaydi}}</translation>

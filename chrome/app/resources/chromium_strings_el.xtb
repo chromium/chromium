@@ -182,7 +182,6 @@
 <translation id="3258596308407688501">Το Chromium δεν έχει δυνατότητα ανάγνωσης και εγγραφής στον κατάλογο δεδομένων του:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">Το V8 είναι η μηχανή JavaScript και WebAssembly του Chromium που χρησιμοποιείται για τη βελτίωση της απόδοσης ιστοτόπων</translation>
 <translation id="3286538390144397061">Άμεση επανεκκίνηση</translation>
 <translation id="328888136576916638">Λείπουν κλειδιά του Google API. Ορισμένες λειτουργίες του Google Chromium θα απενεργοποιηθούν.</translation>
 <translation id="3296368748942286671">Να συνεχίζεται η εκτέλεση εφαρμογών παρασκηνίου όταν το Chromium είναι κλειστό</translation>

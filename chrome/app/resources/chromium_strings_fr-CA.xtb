@@ -183,7 +183,6 @@ Certaines fonctionnalités ne seront peut-être pas disponibles et les modificat
 <translation id="3258596308407688501">Chromium ne peut pas lire et écrire dans son répertoire de données :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 est le moteur JavaScript et WebAssembly de Chromium utilisé pour améliorer les performances du site</translation>
 <translation id="3286538390144397061">Redémarrer maintenant</translation>
 <translation id="328888136576916638">Les clés d'API Google sont manquantes. Certaines fonctionnalités de Chromium seront désactivées</translation>
 <translation id="3296368748942286671">Continuer l'exécution d'applications en arrière-plan après la fermeture de Chromium</translation>
@@ -501,6 +500,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="7461356015007898716">Pour recevoir les futures mises à jour de Chromium, vous devrez disposer de Windows 10 ou d'une version ultérieure. Cet ordinateur fonctionne sous Windows 7.</translation>
 <translation id="7467949745582939695">Relancer Chromium?</translation>
 <translation id="7483335560992089831">Vous ne pouvez pas installer la même version de Chromium qui est en cours d'exécution. Veuillez fermer Chromium et essayer à nouveau.</translation>
+<translation id="7517403744065880907">Vous enregistrerez et utiliserez des mots de passe et plus encore dans votre compte Google chaque fois que vous serez connecté à Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Les sites fonctionneront probablement comme prévu. Vous serez déconnecté de la plupart des sites lorsque vous fermerez toutes les fenêtres Chromium, à l'exception de votre compte Google si vous êtes connecté à Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium redémarrera dans 1 minute}one{Chromium redémarrera dans # minute}other{Chromium redémarrera dans # minutes}}</translation>
 <translation id="7565444033145385702">Pour protéger vos données, laissez Chromium retirer les autorisations des sites que vous n'avez pas visités récemment.</translation>
@@ -625,6 +625,7 @@ Chromium est incapable de récupérer vos paramètres.</translation>
 <translation id="9158494823179993217">Votre administrateur système a configuré Chromium pour ouvrir un autre navigateur afin d'accéder à <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Relancer &amp;Chromium pour le mettre à jour</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Accédez à plus d'options lorsque vous êtes connecté à Chromium</translation>
 <translation id="924957577793602335">Personnalisez Chromium</translation>
 <translation id="93478295209880648">Il se peut que Chromium ne fonctionne pas correctement, car il n'est plus compatible avec Windows XP ni Windows Vista</translation>
 <translation id="945522503751344254">Envoyer un commentaire à Google</translation>

@@ -715,6 +715,7 @@ Vaše šifrovaná data mohou číst pouze uživatelé, kteří mají vaši heslo
 <translation id="4380055775103003110">Pokud tento problém přetrvává, můžete na <ph name="SITE_ETLD_PLUS_ONE" /> zkusit pokračovat jinými způsoby.</translation>
 <translation id="4384468725000734951">K vyhledávání se používá služba Sogou</translation>
 <translation id="4387647248986092471">Vytvořit zámek profilu auta</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Karty a skupiny, které nejméně 1 den nebyly použity}few{Karty a karet, které nejméně # dny nebyly použity}many{Karty a karet, které nejméně # dne nebyly použity}other{Karty a karet, které nejméně # dní nebyly použity}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Stahování…</translation>
 <translation id="4404568932422911380">Žádné záložky</translation>
 <translation id="4405224443901389797">Přesunout do…</translation>

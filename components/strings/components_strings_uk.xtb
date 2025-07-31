@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Альтернативний</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Конверт Chinese № 7</translation>
-<translation id="1269045546668906972">Увімкніть автозаповнення за допомогою ШІ, щоб автоматично вводити дані в більшу кількість полів</translation>
 <translation id="1269516672602708785">Швидко створюйте нові сайти в Google Сайтах</translation>
 <translation id="1270328905573953738">Переїзд і перевезення майна</translation>
 <translation id="1270502636509132238">Спосіб отримання</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Інші закладки</translation>
 <translation id="2355395290879513365">Зловмисники можуть бачити зображення, які ви переглядаєте на цьому сайті, і змінювати їх із метою ошукати вас.</translation>
 <translation id="2356070529366658676">Запитувати</translation>
-<translation id="2356926036049612643">Оптимізатор V8</translation>
 <translation id="2356941001189392209">Обмежений список URL-адрес відвіданих сторінок, на яких виявлено події застарілих технологій</translation>
 <translation id="2357481397660644965">Вашим пристроєм керує <ph name="DEVICE_MANAGER" />, а обліковим записом – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Декілька</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">Конверт № 11</translation>
 <translation id="398470910934384994">Птахи</translation>
 <translation id="3985750352229496475">Керувати адресами…</translation>
-<translation id="3986506998755860149">дізнатися більше про автозаповнення за допомогою ШІ в налаштуваннях.</translation>
 <translation id="3986557181852957825">Логотипи Google Pay і Klarna</translation>
 <translation id="3986705137476756801">Наразі вимкнути живі субтитри</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Менше 1 МБ</translation>
 <translation id="3990250421422698716">Поступове зміщення</translation>
 <translation id="3990532701115075684">Відстежувати ваші руки</translation>
+<translation id="399179161741278232">Імпортовано</translation>
 <translation id="3992684624889376114">Про цю сторінку</translation>
 <translation id="3995639283717357522">Застосувати правила</translation>
 <translation id="3996683183117168945">Посилання <ph name="CURRENT_CITATION" /> з <ph name="MAX_CITATIONS" /> (<ph name="PRODUCT_NAME" />, <ph name="URL" />). <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@
 <translation id="5002932099480077015">Коли цю функцію ввімкнено, Chrome зберігає копію даних вашої картки на пристрої, щоб ви могли швидше заповнювати форми.</translation>
 <translation id="5007344584818503324">Дії в спільних групах вкладок</translation>
 <translation id="5007392906805964215">Переглянути</translation>
-<translation id="5010599530303458903">Сплачуйте щомісяця або здійсніть 4 безпроцентні платежі на виплат (за умови відповідності вимогам)</translation>
 <translation id="5011561501798487822">Визначена мова</translation>
 <translation id="5015510746216210676">Назва пристрою:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@
 <translation id="6151417162996330722">Сертифікат сервера має задовгий термін дії.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> дюйм. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Біг і ходьба</translation>
-<translation id="6157079899699705880">Функція автозаповнення за допомогою ШІ краще розпізнає форми й швидше заповнює їх замість вас</translation>
 <translation id="6157754950574419155">Видалити всю історію</translation>
 <translation id="6157877588268064908">Укажіть адресу, щоб переглянути способи відправлення та вимоги.</translation>
 <translation id="6159554577634054750">Боротьба зі шкідниками</translation>

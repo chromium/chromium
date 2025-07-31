@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">ಪರ್ಯಾಯ</translation>
 <translation id="1264974993859112054">ಕ್ರೀಡೆ</translation>
 <translation id="1268480293435976622">ಎನ್ವಲಪ್ ಚೈನೀಸ್ #7</translation>
-<translation id="1269045546668906972">ಹೆಚ್ಚಿನ ಫೀಲ್ಡ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಭರ್ತಿಮಾಡಲು AI ಜೊತೆಗೆ ಆಟೋಫಿಲ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="1269516672602708785">Google Sites ನಲ್ಲಿ ತ್ವರಿತವಾಗಿ ಹೊಸ ಸೈಟ್ ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="1270328905573953738">ಸ್ಥಳ ಬದಲಾವಣೆ ಮತ್ತು ಸ್ಥಳಾಂತರ</translation>
 <translation id="1270502636509132238">ಪಿಕಪ್ ವಿಧಾನ</translation>
@@ -818,7 +817,6 @@
 <translation id="2354001756790975382">ಇತರ ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳು</translation>
 <translation id="2355395290879513365">ಈ ಸೈಟ್‌ನಲ್ಲಿ ನೀವು ನೋಡುತ್ತಿರುವ ಚಿತ್ರಗಳನ್ನು ವೀಕ್ಷಿಸಲು ಮತ್ತು ಅವುಗಳನ್ನು ಮಾರ್ಪಡಿಸುವ ಮೂಲಕ ನಿಮ್ಮನ್ನು ವಂಚಿಸಲು ದಾಳಿಕೋರರಿಗೆ ಸಾಧ್ಯವಾಗುತ್ತಿರಬಹುದು.</translation>
 <translation id="2356070529366658676">ಕೇಳಿ</translation>
-<translation id="2356926036049612643">V8 ಆಪ್ಟಿಮೈಸರ್</translation>
 <translation id="2356941001189392209">ಲೆಗಸಿ ತಂತ್ರಜ್ಞಾನದ ಈವೆಂಟ್‌ಗಳು ಸಂಭವಿಸುತ್ತಿರುವ ಸ್ಥಳದಲ್ಲಿ ನೀವು ಭೇಟಿ ನೀಡುವ ಪುಟಗಳ URL ಗಳ ಸೀಮಿತ ಪಟ್ಟಿ</translation>
 <translation id="2357481397660644965">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DEVICE_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ ಮತ್ತು ನಿಮ್ಮ ಖಾತೆಯನ್ನು <ph name="ACCOUNT_MANAGER" /> ಮೂಲಕ ನಿರ್ವಹಿಸಲಾಗುತ್ತಿದೆ.</translation>
 <translation id="2359629602545592467">ಬಹು</translation>
@@ -1206,7 +1204,7 @@
 <translation id="3027915437837548462">SVG ಚಿತ್ರ</translation>
 <translation id="3030331669969285614">ಈ ಫ್ಲ್ಯಾಗ್‌ಗಳು ಬ್ರೇಕಿಂಗ್ ಬದಲಾವಣೆಯನ್ನು ತಡೆಯುತ್ತದೆ ಅಥವಾ ಪೂರ್ವಸ್ಥಿತಿಗೆ ಮರಳಿಸುತ್ತದೆ ಹಾಗೂ ಸೀಮಿತ ಅವಧಿಗೆ ಮಾತ್ರ ಲಭ್ಯವಿರುತ್ತದೆ.</translation>
 <translation id="3030542417256082866">ವಾಹನ ಮಾಹಿತಿಯನ್ನು ಸೇವ್ ಮಾಡಬೇಕೆ?</translation>
-<translation id="3033200136993730761">ನಿಮ್ಮ ಮನೆ ವಿಳಾಸವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು, ಉದಾಹರಣೆಗೆ ಇನ್ನಷ್ಟು ಸೂಕ್ತವಾದ Search ಫಲಿತಾಂಶಗಳು ಮತ್ತು Google Maps ನಲ್ಲಿ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು. <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
+<translation id="3033200136993730761">ನಿಮ್ಮ ಮನೆ ವಿಳಾಸವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು, ಉದಾಹರಣೆಗೆ ಇನ್ನಷ್ಟು ಸೂಕ್ತವಾದ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಮತ್ತು Google Maps ನಲ್ಲಿ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು. <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="3034526003882782781">ಸ್ಕ್ರಾಲ್ ಮತ್ತು ಝೂಮ್ ಮಾಡುವುದನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="3036894576201005614">ಮನೆಯನ್ನು ಸ್ವಚ್ಛಗೊಳಿಸುವುದಕ್ಕೆ ಸಂಬಂಧಿಸಿದ ಪೂರೈಕೆಗಳು</translation>
 <translation id="3037177537145227281">ದರವನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಲಾಗುತ್ತಿದೆ</translation>
@@ -1782,13 +1780,13 @@
 <translation id="3984581365661308170">ಎನ್ವಲಪ್ #11</translation>
 <translation id="398470910934384994">ಪಕ್ಷಿಗಳು</translation>
 <translation id="3985750352229496475">ವಿಳಾಸಗಳನ್ನು ನಿರ್ವಹಿಸಿ...</translation>
-<translation id="3986506998755860149">ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ AI ಮೂಲಕ ಆಟೋಫಿಲ್ ಮಾಡುವ ಕುರಿತು ಇನ್ನಷ್ಟು ತಿಳಿಯಿರಿ</translation>
 <translation id="3986557181852957825">Google Pay, Klarna ಲೋಗೋ</translation>
 <translation id="3986705137476756801">ಈಗ ಲೈವ್ ಕ್ಯಾಪ್ಶನ್ ಅನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB ಗಿಂತ ಕಡಿಮೆ</translation>
 <translation id="3990250421422698716">ಜಾಗ್ ಆಫ್‌ಸೆಟ್</translation>
 <translation id="3990532701115075684">ನಿಮ್ಮ ಕೈಗಳನ್ನು ಟ್ರ್ಯಾಕ್ ಮಾಡಿ</translation>
+<translation id="399179161741278232">ಆಮದುಮಾಡಲಾಗಿದೆ</translation>
 <translation id="3992684624889376114">ಈ ಪುಟದ ಕುರಿತು</translation>
 <translation id="3995639283717357522">ನೀತಿಗಳನ್ನು ಅನ್ವಯಿಸಿ</translation>
 <translation id="3996683183117168945"><ph name="MAX_CITATIONS" /> ರಲ್ಲಿ <ph name="CURRENT_CITATION" /> ಉಲ್ಲೇಖ, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2396,7 +2394,6 @@
 <translation id="5002932099480077015">ಸಕ್ರಿಯವಾಗಿದ್ದರೆ, ವೇಗವಾಗಿ ಫಾರ್ಮ್ ಭರ್ತಿ ಮಾಡಲು Chrome ಈ ಸಾಧನದಲ್ಲಿ ನಿಮ್ಮ ಕಾರ್ಡ್‌ನ ಪ್ರತಿಯನ್ನು ಸಂಗ್ರಹಿಸುತ್ತದೆ.</translation>
 <translation id="5007344584818503324">ಹಂಚಿಕೊಳ್ಳಲಾದ ಟ್ಯಾಬ್ ಗುಂಪುಗಳ ಚಟುವಟಿಕೆ</translation>
 <translation id="5007392906805964215">ಪರಿಶೀಲಿಸಿ</translation>
-<translation id="5010599530303458903">ಮಾಸಿಕ ಅಥವಾ 4 ಬಡ್ಡಿ ರಹಿತ ಕಂತುಗಳಲ್ಲಿ ಪಾವತಿಸಿ (ಅರ್ಹತೆಗೆ ಒಳಪಟ್ಟಿರುತ್ತದೆ)</translation>
 <translation id="5011561501798487822">ಪತ್ತೆಯಾದ ಭಾಷೆ</translation>
 <translation id="5015510746216210676">ಯಂತ್ರದ ಹೆಸರು:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2915,7 +2912,7 @@
 <translation id="5898767305816764989">ಥಂಬ್ಸ್ ಅಪ್ ಬಟನ್, ನೀವು <ph name="THUMBS_UP_SUGGESTION_BUTTON_FOCUSED_FRIENDLY_MATCH_TEXT" /> ಅನ್ನು ಇಷ್ಟಪಡುತ್ತಿದ್ದೀರಿ ಎಂಬ ಫೀಡ್‌ಬ್ಯಾಕ್ ಅನ್ನು ಸಲ್ಲಿಸಲು Enter ಬಟನ್‌ ಅನ್ನು ಒತ್ತಿರಿ</translation>
 <translation id="5901630391730855834">ಹಳದಿ</translation>
 <translation id="5903264686717710770">ಶೀರ್ಷಿಕೆ:</translation>
-<translation id="5905671155741555195">ನಿಮ್ಮ ಕೆಲಸದ ವಿಳಾಸವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು, ಉದಾಹರಣೆಗೆ ಇನ್ನಷ್ಟು ಸೂಕ್ತವಾದ Search ಫಲಿತಾಂಶಗಳು ಮತ್ತು Google Maps ನಲ್ಲಿ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು. <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
+<translation id="5905671155741555195">ನಿಮ್ಮ ಕೆಲಸದ ವಿಳಾಸವು Google ಸೇವೆಗಳಾದ್ಯಂತ ಕೆಲಸಗಳನ್ನು ಪೂರ್ಣಗೊಳಿಸಲು ನಿಮಗೆ ಸಹಾಯ ಮಾಡಬಲ್ಲದು, ಉದಾಹರಣೆಗೆ ಇನ್ನಷ್ಟು ಸೂಕ್ತವಾದ ಹುಡುಕಾಟ ಫಲಿತಾಂಶಗಳು ಮತ್ತು Google Maps ನಲ್ಲಿ ಮಾರ್ಗ ನಿರ್ದೇಶನಗಳು. <ph name="BEGIN_LINK" />ನಿಮ್ಮ Google ಖಾತೆ <ph name="ACCOUNT" /> ನಲ್ಲಿ<ph name="END_LINK" /> ನಿಮ್ಮ ವಿಳಾಸವನ್ನು ನೀವು ಎಡಿಟ್ ಮಾಡಬಹುದು ಅಥವಾ ಅಳಿಸಬಹುದು.</translation>
 <translation id="5908541034548427511"><ph name="TYPE_1" /> (ಸಿಂಕ್‌ ಮಾಡಲಾಗಿದೆ)</translation>
 <translation id="5910140988253729859">ಆಟೋಫಿಲ್ ಅನ್ನು ರದ್ದುಗೊಳಿಸಿ</translation>
 <translation id="5911020115933784199">ಈವೆಂಟ್‌ಗಳು ಮತ್ತು ಪಟ್ಟಿಗಳು</translation>
@@ -3076,7 +3073,6 @@
 <translation id="6151417162996330722">ಸರ್ವರ್ ಪ್ರಮಾಣಪತ್ರವು ತುಂಬಾ ಉದ್ದವಾದ ವಾಯಿದೆ ಅವಧಿಯನ್ನು ಹೊಂದಿದೆ.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ಇಂಚು (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ರನ್ನಿಂಗ್ ಮತ್ತು ವಾಕಿಂಗ್</translation>
-<translation id="6157079899699705880">AI ಜೊತೆಗಿನ ಆಟೋಫಿಲ್, ಫಾರ್ಮ್‌ಗಳನ್ನು ಉತ್ತಮವಾಗಿ ಅರ್ಥಮಾಡಿಕೊಳ್ಳುತ್ತದೆ ಮತ್ತು ನಿಮಗಾಗಿ ಅವುಗಳನ್ನು ವೇಗವಾಗಿ ಆಟೋಫಿಲ್ ಮಾಡಬಲ್ಲದು</translation>
 <translation id="6157754950574419155">ಇತಿಹಾಸದಿಂದ ಎಲ್ಲವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="6157877588268064908">ಶಿಪ್ಪಿಂಗ್ ವಿಧಾನಗಳು ಹಾಗೂ ಆವಶ್ಯಕತೆಗಳನ್ನು ನೋಡಲು, ಒಂದು ವಿಳಾಸವನ್ನು ಆಯ್ಕೆ ಮಾಡಿ</translation>
 <translation id="6159554577634054750">ಕೀಟ ನಿಯಂತ್ರಣ</translation>

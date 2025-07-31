@@ -2519,7 +2519,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="2730647855013151888">Dołącz wszystkie dane osobowe</translation>
 <translation id="2730901670247399077">Podpowiedzi emotikonów</translation>
 <translation id="273093730430620027">Ta strona ma dostęp do kamery.</translation>
-<translation id="2730956943403103181">Nie zezwolono na używanie optymalizatora V8</translation>
 <translation id="2731392572903530958">Otwórz ponowni&amp;e zamknięte okno</translation>
 <translation id="2731700343119398978">Czekaj...</translation>
 <translation id="2731971182069536520">Po następnym uruchomieniu urządzenia administrator wykona jednorazową aktualizację, która usunie Twoje dane lokalne.</translation>
@@ -3118,7 +3117,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3160928651883997588">Ustawienia VPN</translation>
 <translation id="3161522574479303604">Wszystkie języki</translation>
 <translation id="3162070126914310576">Nie można teraz zarejestrować tego urządzenia, ponieważ jednostka organizacyjna osiągnęła wstępny limit rejestracji. Aby uzyskać pomoc, skontaktuj się z administratorem.</translation>
-<translation id="3162766632262775911">Zezwolono na używanie optymalizatora V8 bez ograniczeń</translation>
 <translation id="3162853326462195145">Konto szkolne</translation>
 <translation id="3162899666601560689">Witryny mogą używać plików cookie dla Twojej wygody, by na przykład zapamiętać Twoje logowanie lub zawartość koszyka</translation>
 <translation id="3163085718713826852">Wpisz hasło certyfikatu</translation>
@@ -3832,7 +3830,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3666971425390608309">Pobieranie wstrzymane: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">Urządzenia od dowolnego dostawcy</translation>
 <translation id="3670229581627177274">Włącz Bluetooth</translation>
-<translation id="3670480940339182416">Witryny mogą używać optymalizatora V8</translation>
 <translation id="3671982238795754537">Więcej informacji o kluczach dostępu</translation>
 <translation id="3672681487849735243">Wykryto błąd fabryczny</translation>
 <translation id="3673097791729989571">Logowanie pochodzi z domeny <ph name="SAML_DOMAIN" /></translation>
@@ -5737,6 +5734,7 @@ Aby pomniejszyć, naciśnij Ctrl + Alt + zmniejsz jasność.</translation>
 <translation id="5003070249435823986">Użyj gestu, aby przejść do trybu przewijania, a potem porusz głową w kierunku, w którym chcesz przewijać. Aby wyjść z trybu przewijania, użyj gestu ponownie.</translation>
 <translation id="5003993274120026347">Następne zdanie</translation>
 <translation id="5005113238422129109">Używaj mikrofonu do czatowania z Gemini. Gdy rozmawiasz z Gemini, dźwięk jest zapisywany w aktywności w aplikacjach z Gemini (jeśli ta opcja jest włączona)</translation>
+<translation id="5005311809885666699">Zapisane z Chrome</translation>
 <translation id="5005498671520578047">Skopiuj hasło</translation>
 <translation id="5006218871145547804">ADB aplikacji Crostini na Androida</translation>
 <translation id="5006778209728626987">Błyskawica</translation>
@@ -9710,6 +9708,7 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="784475655832336580">Gdy włączony jest ChromeVox, nie można podświetlić elementu za pomocą klawiatury</translation>
 <translation id="7844992432319478437">Aktualizowanie zmian</translation>
 <translation id="7846161022626028328">Wystąpił błąd. Spróbuj ponownie.</translation>
+<translation id="7846296061357476882">Usługi Google</translation>
 <translation id="7846634333498149051">Klawiatura</translation>
 <translation id="7847212883280406910">Naciśnij Ctrl + Alt + S, aby przełączyć się na <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Otwórz wszystkie (<ph name="URL_COUNT" />) w nowej grupie kart</translation>
@@ -9729,7 +9728,6 @@ Aby usunąć przypisanie, naciśnij przypisany przełącznik lub klawisz.</trans
 <translation id="7853747251428735">Więcej narzę&amp;dzi</translation>
 <translation id="7855258394151767387">Aby nacisnąć przycisk myszy, użyj klawisza „W”</translation>
 <translation id="7855678561139483478">Przenieś kartę do nowego okna</translation>
-<translation id="7856798637819639676">Bezpiecznie użyj dokumentu tożsamości z urządzenia z Androidem</translation>
 <translation id="7857004848504343806">Twój komputer ma moduł zabezpieczeń, który umożliwia zastosowanie wielu krytycznych funkcji zabezpieczeń w ChromeOS Flex. Więcej informacji znajdziesz w Centrum pomocy Chromebooka na stronie: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Sugestie tekstowe</translation>
 <translation id="7858120906780498731">Podłączone urządzenia wejściowe ChromeOS</translation>
@@ -9989,7 +9987,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8026784703228858744">Zapisuj m.in. swoje zakładki i hasła dzięki synchronizacji</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Odwiedzono 0 dni temu}=1{Odwiedzono dzień temu}few{Odwiedzono # dni temu}many{Odwiedzono # dni temu}other{Odwiedzono # dnia temu}}</translation>
 <translation id="8028060951694135607">Odzyskiwanie kluczy firmy Microsoft</translation>
-<translation id="8028138772801251745">Autouzupełnianie za pomocą AI</translation>
 <translation id="8028803902702117856">Pobieram <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Rozmiar</translation>
 <translation id="8029349782735515147">Wyświetlaj napisy podczas korzystania z Gemini Live</translation>
@@ -10087,7 +10084,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="808894953321890993">Zmień hasło</translation>
 <translation id="8090234456044969073">Odczyt listy najczęściej odwiedzanych stron</translation>
 <translation id="8090513782447872344">Zawsze możesz tu wrócić, aby sprawdzić te informacje jeszcze raz</translation>
-<translation id="8090579562279016251">Zmniejsza wydajność, ale sprawia, że mechanizm V8 jest bardziej odporny na ataki</translation>
 <translation id="8090686009202681725">Utwórz motyw za pomocą AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> nie odpowiada</translation>
 <translation id="8094536695728193970">Morela</translation>
@@ -10142,7 +10138,6 @@ Przechowuj plik klucza w bezpiecznym miejscu. Będzie on potrzebny do utworzenia
 <translation id="8125651784723647184">Udostępnianiem hasła zarządza administrator</translation>
 <translation id="8126355825906412872">Uśmiech</translation>
 <translation id="8129265306888404830">Aby używać adresu e-mail z organizacji (<ph name="EMAIL_DOMAIN" />), musisz użyć rejestracji w firmie. Jeśli używasz tego urządzenia do celów prywatnych, zaloguj się na osobiste konto Google.</translation>
-<translation id="8130476996317833777">Nie zezwalaj witrynom na korzystanie z optymalizatora V8</translation>
 <translation id="813082847718468539">Wyświetl informacje o witrynie</translation>
 <translation id="8131740175452115882">Potwierdź</translation>
 <translation id="8133297578569873332">Dostateczna – radiowa</translation>

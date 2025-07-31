@@ -162,7 +162,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="1264309058268477500">Alternatibo</translation>
 <translation id="1264974993859112054">Pampalakasan</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
-<translation id="1269045546668906972">I-on ang autofill gamit ang AI para awtomatikong mapunan ang mas maraming field</translation>
 <translation id="1269516672602708785">Gumawa ng bagong site sa Google Sites nang mabilis</translation>
 <translation id="1270328905573953738">Paglipat at Relokasyon</translation>
 <translation id="1270502636509132238">Paraan sa Pag-pick up</translation>
@@ -819,7 +818,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2354001756790975382">Iba pang mga bookmark</translation>
 <translation id="2355395290879513365">Maaaring makita ng mga umaatake ang mga larawang tinitingnan mo sa site na ito at lilinlangin ka sa pamamagitan ng pagbago sa mga ito.</translation>
 <translation id="2356070529366658676">Magtanong</translation>
-<translation id="2356926036049612643">V8 optimizer</translation>
 <translation id="2356941001189392209">Limitadong listahan ng mga URL ng mga page na binisita mo kung saan may mga event ng legacy na teknolohiya</translation>
 <translation id="2357481397660644965">Pinapamahalaan ng <ph name="DEVICE_MANAGER" /> ang iyong device at pinapamahalaan ng <ph name="ACCOUNT_MANAGER" /> ang account mo.</translation>
 <translation id="2359629602545592467">Marami</translation>
@@ -1785,13 +1783,13 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">Mga ibon</translation>
 <translation id="3985750352229496475">Pamahalaan ang Mga Address...</translation>
-<translation id="3986506998755860149">matuto pa tungkol sa pag-autofill gamit ang AI sa mga setting</translation>
 <translation id="3986557181852957825">Google Pay, logo ng Klarna</translation>
 <translation id="3986705137476756801">I-off muna sa ngayon ang Instant Caption</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Wala pang 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3990532701115075684">I-track ang iyong mga kamay</translation>
+<translation id="399179161741278232">Na-import</translation>
 <translation id="3992684624889376114">Tungkol sa page na ito</translation>
 <translation id="3995639283717357522">Ilapat ang mga patakaran</translation>
 <translation id="3996683183117168945">Citation <ph name="CURRENT_CITATION" /> sa <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5002932099480077015">Kung naka-enable, mag-iimbak ang Chrome ng kopya ng iyong card sa device na ito para sa mas mabilis na pagsagot sa form.</translation>
 <translation id="5007344584818503324">Aktibidad sa mga naka-share na grupo ng tab</translation>
 <translation id="5007392906805964215">Suriin</translation>
-<translation id="5010599530303458903">Magbayad nang buwan-buwan o sa 4 na installment na walang interes (napapailalim sa pagiging kwalipikado)</translation>
 <translation id="5011561501798487822">Na-detect na Wika</translation>
 <translation id="5015510746216210676">Pangalan ng Machine:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6151417162996330722">Masyadong mahaba ang panahon ng pagkakaroon ng bisa ng certificate ng server.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Pagtakbo at Paglalakad</translation>
-<translation id="6157079899699705880">Mas naiintindihan ng Autofill gamit ang AI ang mga form at mas mabilis nitong mao-autofill ang mga ito para sa iyo</translation>
 <translation id="6157754950574419155">Alisin ang lahat sa history</translation>
 <translation id="6157877588268064908">Para makita ang mga paraan at kinakailangan sa pagpapadala, pumili ng address</translation>
 <translation id="6159554577634054750">Pagkontrol sa Peste</translation>

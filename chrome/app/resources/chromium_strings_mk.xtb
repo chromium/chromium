@@ -184,7 +184,6 @@
 <translation id="3258596308407688501">Chromium не може да чита и да пишува во директориумот за податоци:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 е пребарувач на JavaScript и WebAssembly во Chromium што се користи за подобрување на изведбата на сајтот</translation>
 <translation id="3286538390144397061">Рестартирај веднаш</translation>
 <translation id="328888136576916638">Клучевите Google API недостасуваат. Некои функции на Chromium ќе бидат оневозможени.</translation>
 <translation id="3296368748942286671">Продолжи со извршување на заднинските апликации кога Chromium е затворен</translation>

@@ -182,7 +182,6 @@
 <translation id="3258596308407688501">O Chromium não consegue ler e escrever no respetivo diretório de dados:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">O V8 é o motor JavaScript e WebAssembly do Chromium usado para melhorar o desempenho do site</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
 <translation id="328888136576916638">As chaves da API do Google estão em falta. Algumas funcionalidades do Chromium serão desativadas.</translation>
 <translation id="3296368748942286671">Continuar a executar aplicações em segundo plano quando o Chromium está fechado</translation>
@@ -503,6 +502,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="7461356015007898716">Para obter atualizações futuras do Chromium, precisa do Windows 10 ou posterior. Este computador está a usar o Windows 7.</translation>
 <translation id="7467949745582939695">Reiniciar o Chromium?</translation>
 <translation id="7483335560992089831">Não é possível instalar a mesma versão do Chromium que está atualmente em execução. Feche o Chromium e tente novamente.</translation>
+<translation id="7517403744065880907">Vai guardar e usar palavras-passe e muito mais na sua Conta Google sempre que tiver sessão iniciada no Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">É provável que os sites funcionem conforme esperado. A sua sessão é terminada na maioria dos sites quando fecha todas as janelas do Chromium, exceto na sua Conta Google se tiver sessão iniciada no Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{O Chromium será reiniciado dentro de 1 minuto}other{O Chromium será reiniciado dentro de # minutos}}</translation>
 <translation id="7565444033145385702">Para proteger os seus dados, permita que o Chromium remova as autorizações de sites que não visitou recentemente.</translation>
@@ -628,6 +628,7 @@ O Chromium não consegue recuperar as suas definições.</translation>
 <translation id="9158494823179993217">O administrador do sistema configurou o Chromium para abrir um navegador alternativo, de modo a aceder a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reiniciar para atualizar o &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Usufrua de mais vantagens quando tem sessão iniciada no Chromium</translation>
 <translation id="924957577793602335">Personalize o Chromium</translation>
 <translation id="93478295209880648">O Chromium pode não funcionar corretamente, uma vez que já não é suportado no Windows XP ou no Windows Vista.</translation>
 <translation id="945522503751344254">Enviar feedback</translation>

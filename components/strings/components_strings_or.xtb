@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">ବିକଳ୍ପ</translation>
 <translation id="1264974993859112054">ଖେଳଗୁଡିକ</translation>
 <translation id="1268480293435976622">ଏନଭେଲପ ଚାଇନିଜ #7</translation>
-<translation id="1269045546668906972">ଅଧିକ ଫିଲ୍ଡ ସ୍ୱଚାଳିତ ଭାବରେ ପୂରଣ କରିବା ପାଇଁ AI ସହିତ ଅଟୋଫିଲ ଚାଲୁ କରନ୍ତୁ</translation>
 <translation id="1269516672602708785">Google Sitesରେ ଶୀଘ୍ର ଏକ ନୂଆ ସାଇଟ୍ ତିଆରି କରନ୍ତୁ</translation>
 <translation id="1270328905573953738">ମୁଭିଂ ଏବଂ ରିଲୋକେସନ</translation>
 <translation id="1270502636509132238">ଉଠାଇବା ପଦ୍ଧତି</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">ଅନ୍ୟ ବୁକମାର୍କସ୍</translation>
 <translation id="2355395290879513365">ଆପଣ ଏହି ସାଇଟ୍‌ରେ ଦେଖୁଥିବା ଛବିଗୁଡ଼ିକୁ ଆକ୍ରମଣକାରୀ ଦେଖିବାରେ ସକ୍ଷମ ହୋ‍ଇପାରେ ଏବଂ ସେଗୁଡ଼ିକୁ ସଂଶୋଧନ କରି ଆପଣଙ୍କ ସହିତ ଛଳନା କରିପାରେ।</translation>
 <translation id="2356070529366658676">ପଚାରନ୍ତୁ</translation>
-<translation id="2356926036049612643">V8 ଅପ୍ଟିମାଇଜର</translation>
 <translation id="2356941001189392209">ଲିଗାସି ଟେକ୍ନୋଲୋଜି ଇଭେଣ୍ଟଗୁଡ଼ିକ ହେଉଥିବା ଆପଣ ଭିଜିଟ କରୁଥିବା ପୃଷ୍ଠାଗୁଡ଼ିକର URLର ଏକ ସୀମିତ ତାଲିକା</translation>
 <translation id="2357481397660644965">ଆପଣଙ୍କର ଡିଭାଇସ୍ <ph name="DEVICE_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି ଏବଂ ଆପଣଙ୍କର ଆକାଉଣ୍ଟ <ph name="ACCOUNT_MANAGER" /> ଦ୍ୱାରା ପରିଚାଳିତ ହେଉଛି।</translation>
 <translation id="2359629602545592467">ଏକାଧିକ</translation>
@@ -1782,13 +1780,13 @@
 <translation id="3984581365661308170">ଏନଭେଲପ #11</translation>
 <translation id="398470910934384994">ପକ୍ଷୀଗୁଡ଼ିକ</translation>
 <translation id="3985750352229496475">ଠିକଣାଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ...</translation>
-<translation id="3986506998755860149">ସେଟିଂସରେ AI ମାଧ୍ୟମରେ ଅଟୋଫିଲ ବିଷୟରେ ଅଧିକ ଜାଣନ୍ତୁ</translation>
 <translation id="3986557181852957825">Google Pay, Klarna ଲୋଗୋ</translation>
 <translation id="3986705137476756801">ବର୍ତ୍ତମାନ ପାଇଁ ଲାଇଭ୍ କ୍ୟାପ୍ସନ୍ ବନ୍ଦ କରନ୍ତୁ</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MBରୁ କମ୍ ଅଛି</translation>
 <translation id="3990250421422698716">ଜଗ୍ ଅଫ୍‌ସେଟ୍</translation>
 <translation id="3990532701115075684">ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରନ୍ତୁ</translation>
+<translation id="399179161741278232">ଆମୋଦିତ ହୋଇଛି</translation>
 <translation id="3992684624889376114">ଏହି ପୃଷ୍ଠା ବିଷୟରେ</translation>
 <translation id="3995639283717357522">ନୀତିଗୁଡ଼ିକ ଲାଗୁ କରନ୍ତୁ</translation>
 <translation id="3996683183117168945"><ph name="CURRENT_CITATION" />ରୁ <ph name="MAX_CITATIONS" /> ନମ୍ବର ସାଇଟେସନ, <ph name="PRODUCT_NAME" />, <ph name="URL" />। <ph name="PAGE_TITLE" />। <ph name="PAGE_PREVIEW" />।</translation>
@@ -2396,7 +2394,6 @@
 <translation id="5002932099480077015">ଯଦି ସକ୍ଷମ ଥାଏ, ତେବେ Chrome ଦ୍ରୁତତର ଫର୍ମ ପୂରଣ ପାଇଁ ଆପଣଙ୍କ କାର୍ଡର ଏକ କପି ଏହି ଡିଭାଇସ୍‌ରେ ଷ୍ଟୋର୍ କରିବ।</translation>
 <translation id="5007344584818503324">ସେୟାର କରାଯାଇଥିବା ଟାବ ଗ୍ରୁପ କାର୍ଯ୍ୟକଳାପ</translation>
 <translation id="5007392906805964215">ସମୀକ୍ଷା କରନ୍ତୁ</translation>
-<translation id="5010599530303458903">ମାସିକ କିମ୍ବା 4 ସୁଧ-ମୁକ୍ତ ଇନଷ୍ଟଲମେଣ୍ଟରେ ପେମେଣ୍ଟ କରନ୍ତୁ (ଯୋଗ୍ୟତା ଉପରେ ନିର୍ଭର କରେ)</translation>
 <translation id="5011561501798487822">ଚିହ୍ନଟ କରାଯାଇଥିବା ଭାଷା</translation>
 <translation id="5015510746216210676">ମେସିନ୍ ନାମ:</translation>
 <translation id="5016205925109358554">ସେରିଫ୍‌</translation>
@@ -3076,7 +3073,6 @@
 <translation id="6151417162996330722">ସର୍ଭର ସାର୍ଟିଫିକେଟ୍‌ର ବୈଧତା ଅବଧି ବହୁତ ଲମ୍ବା ଅଟେ।</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ଇଞ୍ଚ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ରନିଂ ଏବଂ ୱାକିଂ</translation>
-<translation id="6157079899699705880">AI ମାଧ୍ୟମରେ ଅଟୋଫିଲ ଫର୍ମଗୁଡ଼ିକୁ ଭଲ ଭାବରେ ବୁଝି ଆପଣଙ୍କ ପାଇଁ ସେଗୁଡ଼ିକୁ ଶୀଘ୍ର ଅଟୋଫିଲ କରିପାରେ</translation>
 <translation id="6157754950574419155">ଇତିହାସରୁ ସବୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="6157877588268064908">ସିପିଂ ପଦ୍ଧତି ଏବଂ ଆବଶ୍ୟକତାଗୁଡ଼ିକ ଦେଖିବାକୁ, ଗୋଟିଏ ଠିକଣା ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6159554577634054750">ପେଷ୍ଟ କଣ୍ଟ୍ରୋଲ</translation>

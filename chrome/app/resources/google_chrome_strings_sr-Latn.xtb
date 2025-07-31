@@ -86,6 +86,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="2091012649849228750">Da biste dobijali buduća Google Chrome ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 8.</translation>
 <translation id="2094648590148273905">Chrome OS Flex uslovi</translation>
 <translation id="2094919256425865063">Želite li ipak da zatvorite Chrome?</translation>
+<translation id="2096213354152647998">Niste skoro posećivali sajt. Chrome je uklonio dozvolu <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">Chrome OS Flex je omogućen zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru sa otvorenim kodom<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linux okruženje za programiranje<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Onemogući Chrome koji radi u pozadini za aplikacije</translation>
 <translation id="2120620239521071941">Ovim ćete izbrisati <ph name="ITEMS_COUNT" /> stavke(i) sa ovog uređaja. Da biste kasnije vratili podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -463,6 +464,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="6696915334902295848">Chrome-u treba dozvola za mikrofon za ovaj sajt</translation>
 <translation id="6712881677154121168">Greška pri preuzimanju: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Ubrzajte Chrome</translation>
+<translation id="6734827584173583205">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i još <ph name="COUNT" />.</translation>
 <translation id="6735387454586646204">Chrome OS Flex sistem</translation>
 <translation id="6750954913813541382">Da bi ispravio pravopisne greške, Chrome Google-u šalje tekst koji unosite u pregledač</translation>
 <translation id="6760235774835597023">Ubrzava sajtove uz Chrome mehanizam V8, ali čini Chrome malo manje otpornim na napade. Ovo podešavanje je uključeno.</translation>
@@ -488,6 +490,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="7024536598735240744">Greška pri otpakivanju: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Instalacija je prekinuta.</translation>
 <translation id="7025800014283535195">Ovde možete da prelazite sa jednog Chrome profila na drugi</translation>
+<translation id="7051685429025310665">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Prilagodite Chrome sebi</translation>
 <translation id="7060643578009939353">Pretražite ovaj video pomoću Google objektiva</translation>
 <translation id="7071827361006050863">Chrome će uskoro izbrisati podatke pregledanja</translation>
@@ -549,6 +552,7 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="77283119132245232">Pruža usluge praćenja sistema za <ph name="BROWSER_NAME" />. Ako je ova usluga onemogućena, tragovi učinka koje napravi pregledač neće sadržati događaje u celom sistemu, poput promene konteksta i pripremljenih događaja sa nitima.</translation>
 <translation id="7736869414036750079">Organizacija zahteva da se prijavite u Chrome</translation>
 <translation id="7747138024166251722">Program za instalaciju nije mogao da napravi privremeni direktorijum. Proverite da li imate slobodnog prostora na disku, kao i dozvolu da instalirate softver.</translation>
+<translation id="7748969056734910029">Niste skoro posećivali sajt. Chrome je uklonio dozvole <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Kliknite na ime da biste otvorili Chrome i počnite da pregledate.</translation>
 <translation id="7777080907402804672">Ako slika nema koristan opis, Chrome će probati da vam ga pruži. Slike se šalju Google-u radi pravljenja opisa. To možete da isključite u podešavanjima u svakom trenutku.</translation>
 <translation id="778331955594035129">Chrome-u treba dozvola za lokaciju za ovaj sajt</translation>
@@ -633,7 +637,6 @@ Google Chrome ne može da vrati podešavanja.</translation>
 <translation id="8781673607513845160">Da biste koristili kameru, odobrite Chrome-u pristup u <ph name="BEGIN_LINK" />podešavanjima sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Greška pri instalaciji: Administrator mreže je primenio smernice za grupu koje sprečavaju instalaciju: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Organizacija može da vidi podatke pregledanja, poput obeleživača, istorije i lozinki, i da upravlja njima. Ne može da vidi podatke pregledanja na drugim Chrome profilima</translation>
-<translation id="8801657293260363985">V8 je Chrome alatka za JavaScript i WebAssembly koja se koristi za poboljšanje performansi sajta</translation>
 <translation id="8821043148920470810">Da biste dobijali buduća Google Chrome ažuriranja, treba vam Windows 10 ili novija verzija. Ovaj računar koristi Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastareo</translation>
 <translation id="8825634023950448068">Radi zaštite privatnosti automatski brišemo interesovanja starija od 4 nedelje. Kada nastavite da pregledate, interesovanje će se možda ponovo pojaviti na listi. Ako Chrome pogreši ili ne želite da vam se prikazuju određeni oglasi, možete da uklonite interesovanje.</translation>

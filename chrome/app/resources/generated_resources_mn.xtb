@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Нэрийн шинэчлэлтийг шалгах</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> нь <ph name="DESK_TITLE" />-н дэлгэцэд харьяалагдана</translation>
 <translation id="1166644470305877068">Тусгаарласан веб аппууд энэ тохиргоог автоматаар дагадаг</translation>
+<translation id="116712635768212829">Хэрэв Chrome таны аль нэг нууц үгийг өгөгдлийн зөрчлөөс олбол таныг нэвтэрсэн тохиолдолд Google Нууц үгний менежер танд зориулж нууц үгийг тань өөрчлөхийг санал болгож болно.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> дотор нээж байна ...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> сэтгэл санааны байдалтай, <ph name="STYLE" /> хэв маягтай, <ph name="SUBJECT" />-н сэдэвтэй саяхны ХОУ-ы <ph name="INDEX" />-р загвар.</translation>
 <translation id="116896278675803795">Хэлийг сонгосон контентод тааруулж автоматаар өөрчлөх</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">Тохируулга дууслаа! Дараа нь төхөөрөмжөө тоглоом тоглоход бэлэн болгоорой</translation>
 <translation id="137651782282853227">Хадгалсан хаяг энд харагдана</translation>
 <translation id="1376771218494401509">Цонхыг &amp;нэрлэх...</translation>
+<translation id="1377438103060664754">Таны аль нэг нууц үг өгөгдлийн зөрчлөөс олдсон тохиолдолд Google Нууц үгний менежер танаас үүнийг сайн нууц үг болгож өөрчлөхийг хүсэж байгаа эсэхийг асууна</translation>
 <translation id="1377600615067678409">Одоогоор алгасъя</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> энэ тохиргоог хянаж байна</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Алдагдсан нууц үг алга}=1{Алдагдсан 1 нууц үг}other{{NUM_COMPROMISED} алдагдсан нууц үг}}</translation>
@@ -2532,7 +2534,6 @@
 <translation id="2730647855013151888">Бүх хувийн мэдээллийг багтаах</translation>
 <translation id="2730901670247399077">Эможины зөвлөмжүүд</translation>
 <translation id="273093730430620027">Энэ хуудас таны камерт хандаж байна.</translation>
-<translation id="2730956943403103181">V8 оновчтой болгогчийг ашиглахыг зөвшөөрдөггүй</translation>
 <translation id="2731392572903530958">Хаагдсан цонхыг дахин нээх</translation>
 <translation id="2731700343119398978">Түр хүлээнэ үү ...</translation>
 <translation id="2731971182069536520">Та дараагийн удаа төхөөрөмжөө дахин эхлүүлэхэд таны админ таны дотоод өгөгдлийг устгах нэг удаагийн шинэчлэлт хийнэ.</translation>
@@ -3131,7 +3132,6 @@
 <translation id="3160928651883997588">VPN-н сонголт</translation>
 <translation id="3161522574479303604">Бүх хэл</translation>
 <translation id="3162070126914310576">Танай байгууллагын нэгж анх бүртгүүлэх хязгаартаа хүрсэн тул энэ төхөөрөмжийг яг одоо бүртгүүлэх боломжгүй. Тусламж авахаар администратортайгаа холбогдоно уу.</translation>
-<translation id="3162766632262775911">V8 оновчтой болгогчийг ашиглахыг үргэлж зөвшөөрсөн</translation>
 <translation id="3162853326462195145">Сургуулийн бүртгэл</translation>
 <translation id="3162899666601560689">Сайтууд нь, жишээлбэл таныг нэвтэрсэн хэвээр байлгах эсвэл таны худалдан авалтын сагсны зүйлсийг санах зэргээр таны үзэх туршлагыг сайжруулахад күүки ашиглах боломжтой</translation>
 <translation id="3163085718713826852">Сертификатын нууц үгийг оруулна уу</translation>
@@ -3847,7 +3847,6 @@
 <translation id="3666971425390608309">Татахыг түр зогсоосон: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Дурын борлуулагчийн төхөөрөмжүүд</translation>
 <translation id="3670229581627177274">Bluetooth асаах</translation>
-<translation id="3670480940339182416">Сайтууд V8 оновчтой болгогчийг ашиглах боломжтой</translation>
 <translation id="3671982238795754537">Нэвтрэх түлхүүрийн талаар нэмэлт мэдээлэл авах</translation>
 <translation id="3672681487849735243">Үйлдвэрлэлийн алдаа илэрлээ</translation>
 <translation id="3673097791729989571">Нэвтрэлтийг <ph name="SAML_DOMAIN" />-с хост хийсэн</translation>
@@ -5747,6 +5746,7 @@
 <translation id="5001526427543320409">Гуравдагч талын күүки</translation>
 <translation id="5003070249435823986">Та гүйлгэх горимд орохын тулд зангааг ашиглаж, дараа нь гүйлгэхийг хүсэж буй чиглэл рүүгээ толгойгоо хөдөлгөнө үү. Гүйлгэх горимоос гарахын тулд зангааг дахин ашиглана уу.</translation>
 <translation id="5003993274120026347">Дараагийн өгүүлбэр</translation>
+<translation id="5005311809885666699">Chrome-с хадгалсан</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5006218871145547804">Crostini-н Андройд аппын ADB</translation>
 <translation id="5006778209728626987">Гэрэлтүүлэг</translation>
@@ -9712,6 +9712,7 @@
 <translation id="784475655832336580">ChromeVox асаалттай үед гарын фокусаар зүйл тодруулах боломжгүй байна</translation>
 <translation id="7844992432319478437">Шинэчлэх ялгаа</translation>
 <translation id="7846161022626028328">Алдаа гарлаа. Дахин оролдоно уу.</translation>
+<translation id="7846296061357476882">Google-н үйлчилгээнүүд</translation>
 <translation id="7846634333498149051">Гар</translation>
 <translation id="7847212883280406910">Ctrl + Alt + S дээр даран <ph name="IDS_SHORT_PRODUCT_OS_NAME" />-д шилжих</translation>
 <translation id="7848244988854036372">Бүгдийг (<ph name="URL_COUNT" />) шинэ табын бүлэгт нээх</translation>
@@ -9731,7 +9732,6 @@
 <translation id="7853747251428735">Бусад хэрэгсэл</translation>
 <translation id="7855258394151767387">Хулганын товчийг дарахын тулд “w”-г ашиглана уу</translation>
 <translation id="7855678561139483478">Табыг шинэ цонх руу зөөх</translation>
-<translation id="7856798637819639676">Android төхөөрөмжөөсөө ID-г аюулгүй ашиглана уу</translation>
 <translation id="7857004848504343806">Таны компьютер ChromeOS Flex-д аюулгүй байдлын чухал онцлогуудыг хэрэгжүүлэхэд ашигладаг аюулгүй байдлын модуль агуулж байна. Нэмэлт мэдээлэл авах бол Chromebook-н Тусламжийн төвд зочилно уу: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Текстийн зөвлөмж</translation>
 <translation id="7858120906780498731">ChromeOS холбогдсон оролтын төхөөрөмжүүд</translation>
@@ -9988,7 +9988,6 @@
 <translation id="8026784703228858744">Хавчуурга, бусад зүйлээ синкээр хадгалаарай</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 хоногийн өмнө зочилсон}=1{1 хоногийн өмнө зочилсон}other{# хоногийн өмнө зочилсон}}</translation>
 <translation id="8028060951694135607">Microsoft-ын түлхүүр сэргээгч</translation>
-<translation id="8028138772801251745">ХОУ-аар автоматаар бөглөх</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" />-г татаж байна</translation>
 <translation id="8028993641010258682">Хэмжээ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Унших жагсаалт}=1{Унших жагсаалт ({SELECTED_ITEMS})}other{Унших жагсаалт ({SELECTED_ITEMS})}}</translation>
@@ -10085,7 +10084,6 @@
 <translation id="808894953321890993">Нууц үгийг солих</translation>
 <translation id="8090234456044969073">Хамгийн их зочилсон веб сайтуудынхаа жагсаалтыг харах</translation>
 <translation id="8090513782447872344">Та хүссэн үедээ буцан ирж дахин харах боломжтой</translation>
-<translation id="8090579562279016251">Гүйцэтгэлийг багасгах хэдий ч V8-г халдлагуудад илүү тэсвэртэй болгоно</translation>
 <translation id="8090686009202681725">ХОУ-аар загвар үүсгэх</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> хариу өгөхгүй байна</translation>
 <translation id="8094536695728193970">Гүйлс</translation>
@@ -10139,7 +10137,6 @@
 <translation id="8125651784723647184">Нууц үг хуваалцахыг танай администратор удирддаг</translation>
 <translation id="8126355825906412872">Инээмсэглэх</translation>
 <translation id="8129265306888404830">Байгууллагынхаа (<ph name="EMAIL_DOMAIN" />) имэйл хаягаа ашиглахын тулд та байгууллагын элсэлтийг ашиглах шаардлагатай. Хэрэв энэ төхөөрөмж таны хувийн хэрэглээнд зориулагдсан бол хувийн Google Бүртгэлээрээ нэвтэрнэ үү.</translation>
-<translation id="8130476996317833777">V8 оновчтой болгогчийг ашиглахыг сайтуудад бүү зөвшөөр</translation>
 <translation id="813082847718468539">Сайтын мэдээллийг үзэх</translation>
 <translation id="8131740175452115882">Батлах</translation>
 <translation id="8133297578569873332">Зөвшөөрөхүйц - FM</translation>

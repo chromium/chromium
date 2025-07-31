@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 8.</translation>
 <translation id="2094648590148273905">Condicions de ChromeOS Flex</translation>
 <translation id="2094919256425865063">Vols sortir de Chrome igualment?</translation>
+<translation id="2096213354152647998">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">ChromeOS Flex és possible gràcies a <ph name="BEGIN_LINK_CROS_OSS" />programari lliure<ph name="END_LINK_CROS_OSS" /> addicional, igual que l'<ph name="BEGIN_LINK_LINUX_OSS" />entorn de desenvolupament de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">Desactiva l'execució de Chrome en segon pla per a les aplicacions</translation>
 <translation id="2120620239521071941">Amb aquesta acció, se suprimiran <ph name="ITEMS_COUNT" /> elements d'aquest dispositiu. Per recuperar les teves dades més endavant, inicia la sessió a Chrome com a <ph name="USER_EMAIL" />.</translation>
@@ -266,6 +267,7 @@
 <translation id="4205939740494406371">Chrome no pot comprovar les teves contrasenyes. Torna-ho a provar al cap de 24 hores o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">S'està cancel·lant...</translation>
 <translation id="4224210481850767180">S'ha cancel·lat la instal·lació.</translation>
+<translation id="4230631012078055975">Obtén més avantatges tenint la sessió iniciada a Chrome</translation>
 <translation id="4242034826641750751">Chrome necessita permís d'accés a la càmera i al micròfon per a aquest lloc web</translation>
 <translation id="424864128008805179">Vols tancar la sessió de Chrome?</translation>
 <translation id="4251615635259297716">Voleu enllaçar les vostres dades de Chrome amb aquest compte?</translation>
@@ -454,6 +456,7 @@
 <translation id="6696915334902295848">Chrome necessita permís d'accés al micròfon per a aquest lloc web</translation>
 <translation id="6712881677154121168">Error de baixada: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Fes que Chrome sigui més ràpid</translation>
+<translation id="6734827584173583205">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> més.</translation>
 <translation id="6735387454586646204">Sistema ChromeOS Flex</translation>
 <translation id="6750954913813541382">Per corregir els errors d'ortografia, Chrome envia a Google el text que escrius al navegador</translation>
 <translation id="6760235774835597023">Agilitza els llocs web amb el motor V8 de Chrome, però fa que Chrome sigui una mica menys resistent als atacs. Aquesta opció de configuració està activada.</translation>
@@ -479,6 +482,7 @@
 <translation id="7024536598735240744">Error de descompressió: <ph name="UNPACK_ERROR" /></translation>
 <translation id="7025789849649390912">La instal·lació s'ha aturat.</translation>
 <translation id="7025800014283535195">Pots canviar entre perfils de Chrome aquí</translation>
+<translation id="7051685429025310665">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">Personalitza Chrome</translation>
 <translation id="7060643578009939353">Cerca aquest vídeo amb Google Lens</translation>
 <translation id="7071827361006050863">Chrome suprimirà les dades de navegació aviat</translation>
@@ -540,6 +544,7 @@
 <translation id="77283119132245232">Proporciona serveis de traçabilitat del sistema per a <ph name="BROWSER_NAME" />. Si aquest servei es desactiva, les traces de rendiment creades pel navegador no inclouran esdeveniments de tot el sistema, com ara els esdeveniments de canvi de context i de fils preparats.</translation>
 <translation id="7736869414036750079">La teva organització requereix que iniciïs la sessió a Chrome</translation>
 <translation id="7747138024166251722">L'instal·lador no ha pogut crear un directori temporal. Comprova que hi ha espai lliure al disc i que tens permís per instal·lar el programari.</translation>
+<translation id="7748969056734910029">No l'has visitat recentment. Chrome ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">Feu clic al vostre nom per obrir Chrome i començar a navegar.</translation>
 <translation id="7777080907402804672">Si una imatge no té una descripció útil, Chrome provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="778331955594035129">Chrome necessita permís d'accés a la ubicació per a aquest lloc web</translation>
@@ -585,6 +590,7 @@
 <translation id="8321888067342493336">Desa com a imatge</translation>
 <translation id="8336463659890584292">Quan un lloc web demana precarregar de manera privada enllaços de la seva pàgina, Chrome fa servir els servidors de Google. Això amaga la teva identitat del lloc web precarregat, però Google sap quins llocs web es precarreguen.</translation>
 <translation id="8342675569599923794">Chrome ha bloquejat aquest fitxer perquè és perillós.</translation>
+<translation id="8349094670477064572">Desaràs i utilitzaràs contrasenyes i altres elements del teu Compte de Google en tots els llocs en què tinguis la sessió iniciada a Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Tradueix a</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Tots els drets reservats.</translation>
 <translation id="8387459386171870978">Continua utilitzant Chrome</translation>
@@ -623,7 +629,6 @@
 <translation id="8781673607513845160">Per poder utilitzar la càmera, dona accés a Chrome des de la <ph name="BEGIN_LINK" />configuració del sistema<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Error d'instal·lació: l'administrador de la xarxa ha aplicat una norma de grup que impedeix la instal·lació (<ph name="INSTALL_ERROR" />)</translation>
 <translation id="8798550110818026746">La teva organització pot veure i gestionar les dades de navegació, com ara les adreces d'interès, l'historial i les contrasenyes. No pot veure les dades de navegació dels altres perfils de Chrome.</translation>
-<translation id="8801657293260363985">V8 és el motor JavaScript i WebAssembly de Chrome que s'utilitza per millorar el rendiment dels llocs web</translation>
 <translation id="8821043148920470810">Per obtenir actualitzacions de Google Chrome en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 7.</translation>
 <translation id="8823341990149967727">Chrome no està actualitzat</translation>
 <translation id="8825634023950448068">Amb la finalitat de protegir la teva privadesa, suprimim automàticament els interessos que tenen més de 4 setmanes. A mesura que continuïs navegant, és possible que torni a aparèixer un interès a la llista. Si Chrome s'equivoca o no vols veure determinats anuncis, pots suprimir un interès.</translation>

@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">如果此問題持續發生，你可嘗試在「<ph name="SITE_ETLD_PLUS_ONE" />」上透過其他方法繼續操作。</translation>
 <translation id="4384468725000734951">使用「搜狗」搜尋內容</translation>
 <translation id="4387647248986092471">建立汽車個人檔案鎖定</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{閒置 1 天或以上的分頁和群組}other{閒置 # 天或以上的分頁和群組}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - 下載中…</translation>
 <translation id="4404568932422911380">沒有書籤</translation>
 <translation id="4405224443901389797">移至…</translation>

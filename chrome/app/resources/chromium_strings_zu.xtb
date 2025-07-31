@@ -183,7 +183,6 @@ Ezinye izici kungenzeka zingabi khona futhi izinguquko kokuncamelayo ngeke zize 
 <translation id="3258596308407688501">I-Chromium ayikwazi ukufunda nokubhala umkhombandlela wayo wedatha:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">I-V8 iyi-JavaScript ye-Chromium futhi injini ye-WebAssembly isetshenziswe ukuthuthukisa ukusebenza kwesayithi</translation>
 <translation id="3286538390144397061">Qala kabusha manje</translation>
 <translation id="328888136576916638">Okhiye be-Google API abekho. Okunye ukusebenza kwe-Chromium kuzokhutshazwa.</translation>
 <translation id="3296368748942286671">Qhubeka usebenzise izinhlelo zokusebenza ezingemuva uma i-Chromium ivaliwe</translation>
@@ -501,6 +500,7 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="7461356015007898716">Ukuze uthole izibuyekezo zesikhathi esizayo ze-Chromium, uzodinga i-Windows 10 noma yakamuva. Le khompyutha isebenzisa i-Windows 7.</translation>
 <translation id="7467949745582939695">Qalisa kabusha i-Chromium?</translation>
 <translation id="7483335560992089831">Ayikwazi ukufaka inguqulo ye-Chromium efana nale esebenzayo okwamanje. Sicela uvale i-Chromium uphinde uzame futhi.</translation>
+<translation id="7517403744065880907">Uzolondoloza futhi usebenzise amaphasiwedi nokunye okwengeziwe kuGoogle Account yakho noma nini uma ungene ngemvume kuChromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Amasayithi cishe azosebenza njengokulindelwe. Uzophuma ngemvume kumasayithi amaningi uma uvala wonke amawindi e-Chromium, ngaphandle kwe-Google Account yakho uma ungene ngemvume ku-Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{I-Chromium izoqalisa kabusha kuminithi elingu-1}one{I-Chromium izoqalisa kabusha emaminithini angu-#}other{I-Chromium izoqalisa kabusha emaminithini angu-#}}</translation>
 <translation id="7565444033145385702">Ukuvikela idatha lakho vumela iChromium isuse izimvume emasayithini ongakawavakasheli muva nje.</translation>
@@ -625,6 +625,7 @@ I-Chromium ayikwazi ukubuyisela izilungiselelo zakho.</translation>
 <translation id="9158494823179993217">Umlawuli wesistimu yakho ulungise i-Chromium ukuthi ivule esinye isiphequluli ukufinyelela i-<ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Qalisa kabusha ukuze ubuyekeze i-&amp;Chromium</translation>
 <translation id="9190841055450128916">I-Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Thola okwengeziwe uma ungene ngemvume kuChromium</translation>
 <translation id="924957577793602335">Yenza i-Chromium Ibe ngeyakho</translation>
 <translation id="93478295209880648">I-Chromium kungenzeka ingasebenzi kahle ngoba ayisasekelwa ku-Windows XP noma ku-Windows Vista</translation>
 <translation id="945522503751344254">Thumela impendulo</translation>

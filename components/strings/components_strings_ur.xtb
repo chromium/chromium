@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">متبادل</translation>
 <translation id="1264974993859112054">کھیل</translation>
 <translation id="1268480293435976622">‏Chinese #7 لفافہ</translation>
-<translation id="1269045546668906972">‏مزید فیلڈز کو خودکار طور پر پُر کرنے کے لیے AI کے ساتھ آٹو فل آن کریں</translation>
 <translation id="1269516672602708785">‏Google Sites میں تیزی سے نئی سائٹ تخلیق کریں</translation>
 <translation id="1270328905573953738">منتقلی اور تبدیلیٔ مقام</translation>
 <translation id="1270502636509132238">پِک اپ کا طریقہ</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">دیگر بُک مارکس</translation>
 <translation id="2355395290879513365">حملہ آور ان تصاویر کو دیکھ سکتے ہیں جنہیں آپ اس سائٹ پر دیکھ رہے ہیں اور ان میں ترمیم کر کے آپ کو دھوکہ دے سکتے ہیں۔</translation>
 <translation id="2356070529366658676">پوچھیں</translation>
-<translation id="2356926036049612643">‏V8 کو بہتر بنانے والا</translation>
 <translation id="2356941001189392209">‏آپ کے ملاحظہ کردہ صفحات کے URLs کی ایک محدود کردہ فہرست جہاں ٹیکنالوجی کے پرانے ایونٹس رونما ہو رہے ہیں</translation>
 <translation id="2357481397660644965">آپ کا آلہ <ph name="DEVICE_MANAGER" /> کے زیر انتظام ہے اور آپ کا اکاؤنٹ <ph name="ACCOUNT_MANAGER" /> کے زیر انتظام ہے۔</translation>
 <translation id="2359629602545592467">متعدد</translation>
@@ -1786,13 +1784,13 @@
 <translation id="3984581365661308170">#11 لفافہ</translation>
 <translation id="398470910934384994">پرندے</translation>
 <translation id="3985750352229496475">پتے کا نظم کریں...</translation>
-<translation id="3986506998755860149">‏ترتیبات میں AI کے ساتھ آٹوفل کے بارے میں مزید جانیں</translation>
 <translation id="3986557181852957825">‏‫Google Pay, Klarna کا لوگو</translation>
 <translation id="3986705137476756801">ابھی کیلئے لائیو کیپشن آف کریں</translation>
 <translation id="3987460020348247775">‎<ph name="EXPRESSION" /> = <ph name="ANSWER" />‎</translation>
 <translation id="3987940399970879459">‏‎1 MB‎ سے کم</translation>
 <translation id="3990250421422698716">جاگ آفسیٹ</translation>
 <translation id="3990532701115075684">اپنے ہاتھوں کو ٹریک کریں</translation>
+<translation id="399179161741278232">درآمد کردہ</translation>
 <translation id="3992684624889376114">اس صفحہ کے بارے میں</translation>
 <translation id="3995639283717357522">پالیسیاں لاگو کریں</translation>
 <translation id="3996683183117168945">حوالہ <ph name="CURRENT_CITATION" /> میں سے <ph name="MAX_CITATIONS" />، <ph name="PRODUCT_NAME" />، <ph name="URL" />۔ <ph name="PAGE_TITLE" />۔ <ph name="PAGE_PREVIEW" />۔</translation>
@@ -2088,6 +2086,7 @@
 <translation id="4451135742916150903">‏سائٹ HID آلات سے منسلک ہونے کیلئے پوچھ سکتی ہے</translation>
 <translation id="4451684391620232683">صارف کو پیش کردہ ٹیکسٹ:</translation>
 <translation id="4452328064229197696">‏آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ اپنے اکاؤنٹس محفوظ کرنے کے لیے، Google پاس ورڈ مینیجر آپ کے محفوظ کردہ پاس ورڈز کو چیک کرنے کی تجویز کرتا ہے۔</translation>
+<translation id="4454620051637646665">بینر برخاست کریں</translation>
 <translation id="4456937135469235202">ایڈونچر سفر</translation>
 <translation id="4458013283022578512">ایک سوال درج کریں</translation>
 <translation id="4464826014807964867">آپ کی تنظیم کے ذریعے دی گئی معلومات والی ویب سائٹس</translation>
@@ -2399,7 +2398,6 @@
 <translation id="5002932099480077015">‏فعال ہونے پر، زیادہ تیزی سے فارم بھرنے کیلئے Chrome آپ کے کارڈ کی کاپی کو اس آلہ پر اسٹور کرے گا۔</translation>
 <translation id="5007344584818503324">اشتراک کردہ ٹیب گروپس کی سرگرمی</translation>
 <translation id="5007392906805964215">جائزہ لیں</translation>
-<translation id="5010599530303458903">ماہانہ یا بلا سود والی 4 قسطوں میں ادائیگی کریں (اہلیت کے ساتھ مشروط)</translation>
 <translation id="5011561501798487822">شناخت کردہ زبان</translation>
 <translation id="5015510746216210676">مشین کا نام:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2673,8 +2671,10 @@
 <translation id="5464236009658034488">دفتری اشیاء</translation>
 <translation id="5465724643247062031">شیشہ (اوپیک)</translation>
 <translation id="5466018172325111652">آپ کو اپنا کوڈ موصول نہیں ہوا؟ <ph name="BEGIN_LINK" />نیا کوڈ حاصل کریں<ph name="END_LINK" /></translation>
+<translation id="5466818462212249084">ادائیگیوں کی ایپس</translation>
 <translation id="5470861586879999274">ترمییم &amp;دوبارہ کریں</translation>
 <translation id="5472588168895083535">ہینڈ ٹریکنگ مسدود کر دی گئی</translation>
+<translation id="5477756102936130143">تعاون یافتہ ادائیگیوں کی ایپس پر ری ڈائریکشن کو فعال کریں</translation>
 <translation id="5479505548832623900">ہو سکتا ہے کہ ایکسٹینشن نے اسے نظر انداز کر دیا ہو۔</translation>
 <translation id="547963486735802022">اپنی فائلز کو دوبارہ منتقل کرنے کی کوشش کریں</translation>
 <translation id="5481076368049295676">یہ مواد آپ کے آلہ پر آپ کی معلومات چوری کرنے والا یا اس کو حذف کرنے والا خطرناک سافٹ ویئر انسٹال کرنے کی کوشش کر سکتا ہے۔ <ph name="BEGIN_LINK" />بہر صورت دکھائیں<ph name="END_LINK" /></translation>
@@ -2784,6 +2784,7 @@
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />۔ <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">اسٹیریو سسٹمز اور اجزاء</translation>
 <translation id="5644090287519800334">‏سائیڈ 1 تصویر X شفٹ</translation>
+<translation id="5644128326840674462">پروموشن بینر</translation>
 <translation id="5645132789250840550">پلاسٹک (سیمی گلوس)</translation>
 <translation id="5645719697465708351">پارٹی اور تعطیلات کی سپلائیز</translation>
 <translation id="5645854190134202180">دوسری شفٹ</translation>
@@ -2803,6 +2804,7 @@
 <translation id="567604591393105935">کامرس سے متعلق نیچے کی شیٹ آدھی اونچائی پر کھلی ہوئی ہے</translation>
 <translation id="5676641328629468296">‏‫Google Pay‏، Pix</translation>
 <translation id="5678007133659493065">فوئل</translation>
+<translation id="5679086391497468752">گھر کا پتہ</translation>
 <translation id="5680642791693447368">ہیجانی، جرم اور پُراسرار موویز</translation>
 <translation id="568292603005599551">‏تصویر X پوزیشن</translation>
 <translation id="5684874026226664614">افوہ۔ اس صفحہ کا ترجمہ نہیں کیا جا سکا۔</translation>
@@ -3077,7 +3079,6 @@
 <translation id="6151417162996330722">سرور سرٹیفیکیٹ کی درستگی کی مدت کافی طویل ہے۔</translation>
 <translation id="6153243098246946146">‏(<ph name="ORIENTATION" />) میں ‎<ph name="WIDTH" /> × <ph name="HEIGHT" />‎</translation>
 <translation id="615506061184576470">دوڑنا اور چہل قدمی</translation>
-<translation id="6157079899699705880">‏‫AI کے ذریعے آٹو فل کریں خصوصیت فارمز کو بہتر طور پر سمجھتی ہے اور آپ کیلئے انہیں تیزی سے آٹو فل کر سکتی ہے</translation>
 <translation id="6157754950574419155">سرگزشت سے سب کو ہٹائیں</translation>
 <translation id="6157877588268064908">ترسیل کے طریقے اور ضروریات دیکھنے کیلئے، ایک پتہ منتخب کریں</translation>
 <translation id="6159554577634054750">کیڑوں پر قابو پانا</translation>
@@ -3300,6 +3301,7 @@
 <translation id="6494750904506170417">پوپ اپس اور ری ڈائریکٹس</translation>
 <translation id="6495664197699704593">یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، <ph name="GOOGLE_PASSWORD_MANAGER" />۔</translation>
 <translation id="649611364763911650">‏‫Chrome میں ایک اور آٹو فِل سروس استعمال کرنے کے لیے، Android کی ترتیبات میں اپنا آٹو فل فراہم کنندہ منتخب کریں</translation>
+<translation id="6496888501595572660">چیک آؤٹ پر <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />بعد میں ادائیگی کریں کے اختیارات<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> دکھائیں</translation>
 <translation id="6499038740797743453">پاس ورڈ کو ری سیٹ کریں؟</translation>
 <translation id="6502510275417601303">ادائیگی کی نئی ترتیب کے بارے میں الرٹ بند ہے</translation>
 <translation id="6502991525169604759">آپ کی تبدیلیوں کے بغیر</translation>
@@ -3582,6 +3584,7 @@
 <translation id="6989763994942163495">جدید ترین ترتیبات دکھائیں…</translation>
 <translation id="6991376411634620997">‏پاس کی • Windows Hello</translation>
 <translation id="6997288673234694149">بیس بال اور سافٹ بال سے متعلق ساز و سامان</translation>
+<translation id="6998512609912910179">تیزی سے فارمز پُر کریں</translation>
 <translation id="6999480632062519056">تندرستی سے متعلق ہدایت اور ذاتی تربیت</translation>
 <translation id="7003278537452757231">نمدے اور قالینیں</translation>
 <translation id="7003322000677139268">گاڑی کے پرزے اور لوازمات</translation>
@@ -3966,6 +3969,7 @@
 <translation id="7625242817712715120">منتظم کی پالیسی اس مواد کو پرنٹ کرنے کی تجویز نہیں کرتی ہے</translation>
 <translation id="7627785503571172573">تصویر (فلم)</translation>
 <translation id="762844065391966283">ایک وقت میں ایک</translation>
+<translation id="7629058630148860366">دفتر کا پتہ</translation>
 <translation id="763042426047865637">آتش زدگی اور سیکیورٹی سروسز</translation>
 <translation id="7630470133768862132">منظوری کا اسٹیٹس:</translation>
 <translation id="7631072086707140121">‏URL کا HTTPS ہونا لازمی ہے۔</translation>
@@ -4651,6 +4655,7 @@
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، اپنی Chrome کی ترتیبات سے Chrome اپ ڈیٹ کرنے کے لیے ٹیب، پھر اینٹر دبائیں</translation>
 <translation id="8820817407110198400">بُک مارکس</translation>
 <translation id="882338992931677877">دستی سلاٹ</translation>
+<translation id="8827067923357481311">بعد میں ادائیگی کریں کے اختیارات</translation>
 <translation id="8830320733681313421">‏Hagaki پوسٹ کارڈ</translation>
 <translation id="8830565333350631528"><ph name="CLOUD_PROVIDER" /> میں فائلز ملاحظہ کریں</translation>
 <translation id="8831783793142731637"><ph name="RANGE_MINIMUM" /> سے زیادہ خریداری کے لیے دستیاب ہے</translation>

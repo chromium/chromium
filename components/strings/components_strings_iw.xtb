@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">חלופי</translation>
 <translation id="1264974993859112054">ספורט</translation>
 <translation id="1268480293435976622">מעטפה – סינית 7</translation>
-<translation id="1269045546668906972">‏הפעלת המילוי האוטומטי באמצעות AI כדי למלא שדות נוספים באופן אוטומטי</translation>
 <translation id="1269516672602708785">‏יצירה מהירה של אתר חדש ב-Google Sites</translation>
 <translation id="1270328905573953738">הובלות והעתקת מקום מגורים</translation>
 <translation id="1270502636509132238">שיטת איסוף</translation>
@@ -558,6 +557,7 @@
 <translation id="1927439846988093361">טיפוח השיער</translation>
 <translation id="1935353813610900265">‏שליחת משוב על חיפוש בהיסטוריה באמצעות AI</translation>
 <translation id="1935995810530254458">אעתיק בכל זאת</translation>
+<translation id="1938580037092872316">הוספת פרטים חדשים לכתובת השמורה</translation>
 <translation id="1939059826036755332">הפעלה אוטומטית של 'תמונה בתוך תמונה'</translation>
 <translation id="1939175642807587452">האתר יכול לבקש הרשאה לשלוח התראות</translation>
 <translation id="1940441167050915935">מחיקה של קודי האבטחה שנשמרו</translation>
@@ -819,7 +819,6 @@
 <translation id="2354001756790975382">סימניות אחרות</translation>
 <translation id="2355395290879513365">ייתכן שתוקפים יוכלו לראות את התמונות שבהן צפית באתר זה, ולאחר מכן הם ינסו להונות אותך על ידי שינוי התמונות.</translation>
 <translation id="2356070529366658676">לשאול</translation>
-<translation id="2356926036049612643">‏כלי האופטימיזציה של V8</translation>
 <translation id="2356941001189392209">‏רשימה חלקית של כתובות URL של דפים עם אירועי שימוש בטכנולוגיה מדור קודם שביקרת בהם</translation>
 <translation id="2357481397660644965">המכשיר שלך מנוהל על ידי <ph name="DEVICE_MANAGER" /> והחשבון שלך מנוהל על ידי <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">מטבעות מרובים</translation>
@@ -1785,13 +1784,13 @@
 <translation id="3984581365661308170">מעטפה 11</translation>
 <translation id="398470910934384994">ציפורים</translation>
 <translation id="3985750352229496475">לניהול הכתובות…</translation>
-<translation id="3986506998755860149">‏אפשר לקבל מידע נוסף על התכונה "מילוי אוטומטי באמצעות AI" בהגדרות</translation>
 <translation id="3986557181852957825">‏הלוגו של Google Pay ושל Klarna</translation>
 <translation id="3986705137476756801">השבתת הכתוביות המיידיות נכון לעכשיו</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">‏פחות מ-‎1 MB</translation>
 <translation id="3990250421422698716">היסט הלשונית</translation>
 <translation id="3990532701115075684">מעקב אחר תנועות הידיים</translation>
+<translation id="399179161741278232">מיובאות</translation>
 <translation id="3992684624889376114">מידע על הדף הזה</translation>
 <translation id="3995639283717357522">החלת המדיניות</translation>
 <translation id="3996683183117168945">ציטוט <ph name="CURRENT_CITATION" /> מתוך <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2403,7 +2402,6 @@ Del</translation>
 <translation id="5002932099480077015">‏אם האפשרות הזו תופעל, Chrome יאחסן עותק של הכרטיס שלך במכשיר הזה למילוי מהיר יותר של טפסים.</translation>
 <translation id="5007344584818503324">פעילות בקבוצות משותפות של כרטיסיות</translation>
 <translation id="5007392906805964215">עיון</translation>
-<translation id="5010599530303458903">תשלום חודשי או ב-4 תשלומים ללא ריבית (בכפוף לזכאות)</translation>
 <translation id="5011561501798487822">השפה שזוהתה</translation>
 <translation id="5015510746216210676">שם המחשב:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3085,7 +3083,6 @@ Del</translation>
 <translation id="6151417162996330722">תקופת התוקף של אישור השרת ארוכה מדי.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> אינץ' (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ריצה והליכה</translation>
-<translation id="6157079899699705880">‏התכונה "מילוי אוטומטי באמצעות AI" מבינה את הטפסים טוב יותר ויכולה למלא אותם באופן אוטומטי מהר יותר</translation>
 <translation id="6157754950574419155">הסרת כל הפריטים מההיסטוריה</translation>
 <translation id="6157877588268064908">עליך לבחור כתובת כדי לראות שיטות משלוח ודרישות</translation>
 <translation id="6159554577634054750">הדברת מזיקים</translation>
@@ -3551,6 +3548,7 @@ Del</translation>
 <translation id="6935082727755903526">משרות בתחום החשבונאות והפיננסים</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. בביקור הבא שלך, יכול להיות שאתרים מסוימים ייטענו לאט יותר.</translation>
 <translation id="6936976777388162184">‏זהו מכשיר שמגיע בחבילה ולא ניתן לרשום אותו לשדרוג של מכשירים לחתימה דיגיטלית ושל Kiosk.</translation>
+<translation id="6942444979237658241">תגובות - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">משחקי אסטרטגיה</translation>
 <translation id="6944692733090228304">הזנת את הסיסמה שלך באתר שלא מנוהל על ידי <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. כדי להגן על החשבון, מומלץ לא להשתמש בסיסמה שלך באפליקציות ובאתרים אחרים.</translation>
 <translation id="6946949206576443118">‏חיפוש באינטרנט בדפדפן Chrome</translation>
@@ -4009,6 +4007,7 @@ Del</translation>
 <translation id="7668654391829183341">מכשיר לא ידוע</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> מתוך <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{הפעולות שננקטו עם נתונים שסומנו כסודיים (פעולה אחת דווחה מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}one{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}two{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}other{הפעולות שננקטו עם נתונים שסומנו כסודיים (# פעולות דווחו מאז ההתחברות). <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">‏פרטים מחשבון Google <ph name="USER_EMAIL" /> יכולים לעזור לך למלא טפסים מהר יותר ב-Chrome</translation>
 <translation id="7673278391011283842">תיבת דואר 6</translation>
 <translation id="7675325315208090829">לניהול אמצעי התשלום…</translation>
 <translation id="767550629621587224">Pre-Cut Tabs</translation>
@@ -4275,6 +4274,7 @@ Del</translation>
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{נוצרה לפני חודש}one{נוצרה לפני {NUM_MONTHS} חודשים}two{נוצרה לפני חודשיים ({NUM_MONTHS})}other{נוצרה לפני {NUM_MONTHS} חודשים}}</translation>
 <translation id="8148608574971654810">‏גרסת PDF:</translation>
 <translation id="8149426793427495338">המחשב עבר למצב שינה.</translation>
+<translation id="815036624016370447">‏פרטים מחשבון Google <ph name="ACCOUNT" /> יכולים לעזור לך למלא טפסים מהר יותר ב-Chrome</translation>
 <translation id="8150722005171944719">הקובץ הנמצא ב-<ph name="URL" /> לא ניתן לקריאה. ייתכן שהקובץ הוסר או הועבר, או שהרשאות הקובץ מונעות גישה אליו.</translation>
 <translation id="8151185429379586178">כלים למפתחים</translation>
 <translation id="8153865548451212769">{0,plural, =1{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקובץ הזה אל <ph name="DESTINATION_NAME" />}one{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}two{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}other{בהתאם למדיניות האדמין, לא מומלץ להוריד את הקבצים האלה אל <ph name="DESTINATION_NAME" />}}</translation>

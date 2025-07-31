@@ -162,7 +162,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1264309058268477500">Nadomestni</translation>
 <translation id="1264974993859112054">Šport</translation>
 <translation id="1268480293435976622">Kitajska kuverta št. 7</translation>
-<translation id="1269045546668906972">Vklopite samodejno izpolnjevanje z umetno inteligenco, da boste samodejno izpolnili več polj</translation>
 <translation id="1269516672602708785">Hitro ustvarjanje novega spletnega mesta v Google Spletnih mestih</translation>
 <translation id="1270328905573953738">Selitve</translation>
 <translation id="1270502636509132238">Način prevzema</translation>
@@ -819,7 +818,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2354001756790975382">Drugi zaznamki</translation>
 <translation id="2355395290879513365">Napadalci morda vidijo slike, ki si jih ogledujete na tem spletnem mestu, in vas ukanijo, tako da jih spremenijo.</translation>
 <translation id="2356070529366658676">Vprašaj</translation>
-<translation id="2356926036049612643">Orodje za optimiziranje V8</translation>
 <translation id="2356941001189392209">Omejen seznam URL-jev strani, ki jih obiščete, na katerih prihaja do starejših tehnoloških dogodkov</translation>
 <translation id="2357481397660644965">Vašo napravo upravlja domena <ph name="DEVICE_MANAGER" /> in vaš račun upravlja domena <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Več valut</translation>
@@ -1785,13 +1783,13 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3984581365661308170">Kuverta št. 11</translation>
 <translation id="398470910934384994">Ptice</translation>
 <translation id="3985750352229496475">Upravljanje naslovov …</translation>
-<translation id="3986506998755860149">preberite več o samodejnem izpolnjevanju z umetno inteligenco v nastavitvah</translation>
 <translation id="3986557181852957825">Logotip Googla Pay in storitve Klarna</translation>
 <translation id="3986705137476756801">Izklop samodejnih podnapisov za zdaj</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Manj kot 1 MB</translation>
 <translation id="3990250421422698716">Zamik v načinu dela »jog«</translation>
 <translation id="3990532701115075684">Sledenje potezam dlani</translation>
+<translation id="399179161741278232">Uvoženo</translation>
 <translation id="3992684624889376114">O tej strani</translation>
 <translation id="3995639283717357522">Uporabi pravilnike</translation>
 <translation id="3996683183117168945">Navedek <ph name="CURRENT_CITATION" /> od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5002932099480077015">Če je to omogočeno, Chrome shrani kopijo kartice v tej napravi zaradi hitrejšega izpolnjevanja obrazcev.</translation>
 <translation id="5007344584818503324">Dejavnost v deljenih skupinah zavihkov</translation>
 <translation id="5007392906805964215">Pregled</translation>
-<translation id="5010599530303458903">Plačajte mesečno ali v štirih brezobrestnih obrokih (odvisno od primernosti)</translation>
 <translation id="5011561501798487822">Zaznan jezik</translation>
 <translation id="5015510746216210676">Ime naprave:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6151417162996330722">Potrdilo strežnika ima predolgo obdobje veljavnosti.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" />x<ph name="HEIGHT" /> palcev (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Tek in pohodništvo</translation>
-<translation id="6157079899699705880">Samodejno izpolnjevanje z umetno inteligenco bolje razume obrazce in jih lahko hitreje samodejno izpolni</translation>
 <translation id="6157754950574419155">Odstrani vse iz zgodovine</translation>
 <translation id="6157877588268064908">Če si želite ogledati načine pošiljanja in zahteve, izberite naslov</translation>
 <translation id="6159554577634054750">Zatiranje škodljivcev</translation>
@@ -3586,6 +3582,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6989763994942163495">Prikaži dodatne nastavitve ...</translation>
 <translation id="6991376411634620997">Ključ za dostop • Windows Hello</translation>
 <translation id="6997288673234694149">Oprema za bejzbol in softbol</translation>
+<translation id="6998512609912910179">Hitrejše izpolnjevanje obrazcev</translation>
 <translation id="6999480632062519056">Inštruktorji vadbe in osebni trenerji</translation>
 <translation id="7003278537452757231">Preproge</translation>
 <translation id="7003322000677139268">Nadomestni deli in dodatna oprema za vozila</translation>

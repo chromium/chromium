@@ -2525,7 +2525,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2730647855013151888">Alle persoonlijke informatie opnemen</translation>
 <translation id="2730901670247399077">Emoji-suggesties</translation>
 <translation id="273093730430620027">Deze pagina gebruikt je camera.</translation>
-<translation id="2730956943403103181">Geen toestemming om V8-optimalisatie te gebruiken</translation>
 <translation id="2731392572903530958">G&amp;esloten venster opnieuw openen</translation>
 <translation id="2731700343119398978">Even geduld...</translation>
 <translation id="2731971182069536520">De volgende keer dat je je apparaat opnieuw opstart, voert je beheerder een update uit waarmee je lokale gegevens worden verwijderd.</translation>
@@ -3124,7 +3123,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3160928651883997588">VPN-voorkeuren</translation>
 <translation id="3161522574479303604">Alle talen</translation>
 <translation id="3162070126914310576">Dit apparaat kan nu niet worden ingeschreven omdat je organisatie-eenheid de aanvankelijke inschrijvingslimiet heeft bereikt. Neem voor hulp contact op met de beheerder.</translation>
-<translation id="3162766632262775911">V8-optimalisatie mag altijd worden gebruikt</translation>
 <translation id="3162853326462195145">Schoolaccount</translation>
 <translation id="3162899666601560689">Sites mogen cookies gebruiken om de browsefunctionaliteit te verbeteren, bijvoorbeeld door je ingelogd te houden of door artikelen in je winkelwagen te onthouden</translation>
 <translation id="3163085718713826852">Voer het certificaatwachtwoord in</translation>
@@ -3838,7 +3836,6 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3666971425390608309">Download onderbroken: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Apparaten van elke leverancier</translation>
 <translation id="3670229581627177274">Bluetooth aanzetten</translation>
-<translation id="3670480940339182416">Sites kunnen V8-optimalisatie gebruiken</translation>
 <translation id="3671982238795754537">Meer informatie over toegangssleutels</translation>
 <translation id="3672681487849735243">Er is een fabrieksfout gedetecteerd</translation>
 <translation id="3673097791729989571">Inloggen gehost door <ph name="SAML_DOMAIN" /></translation>
@@ -5737,6 +5734,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5001526427543320409">Cookies van derden</translation>
 <translation id="5003070249435823986">Gebruik het gebaar om de scrollmodus te openen en beweeg dan je hoofd in de richting waarin je wilt scrollen. Gebruik het gebaar opnieuw om de scrollmodus te sluiten.</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
+<translation id="5005311809885666699">Opgeslagen vanuit Chrome</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5006218871145547804">Android-app-ADB voor Crostini</translation>
 <translation id="5006778209728626987">Bliksem</translation>
@@ -9698,6 +9696,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="784475655832336580">De markering van het item met toetsenbordfocus is niet beschikbaar als ChromeVox aanstaat</translation>
 <translation id="7844992432319478437">Diff bijwerken</translation>
 <translation id="7846161022626028328">Er is iets fout gegaan. Probeer het opnieuw.</translation>
+<translation id="7846296061357476882">Google-services</translation>
 <translation id="7846634333498149051">Toetsenbord</translation>
 <translation id="7847212883280406910">Druk op Ctrl + Alt + S om over te schakelen naar <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Alles (<ph name="URL_COUNT" />) openen in nieuwe tabbladgroep</translation>
@@ -9717,7 +9716,6 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7853747251428735">Meer hu&amp;lpprogramma's</translation>
 <translation id="7855258394151767387">Gebruik w om op een muisknop te drukken</translation>
 <translation id="7855678561139483478">Tabblad verplaatsen naar nieuw venster</translation>
-<translation id="7856798637819639676">Gebruik een ID beter beveiligd vanaf je Android-apparaat</translation>
 <translation id="7857004848504343806">Je computer bevat een beveiligde module die wordt gebruikt om veel van de belangrijke beveiligingsfuncties in Chrome OS Flex te implementeren. Ga voor meer informatie naar het Helpcentrum voor Chromebooks: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstsuggesties</translation>
 <translation id="7858120906780498731">Gekoppelde ChromeOS-invoerapparaten</translation>
@@ -9976,7 +9974,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8026784703228858744">Sla onder andere je bookmarks op met synchronisatie</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 dagen geleden bezocht}=1{1 dag geleden bezocht}other{# dagen geleden bezocht}}</translation>
 <translation id="8028060951694135607">Microsoft-sleutelherstel</translation>
-<translation id="8028138772801251745">Automatisch invullen met AI</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> downloaden, <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">Grootte</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Leeslijst}=1{Leeslijst ({SELECTED_ITEMS})}other{Leeslijst ({SELECTED_ITEMS})}}</translation>
@@ -10073,7 +10070,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="808894953321890993">Wachtwoord wijzigen</translation>
 <translation id="8090234456044969073">Lijst met je meest bezochte websites bekijken</translation>
 <translation id="8090513782447872344">Je kunt altijd terugkomen om nog een kijkje te nemen</translation>
-<translation id="8090579562279016251">Vermindert de prestaties maar maakt V8 beter bestand tegen aanvallen</translation>
 <translation id="8090686009202681725">Thema maken met AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> reageert niet</translation>
 <translation id="8094536695728193970">Abrikoos</translation>
@@ -10127,7 +10123,6 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8125651784723647184">Wachtwoord delen wordt beheerd door je beheerder</translation>
 <translation id="8126355825906412872">Lachen</translation>
 <translation id="8129265306888404830">Als je het e-mailadres van je organisatie (<ph name="EMAIL_DOMAIN" />) wilt gebruiken, moet je zakelijke inschrijving gebruiken. Als dit apparaat bedoeld is voor persoonlijk gebruik, log je in met je persoonlijke Google-account.</translation>
-<translation id="8130476996317833777">Niet toestaan dat sites V8-optimalisatie gebruiken</translation>
 <translation id="813082847718468539">Sitegegevens bekijken</translation>
 <translation id="8131740175452115882">Bevestigen</translation>
 <translation id="8133297578569873332">Acceptabel - FM</translation>

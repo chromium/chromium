@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">ກວດສອບການອັບເດດຊື່</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> ເປັນຂອງໂຕະ <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">ເວັບແອັບທີ່ແຍກໄວ້ຈະດຳເນີນການຕາມການຕັ້ງຄ່ານີ້ໂດຍອັດຕະໂນມັດ</translation>
+<translation id="116712635768212829">ຫາກ Chrome ພົບໜຶ່ງໃນລະຫັດຜ່ານຂອງທ່ານໃນການລະເມີດຂໍ້ມູນ, ຕົວຈັດການລະຫັດຜ່ານ Google ສາມາດສະເໜີໃຫ້ທ່ານປ່ຽນລະຫັດຜ່ານຂອງທ່ານຫາກທ່ານເຂົ້າສູ່ລະບົບ.</translation>
 <translation id="1168020859489941584">ກໍາລັງເປີດຢູ່ໃນ <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">ຮູບແບບສີສັນ AI ຫຼ້າສຸດທີ <ph name="INDEX" /> ຂອງ <ph name="SUBJECT" />, ໃນຮູບແບບ <ph name="STYLE" />, ດ້ວຍອາລົມ <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">ປ່ຽນພາສາໂດຍອັດຕະໂນມັດເພື່ອໃຫ້ກົງກັບເນື້ອຫາທີ່ເລືອກໄວ້</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">ການຕັ້ງຄ່າສຳເລັດແລ້ວ! ກຽມອຸປະກອນຂອງທ່ານໃຫ້ພ້ອມສຳລັບການຫຼິ້ນເກມຕໍ່ໄປ</translation>
 <translation id="137651782282853227">ທີ່ຢູ່ທີ່ບັນທຶກໄວ້ຈະປາກົດຢູ່ບ່ອນນີ້</translation>
 <translation id="1376771218494401509">ຊື່ ແລະ ໜ້າຈໍ...</translation>
+<translation id="1377438103060664754">ຫາກພົບໜຶ່ງໃນລະຫັດຜ່ານຂອງທ່ານໃນການລະເມີດຂໍ້ມູນ, ຕົວຈັດການລະຫັດຜ່ານ Google ຈະຖາມວ່າທ່ານຕ້ອງການປ່ຽນລະຫັດຜ່ານເປັນລະຫັດຜ່ານຍາກຫຼືບໍ່</translation>
 <translation id="1377600615067678409">ຂ້າມ​ໄປດຽວນີ້</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> ກຳລັງຄວບຄຸມການຕັ້ງຄ່ານີ້</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ 1 ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {NUM_COMPROMISED} ລາຍການ}}</translation>
@@ -2535,7 +2537,6 @@
 <translation id="2730647855013151888">ຮວມຂໍ້ມູນສ່ວນຕົວທັງໝົດ</translation>
 <translation id="2730901670247399077">ການແນະນຳອີໂມຈິ</translation>
 <translation id="273093730430620027">ໜ້ານີ້ກໍາລັງເຂົ້າຫາກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
-<translation id="2730956943403103181">ບໍ່ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ຕົວເພີ່ມປະສິດທິພາບ V8</translation>
 <translation id="2731392572903530958">ເປີດໜ້າ​ຕ່າງທີ່ປິດແລ້ວຄືນໃໝ່</translation>
 <translation id="2731700343119398978">ກະ​ລຸ​ນາ​ລໍ​ຖ້າ...</translation>
 <translation id="2731971182069536520">ຄັ້ງຕໍ່ໄປທີ່ທ່ານປິດເປີດອຸປະກອນຂອງທ່ານ, ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານຈະເຮັດການອັບເດດຄັ້ງດຽວທີ່ຈະລຶບຂໍ້ມູນໃນເຄື່ອງຂອງທ່ານ.</translation>
@@ -3134,7 +3135,6 @@
 <translation id="3160928651883997588">ການຕັ້ງຄ່າ VPN</translation>
 <translation id="3161522574479303604">ທຸກ​ພາ​ສາ</translation>
 <translation id="3162070126914310576">ໃນເວລານີ້ບໍ່ສາມາດລົງທະບຽນອຸປະກອນນີ້ໄດ້ເນື່ອງຈາກຫົວໜ່ວຍອົງການຈັດຕັ້ງຂອງທ່ານຮອດຂີດຈໍາກັດການລົງທະບຽນເລີ່ມຕົ້ນຂອງຕົນແລ້ວ. ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານສໍາລັບການຊ່ວຍເຫຼືອ.</translation>
-<translation id="3162766632262775911">ໄດ້ຮັບອະນຸຍາດໃຫ້ໃຊ້ຕົວເພີ່ມປະສິດທິພາບ V8 ທຸກເທື່ອ</translation>
 <translation id="3162853326462195145">ບັນຊີໂຮງຮຽນ</translation>
 <translation id="3162899666601560689">ເວັບໄຊສາມາດໃຊ້ຄຸກກີ້ເພື່ອປັບປຸງປະສົບການທ່ອງເວັບຂອງທ່ານ, ຕົວຢ່າງ: ເພື່ອໃຫ້ທ່ານສືບຕໍ່ຢູ່ໃນລະບົບ ຫຼື ຈື່ລາຍການຕ່າງໆໃນກະຕ່າຊື້ເຄື່ອງຂອງທ່ານ</translation>
 <translation id="3163085718713826852">ໃສ່ລະຫັດຜ່ານໃບຮັບຮອງ</translation>
@@ -3850,7 +3850,6 @@
 <translation id="3666971425390608309">ຢຸດດາວໂຫຼດຊົ່ວຄາວແລ້ວ: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">ອຸປະກອນຈາກຜູ້ຂາຍໃດໆກໍຕາມ</translation>
 <translation id="3670229581627177274">ເປີດໃຊ້ Bluetooth</translation>
-<translation id="3670480940339182416">ເວັບໄຊສາມາດໃຊ້ຕົວເພີ່ມປະສິດທິພາບ V8 ໄດ້</translation>
 <translation id="3671982238795754537">ສຶກສາເພີ່ມເຕີມກ່ຽວກັບກະແຈຜ່ານ</translation>
 <translation id="3672681487849735243">ກວດພົບຄວາມ​ຜິດ​ພາດ​ຂອງ​ໂຮງ​ງານແລ້ວ</translation>
 <translation id="3673097791729989571">ການເຂົ້າສູ່ລະບົບໂຮສໂດຍ <ph name="SAML_DOMAIN" /></translation>
@@ -5751,6 +5750,7 @@
 <translation id="5001526427543320409">ຄຸກກີ້ພາກສ່ວນທີສາມ</translation>
 <translation id="5003070249435823986">ໃຊ້ທ່າທາງເພື່ອເຂົ້າສູ່ໂໝດເລື່ອນ, ຈາກນັ້ນຫຍັບຫົວຂອງທ່ານໄປໃນທິດທາງທີ່ທ່ານຕ້ອງການເລື່ອນ. ໃຊ້ທ່າທາງອີກຄັ້ງເພື່ອອອກຈາກໂໝດເລື່ອນ.</translation>
 <translation id="5003993274120026347">ປະໂຫຍດຕໍ່ໄປ</translation>
+<translation id="5005311809885666699">ບັນທຶກຈາກ Chrome ແລ້ວ</translation>
 <translation id="5005498671520578047">ອັດ​ສຳ​ເນົາ​ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="5006218871145547804">ADB ຂອງແອັບ Android ໃນ Crostini</translation>
 <translation id="5006778209728626987">ສາຍຟ້າ</translation>
@@ -9714,6 +9714,7 @@
 <translation id="784475655832336580">ໄຮໄລ້ລາຍການດ້ວຍການໂຟກັສແປ້ນພິມບໍ່ສາມາດໃຊ້ໄດ້ເມື່ອ ChromeVox ເປີດຢູ່</translation>
 <translation id="7844992432319478437">ກໍາລັງອັບເດດຄວາມແຕກຕ່າງ</translation>
 <translation id="7846161022626028328">ມີຂໍ້ຜິດພາດເກີດຂຶ້ນ. ກະລຸນາລອງໃໝ່.</translation>
+<translation id="7846296061357476882">ບໍລິການ Google</translation>
 <translation id="7846634333498149051">ແປ້ນພິມ</translation>
 <translation id="7847212883280406910">ກົດ Ctrl + Alt + S ເພື່ອ​ຍ້າຍໄປຫາ <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">ເປີດທັງໝົດ (<ph name="URL_COUNT" />) ໃນກຸ່ມແຖບໃໝ່</translation>
@@ -9733,7 +9734,6 @@
 <translation id="7853747251428735">ເຄື່ອງມືເພີ່ມເຕີມ</translation>
 <translation id="7855258394151767387">ໃຊ້ປຸ່ມ “w” ເພື່ອກົດປຸ່ມເມົ້າ</translation>
 <translation id="7855678561139483478">ຍ້າຍແຖບໄປໜ້າຈໍໃໝ່</translation>
-<translation id="7856798637819639676">ໃຊ້ລະຫັດຈາກອຸປະກອນ Android ຂອງທ່ານໄດ້ຢ່າງປອດໄພ</translation>
 <translation id="7857004848504343806">ຄອມພິວເຕີຂອງທ່ານປະກອບມີໂມດູນປອດໄພເຊິ່ງຖືກໃຊ້ເພື່ອຈັດຕັ້ງປະຕິບັດຄຸນສົມບັດຄວາມປອດໄພທີ່ສໍາຄັນຫຼາຍອັນໃນ ChromeOS Flex. ກະລຸນາເຂົ້າເບິ່ງສູນຊ່ວຍເຫຼືອ Chromebook ເພື່ອສຶກສາເພີ່ມເຕີມ: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ການແນະນຳຂໍ້ຄວາມ</translation>
 <translation id="7858120906780498731">ອຸປະກອນປ້ອນຂໍ້ມູນເຂົ້າທີ່ເຊື່ອມຕໍ່ແລ້ວຂອງ ChromeOS</translation>
@@ -9991,7 +9991,6 @@
 <translation id="8026784703228858744">ບັນທຶກບຸກມາກຂອງທ່ານ ແລະ ອື່ນໆດ້ວຍການຊິ້ງ</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{ເຂົ້າເບິ່ງເມື່ອ 0 ມື້ກ່ອນ}=1{ເຂົ້າເບິ່ງເມື່ອ 1 ມື້ກ່ອນ}other{ເຂົ້າເບິ່ງເມື່ອ # ມື້ກ່ອນ}}</translation>
 <translation id="8028060951694135607">ການກູ້ຄືນລະຫັດ Microsoft</translation>
-<translation id="8028138772801251745">ຕື່ມຂໍ້ມູນອັດຕະໂນມັດດ້ວຍ AI</translation>
 <translation id="8028803902702117856">ກຳລັງດາວໂຫຼດ <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">ຂະ​ຫນາດ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{ລາຍຊື່ການອ່ານ}=1{ລາຍຊື່ການອ່ານ ({SELECTED_ITEMS})}other{ລາຍຊື່ການອ່ານ ({SELECTED_ITEMS})}}</translation>
@@ -10088,7 +10087,6 @@
 <translation id="808894953321890993">ປ່ຽນລະຫັດຜ່ານ</translation>
 <translation id="8090234456044969073">ອ່ານລາຍຊື່ເວັບໄຊທ໌ທີ່ທ່ານເຂົ້າເບິ່ງເລື້ອຍທີ່ສຸດ</translation>
 <translation id="8090513782447872344">ທ່ານສາມາດກັບມາອ່ານໃໝ່ຕອນໃດກໍໄດ້</translation>
-<translation id="8090579562279016251">ຫຼຸດປະສິດທິພາບ ແຕ່ເຮັດໃຫ້ V8 ທົນທານຕໍ່ການໂຈມຕີໄດ້ຫຼາຍຂຶ້ນ</translation>
 <translation id="8090686009202681725">ສ້າງຮູບແບບສີສັນດ້ວຍ AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ບໍ່ຕອບສະໜອງ</translation>
 <translation id="8094536695728193970">ແອັບພຣິຄັອດ</translation>
@@ -10142,7 +10140,6 @@
 <translation id="8125651784723647184">ການແບ່ງປັນລະຫັດຜ່ານຖືກຈັດການໂດຍຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ</translation>
 <translation id="8126355825906412872">ຍິ້ມ</translation>
 <translation id="8129265306888404830">ເພື່ອໃຊ້ທີ່ຢູ່ອີເມວຂອງທ່ານຈາກອົງກອນຂອງທ່ານ (<ph name="EMAIL_DOMAIN" />), ທ່ານຕ້ອງໃຊ້ການລົງທະບຽນອົງກອນ. ຫາກອຸປະກອນນີ້ມີໄວ້ສຳລັບການນຳໃຊ້ສ່ວນຕົວຂອງທ່ານ, ໃຫ້ເຂົ້າສູ່ລະບົບດ້ວຍບັນຊີ Google ສ່ວນຕົວຂອງທ່ານ.</translation>
-<translation id="8130476996317833777">ບໍ່ອະນຸຍາດໃຫ້ເວັບໄຊໃຊ້ຕົວເພີ່ມປະສິດທິພາບ V8</translation>
 <translation id="813082847718468539">ເບິ່ງຂໍ້ມູນເວັບໄຊທ໌</translation>
 <translation id="8131740175452115882">ຢືນ​ຢັນ</translation>
 <translation id="8133297578569873332">ຍອມ​ຮັບ​ໄດ້ - FM</translation>

@@ -6108,11 +6108,6 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
 
 หมายเหตุ: นโยบายนี้ไม่มีผลกับการอัปเกรด HSTS</translation>
 <translation id="5297948043665200363">อนุญาตให้ผู้ใช้อยู่ในระบบต่อไปหลังจากที่บัญชีของผู้ใช้ไม่ผ่านการตรวจสอบสิทธิ์</translation>
-<translation id="5298594338496226089">การตั้งค่านโยบายจะทำให้ต้นทางในรายการรับแอตทริบิวต์ของอุปกรณ์ (เช่น หมายเลขซีเรียล ชื่อโฮสต์) ได้โดยใช้ Device Attributes API
-
-ต้นทางต้องสอดคล้องกับเว็บแอปพลิเคชันที่บังคับติดตั้งแล้วโดยใช้นโยบาย <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> หรือ <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (ตั้งแต่เวอร์ชัน 125) หรือตั้งค่าเป็นแอปคีออสก์ โปรดดูข้อกำหนดของ Device Attributes API ที่ https://wicg.github.io/WebApiDevice/device_attributes
-
-ดูข้อมูลโดยละเอียดเกี่ยวกับรูปแบบ <ph name="URL_LABEL" /> ที่ถูกต้อง (ตั้งแต่เวอร์ชัน 127) ที่ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns <ph name="WILDCARD_VALUE" /> ไม่ใช่ค่าที่ยอมรับสำหรับนโยบายนี้</translation>
 <translation id="5298949392804966105">ไม่มีข้อจำกัดในบัญชีที่จัดการ</translation>
 <translation id="530111809849214840">ซ่อนตัวเลือกสำหรับ <ph name="GOOGLE_DRIVE_NAME" /></translation>
 <translation id="530134925949808452">เวลาของวันตามเวลาท้องถิ่นที่จะให้ต่ออายุโควต้าการใช้งาน</translation>
@@ -6778,7 +6773,7 @@ https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns
       หมายเหตุ: คั่นค่าหลายรายการด้วยเครื่องหมายจุลภาค</translation>
 <translation id="5693469654327063861">อนุญาตให้ย้ายข้อมูล</translation>
 <translation id="56936613186060503">Download Manager จะไม่มีตัวเลือกให้บันทึกไฟล์ไปยัง <ph name="GOOGLE_DRIVE_NAME" /></translation>
-<translation id="569457565603183">URL/โดเมนอนุญาตการยืนยันกุญแจรักษาความปลอดภัยโดยตรงโดยอัตโนมัติบนหน้าจอเข้าสู่ระบบ</translation>
+<translation id="569457565603183">URL/โดเมนที่อนุญาตการยืนยันตัวตนด้วยคีย์ความปลอดภัยโดยตรงโดยอัตโนมัติบนหน้าจอเข้าสู่ระบบ</translation>
 <translation id="5695209488612697377">เปิดใช้การใช้ผู้ให้บริการการค้นหาเริ่มต้นในเมนูตามบริบท
 
           หากตั้งค่านโยบายนี้เป็นปิดใช้ การค้นหารายการในเมนูตามบริบทที่ต้องใช้ผู้ให้บริการการค้นหาเริ่มต้นของคุณจะใช้งานไม่ได้

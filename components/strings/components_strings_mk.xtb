@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Наизменична</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Плик Chinese #7</translation>
-<translation id="1269045546668906972">Вклучете ја „Автоматско пополнување со AI“ за да пополнува повеќе полиња автоматски</translation>
 <translation id="1269516672602708785">Набрзина создајте нов сајт во Google Sites</translation>
 <translation id="1270328905573953738">Преселување и преместување</translation>
 <translation id="1270502636509132238">Начин на подигнување</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Други обележувачи</translation>
 <translation id="2355395290879513365">Напаѓачите можеби ќе можат да ги видат сликите што ги гледате на сајтов и да ве измамат со тоа што ќе ги модифицираат.</translation>
 <translation id="2356070529366658676">Прашај</translation>
-<translation id="2356926036049612643">Оптимизатор на V8</translation>
 <translation id="2356941001189392209">Ограничен список со URL-адреси на страниците што ги отворате на кои се случуваат настани со застарена технологија</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> управува со уредот, а <ph name="ACCOUNT_MANAGER" /> управува со сметката.</translation>
 <translation id="2359629602545592467">Повеќе</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">Плик #11</translation>
 <translation id="398470910934384994">Птици</translation>
 <translation id="3985750352229496475">Управувајте со адресите…</translation>
-<translation id="3986506998755860149">дознајте повеќе за „Автоматско пополнување со AI“ во поставките</translation>
 <translation id="3986557181852957825">Лого на Google Pay и Klarna</translation>
 <translation id="3986705137476756801">Исклучете ја „Автоматски титлови“ засега</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Помалку од 1 MB</translation>
 <translation id="3990250421422698716">Офсет превиткување</translation>
 <translation id="3990532701115075684">да ги следи вашите раце</translation>
+<translation id="399179161741278232">Увезени</translation>
 <translation id="3992684624889376114">За оваа страница</translation>
 <translation id="3995639283717357522">Примени ги правилата</translation>
 <translation id="3996683183117168945">Цитат <ph name="CURRENT_CITATION" /> од <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@
 <translation id="5002932099480077015">Ако е овозможено, Chrome ќе складира копија од картичката на уредот за побрзо пополнување формулари.</translation>
 <translation id="5007344584818503324">Активност на споделените групи картички</translation>
 <translation id="5007392906805964215">Прегледајте</translation>
-<translation id="5010599530303458903">Плаќајте месечно или на 4 рати без камата (зависи од подобност)</translation>
 <translation id="5011561501798487822">Откриен јазик</translation>
 <translation id="5015510746216210676">Име на уредот:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@
 <translation id="6151417162996330722">Сертификатот на серверот има период на важност што е премногу долг.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Трчање и одење</translation>
-<translation id="6157079899699705880">„Автоматско пополнување со AI“ подобро ги разбира формуларите и може да ги пополнува автоматски побрзо за вас</translation>
 <translation id="6157754950574419155">Отстрани ги сите од историјата</translation>
 <translation id="6157877588268064908">За да ги видите методите и условите за испорака, изберете адреса</translation>
 <translation id="6159554577634054750">Контрола на штетници</translation>

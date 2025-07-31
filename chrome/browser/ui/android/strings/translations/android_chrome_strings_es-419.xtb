@@ -715,6 +715,7 @@ Solo alguien con tu frase de contraseña puede leer los datos encriptados. Googl
 <translation id="4380055775103003110">Si el problema persiste, prueba otras formas de continuar en <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Se usa Sogou para la búsqueda</translation>
 <translation id="4387647248986092471">Crear un bloqueo de perfil en el automóvil</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Pestañas y grupos que no se usaron durante 1 día o más}other{Pestañas y grupos que no se usaron durante # días o más}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" />: descargando…</translation>
 <translation id="4404568932422911380">No hay favoritos</translation>
 <translation id="4405224443901389797">Mover a…</translation>

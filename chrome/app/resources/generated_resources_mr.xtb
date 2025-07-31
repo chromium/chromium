@@ -2537,7 +2537,6 @@
 <translation id="2730647855013151888">सर्व वैयक्तिक माहिती समाविष्ट करा</translation>
 <translation id="2730901670247399077">इमोजी सूचना</translation>
 <translation id="273093730430620027">हे पेज तुमचा कॅमेरा अ‍ॅक्सेस करत आहे.</translation>
-<translation id="2730956943403103181">V8 ऑप्टिमायझर वापरण्याची अनुमती नाही</translation>
 <translation id="2731392572903530958">बंद केलेली विंडो पु&amp;न्हा उघडा</translation>
 <translation id="2731700343119398978">कृपया प्रतीक्षा करा...</translation>
 <translation id="2731971182069536520">पुढील वेळी तुम्ही तुमचे डिव्हाइस रीस्टार्ट कराल तेव्हा तुमचा अ‍ॅडमिनिस्ट्रेटर एक वेळ अपडेट करेल जो तुमचा स्थानिक डेटा हटवेल.</translation>
@@ -3136,7 +3135,6 @@
 <translation id="3160928651883997588">VPN प्राधान्ये</translation>
 <translation id="3161522574479303604">सर्व भाषा</translation>
 <translation id="3162070126914310576">या वेळी या डिव्हाइसची नोंदणी केली जाऊ शकत नाही, कारण तुमच्या संस्थेच्या युनिटने त्याची सुरुवातीची नोंदणीची मर्यादा गाठली आहे. साहाय्यासाठी तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा.</translation>
-<translation id="3162766632262775911">V8 ऑप्टिमायझर वापरण्यासाठी नेहमी अनुमती दिली आहे</translation>
 <translation id="3162853326462195145">शाळा खाते</translation>
 <translation id="3162899666601560689">तुमच्या ब्राउझिंग अनुभवात सुधारणा करण्यासाठी, उदाहरणार्थ, तुम्हाला साइन इन केलेले ठेवण्यासाठी किंवा तुमच्या शॉपिंग कार्टमधील आयटम लक्षात ठेवण्यासाठी साइट कुकी वापरू शकतात</translation>
 <translation id="3163085718713826852">सर्टिफिकेट पासवर्ड एंटर करा</translation>
@@ -3852,7 +3850,6 @@
 <translation id="3666971425390608309">डाउनलोड थांबले: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">कोणत्याही विक्रेत्याकडील डिव्हाइस</translation>
 <translation id="3670229581627177274">ब्लूटूथ सुरू करा</translation>
-<translation id="3670480940339182416">साइट V8 ऑप्टिमायझर वापरू शकतात</translation>
 <translation id="3671982238795754537">पासकीबद्दल अधिक जाणून घ्या</translation>
 <translation id="3672681487849735243">एक फॅक्टरी एरर शोधली गेली</translation>
 <translation id="3673097791729989571">साइन इन करणे <ph name="SAML_DOMAIN" /> द्वारे होस्ट केले आहे</translation>
@@ -5751,6 +5748,7 @@
 <translation id="5001526427543320409">तृतीय पक्ष कुकी</translation>
 <translation id="5003070249435823986">स्क्रोल मोड एंटर करण्यासाठी जेश्चर वापरा, त्यानंतर तुम्हाला स्क्रोल करायचे आहे त्या दिशेला तुमचे डोके हलवा. स्क्रोल मोडमधून बाहेर पडण्यासाठी पुन्हा जेश्चर वापरा.</translation>
 <translation id="5003993274120026347">पुढील वाक्य</translation>
+<translation id="5005311809885666699">Chrome वरून सेव्ह केले</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5006218871145547804">Crostini Android अ‍ॅप ADB</translation>
 <translation id="5006778209728626987">वीज</translation>
@@ -9719,6 +9717,7 @@ I feel - विटांची इमारत</translation>
 <translation id="784475655832336580">ChromeVox सुरू असते, तेव्हा कीबोर्ड फोकस वापरून आयटम हायलाइट करणे उपलब्ध नसते</translation>
 <translation id="7844992432319478437">फरक अपडेट करत आहे</translation>
 <translation id="7846161022626028328">एरर आली. पुन्हा प्रयत्न करा.</translation>
+<translation id="7846296061357476882">Google सेवा</translation>
 <translation id="7846634333498149051">कीबोर्ड</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> वर स्विच करण्यासाठी Ctrl + Alt + S प्रेस करा</translation>
 <translation id="7848244988854036372">सर्व (<ph name="URL_COUNT" />) नवीन टॅब गटामध्ये उघडा</translation>
@@ -9738,7 +9737,6 @@ I feel - विटांची इमारत</translation>
 <translation id="7853747251428735">अधिक साध&amp;ने</translation>
 <translation id="7855258394151767387">माउस बटण प्रेस करण्यासाठी “w” वापरा</translation>
 <translation id="7855678561139483478">टॅब नवीन विंडोवर हलवा</translation>
-<translation id="7856798637819639676">तुमच्या Android डिव्हाइसवरून आयडी सुरक्षितपणे वापरा</translation>
 <translation id="7857004848504343806">तुमच्या कॉंप्युटरमध्ये सुरक्षित मॉड्युल आहे, जे ChromeOS Flex मध्ये अनेक महत्त्वाची सुरक्षा वैशिष्ट्ये लागू करण्यासाठी वापरले जाते. अधिक जाणून घेण्यासाठी Chromebook मदत केंद्र ला भेट द्या: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">मजकुराबाबत सूचना</translation>
 <translation id="7858120906780498731">ChromeOS कनेक्ट केलेली इनपुट डिव्हाइस</translation>
@@ -9997,7 +9995,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8026784703228858744">सिंक वापरून तुमचे बुकमार्क आणि आणखी बऱ्याच गोष्टी सेव्ह करा</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{० दिवसापूर्वी भेट दिली}=1{१ दिवसापूर्वी भेट दिली}other{# दिवसांपूर्वी भेट दिली}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
-<translation id="8028138772801251745">AI वापरून ऑटोफिल करा</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> डाउनलोड करत आहे</translation>
 <translation id="8028993641010258682">आकार</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{वाचन सूची}=1{वाचन सूची ({SELECTED_ITEMS})}other{वाचन सूची ({SELECTED_ITEMS})}}</translation>
@@ -10094,7 +10091,6 @@ I feel - विटांची इमारत</translation>
 <translation id="808894953321890993">पासवर्ड बदला</translation>
 <translation id="8090234456044969073">आपल्‍या सर्वाधिक वारंवार भेट दिलेल्‍या वेबसाइटची सूची वाचा</translation>
 <translation id="8090513782447872344">तुम्ही पुन्हा पाहण्यासाठी कधीही परत येऊ शकता</translation>
-<translation id="8090579562279016251">परफॉर्मन्स कमी करते, पण हल्ल्यांविरुद्ध V8 चा अवरोध वाढवते</translation>
 <translation id="8090686009202681725">AI वापरून थीम तयार करा</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> प्रतिसाद देत नाही</translation>
 <translation id="8094536695728193970">ॲप्रिकॉट</translation>
@@ -10148,7 +10144,6 @@ I feel - विटांची इमारत</translation>
 <translation id="8125651784723647184">पासवर्ड शेअरिंग तुमच्या अ‍ॅडमिनिस्ट्रेटरद्वारे व्यवस्थापित केलेले आहे</translation>
 <translation id="8126355825906412872">हसा</translation>
 <translation id="8129265306888404830">तुमच्या संस्थेचा ईमेल अ‍ॅड्रेस वापरण्यासाठी (<ph name="EMAIL_DOMAIN" />), तुम्ही एंटरप्राइझ नोंदणी करणे आवश्यक आहे. हे डिव्हाइस तुमच्या वैयक्तिक वापरासाठी असल्यास, तुमचे वैयक्तिक Google खाते वापरून साइन इन करा.</translation>
-<translation id="8130476996317833777">साइटना V8 ऑप्टिमायझर वापरण्याची अनुमती देऊ नका</translation>
 <translation id="813082847718468539">साइटची माहिती पहा</translation>
 <translation id="8131740175452115882">पुष्टी करा</translation>
 <translation id="8133297578569873332">स्वीकारण्यायोग्य - एफएम</translation>

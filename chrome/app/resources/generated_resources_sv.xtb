@@ -2538,7 +2538,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="2730647855013151888">Inkludera alla personliga uppgifter</translation>
 <translation id="2730901670247399077">Emoji-förslag</translation>
 <translation id="273093730430620027">Den här sidan använder din kamera.</translation>
-<translation id="2730956943403103181">Tillåts inte att använda V8-optimeraren</translation>
 <translation id="2731392572903530958">Ö&amp;ppna ett stängt fönster igen</translation>
 <translation id="2731700343119398978">Vänta ...</translation>
 <translation id="2731971182069536520">Administratören gör en engångsuppdatering som raderar din lokala data nästa gång du startar om enheten.</translation>
@@ -3137,7 +3136,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3160928651883997588">VPN-inställningar</translation>
 <translation id="3161522574479303604">Alla språk</translation>
 <translation id="3162070126914310576">Det går inte att registrera enheten just nu eftersom organisationsenheten har nått sin ursprungliga registreringsgräns. Kontakta administratören och be om hjälp.</translation>
-<translation id="3162766632262775911">Tillåts alltid att använda V8-optimeraren</translation>
 <translation id="3162853326462195145">Skolkonto</translation>
 <translation id="3162899666601560689">Webbplatser får förbättra surfupplevelsen med hjälp av cookies, till exempel genom att låta dig förbli inloggad eller spara vad du har lagt till i kundvagnen</translation>
 <translation id="3163085718713826852">Ange lösenordet för certifikatet</translation>
@@ -3853,7 +3851,6 @@ Du kan hantera inställningarna för det här kontot genom att installera Family
 <translation id="3666971425390608309">Nedladdningen har pausats: <ph name="FILE_NAME" /></translation>
 <translation id="3670113805793654926">Enheter från alla leverantörer</translation>
 <translation id="3670229581627177274">Aktivera Bluetooth</translation>
-<translation id="3670480940339182416">Webbplatser kan använda V8-optimeraren</translation>
 <translation id="3671982238795754537">Läs mer om nycklar</translation>
 <translation id="3672681487849735243">Ett fabriksfel har upptäckts</translation>
 <translation id="3673097791729989571">Inloggningen tillhandahålls av <ph name="SAML_DOMAIN" /></translation>
@@ -5754,6 +5751,7 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5003070249435823986">Använd rörelsen för att aktivera scrollningsläget och rör sedan huvudet i den riktning du vill scrolla. Använd rörelsen igen för att avsluta scrollningsläget.</translation>
 <translation id="5003993274120026347">Nästa mening</translation>
+<translation id="5005311809885666699">Sparat från Chrome</translation>
 <translation id="5005498671520578047">Kopiera lösenord</translation>
 <translation id="5006218871145547804">ADB för Android-appar i Crostini</translation>
 <translation id="5006778209728626987">Blixtar</translation>
@@ -9721,6 +9719,7 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="784475655832336580">Markering av objekt med tangentbordsfokus inte är tillgängligt när ChromeVox är aktiverat</translation>
 <translation id="7844992432319478437">Uppdaterar skillnaden</translation>
 <translation id="7846161022626028328">Något gick fel. Försök igen.</translation>
+<translation id="7846296061357476882">Googles tjänster</translation>
 <translation id="7846634333498149051">Tangentbord</translation>
 <translation id="7847212883280406910">Tryck på Ctrl+Alt+ S om du vill byta till <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Öppna alla (<ph name="URL_COUNT" />) i en ny flikgrupp</translation>
@@ -9740,7 +9739,6 @@ Tryck på en brytare eller tangent som redan tilldelats en åtgärd om du vill t
 <translation id="7853747251428735">Fler verk&amp;tyg</translation>
 <translation id="7855258394151767387">Använd w för att trycka på en musknapp</translation>
 <translation id="7855678561139483478">Flytta fliken till ett nytt fönster</translation>
-<translation id="7856798637819639676">Använd ett id-kort på ett säkert sätt från en Android-enhet</translation>
 <translation id="7857004848504343806">Datorn innehåller en säker modul som används för att implementera flera viktiga säkerhetsfunktioner i ChromeOS Flex. Besök hjälpcentret för Chromebook om du vill läsa mer: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Textförslag</translation>
 <translation id="7858120906780498731">Anslutna indataenheter för ChromeOS</translation>
@@ -9999,7 +9997,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8026784703228858744">Spara dina bokmärken och annat med synkronisering</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Besöktes för 0 dagar sedan}=1{Besöktes för 1 dag sedan}other{Besöktes för # dagar sedan}}</translation>
 <translation id="8028060951694135607">Microsofts nyckelåterställning</translation>
-<translation id="8028138772801251745">Autofyll med AI</translation>
 <translation id="8028803902702117856">Laddar ned <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Storlek</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Läslista}=1{Läslista ({SELECTED_ITEMS})}other{Läslista ({SELECTED_ITEMS})}}</translation>
@@ -10096,7 +10093,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="808894953321890993">Ändra lösenord</translation>
 <translation id="8090234456044969073">Läsa en lista över de webbplatser du besöker oftast</translation>
 <translation id="8090513782447872344">Du kan när som helst komma tillbaka och ta en ny titt</translation>
-<translation id="8090579562279016251">Minskar prestandan men gör V8 mer motståndskraftig mot attacker</translation>
 <translation id="8090686009202681725">Skapa tema med AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> svarar inte</translation>
 <translation id="8094536695728193970">Aprikos</translation>
@@ -10150,7 +10146,6 @@ Spara nyckelfilen på ett säkert ställe. Den behövs om du ska skapa nya versi
 <translation id="8125651784723647184">Lösenordsdelning hanteras av administratören</translation>
 <translation id="8126355825906412872">Le</translation>
 <translation id="8129265306888404830">Om du vill använda din e-postadress från organisationen (<ph name="EMAIL_DOMAIN" />) måste du använda företagsregistrering. Om enheten är avsedd för personligt bruk loggar du in med ditt personliga Google-konto.</translation>
-<translation id="8130476996317833777">Tillåt inte att webbplatser använder V8-optimeraren</translation>
 <translation id="813082847718468539">Visa information om webbplatsen</translation>
 <translation id="8131740175452115882">Bekräfta</translation>
 <translation id="8133297578569873332">Acceptabel – FM</translation>

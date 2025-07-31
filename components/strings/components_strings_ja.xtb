@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">代替</translation>
 <translation id="1264974993859112054">スポーツ</translation>
 <translation id="1268480293435976622">中国 #7 封筒</translation>
-<translation id="1269045546668906972">AI による自動入力をオンにすると、より多くの項目を自動的に入力できます</translation>
 <translation id="1269516672602708785">Google サイトで新しいサイトをすばやく作成します</translation>
 <translation id="1270328905573953738">引越し、移転</translation>
 <translation id="1270502636509132238">受け取り方法</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">その他のブックマーク</translation>
 <translation id="2355395290879513365">このサイトで目にする画像は、悪意のあるユーザーによって差し替えられたものである可能性があります。</translation>
 <translation id="2356070529366658676">確認する</translation>
-<translation id="2356926036049612643">V8 オプティマイザー</translation>
 <translation id="2356941001189392209">アクセスしたページのうち、以前のテクノロジー イベントが発生しているページの URL リストのみ</translation>
 <translation id="2357481397660644965">ご使用のデバイスは <ph name="DEVICE_MANAGER" /> で管理され、アカウントは <ph name="ACCOUNT_MANAGER" /> で管理されています。</translation>
 <translation id="2359629602545592467">複数</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">#11 封筒</translation>
 <translation id="398470910934384994">鳥</translation>
 <translation id="3985750352229496475">住所を管理...</translation>
-<translation id="3986506998755860149">設定で AI による自動入力の詳細をご確認ください</translation>
 <translation id="3986557181852957825">Google Pay、Klarna のロゴ</translation>
 <translation id="3986705137476756801">今回のみ自動字幕起こしをオフにする</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB 未満</translation>
 <translation id="3990250421422698716">ジョグ オフセット</translation>
 <translation id="3990532701115075684">ハンド トラッキング</translation>
+<translation id="399179161741278232">インポートしたブックマーク</translation>
 <translation id="3992684624889376114">このページについて</translation>
 <translation id="3995639283717357522">ポリシーを適用</translation>
 <translation id="3996683183117168945">引用 <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />、<ph name="PRODUCT_NAME" />、<ph name="URL" />。<ph name="PAGE_TITLE" />。<ph name="PAGE_PREVIEW" />。</translation>
@@ -2399,7 +2397,6 @@
 <translation id="5002932099480077015">有効にすると、Chrome ではこのデバイスにカードのコピーが保存されます。これにより、フォームにすばやく入力できるようになります。</translation>
 <translation id="5007344584818503324">共有タブグループのアクティビティ</translation>
 <translation id="5007392906805964215">内容を確認</translation>
-<translation id="5010599530303458903">毎月または 4 回の無利子分割払いで支払いを行います（利用条件があります）</translation>
 <translation id="5011561501798487822">検出された言語</translation>
 <translation id="5015510746216210676">マシン名:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@
 <translation id="6151417162996330722">サーバー証明書の有効期限が長すぎます。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" />（<ph name="ORIENTATION" />）</translation>
 <translation id="615506061184576470">ランニング、ウォーキング</translation>
-<translation id="6157079899699705880">AI による自動入力機能でフォームの内容を正確に把握して、すばやく自動入力できます</translation>
 <translation id="6157754950574419155">履歴からすべて削除</translation>
 <translation id="6157877588268064908">配送方法と要件を確認するには、住所を選択してください</translation>
 <translation id="6159554577634054750">害虫駆除</translation>

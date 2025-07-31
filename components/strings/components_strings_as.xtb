@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">বিকল্প</translation>
 <translation id="1264974993859112054">খেলা-ধূলা</translation>
 <translation id="1268480293435976622">এনভেল’প চীনা #৭</translation>
-<translation id="1269045546668906972">অধিক ক্ষেত্ৰ পূৰ কৰিবলৈ AIৰ জৰিয়তে স্বয়ংক্রিয়ভাৱে পূৰ হোৱাৰ সুবিধাটো অন কৰক</translation>
 <translation id="1269516672602708785">Google Sitesত ক্ষিপ্ৰভাৱে এটা নতুন ছাইট সৃষ্টি কৰক</translation>
 <translation id="1270328905573953738">বস্তু অনা-নিয়া আৰু থকা ঠাই সলাওঁতে বস্তু স্থানান্তৰণ কৰা সেৱা</translation>
 <translation id="1270502636509132238">পিকআপৰ পদ্ধতি</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">অন্য বুকমাৰ্কসমূহ</translation>
 <translation id="2355395290879513365">আক্ৰমণকাৰীয়ে আপুনি এই ছাইটটোত চাই থকা প্ৰতিচ্ছবিসমূহ চাব পাৰিব পাৰে আৰু সেইসমূহ সলনি কৰি আপোনাক জালত পেলাব পাৰে।</translation>
 <translation id="2356070529366658676">সোধক</translation>
-<translation id="2356926036049612643">V8 অপ্টিমাইজাৰ</translation>
 <translation id="2356941001189392209">লিগেচী প্ৰযুক্তিৰ লগত জড়িত ঘটনাসমূহ সংঘটিত হোৱা আপুনি চোৱা পৃষ্ঠাসমূহৰ URLসমূহৰ এখন সীমিত সূচী</translation>
 <translation id="2357481397660644965">আপোনাৰ ডিভাইচটো <ph name="DEVICE_MANAGER" />এ আৰু আপোনাৰ একাউণ্টটো <ph name="ACCOUNT_MANAGER" />এ পৰিচালনা কৰে।</translation>
 <translation id="2359629602545592467">একাধিক</translation>
@@ -1528,6 +1526,7 @@
 <translation id="3570079787344939099">স্ক্ৰ’ল কৰা আৰু জুম কৰা</translation>
 <translation id="357244642999988503">স্তম্ভ আঁতৰাওক</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">ঠিকনাত নতুন তথ্য যোগ দিয়ক</translation>
 <translation id="3575121482199441727">এই ছাইটটোৰ বাবে অনুমতি দিয়ক</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">পথৰ নামৰ বিকল্প বাছনি কৰা হৈছে</translation>
@@ -1782,13 +1781,13 @@
 <translation id="3984581365661308170">এনভেল’প #১১</translation>
 <translation id="398470910934384994">চৰাই</translation>
 <translation id="3985750352229496475">ঠিকনাসমূহ পৰিচালনা কৰক...</translation>
-<translation id="3986506998755860149">ছেটিঙত AIৰ জৰিয়তে স্বয়ংক্ৰিয়ভাৱে পূৰ হোৱাৰ সুবিধাৰ বিষয়ে অধিক জানক</translation>
 <translation id="3986557181852957825">Google Pay, Klarnaৰ ল'গ‘</translation>
 <translation id="3986705137476756801">এতিয়াৰ বাবে লাইভ কেপশ্বন অফ কৰক</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">১ এম. বি.তকৈ কম</translation>
 <translation id="3990250421422698716">লাহেকৈ অফছেটক হেঁচক</translation>
 <translation id="3990532701115075684">আপোনাৰ হাত ট্ৰেক কৰক</translation>
+<translation id="399179161741278232">আমদানি কৰা</translation>
 <translation id="3992684624889376114">এই পৃষ্ঠাখনৰ বিষয়ে</translation>
 <translation id="3995639283717357522">নীতি প্ৰয়োগ কৰক</translation>
 <translation id="3996683183117168945"><ph name="MAX_CITATIONS" /> টাৰ <ph name="CURRENT_CITATION" /> টা উদ্ধৃতি, <ph name="PRODUCT_NAME" />, <ph name="URL" />। <ph name="PAGE_TITLE" />। <ph name="PAGE_PREVIEW" />।</translation>
@@ -2395,7 +2394,6 @@
 <translation id="5002932099480077015">যদি এইটো সক্ষম কৰা হয়, তেন্তে Chromeএ ফর্মৰ ক্ষিপ্ৰতাৰে পুৰাবলৈ আপোনাৰ কার্ডৰ এটা প্ৰতিলিপি এই ডিভাইচত ষ্ট’ৰ কৰিব।</translation>
 <translation id="5007344584818503324">শ্বেয়াৰ কৰা টেবৰ গোটৰ কাৰ্যকলাপ</translation>
 <translation id="5007392906805964215">পৰ্যালোচনা কৰক</translation>
-<translation id="5010599530303458903">মাহেকীয়া হিচাপত অথব কৈ ৪ টা সুতবিহীন কিস্তিত পৰিশোধ কৰক (যোগ্যতাৰ ভিত্তিত)</translation>
 <translation id="5011561501798487822">চিনাক্ত কৰা ভাষা</translation>
 <translation id="5015510746216210676">মেছিনৰ নাম:</translation>
 <translation id="5016205925109358554">ছেৰিফ</translation>
@@ -3075,7 +3073,6 @@
 <translation id="6151417162996330722">ছার্ভাৰ প্ৰমাণপত্ৰৰ ম্যাদ উকলাৰ সময় অতি বেছি দীঘলীয়া।</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ইঞ্চি (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">দৌৰা আৰু খোজকঢ়া</translation>
-<translation id="6157079899699705880">AIৰ জৰিয়তে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰাৰ সুবিধাটোৱে ফৰ্মসমূহ ভালদৰে বুজি পায় আৰু আপোনাৰ বাবে সেয়া দ্ৰুততাৰে স্বয়ংক্ৰিয়ভাৱে পূৰ কৰিব পাৰে</translation>
 <translation id="6157754950574419155">ইতিহাসৰ পৰা আটাইবোৰ আঁতৰাওক</translation>
 <translation id="6157877588268064908">শ্বিপিঙৰ পদ্ধতি আৰু আৱশ্যকতাসমূহ চাবলৈ এটা ঠিকনা বাছনি কৰক</translation>
 <translation id="6159554577634054750">কীট-পতংগ নিয়ন্ত্ৰণ</translation>
@@ -3581,6 +3578,7 @@
 <translation id="6989763994942163495">উন্নত ছেটিংসমূহ দেখুৱাওক...</translation>
 <translation id="6991376411634620997">পাছকী • Windows Hello</translation>
 <translation id="6997288673234694149">বে’ছবল আৰু ছফ্টবলৰ সা-সৰঞ্জাম</translation>
+<translation id="6998512609912910179">ফৰ্ম ক্ষিপ্ৰতাৰে পূৰ কৰক</translation>
 <translation id="6999480632062519056">ফিটনেছ নিৰ্দেশনা আৰু ব্যক্তিগত প্ৰশিক্ষণ</translation>
 <translation id="7003278537452757231">ৰাগ আৰু কাৰ্পেট</translation>
 <translation id="7003322000677139268">বাহনৰ অংশ আৰু আনুষংগিক সামগ্ৰী</translation>
@@ -4129,6 +4127,7 @@
 <translation id="7908648876066812348">ভাৰ্ছুৱেল কাৰ্ড অন কৰা হৈছে</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ছেটিঙত Chromeৰ সুৰক্ষা পৰীক্ষা পৃষ্ঠালৈ যাবলৈ প্ৰথমে টেব তাৰ পাছত এণ্টাৰ টিপক</translation>
 <translation id="791107458486222637">ফলাফল পুনৰ নিৰ্ধাৰণ কৰি থকা হৈছে</translation>
+<translation id="7912924955815015552">Safariৰ পৰা আমদানি কৰা হৈছে</translation>
 <translation id="791551905239004656">অংকন আৰু ৰং কৰা</translation>
 <translation id="7916162853251942238">ফ্লেক্স’ বে’ছ</translation>
 <translation id="791698251820376781">আপোনাৰ প্ৰতিষ্ঠানে আপোনাক ছাইন ইন কৰাৰ অনুমতি নিদিয়ে</translation>

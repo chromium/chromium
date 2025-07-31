@@ -162,7 +162,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="1264309058268477500">Alternar</translation>
 <translation id="1264974993859112054">Deportes</translation>
 <translation id="1268480293435976622">Sobre chinés n.º 7</translation>
-<translation id="1269045546668906972">Activa a función de autocompletar coa IA para encher automaticamente máis campos</translation>
 <translation id="1269516672602708785">Crear rapidamente un sitio novo en Google Sites</translation>
 <translation id="1270328905573953738">Mudanzas e traslados</translation>
 <translation id="1270502636509132238">Método de recollida</translation>
@@ -819,7 +818,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="2354001756790975382">Outros marcadores</translation>
 <translation id="2355395290879513365">É posible que os atacantes poidan ver as imaxes que estás observando neste sitio e enganarte modificándoas.</translation>
 <translation id="2356070529366658676">Preguntar</translation>
-<translation id="2356926036049612643">Optimizador de V8</translation>
 <translation id="2356941001189392209">Unha lista limitada dos URL das páxinas que visites nas que se produzan eventos de tecnoloxía antiga</translation>
 <translation id="2357481397660644965"><ph name="DEVICE_MANAGER" /> xestiona o teu dispositivo e <ph name="ACCOUNT_MANAGER" /> xestiona a túa conta.</translation>
 <translation id="2359629602545592467">Varias divisas</translation>
@@ -1785,13 +1783,13 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="3984581365661308170">Sobre n.º 11</translation>
 <translation id="398470910934384994">Aves</translation>
 <translation id="3985750352229496475">Xestiona os enderezos…</translation>
-<translation id="3986506998755860149">consulta máis información sobre a opción de autocompletar coa IA na configuración</translation>
 <translation id="3986557181852957825">Logotipos de Google Pay e Klarna</translation>
 <translation id="3986705137476756801">Desactivar polo momento a función Subtítulos instantáneos</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Compensación mediante empurro</translation>
 <translation id="3990532701115075684">Facer un seguimento das mans</translation>
+<translation id="399179161741278232">Importados</translation>
 <translation id="3992684624889376114">Acerca desta páxina</translation>
 <translation id="3995639283717357522">Aplicar políticas</translation>
 <translation id="3996683183117168945">Cita <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5002932099480077015">Se a opción está activada, Chrome almacenará unha copia da túa tarxeta neste dispositivo para completar o formulario máis rápido.</translation>
 <translation id="5007344584818503324">Actividade dos grupos de pestanas compartidos</translation>
 <translation id="5007392906805964215">Revisar</translation>
-<translation id="5010599530303458903">Paga mensualmente ou en 4 cotas sen intereses (opción suxeita ao cumprimento dos requisitos)</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nome do equipo:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6151417162996330722">O certificado do servidor ten un período de validez demasiado longo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> polg. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Correr e camiñar</translation>
-<translation id="6157079899699705880">A opción de autocompletar coa IA entenderá mellor o contido dos formularios e poderá enchelos automaticamente máis rápido</translation>
 <translation id="6157754950574419155">Quitar todos os elementos do historial</translation>
 <translation id="6157877588268064908">Para consultar os requisitos e métodos de envío, selecciona un enderezo</translation>
 <translation id="6159554577634054750">Control de pragas</translation>

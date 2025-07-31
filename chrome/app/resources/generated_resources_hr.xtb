@@ -1574,7 +1574,7 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2082187087049518845">Dodaj karticu u grupu</translation>
 <translation id="2082510809738716738">Odaberite boju teme</translation>
 <translation id="208586643495776849">Pokušajte ponovo</translation>
-<translation id="208634871997892083">Uvijek uključena VPN mreža</translation>
+<translation id="208634871997892083">Uvijek uključeni VPN</translation>
 <translation id="208654914566977272">Predložene radnje prilikom pretraživanja zaslona</translation>
 <translation id="2087822576218954668">Ispis: <ph name="PRINT_NAME" /></translation>
 <translation id="2088092308059522196">Prijava je podržana samo nakon što instalirate <ph name="DEVICE_OS" />.</translation>
@@ -2528,7 +2528,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="2730647855013151888">Uključite sve osobne podatke</translation>
 <translation id="2730901670247399077">Prijedlozi emojija</translation>
 <translation id="273093730430620027">Ova stranica pristupa vašoj kameri.</translation>
-<translation id="2730956943403103181">Nije dopuštena upotreba alata za optimizaciju V8</translation>
 <translation id="2731392572903530958">P&amp;onovo otvori zatvoreni prozor</translation>
 <translation id="2731700343119398978">Pričekajte...</translation>
 <translation id="2731971182069536520">Prilikom sljedećeg ponovnog pokretanja uređaja vaš će administrator izvršiti jednokratno ažuriranje kojim će se izbrisati vaši lokalni podaci.</translation>
@@ -3127,7 +3126,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3160928651883997588">Preferencije za VPN</translation>
 <translation id="3161522574479303604">Svi jezici</translation>
 <translation id="3162070126914310576">Ovaj uređaj ne može se prijaviti odmah jer je vaša organizacijska jedinica dosegla početno ograničenje prijave. Za pomoć kontaktirajte svojeg administratora.</translation>
-<translation id="3162766632262775911">Uvijek je dopuštena upotreba alata za optimizaciju V8</translation>
 <translation id="3162853326462195145">Školski račun</translation>
 <translation id="3162899666601560689">Web-lokacije mogu upotrebljavati kolačiće za poboljšanje vašeg doživljaja pregledavanja, primjerice da biste ostali prijavljeni ili da bi stavke u vašoj košarici ostale zapamćene</translation>
 <translation id="3163085718713826852">Unesite zaporku za certifikat</translation>
@@ -3842,7 +3840,6 @@ Postavkama računa možete upravljati tako da instalirate aplikaciju Family Link
 <translation id="3666971425390608309">Pauzirano je preuzimanje datoteke <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Uređaji bilo kojeg dobavljača</translation>
 <translation id="3670229581627177274">Uključite Bluetooth</translation>
-<translation id="3670480940339182416">Web-lokacije mogu upotrebljavati alat za optimizaciju V8</translation>
 <translation id="3671982238795754537">Saznajte više o pristupnim ključevima</translation>
 <translation id="3672681487849735243">Otkrivena je tvornička pogreška</translation>
 <translation id="3673097791729989571">Prijavu hosta <ph name="SAML_DOMAIN" /></translation>
@@ -5742,6 +5739,7 @@ Upotrijebite Ctrl + Alt + Smanjivanje svjetline za smanjivanje prikaza.</transla
 <translation id="5001526427543320409">Kolačići trećih strana</translation>
 <translation id="5003070249435823986">Upotrijebite pokret da biste ušli u način pomicanja, a zatim pomičite glavu u smjeru u kojem se želite pomicati. Ponovo upotrijebite pokret da biste izašli iz načina pomicanja.</translation>
 <translation id="5003993274120026347">Sljedeća rečenica</translation>
+<translation id="5005311809885666699">Spremljeno s Chromea</translation>
 <translation id="5005498671520578047">Kopiranje zaporke</translation>
 <translation id="5006218871145547804">Crostinijev ADB za Android aplikacije</translation>
 <translation id="5006778209728626987">Munja</translation>
@@ -9709,6 +9707,7 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="784475655832336580">Kada je uključen ChromeVox, opcija Istakni stavku pomoću fokusa na tipkovnici nije dostupna</translation>
 <translation id="7844992432319478437">Ažuriranje razlika</translation>
 <translation id="7846161022626028328">Došlo je do pogreške. Pokušajte ponovo.</translation>
+<translation id="7846296061357476882">Googleove usluge</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7847212883280406910">Pritisnite Ctrl + Alt + S za prelazak na <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Otvori sve (<ph name="URL_COUNT" />) u novoj grupi kartica</translation>
@@ -9728,7 +9727,6 @@ Pritisnite dodijeljeni prekidač ili tipku da biste uklonili dodjelu.</translati
 <translation id="7853747251428735">Više a&amp;lata</translation>
 <translation id="7855258394151767387">Pomoću tipke w pritisnite tipku miša</translation>
 <translation id="7855678561139483478">Pomaknite karticu u novi prozor</translation>
-<translation id="7856798637819639676">Sigurno upotrebljavajte osobni dokument s Android uređaja</translation>
 <translation id="7857004848504343806">Računalo sadrži sigurni modul koji se upotrebljava za primjenu mnogih važnih sigurnosnih značajki u ChromeOS Flexu. Posjetite Chromebookov centar za pomoć da biste saznali više: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstni prijedlozi</translation>
 <translation id="7858120906780498731">Povezani ulazni uređaji za ChromeOS</translation>
@@ -9987,7 +9985,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8026784703228858744">Spremanje oznaka, zaporki i drugih podataka pomoću sinkronizacije</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Posjećeno prije 0 dana}=1{Posjećeno prije jednog dana}one{Posjećeno prije # dana}few{Posjećeno prije # dana}other{Posjećeno prije # dana}}</translation>
 <translation id="8028060951694135607">Oporavak Microsoftovog ključa</translation>
-<translation id="8028138772801251745">Automatsko popunjavanje pomoću AI-ja</translation>
 <translation id="8028803902702117856">Preuzimanje <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Veličina</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Popis za čitanje}=1{Popis za čitanje ({SELECTED_ITEMS})}one{Popis za čitanje ({SELECTED_ITEMS})}few{Popis za čitanje ({SELECTED_ITEMS})}other{Popis za čitanje ({SELECTED_ITEMS})}}</translation>
@@ -10084,7 +10081,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="808894953321890993">Promjena zaporke</translation>
 <translation id="8090234456044969073">pročitati popis web-lokacija koje najčešće posjećujete</translation>
 <translation id="8090513782447872344">Uvijek se možete vratiti i provjeriti ponovo</translation>
-<translation id="8090579562279016251">Slabi izvedbu, ali V8 čini otpornijim na napade</translation>
 <translation id="8090686009202681725">Izrada teme uz pomoć AI-ja</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ne reagira</translation>
 <translation id="8094536695728193970">Marelica</translation>
@@ -10138,7 +10134,6 @@ Ključnu datoteku čuvajte na sigurnom mjestu. Trebat će vam za stvaranje novih
 <translation id="8125651784723647184">Dijeljenjem zaporki upravlja vaš administrator</translation>
 <translation id="8126355825906412872">Osmijeh</translation>
 <translation id="8129265306888404830">Da biste upotrebljavali e-adresu svoje organizacije (<ph name="EMAIL_DOMAIN" />), trebate upotrijebiti prijavu organizacije. Ako je ovaj uređaj za vašu osobnu upotrebu, prijavite se osobnim Google računom.</translation>
-<translation id="8130476996317833777">Nemoj dopustiti web-lokacijama upotrebu alata za optimizaciju V8</translation>
 <translation id="813082847718468539">Prikaz informacija o web-lokaciji</translation>
 <translation id="8131740175452115882">Potvrdi</translation>
 <translation id="8133297578569873332">Prihvatljiva – FM</translation>

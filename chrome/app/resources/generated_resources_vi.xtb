@@ -2538,7 +2538,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="2730647855013151888">Bao gồm tất cả thông tin cá nhân</translation>
 <translation id="2730901670247399077">Biểu tượng cảm xúc đề xuất</translation>
 <translation id="273093730430620027">Trang này đang truy cập máy ảnh của bạn.</translation>
-<translation id="2730956943403103181">Không được phép sử dụng trình tối ưu hoá V8</translation>
 <translation id="2731392572903530958">&amp;Mở lại Cửa sổ đã Đóng</translation>
 <translation id="2731700343119398978">Vui lòng chờ...</translation>
 <translation id="2731971182069536520">Khi bạn khởi động lại thiết bị vào lần tiếp theo, quản trị viên sẽ tiến hành cập nhật một lần để xóa dữ liệu trên thiết bị của bạn.</translation>
@@ -3137,7 +3136,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3160928651883997588">Lựa chọn ưu tiên về VPN</translation>
 <translation id="3161522574479303604">Tất cả ngôn ngữ</translation>
 <translation id="3162070126914310576">Hiện không thể đăng ký thiết bị này vì đơn vị tổ chức của bạn đã đạt đến giới hạn đăng ký ban đầu. Hãy liên hệ với quản trị viên để được trợ giúp.</translation>
-<translation id="3162766632262775911">Luôn được phép sử dụng trình tối ưu hoá V8</translation>
 <translation id="3162853326462195145">Tài khoản trường học</translation>
 <translation id="3162899666601560689">Các trang web có thể dùng cookie để cải thiện trải nghiệm duyệt web của bạn, chẳng hạn như để duy trì trạng thái đăng nhập hoặc ghi nhớ các mặt hàng có trong giỏ hàng</translation>
 <translation id="3163085718713826852">Nhập mật khẩu của chứng chỉ</translation>
@@ -3853,7 +3851,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3666971425390608309">Đã tạm dừng tải <ph name="FILE_NAME" /> xuống.</translation>
 <translation id="3670113805793654926">Thiết bị của nhà cung cấp bất kỳ</translation>
 <translation id="3670229581627177274">Bật Bluetooth</translation>
-<translation id="3670480940339182416">Các trang web có thể sử dụng trình tối ưu hoá V8</translation>
 <translation id="3671982238795754537">Tìm hiểu thêm về khoá truy cập.</translation>
 <translation id="3672681487849735243">Đã phát hiện lỗi khi xuất xưởng</translation>
 <translation id="3673097791729989571">Phương thức đăng nhập được lưu trữ tại <ph name="SAML_DOMAIN" /></translation>
@@ -5754,6 +5751,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="5001526427543320409">Cookie của bên thứ ba</translation>
 <translation id="5003070249435823986">Dùng cử chỉ để chuyển sang chế độ cuộn, sau đó di chuyển đầu theo hướng bạn muốn cuộn. Dùng lại cử chỉ đó để thoát chế độ cuộn.</translation>
 <translation id="5003993274120026347">Câu tiếp theo</translation>
+<translation id="5005311809885666699">Đã lưu từ Chrome</translation>
 <translation id="5005498671520578047">Sao chép mật khẩu</translation>
 <translation id="5006218871145547804">Cầu gỡ lỗi Android (ADB) cho ứng dụng Android trong Crostini</translation>
 <translation id="5006778209728626987">Tia sét</translation>
@@ -9723,6 +9721,7 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="784475655832336580">Bạn không thể đánh dấu mục bằng tính năng làm nổi bật tiêu điểm bằng bàn phím khi đang bật ChromeVox</translation>
 <translation id="7844992432319478437">Đang cập nhật phần khác nhau</translation>
 <translation id="7846161022626028328">Đã xảy ra lỗi. Hãy thử lại.</translation>
+<translation id="7846296061357476882">Các dịch vụ của Google</translation>
 <translation id="7846634333498149051">Bàn phím</translation>
 <translation id="7847212883280406910">Nhấn Ctrl + Alt + S để chuyển sang <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Mở tất cả (<ph name="URL_COUNT" />) trong nhóm thẻ mới</translation>
@@ -9742,7 +9741,6 @@ Nhấn một công tắc hoặc phím đã gán để xóa.</translation>
 <translation id="7853747251428735">Côn&amp;g cụ khác</translation>
 <translation id="7855258394151767387">Dùng phím "w" để nhấn nút chuột</translation>
 <translation id="7855678561139483478">Di chuyển thẻ sang cửa sổ mới</translation>
-<translation id="7856798637819639676">Sử dụng giấy tờ tuỳ thân một cách an toàn trên thiết bị Android</translation>
 <translation id="7857004848504343806">Máy tính của bạn chứa một mô-đun bảo mật dùng để triển khai nhiều tính năng bảo mật thiết yếu trong ChromeOS Flex. Hãy truy cập Trung tâm trợ giúp của Chromebook để tìm hiểu thêm: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Đề xuất văn bản</translation>
 <translation id="7858120906780498731">Thiết bị đầu vào đã kết nối với ChromeOS</translation>
@@ -10001,7 +9999,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8026784703228858744">Lưu dấu trang và các nội dung khác bằng tính năng đồng bộ hoá</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Đã truy cập 0 ngày trước}=1{Đã truy cập 1 ngày trước}other{Đã truy cập # ngày trước}}</translation>
 <translation id="8028060951694135607">Khôi phục Khoá Microsoft</translation>
-<translation id="8028138772801251745">Tự động điền bằng AI</translation>
 <translation id="8028803902702117856">Đang tải xuống <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Kích thước</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Danh sách đọc}=1{Danh sách đọc ({SELECTED_ITEMS})}other{Danh sách đọc ({SELECTED_ITEMS})}}</translation>
@@ -10098,7 +10095,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="808894953321890993">Đổi mật khẩu</translation>
 <translation id="8090234456044969073">Đọc danh sách trang web được truy cập thường xuyên nhất của bạn</translation>
 <translation id="8090513782447872344">Bạn có thể xem lại hướng dẫn vào bất cứ lúc nào</translation>
-<translation id="8090579562279016251">Làm giảm hiệu suất nhưng giúp V8 tăng khả năng chống lại các cuộc tấn công</translation>
 <translation id="8090686009202681725">Tạo giao diện bằng AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> không phản hồi</translation>
 <translation id="8094536695728193970">Vàng mơ</translation>
@@ -10152,7 +10148,6 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8125651784723647184">Việc chia sẻ mật khẩu do quản trị viên quản lý</translation>
 <translation id="8126355825906412872">Mỉm cười</translation>
 <translation id="8129265306888404830">Để sử dụng địa chỉ email của tổ chức (<ph name="EMAIL_DOMAIN" />), bạn cần sử dụng quy trình đăng ký doanh nghiệp. Nếu bạn sử dụng thiết bị này cho mục đích cá nhân, hãy đăng nhập bằng Tài khoản Google cá nhân của bạn.</translation>
-<translation id="8130476996317833777">Không cho phép các trang web sử dụng trình tối ưu hoá V8</translation>
 <translation id="813082847718468539">Xem thông tin trang web</translation>
 <translation id="8131740175452115882">Xác nhận</translation>
 <translation id="8133297578569873332">Chấp nhận được – FM</translation>

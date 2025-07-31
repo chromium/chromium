@@ -2541,7 +2541,6 @@ Nastavitve tega računa je mogoče upravljati z namestitvijo aplikacije Family L
 <translation id="2730647855013151888">Vključi vse osebne podatke</translation>
 <translation id="2730901670247399077">Predlogi emodžijev</translation>
 <translation id="273093730430620027">Ta stran dostopa do vaše kamere.</translation>
-<translation id="2730956943403103181">Uporaba orodja za optimiziranje V8 ni dovoljena</translation>
 <translation id="2731392572903530958">&amp;Znova odpri zaprto okno</translation>
 <translation id="2731700343119398978">Počakajte ...</translation>
 <translation id="2731971182069536520">Ob naslednjem vnovičnem zagonu naprave bo skrbnik opravil enkratno posodobitev, s katero bodo izbrisani lokalni podatki.</translation>
@@ -3140,7 +3139,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3160928651883997588">Nastavitve za VPN</translation>
 <translation id="3161522574479303604">Vsi jeziki</translation>
 <translation id="3162070126914310576">Te naprave trenutno ni mogoče včlaniti, ker je vaša organizacijska enota dosegla začetno omejitev včlanitev. Za pomoč se obrnite na skrbnika.</translation>
-<translation id="3162766632262775911">Uporaba orodja za optimiziranje V8 je vedno dovoljena</translation>
 <translation id="3162853326462195145">Šolski račun</translation>
 <translation id="3162899666601560689">Spletna mesta lahko uporabljajo piškotke za izboljšanje izkušnje brskanja, in sicer tako, da na primer poskrbijo, da ostanete prijavljeni, ali si zapomnijo izdelke v nakupovalnem vozičku.</translation>
 <translation id="3163085718713826852">Vnesite geslo za potrdilo</translation>
@@ -3856,7 +3854,6 @@ Domena <ph name="DOMAIN" /> zahteva, da je pametna kartica vstavljena.</translat
 <translation id="3666971425390608309">Prenos je začasno zaustavljen: (<ph name="FILE_NAME" />).</translation>
 <translation id="3670113805793654926">Naprave katerega koli ponudnika</translation>
 <translation id="3670229581627177274">Vklop vmesnika Bluetooth</translation>
-<translation id="3670480940339182416">Spletna mesta lahko uporabljajo orodje za optimiziranje V8</translation>
 <translation id="3671982238795754537">Preberite več o ključih za dostop</translation>
 <translation id="3672681487849735243">Zaznana je tovarniška napaka</translation>
 <translation id="3673097791729989571">Prijavo gosti <ph name="SAML_DOMAIN" /></translation>
@@ -5757,6 +5754,7 @@ Za pomanjšavo pritisnite Ctrl + Alt + tipko za zmanjšanje svetlosti.</translat
 <translation id="5001526427543320409">Piškotki tretjih oseb</translation>
 <translation id="5003070249435823986">Uporabite potezo, da vstopite v način pomikanja, nato premaknite glavo v smeri, v kateri se želite pomikati. Če želite zapreti način pomikanja, znova uporabite potezo.</translation>
 <translation id="5003993274120026347">Naslednji stavek</translation>
+<translation id="5005311809885666699">Shranjeno iz Chroma</translation>
 <translation id="5005498671520578047">Kopiranje gesla</translation>
 <translation id="5006218871145547804">ADB za aplikacije za Android v Crostiniju</translation>
 <translation id="5006778209728626987">Strela</translation>
@@ -9732,6 +9730,7 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="784475655832336580">Označevanje elementa s fokusom na tipkovnici ni na voljo, če je vklopljen ChromeVox</translation>
 <translation id="7844992432319478437">Posodabljanje razlik</translation>
 <translation id="7846161022626028328">Prišlo je do napake. Poskusite znova.</translation>
+<translation id="7846296061357476882">Googlove storitve</translation>
 <translation id="7846634333498149051">Tipkovnica</translation>
 <translation id="7847212883280406910">Pritisnite Ctrl + Alt + S za preklop na izdelek <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Odprite vse (<ph name="URL_COUNT" />) v novi skupini zavihkov</translation>
@@ -9751,7 +9750,6 @@ Pritisnite dodeljeno stikalo ali tipko, če želite odstraniti dodelitev.</trans
 <translation id="7853747251428735">Več &amp;orodij</translation>
 <translation id="7855258394151767387">Uporabite »w« za pritisk gumba miške</translation>
 <translation id="7855678561139483478">Premik zavihka v novo okno</translation>
-<translation id="7856798637819639676">Varno uporabljajte osebni dokument v napravi Android</translation>
 <translation id="7857004848504343806">V računalnik je vgrajen varnostni modul, potreben za številne nujne varnostne funkcije v sistemu ChromeOS Flex. Več o njem lahko preberete v centru za pomoč za Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Besedilni predlogi</translation>
 <translation id="7858120906780498731">Povezane vhodne naprave v sistemu ChromeOS</translation>
@@ -10010,7 +10008,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8026784703228858744">Shranite zaznamke in drugo s sinhronizacijo</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Obiskano pred 0 dnevi}=1{Obiskano pred 1 dnevom}one{Obiskano pred # dnevom}two{Obiskano pred # dnevoma}few{Obiskano pred # dnevi}other{Obiskano pred # dnevi}}</translation>
 <translation id="8028060951694135607">Microsoftova obnovitev ključa</translation>
-<translation id="8028138772801251745">Samodejno izpolnjevanje z umetno inteligenco</translation>
 <translation id="8028803902702117856">Prenašanje <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Velikost</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Bralni seznam}=1{Bralni seznam ({SELECTED_ITEMS})}one{Bralni seznam ({SELECTED_ITEMS})}two{Bralni seznam ({SELECTED_ITEMS})}few{Bralni seznam ({SELECTED_ITEMS})}other{Bralni seznam ({SELECTED_ITEMS})}}</translation>
@@ -10107,7 +10104,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="808894953321890993">Sprememba gesla</translation>
 <translation id="8090234456044969073">Preberite seznam spletnih mest, ki jih najpogosteje obiskujete</translation>
 <translation id="8090513782447872344">Kadar koli se lahko vrnete in to znova preberete.</translation>
-<translation id="8090579562279016251">Zmanjša učinkovitost delovanja, vendar je mehanizem V8 odpornejši proti napadom</translation>
 <translation id="8090686009202681725">Ustvarjanje teme z umetno inteligenco</translation>
 <translation id="8093359998839330381">Vtičnik <ph name="PLUGIN_NAME" /> se ne odziva</translation>
 <translation id="8094536695728193970">Marelična</translation>
@@ -10161,7 +10157,6 @@ Datoteko s ključem shranite na varnem. Potrebovali jo boste za izdelavo novih r
 <translation id="8125651784723647184">Deljenje gesel upravlja skrbnik</translation>
 <translation id="8126355825906412872">Nasmeh</translation>
 <translation id="8129265306888404830">Če želite uporabiti svoj e-poštni naslov organizacije (<ph name="EMAIL_DOMAIN" />), morate uporabiti včlanitev v podjetje. Če je ta naprava za osebno uporabo, se prijavite z osebnim računom Google.</translation>
-<translation id="8130476996317833777">Ne dovoli, da spletna mesta uporabljajo orodje za optimiziranje V8</translation>
 <translation id="813082847718468539">Ogled podatkov o mestu</translation>
 <translation id="8131740175452115882">Potrdi</translation>
 <translation id="8133297578569873332">Sprejemljivo – FM</translation>

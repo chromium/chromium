@@ -184,7 +184,6 @@
 <translation id="3258596308407688501">Chromium ვერ ახერხებს თავის მონაცემთა დირექტორიაში წაკითხვას და ჩაწერის განხორციელებას:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 არის Chromium-ის JavaScript-ისა და WebAssembly-ს ძრავა, რომელიც საიტების წარმადობის გასაუმჯობესებლად გამოიყენება</translation>
 <translation id="3286538390144397061">გადატვირთეთ ახლა</translation>
 <translation id="328888136576916638">Google API გასაღები გამოტოვებულია. Chromium-ის ზოგიერთი ფუნქცია გამორთული იქნება.</translation>
 <translation id="3296368748942286671">ფონური პროგრამების გაშვების გაგრძელება, როდესაც Chromium იხურება</translation>

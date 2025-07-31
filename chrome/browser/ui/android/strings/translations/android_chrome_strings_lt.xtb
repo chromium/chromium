@@ -715,6 +715,7 @@ Tik jūsų slaptafrazę turintis asmuo galės perskaityti šifruotus duomenis. S
 <translation id="4380055775103003110">Jei ši problema išlieka, galite išbandyti kitus būdus, kaip tęsti veiklą <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Atliekant paiešką naudojama „Sogou“</translation>
 <translation id="4387647248986092471">Kurti automobilio profilio užraktą</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Skirtukai ir grupės, kurie nebuvo naudojami vieną dieną ar ilgiau}one{Skirtukai ir grupės, kurie nebuvo naudojami # dieną ar ilgiau}few{Skirtukai ir grupės, kurie nebuvo naudojami # dienas ar ilgiau}many{Skirtukai ir grupės, kurie nebuvo naudojami # dienos ar ilgiau}other{Skirtukai ir grupės, kurie nebuvo naudojami # dienų ar ilgiau}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – atsisiunčiama…</translation>
 <translation id="4404568932422911380">Nėra jokių žymių</translation>
 <translation id="4405224443901389797">Perkelti į…</translation>

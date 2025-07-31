@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">ही समस्या येत राहिल्यास, <ph name="SITE_ETLD_PLUS_ONE" /> वर पुढे सुरू ठेवण्यासाठीचे इतर मार्ग तुम्ही वापरून पाहू शकता.</translation>
 <translation id="4384468725000734951">शोध करण्‍यासाठी Sogou वापरत आहे</translation>
 <translation id="4387647248986092471">कार प्रोफाइल लॉक तयार करा</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{१ किंवा त्याहून अधिक दिवस न वापरलेले टॅब आणि गट}other{# किंवा त्याहून अधिक दिवस न वापरलेले टॅब आणि गट}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड करत आहे…</translation>
 <translation id="4404568932422911380">कोणतेही बुकमार्क नाहीत</translation>
 <translation id="4405224443901389797">यामध्ये हलवा…</translation>

@@ -162,7 +162,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1264309058268477500">Alternativa</translation>
 <translation id="1264974993859112054">Esportes</translation>
 <translation id="1268480293435976622">Envelope chinês 7</translation>
-<translation id="1269045546668906972">Ative o preenchimento automático com IA para preencher mais campos automaticamente</translation>
 <translation id="1269516672602708785">Criar rapidamente um novo site no Google Sites</translation>
 <translation id="1270328905573953738">Serviços de mudança</translation>
 <translation id="1270502636509132238">Método de Retirada</translation>
@@ -819,7 +818,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2354001756790975382">Outros favoritos</translation>
 <translation id="2355395290879513365">É possível que invasores consigam ver as imagens que você está olhando nesse site e as modifiquem para enganar você.</translation>
 <translation id="2356070529366658676">Perguntar</translation>
-<translation id="2356926036049612643">Otimizador V8</translation>
 <translation id="2356941001189392209">Uma lista limitada de URLs de páginas acessadas em que eventos de tecnologia legados estão ocorrendo</translation>
 <translation id="2357481397660644965">Seu dispositivo é gerenciado por <ph name="DEVICE_MANAGER" />, e sua conta é gerenciada por <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Várias</translation>
@@ -1785,13 +1783,13 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3984581365661308170">Envelope 11</translation>
 <translation id="398470910934384994">Pássaros</translation>
 <translation id="3985750352229496475">Gerenciar endereços…</translation>
-<translation id="3986506998755860149">saiba mais sobre o preenchimento automático com IA nas configurações</translation>
 <translation id="3986557181852957825">Logotipo do Google Pay e da Klarna</translation>
 <translation id="3986705137476756801">Desativar "Legenda instantânea" por enquanto</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Menos de 1 MB</translation>
 <translation id="3990250421422698716">Ajustar desvio</translation>
 <translation id="3990532701115075684">Rastrear suas mãos</translation>
+<translation id="399179161741278232">Importado</translation>
 <translation id="3992684624889376114">Sobre esta página</translation>
 <translation id="3995639283717357522">Aplicar políticas</translation>
 <translation id="3996683183117168945">Citação <ph name="CURRENT_CITATION" /> de <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2100,7 +2098,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="4480760608050410381">Vídeo MP4</translation>
 <translation id="448363931695049633">Pizzarias</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
-<translation id="4489977488133295402">Confirme sua identidade para preencher automaticamente as formas de pagamento</translation>
+<translation id="4489977488133295402">Confirmar sua identidade para preencher automaticamente as formas de pagamento</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Criptografar as senhas sincronizadas com sua Conta do Google</translation>
 <translation id="4493480324863638523">URL inválido. É necessário um URL com um esquema padrão, como http://example.com ou https://example.com.</translation>
@@ -2399,7 +2397,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="5002932099480077015">Se ativado, o Chrome armazenará uma cópia do seu cartão neste dispositivo para preencher formulários mais rapidamente.</translation>
 <translation id="5007344584818503324">Atividade do grupo de guias compartilhado</translation>
 <translation id="5007392906805964215">Revisar</translation>
-<translation id="5010599530303458903">Pagar mensalmente ou em 4 parcelas sem juros (opção sujeita à qualificação)</translation>
 <translation id="5011561501798487822">Idioma detectado</translation>
 <translation id="5015510746216210676">Nome do computador:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6151417162996330722">O certificado do servidor tem um período de validade excessivamente longo.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> pol. (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Corrida e caminhada</translation>
-<translation id="6157079899699705880">O Preenchimento automático com IA entende melhor os formulários e agiliza o processo para você</translation>
 <translation id="6157754950574419155">Remover todos do histórico</translation>
 <translation id="6157877588268064908">Para acessar métodos e requisitos de envio, selecione um endereço</translation>
 <translation id="6159554577634054750">Controle de pragas</translation>
@@ -4710,7 +4706,7 @@ Mais detalhes:
 <translation id="8918062451146297192">CVC do cartão virtual</translation>
 <translation id="8919740778133505789">Carros esportivos</translation>
 <translation id="8919895429178014996">Ocultar todos os itens</translation>
-<translation id="8919989290032064330">Quer verificar sua identidade para preencher automaticamente as formas de pagamento?</translation>
+<translation id="8919989290032064330">Confirmar sua identidade para preencher automaticamente as formas de pagamento?</translation>
 <translation id="8922013791253848639">Sempre permitir anúncios neste site</translation>
 <translation id="8922734931659847428">Uma lista limitada de URLs de páginas acessadas em que <ph name="BEGIN_LINK" />eventos de tecnologia legados<ph name="END_LINK" /> estão ocorrendo</translation>
 <translation id="892588693504540538">Perfuração na parte superior direita</translation>

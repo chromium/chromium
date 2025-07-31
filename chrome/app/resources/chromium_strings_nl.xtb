@@ -183,7 +183,6 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="3258596308407688501">Chrome kan niet lezen van en schrijven naar de eigen gegevensdirectory :
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 is de JavaScript- en WebAssembly-engine van Chromium die wordt gebruikt om de siteprestaties te verbeteren</translation>
 <translation id="3286538390144397061">Nu herstarten</translation>
 <translation id="328888136576916638">Google API-sleutels ontbreken. Sommige functies van Chromium worden uitgezet.</translation>
 <translation id="3296368748942286671">Achtergrondapps actief houden als Chromium is gesloten</translation>

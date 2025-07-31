@@ -65,6 +65,7 @@
 <translation id="1263433075299269530">上次開啟的分頁</translation>
 <translation id="1264156759663453185">所選文字太多，不適用部分翻譯。</translation>
 <translation id="1264974993859112054">運動資訊</translation>
+<translation id="126737128831326059">匯出成功</translation>
 <translation id="1272079795634619415">停止</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} 個密碼}other{{count} 個密碼}}</translation>
 <translation id="1275718070701477396">已選取</translation>
@@ -168,6 +169,7 @@
 <translation id="1641113438599504367">安全瀏覽</translation>
 <translation id="1644574205037202324">歷史記錄</translation>
 <translation id="164673457281113247">{count,plural, =1{已儲存書籤}other{已儲存書籤}}</translation>
+<translation id="1651260071709244114">應用程式</translation>
 <translation id="1652051421944182562">開啟安全檢查通知…</translation>
 <translation id="1652333207707886577">自訂選單</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{剩餘時間：{TIME} 秒}=1{剩餘時間：{TIME} 秒}other{剩餘時間：{TIME} 秒}}</translation>
@@ -310,6 +312,7 @@
 <translation id="218350106843433823">自動填入密碼和密碼金鑰</translation>
 <translation id="2184272387334793084">登入帳戶即可在任何裝置上存取自己的密碼及其他設定</translation>
 <translation id="2186206192313702726">Google 智慧鏡頭</translation>
+<translation id="2188993354115194873">輕觸「儲存到下載項目」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="219283042927675668">群組中的分頁</translation>
 <translation id="2194856509914051091">注意事項</translation>
 <translation id="2196428379625389579">在網路上搜尋</translation>
@@ -560,6 +563,7 @@
 <translation id="3174662312949010067">你也可以在其他裝置上使用已儲存的密碼。</translation>
 <translation id="3177338796769255211">只要在裝置上登入帳戶，即可存取書籤和其他資訊</translation>
 <translation id="3181954750937456830">安全瀏覽 (保護你和你的裝置不受危險網站攻擊)</translation>
+<translation id="3186796054637504691">清除歷史記錄和網站資料</translation>
 <translation id="3190736958609431397">取消追蹤</translation>
 <translation id="3208260410153224535">貴機構已關閉登入功能。新的書籤、密碼等資訊只會儲存在這部裝置上。</translation>
 <translation id="3213807041830307252">使用相機和相片購物、翻譯及辨識所見內容。</translation>
@@ -700,6 +704,7 @@
 <translation id="3851938967634752633">系統會刪除 <ph name="WEBSITE" />、<ph name="SECOND_WEBSITE" /> 和另外 <ph name="NUMBER_OF_ACCOUNTS" /> 個帳戶的密碼，但不會刪除你的帳戶。</translation>
 <translation id="3853162385423733133">請繼續將密碼儲存到 Google 帳戶 (<ph name="EMAIL" />)，或使用帳戶中的密碼</translation>
 <translation id="3853873210696342070">匯入</translation>
+<translation id="3857113360369572832">開啟 <ph name="BEGIN_BOLD" />Safari 設定<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">名稱</translation>
 <translation id="3868495844258915202">顯示完整網址</translation>
 <translation id="3875783148670536197">顯示操作說明</translation>
@@ -1592,6 +1597,7 @@
 <translation id="7215621211572884440">允許彈出式視窗</translation>
 <translation id="7218491361283758048">郵遞區號</translation>
 <translation id="7221173315674413369">你可以前往「新功能」頁面探索新功能及相關提示</translation>
+<translation id="7223134495231529579">儲存到下載項目</translation>
 <translation id="722339453342442311">立即檢查</translation>
 <translation id="7227235818314667565">管理分享的群組</translation>
 <translation id="7233006041370588369">請選取要填入的密碼。</translation>
@@ -1729,6 +1735,7 @@
 <translation id="7781829728241885113">昨天</translation>
 <translation id="7788868432173225918">關閉展開的檢視畫面</translation>
 <translation id="7791543448312431591">新增</translation>
+<translation id="7795253248079882669">輕觸「匯出」<ph name="BEGIN_BOLD" /><ph name="END_BOLD" /></translation>
 <translation id="7801064017114765401">電腦</translation>
 <translation id="7802239711290932774">使用建議的密碼：</translation>
 <translation id="780301667611848630">不用了，謝謝</translation>
@@ -1839,6 +1846,7 @@
 <translation id="8161614462829037225">使用 <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> 解鎖</translation>
 <translation id="8173034266693057059">長度</translation>
 <translation id="8182037667962849780">{count,plural, =1{適用於 {website_1}}=2{適用於 {website_1}、{website_2}}=3{適用於 {website_1}、{website_2} 和另外 1 個網站}other{適用於 {website_1}、{website_2} 和另外 {more_count} 個網站}}</translation>
+<translation id="8185076488803799132">匯入</translation>
 <translation id="8189615296021678665">輕觸「儲存」，下次登入時就能輕鬆存取這組密碼。</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">新增密碼</translation>
@@ -1855,6 +1863,7 @@
 <translation id="8230355548492839438">尋找上一個項目</translation>
 <translation id="8232956427053453090">保留資料</translation>
 <translation id="8233237502828137700">關閉橫幅宣傳內容</translation>
+<translation id="8258734532103758067">我已匯出資料</translation>
 <translation id="8258999165172757081">已新增</translation>
 <translation id="8261506727792406068">刪除</translation>
 <translation id="82619448491672958">查看其他分頁</translation>
@@ -1923,6 +1932,7 @@
 <translation id="8505361906966222822">儲存位置…</translation>
 <translation id="850600235656508448">以無痕模式開啟</translation>
 <translation id="8511141513131731477">前往第一個分頁</translation>
+<translation id="8515534223594179607">匯出瀏覽資料</translation>
 <translation id="852075982791215701">前往最後一個分頁</translation>
 <translation id="8522147671363140027">{count,plural, =1{這 {count} 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}other{這 {count} 個密碼和其他項目只會儲存在這部裝置。如要在其他裝置上使用，請儲存到 Google 帳戶 ({email})。}}</translation>
 <translation id="8524799873541103884">第 <ph name="FIRST_VISIBLE_TAB" /> 至 <ph name="LAST_VISIBLE_TAB" /> 個<ph name="INCOGNITO" />分頁，共 <ph name="NUMBER_OF_OPEN_TABS" /> 個</translation>
@@ -1974,6 +1984,7 @@
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="8690752723634292147">確認刪除</translation>
 <translation id="8692689525339542358">守護網頁瀏覽安全，有效防堵危險網站、下載內容和擴充功能。</translation>
+<translation id="8692897097252418799">選擇要匯出的資料</translation>
 <translation id="8694281486652655615">顯示這個項目</translation>
 <translation id="8696297579102085705">傳送到你的裝置</translation>
 <translation id="8697136149718343437">將網址列移至底部</translation>
@@ -2128,6 +2139,7 @@
 <translation id="939598580284253335">請輸入通關密語</translation>
 <translation id="939736085109172342">新增資料夾</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />查看可以同步處理的內容<ph name="END_LINK" /></translation>
+<translation id="942624946817804130">匯出</translation>
 <translation id="945522503751344254">提供意見</translation>
 <translation id="94870150074703282">要刪除群組嗎？</translation>
 <translation id="952704832371081537">取消</translation>

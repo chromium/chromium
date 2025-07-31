@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">جایگزین</translation>
 <translation id="1264974993859112054">ورزش</translation>
 <translation id="1268480293435976622">پاکت چینی شماره ۷</translation>
-<translation id="1269045546668906972">تکمیل خودکار مبتنی بر هوش مصنوعی را روشن کنید تا فیلدهای بیشتری را به‌طور خودکار تکمیل کنید</translation>
 <translation id="1269516672602708785">‏ایجاد سریع سایت جدید در Google Sites</translation>
 <translation id="1270328905573953738">اسباب‌کشی و نقل مکان</translation>
 <translation id="1270502636509132238">روش تحویل گرفتن</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">نشانک‌های دیگر</translation>
 <translation id="2355395290879513365">مهاجمین ممکن است بتوانند تصاویری را که در این سایت می‌بینید مشاهده کنند و با دست‌کاری آن‌ها شما را فریب دهند.</translation>
 <translation id="2356070529366658676">سؤال شود</translation>
-<translation id="2356926036049612643">‏بهینه‌ساز V8</translation>
 <translation id="2356941001189392209">فهرست محدودی از نشانی وب صفحه‌هایی که بازدید می‌کنید و رویدادهای فناوری قدیمی در آن‌ها روی می‌دهد</translation>
 <translation id="2357481397660644965">دستگاهتان توسط <ph name="DEVICE_MANAGER" />، و حسابتان توسط <ph name="ACCOUNT_MANAGER" /> مدیریت می‌شود.</translation>
 <translation id="2359629602545592467">چند ارز</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">پاکت شماره ۱۱</translation>
 <translation id="398470910934384994">پرندگان</translation>
 <translation id="3985750352229496475">مدیریت نشانی‌ها…</translation>
-<translation id="3986506998755860149">درباره تکمیل خودکار با هوش مصنوعی در تنظیمات بیشتر بدانید</translation>
 <translation id="3986557181852957825">‏‫Google Pay، نشان‌واره Klarna</translation>
 <translation id="3986705137476756801">«زیرنویس زنده ناشنوایان» فعلاً خاموش شود</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">کمتر از ۱ مگابایت</translation>
 <translation id="3990250421422698716">‏آفست Z شکل</translation>
 <translation id="3990532701115075684">ردیابی کردن دست‌هایتان</translation>
+<translation id="399179161741278232">وارد شده</translation>
 <translation id="3992684624889376114">درباره این صفحه</translation>
 <translation id="3995639283717357522">اعمال خط‌مشی‌ها</translation>
 <translation id="3996683183117168945">نقل‌قول <ph name="CURRENT_CITATION" /> از <ph name="MAX_CITATIONS" />، <ph name="PRODUCT_NAME" />، <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2087,6 +2085,7 @@
 <translation id="4451135742916150903">‏می‌تواند برای اتصال به دستگاه‌های HID درخواست دهد</translation>
 <translation id="4451684391620232683">نوشتار ارائه‌شده به کاربر:</translation>
 <translation id="4452328064229197696">‏گذرواژه‌ای که اکنون استفاده کردید مورد سرقت قرار گرفته است. برای حفظ امنیت حساب‌هایتان، «مدیر گذرواژه Google» توصیه می‌کند گذرواژه‌های ذخیره‌شده‌تان را بررسی کنید.</translation>
+<translation id="4454620051637646665">بستن برنما</translation>
 <translation id="4456937135469235202">سفر ماجراجویی</translation>
 <translation id="4458013283022578512">سؤالی وارد کنید</translation>
 <translation id="4464826014807964867">وب‌سایت‌های حاوی اطلاعات سازمان شما</translation>
@@ -2398,7 +2397,6 @@
 <translation id="5002932099480077015">‏اگر فعال شود، Chrome یک کپی از کارت شما را برای پرکردن سریع‌تر فرم در این دستگاه ذخیره می‌کند.</translation>
 <translation id="5007344584818503324">فعالیت گروه‌های زبانه هم‌رسانی‌شده</translation>
 <translation id="5007392906805964215">مرور</translation>
-<translation id="5010599530303458903">ماهانه یا طی ۴ قسط بدون سود پرداخت کنید (مشروط به واجدشرایط بودن)</translation>
 <translation id="5011561501798487822">زبان شناسایی‌شده</translation>
 <translation id="5015510746216210676">نام ماشین:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2672,8 +2670,10 @@
 <translation id="5464236009658034488">تجهیزات اداری</translation>
 <translation id="5465724643247062031">شیشه (مات)</translation>
 <translation id="5466018172325111652">کد را دریافت نکردید؟ <ph name="BEGIN_LINK" />کد جدید دریافت کنید<ph name="END_LINK" /></translation>
+<translation id="5466818462212249084">برنامه‌های پرداخت</translation>
 <translation id="5470861586879999274">&amp;انجام مجدد ویرایش</translation>
 <translation id="5472588168895083535">ردیابی دست مسدود شد</translation>
+<translation id="5477756102936130143">فعال کردن بازهدایت به برنامه‌های پرداخت پشتیبانی‌شده</translation>
 <translation id="5479505548832623900">احتمالاً افزونه آن را نادیده گرفته است.</translation>
 <translation id="547963486735802022">فایل‌ها را دوباره منتقل کنید</translation>
 <translation id="5481076368049295676">شاید این محتوا تلاش کند نرم‌افزار خطرناکی در دستگاهتان نصب کند که اطلاعاتتان را به سرقت برد یا حذف کند. <ph name="BEGIN_LINK" />درهرصورت نمایش داده شود<ph name="END_LINK" /></translation>
@@ -2783,6 +2783,7 @@
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">سیستم‌ها و قطعات استریو</translation>
 <translation id="5644090287519800334">‏روی ۱، تغییر جهت تصویر حول محور X</translation>
+<translation id="5644128326840674462">برنمای تبلیغ</translation>
 <translation id="5645132789250840550">پلاستیک (نیمه‌براق)</translation>
 <translation id="5645719697465708351">لوازم مهمانی و تعطیلات</translation>
 <translation id="5645854190134202180">نوبت کاری دوم</translation>
@@ -2802,6 +2803,7 @@
 <translation id="567604591393105935">برگ زیرین تجارت به‌صورت نیمه باز شده است</translation>
 <translation id="5676641328629468296">‏‫Google Pay،‏ Pix</translation>
 <translation id="5678007133659493065">فویل</translation>
+<translation id="5679086391497468752">نشانی خانه</translation>
 <translation id="5680642791693447368">فیلم‌های هیجان‌انگیز، جنایی، و رازآلود</translation>
 <translation id="568292603005599551">‏موقعیت X تصویر</translation>
 <translation id="5684874026226664614">متأسفیم. این صفحه ترجمه نشد.</translation>
@@ -3075,7 +3077,6 @@
 <translation id="6151417162996330722">دوره اعتبار گواهینامه سرور بسیار طولانی است.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> اینچ (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">دویدن و پیاده‌روی</translation>
-<translation id="6157079899699705880">تکمیل خودکار با هوش مصنوعی فرم‌ها را بهتر درک می‌کند و می‌تواند با سرعت بیشتری آن‌ها را برایتان به‌طور خودکار تکمیل کند</translation>
 <translation id="6157754950574419155">حذف کردن همه از سابقه</translation>
 <translation id="6157877588268064908">برای دیدن روش‌های ارسال و شرایط موردنیاز، یک نشانی انتخاب کنید</translation>
 <translation id="6159554577634054750">کنترل آفات</translation>
@@ -3298,6 +3299,7 @@
 <translation id="6494750904506170417">بالاپرها و هدایت‌ها</translation>
 <translation id="6495664197699704593">این گذرواژه فقط در این دستگاه ذخیره می‌شود. برای استفاده از آن در دستگاه‌های دیگر، <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">‏برای استفاده کردن از سرویس تکمیل خودکار دیگری در Chrome، ارائه‌دهنده سرویس تکمیل خودکار خود را در تنظیمات Android انتخاب کنید</translation>
+<translation id="6496888501595572660">نمایش <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />گزینه‌های «بعداً پرداخت کنید»<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> هنگام تسویه‌حساب</translation>
 <translation id="6499038740797743453">گذرواژه بازنشانی شود؟</translation>
 <translation id="6502510275417601303">هشدار درباره تنظیم پرداخت جدید بسته شده است</translation>
 <translation id="6502991525169604759">بدون تغییرات اعمال‌شده</translation>
@@ -3580,6 +3582,7 @@
 <translation id="6989763994942163495">نمایش تنظیمات پیشرفته ...</translation>
 <translation id="6991376411634620997">‏گذرکلید • Windows Hello</translation>
 <translation id="6997288673234694149">تجهیزات بیس‌بال و سافت‌بال</translation>
+<translation id="6998512609912910179">فرم‌ها را سریع‌تر تکمیل کنید</translation>
 <translation id="6999480632062519056">آموزش تناسب اندام و تعلیم شخصی</translation>
 <translation id="7003278537452757231">فرش و قالیچه</translation>
 <translation id="7003322000677139268">قطعات و لوازم جانبی خودرو</translation>
@@ -3965,6 +3968,7 @@
 <translation id="7625242817712715120">خط‌مشی سرپرست توصیه می‌کند این محتوا را چاپ نکنید</translation>
 <translation id="7627785503571172573">عکس (فیلم)</translation>
 <translation id="762844065391966283">حذف تک تک</translation>
+<translation id="7629058630148860366">نشانی محل کار</translation>
 <translation id="763042426047865637">خدمات آتش‌نشانی و ایمنی</translation>
 <translation id="7630470133768862132">وضعیت رضایت:</translation>
 <translation id="7631072086707140121">‏نشانی وب باید https باشد.</translation>
@@ -4650,6 +4654,7 @@
 <translation id="8816395686387277279">‏<ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />، برای به‌روزرسانی Chrome ازطریق تنظیمات Chrome، کلید Tab (جهش) و سپس Enter (ورود) را فشار دهید</translation>
 <translation id="8820817407110198400">نشانک‌ها</translation>
 <translation id="882338992931677877">شیار دستی</translation>
+<translation id="8827067923357481311">گزینه‌های «بعداً پرداخت کنید»</translation>
 <translation id="8830320733681313421">کارت‌پستال هاگاکی</translation>
 <translation id="8830565333350631528">مشاهده فایل‌ها در <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8831783793142731637">برای خریدهای بالای <ph name="RANGE_MINIMUM" /> دردسترس است</translation>

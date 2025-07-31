@@ -266,6 +266,7 @@
 <translation id="4205939740494406371">Chrome kan ikke tjekke dine adgangskoder. Prøv igen efter 24 timer, eller <ph name="BEGIN_LINK" />tjek adgangskoder på din Google-konto<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Annullerer…</translation>
 <translation id="4224210481850767180">Installationen er blevet annulleret.</translation>
+<translation id="4230631012078055975">Få flere muligheder, når du er logget ind i Chrome</translation>
 <translation id="4242034826641750751">Chrome skal have adgangstilladelse til kamera og mikrofon for at bruge dette website</translation>
 <translation id="424864128008805179">Vil du logge ud af Chrome?</translation>
 <translation id="4251615635259297716">Vil du linke dine Chrome-data til denne konto?</translation>
@@ -585,6 +586,7 @@
 <translation id="8321888067342493336">Gem som billede</translation>
 <translation id="8336463659890584292">Når et website anmoder om at forudindlæse links privat på websitets side, anvender Chrome Googles servere. På denne måde skjules din identitet fra det forudindlæste website, men Google registrerer, hvilke websites der forudindlæses.</translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
+<translation id="8349094670477064572">Du kan gemme og bruge adgangskoder m.m. på din Google-konto, når du er logget ind i Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Oversæt til</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>
 <translation id="8387459386171870978">Fortsæt med at bruge Chrome</translation>
@@ -623,7 +625,6 @@
 <translation id="8781673607513845160">Giv Chrome adgang i <ph name="BEGIN_LINK" />systemindstillingerne<ph name="END_LINK" /> for at bruge dit kamera</translation>
 <translation id="878572486461146056">Installationsfejl: Din netværksadministrator anvender en gruppepolitik, der forhindrer installationen: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Din organisation kan se og administrere browserdata, f.eks. bogmærker, historik og adgangskoder. Den kan ikke se browserdata på dine andre Chrome-profiler</translation>
-<translation id="8801657293260363985">V8 er Chromes JavaScript- og WebAssembly-maskine, der bruges til at forbedre websitets effektivitet</translation>
 <translation id="8821043148920470810">Hvis du vil have fremtidige Google Chrome-opdateringer, skal du have Windows 10 eller nyere. Denne computer anvender Windows 7.</translation>
 <translation id="8823341990149967727">Chrome er forældet</translation>
 <translation id="8825634023950448068">Vi sletter automatisk de interesser, der er ældre end 4 uger, for at beskytte dit privatliv. Mens du surfer, kan en interesse vises på listen igen. Hvis Chrome tager fejl, eller du ikke vil se visse annoncer, kan du fjerne en interesse.</translation>

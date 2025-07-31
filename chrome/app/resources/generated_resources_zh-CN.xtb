@@ -2517,7 +2517,6 @@
 <translation id="2730647855013151888">包含所有个人信息</translation>
 <translation id="2730901670247399077">表情符号建议</translation>
 <translation id="273093730430620027">此网页正在使用您的摄像头。</translation>
-<translation id="2730956943403103181">不允许使用 V8 优化工具</translation>
 <translation id="2731392572903530958">重新打开关闭的窗口(&amp;E)</translation>
 <translation id="2731700343119398978">请稍候...</translation>
 <translation id="2731971182069536520">当您下次重启设备时，您的管理员将会执行一项一次性更新，这项更新会删除您的本地数据。</translation>
@@ -3116,7 +3115,6 @@
 <translation id="3160928651883997588">VPN 偏好设置</translation>
 <translation id="3161522574479303604">所有语言</translation>
 <translation id="3162070126914310576">由于您的组织部门已达到初始注册上限，因此无法立即注册此设备。请与您的管理员联系，以获取帮助。</translation>
-<translation id="3162766632262775911">始终允许使用 V8 优化工具</translation>
 <translation id="3162853326462195145">学校账号</translation>
 <translation id="3162899666601560689">网站可以使用 Cookie 来提升您的浏览体验，例如让您保持登录状态或记住您购物车中的商品</translation>
 <translation id="3163085718713826852">输入证书密码</translation>
@@ -3830,7 +3828,6 @@
 <translation id="3666971425390608309"><ph name="FILE_NAME" /> 已暂停下载。</translation>
 <translation id="3670113805793654926">来自任何供应商的设备</translation>
 <translation id="3670229581627177274">开启蓝牙</translation>
-<translation id="3670480940339182416">网站可以使用 V8 优化工具</translation>
 <translation id="3671982238795754537">详细了解通行密钥</translation>
 <translation id="3672681487849735243">检测到出厂错误</translation>
 <translation id="3673097791729989571">由 <ph name="SAML_DOMAIN" /> 托管的登录服务</translation>
@@ -5729,6 +5726,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5003070249435823986">使用手势进入滚动模式，然后将头转向要滚动的方向。再次使用手势可退出滚动模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
+<translation id="5005311809885666699">通过 Chrome 保存</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5006218871145547804">Crostini Android 应用 ADB</translation>
 <translation id="5006778209728626987">闪电</translation>
@@ -6315,7 +6313,7 @@
 <translation id="542948651837270806">需为“可信平台模块”固件安装更新。请访问 <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">全角</translation>
 <translation id="5430931332414098647">即时网络共享</translation>
-<translation id="5431318178759467895">彩色</translation>
+<translation id="5431318178759467895">颜色</translation>
 <translation id="5432145523462851548">在文件夹中显示 <ph name="FILE_NAME" /></translation>
 <translation id="5432223177001837288">若要分享音频，请改为分享标签页</translation>
 <translation id="5432872710261597882">选择“我喜欢”，会提交您喜欢此功能的反馈。</translation>
@@ -8401,7 +8399,7 @@
 <translation id="6928650056523249512">自动撤消未使用的网站的权限</translation>
 <translation id="6929126689972602640">学校账号不支持家长控制功能。如果您想添加学校账号，让孩子能够访问 Google 课堂及其他网站以在家中完成学校作业，请先使用孩子的个人账号登录。您可于需要时再在设置中添加学校账号。</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{有 1 个扩展程序已被拒}other{有 # 个扩展程序已被拒}}</translation>
-<translation id="6930337524857202955">有新的下载任务完成</translation>
+<translation id="6930337524857202955">有新下载好的内容</translation>
 <translation id="6931539787433490713"><ph name="USER_NAME" /> • <ph name="PROFILE_NAME" /></translation>
 <translation id="6931690462168617033">点击力度</translation>
 <translation id="6933321725007230600">开启同步功能(&amp;S)…</translation>
@@ -8736,7 +8734,7 @@
               {NUM_OTHER_MEMBERS,plural, =0{加入<ph name="OWNER_FIRST_NAME" />所在的标签页分组}=1{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}other{加入<ph name="OWNER_FIRST_NAME" />和另外 # 人所在的标签页分组}}</translation>
 <translation id="7181976109296206547">查看徽标、名称和网址更新</translation>
 <translation id="7182051712900867547">使用其他账号</translation>
-<translation id="7182063559013288142">即时热点</translation>
+<translation id="7182063559013288142">智能热点</translation>
 <translation id="7182791023900310535">移动您的密码</translation>
 <translation id="718427252411067142">为防止他人使用您的密码，请打开该应用更改密码</translation>
 <translation id="718512729823942418">无可用麦克风</translation>
@@ -9692,6 +9690,7 @@
 <translation id="784475655832336580">开启 ChromeVox 后，无法使用键盘焦点突出显示此内容</translation>
 <translation id="7844992432319478437">正在更新diff</translation>
 <translation id="7846161022626028328">出错了，请重试。</translation>
+<translation id="7846296061357476882">Google 服务</translation>
 <translation id="7846634333498149051">键盘</translation>
 <translation id="7847212883280406910">按 Ctrl + Alt + S 键可切换到 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">在新标签页分组中打开所有（<ph name="URL_COUNT" /> 个）网址</translation>
@@ -9711,7 +9710,6 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855258394151767387">按下“w”键表示按下鼠标按键</translation>
 <translation id="7855678561139483478">将标签页移至新窗口</translation>
-<translation id="7856798637819639676">安全地使用 Android 设备上的 ID</translation>
 <translation id="7857004848504343806">您的计算机包含一个安全模块，该模块可用于在 ChromeOS Flex 中实现许多关键的安全功能。如需了解详情，请访问 Chromebook 帮助中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建议</translation>
 <translation id="7858120906780498731">ChromeOS 连接的输入设备</translation>
@@ -9970,7 +9968,6 @@
 <translation id="8026784703228858744">借助同步功能保存书签和其他数据</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前访问过}=1{1 天前访问过}other{# 天前访问过}}</translation>
 <translation id="8028060951694135607">Microsoft 密钥恢复</translation>
-<translation id="8028138772801251745">利用 AI 自动填充</translation>
 <translation id="8028803902702117856">正在下载“<ph name="FILE_NAME" />”，大小为 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{阅读清单}=1{阅读清单 ({SELECTED_ITEMS})}other{阅读清单 ({SELECTED_ITEMS})}}</translation>
@@ -10067,7 +10064,6 @@
 <translation id="808894953321890993">更改密码</translation>
 <translation id="8090234456044969073">读取您最常访问的网站列表</translation>
 <translation id="8090513782447872344">日后您可随时回来查看</translation>
-<translation id="8090579562279016251">降低性能，但提高 V8 防范攻击的能力</translation>
 <translation id="8090686009202681725">利用 AI 创建主题</translation>
 <translation id="8093359998839330381">“<ph name="PLUGIN_NAME" />”没有响应</translation>
 <translation id="8094536695728193970">杏黄</translation>
@@ -10121,7 +10117,6 @@
 <translation id="8125651784723647184">密码分享功能由您的管理员管理</translation>
 <translation id="8126355825906412872">微笑</translation>
 <translation id="8129265306888404830">如果想通过贵组织 (<ph name="EMAIL_DOMAIN" />) 使用电子邮件地址，您需要使用企业注册。如果此设备是用于个人用途，请使用您的个人 Google 账号登录。</translation>
-<translation id="8130476996317833777">不允许网站使用 V8 优化工具</translation>
 <translation id="813082847718468539">查看网站信息</translation>
 <translation id="8131740175452115882">确认</translation>
 <translation id="8133297578569873332">可接受 - FM</translation>

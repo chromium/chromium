@@ -269,6 +269,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4205939740494406371">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google"<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Po e anulon...</translation>
 <translation id="4224210481850767180">Instalimi është anuluar.</translation>
+<translation id="4230631012078055975">Merr më shumë kur je i identifikuar në Chrome</translation>
 <translation id="4242034826641750751">Chrome ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4251615635259297716">Të lidhen të dhënat e tua të Chrome me këtë llogari?</translation>
@@ -592,6 +593,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8321888067342493336">Ruaje si imazh</translation>
 <translation id="8336463659890584292">Kur një sajt kërkon të ngarkojë paraprakisht lidhje në mënyrë private në faqen e tij, Chrome përdor serverët e Google. Kjo e fsheh identitetin tënd nga sajti i ngarkuar paraprakisht, por Google mëson se çfarë sajtesh ngarkohen paraprakisht.</translation>
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
+<translation id="8349094670477064572">Do të ruash dhe përdorësh fjalëkalimet dhe më shumë në "Llogarinë tënde të Google" në çdo kohë që je i identifikuar në Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Përkthe në</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
 <translation id="8387459386171870978">Vazhdo të përdorësh Chrome</translation>
@@ -630,7 +632,6 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8781673607513845160">Për të përdorur kamerën, jepi Chrome qasje te <ph name="BEGIN_LINK" />cilësimet e sistemit<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Gabim gjatë instalimit: Administratori i rrjetit ka zbatuar një politikë grupi që parandalon instalimin: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Organizata jote mund të shikojë dhe të menaxhojë të dhënat e shfletimit, si p.sh. faqeshënuesit, historikun dhe fjalëkalimet e tua. Ajo nuk mund të shikojë të dhënat e shfletimit në profilet e tjera të Chrome</translation>
-<translation id="8801657293260363985">V8 është motori i JavaScript dhe WebAssembly i Chrome që përdoret për të përmirësuar performancën e sajteve</translation>
 <translation id="8821043148920470810">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet Windows 10 ose një version i mëvonshëm. Ky kompjuter përdor Windows 7.</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>
 <translation id="8825634023950448068">Për të mbrojtur privatësinë tënde, ne fshijmë automatikisht interesat e tua që janë më të vjetra se 4 javë. Ndërsa vazhdon të shfletosh, një interes mund të shfaqet përsëri në listë. Nëse Chrome gabohet ose nëse nuk dëshiron të shikosh reklama të caktuara, mund të heqësh një interes.</translation>

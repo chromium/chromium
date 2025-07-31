@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Алтернативна</translation>
 <translation id="1264974993859112054">Спорт</translation>
 <translation id="1268480293435976622">Плик, китайски №7</translation>
-<translation id="1269045546668906972">Включете автоматичното попълване с AI, за да се попълват автоматично повече полета</translation>
 <translation id="1269516672602708785">Бързо създаване на сайт в Google Сайтове</translation>
 <translation id="1270328905573953738">Преместване и преселване</translation>
 <translation id="1270502636509132238">Начин на вземане</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Други отметки</translation>
 <translation id="2355395290879513365">Извършители на атаки може да са в състояние да видят изображенията, които преглеждате на този сайт, и да ви подведат, като ги променят.</translation>
 <translation id="2356070529366658676">Попитайте ме</translation>
-<translation id="2356926036049612643">Оптимизатор V8</translation>
 <translation id="2356941001189392209">Ограничен списък с URL адреси на посещаваните от вас страници, където има предишни технологични събития</translation>
 <translation id="2357481397660644965">Устройството ви се управлява от <ph name="DEVICE_MANAGER" />, а профилът ви се управлява от <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Няколко</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">Плик №11</translation>
 <translation id="398470910934384994">Птици</translation>
 <translation id="3985750352229496475">Управление на адресите…</translation>
-<translation id="3986506998755860149">научете повече за автоматичното попълване с AI в настройките</translation>
 <translation id="3986557181852957825">Лого на Google Pay и Klarna</translation>
 <translation id="3986705137476756801">Изключване на „Надписи на живо“ засега</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">По-малко от 1 МБ</translation>
 <translation id="3990250421422698716">Разделно офсетово отпечатване</translation>
 <translation id="3990532701115075684">проследява ръцете ви</translation>
+<translation id="399179161741278232">Импортирани</translation>
 <translation id="3992684624889376114">Всичко за тази страница</translation>
 <translation id="3995639283717357522">Прилагане на правилата</translation>
 <translation id="3996683183117168945">Цитат <ph name="CURRENT_CITATION" /> от <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2087,6 +2085,7 @@
 <translation id="4451135742916150903">Може да поиска разрешение да се свързва с HID устройства</translation>
 <translation id="4451684391620232683">Показан на потребителя текст:</translation>
 <translation id="4452328064229197696">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. За да защитите профилите си, мениджърът на паролите в Google ви препоръчва да проверите запазените си пароли.</translation>
+<translation id="4454620051637646665">Отхвърляне на банера</translation>
 <translation id="4456937135469235202">Приключенски пътешествия</translation>
 <translation id="4458013283022578512">Въведете въпрос</translation>
 <translation id="4464826014807964867">Уебсайтове, които разполагат с информация от организацията ви</translation>
@@ -2398,7 +2397,6 @@
 <translation id="5002932099480077015">Ако настройката е активирана, копие на картата ви ще се съхранява в Chrome на това устройство с цел по-бързо попълване на формуляри.</translation>
 <translation id="5007344584818503324">Активност в споделените групи раздели</translation>
 <translation id="5007392906805964215">Преглед</translation>
-<translation id="5010599530303458903">Плащане месечно или на 4 безлихвени вноски (ако отговаряте на условията)</translation>
 <translation id="5011561501798487822">Установен език</translation>
 <translation id="5015510746216210676">Име на компютъра:</translation>
 <translation id="5016205925109358554">Серифен</translation>
@@ -2672,8 +2670,10 @@
 <translation id="5464236009658034488">Канцеларски материали</translation>
 <translation id="5465724643247062031">Стъкло (непрозрачно)</translation>
 <translation id="5466018172325111652">Не получихте кода си? <ph name="BEGIN_LINK" />Получаване на нов код<ph name="END_LINK" /></translation>
+<translation id="5466818462212249084">Приложения за плащане</translation>
 <translation id="5470861586879999274">&amp;Възстановяване на редактирането</translation>
 <translation id="5472588168895083535">Проследяването на ръцете е блокирано</translation>
+<translation id="5477756102936130143">Активиране на пренасочването към поддържани приложения за плащане</translation>
 <translation id="5479505548832623900">Вероятно се пренебрегва от разширението.</translation>
 <translation id="547963486735802022">Опитайте отново да прехвърлите файловете си</translation>
 <translation id="5481076368049295676">Въпросното съдържание може да се опита да инсталира опасен софтуер на устройството ви, който да открадне или изтрие информацията ви. <ph name="BEGIN_LINK" />Показване въпреки това<ph name="END_LINK" /></translation>
@@ -2783,6 +2783,7 @@
 <translation id="5642362243427711530"><ph name="FIRST_STRING" />. <ph name="SECOND_STRING" /></translation>
 <translation id="5642411781689336699">Стереосистеми и компоненти</translation>
 <translation id="5644090287519800334">Изместване на изображението от страна 1 по оста X</translation>
+<translation id="5644128326840674462">Банер за популяризация</translation>
 <translation id="5645132789250840550">Пластмаса (полугланцирана)</translation>
 <translation id="5645719697465708351">Стоки за тържества и празници</translation>
 <translation id="5645854190134202180">Втора смяна</translation>
@@ -2802,6 +2803,7 @@
 <translation id="567604591393105935">Долният лист с информация за цените е отворен на половината височина</translation>
 <translation id="5676641328629468296">Google Pay, Pix</translation>
 <translation id="5678007133659493065">Фолио</translation>
+<translation id="5679086391497468752">Домашен адрес</translation>
 <translation id="5680642791693447368">Трилъри, криминални и детективски филми</translation>
 <translation id="568292603005599551">Позиция на изображението по оста X</translation>
 <translation id="5684874026226664614">Ами сега! Тази страница не можа да се преведе.</translation>
@@ -3075,7 +3077,6 @@
 <translation id="6151417162996330722">Сертификатът на сървъра има твърде дълъг период на валидност.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> инча (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Бягане и ходене</translation>
-<translation id="6157079899699705880">Функцията за автоматично попълване с AI разпознава формулярите по-добре и може да ги попълва по-бързо вместо вас</translation>
 <translation id="6157754950574419155">Премахване на всичко от историята</translation>
 <translation id="6157877588268064908">За да видите начините на доставка и изискванията, изберете адрес</translation>
 <translation id="6159554577634054750">Борба с вредители</translation>
@@ -3298,6 +3299,7 @@
 <translation id="6494750904506170417">изскачащи прозорци и пренасочвания</translation>
 <translation id="6495664197699704593">Паролата е запазена само на това устройство. За да я използвате на другите си устройства, <ph name="GOOGLE_PASSWORD_MANAGER" />.</translation>
 <translation id="649611364763911650">За да използвате друга услуга за автоматично попълване в Chrome, изберете съответния доставчик в настройките на Android</translation>
+<translation id="6496888501595572660">Показване на <ph name="PAY_LATER_OPTIONS_HELP_LINK_BEGIN" />опции за плащане по-късно<ph name="PAY_LATER_OPTIONS_HELP_LINK_END" /> по време на плащането</translation>
 <translation id="6499038740797743453">Да се зададе ли повторно паролата?</translation>
 <translation id="6502510275417601303">Сигналът за нова настройка за плащане е затворен</translation>
 <translation id="6502991525169604759">Без промените ви</translation>
@@ -3966,6 +3968,7 @@
 <translation id="7625242817712715120">Според администраторско правило не се препоръчва отпечатването на това съдържание</translation>
 <translation id="7627785503571172573">Снимка (филм)</translation>
 <translation id="762844065391966283">Един по един</translation>
+<translation id="7629058630148860366">Служебен адрес</translation>
 <translation id="763042426047865637">Противопожарни услуги и охранителни дейности</translation>
 <translation id="7630470133768862132">Състояние на съгласието:</translation>
 <translation id="7631072086707140121">URL адресът трябва да е HTTPS.</translation>
@@ -4651,6 +4654,7 @@
 <translation id="8816395686387277279"><ph name="UPDATE_CHROME_FOCUSED_FRIENDLY_MATCH_TEXT" />. Натиснете Tab и след това – Enter, за да актуализирате Chrome от настройките</translation>
 <translation id="8820817407110198400">Отметки</translation>
 <translation id="882338992931677877">Слот за ръчно подаване</translation>
+<translation id="8827067923357481311">Опции за плащане по-късно</translation>
 <translation id="8830320733681313421">Hagaki Postcard</translation>
 <translation id="8830565333350631528">Преглед на файловете в(ъв) <ph name="CLOUD_PROVIDER" /></translation>
 <translation id="8831783793142731637">Налице за покупки на стойност над <ph name="RANGE_MINIMUM" /></translation>

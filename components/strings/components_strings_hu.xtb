@@ -162,7 +162,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="1264309058268477500">Alternatív</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">7. kínai boríték</translation>
-<translation id="1269045546668906972">Kapcsolja be az AI-jal támogatott automatikus kitöltést, hogy még több mezőt tölthessen ki automatikusan.</translation>
 <translation id="1269516672602708785">Új webhely gyors létrehozása a Google Webhelyek szolgáltatással</translation>
 <translation id="1270328905573953738">Költöztetés és áttelepítés</translation>
 <translation id="1270502636509132238">Átvételi mód</translation>
@@ -819,7 +818,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2354001756790975382">További könyvjelzők</translation>
 <translation id="2355395290879513365">A felhasználók esetleg láthatják a webhelyen éppen megtekintett képeit, és a képeket módosítva félrevezethetik Önt.</translation>
 <translation id="2356070529366658676">Kérés</translation>
-<translation id="2356926036049612643">V8 optimalizáló</translation>
 <translation id="2356941001189392209">A felkeresett oldalak URL-jeinek korlátozott listája, ahol régi technológiai események történnek</translation>
 <translation id="2357481397660644965">Eszközét a(z) <ph name="DEVICE_MANAGER" />, fiókját pedig a(z) <ph name="ACCOUNT_MANAGER" /> kezeli.</translation>
 <translation id="2359629602545592467">Több</translation>
@@ -1783,13 +1781,13 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3984581365661308170">11. boríték</translation>
 <translation id="398470910934384994">Madarak</translation>
 <translation id="3985750352229496475">Címek kezelése…</translation>
-<translation id="3986506998755860149">További információ az AI-jal támogatott automatikus kitöltésről a beállításokban</translation>
 <translation id="3986557181852957825">Google Pay, Klarna-logó</translation>
 <translation id="3986705137476756801">Élő feliratozás átmeneti kikapcsolása</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Kevesebb mint 1 MB</translation>
 <translation id="3990250421422698716">Példányok eltolása</translation>
 <translation id="3990532701115075684">Kézmozgás követése</translation>
+<translation id="399179161741278232">Importált</translation>
 <translation id="3992684624889376114">Információ az oldalról</translation>
 <translation id="3995639283717357522">Házirendek alkalmazása</translation>
 <translation id="3996683183117168945"><ph name="MAX_CITATIONS" />/<ph name="CURRENT_CITATION" />. idézet, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2396,7 +2394,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5002932099480077015">Ha engedélyezi, a Chrome megőrzi a kártya másolatát ezen az eszközön a gyorsabb űrlapkitöltés érdekében.</translation>
 <translation id="5007344584818503324">Megosztott lapcsoportok tevékenységei</translation>
 <translation id="5007392906805964215">Áttekintés</translation>
-<translation id="5010599530303458903">Fizetés havonta vagy négy kamatmentes részletben (jogosultságtól függően)</translation>
 <translation id="5011561501798487822">Észlelt nyelv</translation>
 <translation id="5015510746216210676">Számítógépnév:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3077,7 +3074,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6151417162996330722">A szervertanúsítvány érvényességi ideje túl hosszú.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> ×<ph name="HEIGHT" /> hüvelyk (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Futás és gyaloglás</translation>
-<translation id="6157079899699705880">Az AI-jal támogatott automatikus kitöltés pontosabban megérti az űrlapokat, és gyorsabban tudja kitölteni őket</translation>
 <translation id="6157754950574419155">Az összes eltávolítása az előzményekből</translation>
 <translation id="6157877588268064908">A szállítási módok és követelmények megtekintéséhez válassza ki a címet</translation>
 <translation id="6159554577634054750">Rovarirtás</translation>

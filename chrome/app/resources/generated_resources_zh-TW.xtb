@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">檢查新名稱</translation>
 <translation id="1166596238782048887">「<ph name="TAB_TITLE" />」分頁屬於「<ph name="DESK_TITLE" />」桌面</translation>
 <translation id="1166644470305877068">隔離網頁應用程式會自動按照這項設定運作</translation>
+<translation id="116712635768212829">如果 Chrome 發現你的密碼曾在資料侵害事件中外洩，Google 密碼管理工具可能會在你登入時建議變更密碼。</translation>
 <translation id="1168020859489941584">將於 <ph name="TIME_REMAINING" /> 內開啟...</translation>
 <translation id="1168704243733734901">最近的<ph name="SUBJECT" /> AI 主題 <ph name="INDEX" />，風格為<ph name="STYLE" />，情境為<ph name="MOOD" />。</translation>
 <translation id="116896278675803795">根據所選內容自動變更為相符的語言</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">設定完成！備妥裝置以進行接下來的遊戲</translation>
 <translation id="137651782282853227">你所儲存的地址會顯示在這裡</translation>
 <translation id="1376771218494401509">命名視窗...(&amp;W)</translation>
+<translation id="1377438103060664754">如果你的密碼在資料侵害事件中外洩，Google 密碼管理工具會詢問你是否要改用高強度密碼</translation>
 <translation id="1377600615067678409">暫時略過</translation>
 <translation id="1378613616312864539">這項設定目前受「<ph name="NAME" />」控制</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{沒有任何密碼外洩}=1{1 組密碼外洩}other{{NUM_COMPROMISED} 組密碼外洩}}</translation>
@@ -2523,7 +2525,6 @@
 <translation id="2730647855013151888">加入所有個人資訊</translation>
 <translation id="2730901670247399077">表情符號建議</translation>
 <translation id="273093730430620027">這個網頁正在存取你的攝影機。</translation>
-<translation id="2730956943403103181">不允許使用 V8 最佳化工具</translation>
 <translation id="2731392572903530958">重新開啟先前關閉的視窗(&amp;E)</translation>
 <translation id="2731700343119398978">請稍候...</translation>
 <translation id="2731971182069536520">系統管理員會在你下次重新啟動裝置時執行一次性更新，而這項更新會刪除你的本機資料。</translation>
@@ -3122,7 +3123,6 @@
 <translation id="3160928651883997588">VPN 偏好設定</translation>
 <translation id="3161522574479303604">所有語言</translation>
 <translation id="3162070126914310576">貴機構單位已達到初始註冊上限，因此目前無法註冊這部裝置。請向管理員尋求協助。</translation>
-<translation id="3162766632262775911">一律允許使用 V8 最佳化工具</translation>
 <translation id="3162853326462195145">學校帳戶</translation>
 <translation id="3162899666601560689">網站可使用 Cookie 改善瀏覽體驗，例如讓你保持登入狀態，或記住購物車中的商品</translation>
 <translation id="3163085718713826852">輸入憑證密碼</translation>
@@ -3835,7 +3835,6 @@
 <translation id="3666971425390608309">已暫停下載「<ph name="FILE_NAME" />」。</translation>
 <translation id="3670113805793654926">來自任何供應商的裝置</translation>
 <translation id="3670229581627177274">開啟藍牙功能</translation>
-<translation id="3670480940339182416">網站可以使用 V8 最佳化工具</translation>
 <translation id="3671982238795754537">進一步瞭解密碼金鑰</translation>
 <translation id="3672681487849735243">系統偵測到原廠錯誤</translation>
 <translation id="3673097791729989571">登入作業由 <ph name="SAML_DOMAIN" /> 代管</translation>
@@ -5734,6 +5733,7 @@
 <translation id="5001526427543320409">第三方 Cookie</translation>
 <translation id="5003070249435823986">使用表情進入捲動模式，然後將頭部轉向要捲動的方向。再次做出表情即可退出捲動模式。</translation>
 <translation id="5003993274120026347">下一句</translation>
+<translation id="5005311809885666699">透過 Chrome 儲存</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
 <translation id="5006778209728626987">閃電</translation>
@@ -9695,6 +9695,7 @@
 <translation id="784475655832336580">ChromeVox 開啟時無法使用鍵盤焦點醒目顯示項目</translation>
 <translation id="7844992432319478437">正在更新差異部分</translation>
 <translation id="7846161022626028328">發生錯誤，請再試一次。</translation>
+<translation id="7846296061357476882">Google 服務</translation>
 <translation id="7846634333498149051">鍵盤</translation>
 <translation id="7847212883280406910">按下 Ctrl + Alt + S 鍵切換至 <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">在新分頁群組中開啟所有書籤 (<ph name="URL_COUNT" /> 個)</translation>
@@ -9714,7 +9715,6 @@
 <translation id="7853747251428735">更多工具(&amp;L)</translation>
 <translation id="7855258394151767387">按下「w」表示按下滑鼠按鍵</translation>
 <translation id="7855678561139483478">將分頁移到新視窗</translation>
-<translation id="7856798637819639676">安全使用 Android 裝置上的身分證件資料</translation>
 <translation id="7857004848504343806">你的電腦含有安全性模組，可用於實作 ChromeOS Flex 中許多重要的安全性功能。如需瞭解詳情，請造訪 Chromebook 說明中心：https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">文字建議</translation>
 <translation id="7858120906780498731">ChromeOS 已連接的輸入裝置</translation>
@@ -9973,7 +9973,6 @@
 <translation id="8026784703228858744">透過同步處理功能儲存書籤和其他資訊</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 天前造訪過}=1{1 天前造訪過}other{# 天前造訪過}}</translation>
 <translation id="8028060951694135607">Microsoft 金鑰修復</translation>
-<translation id="8028138772801251745">使用 AI 自動填入</translation>
 <translation id="8028803902702117856">正在下載 <ph name="FILE_NAME" />，檔案大小為 <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">大小</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{閱讀清單}=1{閱讀清單 ({SELECTED_ITEMS})}other{閱讀清單 ({SELECTED_ITEMS})}}</translation>
@@ -10070,7 +10069,6 @@
 <translation id="808894953321890993">變更密碼</translation>
 <translation id="8090234456044969073">讀取最常造訪的網站清單</translation>
 <translation id="8090513782447872344">你可以日後隨時返回查看</translation>
-<translation id="8090579562279016251">降低效能但提高 V8 防範攻擊的能力</translation>
 <translation id="8090686009202681725">使用 AI 建立主題</translation>
 <translation id="8093359998839330381">「<ph name="PLUGIN_NAME" />」無回應</translation>
 <translation id="8094536695728193970">杏黃色</translation>
@@ -10124,7 +10122,6 @@
 <translation id="8125651784723647184">分享密碼功能是由系統管理員管理</translation>
 <translation id="8126355825906412872">微笑</translation>
 <translation id="8129265306888404830">如要使用貴機構的電子郵件地址 (<ph name="EMAIL_DOMAIN" />)，你必須進行企業註冊程序。假如這是你的個人裝置，請登入個人 Google 帳戶。</translation>
-<translation id="8130476996317833777">禁止網站使用 V8 最佳化工具</translation>
 <translation id="813082847718468539">查看網站資訊</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8133297578569873332">可以接受 - FM</translation>

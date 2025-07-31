@@ -181,7 +181,6 @@
 <translation id="3258596308407688501">Google Chrome ไม่สามารถอ่านและเขียนข้อมูลในไดเรกทอรีข้อมูล:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 เป็นเครื่องมือ JavaScript และ WebAssembly ของ Chromium ที่ใช้เพื่อปรับปรุงประสิทธิภาพของเว็บไซต์</translation>
 <translation id="3286538390144397061">รีสตาร์ทเดี๋ยวนี้</translation>
 <translation id="328888136576916638">คีย์ API ของ Google หายไป การทำงานบางอย่างของ Chromium จะถูกปิดใช้งาน</translation>
 <translation id="3296368748942286671">เรียกใช้แอปพลิเคชันพื้นหลังต่อไปเมื่อปิด Chromium</translation>

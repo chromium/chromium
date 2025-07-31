@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Εναλλακτικός</translation>
 <translation id="1264974993859112054">Αθλητικά</translation>
 <translation id="1268480293435976622">Κινεζικός φάκελος #7</translation>
-<translation id="1269045546668906972">Ενεργοποιήστε την αυτόματη συμπλήρωση με χρήση AI για να συμπληρώνετε αυτόματα περισσότερα πεδία</translation>
 <translation id="1269516672602708785">Γρήγορη δημιουργία νέου ιστοτόπου στους Ιστοτόπους Google</translation>
 <translation id="1270328905573953738">Μετακομίσεις και μετεγκαταστάσεις</translation>
 <translation id="1270502636509132238">Τρόπος παραλαβής</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Άλλοι σελιδοδείκτες</translation>
 <translation id="2355395290879513365">Οι εισβολείς ενδέχεται να έχουν τη δυνατότητα να δουν τις εικόνες που προβάλετε σε αυτόν τον ιστότοπο και να σας εξαπατήσουν τροποποιώντας τες.</translation>
 <translation id="2356070529366658676">Να γίνεται ερώτηση</translation>
-<translation id="2356926036049612643">Βελτιστοποιητής V8</translation>
 <translation id="2356941001189392209">Μια περιορισμένη λίστα URL των σελίδων που επισκέπτεστε όπου προκύπτουν συμβάντα τεχνολογίας παλαιού τύπου</translation>
 <translation id="2357481397660644965">Η διαχείριση της συσκευής σας γίνεται από τον τομέα <ph name="DEVICE_MANAGER" /> και του λογαριασμού σας από τον τομέα <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Πολλά</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">Φάκελος #11</translation>
 <translation id="398470910934384994">Πουλιά</translation>
 <translation id="3985750352229496475">Διαχείριση διευθύνσεων…</translation>
-<translation id="3986506998755860149">μάθετε περισσότερα σχετικά με την Αυτόματη συμπλήρωση με AI στις ρυθμίσεις</translation>
 <translation id="3986557181852957825">Λογότυπα Google Pay, Klarna</translation>
 <translation id="3986705137476756801">Απενεργοποίηση Ζωντανών υπότιτλων προς το παρόν</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Λιγότερα από 1 MB</translation>
 <translation id="3990250421422698716">Μετατόπιση στοίβας</translation>
 <translation id="3990532701115075684">Παρακολούθηση των κινήσεων των χεριών σας</translation>
+<translation id="399179161741278232">Έγινε εισαγωγή</translation>
 <translation id="3992684624889376114">Σχετικά με αυτήν τη σελίδα</translation>
 <translation id="3995639283717357522">Εφαρμογή πολιτικών</translation>
 <translation id="3996683183117168945">Αναφορά <ph name="CURRENT_CITATION" /> από <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2400,7 +2398,6 @@
 <translation id="5002932099480077015">Εάν ενεργοποιηθεί, το Chrome θα αποθηκεύσει ένα αντίγραφο της κάρτας σας σε αυτήν τη συσκευή για ταχύτερη συμπλήρωση φορμών.</translation>
 <translation id="5007344584818503324">Δραστηριότητα κοινόχρηστων ομάδων καρτελών</translation>
 <translation id="5007392906805964215">Έλεγχος</translation>
-<translation id="5010599530303458903">Πληρωμή μηνιαίως ή σε 4 άτοκες δόσεις (ανάλογα με την καταλληλότητα)</translation>
 <translation id="5011561501798487822">Εντοπίστηκε γλώσσα</translation>
 <translation id="5015510746216210676">Όνομα συσκευής:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3082,7 +3079,6 @@
 <translation id="6151417162996330722">Το πιστοποιητικό του διακομιστή έχει πολύ μεγάλη περίοδο εγκυρότητας.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> επί <ph name="HEIGHT" /> ίντσες (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Τρέξιμο και περπάτημα</translation>
-<translation id="6157079899699705880">Η Αυτόματη συμπλήρωση με AI κατανοεί καλύτερα τις φόρμες και μπορεί να τις συμπληρώνει αυτόματα πιο γρήγορα για εσάς</translation>
 <translation id="6157754950574419155">Κατάργηση όλων από το ιστορικό</translation>
 <translation id="6157877588268064908">Για να δείτε τρόπους και απαιτήσεις αποστολής, επιλέξτε μια διεύθυνση</translation>
 <translation id="6159554577634054750">Καταπολέμηση επιβλαβών οργανισμών</translation>

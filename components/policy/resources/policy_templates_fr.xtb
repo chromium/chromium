@@ -403,6 +403,7 @@ Pour en savoir plus sur les contextes sécurisés, consultez la page https://www
       Si la règle <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" /> n'est pas configurée, le nom d'hôte indiqué par l'URL de recherche est utilisé.</translation>
 <translation id="1312799700549720683">Contrôle les paramètres d'affichage.</translation>
 <translation id="131353325527891113">Afficher les noms d'utilisateur sur l'écran de connexion</translation>
+<translation id="1317158052518324525">Ne pas autoriser la saisie automatique améliorée.</translation>
 <translation id="1317658068839330898">Ne pas autoriser l'utilisation de l'<ph name="ASSISTANT_PRODUCT_NAME" /> sur le Web</translation>
 <translation id="1318233005302276244">Permet aux utilisateurs de suivre leurs colis sur Chrome.</translation>
 <translation id="1323501563951768821">Les paramètres F12 utilisent le raccourci qui contient la touche de modification Maj</translation>
@@ -6129,11 +6130,6 @@ Les caractères génériques d'hôte globaux (par exemple, "*" ou "[*]") ne sont
 
 Remarque : Cette règle ne s'applique pas aux mises à niveau HSTS.</translation>
 <translation id="5297948043665200363">Autoriser l'utilisateur à rester connecté une fois que son compte n'est plus authentifié</translation>
-<translation id="5298594338496226089">Si cette règle est configurée, les origines listées sont autorisées à récupérer les attributs de l'appareil (comme le numéro de série ou le nom d'hôte) à l'aide de l'API Device Attributes.
-
-Les origines doivent correspondre aux applis Web installées d'office à l'aide de la règle <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> ou <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (depuis la version 125), ou configurées en tant qu'applis kiosque. Pour connaître les spécifications de l'API Device Attributes, veuillez consulter https://wicg.github.io/WebApiDevice/device_attributes.
-
-Pour en savoir plus sur les formats <ph name="URL_LABEL" /> valides (depuis la version 127), veuillez consulter https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. La valeur <ph name="WILDCARD_VALUE" /> n'est pas acceptée pour cette règle.</translation>
 <translation id="5298949392804966105">Aucune restriction pour les comptes gérés</translation>
 <translation id="530111809849214840">Masquer l'option <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">Heure locale à laquelle le quota d'utilisation est renouvelé.</translation>
@@ -8245,6 +8241,7 @@ Sous <ph name="MS_WIN_NAME" />, la règle KDC est toujours respectée.</transla
 <translation id="6659537776197644458">Ne pas déclencher les flux d'authentification pour la synchronisation des mots de passe</translation>
 <translation id="6659877981632400997">Le menu contextuel ne comportera pas d'élément de menu permettant de partager des images avec <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Activer la création de rapports cloud pour un profil géré</translation>
+<translation id="666203515318060501">Autoriser la saisie automatique améliorée sans améliorer les modèles d'IA.</translation>
 <translation id="6665670272107384733">Définir la fréquence à laquelle l'utilisateur doit saisir le mot de passe pour utiliser le déverrouillage rapide</translation>
 <translation id="6667586534922258705">Activer le bouton permettant d'afficher le mot de passe sur l'écran de connexion et de verrouillage</translation>
 <translation id="6667636336079341367">Autoriser Scanner sans améliorer les modèles d'IA.</translation>
@@ -9589,6 +9586,7 @@ Si vous définissez cette règle, vous devez désactiver la règle <ph name="PRI
 <translation id="7657261947024629645">Privilégier les performances.</translation>
 <translation id="76580522298425324">Autoriser la capture d'écran sans geste préalable de l'utilisateur</translation>
 <translation id="7666228839913571182">Autoriser les cookies tiers</translation>
+<translation id="7666782560345386904">Paramètres de la saisie automatique améliorée</translation>
 <translation id="7669630878711068277">Si vous activez cette règle ou que vous ne la configurez pas, les utilisateurs peuvent imprimer dans <ph name="PRODUCT_NAME" />. En revanche, ils ne peuvent pas modifier ce paramètre.
 
       Si vous la désactivez, les utilisateurs ne peuvent pas imprimer à partir de <ph name="PRODUCT_NAME" />. La fonctionnalité d'impression est désactivée dans le menu à trois points, les extensions et les applications JavaScript.</translation>
@@ -10508,6 +10506,7 @@ Si cette règle n'est pas configurée, la commande par le visage est désactivé
 <translation id="8331421240786531350">Empêcher les sites d'envoyer des requêtes à des points de terminaison du réseau local.</translation>
 <translation id="8331479227794770304">Activer les touches rémanentes</translation>
 <translation id="8332822245414537447">Désactiver la vérification de l'utilisation des clés RSA</translation>
+<translation id="8333141477131859004">Autoriser la saisie automatique améliorée et améliorer les modèles d'IA.</translation>
 <translation id="8334685561819743286">Désactiver la correction automatique lors de la saisie au clavier physique</translation>
 <translation id="8336986243404088829">Cette règle atténue les attaques de mémoire en traitement croisé par canal auxiliaire en isolant le processus de rendu sur le cœur de processeur et en empêchant d'autres processus de partager le même cœur. L'atténuation est compatible avec <ph name="MS_WIN_NAME" /> 11 24H2 et versions ultérieures. Si l'OS ne dispose pas de la prise en charge de la planification requise, cette règle n'aura aucun effet. Cette règle peut ralentir les performances dans certains scénarios exigeants analogues à la désactivation de l'hyperthreading. Pour en savoir plus, consultez https://learn.microsoft.com/fr-fr/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Si cette règle est activée, aucun autre processus ne sera planifié sur le même cœur de processeur lorsque le processus de rendu est en cours d'exécution.

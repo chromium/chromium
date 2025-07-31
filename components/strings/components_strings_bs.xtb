@@ -162,7 +162,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="1264309058268477500">Alternativno</translation>
 <translation id="1264974993859112054">Sportovi</translation>
 <translation id="1268480293435976622">Koverta Chinese #7</translation>
-<translation id="1269045546668906972">Uključite automatsko popunjavanje putem AI-ja da automatski popunjavate više polja</translation>
 <translation id="1269516672602708785">Brzo kreirajte novu web lokaciju na usluzi Google Web lokacije</translation>
 <translation id="1270328905573953738">Selidbe i premještanja</translation>
 <translation id="1270502636509132238">Način preuzimanja</translation>
@@ -819,7 +818,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2354001756790975382">Ostale oznake</translation>
 <translation id="2355395290879513365">Napadači mogu vidjeti slike koje gledate na ovoj web lokaciji i navesti vas da ih izmijenite.</translation>
 <translation id="2356070529366658676">Pitaj</translation>
-<translation id="2356926036049612643">V8 optimizator</translation>
 <translation id="2356941001189392209">Ograničena lista URL-ova stranica koje posjećujete na kojima se odvijaju događaji starije tehnologije</translation>
 <translation id="2357481397660644965">Vašim uređajem upravlja <ph name="DEVICE_MANAGER" />, a vašim računom upravlja <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Veći broj</translation>
@@ -1785,13 +1783,13 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3984581365661308170">Koverta #11</translation>
 <translation id="398470910934384994">Ptice</translation>
 <translation id="3985750352229496475">Upravljajte adresama...</translation>
-<translation id="3986506998755860149">Saznajte više o automatskom popunjavanju putem AI-ja u postavkama</translation>
 <translation id="3986557181852957825">Google Pay, Klarnin logotip</translation>
 <translation id="3986705137476756801">Isključite Automatske titlove za sada</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Manje od 1 MB</translation>
 <translation id="3990250421422698716">Odvajanje dokumenata</translation>
 <translation id="3990532701115075684">pratiti vaše ruke</translation>
+<translation id="399179161741278232">Uvezeno</translation>
 <translation id="3992684624889376114">O ovoj stranici</translation>
 <translation id="3995639283717357522">Primijeni pravila</translation>
 <translation id="3996683183117168945"><ph name="CURRENT_CITATION" />. citat od <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5002932099480077015">Ako je omogućeno, Chrome će pohraniti kopiju vaše kartice na ovom uređaju radi bržeg popunjavanja obrazaca.</translation>
 <translation id="5007344584818503324">Aktivnost u dijeljenoj grupi kartica</translation>
 <translation id="5007392906805964215">Pregled</translation>
-<translation id="5010599530303458903">Plaćajte mjesečno ili platite u 4 beskamatne rate (podložno je ispunjavanju uslova)</translation>
 <translation id="5011561501798487822">Otkriveni jezik</translation>
 <translation id="5015510746216210676">Naziv mašine:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6151417162996330722">Period važenja certifikata servera je predugačak.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Trčanje i hodanje</translation>
-<translation id="6157079899699705880">Automatsko popunjavanje pomoću AI-ja bolje razumije obrasce i može ih brže automatski popuniti za vas</translation>
 <translation id="6157754950574419155">Ukloni sve iz historije</translation>
 <translation id="6157877588268064908">Da vidite načine i uslove isporuke, odaberite adresu</translation>
 <translation id="6159554577634054750">Deratizacija i dezinsekcija</translation>
@@ -3586,6 +3582,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6989763994942163495">Prikaži napredne postavke...</translation>
 <translation id="6991376411634620997">Pristupni ključ • Windows Hello</translation>
 <translation id="6997288673234694149">Oprema za bejzbol i softbol</translation>
+<translation id="6998512609912910179">Brže ispunjavajte obrasce</translation>
 <translation id="6999480632062519056">Fitnes instrukcije i lični trening</translation>
 <translation id="7003278537452757231">Staze i tepisi</translation>
 <translation id="7003322000677139268">Dijelovi i dodatna oprema za vozila</translation>

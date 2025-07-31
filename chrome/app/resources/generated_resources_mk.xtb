@@ -2539,7 +2539,6 @@
 <translation id="2730647855013151888">Опфатете ги сите лични податоци</translation>
 <translation id="2730901670247399077">Предлози за емоџија</translation>
 <translation id="273093730430620027">Страницата пристапува до фотоапаратот.</translation>
-<translation id="2730956943403103181">Не е дозволено да се користи оптимизатор на V8</translation>
 <translation id="2731392572903530958">Повторно&amp; отвори затворен прозорец</translation>
 <translation id="2731700343119398978">Почекајте...</translation>
 <translation id="2731971182069536520">Следниот пат кога ќе го рестартирате уредот, вашиот администратор ќе изврши еднократно ажурирање што ќе ги избрише локалните податоци.</translation>
@@ -3138,7 +3137,6 @@
 <translation id="3160928651883997588">Поставки за VPN</translation>
 <translation id="3161522574479303604">Сите јазици</translation>
 <translation id="3162070126914310576">Уредов не може да се регистрира во моментов бидејќи вашата организациска единица го достигна своето ограничување за првично регистрирање. Контактирајте со администраторот за помош.</translation>
-<translation id="3162766632262775911">Секогаш е дозволено да се користи оптимизаторот на V8</translation>
 <translation id="3162853326462195145">Училишна сметка</translation>
 <translation id="3162899666601560689">Сајтовите може да користат колачиња за да го подобрат вашето доживување со прелистувањето, на пример, да ве одржат најавени или да запомнат ставки во кошничката за купување</translation>
 <translation id="3163085718713826852">Внесете ја лозинката за сертификатот</translation>
@@ -3854,7 +3852,6 @@
 <translation id="3666971425390608309">Преземањето е паузирано: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Уреди од кој било продавач</translation>
 <translation id="3670229581627177274">Вклучете Bluetooth</translation>
-<translation id="3670480940339182416">Сајтовите може да го користат оптимизаторот на V8</translation>
 <translation id="3671982238795754537">Дознајте повеќе за криптографските клучеви</translation>
 <translation id="3672681487849735243">Откриена е фабричка грешка</translation>
 <translation id="3673097791729989571">Најавување хостирано од <ph name="SAML_DOMAIN" /></translation>
@@ -5755,6 +5752,7 @@
 <translation id="5001526427543320409">Колачиња од трети страни</translation>
 <translation id="5003070249435823986">Користете го движењето за да влезете во „Режим на лизгање“, па помрднете ја главата во насоката во којашто сакате да лизгате. Користете го движењето повторно за да излезете од „Режим на лизгање“.</translation>
 <translation id="5003993274120026347">Следна реченица</translation>
+<translation id="5005311809885666699">Зачувано од Chrome</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5006218871145547804">ADB за апликации на Android за Crostini</translation>
 <translation id="5006778209728626987">Секавица</translation>
@@ -9723,6 +9721,7 @@
 <translation id="784475655832336580">Функцијата „Означи ја ставката со фокус на тастатурата“ не е достапна кога е вклучен ChromeVox</translation>
 <translation id="7844992432319478437">Се ажурира разлика</translation>
 <translation id="7846161022626028328">Се јави грешка. Обидете се повторно.</translation>
+<translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="7846634333498149051">Тастатура</translation>
 <translation id="7847212883280406910">Притиснете Ctrl + Alt + S за да префрлите на <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Отвори ги сите (<ph name="URL_COUNT" />) во нова група картички</translation>
@@ -9742,7 +9741,6 @@
 <translation id="7853747251428735">&amp;Повеќе алатки</translation>
 <translation id="7855258394151767387">Користете „W“ за да притиснете копче на глувчето</translation>
 <translation id="7855678561139483478">Преместете ја картичката во нов прозорец</translation>
-<translation id="7856798637819639676">Безбедно користите ID од вашиот уред со Android</translation>
 <translation id="7857004848504343806">Вашиот компјутер содржи заштитен модул што се користи за имплементирање многу важни безбедносни функции во ChromeOS Flex. Посетете го „Центарот за помош на Chromebook“ за да дознаете повеќе: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Предлози за текст</translation>
 <translation id="7858120906780498731">Поврзани влезни уреди на ChromeOS</translation>
@@ -10000,7 +9998,6 @@
 <translation id="8026784703228858744">Зачувувајте ги обележувачите и друго со синхронизација</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Отворено пред 0 дена}=1{Отворено пред 1 ден}one{Отворено пред # ден}other{Отворено пред # дена}}</translation>
 <translation id="8028060951694135607">Клуч за обнова на Microsoft</translation>
-<translation id="8028138772801251745">Автоматско пополнување со AI</translation>
 <translation id="8028803902702117856">Се презема <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Големина</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список за читање}=1{Список за читање ({SELECTED_ITEMS})}one{Список за читање ({SELECTED_ITEMS})}other{Список за читање ({SELECTED_ITEMS})}}</translation>
@@ -10097,7 +10094,6 @@
 <translation id="808894953321890993">Промени лозинка</translation>
 <translation id="8090234456044969073">Прочитај листа со најчесто посетувани веб-локации</translation>
 <translation id="8090513782447872344">Може да се вратите во секое време за да погледнете повторно</translation>
-<translation id="8090579562279016251">Ја намалува изведбата, но прави V8 да биде поотпорен на напади</translation>
 <translation id="8090686009202681725">Создајте тема со AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не реагира</translation>
 <translation id="8094536695728193970">Apricot</translation>
@@ -10151,7 +10147,6 @@
 <translation id="8125651784723647184">Вашиот администратор управува со споделувањето лозинки</translation>
 <translation id="8126355825906412872">Насмевнете се</translation>
 <translation id="8129265306888404830">За да ја користите адресата на е-пошта од вашата организација (<ph name="EMAIL_DOMAIN" />), треба да се регистрирате како претпријатие. Ако уредов е за лична употреба, најавете се со вашата лична сметка на Google.</translation>
-<translation id="8130476996317833777">Не дозволувај сајтовите да го користат оптимизаторот на V8</translation>
 <translation id="813082847718468539">Прикажи информации за локација</translation>
 <translation id="8131740175452115882">Потврди</translation>
 <translation id="8133297578569873332">Прифатливо – FM</translation>

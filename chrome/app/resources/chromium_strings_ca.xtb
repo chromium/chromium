@@ -182,7 +182,6 @@
 <translation id="3258596308407688501">Chromium no pot llegir ni escriure en el directori de dades:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 és el motor JavaScript i WebAssembly de Chromium que s'utilitza per millorar el rendiment dels llocs web</translation>
 <translation id="3286538390144397061">Reinicia ara</translation>
 <translation id="328888136576916638">Falten les claus de l'API de Google. Es desactivaran algunes de les funcions de Chromium.</translation>
 <translation id="3296368748942286671">Continua executant les aplicacions en segon pla quan es tanqui Chromium</translation>
@@ -295,6 +294,7 @@
 <translation id="4724676981607797757">La instal·lació ha fallat a causa d'un error de protocol no admès.</translation>
 <translation id="4746050847053251315">Vols sortir de Chromium igualment?</translation>
 <translation id="4748217263233248895">S'acaba d'aplicar una actualització de seguretat especial per a Chromium. Reinicia el navegador i restaurarem les pestanyes.</translation>
+<translation id="4771701986670315895">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="COUNT" /> més.</translation>
 <translation id="4788777615168560705">Chromium no pot comprovar les teves contrasenyes. Torna-ho a provar al cap de 24 hores o <ph name="BEGIN_LINK" />comprova les contrasenyes desades al teu Compte de Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Fa servir el mateix corrector ortogràfic que s'utilitza a la Cerca de Google. El text que escrius al navegador s'envia a Google. Pots canviar aquest comportament sempre que vulguis a la configuració.</translation>
 <translation id="4814736265800133385">Fes servir Chromium sense cap compte</translation>
@@ -307,6 +307,7 @@
 <translation id="4987820182225656817">Els convidats poden utilitzar Chromium sense deixar-hi rastre.</translation>
 <translation id="4994636714258228724">Afegeix-me a Chromium</translation>
 <translation id="5123973130450702873">Chromium necessita permís per fer un seguiment de les teves mans</translation>
+<translation id="5141988424377517949">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> i <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Normalment bloqueges les notificacions. Per permetre que aquest lloc web et mostri notificacions, fes clic a la icona de notificacions que hi ha a l'extrem dret de la barra d'ubicacions.</translation>
 <translation id="5187123684706427865">El compte de Chromium requereix una reautenticació</translation>
 <translation id="5224391634244552924">No hi ha cap contrasenya desada. Chromium pot comprovar les teves contrasenyes quan les deses.</translation>
@@ -492,6 +493,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="734373864078049451">El vostre web, les adreces d'interès i altres coses de Chromium resideixen aquí.</translation>
 <translation id="7349591376906416160">L'administrador del sistema ha configurat Chromium perquè obri <ph name="ALTERNATIVE_BROWSER_NAME" /> per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="7352651011704765696">S'ha produït un error</translation>
+<translation id="7376384068949534168">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION_1" /> i <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Aquesta extensió ja no s'admet. Chromium et recomana que la suprimeixis.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7450541714075000668">El text s'ha copiat</translation>
@@ -500,6 +502,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="7461356015007898716">Per obtenir actualitzacions de Chromium en el futur, necessitaràs Windows 10 o una versió posterior. Aquest ordinador utilitza Windows 7.</translation>
 <translation id="7467949745582939695">Vols tornar a iniciar Chromium?</translation>
 <translation id="7483335560992089831">No es pot instal·lar la mateixa versió de Chromium que s'està executant actualment. Tanqueu Chromium i torneu-ho a provar.</translation>
+<translation id="7517403744065880907">Desaràs i utilitzaràs contrasenyes i altres elements del teu Compte de Google en tots els llocs en què tinguis la sessió iniciada a Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">És probable que els llocs web funcionin de la manera prevista. Quan tanquis totes les finestres de Chromium, se't tancarà la sessió de la majoria de llocs web, tret del Compte de Google si tens la sessió iniciada a Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium es reiniciarà d'aquí a 1 minut}other{Chromium es reiniciarà d'aquí a # minuts}}</translation>
 <translation id="7565444033145385702">Per protegir les teves dades, permet que Chromium suprimeixi els permisos dels llocs web que no has visitat recentment.</translation>
@@ -555,6 +558,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="8248265253516264921">Si una imatge no té una descripció útil, Chromium provarà d'oferir-te'n una. Per crear les descripcions, les imatges s'envien a Google. Pots desactivar aquesta funció en qualsevol moment a la configuració.</translation>
 <translation id="8254601181414348851">Vols iniciar la sessió a Chromium en un altre perfil?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium t'avisa<ph name="END_LINK" /> sobre baixades i llocs web que no són segurs</translation>
+<translation id="8295827201165805317">No l'has visitat recentment. Chromium ha suprimit <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Error d'arrencada: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">La teva organització tanca Chromium quan no s'utilitza durant <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Desa com a imatge</translation>
@@ -624,6 +628,7 @@ Chromium no pot recuperar la configuració.</translation>
 <translation id="9158494823179993217">L'administrador del sistema ha configurat Chromium perquè obri un navegador alternatiu per accedir a <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Reinicia per actualitzar &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Obtén més avantatges tenint la sessió iniciada a Chromium</translation>
 <translation id="924957577793602335">Personalitza Chromium</translation>
 <translation id="93478295209880648">Pot ser que Chromium no funcioni correctament perquè ja no és compatible amb Windows XP ni Windows Vista</translation>
 <translation id="945522503751344254">Envia suggeriments</translation>

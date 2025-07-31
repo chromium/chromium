@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">อื่นๆ</translation>
 <translation id="1264974993859112054">กีฬา</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
-<translation id="1269045546668906972">เปิดการป้อนข้อความอัตโนมัติด้วย AI เพื่อป้อนข้อมูลในช่องอื่นๆ เพิ่มเติมโดยอัตโนมัติ</translation>
 <translation id="1269516672602708785">สร้างเว็บไซต์แบบใหม่ใน Google Sites อย่างรวดเร็ว</translation>
 <translation id="1270328905573953738">การย้ายและเปลี่ยนสถานที่</translation>
 <translation id="1270502636509132238">วิธีการรับสินค้า</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">บุ๊กมาร์กอื่นๆ</translation>
 <translation id="2355395290879513365">ผู้โจมตีอาจเห็นรูปภาพที่คุณกำลังดูอยู่บนเว็บไซต์นี้และหลอกลวงคุณโดยการแก้ไขรูปภาพ</translation>
 <translation id="2356070529366658676">ถาม</translation>
-<translation id="2356926036049612643">เครื่องมือเพิ่มประสิทธิภาพ V8</translation>
 <translation id="2356941001189392209">รายการ URL ที่จำกัดไว้ของหน้าเว็บที่คุณเข้าชมซึ่งใช้เหตุการณ์เทคโนโลยีเดิม</translation>
 <translation id="2357481397660644965">อุปกรณ์ของคุณจัดการโดย <ph name="DEVICE_MANAGER" /> และบัญชีของคุณจัดการโดย <ph name="ACCOUNT_MANAGER" /></translation>
 <translation id="2359629602545592467">หลายรายการ</translation>
@@ -1784,13 +1782,13 @@
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">นก</translation>
 <translation id="3985750352229496475">จัดการที่อยู่...</translation>
-<translation id="3986506998755860149">ดูข้อมูลเพิ่มเติมเกี่ยวกับการป้อนข้อความอัตโนมัติด้วย AI ในการตั้งค่า</translation>
 <translation id="3986557181852957825">Google Pay, โลโก้ Klarna</translation>
 <translation id="3986705137476756801">ปิดคำบรรยายสดไปก่อน</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">ไม่ถึง 1 MB</translation>
 <translation id="3990250421422698716">การชดเชยพื้นผิวที่ไม่สม่ำเสมอ</translation>
 <translation id="3990532701115075684">ติดตามการเคลื่อนไหวของมือคุณ</translation>
+<translation id="399179161741278232">นำเข้า</translation>
 <translation id="3992684624889376114">เกี่ยวกับหน้านี้</translation>
 <translation id="3995639283717357522">ใช้นโยบาย</translation>
 <translation id="3996683183117168945">การอ้างอิงที่ <ph name="CURRENT_CITATION" /> จาก <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" /> <ph name="PAGE_PREVIEW" /></translation>
@@ -2398,7 +2396,6 @@
 <translation id="5002932099480077015">หากเปิดใช้ Chrome จะเก็บสำเนาการ์ดของคุณในอุปกรณ์นี้เพื่อให้การกรอกฟอร์มทำได้เร็วขึ้น</translation>
 <translation id="5007344584818503324">กิจกรรมในกลุ่มแท็บที่แชร์</translation>
 <translation id="5007392906805964215">ดู</translation>
-<translation id="5010599530303458903">ชำระรายเดือนหรือผ่อนชำระ 4 งวดแบบไม่มีดอกเบี้ย (ขึ้นอยู่กับสิทธิ์)</translation>
 <translation id="5011561501798487822">ภาษาที่ตรวจพบ</translation>
 <translation id="5015510746216210676">ชื่อเครื่อง:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3079,7 +3076,6 @@
 <translation id="6151417162996330722">ใบรับรองเซิร์ฟเวอร์มีระยะเวลาที่สามารถใช้ได้นานเกินไป</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> นิ้ว (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">วิ่งและเดิน</translation>
-<translation id="6157079899699705880">การป้อนข้อความอัตโนมัติด้วย AI เข้าใจแบบฟอร์มได้ดีขึ้นและป้อนข้อความอัตโนมัติให้คุณได้เร็วขึ้น</translation>
 <translation id="6157754950574419155">นำทั้งหมดออกจากประวัติการเข้าชม</translation>
 <translation id="6157877588268064908">หากต้องการดูวิธีการจัดส่งสินค้าและข้อกำหนด โปรดเลือกที่อยู่</translation>
 <translation id="6159554577634054750">ผลิตภัณฑ์กำจัดแมลง</translation>

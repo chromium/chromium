@@ -250,6 +250,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1166583374608765787">Examiner la modification du nom</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> fait partie du bureau <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Les applications Web isolées suivent automatiquement ce paramètre</translation>
+<translation id="116712635768212829">Si Chrome trouve l'un de vos mots de passe du fait d'une violation de données, le Gestionnaire de mots de passe de Google peut vous proposer de le modifier pour vous si vous êtes connecté.</translation>
 <translation id="1168020859489941584">Ouverture dans <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Thème IA récent <ph name="INDEX" /> sur <ph name="SUBJECT" />, style <ph name="STYLE" /> et humeur <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Passer automatiquement à la langue du contenu sélectionné</translation>
@@ -555,6 +556,7 @@ Vérifiez vos mots de passe à tout moment dans le <ph name="GOOGLE_PASSWORD_MAN
 <translation id="1375938286942050085">La configuration est terminée ! Et si vous prépariez aussi votre appareil pour les jeux vidéo ?</translation>
 <translation id="137651782282853227">Les adresses enregistrées s'afficheront ici</translation>
 <translation id="1376771218494401509">Nommer la &amp;fenêtre</translation>
+<translation id="1377438103060664754">Si l'un de vos mots de passe est détecté lors d'une violation de données, le Gestionnaire de mots de passe de Google vous demande si vous souhaitez le remplacer par un mot de passe sécurisé</translation>
 <translation id="1377600615067678409">Ignorer pour le moment</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> contrôle ce paramètre</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Aucun mot de passe compromis}=1{1 mot de passe compromis}one{{NUM_COMPROMISED} mot de passe compromis}other{{NUM_COMPROMISED} mots de passe compromis}}</translation>
@@ -2524,7 +2526,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="2730647855013151888">Inclure toutes les informations personnelles</translation>
 <translation id="2730901670247399077">Suggestions d'emoji</translation>
 <translation id="273093730430620027">Cette page a accès à votre caméra</translation>
-<translation id="2730956943403103181">Non autorisés à utiliser l'optimiseur V8</translation>
 <translation id="2731392572903530958">&amp;Rouvrir la fenêtre fermée</translation>
 <translation id="2731700343119398978">Veuillez patienter…</translation>
 <translation id="2731971182069536520">La prochaine fois que vous redémarrerez votre appareil, l'administrateur effectuera une mise à jour exceptionnelle qui entraînera la suppression de vos données locales.</translation>
@@ -3123,7 +3124,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3160928651883997588">Préférences VPN</translation>
 <translation id="3161522574479303604">Toutes les langues</translation>
 <translation id="3162070126914310576">Impossible d'enregistrer cet appareil pour le moment, car votre unité organisationnelle a atteint sa limite d'enregistrements initiale. Contactez votre administrateur pour obtenir de l'aide.</translation>
-<translation id="3162766632262775911">Toujours autorisés à utiliser l'optimiseur V8</translation>
 <translation id="3162853326462195145">Compte scolaire</translation>
 <translation id="3162899666601560689">Les sites peuvent utiliser des cookies pour améliorer votre expérience de navigation, par exemple pour vous maintenir connecté ou se souvenir des articles de votre panier</translation>
 <translation id="3163085718713826852">Saisissez le mot de passe du certificat</translation>
@@ -3837,7 +3837,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="3666971425390608309">Téléchargement suspendu : <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Appareils de n'importe quel fournisseur</translation>
 <translation id="3670229581627177274">Activer le Bluetooth</translation>
-<translation id="3670480940339182416">Les sites peuvent utiliser l'optimiseur V8</translation>
 <translation id="3671982238795754537">En savoir plus sur les clés d'accès</translation>
 <translation id="3672681487849735243">Une erreur a été détectée dans la configuration d'usine</translation>
 <translation id="3673097791729989571">Connexion hébergée par <ph name="SAML_DOMAIN" /></translation>
@@ -5737,6 +5736,7 @@ Appuyez sur Ctrl+Alt+Baisser la luminosité pour faire un zoom arrière.</transl
 <translation id="5001526427543320409">Cookies tiers</translation>
 <translation id="5003070249435823986">Effectuez le geste pour activer le mode défilement, puis bougez la tête dans la direction dans laquelle vous voulez faire défiler. Pour quitter ce mode, refaites le même geste.</translation>
 <translation id="5003993274120026347">Phrase suivante</translation>
+<translation id="5005311809885666699">Enregistrées depuis Chrome</translation>
 <translation id="5005498671520578047">Copier mot de passe</translation>
 <translation id="5006218871145547804">ADB pour les applications Android sur Crostini</translation>
 <translation id="5006778209728626987">Foudre</translation>
@@ -9706,6 +9706,7 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="784475655832336580">"Mettre en surbrillance l'élément sélectionné au clavier" non disponible quand ChromeVox est activé</translation>
 <translation id="7844992432319478437">Différence de mise à jour</translation>
 <translation id="7846161022626028328">Une erreur s'est produite. Réessayez.</translation>
+<translation id="7846296061357476882">Services Google</translation>
 <translation id="7846634333498149051">Clavier</translation>
 <translation id="7847212883280406910">Appuyez sur Ctrl+Alt+S pour passer à <ph name="IDS_SHORT_PRODUCT_OS_NAME" />.</translation>
 <translation id="7848244988854036372">Tout ouvrir (<ph name="URL_COUNT" />) dans un nouveau groupe d'onglets</translation>
@@ -9725,7 +9726,6 @@ Appuyez sur un contacteur ou une touche associé(e) pour supprimer l'association
 <translation id="7853747251428735">Plus d'outi&amp;ls</translation>
 <translation id="7855258394151767387">Utiliser "W" pour appuyer sur un bouton de la souris</translation>
 <translation id="7855678561139483478">Déplacer l'onglet vers une nouvelle fenêtre</translation>
-<translation id="7856798637819639676">Utilisez une pièce d'identité de manière sécurisée depuis votre appareil Android</translation>
 <translation id="7857004848504343806">Votre ordinateur contient un module de sécurité qui permet d'implémenter de nombreuses fonctionnalités de sécurité critiques dans ChromeOS Flex. Consultez le centre d'aide Chromebook pour en savoir plus : https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Suggestions écrites</translation>
 <translation id="7858120906780498731">Périphériques d'entrée connectés ChromeOS</translation>
@@ -9984,7 +9984,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8026784703228858744">Enregistrez vos favoris et plus avec la synchronisation</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Dernière visite il y a 0 jour}=1{Dernière visite il y a 1 jour}one{Dernière visite il y a # jour}other{Dernière visite il y a # jours}}</translation>
 <translation id="8028060951694135607">Récupération de clé Microsoft</translation>
-<translation id="8028138772801251745">Saisir automatiquement avec l'IA</translation>
 <translation id="8028803902702117856">Téléchargement en cours : <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Taille</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Liste de lecture}=1{Liste de lecture ({SELECTED_ITEMS})}one{Liste de lecture ({SELECTED_ITEMS})}other{Liste de lecture ({SELECTED_ITEMS})}}</translation>
@@ -10081,7 +10080,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="808894953321890993">Modifier le mot de passe</translation>
 <translation id="8090234456044969073">Lire une liste des sites Web que vous consultez le plus souvent</translation>
 <translation id="8090513782447872344">Vous pourrez revenir à tout moment pour relire le guide</translation>
-<translation id="8090579562279016251">Réduit les performances, mais rend V8 plus résistant aux attaques</translation>
 <translation id="8090686009202681725">Créer un thème avec l'IA</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> ne répond pas</translation>
 <translation id="8094536695728193970">Abricot</translation>
@@ -10135,7 +10133,6 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8125651784723647184">Le partage des mots de passe est géré par votre administrateur</translation>
 <translation id="8126355825906412872">Sourire</translation>
 <translation id="8129265306888404830">Pour utiliser votre adresse e-mail fournie par votre organisation (<ph name="EMAIL_DOMAIN" />), vous devez utiliser l'inscription d'entreprise. Si cet appareil est pour votre usage personnel, connectez-vous avec votre compte Google personnel.</translation>
-<translation id="8130476996317833777">Ne pas autoriser les sites à utiliser l'optimiseur V8</translation>
 <translation id="813082847718468539">Afficher des informations à propos du site</translation>
 <translation id="8131740175452115882">Confirmer</translation>
 <translation id="8133297578569873332">Acceptable – FM</translation>

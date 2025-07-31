@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">Преглед на актуализацията на името</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> принадлежи на работния кът <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Тази настройка се прилага автоматично за изолираните уеб приложения</translation>
+<translation id="116712635768212829">В случай че Chrome открие една от паролите ви при нарушение на сигурността на данните, Google Мениджър на пароли може да предложи да я промени вместо вас, ако сте влезли в профила си.</translation>
 <translation id="1168020859489941584">Ще се отвори след <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Наскоро създадена от AI тема <ph name="INDEX" /> с(ъс) <ph name="SUBJECT" /> в стил „<ph name="STYLE" />“ и настроение „<ph name="MOOD" />“.</translation>
 <translation id="116896278675803795">Автоматична промяна на езика, за да съответства на избраното съдържание</translation>
@@ -554,6 +555,7 @@
 <translation id="1375938286942050085">Настройването завърши! Сега подгответе устройството си за игри</translation>
 <translation id="137651782282853227">Тук ще се покажат запазените адреси</translation>
 <translation id="1376771218494401509">Наименуване на &amp;прозореца...</translation>
+<translation id="1377438103060664754">Ако една от паролите ви бъде открита при нарушение на сигурността на данните, Google Мениджър на пароли пита дали искате да я замените с надеждна парола</translation>
 <translation id="1377600615067678409">Пропускане засега</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> контролира тази настройка</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Няма компрометирани пароли}=1{1 компрометирана парола}other{{NUM_COMPROMISED} компрометирани пароли}}</translation>
@@ -2532,7 +2534,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2730647855013151888">Включване на цялата лична информация</translation>
 <translation id="2730901670247399077">Предложения за емоджи</translation>
 <translation id="273093730430620027">Тази страница осъществява достъп до камерата ви.</translation>
-<translation id="2730956943403103181">Сайтове без разрешение за използване на оптимизатора V8</translation>
 <translation id="2731392572903530958">По&amp;вторно отваряне на затворения прозорец</translation>
 <translation id="2731700343119398978">Моля, изчакайте...</translation>
 <translation id="2731971182069536520">При следващото рестартиране на устройството администраторът ви ще извърши еднократна актуализация, при която ще бъдат изтрити локалните ви данни.</translation>
@@ -3131,7 +3132,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3160928651883997588">Предпочитания за VPN</translation>
 <translation id="3161522574479303604">Всички езици</translation>
 <translation id="3162070126914310576">Това устройство не може да бъде регистрирано в момента, защото за организационната единица е достигнато ограничението за първоначална регистрация. За помощ се свържете с администратора си.</translation>
-<translation id="3162766632262775911">Сайтове с разрешение за използване на оптимизатора V8</translation>
 <translation id="3162853326462195145">Училищен профил</translation>
 <translation id="3162899666601560689">Сайтовете могат да използват „бисквитки“ с цел по-добро сърфиране, например за да оставате в профила си или за да запомнят артикулите в пазарската ви кошница</translation>
 <translation id="3163085718713826852">Въведете паролата за сертификата</translation>
@@ -3847,7 +3847,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="3666971425390608309">Изтеглянето на <ph name="FILE_NAME" /> е на пауза.</translation>
 <translation id="3670113805793654926">Устройства от който и да е доставчик</translation>
 <translation id="3670229581627177274">Включване на Bluetooth</translation>
-<translation id="3670480940339182416">Сайтовете могат да използват оптимизатора V8</translation>
 <translation id="3671982238795754537">Научете повече за ключовете за достъп</translation>
 <translation id="3672681487849735243">Открита е фабрична грешка</translation>
 <translation id="3673097791729989571">Услугата за вход се хоства от <ph name="SAML_DOMAIN" /></translation>
@@ -5749,6 +5748,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5001526427543320409">„Бисквитки“ на трети страни</translation>
 <translation id="5003070249435823986">Използвайте жеста, за да активирате режима за превъртане, след което преместете главата си в посоката, в която искате да превъртите съдържанието. Използвайте отново жеста, за да деактивирате режима за превъртане.</translation>
 <translation id="5003993274120026347">Следващо изречение</translation>
+<translation id="5005311809885666699">Запазено от Chrome</translation>
 <translation id="5005498671520578047">Копиране на паролата</translation>
 <translation id="5006218871145547804">Отстраняване на грешки в приложения за Android през ADB за Crostini</translation>
 <translation id="5006778209728626987">Светкавица</translation>
@@ -9717,6 +9717,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="784475655832336580">Функцията за открояване на елементи, върху които е поставен фокусът на клавиатурата, не е налице, когато екранният четец ChromeVox е включен</translation>
 <translation id="7844992432319478437">Файлът с разликите се актуализира</translation>
 <translation id="7846161022626028328">Възникна грешка. Опитайте отново.</translation>
+<translation id="7846296061357476882">Услуги на Google</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7847212883280406910">Натиснете „Ctrl + Alt + S“, за да превключите към <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Отваряне на всички (<ph name="URL_COUNT" />) в нова група раздели</translation>
@@ -9736,7 +9737,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="7853747251428735">Още инструмен&amp;ти</translation>
 <translation id="7855258394151767387">Използвайте клавиша w, за да натиснете бутон на мишката</translation>
 <translation id="7855678561139483478">Преместване на раздела в нов прозорец</translation>
-<translation id="7856798637819639676">Безопасно използване на документ за самоличност от устройството ви с Android</translation>
 <translation id="7857004848504343806">Компютърът ви съдържа модул за сигурност, който служи за реализиране на множество критични защитни функции в ChromeOS Flex. За да научите повече, посетете Помощния център на Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Текстови предложения</translation>
 <translation id="7858120906780498731">Входни устройства, свързани с ChromeOS</translation>
@@ -9995,7 +9995,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8026784703228858744">Запазвайте своите отметки и др. с функцията за синхронизиране</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Посетено преди 0 дни}=1{Посетено преди 1 ден}other{Посетено преди # дни}}</translation>
 <translation id="8028060951694135607">Възстановяване на ключ от Microsoft</translation>
-<translation id="8028138772801251745">Автоматично попълване с AI</translation>
 <translation id="8028803902702117856">Изтеглят се <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Размер</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Списък за четене}=1{Списък за четене ({SELECTED_ITEMS})}other{Списък за четене ({SELECTED_ITEMS})}}</translation>
@@ -10092,7 +10091,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="808894953321890993">Промяна на паролата</translation>
 <translation id="8090234456044969073">Четене на списък с най-често посещаваните от вас уебсайтове</translation>
 <translation id="8090513782447872344">Можете да се върнете по всяко време, за да прегледате това още веднъж</translation>
-<translation id="8090579562279016251">Намалява ефективността, но прави оптимизатора V8 по-устойчив на атаки</translation>
 <translation id="8090686009202681725">Създаване на тема с AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> не реагира</translation>
 <translation id="8094536695728193970">оранжево-розово</translation>
@@ -10146,7 +10144,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="8125651784723647184">Споделянето на паролите се управлява от администратора ви</translation>
 <translation id="8126355825906412872">Усмихване</translation>
 <translation id="8129265306888404830">За да ползвате имейл адреса от организацията си (<ph name="EMAIL_DOMAIN" />), трябва да използвате корпоративното регистриране. Ако това устройство е за лична употреба, влезте с личния си профил в Google.</translation>
-<translation id="8130476996317833777">Забраняване на сайтовете да използват оптимизатора V8</translation>
 <translation id="813082847718468539">Преглед на информацията за сайта</translation>
 <translation id="8131740175452115882">Потвърждаване</translation>
 <translation id="8133297578569873332">Приемливо – FM</translation>

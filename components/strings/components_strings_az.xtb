@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">Alternativ</translation>
 <translation id="1264974993859112054">İdman</translation>
 <translation id="1268480293435976622">Zərf Çin #7</translation>
-<translation id="1269045546668906972">Daha çox sahəni avtomatik doldurmaq üçün Sİ ilə avto-doldurmanı yandırın</translation>
 <translation id="1269516672602708785">Google Sayt'da cəld yeni sayt yaradın</translation>
 <translation id="1270328905573953738">Köçmə və yerdəyişmə</translation>
 <translation id="1270502636509132238">Götürmə Üsulu</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">Digər əlfəcinlər</translation>
 <translation id="2355395290879513365">Hücumçular bu saytda baxdığınız şəkilləri görə bilər və onları deyişdirərək Sizi aldada bilər.</translation>
 <translation id="2356070529366658676">Soruşun</translation>
-<translation id="2356926036049612643">V8 optimallaşdırıcısı</translation>
 <translation id="2356941001189392209">Köhnə texnologiya hadisələri olan səhifələrin məhdud URL siyahısı</translation>
 <translation id="2357481397660644965">Cihazı <ph name="DEVICE_MANAGER" />, hesabı isə<ph name="ACCOUNT_MANAGER" /> idarə edir.</translation>
 <translation id="2359629602545592467">Çoxsaylı</translation>
@@ -1781,13 +1779,13 @@
 <translation id="3984581365661308170">Zərf #11</translation>
 <translation id="398470910934384994">Quşlar</translation>
 <translation id="3985750352229496475">Ünvanları İdarə Edin...</translation>
-<translation id="3986506998755860149">ayarlarda Sİ ilə avto-doldurma haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3986557181852957825">Google Pay, Klarna loqosu</translation>
 <translation id="3986705137476756801">Canlı Subtitri hələlik deaktiv edin</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 MB-dan az</translation>
 <translation id="3990250421422698716">Kənarını bükün</translation>
 <translation id="3990532701115075684">Əllərinizi izləmək</translation>
+<translation id="399179161741278232">İmport edilmiş</translation>
 <translation id="3992684624889376114">Bu səhifə haqqında</translation>
 <translation id="3995639283717357522">Siyasətlərin tətbiq edilməsi</translation>
 <translation id="3996683183117168945">İstinad <ph name="CURRENT_CITATION" />/<ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2395,7 +2393,6 @@
 <translation id="5002932099480077015">Imkan varsa, Chrome sürətli forma doldurmaq üçün bu cihaz sizin kart surəti saxlamaq olacaq.</translation>
 <translation id="5007344584818503324">Paylaşılan tab qrupları üzrə fəaliyyət</translation>
 <translation id="5007392906805964215">Nəzərdən keçirin</translation>
-<translation id="5010599530303458903">Aylıq və ya 4 dəfəyə faizsiz şəkildə ödəyin (uyğunluqdan asılıdır)</translation>
 <translation id="5011561501798487822">Aşkarlanmış Dil</translation>
 <translation id="5015510746216210676">Cihaz Adı:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3076,7 +3073,6 @@
 <translation id="6151417162996330722">Server sertifikatı çox uzun olan doğrulama müddətinə malikdir.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> düym (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Qaçış və Yerimə</translation>
-<translation id="6157079899699705880">AI ilə avtodoldurma formaları yaxşı başa düşür və avtomatik olaraq tez doldura bilər</translation>
 <translation id="6157754950574419155">Tarixçədən hamısını silin</translation>
 <translation id="6157877588268064908">Göndərmə üsulları və tələblərinə baxın, ünvan seçin</translation>
 <translation id="6159554577634054750">Ziyanvericilərə nəzarət</translation>
@@ -3582,6 +3578,7 @@
 <translation id="6989763994942163495">Qabaqcıl ayarları göstərin...</translation>
 <translation id="6991376411634620997">Giriş açarı • Windows Hello</translation>
 <translation id="6997288673234694149">Beysbol və softbol avadanlıqları</translation>
+<translation id="6998512609912910179">Formaları daha tez doldurun</translation>
 <translation id="6999480632062519056">Fitnes təlimatı və şəxsi təlim</translation>
 <translation id="7003278537452757231">Kilim və xalçalar</translation>
 <translation id="7003322000677139268">Ehtiyat Hissələri və Aksesuarlar</translation>

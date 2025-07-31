@@ -448,6 +448,7 @@ Napredna zaštita kontrolira sljedeće postavke Chromea:
 <translation id="6064125863973209585">Dovršena preuzimanja</translation>
 <translation id="6071501408666570960">Možda ste odjavljeni s ove web-lokacije</translation>
 <translation id="6085954183010297841">Želite li izbrisati odobrenje za uređivanje datoteke? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Kad je ta postavka uključena, web-lokacije mogu automatski pristupiti slici u slici. Kad je ta postavka isključena, web-lokacije ne mogu automatski pristupiti slici u slici.</translation>
 <translation id="6120483543004435978">Kad je ta postavka uključena, web-lokacije mogu tražiti informacije kada aktivno koristite uređaj. Kad je ta postavka isključena, web-lokacije ne mogu znati kad aktivno koristite uređaj.</translation>
 <translation id="615886654739818377">Nemoj dopustiti web-lokacijama da upravljaju prozorima na svim zaslonima</translation>
 <translation id="6165508094623778733">Saznajte više</translation>

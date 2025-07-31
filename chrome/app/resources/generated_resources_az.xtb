@@ -2524,7 +2524,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2730647855013151888">Bütün şəxsi məlumatları daxil edin</translation>
 <translation id="2730901670247399077">Emoji təklifləri</translation>
 <translation id="273093730430620027">Bu səhifə kameranıza daxil olur.</translation>
-<translation id="2730956943403103181">V8 optimallaşdırıcısından istifadə icazəsi verilməyib</translation>
 <translation id="2731392572903530958">Qapadılmış Pəncərəni yenidən açın</translation>
 <translation id="2731700343119398978">Gözləyin...</translation>
 <translation id="2731971182069536520">Növbəti dəfə cihazı yenidən başlatdığınız zaman administrator birdəfəlik güncəlləmə yerinə yetirəcək. Bu, lokal datanızı siləcək.</translation>
@@ -3123,7 +3122,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3160928651883997588">VPN Tərcihləri</translation>
 <translation id="3161522574479303604">Bütün dillər</translation>
 <translation id="3162070126914310576">Təşkilat qrupunuz ilkin qeydiyyat limitinə çatdığı üçün hazırda bu cihazı qeydiyyatdan keçirmək mümkün deyil. Kömək üçün administrator ilə əlaqə saxlayın.</translation>
-<translation id="3162766632262775911">V8 optimallaşdırıcısından istifadə icazəsi verilib</translation>
 <translation id="3162853326462195145">Məktəb hesabı</translation>
 <translation id="3162899666601560689">Saytlar baxış təcrübənizi yaxşılaşdırmaq üçün, məsələn, sizi daxil olmuş vəziyyətdə saxlamaq və ya alış-veriş səbətinizdəki elementləri yadda saxlamaq üçün kukilərdən istifadə edə bilər</translation>
 <translation id="3163085718713826852">Sertifikatın parolunu daxil edin</translation>
@@ -3839,7 +3837,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="3666971425390608309"><ph name="FILE_NAME" /> endirilməsi durdurulub.</translation>
 <translation id="3670113805793654926">Hər hansı vendordan olan cihazlar</translation>
 <translation id="3670229581627177274">Bluetooth aktivləşdirilsin?</translation>
-<translation id="3670480940339182416">Saytlar V8 optimallaşdırıcısından istifadə edə bilər</translation>
 <translation id="3671982238795754537">Giriş açarları haqqında ətraflı məlumat əldə edin</translation>
 <translation id="3672681487849735243">Zavod xətası aşkar edildi</translation>
 <translation id="3673097791729989571">Giriş hostu: <ph name="SAML_DOMAIN" /></translation>
@@ -5738,6 +5735,7 @@ Uzaqlaşdırmaq üçün Ctrl + Alt + Parlaqlığı Azalt düymələrindən istif
 <translation id="5001526427543320409">Üçüncü tərəf kukiləri</translation>
 <translation id="5003070249435823986">Sürüşdürmə rejiminə daxil olmaq üçün jestdən istifadə edin, sonra başınızı sürüşdürmək istədiyiniz istiqamətdə hərəkət etdirin. Sürüşdürmə rejimindən çıxmaq üçün yenidən jestdən istifadə edin.</translation>
 <translation id="5003993274120026347">Növbəti cümlə</translation>
+<translation id="5005311809885666699">Chrome-dan yadda saxlananlar</translation>
 <translation id="5005498671520578047">Parolu kopyalayın</translation>
 <translation id="5006218871145547804">Crostini Android tətbiqi üzrə ADB</translation>
 <translation id="5006778209728626987">İldırım</translation>
@@ -9702,6 +9700,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="784475655832336580">ChromeVox aktiv olduqda klaviatura fokusu ilə elementin vurğulanması əlçatan olmur</translation>
 <translation id="7844992432319478437">Diff utiliti güncəllənir</translation>
 <translation id="7846161022626028328">Xəta baş verdi. Yenidən cəhd edin.</translation>
+<translation id="7846296061357476882">Google xidmətləri</translation>
 <translation id="7846634333498149051">Klaviatura</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> məhsuluna keçmək üçün Ctrl + Alt + S basın</translation>
 <translation id="7848244988854036372">Hamısını (<ph name="URL_COUNT" />) yeni tab qrupunda açın</translation>
@@ -9721,7 +9720,6 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7853747251428735">Daha çox alətlər</translation>
 <translation id="7855258394151767387">Maus düyməsini basmaq üçün "w" düyməsindən istifadə edin</translation>
 <translation id="7855678561139483478">Tabı yeni pəncərəyə daşıyın</translation>
-<translation id="7856798637819639676">Android cihazınızdan əldə edilən ID-dən etibarlı şəkildə istifadə edin</translation>
 <translation id="7857004848504343806">Kompüter ChromeOS Flex'də bir çox kritik təhlükəsizlik funksiyalarının tətbiqi üçün istifadə olunan təhlükəsizlik modulundan ibarətdir. Ətraflı məlumat üçün Chromebook Yardım Mərkəzinə daxil olun: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Mətn təklifləri</translation>
 <translation id="7858120906780498731">ChromeOS qoşulu daxiletmə cihazları</translation>
@@ -9979,7 +9977,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8026784703228858744">Sinxronlaşdırma ilə əlfəcin və s. datanı yadda saxlayın</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 gün əvvəl daxil olmusunuz}=1{1 gün əvvəl daxil olmusunuz}other{# gün əvvəl daxil olmusunuz}}</translation>
 <translation id="8028060951694135607">Microsoft Açar Bərpası</translation>
-<translation id="8028138772801251745">Sİ ilə avtomatik doldurun</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> endirilir</translation>
 <translation id="8028993641010258682">Ölçü</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Oxu siyahısı}=1{Oxu siyahısı ({SELECTED_ITEMS})}other{Oxu siyahısı ({SELECTED_ITEMS})}}</translation>
@@ -10076,7 +10073,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="808894953321890993">Parolu dəyişin</translation>
 <translation id="8090234456044969073">Tez-tez ziyarət etdiyiniz veb sayt siyahısını oxuyun</translation>
 <translation id="8090513782447872344">Yenidən baxmaq üçün istənilən vaxt geri qayıda bilərsiniz</translation>
-<translation id="8090579562279016251">Performansı azaldır, lakin V8-i hücumlara qarşı davamlı edir</translation>
 <translation id="8090686009202681725">AI ilə tema yaradın</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> cavab vermir</translation>
 <translation id="8094536695728193970">Ərik</translation>
@@ -10130,7 +10126,6 @@ Açar faylınızı güvənli yerdə saxlayın.</translation>
 <translation id="8125651784723647184">Parol paylaşımını administrator idarə edir</translation>
 <translation id="8126355825906412872">Gülümsəyin</translation>
 <translation id="8129265306888404830">Təşkilatın təmin etdiyi e-poçt ünvanı (<ph name="EMAIL_DOMAIN" />) üçün müəssisə qeydiyyatından istifadə etməlisiniz. Bu cihaz şəxsi istifadə üçündürsə, şəxsi Google Hesabı ilə daxil olun.</translation>
-<translation id="8130476996317833777">Saytlara V8 optimallaşdırıcısından istifadə icazəsi verməyin</translation>
 <translation id="813082847718468539">Sayt məlumatına baxın</translation>
 <translation id="8131740175452115882">Təsdiq edin</translation>
 <translation id="8133297578569873332">Məqbul - FM</translation>

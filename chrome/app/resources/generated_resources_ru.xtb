@@ -2527,7 +2527,6 @@
 <translation id="2730647855013151888">Включить всю личную информацию</translation>
 <translation id="2730901670247399077">Подсказки эмодзи</translation>
 <translation id="273093730430620027">Этой странице разрешен доступ к вашей камере.</translation>
-<translation id="2730956943403103181">Сайты, которым запрещено использовать оптимизатор V8</translation>
 <translation id="2731392572903530958">Открыть закрытое окно</translation>
 <translation id="2731700343119398978">Подождите…</translation>
 <translation id="2731971182069536520">Когда вы перезапустите устройство, администратор выполнит разовое обновление, которое удалит ваши локальные файлы.</translation>
@@ -3126,7 +3125,6 @@
 <translation id="3160928651883997588">Настройки сети VPN</translation>
 <translation id="3161522574479303604">Все языки</translation>
 <translation id="3162070126914310576">Сейчас это устройство нельзя зарегистрировать, так как ваше организационное подразделение достигло начального лимита на регистрацию. Обратитесь за помощью к администратору.</translation>
-<translation id="3162766632262775911">Сайты, которым всегда разрешено использовать оптимизатор V8</translation>
 <translation id="3162853326462195145">Учебный аккаунт</translation>
 <translation id="3162899666601560689">Сайты могут использовать файлы cookie для вашего удобства, например, чтобы вам не приходилось вновь входить в аккаунт или повторно добавлять товары в корзину.</translation>
 <translation id="3163085718713826852">Введите пароль сертификата</translation>
@@ -3842,7 +3840,6 @@
 <translation id="3666971425390608309">Скачивание файла "<ph name="FILE_NAME" />" приостановлено.</translation>
 <translation id="3670113805793654926">Устройства от любого поставщика</translation>
 <translation id="3670229581627177274">Включить Bluetooth</translation>
-<translation id="3670480940339182416">Разрешить сайтам использовать оптимизатор V8</translation>
 <translation id="3671982238795754537">Подробнее о ключах доступа…</translation>
 <translation id="3672681487849735243">Обнаружен производственный брак</translation>
 <translation id="3673097791729989571">Вход через <ph name="SAML_DOMAIN" /></translation>
@@ -5742,6 +5739,7 @@
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
 <translation id="5003070249435823986">Включить режим прокрутки можно с помощью жеста. Во время прокрутки ее направление будет зависеть от движений вашей головы. Повторите жест, чтобы отключить режим прокрутки.</translation>
 <translation id="5003993274120026347">К следующему предложению</translation>
+<translation id="5005311809885666699">Сохранено из Chrome</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5006218871145547804">Инструмент adb для Android-приложений в Crostini</translation>
 <translation id="5006778209728626987">Молния</translation>
@@ -9714,6 +9712,7 @@
 <translation id="784475655832336580">Параметр "Выделять объект с помощью клавиатуры" недоступен при включенной программе ChromeVox</translation>
 <translation id="7844992432319478437">Утилита diff обновляется</translation>
 <translation id="7846161022626028328">Произошла ошибка. Повторите попытку.</translation>
+<translation id="7846296061357476882">Сервисы Google</translation>
 <translation id="7846634333498149051">Клавиатура</translation>
 <translation id="7847212883280406910">Нажмите Ctrl + Alt + S, чтобы перейти к <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Открыть все URL (<ph name="URL_COUNT" />) в новой группе вкладок</translation>
@@ -9733,7 +9732,6 @@
 <translation id="7853747251428735">Дополнительные инструмен&amp;ты</translation>
 <translation id="7855258394151767387">Чтобы нажать кнопку мыши, используйте клавишу W.</translation>
 <translation id="7855678561139483478">Открыть вкладку в новом окне</translation>
-<translation id="7856798637819639676">Используйте удостоверение личности на устройстве Android. Это безопасно.</translation>
 <translation id="7857004848504343806">Компьютер оснащен модулем безопасности, с помощью которого в Chrome OS Flex реализовано множество критически важных функций защиты. Более подробную информацию можно получить в Справочном центре Chromebook: https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Текстовые подсказки</translation>
 <translation id="7858120906780498731">Устройства ввода, подключенные к ChromeOS</translation>
@@ -9992,7 +9990,6 @@
 <translation id="8026784703228858744">Синхронизируйте закладки и другие данные, чтобы не терять к ним доступ.</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Вы открывали 0 дней назад}=1{Вы открывали 1 день назад}one{Вы открывали # день назад}few{Вы открывали # дня назад}many{Вы открывали # дней назад}other{Вы открывали # дня назад}}</translation>
 <translation id="8028060951694135607">Восстановление ключей Microsoft</translation>
-<translation id="8028138772801251745">Автозаполнение с помощью ИИ</translation>
 <translation id="8028803902702117856">Скачивание файла <ph name="FILE_NAME" /> (<ph name="SIZE" />)</translation>
 <translation id="8028993641010258682">Размер</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Список для чтения}=1{Список для чтения ({SELECTED_ITEMS})}one{Список для чтения ({SELECTED_ITEMS})}few{Список для чтения ({SELECTED_ITEMS})}many{Список для чтения ({SELECTED_ITEMS})}other{Список для чтения ({SELECTED_ITEMS})}}</translation>
@@ -10089,7 +10086,6 @@
 <translation id="808894953321890993">Сменить пароль</translation>
 <translation id="8090234456044969073">Список самых посещаемых сайтов</translation>
 <translation id="8090513782447872344">Вы можете вернуться на эту страницу в любой момент.</translation>
-<translation id="8090579562279016251">Производительность снизится, но V8 станет более устойчив к атакам</translation>
 <translation id="8090686009202681725">Создать тему с помощью ИИ</translation>
 <translation id="8093359998839330381">Плагин <ph name="PLUGIN_NAME" /> не отвечает</translation>
 <translation id="8094536695728193970">Абрикос</translation>
@@ -10143,7 +10139,6 @@
 <translation id="8125651784723647184">Обменом паролями управляет администратор</translation>
 <translation id="8126355825906412872">Улыбнуться</translation>
 <translation id="8129265306888404830">Чтобы пользоваться адресом электронной почты, предоставленным организацией (<ph name="EMAIL_DOMAIN" />), вам необходимо зарегистрироваться в корпоративном домене. Если устройство предназначено для использования в личных целях, войдите в личный аккаунт Google.</translation>
-<translation id="8130476996317833777">Запретить сайтам использовать оптимизатор V8</translation>
 <translation id="813082847718468539">Сведения о сайте</translation>
 <translation id="8131740175452115882">Подтвердить</translation>
 <translation id="8133297578569873332">Приемлемое – FM</translation>

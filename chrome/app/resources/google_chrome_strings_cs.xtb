@@ -269,6 +269,7 @@ Některé funkce možná nebudou k dispozici a změny nastavení se neuloží.</
 <translation id="4205939740494406371">Chrome nemůže zkontrolovat vaše hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Rušení...</translation>
 <translation id="4224210481850767180">Instalace byla zrušena.</translation>
+<translation id="4230631012078055975">Přihlášením do Chromu získáte další funkce</translation>
 <translation id="4242034826641750751">Chrome pro tento web potřebuje přístup k fotoaparátu a mikrofonu</translation>
 <translation id="424864128008805179">Odhlásit se z Chromu?</translation>
 <translation id="4251615635259297716">Chcete propojit údaje prohlížeče Chrome s tímto účtem?</translation>
@@ -592,6 +593,7 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8321888067342493336">Uložit jako obrázek</translation>
 <translation id="8336463659890584292">Když web požádá o soukromé předběžné načtení odkazů na stránce, použije Chrome servery Google. To před předběžně načítaným webem skryje vaši identitu, ale Google se dozví, které weby se předběžně načítají.</translation>
 <translation id="8342675569599923794">Tento soubor je nebezpečný, proto jej Chrome zablokoval.</translation>
+<translation id="8349094670477064572">Když se do Chromu přihlásíte, budete moct ukládat a používat hesla a další data ve svém účtu Google. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Přeložit do jazyka</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Všechna práva vyhrazena.</translation>
 <translation id="8387459386171870978">Pokračovat v používání Chromu</translation>
@@ -630,7 +632,6 @@ Aplikace Google Chrome nemůže vaše nastavení obnovit.</translation>
 <translation id="8781673607513845160">Pokud chcete používat kameru, udělte Chromu přístup v <ph name="BEGIN_LINK" />nastavení systému<ph name="END_LINK" /></translation>
 <translation id="878572486461146056">Chyba instalace: Správce sítě použil zásady skupiny, které brání instalaci: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">Vaše organizace může zobrazit a spravovat údaje o prohlížení (například vaše záložky, historii a hesla). Údaje o prohlížení v ostatních profilech Chrome nevidí</translation>
-<translation id="8801657293260363985">V8 je modul prohlížeče Chrome pro JavaScript a WebAssembly používaný ke zlepšení výkonu webů</translation>
 <translation id="8821043148920470810">Pokud chcete v budoucnu dostávat aktualizace prohlížeče Google Chrome, budete potřebovat systém Windows 10 nebo novější. Tento počítač používá Windows 7.</translation>
 <translation id="8823341990149967727">Chrome je zastaralý</translation>
 <translation id="8825634023950448068">Abychom chránili vaše soukromí, vaše zájmy starší než 4 měsíce automaticky mažeme. Jak budete pracovat s internetem, zájmy se mohou na seznamu znovu objevit. Pokud Chrome zájem neodhadne správně nebo pokud některé reklamy nechcete vídat, můžete zájem odstranit.</translation>

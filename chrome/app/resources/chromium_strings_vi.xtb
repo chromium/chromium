@@ -182,7 +182,6 @@
 <translation id="3258596308407688501">Chromium không thể đọc và ghi vào thư mục dữ liệu:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 là công cụ WebAssembly và JavaScript của Chromium, có tác dụng cải thiện hiệu suất của trang web</translation>
 <translation id="3286538390144397061">Khởi động lại Ngay bây giờ</translation>
 <translation id="328888136576916638">Khóa API của Google bị thiếu. Một số chức năng của Chromium sẽ bị tắt.</translation>
 <translation id="3296368748942286671">Tiếp tục chạy các ứng dụng dưới nền khi Chromium bị đóng</translation>

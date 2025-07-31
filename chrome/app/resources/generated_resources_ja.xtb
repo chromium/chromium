@@ -2519,7 +2519,6 @@
 <translation id="2730647855013151888">すべての個人情報を含める</translation>
 <translation id="2730901670247399077">絵文字候補</translation>
 <translation id="273093730430620027">このページはカメラにアクセスしています。</translation>
-<translation id="2730956943403103181">V8 オプティマイザーの使用を許可しない</translation>
 <translation id="2731392572903530958">閉じたウインドウを開く(&amp;E)</translation>
 <translation id="2731700343119398978">お待ちください...</translation>
 <translation id="2731971182069536520">次回デバイスを再起動すると、管理者による 1 回限りの更新が行われ、ローカルデータが削除されます。</translation>
@@ -3118,7 +3117,6 @@
 <translation id="3160928651883997588">VPN 設定</translation>
 <translation id="3161522574479303604">すべての言語</translation>
 <translation id="3162070126914310576">組織部門の数が初期登録の上限に達しているため、このデバイスを今すぐ登録することはできません。サポートをご希望の場合は、管理者にご連絡ください。</translation>
-<translation id="3162766632262775911">V8 オプティマイザーの使用を常に許可する</translation>
 <translation id="3162853326462195145">学校用アカウント</translation>
 <translation id="3162899666601560689">サイトは、Cookie を使用して閲覧の利便性を高めることができます（ログイン状態の維持、ショッピング カートの中身の保存など）</translation>
 <translation id="3163085718713826852">証明書のパスワードを入力</translation>
@@ -3831,7 +3829,6 @@
 <translation id="3666971425390608309">ダウンロードを一時停止しました: <ph name="FILE_NAME" />。</translation>
 <translation id="3670113805793654926">任意のベンダーのデバイス</translation>
 <translation id="3670229581627177274">Bluetooth を ON にする</translation>
-<translation id="3670480940339182416">サイトでの V8 オプティマイザーの使用を許可する</translation>
 <translation id="3671982238795754537">パスキーの詳細</translation>
 <translation id="3672681487849735243">出荷時のエラーが見つかりました</translation>
 <translation id="3673097791729989571">ログインは <ph name="SAML_DOMAIN" /> でホストされています</translation>
@@ -5729,6 +5726,7 @@
 <translation id="5001526427543320409">サードパーティ Cookie</translation>
 <translation id="5003070249435823986">ジェスチャーでスクロール モードに切り替えてから、スクロールしたい方向に頭を動かします。スクロール モードを終了するには、もう一度ジェスチャーを使用します。</translation>
 <translation id="5003993274120026347">次の文</translation>
+<translation id="5005311809885666699">Chrome から保存</translation>
 <translation id="5005498671520578047">パスワードのコピー</translation>
 <translation id="5006218871145547804">Crostini Android アプリ ADB</translation>
 <translation id="5006778209728626987">稲妻</translation>
@@ -9689,6 +9687,7 @@
 <translation id="784475655832336580">ChromeVox が有効になっている場合、キーボード フォーカスがある項目をハイライト表示することはできません</translation>
 <translation id="7844992432319478437">差分の更新中</translation>
 <translation id="7846161022626028328">エラーが発生しました。もう一度お試しください。</translation>
+<translation id="7846296061357476882">Google のサービス</translation>
 <translation id="7846634333498149051">キーボード</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> に切り替えるには Ctrl + Alt+ S キーを押します</translation>
 <translation id="7848244988854036372">すべて（<ph name="URL_COUNT" /> 個）を新しいタブグループで開く</translation>
@@ -9708,7 +9707,6 @@
 <translation id="7853747251428735">その他のツール(&amp;L)</translation>
 <translation id="7855258394151767387">W キーを使用してマウスボタンを押す</translation>
 <translation id="7855678561139483478">タブを新しいウィンドウに移動</translation>
-<translation id="7856798637819639676">Android デバイスの ID を安全に使用してください</translation>
 <translation id="7857004848504343806">ご使用のパソコンにはセキュア モジュールが組み込まれています。これは ChromeOS Flex の多くの重要なセキュリティ機能を実装するために使用されます。詳しくは Chromebook ヘルプセンター（https://support.google.com/chromebook/?p=sm）をご覧ください。</translation>
 <translation id="7857093393627376423">テキスト候補</translation>
 <translation id="7858120906780498731">ChromeOS に接続されている入力デバイス</translation>
@@ -9967,7 +9965,6 @@
 <translation id="8026784703228858744">同期してブックマークやその他のデータを保存できます</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 日前にアクセス}=1{1 日前にアクセス}other{# 日前にアクセス}}</translation>
 <translation id="8028060951694135607">Microsoft キー回復</translation>
-<translation id="8028138772801251745">AI による自動入力</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> をダウンロードしています。<ph name="SIZE" /> 完了</translation>
 <translation id="8028993641010258682">サイズ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{リーディング リスト}=1{リーディング リスト（{SELECTED_ITEMS}）}other{リーディング リスト（{SELECTED_ITEMS}）}}</translation>
@@ -10064,7 +10061,6 @@
 <translation id="808894953321890993">パスワードの変更</translation>
 <translation id="8090234456044969073">よくアクセスするウェブサイトのリストの読み取り</translation>
 <translation id="8090513782447872344">またいつでもご確認いただけます</translation>
-<translation id="8090579562279016251">パフォーマンスは低下しますが、攻撃に対する V8 の耐性が強化されます</translation>
 <translation id="8090686009202681725">AI を使用してテーマを作成</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> が応答していません</translation>
 <translation id="8094536695728193970">アプリコット</translation>
@@ -10118,7 +10114,6 @@
 <translation id="8125651784723647184">パスワードの共有は管理者によって管理されています</translation>
 <translation id="8126355825906412872">笑う</translation>
 <translation id="8129265306888404830">組織（<ph name="EMAIL_DOMAIN" />）のメールアドレスを使用するには、企業登録を使用する必要があります。このデバイスを個人で使用している場合は、個人の Google アカウントでログインしてください。</translation>
-<translation id="8130476996317833777">サイトでの V8 オプティマイザーの使用を許可しない</translation>
 <translation id="813082847718468539">サイト情報を表示</translation>
 <translation id="8131740175452115882">確認</translation>
 <translation id="8133297578569873332">許容範囲内 - FM</translation>

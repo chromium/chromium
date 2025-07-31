@@ -2535,7 +2535,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="2730647855013151888">Jumuisha taarifa binafsi zote</translation>
 <translation id="2730901670247399077">Mapendekezo ya emoji</translation>
 <translation id="273093730430620027">Ukurasa huu unafikia kamera yako.</translation>
-<translation id="2730956943403103181">Hairuhusiwi kutumia kiboreshaji cha V8</translation>
 <translation id="2731392572903530958">Fungua &amp;Tena Dirisha Lililofungwa</translation>
 <translation id="2731700343119398978">Tafadhali subiri...</translation>
 <translation id="2731971182069536520">Utakapozima na kuwasha tena kifaa chako, msimamizi wako atatekeleza sasisho la mara moja ambalo litafuta data ya kifaa chako.</translation>
@@ -3134,7 +3133,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3160928651883997588">Mapendeleo ya VPN</translation>
 <translation id="3161522574479303604">Lugha zote</translation>
 <translation id="3162070126914310576">Kifaa hiki hakiwezi kuandikishwa kwa sasa kwa sababu kitengo cha shirika lako kimefikia kikomo chake cha kwanza cha uandikishaji. Wasiliana na msimamizi wako ili upate usaidizi.</translation>
-<translation id="3162766632262775911">Zinazoruhusiwa kila wakati kutumia kiboreshaji cha V8</translation>
 <translation id="3162853326462195145">Akaunti ya shule</translation>
 <translation id="3162899666601560689">Tovuti zinaweza kutumia vidakuzi ili kuboresha hali yako ya kuvinjari, kwa mfano, ili kufanya ubaki ukiwa umeingia katika akaunti au kukumbuka bidhaa zilizo kwenye kikapu chako cha ununuzi</translation>
 <translation id="3163085718713826852">Weka nenosiri la cheti</translation>
@@ -3850,7 +3848,6 @@ Unaweza kudhibiti mipangilio ya akaunti hii kwa kusakinisha programu ya Family L
 <translation id="3666971425390608309">Imesitisha kupakua: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Vifaa kutoka muuzaji yeyote</translation>
 <translation id="3670229581627177274">Washa Bluetooth</translation>
-<translation id="3670480940339182416">Tovuti zinaweza kutumia kiboreshaji cha V8</translation>
 <translation id="3671982238795754537">Pata maelezo zaidi kuhusu funguo za siri</translation>
 <translation id="3672681487849735243">Hitilafu ya kiwanda imegunduliwa</translation>
 <translation id="3673097791729989571">Huduma ya kuingia katika akaunti inapangishwa na <ph name="SAML_DOMAIN" /></translation>
@@ -5749,6 +5746,7 @@ Bonyeza kitufe cha Ctrl kisha Alt na kitufe cha Kupunguza Mwangaza kwa wakati mm
 <translation id="5001526427543320409">Vidakuzi vya washirika wengine</translation>
 <translation id="5003070249435823986">Tumia ishara ili uwashe hali ya kusogeza, kisha usogeze kichwa chako kuelekea upande ambao ungependa kusogeza. Tumia ishara hiyo tena uzime hali ya kusogeza.</translation>
 <translation id="5003993274120026347">Sentensi inayofuata</translation>
+<translation id="5005311809885666699">Zilizohifadhiwa kutoka kwenye Chrome</translation>
 <translation id="5005498671520578047">Nakili nenosiri</translation>
 <translation id="5006218871145547804">ADB ya programu ya Android kwenye Crostini</translation>
 <translation id="5006778209728626987">Mwale wa radi</translation>
@@ -9717,6 +9715,7 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="784475655832336580">Kipengele cha kuangazia kipengee ukitumia kiangaziaji cha kibodi hakipatikani wakati ChromeVox imewashwa</translation>
 <translation id="7844992432319478437">Inasasisha tofauti</translation>
 <translation id="7846161022626028328">Hitilafu fulani imetokea. Jaribu tena.</translation>
+<translation id="7846296061357476882">Huduma za Google</translation>
 <translation id="7846634333498149051">Kibodi</translation>
 <translation id="7847212883280406910">Bonyeza "Ctrl" na "Alt" na "S" kwa pamoja ili kubadilisha kwenda <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Fungua zote (<ph name="URL_COUNT" />) katika kikundi kipya cha vichupo</translation>
@@ -9736,7 +9735,6 @@ Bonyeza swichi au kitufe ulichokabidhi ili uondoe kitendo ulichokabidhi.</transl
 <translation id="7853747251428735">Zana Zaidi</translation>
 <translation id="7855258394151767387">Tumia “w” kubonyeza kitufe cha kipanya</translation>
 <translation id="7855678561139483478">Sogeza kichupo kwenye dirisha jipya</translation>
-<translation id="7856798637819639676">Tumia kitambulisho chako kwa njia salama kwenye kifaa chako cha Android</translation>
 <translation id="7857004848504343806">Kompyuta yako ina sehemu ya usalama, ambayo inatumiwa kutekeleza vipengele vingi muhimu vya usalama kwenye ChromeOS Flex. Tembelea Kituo cha Usaidizi cha Chromebook ili upate malezo zaidi: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Mapendekezo ya maandishi</translation>
 <translation id="7858120906780498731">Vifaa vya Kuingiza Maudhui Vilivyounganishwa kwenye ChromeOS</translation>
@@ -9995,7 +9993,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8026784703228858744">Hifadhi alamisho zako na zaidi ukitumia kipengele cha usawazishaji</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Ulitembelea siku 0 zilizopita}=1{Ulitembelea siku 1 iliyopita}other{Ulitembelea siku # zilizopita}}</translation>
 <translation id="8028060951694135607">Uopoaji wa Funguo kutoka Microsoft</translation>
-<translation id="8028138772801251745">Kujaza kiotomatiki kwa Kutumia AI</translation>
 <translation id="8028803902702117856">Inapakua <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Ukubwa</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Orodha ya kusoma}=1{Orodha ya kusoma ({SELECTED_ITEMS})}other{Orodha ya kusoma ({SELECTED_ITEMS})}}</translation>
@@ -10092,7 +10089,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="808894953321890993">Badilisha nenosiri</translation>
 <translation id="8090234456044969073">Soma orodha ya tovuti zako unazotembelea mara nyingi</translation>
 <translation id="8090513782447872344">Unaweza kurudi hapa wakati wowote ili uangalie tena</translation>
-<translation id="8090579562279016251">Hupunguza utendaji lakini hufanya V8 kustahimili mashambulizi zaidi</translation>
 <translation id="8090686009202681725">Tumia AI kubuni mandhari</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> haifanyi kazi</translation>
 <translation id="8094536695728193970">Aprikoti</translation>
@@ -10146,7 +10142,6 @@ Weka faili yako ya funguo mahali salama. Utaihitaji kuunda matoleo mapya ya kien
 <translation id="8125651784723647184">Kipengele cha kushiriki nenosiri kinadhibitiwa na msimamizi wako</translation>
 <translation id="8126355825906412872">Tabasamu</translation>
 <translation id="8129265306888404830">Ili utumie anwani ya barua pepe ya shirika lako (<ph name="EMAIL_DOMAIN" />), unahitaji kutumia kipengele cha usajili wa biashara. Iwapo kifaa hiki ni kwa ajili ya matumizi yako binafsi, ingia ukitumia Akaunti yako binafsi ya Google.</translation>
-<translation id="8130476996317833777">Usiruhusu tovuti kutumia kiboreshaji cha V8</translation>
 <translation id="813082847718468539">Angalia maelezo ya tovuti</translation>
 <translation id="8131740175452115882">Thibitisha</translation>
 <translation id="8133297578569873332">DVD - Inakubalika</translation>

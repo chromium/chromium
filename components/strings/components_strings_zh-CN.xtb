@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">备用</translation>
 <translation id="1264974993859112054">体育</translation>
 <translation id="1268480293435976622">中式 #7 信封</translation>
-<translation id="1269045546668906972">开启“利用 AI 自动填充”功能即可自动填充更多字段</translation>
 <translation id="1269516672602708785">在 Google 协作平台中快速创建新网站</translation>
 <translation id="1270328905573953738">搬迁</translation>
 <translation id="1270502636509132238">取货方式</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">其他书签</translation>
 <translation id="2355395290879513365">攻击者可能能够看到您正在此网站上浏览的图片，并通过编辑这些图片让您受骗。</translation>
 <translation id="2356070529366658676">询问</translation>
-<translation id="2356926036049612643">V8 优化工具</translation>
 <translation id="2356941001189392209">被您访问过且发生了旧版技术事件的部分网页网址的列表</translation>
 <translation id="2357481397660644965">您的设备由 <ph name="DEVICE_MANAGER" /> 管理，您的账号由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多种货币</translation>
@@ -1781,13 +1779,13 @@
 <translation id="3984581365661308170">#11 信封</translation>
 <translation id="398470910934384994">养鸟/观鸟</translation>
 <translation id="3985750352229496475">管理地址…</translation>
-<translation id="3986506998755860149">在设置中详细了解“利用 AI 自动填充”功能</translation>
 <translation id="3986557181852957825">Google Pay、Klarna 徽标</translation>
 <translation id="3986705137476756801">暂时关闭“实时字幕”功能</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">小于 1 MB</translation>
 <translation id="3990250421422698716">撞页偏移</translation>
 <translation id="3990532701115075684">跟踪您的手部动作</translation>
+<translation id="399179161741278232">已导入</translation>
 <translation id="3992684624889376114">关于此页面</translation>
 <translation id="3995639283717357522">应用政策</translation>
 <translation id="3996683183117168945">第 <ph name="CURRENT_CITATION" /> 项引用，共 <ph name="MAX_CITATIONS" /> 项，<ph name="PRODUCT_NAME" />，<ph name="URL" />。<ph name="PAGE_TITLE" />。<ph name="PAGE_PREVIEW" />。</translation>
@@ -2395,7 +2393,6 @@
 <translation id="5002932099480077015">如果您选中此项，Chrome 会将您的卡的副本存储在此设备上，以加快表单填写速度。</translation>
 <translation id="5007344584818503324">已共享的标签页分组活动记录</translation>
 <translation id="5007392906805964215">查看</translation>
-<translation id="5010599530303458903">按月支付或分 4 期免息付款（需满足资格要求）</translation>
 <translation id="5011561501798487822">检测到的语言</translation>
 <translation id="5015510746216210676">设备名称：</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -2648,7 +2645,7 @@
 <translation id="5425082381151187189">家居与室内装潢</translation>
 <translation id="5426179911063097041"><ph name="SITE" /> 想向您发送通知</translation>
 <translation id="5430298929874300616">移除书签</translation>
-<translation id="5431318178759467895">彩色</translation>
+<translation id="5431318178759467895">颜色</translation>
 <translation id="5433756542371550806">命令行变体</translation>
 <translation id="5434798570900738152">Chromium <ph name="BEGIN_EMPHASIS" />不会保存<ph name="END_EMPHASIS" />：
           <ph name="BEGIN_LIST" />
@@ -3075,7 +3072,6 @@
 <translation id="6151417162996330722">该服务器证书的有效期过长。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 英寸（<ph name="ORIENTATION" />）</translation>
 <translation id="615506061184576470">跑步与走路</translation>
-<translation id="6157079899699705880">“利用 AI 自动填充”功能可以更好地理解表单，并更快地为您自动填充表单</translation>
 <translation id="6157754950574419155">移除历史记录中的所有内容</translation>
 <translation id="6157877588268064908">要查看送货方式和要求，请选择相应地址</translation>
 <translation id="6159554577634054750">病虫害防治</translation>
@@ -3581,6 +3577,7 @@
 <translation id="6989763994942163495">显示高级设置...</translation>
 <translation id="6991376411634620997">通行密钥 • Windows Hello</translation>
 <translation id="6997288673234694149">棒球和垒球装备</translation>
+<translation id="6998512609912910179">更快捷地填写表单</translation>
 <translation id="6999480632062519056">健身指导与私人训练</translation>
 <translation id="7003278537452757231">地垫与地毯</translation>
 <translation id="7003322000677139268">车辆零配件</translation>

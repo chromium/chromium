@@ -162,7 +162,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="1264309058268477500">Alternative</translation>
 <translation id="1264974993859112054">Sports</translation>
 <translation id="1268480293435976622">Envelope Chinese no.7</translation>
-<translation id="1269045546668906972">Turn on autofill with AI to automatically fill more fields</translation>
 <translation id="1269516672602708785">Create a new site in Google Sites quickly</translation>
 <translation id="1270328905573953738">Moving and Relocation</translation>
 <translation id="1270502636509132238">Pickup Method</translation>
@@ -819,7 +818,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="2354001756790975382">Other bookmarks</translation>
 <translation id="2355395290879513365">Attackers might be able to see the images that you’re looking at on this site and trick you by modifying them.</translation>
 <translation id="2356070529366658676">Ask</translation>
-<translation id="2356926036049612643">V8 optimiser</translation>
 <translation id="2356941001189392209">A limited list of URLs of pages that you visit where legacy technology events are occurring</translation>
 <translation id="2357481397660644965">Your device is managed by <ph name="DEVICE_MANAGER" /> and your account is managed by <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Multiple</translation>
@@ -1785,13 +1783,13 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3984581365661308170">Envelope no.11</translation>
 <translation id="398470910934384994">Birds</translation>
 <translation id="3985750352229496475">Manage Addresses…</translation>
-<translation id="3986506998755860149">learn more about autofill with AI in settings</translation>
 <translation id="3986557181852957825">Google Pay, Klarna logo</translation>
 <translation id="3986705137476756801">Turn off Live Caption for now</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Less than 1 MB</translation>
 <translation id="3990250421422698716">Jog offset</translation>
 <translation id="3990532701115075684">Track your hands</translation>
+<translation id="399179161741278232">Imported</translation>
 <translation id="3992684624889376114">About this page</translation>
 <translation id="3995639283717357522">Apply policies</translation>
 <translation id="3996683183117168945">Citation <ph name="CURRENT_CITATION" /> of <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -1981,7 +1979,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="4277937682389409325">Local address</translation>
 <translation id="4278090321534187713">Cards not accepted by this merchant are disabled</translation>
 <translation id="4278390842282768270">Allowed</translation>
-<translation id="4281245629646759298">Light Yellow</translation>
+<translation id="4281245629646759298">Light yellow</translation>
 <translation id="4281998142035485137">{0,plural, =1{Open confidential file?}other{Open confidential files?}}</translation>
 <translation id="4282280603030594840">Vehicle shopping</translation>
 <translation id="4282346679996504092">Alerts for this product have been turned off and the bookmark removed</translation>
@@ -2399,7 +2397,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="5002932099480077015">If enabled, Chrome will store a copy of your card on this device for faster form filling.</translation>
 <translation id="5007344584818503324">Shared tab groups activity</translation>
 <translation id="5007392906805964215">Review</translation>
-<translation id="5010599530303458903">Pay monthly or in 4 interest-free instalments (subject to eligibility)</translation>
 <translation id="5011561501798487822">Detected language</translation>
 <translation id="5015510746216210676">Machine name:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6151417162996330722">The server certificate has a validity period that is too long.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Running and walking</translation>
-<translation id="6157079899699705880">Autofill with AI understands forms better and can autofill them faster for you</translation>
 <translation id="6157754950574419155">Remove all from history</translation>
 <translation id="6157877588268064908">To see delivery methods and requirements, select an address</translation>
 <translation id="6159554577634054750">Pest Control</translation>

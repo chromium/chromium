@@ -250,6 +250,7 @@
 <translation id="1166583374608765787">અપડેટ કરેલા નામનો રિવ્યૂ કરો</translation>
 <translation id="1166596238782048887"><ph name="DESK_TITLE" /> ડેસ્ક <ph name="TAB_TITLE" />ની માલિકી ધરાવે છે</translation>
 <translation id="1166644470305877068">આઇસોલેટેડ વેબ ઍપ ઑટોમૅટિક રીતે આ સેટિંગને અનુસરે છે</translation>
+<translation id="116712635768212829">જો Chromeને તમારો કોઈ પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળે, તો જો તમે સાઇન ઇન કર્યું હોય, તો Google Password Manager તમારા માટે તમારો પાસવર્ડ બદલવાની ઑફર કરી શકે છે.</translation>
 <translation id="1168020859489941584"><ph name="TIME_REMAINING" /> માં ખુલી રહ્યું છે...</translation>
 <translation id="1168704243733734901"><ph name="MOOD" /> મૂડ ધરાવતી <ph name="STYLE" /> શૈલીમાં, <ph name="SUBJECT" />ની <ph name="INDEX" /> તાજેતરની AI થીમ.</translation>
 <translation id="116896278675803795">પસંદ કરેલા કન્ટેન્ટ સાથે મેળ કરવા માટે ઑટોમૅટિક રીતે ભાષા બદલો</translation>
@@ -555,6 +556,7 @@
 <translation id="1375938286942050085">સેટઅપ પૂર્ણ થયું! આગલી ગેમ રમવા માટે, તમારું ડિવાઇસ તૈયાર કરો</translation>
 <translation id="137651782282853227">સાચવેલા સરનામાં અહીં દેખાશે</translation>
 <translation id="1376771218494401509">વિન્ડોને કોઈ નામ આપો...</translation>
+<translation id="1377438103060664754">જો તમારો કોઈ પાસવર્ડ ડેટા ઉલ્લંઘનમાં જોવા મળે, તો Google Password Manager તમે તેને સશક્ત પાસવર્ડમાં બદલવા માગો છો કે કેમ તે પૂછે છે</translation>
 <translation id="1377600615067678409">હાલ પૂરતું છોડો</translation>
 <translation id="1378613616312864539"><ph name="NAME" />, આ સેટિંગને નિયંત્રિત કરી રહ્યાં છે</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો 1 પાસવર્ડ}one{ચેડાં કરાયેલો {NUM_COMPROMISED} પાસવર્ડ}other{ચેડાં કરાયેલા {NUM_COMPROMISED} પાસવર્ડ}}</translation>
@@ -2521,7 +2523,6 @@
 <translation id="2730647855013151888">બધી વ્યક્તિગત માહિતી શામેલ કરો</translation>
 <translation id="2730901670247399077">ઇમોજી માટે સૂચનો</translation>
 <translation id="273093730430620027">આ પેજ તમારા કૅમેરાને ઍક્સેસ કરી રહ્યું છે.</translation>
-<translation id="2730956943403103181">V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાની મંજૂરી નથી</translation>
 <translation id="2731392572903530958">બંધ કરેલી વિંડો ફ&amp;રીથી ખોલો</translation>
 <translation id="2731700343119398978">કૃપા કરીને રાહ જુઓ...</translation>
 <translation id="2731971182069536520">આગલી વખતે તમે તમારું ડિવાઇસ ફરી શરૂ કરશો, ત્યારે તમારા વ્યવસ્થાપક એક-સમયનો અપડેટ કરશે, જેના કારણે તમારો બધો સ્થાનિક ડેટા ડિલીટ થઈ જશે.</translation>
@@ -3120,7 +3121,6 @@
 <translation id="3160928651883997588">VPN પસંદગીઓ</translation>
 <translation id="3161522574479303604">બધી ભાષાઓ</translation>
 <translation id="3162070126914310576">અત્યારે ડિવાઇસની નોંધણી કરી શકાતી નથી કારણ કે તમારી સંસ્થાનું યુનિટ તેની પ્રારંભિક નોંધણીની મર્યાદાએ પહોંચી ગયું છે. સહાયતા માટે તમારા ઍડમિનિસ્ટ્રેટરનો સંપર્ક કરો.</translation>
-<translation id="3162766632262775911">હંમેશા V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાની મંજૂરી છે</translation>
 <translation id="3162853326462195145">સ્કૂલ એકાઉન્ટ</translation>
 <translation id="3162899666601560689">તમને વધુ સારો બ્રાઉઝિંગ અનુભવ આપવા માટે, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરીને રાખવા અથવા તમારા શૉપિંગ કાર્ટની આઇટમ યાદ રાખવા માટે, સાઇટ કુકીનો ઉપયોગ કરી શકે છે</translation>
 <translation id="3163085718713826852">સર્ટિફિકેટનો પાસવર્ડ દાખલ કરો</translation>
@@ -3836,7 +3836,6 @@
 <translation id="3666971425390608309">ડાઉનલોડ થોભાવ્યું: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">કોઈ પણ વિક્રેતા પાસે ઉપલબ્ધ ડિવાઇસની શ્રેણી</translation>
 <translation id="3670229581627177274">Bluetooth ચાલુ કરો</translation>
-<translation id="3670480940339182416">સાઇટ V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરી શકે છે</translation>
 <translation id="3671982238795754537">પાસકી વિશે વધુ જાણો</translation>
 <translation id="3672681487849735243">એક ફેક્ટરી ભૂલ શોધવામાં આવી છે</translation>
 <translation id="3673097791729989571"><ph name="SAML_DOMAIN" /> દ્વારા સાઇન ઇન કરવાની સુવિધા હોસ્ટ કરવામાં આવી છે</translation>
@@ -5737,6 +5736,7 @@
 <translation id="5001526427543320409">ત્રીજા પક્ષની કુકી</translation>
 <translation id="5003070249435823986">સ્ક્રોલ મોડમાં દાખલ થવા માટે સંકેતનો ઉપયોગ કરો, પછી તમે જે દિશામાં સ્ક્રોલ કરવા માગતા હો તે દિશામાં તમારું માથું હલાવો. સ્ક્રોલ મોડમાંથી બહાર નીકળવા માટે ફરીથી સંકેતનો ઉપયોગ કરો.</translation>
 <translation id="5003993274120026347">આગલું વાક્ય</translation>
+<translation id="5005311809885666699">Chromeમાંથી સાચવેલા</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5006218871145547804">Crostini Android ઍપ ADB</translation>
 <translation id="5006778209728626987">વીજળી</translation>
@@ -9707,6 +9707,7 @@ USB ડિવાઇસ</translation>
 <translation id="784475655832336580">ChromeVox ચાલુ હોય ત્યારે કીબોર્ડ ફોકસ સાથે આઇટમ હાઇલાઇટ કરવાની સુવિધા ઉપલબ્ધ હોતી નથી</translation>
 <translation id="7844992432319478437">અપડેટનો તફાવત</translation>
 <translation id="7846161022626028328">કોઈ ભૂલ આવી હતી. ફરી પ્રયાસ કરો.</translation>
+<translation id="7846296061357476882">Googleની સેવાઓ</translation>
 <translation id="7846634333498149051">કીબોર્ડ</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> પર સ્વિચ કરવા માટે Ctrl + Alt + S દબાવો</translation>
 <translation id="7848244988854036372">બધા (<ph name="URL_COUNT" />)ને નવા ટૅબના ગ્રૂપમાં ખોલો</translation>
@@ -9726,7 +9727,6 @@ USB ડિવાઇસ</translation>
 <translation id="7853747251428735">વધુ સા&amp;ધનો</translation>
 <translation id="7855258394151767387">માઉસનું બટન દબાવવા માટે “w”નો ઉપયોગ કરો</translation>
 <translation id="7855678561139483478">ટૅબને નવી વિંડોમાં ખસેડો</translation>
-<translation id="7856798637819639676">તમારા Android ડિવાઇસમાંથી IDનો સુરક્ષિત રીતે ઉપયોગ કરો</translation>
 <translation id="7857004848504343806">તમારું કમ્પ્યુટર સુરક્ષા મૉડ્યૂલ ધરાવે છે, જેનો ઉપયોગ ChromeOS Flexમાં ઘણી મહત્ત્વપૂર્ણ સુરક્ષા સુવિધાઓ લાગુ કરવા માટે કરવામાં આવે છે. વધુ જાણવા માટે Chromebook સહાયતા કેન્દ્રની મુલાકાત લો: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">ટેક્સ્ટ સૂચનો</translation>
 <translation id="7858120906780498731">ChromeOS સાથે કનેકટેડ ઇનપુટ ડિવાઇસ</translation>
@@ -9980,7 +9980,6 @@ USB ડિવાઇસ</translation>
 <translation id="8026784703228858744">સિંકની સુવિધા વડે તમારા બુકમાર્ક જેવી બીજી ઘણી બાબતો સાચવો</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{0 દિવસ પહેલાં મુલાકાત લીધી}=1{1 દિવસ પહેલાં મુલાકાત લીધી}one{# દિવસ પહેલાં મુલાકાત લીધી}other{# દિવસ પહેલાં મુલાકાત લીધી}}</translation>
 <translation id="8028060951694135607">Microsoft Key Recovery</translation>
-<translation id="8028138772801251745">AI વડે ઑટોમૅટિક રીતે ભરવાની સુવિધા</translation>
 <translation id="8028803902702117856"><ph name="SIZE" />, <ph name="FILE_NAME" /> ડાઉનલોડ કરી રહ્યાં છીએ</translation>
 <translation id="8028993641010258682">કદ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{વાંચન સૂચિ}=1{વાંચન સૂચિ ({SELECTED_ITEMS})}one{વાંચન સૂચિ ({SELECTED_ITEMS})}other{વાંચન સૂચિ ({SELECTED_ITEMS})}}</translation>
@@ -10077,7 +10076,6 @@ USB ડિવાઇસ</translation>
 <translation id="808894953321890993">પાસવર્ડ બદલો</translation>
 <translation id="8090234456044969073">તમારી મોટાભાગની અવારનાવર મુલાકાત લીધેલ વેબસાઇટ્સની સૂચિ વાંચો</translation>
 <translation id="8090513782447872344">તમે ફરીથી જોવા માટે કોઈપણ સમયે પાછા આવી શકો છો</translation>
-<translation id="8090579562279016251">પર્ફોર્મન્સ ઘટાડે છે પરંતુ V8ને અટૅક સામે વધુ પ્રતિરોધક બનાવે છે</translation>
 <translation id="8090686009202681725">AI વડે થીમ બનાવો</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> પ્રતિસાદ આપી રહ્યું નથી</translation>
 <translation id="8094536695728193970">એપ્રિકૉટ</translation>
@@ -10131,7 +10129,6 @@ USB ડિવાઇસ</translation>
 <translation id="8125651784723647184">પાસવર્ડ શેરિંગ ઍડમિનિસ્ટ્રેટર દ્વારા શેર કરવામાં આવે છે</translation>
 <translation id="8126355825906412872">સ્મિત</translation>
 <translation id="8129265306888404830">તમારી સંસ્થા (<ph name="EMAIL_DOMAIN" />)ના તમારા ઇમેઇલ ઍડ્રેસનો ઉપયોગ કરવા માટે, તમારે એન્ટરપ્રાઇઝની નોંધણી કરવી જરૂરી છે. જો આ ડિવાઇસ તમારા વ્યક્તિગત ઉપયોગ માટે હોય, તો તમારા વ્યક્તિગત Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
-<translation id="8130476996317833777">સાઇટને V8 ઑપ્ટિમાઇઝરનો ઉપયોગ કરવાની મંજૂરી આપશો નહીં</translation>
 <translation id="813082847718468539">સ્થાન માહિતી જુઓ</translation>
 <translation id="8131740175452115882">પુષ્ટિ કરો</translation>
 <translation id="8133297578569873332">સ્વીકાર્ય - FM</translation>

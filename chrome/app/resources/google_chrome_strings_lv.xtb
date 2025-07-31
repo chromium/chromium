@@ -267,6 +267,7 @@
 <translation id="4205939740494406371">Pārlūkprogrammā Chrome nevar pārbaudīt jūsu paroles. Mēģiniet vēlreiz pēc 24 stundām vai <ph name="BEGIN_LINK" />pārbaudiet paroles savā Google kontā<ph name="END_LINK" />.</translation>
 <translation id="4222932583846282852">Notiek atcelšana...</translation>
 <translation id="4224210481850767180">Instalēšana ir atcelta.</translation>
+<translation id="4230631012078055975">Iegūstiet vairāk, pierakstoties pārlūkā Chrome</translation>
 <translation id="4242034826641750751">Pārlūkam Chrome ir nepieciešama atļauja izmantot kameru un mikrofonu šajā vietnē.</translation>
 <translation id="424864128008805179">Vai izrakstīties no pārlūka Chrome?</translation>
 <translation id="4251615635259297716">Vai saistīt Chrome datus ar šo kontu?</translation>
@@ -588,6 +589,7 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8321888067342493336">Saglabāt kā attēlu</translation>
 <translation id="8336463659890584292">Kad vietnē tiek piedāvāts privāti iepriekš ielādēt saites vietnes lapā, Chrome izmanto Google serverus. Tādējādi jūsu identitāte tiek slēpta no iepriekš ielādētās lapas īpašniekiem, taču Google uzzina, kādas lapas tiek iepriekš ielādētas.</translation>
 <translation id="8342675569599923794">Šis fails ir bīstams, tāpēc Chrome to bloķēja.</translation>
+<translation id="8349094670477064572">Jūs saglabāsiet un izmantosiet paroles un citu saturu savā Google kontā, kad vien būsiet pierakstījies pārlūkā Chrome. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">Tulkot šādā valodā:</translation>
 <translation id="8370517070665726704">Autortiesības: <ph name="YEAR" /> Google LLC. Visas tiesības paturētas.</translation>
 <translation id="8387459386171870978">Turpināt lietot Chrome</translation>
@@ -626,7 +628,6 @@ Dažas funkcijas var nebūt pieejamas. Norādiet citu profila direktoriju vai li
 <translation id="8781673607513845160">Lai varētu izmantot kameru, piešķiriet pārlūkam Chrome piekļuvi <ph name="BEGIN_LINK" />sistēmas iestatījumos<ph name="END_LINK" />.</translation>
 <translation id="878572486461146056">Instalēšanas kļūda: administrators ir piemērojis grupas politiku, kas neļauj veikt instalēšanu: <ph name="INSTALL_ERROR" />.</translation>
 <translation id="8798550110818026746">Jūsu organizācija var skatīt un pārvaldīt pārlūkošanas datus, piemēram, grāmatzīmes, vēsturi un paroles. Tā nevar skatīt pārlūkošanas datus citos Chrome profilos.</translation>
-<translation id="8801657293260363985">V8 ir Chrome JavaScript un WebAssembly programma, kas tiek izmantota vietnes veiktspējas uzlabošanai</translation>
 <translation id="8821043148920470810">Lai saņemtu turpmākus Google Chrome atjauninājumus, nepieciešama operētājsistēma Windows 10 vai jaunāka versija. Šajā datorā tiek izmantota operētājsistēma Windows 7.</translation>
 <translation id="8823341990149967727">Chrome versija ir novecojusi</translation>
 <translation id="8825634023950448068">Lai aizsargātu jūsu konfidencialitāti, mēs automātiski dzēšam intereses, kas ir glabātas ilgāk par četrām nedēļām. Intereses var tikt atkārtoti pievienotas sarakstam, kad turpināsiet pārlūkošanu. Ja intereses pārlūkā Chrome nav noteiktas pareizi vai nevēlaties skatīt konkrētas reklāmas, varat noņemt interesi.</translation>

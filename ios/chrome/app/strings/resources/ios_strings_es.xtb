@@ -65,6 +65,7 @@
 <translation id="1263433075299269530">Tu última pestaña abierta</translation>
 <translation id="1264156759663453185">El texto seleccionado es demasiado grande para una traducción parcial.</translation>
 <translation id="1264974993859112054">Deportes</translation>
+<translation id="126737128831326059">Exportación completada correctamente</translation>
 <translation id="1272079795634619415">Detener</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} contraseña}other{{count} contraseñas}}</translation>
 <translation id="1275718070701477396">Seleccionado</translation>
@@ -168,6 +169,7 @@
 <translation id="1641113438599504367">Navegación segura</translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="164673457281113247">{count,plural, =1{Marcador guardado}other{Marcadores guardados}}</translation>
+<translation id="1651260071709244114">Aplicaciones</translation>
 <translation id="1652051421944182562">Activar notificaciones de Comprobación de tu estado…</translation>
 <translation id="1652333207707886577">Personalizar el menú</translation>
 <translation id="1653274177966208838">{TIME,plural, =0{Tiempo restante: {TIME} segundos}=1{Tiempo restante: {TIME} segundo}other{Tiempo restante: {TIME} segundos}}</translation>
@@ -310,6 +312,7 @@
 <translation id="218350106843433823">Autocompletar contraseñas y llaves de acceso</translation>
 <translation id="2184272387334793084">Inicia sesión para acceder a tus contraseñas y más en todos tus dispositivos</translation>
 <translation id="2186206192313702726">Google Lens</translation>
+<translation id="2188993354115194873">Toca <ph name="BEGIN_BOLD" />Guardar en Descargas<ph name="END_BOLD" />.</translation>
 <translation id="219283042927675668">Pestañas en el grupo</translation>
 <translation id="2194856509914051091">Notas importantes</translation>
 <translation id="2196428379625389579">Buscar en la Web</translation>
@@ -434,7 +437,7 @@ Los sitios no pueden usar cookies para ver tu actividad de navegación en otros 
 <translation id="2658056020748144467">No se puede abrir archivo</translation>
 <translation id="2661809266906115479"><ph name="TITLE" />, <ph name="STATE" />, solo en este dispositivo, <ph name="URL" /></translation>
 <translation id="2664621323652615289">Detener</translation>
-<translation id="2666092431469916601">Superior</translation>
+<translation id="2666092431469916601">Arriba</translation>
 <translation id="2669454659051515572">Cualquier persona que use este dispositivo puede ver los archivos descargados</translation>
 <translation id="2671423594960767771">Compartir grupo</translation>
 <translation id="2673508731173059946">Ir al enlace copiado</translation>
@@ -536,7 +539,7 @@ Usas el buscador <ph name="DSE_NAME" />. Consulta las instrucciones del buscador
 Consulta las instrucciones del buscador para eliminar tu historial de búsqueda (si corresponde).</translation>
 <translation id="3080525922482950719">Puedes guardar páginas para leerlas más tarde o sin conexión</translation>
 <translation id="3081338492074632642">La contraseña que guardes debe coincidir con tu contraseña de <ph name="WEBSITE" />.</translation>
-<translation id="3087734570205094154">Inferior</translation>
+<translation id="3087734570205094154">Abajo</translation>
 <translation id="309710370695886264">Tienes 1 contraseña reutilizada. Corrige el problema para protegerte.</translation>
 <translation id="3106258548858559536">Desactivar modo Lectura</translation>
 <translation id="3106690631878101882">Ocultar Traducir</translation>
@@ -560,6 +563,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3174662312949010067">También puedes usar las contraseñas guardadas en tus otros dispositivos.</translation>
 <translation id="3177338796769255211">Inicia sesión para acceder a tus marcadores y otras cosas en todos tus dispositivos</translation>
 <translation id="3181954750937456830">Navegación segura (te protege a ti y a tu dispositivo frente a sitios peligrosos)</translation>
+<translation id="3186796054637504691">Borrar historial y datos de sitios web</translation>
 <translation id="3190736958609431397">Dejar de seguir</translation>
 <translation id="3208260410153224535">Tu organización ha desactivado el inicio de sesión. Los marcadores, las contraseñas y otros elementos nuevos solo se guardarán en este dispositivo.</translation>
 <translation id="3213807041830307252">Compra, traduce e identifica lo que ves con tu cámara y tu galería de fotos.</translation>
@@ -700,6 +704,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="3851938967634752633">Se eliminarán las contraseñas de <ph name="WEBSITE" />, <ph name="SECOND_WEBSITE" /> y <ph name="NUMBER_OF_ACCOUNTS" /> cuentas más. Tus cuentas no se eliminarán.</translation>
 <translation id="3853162385423733133">Sigue usando y guardando las contraseñas en tu cuenta de Google <ph name="EMAIL" /></translation>
 <translation id="3853873210696342070">Importar</translation>
+<translation id="3857113360369572832">Abre la <ph name="BEGIN_BOLD" />configuración de Safari<ph name="END_BOLD" /></translation>
 <translation id="3858860766373142691">Nombre</translation>
 <translation id="3868495844258915202">Mostrar URL completa</translation>
 <translation id="3875783148670536197">Muéstrame cómo</translation>
@@ -1592,6 +1597,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7215621211572884440">Pop-ups permitidos</translation>
 <translation id="7218491361283758048">Código postal</translation>
 <translation id="7221173315674413369">Descubre nuevas funciones y consejos en Novedades</translation>
+<translation id="7223134495231529579">Guardar en Descargas</translation>
 <translation id="722339453342442311">Comprobar ahora</translation>
 <translation id="7227235818314667565">Gestionar uso compartido</translation>
 <translation id="7233006041370588369">Selecciona la contraseña que quieras rellenar.</translation>
@@ -1729,6 +1735,7 @@ Mientras estás en modo Incógnito, los sitios no pueden usar tus cookies para v
 <translation id="7781829728241885113">Ayer</translation>
 <translation id="7788868432173225918">Cerrar vista ampliada</translation>
 <translation id="7791543448312431591">Añadir</translation>
+<translation id="7795253248079882669">Toca <ph name="BEGIN_BOLD" />Exportar<ph name="END_BOLD" />.</translation>
 <translation id="7801064017114765401">Ordenadores</translation>
 <translation id="7802239711290932774">Usar contraseña sugerida:</translation>
 <translation id="780301667611848630">No, gracias</translation>
@@ -1839,6 +1846,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8161614462829037225">Desbloquear con <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /></translation>
 <translation id="8173034266693057059">Longitud</translation>
 <translation id="8182037667962849780">{count,plural, =1{Para {website_1}}=2{Para {website_1} y {website_2}}=3{Para {website_1}, {website_2} y 1 más}other{Para {website_1}, {website_2} y {more_count} más}}</translation>
+<translation id="8185076488803799132">Importar</translation>
 <translation id="8189615296021678665">Toca Guardar para acceder fácilmente a esta contraseña la próxima vez que inicies sesión.</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Añadir contraseña</translation>
@@ -1855,6 +1863,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8230355548492839438">Buscar anterior</translation>
 <translation id="8232956427053453090">Conservar datos</translation>
 <translation id="8233237502828137700">Cerrar banner de promoción</translation>
+<translation id="8258734532103758067">He exportado mis datos</translation>
 <translation id="8258999165172757081">Añadido</translation>
 <translation id="8261506727792406068">Eliminar</translation>
 <translation id="82619448491672958">Ver otras pestañas</translation>
@@ -1923,6 +1932,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8505361906966222822">Guardar en…</translation>
 <translation id="850600235656508448">Abrir en modo Incógnito</translation>
 <translation id="8511141513131731477">Ir a la primera pestaña</translation>
+<translation id="8515534223594179607">Exportar datos de navegación</translation>
 <translation id="852075982791215701">Ir a la última pestaña</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} contraseña y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}other{{count} contraseñas y otros elementos solo se guardan en este dispositivo. Para usarlos en tus otros dispositivos, guárdalos en tu cuenta de Google: {email}.}}</translation>
 <translation id="8524799873541103884">Pestañas de <ph name="INCOGNITO" />: de <ph name="FIRST_VISIBLE_TAB" /> a <ph name="LAST_VISIBLE_TAB" /> de <ph name="NUMBER_OF_OPEN_TABS" /></translation>
@@ -1974,6 +1984,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8680787084697685621">La información de inicio de sesión no está actualizada.</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
 <translation id="8692689525339542358">Protégete frente a sitios, descargas y extensiones peligrosos.</translation>
+<translation id="8692897097252418799">Elige los datos que quieres exportar</translation>
 <translation id="8694281486652655615">Muestra este elemento</translation>
 <translation id="8696297579102085705">Enviar a tu dispositivo</translation>
 <translation id="8697136149718343437">Mover barra de direcciones a la parte inferior</translation>
@@ -1996,6 +2007,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8741995161408053644">Es posible que tu cuenta de Google tenga otras formas del historial de navegación en la página <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crear enlace</translation>
 <translation id="8746155870861185046">Compartir resaltado</translation>
+<translation id="8748678031495824833">Abrir herramientas de IA en la página</translation>
 <translation id="8750037785291841318">Aquí verás tus pestañas</translation>
 <translation id="8756969031206844760">¿Quieres actualizar la contraseña?</translation>
 <translation id="8764015330924122850">Dejar de seguir a <ph name="DOMAIN_NAME" /></translation>
@@ -2128,6 +2140,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="939598580284253335">Introducir frase de contraseña</translation>
 <translation id="939736085109172342">Nueva carpeta</translation>
 <translation id="940409663738806563"><ph name="BEGIN_LINK" />Consulta lo que puedes sincronizar<ph name="END_LINK" /></translation>
+<translation id="942624946817804130">Exportar</translation>
 <translation id="945522503751344254">Enviar comentarios</translation>
 <translation id="94870150074703282">¿Eliminar grupo?</translation>
 <translation id="952704832371081537">Cancelar</translation>

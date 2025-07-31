@@ -250,6 +250,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1166583374608765787">Gennemgå navneopdateringen</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> tilhører skrivebordet <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">Isolerede webapps følger automatisk denne indstilling</translation>
+<translation id="116712635768212829">Hvis Chrome registrerer, at én af dine adgangskoder er blevet lækket i forbindelse med et brud på datasikkerheden, kan Google Adgangskodeadministrator tilbyde at ændre din adgangskode for dig, hvis du er logget ind.</translation>
 <translation id="1168020859489941584">Åbner om <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Seneste AI-tema <ph name="INDEX" /> af <ph name="SUBJECT" /> i stilen <ph name="STYLE" /> med stemningen <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Skift automatisk sprog, så det passer med det valgte indhold</translation>
@@ -555,6 +556,7 @@ Du kan til enhver tid tjekke dine adgangskoder i <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1375938286942050085">Konfigurationen er fuldført. Gør nu din enhed klar til gaming</translation>
 <translation id="137651782282853227">Dine gemte adresser vises her</translation>
 <translation id="1376771218494401509">Navngiv vindue...</translation>
+<translation id="1377438103060664754">Hvis én af dine adgangskoder er blevet lækket i forbindelse med et brud på datasikkerheden, spørger Google Adgangskodeadministrator, om du vil ændre den pågældende adgangskode til en stærk adgangskode</translation>
 <translation id="1377600615067678409">Vent til senere</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> kontrollerer denne indstilling</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Ingen kompromitterede adgangskoder}=1{1 kompromitteret adgangskode}one{{NUM_COMPROMISED} kompromitteret adgangskode}other{{NUM_COMPROMISED} kompromitterede adgangskoder}}</translation>
@@ -2538,7 +2540,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2730647855013151888">Medtag alle personlige oplysninger</translation>
 <translation id="2730901670247399077">Forslag til emojis</translation>
 <translation id="273093730430620027">Denne side har adgang til dit kamera.</translation>
-<translation id="2730956943403103181">Har ikke tilladelse til at anvende V8-optimering</translation>
 <translation id="2731392572903530958">G&amp;enåbn lukket vindue</translation>
 <translation id="2731700343119398978">Vent et øjeblik...</translation>
 <translation id="2731971182069536520">Næste gang du genstarter din enhed, udfører din administrator en engangsopdatering, der sletter dine lokale data.</translation>
@@ -3137,7 +3138,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3160928651883997588">Præferencer for VPN</translation>
 <translation id="3161522574479303604">Alle sprog</translation>
 <translation id="3162070126914310576">Denne enhed kan ikke tilmeldes lige nu, fordi din organisationsenhed har nået sin grænse for indledende tilmelding. Kontakt din administrator for at få hjælp.</translation>
-<translation id="3162766632262775911">Har altid tilladelse til at anvende V8-optimering</translation>
 <translation id="3162853326462195145">Skolekonto</translation>
 <translation id="3162899666601560689">Websites kan bruge cookies til at forbedre din browseroplevelse ved f.eks. at sørge for, at du forbliver logget ind, eller ved at huske varerne i din kurv</translation>
 <translation id="3163085718713826852">Angiv adgangskoden til certifikatet</translation>
@@ -3853,7 +3853,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3666971425390608309">Download af <ph name="FILE_NAME" /> er sat på pause.</translation>
 <translation id="3670113805793654926">Enheder fra alle leverandører</translation>
 <translation id="3670229581627177274">Slå Bluetooth til</translation>
-<translation id="3670480940339182416">Websites kan anvende V8-optimering</translation>
 <translation id="3671982238795754537">Få flere oplysninger om adgangsnøgler</translation>
 <translation id="3672681487849735243">Der blev registreret er fabriksfejl</translation>
 <translation id="3673097791729989571">Login hostes af <ph name="SAML_DOMAIN" /></translation>
@@ -5754,6 +5753,7 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
 <translation id="5003070249435823986">Brug bevægelsen til at aktivere rulletilstand, og bevæg derefter dit hoved i den retning, du vil rulle. Brug bevægelsen igen for at afslutte rulletilstand.</translation>
 <translation id="5003993274120026347">Næste sætning</translation>
+<translation id="5005311809885666699">Gemt fra Chrome</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5006218871145547804">Adb til Android-apps i Crostini</translation>
 <translation id="5006778209728626987">Lyn</translation>
@@ -9722,6 +9722,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="784475655832336580">Fremhævning af elementet med tastaturfokus er ikke tilgængelig, når ChromeVox er aktiveret</translation>
 <translation id="7844992432319478437">Opdaterer diff</translation>
 <translation id="7846161022626028328">Der opstod en fejl. Prøv igen.</translation>
+<translation id="7846296061357476882">Google-tjenester</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7847212883280406910">Tryk på Ctrl+Alt+S for at skifte til <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Åbn alle (<ph name="URL_COUNT" />) i en ny fanegruppe</translation>
@@ -9741,7 +9742,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7853747251428735">Flere værktø&amp;jer</translation>
 <translation id="7855258394151767387">Brug “w” til at trykke på en museknap</translation>
 <translation id="7855678561139483478">Flyt fanen til et nyt vindue</translation>
-<translation id="7856798637819639676">Brug et id fra din Android-enhed på en sikker måde</translation>
 <translation id="7857004848504343806">Computeren indeholder et sikkerhedsmodul, som bruges til at implementere mange vigtige sikkerhedsfunktioner i ChromeOS Flex. Du kan få flere oplysninger i Hjælp til Chromebook: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">Tekstforslag</translation>
 <translation id="7858120906780498731">Tilsluttede inputenheder for ChromeOS</translation>
@@ -10000,7 +10000,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8026784703228858744">Gem dine bogmærker med mere ved hjælp af synkronisering</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Besøgt for 0 dage siden}=1{Besøgt for 1 dag siden}one{Besøgt for # dag siden}other{Besøgt for # dage siden}}</translation>
 <translation id="8028060951694135607">Microsoft-nøglegenoprettelse</translation>
-<translation id="8028138772801251745">Autofyld med AI</translation>
 <translation id="8028803902702117856">Downloader <ph name="SIZE" /> – <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Størrelse</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Læseliste}=1{Læseliste ({SELECTED_ITEMS})}one{Reading list ({SELECTED_ITEMS})}other{Læseliste ({SELECTED_ITEMS})}}</translation>
@@ -10097,7 +10096,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="808894953321890993">Skift adgangskode</translation>
 <translation id="8090234456044969073">Se en liste over dine mest besøgte websites</translation>
 <translation id="8090513782447872344">Du kan altid vende tilbage hertil senere</translation>
-<translation id="8090579562279016251">Reducerer ydeevnen, men gør V8 mere modstandsdygtig over for angreb</translation>
 <translation id="8090686009202681725">Opret et tema ved hjælp af AI</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> svarer ikke</translation>
 <translation id="8094536695728193970">Apricot</translation>
@@ -10151,7 +10149,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8125651784723647184">Deling af adgangskoder håndteres af din administrator</translation>
 <translation id="8126355825906412872">Smil</translation>
 <translation id="8129265306888404830">Hvis du vil bruge din mailadresse fra din organisation (<ph name="EMAIL_DOMAIN" />), skal du bruge virksomhedstilmelding. Hvis denne enhed er til privat brug, skal du logge ind med din personlige Google-konto.</translation>
-<translation id="8130476996317833777">Tillad ikke, at websites anvender V8-optimering</translation>
 <translation id="813082847718468539">Se websiteoplysninger</translation>
 <translation id="8131740175452115882">Bekræft</translation>
 <translation id="8133297578569873332">Acceptabel – FM-kvalitet</translation>

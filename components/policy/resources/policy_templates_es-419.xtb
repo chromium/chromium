@@ -406,6 +406,7 @@ Para obtener más información sobre contextos seguros, consulta Secure Contexts
       Si no estableces <ph name="DEFAULT_SEARCH_PROVIDER_NAME_POLICY_NAME" />, se utilizará el nombre de host especificado por la URL de búsqueda.</translation>
 <translation id="1312799700549720683">Controla la configuración de visualización.</translation>
 <translation id="131353325527891113">Mostrar los nombres de usuario en la pantalla de inicio de sesión</translation>
+<translation id="1317158052518324525">No permitir el autocompletado mejorado.</translation>
 <translation id="1317658068839330898">No permitir el uso de <ph name="ASSISTANT_PRODUCT_NAME" /> en la Web</translation>
 <translation id="1318233005302276244">Permite a los usuarios realizar un seguimiento de sus paquetes en Chrome.</translation>
 <translation id="1323501563951768821">La configuración de F12 usa la combinación de teclas que contiene la tecla modificadora mayúsculas</translation>
@@ -6388,11 +6389,6 @@ políticas específicas.
 
 Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5297948043665200363">Permitir que el usuario permanezca conectado después de que se anule la autenticación de su cuenta</translation>
-<translation id="5298594338496226089">Si estableces la política, los orígenes enumerados podrán obtener los atributos del dispositivo (p. ej., el número de serie o nombre de host) con la API de Device Attributes.
-
-Los orígenes deben corresponder a las aplicaciones web que se instalan de manera automática con la política <ph name="WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> o <ph name="ISOLATED_WEB_APP_INSTALL_FORCE_LIST_POLICY_NAME" /> (desde la versión 125) o que están configuradas como aplicaciones de kiosco. Para conocer las especificaciones de la API de Device Attributes, consulta https://wicg.github.io/WebApiDevice/device_attributes.
-
-Para obtener información detallada sobre los patrones de <ph name="URL_LABEL" /> válidos (desde la versión 127), consulta https://cloud.google.com/docs/chrome-enterprise/policies/url-patterns. <ph name="WILDCARD_VALUE" /> no es un valor aceptado para esta política.</translation>
 <translation id="5298949392804966105">No hay restricciones en las cuentas administradas</translation>
 <translation id="530111809849214840">Ocultar la opción <ph name="GOOGLE_DRIVE_NAME" />.</translation>
 <translation id="530134925949808452">La hora del día en que se renueva la cuota de uso (en hora local).</translation>
@@ -8608,6 +8604,7 @@ En <ph name="MS_WIN_NAME" />, siempre se respeta la política de KDC.</translati
 <translation id="6659537776197644458">No activar los flujos de autenticación para la sincronización de contraseñas</translation>
 <translation id="6659877981632400997">El menú contextual no tendrá un elemento de menú para compartir imágenes con <ph name="GOOGLE_PHOTOS_PRODUCT_NAME" />.</translation>
 <translation id="6661178198729301029">Habilitar los informes en la nube para los perfiles administrados</translation>
+<translation id="666203515318060501">Permitir el autocompletado mejorado sin mejorar los modelos de IA.</translation>
 <translation id="6665670272107384733">Establecer la frecuencia con la que el usuario debe ingresar la contraseña para usar el desbloqueo rápido</translation>
 <translation id="6667586534922258705">Muestra el botón para ver la contraseña en la pantalla de inicio o de bloqueo</translation>
 <translation id="6667636336079341367">Permitir Scanner sin mejorar los modelos de IA.</translation>
@@ -10011,6 +10008,7 @@ Para establecer esta política, se debe inhabilitar la política <ph name="PRIVA
 <translation id="7657261947024629645">Optimiza el rendimiento.</translation>
 <translation id="76580522298425324">Permitir la captura de pantalla sin gestos previos del usuario</translation>
 <translation id="7666228839913571182">Permite cookies de terceros</translation>
+<translation id="7666782560345386904">Configuración del autocompletado mejorado</translation>
 <translation id="7669630878711068277">Si habilitas la política o no la estableces, los usuarios podrán realizar impresiones en <ph name="PRODUCT_NAME" />. Los usuarios no podrán cambiar esta configuración.
 
       Si inhabilitas la política, los usuarios no podrán realizar impresiones desde <ph name="PRODUCT_NAME" />. Se desactivará la opción de impresión en el menú de tres puntos, las extensiones y las aplicaciones de JavaScript.</translation>
@@ -10980,6 +10978,7 @@ Si no la estableces, el control con gestos faciales estará inicialmente inhabil
 <translation id="8331421240786531350">Impedir que los sitios realicen solicitudes a endpoints de red locales.</translation>
 <translation id="8331479227794770304">Habilitar teclas de acción prolongada</translation>
 <translation id="8332822245414537447">Inhabilitar la verificación de uso de la clave RSA</translation>
+<translation id="8333141477131859004">Permitir el autocompletado mejorado y mejorar los modelos de IA.</translation>
 <translation id="8334685561819743286">Inhabilitar la autocorrección en el teclado físico cuando los usuarios escriben</translation>
 <translation id="8336986243404088829">Esta política mitiga los ataques de memoria de procesos cruzados de canal lateral aislando el proceso de renderización en el núcleo de la CPU y evitando que otros procesos compartan el mismo núcleo. La mitigación es compatible con <ph name="MS_WIN_NAME" /> 11 24H2 y versiones posteriores. Si el SO no tiene la compatibilidad de programación necesaria, esta política no tendrá efecto. Esta política puede ralentizar el rendimiento en algunos escenarios exigentes, de forma similar a la inhabilitación del hyperthreading. Para obtener más información, consulta https://learn.microsoft.com/es-mx/windows/win32/api/winnt/ns-winnt-process_mitigation_side_channel_isolation_policy
       Si se habilita esta política, no se programarán otros procesos en el mismo núcleo de CPU cuando se ejecute el proceso de renderización.

@@ -250,6 +250,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1166583374608765787">Namensaktualisierung prüfen</translation>
 <translation id="1166596238782048887">„<ph name="TAB_TITLE" />“ gehört zum Desktop „<ph name="DESK_TITLE" />“</translation>
 <translation id="1166644470305877068">Für isolierte Web-Apps wird diese Einstellung automatisch übernommen</translation>
+<translation id="116712635768212829">Wenn Chrome eines deiner Passwörter bei einer Datenpanne findet, kann der Google Passwortmanager dir bei der Anmeldung anbieten, dein Passwort zu ändern.</translation>
 <translation id="1168020859489941584">Wird in <ph name="TIME_REMAINING" /> geöffnet...</translation>
 <translation id="1168704243733734901">Aktuelles KI-Design <ph name="INDEX" /> von <ph name="SUBJECT" /> im Stil „<ph name="STYLE" />“ und mit der Stimmung „<ph name="MOOD" />“.</translation>
 <translation id="116896278675803795">Sprache automatisch an ausgewählte Inhalte anpassen</translation>
@@ -554,6 +555,7 @@ Du kannst deine Passwörter jederzeit im <ph name="GOOGLE_PASSWORD_MANAGER" /> p
 <translation id="1375938286942050085">Die Einrichtung ist abgeschlossen! Bereite dein Gerät als Nächstes aufs Gaming vor</translation>
 <translation id="137651782282853227">Hier werden gespeicherte Adressen angezeigt</translation>
 <translation id="1376771218494401509">Fenster &amp;benennen…</translation>
+<translation id="1377438103060664754">Wenn eines deiner Passwörter bei einer Datenpanne gefunden wird, fragt der Google Passwortmanager, ob du es durch ein starkes Passwort ersetzen möchtest</translation>
 <translation id="1377600615067678409">Zunächst überspringen</translation>
 <translation id="1378613616312864539">Diese Einstellung wird von <ph name="NAME" /> gesteuert</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Keine kompromittierten Passwörter}=1{1 kompromittiertes Passwort}other{{NUM_COMPROMISED} kompromittierte Passwörter}}</translation>
@@ -2520,7 +2522,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2730647855013151888">Alle personenbezogenen Daten einbeziehen</translation>
 <translation id="2730901670247399077">Emoji-Vorschläge</translation>
 <translation id="273093730430620027">Diese Seite greift auf deine Kamera zu.</translation>
-<translation id="2730956943403103181">Dürfen das V8-Optimierungstool nicht verwenden</translation>
 <translation id="2731392572903530958">Geschlossenes Fenster wieder öffn&amp;en</translation>
 <translation id="2731700343119398978">Bitte warten...</translation>
 <translation id="2731971182069536520">Beim nächsten Neustart deines Geräts führt dein Administrator ein einmaliges Update durch, bei dem deine lokalen Daten gelöscht werden.</translation>
@@ -3119,7 +3120,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3160928651883997588">VPN-Einstellungen</translation>
 <translation id="3161522574479303604">Alle Sprachen</translation>
 <translation id="3162070126914310576">Dieses Gerät kann derzeit nicht registriert werden, da die maximale Anzahl an Geräten für die Erstregistrierung in deiner Organisationseinheit bereits erreicht wurde. Bei Fragen wende dich bitte an deinen Administrator.</translation>
-<translation id="3162766632262775911">Dürfen immer das V8-Optimierungstool verwenden</translation>
 <translation id="3162853326462195145">Konto einer Bildungseinrichtung</translation>
 <translation id="3162899666601560689">Websites können Cookies verwenden, um dir das Surfen zu erleichtern; zum Beispiel, damit du angemeldet bleibst oder Artikel in deinem Einkaufswagen gespeichert bleiben</translation>
 <translation id="3163085718713826852">Passwort für Zertifikat eingeben</translation>
@@ -3833,7 +3833,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3666971425390608309">Download von „<ph name="FILE_NAME" />“ wurde pausiert.</translation>
 <translation id="3670113805793654926">Geräte von allen Anbietern</translation>
 <translation id="3670229581627177274">Bluetooth aktivieren</translation>
-<translation id="3670480940339182416">Websites können das V8-Optimierungstool verwenden</translation>
 <translation id="3671982238795754537">Weitere Informationen zu Passkeys</translation>
 <translation id="3672681487849735243">Ein werkseitiger Fehler wurde festgestellt.</translation>
 <translation id="3673097791729989571">Anmeldung gehostet von <ph name="SAML_DOMAIN" /></translation>
@@ -5733,6 +5732,7 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="5001526427543320409">Drittanbieter-Cookies</translation>
 <translation id="5003070249435823986">Aktiviere mit der Geste den Scrollmodus und bewege dann deinen Kopf in die Richtung, in die du scrollen möchtest. Wenn du den Scrollmodus beenden möchtest, führe die Geste noch einmal aus.</translation>
 <translation id="5003993274120026347">Nächster Satz</translation>
+<translation id="5005311809885666699">Aus Chrome gespeichert</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5006218871145547804">Android-App-ADB für Crostini</translation>
 <translation id="5006778209728626987">Gewitter</translation>
@@ -9696,6 +9696,7 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="784475655832336580">„Objekt mit Tastaturfokus hervorheben“ nicht verfügbar, wenn ChromeVox aktiviert ist</translation>
 <translation id="7844992432319478437">DIFF-Datei wird aktualisiert.</translation>
 <translation id="7846161022626028328">Ein Fehler ist aufgetreten. Versuche es noch einmal.</translation>
+<translation id="7846296061357476882">Google-Dienste</translation>
 <translation id="7846634333498149051">Tastatur</translation>
 <translation id="7847212883280406910">Drücke Strg + Alt + S, um zu <ph name="IDS_SHORT_PRODUCT_OS_NAME" /> zu wechseln.</translation>
 <translation id="7848244988854036372">Alle (<ph name="URL_COUNT" />) in neuer Tabgruppe öffnen</translation>
@@ -9715,7 +9716,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="7853747251428735">Weitere Too&amp;ls</translation>
 <translation id="7855258394151767387">Verwende „w“, um eine Maustaste zu drücken</translation>
 <translation id="7855678561139483478">Tab in ein neues Fenster verschieben</translation>
-<translation id="7856798637819639676">Sichere ID von deinem Android-Gerät verwenden</translation>
 <translation id="7857004848504343806">Dein Computer enthält ein Sicherheitsmodul, über das viele wichtige Sicherheitsfunktionen in Chrome OS Flex implementiert werden. Weitere Informationen dazu findest du in der Chromebook-Hilfe unter https://support.google.com/chromebook/?p=sm.</translation>
 <translation id="7857093393627376423">Textvorschläge</translation>
 <translation id="7858120906780498731">Verbundene ChromeOS-Eingabegeräte</translation>
@@ -9974,7 +9974,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8026784703228858744">Über eine Synchronisierung deine Lesezeichen und weitere Elemente speichern</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Vor 0 Tagen besucht}=1{Vor 1 Tag besucht}other{Vor # Tagen besucht}}</translation>
 <translation id="8028060951694135607">Microsoft-Schlüsselwiederherstellung</translation>
-<translation id="8028138772801251745">Autofill mit KI</translation>
 <translation id="8028803902702117856"><ph name="SIZE" /> werden heruntergeladen, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Größe</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Leseliste}=1{Leseliste ({SELECTED_ITEMS})}other{Leseliste ({SELECTED_ITEMS})}}</translation>
@@ -10071,7 +10070,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="808894953321890993">Passwort ändern</translation>
 <translation id="8090234456044969073">Liste deiner meistbesuchten Websites lesen</translation>
 <translation id="8090513782447872344">Du kannst jederzeit wieder herkommen, um dir alles anzusehen</translation>
-<translation id="8090579562279016251">Reduziert die Leistung, macht V8 aber widerstandsfähiger gegen Angriffe</translation>
 <translation id="8090686009202681725">Design mit KI erstellen</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> reagiert nicht</translation>
 <translation id="8094536695728193970">Apricot</translation>
@@ -10125,7 +10123,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8125651784723647184">Das Teilen von Passwörtern wird von deinem Administrator verwaltet</translation>
 <translation id="8126355825906412872">Lächeln</translation>
 <translation id="8129265306888404830">Wenn du die E-Mail-Adresse deiner Organisation (<ph name="EMAIL_DOMAIN" />) verwenden möchtest, benötigst du eine Unternehmensregistrierung. Wenn du dieses Gerät privat nutzt, melde dich mit deinem privaten Google-Konto an.</translation>
-<translation id="8130476996317833777">Websites dürfen das V8-Optimierungstool nicht verwenden</translation>
 <translation id="813082847718468539">Website-Informationen anzeigen</translation>
 <translation id="8131740175452115882">Bestätigen</translation>
 <translation id="8133297578569873332">Akzeptabel – UKW</translation>

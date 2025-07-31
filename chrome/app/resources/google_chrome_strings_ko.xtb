@@ -269,6 +269,7 @@
 <translation id="4205939740494406371">Chrome에서 비밀번호를 확인할 수 없습니다. 24시간 후에 다시 시도해 보거나 <ph name="BEGIN_LINK" />Google 계정에서 비밀번호를 확인<ph name="END_LINK" />하세요.</translation>
 <translation id="4222932583846282852">취소 중...</translation>
 <translation id="4224210481850767180">설치가 취소되었습니다.</translation>
+<translation id="4230631012078055975">Chrome에 로그인하고 Chrome을 최대한 활용하세요</translation>
 <translation id="4242034826641750751">Chrome에서 사이트에 대한 카메라 및 마이크 권한이 필요합니다.</translation>
 <translation id="424864128008805179">Chrome에서 로그아웃하시겠습니까?</translation>
 <translation id="4251615635259297716">Chrome 데이터를 이 계정에 연결하시겠습니까?</translation>
@@ -592,6 +593,7 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8321888067342493336">이미지로 저장</translation>
 <translation id="8336463659890584292">사이트에서 페이지에 있는 링크를 비공개로 미리 로드해 달라고 요청하면 Chrome은 Google 서버를 사용합니다. 이렇게 하면 미리 로드된 사이트에서 사용자의 신원을 숨길 수 있지만 Google은 어떤 사이트가 미리 로드되는지 학습합니다.</translation>
 <translation id="8342675569599923794">이 파일은 위험하므로 Chrome에서 차단했습니다.</translation>
+<translation id="8349094670477064572">Chrome에 로그인할 때마다 Google 계정에 비밀번호 등의 정보를 저장하고 사용할 수 있습니다. <ph name="LEARN_MORE" /></translation>
 <translation id="8362914115861174987">도착어</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>
 <translation id="8387459386171870978">Chrome 계속 사용</translation>
@@ -630,7 +632,6 @@ Chrome에서 설정을 복구할 수 없습니다.</translation>
 <translation id="8781673607513845160">카메라를 사용하려면 <ph name="BEGIN_LINK" />시스템 설정<ph name="END_LINK" />에서 Chrome에 액세스 권한을 부여하세요.</translation>
 <translation id="878572486461146056">설치 오류: 네트워크 관리자가 설치를 방지하는 그룹 정책을 적용했습니다: <ph name="INSTALL_ERROR" /></translation>
 <translation id="8798550110818026746">조직에서 북마크, 방문 기록, 비밀번호와 같은 인터넷 사용 기록을 보고 관리할 수 있습니다. 다른 Chrome 프로필의 인터넷 사용 기록은 확인할 수 없습니다.</translation>
-<translation id="8801657293260363985">V8은 사이트 속도를 개선하는 데 사용되는 Chrome의 JavaScript 및 WebAssembly 엔진입니다.</translation>
 <translation id="8821043148920470810">향후 Chrome 업데이트를 받으려면 Windows 10 이상이 필요합니다. 이 컴퓨터에서는 Windows 7을 사용 중입니다.</translation>
 <translation id="8823341990149967727">Chrome이 이전 버전임</translation>
 <translation id="8825634023950448068">개인 정보를 보호하기 위해 Chrome에서는 4주가 지난 관심분야를 자동 삭제합니다. 인터넷 사용에 따라 특정 관심분야가 목록에 다시 표시될 수 있습니다. Chrome에서 관심분야를 잘못 예측했거나 특정 광고를 보고 싶지 않다면 직접 관심분야를 삭제하세요.</translation>

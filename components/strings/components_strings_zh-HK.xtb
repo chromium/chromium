@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">替用匣</translation>
 <translation id="1264974993859112054">運動</translation>
 <translation id="1268480293435976622">Chinese #7 信封</translation>
-<translation id="1269045546668906972">開啟 AI 自動填入功能，即可自動填寫更多欄位</translation>
 <translation id="1269516672602708785">在「Google 協作平台」中快速建立新版網站</translation>
 <translation id="1270328905573953738">搬屋和搬遷</translation>
 <translation id="1270502636509132238">取貨方式</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">其他書籤</translation>
 <translation id="2355395290879513365">攻擊者可能可以看到您正在此網站上看到的圖片，然後透過修改圖片來欺騙您。</translation>
 <translation id="2356070529366658676">詢問</translation>
-<translation id="2356926036049612643">V8 優化工具</translation>
 <translation id="2356941001189392209">你瀏覽的網頁網址清單 (只列出發生舊版科技事件的網址)</translation>
 <translation id="2357481397660644965">您的裝置由 <ph name="DEVICE_MANAGER" /> 管理，而您的帳戶由 <ph name="ACCOUNT_MANAGER" /> 管理。</translation>
 <translation id="2359629602545592467">多種貨幣</translation>
@@ -1784,13 +1782,13 @@
 <translation id="3984581365661308170">#11 信封</translation>
 <translation id="398470910934384994">鳥</translation>
 <translation id="3985750352229496475">管理地址…</translation>
-<translation id="3986506998755860149">前往設定進一步瞭解運用 AI 自動填入的功能</translation>
 <translation id="3986557181852957825">Google Pay、Klarna 標誌</translation>
 <translation id="3986705137476756801">暫時關閉即時字幕</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">小於 1 MB</translation>
 <translation id="3990250421422698716">撞頁偏移</translation>
 <translation id="3990532701115075684">追蹤你的手部</translation>
+<translation id="399179161741278232">已匯入</translation>
 <translation id="3992684624889376114">關於本頁</translation>
 <translation id="3995639283717357522">套用政策</translation>
 <translation id="3996683183117168945">第 <ph name="CURRENT_CITATION" /> 段引文，總共有 <ph name="MAX_CITATIONS" /> 段，<ph name="PRODUCT_NAME" />，<ph name="URL" />。<ph name="PAGE_TITLE" />。<ph name="PAGE_PREVIEW" />。</translation>
@@ -2398,7 +2396,6 @@
 <translation id="5002932099480077015">啟用後，Chrome 會在此裝置上儲存信用卡資料副本，以加快填表速度。</translation>
 <translation id="5007344584818503324">共用分頁群組活動</translation>
 <translation id="5007392906805964215">查看</translation>
-<translation id="5010599530303458903">每月付款或分 4 期免息分期付款 (須符合資格)</translation>
 <translation id="5011561501798487822">偵測到的語言</translation>
 <translation id="5015510746216210676">電腦名稱：</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3079,7 +3076,6 @@
 <translation id="6151417162996330722">這個伺服器憑證的有效期過長。</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> 吋 (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">跑步和步行</translation>
-<translation id="6157079899699705880">「運用 AI 自動填入」功能可以更準確識別表格內容，更快自動填入相關資料。</translation>
 <translation id="6157754950574419155">從記錄中移除全部項目</translation>
 <translation id="6157877588268064908">如要查看運送方式和要求，請選取一個地址</translation>
 <translation id="6159554577634054750">蟲害控制</translation>
@@ -3585,6 +3581,7 @@
 <translation id="6989763994942163495">顯示進階設定…</translation>
 <translation id="6991376411634620997">密鑰 • Windows Hello</translation>
 <translation id="6997288673234694149">棒球和壘球裝備</translation>
+<translation id="6998512609912910179">填表速度更快</translation>
 <translation id="6999480632062519056">健身指導和私人教練</translation>
 <translation id="7003278537452757231">毯子和地毯</translation>
 <translation id="7003322000677139268">汽車零件和配件</translation>

@@ -715,6 +715,7 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="4380055775103003110">Ef þetta vandamál heldur áfram að koma upp geturðu prófað aðrar leiðir til að halda áfram í <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Notar Sogou fyrir leit</translation>
 <translation id="4387647248986092471">Búa til prófíllás fyrir bílinn</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Flipar og hópar sem hafa ekki verið notaðir í einn dag eða lengur}one{Flipar og hópar sem hafa ekki verið notaðir í # dag eða lengur}other{Flipar og hópar sem hafa ekki verið notaðir í # daga eða lengur}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Sækir…</translation>
 <translation id="4404568932422911380">Engin bókamerki</translation>
 <translation id="4405224443901389797">Færa í…</translation>

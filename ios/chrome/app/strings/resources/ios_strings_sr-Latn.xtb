@@ -164,6 +164,7 @@
 <translation id="1612754831519568745">Bezbedno pregledanje je trenutno isključeno. Dobijte zaštitu od opasnih sajtova, preuzimanja i dodataka.</translation>
 <translation id="1620510694547887537">Kamera</translation>
 <translation id="1622717322707146952">Izaberite Dodaj u Google kalendar ili Dodaj u Apple Calendar.</translation>
+<translation id="1625502944725673937">Uvoz fajla nije uspeo</translation>
 <translation id="1629162218487290695">Potvrdite da ste to vi…</translation>
 <translation id="1636234353664774105">Dobijajte uputstva do odredišta pomoću detaljnih uputstava uz funkciju za navigaciju.</translation>
 <translation id="1641113438599504367">Bezbedno pregledanje</translation>
@@ -1041,6 +1042,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="5128788795241319992">Istražite novi meni</translation>
 <translation id="5132942445612118989">Sinhronizujte lozinke, istoriju i drugi sadržaj na svim uređajima</translation>
 <translation id="5141363746588976328">Sakrijte karticu Padovi cena na karticama</translation>
+<translation id="514154868070499296">Font: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Izađite iz prebacivača kartica</translation>
 <translation id="5148717509369231739">Uvoz u Safari</translation>
 <translation id="5157638238828697074">Došlo je do greške. Otvaranje aplikacije nije uspelo.</translation>
@@ -1558,6 +1560,7 @@ Kada ste u režimu bez arhiviranja, sajtovi ne mogu da koriste kolačiće da bi
 <translation id="7015418667643980944">Podeljeni prikaz</translation>
 <translation id="7016070607649558507">Imate 1 slabu lozinku. Rešite problem odmah da biste bili bezbedni.</translation>
 <translation id="7016958933495968912">Opcije za Discover</translation>
+<translation id="7017863468226238797">Ovaj fajl je prazan ili sadrži podatke u pogrešnom formatu</translation>
 <translation id="7029809446516969842">Lozinke</translation>
 <translation id="7035825883570480307">Želite li da uključite obaveštenja?</translation>
 <translation id="7039345315346323556">Nedavno</translation>

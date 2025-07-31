@@ -218,6 +218,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1143142264369994168">Signatário do certificado</translation>
 <translation id="1145593918056169051">A impressora parou</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Extensões}=1{Extensões ({SELECTED_ITEMS})}other{Extensões ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Ponteiro de cabeça</translation>
 <translation id="114721135501989771">Inteligên. Google no Chrome</translation>
 <translation id="1147322039136785890">Agora é a vez de <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -252,6 +253,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1166583374608765787">Analise a atualização do nome</translation>
 <translation id="1166596238782048887"><ph name="TAB_TITLE" /> pertence ao espaço de trabalho <ph name="DESK_TITLE" /></translation>
 <translation id="1166644470305877068">As apps Web isoladas seguem automaticamente esta definição</translation>
+<translation id="116712635768212829">Se o Chrome encontrar uma das suas palavras-passe numa violação de dados, o Gestor de Palavras-passe da Google pode oferecer-se para a alterar por si se tiver sessão iniciada.</translation>
 <translation id="1168020859489941584">A abrir dentro de <ph name="TIME_REMAINING" />...</translation>
 <translation id="1168704243733734901">Tema de IA recente <ph name="INDEX" /> de <ph name="SUBJECT" />, no estilo <ph name="STYLE" />, com o estado de espírito <ph name="MOOD" />.</translation>
 <translation id="116896278675803795">Alterar automaticamente o idioma para corresponder ao conteúdo selecionado</translation>
@@ -556,6 +558,7 @@ Verifique as suas palavras-passe em qualquer altura no <ph name="GOOGLE_PASSWORD
 <translation id="1375938286942050085">A configuração está concluída! Em seguida, prepare o seu dispositivo para jogar</translation>
 <translation id="137651782282853227">Os endereços guardados aparecem aqui</translation>
 <translation id="1376771218494401509">Nome da &amp;janela…</translation>
+<translation id="1377438103060664754">Se uma das suas palavras-passe for encontrada numa violação de dados, o Gestor de Palavras-passe da Google pergunta se quer alterá-la para uma palavra-passe forte</translation>
 <translation id="1377600615067678409">Ignorar por enquanto</translation>
 <translation id="1378613616312864539"><ph name="NAME" /> está a controlar esta definição</translation>
 <translation id="1378848228640136848">{NUM_COMPROMISED,plural, =0{Nenhuma palavra-passe comprometida.}=1{1 palavra-passe comprometida.}other{{NUM_COMPROMISED} palavras-passe comprometidas.}}</translation>
@@ -733,6 +736,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504551620756424144">As pastas partilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar palavras-passe</translation>
+<translation id="1505654899813338756">Pode agrupar separadores para manter as páginas relacionadas juntas e guardadas em todos os seus dispositivos</translation>
 <translation id="1506061864768559482">Motor de pesquisa</translation>
 <translation id="1506187449813838456">Aumentar timbre</translation>
 <translation id="1507170440449692343">Esta página foi impedida de aceder à sua câmara.</translation>
@@ -2531,7 +2535,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="2730647855013151888">Incluir todas as informações pessoais</translation>
 <translation id="2730901670247399077">Sugestões de emojis</translation>
 <translation id="273093730430620027">Esta página está a aceder à sua câmara.</translation>
-<translation id="2730956943403103181">Sem autorização para usar o otimizador do V8</translation>
 <translation id="2731392572903530958">Voltar a Abrir a Jan&amp;ela Fechada</translation>
 <translation id="2731700343119398978">Aguarde...</translation>
 <translation id="2731971182069536520">Da próxima vez que reiniciar o dispositivo, o administrador irá efetuar uma atualização única que elimina os seus dados locais.</translation>
@@ -3131,7 +3134,6 @@ Quer pará-lo?</translation>
 <translation id="3160928651883997588">Preferências da VPN</translation>
 <translation id="3161522574479303604">Todos os idiomas</translation>
 <translation id="3162070126914310576">Não é possível inscrever este dispositivo neste momento porque a sua unidade organizacional atingiu o limite de inscrição inicial. Contacte o seu administrador para receber assistência.</translation>
-<translation id="3162766632262775911">Sempre com autorização para usar o otimizador do V8</translation>
 <translation id="3162853326462195145">Conta escolar</translation>
 <translation id="3162899666601560689">Os sites podem usar cookies para melhorar a experiência de navegação, por exemplo, para manter a sua sessão iniciada ou memorizar os artigos no seu carrinho de compras</translation>
 <translation id="3163085718713826852">Introduza a palavra-passe do certificado</translation>
@@ -3849,7 +3851,6 @@ Quer pará-lo?</translation>
 <translation id="3666971425390608309">Transferência pausada: <ph name="FILE_NAME" />.</translation>
 <translation id="3670113805793654926">Dispositivos de qualquer fornecedor</translation>
 <translation id="3670229581627177274">Ativar o Bluetooth</translation>
-<translation id="3670480940339182416">Os sites podem usar o otimizador do V8</translation>
 <translation id="3671982238795754537">Saiba mais acerca das chaves de acesso</translation>
 <translation id="3672681487849735243">Foi detetado um erro de fábrica</translation>
 <translation id="3673097791729989571">Início de sessão alojado por <ph name="SAML_DOMAIN" /></translation>
@@ -5308,6 +5309,7 @@ Quer pará-lo?</translation>
 <translation id="4681930562518940301">Abrir &amp;imagem original num novo separador</translation>
 <translation id="4682481611456523884">O conteúdo incorporado neste site não pode usar informações guardadas sobre si</translation>
 <translation id="4682807230647698604">Quando usa estas funcionalidades, são enviados dados relevantes para a Google para criar experiências de IA</translation>
+<translation id="4683143253481759090">O Chrome foi atualizado</translation>
 <translation id="4683629100208651599">Colocar em minúsculas</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (predefinição)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
@@ -5755,6 +5757,7 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5003070249435823986">Use o gesto para entrar no modo de deslocamento e, de seguida, mova a cabeça na direção para a qual quer deslocar a página. Use novamente o gesto para sair do modo de deslocamento.</translation>
 <translation id="5003993274120026347">Frase seguinte</translation>
 <translation id="5005113238422129109">Use o microfone para conversar com o Gemini. Quando fala com o Gemini, o áudio é armazenado na Atividade das Apps Gemini (se estiver ativada)</translation>
+<translation id="5005311809885666699">Guardado a partir do Chrome</translation>
 <translation id="5005498671520578047">Copiar palavra-passe</translation>
 <translation id="5006218871145547804">ADB de apps Android do Crostini</translation>
 <translation id="5006778209728626987">Relâmpago</translation>
@@ -9730,6 +9733,7 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="784475655832336580">O realce do item com o foco do teclado não está disponível quando o ChromeVox está ativado</translation>
 <translation id="7844992432319478437">A atualizar dif.</translation>
 <translation id="7846161022626028328">Ocorreu um erro. Tente novamente.</translation>
+<translation id="7846296061357476882">Serviços Google</translation>
 <translation id="7846634333498149051">Teclado</translation>
 <translation id="7847212883280406910">Prima Ctrl + Alt + S para mudar para <ph name="IDS_SHORT_PRODUCT_OS_NAME" /></translation>
 <translation id="7848244988854036372">Abra todos (<ph name="URL_COUNT" />) num novo grupo de separadores</translation>
@@ -9749,7 +9753,6 @@ Prima uma tecla ou um interruptor atribuído para remover a atribuição.</trans
 <translation id="7853747251428735">Mais ferrament&amp;as</translation>
 <translation id="7855258394151767387">Use "w" para premir um botão do rato</translation>
 <translation id="7855678561139483478">Mover separador para nova janela</translation>
-<translation id="7856798637819639676">Use um ID de forma segura a partir do seu dispositivo Android</translation>
 <translation id="7857004848504343806">O seu computador contém um módulo seguro, que é usado para implementar várias funcionalidades de segurança essenciais no ChromeOS Flex. Visite o Centro de Ajuda do Chromebook em https://support.google.com/chromebook/?p=sm para saber mais</translation>
 <translation id="7857093393627376423">Sugestões de texto</translation>
 <translation id="7858120906780498731">Dispositivos de entrada ligados ao ChromeOS</translation>
@@ -10009,7 +10012,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8026784703228858744">Guarde os seus marcadores, palavras-passe e muito mais com a sincronização</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{Visitou há 0 dias}=1{Visitou há 1 dia}other{Visitou há # dias}}</translation>
 <translation id="8028060951694135607">Recuperação de chaves da Microsoft</translation>
-<translation id="8028138772801251745">Preenchimento automático com IA</translation>
 <translation id="8028803902702117856">A transferir <ph name="SIZE" />… <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">Tamanho</translation>
 <translation id="8029349782735515147">Apresente legendas ao usar o Gemini Live</translation>
@@ -10107,7 +10109,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="808894953321890993">Alterar palavra-passe</translation>
 <translation id="8090234456044969073">Ler uma lista dos Sites visitados com mais frequência</translation>
 <translation id="8090513782447872344">Pode regressar em qualquer altura para consultar novamente</translation>
-<translation id="8090579562279016251">Reduz o desempenho, mas torna o V8 mais resistente a ataques</translation>
 <translation id="8090686009202681725">Crie um tema com IA</translation>
 <translation id="8093359998839330381">O plugin <ph name="PLUGIN_NAME" /> não está a responder.</translation>
 <translation id="8094536695728193970">Alperce</translation>
@@ -10162,7 +10163,6 @@ Mantenha o seu ficheiro de chave num local seguro, pois irá precisar dele para 
 <translation id="8125651784723647184">A partilha de palavras-passe é gerida pelo seu administrador</translation>
 <translation id="8126355825906412872">Sorrir</translation>
 <translation id="8129265306888404830">Para usar o endereço de email da sua organização (<ph name="EMAIL_DOMAIN" />), tem de usar a inscrição empresarial. Se este dispositivo for para sua utilização pessoal, inicie sessão com a sua Conta Google pessoal.</translation>
-<translation id="8130476996317833777">Não permitir que os sites usem o otimizador do V8</translation>
 <translation id="813082847718468539">Ver informações do Website</translation>
 <translation id="8131740175452115882">Confirmar</translation>
 <translation id="8133297578569873332">Aceitável – FM</translation>

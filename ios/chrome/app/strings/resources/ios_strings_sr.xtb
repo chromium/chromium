@@ -164,6 +164,7 @@
 <translation id="1612754831519568745">Безбедно прегледање је тренутно искључено. Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="1620510694547887537">Камера</translation>
 <translation id="1622717322707146952">Изаберите Додај у Google календар или Додај у Apple Calendar.</translation>
+<translation id="1625502944725673937">Увоз фајла није успео</translation>
 <translation id="1629162218487290695">Потврдите да сте то ви…</translation>
 <translation id="1636234353664774105">Добијајте упутства до одредишта помоћу детаљних упутстава уз функцију за навигацију.</translation>
 <translation id="1641113438599504367">Безбедно прегледање</translation>
@@ -1041,6 +1042,7 @@
 <translation id="5128788795241319992">Истражите нови мени</translation>
 <translation id="5132942445612118989">Синхронизујте лозинке, историју и други садржај на свим уређајима</translation>
 <translation id="5141363746588976328">Сакријте картицу Падови цена на картицама</translation>
+<translation id="514154868070499296">Фонт: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Изађите из пребацивача картица</translation>
 <translation id="5148717509369231739">Увоз у Safari</translation>
 <translation id="5157638238828697074">Дошло је до грешке. Отварање апликације није успело.</translation>
@@ -1558,6 +1560,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="7015418667643980944">Подељени приказ</translation>
 <translation id="7016070607649558507">Имате 1 слабу лозинку. Решите проблем одмах да бисте били безбедни.</translation>
 <translation id="7016958933495968912">Опције за Discover</translation>
+<translation id="7017863468226238797">Овај фајл је празан или садржи податке у погрешном формату</translation>
 <translation id="7029809446516969842">Лозинке</translation>
 <translation id="7035825883570480307">Желите ли да укључите обавештења?</translation>
 <translation id="7039345315346323556">Недавно</translation>

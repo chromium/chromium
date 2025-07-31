@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">ഇതര ട്രേ</translation>
 <translation id="1264974993859112054">കായികം</translation>
 <translation id="1268480293435976622">Envelope Chinese #7</translation>
-<translation id="1269045546668906972">കൂടുതൽ ഫീൽഡുകൾ സ്വയമേവ പൂരിപ്പിക്കാൻ AI ഉപയോഗിച്ചുള്ള സ്വയമേവ പൂരിപ്പിക്കൽ ഓണാക്കുക</translation>
 <translation id="1269516672602708785">Google Sites-ൽ പുതിയൊരു സൈറ്റ് വേഗത്തിൽ സൃഷ്ടിക്കുക</translation>
 <translation id="1270328905573953738">സാധനങ്ങൾ മാറ്റലും സ്ഥലം മാറലും</translation>
 <translation id="1270502636509132238">പിക്കപ്പ് രീതി</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">മറ്റ് ബുക്‌മാര്‍ക്കുകള്‍</translation>
 <translation id="2355395290879513365">നിങ്ങൾ ഈ സൈറ്റിൽ തിരയുന്ന ചിത്രങ്ങൾ കാണാനും അവയിൽ മാറ്റം വരുത്തി നിങ്ങളെ കബളിപ്പിക്കാനും അക്രമകാരികൾക്ക് കഴിഞ്ഞേക്കാം.</translation>
 <translation id="2356070529366658676">ചോദിക്കുക</translation>
-<translation id="2356926036049612643">V8 ഒപ്റ്റിമൈസർ</translation>
 <translation id="2356941001189392209">ലെഗസി ടെക്‌നോളജി ഇവന്റുകൾ നടക്കുന്ന, നിങ്ങൾ സന്ദർശിക്കുന്ന പേജുകളുടെ URL-കളുടെ പരിമിതമായ ലിസ്‌റ്റ്</translation>
 <translation id="2357481397660644965">നിങ്ങളുടെ ഉപകരണം <ph name="DEVICE_MANAGER" />-ഉം അക്കൗണ്ട് <ph name="ACCOUNT_MANAGER" />-ഉം മാനേജ് ചെയ്യുന്നു.</translation>
 <translation id="2359629602545592467">ഒന്നിലധികം</translation>
@@ -1530,6 +1528,7 @@
 <translation id="3570079787344939099">സ്ക്രോൾ ചെയ്യലും സൂം ചെയ്യലും</translation>
 <translation id="357244642999988503">കോളം നീക്കം ചെയ്യുക</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">വിലാസത്തിലേക്ക് പുതിയ വിവരങ്ങൾ ചേർക്കുക</translation>
 <translation id="3575121482199441727">ഈ സൈറ്റിന് അനുവദിക്കുക</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">തെരുവിന്റെ പേര് ഓപ്‌ഷൻ തിരഞ്ഞെടുത്തു</translation>
@@ -1784,13 +1783,13 @@
 <translation id="3984581365661308170">Envelope #11</translation>
 <translation id="398470910934384994">പക്ഷികൾ</translation>
 <translation id="3985750352229496475">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക...</translation>
-<translation id="3986506998755860149">ക്രമീകരണത്തിലെ AI ഉപയോഗിച്ചുള്ള സ്വയമേവ പൂരിപ്പിക്കലിനെ കുറിച്ച് കൂടുതലറിയുക</translation>
 <translation id="3986557181852957825">Google Pay, Klarna ലോഗോ</translation>
 <translation id="3986705137476756801">തത്സമയ ക്യാപ്ഷൻ ഇപ്പോഴത്തേക്ക് ഓഫാക്കുക</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">ഒരു MB-യിൽ കുറവാണ്</translation>
 <translation id="3990250421422698716">ജോഗ് ഓഫ്‌സെറ്റ്</translation>
 <translation id="3990532701115075684">നിങ്ങളുടെ കൈകൾ ട്രാക്ക് ചെയ്യാൻ</translation>
+<translation id="399179161741278232">ഇറക്കുമതിചെയ്തു</translation>
 <translation id="3992684624889376114">ഈ പേജിനെക്കുറിച്ച്</translation>
 <translation id="3995639283717357522">നയങ്ങൾ ബാധകമാക്കുക</translation>
 <translation id="3996683183117168945">അവലംബം <ph name="MAX_CITATIONS" />-ൽ <ph name="CURRENT_CITATION" />-ാമത്തേത്, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2398,7 +2397,6 @@
 <translation id="5002932099480077015">പ്രവർത്തനക്ഷമമാക്കിയെങ്കിൽ, വേഗത്തിൽ ഫോം പൂരിപ്പിക്കാൻ Chrome ഈ ഉപകരണത്തിൽ നിങ്ങളുടെ കാർഡിന്റെ ഒരു പകർപ്പ് സൂക്ഷിക്കും.</translation>
 <translation id="5007344584818503324">പങ്കിട്ട ടാബ് ഗ്രൂപ്പുകളുടെ ആക്റ്റിവിറ്റി</translation>
 <translation id="5007392906805964215">അവലോകനം ചെയ്യുക</translation>
-<translation id="5010599530303458903">പ്രതിമാസം പേ ചെയ്യുക അല്ലെങ്കിൽ പലിശരഹിതമായ 4 ഇൻസ്റ്റാൾമെന്റുകളായി പേ ചെയ്യുക (യോഗ്യതയ്ക്ക് വിധേയം)</translation>
 <translation id="5011561501798487822">ഭാഷ തിരിച്ചറിഞ്ഞു</translation>
 <translation id="5015510746216210676">മെഷീനിന്‍റെ പേര്‌:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3079,7 +3077,6 @@
 <translation id="6151417162996330722">സെർവർ സർട്ടിഫിക്കറ്റിന് ദൈർഘ്യമേറിയ ഒരു കാലയളവ് ഉണ്ട്.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> ഇഞ്ച് (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ഓട്ടവും നടത്തവും</translation>
-<translation id="6157079899699705880">AI ഉപയോഗിച്ചുള്ള സ്വയമേവ പൂരിപ്പിക്കൽ, ഫോമുകൾ നന്നായി മനസ്സിലാക്കുകയും നിങ്ങൾക്കായി അവ വേഗത്തിൽ സ്വയമേവ പൂരിപ്പിക്കുകയും ചെയ്യും</translation>
 <translation id="6157754950574419155">ചരിത്രത്തിലെ എല്ലാ ഇനങ്ങളും നീക്കം ചെയ്യുക</translation>
 <translation id="6157877588268064908">ഷിപ്പിംഗ് രീതികളും ആവശ്യകതകളും കാണാൻ ഒരു വിലാസം തിരഞ്ഞെടുക്കുക</translation>
 <translation id="6159554577634054750">കീട നിയന്ത്രണം</translation>
@@ -3585,6 +3582,7 @@
 <translation id="6989763994942163495">വിപുലമായ ക്രമീകരണങ്ങൾ കാണിക്കുക...</translation>
 <translation id="6991376411634620997">പാസ്‌കീ • Windows Hello</translation>
 <translation id="6997288673234694149">ബേസ്ബോൾ, സോഫ്‌റ്റ്‌ബോൾ ഉപകരണം</translation>
+<translation id="6998512609912910179">ഫോമുകൾ കൂടുതൽ വേഗത്തിൽ പൂരിപ്പിക്കുക</translation>
 <translation id="6999480632062519056">ഫിറ്റ്നസ് നിർദ്ദേശവും വ്യക്തിപര പരിശീലനവും</translation>
 <translation id="7003278537452757231">പരവതാനികളും കാർപ്പെറ്റുകളും</translation>
 <translation id="7003322000677139268">വാഹന ഭാഗങ്ങളും ആക്‌സസറികളും</translation>
@@ -4132,6 +4130,7 @@
 <translation id="7908648876066812348">വെർച്വൽ കാർഡ് ഓണാക്കുന്നു</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, ക്രമീകരണത്തിലെ Chrome സുരക്ഷാ പരിശോധനാ പേജിലേക്ക് പോകാൻ, Tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="791107458486222637">ഫലം വീണ്ടും സൃഷ്‌ടിക്കുന്നു</translation>
+<translation id="7912924955815015552">Safari-യിൽ നിന്നും ഇമ്പോർട്ട് ചെയ്‌തത്</translation>
 <translation id="791551905239004656">വരയ്ക്കലും നിറംകൊടുക്കലും</translation>
 <translation id="7916162853251942238">ഫ്ലെക്‌സോ ബേസ്</translation>
 <translation id="791698251820376781">നിങ്ങളുടെ സ്ഥാപനം നിങ്ങളെ സൈൻ ഇൻ ചെയ്യാൻ അനുവദിക്കുന്നില്ല</translation>

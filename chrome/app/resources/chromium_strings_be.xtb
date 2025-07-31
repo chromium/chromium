@@ -183,7 +183,6 @@
 <translation id="3258596308407688501">Chromium не можа чытаць з каталога даных і запісваць у яго:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 – гэта рухавік JavaScript і WebAssembly у Chromium, які павышае эфектыўнасць сайтаў</translation>
 <translation id="3286538390144397061">Перазапусціць</translation>
 <translation id="328888136576916638">Адсутнічаюць ключы Google API. Некаторыя функцыі Chromium будуць выключаны.</translation>
 <translation id="3296368748942286671">Працягваць выконваць фонавыя праграмы, калі Chromium закрыты</translation>
@@ -501,6 +500,7 @@
 <translation id="7461356015007898716">Каб атрымліваць наступныя абнаўленні Chromium, вам патрэбная версія Windows 10 ці пазнейшая. На гэтым камп’ютары выкарыстоўваецца Windows 7.</translation>
 <translation id="7467949745582939695">Перазапусціць Chromium?</translation>
 <translation id="7483335560992089831">Немагчыма ўсталяваць тую ж версію Chromium, што зараз працуе. Закрыйце Chromium і паўтарыце спробу.</translation>
+<translation id="7517403744065880907">Вы зможаце захоўваць і выкарыстоўваць паролі і іншыя даныя ў сваім Уліковым запісе Google пасля ўваходу ў Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Верагодна, сайты будуць працаваць правільна. Калі вы закрыеце ўсе вокны Chromium, вы выйдзеце з большасці сайтаў, але застаняцеся ва Уліковым запісе Google, калі раней выканалі ўваход у Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium будзе перазапушчаны праз 1 хвіліну}one{Chromium будзе перазапушчаны праз # хвіліну}few{Chromium будзе перазапушчаны праз # хвіліны}many{Chromium будзе перазапушчаны праз # хвілін}other{Chromium будзе перазапушчаны праз # хвіліны}}</translation>
 <translation id="7565444033145385702">Каб абараніць свае даныя, дазвольце Chromium адклікаць дазволы ў сайтаў, якія вы не наведвалі ў апошні час.</translation>
@@ -625,6 +625,7 @@
 <translation id="9158494823179993217">Ваш сістэмны адміністратар наладзіў Chromium, каб адкрыць альтэрнатыўны браўзер для доступу да <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Перазапусціць, каб абнавіць &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-In)</translation>
+<translation id="9206863043651638213">Атрымайце больш магчымасцей, увайшоўшы ў Chromium</translation>
 <translation id="924957577793602335">Дастасуйце Chromium да сваіх мэт</translation>
 <translation id="93478295209880648">Браўзер Chromium больш не падтрымліваецца на Windows XP і Windows Vista, таму можа працаваць няправільна</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>

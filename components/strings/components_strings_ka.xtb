@@ -162,7 +162,6 @@
 <translation id="1264309058268477500">ალტერნატიული</translation>
 <translation id="1264974993859112054">სპორტი</translation>
 <translation id="1268480293435976622">კონვერტი Chinese 7</translation>
-<translation id="1269045546668906972">ჩართეთ ავტომატური შევსება ხელოვნური ინტელექტით, რომ ავტომატურად შეივსოს უფრო მეტი ველი</translation>
 <translation id="1269516672602708785">Google Sites-ში ახალი საიტის სწრაფად შექმნა</translation>
 <translation id="1270328905573953738">საცხოვრებელი და სამუშაო ადგილის შეცვლა</translation>
 <translation id="1270502636509132238">წაღების მეთოდი</translation>
@@ -819,7 +818,6 @@
 <translation id="2354001756790975382">სხვა სანიშნეები</translation>
 <translation id="2355395290879513365">თავდამსხმელებს შეუძლიათ იმ სურათების ნახვა, რომლებსაც ამ საიტზე ათვალიერებთ, და მათი შეცვლის მეშვეობით, თქვენი შეცდომაში შეყვანა.</translation>
 <translation id="2356070529366658676">მკითხე</translation>
-<translation id="2356926036049612643">V8 ოპტიმიზატორი</translation>
 <translation id="2356941001189392209">თქვენ მიერ მონახულებული იმ გვერდების URL-ების შეზღუდული სია, რომლებზეც მოვლენები მოძველებული ტექნოლოგიით ხდება</translation>
 <translation id="2357481397660644965">თქვენს მოწყობილობას მართავს <ph name="DEVICE_MANAGER" />, ხოლო თქვენს ანგარიშს — <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">რამდენიმე</translation>
@@ -1785,13 +1783,13 @@
 <translation id="3984581365661308170">კონვერტი 11</translation>
 <translation id="398470910934384994">ფრინველები</translation>
 <translation id="3985750352229496475">მისამართების მართვა…</translation>
-<translation id="3986506998755860149">პარამეტრებში შეიტყვეთ ხელოვნური ინტელექტის გამოყენებით ავტომატური შევსების შესახებ</translation>
 <translation id="3986557181852957825">Google Pay-ს, Klarna-ს ლოგო</translation>
 <translation id="3986705137476756801">პირდაპირი სუბტიტრების დროებით გამორთვა</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">1 მბაიტზე ნაკლები</translation>
 <translation id="3990250421422698716">კიდის წანაცვლება</translation>
 <translation id="3990532701115075684">თქვენი ხელების მოძრაობაზე თვალის დევნება</translation>
+<translation id="399179161741278232">იმპორტირებული</translation>
 <translation id="3992684624889376114">ამ გვერდის შესახებ</translation>
 <translation id="3995639283717357522">წესების გამოყენება</translation>
 <translation id="3996683183117168945"><ph name="MAX_CITATIONS" />-დან <ph name="CURRENT_CITATION" /> ციტირება, <ph name="PRODUCT_NAME" />, <ph name="URL" /> <ph name="PAGE_TITLE" />. <ph name="PAGE_PREVIEW" />.</translation>
@@ -2399,7 +2397,6 @@
 <translation id="5002932099480077015">თუ ჩართულია, Chrome თქვენი ბარათის ასლს ამ მოწყობილობაში ფორმათა უფრო სწრაფად შევსებისთვის შეინახავს.</translation>
 <translation id="5007344584818503324">ჩანართების ჯგუფების აქტივობა გაზიარებულია</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
-<translation id="5010599530303458903">გადახდა ყოველთვიურად ან 4 უპროცენტო ნაწილად (ვრცელდება მოთხოვნები)</translation>
 <translation id="5011561501798487822">აღმოჩენილია ენა</translation>
 <translation id="5015510746216210676">მოწყობილობის სახელი:</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3080,7 +3077,6 @@
 <translation id="6151417162996330722">სერვერის სერთიფიკატს აქვს მოქმედების პერიოდი, რომელიც ძალიან ხანგრძლივია.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> დუიმი (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">სირბილი და ფეხით სიარული</translation>
-<translation id="6157079899699705880">ავტომატური შევსება ხელოვნური ინტელექტით ფორმებს უკეთ აღიქვამს და უფრო სწრაფად შეუძლია მათი შევსება.</translation>
 <translation id="6157754950574419155">ყველას ამოშლა ისტორიიდან</translation>
 <translation id="6157877588268064908">გაგზავნის მეთოდებისა და მოთხოვნების სანახავად აირჩიეთ მისამართი</translation>
 <translation id="6159554577634054750">მავნებლებთან ბრძოლა</translation>

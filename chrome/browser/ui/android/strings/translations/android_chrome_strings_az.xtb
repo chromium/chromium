@@ -715,6 +715,7 @@ Yalnız parol ifadəsini bilən şəxs şifrələnmiş datanı oxuya bilər. Goo
 <translation id="4380055775103003110">Bu problem davam etsə, <ph name="SITE_ETLD_PLUS_ONE" /> saytında davam etmək üçün başqa yolları sınaya bilərsiniz.</translation>
 <translation id="4384468725000734951">Axtarış üçün Sogou istifadə edilir</translation>
 <translation id="4387647248986092471">Avtomobil profil kilidi yaradın</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{1 gün və ya daha uzun müddət istifadə edilməyən tablar və qruplar}other{# gün və ya daha uzun müddət istifadə edilməyən tablar və qruplar}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Endirilir…</translation>
 <translation id="4404568932422911380">Əlfəcin yoxdur</translation>
 <translation id="4405224443901389797">Bura köçürün:</translation>

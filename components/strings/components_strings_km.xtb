@@ -163,7 +163,6 @@
 <translation id="1264309058268477500">ជំនួស</translation>
 <translation id="1264974993859112054">កីឡា</translation>
 <translation id="1268480293435976622">ស្រោមសំបុត្រចិន #7</translation>
-<translation id="1269045546668906972">បើក​ការបំពេញ​ស្វ័យប្រវត្តិ​ដោយ AI ដើម្បី​បំពេញ​កន្លែងបញ្ចូល​ច្រើនទៀត​ដោយ​ស្វ័យប្រវត្តិ</translation>
 <translation id="1269516672602708785">បង្កើត​គេហទំព័រថ្មី​នៅក្នុង Google Sites បានរហ័ស</translation>
 <translation id="1270328905573953738">ការផ្លាស់ទីលំនៅ និង​ប្ដូរ​ទីតាំង</translation>
 <translation id="1270502636509132238">មធ្យោបាយ​ទៅយក</translation>
@@ -821,7 +820,6 @@
 <translation id="2354001756790975382">ចំណាំផ្សេងទៀត</translation>
 <translation id="2355395290879513365">អ្នកវាយប្រហារអាចនឹងមើលឃើញរូបភាពដែលអ្នកកំពុងមើលនៅលើគេហទំព័រនេះ និងបញ្ឆោតអ្នកដោយធ្វើការកែសម្រួលពួកវា។</translation>
 <translation id="2356070529366658676">សួរ</translation>
-<translation id="2356926036049612643">ឧបករណ៍បង្កើនប្រសិទ្ធិភាព V8</translation>
 <translation id="2356941001189392209">បញ្ជី URL ទំព័រមួយចំនួនតូច​ដែលអ្នក​ចូលមើល ដែលព្រឹត្តិការណ៍​បច្ចេកវិទ្យាចាស់កំពុង​កើតឡើង</translation>
 <translation id="2357481397660644965">ឧបករណ៍​របស់អ្នក​ស្ថិតក្រោមការគ្រប់គ្រង​របស់ <ph name="DEVICE_MANAGER" /> ហើយ​គណនី​របស់អ្នកស្ថិតក្រោមការគ្រប់គ្រង​របស់ <ph name="ACCOUNT_MANAGER" />។</translation>
 <translation id="2359629602545592467">ច្រើន</translation>
@@ -1534,6 +1532,7 @@
 <translation id="3570079787344939099">ការរំកិល និង​ការពង្រីកបង្រួម</translation>
 <translation id="357244642999988503">ដក​ជួរឈរចេញ</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">បញ្ចូល​ព័ត៌មានថ្មី​ទៅអាសយដ្ឋាន</translation>
 <translation id="3575121482199441727">អនុញ្ញាត​សម្រាប់​គេហទំព័រ​នេះ</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">បានជ្រើសរើសជម្រើសឈ្មោះផ្លូវ</translation>
@@ -1788,13 +1787,13 @@
 <translation id="3984581365661308170">ស្រោមសំបុត្រ #11</translation>
 <translation id="398470910934384994">បក្សី</translation>
 <translation id="3985750352229496475">គ្រប់គ្រង​អាសយដ្ឋាន...</translation>
-<translation id="3986506998755860149">ស្វែងយល់​បន្ថែម​អំពី​ការបំពេញ​ស្វ័យប្រវត្តិ​ដោយ AI នៅក្នុង​ការកំណត់</translation>
 <translation id="3986557181852957825">Google Pay, និមិត្តសញ្ញា Klarna</translation>
 <translation id="3986705137476756801">បិទអក្សររត់​ក្នុងពេលជាក់ស្ដែង​ឥឡូវនេះ</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">តិចជាង 1 MB</translation>
 <translation id="3990250421422698716">គម្លាតរុញ</translation>
 <translation id="3990532701115075684">តាមដានដៃរបស់អ្នក</translation>
+<translation id="399179161741278232">បាននាំចូល</translation>
 <translation id="3992684624889376114">អំពី​ទំព័រ​នេះ</translation>
 <translation id="3995639283717357522">អនុវត្ត​គោលការណ៍</translation>
 <translation id="3996683183117168945">ការដកស្រង់ដោយប្រយោលទី <ph name="CURRENT_CITATION" /> នៃ <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />។ <ph name="PAGE_TITLE" />។ <ph name="PAGE_PREVIEW" />។</translation>
@@ -2403,7 +2402,6 @@
 <translation id="5002932099480077015">បើបើកដំណើរការ នោះ Chrome នឹងផ្ទុកច្បាប់ចម្លងកាតរបស់អ្នកនៅលើឧបករណ៍នេះសម្រាប់ការបំពេញសំណុំបែបបទលឿនជាងមុន។</translation>
 <translation id="5007344584818503324">សកម្មភាព​ក្រុមផ្ទាំង​ដែលបាន​ចែករំលែក</translation>
 <translation id="5007392906805964215">ពិនិត្យមើល</translation>
-<translation id="5010599530303458903">បង់ប្រចាំខែ ឬបង់រំលស់ 4 ដងដោយ​គ្មានការប្រាក់ (អាស្រ័យលើ​សិទ្ធិទទួលបាន)</translation>
 <translation id="5011561501798487822">ភាសាដែលបានសម្គាល់</translation>
 <translation id="5015510746216210676">ឈ្មោះ​ម៉ាស៊ីន​៖</translation>
 <translation id="5016205925109358554">Serif</translation>
@@ -3084,7 +3082,6 @@
 <translation id="6151417162996330722">វិញ្ញាបនបត្រម៉ាស៊ីនមេមានសុពលភាពយូរពេក។</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> in (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">ការរត់ និងការដើរ</translation>
-<translation id="6157079899699705880">ការបំពេញ​ស្វ័យប្រវត្តិ​ដោយប្រើ AI យល់អំពី​ទម្រង់​បែបបទ​កាន់តែ​ប្រសើរ និង​អាចបំពេញ​ទម្រង់បែបបទ​ទាំងនោះ​ដោយ​ស្វ័យប្រវត្តិ​បានកាន់តែរហ័ស​សម្រាប់អ្នក</translation>
 <translation id="6157754950574419155">លុបទាំងអស់​ចេញពីប្រវត្តិ</translation>
 <translation id="6157877588268064908">ដើម្បីមើលមធ្យោបាយ និងលក្ខខណ្ឌតម្រូវនៃការដឹកជញ្ជូនតាមប្រៃសណីយ៍ សូមជ្រើសរើសអាសយដ្ឋាន</translation>
 <translation id="6159554577634054750">ការគ្រប់គ្រង​សត្វល្អិត​ចង្រៃ</translation>
@@ -4140,6 +4137,7 @@
 <translation id="7908648876066812348">កំពុងបើក​កាត​និម្មិត</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> ចុច Tab រួចចុច Enter ដើម្បីចូលទៅកាន់ទំព័រនៃការពិនិត្យសុវត្ថិភាព Chrome នៅក្នុងការកំណត់</translation>
 <translation id="791107458486222637">កំពុងធ្វើ​វិញ</translation>
+<translation id="7912924955815015552">បាន​នាំចូលពី Safari</translation>
 <translation id="791551905239004656">គំនូរ និងការផាត់ពណ៌</translation>
 <translation id="7916162853251942238">បាត Flexo</translation>
 <translation id="791698251820376781">ស្ថាប័ន​របស់អ្នក​មិនអនុញ្ញាតឱ្យ​អ្នកចូល​គណនីទេ</translation>

@@ -65,7 +65,7 @@
 <translation id="1263433075299269530">Последняя открытая вкладка</translation>
 <translation id="1264156759663453185">Выбран слишком длинный отрывок текста.</translation>
 <translation id="1264974993859112054">Спорт</translation>
-<translation id="126737128831326059">Экспорт завершен.</translation>
+<translation id="126737128831326059">Экспорт завершен</translation>
 <translation id="1272079795634619415">Остановить</translation>
 <translation id="1273416271143914096">{count,plural, =1{{count} пароль}one{{count} пароль}few{{count} пароля}many{{count} паролей}other{{count} пароля}}</translation>
 <translation id="1275718070701477396">Выбрано</translation>
@@ -1863,7 +1863,7 @@
 <translation id="8230355548492839438">Найти предыдущую</translation>
 <translation id="8232956427053453090">Не удалять данные</translation>
 <translation id="8233237502828137700">Закрыть баннер</translation>
-<translation id="8258734532103758067">Данные экспортированы.</translation>
+<translation id="8258734532103758067">Данные экспортированы</translation>
 <translation id="8258999165172757081">Добавлено</translation>
 <translation id="8261506727792406068">Удалить</translation>
 <translation id="82619448491672958">Посмотреть другие вкладки</translation>
@@ -1932,7 +1932,7 @@
 <translation id="8505361906966222822">Место сохранения</translation>
 <translation id="850600235656508448">Открыть в режиме инкогнито</translation>
 <translation id="8511141513131731477">Перейти к первой вкладке</translation>
-<translation id="8515534223594179607">Экспортировать данные о работе в браузере</translation>
+<translation id="8515534223594179607">Экспорт данных о работе в браузере</translation>
 <translation id="852075982791215701">Перейти к последней вкладке</translation>
 <translation id="8522147671363140027">{count,plural, =1{{count} пароль и другие объекты сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте эти данные в аккаунт Google ({email}).}one{{count} пароль и другие объекты сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте эти данные в аккаунт Google ({email}).}few{{count} пароля и другие объекты сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте эти данные в аккаунт Google ({email}).}many{{count} паролей и другие объекты сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте эти данные в аккаунт Google ({email}).}other{{count} пароля и другие объекты сохранены только на этом устройстве. Чтобы они синхронизировались с другими устройствами, добавьте эти данные в аккаунт Google ({email}).}}</translation>
 <translation id="8524799873541103884"><ph name="INCOGNITO" />, вкладки между <ph name="FIRST_VISIBLE_TAB" /> и <ph name="LAST_VISIBLE_TAB" />, всего <ph name="NUMBER_OF_OPEN_TABS" /></translation>

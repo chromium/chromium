@@ -162,7 +162,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="1264309058268477500">Alternatywne</translation>
 <translation id="1264974993859112054">Sport</translation>
 <translation id="1268480293435976622">Koperta chińska nr 7</translation>
-<translation id="1269045546668906972">Włącz autouzupełnianie za pomocą AI, aby automatycznie wypełniać więcej pól</translation>
 <translation id="1269516672602708785">Szybko utwórz nową witrynę w Witrynach Google</translation>
 <translation id="1270328905573953738">Przeprowadzki</translation>
 <translation id="1270502636509132238">Metoda odbioru</translation>
@@ -819,7 +818,6 @@ Jeśli się nie zgodzisz, zostaną one zablokowane ze względu na Twoje ustawien
 <translation id="2354001756790975382">Inne zakładki</translation>
 <translation id="2355395290879513365">Osoby dokonujące ataków mogą widzieć te same obrazy w witrynie co Ty i zmodyfikować je, by Cię oszukać.</translation>
 <translation id="2356070529366658676">Pytaj</translation>
-<translation id="2356926036049612643">Optymalizator V8</translation>
 <translation id="2356941001189392209">Ograniczona lista adresów URL odwiedzanych przez Ciebie stron, na których występują zdarzenia oparte na starszej technologii</translation>
 <translation id="2357481397660644965">Twoim urządzeniem zarządza <ph name="DEVICE_MANAGER" />, a Twoim kontem – <ph name="ACCOUNT_MANAGER" />.</translation>
 <translation id="2359629602545592467">Różne</translation>
@@ -1786,13 +1784,13 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="3984581365661308170">Koperta nr 11</translation>
 <translation id="398470910934384994">Ptaki</translation>
 <translation id="3985750352229496475">Zarządzaj adresami...</translation>
-<translation id="3986506998755860149">dowiedzieć się więcej o autouzupełnianiu za pomocą AI w ustawieniach</translation>
 <translation id="3986557181852957825">Logo Google Pay, Klarna</translation>
 <translation id="3986705137476756801">Na razie wyłącz napisy na żywo</translation>
 <translation id="3987460020348247775"><ph name="EXPRESSION" /> = <ph name="ANSWER" /></translation>
 <translation id="3987940399970879459">Mniej niż 1 MB</translation>
 <translation id="3990250421422698716">Odsunięcie poszczególnych kopii</translation>
 <translation id="3990532701115075684">Śledzenie Twoich rąk</translation>
+<translation id="399179161741278232">Zaimportowane</translation>
 <translation id="3992684624889376114">Informacje o tej stronie</translation>
 <translation id="3995639283717357522">Zastosuj zasady</translation>
 <translation id="3996683183117168945">Cytat <ph name="CURRENT_CITATION" /> z <ph name="MAX_CITATIONS" />, <ph name="PRODUCT_NAME" />, <ph name="URL" />. <ph name="PAGE_TITLE" /> <ph name="PAGE_PREVIEW" /></translation>
@@ -2400,7 +2398,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="5002932099480077015">Jeśli włączysz tę opcję, Chrome zapisze kopię Twojej karty na tym urządzeniu, by umożliwić Ci szybsze wypełnianie formularzy.</translation>
 <translation id="5007344584818503324">Aktywność w udostępnianych grupach kart</translation>
 <translation id="5007392906805964215">Sprawdź</translation>
-<translation id="5010599530303458903">Płać co miesiąc lub w 4 nieoprocentowanych ratach (jeśli spełniasz wymagania)</translation>
 <translation id="5011561501798487822">Wykryty język</translation>
 <translation id="5015510746216210676">Nazwa komputera:</translation>
 <translation id="5016205925109358554">Szeryfowa</translation>
@@ -3081,7 +3078,6 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6151417162996330722">Certyfikat serwera ma za długi okres ważności.</translation>
 <translation id="6153243098246946146"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (w calach) (<ph name="ORIENTATION" />)</translation>
 <translation id="615506061184576470">Bieganie i chodzenie</translation>
-<translation id="6157079899699705880">Autouzupełnianie z wykorzystaniem AI lepiej rozumie formularze i szybciej je uzupełnia</translation>
 <translation id="6157754950574419155">Usuń wszystkie z historii</translation>
 <translation id="6157877588268064908">Aby zobaczyć metody wysyłki oraz wymagania, wybierz adres</translation>
 <translation id="6159554577634054750">Zwalczanie szkodników</translation>
@@ -3587,6 +3583,7 @@ Uruchamianie aplikacji może potrwać dłużej niż zwykle.</translation>
 <translation id="6989763994942163495">Pokaż ustawienia zaawansowane...</translation>
 <translation id="6991376411634620997">Klucz dostępu • Windows Hello</translation>
 <translation id="6997288673234694149">Sprzęt do baseballu i softballu</translation>
+<translation id="6998512609912910179">Szybciej wypełniaj formularze</translation>
 <translation id="6999480632062519056">Szkolenia fitness i treningi personalne</translation>
 <translation id="7003278537452757231">Chodniki i dywany</translation>
 <translation id="7003322000677139268">Części i akcesoria motoryzacyjne</translation>

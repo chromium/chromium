@@ -184,7 +184,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="3258596308407688501">Chromium getur ekki lesið og skrifað í gagnamöppuna sína:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
-<translation id="3268051428841342958">V8 er JavaScript- and WebAssembly-vél Chromium sem er notuð til að bæta afköst vefsvæða</translation>
 <translation id="3286538390144397061">Endurræsa núna</translation>
 <translation id="328888136576916638">Lykla vantar fyrir forritaskil Google. Sumir eiginleikar Chromium verða óvirkir.</translation>
 <translation id="3296368748942286671">Halda áfram að keyra bakgrunnsforrit þegar Chromium er lokað</translation>
@@ -502,6 +501,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="7461356015007898716">Til að fá frekari uppfærslur á Chromium þarftu Windows 10 eða nýrri útgáfu. Þessi tölva notar Windows 7.</translation>
 <translation id="7467949745582939695">Endurræsa Chromium?</translation>
 <translation id="7483335560992089831">Ekki er hægt að setja upp sömu útgáfu Chromium og er nú þegar í gangi. Lokaðu Chromium og reyndu aftur.</translation>
+<translation id="7517403744065880907">Þú vistar og notar aðgangsorðin þín og margt fleira á Google-reikningnum þegar þú ert með innskráningu í Chromium. <ph name="LEARN_MORE" /></translation>
 <translation id="751935028865900641">Vefsvæði munu líklega virka sem skyldi. Þú skráist út af flestum vefsvæðum þegar þú lokar öllum Chromium-gluggum en ekki út af Google-reikningnum þínum ef þú hefur skráð þig inn á Chromium.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium verður endurræst eftir 1 mínútu}one{Chromium verður endurræst eftir # mínútu}other{Chromium verður endurræst eftir # mínútur}}</translation>
 <translation id="7565444033145385702">Til að vernda gögnin þín skaltu leyfa Chromium að fjarlægja heimildir vefsvæða sem þú hefur ekki opnað nýlega.</translation>
@@ -626,6 +626,7 @@ Chromium getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="9158494823179993217">Kerfisstjórinn þinn hefur stillt Chromium á að opna annan vafra fyrir <ph name="TARGET_URL_HOSTNAME" />.</translation>
 <translation id="9185526690718004400">Endurræstu til að uppfæra &amp;Chromium</translation>
 <translation id="9190841055450128916">Chromium (mDNS-inn)</translation>
+<translation id="9206863043651638213">Fáðu meira út úr Chromium með innskráningu</translation>
 <translation id="924957577793602335">Lagaðu Chromium að þínum þörfum</translation>
 <translation id="93478295209880648">Vera kann að Chromium virki ekki sem skyldi vegna þess að vafrinn er ekki lengur studdur á Windows XP eða Windows Vista</translation>
 <translation id="945522503751344254">Senda ábendingu</translation>

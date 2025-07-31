@@ -2539,7 +2539,6 @@
 <translation id="2730647855013151888">সব ব্যক্তিগত তথ্য যুক্ত করুন</translation>
 <translation id="2730901670247399077">ইমোজি সাজেশন</translation>
 <translation id="273093730430620027">এই পৃষ্ঠাটি আপনার ক্যামেরা অ্যাক্সেস করছে৷</translation>
-<translation id="2730956943403103181">ভি৮ অপ্টিমাইজার ব্যবহার করার অনুমতি নেই</translation>
 <translation id="2731392572903530958">বন্ধ হওয়া উইল্ডো পুনরায়&amp;খুলুন</translation>
 <translation id="2731700343119398978">অনুগ্রহ করে অপেক্ষা করুন...</translation>
 <translation id="2731971182069536520">ডিভাইস পরের বার চালানোর সময়, আপনার অ্যাডমিনিস্ট্রেটর এককালীন আপডেট করবেন যার ফলে আপনার স্থানীয় ডেটা মুছে যাবে।</translation>
@@ -3138,7 +3137,6 @@
 <translation id="3160928651883997588">ভিপিএন সংক্রান্ত অভিরুচি</translation>
 <translation id="3161522574479303604">সকল ভাষা</translation>
 <translation id="3162070126914310576">এই ডিভাইসটি এখন এনরোল করা যাবে না কারণ আপনার সংস্থার ইউনিট এনরোল করার প্রথমিক সীমায় পৌঁছে গেছে। সাহায্যের জন্য আপনার অ্যাডমিনিস্ট্রেটরের সাথে যোগাযোগ করুন।</translation>
-<translation id="3162766632262775911">সবসময় ভি৮ অপ্টিমাইজার ব্যবহার করতে পারে</translation>
 <translation id="3162853326462195145">স্কুলের অ্যাকাউন্ট</translation>
 <translation id="3162899666601560689">আপনার শপিং কার্টে বেছে নেওয়া আইটেমগুলি মনে রাখা বা সাইন-ইন সংক্রান্ত তথ্য সেভ করার মতো ব্রাউজিং অভিজ্ঞতা আরও ভাল করার জন্য সাইটগুলি কুকি ব্যবহার করতে পারবে</translation>
 <translation id="3163085718713826852">সার্টিফিকেটের পাসওয়ার্ড লিখুন</translation>
@@ -3854,7 +3852,6 @@
 <translation id="3666971425390608309">ডাউনলোড পজ করা হয়েছে: <ph name="FILE_NAME" />।</translation>
 <translation id="3670113805793654926">যেকোনও ভেন্ডর থেকে ডিভাইস</translation>
 <translation id="3670229581627177274">ব্লুটুথ চালু করুন</translation>
-<translation id="3670480940339182416">সাইট ভি৮ অপ্টিমাইজার ব্যবহার করতে পারে</translation>
 <translation id="3671982238795754537">পাসকী সম্পর্কে আরও জানুন</translation>
 <translation id="3672681487849735243">একটি ফ্যাক্টরি ত্রুটি শনাক্ত করা হয়েছে</translation>
 <translation id="3673097791729989571">সাইন-ইন ফিচারটি <ph name="SAML_DOMAIN" /> দ্বারা হোস্ট করা হয়েছে</translation>
@@ -5755,6 +5752,7 @@
 <translation id="5001526427543320409">থার্ড-পার্টি কুকি</translation>
 <translation id="5003070249435823986">জেসচার ব্যবহার করে স্ক্রল মোডে ঢুকুন, তারপর যেদিকে স্ক্রল করতে চান সেই দিকে আপনার মাথা সরান। স্ক্রল মোড থেকে বেরিয়ে আসতে আবার জেসচার ব্যবহার করুন।</translation>
 <translation id="5003993274120026347">পরের বাক্য</translation>
+<translation id="5005311809885666699">Chrome থেকে সেভ করা হয়েছে</translation>
 <translation id="5005498671520578047">পাসওয়ার্ড কপি করুন</translation>
 <translation id="5006218871145547804">Crostini Android অ্যাপ ADB</translation>
 <translation id="5006778209728626987">লাইটনিং</translation>
@@ -9724,6 +9722,7 @@
 <translation id="784475655832336580">ChromeVox চালু করা থাকলে, 'কীবোর্ড ফোকাস ব্যবহার করে আইটেম হাইলাইট করুন' ফিচার উপলভ্য হবে না</translation>
 <translation id="7844992432319478437">ভিন্ন আপডেট হচ্ছে</translation>
 <translation id="7846161022626028328">কোনও সমস্যা হয়েছে। আবার চেষ্টা করুন।</translation>
+<translation id="7846296061357476882">Google পরিষেবা</translation>
 <translation id="7846634333498149051">কীবোর্ড</translation>
 <translation id="7847212883280406910"><ph name="IDS_SHORT_PRODUCT_OS_NAME" /> এ স্যুইচ করার জন্য Ctrl + Alt + S টিপুন</translation>
 <translation id="7848244988854036372">সবকটি (<ph name="URL_COUNT" />) নতুন ট্যাব গ্রুপে খুলুন</translation>
@@ -9743,7 +9742,6 @@
 <translation id="7853747251428735">আরও সর&amp;ঞ্জাম</translation>
 <translation id="7855258394151767387">মাউসের বোতাম প্রেস করতে “w” ব্যবহার করুন</translation>
 <translation id="7855678561139483478">ট্যাবটি নতুন উইন্ডোতে খুলুন</translation>
-<translation id="7856798637819639676">আপনার Android ডিভাইস থেকে নিরাপদে কোনও আইডি ব্যবহার করুন</translation>
 <translation id="7857004848504343806">আপনার কম্পিউটারে একটি নিরাপদ মডিউল আছে, যেটির সাহায্যে ChromeOS Flex-এর বিভিন্ন জটিল নিরাপত্তা ফিচার ব্যবহার করা হয়। আরও জানতে Chromebook সহায়তা কেন্দ্রে যান: https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7857093393627376423">টেক্সট সংক্রান্ত সাজেশন</translation>
 <translation id="7858120906780498731">ChromeOS কানেক্ট করা ইনপুট ডিভাইস</translation>
@@ -10002,7 +10000,6 @@
 <translation id="8026784703228858744">সিঙ্ক ব্যবহার করে আপনার বুকমার্ক ও আরও অনেক কিছু সেভ করুন</translation>
 <translation id="8027325966409484573">{NUM_DAYS,plural, =0{০ দিন আগে গেছিলেন}=1{১ দিন আগে গেছিলেন}one{# দিন আগে গেছিলেন}other{# দিন আগে গেছিলেন}}</translation>
 <translation id="8028060951694135607">Microsoft মূল পুনরুদ্ধার</translation>
-<translation id="8028138772801251745">AI-এর মাধ্যমে অটোফিল</translation>
 <translation id="8028803902702117856">ডাউনলোড হচ্ছে <ph name="SIZE" />, <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">সাইজ</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{পড়ার তালিকা}=1{পড়ার তালিকা ({SELECTED_ITEMS}টি)}one{পড়ার তালিকা ({SELECTED_ITEMS}টি)}other{পড়ার তালিকা ({SELECTED_ITEMS}টি)}}</translation>
@@ -10099,7 +10096,6 @@
 <translation id="808894953321890993">পাসওয়ার্ড পরিবর্তন করুন</translation>
 <translation id="8090234456044969073">আপনার সবচেয়ে ঘন ঘন পরিদর্শিত ওয়েবসাইটের একটি তালিকা পড়ুন</translation>
 <translation id="8090513782447872344">আরেকবার দেখার জন্য আপনি যেকোনও সময় ফিরে আসতে পারেন</translation>
-<translation id="8090579562279016251">পারফর্ম্যান্স কমিয়ে দেয় তবে অ্যাটাকের হাত থেকে ভি৮-কে আরও বেশি প্রতিরোধক করে তোলে</translation>
 <translation id="8090686009202681725">AI-এর মাধ্যমে থিম তৈরি করুন</translation>
 <translation id="8093359998839330381"><ph name="PLUGIN_NAME" /> এর কোনও প্রতিক্রিয়া নেই</translation>
 <translation id="8094536695728193970">অ্যাপ্রিকট</translation>
@@ -10153,7 +10149,6 @@
 <translation id="8125651784723647184">পাসওয়ার্ড শেয়ারিং আপনার অ্যাডমিনিস্ট্রেটর ম্যানেজ করেন</translation>
 <translation id="8126355825906412872">হাসি</translation>
 <translation id="8129265306888404830">আপনার প্রতিষ্ঠান থেকে আপনার ইমেল অ্যাড্রেস ব্যবহার করতে (<ph name="EMAIL_DOMAIN" />), আপনাকে এন্টারপ্রাইজ এনরোলমেন্ট ব্যবহার করতে হবে। যদি এই ডিভাইসটি আপনার ব্যক্তিগত ব্যবহারের জন্য হয়, তাহলে আপনার ব্যক্তিগত Google অ্যাকাউন্ট দিয়ে সাইন-ইন করুন।</translation>
-<translation id="8130476996317833777">ভি৮ অপ্টিমাইজার ব্যবহার করার অনুমতি সাইটকে দেবেন না</translation>
 <translation id="813082847718468539">সাইটের তথ্য দর্শন করুন</translation>
 <translation id="8131740175452115882">নিশ্চিত হন</translation>
 <translation id="8133297578569873332">ঠিকঠাক - FM</translation>
