@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.browserservices.digitalgoods;
 import android.app.Activity;
 
 import org.chromium.base.ResettersForTesting;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.ActivityUtils;
 import org.chromium.chrome.browser.customtabs.CustomTabActivity;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -22,8 +24,9 @@ import org.chromium.payments.mojom.DigitalGoodsFactory;
 import org.chromium.payments.mojom.DigitalGoodsFactory.CreateDigitalGoods_Response;
 
 /** An implementation of the mojo {@link DigitalGoodsFactory} interface. */
+@NullMarked
 public class DigitalGoodsFactoryImpl implements DigitalGoodsFactory {
-    private static DigitalGoods sImplForTesting;
+    private static @Nullable DigitalGoods sImplForTesting;
 
     private final RenderFrameHost mRenderFrameHost;
     private final DigitalGoodsImpl.Delegate mDigitalGoodsDelegate;

@@ -11,6 +11,7 @@ import android.os.RemoteException;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers;
 import org.chromium.components.embedder_support.util.Origin;
@@ -24,6 +25,7 @@ import org.chromium.payments.mojom.DigitalGoods.ListPurchases_Response;
  * Android types and then uses the {@link TrustedWebActivityClient} to call into the Trusted Web
  * Activity Client.
  */
+@NullMarked
 public class DigitalGoodsAdapter {
     private static final String TAG = "DigitalGoods";
 

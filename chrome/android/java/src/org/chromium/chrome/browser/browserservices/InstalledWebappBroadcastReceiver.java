@@ -10,6 +10,7 @@ import android.content.Intent;
 
 import org.chromium.base.Log;
 import org.chromium.base.version_info.VersionInfo;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.chrome.browser.webapps.WebApkUninstallTracker;
 import org.chromium.components.embedder_support.util.Origin;
@@ -42,6 +43,7 @@ import java.util.Set;
  * <p>Lifecycle: The lifecycle of this class is managed by Android. Thread safety: {@link
  * #onReceive} will be called on the UI thread.
  */
+@NullMarked
 public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
     private static final String TAG = "IWBroadcastReceiver";
 
@@ -114,6 +116,7 @@ public class InstalledWebappBroadcastReceiver extends BroadcastReceiver {
 
     private void clearPreferences(int uid, boolean uninstalled) {
         String packageName = InstalledWebappDataRegister.getPackageNameForRegisteredUid(uid);
+        assert packageName != null;
         BrowserServicesStore.removeTwaDisclosureAcceptanceForPackage(packageName);
         if (uninstalled) {
             InstalledWebappDataRegister.removePackage(uid);

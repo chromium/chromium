@@ -67,7 +67,7 @@ public class InstalledWebappDataRegister {
      * handling uninstallation or data clear, since that would require loading native libraries.
      */
     public static void registerPackageForOrigin(
-            int uid, String appName, String packageName, String domain, Origin origin) {
+            int uid, String appName, String packageName, @Nullable String domain, Origin origin) {
         // Store the UID in the main Chrome Preferences.
         Set<String> uids = getUids();
         uids.add(String.valueOf(uid));
@@ -81,7 +81,8 @@ public class InstalledWebappDataRegister {
         editor.apply();
     }
 
-    private static void writeToSet(SharedPreferences.Editor editor, String key, String newElement) {
+    private static void writeToSet(
+            SharedPreferences.Editor editor, String key, @Nullable String newElement) {
         Set<String> set = new HashSet<>(getPreferences().getStringSet(key, Collections.emptySet()));
         set.add(newElement);
         editor.putStringSet(key, set);

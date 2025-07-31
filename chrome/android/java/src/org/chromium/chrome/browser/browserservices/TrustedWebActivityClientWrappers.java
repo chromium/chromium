@@ -22,6 +22,8 @@ import org.chromium.base.Log;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClient.ExecutionCallback;
 import org.chromium.components.embedder_support.util.Origin;
 
@@ -30,6 +32,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executor;
 
 /** Provides wrappers for AndroidX classes that can be mocked in tests. */
+@NullMarked
 public class TrustedWebActivityClientWrappers {
     private static final String TAG = "TWAClient";
     private static final Executor UI_THREAD_EXECUTOR =
@@ -55,11 +58,11 @@ public class TrustedWebActivityClientWrappers {
         int getSmallIconId() throws RemoteException;
 
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
-        Bitmap getSmallIconBitmap() throws RemoteException;
+        @Nullable Bitmap getSmallIconBitmap() throws RemoteException;
 
         /** See implementation on {@link TrustedWebActivityServiceConnection}. */
-        Bundle sendExtraCommand(
-                String commandName, Bundle args, TrustedWebActivityCallback callback)
+        @Nullable Bundle sendExtraCommand(
+                String commandName, Bundle args, @Nullable TrustedWebActivityCallback callback)
                 throws RemoteException;
     }
 
@@ -143,13 +146,13 @@ public class TrustedWebActivityClientWrappers {
             }
 
             @Override
-            public Bitmap getSmallIconBitmap() throws RemoteException {
+            public @Nullable Bitmap getSmallIconBitmap() throws RemoteException {
                 return connection.getSmallIconBitmap();
             }
 
             @Override
-            public Bundle sendExtraCommand(
-                    String commandName, Bundle args, TrustedWebActivityCallback callback)
+            public @Nullable Bundle sendExtraCommand(
+                    String commandName, Bundle args, @Nullable TrustedWebActivityCallback callback)
                     throws RemoteException {
                 return connection.sendExtraCommand(commandName, args, callback);
             }

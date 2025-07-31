@@ -11,6 +11,8 @@ import android.text.TextUtils;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.browserservices.permissiondelegation.PermissionUpdater;
 import org.chromium.components.embedder_support.util.Origin;
 import org.chromium.components.embedder_support.util.UrlUtilities;
@@ -22,6 +24,7 @@ import java.util.Set;
  * Records in all the appropriate places that an installed webapp (TWA or WebAPK) has successfully
  * been verified.
  */
+@NullMarked
 public class InstalledWebappRegistrar {
     private static final String TAG = "WebappRegistrar";
 
@@ -35,7 +38,7 @@ public class InstalledWebappRegistrar {
      */
     private final Set<String> mCache = new HashSet<>();
 
-    private static InstalledWebappRegistrar sInstance;
+    private static @Nullable InstalledWebappRegistrar sInstance;
 
     public static InstalledWebappRegistrar getInstance() {
         if (sInstance == null) sInstance = new InstalledWebappRegistrar();

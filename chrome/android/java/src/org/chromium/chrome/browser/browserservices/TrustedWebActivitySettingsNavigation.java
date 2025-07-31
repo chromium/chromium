@@ -10,6 +10,8 @@ import android.content.pm.PackageManager;
 import android.os.Bundle;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.settings.SettingsNavigationFactory;
 import org.chromium.chrome.browser.webapps.ChromeWebApkHost;
@@ -25,6 +27,7 @@ import java.util.Collection;
 /**
  * Helper functions for launching site-settings for websites associated with a Trusted Web Activity.
  */
+@NullMarked
 public class TrustedWebActivitySettingsNavigation {
     private static final String TAG = "TwaSettingsNavigation";
 
@@ -62,7 +65,7 @@ public class TrustedWebActivitySettingsNavigation {
         openSingleWebsitePrefs(context, webApkUrl);
     }
 
-    private static Integer getApplicationUid(Context context, String packageName) {
+    private static @Nullable Integer getApplicationUid(Context context, String packageName) {
         int applicationUid;
         try {
             applicationUid = context.getPackageManager().getApplicationInfo(packageName, 0).uid;

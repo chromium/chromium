@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.browserservices;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.browserservices.permissiondelegation.InstalledWebappGeolocationBridge.EXTRA_NEW_LOCATION_ERROR_CALLBACK;
 
 import android.app.ActivityOptions;
@@ -23,8 +24,6 @@ import android.os.Looper;
 import android.os.Messenger;
 import android.os.RemoteException;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.browser.trusted.Token;
 import androidx.browser.trusted.TrustedWebActivityCallback;
 import androidx.browser.trusted.TrustedWebActivityService;
@@ -36,6 +35,8 @@ import org.chromium.base.Log;
 import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.Connection;
 import org.chromium.chrome.browser.browserservices.TrustedWebActivityClientWrappers.ConnectionPool;
@@ -54,6 +55,7 @@ import java.util.List;
 import java.util.Set;
 
 /** A client for calling methods on a {@link TrustedWebActivityService}. */
+@NullMarked
 public class TrustedWebActivityClient {
     private static final String TAG = "TWAClient";
 
@@ -78,7 +80,7 @@ public class TrustedWebActivityClient {
 
     private final ConnectionPool mConnectionPool;
 
-    private static TrustedWebActivityClient sInstance;
+    private static @Nullable TrustedWebActivityClient sInstance;
 
     /** Interface for callbacks to get a permission setting from a TWA app. */
     public interface PermissionCallback {
@@ -180,6 +182,7 @@ public class TrustedWebActivityClient {
                         }
 
                         @ContentSettingValues int settingValue = ContentSettingValues.BLOCK;
+                        assert commandResult != null;
                         @PermissionStatus
                         int permissionStatus =
                                 commandResult.getInt(KEY_PERMISSION_STATUS, PermissionStatus.BLOCK);
@@ -229,8 +232,9 @@ public class TrustedWebActivityClient {
                                         : commandResult.getBoolean(EXTRA_COMMAND_SUCCESS);
                         PendingIntent pendingIntent =
                                 commandSuccess
-                                        ? commandResult.getParcelable(
-                                                KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
+                                        ? assumeNonNull(commandResult)
+                                                .getParcelable(
+                                                        KEY_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT)
                                         : null;
                         TrustedWebActivityUmaRecorder.recordExtraCommandSuccess(
                                 COMMAND_GET_NOTIFICATION_PERMISSION_REQUEST_PENDING_INTENT,
@@ -563,9 +567,9 @@ public class TrustedWebActivityClient {
     }
 
     private static @Nullable ComponentName searchVerifiedApps(
-            @NonNull PackageManager pm,
+            PackageManager pm,
             @Nullable Set<Token> verifiedPackages,
-            @NonNull List<ResolveInfo> resolveInfosForUrl) {
+            List<ResolveInfo> resolveInfosForUrl) {
         if (verifiedPackages == null || verifiedPackages.isEmpty()) return null;
 
         for (ResolveInfo info : resolveInfosForUrl) {
@@ -591,7 +595,7 @@ public class TrustedWebActivityClient {
             Connection service,
             String commandName,
             Bundle args,
-            TrustedWebActivityCallback callback) {
+            @Nullable TrustedWebActivityCallback callback) {
         try {
             return service.sendExtraCommand(commandName, args, callback);
         } catch (Exception e) {
