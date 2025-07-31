@@ -926,6 +926,8 @@ public class RootUiCoordinator
                             new WeakReference<Activity>(mActivity),
                             mWindowAndroid.getInsetObserver(),
                             this::initializeEdgeToEdgeController);
+        } else {
+            initializeEdgeToEdgeController();
         }
         initBoardingPassDetector();
 
