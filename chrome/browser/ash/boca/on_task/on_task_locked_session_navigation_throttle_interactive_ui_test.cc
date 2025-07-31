@@ -174,6 +174,11 @@ class OnTaskLockedSessionNavigationThrottleInteractiveUITestBase
   }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<boca::OnTaskSystemWebAppManagerImpl> system_web_app_manager_;
   raw_ptr<FakeOnTaskNotificationsManagerDelegate>
@@ -190,11 +195,6 @@ class OnTaskLockedSessionNavigationThrottleInteractiveUITest
     embedded_test_server()->AddDefaultHandlers(GetChromeTestDataDir());
     ASSERT_TRUE(embedded_test_server()->Start());
   }
- private:
-  // TODO(https://crbug.com/423465927): Explore a better approach to make the
-  // existing tests run with the prewarm feature enabled.
-  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
-      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
 };
 
 IN_PROC_BROWSER_TEST_F(OnTaskLockedSessionNavigationThrottleInteractiveUITest,

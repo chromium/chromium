@@ -16,6 +16,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/predictors/loading_predictor_config.h"
+#include "chrome/browser/preloading/scoped_prewarm_feature_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -324,6 +325,11 @@ class NetworkRequestMetricsBrowserTest
   base::HistogramTester* histograms() { return histograms_.get(); }
 
  private:
+  // TODO(https://crbug.com/423465927): Explore a better approach to make the
+  // existing tests run with the prewarm feature enabled.
+  test::ScopedPrewarmFeatureList scoped_prewarm_feature_list_{
+      test::ScopedPrewarmFeatureList::PrewarmState::kDisabled};
+
   std::unique_ptr<net::test_server::ControllableHttpResponse>
       uninteresting_main_frame_response_;
   std::unique_ptr<net::test_server::ControllableHttpResponse>
