@@ -88,7 +88,8 @@ void MachOImageAnnotationsReader::ReadCrashReporterClientAnnotations(
     return;
   }
 
-  if (crash_info.version != 4 && crash_info.version != 5) {
+  if (crash_info.version != 4 && crash_info.version != 5 &&
+      crash_info.version != 7) {
     LOG(WARNING) << "unexpected crash info version " << crash_info.version
                  << " in " << name_;
     return;
@@ -104,9 +105,13 @@ void MachOImageAnnotationsReader::ReadCrashReporterClientAnnotations(
     return;
   }
 
-  // This number was totally made up out of nowhere, but it seems prudent to
-  // enforce some limit.
-  constexpr size_t kMaxMessageSize = 1024;
+  // It seems prudent to enforce some limit. Different users of
+  // CRSetCrashLogMessage and CRSetCrashLogMessage2, apparently the private
+  // <CrashReporterClient.h> functions used to set message and message2, use
+  // different buffer lengths. 15.0 dyld-1231.3 libdyld/dyld_process_info.cpp
+  // has `static char sCrashReporterInfo[4096]`, which seems like a reasonable
+  // limit.
+  constexpr size_t kMaxMessageSize = 4096;
   if (crash_info.message) {
     std::string message;
     if (process_reader_->Memory()->ReadCStringSizeLimited(

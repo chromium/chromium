@@ -20,6 +20,7 @@
 #include <errno.h>
 #include <mach-o/dyld.h>
 #include <mach-o/dyld_images.h>
+#include <mach-o/loader.h>
 #include <mach/mach.h>
 #include <pthread.h>
 #include <string.h>
@@ -33,6 +34,7 @@
 
 #include "base/apple/mach_logging.h"
 #include "base/check_op.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/strings/stringprintf.h"
@@ -54,6 +56,12 @@
 namespace crashpad {
 namespace test {
 namespace {
+
+#if !defined(ARCH_CPU_64_BITS)
+using MachHeader = mach_header;
+#else
+using MachHeader = mach_header_64;
+#endif
 
 using ModulePathAndAddress = std::pair<std::string, mach_vm_address_t>;
 struct PathAndAddressHash {
@@ -836,9 +844,20 @@ bool ExpectCLKernels() {
          MacOSVersionNumber() >= 10'07'00;
 }
 
-// Disabled to investigate crbug.com/414919209.
-// TODO(crbug.com/414919209): Re-enable or remove if no longer relevant.
-TEST(ProcessReaderMac, DISABLED_SelfModules) {
+// Starting in dyld-1284.13 (macOS 15.4), _dyld_get_image_name (in
+// dyld4::PrebuiltLoader::path) returns an absolute path for a main executable,
+// even when the image was not loaded from an absolute path. This can break test
+// expectations when the test executable is not invoked from an absolute path.
+// As a workaround, just use the main executable’s basename for comparison
+// purposes.
+std::string ComparableModuleName(const std::string& module_name,
+                                 uint32_t file_type) {
+  return file_type == MH_EXECUTE
+             ? base::FilePath(module_name).BaseName().value()
+             : module_name;
+}
+
+TEST(ProcessReaderMac, SelfModules) {
   ScopedOpenCLNoOpKernel ensure_cl_kernels;
   ASSERT_NO_FATAL_FAILURE(ensure_cl_kernels.SetUp());
 
@@ -871,12 +890,14 @@ TEST(ProcessReaderMac, DISABLED_SelfModules) {
       EXPECT_EQ(file_type, static_cast<uint32_t>(MH_EXECUTE));
     } else {
       EXPECT_NE(file_type, static_cast<uint32_t>(MH_EXECUTE));
+      EXPECT_NE(file_type, static_cast<uint32_t>(MH_DYLINKER));
     }
     if (IsMalformedCLKernelsModule(module.reader->FileType(), module.name)) {
       cl_kernel_names.insert(module.name);
     }
     actual_modules.insert(
-        std::make_pair(module.name, module.reader->Address()));
+        std::make_pair(ComparableModuleName(module.name, file_type),
+                       module.reader->Address()));
   }
   EXPECT_EQ(cl_kernel_names.size() > 0,
             ExpectCLKernels() && ensure_cl_kernels.success());
@@ -890,8 +911,11 @@ TEST(ProcessReaderMac, DISABLED_SelfModules) {
     const char* dyld_image_name = _dyld_get_image_name(index);
     mach_vm_address_t dyld_image_address =
         FromPointerCast<mach_vm_address_t>(_dyld_get_image_header(index));
-    expect_modules.insert(
-        std::make_pair(std::string(dyld_image_name), dyld_image_address));
+    const MachHeader* image_header =
+        reinterpret_cast<const MachHeader*>(dyld_image_address);
+    expect_modules.insert(std::make_pair(
+        ComparableModuleName(dyld_image_name, image_header->filetype),
+        dyld_image_address));
     if (cl_kernel_names.find(dyld_image_name) == cl_kernel_names.end()) {
       VerifyImageExistence(dyld_image_name);
     }
@@ -928,7 +952,6 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
         EXPECT_EQ(file_type, static_cast<uint32_t>(MH_EXECUTE));
       } else if (i == modules.size() - 1) {
         EXPECT_EQ(file_type, static_cast<uint32_t>(MH_DYLINKER));
-
       } else {
         EXPECT_NE(file_type, static_cast<uint32_t>(MH_EXECUTE));
         EXPECT_NE(file_type, static_cast<uint32_t>(MH_DYLINKER));
@@ -937,7 +960,8 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
         cl_kernel_names.insert(module.name);
       }
       actual_modules.insert(
-          std::make_pair(module.name, module.reader->Address()));
+          std::make_pair(ComparableModuleName(module.name, file_type),
+                         module.reader->Address()));
     }
 
     // There needs to be at least an entry for the main executable, for a dylib,
@@ -965,10 +989,16 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
       mach_vm_address_t expect_address;
       CheckedReadFileExactly(
           read_handle, &expect_address, sizeof(expect_address));
-      expect_modules.insert(std::make_pair(expect_name, expect_address));
+
+      uint32_t file_type;
+      CheckedReadFileExactly(read_handle, &file_type, sizeof(file_type));
+
       if (cl_kernel_names.find(expect_name) == cl_kernel_names.end()) {
         VerifyImageExistence(expect_name.c_str());
       }
+
+      expect_modules.insert(std::make_pair(
+          ComparableModuleName(expect_name, file_type), expect_address));
     }
     EXPECT_EQ(cl_kernel_names.size() > 0,
               ExpectCLKernels() && ensure_cl_kernels_success_);
@@ -1005,6 +1035,10 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
             dyld_image_infos->dyldImageLoadAddress);
       }
 
+      const MachHeader* image_header =
+          reinterpret_cast<const MachHeader*>(dyld_image_address);
+      uint32_t file_type = image_header->filetype;
+
       uint32_t dyld_image_name_length = strlen(dyld_image_name);
       CheckedWriteFile(write_handle,
                        &dyld_image_name_length,
@@ -1015,6 +1049,7 @@ class ProcessReaderModulesChild final : public MachMultiprocess {
 
       CheckedWriteFile(
           write_handle, &dyld_image_address, sizeof(dyld_image_address));
+      CheckedWriteFile(write_handle, &file_type, sizeof(file_type));
     }
 
     // Wait for the parent to signal that it’s OK to exit by closing its end of
