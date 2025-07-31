@@ -64,6 +64,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/metrics/metrics_service.h"
+#include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/policy/core/common/management/management_service.h"
 #include "components/policy/core/common/management/scoped_management_service_override_for_testing.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -197,7 +198,8 @@ class GlicApiTest : public NonInteractiveGlicTest {
                  {features::kGlicPreLoadingTimeMs.name, "20"},
                  {features::kGlicMinLoadingTimeMs.name, "40"},
              }},
-            {features::kGlicScrollTo, {}},
+            {features::kGlicScrollTo,
+             {{"glic-scroll-to-enforce-document-id", "true"}}},
             {features::kGlicClosedCaptioning, {}},
             {features::kGlicApiActivationGating, {}},
             {mojom::features::kGlicMultiTab, {}},
@@ -388,6 +390,19 @@ class GlicApiTestWithOneTab : public GlicApiTest {
   GURL page_url() {
     return InProcessBrowserTest::embedded_test_server()->GetURL(
         "/glic/test.html");
+  }
+
+  std::string GetDocumentIdForTab(ui::ElementIdentifier tab_id) {
+    ui::TrackedElement* const element =
+        ui::ElementTracker::GetElementTracker()->GetElementInAnyContext(
+            tab_id);
+    CHECK(element);
+    content::RenderFrameHost* rfh = AsInstrumentedWebContents(element)
+                                        ->web_contents()
+                                        ->GetPrimaryMainFrame();
+    return optimization_guide::DocumentIdentifierUserData::
+        GetDocumentIdentifier(rfh->GetGlobalFrameToken())
+            .value();
   }
 
   std::unique_ptr<base::HistogramTester> histogram_tester;
@@ -1061,10 +1076,9 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,
                        MAYBE_testDeferredFocusedTabStateAtCreation) {
   // Navigate the first tab.
-  RunTestSequence(
-      NavigateWebContents(kFirstTab,
-                          InProcessBrowserTest::embedded_test_server()->GetURL(
-                              "/scrollable_page_with_content.html")));
+  RunTestSequence(NavigateWebContents(
+      kFirstTab, InProcessBrowserTest::embedded_test_server()->GetURL(
+                     "/scrollable_page_with_content.html")));
   ExecuteJsTest();
   RunTestSequence(ToggleGlicWindow(GlicWindowMode::kDetached),
                   CheckControllerShowing(true));
@@ -1274,20 +1288,24 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testMetrics) {
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFindsText) {
-  ExecuteJsTest();
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab,
                        testScrollToFindsTextNoTabContextPermission) {
-  ExecuteJsTest();
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToFailsWhenInactive) {
-  ExecuteJsTest();
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testScrollToNoMatchFound) {
-  ExecuteJsTest();
+  ExecuteJsTest({.params = base::Value(base::Value::Dict().Set(
+                     "documentId", GetDocumentIdForTab(kFirstTab)))});
 }
 
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testSetSyntheticExperimentState) {

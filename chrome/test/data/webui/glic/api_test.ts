@@ -875,15 +875,21 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.scrollTo);
     assertTrue(!!this.host.setTabContextPermissionState);
     await this.host.setTabContextPermissionState(true);
-    await this.host.scrollTo(
-        {selector: {exactText: {text: 'Test Page'}}, highlight: true});
+    await this.host.scrollTo({
+      selector: {exactText: {text: 'Test Page'}},
+      highlight: true,
+      documentId: this.testParams.documentId,
+    });
   }
 
   async testScrollToFindsTextNoTabContextPermission() {
     assertTrue(!!this.host.scrollTo);
     try {
-      await this.host.scrollTo(
-          {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
+      await this.host.scrollTo({
+        selector: {exactText: {text: 'Abracadabra'}},
+        highlight: true,
+        documentId: this.testParams.documentId,
+      });
     } catch (e) {
       assertEquals(
           ScrollToErrorReason.TAB_CONTEXT_PERMISSION_DISABLED,
@@ -898,8 +904,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.closePanel);
     await this.closePanelAndWaitUntilInactive();
     try {
-      await this.host.scrollTo(
-          {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
+      await this.host.scrollTo({
+        selector: {exactText: {text: 'Abracadabra'}},
+        highlight: true,
+        documentId: this.testParams.documentId,
+      });
     } catch (e) {
       assertEquals(
           ScrollToErrorReason.NOT_SUPPORTED, (e as ScrollToError).reason);
@@ -913,8 +922,11 @@ class ApiTests extends ApiTestFixtureBase {
     assertTrue(!!this.host.setTabContextPermissionState);
     await this.host.setTabContextPermissionState(true);
     try {
-      await this.host.scrollTo(
-          {selector: {exactText: {text: 'Abracadabra'}}, highlight: true});
+      await this.host.scrollTo({
+        selector: {exactText: {text: 'Abracadabra'}},
+        highlight: true,
+        documentId: this.testParams.documentId,
+      });
     } catch (e) {
       assertEquals(
           ScrollToErrorReason.NO_MATCH_FOUND, (e as ScrollToError).reason);
