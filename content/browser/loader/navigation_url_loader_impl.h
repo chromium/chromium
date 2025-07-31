@@ -436,6 +436,12 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       //   `OnRequestRedirected()` until
       //   `NavigationURLLoaderImpl::FollowRedirect()` is called.
       kRedirect,
+
+      // Waiting for `NavigationLoaderInterceptor::MaybeCreateLoader()`.
+      // From `NavigationURLLoaderImpl::Restart()`
+      // Until `NavigationURLLoaderImpl::StartNonInterceptedRequest()` or
+      // `NavigationURLLoaderImpl::StartInterceptedRequest()`.
+      kInterceptor,
     };
     void OnExclusiveTaskStarted(ExclusiveTaskType exclusive_task_type);
     void OnExclusiveTaskCompleted(ExclusiveTaskType exclusive_task_type);

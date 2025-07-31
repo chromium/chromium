@@ -776,6 +776,8 @@ void NavigationURLLoaderImpl::Restart() {
   }
   received_response_ = false;
   head_update_params_ = ResponseHeadUpdateParams();
+  loader_holder_.OnExclusiveTaskStarted(
+      LoaderHolder::ExclusiveTaskType::kInterceptor);
   MaybeStartLoader(/*next_interceptor_index=*/0,
                    /*interceptor_result=*/std::nullopt);
 }
@@ -785,6 +787,11 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
     std::optional<NavigationLoaderInterceptor::Result> interceptor_result) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(started_);
+
+  if (loader_holder_.ShouldCancelExclusiveTask(
+          LoaderHolder::ExclusiveTaskType::kInterceptor)) {
+    return;
+  }
 
   if (interceptor_result) {
     subresource_loader_params_ =
@@ -827,6 +834,9 @@ void NavigationURLLoaderImpl::MaybeStartLoader(
 
 void NavigationURLLoaderImpl::StartInterceptedRequest(
     scoped_refptr<network::SharedURLLoaderFactory> single_request_factory) {
+  loader_holder_.OnExclusiveTaskCompleted(
+      LoaderHolder::ExclusiveTaskType::kInterceptor);
+
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> additional_throttles;
   // Intercepted requests need MimeSniffingThrottle to do mime sniffing.
   // Non-intercepted requests usually go through the regular network
@@ -1044,6 +1054,9 @@ bool NavigationURLLoaderImpl::LoaderHolder::receiver_is_bound_for_check()
 
 void NavigationURLLoaderImpl::StartNonInterceptedRequest(
     ResponseHeadUpdateParams head_update_params) {
+  loader_holder_.OnExclusiveTaskCompleted(
+      LoaderHolder::ExclusiveTaskType::kInterceptor);
+
   // If we already have the default `url_loader_` we must come here after a
   // redirect. No interceptors wanted to intercept the redirected request,
   // so let the loader just follow the redirect.

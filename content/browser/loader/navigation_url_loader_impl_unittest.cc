@@ -1082,12 +1082,9 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringAsyncInterceptor) {
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `1`, but currently the request continues after the interceptor is unblocked
-  // and receives a response.
-  delegate.WaitForResponseStarted();
+  task_environment_->RunUntilIdle();
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 // Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with an
@@ -1148,12 +1145,9 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringAsyncInterceptor) {
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `1`, but currently the request continues after the interceptor is unblocked
-  // and receives a response.
-  delegate.WaitForResponseStarted();
+  task_environment_->RunUntilIdle();
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 // Successful case with an async interceptor (redirected request).
@@ -1253,12 +1247,9 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringAsyncInterceptorForRedirect) {
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `1`, but currently the request continues after the interceptor is unblocked
-  // and receives a response.
-  delegate.WaitForResponseStarted();
+  task_environment_->RunUntilIdle();
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 // Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with an
@@ -1308,29 +1299,27 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringAsyncInterceptorForRedirect) {
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
-  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
-  // because `default_loader_used_` is true.
-  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+  // `MaybeCreateLoaderForResponse()` shouldn't be called during an exclusive
+  // task.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 0);
 
   // See Note [*2] above.
   response_interceptor_ptr->set_should_redirect(false);
 
-  // Wait for the redirect by `MaybeCreateLoaderForResponse()` is notified.
-  delegate.WaitForRequestRedirected();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Finish the async operation.
   async_interceptor_ptr->Unblock();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `0`, but currently the request continues after the interceptor is unblocked
-  // and receives a response.
-  delegate.WaitForResponseStarted();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
