@@ -61,6 +61,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
       const CreditCard& imported_credit_card) override;
   bool IsPaymentCvcStorageEnabled() override;
   bool IsSyncFeatureEnabledForPaymentsServerMetrics() const override;
+  bool IsAutofillBnplPrefEnabled() const override;
   CoreAccountInfo GetAccountInfoForPaymentsServer() const override;
 
   // Clears |local_credit_cards_| and |server_credit_cards_|.
@@ -86,6 +87,10 @@ class TestPaymentsDataManager : public PaymentsDataManager {
 
   void SetIsPaymentCvcStorageEnabled(bool enabled) {
     payments_cvc_storage_enabled_ = enabled;
+  }
+
+  void SetIsAutofillBnplPrefEnabled(bool enabled) {
+    autofill_bnpl_enabled_ = enabled;
   }
 
   // Adds a card to `server_credit_cards_`. This test class treats masked and
@@ -142,6 +147,7 @@ class TestPaymentsDataManager : public PaymentsDataManager {
   std::optional<bool> payments_wallet_sync_transport_enabled_;
   std::optional<bool> payment_methods_mandatory_reauth_enabled_;
   std::optional<bool> payments_cvc_storage_enabled_;
+  std::optional<bool> autofill_bnpl_enabled_;
   CoreAccountInfo account_info_;
   std::unique_ptr<TestAutofillImageFetcher> owned_image_fetcher_;
 };

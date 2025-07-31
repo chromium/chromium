@@ -1336,13 +1336,17 @@ sync_pb::PaymentInstrument CreatePaymentInstrumentWithLinkedBnplIssuer(
   return payment_instrument;
 }
 
-BnplIssuer GetTestLinkedBnplIssuer(autofill::BnplIssuer::IssuerId issuer_id) {
+BnplIssuer GetTestLinkedBnplIssuer(
+    autofill::BnplIssuer::IssuerId issuer_id,
+    DenseSet<PaymentInstrument::ActionRequired> action_required) {
   std::vector<BnplIssuer::EligiblePriceRange> eligible_price_ranges;
   // Currency: USD, price lower bound: $50, price upper bound: $200.
   eligible_price_ranges.emplace_back(/*currency=*/"USD",
                                      /*price_lower_bound=*/50'000'000,
                                      /*price_upper_bound=*/200'000'000);
-  return BnplIssuer(12345, issuer_id, std::move(eligible_price_ranges));
+  return BnplIssuer(
+      /*instrument_id=*/12345, issuer_id, std::move(eligible_price_ranges),
+      std::move(action_required));
 }
 
 BnplIssuer GetTestUnlinkedBnplIssuer() {
