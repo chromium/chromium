@@ -27,7 +27,7 @@ GaiaAuthFetcherIOS::~GaiaAuthFetcherIOS() {}
 void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
     const std::string& body,
     const std::string& body_content_type,
-    const std::string& headers,
+    const net::HttpRequestHeaders& headers,
     const GURL& gaia_gurl,
     network::mojom::CredentialsMode credentials_mode,
     const net::NetworkTrafficAnnotationTag& traffic_annotation) {
@@ -46,7 +46,7 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   }
 
   DVLOG(2) << "Gaia fetcher URL: " << gaia_gurl.spec();
-  DVLOG(2) << "Gaia fetcher headers: " << headers;
+  DVLOG(2) << "Gaia fetcher headers: " << headers.ToString();
   DVLOG(2) << "Gaia fetcher body: " << body;
 
   // The fetch requires cookies and WKWebView is being used. The only way to do
@@ -54,7 +54,8 @@ void GaiaAuthFetcherIOS::CreateAndStartGaiaFetcher(
   // WKWebView.
   SetPendingFetch(true);
   bool should_use_xml_http_request = IsMultiloginUrl(gaia_gurl);
-  bridge_->Fetch(gaia_gurl, headers, body, should_use_xml_http_request);
+  bridge_->Fetch(gaia_gurl, headers.ToString(), body,
+                 should_use_xml_http_request);
 }
 
 void GaiaAuthFetcherIOS::OnFetchComplete(const GURL& url,
