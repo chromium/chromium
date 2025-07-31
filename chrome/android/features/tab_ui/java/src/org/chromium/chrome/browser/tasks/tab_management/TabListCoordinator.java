@@ -318,14 +318,6 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                     (holder) -> {
                         int holderItemViewType = holder.getItemViewType();
 
-                        // TODO(crbug.com/40949143): Convert this logic block to a callback.
-                        // If a custom message card item type is present, ensure that all attached
-                        // child views are removed when the card is recycled.
-                        if (holderItemViewType == UiType.ARCHIVED_TABS_MESSAGE) {
-                            ArchivedTabsCardView view = (ArchivedTabsCardView) holder.itemView;
-                            view.removeAllViews();
-                        }
-
                         if (holderItemViewType != UiType.TAB
                                 || holderItemViewType != UiType.TAB_GROUP) {
                             return;
