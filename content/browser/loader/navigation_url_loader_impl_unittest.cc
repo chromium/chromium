@@ -734,12 +734,9 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringURLLoader) {
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `1`, but currently the request continues after `Start()` and receives a
-  // response.
-  delegate.WaitForResponseStarted();
+  task_environment_->RunUntilIdle();
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 // Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) while

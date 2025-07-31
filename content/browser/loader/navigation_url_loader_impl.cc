@@ -1423,6 +1423,9 @@ void NavigationURLLoaderImpl::OnComplete(
     }
   }
 
+  // Cancel all loading operations to avoid further URLLoaderClient calls.
+  loader_holder_.Reset();
+
   status_ = status;
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&NavigationURLLoaderImpl::NotifyRequestFailed,
