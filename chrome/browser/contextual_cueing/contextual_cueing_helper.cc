@@ -29,8 +29,10 @@
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
+#include "net/http/http_response_headers.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
+#include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
@@ -162,6 +164,20 @@ void ContextualCueingHelper::DidFinishNavigation(
   if (navigation_handle->IsErrorPage() ||
       !navigation_handle->ShouldUpdateHistory()) {
     return;
+  }
+
+  // If `blink::features::kVisitedLinksOnErrorNavigation` is enabled, then
+  // `navigation_handle->ShouldUpdateHistory()` will return true for committed
+  // 404 pages. In that case, we need to ignore such pages.
+  if (base::FeatureList::IsEnabled(
+          blink::features::kVisitedLinksOnErrorNavigation)) {
+    const int status_code =
+        navigation_handle->GetResponseHeaders()
+            ? navigation_handle->GetResponseHeaders()->response_code()
+            : 0;
+    if (status_code == 404) {
+      return;
+    }
   }
 
   // We have already initiated nudging sequence for the page. Do not report page

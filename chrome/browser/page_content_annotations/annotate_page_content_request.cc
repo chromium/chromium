@@ -18,9 +18,12 @@
 #include "components/pdf/common/constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/http/http_response_headers.h"
 #include "pdf/buildflags.h"
 #include "services/metrics/public/cpp/metrics_utils.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
+#include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(ENABLE_PDF)
 #include "components/pdf/browser/pdf_document_helper.h"
@@ -102,6 +105,25 @@ void AnnotatedPageContentRequest::DidFinishNavigation(
   // change in page state.
   if (!navigation_handle->ShouldUpdateHistory()) {
     return;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          blink::features::kVisitedLinksOnErrorNavigation)) {
+    // With the flag enabled, navigations with a 404 status code will be
+    // eligible for History. We want to ignore 404s. At this point, we should
+    // only be looking at committed same-document navigations. Same-document
+    // navigations have no network request and therefore no response code, so we
+    // should look at the response code for the request that brought us to the
+    // current document instead of the `NavigationHandle`.
+    const auto* document_response_head =
+        navigation_handle->GetRenderFrameHost()->GetLastResponseHead();
+    if (!document_response_head || !document_response_head->headers) {
+      return;
+    }
+    const int status_code = document_response_head->headers->response_code();
+    if (status_code == 404) {
+      return;
+    }
   }
 
   ResetForNewNavigation();

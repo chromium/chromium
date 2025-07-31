@@ -76,8 +76,10 @@ struct DidCommitProvisionalLoadParams {
   // [Native] enums are by default initialized to 0 (i.e. PAGE_TRANSITION_LINK)
   PageTransition transition;
 
-  // Set to false if we want to update the session history but not update
-  // the browser history.  E.g., on unreachable urls.
+  // Set to false if we want to update the session history but not update the
+  // browser history (e.g., on unreachable URLs). If the URL was reachable and
+  // `blink::features::kVisitedLinksOnErrorNavigation` is enabled, this param is
+  // set to `true` even if the navigation resulted in a 404 response code.
   bool should_update_history = false;
 
   // Contents MIME type of main frame.

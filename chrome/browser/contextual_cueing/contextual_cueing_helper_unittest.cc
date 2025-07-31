@@ -21,6 +21,9 @@
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
+#include "content/public/test/mock_navigation_handle.h"
+#include "content/public/test/navigation_simulator.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace contextual_cueing {
 namespace {
@@ -43,7 +46,7 @@ std::unique_ptr<KeyedService> CreatePageContentExtractionService(
 
 std::unique_ptr<KeyedService> CreateContextualCueingService(
     content::BrowserContext* context) {
-  return std::make_unique<MockContextualCueingService>();
+  return std::make_unique<testing::NiceMock<MockContextualCueingService>>();
 }
 
 class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
@@ -51,7 +54,7 @@ class ContextualCueingHelperTest : public ChromeRenderViewHostTestHarness {
   ContextualCueingHelperTest() {
     scoped_feature_list_.InitWithFeatures(
         {features::kGlic, features::kTabstripComboButton, kContextualCueing},
-        {});
+        {contextual_cueing::kGlicZeroStateSuggestions});
   }
 
   void SetUp() override {
@@ -94,6 +97,76 @@ TEST_F(ContextualCueingHelperTest, TabHelperStartsUp) {
       ContextualCueingHelper::FromWebContents(web_contents());
   EXPECT_NE(nullptr, contextual_cueing_helper);
 }
+
+class ContextualCueingHelperResponseCodeTest
+    : public ContextualCueingHelperTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  ContextualCueingHelperResponseCodeTest() {
+    std::vector<base::test::FeatureRef> enabled_features = {
+        features::kGlic, features::kTabstripComboButton, kContextualCueing};
+    std::vector<base::test::FeatureRef> disabled_features = {
+        contextual_cueing::kGlicZeroStateSuggestions};
+
+    const bool are_404_navigations_saved_to_history = GetParam();
+    if (are_404_navigations_saved_to_history) {
+      enabled_features.push_back(
+          blink::features::kVisitedLinksOnErrorNavigation);
+    } else {
+      disabled_features.push_back(
+          blink::features::kVisitedLinksOnErrorNavigation);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_P(ContextualCueingHelperResponseCodeTest, Committed404Page) {
+  ContextualCueingHelper::MaybeCreateForWebContents(web_contents());
+  auto* contextual_cueing_helper =
+      ContextualCueingHelper::FromWebContents(web_contents());
+  ASSERT_NE(contextual_cueing_helper, nullptr);
+  auto* mock_contextual_cueing_service =
+      static_cast<testing::NiceMock<MockContextualCueingService>*>(
+          ContextualCueingServiceFactory::GetForProfile(profile()));
+  ASSERT_NE(mock_contextual_cueing_service, nullptr);
+
+  // Navigate to a URL that returns a 404 with a body.
+  auto navigation_simulator =
+      content::NavigationSimulator::CreateBrowserInitiated(
+          GURL("http://www.foo.com/custom404"), web_contents());
+  navigation_simulator->Start();
+  std::string raw_response_headers = "HTTP/1.1 404 Not Found\r\n\r\n";
+  scoped_refptr<net::HttpResponseHeaders> response_headers =
+      net::HttpResponseHeaders::TryToCreate(raw_response_headers);
+  navigation_simulator->SetResponseHeaders(response_headers);
+  std::string response_body = "Not found, sorry";
+  mojo::ScopedDataPipeProducerHandle producer_handle;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(response_body.size(), producer_handle,
+                                 consumer_handle));
+  navigation_simulator->SetResponseBody(std::move(consumer_handle));
+  size_t actually_written_bytes = 0;
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer_handle->WriteData(base::as_byte_span(response_body),
+                                       MOJO_WRITE_DATA_FLAG_NONE,
+                                       actually_written_bytes));
+  EXPECT_EQ(actually_written_bytes, response_body.size());
+
+  // If 404 navigations are saved to history, we should filter them out. If they
+  // aren't saved to history, we still won't report it, because we only report
+  // page loads for navigations that are saved to history.
+  EXPECT_CALL(*mock_contextual_cueing_service, ReportPageLoad()).Times(0);
+  navigation_simulator->Commit();
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         ContextualCueingHelperResponseCodeTest,
+                         ::testing::Bool());
 
 #endif  // BUILDFLAG(ENABLE_GLIC)
 

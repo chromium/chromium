@@ -1587,12 +1587,16 @@ NavigationSimulatorImpl::BuildDidCommitProvisionalLoadParams(
 
   if (failed_navigation) {
     params->url_is_unreachable = true;
+    params->should_update_history = false;
   } else if (same_document) {
     params->should_update_history = true;
   } else {
     // TODO(crbug.com/40161149): Reconsider how we calculate
     // should_update_history.
-    params->should_update_history = response_headers_->response_code() != 404;
+    bool are_404_navigations_saved_in_history = base::FeatureList::IsEnabled(
+        blink::features::kVisitedLinksOnErrorNavigation);
+    params->should_update_history = are_404_navigations_saved_in_history ||
+                                    response_headers_->response_code() != 404;
   }
 
   // This mirrors the calculation in
