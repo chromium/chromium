@@ -49,6 +49,11 @@ constexpr auto kAllowedFillingSources = base::MakeFixedFlatSet<FillingSource>(
     {FillingSource::PASSWORD_FALLBACKS, FillingSource::CREDIT_CARD_FALLBACKS,
      FillingSource::ADDRESS_FALLBACKS});
 
+constexpr char
+    kUmaAccessoryActionSelectedForNonCredentialFieldWithoutSuggestions[] =
+        "KeyboardAccessory."
+        "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions";
+
 }  // namespace
 
 ManualFillingControllerImpl::~ManualFillingControllerImpl() {
@@ -178,6 +183,13 @@ void ManualFillingControllerImpl::Hide() {
 void ManualFillingControllerImpl::OnFillingTriggered(
     AccessoryTabType type,
     const autofill::AccessorySheetField& selection) {
+  bool is_non_credential_field_without_suggestions =
+      last_focused_field_type_ != FocusedFieldType::kFillableUsernameField &&
+      last_focused_field_type_ != FocusedFieldType::kFillablePasswordField &&
+      !available_sources_.contains(FillingSource::AUTOFILL);
+  UMA_HISTOGRAM_BOOLEAN(
+      kUmaAccessoryActionSelectedForNonCredentialFieldWithoutSuggestions,
+      is_non_credential_field_without_suggestions);
   AccessoryController* controller = GetControllerForTabType(type);
   if (!controller) {
     return;  // Controller not available anymore.
@@ -199,6 +211,13 @@ void ManualFillingControllerImpl::OnPasskeySelected(
 
 void ManualFillingControllerImpl::OnOptionSelected(
     AccessoryAction selected_action) const {
+  bool is_non_credential_field_without_suggestions =
+      last_focused_field_type_ != FocusedFieldType::kFillableUsernameField &&
+      last_focused_field_type_ != FocusedFieldType::kFillablePasswordField &&
+      !available_sources_.contains(FillingSource::AUTOFILL);
+  UMA_HISTOGRAM_BOOLEAN(
+      kUmaAccessoryActionSelectedForNonCredentialFieldWithoutSuggestions,
+      is_non_credential_field_without_suggestions);
   UMA_HISTOGRAM_ENUMERATION("KeyboardAccessory.AccessoryActionSelected",
                             selected_action, AccessoryAction::COUNT);
   AccessoryController* controller = GetControllerForAction(selected_action);

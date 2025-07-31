@@ -7,6 +7,7 @@
 #include <string>
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/autofill/manual_filling_view_interface.h"
 #include "chrome/browser/autofill/mock_manual_filling_view.h"
@@ -383,4 +384,122 @@ TEST_F(ManualFillingControllerTest,
                             IsCredentialFieldOrHasAutofillSuggestions(false)));
   controller()->UpdateSourceAvailability(FillingSource::PASSWORD_FALLBACKS,
                                          /*has_suggestions=*/true);
+}
+
+TEST_F(ManualFillingControllerTest, ForwardsFillingTriggeredToController) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  autofill::AccessorySheetField selected_field =
+      autofill::AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
+          .SetDisplayText(u"4111111111111111")
+          .SetSelectable(true)
+          .Build();
+  EXPECT_CALL(*view(), SwapSheetWithKeyboard());
+  EXPECT_CALL(mock_payment_method_controller_,
+              OnFillingTriggered(controller()->GetLastFocusedFieldId(),
+                                 selected_field));
+
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+}
+
+TEST_F(ManualFillingControllerTest, LogsHistogramOnFillingTriggered) {
+  base::HistogramTester histogram_tester;
+  // User selects non credential field that does not have autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  autofill::AccessorySheetField selected_field =
+      autofill::AccessorySheetField::Builder()
+          .SetSuggestionType(AccessorySuggestionType::kCreditCardNumber)
+          .SetDisplayText(u"4111111111111111")
+          .SetSelectable(true)
+          .Build();
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      true, 1);
+
+  // User selects non credential field that has autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 1);
+
+  // User selects a credential field.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+
+  controller()->OnFillingTriggered(AccessoryTabType::CREDIT_CARDS,
+                                   selected_field);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 2);
+}
+
+TEST_F(ManualFillingControllerTest, ForwardsOptionSelectedToController) {
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  EXPECT_CALL(mock_payment_method_controller_,
+              OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS));
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+}
+
+TEST_F(ManualFillingControllerTest, LogsHistogramOnOptionSelected) {
+  base::HistogramTester histogram_tester;
+  // User selects non credential field that does not have autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      true, 1);
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelected",
+      AccessoryAction::MANAGE_CREDIT_CARDS, 1);
+
+  // User selects non credential field that has autofill suggestions.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillableNonSearchField);
+  controller()->UpdateSourceAvailability(FillingSource::AUTOFILL,
+                                         /*has_suggestions=*/true);
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 1);
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelected",
+      AccessoryAction::MANAGE_CREDIT_CARDS, 2);
+
+  // User selects a credential field.
+  FocusFieldAndClearExpectations(FocusedFieldType::kFillablePasswordField);
+
+  controller()->OnOptionSelected(AccessoryAction::MANAGE_CREDIT_CARDS);
+
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions",
+      false, 2);
+  histogram_tester.ExpectBucketCount(
+      "KeyboardAccessory."
+      "AccessoryActionSelected",
+      AccessoryAction::MANAGE_CREDIT_CARDS, 3);
 }

@@ -182,6 +182,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="KeyboardAccessory.AccessoryActionSelectedForNonCredentialFieldWithoutSuggestions"
+    enum="BooleanYesNo" expires_after="2026-03-22">
+  <owner>luchenpeng@google.com</owner>
+  <owner>piotrkotynia@google.com</owner>
+  <summary>
+    Android only. Records if user selected a suggestion or action from manual
+    fallback sheet, and the field is not a username or password field and the
+    field has no autofill suggestions. This is used to analyze how many
+    interactions we would miss by suppressing KA on large form factors for non
+    credential fields and fields without autofill suggestions.
+  </summary>
+</histogram>
+
 <histogram name="KeyboardAccessory.AccessorySheetTriggered{AccessorySheetType}"
     enum="AccessorySheetTrigger" expires_after="2025-12-14">
   <owner>friedrichh@chromium.org</owner>
