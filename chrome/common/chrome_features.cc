@@ -364,7 +364,7 @@ const char kGlicActorUiHandoffButtonName[] = "glic-actor-ui-handoff-button";
 
 // Controls whether the task icon in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiTaskIcon{
-    &kGlicActorUi, kGlicActorUiTaskIconName, false};
+    &kGlicActorUi, kGlicActorUiTaskIconName, true};
 // Controls whether the Actor Overlay in the actor ui is enabled.
 const base::FeatureParam<bool> kGlicActorUiOverlay{
     &kGlicActorUi, kGlicActorUiOverlayName, false};
