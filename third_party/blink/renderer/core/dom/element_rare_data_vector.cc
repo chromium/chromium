@@ -539,6 +539,17 @@ void ElementRareDataVector::SetCustomElementRegistry(CustomElementRegistry* regi
   SetField(FieldId::kCustomElementRegistry, registry);
 }
 
+ElementAnimationTriggerData* ElementRareDataVector::AnimationTriggerData() {
+  return static_cast<ElementAnimationTriggerData*>(
+      GetField(FieldId::kAnimationTriggerData));
+}
+
+ElementAnimationTriggerData&
+ElementRareDataVector::EnsureAnimationTriggerData() {
+  return EnsureField<ElementAnimationTriggerData>(
+      FieldId::kAnimationTriggerData);
+}
+
 void ElementRareDataVector::IncrementImplicitlyAnchoredElementCount() {
   EnsureWrappedField<wtf_size_t>(FieldId::kImplicitlyAnchoredElementCount)++;
 }

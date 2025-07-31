@@ -472,6 +472,14 @@ void AnimationTrigger::removeAnimation(Animation* animation) {
   }
 }
 
+void AnimationTrigger::RemoveAnimations() {
+  HeapHashSet<WeakMember<Animation>> animations;
+  animations_.swap(animations);
+  for (Animation* animation : animations) {
+    removeAnimation(animation);
+  }
+}
+
 void AnimationTrigger::UpdateAnimations(
     AnimationTrigger::UpdateType update_type) {
   DCHECK_NE(update_type, UpdateType::kNone);
