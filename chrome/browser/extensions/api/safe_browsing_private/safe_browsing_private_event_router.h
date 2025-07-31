@@ -154,6 +154,7 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const std::string& mime_type,
       const std::string& trigger,
       const std::string& source_active_user_email,
+      const std::string& content_area_account_email,
       const data_controls::Verdict::TriggeredRules& triggered_rules,
       enterprise_connectors::EventResult event_result,
       int64_t content_size);

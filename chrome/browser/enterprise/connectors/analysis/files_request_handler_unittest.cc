@@ -206,6 +206,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
     return {};
   }
 
+  content::WebContents* web_contents() const override { return nullptr; }
+
  private:
   const raw_ref<const enterprise_connectors::AnalysisSettings> settings_;
   int user_action_requests_count_ = 0;

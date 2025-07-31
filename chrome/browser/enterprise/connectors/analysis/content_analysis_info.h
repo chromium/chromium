@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_ANALYSIS_CONTENT_ANALYSIS_INFO_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/binary_upload_service.h"
 #include "components/enterprise/connectors/core/content_analysis_info_base.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
@@ -20,6 +21,11 @@ namespace enterprise_connectors {
 // Implementation of `ContentAnalysisInfoBase` for chrome/ platforms.
 class ContentAnalysisInfo : public ContentAnalysisInfoBase {
  public:
+  // Returns the web contents associated to the user action. This can return
+  // nullptr, for example in cases where the tab is closed after the content
+  // analysis triggering action has happened.
+  virtual content::WebContents* web_contents() const = 0;
+
   // Adds shared fields to `request` before sending it to the binary upload
   // service. Connector-specific fields need to be added to the request
   // separately.
@@ -39,7 +45,11 @@ class ContentAnalysisInfo : public ContentAnalysisInfoBase {
 // implemented.
 class ContentAreaUserProvider : public ContentAnalysisInfo {
  public:
-  static std::string GetUser(Profile* profile, const GURL& tab_url);
+  static std::string GetUser(Profile* profile,
+                             content::WebContents* web_contents,
+                             const GURL& tab_url);
+
+  ~ContentAreaUserProvider();
 
  private:
   const AnalysisSettings& settings() const override;
@@ -55,11 +65,14 @@ class ContentAreaUserProvider : public ContentAnalysisInfo {
   referrer_chain() const override;
   google::protobuf::RepeatedPtrField<std::string> frame_url_chain()
       const override;
+  content::WebContents* web_contents() const override;
 
   explicit ContentAreaUserProvider(signin::IdentityManager* im,
+                                   content::WebContents* web_contents,
                                    const GURL& tab_url);
 
   raw_ptr<signin::IdentityManager> im_;
+  base::WeakPtr<content::WebContents> web_contents_;
   raw_ref<const GURL> tab_url_;
 };
 
@@ -69,11 +82,13 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
  public:
   explicit DownloadContentAreaUserProvider(
       const download::DownloadItem& download_item);
+  ~DownloadContentAreaUserProvider();
 
   // ContentAnalysisInfo:
   const GURL& url() const override;
   const GURL& tab_url() const override;
   signin::IdentityManager* identity_manager() const override;
+  content::WebContents* web_contents() const override;
 
  private:
   // ContentAnalysisInfo:
@@ -91,6 +106,7 @@ class DownloadContentAreaUserProvider : public ContentAnalysisInfo {
   GURL url_;
   GURL tab_url_;
   raw_ptr<signin::IdentityManager> im_;
+  base::WeakPtr<content::WebContents> web_contents_;
 };
 
 }  // namespace enterprise_connectors

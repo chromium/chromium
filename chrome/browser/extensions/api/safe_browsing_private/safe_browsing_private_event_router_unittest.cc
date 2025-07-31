@@ -211,8 +211,9 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnDataControlsSensitiveDataEvent(
             GURL(kUrl), GURL(kTabUrl), kSource, kDestination, "text/plain",
             enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
-            "active_user@gmail.com", triggered_rules,
-            enterprise_connectors::EventResult::BLOCKED, 12345);
+            "source_active_user@gmail.com", "active_user@gmail.com",
+            triggered_rules, enterprise_connectors::EventResult::BLOCKED,
+            12345);
   }
 #endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
@@ -894,7 +895,10 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
                 enterprise_connectors::EventResult::BLOCKED));
   EXPECT_EQ(*event->FindString(
                 enterprise_connectors::kKeySourceWebAppSignedInAccount),
-            "active_user@gmail.com");
+            "source_active_user@gmail.com");
+  EXPECT_EQ(
+      *event->FindString(enterprise_connectors::kKeyWebAppSignedInAccount),
+      "active_user@gmail.com");
 
   const base::Value::List* triggered_rule_info =
       event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);

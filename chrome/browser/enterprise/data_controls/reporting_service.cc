@@ -4,6 +4,7 @@
 
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 
+#include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
 #include "chrome/browser/enterprise/data_protection/content_area_user_provider.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
@@ -238,6 +239,7 @@ void ReportingService::ReportCopyOrPaste(
   GURL url;
   std::string destination_string;
   std::string source_string;
+  content::WebContents* web_contents = nullptr;
   if (trigger ==
       enterprise_connectors::kWebContentUploadDataTransferEventTrigger) {
     DCHECK(destination.has_value());
@@ -246,6 +248,7 @@ void ReportingService::ReportCopyOrPaste(
     destination_string = url.spec();
     source_string = GetClipboardSourceString(source, *destination,
                                              kDataControlsRulesScopePref);
+    web_contents = destination->web_contents();
   } else {
     DCHECK_EQ(trigger,
               enterprise_connectors::kClipboardCopyDataTransferEventTrigger);
@@ -253,6 +256,7 @@ void ReportingService::ReportCopyOrPaste(
 
     url = GetURL(source);
     source_string = GetURL(source).spec();
+    web_contents = source.web_contents();
   }
 
   router->OnDataControlsSensitiveDataEvent(
@@ -264,6 +268,9 @@ void ReportingService::ReportCopyOrPaste(
       /*trigger=*/trigger,
       /*source_active_user_email=*/
       enterprise_data_protection::GetActiveContentAreaUser(source),
+      /*content_area_account_email=*/
+      enterprise_connectors::ContentAreaUserProvider::GetUser(
+          &profile_.get(), web_contents, url),
       /*triggered_rules=*/verdict.triggered_rules(),
       /*event_result=*/event_result,
       /*content_size=*/metadata.size.value_or(-1));

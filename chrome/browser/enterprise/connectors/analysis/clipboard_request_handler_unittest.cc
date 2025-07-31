@@ -99,6 +99,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
     return {};
   }
 
+  content::WebContents* web_contents() const override { return nullptr; }
+
  private:
   GURL tab_url_{kUrl};
   AnalysisSettings settings_;

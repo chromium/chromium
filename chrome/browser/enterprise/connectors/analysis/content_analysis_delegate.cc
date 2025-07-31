@@ -502,8 +502,9 @@ ContentAnalysisDelegate::ContentAnalysisDelegate(
     : data_(std::move(data)),
       tab_id_(sessions::SessionTabHelper::IdForTab(web_contents)),
       callback_(std::move(callback)),
-      access_point_(access_point) {
-  DCHECK(web_contents);
+      access_point_(access_point),
+      web_contents_(web_contents->GetWeakPtr()) {
+  CHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
   url_ = web_contents->GetLastCommittedURL();
   if (base::FeatureList::IsEnabled(kEnterpriseIframeDlpRulesSupport)) {
@@ -1027,6 +1028,10 @@ ContentAnalysisDelegate::referrer_chain() const {
 google::protobuf::RepeatedPtrField<std::string>
 ContentAnalysisDelegate::frame_url_chain() const {
   return frame_url_chain_;
+}
+
+content::WebContents* ContentAnalysisDelegate::web_contents() const {
+  return web_contents_.get();
 }
 
 }  // namespace enterprise_connectors

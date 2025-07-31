@@ -473,6 +473,10 @@ FileTransferAnalysisDelegate::frame_url_chain() const {
   return {};
 }
 
+content::WebContents* FileTransferAnalysisDelegate::web_contents() const {
+  return nullptr;
+}
+
 void FileTransferAnalysisDelegate::OnGotFileURLs(
     std::vector<storage::FileSystemURL> scanning_urls) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

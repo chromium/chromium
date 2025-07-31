@@ -238,6 +238,10 @@ DownloadItemMetadata::CollectFrameUrls() const {
       enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
 }
 
+content::WebContents* DownloadItemMetadata::web_contents() const {
+  return content::DownloadItemUtils::GetOriginalWebContents(item_.get());
+}
+
 base::WeakPtr<DownloadItemMetadata> DownloadItemMetadata::GetWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }

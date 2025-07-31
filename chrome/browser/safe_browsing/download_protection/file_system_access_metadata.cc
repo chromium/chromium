@@ -164,6 +164,10 @@ FileSystemAccessMetadata::CollectFrameUrls() const {
       enterprise_connectors::DeepScanAccessPoint::DOWNLOAD);
 }
 
+content::WebContents* FileSystemAccessMetadata::web_contents() const {
+  return item_->web_contents.get();
+}
+
 base::WeakPtr<FileSystemAccessMetadata> FileSystemAccessMetadata::GetWeakPtr() {
   return weakptr_factory_.GetWeakPtr();
 }

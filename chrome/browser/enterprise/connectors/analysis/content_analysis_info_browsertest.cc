@@ -165,7 +165,8 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest, GetActiveUser) {
   active_user_test_mixin_->SetFakeCookieValue();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
   ASSERT_EQ(expected_active_email(),
-            ContentAreaUserProvider::GetUser(browser()->profile(), url()));
+            ContentAreaUserProvider::GetUser(browser()->profile(),
+                                             /*web_contents=*/nullptr, url()));
 }
 
 INSTANTIATE_TEST_SUITE_P(,
@@ -176,8 +177,9 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailFeatureDisabledBrowserTest,
                        GetActiveUser) {
   active_user_test_mixin_->SetFakeCookieValue();
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url()));
-  ASSERT_TRUE(
-      ContentAreaUserProvider::GetUser(browser()->profile(), url()).empty());
+  ASSERT_TRUE(ContentAreaUserProvider::GetUser(browser()->profile(),
+                                               /*web_contents=*/nullptr, url())
+                  .empty());
 }
 
 INSTANTIATE_TEST_SUITE_P(,

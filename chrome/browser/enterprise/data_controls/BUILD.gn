@@ -62,8 +62,10 @@ source_set("data_controls") {
     ]
     if (safe_browsing_mode != 0) {
       sources += [
-        "reporting_service.cc",
-        "reporting_service.h",
+        # TODO(crbug.com/435459809): Uncomment these lines to compile these
+        # files in the proper long-term target.
+        # "reporting_service.cc",
+        # "reporting_service.h",
       ]
     }
     deps += [

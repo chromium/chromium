@@ -775,6 +775,10 @@ DeepScanningRequest::frame_url_chain() const {
   return metadata_->CollectFrameUrls();
 }
 
+content::WebContents* DeepScanningRequest::web_contents() const {
+  return metadata_->web_contents();
+}
+
 void DeepScanningRequest::MaybeFinishRequest(DownloadCheckResult result) {
   download_check_result_ =
       GetHighestPrecedenceResult(download_check_result_, result);

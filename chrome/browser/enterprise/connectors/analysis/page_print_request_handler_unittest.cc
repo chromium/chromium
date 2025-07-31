@@ -96,6 +96,8 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
     return {};
   }
 
+  content::WebContents* web_contents() const override { return nullptr; }
+
  private:
   GURL url_{kUrl};
   GURL tab_url_{kTabUrl};
