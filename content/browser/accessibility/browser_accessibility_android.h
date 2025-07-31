@@ -270,6 +270,10 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid
   // manager to the web_contents_accessibility_android JNI.
   std::u16string GenerateAccessibilityNodeInfoString() const;
 
+  // Used to determine paint order to see in what order nodes are drawn.
+  // Used by Android XR.
+  int GetPaintOrder() const;
+
  protected:
   BrowserAccessibilityAndroid(ui::BrowserAccessibilityManager* manager,
                               ui::AXNode* node);

@@ -10,8 +10,10 @@
 #include "base/system/sys_info.h"
 #include "cc/base/switches.h"
 #include "components/input/switches.h"
+#include "content/common/features.h"
 #include "content/public/browser/android/compositor.h"
 #include "content/public/common/content_switches.h"
+#include "device/vr/public/cpp/features.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "third_party/blink/public/common/switches.h"
 #include "ui/base/ui_base_switches.h"
@@ -55,6 +57,11 @@ void SetContentCommandLineFlags(bool single_process) {
 
   // Disable anti-aliasing.
   parsed_command_line->AppendSwitch(switches::kDisableCompositedAntialiasing);
+
+  if (device::features::IsXrDevice()) {
+    parsed_command_line->AppendSwitchASCII(switches::kEnableFeatures,
+                                           "XrDevice");
+  }
 }
 
 }  // namespace content

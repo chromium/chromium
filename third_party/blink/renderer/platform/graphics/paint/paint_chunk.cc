@@ -55,6 +55,9 @@ size_t PaintChunk::MemoryUsageInBytes() const {
     total_size += sizeof(*hit_test_data);
     total_size += hit_test_data->touch_action_rects.CapacityInBytes();
     total_size += hit_test_data->wheel_event_rects.CapacityInBytes();
+#if BUILDFLAG(IS_ANDROID)
+    total_size += hit_test_data->xr_regions.CapacityInBytes();
+#endif
   }
   if (region_capture_data) {
     total_size += sizeof(*region_capture_data);

@@ -2828,6 +2828,10 @@ BASE_FEATURE(kWorkerThreadRespectTermRequest,
              "WorkerThreadRespectTermRequest",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Indicates that renderer is running on an Android XR (AR/VR) device.
+// Enables certain features which are not needed on other platforms.
+BASE_FEATURE(kXrDevice, "XrDevice", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When adding new features or constants for features, please keep the features
 // sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
 // that feature grouped with the associated feature.
@@ -2882,6 +2886,10 @@ bool IsKeepAliveURLLoaderServiceEnabled() {
 bool IsLinkPreviewTriggerTypeEnabled(LinkPreviewTriggerType type) {
   return base::FeatureList::IsEnabled(blink::features::kLinkPreview) &&
          type == blink::features::kLinkPreviewTriggerType.Get();
+}
+
+bool IsXrDevice() {
+  return base::FeatureList::IsEnabled(blink::features::kXrDevice);
 }
 
 // DO NOT ADD NEW FEATURES HERE.

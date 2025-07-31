@@ -365,7 +365,9 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   int GetLocationSerializationDelay();
 
   // Called during the accessibility lifecycle to refresh the AX tree.
-  void CommitAXUpdates(Document&, bool force) override;
+  bool CommitAXUpdates(Document&, bool force) override;
+
+  void SerializeAXUpdatesIfNeeded(Document&) override;
 
   // Called when a HTMLFrameOwnerElement (such as an iframe element) changes the
   // embedding token of its child frame.
@@ -885,6 +887,8 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   bool IsMainDocumentDirty() const;
   bool IsPopupDocumentDirty() const;
 
+  bool CommitAndSerializeAXUpdates(Document&, bool force);
+
   // Returns true if the AXID is for a DOM node.
   // All other AXIDs are generated.
   bool IsDOMNodeID(AXID axid) { return axid > 0; }
@@ -1177,6 +1181,13 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
 
   void IncrementGenerationalCacheId() { ++generational_cache_id_; }
 
+  // These methods help compute paint orders for AXObjects
+#if BUILDFLAG(IS_ANDROID)
+  void ComputeXrHitTestOrder(
+      HashMap<DOMNodeId, int>& dom_node_hit_test_order_map) override;
+  void ApplyXrHitTestOrder(const HashMap<DOMNodeId, int>& order_map) override;
+#endif
+
   // Queued callbacks.
   TreeUpdateCallbackQueue tree_update_callback_queue_main_;
   TreeUpdateCallbackQueue tree_update_callback_queue_popup_;
@@ -1298,7 +1309,16 @@ class MODULES_EXPORT AXObjectCacheImpl : public AXObjectCacheBase {
   // Make sure the next serialization sends everything.
   bool mark_all_dirty_ = false;
 
+  // Helper for ComputeXrHitTestOrder, walks over all elements in a layer
+  // and assigns sequential increasing paint order values to them.
+  static void AddLayerXrHitTestEntries(const cc::Layer* layer,
+                                       HashMap<DOMNodeId, int>& order_map);
+
   mutable bool has_axid_generator_looped_ = false;
+
+  // Set to true when CommitAXUpdates() runs with no early return. Set to false
+  // once the updates are serialized via SerializeUpdatesIfNeeded.
+  bool needs_serialization_ = false;
 
   // These maps get cleared when the tree is thawed. Contains the data used to
   // compute Next|PreviousOnLineId attributes.

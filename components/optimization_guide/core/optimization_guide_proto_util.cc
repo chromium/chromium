@@ -292,6 +292,8 @@ optimization_guide::proto::AXIntAttribute IntAttributeToProto(
           AX_IA_ARIANOTIFICATIONPRIORITYDEPRECATED;
     case ax::mojom::IntAttribute::kMaxLength:
       return optimization_guide::proto::AXIntAttribute::AX_IA_MAXLENGTH;
+    case ax::mojom::IntAttribute::kPaintOrder:
+      return optimization_guide::proto::AXIntAttribute::AX_IA_PAINTORDER;
   }
 }
 

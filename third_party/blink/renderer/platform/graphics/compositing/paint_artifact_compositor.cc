@@ -1340,6 +1340,7 @@ void PaintArtifactCompositor::UpdateDebugInfo() const {
       tracking->AddToLayerDebugInfo(debug_info);
       tracking->ClearInvalidations();
     }
+
     previous_layer_state = pending_layer.GetPropertyTreeState();
   }
 }

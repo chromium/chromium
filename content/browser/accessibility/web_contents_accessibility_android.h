@@ -301,6 +301,9 @@ class CONTENT_EXPORT WebContentsAccessibilityAndroid
                         jint unique_id,
                         jboolean has_sent_previous_request);
 
+  // Get the paint order for a given node.
+  jint GetPaintOrder(JNIEnv* env, jint unique_id);
+
   void UpdateFrameInfo(float page_scale);
 
   // Set a new max for TYPE_WINDOW_CONTENT_CHANGED events to fire.
