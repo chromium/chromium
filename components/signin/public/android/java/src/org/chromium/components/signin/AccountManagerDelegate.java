@@ -22,10 +22,12 @@ import org.chromium.google_apis.gaia.GaiaId;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- * Abstraction of account management implementation.
- * Provides methods for getting accounts and managing auth tokens.
+ * Abstraction of account management implementation. Provides methods for getting accounts and
+ * managing auth tokens.
  */
 @NullMarked
 public interface AccountManagerDelegate {
@@ -125,4 +127,45 @@ public interface AccountManagerDelegate {
      */
     void confirmCredentials(
             Account account, @Nullable Activity activity, Callback<@Nullable Bundle> callback);
+
+    /**
+     * Get all the accounts on device synchronously.
+     *
+     * <p>TODO(crbug.com/429143376): This method is currently a no-op and will be implemented in
+     * following Cls.
+     *
+     * @return A list of accounts available on the device.
+     */
+    @WorkerThread
+    default List<PlatformAccount> getPlatformAccountsSynchronous()
+            throws AccountManagerDelegateException {
+        return new ArrayList<>();
+    }
+
+    /**
+     * Get an auth token.
+     *
+     * <p>TODO(crbug.com/429143376): This method is currently a no-op and will be implemented in
+     * following Cls.
+     *
+     * @param platformAccount The {@link PlatformAccount} for which the auth token is requested.
+     * @param authTokenScopes The scopes of the authToken being requested.
+     * @return The access token data fetched from the authenticator.
+     */
+    @WorkerThread
+    default AccessTokenData getAccessTokenForPlatformAccount(
+            PlatformAccount platformAccount, String authTokenScopes) throws AuthException {
+        return new AccessTokenData("");
+    }
+
+    /**
+     * Invalidates access token for specified token.
+     *
+     * <p>TODO(crbug.com/429143376): This method is currently a no-op and will be implemented in
+     * following Cls.
+     *
+     * @param authToken The auth token to invalidate.
+     */
+    @WorkerThread
+    default void invalidateAccessTokenForPlatformAccount(String authToken) throws AuthException {}
 }
