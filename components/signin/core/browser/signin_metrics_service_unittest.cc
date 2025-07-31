@@ -6,6 +6,7 @@
 
 #include "base/json/values_util.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/testing_pref_service.h"
@@ -84,9 +85,14 @@ class SigninMetricsServiceTest : public ::testing::Test {
 
   void Signout() { identity_test_environment_.ClearPrimaryAccount(); }
 
-  void EnableSync(const std::string& email) {
-    identity_test_environment_.MakePrimaryAccountAvailable(
-        email, signin::ConsentLevel::kSync);
+  void EnableSync(const std::string& email,
+                  signin_metrics::AccessPoint access_point =
+                      signin_metrics::AccessPoint::kSettings) {
+    identity_test_environment_.MakeAccountAvailable(
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSync)
+            .WithAccessPoint(access_point)
+            .Build(email));
   }
 
   AccountInfo WebSignin(const std::string& email) {
@@ -758,4 +764,48 @@ TEST_F(SigninMetricsServiceTest, ErrorNotificationEmptyAccount) {
               base::HistogramTester::CountsMap());
   EXPECT_THAT(histogram_tester.GetTotalCountsForPrefix("Signin.SyncPaused"),
               base::HistogramTester::CountsMap());
+}
+
+TEST_F(SigninMetricsServiceTest, HistorySyncPromoMetricLogging) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list{
+      switches::kAvatarButtonSyncPromoForTesting};
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  AccountInfo account = Signin(email);
+  SigninPrefs signin_prefs(pref_service());
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+  signin_prefs.IncrementSyncPromoIdentityPillShownCount(account.gaia);
+
+  EnableSync(
+      email,
+      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
+      signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia), 1);
+}
+
+TEST_F(SigninMetricsServiceTest,
+       HistorySyncPromoMetricLoggingWithSyncPromoOff) {
+  base::HistogramTester histogram_tester;
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      switches::kAvatarButtonSyncPromoForTesting);
+
+  CreateSigninMetricsService();
+
+  const std::string email("test@gmail.com");
+  AccountInfo account = Signin(email);
+  SigninPrefs signin_prefs(pref_service());
+  signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(account.gaia);
+  signin_prefs.IncrementHistorySyncPromoIdentityPillShownCount(account.gaia);
+
+  EnableSync(
+      email,
+      signin_metrics::AccessPoint::kHistorySyncOptinExpansionPillOnStartup);
+  histogram_tester.ExpectBucketCount(
+      "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
+      signin_prefs.GetHistorySyncPromoIdentityPillShownCount(account.gaia), 1);
 }

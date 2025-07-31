@@ -3299,6 +3299,18 @@ kept as long as profile signout is possible -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SyncOptIn.IdentityPill.SyncAtShowCount"
+    units="ShowCount" expires_after="2026-01-12">
+  <owner>ernn@google.com</owner>
+  <owner>rsult@google.com</owner>
+  <owner>chrome-signin-team-desktop@google.com</owner>
+  <summary>
+    Records the count at which the Sync promo on the Identity Pill was shown
+    when the user has successfuly intereacted with it (E.g. successfully turned
+    sync). Recorded when that interaction was succesfully made.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SyncOptIn.Offered" enum="SigninAccessPoint"
     expires_after="2026-01-12">
   <owner>ernn@google.com</owner>

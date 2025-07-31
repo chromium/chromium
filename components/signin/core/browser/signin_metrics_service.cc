@@ -308,8 +308,31 @@ void SigninMetricsService::OnPrimaryAccountChanged(
 
   switch (event_details.GetEventTypeFor(signin::ConsentLevel::kSync)) {
     case signin::PrimaryAccountChangeEvent::Type::kNone:
-    case signin::PrimaryAccountChangeEvent::Type::kSet:
       break;
+    case signin::PrimaryAccountChangeEvent::Type::kSet: {
+      std::optional<signin_metrics::AccessPoint> access_point =
+          event_details.GetSetPrimaryAccountAccessPoint();
+      CHECK(access_point.has_value());
+      if (access_point == signin_metrics::AccessPoint::
+                              kHistorySyncOptinExpansionPillOnStartup ||
+          access_point == signin_metrics::AccessPoint::
+                              kHistorySyncOptinExpansionPillOnInactivity) {
+        SigninPrefs signin_prefs(pref_service_.get());
+        const CoreAccountInfo& account =
+            event_details.GetCurrentState().primary_account;
+        base::UmaHistogramExactLinear(
+            "Signin.SyncOptIn.IdentityPill.SyncAtShowCount",
+            switches::IsAvatarSyncPromoFeatureEnabled()
+                ? signin_prefs.GetSyncPromoIdentityPillShownCount(account.gaia)
+                : signin_prefs.GetHistorySyncPromoIdentityPillShownCount(
+                      account.gaia),
+            // Arbitrary number that is higher than the possible show count that
+            // the promo can reach
+            // (`user_education::features::GetNewBadgeShowCount()`: 10).
+            /*exclusive_max=*/30);
+      }
+      break;
+    }
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       if (pref_service_->HasPrefPath(kSyncPausedStartTimePref)) {
         RecordPendingResolutionTime(
