@@ -7950,8 +7950,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_TRUE(web_request_api);
 
   // Listen to "will_receive" message from the extension.
-  ExtensionTestMessageListener will_receive_listener("will_receive",
-                                                     ReplyBehavior::kWillReply);
+  ExtensionTestMessageListener will_receive_listener(
+      "will_receive",
+      feature_enabled ? ReplyBehavior::kWillReply : ReplyBehavior::kWontReply);
   // Listen to the completion of the registration storage.
   service_worker_test_utils::TestServiceWorkerContextObserver
       registration_observer(profile());
