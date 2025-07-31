@@ -307,7 +307,7 @@ void TextPaintTimingDetector::AssignPaintTimeToQueuedRecords(
       continue;
     }
     record->SetPaintTime(timestamp, paint_timing_info);
-    if (can_report_timing && record->IsNeededForTiming()) {
+    if (can_report_timing && record->IsNeededForElementTiming()) {
       text_element_timing_->OnTextObjectPainted(*record, paint_timing_info);
     }
 

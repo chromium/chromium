@@ -89,17 +89,19 @@ class CORE_EXPORT TextRecord final : public PaintTimingRecord {
              const gfx::Rect& frame_visual_rect,
              const gfx::RectF& root_visual_rect,
              uint32_t frame_index,
-             bool is_needed_for_timing,
+             bool is_needed_for_element_timing,
              SoftNavigationContext* soft_navigation_context);
 
   bool IsTextRecord() const override { return true; }
 
   const gfx::RectF& ElementTimingRect() const { return element_timing_rect_; }
-  bool IsNeededForTiming() const { return is_needed_for_timing_; }
+  bool IsNeededForElementTiming() const {
+    return is_needed_for_element_timing_;
+  }
 
  private:
   const gfx::RectF element_timing_rect_;
-  const bool is_needed_for_timing_;
+  const bool is_needed_for_element_timing_;
 };
 
 // TODO(yoav): Rename all mentions of "image" to "media"

@@ -55,7 +55,7 @@ TextRecord::TextRecord(Node* node,
                        const gfx::Rect& frame_visual_rect,
                        const gfx::RectF& root_visual_rect,
                        uint32_t frame_index,
-                       bool is_needed_for_timing,
+                       bool is_needed_for_element_timing,
                        SoftNavigationContext* soft_navigation_context)
     : PaintTimingRecord(node,
                         new_recorded_size,
@@ -63,7 +63,7 @@ TextRecord::TextRecord(Node* node,
                         root_visual_rect,
                         soft_navigation_context),
       element_timing_rect_(element_timing_rect),
-      is_needed_for_timing_(is_needed_for_timing) {}
+      is_needed_for_element_timing_(is_needed_for_element_timing) {}
 
 ImageRecord::ImageRecord(Node* node,
                          const MediaTiming* new_media_timing,

@@ -68,7 +68,7 @@ bool TextElementTiming::CanReportElements() {
 void TextElementTiming::OnTextObjectPainted(
     const TextRecord& record,
     const DOMPaintTimingInfo& paint_timing_info) {
-  DCHECK(record.IsNeededForTiming());
+  DCHECK(record.IsNeededForElementTiming());
   Node* node = record.GetNode();
 
   // Text aggregators need to be Elements. This will not be the case if the
