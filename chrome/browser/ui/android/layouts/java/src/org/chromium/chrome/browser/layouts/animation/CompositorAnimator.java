@@ -456,6 +456,17 @@ public class CompositorAnimator extends Animator {
         mTimeSinceStartMs = 0;
 
         for (AnimatorListener listener : mListeners) listener.onAnimationStart(this);
+
+        // If in testing mode, #registerAndStartAnimator will finish the animation, meaning we don't
+        // need to set the initial values.
+        if (mAnimationState == AnimationState.ENDED) return;
+
+        // Immediately set to the initial value, since otherwise, this wouldn't occur until the next
+        // compositor update.
+        mAnimatedFraction = 0f;
+        for (AnimatorUpdateListener listener : mAnimatorUpdateListeners) {
+            listener.onAnimationUpdate(this);
+        }
     }
 
     @Override

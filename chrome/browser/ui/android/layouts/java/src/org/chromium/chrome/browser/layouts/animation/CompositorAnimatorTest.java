@@ -380,6 +380,12 @@ public final class CompositorAnimatorTest {
                 0f,
                 mUpdateListener.mLastAnimatedFraction,
                 MathUtils.EPSILON);
+        // We push one update in #start() to ensure the properties are immediately updated to their
+        // initial values
+        assertEquals(
+                "The update event count is incorrect.",
+                1,
+                mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(10);
         assertEquals(
@@ -389,7 +395,7 @@ public final class CompositorAnimatorTest {
                 MathUtils.EPSILON);
         assertEquals(
                 "The update event count is incorrect.",
-                1,
+                2,
                 mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(80);
@@ -400,7 +406,7 @@ public final class CompositorAnimatorTest {
                 MathUtils.EPSILON);
         assertEquals(
                 "The update event count is incorrect.",
-                2,
+                3,
                 mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(10);
@@ -411,7 +417,7 @@ public final class CompositorAnimatorTest {
                 MathUtils.EPSILON);
         assertEquals(
                 "The update event count is incorrect.",
-                3,
+                4,
                 mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         assertEquals(
@@ -439,6 +445,12 @@ public final class CompositorAnimatorTest {
                 0f,
                 mUpdateListener.mLastAnimatedFraction,
                 MathUtils.EPSILON);
+        // We push one update in #start() to ensure the properties are immediately updated to their
+        // initial values
+        assertEquals(
+                "The update event count is incorrect.",
+                1,
+                mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(10);
         assertEquals(
@@ -448,7 +460,7 @@ public final class CompositorAnimatorTest {
                 MathUtils.EPSILON);
         assertEquals(
                 "The update event count is incorrect.",
-                1,
+                2,
                 mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(80);
@@ -459,7 +471,7 @@ public final class CompositorAnimatorTest {
                 MathUtils.EPSILON);
         assertEquals(
                 "The update event count is incorrect.",
-                2,
+                3,
                 mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         mHandler.pushUpdate(10);
@@ -470,7 +482,7 @@ public final class CompositorAnimatorTest {
                 MathUtils.EPSILON);
         assertEquals(
                 "The update event count is incorrect.",
-                3,
+                4,
                 mUpdateListener.mUpdateCallbackHelper.getCallCount());
 
         assertEquals(

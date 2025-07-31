@@ -419,6 +419,7 @@ public class StripLayoutHelper
     // used for hover actions. Consider using setAndStartRunningAnimator() to set and start this
     // animator.
     private @Nullable Animator mRunningAnimator;
+    private final List<Animator> mQueuedAnimators = new ArrayList<>();
 
     private final TintedCompositorButton mNewTabButton;
     private final @Nullable CompositorButton mModelSelectorButton;
@@ -1337,6 +1338,7 @@ public class StripLayoutHelper
         // 3. Update tab spinners.
         updateSpinners(time);
 
+        startQueuedAnimationsIfAny();
         final boolean doneAnimating = mRunningAnimator == null || !mRunningAnimator.isRunning();
         updateStrip();
 
@@ -2826,6 +2828,7 @@ public class StripLayoutHelper
                             /* animate= */ true,
                             /* deferAnimations= */ true,
                             /* closedTab= */ getTabById(tab.getTabId()));
+            if (tabClosingAnimators == null) return;
         } else {
             tabClosingAnimators.add(
                     CompositorAnimator.ofFloatProperty(
@@ -3356,6 +3359,9 @@ public class StripLayoutHelper
 
     @Override
     public void finishAnimations() {
+        // Start any queued animations. This will ensure that their end state is reached, and any
+        // listeners are triggered accordingly.
+        startQueuedAnimationsIfAny();
         // Force any outstanding animations to finish. Need to recurse as some animations (like the
         // multi-step tab close animation) kick off another animation once the first ends.
         while (mRunningAnimator != null && mRunningAnimator.isRunning()) {
@@ -3365,12 +3371,8 @@ public class StripLayoutHelper
     }
 
     @Override
-    public void startAnimations(
-            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener) {
-        AnimatorSet set = new AnimatorSet();
-        set.playTogether(animationList);
-        if (listener != null) set.addListener(listener);
-
+    public void startAnimations(List<Animator> animationList, @Nullable AnimatorListener listener) {
+        AnimatorSet set = getAnimatorSet(animationList, listener);
         finishAnimations();
         setAndStartRunningAnimator(set);
     }
@@ -3393,6 +3395,33 @@ public class StripLayoutHelper
                     }
                 });
         mRunningAnimator.start();
+    }
+
+    @Override
+    public void queueAnimations(List<Animator> animationList, @Nullable AnimatorListener listener) {
+        AnimatorSet set = getAnimatorSet(animationList, listener);
+        mQueuedAnimators.add(set);
+        // The queued animators get started in the next #updateLayout call. Request an update here
+        // to ensure that we get one of these calls.
+        mUpdateHost.requestUpdate();
+    }
+
+    private AnimatorSet getAnimatorSet(
+            @Nullable List<Animator> animationList, @Nullable AnimatorListener listener) {
+        AnimatorSet set = new AnimatorSet();
+        set.playTogether(animationList);
+        if (listener != null) set.addListener(listener);
+        return set;
+    }
+
+    private void startQueuedAnimationsIfAny() {
+        if (!mQueuedAnimators.isEmpty()) {
+            // We need to clone and clear mQueuedAnimators to prevent an infinite-loop when we try
+            // to #finishAnimations in #startAnimations below.
+            List<Animator> queuedAnimators = new ArrayList<>(mQueuedAnimators);
+            mQueuedAnimators.clear();
+            startAnimations(queuedAnimators);
+        }
     }
 
     @Override

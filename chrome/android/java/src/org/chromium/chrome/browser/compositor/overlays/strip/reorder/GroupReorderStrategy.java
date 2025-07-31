@@ -257,6 +257,6 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             }
         }
         animators.add(getViewSlidingAnimator(adjTitle));
-        mAnimationHost.startAnimations(animators, /* listener= */ null);
+        mAnimationHost.queueAnimations(animators, /* listener= */ null);
     }
 }

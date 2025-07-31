@@ -178,5 +178,10 @@ public abstract class ReorderStrategyTestBase {
             // Immediately end to be able to verify end state.
             finishAnimations();
         }
+
+        @Override
+        public void queueAnimations(List<Animator> animationList, AnimatorListener listener) {
+            startAnimations(animationList, listener);
+        }
     }
 }

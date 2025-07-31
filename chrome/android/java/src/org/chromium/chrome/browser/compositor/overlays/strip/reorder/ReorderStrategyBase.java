@@ -505,7 +505,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                 throughGroupTitle,
                 animators);
 
-        mAnimationHost.startAnimations(animators, /* listener= */ null);
+        mAnimationHost.queueAnimations(animators, /* listener= */ null);
     }
 
     /**
@@ -530,6 +530,6 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
     protected void animateViewSliding(StripLayoutView view) {
         List<Animator> animators = new ArrayList<>();
         animators.add(getViewSlidingAnimator(view));
-        mAnimationHost.startAnimations(animators, /* listener= */ null);
+        mAnimationHost.queueAnimations(animators, /* listener= */ null);
     }
 }
