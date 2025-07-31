@@ -206,7 +206,16 @@ bool CanvasRenderingContext2D::IsComposited() const {
   if (settings && !settings->GetAcceleratedCompositingEnabled()) {
     return false;
   }
-  return element->IsCompositedForCanvas2D();
+  if (IsHibernating()) {
+    return false;
+  }
+
+  if (!resource_provider_) [[unlikely]] {
+    return false;
+  }
+
+  return resource_provider_->SupportsDirectCompositing() &&
+         !element->LowLatencyEnabled();
 }
 
 void CanvasRenderingContext2D::Stop() {

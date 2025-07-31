@@ -1537,23 +1537,6 @@ void HTMLCanvasElement::CollectStyleForPresentationAttribute(
   }
 }
 
-bool HTMLCanvasElement::IsCompositedForCanvas2D() const {
-  CHECK(IsRenderingContext2D());
-
-  if (RenderingContext()->IsHibernating()) {
-    return false;
-  }
-
-  if (!RenderingContext()->GetResourceProviderForCanvas2D()) [[unlikely]] {
-    return false;
-  }
-
-  return RenderingContext()
-             ->GetResourceProviderForCanvas2D()
-             ->SupportsDirectCompositing() &&
-         !LowLatencyEnabled();
-}
-
 void HTMLCanvasElement::AddListener(CanvasDrawListener* listener) {
   // The presence of a listener forces OffscrenCanvas animations to be active
   listeners_.insert(listener);

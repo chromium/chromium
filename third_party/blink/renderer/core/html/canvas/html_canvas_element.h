@@ -151,8 +151,6 @@ class CORE_EXPORT HTMLCanvasElement final
       const AtomicString&,
       HeapVector<CSSPropertyValue, 8>&) final;
 
-  bool IsCompositedForCanvas2D() const;
-
   // Used for canvas capture.
   void AddListener(CanvasDrawListener*);
   void RemoveListener(CanvasDrawListener*);
