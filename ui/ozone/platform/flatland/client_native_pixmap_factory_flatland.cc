@@ -2,9 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
-
 #include "ui/ozone/platform/flatland/client_native_pixmap_factory_flatland.h"
 
 #include <lib/zx/vmar.h>
@@ -14,9 +11,11 @@
 #include <vector>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/fuchsia/koid.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/sequence_checker.h"
 #include "base/system/sys_info.h"
@@ -115,7 +114,7 @@ class ClientNativePixmapFuchsia final : public gfx::ClientNativePixmap {
   void* GetMemoryAddress(size_t plane) const override {
     DCHECK_LT(plane, handle_.planes.size());
     DCHECK(mapping_);
-    return mapping_ + handle_.planes[plane].offset;
+    return UNSAFE_TODO(mapping_ + handle_.planes[plane].offset);
   }
 
   int GetStride(size_t plane) const override {

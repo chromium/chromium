@@ -333,7 +333,7 @@ class FileMetricsProviderTestBase : public testing::Test {
       const base::FilePath& path) {
     DCHECK_LT(0U, filter_actions_remaining_);
     --filter_actions_remaining_;
-    return *filter_actions_++;
+    return UNSAFE_TODO(*filter_actions_++);
   }
 
   base::test::TaskEnvironment task_environment_;

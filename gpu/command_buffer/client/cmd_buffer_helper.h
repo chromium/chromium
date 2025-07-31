@@ -157,7 +157,7 @@ class GPU_COMMAND_BUFFER_CLIENT_EXPORT CommandBufferHelper {
     DCHECK_LE(entries, immediate_entry_count_);
 
     // Allocate space and advance put_.
-    CommandBufferEntry* space = &entries_[put_];
+    CommandBufferEntry* space = UNSAFE_TODO(&entries_[put_]);
     put_ += entries;
     immediate_entry_count_ -= entries;
 

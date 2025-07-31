@@ -35,7 +35,7 @@ class Serializer {
       return;
 
     UNSAFE_TODO(memcpy(memory_, input, bytes));
-    memory_ += bytes;
+    UNSAFE_TODO(memory_ += bytes);
     bytes_written_ += bytes;
   }
 
@@ -48,7 +48,7 @@ class Serializer {
     size_t padding = base::bits::AlignUp(memory, alignment) - memory;
     DCHECK_LE(bytes_written_ + size + padding, memory_size_);
 
-    memory_ += padding;
+    UNSAFE_TODO(memory_ += padding);
     bytes_written_ += padding;
   }
 

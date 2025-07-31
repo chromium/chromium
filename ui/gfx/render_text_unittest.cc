@@ -419,7 +419,7 @@ class TestRectangleBuffer {
                                      << stride_;
     for (int y = top; y < top + height; ++y) {
       for (int x = left; x < left + width; ++x) {
-        SkColor buffer_color = buffer_[x + y * stride_];
+        SkColor buffer_color = UNSAFE_TODO(buffer_[x + y * stride_]);
         EXPECT_EQ(color, buffer_color) << string_ << " at " << x << ", " << y;
       }
     }
@@ -431,7 +431,7 @@ class TestRectangleBuffer {
                                 int top,
                                 int width,
                                 int height) const {
-    SkColor buffer_color = buffer_[left + top * stride_];
+    SkColor buffer_color = UNSAFE_TODO(buffer_[left + top * stride_]);
     EnsureSolidRect(buffer_color, left, top, width, height);
   }
 

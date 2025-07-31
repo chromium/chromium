@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
@@ -98,7 +99,8 @@ std::unique_ptr<DesktopMediaPicker> FakeDesktopMediaPickerFactory::CreatePicker(
   if (current_test_ >= tests_count_)
     return nullptr;
   ++current_test_;
-  picker_ = new FakeDesktopMediaPicker(test_flags_ + current_test_ - 1);
+  picker_ =
+      new FakeDesktopMediaPicker(UNSAFE_TODO(test_flags_ + current_test_ - 1));
   return std::unique_ptr<DesktopMediaPicker>(picker_);
 }
 

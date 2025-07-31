@@ -1178,9 +1178,11 @@ class RestrictedDispatchDeadlockServer : public Worker {
         peer_(peer) {}
 
   void OnDoServerTask() {
-    events_[3]->Signal();
-    events_[2]->Wait();
-    events_[0]->Signal();
+    UNSAFE_TODO({
+      events_[3]->Signal();
+      events_[2]->Wait();
+      events_[0]->Signal();
+    });
     SendMessageToClient();
   }
 
@@ -1239,9 +1241,11 @@ class RestrictedDispatchDeadlockClient2 : public Worker {
   }
 
   void OnDoClient2Task() {
-    events_[3]->Wait();
-    events_[1]->Signal();
-    events_[2]->Signal();
+    UNSAFE_TODO({
+      events_[3]->Wait();
+      events_[1]->Signal();
+      events_[2]->Signal();
+    });
     DCHECK(received_msg_ == false);
 
     Message* message = new SyncChannelTestMsg_NoArgs;
@@ -1308,8 +1312,10 @@ class RestrictedDispatchDeadlockClient1 : public Worker {
         FROM_HERE,
         base::BindOnce(&RestrictedDispatchDeadlockClient2::OnDoClient2Task,
                        base::Unretained(peer_)));
-    events_[0]->Wait();
-    events_[1]->Wait();
+    UNSAFE_TODO({
+      events_[0]->Wait();
+      events_[1]->Wait();
+    });
     DCHECK(received_msg_ == false);
 
     Message* message = new SyncChannelTestMsg_NoArgs;

@@ -12,6 +12,7 @@
 #include <algorithm>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/functional/callback.h"
 
 namespace media {
@@ -44,7 +45,8 @@ void MemoryDataSource::Read(int64_t position,
 
   if (clamped_size > 0) {
     DCHECK(data);
-    memcpy(data, data_ + base::checked_cast<size_t>(position), clamped_size);
+    memcpy(data, UNSAFE_TODO(data_ + base::checked_cast<size_t>(position)),
+           clamped_size);
   }
 
   std::move(read_cb).Run(clamped_size);

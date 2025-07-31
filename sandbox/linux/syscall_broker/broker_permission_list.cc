@@ -12,6 +12,8 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
+
 namespace sandbox {
 namespace syscall_broker {
 
@@ -37,8 +39,8 @@ const char* BrokerPermissionList::GetFileNameIfAllowedToAccess(
     const char* requested_filename,
     int requested_mode) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
-    const char* ret =
-        permissions_array_[i].CheckAccess(requested_filename, requested_mode);
+    const char* ret = UNSAFE_TODO(permissions_array_[i])
+                          .CheckAccess(requested_filename, requested_mode);
     if (ret) {
       return ret;
     }
@@ -51,7 +53,8 @@ std::pair<const char*, bool> BrokerPermissionList::GetFileNameIfAllowedToOpen(
     int requested_flags) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
     std::pair<const char*, bool> ret =
-        permissions_array_[i].CheckOpen(requested_filename, requested_flags);
+        UNSAFE_TODO(permissions_array_[i])
+            .CheckOpen(requested_filename, requested_flags);
     if (ret.first) {
       return ret;
     }
@@ -62,8 +65,8 @@ std::pair<const char*, bool> BrokerPermissionList::GetFileNameIfAllowedToOpen(
 const char* BrokerPermissionList::GetFileNameIfAllowedToStat(
     const char* requested_filename) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
-    const char* ret =
-        permissions_array_[i].CheckStatWithIntermediates(requested_filename);
+    const char* ret = UNSAFE_TODO(permissions_array_[i])
+                          .CheckStatWithIntermediates(requested_filename);
     if (ret) {
       return ret;
     }
@@ -76,8 +79,8 @@ const char* BrokerPermissionList::GetFileNameIfAllowedToInotifyAddWatch(
     uint32_t mask) const {
   for (size_t i = 0; i < num_of_permissions_; i++) {
     const char* ret =
-        permissions_array_[i].CheckInotifyAddWatchWithIntermediates(
-            requested_filename, mask);
+        UNSAFE_TODO(permissions_array_[i])
+            .CheckInotifyAddWatchWithIntermediates(requested_filename, mask);
     if (ret) {
       return ret;
     }

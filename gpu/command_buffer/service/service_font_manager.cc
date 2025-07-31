@@ -15,6 +15,7 @@
 #include <type_traits>
 
 #include "base/bits.h"
+#include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -43,7 +44,7 @@ class Deserializer {
 
     memcpy(val, const_cast<const uint8_t*>(memory_.get()), sizeof(T));
 
-    memory_ += sizeof(T);
+    UNSAFE_TODO(memory_ += sizeof(T));
     bytes_read_ += sizeof(T);
     return true;
   }
@@ -62,7 +63,7 @@ class Deserializer {
       return false;
 
     bytes_read_ += size;
-    memory_ += size;
+    UNSAFE_TODO(memory_ += size);
     return true;
   }
 
@@ -82,7 +83,7 @@ class Deserializer {
       return false;
     }
 
-    memory_ += padding;
+    UNSAFE_TODO(memory_ += padding);
     bytes_read_ += padding;
     return true;
   }

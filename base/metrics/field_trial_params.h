@@ -235,8 +235,8 @@ struct FeatureParam<Enum, true> {
   // Returns the param-string for the given enum value.
   std::string GetName(Enum value) const {
     for (size_t i = 0; i < option_count; ++i) {
-      if (value == options[i].value) {
-        return options[i].name;
+      if (value == UNSAFE_TODO(options[i].value)) {
+        return UNSAFE_TODO(options[i].name);
       }
     }
     NOTREACHED();

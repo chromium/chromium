@@ -88,7 +88,7 @@ scoped_refptr<UnsizedRefCountedMemory> ReadBuffer::ReadAndAdvance(
 }
 
 int ReadBuffer::TakeFd() {
-  return *fds++;
+  return UNSAFE_TODO(*fds++);
 }
 
 WriteBuffer::WriteBuffer() = default;

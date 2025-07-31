@@ -502,37 +502,37 @@ class Schema::InternalStorage
 
   const SchemaNode* schema(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.schema_nodes + index;
+    return UNSAFE_TODO(schema_data_.schema_nodes + index);
   }
 
   const PropertiesNode* properties(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.properties_nodes + index;
+    return UNSAFE_TODO(schema_data_.properties_nodes + index);
   }
 
   const PropertyNode* property(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.property_nodes + index;
+    return UNSAFE_TODO(schema_data_.property_nodes + index);
   }
 
   const RestrictionNode* restriction(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.restriction_nodes + index;
+    return UNSAFE_TODO(schema_data_.restriction_nodes + index);
   }
 
   const char* const* required_property(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.required_properties + index;
+    return UNSAFE_TODO(schema_data_.required_properties + index);
   }
 
   const int* int_enums(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.int_enums + index;
+    return UNSAFE_TODO(schema_data_.int_enums + index);
   }
 
   const char* const* string_enums(int index) const {
     DCHECK_GE(index, 0);
-    return schema_data_.string_enums + index;
+    return UNSAFE_TODO(schema_data_.string_enums + index);
   }
 
   // Compiles regular expression |pattern|. The result is cached and will be
@@ -1140,7 +1140,7 @@ bool Schema::Iterator::IsAtEnd() const {
 
 void Schema::Iterator::Advance() {
   DCHECK(it_);
-  ++it_;
+  UNSAFE_TODO(++it_);  // Should be UNSAFE_BUFFER_USAGE.
 }
 
 const char* Schema::Iterator::key() const {

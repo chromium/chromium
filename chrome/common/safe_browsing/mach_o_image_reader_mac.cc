@@ -36,7 +36,7 @@ class ByteSlice {
   ByteSlice Slice(size_t at, size_t size) {
     if (!RangeCheck(at, size))
       return ByteSlice();
-    return ByteSlice(data_ + at, size);
+    return ByteSlice(UNSAFE_TODO(data_ + at), size);
   }
 
   // Casts an offset to a specific type.

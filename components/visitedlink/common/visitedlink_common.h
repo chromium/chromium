@@ -11,6 +11,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "components/visitedlink/core/visited_link.h"
 
@@ -144,7 +145,7 @@ class VisitedLinkCommon {
   Fingerprint FingerprintAt(int32_t table_offset) const {
     if (!hash_table_)
       return null_fingerprint_;
-    return hash_table_[table_offset];
+    return UNSAFE_TODO(hash_table_[table_offset]);
   }
 
   // Computes the fingerprint of the given canonical URL. It is static so the

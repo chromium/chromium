@@ -20,7 +20,7 @@ bool PreloadDecoder::BitReader::Next(bool* out) {
     if (current_byte_index_ >= num_bytes_) {
       return false;
     }
-    current_byte_ = bytes_[current_byte_index_++];
+    current_byte_ = UNSAFE_TODO(bytes_[current_byte_index_++]);
     num_bits_used_ = 0;
   }
 
@@ -137,7 +137,7 @@ bool PreloadDecoder::BitReader::Seek(size_t offset) {
     return false;
   }
   current_byte_index_ = offset / 8;
-  current_byte_ = bytes_[current_byte_index_++];
+  current_byte_ = UNSAFE_TODO(bytes_[current_byte_index_++]);
   num_bits_used_ = offset % 8;
   return true;
 }
@@ -148,7 +148,7 @@ PreloadDecoder::HuffmanDecoder::HuffmanDecoder(const uint8_t* tree,
 
 bool PreloadDecoder::HuffmanDecoder::Decode(PreloadDecoder::BitReader* reader,
                                             char* out) const {
-  const uint8_t* current = &tree_[tree_bytes_ - 2];
+  const uint8_t* current = UNSAFE_TODO(&tree_[tree_bytes_ - 2]);
 
   for (;;) {
     bool bit;
@@ -168,7 +168,7 @@ bool PreloadDecoder::HuffmanDecoder::Decode(PreloadDecoder::BitReader* reader,
       return false;
     }
 
-    current = &tree_[offset];
+    current = UNSAFE_TODO(&tree_[offset]);
   }
 }
 

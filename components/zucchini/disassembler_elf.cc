@@ -283,11 +283,12 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   elf::Elf32_Half string_section_id = header_->e_shstrndx;
   if (string_section_id >= sections_count_)
     return false;
-  size_t section_names_size = sections_[string_section_id].sh_size;
+  size_t section_names_size = UNSAFE_TODO(sections_[string_section_id]).sh_size;
   if (section_names_size > 0) {
     // If nonempty, then last byte of string section must be null.
     const char* section_names = nullptr;
-    source = BufferSource(image_, sections_[string_section_id].sh_offset);
+    source = BufferSource(image_,
+                          UNSAFE_TODO(sections_[string_section_id].sh_offset));
     section_names = source.GetArray<char>(section_names_size);
     if (!section_names ||
         UNSAFE_TODO(section_names[section_names_size - 1]) != '\0') {
@@ -300,7 +301,8 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
 
   // Visits |segments_| to get estimate on |offset_bound|.
   for (const typename Traits::Elf_Phdr* segment = segments_;
-       segment != segments_ + segments_count_; UNSAFE_TODO(++segment)) {
+       segment != UNSAFE_TODO(segments_ + segments_count_);
+       UNSAFE_TODO(++segment)) {
     // |image_.covers()| is a sufficient check except when size_t is 32 bit and
     // parsing ELF64. In such cases a value-in-range check is needed on the
     // segment. This fixes crbug/1035603.
@@ -321,7 +323,7 @@ bool DisassemblerElf<TRAITS>::ParseHeader() {
   section_judgements_.reserve(sections_count_);
 
   for (int i = 0; i < sections_count_; ++i) {
-    const typename Traits::Elf_Shdr* section = &sections_[i];
+    const typename Traits::Elf_Shdr* section = UNSAFE_TODO(&sections_[i]);
     int judgement = JudgeSection<Traits>(image_.size(), section);
     section_judgements_.push_back(judgement);
     if ((judgement & SECTION_BIT_SAFE) == 0)
@@ -355,7 +357,7 @@ void DisassemblerElf<TRAITS>::ExtractInterestingSectionHeaders() {
   DCHECK(reloc_section_dims_.empty());
   DCHECK(exec_headers_.empty());
   for (elf::Elf32_Half i = 0; i < sections_count_; ++i) {
-    const typename Traits::Elf_Shdr* section = sections_ + i;
+    const typename Traits::Elf_Shdr* section = UNSAFE_TODO(sections_ + i);
     if ((section_judgements_[i] & SECTION_BIT_MAYBE_USEFUL_FOR_POINTERS) != 0) {
       if (IsRelocSection<Traits>(*section))
         reloc_section_dims_.emplace_back(*section);
