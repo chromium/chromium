@@ -157,15 +157,23 @@ DownloadInterruptReason BaseFile::Initialize(
   return Open(hash_so_far, bytes_wasted);
 }
 
-DownloadInterruptReason BaseFile::AppendDataToFile(const char* data,
-                                                   size_t data_len) {
+DownloadInterruptReason BaseFile::AppendDataToFile(
+    base::span<const uint8_t> data) {
   DCHECK(!is_sparse_file_);
-  return WriteDataToFile(bytes_so_far_, data, data_len);
+  return WriteDataToFile(bytes_so_far_, data);
 }
 
-DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
-                                                  const char* data,
-                                                  size_t data_len) {
+DownloadInterruptReason BaseFile::AppendDataToFile(const char* data,
+                                                   size_t data_len) {
+  UNSAFE_BUFFERS(
+      // SAFETY TODO(https://crbug.com/435230896): get rid of this.
+      return AppendDataToFile(
+                 base::span(reinterpret_cast<const uint8_t*>(data), data_len));)
+}
+
+DownloadInterruptReason BaseFile::WriteDataToFile(
+    int64_t offset,
+    base::span<const uint8_t> data) {
   // NOTE(benwells): The above DCHECK won't be present in release builds,
   // so we log any occurences to see how common this error is in the wild.
   if (detached_)
@@ -177,8 +185,9 @@ DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
   }
 
   // TODO(phajdan.jr): get rid of this check.
-  if (data_len == 0)
+  if (data.size() == 0) {
     return DOWNLOAD_INTERRUPT_REASON_NONE;
+  }
 
   // Use nestable async event instead of sync event so that all the writes
   // belong to the same download will be grouped together.
@@ -192,39 +201,46 @@ DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
   }
 
   // Writes to the file.
-  int64_t len = base::saturated_cast<int64_t>(data_len);
-  const char* current_data = data;
+  base::span<const uint8_t> current_data = data;
   int64_t current_offset = offset;
-  while (len > 0) {
+  while (!current_data.empty()) {
     // |write_result| may be less than |len|, and return an error on the next
     // write call when the disk is unavaliable.
-    int write_result = file_.Write(current_offset, current_data, len);
-    DCHECK_NE(0, write_result);
-
-    // Report errors on file writes.
-    if (write_result < 0)
+    std::optional<size_t> write_result =
+        file_.Write(current_offset, current_data);
+    if (!write_result.has_value()) {
       return LogSystemError("Write", logging::GetLastSystemErrorCode());
+    }
+
+    DCHECK_NE(0u, *write_result);
 
     // Update status.
-    DCHECK_LE(write_result, len);
-    len -= write_result;
-    current_data += write_result;
-    current_offset += write_result;
-    bytes_so_far_ += write_result;
+    bytes_so_far_ += *write_result;
+    current_offset += *write_result;
+    current_data = current_data.subspan(*write_result);
   }
 
   CONDITIONAL_TRACE(NESTABLE_ASYNC_END1("download", "DownloadFileWrite",
-                                        download_id_, "bytes", data_len));
+                                        download_id_, "bytes", data.size()));
 
   if (secure_hash_)
-    secure_hash_->Update(data, data_len);
+    secure_hash_->Update(data);
 
   return DOWNLOAD_INTERRUPT_REASON_NONE;
 }
 
+DownloadInterruptReason BaseFile::WriteDataToFile(int64_t offset,
+                                                  const char* data,
+                                                  size_t data_len) {
+  UNSAFE_BUFFERS(
+      // SAFETY TODO(https://crbug.com/435230896): get rid of this.
+      return WriteDataToFile(
+                 offset,
+                 base::span(reinterpret_cast<const uint8_t*>(data), data_len));)
+}
+
 bool BaseFile::ValidateDataInFile(int64_t offset,
-                                  const char* data,
-                                  size_t data_len) {
+                                  base::span<const uint8_t> data) {
   if (!file_.IsValid())
     return false;
 
@@ -233,15 +249,27 @@ bool BaseFile::ValidateDataInFile(int64_t offset,
   if (offset > bytes_so_far_)
     return false;
 
-  if (data_len <= 0)
+  if (data.size() == 0) {
     return true;
+  }
 
-  auto buffer = base::HeapArray<char>::Uninit(data_len);
-  int bytes_read = file_.Read(offset, buffer.data(), buffer.size());
-  if (bytes_read < 0 || static_cast<size_t>(bytes_read) < data_len)
+  auto buffer = base::HeapArray<uint8_t>::Uninit(data.size());
+  std::optional<size_t> bytes_read = file_.Read(offset, buffer.as_span());
+  if (!bytes_read.has_value() || bytes_read.value() < data.size()) {
     return false;
+  }
 
-  return memcmp(data, buffer.data(), buffer.size()) == 0;
+  return base::span(buffer) == data;
+}
+
+bool BaseFile::ValidateDataInFile(int64_t offset,
+                                  const char* data,
+                                  size_t data_len) {
+  UNSAFE_BUFFERS(
+      // SAFETY TODO(https://crbug.com/435230896): get rid of this.
+      return ValidateDataInFile(
+                 offset,
+                 base::span(reinterpret_cast<const uint8_t*>(data), data_len));)
 }
 
 DownloadInterruptReason BaseFile::Rename(const base::FilePath& new_path) {
