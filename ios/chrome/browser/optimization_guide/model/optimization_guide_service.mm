@@ -5,7 +5,6 @@
 #import "ios/chrome/browser/optimization_guide/model/optimization_guide_service.h"
 
 #import "base/apple/bundle_locations.h"
-#import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "base/metrics/histogram_functions.h"
@@ -22,7 +21,6 @@
 #import "components/optimization_guide/core/hints/top_host_provider.h"
 #import "components/optimization_guide/core/model_execution/model_execution_manager.h"
 #import "components/optimization_guide/core/model_execution/on_device_model_service_controller.h"
-#import "components/optimization_guide/core/optimization_guide_constants.h"
 #import "components/optimization_guide/core/optimization_guide_features.h"
 #import "components/optimization_guide/core/optimization_guide_logger.h"
 #import "components/optimization_guide/core/optimization_guide_util.h"
@@ -55,18 +53,6 @@ using ModelExecutionError = optimization_guide::
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 using ::optimization_guide::OnDeviceModelComponentStateManager;
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
-
-// Deletes old store paths that were written in incorrect locations.
-void DeleteOldStorePaths(const base::FilePath& profile_path) {
-  // Added 11/2023
-  //
-  // Delete the old profile-wide model download store path, since
-  // the install-wide model store is enabled now.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
-      base::GetDeletePathRecursivelyCallback(profile_path.Append(
-          optimization_guide::kOldOptimizationGuidePredictionModelDownloads)));
-}
 
 #if BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
 class OnDeviceModelComponentStateManagerDelegate
@@ -205,14 +191,6 @@ OptimizationGuideService::OptimizationGuideService(
             optimization_guide_logger_.get(), nullptr);
 #endif  // BUILDFLAG(BUILD_WITH_INTERNAL_OPTIMIZATION_GUIDE)
   }
-
-  // Some previous paths were written in incorrect locations. Delete the
-  // old paths.
-  //
-  // TODO(crbug.com/40842340): Remove this code in 05/2023 since it should be
-  // assumed that all clients that had the previous path have had their previous
-  // stores deleted.
-  DeleteOldStorePaths(profile_path);
 
   OPTIMIZATION_GUIDE_LOG(
       optimization_guide_common::mojom::LogSource::SERVICE_AND_SETTINGS,

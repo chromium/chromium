@@ -36,9 +36,6 @@ const base::FilePath::CharType
     kOldOptimizationGuidePredictionModelMetadataStore[] =
         FILE_PATH_LITERAL("optimization_guide_model_metadata_store");
 
-const base::FilePath::CharType kOldOptimizationGuidePredictionModelDownloads[] =
-    FILE_PATH_LITERAL("optimization_guide_prediction_model_downloads");
-
 const base::FilePath::CharType kOptimizationGuideModelStoreDirPrefix[] =
     FILE_PATH_LITERAL("optimization_guide_model_store");
 

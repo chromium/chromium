@@ -53,12 +53,6 @@ COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType
     kOldOptimizationGuidePredictionModelMetadataStore[];
 
-// The folder where the old prediction model downloads are stored. This is per
-// profile.
-COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
-extern const base::FilePath::CharType
-    kOldOptimizationGuidePredictionModelDownloads[];
-
 // The prefix for the folder where models are stored by the new install-wide
 // model store.
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
