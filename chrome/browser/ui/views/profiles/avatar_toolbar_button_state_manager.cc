@@ -63,6 +63,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_prefs.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_change_event.h"
 #include "components/sync/base/features.h"
@@ -891,6 +892,14 @@ class HistorySyncOptinCoordinator
         IdentityManagerFactory::GetForProfile(&profile));
   }
 
+  bool ShouldProfileShowPromo() const {
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      return signin_util::ShouldShowAvatarSyncPromo(&profile_.get());
+    }
+
+    return signin_util::ShouldShowHistorySyncOptinScreen(profile_.get());
+  }
+
   void Trigger(signin_metrics::AccessPoint access_point) {
     if (triggered_) {
       return;
@@ -898,7 +907,7 @@ class HistorySyncOptinCoordinator
     if (!sync_promo_identity_pill_manager_.ShouldShowPromo()) {
       return;
     }
-    if (!signin_util::ShouldShowHistorySyncOptinScreen(profile_.get())) {
+    if (!ShouldProfileShowPromo()) {
       return;
     }
     access_point_ = access_point;
@@ -995,6 +1004,8 @@ class HistorySyncOptinCoordinator
 
 // With the addition of `switches::kAvatarButtonSyncPromo` feature, this
 // provider may either show a SyncPromo or a HistorySyncPromo.
+// SyncPromo has a higher priority, check
+// `HistorySyncOptinCoordinator::ShouldProfileShowPromo()`.
 class HistorySyncOptinStateProvider : public StateProvider {
  public:
   explicit HistorySyncOptinStateProvider(Browser* browser,

@@ -26,6 +26,7 @@
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -385,6 +386,64 @@ bool ShouldShowHistorySyncOptinScreen(Profile& profile) {
           syncer::UserSelectableType::kSavedTabGroups)) {
     return false;
   }
+  return true;
+}
+
+bool ShouldShowAvatarSyncPromo(Profile* profile) {
+  CHECK(switches::IsAvatarSyncPromoFeatureEnabled());
+
+  // Do not show the promo for users that are not signed in. (E.g. Signed out,
+  // Signin Pending or already syncing).
+  if (GetSignedInState(IdentityManagerFactory::GetForProfile(profile)) !=
+      signin_util::SignedInState::kSignedIn) {
+    return false;
+  }
+
+  // SyncService should be usable.
+  syncer::SyncService* sync_service =
+      SyncServiceFactory::GetForProfile(profile);
+  if (!sync_service) {
+    return false;
+  }
+  if (sync_service->HasDisableReason(
+          syncer::SyncService::DISABLE_REASON_ENTERPRISE_POLICY)) {
+    return false;
+  }
+
+  // A profile signed in with a managed account should not see this promo.
+  if (enterprise_util::UserAcceptedAccountManagement(profile)) {
+    return false;
+  }
+
+  // Do not show the promo if there was a previously syncing account that does
+  // not match the currently signed in one.
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CoreAccountInfo core_account_info =
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
+  if (core_account_info.IsEmpty()) {
+    return false;
+  }
+  PrefService* pref_service = profile->GetPrefs();
+  GaiaId previously_syncing_gaia_id =
+      GaiaId(pref_service->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
+  if (IsCrossAccountError(profile, core_account_info.gaia)) {
+    return false;
+  }
+
+  // For non-dice users, do not show the promo for users that have been signed
+  // for a short period of time.
+  // TODO(crbug.com/435113265): Confirm minimum cookie age value.
+  constexpr base::TimeDelta kMinimumCookieAge = base::Days(7);
+  if (pref_service->GetBoolean(prefs::kExplicitBrowserSignin)) {
+    const base::Time last_changed = base::Time::FromSecondsSinceUnixEpoch(
+        pref_service->GetDouble(prefs::kGaiaCookieChangedTime));
+    if (last_changed.is_null() ||
+        (base::Time::Now() - last_changed < kMinimumCookieAge)) {
+      return false;
+    }
+  }
+
   return true;
 }
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)

@@ -176,6 +176,11 @@ SignedInState GetSignedInState(const signin::IdentityManager* identity_manager);
 // TODO(crbug.com/419741847): Consider using also on mobile and moving the
 // method as necessary.
 bool ShouldShowHistorySyncOptinScreen(Profile& profile);
+
+// The avatar sync promo is only shown to users with specific sign in states.
+// Requires the feature enabling through
+// `switches::IsAvatarSyncPromoFeatureEnabled()`.
+bool ShouldShowAvatarSyncPromo(Profile* profile);
 #endif  // BUILDFLAG(IS_LINUX) ||  BUILDFLAG(IS_MAC) ||  BUILDFLAG(IS_WIN)
 
 }  // namespace signin_util

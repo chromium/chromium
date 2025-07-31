@@ -65,6 +65,7 @@
 #include "components/policy/policy_constants.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
+#include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
@@ -315,8 +316,18 @@ class AvatarToolbarButtonBaseBrowserTest {
 
   // Signs in to Chrome with `email` and set the `name` to the account name.
   AccountInfo Signin(const std::u16string& email, const std::u16string& name) {
-    return MakePrimaryAccountAvailableWithName(signin::ConsentLevel::kSignin,
-                                               email, name);
+    AccountInfo account_info = MakePrimaryAccountAvailableWithName(
+        signin::ConsentLevel::kSignin, email, name);
+
+    // This simplifies the setup for tests that expect to show the SyncPromo.
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      // Simulate setting enough time passing for the cookie change.
+      GetBrowser()->GetProfile()->GetPrefs()->SetDouble(
+          prefs::kGaiaCookieChangedTime,
+          (base::Time::Now() - base::Days(8)).InSecondsFSinceUnixEpoch());
+    }
+
+    return account_info;
   }
 
   // Make sure `image_url` is different for each new image in order for the
