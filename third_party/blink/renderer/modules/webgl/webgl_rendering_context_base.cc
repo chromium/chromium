@@ -862,19 +862,14 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
     }
     return resource_provider->Snapshot(reason);
   } else {
-    resource_provider = CanvasResourceProvider::CreateBitmapProvider(
-        size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
-        CanvasResourceProvider::ShouldInitialize::kNo);
-
-    if (!resource_provider || !resource_provider->IsValid()) {
-      return nullptr;
-    }
-
-    if (!CopyRenderingResultsFromDrawingBuffer(resource_provider.get(),
-                                               kBackBuffer)) {
-      return nullptr;
-    }
-    return resource_provider->Snapshot(reason);
+    // Match the SBI configuration to that produced when using GPU compositing:
+    // N32 and premul (as set by `CopyRenderingResultsFromDrawingBuffer`) and
+    // top-left origin (the orientation that is used by
+    // `CanvasResourceProvider::Snapshot()` when it is not passed an orientation
+    // explicitly).
+    return CopyRenderingResultsToUnacceleratedStaticBitmapImage(
+        kBackBuffer, viz::SharedImageFormat::N32Format(), kPremul_SkAlphaType,
+        kTopLeft_GrSurfaceOrigin);
   }
 }
 
@@ -2197,6 +2192,31 @@ bool WebGLRenderingContextBase::CopyRenderingResultsFromDrawingBuffer(
   image->Draw(&resource_provider->Canvas(), flags, gfx::RectF(dest_rect),
               gfx::RectF(src_rect), draw_options);
   return true;
+}
+
+scoped_refptr<StaticBitmapImage>
+WebGLRenderingContextBase::CopyRenderingResultsToUnacceleratedStaticBitmapImage(
+    SourceDrawingBuffer source_buffer,
+    viz::SharedImageFormat format,
+    SkAlphaType alpha_type,
+    GrSurfaceOrigin origin) {
+  // Early-out if the context has been lost.
+  if (!GetDrawingBuffer()) {
+    return nullptr;
+  }
+
+  ScopedPixelLocalStorageInterrupt scoped_pls_interrupt(this);
+  ScopedFramebufferRestorer fbo_restorer(this);
+  // In rare situations on macOS the drawing buffer can be destroyed
+  // during the resolve process, specifically during automatic
+  // graphics switching. Guard against this.
+  // This is a no-op if already called higher up the stack from here.
+  if (!GetDrawingBuffer()->ResolveAndBindForReadAndDraw()) {
+    return nullptr;
+  }
+
+  return GetDrawingBuffer()->GetUnacceleratedStaticBitmapImage(
+      source_buffer, format, alpha_type, origin);
 }
 
 bool WebGLRenderingContextBase::CopyRenderingResultsToVideoFrame(
