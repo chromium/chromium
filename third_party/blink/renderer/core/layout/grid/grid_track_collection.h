@@ -100,10 +100,13 @@ class CORE_EXPORT GridRangeBuilder {
                            wtf_size_t* grid_item_end_range_index);
 
   // Build the collection of ranges based on information provided through the
-  // specified tracks and `EnsureTrackCoverage`. If `collapsed_track_indexes` is
+  // specified tracks and `EnsureTrackCoverage`. If `needs_auto_track_size` is
+  // true, that means we are in a track sizing pass to computed a repeat tack
+  // defintion of auto sized tracks. If `collapsed_track_indexes` is
   // not nullptr, this method with populate it with the track indexes of all
   // collapsed tracks.
   GridRangeVector FinalizeRanges(
+      bool needs_auto_track_size = false,
       Vector<wtf_size_t>* collapsed_track_indexes = nullptr);
 
  private:

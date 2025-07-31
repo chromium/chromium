@@ -1157,10 +1157,18 @@ crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-019.html [ Fai
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-020.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-024.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-025.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-015.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-016.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-021.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/column-auto-repeat-auto-020.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-017.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-018.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-022.html [ Failure ]
 crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-023.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-015.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-016.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-021.html [ Failure ]
+crbug.com/1076027 wpt_internal/css/css-masonry/row-auto-repeat-auto-020.html [ Failure ]
 
 # external/wpt/css/css-fonts/... tests triaged away from the default WPT bug ID
 crbug.com/1211460 external/wpt/css/css-fonts/alternates-order.html [ Failure ]

@@ -111,6 +111,7 @@ void GridRangeBuilder::EnsureTrackCoverage(
 }
 
 GridRangeVector GridRangeBuilder::FinalizeRanges(
+    bool needs_auto_track_size,
     Vector<wtf_size_t>* collapsed_track_indexes) {
   DCHECK_EQ(start_lines_.size(), end_lines_.size());
 
@@ -292,7 +293,10 @@ GridRangeVector GridRangeBuilder::FinalizeRanges(
         *end_lines_[line_index].grid_item_range_index_to_cache = ranges.size();
     }
 
-    if (is_in_auto_fit_range && open_items_or_repeaters == 1) {
+    // Don't collapse tracks if we are in the first track sizing pass used to
+    // calculate the track size/count for repeat(auto-fit, auto).
+    if (is_in_auto_fit_range && open_items_or_repeaters == 1 &&
+        !needs_auto_track_size) {
       range.SetIsCollapsed();
       range.set_count = 0;
       if (collapsed_track_indexes) {

@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
-<title>Auto-fit repeat tracks with auto size</title>
+<title>Auto-fit repeat tracks with auto size and explicit item placement</title>
 <link rel="help" href="https://drafts.csswg.org/css-grid-3">
-<link rel="match" href="column-auto-repeat-auto-012-ref.html">
+<link rel="match" href="column-auto-repeat-auto-014-ref.html">
 <link rel="author" title="Alison Maher" href="mailto:almaher@microsoft.com">
 <style>
 .masonry {
@@ -10,8 +10,8 @@
     background: gray;
     item-tolerance: 0;
     grid-template-columns: repeat(auto-fit, auto);
-    height: 300px;
-    width: 300px;
+    height: 200px;
+    width: 500px;
 }
 
 .masonry > div {
@@ -21,21 +21,19 @@
 </style>
 <body>
   <div class="masonry">
-    <!-- The second track should still be collapsed, even though this
-    item is placed in every possible track. -->
-    <div style="background: lightskyblue;">
+    <div style="background: lightskyblue; grid-column: 1;">
       Number 1
     </div>
     <div style="background: lightcoral; grid-column: 3;">
       Number 2
     </div>
-    <div style="background: lightgreen; grid-column: 1;">
+    <div style="background: lightgreen; grid-column: 5;">
       Number 3
     </div>
-    <div style="background: lightpink; grid-column: 3;">
+    <div style="background: lightpink; grid-column: 1;">
       Number 4
     </div>
-    <div style="background: orange; grid-column:1;">
+    <div style="background: orange; grid-column: 3;">
       Number 5
     </div>
   </div>

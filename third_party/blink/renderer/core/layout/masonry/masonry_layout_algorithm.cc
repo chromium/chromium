@@ -58,7 +58,7 @@ MinMaxSizesResult MasonryLayoutAlgorithm::ComputeMinMaxSizes(
     // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
     if (needs_auto_track_size) {
       CHECK_NE(track_collection.GetAutoSizedRepeaterTrackIndex(), kNotFound);
-      collapsed_track_indexes.clear();
+      CHECK(collapsed_track_indexes.empty());
       // Note that when `needs_auto_track_size` is true, we skip the steps to
       // distribute free space during track sizing. This means that the base
       // track size at this point represents the size of the intrinsic track
@@ -138,7 +138,7 @@ const LayoutResult* MasonryLayoutAlgorithm::Layout() {
   // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
   if (needs_auto_track_size) {
     CHECK_NE(track_collection.GetAutoSizedRepeaterTrackIndex(), kNotFound);
-    collapsed_track_indexes.clear();
+    CHECK(collapsed_track_indexes.empty());
     // Note that when `needs_auto_track_size` is true, we skip the steps to
     // distribute free space during track sizing. This means that the base track
     // size at this point represents the size of the intrinsic track without
@@ -671,19 +671,13 @@ GridSizingTrackCollection MasonryLayoutAlgorithm::BuildGridAxisTracks(
                                         &range_indices.begin,
                                         &range_indices.end);
     }
-    return range_builder.FinalizeRanges(&collapsed_track_indexes);
+    return range_builder.FinalizeRanges(needs_auto_track_size,
+                                        &collapsed_track_indexes);
   };
 
   GridSizingTrackCollection track_collection(BuildRanges(),
                                              grid_axis_direction);
   track_collection.BuildSets(style, masonry_available_size_);
-
-  // If we didn't find an auto repeater, and we are currently looking for
-  // an auto track size for an auto repeater, unset `needs_auto_track_size`
-  // because that means all repeat tracks have been collapsed, and we no
-  // longer need to run two different track sizing passes.
-  needs_auto_track_size &=
-      track_collection.GetAutoSizedRepeaterTrackIndex() != kNotFound;
 
   if (track_collection.HasNonDefiniteTrack()) {
     GridTrackSizingAlgorithm::CacheGridItemsProperties(track_collection,

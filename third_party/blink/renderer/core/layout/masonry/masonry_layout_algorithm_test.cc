@@ -29,10 +29,34 @@ class MasonryLayoutAlgorithmTest : public BaseLayoutAlgorithmTest {
 
     auto masonry_items = algorithm.Node().ConstructMasonryItems(line_resolver);
     bool needs_auto_track_size = false;
+    std::optional<LayoutUnit> auto_repeat_track_size = std::nullopt;
     grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
-        SizingConstraint::kLayout, /*auto_repeat_track_size=*/std::nullopt,
-        masonry_items, collapsed_track_indexes_, start_offset,
-        needs_auto_track_size);
+        SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
+        collapsed_track_indexes_, start_offset, needs_auto_track_size);
+
+    // We have a repeat() track definition with an auto sized track(s). The
+    // previous track sizing pass was used to find the track size to apply
+    // to the auto sized track(s). Retrieve that value, and re-run track
+    // sizing to get the correct number of automatic repetitions for the
+    // repeat() definition.
+    //
+    // https://www.w3.org/TR/css-grid-3/#masonry-intrinsic-repeat
+    if (needs_auto_track_size) {
+      CHECK_NE(grid_axis_tracks_->GetAutoSizedRepeaterTrackIndex(), kNotFound);
+      CHECK(collapsed_track_indexes_.empty());
+      // Note that when `needs_auto_track_size` is true, we skip the steps to
+      // distribute free space during track sizing. This means that the base
+      // track size at this point represents the size of the intrinsic track
+      // without free space distribution.
+      auto_repeat_track_size =
+          grid_axis_tracks_
+              ->GetSetAt(grid_axis_tracks_->GetAutoSizedRepeaterTrackIndex())
+              .BaseSize();
+
+      grid_axis_tracks_ = algorithm.ComputeGridAxisTracks(
+          SizingConstraint::kLayout, auto_repeat_track_size, masonry_items,
+          collapsed_track_indexes_, start_offset, needs_auto_track_size);
+    }
 
     const auto grid_axis_direction = grid_axis_tracks_->Direction();
     ASSERT_EQ(grid_axis_direction, style.MasonryTrackSizingDirection());
@@ -685,6 +709,181 @@ TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitNoCollapse) {
                           LayoutUnit(100)}));
 }
 
+TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFitAutoSizeAutoPlacement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+        display: masonry;
+        grid-template-columns: repeat(auto-fit, auto);
+    }
+    #masonry > div {
+        width: 100px;
+        height: 100px;
+    }
+    </style>
+    <div id="masonry">
+      <div style="grid-column: 1;"></div>
+      <div style="grid-column: 3;"></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(200)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  // These don't end up being 100px wide because auto tracks get stretched after
+  // the other tracks were collapsed.
+  EXPECT_EQ(TrackSizes(),
+            Vector<LayoutUnit>({LayoutUnit(250), LayoutUnit(250),
+                                LayoutUnit(250), LayoutUnit(250)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest,
+       ColumnAutoFitAutoSizeAndAutoAndExplicitPlacement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+        display: masonry;
+        grid-template-columns: repeat(auto-fit, auto);
+        height: 200px;
+        width: 1000px;
+    }
+    #masonry > div {
+        width: 100px;
+        height: 100px;
+    }
+    </style>
+    <div id="masonry">
+      <div></div>
+      <div></div>
+      <div style="grid-column: 4"></div>
+      <div style="grid-column: 6"></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(200)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  // These don't end up being 100px wide because auto tracks get stretched after
+  // the other tracks were collapsed.
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(200), LayoutUnit(200),
+                                              LayoutUnit(200), LayoutUnit(200),
+                                              LayoutUnit(200)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoAndAutoPlacement) {
+  SetBodyInnerHTML(R"HTML(
+  <style>
+  #masonry {
+      display: masonry;
+      grid-template-columns: repeat(5, 100px) repeat(auto-fit, auto);
+  }
+  #masonry > div {
+      width: 100px;
+      height: 100px;
+  }
+  </style>
+  <div id="masonry">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(200)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  // The last auto-fit column is 500px because it stretches to fill the
+  // remaining space.
+  EXPECT_EQ(
+      TrackSizes(),
+      Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100), LayoutUnit(100), LayoutUnit(500)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, ColumnAutoFillAutoFitAutoNoCollapse) {
+  SetBodyInnerHTML(R"HTML(
+  <style>
+  #masonry {
+      display: masonry;
+      grid-template-columns: repeat(auto-fit, auto) repeat(5, 100px);
+  }
+  #masonry > div {
+      width: auto;
+      height: 100px;
+  }
+  </style>
+  <div id="masonry">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(1000), LayoutUnit(200)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  EXPECT_EQ(
+      TrackSizes(),
+      Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100)}));
+}
+
 TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoPlacement) {
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -824,6 +1023,187 @@ TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitNoCollapse) {
   }
   #masonry > div {
       height: 100%;
+      width: 100px;
+  }
+  </style>
+  <div id="masonry">
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(1000)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  EXPECT_EQ(
+      TrackSizes(),
+      Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, RowAutoFitAutoSizeAutoPlacement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+        display: masonry;
+        masonry-direction: row;
+        grid-template-rows: repeat(auto-fit, auto);
+        height: 1000px;
+    }
+    #masonry > div {
+        height: 100px;
+        width: 100px;
+    }
+    </style>
+    <div id="masonry">
+      <div style="grid-row: 1;"></div>
+      <div style="grid-row: 3;"></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(1000)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  // These don't end up being 100px wide because auto tracks get stretched after
+  // the other tracks were collapsed.
+  EXPECT_EQ(TrackSizes(),
+            Vector<LayoutUnit>({LayoutUnit(250), LayoutUnit(250),
+                                LayoutUnit(250), LayoutUnit(250)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest,
+       RowAutoFitAutoSizeAndAutoAndExplicitPlacement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+        display: masonry;
+        masonry-direction: row;
+        grid-template-rows: repeat(auto-fit, auto);
+        height: 1000px;
+    }
+    #masonry > div {
+        height: 100px;
+        width: 100px;
+    }
+    </style>
+    <div id="masonry">
+      <div></div>
+      <div></div>
+      <div style="grid-row: 4"></div>
+      <div style="grid-row: 6"></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(1000)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  // These don't end up being 100px wide because auto tracks get stretched after
+  // the other tracks were collapsed.
+  EXPECT_EQ(TrackSizes(), Vector<LayoutUnit>({LayoutUnit(200), LayoutUnit(200),
+                                              LayoutUnit(200), LayoutUnit(200),
+                                              LayoutUnit(200)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoAndAutoPlacement) {
+  SetBodyInnerHTML(R"HTML(
+    <style>
+    #masonry {
+        display: masonry;
+        masonry-direction: row;
+        grid-template-rows: repeat(5, 100px) repeat(auto-fit, auto);
+        height: 1000px;
+    }
+    #masonry > div {
+        height: 100px;
+        width: 100px;
+    }
+    </style>
+    <div id="masonry">
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  )HTML");
+
+  BlockNode node(GetLayoutBoxByElementId("masonry"));
+
+  const auto space = ConstructBlockLayoutTestConstraintSpace(
+      {WritingMode::kHorizontalTb, TextDirection::kLtr},
+      LogicalSize(LayoutUnit(200), LayoutUnit(1000)),
+      /*stretch_inline_size_if_auto=*/true,
+      /*is_new_formatting_context=*/true);
+
+  const auto fragment_geometry =
+      CalculateInitialFragmentGeometry(space, node, /*break_token=*/nullptr);
+
+  MasonryLayoutAlgorithm algorithm({node, fragment_geometry, space});
+  ComputeGeometry(algorithm);
+
+  // The last auto-fit row is 500px because it stretches to fill the remaining
+  // space.
+  EXPECT_EQ(
+      TrackSizes(),
+      Vector<LayoutUnit>({LayoutUnit(100), LayoutUnit(100), LayoutUnit(100),
+                          LayoutUnit(100), LayoutUnit(100), LayoutUnit(500)}));
+}
+
+TEST_F(MasonryLayoutAlgorithmTest, RowAutoFillAutoFitAutoNoCollapse) {
+  SetBodyInnerHTML(R"HTML(
+  <style>
+  #masonry {
+      display: masonry;
+      masonry-direction: row;
+      grid-template-rows: repeat(auto-fit, auto) repeat(5, 100px);
+      height: 1000px;
+  }
+  #masonry > div {
+      height: 100px;
       width: 100px;
   }
   </style>
