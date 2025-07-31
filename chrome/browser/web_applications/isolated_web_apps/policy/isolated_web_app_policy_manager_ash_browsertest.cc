@@ -362,8 +362,9 @@ class IsolatedWebAppPolicyManagerAshBrowserTest
       const IsolatedWebAppPolicyManagerAshBrowserTest&) = delete;
 };
 
+// TODO(crbug.com/435371796): Test is flaky.
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       InstallIsolatedWebAppOnLogin) {
+                       DISABLED_InstallIsolatedWebAppOnLogin) {
   AddUser(/*set_iwa_policy_on_login=*/true);
 
   // Log in in the managed guest session.
@@ -383,8 +384,9 @@ IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
   EXPECT_EQ(GetIsolatedWebAppVersion(kAppId1).GetString(), "7.0.6");
 }
 
+// TODO(crbug.com/435371796): Test is flaky.
 IN_PROC_BROWSER_TEST_P(IsolatedWebAppPolicyManagerAshBrowserTest,
-                       PolicyUpdate) {
+                       DISABLED_PolicyUpdate) {
   AddUser();
 
   SetPolicyWithOneApp();
