@@ -8493,10 +8493,10 @@ Keep your key file in a safe place. You will need it to create new versions of y
           Reset to default
         </message>
       </if>
-      <message name="IDS_NTP_COMPOSE_ENTRYPOINT" desc="The text for the compose entrypoint in the searchbox on the New Tab Page." translateable="true">
+      <message name="IDS_NTP_COMPOSE_ENTRYPOINT" desc="The text for the compose entrypoint in the searchbox on the New Tab Page.">
         AI Mode
       </message>
-      <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page." translateable="false">
+      <message name="IDS_NTP_COMPOSE_ENTRYPOINT_A11Y_LABEL" desc="The accessibility label for the compose entrypoint in the searchbox on the New Tab Page.">
         Ask Google AI Mode
       </message>
       <message name="IDS_NTP_COMPOSE_PLACEHOLDER_TEXT" desc="The placeholder for the input in the compose box.">
@@ -8505,43 +8505,43 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL" desc="The accessibility label for the cancel button on the compose box when there is no input.">
         Dismiss
       </message>
-      <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT" desc="The accessibility label for the cancel button on the compose box when there is input." translateable="false">
+      <message name="IDS_NTP_COMPOSE_CANCEL_BUTTON_A11Y_LABEL_INPUT" desc="The accessibility label for the cancel button on the compose box when there is input.">
         Clear
       </message>
       <message name="IDS_NTP_COMPOSE_IMAGE_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the image upload button on the compose box.">
         Upload an image
       </message>
-      <message name="IDS_NTP_COMPOSE_PDF_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the file upload button on the compose box." translateable="false">
+      <message name="IDS_NTP_COMPOSE_PDF_UPLOAD_BUTTON_A11Y_LABEL" desc="The accessibility label for the file upload button on the compose box.">
         Upload a PDF
       </message>
       <message name="IDS_NTP_COMPOSE_SUBMIT_BUTTON_A11Y_LABEL" desc="The accessibility label for the submit button on the compose box.">
         Send
       </message>
-      <message name="IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL" desc="The accessibility label for the delete button shown on hover for uploaded files." translateable="false">
+      <message name="IDS_NTP_COMPOSE_DELETE_FILE_A11Y_LABEL" desc="The accessibility label for the delete button shown on hover for uploaded files.">
         <ph name="FILE_NAME">$1<ex>recipe.pdf</ex></ph> press enter to delete file
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT" desc="Text for a screenreader to read aloud when the user starts uploading a file." translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_STARTED_A11Y_TEXT" desc="Text for a screenreader to read aloud when the user starts uploading a file.">
         Uploading file
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_COMPLETE_A11Y_TEXT" desc="Text for a screenreader to read aloud when the user's file upload completes successfully." translateable="false">>
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_COMPLETE_A11Y_TEXT" desc="Text for a screenreader to read aloud when the user's file upload completes successfully.">>
         File upload complete
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE" desc="The text to display when a file upload is empty." translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_EMPTY_SIZE" desc="The text to display when a file upload is empty.">
         Can't upload. File appears to be empty.
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE" desc="The text to display when a file upload exceeds the allowed size" translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_INVALID_TOO_LARGE" desc="The text to display when a file upload exceeds the allowed size">
         Can't upload. File exceeds maximum supported size.
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR" desc="The text to display when an file upload image can't be processed." translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_IMAGE_PROCESSING_ERROR" desc="The text to display when an file upload image can't be processed.">
         Can't upload. Failed to process image file.
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED" desc="The generic text to display when a file upload fails a validation step." translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_VALIDATION_FAILED" desc="The generic text to display when a file upload fails a validation step.">
         Can't upload. File upload failed validation checks.
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED"  translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_FAILED">
         Unexpected error, file upload failed.
       </message>
-      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED" translateable="false">
+      <message name="IDS_NTP_COMPOSE_FILE_UPLOAD_EXPIRED">
         File upload has expired and been removed.
       </message>
 
