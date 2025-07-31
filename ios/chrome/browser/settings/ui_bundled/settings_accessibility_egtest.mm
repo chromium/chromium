@@ -167,7 +167,11 @@ id<GREYMatcher> BandwidthSettingsButton() {
   [[EarlGrey selectElementWithMatcher:BlockPopupsButton()]
       performAction:grey_tap()];
   [ChromeEarlGrey verifyAccessibilityForCurrentScreen];
-  [self closeSubSettingsMenu];
+  // Close settings menu.
+  [[EarlGrey selectElementWithMatcher:NavigationBarBackButton()]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      performAction:grey_tap()];
 }
 
 // Verifies the UI elements are accessible on the Privacy Settings page.
