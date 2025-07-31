@@ -150,7 +150,7 @@ public class OmniboxFeatures {
             newFlag(OmniboxFeatureList.MULTILINE_EDIT_FIELD, FeatureState.DISABLED);
 
     public static final CachedFlag sAndroidHubSearchTabGroups =
-            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.DISABLED);
+            newFlag(OmniboxFeatureList.ANDROID_HUB_SEARCH_TAB_GROUPS, FeatureState.ENABLED_IN_TEST);
 
     public static final BooleanCachedFeatureParam sOmniboxParityRetrieveBuiltInEngineIcon =
             newBooleanParam(sOmniboxMobileParityUpdateV2, "retrieve_builtin_favicon", false);
