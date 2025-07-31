@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_DESKS_CHROME_DESKS_UTIL_H_
 #define CHROME_BROWSER_UI_ASH_DESKS_CHROME_DESKS_UTIL_H_
 
+#include <cstdint>
 #include <memory>
 #include <vector>
 
