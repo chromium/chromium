@@ -204,19 +204,11 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
   if (IsDiamondPrototypeEnabled()) {
     self.toolsMenuButton = [self.buttonFactory toolsMenuButton];
-    self.toolsMenuButton.tintColor = [UIColor colorNamed:kSolidBlackColor];
-    self.toolsMenuButton.backgroundColor = [UIColor colorNamed:kGrey50Color];
-    self.toolsMenuButton.layer.cornerRadius = 13;
-    self.toolsMenuButton.visibilityMask = ToolbarComponentVisibilityAlways;
     [self.toolsMenuButton updateHiddenInCurrentSizeClass];
     [self addSubview:self.toolsMenuButton];
 
     self.diamondPrototypeButton = [self.buttonFactory diamondPrototypeButton];
-    self.diamondPrototypeButton.tintColor =
-        [UIColor colorNamed:kSolidBlackColor];
-    self.diamondPrototypeButton.backgroundColor =
-        [UIColor colorNamed:kGrey50Color];
-    self.diamondPrototypeButton.layer.cornerRadius = 13;
+    [self.diamondPrototypeButton updateHiddenInCurrentSizeClass];
     [self addSubview:self.self.diamondPrototypeButton];
 
     self.backButton = [self.buttonFactory backButton];

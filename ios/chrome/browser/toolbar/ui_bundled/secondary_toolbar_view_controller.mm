@@ -13,6 +13,7 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/shared/ui/util/util_swift.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/adaptive_toolbar_view_controller+subclassing.h"
+#import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_button_factory.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/buttons/toolbar_configuration.h"
 #import "ios/chrome/browser/toolbar/ui_bundled/public/toolbar_constants.h"
@@ -89,6 +90,11 @@
   CGFloat alphaValue = fmax(progress * 1.1 - 0.1, 0);
   if (IsBottomOmniboxAvailable()) {
     self.view.buttonStackView.alpha = alphaValue;
+  }
+
+  if (IsDiamondPrototypeEnabled()) {
+    self.view.toolsMenuButton.alpha = alphaValue;
+    self.view.diamondPrototypeButton.alpha = alphaValue;
   }
 
   self.view.locationBarTopConstraint.constant =

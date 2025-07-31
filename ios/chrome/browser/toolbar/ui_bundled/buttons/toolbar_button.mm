@@ -247,6 +247,11 @@ const CGFloat kButtonImageInset = 3;
 
 // Updates the tint color according to the current state.
 - (void)updateTintColor {
+  if (IsDiamondPrototypeEnabled()) {
+    self.tintColor =
+        [[UIColor colorNamed:kSolidBlackColor] colorWithAlphaComponent:0.9];
+    return;
+  }
   self.tintColor =
       (self.iphHighlighted)
           ? self.toolbarConfiguration.buttonsTintColorIPHHighlighted
