@@ -317,16 +317,6 @@ export class SettingsAutofillSectionElement extends
         this.isAccountWorkAddress_(address);
   }
 
-  private getAddressIcon_(address: chrome.autofillPrivate.AddressEntry) {
-    if (this.isAccountHomeAddress_(address)) {
-      return 'settings20:home';
-    }
-    if (this.isAccountWorkAddress_(address)) {
-      return 'settings20:work';
-    }
-    return 'settings20:location-on';
-  }
-
   private onAccountHomeAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('googleAccountHomeAddressUrl'));
@@ -335,10 +325,6 @@ export class SettingsAutofillSectionElement extends
   private onAccountWorkAddressClick_() {
     OpenWindowProxyImpl.getInstance().openUrl(
         this.i18n('googleAccountWorkAddressUrl'));
-  }
-
-  private shouldShowAddressRowIcon_() {
-    return loadTimeData.getBoolean('enableSupportForHomeAndWork');
   }
 
   private isCloudOffVisible_(
@@ -364,6 +350,57 @@ export class SettingsAutofillSectionElement extends
     // Local profile of a logged-in user with disabled address sync and
     // enabled feature.
     return true;
+  }
+
+  /**
+   * Determines if an icon is to be shown for the given address.
+   */
+  private shouldShowAddressIcon_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): boolean {
+    return this.isCloudOffVisible_(address, accountInfo) ||
+        loadTimeData.getBoolean('enableSupportForHomeAndWork');
+  }
+
+  /**
+   * Determines which icon to show for a given address.
+   *
+   * @return The icon string or an empty string.
+   */
+  private getAddressIcon_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): string {
+    if (this.isAccountHomeAddress_(address)) {
+      return 'settings20:home';
+    }
+    if (this.isAccountWorkAddress_(address)) {
+      return 'settings20:work';
+    }
+    if (this.isCloudOffVisible_(address, accountInfo)) {
+      return 'cr20:cloud-off';
+    }
+
+    return 'settings20:location-on';
+  }
+
+  /**
+   * Determines which a11y string to announce for a given address.
+   *
+   * @return The a11y string or an empty string.
+   */
+  private getA11yLabelForIcon_(
+      address: chrome.autofillPrivate.AddressEntry,
+      accountInfo: chrome.autofillPrivate.AccountInfo|null): string {
+    if (this.isCloudOffVisible_(address, accountInfo)) {
+      return this.i18n('localAddressIconA11yLabel');
+    }
+    if (this.isAccountHomeAddress_(address)) {
+      return this.i18n('homeAddressIconA11yLabel');
+    }
+    if (this.isAccountWorkAddress_(address)) {
+      return this.i18n('workAddressIconA11yLabel');
+    }
+    return '';
   }
 
   /**

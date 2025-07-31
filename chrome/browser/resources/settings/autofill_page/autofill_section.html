@@ -11,17 +11,6 @@
       background-color: var(--cr-hover-background-color);
     }
 
-    #address-row-icon {
-      --iron-icon-fill-color: var(--google-grey-700);
-      padding-inline-end: var(--cr-icon-button-margin-start);
-    }
-
-    @media (prefers-color-scheme: dark) {
-      #address-row-icon {
-        --iron-icon-fill-color: var(--google-grey-500);
-      }
-    }
-
     #addressList .start {
       display: flex;
       overflow: hidden;
@@ -85,11 +74,6 @@
         <template is="dom-repeat" items="[[addresses]]">
           <div class="list-item" role="listitem">
             <div class="start">
-              <cr-icon id="address-row-icon" icon="[[getAddressIcon_(item)]]"
-                  hidden="[[!shouldShowAddressRowIcon_]]"
-                  role="img">
-              </cr-icon>
-
               <span id="addressSummary">
                 <span class="ellipses">
                   [[item.metadata.summaryLabel]]
@@ -98,9 +82,11 @@
                   [[item.metadata.summarySublabel]]
                 </span>
               </span>
-              <cr-icon icon="cr20:cloud-off"
-                  hidden$="[[!isCloudOffVisible_(item, accountInfo_)]]"
-                  aria-label="$i18n{localAddressIconA11yLabel}"
+              <cr-icon
+                  id="address-row-icon"
+                  icon="[[getAddressIcon_(item, accountInfo_)]]"
+                  hidden$="[[!shouldShowAddressIcon_(item, accountInfo_)]]"
+                  aria-label="[[getA11yLabelForIcon_(item, accountInfo_)]]"
                   role="img">
               </cr-icon>
             </div>

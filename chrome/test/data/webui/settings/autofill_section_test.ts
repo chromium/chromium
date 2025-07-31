@@ -461,30 +461,30 @@ suite('AutofillSectionAddressTests', function() {
     const section = document.createElement('settings-autofill-section');
     document.body.appendChild(section);
     await autofillManager.whenCalled('getAddressList');
-
     await flushTasks();
 
     const addressList = section.$.addressList;
+    const getIcon = () => addressList.children[0]!.querySelector<HTMLElement>(
+        '#address-row-icon');
 
+    const iconName1 = getIcon()!.getAttribute('icon');
     assertFalse(
-        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
+        !!iconName1 && iconName1.includes('cloud-off'),
         'Sync for addresses is enabled, the local indicator should be off.');
 
     const changeListener =
         autofillManager.lastCallback.setPersonalDataManagerListener!;
-
     changeListener(autofillManager.data.addresses, [], [], [], undefined);
+    const iconName2 = getIcon()!.getAttribute('icon');
     assertFalse(
-        isVisible(section.$.addressList.children[0]!.querySelector(
-            '[icon*=cloud-off]')),
+        !!iconName2 && iconName2.includes('cloud-off'),
         'The local indicator should not be shown to logged-out users');
 
     changeListener(
         autofillManager.data.addresses, [], [], [], STUB_USER_ACCOUNT_INFO);
     assertTrue(
-        isVisible(addressList.children[0]!.querySelector('[icon*=cloud-off]')),
+        isVisible(getIcon()),
         'Sync is disabled but the feature is on, the icon should be visible.');
-
 
     document.body.removeChild(section);
   });

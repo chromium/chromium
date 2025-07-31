@@ -388,6 +388,12 @@
   <message name="IDS_AUTOFILL_LOCAL_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the 'no-cloud' address icon in Settings.">
     Address is available only on this device
   </message>
+  <message name="IDS_AUTOFILL_HOME_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the home address icon in Settings.">
+    home address
+  </message>
+  <message name="IDS_AUTOFILL_WORK_ADDRESS_ICON_A11Y_LABEL" desc="The a11y label for the work address icon in Settings.">
+    work address
+  </message>
   <message name="IDS_AUTOFILL_SYNC_TOGGLE_LABEL" desc="The Sync Autofill toggle label on the Autofill Settings page.">
     Use and save Addresses from your Google Account
   </message>
