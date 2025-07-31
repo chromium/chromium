@@ -11,6 +11,7 @@
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "chromecast/starboard/media/cdm/mock_starboard_drm_wrapper_client.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
@@ -134,13 +135,18 @@ class StarboardPlayerManagerTest : public ::testing::Test {
  protected:
   StarboardPlayerManagerTest()
       : audio_stream_(DemuxerStream::Type::AUDIO),
-        video_stream_(DemuxerStream::Type::VIDEO) {}
+        video_stream_(DemuxerStream::Type::VIDEO) {
+    ON_CALL(starboard_for_drm_, CreateDrmSystem)
+        .WillByDefault(Return(&sb_drm_system_));
+    StarboardDrmWrapper::SetSingletonForTesting(&starboard_for_drm_);
+  }
 
   ~StarboardPlayerManagerTest() override = default;
 
   // This should be destructed last.
   base::test::TaskEnvironment task_environment_;
   NiceMock<MockStarboardApiWrapper> starboard_;
+  NiceMock<MockStarboardApiWrapper> starboard_for_drm_;
   MockDemuxerStream audio_stream_;
   MockDemuxerStream video_stream_;
   MockRendererClient renderer_client_;
@@ -148,6 +154,8 @@ class StarboardPlayerManagerTest : public ::testing::Test {
   // Since SbPlayer is used as an opaque void* by cast, we can use any type
   // here. All that matters is the address.
   int sb_player_ = 1;
+  // Same for SbDrmSystem.
+  int sb_drm_system_ = 2;
 };
 
 TEST_F(StarboardPlayerManagerTest,
@@ -722,23 +730,19 @@ TEST_F(StarboardPlayerManagerTest, CreatePlayerReturnsNullIfTaskRunnerIsNull) {
               IsNull());
 }
 
-TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedAudioAndVideo) {
-  // SbDrmSystem is an opaque blob to cast, so its actual value does not matter.
-  // All that matters is its address (treated as void*).
-  int drm_system = 3;
-  EXPECT_CALL(starboard_, CreateDrmSystem).WillOnce(Return(&drm_system));
+TEST_F(StarboardPlayerManagerTest,
+       PassesDrmSystemToStarboardForEncryptedAudioAndVideoStreams) {
   EXPECT_CALL(
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system,
+              .drm_system = &sb_drm_system_,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
                   kStarboardPlayerOutputModePunchOut})),
           _))
       .WillOnce(Return(&sb_player_));
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
 
   // Both audio and video streams are encrypted.
   audio_stream_.set_audio_decoder_config(
@@ -746,31 +750,27 @@ TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedAudioAndVideo) {
   video_stream_.set_video_decoder_config(
       GetChromiumVideoConfig(::media::EncryptionScheme::kCenc));
 
-  std::unique_ptr<StarboardPlayerManager> player_manager =
+  EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
           base::SequencedTaskRunner::GetCurrentDefault(),
-          /*enable_buffering=*/true);
-  EXPECT_THAT(player_manager, NotNull());
+          /*enable_buffering=*/true),
+      NotNull());
 }
 
-TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedAudio) {
-  // SbDrmSystem is an opaque blob to cast, so its actual value does not matter.
-  // All that matters is its address (treated as void*).
-  int drm_system = 3;
-  EXPECT_CALL(starboard_, CreateDrmSystem).WillOnce(Return(&drm_system));
+TEST_F(StarboardPlayerManagerTest,
+       PassesDrmSystemToStarboardForEncryptedAudioStream) {
   EXPECT_CALL(
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system,
+              .drm_system = &sb_drm_system_,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
                   kStarboardPlayerOutputModePunchOut})),
           _))
       .WillOnce(Return(&sb_player_));
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
 
   // Only the audio stream is encrypted.
   audio_stream_.set_audio_decoder_config(
@@ -778,31 +778,27 @@ TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedAudio) {
   video_stream_.set_video_decoder_config(
       GetChromiumVideoConfig(::media::EncryptionScheme::kUnencrypted));
 
-  std::unique_ptr<StarboardPlayerManager> player_manager =
+  EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
           base::SequencedTaskRunner::GetCurrentDefault(),
-          /*enable_buffering=*/true);
-  EXPECT_THAT(player_manager, NotNull());
+          /*enable_buffering=*/true),
+      NotNull());
 }
 
-TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedVideo) {
-  // SbDrmSystem is an opaque blob to cast, so its actual value does not matter.
-  // All that matters is its address (treated as void*).
-  int drm_system = 3;
-  EXPECT_CALL(starboard_, CreateDrmSystem).WillOnce(Return(&drm_system));
+TEST_F(StarboardPlayerManagerTest,
+       PassesDrmSystemToStarboardForEncryptedVideoStream) {
   EXPECT_CALL(
       starboard_,
       CreatePlayer(
           Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
-              .drm_system = &drm_system,
+              .drm_system = &sb_drm_system_,
               .audio_sample_info = GetStarboardAudioConfig(),
               .video_sample_info = GetStarboardVideoConfig(),
               .output_mode = StarboardPlayerOutputMode::
                   kStarboardPlayerOutputModePunchOut})),
           _))
       .WillOnce(Return(&sb_player_));
-  StarboardDrmWrapper::SetSingletonForTesting(&starboard_);
 
   // Only the video stream is encrypted.
   audio_stream_.set_audio_decoder_config(
@@ -810,12 +806,84 @@ TEST_F(StarboardPlayerManagerTest, CreatesDrmSystemForEncryptedVideo) {
   video_stream_.set_video_decoder_config(
       GetChromiumVideoConfig(::media::EncryptionScheme::kCenc));
 
-  std::unique_ptr<StarboardPlayerManager> player_manager =
+  EXPECT_THAT(
       StarboardPlayerManager::Create(
           &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
           base::SequencedTaskRunner::GetCurrentDefault(),
-          /*enable_buffering=*/true);
-  EXPECT_THAT(player_manager, NotNull());
+          /*enable_buffering=*/true),
+      NotNull());
+}
+
+TEST_F(StarboardPlayerManagerTest,
+       PassesDrmSystemToStarboardIfCdmExistsEvenIfAudioAndVideoAreUnencrypted) {
+  // This is a regression test for http://crbug.com/432142194. Specifically, a
+  // scenario where ads play before DRM-protected content.
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = &sb_drm_system_,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(Return(&sb_player_));
+
+  // Both streams are unencrypted.
+  audio_stream_.set_audio_decoder_config(
+      GetChromiumAudioConfig(::media::EncryptionScheme::kUnencrypted));
+  video_stream_.set_video_decoder_config(
+      GetChromiumVideoConfig(::media::EncryptionScheme::kUnencrypted));
+
+  // However, a CDM has been created. So we should still pass an SbDrmSystem to
+  // SbPlayerCreate.
+  //
+  // Instantiating a MockStarboardDrmWrapperClient simulates a CDM being
+  // instantiated.
+  MockStarboardDrmWrapperClient drm_wrapper_client;
+
+  EXPECT_THAT(
+      StarboardPlayerManager::Create(
+          &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          /*enable_buffering=*/true),
+      NotNull());
+}
+
+TEST_F(
+    StarboardPlayerManagerTest,
+    DoesNotPassDrmSystemToStarboardIfCdmIsDestroyedAndAudioAndVideoAreUnencrypted) {
+  EXPECT_CALL(
+      starboard_,
+      CreatePlayer(
+          Pointee(MatchesPlayerCreationParam(StarboardPlayerCreationParam{
+              .drm_system = nullptr,
+              .audio_sample_info = GetStarboardAudioConfig(),
+              .video_sample_info = GetStarboardVideoConfig(),
+              .output_mode = StarboardPlayerOutputMode::
+                  kStarboardPlayerOutputModePunchOut})),
+          _))
+      .WillOnce(Return(&sb_player_));
+
+  // Both streams are unencrypted.
+  audio_stream_.set_audio_decoder_config(
+      GetChromiumAudioConfig(::media::EncryptionScheme::kUnencrypted));
+  video_stream_.set_video_decoder_config(
+      GetChromiumVideoConfig(::media::EncryptionScheme::kUnencrypted));
+
+  {
+    MockStarboardDrmWrapperClient drm_wrapper_client;
+  }
+  // drm_wrapper_client is destructed, so no SbDrmSystem exists when
+  // StarboardPlayerManager is created.
+
+  EXPECT_THAT(
+      StarboardPlayerManager::Create(
+          &starboard_, &audio_stream_, &video_stream_, &renderer_client_,
+          base::SequencedTaskRunner::GetCurrentDefault(),
+          /*enable_buffering=*/true),
+      NotNull());
 }
 
 }  // namespace

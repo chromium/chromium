@@ -40,9 +40,7 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
   creation_param.output_mode =
       StarboardPlayerOutputMode::kStarboardPlayerOutputModePunchOut;
 
-  // This will be set below if audio or video is encrypted.
-  creation_param.drm_system = nullptr;
-
+  bool stream_encrypted = false;
   if (audio_stream) {
     audio_stream->EnableBitstreamConverter();
     audio_config = audio_stream->audio_decoder_config();
@@ -58,8 +56,7 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     creation_param.audio_sample_info = *audio_sample_info;
 
     if (audio_config.is_encrypted()) {
-      creation_param.drm_system =
-          StarboardDrmWrapper::GetInstance().GetDrmSystem();
+      stream_encrypted = true;
     }
   }
 
@@ -87,14 +84,35 @@ std::unique_ptr<StarboardPlayerManager> StarboardPlayerManager::Create(
     }
 
     if (video_config.is_encrypted()) {
-      creation_param.drm_system =
-          StarboardDrmWrapper::GetInstance().GetDrmSystem();
+      stream_encrypted = true;
     }
   }
 
   std::optional<StarboardDrmWrapper::DrmSystemResource> drm_resource;
-  if (creation_param.drm_system != nullptr) {
+  const bool cdm_exists = StarboardDrmWrapper::GetInstance().HasClients();
+  if (stream_encrypted || cdm_exists) {
+    if (stream_encrypted && !cdm_exists) {
+      // This case might happen if there's a race between the JS app creating a
+      // MediaKeys object and playback starting.
+      LOG(WARNING) << "Content is encrypted, but no CDM exists. Passing an "
+                      "SbDrmSystem to SbPlayerCreate regardless";
+    } else if (!stream_encrypted && cdm_exists) {
+      // This case might happen if ads play before the main content.
+      LOG(WARNING) << "Content is not encrypted, but a CDM exists. Passing an "
+                      "SbDrmSystem to SbPlayerCreate regardless";
+    } else {
+      // Standard case.
+      LOG(INFO)
+          << "Content is encrypted and a CDM exists. Using an SbDrmSystem.";
+    }
+
     drm_resource.emplace();
+    creation_param.drm_system =
+        StarboardDrmWrapper::GetInstance().GetDrmSystem();
+  } else {
+    LOG(INFO) << "Content is not encrypted and no CDM exists. Passing a null "
+                 "SbDrmSystem to SbPlayerCreate";
+    creation_param.drm_system = nullptr;
   }
 
   // base::WrapUnique is necessary because we're calling a private ctor.
