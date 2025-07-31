@@ -1908,7 +1908,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
     }
 
     @CalledByNative
-    private void handleFocusChanged(int id) {
+    private void handleFocusChanged(int id, boolean isRootOrFrameRoot) {
         // If |mShouldFocusOnPageLoad| is false, that means this is a WebView and
         // we should avoid moving accessibility focus when the page loads, but more
         // generally we should avoid moving accessibility focus whenever it's not
@@ -1922,7 +1922,7 @@ public class WebContentsAccessibilityImpl extends AccessibilityNodeProviderCompa
             // result in a blur aka focus on the root. This interferes
             // with some accessibility services that move accessibility
             // focus along with input focus.
-            if (mCurrentRootId == id) {
+            if (isRootOrFrameRoot) {
                 return;
             }
         }

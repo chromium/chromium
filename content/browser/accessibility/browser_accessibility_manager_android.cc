@@ -195,7 +195,9 @@ void BrowserAccessibilityManagerAndroid::FireFocusEvent(ui::AXNode* node) {
 
   BrowserAccessibilityAndroid* android_node =
       static_cast<BrowserAccessibilityAndroid*>(GetFromAXNode(node));
-  wcax->HandleFocusChanged(android_node->GetUniqueId());
+  wcax->HandleFocusChanged(
+      android_node->GetUniqueId(),
+      android_node->manager()->GetBrowserAccessibilityRoot() == android_node);
 }
 
 void BrowserAccessibilityManagerAndroid::FireLocationChanged(
