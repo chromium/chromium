@@ -5076,7 +5076,7 @@ const char kMayLaunchUrlUsesSeparateStoragePartitionDescription[] =
 
 const char kMediaIndicatorsAndroidName[] = "Media Indicators Android";
 const char kMediaIndicatorsAndroidDescription[] =
-    "Enables media indicators on tablets.";
+    "Enables media indicators on Android.";
 
 const char kMiniOriginBarName[] = "Mini Origin Bar";
 const char kMiniOriginBarDescription[] =

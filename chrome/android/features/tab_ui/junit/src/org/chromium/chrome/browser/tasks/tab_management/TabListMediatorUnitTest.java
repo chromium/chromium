@@ -5166,8 +5166,6 @@ public class TabListMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
     public void testMediaState_TabAudible() {
-        // Simulate tablet
-        when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(2);
         assertEquals(MediaState.NONE, mModelList.get(0).model.get(TabProperties.MEDIA_INDICATOR));
 
         when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
@@ -5180,8 +5178,6 @@ public class TabListMediatorUnitTest {
     @Test
     @EnableFeatures(ChromeFeatureList.MEDIA_INDICATORS_ANDROID)
     public void testMediaState_TabNone() {
-        // Simulate tablet
-        when(mResources.getInteger(R.integer.min_screen_width_bucket)).thenReturn(2);
         when(mTab1.getMediaState()).thenReturn(MediaState.AUDIBLE);
         mTabObserverCaptor.getValue().onMediaStateChanged(mTab1, MediaState.AUDIBLE);
         assertEquals(

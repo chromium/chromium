@@ -103,7 +103,6 @@ import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.back_forward_transition.AnimationStage;
 import org.chromium.content_public.browser.navigation_controller.UserAgentOverrideOption;
 import org.chromium.content_public.common.Referrer;
-import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.base.ViewAndroidDelegate;
 import org.chromium.ui.base.WindowAndroid;
@@ -2687,8 +2686,7 @@ class TabImpl implements Tab {
     @Override
     public void setMediaState(@MediaState int mediaState) {
         mMediaState = mediaState;
-        if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()
-                && DeviceFormFactor.isNonMultiDisplayContextOnTablet(getContext())) {
+        if (ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
             for (TabObserver observer : mObservers) {
                 observer.onMediaStateChanged(this, mediaState);
             }

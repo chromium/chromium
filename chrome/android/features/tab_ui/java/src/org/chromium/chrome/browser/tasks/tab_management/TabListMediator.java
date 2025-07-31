@@ -1774,10 +1774,7 @@ class TabListMediator implements TabListNotificationHandler {
     }
 
     private @MediaState int getTabGridMediaIndicator(Tab representativeTab) {
-        if (!DeviceFormFactor.isNonMultiDisplayContextOnTablet(mActivity)
-                || !ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) {
-            return MediaState.NONE;
-        }
+        if (!ChromeFeatureList.sMediaIndicatorsAndroid.isEnabled()) return MediaState.NONE;
 
         if (!mActionsOnAllRelatedTabs || !isTabInTabGroup(representativeTab)) {
             return representativeTab.getMediaState();

@@ -6632,7 +6632,7 @@
   },
   {
     "name": "media-indicators-android",
-    "owners": ["polardz@google.com", "ckitagawa@google.com", "clank-tab-dev@google.com"],
+    "owners": ["polardz@google.com", "ckitagawa@chromium.org", "clank-tab-dev@google.com"],
     "expiry_milestone": 145
   },
   {
