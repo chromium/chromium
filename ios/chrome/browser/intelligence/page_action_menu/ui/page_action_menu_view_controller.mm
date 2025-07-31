@@ -507,6 +507,8 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   // Create the button config.
   UIButtonConfiguration* buttonConfiguration =
       [UIButtonConfiguration filledButtonConfiguration];
+  buttonConfiguration.titleAlignment =
+      UIButtonConfigurationTitleAlignmentCenter;
   buttonConfiguration.image = image;
   buttonConfiguration.imagePlacement = NSDirectionalRectEdgeTop;
   buttonConfiguration.imagePadding = kSmallButtonImagePadding;
