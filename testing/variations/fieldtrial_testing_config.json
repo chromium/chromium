@@ -15721,7 +15721,7 @@
                 {
                     "name": "Enabled",
                     "params": {
-                        "ConfigParam": "CgIIAw=="
+                        "ConfigParam": "CgIIAxI8CAEQARoXCAAQ4MZbGMAMIMAMKCgyB2ltYWdlLyoiGwiAhK9fEhQucGRmLGFwcGxpY2F0aW9uL3BkZigB"
                     },
                     "enable_features": [
                         "NtpComposebox"
