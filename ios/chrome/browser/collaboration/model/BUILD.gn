@@ -116,10 +116,5 @@ source_set("features") {
     "features.h",
     "features.mm",
   ]
-  deps = [
-    ":model",
-    "//components/collaboration/public",
-    "//ios/chrome/browser/shared/model/profile",
-    "//ios/chrome/browser/shared/public/features",
-  ]
+  deps = [ "//components/collaboration/public" ]
 }
