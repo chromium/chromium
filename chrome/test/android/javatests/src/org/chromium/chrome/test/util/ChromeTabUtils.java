@@ -130,6 +130,10 @@ public class ChromeTabUtils {
                 && !tab.getWebContents().shouldShowLoadingUI();
     }
 
+    public static int getTabCountOnUiThread(TabModel tabModel) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getCount());
+    }
+
     public static String getCurrentTabTitleOnUiThread(ChromeActivity activity) {
         return ThreadUtils.runOnUiThreadBlocking(
                 () -> {

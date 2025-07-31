@@ -7,6 +7,8 @@ package org.chromium.chrome.test.transit.hub;
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import android.view.View;
 
 import org.hamcrest.Matcher;
@@ -39,7 +41,8 @@ public class RegularTabSwitcherStation extends TabSwitcherStation {
      */
     public static RegularTabSwitcherStation from(TabModelSelector selector) {
         return new RegularTabSwitcherStation(
-                selector.getModel(false).getCount() > 0, selector.getModel(true).getCount() > 0);
+                getTabCountOnUiThread(selector.getModel(false)) > 0,
+                getTabCountOnUiThread(selector.getModel(true)) > 0);
     }
 
     @Override

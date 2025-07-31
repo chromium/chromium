@@ -6,6 +6,8 @@ package org.chromium.chrome.test.transit.hub;
 
 import static androidx.test.espresso.matcher.ViewMatchers.isSelected;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import org.chromium.base.test.transit.ViewElementMatchesCondition;
 import org.chromium.chrome.browser.hub.PaneId;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
@@ -28,7 +30,8 @@ public class IncognitoTabSwitcherStation extends TabSwitcherStation {
      */
     public static IncognitoTabSwitcherStation from(TabModelSelector selector) {
         return new IncognitoTabSwitcherStation(
-                selector.getModel(false).getCount() > 0, selector.getModel(true).getCount() > 0);
+                getTabCountOnUiThread(selector.getModel(false)) > 0,
+                getTabCountOnUiThread(selector.getModel(true)) > 0);
     }
 
     @Override
