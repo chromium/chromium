@@ -14,6 +14,8 @@ source_set("ui") {
     "safari_data_import_password_conflict_mutator.h",
     "safari_data_import_password_conflict_resolution_view_controller.h",
     "safari_data_import_password_conflict_resolution_view_controller.mm",
+    "safari_data_invalid_passwords_view_controller.h",
+    "safari_data_invalid_passwords_view_controller.mm",
     "safari_data_item_table_view.h",
     "safari_data_item_table_view.mm",
   ]

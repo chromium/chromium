@@ -10,12 +10,14 @@
 }
 - (instancetype)initWithURL:(NSString*)url
                    username:(NSString*)username
-                   password:(NSString*)password {
+                   password:(NSString*)password
+                     status:(PasswordImportStatus)status {
   self = [super init];
   if (self) {
     _url = url;
     _username = username;
     _password = password;
+    _status = status;
   }
   return self;
 }

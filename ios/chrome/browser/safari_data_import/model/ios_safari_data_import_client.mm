@@ -16,6 +16,40 @@ namespace {
 using password_manager::ImportEntry;
 using password_manager::ImportResults;
 
+// Converts password_manager::ImportEntry::Status to PasswordImportStatus.
+PasswordImportStatus GetPasswordImportStatusFromImportEntryStatus(
+    password_manager::ImportEntry::Status status) {
+  switch (status) {
+    case ImportEntry::Status::NONE:
+      return PasswordImportStatus::kNone;
+    case ImportEntry::Status::UNKNOWN_ERROR:
+      return PasswordImportStatus::kUnknownError;
+    case ImportEntry::Status::MISSING_PASSWORD:
+      return PasswordImportStatus::kMissingPassword;
+    case ImportEntry::Status::MISSING_URL:
+      return PasswordImportStatus::kMissingURL;
+    case ImportEntry::Status::INVALID_URL:
+      return PasswordImportStatus::kInvalidURL;
+    case ImportEntry::Status::LONG_URL:
+      return PasswordImportStatus::kLongUrl;
+    case ImportEntry::Status::LONG_PASSWORD:
+      return PasswordImportStatus::kLongPassword;
+    case ImportEntry::Status::LONG_USERNAME:
+      return PasswordImportStatus::kLongUsername;
+    case ImportEntry::Status::CONFLICT_PROFILE:
+      return PasswordImportStatus::kConflictProfile;
+    case ImportEntry::Status::CONFLICT_ACCOUNT:
+      return PasswordImportStatus::kConflictAccount;
+    case ImportEntry::Status::LONG_NOTE:
+      return PasswordImportStatus::kLongNote;
+    case ImportEntry::Status::LONG_CONCATENATED_NOTE:
+      return PasswordImportStatus::kLongConcatenatedNote;
+    case ImportEntry::Status::VALID:
+      return PasswordImportStatus::kValid;
+  }
+  NOTREACHED();
+}
+
 // Converts `ImportResults` to a list of `PasswordImportItem`s.
 NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
     const ImportResults& results) {
@@ -24,7 +58,8 @@ NSArray<PasswordImportItem*>* GetPasswordImportItemsFromImportResults(
     PasswordImportItem* item = [[PasswordImportItem alloc]
         initWithURL:base::SysUTF8ToNSString(entry.url)
            username:base::SysUTF8ToNSString(entry.username)
-           password:base::SysUTF8ToNSString(entry.password)];
+           password:base::SysUTF8ToNSString(entry.password)
+             status:GetPasswordImportStatusFromImportEntryStatus(entry.status)];
     [password_items addObject:item];
   }
   return password_items;

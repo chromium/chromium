@@ -30,6 +30,7 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_stage_transition_handler.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_import_view_controller.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_resolution_view_controller.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_invalid_passwords_view_controller.h"
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
@@ -47,7 +48,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
 
 @interface SafariDataImportImportCoordinator () <
     PromoStyleViewControllerDelegate,
-    SafariDataImportImportStageTransitionHandler>
+    SafariDataImportImportStageTransitionHandler,
+    UITableViewDelegate>
 
 /// The mediator handling the interaction with the model. Lazily loaded with
 /// `-mediator` method.
@@ -89,6 +91,7 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
       [[SafariDataImportImportViewController alloc] init];
   _containerViewController.delegate = self;
   _tableView = [[SafariDataItemTableView alloc] init];
+  _tableView.delegate = self;
   _tableView.importStageTransitionHandler = self;
   _containerViewController.itemTableView = _tableView;
   self.baseNavigationController.navigationBarHidden = NO;
@@ -222,6 +225,22 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
   }
   [self.mediator reset];
   _containerViewController.importStage = SafariDataImportStage::kNotStarted;
+}
+
+#pragma mark - UITableViewDelegate
+
+- (void)tableView:(UITableView*)tableView
+    accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath {
+  CHECK_EQ(tableView, _tableView);
+  NSArray<PasswordImportItem*>* invalidPasswords =
+      self.mediator.invalidPasswords;
+  CHECK_GT(invalidPasswords.count, 0u);
+  SafariDataInvalidPasswordsViewController* invalidPasswordsViewController =
+      [[SafariDataInvalidPasswordsViewController alloc]
+          initWithInvalidPasswords:invalidPasswords];
+  [self presentViewController:
+            [[UINavigationController alloc]
+                initWithRootViewController:invalidPasswordsViewController]];
 }
 
 #pragma mark - Private

@@ -159,10 +159,6 @@ UIView* GetCheckmark() {
 
 }  // namespace
 
-@interface SafariDataItemTableView () <UITableViewDelegate>
-
-@end
-
 @implementation SafariDataItemTableView {
   /// Safari data items to be displayed in the table. The dictionary key is an
   /// NSNumber representation of the type.
@@ -185,7 +181,6 @@ UIView* GetCheckmark() {
     self.allowsSelection = NO;
     self.backgroundColor = [UIColor clearColor];
     self.separatorInset = UIEdgeInsetsMake(0, 60, 0, 0);
-    self.delegate = self;
     /// Remove extra space from UITableViewWrapperView.
     self.directionalLayoutMargins =
         NSDirectionalEdgeInsetsMake(0, CGFLOAT_MIN, 0, CGFLOAT_MIN);
@@ -358,13 +353,6 @@ UIView* GetCheckmark() {
       }
       return;
   }
-}
-
-#pragma mark - UITableViewDelegate
-
-- (void)tableView:(UITableView*)tableView
-    accessoryButtonTappedForRowWithIndexPath:(NSIndexPath*)indexPath {
-  /// TODO(crbug.com/420703283): Show the list of un-imported passwords.
 }
 
 @end
