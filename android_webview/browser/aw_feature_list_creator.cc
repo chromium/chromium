@@ -16,7 +16,6 @@
 #include "android_webview/browser/aw_feature_entries.h"
 #include "android_webview/browser/aw_metrics_service_client_delegate.h"
 #include "android_webview/browser/metrics/android_metrics_provider.h"
-#include "android_webview/browser/metrics/android_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/browser/supervised_user/aw_supervised_user_url_classifier.h"
 #include "android_webview/browser/tracing/aw_tracing_delegate.h"
@@ -192,7 +191,7 @@ std::unique_ptr<PrefService> AwFeatureListCreator::CreatePrefService() {
   persistent_prefs.insert(std::string(metrics::prefs::kMetricsLastSeenPrefix) +
                           kBrowserMetricsName);
   persistent_prefs.insert(std::string(metrics::prefs::kMetricsLastSeenPrefix) +
-                          metrics::kCrashpadHistogramAllocatorName);
+                          kCrashpadHistogramAllocatorName);
 
   // SegregatedPrefStore may be validated with a MAC (message authentication
   // code). On Android, the store is protected by app sandboxing, so validation

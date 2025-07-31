@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "android_webview/browser/metrics/android_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "base/metrics/user_metrics.h"
 #include "base/test/task_environment.h"
@@ -18,8 +17,7 @@
 
 namespace android_webview {
 
-using InstallerPackageType =
-    metrics::AndroidMetricsServiceClient::InstallerPackageType;
+using InstallerPackageType = AwMetricsServiceClient::InstallerPackageType;
 
 namespace {
 class AwMetricsServiceClientSampleRateTestDelegate
@@ -36,7 +34,6 @@ class AwMetricsServiceTestClientForSampling : public AwMetricsServiceClient {
       std::unique_ptr<Delegate> delegate)
       : AwMetricsServiceClient(std::move(delegate)) {}
   using AwMetricsServiceClient::IsInSample;
-  using AwMetricsServiceClient::RegisterPrefs;
   void SetSampleRatePerMille(int sample_rate_per_mille) {
     _sample_rate_per_mille = sample_rate_per_mille;
   }

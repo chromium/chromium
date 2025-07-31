@@ -165,6 +165,7 @@ namespace android_webview {
 class AwBrowserContext;
 class AwBrowserContextStore;
 class AwFormDatabaseService;
+class AwMetricsServiceClient;
 class CookieManager;
 class JsSandboxIsolate;
 class OverlayProcessorWebView;
@@ -347,7 +348,6 @@ namespace memory_pressure {
 class UserLevelMemoryPressureSignalGenerator;
 }
 namespace metrics {
-class AndroidMetricsServiceClient;
 class CleanExitBeacon;
 }  // namespace metrics
 namespace midi {
@@ -578,6 +578,7 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class ::WebEngineBrowserMainParts;
   friend class android_webview::AwBrowserContext;
   friend class android_webview::AwBrowserContextStore;
+  friend class android_webview::AwMetricsServiceClient;
   friend class android_webview::CookieManager;
   friend class android_webview::ScopedAllowInitGLBindings;
   friend class ash::LoginEventRecorder;
@@ -620,7 +621,6 @@ class BASE_EXPORT ScopedAllowBlocking {
   friend class media::FileVideoCaptureDeviceFactory;
   friend class memory_instrumentation::OSMetrics;
   friend class memory_pressure::UserLevelMemoryPressureSignalGenerator;
-  friend class metrics::AndroidMetricsServiceClient;
   friend class metrics::CleanExitBeacon;
   friend class module_installer::ScopedAllowModulePakLoad;
   friend class net::GSSAPISharedLibrary;    // http://crbug.com/66702

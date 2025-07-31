@@ -28,8 +28,7 @@ class AwServerSideAllowlistMetricsProvider : public ::metrics::MetricsProvider {
       metrics::SystemProfileProto* system_profile) override;
 
  private:
-  metrics::AndroidMetricsServiceClient::InstallerPackageType
-  GetInstallerPackageType();
+  AwMetricsServiceClient::InstallerPackageType GetInstallerPackageType();
 
   bool IsAppPackageNameSystemApp();
 

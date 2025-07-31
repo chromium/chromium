@@ -4,7 +4,6 @@
 
 #include "android_webview/browser/metrics/aw_server_side_allowlist_metrics_provider.h"
 
-#include "android_webview/browser/metrics/android_metrics_service_client.h"
 #include "android_webview/browser/metrics/aw_metrics_service_client.h"
 #include "android_webview/common/aw_features.h"
 #include "base/test/scoped_feature_list.h"
@@ -14,8 +13,7 @@
 
 namespace android_webview {
 
-using InstallerPackageType =
-    metrics::AndroidMetricsServiceClient::InstallerPackageType;
+using InstallerPackageType = AwMetricsServiceClient::InstallerPackageType;
 
 namespace {
 
