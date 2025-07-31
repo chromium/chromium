@@ -5,11 +5,13 @@
 source_set("ui") {
   sources = [
     "reader_mode_consumer.h",
+    "reader_mode_mutator.h",
     "reader_mode_view_controller.h",
     "reader_mode_view_controller.mm",
   ]
   deps = [
     ":constants",
+    "//components/dom_distiller/core/mojom",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tabs_closure_animation",

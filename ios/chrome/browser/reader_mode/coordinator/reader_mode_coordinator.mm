@@ -4,6 +4,9 @@
 
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_coordinator.h"
 
+#import "components/dom_distiller/core/distilled_page_prefs.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service.h"
+#import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/reader_mode/coordinator/reader_mode_mediator.h"
@@ -35,10 +38,17 @@
   _viewController = [[ReaderModeViewController alloc] init];
   ProfileIOS* profile = self.browser->GetProfile();
   BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
+  DistillerService* distiller_service =
+      DistillerServiceFactory::GetForProfile(self.browser->GetProfile());
+  dom_distiller::DistilledPagePrefs* distilledPagePrefs =
+      distiller_service ? distiller_service->GetDistilledPagePrefs() : nullptr;
   _mediator = [[ReaderModeMediator alloc]
       initWithWebStateList:self.browser->GetWebStateList()
-                BWGService:BWGService];
+                BWGService:BWGService
+        distilledPagePrefs:distilledPagePrefs];
   _mediator.consumer = _viewController;
+  _viewController.mutator = _mediator;
+  [self.baseViewController addChildViewController:_viewController];
   [_viewController moveToParentViewController:self.baseViewController
                                      animated:animated];
   // Start handling Reader mode options commands.

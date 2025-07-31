@@ -11,6 +11,7 @@ source_set("coordinator") {
   ]
   deps = [
     ":options",
+    "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/bwg/model:tab_helper",
@@ -63,5 +64,23 @@ source_set("options") {
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/public/commands",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "reader_mode_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base/test:test_support",
+    "//components/dom_distiller/core",
+    "//components/dom_distiller/core/mojom",
+    "//ios/chrome/browser/dom_distiller/model",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
+    "//ios/chrome/browser/shared/model/browser/test:test_support",
+    "//ios/chrome/browser/shared/model/profile/test",
+    "//ios/web/public/test",
+    "//testing/gtest",
   ]
 }

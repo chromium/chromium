@@ -9,8 +9,12 @@
 
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_consumer.h"
 
+@protocol ReaderModeMutator;
+
 // View controller for displaying the Reader mode content.
 @interface ReaderModeViewController : UIViewController <ReaderModeConsumer>
+
+@property(nonatomic, weak) id<ReaderModeMutator> mutator;
 
 // Adds `self` as child view controller of `parent` and does the appropriate
 // calls to `willMoveToParentViewController:` and

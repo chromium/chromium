@@ -8,19 +8,27 @@
 #import <Foundation/Foundation.h>
 
 #import "base/memory/raw_ptr.h"
+#import "ios/chrome/browser/reader_mode/ui/reader_mode_mutator.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 
 class BwgService;
 @protocol ReaderModeConsumer;
+namespace dom_distiller {
+class DistilledPagePrefs;
+}
 
 // Mediator for the Reader mode UI.
-@interface ReaderModeMediator : NSObject
+@interface ReaderModeMediator : NSObject <ReaderModeMutator>
 
 @property(nonatomic, weak) id<ReaderModeConsumer> consumer;
+@property(nonatomic, readonly)
+    dom_distiller::DistilledPagePrefs* distilledPagePrefs;
 
 // Designated initializer. `webStateList` must not be null.
 - (instancetype)initWithWebStateList:(WebStateList*)webStateList
                           BWGService:(BwgService*)BWGService
+                  distilledPagePrefs:
+                      (dom_distiller::DistilledPagePrefs*)distilledPagePrefs
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
