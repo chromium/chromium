@@ -21,10 +21,10 @@ const base::FeatureParam<int> kMaxCacheSize{
 
 const base::FeatureParam<int> kMinRequiredPhysicalRamMb{
     &blink::features::kBackForwardTransitions, "min-required-physical-ram-mb",
-    0};
+    7200};
 
 const base::FeatureParam<double> kPercentageOfRamToUse{
-    &blink::features::kBackForwardTransitions, "percentage-of-ram-to-use", 2.5};
+    &blink::features::kBackForwardTransitions, "percentage-of-ram-to-use", 0.5};
 
 const base::FeatureParam<base::TimeDelta> kInvisibleCacheCleanupDelay{
     &blink::features::kBackForwardTransitions, "invisible-cache-cleanup-delay",
@@ -35,7 +35,7 @@ const base::FeatureParam<base::TimeDelta> kInvisibleCacheCleanupDelay{
 // processed.
 const base::FeatureParam<bool> kCompressScreenshotWhenQuiet{
     &blink::features::kBackForwardTransitions, "compress-screenshot-when-quiet",
-    false};
+    true};
 
 // SendResult is an expensive operation and the start of a navigation is a busy
 // time. Delaying SendResult reduces chances of contention.
@@ -44,7 +44,7 @@ const base::FeatureParam<bool> kCompressScreenshotWhenQuiet{
 // Navigation.GestureTransition.CacheHitOrMissReason.
 const base::FeatureParam<int> kScreenshotSendResultDelayMs{
     &blink::features::kBackForwardTransitions,
-    "screenshot-send-result-delay-ms", 0};
+    "screenshot-send-result-delay-ms", 400};
 
 size_t GetMaxCacheSizeInBytes() {
   constexpr int kLowEndMax = 32 * 1024 * 1024;  // 32MB
@@ -75,11 +75,14 @@ bool NavigationTransitionConfig::AreBackForwardTransitionsEnabled() {
 size_t NavigationTransitionConfig::ComputeCacheSizeInBytes() {
   // Assume 4 bytes per pixel. This value estimates the max number of bytes of
   // the physical screen's uncompressed bitmap.
-  size_t display_size_in_bytes = 0;
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    display_size_in_bytes =
-        std::max(display_size_in_bytes,
-                 static_cast<size_t>(4 * display.GetSizeInPixel().Area64()));
+  // Assume one pixel for unit tests that don't have or need a screen.
+  size_t display_size_in_bytes = 4;
+  if (auto* screen = display::Screen::GetScreen(); screen) {
+    for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
+      display_size_in_bytes =
+          std::max(display_size_in_bytes,
+                   static_cast<size_t>(4 * display.GetSizeInPixel().Area64()));
+    }
   }
 
   size_t memory_required_for_max_screenshots =

@@ -37,9 +37,8 @@ class NavigationEntryScreenshotManagerTest
         memory_(GetParam().ram_mb) {
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {{blink::features::kBackForwardTransitions,
-          {
-              {"percentage-of-ram-to-use", "1"},
-          }}},
+          {{"percentage-of-ram-to-use", "1"},
+           {"min-required-physical-ram-mb", "0"}}}},
         {});
   }
 

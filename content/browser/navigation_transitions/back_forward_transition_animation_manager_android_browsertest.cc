@@ -376,7 +376,8 @@ class BackForwardTransitionAnimationManagerBrowserTest
  public:
   BackForwardTransitionAnimationManagerBrowserTest() {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
-        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kBackForwardTransitions,
+         {{"min-required-physical-ram-mb", "0"}}},
         {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
          {}}};
     scoped_feature_list_.InitWithFeaturesAndParameters(
