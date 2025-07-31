@@ -104,7 +104,7 @@ source_set("lib") {
 
   if (is_android) {
     deps += [ ":shape_detection_jni_headers" ]
-  } else if (is_chromeos) {
+  } else if (is_chromeos || is_linux) {
     sources += [
       "shape_detection_sandbox_hook.cc",
       "shape_detection_sandbox_hook.h",

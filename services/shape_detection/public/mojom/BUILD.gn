@@ -21,8 +21,9 @@ mojom("mojom") {
     "//ui/gfx/geometry/mojom",
   ]
 
-  # Platforms except Chrome OS host shape detection in the GPU process.
-  if (is_chromeos && is_chrome_branded) {
+  # On branded ChromeOS and Linux, shape detection is hosted in a utility
+  # process. Other platforms host it in the GPU process.
+  if ((is_linux || is_chromeos) && is_chrome_branded) {
     enabled_features = [ "has_shape_detection_utility" ]
   }
 }
