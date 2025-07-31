@@ -3463,18 +3463,6 @@ chromium-metrics-reviews@google.com.
   <token key="UtilityProcessType" variants="UtilityProcessType"/>
 </histogram>
 
-<histogram name="MemoryAndroid.EvictedTreeSize2" units="units"
-    expires_after="2025-08-26">
-  <owner>jonross@chromium.org</owner>
-  <owner>chrome-gpu-metric-alerts@google.com</owner>
-  <summary>
-    The total count of viz::SurfaceIds being evicted for the current FrameTree.
-    Along with any surfaces that were embedded before a navigation occurred.
-
-    This will be emitted whenever we evict one DelegatedFrameHostAndroid.
-  </summary>
-</histogram>
-
 <histogram name="MemoryAndroid.LowRamDevice" enum="Boolean"
     expires_after="never">
 <!-- expires-never: used internally for filtering -->

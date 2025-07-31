@@ -248,8 +248,6 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame(
     return;
   }
 
-  UMA_HISTOGRAM_COUNTS_100("MemoryAndroid.EvictedTreeSize2",
-                           surface_ids.size());
   if (surface_ids.empty())
     return;
   host_frame_sink_manager_->EvictSurfaces(surface_ids);
