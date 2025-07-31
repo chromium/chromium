@@ -58,7 +58,6 @@ constexpr CGFloat kButtonSpacing = 10;
 constexpr CGFloat kLegacyMenuImageSize = 20;
 constexpr CGFloat kCloseImageSize = 12.5;
 constexpr CGFloat kMenuImageSize = 16;
-constexpr CGFloat kButtonDiameter = 26;
 
 // Animation.
 constexpr CGFloat kTranslationCompletion = 0;
@@ -103,11 +102,11 @@ UIButton* TopToolbarButton(NSString* symbol_name,
   ExtendedTouchTargetButton* button =
       [ExtendedTouchTargetButton buttonWithConfiguration:configuration
                                            primaryAction:action];
-  button.minimumDiameter = kButtonDiameter + kButtonSpacing;
+  button.minimumDiameter = kTabGroupButtonHeight + kButtonSpacing;
   button.translatesAutoresizingMaskIntoConstraints = NO;
 
   [NSLayoutConstraint activateConstraints:@[
-    [button.heightAnchor constraintEqualToConstant:kButtonDiameter],
+    [button.heightAnchor constraintEqualToConstant:kTabGroupButtonHeight],
     [button.widthAnchor constraintEqualToAnchor:button.heightAnchor],
   ]];
 
