@@ -53,6 +53,14 @@
   // NO-OP
 }
 
+- (void)setHUDViewHidden:(BOOL)hidden {
+  // NO-OP
+}
+
+- (void)setGuidanceViewHidden:(BOOL)hidden {
+  // NO-OP
+}
+
 - (void)disableFlyoutMenu:(BOOL)disable {
   // NO-OP
 }

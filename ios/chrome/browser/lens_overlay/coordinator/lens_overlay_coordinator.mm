@@ -440,6 +440,11 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
     [_selectionViewController updateGuidanceViewVisibility:NO animated:YES];
   }
 
+  if (_entrypoint == LensOverlayEntrypoint::kFREPromo) {
+    [_selectionViewController setHUDViewHidden:YES];
+    [_selectionViewController setGuidanceViewHidden:YES];
+  }
+
   [_metricsRecorder setLensOverlayInForeground:YES];
 
   [self showRestorationWindowIfNeeded];
@@ -1550,6 +1555,10 @@ const base::TimeDelta kSearchWithCameraTooltipHintDelay = base::Seconds(2.0);
 - (void)showResultsPageAnimated:(BOOL)animated {
   if (!_associatedTabHelper) {
     return;
+  }
+
+  if (_entrypoint == LensOverlayEntrypoint::kFREPromo) {
+    [_selectionViewController setHUDViewHidden:NO];
   }
 
   __weak __typeof(self) weakSelf = self;
