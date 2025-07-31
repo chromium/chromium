@@ -7,12 +7,14 @@ import os
 import tempfile
 import unittest
 
-import orderfile_generator_backend
+import generate_orderfile_full
+
 
 class TestOrderfileGenerator(unittest.TestCase):
+
   def testStepRecorder(self):
     """Checks that the step recorder records step timings correctly."""
-    step_recorder = orderfile_generator_backend.StepRecorder()
+    step_recorder = generate_orderfile_full.StepRecorder()
     self.assertFalse(step_recorder.ErrorRecorded())
     step_recorder.BeginStep('foo')
     self.assertFalse(step_recorder.ErrorRecorded())
@@ -27,8 +29,9 @@ class TestOrderfileGenerator(unittest.TestCase):
     self.assertTrue(step_recorder.ErrorRecorded())
 
   def testGetFileExtension(self):
-    self.assertEqual('zip',
-        orderfile_generator_backend._GetFileExtension('/foo/bar/baz.blub.zip'))
+    self.assertEqual(
+        'zip',
+        generate_orderfile_full._GetFileExtension('/foo/bar/baz.blub.zip'))
 
   def testGenerateHash(self):
     try:
@@ -36,7 +39,7 @@ class TestOrderfileGenerator(unittest.TestCase):
         filename = handle.name
         handle.write('foo')
       self.assertEqual('0beec7b5ea3f0fdbc95d0dd47f3c5bc275da8a33',
-                       orderfile_generator_backend._GenerateHash(filename))
+                       generate_orderfile_full._GenerateHash(filename))
     finally:
       if filename:
         os.unlink(filename)

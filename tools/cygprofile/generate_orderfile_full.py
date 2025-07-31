@@ -2,17 +2,15 @@
 # Copyright 2013 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-
 """ A utility to generate an orderfile.
 
 The orderfile is used by the linker to order symbols such that they
 are placed consecutively. See //docs/orderfile.md.
 
 Example usage:
-  tools/cygprofile/orderfile_generator_backend.py --use-remoteexec \
+  tools/cygprofile/generate_orderfile_full.py --use-remoteexec \
     --target-arch=arm64
 """
-
 
 import argparse
 import ast
@@ -454,8 +452,8 @@ class OrderfileUpdater:
       use_debug_location: (bool) Whether to use the debug location.
       use_new_cloud: (bool) Whether to use the new workflow and modify DEPS.
     """
-    bucket = (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG if use_debug_location
-              else self._CLOUD_STORAGE_BUCKET)
+    bucket = (self._CLOUD_STORAGE_BUCKET_FOR_DEBUG
+              if use_debug_location else self._CLOUD_STORAGE_BUCKET)
     extension = _GetFileExtension(filename)
     cmd = [self._UPLOAD_TO_CLOUD_COMMAND, '--bucket', bucket]
     if extension:
@@ -588,7 +586,6 @@ class OrderfileGenerator:
       raise Exception('No device running Android Q+ found to build trichrome.')
 
     return devices[0]
-
 
   def __init__(self, options, orderfile_updater_class):
     self._options = options
@@ -727,7 +724,7 @@ class OrderfileGenerator:
           'Outlined function found in instrumented function, very likely '
           'something has gone very wrong!')
     self._output_data['offsets_kib'] = processor.SymbolsSize(
-            ordered_symbols) / 1024
+        ordered_symbols) / 1024
     with open(self._GetUnpatchedOrderfileFilename(), 'w') as orderfile:
       orderfile.write('\n'.join(ordered_symbols))
 
@@ -769,8 +766,8 @@ class OrderfileGenerator:
 
   def _RecordHash(self, file_name):
     """Records the hash of the file into the output_data dictionary."""
-    self._output_data[os.path.basename(file_name) + '.sha1'] = _GenerateHash(
-        file_name)
+    self._output_data[os.path.basename(file_name) +
+                      '.sha1'] = _GenerateHash(file_name)
 
   def _SaveFileLocally(self, file_name, file_sha1):
     """Saves the file to a temporary location and prints the sha1sum."""
@@ -830,10 +827,12 @@ class OrderfileGenerator:
 
   def UploadReadyOrderfiles(self):
     self._step_recorder.BeginStep('Upload Ready Orderfiles')
-    for file_name in [self._GetUnpatchedOrderfileFilename(),
-        self._GetPathToOrderfile()]:
-      self._orderfile_updater.UploadToCloudStorage(
-          file_name, use_debug_location=False)
+    for file_name in [
+        self._GetUnpatchedOrderfileFilename(),
+        self._GetPathToOrderfile()
+    ]:
+      self._orderfile_updater.UploadToCloudStorage(file_name,
+                                                   use_debug_location=False)
 
   def _WebViewStartupBenchmark(self, apk: str):
     """Runs system_health.webview_startup benchmark.
@@ -910,8 +909,8 @@ class OrderfileGenerator:
           # story run, so this average (reported as 'avg') is exactly the value
           # of that one sample. Each story is run multiple times, so this loop
           # will accumulate into a list all values for all runs of each story.
-          results.setdefault(row['name'], {}).setdefault(
-              row['stories'], []).append(row['avg'])
+          results.setdefault(row['name'], {}).setdefault(row['stories'],
+                                                         []).append(row['avg'])
 
       if not results:
         raise Exception('Could not find relevant results')
@@ -966,7 +965,6 @@ class OrderfileGenerator:
     finally:
       shutil.rmtree(out_dir)
 
-
   def RunBenchmark(self,
                    out_directory: pathlib.Path,
                    no_orderfile: bool = False) -> Dict:
@@ -997,15 +995,13 @@ class OrderfileGenerator:
         open(orderfile_path, 'w').close()
 
       # Build APK to be installed on the device.
-      self._compiler.CompileChromeApk(instrumented=False,
-                                      force_relink=True)
+      self._compiler.CompileChromeApk(instrumented=False, force_relink=True)
       benchmark_results[_RESULTS_KEY_SPEEDOMETER] = self._PerformanceBenchmark(
           self._compiler.chrome_apk_path)
       benchmark_results['orderfile.memory_mobile'] = (
           self._NativeCodeMemoryBenchmark(self._compiler.chrome_apk_path))
       if self._options.profile_webview_startup:
-        self._compiler.CompileWebViewApk(instrumented=False,
-                                         force_relink=True)
+        self._compiler.CompileWebViewApk(instrumented=False, force_relink=True)
         self._profiler.InstallAndSetWebViewProvider(
             self._compiler.webview_installer_path)
         benchmark_results[
@@ -1122,16 +1118,22 @@ class OrderfileGenerator:
 def CreateArgumentParser():
   """Creates and returns the argument parser."""
   parser = argparse.ArgumentParser()
-  parser.add_argument('--no-benchmark', action='store_false', dest='benchmark',
-                      default=True, help='Disables running benchmarks.')
+  parser.add_argument('--no-benchmark',
+                      action='store_false',
+                      dest='benchmark',
+                      default=True,
+                      help='Disables running benchmarks.')
   parser.add_argument(
-      '--buildbot', action='store_true',
+      '--buildbot',
+      action='store_true',
       help='If true, the script expects to be run on a buildbot')
+  parser.add_argument('--device',
+                      default=None,
+                      type=str,
+                      help='Device serial number on which to run profiling.')
   parser.add_argument(
-      '--device', default=None, type=str,
-      help='Device serial number on which to run profiling.')
-  parser.add_argument(
-      '--verify', action='store_true',
+      '--verify',
+      action='store_true',
       help='If true, the script only verifies the current orderfile')
   parser.add_argument('--target-arch',
                       action='store',
@@ -1139,7 +1141,9 @@ def CreateArgumentParser():
                       default='arm',
                       choices=list(_ARCH_GN_ARGS.keys()),
                       help='The target architecture for which to build.')
-  parser.add_argument('--output-json', action='store', dest='json_file',
+  parser.add_argument('--output-json',
+                      action='store',
+                      dest='json_file',
                       help='Location to save stats in json format')
   parser.add_argument(
       '--skip-profile',
@@ -1179,11 +1183,15 @@ def CreateArgumentParser():
                       default=False,
                       help='Use the webview startup benchmark profiles to '
                       'generate the orderfile.')
-  parser.add_argument('--pregenerated-profiles', default=None, type=str,
+  parser.add_argument('--pregenerated-profiles',
+                      default=None,
+                      type=str,
                       help=('Pregenerated profiles to use instead of running '
                             'profile step. Cannot be used with '
                             '--skip-profiles.'))
-  parser.add_argument('--profile-save-dir', default=None, type=str,
+  parser.add_argument('--profile-save-dir',
+                      default=None,
+                      type=str,
                       help=('Directory to save any profiles created. These can '
                             'be used with --pregenerated-profiles.  Cannot be '
                             'used with --skip-profiles.'))
@@ -1260,8 +1268,7 @@ def CreateOrderfile(options, orderfile_updater_class=None):
   except Exception:
     logging.exception('Generator failure')
   finally:
-    json_output = json.dumps(generator.GetReportingData(),
-                             indent=2) + '\n'
+    json_output = json.dumps(generator.GetReportingData(), indent=2) + '\n'
     if options.json_file:
       with open(options.json_file, 'w') as f:
         f.write(json_output)

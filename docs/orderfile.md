@@ -14,7 +14,7 @@ placing functions commonly called together closely in memory.
 
 ## Generating Orderfiles Manually
 
-To generate an orderfile you can run the `orderfile_generator_backend.py`
+To generate an orderfile you can run the `generate_orderfile_full.py`
 script. You will need an Android device connected with
 [adb](https://developer.android.com/tools/adb) to generate the orderfile as the
 generation pipeline will need to run benchmarks on a device.
@@ -22,7 +22,7 @@ generation pipeline will need to run benchmarks on a device.
 Example:
 
 ```
-tools/cygprofile/orderfile_generator_backend.py --target-arch=arm64 --use-remoteexec
+tools/cygprofile/generate_orderfile_full.py --target-arch=arm64 --use-remoteexec
 ```
 
 You can specify the architecture (arm or arm64) with `--target-arch`. For quick
@@ -78,7 +78,7 @@ code. Only one benchmark measures it: `system_health.memory_mobile`.
 
 ## Orderfile Pipeline
 
-The `orderfile_generator_backend.py` script runs several key steps:
+The `generate_orderfile_full.py` script runs several key steps:
 
 1. **Build and install Chrome with orderfile instrumentation.** This uses the
    [`-finstrument-function-entry-bare`](https://clang.llvm.org/docs/ClangCommandLineReference.html#cmdoption-clang-finstrument-function-entry-bare)
