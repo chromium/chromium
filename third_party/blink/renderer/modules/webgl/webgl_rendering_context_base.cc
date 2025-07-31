@@ -851,24 +851,31 @@ scoped_refptr<StaticBitmapImage> WebGLRenderingContextBase::GetImage(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         kShouldInitialize, SharedGpuContext::ContextProviderWrapper(),
         RasterMode::kGPU, gpu::SHARED_IMAGE_USAGE_DISPLAY_READ);
-  }
-  if (!resource_provider || !resource_provider->IsValid()) {
+
+    if (!resource_provider || !resource_provider->IsValid()) {
+      return nullptr;
+    }
+
+    if (!CopyRenderingResultsFromDrawingBuffer(resource_provider.get(),
+                                               kBackBuffer)) {
+      return nullptr;
+    }
+    return resource_provider->Snapshot(reason);
+  } else {
     resource_provider = CanvasResourceProvider::CreateBitmapProvider(
         size, GetSharedImageFormat(), GetAlphaType(), GetColorSpace(),
         CanvasResourceProvider::ShouldInitialize::kNo);
-  }
 
-  if (!resource_provider || !resource_provider->IsValid())
-    return nullptr;
+    if (!resource_provider || !resource_provider->IsValid()) {
+      return nullptr;
+    }
 
-  if (!CopyRenderingResultsFromDrawingBuffer(resource_provider.get(),
-                                             kBackBuffer)) {
-    // CopyRenderingResultsFromDrawingBuffer handles both the
-    // hardware-accelerated and software cases, so there is no
-    // possible additional fallback for failures seen at this point.
-    return nullptr;
+    if (!CopyRenderingResultsFromDrawingBuffer(resource_provider.get(),
+                                               kBackBuffer)) {
+      return nullptr;
+    }
+    return resource_provider->Snapshot(reason);
   }
-  return resource_provider->Snapshot(reason);
 }
 
 ScriptPromise<IDLUndefined> WebGLRenderingContextBase::makeXRCompatible(
