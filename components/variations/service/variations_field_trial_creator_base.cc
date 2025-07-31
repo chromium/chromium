@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
-#pragma allow_unsafe_libc_calls
-#endif
-
 #include "components/variations/service/variations_field_trial_creator_base.h"
 
 #include <stddef.h>
@@ -82,14 +77,6 @@ void RecordSeedFreshness(base::TimeDelta seed_age) {
 void RecordVariationsSeedUsage(SeedUsage usage) {
   VLOG(1) << "VariationsSeedUsage:" << static_cast<int>(usage);
   base::UmaHistogramEnumeration("Variations.SeedUsage", usage);
-}
-
-// If an invalid command-line to force field trials was specified, exit the
-// browser with a helpful error message, so that the user can correct their
-// mistake.
-void ExitWithMessage(const std::string& message) {
-  puts(message.c_str());
-  exit(1);
 }
 
 // Retrieves the value of the policy converted to the RestrictionPolicyValues.
@@ -263,7 +250,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
 
   switch (result) {
     case VariationsIdsProvider::ForceIdsResult::INVALID_SWITCH_ENTRY:
-      ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
+      client_->ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
                                          switches::kForceVariationIds));
       break;
     case VariationsIdsProvider::ForceIdsResult::INVALID_VECTOR_ENTRY:
@@ -279,7 +266,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
   bool success = http_header_provider->ForceDisableVariationIds(
       command_line->GetSwitchValueASCII(switches::kForceDisableVariationIds));
   if (!success) {
-    ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
+    client_->ExitWithMessage(base::StringPrintf("Invalid --%s list specified.",
                                        switches::kForceDisableVariationIds));
   }
 
@@ -303,7 +290,7 @@ bool VariationsFieldTrialCreatorBase::SetUpFieldTrials(
   }
 #else
   if (command_line->HasSwitch(switches::kEnableFieldTrialTestingConfig)) {
-    ExitWithMessage(
+    client_->ExitWithMessage(
         base::StringPrintf("--%s was passed, but the field trial testing "
                            "config was excluded from the build.",
                            switches::kEnableFieldTrialTestingConfig));
@@ -742,7 +729,7 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
       file_deserializer.Deserialize(&error_code, &error_message);
 
   if (!json_contents) {
-    ExitWithMessage(base::StringPrintf("Failed to load \"%s\" %s (%i)",
+    client_->ExitWithMessage(base::StringPrintf("Failed to load \"%s\" %s (%i)",
                                        json_seed_path.AsUTF8Unsafe().c_str(),
                                        error_message.c_str(), error_code));
   }
@@ -753,13 +740,13 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
       json_contents->GetDict().Find(prefs::kVariationsSeedSignature);
 
   if (!seed_data || !seed_data->is_string()) {
-    ExitWithMessage(
+    client_->ExitWithMessage(
         base::StrCat({"Missing or invalid seed data in contents of \"",
                       json_seed_path.AsUTF8Unsafe(), "\""}));
   }
 
   if (!seed_signature || !seed_signature->is_string()) {
-    ExitWithMessage(
+    client_->ExitWithMessage(
         base::StrCat({"Missing or invalid seed signature in contents of \"",
                       json_seed_path.AsUTF8Unsafe(), "\""}));
   }
@@ -772,7 +759,7 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
   // Override Local State seed prefs.
   std::string decoded_seed;
   if (!base::Base64Decode(seed_data->GetString(), &decoded_seed)) {
-    ExitWithMessage(
+    client_->ExitWithMessage(
         base::StrCat({"Failed to decode seed data in contents of \"",
                       json_seed_path.AsUTF8Unsafe(), "\""}));
   }

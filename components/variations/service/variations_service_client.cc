@@ -4,6 +4,13 @@
 
 #include "components/variations/service/variations_service_client.h"
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/390223051): Remove C-library calls to fix the errors.
+#pragma allow_unsafe_libc_calls
+#endif
+
+#include <cstdio>
+#include <cstdlib>
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -88,6 +95,11 @@ base::FilePath VariationsServiceClient::GetVariationsSeedFileDir() {
 std::unique_ptr<SeedResponse>
 VariationsServiceClient::TakeSeedFromNativeVariationsSeedStore() {
   return nullptr;
+}
+
+void VariationsServiceClient::ExitWithMessage(const std::string& message) {
+  puts(message.c_str());
+  exit(1);
 }
 
 }  // namespace variations
