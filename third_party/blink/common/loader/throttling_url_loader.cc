@@ -448,7 +448,11 @@ void ThrottlingURLLoader::Start(
 #endif
 
       base::Time start = base::Time::Now();
+      auto weak_ptr = weak_factory_.GetWeakPtr();
       throttle->WillStartRequest(url_request, &throttle_deferred);
+      if (!weak_ptr) {
+        return;
+      }
       RecordExecutionTimeHistogram(GetStageNameForHistogram(DEFERRED_START),
                                    start);
 
