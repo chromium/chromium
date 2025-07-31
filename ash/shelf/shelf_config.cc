@@ -463,16 +463,12 @@ SkColor ShelfConfig::GetDefaultShelfColor(const views::Widget* widget) const {
   DCHECK(widget);
 
   const auto* color_provider = widget->GetColorProvider();
-  if (!features::IsBackgroundBlurEnabled()) {
-    return color_provider->GetColor(kColorAshShieldAndBase90);
-  }
-
   return color_provider->GetColor(GetShelfBaseLayerColorId());
 }
 
 int ShelfConfig::GetShelfControlButtonBlurRadius() const {
-  if (features::IsBackgroundBlurEnabled() && in_tablet_mode_ && !is_in_app_ &&
-      chromeos::features::IsSystemBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled() && in_tablet_mode_ &&
+      !is_in_app_) {
     return shelf_blur_radius_;
   }
   return 0;

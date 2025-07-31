@@ -637,8 +637,7 @@ void HotseatWidgetDelegateView::SetTranslucentBackground(
 }
 
 void HotseatWidgetDelegateView::SetBackgroundBlur(bool enable_blur) {
-  if (!features::IsBackgroundBlurEnabled() ||
-      !chromeos::features::IsSystemBlurEnabled() || blur_lock_ > 0) {
+  if (!chromeos::features::IsSystemBlurEnabled() || blur_lock_ > 0) {
     return;
   }
 

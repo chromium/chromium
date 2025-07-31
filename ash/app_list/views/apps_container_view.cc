@@ -644,8 +644,7 @@ bool AppsContainerView::IsPointWithinBottomDragBuffer(
 }
 
 void AppsContainerView::MaybeCreateGradientMask() {
-  if (!features::IsBackgroundBlurEnabled() ||
-      !chromeos::features::IsSystemBlurEnabled()) {
+  if (!chromeos::features::IsSystemBlurEnabled()) {
     return;
   }
 

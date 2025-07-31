@@ -160,8 +160,7 @@ WindowCycleView::WindowCycleView(aura::Window* root_window,
   SetPaintToLayer();
   layer()->SetName("WindowCycleView");
   layer()->SetMasksToBounds(true);
-  if (features::IsBackgroundBlurEnabled() &&
-      chromeos::features::IsSystemBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled()) {
     layer()->SetFillsBoundsOpaquely(false);
     layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer()->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);

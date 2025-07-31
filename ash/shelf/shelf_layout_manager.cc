@@ -502,8 +502,7 @@ ShelfLayoutManager::ScopedVisibilityLock::~ScopedVisibilityLock() {
 ShelfLayoutManager::ShelfLayoutManager(ShelfWidget* shelf_widget, Shelf* shelf)
     : shelf_widget_(shelf_widget),
       shelf_(shelf),
-      is_background_blur_enabled_(features::IsBackgroundBlurEnabled() &&
-                                  chromeos::features::IsSystemBlurEnabled()) {
+      is_background_blur_enabled_(chromeos::features::IsSystemBlurEnabled()) {
   DCHECK(shelf_widget_);
   DCHECK(shelf_);
 }

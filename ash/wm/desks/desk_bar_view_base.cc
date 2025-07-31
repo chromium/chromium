@@ -125,8 +125,7 @@ void MaybeSetupBackgroundView(DeskBarViewBase* bar_view) {
     return;
   }
 
-  if (features::IsBackgroundBlurEnabled() &&
-      chromeos::features::IsSystemBlurEnabled()) {
+  if (chromeos::features::IsSystemBlurEnabled()) {
     layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
     layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }

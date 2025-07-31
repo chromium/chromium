@@ -149,13 +149,11 @@ std::unique_ptr<views::Widget> InformedRestoreContentsView::Create(
 
   // Add blur to help with contrast between the background and the text. Uses
   // the same settings as the Quick Settings menu, i.e., `TrayBubbleView`.
-  if (features::IsBackgroundBlurEnabled()) {
-    layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
-    layer->SetIsFastRoundedCorner(true);
-    if (chromeos::features::IsSystemBlurEnabled()) {
-      layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-      layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
-    }
+  layer->SetRoundedCornerRadius(gfx::RoundedCornersF(kContentsRounding));
+  layer->SetIsFastRoundedCorner(true);
+  if (chromeos::features::IsSystemBlurEnabled()) {
+    layer->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+    layer->SetBackdropFilterQuality(ColorProvider::kBackgroundBlurQuality);
   }
 
   return widget;
