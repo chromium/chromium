@@ -165,7 +165,7 @@ class BinaryUploadService : public KeyedService {
     // Methods for modifying the ContentAnalysisRequest.
     void set_analysis_connector(
         enterprise_connectors::AnalysisConnector connector);
-    void set_url(const std::string& url);
+    void set_url(const GURL& url);
     void set_source(const std::string& source);
     void set_destination(const std::string& destination);
     void set_csd(ClientDownloadRequest csd);

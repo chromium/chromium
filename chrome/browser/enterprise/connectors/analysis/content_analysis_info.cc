@@ -114,7 +114,7 @@ std::string ContentAreaUserProvider::email() const {
   NOTREACHED();
 }
 
-std::string ContentAreaUserProvider::url() const {
+const GURL& ContentAreaUserProvider::url() const {
   NOTREACHED();
 }
 
@@ -144,8 +144,8 @@ DownloadContentAreaUserProvider::DownloadContentAreaUserProvider(
       im_(IdentityManagerFactory::GetForProfile(Profile::FromBrowserContext(
           content::DownloadItemUtils::GetBrowserContext(&download_item)))) {}
 
-std::string DownloadContentAreaUserProvider::url() const {
-  return url_.spec();
+const GURL& DownloadContentAreaUserProvider::url() const {
+  return url_;
 }
 
 const GURL& DownloadContentAreaUserProvider::tab_url() const {

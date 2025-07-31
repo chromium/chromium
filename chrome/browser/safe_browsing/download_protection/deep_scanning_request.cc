@@ -746,11 +746,12 @@ std::string DeepScanningRequest::email() const {
       Profile::FromBrowserContext(metadata_->GetBrowserContext()));
 }
 
-std::string DeepScanningRequest::url() const {
+const GURL& DeepScanningRequest::url() const {
   if (metadata_->GetURL().is_valid()) {
-    return metadata_->GetURL().spec();
+    return metadata_->GetURL();
   }
-  return "";
+  return GURL::EmptyGURL();
+  ;
 }
 
 const GURL& DeepScanningRequest::tab_url() const {

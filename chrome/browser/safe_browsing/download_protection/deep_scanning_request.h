@@ -114,7 +114,7 @@ class DeepScanningRequest : public download::DownloadItem::Observer,
   std::string tab_title() const override;
   std::string user_action_id() const override;
   std::string email() const override;
-  std::string url() const override;
+  const GURL& url() const override;
   const GURL& tab_url() const override;
   enterprise_connectors::ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>

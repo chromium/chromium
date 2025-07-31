@@ -173,7 +173,7 @@ class FileTransferAnalysisDelegate : public ContentAnalysisInfo {
   std::string tab_title() const override;
   std::string user_action_id() const override;
   std::string email() const override;
-  std::string url() const override;
+  const GURL& url() const override;
   const GURL& tab_url() const override;
   ContentAnalysisRequest::Reason reason() const override;
   google::protobuf::RepeatedPtrField<::safe_browsing::ReferrerChainEntry>

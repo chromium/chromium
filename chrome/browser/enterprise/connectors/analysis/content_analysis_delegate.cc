@@ -1003,8 +1003,8 @@ std::string ContentAnalysisDelegate::email() const {
   return GetProfileEmail(profile_);
 }
 
-std::string ContentAnalysisDelegate::url() const {
-  return url_.spec();
+const GURL& ContentAnalysisDelegate::url() const {
+  return url_;
 }
 
 const GURL& ContentAnalysisDelegate::tab_url() const {

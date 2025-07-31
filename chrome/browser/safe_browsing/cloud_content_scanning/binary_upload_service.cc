@@ -159,8 +159,8 @@ void BinaryUploadService::Request::set_analysis_connector(
   content_analysis_request_.set_analysis_connector(connector);
 }
 
-void BinaryUploadService::Request::set_url(const std::string& url) {
-  content_analysis_request_.mutable_request_data()->set_url(url);
+void BinaryUploadService::Request::set_url(const GURL& url) {
+  content_analysis_request_.mutable_request_data()->set_url(url.spec());
 }
 
 void BinaryUploadService::Request::set_source(const std::string& source) {

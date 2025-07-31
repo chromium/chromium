@@ -80,7 +80,7 @@ class TestContentAnalysisInfo : public ContentAnalysisInfo {
 
   std::string email() const override { return "test@user.com"; }
 
-  std::string url() const override { return kUrl; }
+  const GURL& url() const override { return tab_url_; }
 
   const GURL& tab_url() const override { return tab_url_; }
 

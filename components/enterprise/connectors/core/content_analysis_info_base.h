@@ -37,7 +37,7 @@ class ContentAnalysisInfoBase {
   virtual std::string tab_title() const = 0;
   virtual std::string user_action_id() const = 0;
   virtual std::string email() const = 0;
-  virtual std::string url() const = 0;
+  virtual const GURL& url() const = 0;
   virtual const GURL& tab_url() const = 0;
   virtual ContentAnalysisRequest::Reason reason() const = 0;
   virtual google::protobuf::RepeatedPtrField<
