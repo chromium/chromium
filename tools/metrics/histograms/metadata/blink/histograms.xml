@@ -860,6 +860,21 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.CookiesTime.AblationSleepTime" units="microseconds"
+    expires_after="2025-12-28">
+  <owner>elkurin@chromium.org</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Sleep duration (in microseconds) added to Cookies operation with IPC call
+    from the CookieJar used for ablation study. This metrics is recorded only
+    when CookieJar ablation study is enabled, and during getting cookie with
+    IPC. While AblationDelay2 records the wanted delay, this metrics records the
+    actual delay.
+
+    Note: This metric is only reported for clients with high-resolution clocks.
+  </summary>
+</histogram>
+
 <histogram name="Blink.CookiesTime.{IpcNeeded}" units="ms"
     expires_after="2025-12-28">
   <owner>elkurin@chromium.org</owner>

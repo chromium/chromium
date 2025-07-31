@@ -231,7 +231,11 @@ String CookieJar::Cookies() {
     base::TimeDelta delay = elapsed * kCookieJarAblationDelayFactor.Get() +
                             kCookieJarAblationDelayOffset.Get();
     base::UmaHistogramMediumTimes("Blink.CookiesTime.AblationDelay2", delay);
+
     if (delay.is_positive()) {
+      // Report the actual delay caused by PlatformThread::Sleep(). See
+      // https://crbug.com/412532502 for more details.
+      SCOPED_UMA_HISTOGRAM_TIMER_MICROS("Blink.Cookies.Time.AblationSleepTime");
       base::PlatformThread::Sleep(delay);
     }
   }
