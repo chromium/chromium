@@ -164,7 +164,7 @@ class Buffer {
   // have been allocated for the |buffer_|.
   inline bool Out(char ch) {
     if (size_ >= 1 && count_ < size_) {
-      buffer_[count_] = ch;
+      UNSAFE_TODO(buffer_[count_] = ch);
       return IncrementCountByOne();
     }
     // |count_| still needs to be updated, even if the buffer has been
@@ -263,7 +263,8 @@ class Buffer {
     if (idx > size_) {
       idx = size_;
     }
-    return buffer_ + idx;
+    // SAFETY: idx checked against size_ above.
+    return UNSAFE_BUFFERS(buffer_ + idx);
   }
 
   // User-provided buffer that will receive the fully formatted output string.
@@ -363,7 +364,9 @@ bool Buffer::IToASCII(bool sign,
         // have to discard digits in the order that we have already emitted
         // them. This is essentially equivalent to:
         //   memmove(buffer_ + start, buffer_ + start + 1, size_ - start - 1)
-        for (char *move = buffer_ + start, *end = buffer_ + size_ - 1;
+        // SAFETY: start checked against size_ above.
+        for (char *move = UNSAFE_BUFFERS(buffer_ + start),
+                  *end = UNSAFE_BUFFERS(buffer_ + size_ - 1);
              move < end; UNSAFE_TODO(++move)) {
           *move = UNSAFE_TODO(move[1]);
         }
@@ -423,7 +426,8 @@ bool Buffer::IToASCII(bool sign,
     // order. We can't easily generate them in forward order, as we can't tell
     // the number of characters needed until we are done converting.
     // So, now, we reverse the string (except for the possible '-' sign).
-    char* front = buffer_ + start;
+    // SAFETY: start checked against size_ above.
+    char* front = UNSAFE_BUFFERS(buffer_ + start);
     char* back = GetInsertionPoint();
     UNSAFE_TODO({
       while (--back > front) {

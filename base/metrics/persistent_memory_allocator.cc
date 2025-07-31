@@ -1350,12 +1350,14 @@ span<uint8_t> DelayedPersistentAllocation::GetUntyped() const {
   SCOPED_CRASH_KEY_STRING32(
       PMA, "ref_value_before",
       ref_is_magic_number
-          ? NumberToString((reference_ - 1)->load(std::memory_order_relaxed))
+          ? NumberToString(
+                (UNSAFE_TODO(reference_ - 1))->load(std::memory_order_relaxed))
           : "N/A");
   SCOPED_CRASH_KEY_STRING32(
       PMA, "ref_value_after",
       ref_is_magic_number
-          ? NumberToString((reference_ + 1)->load(std::memory_order_relaxed))
+          ? NumberToString(
+                (UNSAFE_TODO(reference_ + 1))->load(std::memory_order_relaxed))
           : "N/A");
   SCOPED_CRASH_KEY_BOOL(PMA, "ref_found", ref_found);
   SCOPED_CRASH_KEY_BOOL(PMA, "race_detected", race_detected);

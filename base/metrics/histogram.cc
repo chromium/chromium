@@ -808,9 +808,9 @@ class LinearHistogram::Factory : public Histogram::Factory {
     LinearHistogram* histogram = static_cast<LinearHistogram*>(base_histogram);
     // Set range descriptions.
     if (descriptions_) {
-      for (int i = 0; descriptions_[i].description; ++i) {
-        histogram->bucket_description_[descriptions_[i].sample] =
-            descriptions_[i].description;
+      for (int i = 0; UNSAFE_TODO(descriptions_[i].description); ++i) {
+        UNSAFE_TODO(histogram->bucket_description_[descriptions_[i].sample] =
+                        descriptions_[i].description);
       }
     }
   }
