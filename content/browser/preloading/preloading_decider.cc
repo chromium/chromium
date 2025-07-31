@@ -38,13 +38,9 @@ namespace content {
 
 namespace {
 
-using EagernessSet =
-    base::EnumSet<blink::mojom::SpeculationEagerness,
-                  blink::mojom::SpeculationEagerness::kMinValue,
-                  blink::mojom::SpeculationEagerness::kMaxValue>;
-
-EagernessSet EagernessSetFromFeatureParam(std::string_view value) {
-  EagernessSet set;
+content::PreloadingDecider::EagernessSet EagernessSetFromFeatureParam(
+    std::string_view value) {
+  content::PreloadingDecider::EagernessSet set;
   for (std::string_view piece : base::SplitStringPiece(
            value, ",", base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY)) {
     if (piece == "conservative") {
@@ -262,7 +258,8 @@ void PreloadingDecider::OnPointerDown(const GURL& url) {
   }
   MaybeEnactCandidate(url, preloading_predictor::kUrlPointerDownOnAnchor,
                       PreloadingConfidence{100},
-                      /*fallback_to_preconnect=*/true);
+                      /*fallback_to_preconnect=*/true,
+                      /*eagerness_to_exclude=*/{});
 }
 
 void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
@@ -291,7 +288,8 @@ void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
       base::saturated_cast<int>(std::nearbyint(score * 100.f)), 0, 100)};
 
   MaybeEnactCandidate(url, preloading_predictor::kPreloadingHeuristicsMLModel,
-                      confidence, /*fallback_to_preconnect=*/false);
+                      confidence, /*fallback_to_preconnect=*/false,
+                      /*eagerness_to_exclude=*/{});
 }
 
 void PreloadingDecider::OnPointerHover(
@@ -317,7 +315,8 @@ void PreloadingDecider::OnPointerHover(
   // to prefetch or prerender.
   constexpr bool fallback_to_preconnect = false;
   MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
-                      PreloadingConfidence{100}, fallback_to_preconnect);
+                      PreloadingConfidence{100}, fallback_to_preconnect,
+                      /*eagerness_to_exclude=*/{});
 }
 
 void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
@@ -333,18 +332,19 @@ void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
     return;
   }
 
-  MaybeEnactCandidate(url, preloading_predictor::kViewportHeuristic,
-                      PreloadingConfidence{100},
-                      /*fallback_to_preconnect=*/false);
+  MaybeEnactCandidate(
+      url, preloading_predictor::kViewportHeuristic, PreloadingConfidence{100},
+      /*fallback_to_preconnect=*/false, /*eagerness_to_exclude=*/{});
 }
 
 void PreloadingDecider::MaybeEnactCandidate(
     const GURL& url,
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence,
-    bool fallback_to_preconnect) {
-  if (const auto [found, added_prediction] =
-          MaybePrerender(url, enacting_predictor, confidence);
+    bool fallback_to_preconnect,
+    EagernessSet eagerness_to_exclude) {
+  if (const auto [found, added_prediction] = MaybePrerender(
+          url, enacting_predictor, confidence, eagerness_to_exclude);
       found) {
     // If the prediction is associated with another WebContents, don't duplicate
     // it here.
@@ -361,7 +361,8 @@ void PreloadingDecider::MaybeEnactCandidate(
     return;
   }
 
-  if (MaybePrefetch(url, enacting_predictor, confidence)) {
+  if (MaybePrefetch(url, enacting_predictor, confidence,
+                    eagerness_to_exclude)) {
     return;
   }
   // Ideally it is preferred to fallback to preconnect asynchronously if a
@@ -558,12 +559,13 @@ std::vector<std::optional<std::string>>
 PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
     const PreloadingDecider::SpeculationCandidateKey& lookup_key,
     const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence) {
+    PreloadingConfidence confidence,
+    EagernessSet eagerness_to_exclude) {
   std::vector<std::optional<std::string>> merged_tags;
 
   // Find all suitable candidates.
-  auto suitable_candidates =
-      FindSuitableCandidates(lookup_key, enacting_predictor, confidence);
+  auto suitable_candidates = FindSuitableCandidates(
+      lookup_key, enacting_predictor, confidence, eagerness_to_exclude);
 
   // Iterate through all suitable candidates and merge their tags.
   for (const auto& candidate_pair : suitable_candidates) {
@@ -580,15 +582,16 @@ PreloadingDecider::GetMergedSpeculationTagsFromSuitableCandidates(
 bool PreloadingDecider::MaybePrefetch(
     const GURL& url,
     const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence) {
+    PreloadingConfidence confidence,
+    EagernessSet eagerness_to_exclude) {
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrefetch};
   std::vector<std::optional<std::string>> merged_tags =
-      GetMergedSpeculationTagsFromSuitableCandidates(key, enacting_predictor,
-                                                     confidence);
+      GetMergedSpeculationTagsFromSuitableCandidates(
+          key, enacting_predictor, confidence, eagerness_to_exclude);
   std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
                           blink::mojom::SpeculationCandidatePtr>>
-      matched_candidate_pair =
-          GetMatchedPreloadingCandidate(key, enacting_predictor, confidence);
+      matched_candidate_pair = GetMatchedPreloadingCandidate(
+          key, enacting_predictor, confidence, eagerness_to_exclude);
   if (!matched_candidate_pair.has_value()) {
     return false;
   }
@@ -612,10 +615,11 @@ std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
 PreloadingDecider::GetMatchedPreloadingCandidate(
     const PreloadingDecider::SpeculationCandidateKey& lookup_key,
     const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence) const {
+    PreloadingConfidence confidence,
+    EagernessSet eagerness_to_exclude) const {
   // Find all suitable candidates.
-  auto suitable_candidates =
-      FindSuitableCandidates(lookup_key, enacting_predictor, confidence);
+  auto suitable_candidates = FindSuitableCandidates(
+      lookup_key, enacting_predictor, confidence, eagerness_to_exclude);
 
   if (suitable_candidates.empty()) {
     return std::nullopt;
@@ -632,6 +636,7 @@ void PreloadingDecider::EnumerateNoVarySearchMatchedCandidates(
     const SpeculationCandidateKey& lookup_key,
     const PreloadingPredictor& enacting_predictor,
     PreloadingConfidence confidence,
+    EagernessSet eagerness_to_exclude,
     Visitor&& visitor) const {
   // Remove query and ref from the URL for NVS matching.
   GURL::Replacements replacements;
@@ -657,7 +662,8 @@ void PreloadingDecider::EnumerateNoVarySearchMatchedCandidates(
               on_standby_candidate->no_vary_search_hint)
               .AreEquivalent(lookup_key.first, preload_url) &&
           IsSuitableCandidate(on_standby_candidate, enacting_predictor,
-                              confidence, standby_key.second)) {
+                              confidence, standby_key.second,
+                              eagerness_to_exclude)) {
         // If visitor returns true, stop enumeration early.
         if (visitor(standby_key, on_standby_candidate)) {
           return;
@@ -672,7 +678,8 @@ std::vector<std::pair<PreloadingDecider::SpeculationCandidateKey,
 PreloadingDecider::FindSuitableCandidates(
     const PreloadingDecider::SpeculationCandidateKey& lookup_key,
     const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence) const {
+    PreloadingConfidence confidence,
+    EagernessSet eagerness_to_exclude) const {
   std::vector<
       std::pair<SpeculationCandidateKey, blink::mojom::SpeculationCandidatePtr>>
       suitable_candidates;
@@ -682,7 +689,7 @@ PreloadingDecider::FindSuitableCandidates(
   if (it != on_standby_candidates_.end()) {
     for (const auto& candidate : it->second) {
       if (IsSuitableCandidate(candidate, enacting_predictor, confidence,
-                              lookup_key.second)) {
+                              lookup_key.second, eagerness_to_exclude)) {
         suitable_candidates.emplace_back(lookup_key, candidate.Clone());
       }
     }
@@ -695,7 +702,7 @@ PreloadingDecider::FindSuitableCandidates(
 
   // Use NVS matching to collect all suitable candidates.
   EnumerateNoVarySearchMatchedCandidates(
-      lookup_key, enacting_predictor, confidence,
+      lookup_key, enacting_predictor, confidence, eagerness_to_exclude,
       [&](const SpeculationCandidateKey& standby_key,
           const blink::mojom::SpeculationCandidatePtr& candidate) {
         suitable_candidates.emplace_back(standby_key, candidate.Clone());
@@ -721,16 +728,17 @@ bool PreloadingDecider::ShouldWaitForPrefetchResult(const GURL& url) {
 std::pair<bool, bool> PreloadingDecider::MaybePrerender(
     const GURL& url,
     const PreloadingPredictor& enacting_predictor,
-    PreloadingConfidence confidence) {
+    PreloadingConfidence confidence,
+    EagernessSet eagerness_to_exclude) {
   std::pair<bool, bool> result{false, false};
   SpeculationCandidateKey key{url, blink::mojom::SpeculationAction::kPrerender};
   std::vector<std::optional<std::string>> merged_tags =
-      GetMergedSpeculationTagsFromSuitableCandidates(key, enacting_predictor,
-                                                     confidence);
+      GetMergedSpeculationTagsFromSuitableCandidates(
+          key, enacting_predictor, confidence, eagerness_to_exclude);
   std::optional<std::pair<PreloadingDecider::SpeculationCandidateKey,
                           blink::mojom::SpeculationCandidatePtr>>
-      matched_candidate_pair =
-          GetMatchedPreloadingCandidate(key, enacting_predictor, confidence);
+      matched_candidate_pair = GetMatchedPreloadingCandidate(
+          key, enacting_predictor, confidence, eagerness_to_exclude);
   if (!matched_candidate_pair.has_value()) {
     return result;
   }
@@ -767,9 +775,11 @@ bool PreloadingDecider::IsSuitableCandidate(
     const blink::mojom::SpeculationCandidatePtr& candidate,
     const PreloadingPredictor& predictor,
     PreloadingConfidence confidence,
-    blink::mojom::SpeculationAction action) const {
+    blink::mojom::SpeculationAction action,
+    EagernessSet eagerness_to_exclude) const {
   EagernessSet eagerness_set_for_predictor =
       behavior_config_->EagernessSetForPredictor(predictor);
+  eagerness_set_for_predictor.RemoveAll(eagerness_to_exclude);
 
   // If the ML model is available, its decisions supersede the hover heuristic.
   if (ml_model_available_ &&

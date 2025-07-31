@@ -1369,7 +1369,8 @@ TEST_F(PreloadingDeciderTest, SpeculationRulesTagsMergingForNVSMatch) {
 
   auto merged_tags =
       preloading_decider->GetMergedSpeculationTagsFromSuitableCandidates(
-          lookup_key, predictor, PreloadingConfidence{100});
+          lookup_key, predictor, PreloadingConfidence{100},
+          /*eagerness_to_exclude=*/{});
 
   // The merged tags should contain tags from both NVS-matched candidates.
   EXPECT_EQ(merged_tags.size(), 2u);
@@ -1418,7 +1419,8 @@ TEST_F(PreloadingDeciderTest,
 
   auto merged_tags =
       preloading_decider->GetMergedSpeculationTagsFromSuitableCandidates(
-          lookup_key, predictor, PreloadingConfidence{100});
+          lookup_key, predictor, PreloadingConfidence{100},
+          /*eagerness_to_exclude=*/{});
 
   // The merged tags should contain a single std::nullopt since no candidates
   // have tags.
