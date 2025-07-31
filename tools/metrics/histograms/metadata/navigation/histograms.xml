@@ -2001,6 +2001,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Navigation.Renderer.ProcessReadiness"
+    enum="RendererProcessReadiness" expires_after="2026-07-23">
+  <owner>alexmos@chromium.org</owner>
+  <owner>creis@chromium.org</owner>
+  <summary>
+    Identifies how ready the renderer process is for processing a
+    CommitNavigation IPC by recording whether the process was ready for
+    processing IPC when CommitNavigation was sent, and if so, whether all
+    prerequisite view/proxy/frame objects were already created. Recorded in the
+    renderer at the end of committing a navigation.
+  </summary>
+</histogram>
+
 <histogram name="Navigation.Renderer.Timeline.{DurationFromTo}.Duration"
     units="ms" expires_after="2026-06-20">
   <owner>alexmos@chromium.org</owner>

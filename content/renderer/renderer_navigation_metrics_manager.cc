@@ -29,6 +29,29 @@ BASE_FEATURE(kEnableRendererNavigationTimeline,
              "EnableRendererNavigationTimeline",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Used to record how ready a renderer process is for an incoming
+// CommitNavigation IPC. Please keep in sync with "RendererProcessReadiness" in
+// tools/metrics/histograms/metadata/navigation/enums.xml. These values are
+// persisted to logs. Entries should not be renumbered and numeric values should
+// never be reused.
+//
+// LINT.IfChange(RendererProcessReadiness)
+enum class RendererProcessReadiness {
+  // The commit IPC was sent before the process was ready. This implies that
+  // we should've started the renderer process earlier.
+  kProcessNotReady = 0,
+  // Renderer was ready, but the preparatory work of creating the
+  // view/proxy/frame objects wasn't complete before the commit IPC was sent.
+  // This implies that the speculative RenderFrameHost should've been created
+  // earlier.
+  kViewProxyFrameNotReady = 1,
+  // Renderer was ready to process the commit IPC right away.
+  kReadyToProcessCommitIPC = 2,
+
+  kMaxValue = kReadyToProcessCommitIPC
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/navigation/enums.xml:RendererProcessReadiness)
+
 }  // namespace
 
 RendererNavigationMetricsManager& RendererNavigationMetricsManager::Instance() {
@@ -289,6 +312,43 @@ void RendererNavigationMetricsManager::RecordTraceEventsAndMetrics(
                             timeline.create_frame_event->end);
   }
 
+  // Record a metric to measure how ready the renderer process is to process a
+  // navigation commit IPC.
+  std::string readiness_description;
+  if (timeline.commit_sent < process_ready_time) {
+    // The commit IPC was sent before the process was ready. This implies that
+    // we should've started the renderer process earlier.
+    base::UmaHistogramEnumeration("Navigation.Renderer.ProcessReadiness",
+                                  RendererProcessReadiness::kProcessNotReady);
+    readiness_description = "Process not ready";
+  } else if (timeline.create_frame_event &&
+             timeline.commit_sent < timeline.create_frame_event->end) {
+    // Renderer was ready, but the prerequisite work of creating the
+    // view/proxy/frame objects wasn't completed before the commit IPC was sent.
+    // This implies that the speculative RenderFrameHost should've been created
+    // earlier. Note that CreateFrame's end time is used here because it is the
+    // last view/proxy/frame creation IPC to be processed; not having
+    // CreateFrame for this navigation implies there also was no view or proxy
+    // creation, and the navigation commit wasn't blocked waiting for any of
+    // them.
+    base::UmaHistogramEnumeration(
+        "Navigation.Renderer.ProcessReadiness",
+        RendererProcessReadiness::kViewProxyFrameNotReady);
+    readiness_description = "View/proxy/frame not ready";
+  } else {
+    // Renderer was ready to process the commit IPC without waiting for process
+    // startup or prerequisite frame/proxy/view creation IPCs.
+    base::UmaHistogramEnumeration(
+        "Navigation.Renderer.ProcessReadiness",
+        RendererProcessReadiness::kReadyToProcessCommitIPC);
+    readiness_description = "Ready to process commit IPC";
+  }
+  // Also emit an instant trace event to expose process readiness in traces.
+  TRACE_EVENT_INSTANT(
+      "navigation",
+      "RendererNavigationMetricsManager::RecordTraceEventsAndMetrics",
+      "ProcessReadiness", readiness_description);
+
   log_trace_event_and_uma("CommitToDidCommit", timeline.commit_start,
                           timeline.commit_end);
 }
@@ -296,7 +356,8 @@ void RendererNavigationMetricsManager::RecordTraceEventsAndMetrics(
 void RendererNavigationMetricsManager::ProcessNavigationCommit(
     const base::UnguessableToken& navigation_metrics_token,
     const GURL& url,
-    const base::TimeTicks& navigation_start_time) {
+    const base::TimeTicks& navigation_start_time,
+    const base::TimeTicks& commit_sent_time) {
   if (!base::FeatureList::IsEnabled(kEnableRendererNavigationTimeline)) {
     return;
   }
@@ -311,6 +372,7 @@ void RendererNavigationMetricsManager::ProcessNavigationCommit(
 
   auto& timeline = it->second;
   timeline.navigation_start = navigation_start_time;
+  timeline.commit_sent = commit_sent_time;
   timeline.commit_end = base::TimeTicks().Now();
   RecordTraceEventsAndMetrics(timeline, url);
 
