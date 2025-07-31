@@ -302,10 +302,9 @@ TEST_F(PaymentLinkManagerTest,
   GURL supported_payment_link(
       "shopeepay://shopeepay.com.my?code=https://shopeepay.com.my/"
       "281011051692389958586862838?merchant=Walmart&amount=101&currency=usd");
+  ON_CALL(client_, GetPaymentsDataManager)
+      .WillByDefault(testing::Return(nullptr));
 
-  EXPECT_CALL(client_, GetPaymentsDataManager)
-      .Times(1)
-      .WillOnce(testing::Return(nullptr));
   EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
 
   payment_link_manager_->TriggerPaymentLinkPushPayment(
@@ -1715,6 +1714,39 @@ TEST_F(PaymentLinkManagerTestForA2AFlow,
 
   EXPECT_TRUE(pref_service_.get()->GetBoolean(
       autofill::prefs::kFacilitatedPaymentsA2ATriggeredOnce));
+}
+
+// A2A payment prompt is not shown if the user has opted out of the A2A flow.
+TEST_F(PaymentLinkManagerTestForA2AFlow,
+       UserOptedOut_A2APaymentPromptNotShown) {
+  feature_list_.InitAndEnableFeature(
+      payments::facilitated::kFacilitatedPaymentsEnableA2APayment);
+  GURL supported_payment_link(
+      "https://www.itmx.co.th/facilitated-payment/prompt-pay?path=fake_path");
+  ON_CALL(*mock_facilitated_payments_app_info_list_, Size)
+      .WillByDefault(testing::Return(2));
+
+  // Test that when `kFacilitatedPaymentsA2AEnabled` pref is true,
+  // `ShowPaymentLinkPrompt` is invoked.
+  pref_service_.get()->SetBoolean(
+      autofill::prefs::kFacilitatedPaymentsA2AEnabled, true);
+
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(1);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
+
+  // Test that when `kFacilitatedPaymentsA2AEnabled` pref is false,
+  // `ShowPaymentLinkPrompt` is not invoked.
+  pref_service_.get()->SetBoolean(
+      autofill::prefs::kFacilitatedPaymentsA2AEnabled, false);
+
+  EXPECT_CALL(client_, ShowPaymentLinkPrompt).Times(0);
+
+  payment_link_manager_->TriggerPaymentLinkPushPayment(
+      supported_payment_link, GURL("https://www.example.com"),
+      ukm::UkmRecorder::GetNewSourceID());
 }
 
 }  // namespace payments::facilitated

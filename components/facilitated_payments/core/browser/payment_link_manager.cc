@@ -180,10 +180,20 @@ void PaymentLinkManager::RetrieveSupportedEwallets(
 }
 
 bool PaymentLinkManager::CanTriggerAppPaymentFlow(const GURL& page_url) {
-  return optimization_guide_decider_->CanApplyOptimization(
-             page_url, optimization_guide::proto::A2A_MERCHANT_ALLOWLIST,
-             /*optimization_metadata=*/nullptr) ==
-         optimization_guide::OptimizationGuideDecision::kTrue;
+  if (optimization_guide_decider_->CanApplyOptimization(
+          page_url, optimization_guide::proto::A2A_MERCHANT_ALLOWLIST,
+          /*optimization_metadata=*/nullptr) !=
+      optimization_guide::OptimizationGuideDecision::kTrue) {
+    return false;
+  }
+
+  if (!client_->GetPaymentsDataManager()) {
+    // Payments data manager can be null only in tests.
+    return false;
+  }
+
+  return client_->GetPaymentsDataManager()
+      ->IsFacilitatedPaymentsA2AUserPrefEnabled();
 }
 
 void PaymentLinkManager::Reset() {

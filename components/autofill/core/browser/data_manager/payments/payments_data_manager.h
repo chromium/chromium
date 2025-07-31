@@ -520,6 +520,9 @@ class PaymentsDataManager : public AutofillWebDataServiceObserverOnUISequence,
   // Returns the value of the FacilitatedPaymentsEwallet user pref.
   bool IsFacilitatedPaymentsEwalletUserPrefEnabled() const;
 
+  // Returns the value of the FacilitatedPaymentsA2AEnabled user pref.
+  bool IsFacilitatedPaymentsA2AUserPrefEnabled() const;
+
   // Sets the FacilitatedPaymentsA2ATriggeredOnce user pref value to `enabled`.
   void SetFacilitatedPaymentsA2ATriggeredOnce(bool enabled);
 

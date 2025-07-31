@@ -334,6 +334,15 @@ bool IsFacilitatedPaymentsPixAccountLinkingEnabled(const PrefService* prefs) {
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
+bool IsFacilitatedPaymentsA2AEnabled(const PrefService* prefs) {
+#if BUILDFLAG(IS_ANDROID)
+  return prefs->GetBoolean(kFacilitatedPaymentsA2AEnabled);
+#else
+  // Default to false on other platforms as the feature is Android-only.
+  return false;
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 void SetFacilitatedPaymentsA2ATriggeredOnce(PrefService* prefs, bool value) {
 #if BUILDFLAG(IS_ANDROID)
   prefs->SetBoolean(kFacilitatedPaymentsA2ATriggeredOnce, value);
