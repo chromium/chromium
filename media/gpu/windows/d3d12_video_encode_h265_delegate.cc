@@ -342,6 +342,8 @@ D3D12VideoEncodeH265Delegate::EncodeImpl(
           0, rate_controller_timestamp_);
     }
     qp = software_rate_controller_->temporal_layers(0).curr_frame_qp();
+  } else if (options.quantizer.has_value()) {
+    qp = options.quantizer.value();
   }
   if (qp != -1) {
     CHECK_EQ(input_arguments_.SequenceControlDesc.RateControl.Mode,

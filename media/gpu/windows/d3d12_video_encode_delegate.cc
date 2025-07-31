@@ -113,10 +113,17 @@ D3D12VideoEncodeDelegate::GetSupportedProfiles(
         .RateControlMode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CBR,
     };
     CHECK_FEATURE_SUPPORT(RATE_CONTROL_MODE, cbr);
+    D3D12_FEATURE_DATA_VIDEO_ENCODER_RATE_CONTROL_MODE cqp{
+        .Codec = codec,
+        .RateControlMode = D3D12_VIDEO_ENCODER_RATE_CONTROL_MODE_CQP,
+    };
+    CHECK_FEATURE_SUPPORT(RATE_CONTROL_MODE, cqp);
     // If VBR is not supported, we will fallback to CBR.
     supported_profile.rate_control_modes =
         (cbr.IsSupported ? VideoEncodeAccelerator::kConstantMode |
                                VideoEncodeAccelerator::kVariableMode
+                         : VideoEncodeAccelerator::kNoMode) |
+        (cqp.IsSupported ? VideoEncodeAccelerator::kExternalMode
                          : VideoEncodeAccelerator::kNoMode);
     // TODO(crbug.com/40275246): support L1T2/L1T3.
     supported_profile.scalability_modes.push_back(SVCScalabilityMode::kL1T1);
