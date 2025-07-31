@@ -52,6 +52,14 @@ const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 // Spacing between primary and secondary buttons.
 const CGFloat kSpacingScrollViewAndButtons = 24.0;
 
+// Constants for gradient Gemini logo.
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
+const CGFloat kGeminiLogoFontScale = 2.0;
+#endif
+const CGFloat kFontCapHeightMultiplier = 1.1;
+const CGFloat kImageWidthAdjustment = 10.0;
+const CGFloat kBaselineAdjustment = 10.0;
+
 }  // namespace
 
 @interface BWGPromoViewController ()
@@ -201,50 +209,94 @@ const CGFloat kSpacingScrollViewAndButtons = 24.0;
   UIFont* labelFont =
       PreferredFontForTextStyle(UIFontTextStyleTitle1, UIFontWeightSemibold);
   mainTitleLabel.font = labelFont;
-
   NSString* mainTitleString =
       l10n_util::GetNSString(IDS_IOS_BWG_PROMO_MAIN_TITLE);
+
+#if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
   NSString* gradientSubstring =
       l10n_util::GetNSString(IDS_IOS_BWG_PROMO_GRADIENT_TEXT);
+  UIImage* geminiIcon = CustomSymbolWithPointSize(
+      kGeminiFullSymbol, labelFont.pointSize + kGeminiLogoFontScale);
+  UIImage* gradientImage = [self createGradientImageFromSymbol:geminiIcon];
+
+  NSAttributedString* gradientGeminiString =
+      [self attributedStringWithText:mainTitleString
+                  replacingSubstring:gradientSubstring
+                           withImage:gradientImage
+                                font:labelFont];
+
+  mainTitleLabel.attributedText = gradientGeminiString;
+#else
   NSMutableAttributedString* attributedString =
       [[NSMutableAttributedString alloc] initWithString:mainTitleString];
+  mainTitleLabel.attributedText = attributedString;
+#endif
 
-  CGSize mainTitleTextSize = [attributedString size];
+  return mainTitleLabel;
+}
+
+// Creates a gradient image from a symbol image.
+- (UIImage*)createGradientImageFromSymbol:(UIImage*)symbolImage {
+  CGSize iconSize = symbolImage.size;
+
   CAGradientLayer* gradientLayer = [CAGradientLayer layer];
   gradientLayer.colors = [self createGradientColorsArray];
   gradientLayer.startPoint = CGPointMake(0, 0.5);
-  gradientLayer.endPoint = CGPointMake(0.8, 0.5);
-  gradientLayer.frame =
-      CGRectMake(0, 0, mainTitleTextSize.width, labelFont.pointSize);
+  gradientLayer.endPoint = CGPointMake(1.0, 0.5);
+  gradientLayer.frame = CGRectMake(0, 0, iconSize.width, iconSize.height);
+  gradientLayer.locations = @[ @0.40, @1.0 ];
 
   UIGraphicsImageRenderer* renderer =
-      [[UIGraphicsImageRenderer alloc] initWithSize:mainTitleTextSize];
-  UIImage* textImage = [renderer
+      [[UIGraphicsImageRenderer alloc] initWithSize:iconSize];
+  UIImage* gradientImage = [renderer
       imageWithActions:^(UIGraphicsImageRendererContext* rendererContext) {
+        // CG layers have inversed coordinates of symbol images. Therefore, we
+        // vertically flip the rendered image.
+        CGContextTranslateCTM(rendererContext.CGContext, 0, iconSize.height);
+        CGContextScaleCTM(rendererContext.CGContext, 1.0, -1.0);
+        CGContextClipToMask(rendererContext.CGContext,
+                            CGRectMake(0, 0, iconSize.width, iconSize.height),
+                            symbolImage.CGImage);
         [gradientLayer renderInContext:rendererContext.CGContext];
       }];
+  return gradientImage;
+}
 
-  UIColor* gradientColor = [UIColor colorWithPatternImage:textImage];
-  NSRange gradientRange = [mainTitleString rangeOfString:gradientSubstring];
-  [attributedString addAttribute:NSForegroundColorAttributeName
-                           value:gradientColor
-                           range:gradientRange];
+// Creates an attributed string and replaces a substring with an image.
+- (NSAttributedString*)attributedStringWithText:(NSString*)text
+                             replacingSubstring:(NSString*)substring
+                                      withImage:(UIImage*)image
+                                           font:(UIFont*)font {
+  NSMutableAttributedString* attributedString =
+      [[NSMutableAttributedString alloc]
+          initWithString:text
+              attributes:@{NSFontAttributeName : font}];
 
-  UIFont* gradientStringFont =
-      ios::provider::GetBrandedProductMediumFont(labelFont.pointSize);
-  [attributedString addAttribute:NSFontAttributeName
-                           value:gradientStringFont
-                           range:gradientRange];
+  NSRange range = [attributedString.string rangeOfString:substring];
+  NSTextAttachment* textAttachment = [[NSTextAttachment alloc] init];
+  textAttachment.image = image;
 
-  mainTitleLabel.attributedText = attributedString;
-  return mainTitleLabel;
+  // Adjust bounds so image aligns with the string.
+  CGFloat imageHeight = font.capHeight * kFontCapHeightMultiplier;
+  CGFloat imageAspectRatio = image.size.width / image.size.height;
+  CGFloat imageWidth = imageHeight * imageAspectRatio + kImageWidthAdjustment;
+  CGFloat yOrigin = font.descender / kBaselineAdjustment;
+
+  textAttachment.bounds = CGRectMake(0, yOrigin, imageWidth, imageHeight);
+
+  NSAttributedString* attachmentString =
+      [NSAttributedString attributedStringWithAttachment:textAttachment];
+
+  [attributedString replaceCharactersInRange:range
+                        withAttributedString:attachmentString];
+
+  return attributedString;
 }
 
 // Create an array of colors representing a gradient color palette.
 - (NSArray*)createGradientColorsArray {
   NSArray<UIColor*>* colors = @[
-    [UIColor colorNamed:kBlue400Color], [UIColor colorNamed:kBlue700Color],
-    [UIColor colorNamed:kBlue300Color]
+    [UIColor colorNamed:kBlue700Color], [UIColor colorNamed:kBlue300Color]
   ];
 
   NSMutableArray<id>* gradientColorArray = [[NSMutableArray alloc] init];
