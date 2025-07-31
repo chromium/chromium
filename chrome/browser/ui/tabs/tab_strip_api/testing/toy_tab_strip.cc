@@ -83,4 +83,45 @@ int ToyTabStrip::GetNextId() {
   return id++;
 }
 
+std::optional<tab_groups::TabGroupId> ToyTabStrip::GetGroupIdFor(
+    const tabs::TabCollectionHandle& handle) const {
+  for (const auto& group : groups_with_visuals_) {
+    if (group.handle == handle) {
+      return group.id;
+    }
+  }
+  return std::nullopt;
+}
+
+tabs::TabCollectionHandle ToyTabStrip::AddGroup(
+    const tab_groups::TabGroupVisualData& visual_data) {
+  ToyTabGroupData new_group{tab_groups::TabGroupId::GenerateNew(),
+                            tabs::TabCollectionHandle(GetNextId()),
+                            visual_data};
+  auto handle = new_group.handle;
+  groups_with_visuals_.push_back(std::move(new_group));
+  return handle;
+}
+
+const tab_groups::TabGroupVisualData* ToyTabStrip::GetGroupVisualData(
+    const tabs::TabCollectionHandle& handle) const {
+  for (const auto& group : groups_with_visuals_) {
+    if (group.handle == handle) {
+      return &group.visuals;
+    }
+  }
+  return nullptr;
+}
+
+void ToyTabStrip::UpdateGroupVisuals(
+    const tab_groups::TabGroupId& group_id,
+    const tab_groups::TabGroupVisualData& new_visuals) {
+  for (auto& group : groups_with_visuals_) {
+    if (group.id == group_id) {
+      group.visuals = new_visuals;
+      return;
+    }
+  }
+}
+
 }  // namespace tabs_api::testing
