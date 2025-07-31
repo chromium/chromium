@@ -1092,6 +1092,12 @@ inline constexpr char kTimeOfFirstFilesAppChipPress[] =
     "ash.holding_space.time_of_first_files_app_chip_press";
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
+// Deprecated 07/2025.
+inline constexpr char kSyncPromoIdentityPillShownCount[] =
+    "ChromeSigninSyncPromoIdentityPillShownCount";
+inline constexpr char kSyncPromoIdentityPillUsedCount[] =
+    "ChromeSigninSyncPromoIdentityPillUsedCount";
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1544,6 +1550,9 @@ void RegisterProfilePrefsForMigration(
   // Deprecated 07/2025.
   registry->RegisterTimePref(kTimeOfFirstFilesAppChipPress, base::Time());
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  registry->RegisterIntegerPref(kSyncPromoIdentityPillShownCount, 0);
+  registry->RegisterIntegerPref(kSyncPromoIdentityPillUsedCount, 0);
 }
 
 }  // namespace
@@ -2831,6 +2840,9 @@ void MigrateObsoleteProfilePrefs(PrefService* profile_prefs,
   // Added 07/2025.
   profile_prefs->ClearPref(kTimeOfFirstFilesAppChipPress);
 #endif  // BUILDFLAG(IS_CHROMEOS)
+
+  profile_prefs->ClearPref(kSyncPromoIdentityPillShownCount);
+  profile_prefs->ClearPref(kSyncPromoIdentityPillUsedCount);
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -82,15 +82,27 @@ constexpr char kExtensionsExplicitBrowserSigninEnabled[] =
 constexpr char kBookmarksExplicitBrowserSigninEnabled[] =
     "BookmarksExplicitBrowserSigninEnabled";
 
+// History Sync promo on the avatar button.
+//
+// Number of times the history sync promo was shown in the identity pill (avata
+// toolbar button).
+constexpr std::string_view kHistorySyncPromoIdentityPillShownCount =
+    "ChromeSigninSyncPromoIdentityPillShownCount";
+// Number of times the history sync promo was used (clicked) in the identity
+// pill (avatar toolbar button).
+constexpr std::string_view kHistorySyncPromoIdentityPillUsedCount =
+    "ChromeSigninSyncPromoIdentityPillUsedCount";
+
+// Sync promo on the avatar button.
+//
 // Number of times the sync promo was shown in the identity pill (avatar toolbar
 // button).
 constexpr std::string_view kSyncPromoIdentityPillShownCount =
-    "ChromeSigninSyncPromoIdentityPillShownCount";
-
+    "SyncPromoIdentityPillShownCount";
 // Number of times the sync promo was used (clicked) in the identity pill
 // (avatar toolbar button).
 constexpr std::string_view kSyncPromoIdentityPillUsedCount =
-    "ChromeSigninSyncPromoIdentityPillUsedCount";
+    "SyncPromoIdentityPillUsedCount";
 
 // Number of times the Bookmark Batch Upload promo was dismissed.
 constexpr std::string_view kBookmarkBatchUploadPromoDismissCount =
@@ -110,8 +122,6 @@ void SigninPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterDictionaryPref(kSigninAccountPrefs);
   registry->RegisterIntegerPref(prefs::kHistorySyncSuccessiveDeclineCount, 0);
   registry->RegisterInt64Pref(prefs::kHistorySyncLastDeclinedTimestamp, 0);
-  registry->RegisterIntegerPref(kSyncPromoIdentityPillShownCount, 0);
-  registry->RegisterIntegerPref(kSyncPromoIdentityPillUsedCount, 0);
 }
 
 bool SigninPrefs::HasAccountPrefs(const GaiaId& gaia_id) const {
@@ -292,6 +302,26 @@ bool SigninPrefs::GetBookmarksExplicitBrowserSignin(
     const GaiaId& gaia_id) const {
   return GetBooleanPrefForAccount(gaia_id,
                                   kBookmarksExplicitBrowserSigninEnabled);
+}
+
+void SigninPrefs::IncrementHistorySyncPromoIdentityPillShownCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kHistorySyncPromoIdentityPillShownCount);
+}
+
+int SigninPrefs::GetHistorySyncPromoIdentityPillShownCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kHistorySyncPromoIdentityPillShownCount);
+}
+
+void SigninPrefs::IncrementHistorySyncPromoIdentityPillUsedCount(
+    const GaiaId& gaia_id) {
+  IncrementIntPrefForAccount(gaia_id, kHistorySyncPromoIdentityPillUsedCount);
+}
+
+int SigninPrefs::GetHistorySyncPromoIdentityPillUsedCount(
+    const GaiaId& gaia_id) const {
+  return GetIntPrefForAccount(gaia_id, kHistorySyncPromoIdentityPillUsedCount);
 }
 
 void SigninPrefs::IncrementSyncPromoIdentityPillShownCount(
