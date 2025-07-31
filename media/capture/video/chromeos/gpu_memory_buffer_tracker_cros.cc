@@ -64,21 +64,10 @@ GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
 gfx::GpuMemoryBufferHandle
 GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   CHECK(shared_image_);
-  // Overriding the GpuMemoryBufferHandle id to an invalid id to avoid buffer
-  // collision in GpuMemoryBufferFactoryNativePixmap when we pass the handle
-  // to a different process. (crbug.com/993265)
-  //
-  // This will force the GPU process to look up the real native pixmap handle
-  // through the DMA-buf fds in [1] when creating SharedImage, instead of
-  // re-using a wrong pixmap handle in the cache.
-  //
-  // [1]: https://tinyurl.com/yymtv22y
-  // TODO(crbug.com/359601431): Remove this method once all
-  // GpuMemoryBufferTrackers are converted to use MappableSI.
-  // Note that the above case of buffer collision will not be an issue with use
-  // of MappableSI everywhere since it does not internally use or cache buffer
-  // ids to refer to underlying buffer. Instead all the shared images are
-  // referred to by mailboxes.
+
+  // TODO(crbug.com/359601431): Change this flow to talk entirely in terms of
+  // SharedImage once all GpuMemoryBufferTrackers are converted to use
+  // MappableSI.
   gfx::GpuMemoryBufferHandle handle =
       shared_image_->CloneGpuMemoryBufferHandle();
   return handle;
