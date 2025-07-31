@@ -29,8 +29,7 @@ class UI_ANDROID_EXPORT DisplayAndroidManager : public display::ScreenBase {
 
   ~DisplayAndroidManager() override = default;
 
-  // Screen interface.
-
+  // display::ScreenBase:
   display::Display GetDisplayNearestWindow(
       gfx::NativeWindow window) const override;
   display::Display GetDisplayNearestView(gfx::NativeView view) const override;
