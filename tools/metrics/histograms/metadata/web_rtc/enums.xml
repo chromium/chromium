@@ -113,6 +113,7 @@ chromium-metrics-reviews@google.com.
   <int value="0" label="Unknown"/>
   <int value="1" label="Success"/>
   <int value="2" label="FailureDueToSameTitleWindows"/>
+  <int value="3" label="FailureDueToSlideShowWasNotChosen"/>
 </enum>
 
 <enum name="GenerateCertificateAlgorithms">
