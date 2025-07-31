@@ -57,6 +57,21 @@ struct TabGroupVisualData {
   bool is_collapsed;
 };
 
+struct SplitTab {
+  NodeId id;
+  SplitTabVisualData data;
+};
+
+struct SplitTabVisualData {
+  enum Layout {
+    kVertical,
+    kHorizontal,
+  };
+
+  Layout layout;
+  double split_ratio;
+};
+
 // A TabCollection is a container in the tab strip tree. Using a union enforces
 // that a collection must be exactly one of the types below thus preventing
 // inconsistent states.
@@ -65,6 +80,7 @@ union TabCollection {
   PinnedTabs pinned_tabs;
   UnpinnedTabs unpinned_tabs;
   TabGroup tab_group;
+  SplitTab split_tab;
 };
 
 // The TabCollection tree has child nodes that can be a Tab or a

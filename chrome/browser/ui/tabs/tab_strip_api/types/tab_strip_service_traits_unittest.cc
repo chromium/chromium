@@ -5,6 +5,8 @@
 #include "chrome/browser/ui/tabs/tab_strip_api/tab_strip_api.mojom.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/node_id_traits.h"
 #include "chrome/browser/ui/tabs/tab_strip_api/types/position_traits.h"
+#include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace tabs_api {
@@ -42,6 +44,20 @@ TEST(TabsStripServiceMojoTraitsTest, ConvertTabGroupVisualData) {
   tab_groups::TabGroupVisualData deserialized;
   ASSERT_TRUE(
       mojom::TabGroupVisualData::Deserialize(serialized, &deserialized));
+
+  ASSERT_TRUE(original == deserialized);
+}
+
+TEST(TabsStripServiceMojoTraitsTest, ConvertSplitTabVisualData) {
+  split_tabs::SplitTabVisualData original(split_tabs::SplitTabLayout::kVertical,
+                                          0.75);
+
+  std::vector<uint8_t> serialized =
+      mojom::SplitTabVisualData::Serialize(&original);
+
+  split_tabs::SplitTabVisualData deserialized;
+  ASSERT_TRUE(
+      mojom::SplitTabVisualData::Deserialize(serialized, &deserialized));
 
   ASSERT_TRUE(original == deserialized);
 }

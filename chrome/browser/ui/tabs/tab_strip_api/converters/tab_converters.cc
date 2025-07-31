@@ -10,6 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "components/tab_groups/tab_group_visual_data.h"
+#include "components/tabs/public/split_tab_collection.h"
+#include "components/tabs/public/split_tab_data.h"
+#include "components/tabs/public/split_tab_visual_data.h"
 #include "components/tabs/public/tab_group.h"
 #include "components/tabs/public/tab_group_tab_collection.h"
 
@@ -73,8 +76,17 @@ tabs_api::mojom::TabCollectionPtr BuildMojoTabCollection(
           std::move(mojo_tab_group));
     }
     case tabs::TabCollection::Type::SPLIT: {
-      // TODO(crbug.com/421933194): Add SplitTab.
-      NOTIMPLEMENTED();
+      auto mojo_split_tab = tabs_api::mojom::SplitTab::New();
+      mojo_split_tab->id = node_id;
+      const tabs::SplitTabCollection* split_collection =
+          static_cast<const tabs::SplitTabCollection*>(collection);
+      split_tabs::SplitTabData* split_data = split_collection->data();
+      CHECK(split_data);
+      split_tabs::SplitTabVisualData* visual_data = split_data->visual_data();
+      CHECK(visual_data);
+      mojo_split_tab->data = *visual_data;
+      return tabs_api::mojom::TabCollection::NewSplitTab(
+          std::move(mojo_split_tab));
     }
   }
   NOTREACHED();
