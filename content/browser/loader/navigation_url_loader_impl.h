@@ -122,6 +122,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   void CancelNavigationTimeout() override;
 
+  void TriggerTimeoutForTesting();
   const network::ResourceRequest& GetResourceRequestForTesting() const;
 
  private:
@@ -239,10 +240,14 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       const NavigationRequestInfo& request_info,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
 
-  void ParseHeaders(const GURL& url,
-                    network::mojom::URLResponseHeadPtr head,
-                    base::OnceCallback<void(network::mojom::URLResponseHeadPtr)>
-                        continuation);
+  // When `clear_parsed_headers_for_testing` is true (which is only allowed in
+  // tests), `head->parsed_headers` is cleared to enforce and test the async
+  // `ParseHeaders()` path. https://crbug.com/434182226
+  void ParseHeaders(
+      const GURL& url,
+      network::mojom::URLResponseHeadPtr head,
+      base::OnceCallback<void(network::mojom::URLResponseHeadPtr)> continuation,
+      bool clear_parsed_headers_for_testing);
 
   void NotifyResponseStarted(
       network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints,

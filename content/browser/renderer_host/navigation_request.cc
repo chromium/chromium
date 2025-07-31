@@ -3438,6 +3438,12 @@ ukm::SourceId NavigationRequest::GetPreviousPageUkmSourceId() {
   return previous_page_ukm_source_id_;
 }
 
+bool NavigationRequest::ShouldClearParsedHeadersOnTestReceiveRedirect() {
+  // This method is only for testing and thus must do nothing and return `false`
+  // here.
+  return false;
+}
+
 void NavigationRequest::OnRequestRedirected(
     const net::RedirectInfo& redirect_info,
     const net::NetworkAnonymizationKey& network_anonymization_key,

@@ -10,6 +10,7 @@
 #include <string_view>
 #include <utility>
 
+#include "base/check_is_test.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
@@ -1324,7 +1325,8 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
       weak_factory_.GetWeakPtr(), std::move(url_loader_client_endpoints),
       std::move(response_body_), global_request_id_, is_download);
 
-  ParseHeaders(url_, std::move(head), std::move(on_receive_response));
+  ParseHeaders(url_, std::move(head), std::move(on_receive_response),
+               /*clear_parsed_headers_for_testing=*/false);
 }
 
 void NavigationURLLoaderImpl::OnReceiveRedirect(
@@ -1373,7 +1375,13 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
   auto on_receive_redirect =
       base::BindOnce(&NavigationURLLoaderImpl::NotifyRequestRedirected,
                      weak_factory_.GetWeakPtr(), redirect_info);
-  ParseHeaders(previous_url, std::move(head), std::move(on_receive_redirect));
+  const bool clear_parsed_headers_for_testing =
+      delegate_->ShouldClearParsedHeadersOnTestReceiveRedirect();
+  if (clear_parsed_headers_for_testing) {
+    CHECK_IS_TEST();
+  }
+  ParseHeaders(previous_url, std::move(head), std::move(on_receive_redirect),
+               clear_parsed_headers_for_testing);
 }
 
 void NavigationURLLoaderImpl::OnUploadProgress(
@@ -1664,7 +1672,8 @@ NavigationURLLoaderImpl::CreateSignedExchangeRequestHandler(
 void NavigationURLLoaderImpl::ParseHeaders(
     const GURL& url,
     network::mojom::URLResponseHeadPtr head,
-    base::OnceCallback<void(network::mojom::URLResponseHeadPtr)> continuation) {
+    base::OnceCallback<void(network::mojom::URLResponseHeadPtr)> continuation,
+    bool clear_parsed_headers_for_testing) {
   // As an optimization, when we know the parsed headers will be empty, we can
   // skip the network process roundtrip.
   // TODO(arthursonzogni): If there are any performance issues, consider
@@ -1681,6 +1690,11 @@ void NavigationURLLoaderImpl::ParseHeaders(
             kMicrosecondTimes);
     head->parsed_headers =
         network::PopulateParsedHeaders(head->headers.get(), url);
+  }
+
+  if (clear_parsed_headers_for_testing) {
+    CHECK_IS_TEST();
+    head->parsed_headers.reset();
   }
 
   // The main path:
@@ -2063,6 +2077,10 @@ bool NavigationURLLoaderImpl::SetNavigationTimeout(base::TimeDelta timeout) {
 
 void NavigationURLLoaderImpl::CancelNavigationTimeout() {
   timeout_timer_.Stop();
+}
+
+void NavigationURLLoaderImpl::TriggerTimeoutForTesting() {
+  timeout_timer_.FireNow();
 }
 
 void NavigationURLLoaderImpl::NotifyResponseStarted(

@@ -107,6 +107,16 @@ class CONTENT_EXPORT NavigationURLLoaderDelegate {
   CreateNavigationEarlyHintsManagerParams(
       const network::mojom::EarlyHints& early_hints) = 0;
 
+  // Only for testing purpose (https://crbug.com/434182226).
+  // In non-test cases, use `OnRequestRedirected()` instead, and this method
+  // must do nothing and return `false`.
+  //
+  // Called when `NavigationURLLoaderImpl::OnReceiveRedirect()` is called.
+  // When the return value is `true` (which is only allowed in tests),
+  // `head->parsed_headers` is cleared to enforce and test the async
+  // `ParseHeaders()` path.
+  virtual bool ShouldClearParsedHeadersOnTestReceiveRedirect() = 0;
+
  protected:
   NavigationURLLoaderDelegate() {}
   virtual ~NavigationURLLoaderDelegate() {}

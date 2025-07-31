@@ -126,9 +126,14 @@ class NavigationURLLoaderImplTest : public testing::Test {
           blink::NavigationDownloadPolicy(),
       bool is_main_frame = true,
       bool upgrade_if_insecure = false,
-      bool is_ad_tagged = false) {
+      bool is_ad_tagged = false,
+      std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors =
+          {}) {
     // NavigationURLLoader assumes that the corresponding FrameTreeNode has an
     // associated NavigationRequest.
+    // NOTE: This also creates and starts another `NavigationURLLoaderImpl`
+    // (`NavigationRequest::loader_`) but it's not the `NavigationURLLoaderImpl`
+    // being tested (=the return value of this method).
     pending_navigation_ = NavigationSimulator::CreateBrowserInitiated(
         GURL("https://example.com"), web_contents_.get());
     pending_navigation_->Start();
@@ -195,7 +200,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             false /* shared_storage_writable */,
             is_ad_tagged /* is_ad_tagged */,
             false /* force_no_https_upgrade */));
-    std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
 
     return std::make_unique<NavigationURLLoaderImpl>(
         browser_context_.get(), browser_context_->GetDefaultStoragePartition(),
@@ -577,6 +581,774 @@ TEST_F(NavigationURLLoaderImplTest, Redirect308Tests) {
                                url.DeprecatedGetOriginAsURL().spec());
   HTTPRedirectOriginHeaderTest(https_redirect_url, "POST", "POST", "null",
                                true);
+}
+
+namespace {
+
+// A `NavigationLoaderInterceptor` to test operations during an interceptor is
+// running (between `MaybeCreateLoader()` call and its callback invocation, i.e.
+// between `WaitUntilMaybeCreateLoader()` and `Unblock()`).
+class TestAsyncInterceptor final : public NavigationLoaderInterceptor {
+ public:
+  TestAsyncInterceptor() { ResetRunLoop(); }
+  ~TestAsyncInterceptor() override = default;
+
+  // Waits until the start of `MaybeCreateLoader()`.
+  void WaitUntilMaybeCreateLoader() { run_loop_->Run(); }
+
+  // Finishes `MaybeCreateLoader()` without intercepting the request.
+  void Unblock() {
+    // Allow `WaitUntilMaybeCreateLoader()` for the next redirect request.
+    ResetRunLoop();
+    std::move(loader_callback_).Run(std::nullopt);
+  }
+
+ private:
+  void MaybeCreateLoader(
+      const network::ResourceRequest& tentative_resource_request,
+      BrowserContext* browser_context,
+      LoaderCallback loader_callback,
+      FallbackCallback fallback_callback) override {
+    run_loop_->Quit();
+    loader_callback_ = std::move(loader_callback);
+  }
+
+  bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
+      const network::ResourceRequest& request,
+      network::mojom::URLResponseHeadPtr* response_head,
+      mojo::ScopedDataPipeConsumerHandle* response_body,
+      mojo::PendingRemote<network::mojom::URLLoader>* loader,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+      blink::ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors) override {
+    return false;
+  }
+
+  void ResetRunLoop() { run_loop_ = std::make_unique<base::RunLoop>(); }
+
+  std::unique_ptr<base::RunLoop> run_loop_;
+  LoaderCallback loader_callback_;
+};
+
+// A `NavigationLoaderInterceptor` to test `MaybeCreateLoaderForResponse()`
+// triggering redirects.
+class TestResponseInterceptor final : public NavigationLoaderInterceptor {
+ public:
+  explicit TestResponseInterceptor(const GURL& redirect_url)
+      : redirect_url_(redirect_url) {}
+  ~TestResponseInterceptor() override = default;
+
+  int response_count() const { return response_count_; }
+  void set_should_redirect(bool should_redirect) {
+    should_redirect_ = should_redirect;
+  }
+
+ private:
+  void MaybeCreateLoader(
+      const network::ResourceRequest& tentative_resource_request,
+      BrowserContext* browser_context,
+      LoaderCallback callback,
+      FallbackCallback fallback_callback) override {
+    std::move(callback).Run(std::nullopt);
+  }
+
+  bool MaybeCreateLoaderForResponse(
+      const network::URLLoaderCompletionStatus& status,
+      const network::ResourceRequest& request,
+      network::mojom::URLResponseHeadPtr* response_head,
+      mojo::ScopedDataPipeConsumerHandle* response_body,
+      mojo::PendingRemote<network::mojom::URLLoader>* loader,
+      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
+      blink::ThrottlingURLLoader* url_loader,
+      bool* skip_other_interceptors) override {
+    if (!should_redirect_) {
+      return false;
+    }
+
+    ++response_count_;
+
+    mojo::Remote<network::mojom::URLLoaderClient> client;
+    *client_receiver = client.BindNewPipeAndPassReceiver();
+
+    // Create an artificial redirect back to the fallback URL.
+    auto new_response_head = network::mojom::URLResponseHead::New();
+    net::RedirectInfo redirect_info = net::RedirectInfo::ComputeRedirectInfo(
+        request.method, request.url, request.site_for_cookies,
+        request.update_first_party_url_on_redirect
+            ? net::RedirectInfo::FirstPartyURLPolicy::UPDATE_URL_ON_REDIRECT
+            : net::RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL,
+        request.referrer_policy, request.referrer.spec(),
+        request.request_initiator, net::HTTP_TEMPORARY_REDIRECT, redirect_url_,
+        /*referrer_policy_header=*/std::nullopt,
+        /*insecure_scheme_was_upgraded=*/false);
+    client->OnReceiveRedirect(redirect_info, std::move(new_response_head));
+    return true;
+  }
+
+  const GURL redirect_url_;
+  int response_count_ = 0;
+  bool should_redirect_ = true;
+};
+
+// This sets the timeout timer but doesn't expect the timer is fired
+// automatically. If needed, the timer should be fired explicitly e.g. via
+// `TriggerTimeoutForTesting()`.
+void SetLargeNavigationTimeout(NavigationURLLoaderImpl& loader) {
+  loader.SetNavigationTimeout(base::Seconds(1000));
+}
+
+}  // namespace
+
+// Timeout case (failure) while waiting for the response from URLLoader.
+TEST_F(NavigationURLLoaderImplTest, TimeoutDuringURLLoader) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(final_url, std::string(), "GET", &delegate);
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the failure due to the timeout is notified.
+  //
+  // Note [*1]:
+  // In the expected non-test scenario, the operations below should occur
+  // between `TriggerTimeoutForTesting()` and `WaitForRequestFailed()` (which
+  // should be quite rare though), because `NavigationRequest` destroys
+  // `NavigationURLLoaderImpl` upon `OnRequestFailed()`.
+  // In tests, `WaitForRequestFailed()` is called before the operations below to
+  // avoid race conditions, but we can consider as if the `OnRequestFailed()`
+  // waited here is received after the operations below, because
+  // `OnRequestFailed()` can delay as a pending posted task without interfering
+  // with other parts of `NavigationURLLoaderImpl`.
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `1`, but currently the request continues after `Start()` and receives a
+  // response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+}
+
+// Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) while
+// waiting for the response from URLLoader.
+TEST_F(NavigationURLLoaderImplTest, RedirectDuringURLLoader) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  const GURL interceptor_url = http_test_server_.GetURL("/foo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto response_interceptor =
+      std::make_unique<TestResponseInterceptor>(interceptor_url);
+  auto* response_interceptor_ptr = response_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(response_interceptor));
+  auto loader =
+      CreateTestLoader(final_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
+  // which triggers `OnReceiveRedirect()` asynchronously.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+
+  // Note [*2]:
+  // Avoid `MaybeCreateLoaderForResponse()` intercepting the response below, to
+  // simplify the expectation a bit. The main thing to test is possibly
+  // triggering `MaybeCreateLoaderForResponse()` from `OnComplete()` (i.e. from
+  // `TriggerTimeoutForTesting()` above), not the response possibly received
+  // (unexpectedly) below after the timeout.
+  response_interceptor_ptr->set_should_redirect(false);
+
+  // Wait for the redirect due to the timeout + interceptor is notified.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Check that no further loading should occur.
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+}
+
+// Timeout case (failure) with async `OnRequestRedirected()` ->
+// `FollowRedirect()`.
+TEST_F(NavigationURLLoaderImplTest, TimeoutDuringFollowRedirect) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Wait for the async operation starts.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Finish the async operation.
+  loader->FollowRedirect({}, {}, {});
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `1`, but currently the request continues after `FollowRedirect()` and
+  // receives a response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+}
+
+// Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with async
+// `OnRequestRedirected()` -> `FollowRedirect()`.
+TEST_F(NavigationURLLoaderImplTest, RedirectDuringFollowRedirect) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL interceptor_url = http_test_server_.GetURL("/foo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto response_interceptor =
+      std::make_unique<TestResponseInterceptor>(interceptor_url);
+  auto* response_interceptor_ptr = response_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(response_interceptor));
+  auto loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Wait for the async operation starts.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
+  // which triggers `OnReceiveRedirect()` asynchronously.
+  // TODO(https://crbug.com/434182226): `MaybeCreateLoaderForResponse()`
+  // shouldn't be called.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+
+  // See Note [*2] above.
+  response_interceptor_ptr->set_should_redirect(false);
+
+  // Wait for the redirect due to the timeout + interceptor is notified.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Finish the async operation.
+  loader->FollowRedirect({}, {}, {});
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `1`, but currently the request continues after `FollowRedirect()` and
+  // receives a response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Successful case with async `ParseHeaders()`.
+TEST_F(NavigationURLLoaderImplTest, ForceAsyncParseHeaders) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Force the async ParseHeaders() path for redirects.
+  delegate.set_clear_parsed_headers_on_redirect(true);
+
+  // Wait for the async operation starts.
+  delegate.WaitForOnReceiveRedirect();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Finish the async operation (`ParseHeaders()` automatically completes while
+  // running the task queue) and wait for redirect/response received after the
+  // async `ParseHeaders()`.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.redirect_info().new_url, final_url);
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  loader->FollowRedirect({}, {}, {});
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(net::OK, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Timouet case (failure) with async `ParseHeaders()`.
+TEST_F(NavigationURLLoaderImplTest, TimeoutDuringParseHeaders) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(redirect_url, std::string(), "GET", &delegate);
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Force the async ParseHeaders() path for redirects.
+  delegate.set_clear_parsed_headers_on_redirect(true);
+
+  // Wait for the async operation starts.
+  delegate.WaitForOnReceiveRedirect();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Simulate timeout during the async operation.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Finish the async operation (`ParseHeaders()` automatically completes while
+  // running the task queue). No further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_redirect_handled_counter()` should
+  // be `0`, but currently the original redirect is notified after
+  // `ParseHeaders()` completes.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with async
+// `ParseHeaders()`.
+TEST_F(NavigationURLLoaderImplTest, RedirectDuringParseHeaders) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL interceptor_url = http_test_server_.GetURL("/foo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto response_interceptor =
+      std::make_unique<TestResponseInterceptor>(interceptor_url);
+  auto* response_interceptor_ptr = response_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(response_interceptor));
+  auto loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Force the async ParseHeaders() path for redirects.
+  delegate.set_clear_parsed_headers_on_redirect(true);
+
+  // Wait for the async operation starts.
+  delegate.WaitForOnReceiveRedirect();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  EXPECT_EQ(response_interceptor_ptr->response_count(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
+  // which triggers `OnReceiveRedirect()` asynchronously.
+  // TODO(https://crbug.com/434182226): `MaybeCreateLoaderForResponse()`
+  // shouldn't be called.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+
+  // Wait for the redirect due to the timeout + interceptor is notified.
+  // Also finish the async operation (`ParseHeaders()` automatically completes
+  // while running the task queue).
+  // TODO(https://crbug.com/434182226): We currently receive two redirect
+  // notifications (one from the original request delayed by `ParseHeaders()`,
+  // one from the timeout + interceptor), which is wrong.
+  delegate.WaitForRequestRedirected();
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Check that no further loading should occur.
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+}
+
+// Successful case with an async interceptor (initial request).
+TEST_F(NavigationURLLoaderImplTest, ForceAsyncInterceptor) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(async_interceptor));
+  auto loader =
+      CreateTestLoader(final_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Wait for the async operation starts.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Finish the async operation.
+  async_interceptor_ptr->Unblock();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for response received after the interceptor.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(net::OK, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Timeout case (failure) with an async interceptor (initial request).
+TEST_F(NavigationURLLoaderImplTest, TimeoutDuringAsyncInterceptor) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(async_interceptor));
+  auto loader =
+      CreateTestLoader(final_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Wait for the async operation starts.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Finish the async operation.
+  async_interceptor_ptr->Unblock();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `1`, but currently the request continues after the interceptor is unblocked
+  // and receives a response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+}
+
+// Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with an
+// async interceptor (initial request).
+TEST_F(NavigationURLLoaderImplTest, RedirectDuringAsyncInterceptor) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  const GURL interceptor_url = http_test_server_.GetURL("/foo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto response_interceptor =
+      std::make_unique<TestResponseInterceptor>(interceptor_url);
+  auto* response_interceptor_ptr = response_interceptor.get();
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(response_interceptor));
+  interceptors.push_back(std::move(async_interceptor));
+  auto loader =
+      CreateTestLoader(final_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Wait for the async operation starts.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Interceptor's MaybeCreateLoaderForResponse() isn't processed here, because
+  // `default_loader_used_` is false. Therefore falling back to the same
+  // scenario as the `TimeoutDuringAsyncInterceptor` test above.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 0);
+
+  // See Note [*2] above.
+  response_interceptor_ptr->set_should_redirect(false);
+
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Finish the async operation.
+  async_interceptor_ptr->Unblock();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `1`, but currently the request continues after the interceptor is unblocked
+  // and receives a response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+}
+
+// Successful case with an async interceptor (redirected request).
+TEST_F(NavigationURLLoaderImplTest, ForceAsyncInterceptorForRedirect) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(async_interceptor));
+  auto loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Process the initial request.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  async_interceptor_ptr->Unblock();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({}, {}, {});
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the async operation starts.
+  // This processes the redirected request until the async interceptor starts.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Finish the async operation.
+  async_interceptor_ptr->Unblock();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for response received after the interceptor.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(net::OK, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+}
+
+// Timeout case (failure) with an async interceptor (redirect request).
+TEST_F(NavigationURLLoaderImplTest, TimeoutDuringAsyncInterceptorForRedirect) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(async_interceptor));
+  auto loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Process the initial request.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  async_interceptor_ptr->Unblock();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({}, {}, {});
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the async operation starts.
+  // This processes the redirected request until the async interceptor starts.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Finish the async operation.
+  async_interceptor_ptr->Unblock();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `1`, but currently the request continues after the interceptor is unblocked
+  // and receives a response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+}
+
+// Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with an
+// async interceptor (redirect request).
+TEST_F(NavigationURLLoaderImplTest, RedirectDuringAsyncInterceptorForRedirect) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL redirect_url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  const GURL interceptor_url = http_test_server_.GetURL("/foo");
+  TestNavigationURLLoaderDelegate delegate;
+  auto response_interceptor =
+      std::make_unique<TestResponseInterceptor>(interceptor_url);
+  auto* response_interceptor_ptr = response_interceptor.get();
+  auto async_interceptor = std::make_unique<TestAsyncInterceptor>();
+  auto* async_interceptor_ptr = async_interceptor.get();
+  std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
+  interceptors.push_back(std::move(response_interceptor));
+  interceptors.push_back(std::move(async_interceptor));
+  auto loader =
+      CreateTestLoader(redirect_url, std::string(), "GET", &delegate,
+                       blink::NavigationDownloadPolicy(),
+                       /*is_main_frame=*/true,
+                       /*upgrade_if_insecure=*/false,
+                       /*is_ad_tagged=*/false, std::move(interceptors));
+  loader->Start();
+  SetLargeNavigationTimeout(*loader);
+
+  // Process the initial request.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  async_interceptor_ptr->Unblock();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({}, {}, {});
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Wait for the async operation starts.
+  // This processes the redirected request until the async interceptor starts.
+  async_interceptor_ptr->WaitUntilMaybeCreateLoader();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  EXPECT_EQ(response_interceptor_ptr->response_count(), 0);
+
+  // Simulate timeout during the async operation.
+  // `delegate` shouldn't be notified synchronously.
+  static_cast<NavigationURLLoaderImpl*>(loader.get())
+      ->TriggerTimeoutForTesting();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
+  // because `default_loader_used_` is true.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+
+  // See Note [*2] above.
+  response_interceptor_ptr->set_should_redirect(false);
+
+  // Wait for the redirect by `MaybeCreateLoaderForResponse()` is notified.
+  delegate.WaitForRequestRedirected();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Finish the async operation.
+  async_interceptor_ptr->Unblock();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+
+  // Check that no further loading should occur.
+  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
+  // `0`, but currently the request continues after the interceptor is unblocked
+  // and receives a response.
+  delegate.WaitForResponseStarted();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 TEST_F(NavigationURLLoaderImplTest, RedirectModifiedHeaders) {
