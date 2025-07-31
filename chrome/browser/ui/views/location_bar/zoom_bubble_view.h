@@ -5,8 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_ZOOM_BUBBLE_VIEW_H_
 
+#include <memory>
+#include <string>
+
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
@@ -94,7 +98,7 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   ZoomBubbleView(views::View* anchor_view,
                  content::WebContents* web_contents,
                  DisplayReason reason,
-                 ImmersiveModeController* immersive_mode_controller);
+                 ImmersiveModeController& immersive_mode_controller);
   ~ZoomBubbleView() override;
 
   // LocationBarBubbleDelegateView:
@@ -176,10 +180,11 @@ class ZoomBubbleView : public LocationBarBubbleDelegateView,
   // closing.
   bool ignore_close_bubble_ = false;
 
-  // The immersive mode controller for the BrowserView containing
+  // The immersive mode controller observation for the BrowserView containing
   // |web_contents_|.
-  // Not owned.
-  raw_ptr<ImmersiveModeController> immersive_mode_controller_;
+  base::ScopedObservation<ImmersiveModeController,
+                          ImmersiveModeController::Observer>
+      scoped_observation_{this};
 
   // The session of the Browser that triggered the bubble. This allows the zoom
   // icon to be updated even if the WebContents is destroyed.
