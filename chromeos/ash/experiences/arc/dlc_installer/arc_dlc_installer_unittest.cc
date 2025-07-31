@@ -69,15 +69,14 @@ class ArcDlcInstallerTest : public testing::Test {
                         base::Value(enabled));
   }
 
-  void InstallArcImageFromDlc(std::string_view install_error) {
-    // Configure the FakeDlcserviceClient to trigger the progress callback.
-    fake_dlcservice_client()->set_trigger_install_progress(true);
-    fake_dlcservice_client()->set_install_error(install_error);
-
+  void PrepareArcAndWait(bool expected_result) {
     base::RunLoop run_loop;
-    auto callback = base::IgnoreArgs<bool>(run_loop.QuitClosure());
-
-    arc_dlc_installer_->PrepareArc(std::move(callback));
+    arc_dlc_installer_->PrepareArc(base::BindOnce(
+        [](base::RunLoop* loop, bool expected, bool actual_result) {
+          EXPECT_EQ(expected, actual_result);
+          loop->Quit();
+        },
+        base::Unretained(&run_loop), expected_result));
     run_loop.Run();
   }
 
@@ -104,72 +103,50 @@ class ArcDlcInstallerTest : public testing::Test {
   std::unique_ptr<ArcDlcInstaller> arc_dlc_installer_;
 };
 
-// Verify that the hardware check is not being run to install
-// the arcvm DLC image when Reven branding is disabled
-TEST_F(ArcDlcInstallerTest, MaybeEnableArc_NonRevenBranding) {
+// Verifies that ARCVM DLC image preparation fails when the arcvm-dlc command
+// flag is not enabled.
+TEST_F(ArcDlcInstallerTest, MaybeEnableArc_NoArcvmDlcCommandFlag) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
-  // Add arcvm-dlc command flag.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
-  arc_dlc_installer_->PrepareArc(
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+  PrepareArcAndWait(/*expected_result=*/false);
 }
 
-// Verify that the hardware check is not being run to install
-// the arcvm DLC image for unmanaged devices.
+// Verifies that ARCVM DLC image preparation fails for unmanaged devices.
 TEST_F(ArcDlcInstallerTest, MaybeEnableArc_UnmanagedDevice) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
-  arc_dlc_installer_->PrepareArc(
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+
+  PrepareArcAndWait(/*expected_result=*/false);
 }
 
-// Verify that the hardware check is not run to install
-// the ARCVM DLC image when the kDeviceFlexArcPreloadEnabled policy is unset.
+// Verifies that ARCVM DLC image preparation fails when the
+// kDeviceFlexArcPreloadEnabled policy is unset.
 TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyUnset) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
-  // Add arcvm-dlc command flag.
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kEnableArcVmDlc);
-  arc_dlc_installer_->PrepareArc(
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
-}
-
-// Verify that the hardware check is not being run to install
-// the arcvm DLC image when kDeviceFlexArcPreloadEnabled policy is off.
-TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyOff) {
-  test_install_attributes_.Get()->SetCloudManaged("example.com",
-                                                  "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(false);
-  arc_dlc_installer_->PrepareArc(
-      base::BindOnce([](bool result) { EXPECT_FALSE(result); }));
+
+  PrepareArcAndWait(/*expected_result=*/false);
 }
 
 TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallSuccess) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
+  fake_dlcservice_client()->set_trigger_install_progress(true);
+  fake_dlcservice_client()->set_install_error(dlcservice::kErrorNone);
 
-  InstallArcImageFromDlc(dlcservice::kErrorNone);
+  PrepareArcAndWait(/*expected_result=*/true);
+
   VerifyNotifications(
       {arc_dlc_install_notification_manager::kArcVmPreloadSucceededId,
        arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
@@ -178,14 +155,15 @@ TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallSuccess) {
 TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallFail) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
+  fake_dlcservice_client()->set_trigger_install_progress(true);
+  fake_dlcservice_client()->set_install_error(dlcservice::kErrorInternal);
 
-  InstallArcImageFromDlc(dlcservice::kErrorInternal);
+  PrepareArcAndWait(/*expected_result=*/false);
+
   VerifyNotifications(
       {arc_dlc_install_notification_manager::kArcVmPreloadFailedId,
        arc_dlc_install_notification_manager::kArcVmPreloadStartedId});
@@ -196,18 +174,17 @@ TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallFail) {
 TEST_F(ArcDlcInstallerTest, CompletionNotificationTriggerOnce_RepeatInstall) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
   // Add arcvm-dlc command flag.
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
+  fake_dlcservice_client()->set_trigger_install_progress(true);
+  fake_dlcservice_client()->set_install_error(dlcservice::kErrorNone);
 
   // Simulate the first DLC installation.
-  InstallArcImageFromDlc(dlcservice::kErrorNone);
-
+  PrepareArcAndWait(/*expected_result=*/true);
   // Simulate the second DLC installation.
-  InstallArcImageFromDlc(dlcservice::kErrorNone);
+  PrepareArcAndWait(/*expected_result=*/true);
 
   // Expect two notifications: one for the preload start and one for the
   // success, even after triggering the installation twice.
@@ -222,18 +199,15 @@ TEST_F(ArcDlcInstallerTest, VerifyUpstartJobs_InstallSuccess) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
-
   auto* fake_upstart_client =
       static_cast<ash::FakeUpstartClient*>(ash::UpstartClient::Get());
+
   // Start recording calls to the fake upstart client before running the
   // installation flow.
   fake_upstart_client->StartRecordingUpstartOperations();
-
-  InstallArcImageFromDlc(dlcservice::kErrorNone);
+  PrepareArcAndWait(/*expected_result=*/true);
 
   const auto& ops = fake_upstart_client->upstart_operations();
 
@@ -263,17 +237,16 @@ TEST_F(ArcDlcInstallerTest, VerifyUpstartJobs_InstallFail) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
-      ash::switches::kRevenBranding);
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kEnableArcVmDlc);
   SetFlexArcPreloadEnabled(true);
-
+  fake_dlcservice_client()->set_trigger_install_progress(true);
+  fake_dlcservice_client()->set_install_error(dlcservice::kErrorInternal);
   auto* fake_upstart_client =
       static_cast<ash::FakeUpstartClient*>(ash::UpstartClient::Get());
+
   // Start recording calls to the fake upstart client.
   fake_upstart_client->StartRecordingUpstartOperations();
-
-  InstallArcImageFromDlc(dlcservice::kErrorInternal);
+  PrepareArcAndWait(/*expected_result=*/false);
 
   EXPECT_TRUE(fake_upstart_client->upstart_operations().empty());
 }

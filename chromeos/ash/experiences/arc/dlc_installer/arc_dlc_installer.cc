@@ -39,6 +39,7 @@ ArcDlcInstaller::~ArcDlcInstaller() = default;
 
 void ArcDlcInstaller::PrepareArc(base::OnceCallback<void(bool)> callback) {
   if (!IsDlcRequired()) {
+    std::move(callback).Run(false);
     return;
   }
 
