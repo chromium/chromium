@@ -33,9 +33,10 @@ constexpr int64_t kMinMemorySizeInKiB = 4LL * 1024LL * 1024LL;
 constexpr int64_t kMinStorageSizeInBytes = 32LL * 1024LL * 1024LL * 1024LL;
 
 // It takes hundreds of milliseconds to wait for the hardware
-// information to be ready, so set the timeout to five seconds (100 ms * 50)
-// as a safe interval.
-constexpr int64_t kMaxRetries = 50;
+// information to be ready, so set the timeout to ten seconds
+// as a safe interval. Use linear backoff to poll for hardware info.
+// With 14 retries, the total timeout will be around 10 seconds.
+constexpr int64_t kMaxRetries = 14;
 constexpr base::TimeDelta kHardwareInfoReadyRetryInterval =
     base::Milliseconds(100);
 
@@ -90,8 +91,10 @@ void ArcDlcInstallHardwareChecker::IsCompatible(
 void ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices(
     base::OnceCallback<void(bool)> callback,
     mojom::TelemetryInfoPtr info_ptr) {
+  const bool has_block_device_result =
+      !info_ptr.is_null() && info_ptr->block_device_result;
   // Successfully obtained block device information.
-  if (!info_ptr.is_null() && info_ptr->block_device_result &&
+  if (has_block_device_result &&
       info_ptr->block_device_result->which() ==
           ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
               kBlockDeviceInfo) {
@@ -112,9 +115,16 @@ void ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices(
 
   // Timeout to obtain block device information.
   if (retry_count_ > kMaxRetries) {
+    LOG(ERROR) << "Timed out waiting for block device info after "
+               << kMaxRetries << " retries.";
+    if (has_block_device_result &&
+        info_ptr->block_device_result->which() ==
+            ash::cros_healthd::mojom::NonRemovableBlockDeviceResult::Tag::
+                kError) {
+      LOG(ERROR) << "cros_healthd: Error getting block device info: "
+                 << info_ptr->block_device_result->get_error()->msg;
+    }
     base::UmaHistogramBoolean("Arc.RevenHardwareChecker.Timeout", true);
-    LOG(ERROR)
-        << "Did not wait for hardware information to be ready before timeout";
     std::move(callback).Run(false);
     retry_timer_.Stop();
     retry_count_ = 0;
@@ -124,7 +134,7 @@ void ArcDlcInstallHardwareChecker::OnCheckNonRemovableBlockDevices(
   // Retry to obtain the block device information.
   retry_count_++;
   retry_timer_.Start(
-      FROM_HERE, kHardwareInfoReadyRetryInterval,
+      FROM_HERE, kHardwareInfoReadyRetryInterval * retry_count_,
       base::BindOnce(
           &ArcDlcInstallHardwareChecker::OnRetryNonRemovableBlockDevicesCheck,
           weak_factory_.GetWeakPtr(), std::move(callback)));
