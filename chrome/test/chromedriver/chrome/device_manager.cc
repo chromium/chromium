@@ -90,13 +90,6 @@ Status Device::SetUp(const std::string& package,
     // |args| as the executable name, and not an argument (in other words,
     // args[0] is effectively ignored as a command line switch).
     known_exec_name = "webview";
-  } else if (package.find("weblayer") != std::string::npos) {
-    command_line_file = "/data/local/tmp/weblayer-command-line";
-    // This name isn't really important, what is important is that it's
-    // non-empty. If empty, it means weblayer treats the the first value of
-    // |args| as the executable name, and not an argument (in other words,
-    // args[0] is effectively ignored as a command line switch).
-    known_exec_name = "weblayer_shell";
   }
 
   if (!use_running_app) {
@@ -128,8 +121,7 @@ Status Device::SetUp(const std::string& package,
         return Status(kUnknownError, "known package " + package +
                       " does not accept activity/process");
     } else if (activity.empty()) {
-      return Status(kUnknownError,
-                    "WebView/WebLayer apps require activity name");
+      return Status(kUnknownError, "WebView apps require activity name");
     }
 
     if (!command_line_file.empty()) {
@@ -197,18 +189,11 @@ Status Device::ForwardDevtoolsPort(const std::string& package,
     // their PID, which Chrome DevTools accepts and we also should.
     std::string webview_pattern =
         base::StringPrintf("@webview_devtools_remote_.*%d", pid);
-    std::string weblayer_pattern =
-        base::StringPrintf("@weblayer_devtools_remote_.*%d", pid);
     status = adb_->GetSocketByPattern(serial_, webview_pattern, &socket_name);
-    if (status.IsError()) {
-      status =
-          adb_->GetSocketByPattern(serial_, weblayer_pattern, &socket_name);
-    }
     if (status.IsError()) {
       if (socket_name.empty()) {
         status.AddDetails(
-            "make sure the app has its WebView/WebLayer "
-            "configured for debugging");
+            "make sure the app has its WebView configured for debugging");
       }
       return status;
     }
