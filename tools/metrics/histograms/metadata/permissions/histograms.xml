@@ -480,28 +480,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.AIv3.ModelExecutionAlreadyInProgress"
-    enum="BooleanSuccess" expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>hempjudith@google.com</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the AIv3 model execution is already in progress when
-    ExecuteModel is called. This should not happen, but we want to verify this.
-  </summary>
-</histogram>
-
-<histogram name="Permissions.AIv3.ModelExecutionTimeout" enum="BooleanSuccess"
-    expires_after="2025-12-02">
-  <owner>elklm@chromium.org</owner>
-  <owner>hempjudith@google.com</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Records whether the AIv3 model execution took longer than the timeout, hence
-    the execution was terminated.
-  </summary>
-</histogram>
-
 <histogram
     name="Permissions.AndroidSystemLevel.{SystemPermissionType}.Prompt.Shown"
     enum="Boolean" expires_after="2026-01-04">
@@ -1799,6 +1777,31 @@ chromium-metrics-reviews@google.com.
     the {PredictionModel} and await its response for a permission request.
   </summary>
   <token key="PredictionModel" variants="PredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.ModelExecutionAlreadyInProgress"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the {PredictionModel} model execution is already in progress
+    when ExecuteModel is called. This should not happen, but we want to verify
+    this.
+  </summary>
+  <token key="PredictionModel" variants="SnapshotBasedPredictionModels"/>
+</histogram>
+
+<histogram name="Permissions.{PredictionModel}.ModelExecutionTimeout"
+    enum="BooleanSuccess" expires_after="2025-12-02">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Records whether the {PredictionModel} model execution took longer than the
+    timeout, hence the execution was terminated.
+  </summary>
+  <token key="PredictionModel" variants="SnapshotBasedPredictionModels"/>
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.PermissionRequestRelevance"
