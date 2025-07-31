@@ -195,6 +195,10 @@ void ExtensionsMenuMainPageViewUnitTest::SetUp() {
 }
 
 void ExtensionsMenuMainPageViewUnitTest::TearDown() {
+  if (views::Widget* menu_widget =
+          menu_coordinator()->GetExtensionsMenuWidget()) {
+    menu_widget->CloseNow();
+  }
   web_contents_tester_ = nullptr;
   ExtensionsToolbarUnitTest::TearDown();
 }
