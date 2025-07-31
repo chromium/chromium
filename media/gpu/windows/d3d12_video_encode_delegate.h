@@ -140,7 +140,6 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeDelegate {
 
   Microsoft::WRL::ComPtr<ID3D12Device> device_;
   Microsoft::WRL::ComPtr<ID3D12VideoDevice3> video_device_;
-  uint32_t max_num_ref_frames_ = 0;
 
   // The the size and format for the input of the D3D12VideoEncoder. The format
   // may be different to input frame, in which case we do internal conversion.

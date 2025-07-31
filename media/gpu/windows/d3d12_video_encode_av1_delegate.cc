@@ -429,9 +429,9 @@ EncoderStatus D3D12VideoEncodeAV1Delegate::InitializeVideoEncoder(
            VideoCodec::kAV1);
   CHECK(!config.HasSpatialLayer());
   CHECK(!config.HasTemporalLayer());
-  CHECK_EQ(max_num_ref_frames_, 1ull)
-      << "Currently D3D12VideoEncodeAV1Delegate only support 1 reference "
-         "frame.";
+
+  // Currently D3D12VideoEncodeAV1Delegate only support 1 reference frame.
+  max_num_ref_frames_ = 1;
 
   if (config.bitrate.mode() != Bitrate::Mode::kConstant &&
       config.bitrate.mode() != Bitrate::Mode::kVariable) {

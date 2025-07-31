@@ -192,7 +192,6 @@ EncoderStatus D3D12VideoEncodeDelegate::Initialize(
 
   CHECK(!config.HasSpatialLayer() && !config.HasTemporalLayer())
       << "D3D12VideoEncoder only support L1T1 mode.";
-  max_num_ref_frames_ = 1;
 
   input_size_.Width = config.input_visible_size.width();
   input_size_.Height = config.input_visible_size.height();

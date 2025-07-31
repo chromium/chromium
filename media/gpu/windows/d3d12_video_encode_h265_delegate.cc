@@ -405,6 +405,36 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
   CHECK_EQ(VideoCodecProfileToVideoCodec(config.output_profile),
            VideoCodec::kHEVC);
 
+  D3D12_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT_HEVC
+  picture_control_support_h265{};
+  D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT
+  picture_control_support{
+      .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC,
+      .Profile = {.DataSize = sizeof(h265_profile_),
+                  .pHEVCProfile = &h265_profile_},
+      .PictureSupport = {.DataSize = sizeof(picture_control_support_h265),
+                         .pHEVCSupport = &picture_control_support_h265},
+  };
+  EncoderStatus status = CheckD3D12VideoEncoderCodecPictureControlSupport(
+      video_device_.Get(), &picture_control_support);
+  if (!status.is_ok()) {
+    return status;
+  }
+
+  if (picture_control_support_h265.MaxLongTermReferences < 1) {
+    return {EncoderStatus::Codes::kEncoderUnsupportedConfig,
+            "D3D12VideoEncoder doesn't support long term reference for HEVC"};
+  }
+
+  max_num_ref_frames_ = 1;
+  if (picture_control_support_h265.MaxDPBCapacity < max_num_ref_frames_) {
+    return {
+        EncoderStatus::Codes::kEncoderUnsupportedConfig,
+        base::StringPrintf(
+            "D3D12VideoEncoder only support DPB capacity %u, got %u",
+            picture_control_support_h265.MaxDPBCapacity, max_num_ref_frames_)};
+  }
+
   if (config.bitrate.mode() == Bitrate::Mode::kConstant ||
       config.bitrate.mode() == Bitrate::Mode::kVariable) {
     constexpr uint32_t kDefaultQp = 26;
@@ -437,8 +467,7 @@ EncoderStatus D3D12VideoEncodeH265Delegate::InitializeVideoEncoder(
 
   D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC codec{
       .Codec = D3D12_VIDEO_ENCODER_CODEC_HEVC};
-  EncoderStatus status =
-      CheckD3D12VideoEncoderCodec(video_device_.Get(), &codec);
+  status = CheckD3D12VideoEncoderCodec(video_device_.Get(), &codec);
   if (!status.is_ok()) {
     return status;
   }

@@ -74,6 +74,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeAV1Delegate
       const D3D12_VIDEO_ENCODER_AV1_RESTORATION_CONFIG& restoration_config,
       AV1BitstreamBuilder::FrameHeader& frame_header);
 
+  uint32_t max_num_ref_frames_ = 0;
+
   D3D12_VIDEO_ENCODER_ENCODEFRAME_INPUT_ARGUMENTS input_arguments_{};
 
   // input_arguments_.SequenceControlDesc.CodecGopSequence

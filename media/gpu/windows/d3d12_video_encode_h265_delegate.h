@@ -92,6 +92,8 @@ class MEDIA_GPU_EXPORT D3D12VideoEncodeH265Delegate
   H265SPS ToSPS(const H265VPS& vps) const;
   H265PPS ToPPS(const H265SPS& sps) const;
 
+  uint32_t max_num_ref_frames_ = 0;
+
   D3D12_VIDEO_ENCODER_SUPPORT_FLAGS encoder_support_flags_{};
 
   // Codec information, saved for building VPS/SPS/PPS.

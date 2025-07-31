@@ -46,6 +46,11 @@ EncoderStatus CheckD3D12VideoEncoderSupport1(
     ID3D12VideoDevice* video_device,
     D3D12_FEATURE_DATA_VIDEO_ENCODER_SUPPORT1* support);
 
+EncoderStatus CheckD3D12VideoEncoderCodecPictureControlSupport(
+    ID3D12VideoDevice* video_device,
+    D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT*
+        picture_control_support);
+
 std::unique_ptr<D3D12VideoEncoderWrapper> CreateD3D12VideoEncoderWrapper(
     ID3D12VideoDevice* video_device,
     D3D12_VIDEO_ENCODER_CODEC codec,

@@ -359,6 +359,25 @@ EncoderStatus CheckD3D12VideoEncoderSupport1(
   return EncoderStatus::Codes::kOk;
 }
 
+EncoderStatus CheckD3D12VideoEncoderCodecPictureControlSupport(
+    ID3D12VideoDevice* video_device,
+    D3D12_FEATURE_DATA_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT*
+        picture_control_support) {
+  HRESULT hr = video_device->CheckFeatureSupport(
+      D3D12_FEATURE_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT,
+      picture_control_support, sizeof(*picture_control_support));
+  RETURN_ON_HR_FAILURE(
+      hr,
+      "CheckFeatureSupport for "
+      "D3D12_FEATURE_VIDEO_ENCODER_CODEC_PICTURE_CONTROL_SUPPORT failed",
+      EncoderStatus::Codes::kSystemAPICallError);
+  if (!picture_control_support->IsSupported) {
+    return {EncoderStatus::Codes::kEncoderUnsupportedProfile,
+            "D3D12VideoEncoder does not support profile"};
+  }
+  return EncoderStatus::Codes::kOk;
+}
+
 std::unique_ptr<D3D12VideoEncoderWrapper> CreateD3D12VideoEncoderWrapper(
     ID3D12VideoDevice* video_device,
     D3D12_VIDEO_ENCODER_CODEC codec,
