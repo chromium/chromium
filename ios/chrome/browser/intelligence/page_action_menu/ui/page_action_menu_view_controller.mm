@@ -100,7 +100,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
 
   // Add blurred background.
   UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
   UIVisualEffectView* blurEffectView =
       [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
