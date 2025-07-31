@@ -67,7 +67,8 @@ const CGFloat kMenuCornerRadius = 20;
                       webStateList:self.browser->GetWebStateList()];
   }
   if (readerModeTabHelper &&
-      readerModeTabHelper->CurrentPageSupportsReaderMode()) {
+      (readerModeTabHelper->CurrentPageSupportsReaderMode() ||
+       readerModeTabHelper->IsActive())) {
     _viewController.readerModeHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ReaderModeCommands);
   }
