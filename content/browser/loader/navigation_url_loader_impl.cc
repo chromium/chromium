@@ -868,6 +868,7 @@ NavigationURLLoaderImpl::LoaderHolder::~LoaderHolder() = default;
 void NavigationURLLoaderImpl::LoaderHolder::ResetInternal() {
   response_loader_receiver_.reset();
   url_loader_.reset();
+  modified_headers_on_redirect_.reset();
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::Reset() {
@@ -1030,7 +1031,6 @@ void NavigationURLLoaderImpl::LoaderHolder::ResetForFollowRedirect(
         resource_request, modified_headers_on_redirect_->removed_headers_,
         modified_headers_on_redirect_->modified_headers_,
         modified_headers_on_redirect_->modified_cors_exempt_headers_);
-    modified_headers_on_redirect_.reset();
   }
   Reset();
 }
