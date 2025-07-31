@@ -37,6 +37,7 @@ mojom("mojom") {
     "intent_helper.mojom",
     "keymaster.mojom",
     "keymint.mojom",
+    "kiosk.mojom",
     "media_session.mojom",
     "memory.mojom",
     "metrics.mojom",

@@ -31,6 +31,7 @@ import "chromeos/ash/experiences/arc/mojom/input_method_manager.mojom";
 import "chromeos/ash/experiences/arc/mojom/intent_helper.mojom";
 import "chromeos/ash/experiences/arc/mojom/keymaster.mojom";
 import "chromeos/ash/experiences/arc/mojom/keymint.mojom";
+import "chromeos/ash/experiences/arc/mojom/kiosk.mojom";
 import "chromeos/ash/experiences/arc/mojom/media_session.mojom";
 import "chromeos/ash/experiences/arc/mojom/memory.mojom";
 import "chromeos/ash/experiences/arc/mojom/metrics.mojom";
@@ -62,10 +63,10 @@ import "chromeos/ash/experiences/arc/mojom/wallpaper.mojom";
 import "chromeos/ash/experiences/arc/mojom/webapk.mojom";
 import "chromeos/components/payments/mojom/payment_app.mojom";
 
-// Next MinVersion: 70
+// Next MinVersion: 71
 // Deprecated method IDs: 101, 105, 109, 118, 121, 126, 132, 134, 136, 137, 147,
 //                        153, 154, 160, 165
-// Next method ID: 175
+// Next method ID: 176
 [Uuid="1defbc6a-5e24-46bd-9117-3b2f106d7e7a"]
 interface ArcBridgeHost {
   // Keep the entries alphabetical. In order to do so without breaking
@@ -183,6 +184,10 @@ interface ArcBridgeHost {
   // Notifies Chrome that the KeyMintInstance interface is ready.
   [MinVersion=63] OnKeyMintInstanceReady@168(
       pending_remote<keymint.KeyMintInstance> instance_remote);
+
+  // Notifies Chrome that the KioskInstance interface is ready.
+  [MinVersion=70] OnKioskInstanceReady@175(
+      pending_remote<KioskInstance> instance_remote);
 
   // Notifies Chrome that the MediaSessionInstance interface is ready.
   [MinVersion=43] OnMediaSessionInstanceReady@148(

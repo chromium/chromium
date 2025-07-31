@@ -38,6 +38,7 @@
 #include "chromeos/ash/experiences/arc/mojom/intent_helper.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/keymaster.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/keymint.mojom.h"
+#include "chromeos/ash/experiences/arc/mojom/kiosk.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/media_session.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/memory.mojom.h"
 #include "chromeos/ash/experiences/arc/mojom/metrics.mojom.h"
@@ -261,6 +262,11 @@ void ArcBridgeHostImpl::OnKeymasterInstanceReady(
 void ArcBridgeHostImpl::OnKeyMintInstanceReady(
     mojo::PendingRemote<mojom::keymint::KeyMintInstance> keymint_remote) {
   OnInstanceReady(arc_bridge_service_->keymint(), std::move(keymint_remote));
+}
+
+void ArcBridgeHostImpl::OnKioskInstanceReady(
+    mojo::PendingRemote<mojom::KioskInstance> kiosk_remote) {
+  OnInstanceReady(arc_bridge_service_->kiosk(), std::move(kiosk_remote));
 }
 
 void ArcBridgeHostImpl::OnMediaSessionInstanceReady(
