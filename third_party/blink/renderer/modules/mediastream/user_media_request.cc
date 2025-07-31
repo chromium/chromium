@@ -35,6 +35,7 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
+#include "media/base/media_switches.h"
 #include "services/network/public/mojom/permissions_policy/permissions_policy_feature.mojom-blink.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
@@ -516,7 +517,8 @@ UserMediaRequest* UserMediaRequest::Create(
       suppress_local_audio_playback =
           audio.Basic().suppress_local_audio_playback.Ideal();
     }
-    if (!audio.IsNull() && audio.Basic().restrict_own_audio.HasIdeal()) {
+    if (!audio.IsNull() && audio.Basic().restrict_own_audio.HasIdeal() &&
+        media::IsRestrictOwnAudioSupported()) {
       restrict_own_audio = audio.Basic().restrict_own_audio.Ideal();
     }
   }

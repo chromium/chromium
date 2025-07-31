@@ -31,7 +31,9 @@
 #include "base/functional/callback_helpers.h"
 #include "base/strings/to_string.h"
 #include "build/build_config.h"
+#include "media/base/media_switches.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/platform/modules/webrtc/webrtc_logging.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
@@ -849,11 +851,16 @@ void MediaStreamTrackImpl::SetConstraintsInternal(
         constraints_.Basic().suppress_local_audio_playback.Ideal();
   }
 
-  CHECK(!restrict_own_audio_setting_.has_value());
-  if (!constraints_.IsNull() &&
-      constraints_.Basic().restrict_own_audio.HasIdeal()) {
-    restrict_own_audio_setting_ =
-        constraints_.Basic().restrict_own_audio.Ideal();
+  if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled() &&
+      device().has_value() &&
+      device()->type == mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
+    restrict_own_audio_setting_ = false;
+    if (!constraints_.IsNull() &&
+        constraints_.Basic().restrict_own_audio.HasIdeal()) {
+      restrict_own_audio_setting_ =
+          constraints_.Basic().restrict_own_audio.Ideal() &&
+          media::IsRestrictOwnAudioSupported();
+    }
   }
 }
 

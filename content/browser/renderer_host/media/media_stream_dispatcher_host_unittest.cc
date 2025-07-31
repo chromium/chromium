@@ -30,6 +30,7 @@
 #include "base/test/test_future.h"
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
+#include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"
 #include "content/browser/renderer_host/media/audio_input_device_manager.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
@@ -67,6 +68,7 @@
 #endif
 
 using ::blink::mojom::CapturedSurfaceControlResult;
+using ::blink::mojom::MediaStreamType;
 using ::testing::_;
 using ::testing::InSequence;
 using ::testing::Invoke;
@@ -600,7 +602,6 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioOnly) {
 
 TEST_F(MediaStreamDispatcherHostTest,
        BadMessageIfAudioNotRequestedAndSuppressLocalAudioPlayback) {
-  using blink::mojom::MediaStreamType;
 
   blink::StreamControls controls;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
@@ -621,8 +622,6 @@ TEST_F(MediaStreamDispatcherHostTest,
 
 TEST_F(MediaStreamDispatcherHostTest,
        BadMessageIfAudioNotRequestedAndHotwordEnabled) {
-  using blink::mojom::MediaStreamType;
-
   blink::StreamControls controls;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
@@ -640,8 +639,6 @@ TEST_F(MediaStreamDispatcherHostTest,
 
 TEST_F(MediaStreamDispatcherHostTest,
        BadMessageIfAudioNotRequestedAndDisableLocalEcho) {
-  using blink::mojom::MediaStreamType;
-
   blink::StreamControls controls;
   controls.audio.stream_type = MediaStreamType::NO_SERVICE;
   controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
@@ -654,6 +651,22 @@ TEST_F(MediaStreamDispatcherHostTest,
                   kRenderFrameHostId.child_id,
                   bad_message::MSDH_DISABLE_LOCAL_ECHO_BUT_AUDIO_NOT_REQUESTED))
       .Times(1);
+  host_->OnGenerateStreams(kPageRequestId, controls);
+}
+
+TEST_F(MediaStreamDispatcherHostTest,
+       BadMessageIfRestrictOwnAudioWhenNotSupported) {
+  blink::StreamControls controls;
+  controls.audio.stream_type = MediaStreamType::DISPLAY_AUDIO_CAPTURE;
+  controls.video.stream_type = MediaStreamType::DISPLAY_VIDEO_CAPTURE;
+  controls.restrict_own_audio = true;
+  SetupFakeUI(/*expect_started=*/true);
+
+  EXPECT_CALL(*this,
+              MockOnBadMessage(
+                  kRenderFrameHostId.child_id,
+                  bad_message::MSDH_RESTRICT_OWN_AUDIO_IS_SET_WHEN_UNSUPPORTED))
+      .Times(media::IsRestrictOwnAudioSupported() ? 0 : 1);
   host_->OnGenerateStreams(kPageRequestId, controls);
 }
 

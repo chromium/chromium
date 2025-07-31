@@ -1918,8 +1918,13 @@ virtual/prefetch-sw/external/wpt/speculation-rules/prefetch/cross-origin-cookies
 [ Mac ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]
 [ Linux ] http/tests/origin_trials/webexposed/incoming-call-notifications-origin-trial-interfaces.html [ Skip ]
 
-# The behavior is only available on Windows and Mac.
+# restrictOwnAudio is supported only on recent versions of Windows and Mac.
 [ Linux ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Win10.20h2 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Mac12 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Mac13 ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Android ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
+[ Fuchsia ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Skip ]
 
 # EchoCancellation mode "all" is not supported on Linux
 [ Linux ] external/wpt/mediacapture-streams/GUM-echoCancellation-all.https.html [ Skip ]

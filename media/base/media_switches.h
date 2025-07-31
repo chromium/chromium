@@ -588,6 +588,7 @@ MEDIA_EXPORT bool IsDedicatedMediaServiceThreadEnabled(
 MEDIA_EXPORT bool IsHardwareSecureDecryptionEnabled();
 MEDIA_EXPORT bool IsLiveTranslateEnabled();
 MEDIA_EXPORT bool IsVideoCaptureAcceleratedJpegDecodingEnabled();
+MEDIA_EXPORT bool IsRestrictOwnAudioSupported();
 
 #if BUILDFLAG(IS_WIN)
 MEDIA_EXPORT bool IsMediaFoundationD3D11VideoCaptureEnabled();

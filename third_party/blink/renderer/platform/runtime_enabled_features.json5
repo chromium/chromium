@@ -4068,11 +4068,7 @@
     },
     {
       name: "RestrictOwnAudio",
-      status: {
-        "Win": "experimental",
-        "Mac": "experimental",
-        "default": "",
-      },
+      status: "experimental",
     },
     {
       name: "RestrictTabFocusForHiddenSVGElements",

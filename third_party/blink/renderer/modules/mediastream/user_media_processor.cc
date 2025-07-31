@@ -22,6 +22,7 @@
 #include "base/types/optional_util.h"
 #include "build/build_config.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "media/capture/video_capture_types.h"
 #include "media/webrtc/constants.h"
 #include "third_party/blink/public/common/features.h"
@@ -1815,7 +1816,10 @@ MediaStreamSource* UserMediaProcessor::InitializeAudioSourceObject(
 
   if (RuntimeEnabledFeatures::RestrictOwnAudioEnabled()) {
     if (device.type == mojom::blink::MediaStreamType::DISPLAY_AUDIO_CAPTURE) {
-      capabilities.restrict_own_audio = {true, false};
+      capabilities.restrict_own_audio = {false};
+      if (media::IsRestrictOwnAudioSupported()) {
+        capabilities.restrict_own_audio->push_back(true);
+      }
     }
   }
 

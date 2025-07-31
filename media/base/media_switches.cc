@@ -1963,6 +1963,17 @@ bool IsVideoCaptureAcceleratedJpegDecodingEnabled() {
 #endif
 }
 
+bool IsRestrictOwnAudioSupported() {
+#if BUILDFLAG(IS_MAC)
+  return IsMacCatapSystemLoopbackCaptureSupported() &&
+         base::FeatureList::IsEnabled(kMacCatapLoopbackAudioForScreenShare);
+#elif BUILDFLAG(IS_WIN)
+  return IsWindowsSystemLoopbackCaptureSupported();
+#else
+  return false;
+#endif
+}
+
 #if BUILDFLAG(IS_WIN)
 bool IsMediaFoundationD3D11VideoCaptureEnabled() {
   return base::FeatureList::IsEnabled(kMediaFoundationD3D11VideoCapture);

@@ -11,6 +11,8 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
@@ -27,6 +29,7 @@
 #include "build/build_config.h"
 #include "media/audio/audio_device_description.h"
 #include "media/base/audio_parameters.h"
+#include "media/base/media_switches.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -49,6 +52,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/modules/mediastream/media_constraints.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_content.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
@@ -65,6 +69,7 @@
 #include "third_party/blink/renderer/platform/mediastream/media_stream_descriptor.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_track_platform.h"
 #include "third_party/blink/renderer/platform/testing/io_task_runner_testing_platform_support.h"
+#include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/task_environment.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -863,6 +868,26 @@ class UserMediaClientTest : public ::testing::Test {
         user_media_processor_->last_generated_descriptor();
     return MakeGarbageCollected<MediaStreamTrackImpl>(
         /*execution_context=*/nullptr, desc->AudioComponents()[0]);
+  }
+
+  MediaStreamTrack* RequestAudioTrackWithRestrictOwnAudio() {
+    blink::MockConstraintFactory constraint_factory;
+    constraint_factory.basic().restrict_own_audio.SetIdeal(true);
+    MediaConstraints audio_constraints =
+        constraint_factory.CreateMediaConstraints();
+    UserMediaRequest* user_media_request = UserMediaRequest::CreateForTesting(
+        // CreateDefaultConstraints()
+        audio_constraints, MediaConstraints(),
+        /*is_user_media=*/false);
+    user_media_client_impl_->RequestUserMediaForTest(user_media_request);
+    EXPECT_EQ(kRequestSucceeded, request_state());
+
+    MediaStreamDescriptor* desc =
+        display_user_media_processor_->last_generated_descriptor();
+    MediaStreamTrackImpl* track = MakeGarbageCollected<MediaStreamTrackImpl>(
+        /*execution_context=*/nullptr, desc->AudioComponents()[0]);
+    track->SetConstraints(audio_constraints);
+    return track;
   }
 
   void StartMockedVideoSource(
@@ -2127,7 +2152,7 @@ TEST_F(UserMediaClientTest,
 }
 
 TEST_F(UserMediaClientTest,
-       EchoCancellationModeTrackCapabilitiesWithoutSystemWideSupportd) {
+       EchoCancellationModeTrackCapabilitiesWithoutSystemWideSupport) {
   mock_dispatcher_host_.SetAudioDeviceEffects(
       media::AudioParameters::PlatformEffectsMask::NO_EFFECTS);
   MediaStreamTrack* track = RequestLocalAudioTrackWithEchoCancellationMode(
@@ -2152,6 +2177,18 @@ TEST_F(UserMediaClientTest,
                                     EchoCancellationMode::kRemoteOnly)
 #endif
   );
+}
+
+TEST_F(UserMediaClientTest, RestrictOwnAudioTrackCapabilities) {
+  ScopedRestrictOwnAudioForTest enable_restrict_own_audio(true);
+  MediaStreamTrack* track = RequestAudioTrackWithRestrictOwnAudio();
+  ASSERT_TRUE(track);
+  ASSERT_TRUE(track->getCapabilities()->hasRestrictOwnAudio());
+  Vector<bool> restrict_own_audio_capabilities =
+      track->getCapabilities()->restrictOwnAudio();
+  EXPECT_TRUE(base::Contains(restrict_own_audio_capabilities, false));
+  EXPECT_EQ(base::Contains(restrict_own_audio_capabilities, true),
+            media::IsRestrictOwnAudioSupported());
 }
 
 }  // namespace blink

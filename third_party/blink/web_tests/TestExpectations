@@ -1584,6 +1584,7 @@ crbug.com/392640451 [ Win10.20h2 ] editing/pasteboard/4947130.html [ Failure Pas
 crbug.com/821455 editing/pasteboard/drag-files-to-editable-element.html [ Failure ]
 
 crbug.com/1505380 [ Mac ] external/wpt/mediacapture-streams/MediaStreamTrack-getCapabilities.https.html [ Failure ]
+crbug.com/415952276 [ Mac ] external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html [ Failure ]
 
 # Ref tests that needs investigation.
 crbug.com/404597 [ Mac ] fast/forms/long-text-in-input.html [ Crash Failure Pass Timeout ]
