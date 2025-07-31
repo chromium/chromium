@@ -519,6 +519,31 @@ function addGuestViews(row, guests) {
 function addToWorkersList(data) {
   const row =
       addTargetToList(data, $('workers-list'), ['name', 'description', 'url']);
+
+  let description;
+  try {
+    description = JSON.parse(data.description);
+  } catch (e) {
+    // Not a JSON description, ignore and proceed.
+  }
+
+  if (description && description.extendedLifetime) {
+    const nameElement = row.querySelector('.name');
+    if (nameElement) {
+      const label = document.createElement('span');
+      label.className = 'extended-lifetime-label';
+      label.textContent = 'Extended Lifetime';
+      nameElement.appendChild(document.createTextNode(' '));
+      nameElement.appendChild(label);
+    }
+
+    // Hide the raw JSON description.
+    const descriptionElement = row.querySelector('.description');
+    if (descriptionElement) {
+      descriptionElement.style.display = 'none';
+    }
+  }
+
   addActionLink(
       row, 'terminate', sendTargetCommand.bind(null, 'close', data), false);
 }

@@ -502,3 +502,14 @@ dialog.target-discovery .port-forwarding {
     outline: none;
   }
 }
+
+.extended-lifetime-label {
+  background-color: var(--google-grey-300);
+  border-radius: 3px;
+  color: var(--google-grey-900);
+  display: inline-block;
+  font-size: 0.8em;
+  margin-left: 4px;
+  padding: 1px 4px;
+  vertical-align: middle;
+}

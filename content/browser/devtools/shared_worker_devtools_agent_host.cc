@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/json/json_writer.h"
 #include "content/browser/devtools/devtools_renderer_channel.h"
 #include "content/browser/devtools/devtools_session.h"
 #include "content/browser/devtools/protocol/fetch_handler.h"
@@ -62,6 +63,18 @@ std::string SharedWorkerDevToolsAgentHost::GetType() {
 
 std::string SharedWorkerDevToolsAgentHost::GetTitle() {
   return instance_.name();
+}
+
+std::string SharedWorkerDevToolsAgentHost::GetDescription() {
+  if (!instance_.extended_lifetime()) {
+    return std::string();
+  }
+
+  base::Value::Dict description;
+  description.Set("extendedLifetime", true);
+  std::string json;
+  base::JSONWriter::Write(description, &json);
+  return json;
 }
 
 GURL SharedWorkerDevToolsAgentHost::GetURL() {
