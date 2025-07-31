@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/test/task_environment.h"
+#include "chromecast/starboard/media/cdm/mock_starboard_drm_wrapper_client.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -90,46 +91,6 @@ MATCHER_P(StarboardDrmKeyIdMatches, str, "") {
   }
   return true;
 }
-
-class MockStarboardDrmWrapperClient : public StarboardDrmWrapper::Client {
- public:
-  MockStarboardDrmWrapperClient() = default;
-  ~MockStarboardDrmWrapperClient() override = default;
-
-  MOCK_METHOD(void,
-              OnSessionUpdateRequest,
-              (int ticket,
-               StarboardDrmStatus status,
-               StarboardDrmSessionRequestType type,
-               std::string error_message,
-               std::string session_id,
-               std::vector<uint8_t> content),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSessionUpdated,
-              (int ticket,
-               StarboardDrmStatus status,
-               std::string error_message,
-               std::string session_id),
-              (override));
-
-  MOCK_METHOD(void,
-              OnKeyStatusesChanged,
-              (std::string session_id,
-               std::vector<StarboardDrmKeyId> key_ids,
-               std::vector<StarboardDrmKeyStatus> key_statuses),
-              (override));
-
-  MOCK_METHOD(void,
-              OnCertificateUpdated,
-              (int ticket,
-               StarboardDrmStatus status,
-               std::string error_message),
-              (override));
-
-  MOCK_METHOD(void, OnSessionClosed, (std::string session_id), (override));
-};
 
 // A test fixture is used to handle creation of a task environment and set up
 // the mocks to handle calls that are irrelevant to tests.

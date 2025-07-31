@@ -171,6 +171,7 @@ test("starboard_media_unittests") {
     "//chromecast/public",
     "//chromecast/public/media",
     "//chromecast/starboard/chromecast/starboard_cast_api:cast_starboard_api_types",
+    "//chromecast/starboard/media/cdm:mocks",
     "//chromecast/starboard/media/cdm:starboard_drm_key_tracker",
     "//chromecast/starboard/media/cdm:starboard_drm_wrapper",
     "//media",

@@ -8,6 +8,7 @@
 #include "chromecast/public/graphics_types.h"
 #include "chromecast/public/media/media_pipeline_device_params.h"
 #include "chromecast/public/volume_control.h"
+#include "chromecast/starboard/media/cdm/mock_starboard_drm_wrapper_client.h"
 #include "chromecast/starboard/media/cdm/starboard_drm_wrapper.h"
 #include "chromecast/starboard/media/media/mock_starboard_api_wrapper.h"
 #include "chromecast/starboard/media/media/starboard_api_wrapper.h"
@@ -71,48 +72,6 @@ class MockDelegate : public MediaPipelineBackend::Decoder::Delegate {
                uint32_t system_code),
               (override));
   MOCK_METHOD(void, OnVideoResolutionChanged, (const Size& size), (override));
-};
-
-// A mock client of StarboardDrmWrapper. Constructing one can be used to
-// simulate a CDM being created.
-class MockStarboardDrmWrapperClient : public StarboardDrmWrapper::Client {
- public:
-  MockStarboardDrmWrapperClient() = default;
-  ~MockStarboardDrmWrapperClient() override = default;
-
-  MOCK_METHOD(void,
-              OnSessionUpdateRequest,
-              (int ticket,
-               StarboardDrmStatus status,
-               StarboardDrmSessionRequestType type,
-               std::string error_message,
-               std::string session_id,
-               std::vector<uint8_t> content),
-              (override));
-
-  MOCK_METHOD(void,
-              OnSessionUpdated,
-              (int ticket,
-               StarboardDrmStatus status,
-               std::string error_message,
-               std::string session_id),
-              (override));
-
-  MOCK_METHOD(void,
-              OnKeyStatusesChanged,
-              (std::string session_id,
-               std::vector<StarboardDrmKeyId> key_ids,
-               std::vector<StarboardDrmKeyStatus> key_statuses),
-              (override));
-
-  MOCK_METHOD(void,
-              OnCertificateUpdated,
-              (int ticket,
-               StarboardDrmStatus status,
-               std::string error_message),
-              (override));
-
-  MOCK_METHOD(void, OnSessionClosed, (std::string session_id), (override));
 };
 
 // Returns a simple AudioConfig.
