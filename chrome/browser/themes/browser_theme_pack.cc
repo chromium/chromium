@@ -52,6 +52,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
+#include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/codec/png_codec.h"
 #include "ui/gfx/color_analysis.h"
@@ -210,13 +211,17 @@ std::string GetResourceScaleFactorsAsString(
       base::as_byte_span(base::allow_nonunique_obj, scales)));
 }
 
-struct StringToIntTable {
+// Stores the string |key| which is used by themes and its corresponding
+// enumeration |id|. `T` currently represents
+// `TP::OverwritableByUserThemeProperty` and `tab_groups::TabGroupColorId`
+template <typename T>
+struct StringToIdTable {
   const char* const key;
-  TP::OverwritableByUserThemeProperty id;
+  T id;
 };
 
 // Strings used by themes to identify tints in the JSON.
-const StringToIntTable kTintTable[] = {
+const StringToIdTable<TP::OverwritableByUserThemeProperty> kTintTable[] = {
     {"background_tab", TP::TINT_BACKGROUND_TAB},
     {"buttons", TP::TINT_BUTTONS},
     {"frame", TP::TINT_FRAME},
@@ -230,40 +235,41 @@ const StringToIntTable kTintTable[] = {
 const size_t kTintTableLength = std::size(kTintTable);
 
 // Strings used by themes to identify colors in the JSON.
-constexpr StringToIntTable kOverwritableColorTable[] = {
-    {"background_tab", TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE},
-    {"background_tab_inactive",
-     TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE},
-    {"background_tab_incognito",
-     TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO},
-    {"background_tab_incognito_inactive",
-     TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO},
-    {"bookmark_text", TP::COLOR_BOOKMARK_TEXT},
-    {"button_background", TP::COLOR_CONTROL_BUTTON_BACKGROUND},
-    {"frame", TP::COLOR_FRAME_ACTIVE},
-    {"frame_inactive", TP::COLOR_FRAME_INACTIVE},
-    {"frame_incognito", TP::COLOR_FRAME_ACTIVE_INCOGNITO},
-    {"frame_incognito_inactive", TP::COLOR_FRAME_INACTIVE_INCOGNITO},
-    {"ntp_background", TP::COLOR_NTP_BACKGROUND},
-    {"ntp_header", TP::COLOR_NTP_HEADER},
-    {"ntp_link", TP::COLOR_NTP_LINK},
-    {"ntp_text", TP::COLOR_NTP_TEXT},
-    {"omnibox_background", TP::COLOR_OMNIBOX_BACKGROUND},
-    {"omnibox_text", TP::COLOR_OMNIBOX_TEXT},
-    {"tab_background_text", TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE},
-    {"tab_background_text_inactive",
-     TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE},
-    {"tab_background_text_incognito",
-     TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO},
-    {"tab_background_text_incognito_inactive",
-     TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO},
-    {"tab_text", TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE},
-    {"toolbar", TP::COLOR_TOOLBAR},
-    {"toolbar_button_icon", TP::COLOR_TOOLBAR_BUTTON_ICON},
-    {"toolbar_text", TP::COLOR_TOOLBAR_TEXT},
+constexpr StringToIdTable<TP::OverwritableByUserThemeProperty>
+    kOverwritableColorTable[] = {
+        {"background_tab", TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE},
+        {"background_tab_inactive",
+         TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE},
+        {"background_tab_incognito",
+         TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO},
+        {"background_tab_incognito_inactive",
+         TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO},
+        {"bookmark_text", TP::COLOR_BOOKMARK_TEXT},
+        {"button_background", TP::COLOR_CONTROL_BUTTON_BACKGROUND},
+        {"frame", TP::COLOR_FRAME_ACTIVE},
+        {"frame_inactive", TP::COLOR_FRAME_INACTIVE},
+        {"frame_incognito", TP::COLOR_FRAME_ACTIVE_INCOGNITO},
+        {"frame_incognito_inactive", TP::COLOR_FRAME_INACTIVE_INCOGNITO},
+        {"ntp_background", TP::COLOR_NTP_BACKGROUND},
+        {"ntp_header", TP::COLOR_NTP_HEADER},
+        {"ntp_link", TP::COLOR_NTP_LINK},
+        {"ntp_text", TP::COLOR_NTP_TEXT},
+        {"omnibox_background", TP::COLOR_OMNIBOX_BACKGROUND},
+        {"omnibox_text", TP::COLOR_OMNIBOX_TEXT},
+        {"tab_background_text", TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE},
+        {"tab_background_text_inactive",
+         TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE},
+        {"tab_background_text_incognito",
+         TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE_INCOGNITO},
+        {"tab_background_text_incognito_inactive",
+         TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE_INCOGNITO},
+        {"tab_text", TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE},
+        {"toolbar", TP::COLOR_TOOLBAR},
+        {"toolbar_button_icon", TP::COLOR_TOOLBAR_BUTTON_ICON},
+        {"toolbar_text", TP::COLOR_TOOLBAR_TEXT},
 
-    // /!\ If you make any changes here, you must also increment
-    // kThemePackVersion above, or else themes will display incorrectly.
+        // /!\ If you make any changes here, you must also increment
+        // kThemePackVersion above, or else themes will display incorrectly.
 };
 constexpr size_t kOverwritableColorTableLength =
     std::size(kOverwritableColorTable);
@@ -294,26 +300,41 @@ constexpr size_t kColorsArrayLength =
     kOverwritableColorTableLength + kNonOverwritableColorTableLength;
 
 // Strings used by themes to identify display properties keys in JSON.
-const StringToIntTable kDisplayProperties[] = {
-    {"ntp_background_alignment", TP::NTP_BACKGROUND_ALIGNMENT},
-    {"ntp_background_repeat", TP::NTP_BACKGROUND_TILING},
-    {"ntp_logo_alternate", TP::NTP_LOGO_ALTERNATE},
+const StringToIdTable<TP::OverwritableByUserThemeProperty>
+    kDisplayProperties[] = {
+        {"ntp_background_alignment", TP::NTP_BACKGROUND_ALIGNMENT},
+        {"ntp_background_repeat", TP::NTP_BACKGROUND_TILING},
+        {"ntp_logo_alternate", TP::NTP_LOGO_ALTERNATE},
 
-    // /!\ If you make any changes here, you must also increment
-    // kThemePackVersion above, or else themes will display incorrectly.
+        // /!\ If you make any changes here, you must also increment
+        // kThemePackVersion above, or else themes will display incorrectly.
 };
 const size_t kDisplayPropertiesSize = std::size(kDisplayProperties);
 
-int GetIntForString(const std::string& key,
-                    base::span<const StringToIntTable> table,
-                    size_t spanification_suspected_redundant_table_length) {
+const StringToIdTable<tab_groups::TabGroupColorId> kTabGroupColorIdTable[] = {
+    {"grey_override", tab_groups::TabGroupColorId::kGrey},
+    {"blue_override", tab_groups::TabGroupColorId::kBlue},
+    {"red_override", tab_groups::TabGroupColorId::kRed},
+    {"yellow_override", tab_groups::TabGroupColorId::kYellow},
+    {"green_override", tab_groups::TabGroupColorId::kGreen},
+    {"pink_override", tab_groups::TabGroupColorId::kPink},
+    {"purple_override", tab_groups::TabGroupColorId::kPurple},
+    {"cyan_override", tab_groups::TabGroupColorId::kCyan},
+    {"orange_override", tab_groups::TabGroupColorId::kOrange},
+};
+const size_t kTabGroupColorIdTableSize = std::size(kTabGroupColorIdTable);
+
+template <typename T>
+int GetIdForString(const std::string& key,
+                   base::span<const StringToIdTable<T>> table,
+                   size_t spanification_suspected_redundant_table_length) {
   // TODO(crbug.com/431824301): Remove unneeded parameter once validated to be
   // redundant in M143.
   CHECK(spanification_suspected_redundant_table_length == table.size(),
         base::NotFatalUntil::M143);
   for (size_t i = 0; i < spanification_suspected_redundant_table_length; ++i) {
     if (base::EqualsCaseInsensitiveASCII(key, table[i].key)) {
-      return table[i].id;
+      return static_cast<int>(table[i].id);
     }
   }
 
@@ -734,6 +755,8 @@ void BrowserThemePack::BuildFromExtension(
   pack->SetColorsFromJSON(extensions::ThemeInfo::GetColors(extension));
   pack->SetDisplayPropertiesFromJSON(
       extensions::ThemeInfo::GetDisplayProperties(extension));
+  pack->SetTabGroupColorPaletteShadesFromJSON(
+      extensions::ThemeInfo::GetTabGroupColorPalette(extension));
 
   // Builds the images. (Image building is dependent on tints).
   FilePathMap file_paths;
@@ -1353,7 +1376,8 @@ void BrowserThemePack::SetTintsFromJSON(const base::Value::Dict* tints_value) {
     color_utils::HSL hsl = {*h, *s, *l};
     MakeHSLShiftValid(&hsl);
 
-    int id = GetIntForString(key, kTintTable, kTintTableLength);
+    int id = GetIdForString<TP::OverwritableByUserThemeProperty>(
+        key, kTintTable, kTintTableLength);
     if (id != -1) {
       temp_tints[id] = hsl;
     }
@@ -1443,8 +1467,8 @@ void BrowserThemePack::ReadColorsFromJSON(const base::Value::Dict& colors_value,
         (*temp_colors)[TP::COLOR_NTP_HEADER] = color;
       }
     } else {
-      int id = GetIntForString(key, kOverwritableColorTable,
-                               kOverwritableColorTableLength);
+      int id = GetIdForString<TP::OverwritableByUserThemeProperty>(
+          key, kOverwritableColorTable, kOverwritableColorTableLength);
       if (id != -1) {
         (*temp_colors)[id] = color;
       }
@@ -1462,8 +1486,8 @@ void BrowserThemePack::SetDisplayPropertiesFromJSON(
 
   std::map<int, int> temp_properties;
   for (const auto [key, value] : *display_properties_value) {
-    int property_id =
-        GetIntForString(key, kDisplayProperties, kDisplayPropertiesSize);
+    int property_id = GetIdForString<TP::OverwritableByUserThemeProperty>(
+        key, kDisplayProperties, kDisplayPropertiesSize);
     switch (property_id) {
       case TP::NTP_BACKGROUND_ALIGNMENT: {
         if (value.is_string()) {
@@ -1521,6 +1545,31 @@ void BrowserThemePack::ParseImageNamesFromJSON(
       AddFileAtScaleToMap(key, ui::k100Percent,
                           images_path.AppendASCII(value.GetString()),
                           file_paths);
+    }
+  }
+}
+
+void BrowserThemePack::SetTabGroupColorPaletteShadesFromJSON(
+    const base::Value::Dict* tab_group_color_palette_value) {
+  size_t count = 0;
+  for (const auto [key, value] : *tab_group_color_palette_value) {
+    if (!value.is_int()) {
+      continue;
+    }
+
+    int hue = value.GetInt();
+    if (hue < -1 || hue > 360) {
+      continue;
+    }
+
+    int id = GetIdForString<tab_groups::TabGroupColorId>(
+        key, kTabGroupColorIdTable, kTabGroupColorIdTableSize);
+    if (id != -1) {
+      tab_group_color_palette_shades_[count].id = id;
+      ui::GenerateStandardShadesFromHue(
+          hue == -1 ? std::nullopt : std::make_optional(hue),
+          tab_group_color_palette_shades_[count].shades);
+      ++count;
     }
   }
 }

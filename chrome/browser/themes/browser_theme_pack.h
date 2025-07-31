@@ -217,6 +217,12 @@ class BrowserThemePack : public CustomThemeSupplier {
                                const base::FilePath& images_path,
                                FilePathMap* file_paths) const;
 
+  // Transforms the JSON |tab_group_color_palette_value| into their final
+  // versions in the |tab_group_color_palette_shades_| array. Does nothing if
+  // |tab_group_color_palette_value| is nullptr.
+  void SetTabGroupColorPaletteShadesFromJSON(
+      const base::Value::Dict* tab_group_color_palette_value);
+
   // Helper function to populate the FilePathMap.
   void AddFileAtScaleToMap(const std::string& image_name,
                            ui::ResourceScaleFactor scale_factor,
