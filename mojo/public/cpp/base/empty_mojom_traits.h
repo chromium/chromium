@@ -5,7 +5,7 @@
 #ifndef MOJO_PUBLIC_CPP_BASE_EMPTY_MOJOM_TRAITS_H_
 #define MOJO_PUBLIC_CPP_BASE_EMPTY_MOJOM_TRAITS_H_
 
-#include <utility>
+#include <variant>
 
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "mojo/public/mojom/base/empty.mojom-shared.h"
