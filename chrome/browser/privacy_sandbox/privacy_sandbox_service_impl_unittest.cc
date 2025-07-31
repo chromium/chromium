@@ -591,6 +591,9 @@ TEST_P(PrivacySandboxPrivacyGuideShouldShowAdTopicsTest,
   if (is_feature_on) {
     feature_list()->InitAndEnableFeature(
         privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
+  } else {
+    feature_list()->InitAndDisableFeature(
+        privacy_sandbox::kPrivacySandboxAdTopicsContentParity);
   }
 
   ON_CALL(*mock_privacy_sandbox_countries(), IsConsentCountry())
