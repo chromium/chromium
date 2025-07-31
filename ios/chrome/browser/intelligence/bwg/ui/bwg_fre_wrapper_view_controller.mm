@@ -4,7 +4,7 @@
 
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_fre_wrapper_view_controller.h"
 
-#import "base/notreached.h"
+#import "base/check.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_mutator.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_consent_view_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/ui/bwg_promo_view_controller.h"
@@ -306,9 +306,7 @@ const CGFloat kDamping = 0.85;
 
 // Updates VoiceOver focus to the consent view after promo transition.
 - (void)updateAccessibilityFocus {
-  if (!_consentViewController) {
-    return;
-  }
+  CHECK(_consentViewController);
 
   UIAccessibilityPostNotification(UIAccessibilityLayoutChangedNotification,
                                   _consentViewController.view);

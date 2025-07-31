@@ -404,7 +404,8 @@ const CGFloat kBaselineAdjustment = 10.0;
   [primaryButton addTarget:self
                     action:@selector(didTapPrimaryButton:)
           forControlEvents:UIControlEventTouchUpInside];
-  // TODO(crbug.com/420643840): Add a11y labels.
+  primaryButton.accessibilityLabel =
+      l10n_util::GetNSString(IDS_IOS_BWG_PROMO_PRIMARY_BUTTON);
   return primaryButton;
 }
 
