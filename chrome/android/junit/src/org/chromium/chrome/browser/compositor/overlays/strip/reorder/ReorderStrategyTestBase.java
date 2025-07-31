@@ -23,6 +23,7 @@ import org.robolectric.Robolectric;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
@@ -91,7 +92,7 @@ public abstract class ReorderStrategyTestBase {
     protected void setup() {
         mActivity = Robolectric.setupActivity(Activity.class);
         // StripLayoutViews need styles during initializations.
-        mActivity.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI);
+        mActivity.setTheme(R.style.Theme_BrowserUI_DayNight);
         mModel = spy(new MockTabModel(mProfile, /* delegate= */ null));
         for (int id : TAB_IDS) mModel.addTab(id);
         mModel.setIndex(0, TabSelectionType.FROM_USER);

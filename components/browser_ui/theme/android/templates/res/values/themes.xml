@@ -10,12 +10,13 @@ Note: This is a jinja2 template, processed at build time into the final resource
 -->
 
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Light themes -->
     <!-- Colors should be mirrored by Theme.BrowserUI.DialogWhenLarge and
          Theme.BrowserUI.AlertDialog.NoActionBar. -->
-    <style name="Base.V21.Theme.BrowserUI" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Theme.BrowserUI.Light" parent="Theme.Material3.Light.NoActionBar">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
-        {% macro common_color_attributes() %}
+        {% macro color_palette_light_attributes() %}
         <!-- Color palettes -->
         <item name="colorPrimary">@color/baseline_primary_40</item>
         <item name="colorPrimaryDark">@android:color/black</item>
@@ -42,7 +43,10 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="colorOutline">@color/baseline_neutral_variant_50</item>
         <item name="colorOutlineVariant">@color/baseline_neutral_variant_80</item>
         <item name="colorError">@color/baseline_error_40</item>
+        {% endmacro %}
+        {{ color_palette_light_attributes() }}
 
+        {% macro other_color_attributes() %}
         <!-- Text colors-->
         <item name="android:textColorPrimary">@color/default_text_color_list</item>
         <item name="android:textColorSecondary">@color/default_text_color_secondary_list</item>
@@ -72,8 +76,9 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="globalLinkTextColor">?attr/colorPrimary</item>
         <item name="globalClickableSpanColor">?attr/colorPrimary</item>
         {% endmacro %}
-        {{ common_color_attributes() }}
+        {{ other_color_attributes() }}
 
+        {% macro misc_attributes() %}
         <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
          using the theme for SettingsActivity (e.g. PageInfoView) -->
         <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
@@ -88,10 +93,6 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="checkboxStyle">@style/Widget.BrowserUI.CheckBox</item>
         <item name="radioButtonStyle">@style/Widget.BrowserUI.RadioButton</item>
         <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
-
-        <!-- Window Properties -->
-        <item name="android:windowBackground">@macro/default_bg_color</item>
-        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/splash_screen_bg</item>
 
         <!-- Status bar color -->
         <item name="android:statusBarColor">@android:color/black</item>
@@ -139,67 +140,42 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width</item>
         <item name="closeButtonHeight">@dimen/close_button_height</item>
+        {% endmacro %}
+        {{ misc_attributes() }}
+
+        {% macro full_window_attributes() %}
+        <!-- Window Properties -->
+        <item name="android:windowBackground">@macro/default_bg_color</item>
+        <item name="android:windowSplashScreenBackground" tools:targetApi="31">@color/splash_screen_bg</item>
+        {% endmacro %}
+        {{ full_window_attributes() }}
     </style>
+    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI.Light" />
 
-    <style name="Base.V31.Theme.BrowserUI" parent="Base.V21.Theme.BrowserUI" />
-    <style name="Base.Theme.BrowserUI" parent="Base.V31.Theme.BrowserUI" />
-    <style name="Theme.BrowserUI" parent="Base.Theme.BrowserUI" />
-    <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.DayNight" parent="Theme.BrowserUI" />
-
-    <!-- Colors should be mirrored by Base.V21.Theme.BrowserUI. -->
-    <style name="Theme.BrowserUI.DialogWhenLarge" parent="Theme.Material3.DayNight.DialogWhenLarge">
+    <!-- Colors should be mirrored by Theme.BrowserUI -->
+    <style name="Theme.BrowserUI.Light.DialogWhenLarge" parent="Theme.Material3.Light.DialogWhenLarge">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
-        {{ common_color_attributes() }}
-
-        <!-- Widgets style override-->
-        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
-        <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
-         using the theme for SettingsActivity (e.g. PageInfoView) -->
-        <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
-
-        <item name="android:elegantTextHeight">false</item>
-        <item name="defaultFontFamily">sans-serif</item>
-        <item name="defaultMediumFontFamily">sans-serif-medium</item>
-
-        <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
-        <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
-        <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
-
-        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
-
-        <!-- Toolbar button dimensions. -->
-        <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
-        <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
-        <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal</item>
-        <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical</item>
-
-        <!-- Close button dimensions. -->
-        <item name="closeButtonWidth">@dimen/close_button_width</item>
-        <item name="closeButtonHeight">@dimen/close_button_height</item>
+        {{ color_palette_light_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
     </style>
-    <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.DialogWhenLarge.DayNight" parent="Theme.BrowserUI.DialogWhenLarge"/>
+    <style name="Theme.BrowserUI.DayNight.DialogWhenLarge" parent="Theme.BrowserUI.Light.DialogWhenLarge"/>
 
     <!-- Unlike |ThemeOverlay.BrowserUI.AlertDialog|, this is a complete theme that can be used as
-         an activity theme on its own. In addition to mirroring |Base.V21.Theme.BrowserUI|, this
-         should include all the attributes that |ThemeOverlay.BrowserUI.AlertDialog| has.
+         an activity theme on its own. In addition to mirroring |Theme.BrowserUI|, this should
+         include all the attributes that |ThemeOverlay.BrowserUI.AlertDialog| has.
          -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar" parent="Theme.Material3.DayNight.Dialog.Alert">
+    <style name="Theme.BrowserUI.Light.AlertDialog.NoActionBar" parent="Theme.Material3.Light.Dialog.Alert">
         <item name="dynamicColorThemeOverlay">@style/ThemeOverlay.BrowserUI.DynamicColors</item>
 
-        {{ common_color_attributes() }}
+        {{ color_palette_light_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
 
+        {% macro alert_dialog_attributes() %}
         <item name="android:windowBackground">@drawable/dialog_bg_no_shadow</item>
         <item name="android:windowTitleStyle">@style/TextAppearance.AlertDialogTitleStyle</item>
-
-        <!--  Overriding AppCompat values -->
-        <item name="spinnerStyle">@style/SpinnerStyle</item>
-        <item name="materialSwitchStyle">@style/Widget.BrowserUI.Switch</item>
-        <!-- Switches style workaround for UI that might use SwitchPreferenceCompat while not
-         using the theme for SettingsActivity (e.g. PageInfoView) -->
-        <item name="switchPreferenceCompatStyle">@style/SwitchPreference</item>
 
         <!-- Depending on if the support library or framework is inflating the
              dialog, a different layout is used, that names this style slightly
@@ -212,30 +188,59 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <!-- NoActionBar -->
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
-
-        <item name="android:elegantTextHeight">false</item>
-        <item name="defaultFontFamily">sans-serif</item>
-        <item name="defaultMediumFontFamily">sans-serif-medium</item>
-
-        <item name="android:itemTextAppearance">@style/TextAppearance.TextLarge.Primary</item>
-        <item name="android:spinnerItemStyle">@style/Widget.BrowserUI.SpinnerItem</item>
-        <item name="android:spinnerDropDownItemStyle">@style/Widget.BrowserUI.SpinnerDropDownItemStyle</item>
-
-        <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">true</item>
-
-        <!-- Toolbar button dimensions. -->
-        <item name="toolbarButtonWidth">@dimen/toolbar_button_width</item>
-        <item name="toolbarButtonHeight">@dimen/toolbar_button_height</item>
-        <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal</item>
-        <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical</item>
-
-        <!-- Close button dimensions. -->
-        <item name="closeButtonWidth">@dimen/close_button_width</item>
-        <item name="closeButtonHeight">@dimen/close_button_height</item>
+        {% endmacro %}
+        {{ alert_dialog_attributes() }}
     </style>
-    <!-- Overridden by night mode. -->
-    <style name="Theme.BrowserUI.AlertDialog.NoActionBar.DayNight" parent="Theme.BrowserUI.AlertDialog.NoActionBar"/>
+    <style name="Theme.BrowserUI.DayNight.AlertDialog.NoActionBar" parent="Theme.BrowserUI.Light.AlertDialog.NoActionBar"/>
 
+    <!-- Dark themes -->
+    <style name="Theme.BrowserUI.Dark" parent="Theme.Material3.Dark.NoActionBar">
+        {% macro color_palette_dark_attributes() %}
+        <!-- Color palettes -->
+        <item name="colorPrimary">@color/baseline_primary_80</item>
+        <item name="colorPrimaryInverse">@color/baseline_primary_40</item>
+        <item name="colorOnPrimary">@color/baseline_primary_20</item>
+        <item name="colorPrimaryContainer">@color/baseline_primary_30</item>
+        <item name="colorOnPrimaryContainer">@color/baseline_primary_90</item>
+        <item name="colorSecondaryContainer">@color/baseline_secondary_30</item>
+        <item name="colorOnSecondaryContainer">@color/baseline_secondary_90</item>
+        <item name="android:colorBackground">@color/baseline_neutral_10</item>
+        <item name="colorOnBackground">@color/baseline_neutral_90</item>
+        <item name="colorSurface">@color/gm3_baseline_surface_dark</item>
+        <item name="colorOnSurface">@color/baseline_neutral_90</item>
+        <item name="colorSurfaceVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorOnSurfaceVariant">@color/baseline_neutral_variant_80</item>
+        <item name="colorOnSurfaceInverse">@color/baseline_neutral_20</item>
+        <item name="colorSurfaceBright">@color/gm3_baseline_surface_bright_dark</item>
+        <item name="colorSurfaceDim">@color/gm3_baseline_surface_dim_dark</item>
+        <item name="colorSurfaceContainerLow">@color/gm3_baseline_surface_container_low_dark</item>
+        <item name="colorSurfaceContainer">@color/gm3_baseline_surface_container_dark</item>
+        <item name="colorSurfaceContainerHigh">@color/gm3_baseline_surface_container_high_dark</item>
+        <item name="colorSurfaceContainerHighest">@color/gm3_baseline_surface_container_highest_dark</item>
+        <item name="colorOutline">@color/baseline_neutral_variant_60</item>
+        <item name="colorOutlineVariant">@color/baseline_neutral_variant_30</item>
+        <item name="colorError">@color/baseline_error_80</item>
+        {% endmacro %}
+        {{ color_palette_dark_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ full_window_attributes() }}
+    </style>
+
+    <style name="Theme.BrowserUI.Dark.DialogWhenLarge" parent="Theme.Material3.Dark.DialogWhenLarge">
+        {{ color_palette_dark_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+    </style>
+
+    <style name="Theme.BrowserUI.Dark.AlertDialog.NoActionBar" parent="Theme.Material3.Dark.Dialog.Alert">
+        {{ color_palette_dark_attributes() }}
+        {{ other_color_attributes() }}
+        {{ misc_attributes() }}
+        {{ alert_dialog_attributes() }}
+    </style>
+
+    <!-- Misc. themes -->
     <!-- This theme is used instead of android:style/Theme.NoDisplay so that it has the required
         attributes in case the context ends up being used to inflate views. -->
     <style name="Theme.BrowserUI.NoDisplay" parent="Theme.BrowserUI.DayNight">
@@ -261,6 +266,7 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="android:windowOptOutEdgeToEdgeEnforcement" tools:targetApi="35">false</item>
     </style>
 
+    <!-- Theme overlays -->
     <style name="ThemeOverlay.BrowserUI.ElegantTextHeight" parent="">
         <item name="android:elegantTextHeight">true</item>
     </style>
