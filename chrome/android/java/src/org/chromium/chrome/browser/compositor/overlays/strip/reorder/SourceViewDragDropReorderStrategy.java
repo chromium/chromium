@@ -268,6 +268,16 @@ class SourceViewDragDropReorderStrategy extends ReorderStrategyBase {
             return mWrappedStrategy.getInteractingView();
         }
 
+        @Override
+        public void reorderViewInDirection(
+                StripLayoutView[] stripViews,
+                StripLayoutGroupTitle[] groupTitles,
+                StripLayoutTab[] stripTabs,
+                StripLayoutView reorderingView,
+                boolean toRight) {
+            // Intentionally no-op.
+        }
+
         /**
          * Attempts to start the view tearing action through {@link TabStripDragHandler}.
          *

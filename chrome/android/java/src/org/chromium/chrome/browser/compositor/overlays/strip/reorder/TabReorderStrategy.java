@@ -4,9 +4,11 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.PointF;
 import android.view.View;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -179,6 +181,44 @@ public class TabReorderStrategy extends ReorderStrategyBase {
     @Override
     public StripLayoutView getInteractingView() {
         return mInteractingTab;
+    }
+
+    @Override
+    public void reorderViewInDirection(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            StripLayoutView reorderingView,
+            boolean toLeft) {
+        // Cast to the correct view type.
+        assert reorderingView instanceof StripLayoutTab
+                : "Using incorrect ReorderStrategy for view type.";
+        StripLayoutTab tab = (StripLayoutTab) reorderingView;
+
+        // Ensure we have a valid current index.
+        int curIndex = StripLayoutUtils.findIndexForTab(stripTabs, tab.getTabId());
+        assert curIndex != TabModel.INVALID_TAB_INDEX;
+
+        // Fake a successful reorder in the target direction.
+        float offset = MathUtils.flipSignIf(Float.MAX_VALUE, toLeft);
+        reorderTabIfThresholdReached(
+                stripViews,
+                groupTitles,
+                stripTabs,
+                (StripLayoutTab) reorderingView,
+                offset,
+                curIndex);
+
+        // Animate the reordering view and ensure it's foregrounded.
+        reorderingView.setIsForegrounded(/* isForegrounded= */ true);
+        animateViewSliding(
+                reorderingView,
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        reorderingView.setIsForegrounded(/* isForegrounded= */ false);
+                    }
+                });
     }
 
     /**

@@ -493,6 +493,33 @@ public class ReorderDelegate {
         return mExternalViewDragDropReorderStrategy.handleDrop(groupTitles, tabIds, dropIndex);
     }
 
+    /**
+     * Called to trigger an animated reorder when not in reorder mode. This can be triggered through
+     * keyboard shortcuts.
+     *
+     * @param stripViews The list of {@link StripLayoutView}.
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param reorderingView The view to reorder.
+     * @param toLeft {@code True} if reordering the view to the left.
+     */
+    public void reorderViewInDirection(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            StripLayoutView reorderingView,
+            boolean toLeft) {
+        if (reorderingView instanceof StripLayoutTab) {
+            mTabStrategy.reorderViewInDirection(
+                    stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+        } else if (reorderingView instanceof StripLayoutGroupTitle) {
+            mGroupStrategy.reorderViewInDirection(
+                    stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+        } else {
+            assert false : "Attempted to reorder an invalid view type.";
+        }
+    }
+
     // ============================================================================================
     // Margin helpers
     // ============================================================================================

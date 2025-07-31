@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_GROUP_BOTTOM_INDICATOR_WIDTH_OFFSET;
 
 import android.animation.Animator;
+import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
 import android.animation.AnimatorSet;
 import android.view.View;
@@ -85,6 +86,20 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
         mGroupIdToHideSupplier = groupIdToHideSupplier;
         mTabWidthSupplier = tabWidthSupplier;
         mLastReorderScrollTimeSupplier = lastReorderScrollTimeSupplier;
+    }
+
+    // ============================================================================================
+    // Reorder API
+    // ============================================================================================
+
+    @Override
+    public void reorderViewInDirection(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            StripLayoutView reorderingView,
+            boolean toRight) {
+        // Default implementation is intentionally no-op.
     }
 
     // ============================================================================================
@@ -522,14 +537,20 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
                 ANIM_TAB_MOVE_MS);
     }
 
+    /** See {@link #animateViewSliding(StripLayoutView, AnimatorListener)}. */
+    protected void animateViewSliding(StripLayoutView view) {
+        animateViewSliding(view, null);
+    }
+
     /**
      * Creates & starts a sliding {@link CompositorAnimator} for the given {@link StripLayoutView}.
      *
      * @param view The {@link StripLayoutView} to create a sliding {@link CompositorAnimator} for.
+     * @param listener The {@link AnimatorListener} to add, or {@code null} if none.
      */
-    protected void animateViewSliding(StripLayoutView view) {
+    protected void animateViewSliding(StripLayoutView view, @Nullable AnimatorListener listener) {
         List<Animator> animators = new ArrayList<>();
         animators.add(getViewSlidingAnimator(view));
-        mAnimationHost.queueAnimations(animators, /* listener= */ null);
+        mAnimationHost.queueAnimations(animators, listener);
     }
 }

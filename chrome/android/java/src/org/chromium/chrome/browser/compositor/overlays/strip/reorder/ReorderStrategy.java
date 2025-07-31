@@ -60,4 +60,21 @@ public interface ReorderStrategy {
 
     /** Returns the dragged {@link StripLayoutView} for the reorder. */
     @Nullable StripLayoutView getInteractingView();
+
+    /**
+     * Called to trigger an animated reorder when not in reorder mode. This can be triggered through
+     * keyboard shortcuts.
+     *
+     * @param stripViews The list of {@link StripLayoutView}.
+     * @param groupTitles The list of {@link StripLayoutGroupTitle}.
+     * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param reorderingView The view to reorder.
+     * @param toLeft {@code True} if reordering the view to the left.
+     */
+    void reorderViewInDirection(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            StripLayoutView reorderingView,
+            boolean toLeft);
 }

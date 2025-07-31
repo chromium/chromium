@@ -4,11 +4,13 @@
 package org.chromium.chrome.browser.compositor.overlays.strip.reorder;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.PointF;
 import android.view.View;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.MathUtils;
 import org.chromium.base.Token;
 import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -174,6 +176,69 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
         return mInteractingGroupTitle;
     }
 
+    @Override
+    public void reorderViewInDirection(
+            StripLayoutView[] stripViews,
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            StripLayoutView reorderingView,
+            boolean toLeft) {
+        // Cast to the correct view type.
+        assert reorderingView instanceof StripLayoutGroupTitle
+                : "Using incorrect ReorderStrategy for view type.";
+        StripLayoutGroupTitle reorderingGroupTitle = (StripLayoutGroupTitle) reorderingView;
+
+        // Grab the relevant StripLayoutTabs for the given group.
+        List<StripLayoutTab> groupedTabs =
+                StripLayoutUtils.getGroupedTabs(
+                        mModel, stripTabs, reorderingGroupTitle.getTabGroupId());
+        StripLayoutTab firstTabInGroup = groupedTabs.get(0);
+        StripLayoutTab lastTabInGroup = groupedTabs.get(groupedTabs.size() - 1);
+
+        // Fake a successful reorder in the target direction.
+        float offset = MathUtils.flipSignIf(Float.MAX_VALUE, toLeft);
+        reorderGroupIfThresholdReached(
+                groupTitles,
+                stripTabs,
+                offset,
+                firstTabInGroup,
+                lastTabInGroup,
+                reorderingGroupTitle.getTabGroupId());
+
+        // Animate the reordering view. Ensure all the views are foregrounded.
+        reorderingView.setIsForegrounded(/* isForegrounded= */ true);
+        for (StripLayoutTab tab : groupedTabs) {
+            tab.setIsForegrounded(/* isForegrounded= */ true);
+            animateViewSliding(tab);
+        }
+        animateViewSliding(
+                reorderingView,
+                new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        reorderingView.setIsForegrounded(/* isForegrounded= */ false);
+                        for (StripLayoutTab tab : groupedTabs) {
+                            tab.setIsForegrounded(/* isForegrounded= */ false);
+                        }
+                    }
+                });
+    }
+
+    /**
+     * See {@link #reorderGroupIfThresholdReached(StripLayoutGroupTitle[], StripLayoutTab[], float,
+     * StripLayoutTab, StripLayoutTab, Token)}
+     */
+    private boolean reorderGroupIfThresholdReached(
+            StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs, float offset) {
+        return reorderGroupIfThresholdReached(
+                groupTitles,
+                stripTabs,
+                offset,
+                mFirstTabInGroup,
+                mLastTabInGroup,
+                mInteractingGroupTitle.getTabGroupId());
+    }
+
     /**
      * Handles the two different reordering cases:
      *
@@ -188,14 +253,21 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
      * @param offset The distance the group has been dragged from its ideal position.
+     * @param firstTabInGroup The first {@link StripLayoutTab} in the interacting group.
+     * @param lastTabInGroup The last {@link StripLayoutTab} in the interacting group.
+     * @param interactingTabGroupId The tab group ID of the interacting group.
      * @return {@code True} if the reorder was successful. {@code False} otherwise.
      */
     private boolean reorderGroupIfThresholdReached(
-            StripLayoutGroupTitle[] groupTitles, StripLayoutTab[] stripTabs, float offset) {
+            StripLayoutGroupTitle[] groupTitles,
+            StripLayoutTab[] stripTabs,
+            float offset,
+            StripLayoutTab firstTabInGroup,
+            StripLayoutTab lastTabInGroup,
+            Token interactingTabGroupId) {
         boolean towardEnd = isOffsetTowardEnd(offset);
-        int firstTabIndex =
-                StripLayoutUtils.findIndexForTab(stripTabs, mFirstTabInGroup.getTabId());
-        int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, mLastTabInGroup.getTabId());
+        int firstTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, firstTabInGroup.getTabId());
+        int lastTabIndex = StripLayoutUtils.findIndexForTab(stripTabs, lastTabInGroup.getTabId());
 
         // Find the tab we're dragging past. Return if none (i.e. dragging towards strip edge).
         int adjTabIndex = towardEnd ? lastTabIndex + 1 : firstTabIndex - 1;
@@ -211,15 +283,12 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
             assert adjTitle != null : "No matching group title on the tab strip.";
             if (Math.abs(offset) <= getGroupSwapThreshold(adjTitle)) return false;
 
-            movePastAdjacentGroup(stripTabs, adjTitle, towardEnd);
+            movePastAdjacentGroup(stripTabs, interactingTabGroupId, adjTitle, towardEnd);
         } else {
             // Case B: Attempt to drab past ungrouped tab.
             if (Math.abs(offset) <= getTabSwapThreshold()) return false;
 
-            @TabId
-            int tabId =
-                    mTabGroupModelFilter.getGroupLastShownTabId(
-                            mInteractingGroupTitle.getTabGroupId());
+            @TabId int tabId = mTabGroupModelFilter.getGroupLastShownTabId(interactingTabGroupId);
             mTabGroupModelFilter.moveRelatedTabs(tabId, adjTabIndex);
             animateViewSliding(adjStripTab);
         }
@@ -231,19 +300,21 @@ public class GroupReorderStrategy extends ReorderStrategyBase {
      * Reorders the interacting group past an adjacent group. Animates accordingly.
      *
      * @param stripTabs The list of {@link StripLayoutTab}.
+     * @param interactingTabGroupId The tab group ID of the interacting group.
      * @param adjTitle The {@link StripLayoutGroupTitle} of the adjacent group.
      * @param towardEnd True if dragging towards the end of the strip.
      */
     private void movePastAdjacentGroup(
-            StripLayoutTab[] stripTabs, StripLayoutGroupTitle adjTitle, boolean towardEnd) {
+            StripLayoutTab[] stripTabs,
+            Token interactingTabGroupId,
+            StripLayoutGroupTitle adjTitle,
+            boolean towardEnd) {
         // Move the interacting group to its new position.
         List<Tab> adjTabs = mTabGroupModelFilter.getTabsInGroup(adjTitle.getTabGroupId());
         int indexTowardStart = TabGroupUtils.getFirstTabModelIndexForList(mModel, adjTabs);
         int indexTowardEnd = TabGroupUtils.getLastTabModelIndexForList(mModel, adjTabs);
         int destIndex = towardEnd ? indexTowardEnd : indexTowardStart;
-        @TabId
-        int tabId =
-                mTabGroupModelFilter.getGroupLastShownTabId(mInteractingGroupTitle.getTabGroupId());
+        @TabId int tabId = mTabGroupModelFilter.getGroupLastShownTabId(interactingTabGroupId);
         mTabGroupModelFilter.moveRelatedTabs(tabId, destIndex);
 
         // Animate the displaced views sliding to their new positions.
