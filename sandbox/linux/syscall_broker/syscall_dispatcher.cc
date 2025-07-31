@@ -7,6 +7,8 @@
 
 #include <fcntl.h>
 
+#include <cerrno>
+
 #include "base/check.h"
 #include "base/logging.h"
 #include "sandbox/linux/system_headers/linux_syscalls.h"
