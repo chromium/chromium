@@ -1103,6 +1103,9 @@ public final class ProductionSupportedFlagList {
                 "ReloadHiddenTabsWithActiveCrashedSubframes",
                 "Restricts reloading of hidden tabs with crashed subframes to only happen for "
                         + "active subframes."),
+        Flag.baseFeature(
+                "SubframePriorityContribution",
+                "Stops priority contributions from subframes in back-forward cache."),
         // Add new commandline switches and features above. The final entry should have a
         // trailing comma for cleaner diffs.
     };
