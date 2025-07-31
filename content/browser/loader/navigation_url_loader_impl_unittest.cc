@@ -411,6 +411,86 @@ TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsDisabled) {
                    .trusted_params->enabled_client_hints.has_value());
 }
 
+TEST_F(NavigationURLLoaderImplTest, EnsureEnabledClientHintsOnRedirect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kOffloadAcceptCHFrameCheck,
+      {{"AcceptCHOffloadWithRedirect", "true"}});
+  ASSERT_TRUE(http_test_server_.Start());
+
+  const GURL url = http_test_server_.GetURL("/redirect301-to-echo");
+  const GURL final_url = http_test_server_.GetURL("/echo");
+  const url::Origin final_origin = url::Origin::Create(final_url);
+
+  std::vector<network::mojom::WebClientHintsType> expected_client_hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  SetupClientHintsControllerDelegate(expected_client_hints);
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader =
+      CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
+  loader->Start();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({}, {}, {});
+  delegate.WaitForResponseStarted();
+
+  const auto& resource_request = loader->GetResourceRequestForTesting();
+  ASSERT_TRUE(resource_request.trusted_params);
+  EXPECT_TRUE(
+      resource_request.trusted_params->enabled_client_hints.has_value());
+  // The default types are added in addition, and that is why `IsSupersetOf()`
+  // is used.
+  EXPECT_THAT(resource_request.trusted_params->enabled_client_hints->hints,
+              testing::IsSupersetOf(expected_client_hints));
+  EXPECT_EQ(final_origin,
+            resource_request.trusted_params->enabled_client_hints->origin);
+}
+
+TEST_F(NavigationURLLoaderImplTest,
+       EnsureEnabledClientHintsOnCrossOriginRedirect) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeatureWithParameters(
+      network::features::kOffloadAcceptCHFrameCheck,
+      {{"AcceptCHOffloadWithRedirect", "true"}});
+  ASSERT_TRUE(http_test_server_.Start());
+  net::EmbeddedTestServer http_test_server2;
+  http_test_server2.AddDefaultHandlers(
+      base::FilePath(FILE_PATH_LITERAL("content/test/data")));
+  ASSERT_TRUE(http_test_server2.Start());
+
+  const GURL final_url = http_test_server2.GetURL("/echo");
+  const GURL url =
+      http_test_server_.GetURL("/server-redirect?" + final_url.spec());
+  const url::Origin final_origin = url::Origin::Create(final_url);
+
+  std::vector<network::mojom::WebClientHintsType> expected_client_hints = {
+      network::mojom::WebClientHintsType::kUAArch,
+      network::mojom::WebClientHintsType::kUAWoW64,
+  };
+  SetupClientHintsControllerDelegate(expected_client_hints);
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader =
+      CreateTestLoader(url, /*headers=*/"", /*method=*/"GET", &delegate);
+  loader->Start();
+  delegate.WaitForRequestRedirected();
+  loader->FollowRedirect({}, {}, {});
+  delegate.WaitForResponseStarted();
+
+  const auto& resource_request_after_redirect =
+      loader->GetResourceRequestForTesting();
+  ASSERT_TRUE(resource_request_after_redirect.trusted_params);
+  EXPECT_TRUE(resource_request_after_redirect.trusted_params
+                  ->enabled_client_hints.has_value());
+  // The default types are added in addition, and that is why `IsSupersetOf()`
+  // is used.
+  EXPECT_THAT(resource_request_after_redirect.trusted_params
+                  ->enabled_client_hints->hints,
+              testing::IsSupersetOf(expected_client_hints));
+  EXPECT_EQ(final_origin, resource_request_after_redirect.trusted_params
+                              ->enabled_client_hints->origin);
+}
+
 TEST_F(NavigationURLLoaderImplTest, Redirect301Tests) {
   ASSERT_TRUE(http_test_server_.Start());
 

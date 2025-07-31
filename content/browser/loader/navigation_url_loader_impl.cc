@@ -1999,6 +1999,7 @@ void NavigationURLLoaderImpl::FollowRedirect(
     resource_request_->request_body.reset();
   }
 
+  const GURL previous_url = resource_request_->url;
   resource_request_->url = redirect_info_.new_url;
   resource_request_->method = redirect_info_.new_method;
   resource_request_->site_for_cookies = redirect_info_.new_site_for_cookies;
@@ -2012,6 +2013,29 @@ void NavigationURLLoaderImpl::FollowRedirect(
   resource_request_->referrer_policy = redirect_info_.new_referrer_policy;
   resource_request_->navigation_redirect_chain.push_back(
       redirect_info_.new_url);
+
+  if (base::FeatureList::IsEnabled(
+          network::features::kOffloadAcceptCHFrameCheck)) {
+    const url::Origin new_origin = url::Origin::Create(resource_request_->url);
+    const url::Origin old_origin = url::Origin::Create(previous_url);
+    if (!new_origin.IsSameOriginWith(old_origin)) {
+      // For cross-origin redirects, the existing client hints are invalid.
+      // Clear them to avoid sending unintentional hints.
+      resource_request_->trusted_params->enabled_client_hints.reset();
+
+      if (network::features::kAcceptCHOffloadWithRedirect.Get()) {
+        FrameTreeNode* frame_tree_node =
+            FrameTreeNode::GloballyFindByID(frame_tree_node_id_);
+        ClientHintsControllerDelegate* client_hints_controller_delegate =
+            browser_context_->GetClientHintsControllerDelegate();
+        if (client_hints_controller_delegate && frame_tree_node) {
+          resource_request_->trusted_params->enabled_client_hints =
+              GetEnabledClientHints(new_origin, frame_tree_node,
+                                    client_hints_controller_delegate);
+        }
+      }
+    }
+  }
 
   // Need to cache modified headers for `url_loader_` since it doesn't use
   // `resource_request_` during redirect.

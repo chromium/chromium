@@ -166,6 +166,15 @@ BASE_FEATURE(kOffloadAcceptCHFrameCheck,
              "OffloadAcceptCHFrameCheck",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enable offloading the network layer to check enabled client hints even when
+// cross origin redirect happens.
+// See crbug.com/406407746 for details.
+BASE_FEATURE_PARAM(bool,
+                   kAcceptCHOffloadWithRedirect,
+                   &kOffloadAcceptCHFrameCheck,
+                   "AcceptCHOffloadWithRedirect",
+                   false);
+
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              "CorsNonWildcardRequestHeadersSupport",
