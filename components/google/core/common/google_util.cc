@@ -13,6 +13,7 @@
 
 #include "base/command_line.h"
 #include "base/containers/fixed_flat_set.h"
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -145,6 +146,10 @@ bool IsGoogleSearchSubdomainUrl(const GURL& url) {
 
 }  // namespace
 
+BASE_FEATURE(kIsViewerGoogleSearchUrl,
+             "IsViewerGoogleSearchUrl",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Global functions -----------------------------------------------------------
 
 const char kGoogleHomepageURL[] = "https://www.google.com/";
@@ -271,7 +276,12 @@ bool IsGoogleSearchUrl(const GURL& url) {
   // Make sure the path is a known search path.
   std::string_view path(url.path_piece());
   bool is_home_page_base = IsPathHomePageBase(path);
-  if (!is_home_page_base && path != "/search" && path != "/imgres") {
+  bool is_search_url =
+      is_home_page_base || path == "/search" || path == "/imgres";
+  if (base::FeatureList::IsEnabled(kIsViewerGoogleSearchUrl)) {
+    is_search_url |= path == "/viewer" || base::StartsWith(path, "/viewer/");
+  }
+  if (!is_search_url) {
     return false;
   }
 
