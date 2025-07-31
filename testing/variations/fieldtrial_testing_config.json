@@ -5732,6 +5732,24 @@
             ]
         }
     ],
+    "ClientSideDetectionClipboardCopyApi": [
+        {
+            "platforms": [
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "ClientSideDetectionClipboardCopyApi"
+                    ]
+                }
+            ]
+        }
+    ],
     "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection": [
         {
             "platforms": [

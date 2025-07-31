@@ -540,6 +540,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
         return "VibrationApi";
       case safe_browsing::ClientSideDetectionType::FULLSCREEN_API:
         return "FullscreenApi";
+      case safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API:
+        return "ClipboardCopyApi";
     }
   }
 
@@ -1897,6 +1899,133 @@ TEST_F(ClientSideDetectionHostTest,
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.PreClassificationCheckResult.KeyboardLockRequested", 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       ClipboardCopyApiCallDoesNotProceedWithClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({}, {kClientSideDetectionClipboardCopyApi});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+
+  // Check that the clipboard histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+  WaitAndCheckPreClassificationChecks();
+
+  // The feature to send CSP pings is disabled, so nothing will be classified
+  // (or included in the HC allowlist).
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
+      PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC, 1);
+}
+
+TEST_F(ClientSideDetectionHostTest,
+       ClipboardCopyApiCallProceedsWithClassification) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  SetFeatures({kClientSideDetectionClipboardCopyApi}, {});
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+
+  // Check that the clipboard histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+  WaitAndCheckPreClassificationChecks();
+
+  // The feature to send CSP pings is enabled and the host is not included in
+  // the HC allowlist, so normal classification will occur.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
+      PreClassificationCheckResult::CLASSIFY, 1);
+}
+
+TEST_F(
+    ClientSideDetectionHostTest,
+    ClipboardCopyApiCallDoesNotProceedWithClassificationWithHighHCAcceptanceRate) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+
+  feature_list_.InitAndEnableFeatureWithParameters(
+      kClientSideDetectionClipboardCopyApi,
+      {{kCSDClipboardCopyApiHCAcceptanceRate.name, "1.0"}});
+
+  SetEnhancedProtectionPrefForTests(profile()->GetPrefs(), true);
+  base::HistogramTester histogram_tester;
+
+  GURL url("http://host.com/");
+  database_manager_->SetAllowlistLookupDetailsForUrl(url, /*match=*/true);
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  NavigateAndKeepLoading(web_contents(), url);
+  WaitAndCheckPreClassificationChecks();
+
+  // Check that the clipboard histograms haven't been recorded yet.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+
+  ExpectPreClassificationChecks(url, &kFalse, &kFalse, nullptr, nullptr,
+                                nullptr);
+  csd_host_->OnTextCopiedToClipboard(main_rfh(), u"test");
+  WaitAndCheckPreClassificationChecks();
+
+  // The feature to send CSP pings is enabled, but the host is included in the
+  // HC allowlist, so classification will not occur.
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.MatchHighConfidenceAllowlist.ClipboardCopyApi", 1);
+  histogram_tester.ExpectBucketCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi",
+      PreClassificationCheckResult::NO_CLASSIFY_MATCH_HC_ALLOWLIST, 1);
 }
 
 class ClientSideDetectionHostNotificationTest

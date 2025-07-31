@@ -31,6 +31,7 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/render_widget_host_view.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/mock_navigation_handle.h"
@@ -160,6 +161,66 @@ class MockSafeBrowsingUIManager : public SafeBrowsingUIManager {
   ~MockSafeBrowsingUIManager() override = default;
 };
 
+std::string set_up_client_side_model() {
+  flatbuffers::FlatBufferBuilder builder(1024);
+  std::vector<flatbuffers::Offset<flat::Hash>> hashes;
+  // Make sure this is sorted.
+  std::vector<std::string> hashes_vector = {"feature1", "feature2", "feature3",
+                                            "token one", "token two"};
+  for (std::string& feature : hashes_vector) {
+    std::vector<uint8_t> hash_data(feature.begin(), feature.end());
+    hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
+  }
+  flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
+      hashes_flat = builder.CreateVector(hashes);
+
+  std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
+  std::vector<int32_t> rule_feature1 = {};
+  std::vector<int32_t> rule_feature2 = {0};
+  std::vector<int32_t> rule_feature3 = {0, 1};
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
+  rules.push_back(
+      flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
+  flatbuffers::Offset<
+      flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
+      rules_flat = builder.CreateVector(rules);
+
+  std::vector<int32_t> page_terms_vector = {3, 4};
+  flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
+      builder.CreateVector(page_terms_vector);
+
+  std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
+  flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
+      builder.CreateVector(page_words_vector);
+
+  std::vector<
+      flatbuffers::Offset<safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
+      thresholds_vector = {};
+  flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
+      flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
+                                            0);
+  flat::ClientSideModelBuilder csd_model_builder(builder);
+  csd_model_builder.add_version(123);
+  // The model will always trigger.
+  csd_model_builder.add_threshold_probability(-1);
+  csd_model_builder.add_hashes(hashes_flat);
+  csd_model_builder.add_rule(rules_flat);
+  csd_model_builder.add_page_term(page_term_flat);
+  csd_model_builder.add_page_word(page_word_flat);
+  csd_model_builder.add_max_words_per_term(2);
+  csd_model_builder.add_murmur_hash_seed(12345U);
+  csd_model_builder.add_max_shingles_per_page(10);
+  csd_model_builder.add_shingle_size(3);
+  csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
+  builder.Finish(csd_model_builder.Finish());
+
+  return std::string(reinterpret_cast<char*>(builder.GetBufferPointer()),
+                     builder.GetSize());
+}
+
 }  // namespace
 
 class ClientSideDetectionHostPrerenderBrowserTest
@@ -194,7 +255,7 @@ class ClientSideDetectionHostPrerenderBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    set_up_client_side_model();
+    flatbuffer_model_str_ = set_up_client_side_model();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
   }
@@ -205,65 +266,6 @@ class ClientSideDetectionHostPrerenderBrowserTest
 
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void set_up_client_side_model() {
-    flatbuffers::FlatBufferBuilder builder(1024);
-    std::vector<flatbuffers::Offset<flat::Hash>> hashes;
-    // Make sure this is sorted.
-    std::vector<std::string> hashes_vector = {
-        "feature1", "feature2", "feature3", "token one", "token two"};
-    for (std::string& feature : hashes_vector) {
-      std::vector<uint8_t> hash_data(feature.begin(), feature.end());
-      hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
-    }
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
-        hashes_flat = builder.CreateVector(hashes);
-
-    std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
-    std::vector<int32_t> rule_feature1 = {};
-    std::vector<int32_t> rule_feature2 = {0};
-    std::vector<int32_t> rule_feature3 = {0, 1};
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
-    flatbuffers::Offset<
-        flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
-        rules_flat = builder.CreateVector(rules);
-
-    std::vector<int32_t> page_terms_vector = {3, 4};
-    flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
-        builder.CreateVector(page_terms_vector);
-
-    std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
-    flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
-        builder.CreateVector(page_words_vector);
-
-    std::vector<flatbuffers::Offset<
-        safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
-        thresholds_vector = {};
-    flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
-        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
-                                              0);
-    flat::ClientSideModelBuilder csd_model_builder(builder);
-    csd_model_builder.add_version(123);
-    // The model will always trigger.
-    csd_model_builder.add_threshold_probability(-1);
-    csd_model_builder.add_hashes(hashes_flat);
-    csd_model_builder.add_rule(rules_flat);
-    csd_model_builder.add_page_term(page_term_flat);
-    csd_model_builder.add_page_word(page_word_flat);
-    csd_model_builder.add_max_words_per_term(2);
-    csd_model_builder.add_murmur_hash_seed(12345U);
-    csd_model_builder.add_max_shingles_per_page(10);
-    csd_model_builder.add_shingle_size(3);
-    csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
-    builder.Finish(csd_model_builder.Finish());
-    flatbuffer_model_str_ = std::string(
-        reinterpret_cast<char*>(builder.GetBufferPointer()), builder.GetSize());
   }
 
   std::string client_side_model() { return flatbuffer_model_str_; }
@@ -299,7 +301,7 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    set_up_client_side_model();
+    flatbuffer_model_str_ = set_up_client_side_model();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
     ExclusiveAccessTest::SetUpOnMainThread();
@@ -311,65 +313,6 @@ class ClientSideDetectionHostPrerenderExclusiveAccessBrowserTest
 
   content::WebContents* GetWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  void set_up_client_side_model() {
-    flatbuffers::FlatBufferBuilder builder(1024);
-    std::vector<flatbuffers::Offset<flat::Hash>> hashes;
-    // Make sure this is sorted.
-    std::vector<std::string> hashes_vector = {
-        "feature1", "feature2", "feature3", "token one", "token two"};
-    for (std::string& feature : hashes_vector) {
-      std::vector<uint8_t> hash_data(feature.begin(), feature.end());
-      hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
-    }
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
-        hashes_flat = builder.CreateVector(hashes);
-
-    std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
-    std::vector<int32_t> rule_feature1 = {};
-    std::vector<int32_t> rule_feature2 = {0};
-    std::vector<int32_t> rule_feature3 = {0, 1};
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
-    flatbuffers::Offset<
-        flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
-        rules_flat = builder.CreateVector(rules);
-
-    std::vector<int32_t> page_terms_vector = {3, 4};
-    flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
-        builder.CreateVector(page_terms_vector);
-
-    std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
-    flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
-        builder.CreateVector(page_words_vector);
-
-    std::vector<flatbuffers::Offset<
-        safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
-        thresholds_vector = {};
-    flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
-        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
-                                              0);
-    flat::ClientSideModelBuilder csd_model_builder(builder);
-    csd_model_builder.add_version(123);
-    // The model will always trigger.
-    csd_model_builder.add_threshold_probability(-1);
-    csd_model_builder.add_hashes(hashes_flat);
-    csd_model_builder.add_rule(rules_flat);
-    csd_model_builder.add_page_term(page_term_flat);
-    csd_model_builder.add_page_word(page_word_flat);
-    csd_model_builder.add_max_words_per_term(2);
-    csd_model_builder.add_murmur_hash_seed(12345U);
-    csd_model_builder.add_max_shingles_per_page(10);
-    csd_model_builder.add_shingle_size(3);
-    csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
-    builder.Finish(csd_model_builder.Finish());
-    flatbuffer_model_str_ = std::string(
-        reinterpret_cast<char*>(builder.GetBufferPointer()), builder.GetSize());
   }
 
   std::string client_side_model() { return flatbuffer_model_str_; }
@@ -884,68 +827,9 @@ class ClientSideDetectionHostVibrateTest : public InProcessBrowserTest {
   ~ClientSideDetectionHostVibrateTest() override = default;
 
   void SetUpOnMainThread() override {
-    set_up_client_side_model();
+    flatbuffer_model_str_ = set_up_client_side_model();
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-  }
-
-  void set_up_client_side_model() {
-    flatbuffers::FlatBufferBuilder builder(1024);
-    std::vector<flatbuffers::Offset<flat::Hash>> hashes;
-    // Make sure this is sorted.
-    std::vector<std::string> hashes_vector = {
-        "feature1", "feature2", "feature3", "token one", "token two"};
-    for (std::string& feature : hashes_vector) {
-      std::vector<uint8_t> hash_data(feature.begin(), feature.end());
-      hashes.push_back(flat::CreateHashDirect(builder, &hash_data));
-    }
-    flatbuffers::Offset<flatbuffers::Vector<flatbuffers::Offset<flat::Hash>>>
-        hashes_flat = builder.CreateVector(hashes);
-
-    std::vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>> rules;
-    std::vector<int32_t> rule_feature1 = {};
-    std::vector<int32_t> rule_feature2 = {0};
-    std::vector<int32_t> rule_feature3 = {0, 1};
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature1, 0.5));
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature2, 2));
-    rules.push_back(
-        flat::ClientSideModel_::CreateRuleDirect(builder, &rule_feature3, 3));
-    flatbuffers::Offset<
-        flatbuffers::Vector<flatbuffers::Offset<flat::ClientSideModel_::Rule>>>
-        rules_flat = builder.CreateVector(rules);
-
-    std::vector<int32_t> page_terms_vector = {3, 4};
-    flatbuffers::Offset<flatbuffers::Vector<int32_t>> page_term_flat =
-        builder.CreateVector(page_terms_vector);
-
-    std::vector<uint32_t> page_words_vector = {1000U, 2000U, 3000U};
-    flatbuffers::Offset<flatbuffers::Vector<uint32_t>> page_word_flat =
-        builder.CreateVector(page_words_vector);
-
-    std::vector<flatbuffers::Offset<
-        safe_browsing::flat::TfLiteModelMetadata_::Threshold>>
-        thresholds_vector = {};
-    flatbuffers::Offset<flat::TfLiteModelMetadata> tflite_metadata_flat =
-        flat::CreateTfLiteModelMetadataDirect(builder, 0, &thresholds_vector, 0,
-                                              0);
-    flat::ClientSideModelBuilder csd_model_builder(builder);
-    csd_model_builder.add_version(123);
-    // The model will always trigger.
-    csd_model_builder.add_threshold_probability(-1);
-    csd_model_builder.add_hashes(hashes_flat);
-    csd_model_builder.add_rule(rules_flat);
-    csd_model_builder.add_page_term(page_term_flat);
-    csd_model_builder.add_page_word(page_word_flat);
-    csd_model_builder.add_max_words_per_term(2);
-    csd_model_builder.add_murmur_hash_seed(12345U);
-    csd_model_builder.add_max_shingles_per_page(10);
-    csd_model_builder.add_shingle_size(3);
-    csd_model_builder.add_tflite_metadata(tflite_metadata_flat);
-    builder.Finish(csd_model_builder.Finish());
-    flatbuffer_model_str_ = std::string(
-        reinterpret_cast<char*>(builder.GetBufferPointer()), builder.GetSize());
   }
 
   std::string client_side_model() { return flatbuffer_model_str_; }
@@ -1107,6 +991,212 @@ IN_PROC_BROWSER_TEST_F(ClientSideDetectionHostVibrateTest,
 
   histogram_tester.ExpectTotalCount(
       "SBClientPhishing.ServerModelDetectsPhishing.VibrationApi", 1);
+}
+
+class ClientSideDetectionHostClipboardTest
+    : public InProcessBrowserTest,
+      public testing::WithParamInterface<std::string_view> {
+ public:
+  ClientSideDetectionHostClipboardTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        kClientSideDetectionClipboardCopyApi,
+        {{kCSDClipboardCopyApiHCAcceptanceRate.name, "0.0"}});
+  }
+
+  ClientSideDetectionHostClipboardTest(
+      const ClientSideDetectionHostClipboardTest&) = delete;
+  ClientSideDetectionHostClipboardTest& operator=(
+      const ClientSideDetectionHostClipboardTest&) = delete;
+  ~ClientSideDetectionHostClipboardTest() override = default;
+
+  void SetUpOnMainThread() override {
+    flatbuffer_model_str_ = set_up_client_side_model();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    ASSERT_TRUE(embedded_test_server()->Start());
+  }
+
+  std::string client_side_model() { return flatbuffer_model_str_; }
+
+  content::WebContents* GetWebContents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  // This script uses the Clipboard API to write text to the clipboard.
+  static constexpr char kClipboardApiScriptTemplate[] =
+      "navigator.clipboard.writeText($1)";
+  // This script uses the (deprecated) `execCommand` method to write the
+  // currently-selected text to the clipboard. As a result, the script creates a
+  // temporary DOM element and selects text from that element.
+  static constexpr char kDocumentExecScriptTemplate[] = R"(
+    (function() {
+      const textSelectionArea = document.createElement("textarea");
+      textSelectionArea.value = $1;
+      document.body.append(textSelectionArea);
+      textSelectionArea.select();
+      document.execCommand("copy");
+      document.body.removeChild(textSelectionArea);
+    })();
+  )";
+
+ protected:
+  void TriggerClipboardCopy(std::string_view copied_text,
+                            base::OnceClosure clipboard_copy_done) {
+    content::RenderFrameHost* frame = GetWebContents()->GetPrimaryMainFrame();
+    frame->GetView()->Focus();
+    std::string script =
+        content::JsReplace(GetClipboardCopyScript(), copied_text);
+    ASSERT_TRUE(ExecJs(frame, script));
+    std::move(clipboard_copy_done).Run();
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+ private:
+  std::string_view GetClipboardCopyScript() { return GetParam(); }
+
+  std::string flatbuffer_model_str_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    All,
+    ClientSideDetectionHostClipboardTest,
+    ::testing::Values(
+        ClientSideDetectionHostClipboardTest::kClipboardApiScriptTemplate,
+        ClientSideDetectionHostClipboardTest::kDocumentExecScriptTemplate));
+
+class ClipboardObserverWaiter : public content::WebContentsObserver {
+ public:
+  explicit ClipboardObserverWaiter(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+
+  void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
+                               const std::u16string& copied_text) override {
+    did_copy_to_clipboard_ = true;
+    run_loop_.Quit();
+  }
+
+  void Wait() {
+    if (!did_copy_to_clipboard_) {
+      run_loop_.Run();
+    }
+  }
+
+  bool DidCopyToClipboard() { return did_copy_to_clipboard_; }
+
+ private:
+  bool did_copy_to_clipboard_ = false;
+  base::RunLoop run_loop_;
+};
+
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
+                       ClipboardApiTriggersPreclassificationCheck) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+  fake_csd_service.SendModelToRenderers();
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 0);
+
+  ClipboardObserverWaiter waiter(GetWebContents());
+  ASSERT_FALSE(waiter.DidCopyToClipboard());
+
+  base::RunLoop run_loop;
+  TriggerClipboardCopy("this will be copied to the clipboard",
+                       run_loop.QuitClosure());
+  run_loop.Run();
+  waiter.Wait();
+
+  EXPECT_TRUE(waiter.DidCopyToClipboard());
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PreClassificationCheckResult.ClipboardCopyApi", 2);
+}
+
+IN_PROC_BROWSER_TEST_P(ClientSideDetectionHostClipboardTest,
+                       ClipboardApiClassificationTriggersCSPPPing) {
+  if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
+    GTEST_SKIP();
+  }
+  SetSafeBrowsingState(browser()->profile()->GetPrefs(),
+                       SafeBrowsingState::ENHANCED_PROTECTION);
+
+  base::HistogramTester histogram_tester;
+
+  FakeClientSideDetectionService fake_csd_service;
+  fake_csd_service.SetModel(client_side_model());
+
+  scoped_refptr<StrictMock<MockSafeBrowsingUIManager>> mock_ui_manager =
+      new StrictMock<MockSafeBrowsingUIManager>();
+
+  std::unique_ptr<ClientSideDetectionHost> csd_host =
+      ChromeClientSideDetectionHostDelegate::CreateHost(
+          browser()->tab_strip_model()->GetActiveWebContents());
+  csd_host->set_client_side_detection_service(fake_csd_service.GetWeakPtr());
+  csd_host->set_ui_manager(mock_ui_manager.get());
+  fake_csd_service.SendModelToRenderers();
+
+  base::RunLoop run_loop;
+  fake_csd_service.SetRequestCallback(run_loop.QuitClosure());
+
+  const GURL initial_url(embedded_test_server()->GetURL("/title1.html"));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), initial_url));
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.ClipboardCopyApi", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 0);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
+
+  // Bypass the pre-classification check because it would otherwise return
+  // `PreClassificationCheckResult::NO_CLASSIFY_PRIVATE_IP`.
+  csd_host->OnPhishingPreClassificationDone(
+      ClientSideDetectionType::CLIPBOARD_COPY_API,
+      /*should_classify=*/true, /*is_sample_ping=*/false,
+      /*did_match_high_confidence_allowlist=*/false);
+  run_loop.Run();
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.ClipboardCopyApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 0);
+
+  EXPECT_EQ(fake_csd_service.saved_request().model_version(), 123);
+
+  // Expect an interstitial to be shown.
+  EXPECT_CALL(*mock_ui_manager, DisplayBlockingPage(_));
+
+  ASSERT_FALSE(fake_csd_service.saved_callback_is_null());
+  std::move(fake_csd_service.saved_callback())
+      .Run(initial_url, true, net::HTTP_OK, std::nullopt);
+
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.PhishingDetectorResult.ClipboardCopyApi", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ClientSideDetectionTypeRequest", 1);
+  histogram_tester.ExpectTotalCount(
+      "SBClientPhishing.ServerModelDetectsPhishing.ClipboardCopyApi", 1);
 }
 
 }  // namespace safe_browsing

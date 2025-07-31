@@ -1316,6 +1316,8 @@ enum ClientSideDetectionType {
   VIBRATION_API = 6;
   // Fullscreen API request triggered.
   FULLSCREEN_API = 7;
+  // Clipboard copy API request triggered.
+  CLIPBOARD_COPY_API = 8;
 }
 
 message ClientDownloadResponse {

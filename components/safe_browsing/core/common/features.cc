@@ -42,6 +42,14 @@ BASE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection,
              "ClientSideDetectionBrandAndIntentForScamDetection",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kClientSideDetectionClipboardCopyApi,
+             "ClientSideDetectionClipboardCopyApi",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const base::FeatureParam<double> kCSDClipboardCopyApiHCAcceptanceRate{
+    &kClientSideDetectionClipboardCopyApi, "HCAcceptanceRate",
+    /*default_value=*/0.0};
+
 BASE_FEATURE(kClientSideDetectionDebuggingMetadataCache,
              "ClientSideDetectionDebuggingMetadataCache",
              base::FEATURE_ENABLED_BY_DEFAULT);

@@ -24,6 +24,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ClassifierRequestType">
   <variant name="" summary="all request types"/>
+  <variant name=".ClipboardCopyApi" summary="Clipboard copy API"/>
   <variant name=".ForceRequest" summary="Force request"/>
   <variant name=".FullscreenApi" summary="Fullscreen API"/>
   <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
@@ -43,6 +44,7 @@ chromium-metrics-reviews@google.com.
 
 <variants name="ClientSideDetectionRequestType">
   <variant name="" summary="all request types"/>
+  <variant name=".ClipboardCopyApi" summary="Clipboard copy API"/>
   <variant name=".ForceRequest" summary="Force request"/>
   <variant name=".FullscreenApi" summary="Fullscreen API"/>
   <variant name=".KeyboardLockRequested" summary="Keyboard lock requested"/>
@@ -719,6 +721,16 @@ useful for Chirp alerts (go/crca-alerts). -->
     This metric is used to populate a dashboard on go/crsb-site.
   </summary>
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
+<histogram name="SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi"
+    enum="BooleanMatched" expires_after="2026-07-24">
+  <owner>liu@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the CSD allowlist match result when a clipboard copy API is
+    triggered on the page.
+  </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.MatchCSDAllowlistOnFullscreenApi"

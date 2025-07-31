@@ -72,6 +72,8 @@ std::string GetRequestTypeName(
       return "FullscreenApi";
     case safe_browsing::mojom::ClientSideDetectionType::kPasswordProtection:
       return "PasswordProtection";
+    case safe_browsing::mojom::ClientSideDetectionType::kClipboardCopyApi:
+      return "ClipboardCopyApi";
   }
 }
 

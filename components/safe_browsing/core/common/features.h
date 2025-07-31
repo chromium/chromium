@@ -37,6 +37,12 @@ BASE_DECLARE_FEATURE(kAddWarningShownTSToClientSafeBrowsingReport);
 // on-device model LLM.
 BASE_DECLARE_FEATURE(kClientSideDetectionBrandAndIntentForScamDetection);
 
+// Expand CSPP beyond phishing and trigger when clipboard copy API is called on
+// the page.
+BASE_DECLARE_FEATURE(kClientSideDetectionClipboardCopyApi);
+
+extern const base::FeatureParam<double> kCSDClipboardCopyApiHCAcceptanceRate;
+
 BASE_DECLARE_FEATURE(kClientSideDetectionDebuggingMetadataCache);
 
 // Extract only the visual features during the phishing classifier.

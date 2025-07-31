@@ -169,6 +169,8 @@ class ClientSideDetectionHost
   void VibrationRequested() override;
   void DidToggleFullscreenModeForTab(bool entered_fullscreen,
                                      bool will_cause_resize) override;
+  void OnTextCopiedToClipboard(content::RenderFrameHost* render_frame_host,
+                               const std::u16string& copied_text) override;
 
   // permissions::PermissionRequestManager::Observer methods:
   void OnPromptAdded() override;
@@ -251,6 +253,10 @@ class ClientSideDetectionHost
       AsyncCheckTrackerTriggersClassificationRequestOnAllowlistMatch);
   FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostScamDetectionTest,
                            KeyboardLockRequestTriggersOnDeviceLLM);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostClipboardTest,
+                           ClipboardApiTriggersPreclassificationCheck);
+  FRIEND_TEST_ALL_PREFIXES(ClientSideDetectionHostClipboardTest,
+                           ClipboardApiClassificationTriggersCSPPPing);
 
   // Helper function to create preclassification check once requirements are
   // met.

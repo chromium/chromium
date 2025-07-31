@@ -129,6 +129,8 @@ std::string GetRequestTypeName(
       return "VibrationApi";
     case safe_browsing::ClientSideDetectionType::FULLSCREEN_API:
       return "FullscreenApi";
+    case safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API:
+      return "ClipboardCopyApi";
   }
 }
 
@@ -150,6 +152,8 @@ safe_browsing::mojom::ClientSideDetectionType GetClientSideDetectionMojomType(
       return safe_browsing::mojom::ClientSideDetectionType::kVibrationApi;
     case safe_browsing::ClientSideDetectionType::FULLSCREEN_API:
       return safe_browsing::mojom::ClientSideDetectionType::kFullscreen;
+    case safe_browsing::ClientSideDetectionType::CLIPBOARD_COPY_API:
+      return safe_browsing::mojom::ClientSideDetectionType::kClipboardCopyApi;
     case safe_browsing::ClientSideDetectionType::
         CLIENT_SIDE_DETECTION_TYPE_UNSPECIFIED:
     default:
@@ -496,6 +500,12 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
             "SBClientPhishing.MatchCSDAllowlistOnFullscreenApi",
             match_allowlist);
       }
+      if (phishing_detection_request_type_ ==
+          ClientSideDetectionType::CLIPBOARD_COPY_API) {
+        base::UmaHistogramBoolean(
+            "SBClientPhishing.MatchCSDAllowlistOnClipboardCopyApi",
+            match_allowlist);
+      }
       // This check is also for logging purposes although the CSD allowlist
       // could be matched or not checked at all. Once it completes,
       // preclassification check will continue.
@@ -557,11 +567,14 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
     }
 
     if (phishing_detection_request_type_ ==
-        ClientSideDetectionType::FULLSCREEN_API) {
-      // The purpose of triggering preclassification for fullscreen API to have
+            ClientSideDetectionType::FULLSCREEN_API ||
+        (phishing_detection_request_type_ ==
+             ClientSideDetectionType::CLIPBOARD_COPY_API &&
+         !base::FeatureList::IsEnabled(kClientSideDetectionClipboardCopyApi))) {
+      // The purpose of triggering preclassification for these APIs is to have
       // an initial assessment on how often we'll be hitting the allowlist and
-      // triggering the classification. We will not go further than checking for
-      // this metric for now.
+      // triggering the classification. We will not go further than checking
+      // for this metric, unless otherwise specified by feature flags.
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_ALLOWLIST_METRIC);
     }
@@ -579,7 +592,7 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
           /*is_from_cache=*/true, ClientSideDetectionType::TRIGGER_MODELS,
           did_match_high_confidence_allowlist_, url_, is_phishing,
           /*response_code=*/std::nullopt,
-          /*IntelligentScanVerdict=*/std::nullopt);
+          /*intelligent_scan_verdict=*/std::nullopt);
       DontClassifyForPhishing(
           PreClassificationCheckResult::NO_CLASSIFY_RESULT_FROM_CACHE);
     }
@@ -639,6 +652,11 @@ class ClientSideDetectionHost::ShouldClassifyUrlRequest {
       case ClientSideDetectionType::TRIGGER_MODELS:
         return base::RandDouble() <=
                probability_for_accepting_hc_allowlist_trigger_;
+      case ClientSideDetectionType::CLIPBOARD_COPY_API:
+        return base::FeatureList::IsEnabled(
+                   kClientSideDetectionClipboardCopyApi) &&
+               (base::RandDouble() <
+                kCSDClipboardCopyApiHCAcceptanceRate.Get());
       default:
         return false;
     }
@@ -903,6 +921,19 @@ void ClientSideDetectionHost::DidToggleFullscreenModeForTab(
   if (!HasDonePreclassificationCheckOnSameURL(
           ClientSideDetectionType::FULLSCREEN_API)) {
     MaybeStartPreClassification(ClientSideDetectionType::FULLSCREEN_API);
+  }
+}
+
+void ClientSideDetectionHost::OnTextCopiedToClipboard(
+    content::RenderFrameHost* render_frame_host,
+    const std::u16string& copied_text) {
+  if (!IsEnhancedProtectionEnabled(*delegate_->GetPrefs())) {
+    return;
+  }
+
+  if (!HasDonePreclassificationCheckOnSameURL(
+          ClientSideDetectionType::CLIPBOARD_COPY_API)) {
+    MaybeStartPreClassification(ClientSideDetectionType::CLIPBOARD_COPY_API);
   }
 }
 
