@@ -32,7 +32,7 @@ using SessionType = IwaCacheClient::SessionType;
 
 bool IsIwaBundleCacheEnabledInCurrentSession() {
   return IsIwaBundleCacheFeatureEnabled() &&
-         (chromeos::IsManagedGuestSession() || chromeos::IsKioskSession());
+         (chromeos::IsManagedGuestSession() || chromeos::IsIwaKioskSession());
 }
 
 bool IsIwaBundleCacheFeatureEnabled() {

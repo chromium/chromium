@@ -4,7 +4,11 @@
 
 #include "components/user_manager/test_helper.h"
 
+#include <cstddef>
+#include <optional>
+
 #include "base/check_deref.h"
+#include "base/notreached.h"
 #include "chromeos/ash/components/cryptohome/cryptohome_parameters.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/policy/device_local_account/device_local_account_type.h"
@@ -32,6 +36,31 @@ void RegisterPersistedUserInternal(PrefService& local_state,
   {
     KnownUser known_user(&local_state);
     known_user.UpdateId(account_id);
+  }
+}
+
+bool IsUserIdMatchingKioskType(std::string_view user_id,
+                               const UserType& expected_kiosk_type) {
+  auto type_by_user_id = policy::GetDeviceLocalAccountType(user_id);
+  if (!type_by_user_id.has_value()) {
+    return false;
+  }
+
+  switch (expected_kiosk_type) {
+    case UserType::kRegular:
+    case UserType::kChild:
+    case UserType::kGuest:
+    case UserType::kPublicAccount:
+      NOTREACHED() << "Provided UserType is not kiosk: " << expected_kiosk_type;
+    case UserType::kKioskChromeApp:
+      return policy::DeviceLocalAccountType::kKioskApp == type_by_user_id;
+    case UserType::kKioskWebApp:
+      return policy::DeviceLocalAccountType::kWebKioskApp == type_by_user_id;
+    case UserType::kKioskIWA:
+      return policy::DeviceLocalAccountType::kKioskIsolatedWebApp ==
+             type_by_user_id;
+    case UserType::kKioskArcvmApp:
+      return policy::DeviceLocalAccountType::kArcvmKioskApp == type_by_user_id;
   }
 }
 
@@ -133,29 +162,15 @@ User* TestHelper::AddUserInternal(const AccountId& account_id,
 }
 
 User* TestHelper::AddKioskChromeAppUser(std::string_view user_id) {
-  // Quick check that the `user_id` satisfies kiosk-app type.
-  auto type = policy::GetDeviceLocalAccountType(user_id);
-  if (type != policy::DeviceLocalAccountType::kKioskApp) {
-    LOG(ERROR) << "user_id (" << user_id << ") did not satisfy to be used for "
-               << "a kiosk chrome app user. See "
-                  "policy::GetDeviceLocalAccountType for details.";
-    return nullptr;
-  }
-
-  return AddDeviceLocalAccountUserInternal(user_id, UserType::kKioskChromeApp);
+  return AddKioskUser(user_id, UserType::kKioskChromeApp);
 }
 
 User* TestHelper::AddKioskWebAppUser(std::string_view user_id) {
-  // Quick check that the `user_id` satisfies web-kiosk-app type.
-  auto type = policy::GetDeviceLocalAccountType(user_id);
-  if (type != policy::DeviceLocalAccountType::kWebKioskApp) {
-    LOG(ERROR) << "user_id (" << user_id << ") did not satisfy to be used for "
-               << "a kiosk web app user. See policy::GetDeviceLocalAccountType "
-                  "for details.";
-    return nullptr;
-  }
+  return AddKioskUser(user_id, UserType::kKioskWebApp);
+}
 
-  return AddDeviceLocalAccountUserInternal(user_id, UserType::kKioskWebApp);
+User* TestHelper::AddKioskIwaUser(std::string_view user_id) {
+  return AddKioskUser(user_id, UserType::kKioskIWA);
 }
 
 User* TestHelper::AddPublicAccountUser(std::string_view user_id) {
@@ -196,6 +211,16 @@ User* TestHelper::AddDeviceLocalAccountUserInternal(std::string_view user_id,
   device_local_accounts.emplace_back(std::string(user_id), user_type);
   user_manager_->UpdateDeviceLocalAccountUser(device_local_accounts);
   return user_manager_->FindUserAndModify(AccountId::FromUserEmail(user_id));
+}
+
+User* TestHelper::AddKioskUser(std::string_view user_id, UserType kiosk_type) {
+  if (!IsUserIdMatchingKioskType(user_id, kiosk_type)) {
+    LOG(ERROR) << "user_id (" << user_id << ") did not satisfy to be used for "
+               << "a kiosk with specified type: " << kiosk_type
+               << ". See policy::GetDeviceLocalAccountType for details.";
+    return nullptr;
+  }
+  return AddDeviceLocalAccountUserInternal(user_id, kiosk_type);
 }
 
 }  // namespace user_manager

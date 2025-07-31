@@ -13,6 +13,9 @@ extern bool IsKioskSession();
 // Returns true if a web app (PWA) kiosk is currently running.
 extern bool IsWebKioskSession();
 
+// Returns true if a Isolated Web App (IWA) kiosk is currently running.
+extern bool IsIwaKioskSession();
+
 }  // namespace chromeos
 
 #endif  // CHROMEOS_COMPONENTS_KIOSK_KIOSK_UTILS_H_

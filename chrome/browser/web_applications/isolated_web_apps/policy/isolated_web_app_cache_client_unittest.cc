@@ -32,9 +32,15 @@
 
 namespace web_app {
 
-using SessionType = IwaCacheClient::SessionType;
+enum class SessionType {
+  kManagedGuestSession = 0,
+  kIwaKiosk = 1,
+  kWebKiosk = 2,
+  kChromeAppKiosk = 3,
+  kUserSession = 4,
+};
 
-// TODO(crbug.com/416006853): refactor tests to cover static functions.
+// TODO(crbug.com/416006853): refactor tests to cover all static functions.
 class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
  public:
   IwaCacheClientTest() = default;
@@ -47,37 +53,67 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
         std::make_unique<user_manager::FakeUserManager>(local_state_.Get()));
 
     switch (GetSessionType()) {
-      case SessionType::kKiosk:
+      case SessionType::kIwaKiosk:
+        chromeos::SetUpFakeIwaKioskSession();
+        break;
+      case SessionType::kWebKiosk:
+        chromeos::SetUpFakeWebKioskSession();
+        break;
+      case SessionType::kChromeAppKiosk:
         chromeos::SetUpFakeKioskSession();
         break;
       case SessionType::kManagedGuestSession:
         test_managed_guest_session_ = std::make_unique<
             profiles::testing::ScopedTestManagedGuestSession>();
         break;
+      case SessionType::kUserSession:
+        // Do not setup regular user session.
+        break;
     }
-
-    ASSERT_TRUE(cache_root_dir_.CreateUniqueTempDir());
-    cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
-        ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_.GetPath());
   }
-
-  const base::FilePath& CacheRootPath() { return cache_root_dir_.GetPath(); }
 
   SessionType GetSessionType() { return GetParam(); }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_{
-      features::kIsolatedWebAppBundleCache};
   ScopedTestingLocalState local_state_{TestingBrowserProcess::GetGlobal()};
-  base::test::TaskEnvironment task_environment_{
-      base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   user_manager::ScopedUserManager user_manager_;
-  base::ScopedTempDir cache_root_dir_;
-  std::unique_ptr<base::ScopedPathOverride> cache_root_dir_override_;
 
   // This is set only for MGS session.
   std::unique_ptr<profiles::testing::ScopedTestManagedGuestSession>
       test_managed_guest_session_;
 };
+
+TEST_P(IwaCacheClientTest, CachingIsEnabledByDefault) {
+  EXPECT_TRUE(IsIwaBundleCacheFeatureEnabled());
+}
+
+TEST_P(IwaCacheClientTest, DisableExperiment) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      features::kIsolatedWebAppBundleCache);
+
+  EXPECT_FALSE(IsIwaBundleCacheFeatureEnabled());
+  EXPECT_FALSE(IsIwaBundleCacheEnabledInCurrentSession());
+}
+
+TEST_P(IwaCacheClientTest, CachingIsEnabledForSpecificSession) {
+  EXPECT_TRUE(IsIwaBundleCacheFeatureEnabled());
+
+  if (GetSessionType() == SessionType::kManagedGuestSession ||
+      GetSessionType() == SessionType::kIwaKiosk) {
+    EXPECT_TRUE(IsIwaBundleCacheEnabledInCurrentSession());
+  } else {
+    EXPECT_FALSE(IsIwaBundleCacheEnabledInCurrentSession());
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    IwaCacheClientTest,
+    testing::Values(SessionType::kManagedGuestSession,
+                    SessionType::kIwaKiosk,
+                    SessionType::kWebKiosk,
+                    SessionType::kChromeAppKiosk,
+                    SessionType::kUserSession));
 
 }  // namespace web_app
