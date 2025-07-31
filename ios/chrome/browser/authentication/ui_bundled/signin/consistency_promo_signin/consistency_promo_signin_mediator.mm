@@ -108,11 +108,9 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
         std::make_unique<AuthenticationServiceObserverBridge>(
             authenticationService, self);
     _addedGaiaIDs = [[NSMutableSet alloc] init];
-    if (!base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
-      _identityManagerObserverBridge =
-          std::make_unique<signin::IdentityManagerObserverBridge>(
-              _identityManager, self);
-    }
+    _identityManagerObserverBridge =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
 
     _initializedWithDefaultAccount =
         signin::GetDefaultIdentityOnDevice(_identityManager,
@@ -349,31 +347,28 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
 
 - (void)onPrimaryAccountChanged:
     (const signin::PrimaryAccountChangeEvent&)event {
-  CHECK(!base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError));
-  switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
-    case signin::PrimaryAccountChangeEvent::Type::kSet: {
-      // Since sign-in UI blocks all other Chrome screens until it is dismissed
-      // an account change event must come from the consistency sheet.
-      // TODO(crbug.com/40691525): Update if sign-in UI becomes non-blocking.
-      CHECK(_signingIdentity, base::NotFatalUntil::M141);
-      id<SystemIdentity> signedInIdentity =
-          _authenticationService->GetPrimaryIdentity(
-              signin::ConsentLevel::kSignin);
-      DCHECK([signedInIdentity isEqual:_signingIdentity]);
-      break;
-    }
-    case signin::PrimaryAccountChangeEvent::Type::kCleared:
-      // Sign out can be triggered from `onAccountsInCookieUpdated:error:`,
-      // if there is cookie fetch error.
-      return;
-    case signin::PrimaryAccountChangeEvent::Type::kNone:
-      return;
+  if (_authenticationFlow) {
+    // If the authentication is in progress, its callback will deal with
+    // dismissing the view.
+    return;
+  }
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user is signed-in, no more sign-in is needed.
+    // This can occur if, in another scene, the user is in a managed profile,
+    // and switch to a personal account P. Indeed, in this scenario, the other
+    // scene switch to the personal profile, which is the one used in this
+    // mediator, and sign-in the account P in this profile. Since the current
+    // profile will be signed-in, the sign-in view should be dismissed.
+    [self.delegate consistencyPromoSigninMediatorSignInIsImpossible:self];
   }
 }
 
 - (void)onAccountsInCookieUpdated:
             (const signin::AccountsInCookieJarInfo&)accountsInCookieJarInfo
                             error:(const GoogleServiceAuthError&)error {
+  if (base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError)) {
+    return;
+  }
   CHECK(!base::FeatureList::IsEnabled(switches::kEnableIdentityInAuthError));
   if (_authenticationFlow ||
       _accessPoint != signin_metrics::AccessPoint::kWebSignin) {
@@ -416,7 +411,7 @@ constexpr base::TimeDelta kSigninTimeout = base::Seconds(10);
   if (!_authenticationService->SigninEnabled()) {
     // Signin is now disabled, so the consistency default account must be
     // stopped.
-    [self.delegate consistencyPromoSigninMediatorSignInDisabled:self];
+    [self.delegate consistencyPromoSigninMediatorSignInIsImpossible:self];
   }
 }
 

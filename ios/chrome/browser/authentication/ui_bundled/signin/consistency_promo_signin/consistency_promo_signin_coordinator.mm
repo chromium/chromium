@@ -574,7 +574,7 @@
                    completionIdentity:completionIdentity];
 }
 
-- (void)consistencyPromoSigninMediatorSignInDisabled:
+- (void)consistencyPromoSigninMediatorSignInIsImpossible:
     (ConsistencyPromoSigninMediator*)mediator {
   CHECK_EQ(self.consistencyPromoSigninMediator, mediator,
            base::NotFatalUntil::M143);

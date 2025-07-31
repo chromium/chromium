@@ -62,8 +62,12 @@ typedef NS_ENUM(NSInteger, ConsistencyPromoSigninMediatorError) {
             (ConsistencyPromoSigninMediator*)mediator
                                     withIdentity:(id<SystemIdentity>)identity;
 
-// Called if the sign-in is disabled.
-- (void)consistencyPromoSigninMediatorSignInDisabled:
+// Called if it became impossible to sign-in through the consistency promo.
+// Either sign-in is disabled or the user is already signed-in.
+// This can occur because, during a sign-in, only the scenes of the current
+// profile are blocked. Other profiles can still be used to either switch to a
+// personal account or disable sign-in.
+- (void)consistencyPromoSigninMediatorSignInIsImpossible:
     (ConsistencyPromoSigninMediator*)mediator;
 
 // Called if the sign-in is cancelled.
