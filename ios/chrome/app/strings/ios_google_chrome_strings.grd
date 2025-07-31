@@ -1,4 +1,4 @@
-<?xml version='1.0' encoding='UTF-8'?>
+<?xml version='1.0' encoding='utf-8'?>
 <grit base_dir="." latest_public_release="0" current_release="1" source_lang_id="en" enc_check="möl">
   <!--
   This file contains definition of resources that will be translated for each
@@ -338,6 +338,9 @@ Try waiting a few minutes before switching accounts. If you switch accounts now,
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_APP_SETTINGS" desc="Text in the default browser video the app settings. [iOS only]">
         Chrome settings
+      </message>
+      <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_APPS_SUBTITLE_TEXT" desc="Subtitle for the default browser video promo. 'Default Apps' must use the same translation that iOS uses for the 'Default Apps' item in the iOS settings. [iOS only]">
+        Open Default Apps settings in iOS, then tap on "Browser App" and select Chrome.
       </message>
       <message name="IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT" desc="Subtitle for the default browser video promo. [iOS only]">
         Open Chrome settings in iOS, then tap on "Default Browser App" and select Chrome.
