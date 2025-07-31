@@ -11,11 +11,10 @@ bool StructTraits<
     cc::mojom::LayerSelectionBoundDataView,
     cc::LayerSelectionBound>::Read(cc::mojom::LayerSelectionBoundDataView data,
                                    cc::LayerSelectionBound* out) {
-  if (!data.ReadEdgeStart(&out->edge_start) ||
+  if (!data.ReadType(&out->type) || !data.ReadEdgeStart(&out->edge_start) ||
       !data.ReadEdgeEnd(&out->edge_end)) {
     return false;
   }
-  out->type = MojoSelectionBoundTypeToGfx(data.type());
   out->layer_id = data.layer_id();
   out->hidden = data.hidden();
   return true;

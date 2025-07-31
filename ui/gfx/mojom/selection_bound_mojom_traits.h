@@ -12,48 +12,52 @@
 
 namespace mojo {
 
-namespace {
-
-gfx::mojom::SelectionBoundType GfxSelectionBoundTypeToMojo(
-    gfx::SelectionBound::Type type) {
-  switch (type) {
-    case gfx::SelectionBound::LEFT:
-      return gfx::mojom::SelectionBoundType::LEFT;
-    case gfx::SelectionBound::RIGHT:
-      return gfx::mojom::SelectionBoundType::RIGHT;
-    case gfx::SelectionBound::CENTER:
-      return gfx::mojom::SelectionBoundType::CENTER;
-    case gfx::SelectionBound::HIDDEN:
-      return gfx::mojom::SelectionBoundType::HIDDEN;
-    case gfx::SelectionBound::EMPTY:
-      return gfx::mojom::SelectionBoundType::EMPTY;
+template <>
+struct EnumTraits<gfx::mojom::SelectionBoundType, gfx::SelectionBound::Type> {
+  static gfx::mojom::SelectionBoundType ToMojom(
+      gfx::SelectionBound::Type input) {
+    switch (input) {
+      case gfx::SelectionBound::LEFT:
+        return gfx::mojom::SelectionBoundType::LEFT;
+      case gfx::SelectionBound::RIGHT:
+        return gfx::mojom::SelectionBoundType::RIGHT;
+      case gfx::SelectionBound::CENTER:
+        return gfx::mojom::SelectionBoundType::CENTER;
+      case gfx::SelectionBound::HIDDEN:
+        return gfx::mojom::SelectionBoundType::HIDDEN;
+      case gfx::SelectionBound::EMPTY:
+        return gfx::mojom::SelectionBoundType::EMPTY;
+    }
+    NOTREACHED();
   }
-  NOTREACHED();
-}
 
-gfx::SelectionBound::Type MojoSelectionBoundTypeToGfx(
-    gfx::mojom::SelectionBoundType type) {
-  switch (type) {
-    case gfx::mojom::SelectionBoundType::LEFT:
-      return gfx::SelectionBound::LEFT;
-    case gfx::mojom::SelectionBoundType::RIGHT:
-      return gfx::SelectionBound::RIGHT;
-    case gfx::mojom::SelectionBoundType::CENTER:
-      return gfx::SelectionBound::CENTER;
-    case gfx::mojom::SelectionBoundType::HIDDEN:
-      return gfx::SelectionBound::HIDDEN;
-    case gfx::mojom::SelectionBoundType::EMPTY:
-      return gfx::SelectionBound::EMPTY;
+  static bool FromMojom(gfx::mojom::SelectionBoundType input,
+                        gfx::SelectionBound::Type* out) {
+    switch (input) {
+      case gfx::mojom::SelectionBoundType::LEFT:
+        *out = gfx::SelectionBound::LEFT;
+        return true;
+      case gfx::mojom::SelectionBoundType::RIGHT:
+        *out = gfx::SelectionBound::RIGHT;
+        return true;
+      case gfx::mojom::SelectionBoundType::CENTER:
+        *out = gfx::SelectionBound::CENTER;
+        return true;
+      case gfx::mojom::SelectionBoundType::HIDDEN:
+        *out = gfx::SelectionBound::HIDDEN;
+        return true;
+      case gfx::mojom::SelectionBoundType::EMPTY:
+        *out = gfx::SelectionBound::EMPTY;
+        return true;
+    }
+    NOTREACHED();
   }
-  NOTREACHED();
-}
-
-}
+};
 
 template <>
 struct StructTraits<gfx::mojom::SelectionBoundDataView, gfx::SelectionBound> {
-  static gfx::mojom::SelectionBoundType type(const gfx::SelectionBound& input) {
-    return GfxSelectionBoundTypeToMojo(input.type());
+  static gfx::SelectionBound::Type type(const gfx::SelectionBound& input) {
+    return input.type();
   }
 
   static gfx::PointF edge_start(const gfx::SelectionBound& input) {
@@ -78,17 +82,20 @@ struct StructTraits<gfx::mojom::SelectionBoundDataView, gfx::SelectionBound> {
 
   static bool Read(gfx::mojom::SelectionBoundDataView data,
                    gfx::SelectionBound* out) {
+    gfx::SelectionBound::Type type;
     gfx::PointF edge_start;
     gfx::PointF edge_end;
     gfx::PointF visible_edge_start;
     gfx::PointF visible_edge_end;
-    if (!data.ReadEdgeStart(&edge_start) || !data.ReadEdgeEnd(&edge_end) ||
+    if (!data.ReadType(&type) || !data.ReadEdgeStart(&edge_start) ||
+        !data.ReadEdgeEnd(&edge_end) ||
         !data.ReadVisibleEdgeStart(&visible_edge_start) ||
-        !data.ReadVisibleEdgeEnd(&visible_edge_end))
+        !data.ReadVisibleEdgeEnd(&visible_edge_end)) {
       return false;
+    }
     out->SetEdge(edge_start, edge_end);
     out->SetVisibleEdge(visible_edge_start, visible_edge_end);
-    out->set_type(MojoSelectionBoundTypeToGfx(data.type()));
+    out->set_type(type);
     out->set_visible(data.visible());
     return true;
   }

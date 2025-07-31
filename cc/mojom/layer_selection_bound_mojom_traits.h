@@ -15,9 +15,8 @@ namespace mojo {
 template <>
 struct StructTraits<cc::mojom::LayerSelectionBoundDataView,
                     cc::LayerSelectionBound> {
-  static gfx::mojom::SelectionBoundType type(
-      const cc::LayerSelectionBound& bound) {
-    return GfxSelectionBoundTypeToMojo(bound.type);
+  static gfx::SelectionBound::Type type(const cc::LayerSelectionBound& bound) {
+    return bound.type;
   }
 
   static const gfx::Point& edge_start(const cc::LayerSelectionBound& bound) {

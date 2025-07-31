@@ -155,6 +155,10 @@ mojom("mojom") {
           mojom = "gfx.mojom.SelectionBound"
           cpp = "::gfx::SelectionBound"
         },
+        {
+          mojom = "gfx.mojom.SelectionBoundType"
+          cpp = "::gfx::SelectionBound::Type"
+        },
       ]
       traits_headers = [ "selection_bound_mojom_traits.h" ]
       traits_public_deps = [ "//ui/gfx/geometry/mojom:mojom_traits" ]
