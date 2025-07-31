@@ -359,6 +359,41 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     explicit LoaderHolder(network::mojom::URLLoaderClient* receiver);
     ~LoaderHolder();
 
+    // Right now, `State` is used only for `DUMP_WILL_BE_CHECK()`ing and the
+    // other underlying members (e.g. `url_loader_`) should be used to check
+    // state-dependent conditions.
+    // TODO(https://crbug.com/434182226): Once the `DUMP_WILL_BE_CHECK()`s stick
+    // and are turned into `CHECK()`s, `State` must match with `url_loader_`
+    // etc. and thus should be used also for non-CHECK purposes.
+    enum class State {
+      // Neither of the loader or receiver is active right now.
+      // This can be a transient state when processing a redirect (after
+      // resetting the previous redirect leg and just before starting the next
+      // leg).
+      kNone,
+
+      // The loading is ongoing and the `NavigationURLLoaderImpl`'s
+      // `URLLoaderClient` methods are called via `url_loader_` (the primary
+      // cases).
+      // The `URLLoaderClient` methods are called directly (synchronously) by
+      // `blink::ThrottlingURLLoader`.
+      kLoadingViaLoader,
+
+      // The loading is ongoing and the `NavigationURLLoaderImpl`'s
+      // `URLLoaderClient` methods are called via
+      // `response_loader_receiver_` (for `MaybeCreateLoaderForResponse()`).
+      // The `URLLoaderClient` methods are called via mojo.
+      kLoadingViaReceiver,
+
+      // All loading via `NavigationURLLoaderImpl` is done and further
+      // operation on `LoaderHolder` or calls to `NavigationURLLoaderImpl`'s
+      // `URLLoaderClient` methods shouldn't be made, except for some operations
+      // directly through `url_loader()`.
+      kUnbound,
+    };
+
+    State state() const { return state_; }
+
     blink::ThrottlingURLLoader* url_loader() const { return url_loader_.get(); }
     mojo::PendingRemote<network::mojom::URLLoader>* response_url_loader() {
       return &response_url_loader_;
@@ -366,6 +401,7 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
     // Cancel the current loading, if any.
     // Any associated pending operations should be cancelled.
+    // Transitions to `State::kNone`.
     //
     // Note: The "exclusive tasks" (see `ExclusiveTaskState` below) can't be
     // gracefully cancelled here and thus `Reset()` should be called only when
@@ -384,17 +420,20 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // For starting loading via `url_loader` (transitioning from `kNone` to
     // `kLoadingViaLoader`). THe caller should actually start the loading by
     // calling `url_loader->Start()`.
+    // Transitions to `State::kLoadingViaLoader`.
     void SetLoader(std::unique_ptr<blink::ThrottlingURLLoader> url_loader);
 
     // Switches to loading via `pending_receiver` (transitioning from
     // `kLoadingViaLoader` to `kLoadingViaReceiver`). The caller might already
     // call `url_loader()->Unbind()` etc.
+    // Transitions to `State::kLoadingViaReceiver`.
     void BindReceiver(
         mojo::PendingReceiver<network::mojom::URLLoaderClient> pending_receiver,
         scoped_refptr<base::SequencedTaskRunner> task_runner);
 
     // Unbind the endpoints from ``NavigationURLLoaderImpl`` to
     // `URLLoaderClientEndpointsPtr` (transitioning to `kUnbound`).
+    // Transitions to `State::kUnbound`.
     [[nodiscard]] network::mojom::URLLoaderClientEndpointsPtr Unbind();
 
     // Redirect handling: the expected sequence is:
@@ -453,9 +492,13 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
    private:
     void ResetInternal();
+    void CheckState() const;
+
+    State state_ = State::kNone;
 
     // `NavigationURLLoaderImpl`'s `URLLoaderClient` methods are called either
     // via `url_loader_` or `response_loader_receiver_`.
+    // See also the comment at `State` above for details.
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
     mojo::Receiver<network::mojom::URLLoaderClient> response_loader_receiver_;
 

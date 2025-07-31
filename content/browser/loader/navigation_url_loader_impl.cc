@@ -866,9 +866,14 @@ NavigationURLLoaderImpl::LoaderHolder::LoaderHolder(
 NavigationURLLoaderImpl::LoaderHolder::~LoaderHolder() = default;
 
 void NavigationURLLoaderImpl::LoaderHolder::ResetInternal() {
+  CheckState();
+
   response_loader_receiver_.reset();
   url_loader_.reset();
   modified_headers_on_redirect_.reset();
+
+  state_ = State::kNone;
+  CheckState();
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::Reset() {
@@ -980,29 +985,71 @@ void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
   // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
   DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
+  DUMP_WILL_BE_CHECK_EQ(state_, State::kLoadingViaLoader);
+  CheckState();
+
   response_loader_receiver_.reset();
   response_loader_receiver_.Bind(std::move(pending_receiver),
                                  std::move(task_runner));
   url_loader_.reset();
+
+  state_ = State::kLoadingViaReceiver;
+  CheckState();
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::SetLoader(
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader) {
   // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
   DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
+  DUMP_WILL_BE_CHECK_EQ(state_, State::kNone);
+  CheckState();
+
   url_loader_ = std::move(url_loader);
+
+  state_ = State::kLoadingViaLoader;
+  CheckState();
 }
 
 network::mojom::URLLoaderClientEndpointsPtr
 NavigationURLLoaderImpl::LoaderHolder::Unbind() {
+  CheckState();
+
   if (url_loader_) {
+    // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+    DUMP_WILL_BE_CHECK_EQ(state_, State::kLoadingViaLoader);
+    state_ = State::kUnbound;
     // Even after this point `url_loader_` should be alive and accessed via
     // `url_loader()`.
     // TODO(https://crbug.com/40251638): Clean up this behavior if needed.
     return url_loader_->Unbind();
   } else {
+    // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+    DUMP_WILL_BE_CHECK_EQ(state_, State::kLoadingViaReceiver);
+    state_ = State::kUnbound;
     return network::mojom::URLLoaderClientEndpoints::New(
         std::move(response_url_loader_), response_loader_receiver_.Unbind());
+  }
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::CheckState() const {
+  // TODO(https://crbug.com/434182226): Turn `DUMP_WILL_BE_CHECK()`s to
+  // `CHECK()`.
+  switch (state_) {
+    case State::kNone:
+      DUMP_WILL_BE_CHECK(!response_loader_receiver_.is_bound());
+      DUMP_WILL_BE_CHECK(!url_loader_);
+      break;
+    case State::kLoadingViaLoader:
+      DUMP_WILL_BE_CHECK(!response_loader_receiver_.is_bound());
+      DUMP_WILL_BE_CHECK(url_loader_);
+      break;
+    case State::kLoadingViaReceiver:
+      DUMP_WILL_BE_CHECK(response_loader_receiver_.is_bound());
+      DUMP_WILL_BE_CHECK(!url_loader_);
+      break;
+    case State::kUnbound:
+      // `LoaderHolder` shouldn't be touched after `Unbind()`.
+      DUMP_WILL_BE_NOTREACHED();
   }
 }
 
@@ -1066,9 +1113,17 @@ void NavigationURLLoaderImpl::StartNonInterceptedRequest(
   // so let the loader just follow the redirect.
   if (loader_holder_.url_loader()) {
     DCHECK(!redirect_info_.new_url.is_empty());
+    // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+    DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(),
+                          LoaderHolder::State::kLoadingViaLoader);
     loader_holder_.FollowRedirect();
     return;
   }
+
+  // The previous loader should be already reset at
+  // `NavigationURLLoaderImpl::Restart()` and we start a new loader below.
+  // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+  DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(), LoaderHolder::State::kNone);
 
   head_update_params_ = std::move(head_update_params);
   scoped_refptr<network::SharedURLLoaderFactory> factory;
@@ -1232,6 +1287,8 @@ void NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart(
       "navigation", "NavigationURLLoaderImpl::CreateThrottlingLoaderAndStart",
       TRACE_ID_LOCAL(this),
       TRACE_EVENT_FLAG_FLOW_IN | TRACE_EVENT_FLAG_FLOW_OUT);
+  // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+  DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(), LoaderHolder::State::kNone);
   CHECK(!loader_holder_.url_loader());
 
   std::vector<std::unique_ptr<blink::URLLoaderThrottle>> throttles =
@@ -1480,12 +1537,18 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
   }
   if (error != net::OK) {
     if (loader_holder_.url_loader()) {
+      // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+      DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(),
+                            LoaderHolder::State::kLoadingViaLoader);
       // Call CancelWithError instead of OnComplete so that if there is an
       // intercepting URLLoaderFactory (created through the embedder's
       // ContentBrowserClient::WillCreateURLLoaderFactory) it gets notified.
       loader_holder_.url_loader()->CancelWithError(
           error, std::string_view(base::NumberToString(error)));
     } else {
+      // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+      DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(),
+                            LoaderHolder::State::kLoadingViaReceiver);
       // TODO(crbug.com/40118809): Make sure ResetWithReason() is called
       // on the original `url_loader_`.
       OnComplete(network::URLLoaderCompletionStatus(error));
@@ -1737,6 +1800,18 @@ bool NavigationURLLoaderImpl::MaybeCreateLoaderForResponse(
     mojo::PendingReceiver<network::mojom::URLLoaderClient>
         response_client_receiver;
     bool skip_other_interceptors = false;
+    // The `MaybeCreateLoaderForResponse()` call here seems to have been
+    // implicitly assuming the url_loader is non-null since before, because
+    // `SignedExchangeRequestHandler::MaybeCreateLoaderForResponse()` requires a
+    // non-null url_loader. This should hold because:
+    // - `MaybeCreateLoaderForResponse()` is called from the URLLoaderClient
+    //   override methods, so the loading is ongoing.
+    // - `default_loader_used_` is true here, so the state can't be
+    //   `kLoadingViaReceiver` and thus it should be `kLoadingViaLoader`.
+    // TODO(https://crbug.com/434182226): Turn this to `CHECK()`.
+    DUMP_WILL_BE_CHECK_EQ(loader_holder_.state(),
+                          LoaderHolder::State::kLoadingViaLoader);
+
     if (interceptor->MaybeCreateLoaderForResponse(
             status, *resource_request_, response, &response_body_,
             loader_holder_.response_url_loader(), &response_client_receiver,
