@@ -164,7 +164,8 @@ base::span<const uint8_t> as_byte_span(const SkData& sk_data LIFETIME_BOUND) {
 }
 
 base::span<uint8_t> as_writable_byte_span(SkData& data LIFETIME_BOUND) {
-  CHECK(data.unique());
+  // An empty SkData may be shared.
+  CHECK(data.empty() || data.unique());
   // SAFETY: `data` is not null. `writable_data` and `size` come from the same
   // container.
   return UNSAFE_BUFFERS(
