@@ -124,27 +124,27 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   void DidUpdate() override {}
 
   void SetValueAtTime(float value,
-                      double time,
+                      double start_time,
                       ExceptionState& exception_state);
   void LinearRampToValueAtTime(float value,
-                               double time,
+                               double end_time,
                                float initial_value,
                                double call_time,
                                ExceptionState& exception_state);
   void ExponentialRampToValueAtTime(float value,
-                                    double time,
+                                    double end_time,
                                     float initial_value,
                                     double call_time,
                                     ExceptionState& exception_state);
   void SetTargetAtTime(float target,
-                       double time,
+                       double start_time,
                        double time_constant,
                        ExceptionState& exception_state);
   void SetValueCurveAtTime(const Vector<float>& curve,
-                           double time,
+                           double start_time,
                            double duration,
                            ExceptionState& exception_state);
-  void CancelScheduledValues(double start_time,
+  void CancelScheduledValues(double cancel_time,
                              ExceptionState& exception_state);
   void CancelAndHoldAtTime(double cancel_time, ExceptionState& exception_state);
 

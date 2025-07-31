@@ -721,45 +721,46 @@ AudioParamHandler::ParamEvent::ParamEvent(
 }
 
 void AudioParamHandler::SetValueAtTime(float value,
-                                       double time,
+                                       double start_time,
                                        ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state)) {
+  if (!IsNonNegativeAudioParamTime(start_time, exception_state)) {
     return;
   }
 
   base::AutoLock locker(events_lock_);
-  InsertEvent(ParamEvent::CreateSetValueEvent(value, time), exception_state);
+  InsertEvent(ParamEvent::CreateSetValueEvent(value, start_time),
+              exception_state);
 }
 
 void AudioParamHandler::LinearRampToValueAtTime(
     float value,
-    double time,
+    double end_time,
     float initial_value,
     double call_time,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state)) {
+  if (!IsNonNegativeAudioParamTime(end_time, exception_state)) {
     return;
   }
 
   base::AutoLock locker(events_lock_);
-  InsertEvent(
-      ParamEvent::CreateLinearRampEvent(value, time, initial_value, call_time),
-      exception_state);
+  InsertEvent(ParamEvent::CreateLinearRampEvent(value, end_time, initial_value,
+                                                call_time),
+              exception_state);
 }
 
 void AudioParamHandler::ExponentialRampToValueAtTime(
     float value,
-    double time,
+    double end_time,
     float initial_value,
     double call_time,
     ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state)) {
+  if (!IsNonNegativeAudioParamTime(end_time, exception_state)) {
     return;
   }
 
@@ -773,18 +774,18 @@ void AudioParamHandler::ExponentialRampToValueAtTime(
   }
 
   base::AutoLock locker(events_lock_);
-  InsertEvent(ParamEvent::CreateExponentialRampEvent(value, time, initial_value,
-                                                     call_time),
+  InsertEvent(ParamEvent::CreateExponentialRampEvent(value, end_time,
+                                                     initial_value, call_time),
               exception_state);
 }
 
 void AudioParamHandler::SetTargetAtTime(float target,
-                                        double time,
+                                        double start_time,
                                         double time_constant,
                                         ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state) ||
+  if (!IsNonNegativeAudioParamTime(start_time, exception_state) ||
       !IsNonNegativeAudioParamTime(time_constant, exception_state,
                                    "Time constant")) {
     return;
@@ -795,20 +796,22 @@ void AudioParamHandler::SetTargetAtTime(float target,
   // If timeConstant = 0, we instantly jump to the target value, so
   // insert a SetValueEvent instead of SetTargetEvent.
   if (time_constant == 0) {
-    InsertEvent(ParamEvent::CreateSetValueEvent(target, time), exception_state);
-  } else {
-    InsertEvent(ParamEvent::CreateSetTargetEvent(target, time, time_constant),
+    InsertEvent(ParamEvent::CreateSetValueEvent(target, start_time),
                 exception_state);
+  } else {
+    InsertEvent(
+        ParamEvent::CreateSetTargetEvent(target, start_time, time_constant),
+        exception_state);
   }
 }
 
 void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
-                                            double time,
+                                            double start_time,
                                             double duration,
                                             ExceptionState& exception_state) {
   DCHECK(IsMainThread());
 
-  if (!IsNonNegativeAudioParamTime(time, exception_state) ||
+  if (!IsNonNegativeAudioParamTime(start_time, exception_state) ||
       !IsPositiveAudioParamTime(duration, exception_state, "Duration")) {
     return;
   }
@@ -822,9 +825,9 @@ void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
   }
 
   base::AutoLock locker(events_lock_);
-  bool result =
-      InsertEvent(ParamEvent::CreateSetValueCurveEvent(curve, time, duration),
-                  exception_state);
+  bool result = InsertEvent(
+      ParamEvent::CreateSetValueCurveEvent(curve, start_time, duration),
+      exception_state);
   // `InsertEvent` will have already thrown an exception for us if `result` is
   // false.
   if (!result) {
@@ -833,9 +836,9 @@ void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
   // Insert a setValueAtTime event too to establish an event so that all
   // following events will process from the end of the curve instead of the
   // beginning.
-  InsertEvent(
-      ParamEvent::CreateSetValueCurveEndEvent(curve.back(), time + duration),
-      exception_state);
+  InsertEvent(ParamEvent::CreateSetValueCurveEndEvent(curve.back(),
+                                                      start_time + duration),
+              exception_state);
 }
 
 bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
@@ -856,7 +859,7 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
 
   double insert_time = event->Time();
 
-  if (!events_.size() &&
+  if (events_.empty() &&
       (event->GetType() == ParamEvent::Type::kLinearRampToValue ||
        event->GetType() == ParamEvent::Type::kExponentialRampToValue)) {
     // There are no events preceding these ramps.  Insert a new
@@ -1360,7 +1363,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
 
     DCHECK(!std::isnan(value1));
     DCHECK(!std::isnan(value2));
-    DCHECK_GE(time2, time1);
+    CHECK_GE(time2, time1);
 
     // `fill_to_end_frame` is the exclusive upper bound of the last frame to be
     // computed for this event.  It's either the last desired frame
@@ -1386,7 +1389,7 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
     // Time should be monotonically forward. So `fill_to_frame` should be
     // greater than or equal to `write_index`. We have ensured that the time
     // does not overlap when inserting events.
-    DCHECK_GE(fill_to_frame, write_index);
+    CHECK_GE(fill_to_frame, write_index);
 
     const AutomationState current_state = {
         start_frame,  end_frame,     sample_rate,
