@@ -6,6 +6,8 @@ package org.chromium.chrome.browser.tasks.tab_management;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.CARD_TYPE;
+import static org.chromium.chrome.browser.tasks.tab_management.TabListModel.CardProperties.ModelType.TAB;
+import static org.chromium.chrome.browser.tasks.tab_management.TabProperties.TAB_ID;
 
 import android.app.Activity;
 import android.graphics.PointF;
@@ -64,6 +66,7 @@ import org.chromium.chrome.tab_ui.R;
 import org.chromium.ui.base.ViewUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.MVCListAdapter;
+import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
@@ -73,7 +76,10 @@ import org.chromium.ui.widget.ViewLookupCachingFrameLayout;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /** Coordinator for showing UI for a list of tabs. Can be used in GRID or STRIP modes. */
 @NullMarked
@@ -140,6 +146,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     private final ObservableSupplier<@Nullable TabGroupModelFilter> mTabGroupModelFilterSupplier;
     private final ObserverList<DragObserver> mDragObserverList = new ObserverList<>();
     private final TabListHighlighter mTabListHighlighter;
+    private final TabListMergeAnimationManager mTabListMergeAnimationManager;
 
     private boolean mIsInitialized;
     private @Nullable OnLayoutChangeListener mListLayoutListener;
@@ -451,7 +458,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                             parentView, mModelList, this::runOnItemAnimatorFinished);
         }
         mTabListHighlighter = new TabListHighlighter(mModelList);
-
+        mTabListMergeAnimationManager = new TabListMergeAnimationManager(mRecyclerView);
         configureRecyclerViewTouchHelpers();
     }
 
@@ -879,7 +886,7 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /**
-     * Inserts a special {@link MVCListAdapter.ListItem} at given index of the model list.
+     * Inserts a special {@link ListItem} at given index of the model list.
      *
      * @see TabListMediator#addSpecialItemToModel(int, int, PropertyModel).
      */
@@ -888,20 +895,20 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
     }
 
     /**
-     * Removes a special {@link MVCListAdapter.ListItem} that has the given {@code uiType} and/or
-     * its {@link PropertyModel} has the given {@code itemIdentifier}.
+     * Removes a special {@link ListItem} that has the given {@code uiType} and/or its {@link
+     * PropertyModel} has the given {@code itemIdentifier}.
      *
      * @param uiType The uiType to match.
      * @param itemIdentifier The itemIdentifier to match. This can be obsoleted if the {@link
-     *     org.chromium.ui.modelutil.MVCListAdapter.ListItem} does not need additional identifier.
+     *     ListItem} does not need additional identifier.
      */
     void removeSpecialListItem(@UiType int uiType, int itemIdentifier) {
         mMediator.removeSpecialItemFromModelList(uiType, itemIdentifier);
     }
 
     /**
-     * Removes a {@link MVCListAdapter.ListItem} that has the given {@code uiType} and the {@link
-     * PropertyModel} has the given {@link TabListEditorItemSelectionId}.
+     * Removes a {@link ListItem} that has the given {@code uiType} and the {@link PropertyModel}
+     * has the given {@link TabListEditorItemSelectionId}.
      *
      * @param uiType The uiType to match.
      * @param itemId The itemId to match.
@@ -922,13 +929,32 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
 
     // PriceWelcomeMessageService.PriceWelcomeMessageProvider implementation.
     @Override
-    public int getTabIndexFromTabId(int tabId) {
+    public int getTabIndexFromTabId(@TabId int tabId) {
         return mModelList.indexFromTabId(tabId);
     }
 
     @Override
     public void showPriceDropTooltip(int index) {
         mModelList.get(index).model.set(TabProperties.SHOULD_SHOW_PRICE_DROP_TOOLTIP, true);
+    }
+
+    /**
+     * Converts a list of tab IDs into a list of their corresponding indexes within the model list.
+     * Note that this method does not account for tabs in tab groups.
+     *
+     * @param tabIds A list of tab IDs to convert.
+     */
+    public List<Integer> getCardIndexesFromTabIds(List<@TabId Integer> tabIds) {
+        Set<@TabId Integer> tabIdSet = new HashSet<>(tabIds);
+        List<Integer> indexes = new ArrayList<>();
+        for (int i = 0; i < mModelList.size(); i++) {
+            PropertyModel model = mModelList.get(i).model;
+            if (model.get(CARD_TYPE) == TAB && tabIdSet.contains(model.get(TAB_ID))) {
+                indexes.add(i);
+            }
+        }
+        assert tabIds.size() == indexes.size();
+        return indexes;
     }
 
     int getIndexOfNthTabCard(int index) {
@@ -1038,6 +1064,25 @@ public class TabListCoordinator implements PriceWelcomeMessageProvider, DestroyO
                                 r.run();
                             }
                         });
+    }
+
+    /**
+     * Triggers an animation where a set of tabs merge into a single target tab.
+     *
+     * @param targetIndex The model index of the tab that other tabs will merge into.
+     * @param visibleTabIndexes The model indexes for all tabs that will be merged into the target
+     *     tab.
+     * @param onAnimationEnd Executed after the merge animation has finished.
+     */
+    public void triggerMergeAnimation(
+            int targetIndex, List<Integer> visibleTabIndexes, Runnable onAnimationEnd) {
+        Runnable wrappedOnAnimationEnd =
+                () -> {
+                    onAnimationEnd.run();
+                    configureRecyclerViewTouchHelpers();
+                };
+        mTabListMergeAnimationManager.playAnimation(
+                targetIndex, visibleTabIndexes, wrappedOnAnimationEnd);
     }
 
     /** Returns the coordinator that manages the overflow menu for tab group cards in the GTS. */

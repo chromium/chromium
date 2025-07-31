@@ -80,7 +80,8 @@ public class TabGroupSuggestionMessageServiceUnitTest {
                         new TabGroupSuggestionMessageService(
                                 mContext,
                                 tabGroupModelFilterSupplier,
-                                mAddOnMessageAfterTabCallback));
+                                mAddOnMessageAfterTabCallback,
+                                (a, b, c) -> c.run()));
 
         when(mContext.getString(R.string.tab_group_suggestion_message, 2))
                 .thenReturn("Group 2 tabs?");

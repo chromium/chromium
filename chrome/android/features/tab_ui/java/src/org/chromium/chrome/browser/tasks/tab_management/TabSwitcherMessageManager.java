@@ -358,7 +358,8 @@ public class TabSwitcherMessageManager {
                         new TabGroupSuggestionMessageService(
                                 mActivity,
                                 mCurrentTabGroupModelFilterSupplier,
-                                this::addTabGroupSuggestionMessage);
+                                this::addTabGroupSuggestionMessage,
+                                this::translateStartMergeAnimation);
                 mMessageCardProviderCoordinator.subscribeMessageService(
                         mTabGroupSuggestionMessageService);
             }
@@ -371,6 +372,24 @@ public class TabSwitcherMessageManager {
                         mPriceWelcomeMessageReviewActionProviderSupplier,
                         mProfile,
                         mTabListCoordinatorSupplier);
+    }
+
+    /**
+     * Triggers an animation where a set of tabs merge into a single target tab.
+     *
+     * @param targetTabId The ID of the tab that other tabs will merge into.
+     * @param tabIdsToMerge The IDs for all tabs that will be merged into the target tab.
+     * @param onAnimationEnd Executed after the merge animation has finished.
+     */
+    private void translateStartMergeAnimation(
+            @TabId int targetTabId, List<@TabId Integer> tabIdsToMerge, Runnable onAnimationEnd) {
+        if (!mTabListCoordinatorSupplier.hasValue()) return;
+
+        TabListCoordinator tabListCoordinator = assumeNonNull(mTabListCoordinatorSupplier.get());
+        int targetTabIndex = tabListCoordinator.getTabIndexFromTabId(targetTabId);
+        List<Integer> tabIndexesToMerge =
+                tabListCoordinator.getCardIndexesFromTabIds(tabIdsToMerge);
+        tabListCoordinator.triggerMergeAnimation(targetTabIndex, tabIndexesToMerge, onAnimationEnd);
     }
 
     /**
