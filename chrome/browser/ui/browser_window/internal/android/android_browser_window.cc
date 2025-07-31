@@ -8,6 +8,7 @@
 
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_window/internal/jni/AndroidBrowserWindow_jni.h"
@@ -17,6 +18,12 @@
 namespace {
 using base::android::AttachCurrentThread;
 using base::android::JavaParamRef;
+
+std::vector<BrowserWindowInterface*>& GetAndroidWindowList() {
+  static base::NoDestructor<std::vector<BrowserWindowInterface*>> list;
+  return *list;
+}
+
 }  // namespace
 
 // Implements Java |AndroidBrowserWindow.Natives#create|.
@@ -31,11 +38,22 @@ AndroidBrowserWindow::AndroidBrowserWindow(
     const JavaParamRef<jobject>& java_android_browser_window)
     : session_id_(SessionID::NewUnique()) {
   java_android_browser_window_.Reset(env, java_android_browser_window);
+  GetAndroidWindowList().push_back(this);
 }
 
 AndroidBrowserWindow::~AndroidBrowserWindow() {
   Java_AndroidBrowserWindow_clearNativePtr(AttachCurrentThread(),
                                            java_android_browser_window_);
+  std::vector<BrowserWindowInterface*>& all_windows = GetAndroidWindowList();
+  auto iter = std::find(all_windows.begin(), all_windows.end(), this);
+  CHECK(iter != all_windows.end());
+  all_windows.erase(iter);
+}
+
+// static
+std::vector<BrowserWindowInterface*>
+AndroidBrowserWindow::GetAllAndroidBrowserWindowsByCreationTime() {
+  return GetAndroidWindowList();
 }
 
 void AndroidBrowserWindow::Destroy(JNIEnv* env) {
