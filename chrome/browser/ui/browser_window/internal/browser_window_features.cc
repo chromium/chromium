@@ -83,6 +83,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_coordinator.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_action_container.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs/chrome_labs_coordinator.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/translate/translate_bubble_controller.h"
 #include "chrome/browser/ui/views/upgrade_notification_controller.h"
 #include "chrome/browser/ui/views/user_education/impl/browser_user_education_interface_impl.h"
@@ -340,6 +341,19 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
     send_tab_to_self_toolbar_bubble_controller_ = std::make_unique<
         send_tab_to_self::SendTabToSelfToolbarBubbleController>(browser);
 
+    if (browser_view) {
+      // The controller should only be created if the
+      // PinnedToolbarActionsContainer exists for the browser, this might not be
+      // the case for browsers with a custom tab toolbar.
+      if (auto* pinned_toolbar_actions_container =
+              browser_view->toolbar_button_provider()
+                  ->GetPinnedToolbarActionsContainer()) {
+        pinned_toolbar_actions_controller_ =
+            std::make_unique<PinnedToolbarActionsController>(
+                pinned_toolbar_actions_container);
+      }
+    }
+
     // TODO(crbug.com/350508658): Ideally, we don't pass in a reference to
     // browser as per the guidance in the comment above. However, currently,
     // we need browser to properly determine if the lens overlay is enabled.
@@ -590,6 +604,10 @@ void BrowserWindowFeatures::TearDownPreBrowserWindowDestruction() {
 
   desktop_browser_window_capabilities_.reset();
   signin_view_controller_->TearDownPreBrowserWindowDestruction();
+
+  if (pinned_toolbar_actions_controller_) {
+    pinned_toolbar_actions_controller_->TearDown();
+  }
 
   // TODO(crbug.com/423956131): Update reset order once FindBarController is
   // deterministically constructed.

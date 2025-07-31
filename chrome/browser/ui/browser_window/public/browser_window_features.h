@@ -50,6 +50,7 @@ class IncognitoClearBrowsingDataDialogCoordinator;
 class ImmersiveModeController;
 class LocationBarModel;
 class MemorySaverOptInIPHController;
+class PinnedToolbarActionsController;
 class ProfileMenuCoordinator;
 class ReadingListSidePanelCoordinator;
 class SidePanelCoordinator;
@@ -209,6 +210,10 @@ class BrowserWindowFeatures {
 
   CommentsSidePanelCoordinator* comments_side_panel_coordinator() {
     return comments_side_panel_coordinator_.get();
+  }
+
+  PinnedToolbarActionsController* pinned_toolbar_actions_controller() {
+    return pinned_toolbar_actions_controller_.get();
   }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
@@ -472,6 +477,9 @@ class BrowserWindowFeatures {
 
   std::unique_ptr<CommentsSidePanelCoordinator>
       comments_side_panel_coordinator_;
+
+  std::unique_ptr<PinnedToolbarActionsController>
+      pinned_toolbar_actions_controller_;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   std::unique_ptr<pdf::infobar::PdfInfoBarController> pdf_infobar_controller_;

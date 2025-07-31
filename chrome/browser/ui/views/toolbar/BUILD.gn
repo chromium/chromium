@@ -35,6 +35,8 @@ source_set("toolbar") {
     "pinned_toolbar_actions_container.h",
     "pinned_toolbar_actions_container_layout.cc",
     "pinned_toolbar_actions_container_layout.h",
+    "pinned_toolbar_actions_controller.cc",
+    "pinned_toolbar_actions_controller.h",
     "pinned_toolbar_button_status_indicator.cc",
     "pinned_toolbar_button_status_indicator.h",
     "reload_button.cc",
