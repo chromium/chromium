@@ -903,9 +903,6 @@ Called by update_autofill_enums.py.-->
              value edited"/>
   <int value="12353"
       label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Autofilled value accepted"/>
-  <int value="12416"
-      label="KNOWN_TRAVELER_NUMBER: Not autofilled or autofilled value edited"/>
-  <int value="12417" label="KNOWN_TRAVELER_NUMBER: Autofilled value accepted"/>
   <int value="12864"
       label="ADDRESS_HOME_ZIP_PREFIX: Not autofilled or autofilled value
              edited"/>
@@ -916,11 +913,6 @@ Called by update_autofill_enums.py.-->
              edited"/>
   <int value="12929"
       label="ADDRESS_HOME_ZIP_SUFFIX: Autofilled value accepted"/>
-  <int value="12992"
-      label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Not autofilled or
-             autofilled value edited"/>
-  <int value="12993"
-      label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Autofilled value accepted"/>
 </enum>
 
 <enum name="AutofillDeveloperEngagement">
@@ -1238,14 +1230,10 @@ Called by update_autofill_enums.py.-->
   <int value="3073" label="NATIONAL_ID_CARD_ISSUE_DATE: accepted"/>
   <int value="3088" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: edited"/>
   <int value="3089" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: accepted"/>
-  <int value="3104" label="KNOWN_TRAVELER_NUMBER: edited"/>
-  <int value="3105" label="KNOWN_TRAVELER_NUMBER: accepted"/>
   <int value="3216" label="ADDRESS_HOME_ZIP_PREFIX: edited"/>
   <int value="3217" label="ADDRESS_HOME_ZIP_PREFIX: accepted"/>
   <int value="3232" label="ADDRESS_HOME_ZIP_SUFFIX: edited"/>
   <int value="3233" label="ADDRESS_HOME_ZIP_SUFFIX: accepted"/>
-  <int value="3248" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: edited"/>
-  <int value="3249" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: accepted"/>
 </enum>
 
 <enum name="AutofillEmailOrLoyaltyCardAcceptanceMetricValue">
@@ -2108,10 +2096,8 @@ Called by update_autofill_enums.py.-->
   <int value="191" label="NATIONAL_ID_CARD_EXPIRATION_DATE"/>
   <int value="192" label="NATIONAL_ID_CARD_ISSUE_DATE"/>
   <int value="193" label="NATIONAL_ID_CARD_ISSUING_COUNTRY"/>
-  <int value="194" label="KNOWN_TRAVELER_NUMBER"/>
   <int value="201" label="ADDRESS_HOME_ZIP_PREFIX"/>
   <int value="202" label="ADDRESS_HOME_ZIP_SUFFIX"/>
-  <int value="203" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE"/>
 </enum>
 
 <enum name="AutofillFilledCardInformationBubbleFieldClicked">
@@ -3775,14 +3761,10 @@ Called by update_autofill_enums.py.-->
   <int value="769" label="NATIONAL_ID_CARD_ISSUE_DATE: Accepted"/>
   <int value="772" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Ignored"/>
   <int value="773" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Accepted"/>
-  <int value="776" label="KNOWN_TRAVELER_NUMBER: Ignored"/>
-  <int value="777" label="KNOWN_TRAVELER_NUMBER: Accepted"/>
   <int value="804" label="ADDRESS_HOME_ZIP_PREFIX: Ignored"/>
   <int value="805" label="ADDRESS_HOME_ZIP_PREFIX: Accepted"/>
   <int value="808" label="ADDRESS_HOME_ZIP_SUFFIX: Ignored"/>
   <int value="809" label="ADDRESS_HOME_ZIP_SUFFIX: Accepted"/>
-  <int value="812" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Ignored"/>
-  <int value="813" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE: Accepted"/>
 </enum>
 
 <!-- LINT.IfChange(FormSubmissionOutcomeIOS) -->

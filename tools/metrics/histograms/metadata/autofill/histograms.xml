@@ -490,8 +490,6 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="EMAIL_OR_LOYALTY_MEMBERSHIP_ID"/>
   <variant name="EMPTY_TYPE"/>
   <variant name="IBAN_VALUE"/>
-  <variant name="KNOWN_TRAVELER_NUMBER"/>
-  <variant name="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE"/>
   <variant name="LOYALTY_MEMBERSHIP_ID"/>
   <variant name="LOYALTY_MEMBERSHIP_PROGRAM"/>
   <variant name="LOYALTY_MEMBERSHIP_PROVIDER"/>
