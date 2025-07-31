@@ -6,9 +6,13 @@ package org.chromium.chrome.browser.app.tabmodel;
 
 import static org.chromium.build.NullUtil.assumeNonNull;
 
+import android.os.SystemClock;
+
+import org.chromium.base.Log;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabAssociatedApp;
+import org.chromium.chrome.browser.tab.TabState;
 import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab.TabStateStorageService;
@@ -19,6 +23,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabRegistrationObser
 /** Orchestrates saving of tabs to the {@link TabStateStorageService}. */
 @NullMarked
 public class TabStateStore {
+    private static final String TAG = "TabStateStore";
+
     private final TabStateStorageService mTabStateStorageService;
     private final TabStateAttributes.Observer mAttributesObserver =
             this::onTabStateDirtinessChanged;
@@ -45,6 +51,8 @@ public class TabStateStore {
                         TabStateStore.this.onTabUnregistered(tab);
                     }
                 });
+
+        loadAllTabsFromService();
     }
 
     /** Cleans up observation. */
@@ -91,5 +99,33 @@ public class TabStateStore {
     private void onTabUnregistered(Tab tab) {
         assumeNonNull(TabStateAttributes.from(tab)).removeObserver(mAttributesObserver);
         // TODO(https://crbug.com/430996004): Delete the tab record.
+    }
+
+    private void loadAllTabsFromService() {
+        long loadStartTime = SystemClock.elapsedRealtime();
+        mTabStateStorageService.loadAllTabs((tabStates) -> onTabsLoaded(tabStates, loadStartTime));
+    }
+
+    private void onTabsLoaded(TabState[] tabStates, long loadStartTime) {
+        long duration = SystemClock.elapsedRealtime() - loadStartTime;
+        Log.i(TAG, "Loaded %d tabs in %dms", tabStates.length, duration);
+
+        for (int i = 0; i < tabStates.length; i++) {
+            TabState tabState = tabStates[i];
+            if (tabState.contentsState == null || tabState.contentsState.buffer().limit() <= 0) {
+                Log.i(TAG, " Tab %d: no state", i);
+                continue;
+            }
+
+            WebContentsState contentsState = tabState.contentsState;
+            contentsState.setVersion(WebContentsState.CONTENTS_STATE_CURRENT_VERSION);
+            Log.i(
+                    TAG,
+                    " Tab %d: url: %s, title: %s, state size: %d",
+                    i,
+                    contentsState.getVirtualUrlFromState(),
+                    contentsState.getDisplayTitleFromState(),
+                    contentsState.buffer().limit());
+        }
     }
 }
