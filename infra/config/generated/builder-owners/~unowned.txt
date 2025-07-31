@@ -22,7 +22,6 @@ ci/android-code-coverage-native
 ci/android-device-flasher
 ci/android-fieldtrial-rel
 ci/android-perfetto-rel
-ci/android-pie-x86-fyi-rel
 ci/android-rust-arm32-rel
 ci/android-rust-arm64-dbg
 ci/android-rust-arm64-rel
