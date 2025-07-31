@@ -244,5 +244,7 @@
     // ElementInternals.type
     // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/ElementInternalsType/explainer.md
     "button",
+    "reset",
+    "submit",
   ],
 }

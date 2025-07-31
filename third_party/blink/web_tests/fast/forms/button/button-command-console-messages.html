@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<form id="testForm">
+  <!-- Button with command attribute but ambiguous type (should generate console warning) -->
+  <button id="ambiguousButton" command="test-command"></button>
+
+  <!-- Button with commandfor attribute but ambiguous type (should generate console warning) -->
+  <button id="ambiguousButtonFor" commandfor="test-target"></button>
+
+  <!-- Button with explicit type=submit and command attribute (should generate console warning) -->
+  <button id="submitWithCommand" type="submit" command="test-command"></button>
+
+  <!-- Button with explicit type=reset and commandfor attribute (should generate console warning) -->
+  <button id="resetWithCommandFor" type="reset" commandfor="test-target"></button>
+
+  <!-- Button with explicit type=button and command attribute (should NOT generate console warning) -->
+  <button id="buttonWithCommand" type="button" command="test-command"></button>
+</form>
+<div id="test-target"></div>
+
+<script>
+   // Add event listener to prevent default form submission behavior.
+  document.getElementById('testForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+  });
+
+  // Button with command attribute but no explicit type=button should generate console warning.
+  document.getElementById('ambiguousButton').click();
+
+  // Button with commandfor attribute but no explicit type=button should generate console warning.
+  document.getElementById('ambiguousButtonFor').click();
+
+  // Button with type=submit and command attribute should generate console warning.
+  document.getElementById('submitWithCommand').click();
+
+  // Button with type=reset and commandfor attribute should generate console warning.
+  document.getElementById('resetWithCommandFor').click();
+
+  // Button with type=button and command attribute should NOT generate console warning.
+  document.getElementById('buttonWithCommand').click();
+</script>
+
+<script>
+  testRunner.dumpAsText();
+</script>
+
+</body>
+</html>

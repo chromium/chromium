@@ -3293,13 +3293,12 @@ AccessibilityExpanded AXNodeObject::IsExpanded() const {
   // the HTML spec invokers commandfor functionality first, and only
   // popovertarget after, if commandfor was not executed.
   if (auto* button = DynamicTo<HTMLButtonElement>(element)) {
-    const AtomicString& action =
-        button->FastGetAttribute(html_names::kCommandAttr);
-    CommandEventType type = button->GetCommandEventType(action);
     if (HTMLElement* command_for =
             DynamicTo<HTMLElement>(button->commandForElement())) {
-      bool is_valid_popover_command =
-          command_for->IsValidBuiltinPopoverCommand(*button, type);
+      const AtomicString& action =
+          button->FastGetAttribute(html_names::kCommandAttr);
+      bool is_valid_popover_command = command_for->IsValidBuiltinPopoverCommand(
+          *button, HTMLButtonElement::GetCommandEventType(action));
       bool is_child = button->IsDescendantOrShadowDescendantOf(command_for);
       // Buttons for popovers should indicate the expanded/collapsed state.
       if (is_valid_popover_command && !is_child) {

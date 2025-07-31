@@ -53,7 +53,7 @@ class CORE_EXPORT HTMLButtonElement final : public HTMLFormControlElement {
   Element* commandForElement() const;
   AtomicString command() const;
   void setCommand(const AtomicString& type);
-  CommandEventType GetCommandEventType(const AtomicString& type) const;
+  static CommandEventType GetCommandEventType(const AtomicString& type);
 
   // Override for inertness in order to make customizable <select> button inert.
   // TODO(crbug.com/1511354): Replace this with interactivity:inert in

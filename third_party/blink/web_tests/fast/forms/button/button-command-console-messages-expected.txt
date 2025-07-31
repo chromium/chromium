@@ -1,0 +1,5 @@
+CONSOLE WARNING: Buttons associated with forms that include command or commandfor attributes are ambiguous, and require a type=button attribute. No action will be taken.
+CONSOLE WARNING: Buttons associated with forms that include command or commandfor attributes are ambiguous, and require a type=button attribute. No action will be taken.
+CONSOLE WARNING: Buttons with an explicit type=submit will always submit a form, so command or commandfor attributes will be ignored.
+CONSOLE WARNING: Buttons with an explicit type=reset will always reset a form, so command or commandfor attributes will be ignored.
+    

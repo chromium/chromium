@@ -2765,15 +2765,15 @@ AXObject* AXObject::GetCommandForElement() const {
     return nullptr;
   }
 
-  const AtomicString& action = button_element->FastGetAttribute(html_names::kCommandAttr);
-  CommandEventType type = button_element->GetCommandEventType(action);
-
   if (command_for->popoverOpen()) {
     // A button with commandfor might point to an open popover, but the command
     // might be unrelated - for example `show-modal`. Commands that aren't related
     // to the showing or hiding of popovers should not establish a details relation
     // in these cases.
-    if (!command_for->IsValidBuiltinPopoverCommand(*button_element, type)) {
+    const AtomicString& action =
+        button_element->FastGetAttribute(html_names::kCommandAttr);
+    if (!command_for->IsValidBuiltinPopoverCommand(
+            *button_element, HTMLButtonElement::GetCommandEventType(action))) {
       return nullptr;
     }
 
