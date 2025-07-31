@@ -73,6 +73,7 @@ android_library("java") {
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabReparentingParams.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouper.java",
     "android/java/src/org/chromium/chrome/browser/tabmodel/TabUngrouperFactory.java",
+    "android/java/src/org/chromium/chrome/browser/tabmodel/UndoGroupMetadata.java",
   ]
   deps = [
     "//base:base_java",

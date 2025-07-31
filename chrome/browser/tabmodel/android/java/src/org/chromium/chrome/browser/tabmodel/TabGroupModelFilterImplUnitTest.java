@@ -16,8 +16,8 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
 import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.doNothing;
@@ -44,6 +44,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.ArgumentMatcher;
 import org.mockito.Captor;
 import org.mockito.InOrder;
 import org.mockito.Mock;
@@ -72,6 +73,7 @@ import org.chromium.chrome.browser.tab.TabStateAttributes;
 import org.chromium.chrome.browser.tab.TabStateAttributes.DirtinessState;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeatures;
 import org.chromium.chrome.browser.tab_group_sync.TabGroupSyncFeaturesJni;
+import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterImpl.UndoGroupMetadataImpl;
 import org.chromium.chrome.browser.tabmodel.TabGroupModelFilterObserver.DidRemoveTabGroupReason;
 import org.chromium.components.tab_groups.TabGroupColorId;
 import org.chromium.ui.test.util.MockitoHelper;
@@ -993,15 +995,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab1, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver)
                 .didMergeTabToGroup(mTab1, /* isDestinationTab= */ true);
-        verify(mTabGroupModelFilterObserver, never())
-                .showUndoGroupSnackbar(
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyString(),
-                        anyInt(),
-                        anyBoolean());
+        verify(mTabGroupModelFilterObserver, never()).showUndoGroupSnackbar(any());
         assertTrue(mTabGroupModelFilter.isTabInTabGroup(mTab1));
 
         mTabGroupModelFilter.moveTabOutOfGroupInDirection(TAB1_ID, /* trailing= */ true);
@@ -1327,8 +1321,7 @@ public class TabGroupModelFilterImplUnitTest {
     @Test
     public void mergeTabsToGroup_Collapsed() {
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
+        verifyUndoGroupSnackbarTitleCollapsed(true);
     }
 
     @Test
@@ -1336,8 +1329,7 @@ public class TabGroupModelFilterImplUnitTest {
         when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB5_ROOT_ID)), anyBoolean()))
                 .thenReturn(false);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
+        verifyUndoGroupSnackbarTitleCollapsed(true);
     }
 
     @Test
@@ -1345,8 +1337,7 @@ public class TabGroupModelFilterImplUnitTest {
         when(mSharedPreferencesCollapsed.getBoolean(eq(String.valueOf(TAB2_ROOT_ID)), anyBoolean()))
                 .thenReturn(false);
         mTabGroupModelFilter.mergeTabsToGroup(mTab5.getId(), mTab2.getId());
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(false));
+        verifyUndoGroupSnackbarTitleCollapsed(false);
     }
 
     @Test
@@ -1552,8 +1543,7 @@ public class TabGroupModelFilterImplUnitTest {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
         mTabGroupModelFilter.mergeListOfTabsToGroup(
                 tabsToMerge, mTab4, /* indexInGroup= */ null, true);
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
+        verifyUndoGroupSnackbarTitleCollapsed(true);
     }
 
     @Test
@@ -1563,8 +1553,7 @@ public class TabGroupModelFilterImplUnitTest {
         List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab5, mTab6));
         mTabGroupModelFilter.mergeListOfTabsToGroup(
                 tabsToMerge, mTab4, /* indexInGroup= */ null, true);
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), eq(true));
+        verifyUndoGroupSnackbarTitleCollapsed(true);
     }
 
     @Test
@@ -1904,8 +1893,7 @@ public class TabGroupModelFilterImplUnitTest {
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
         verify(mTabGroupModelFilterObserver)
                 .didMergeTabToGroup(mTab4, /* isDestinationTab= */ true);
-        verify(mTabGroupModelFilterObserver, never())
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilterObserver, never()).showUndoGroupSnackbar(any());
 
         assertThat(mTab4.getTabGroupId(), equalTo(tabGroupId));
 
@@ -2289,15 +2277,19 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), false);
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab2, mTabGroupModelFilter);
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(
-                        expectedNotifiedTabs,
-                        originalIndexes,
-                        originalRootIds,
-                        originalTabGroupIds,
-                        TAB_TITLE,
-                        COLOR_ID,
-                        /* destinationGroupTitleCollapsed= */ true);
+        ArgumentMatcher<UndoGroupMetadata> snackbarMatcher =
+                (metadata) -> {
+                    UndoGroupMetadataImpl undoGroupMetadata = (UndoGroupMetadataImpl) metadata;
+                    assertEquals(expectedNotifiedTabs, undoGroupMetadata.tabs);
+                    assertEquals(originalIndexes, undoGroupMetadata.originalIndexes);
+                    assertEquals(originalRootIds, undoGroupMetadata.originalRootIds);
+                    assertEquals(originalTabGroupIds, undoGroupMetadata.originalTabGroupIds);
+                    assertEquals(TAB_TITLE, undoGroupMetadata.destinationGroupTitle);
+                    assertEquals(COLOR_ID, undoGroupMetadata.destinationGroupColorId);
+                    assertTrue(undoGroupMetadata.destinationGroupTitleCollapsed);
+                    return true;
+                };
+        verify(mTabGroupModelFilterObserver).showUndoGroupSnackbar(argThat(snackbarMatcher));
         verify(mTabGroupModelFilterObserver)
                 .didRemoveTabGroup(mTab2.getId(), TAB2_TAB_GROUP_ID, DidRemoveTabGroupReason.MERGE);
         assertArrayEquals(
@@ -2319,15 +2311,7 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab2.getId(), mTab5.getId(), true);
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab2, mTabGroupModelFilter);
-        verify(mTabGroupModelFilterObserver, never())
-                .showUndoGroupSnackbar(
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyString(),
-                        anyInt(),
-                        anyBoolean());
+        verify(mTabGroupModelFilterObserver, never()).showUndoGroupSnackbar(any());
         verify(titleEditor, times(2)).remove(String.valueOf(TAB2_ROOT_ID));
     }
 
@@ -2361,15 +2345,19 @@ public class TabGroupModelFilterImplUnitTest {
         mTabGroupModelFilter.mergeTabsToGroup(mTab3.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver, never())
                 .didCreateNewGroup(mTab4, mTabGroupModelFilter);
-        verify(mTabGroupModelFilterObserver)
-                .showUndoGroupSnackbar(
-                        expectedNotifiedTabs,
-                        originalIndexes,
-                        originalRootIds,
-                        originalTabGroupIds,
-                        TAB_TITLE,
-                        COLOR_ID,
-                        /* destinationGroupTitleCollapsed= */ true);
+        ArgumentMatcher<UndoGroupMetadata> snackbarMatcher =
+                (metadata) -> {
+                    UndoGroupMetadataImpl undoGroupMetadata = (UndoGroupMetadataImpl) metadata;
+                    assertEquals(expectedNotifiedTabs, undoGroupMetadata.tabs);
+                    assertEquals(originalIndexes, undoGroupMetadata.originalIndexes);
+                    assertEquals(originalRootIds, undoGroupMetadata.originalRootIds);
+                    assertEquals(originalTabGroupIds, undoGroupMetadata.originalTabGroupIds);
+                    assertEquals(TAB_TITLE, undoGroupMetadata.destinationGroupTitle);
+                    assertEquals(COLOR_ID, undoGroupMetadata.destinationGroupColorId);
+                    assertTrue(undoGroupMetadata.destinationGroupTitleCollapsed);
+                    return true;
+                };
+        verify(mTabGroupModelFilterObserver).showUndoGroupSnackbar(argThat(snackbarMatcher));
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab2.getId()).toArray(),
                 expectedGroup.toArray());
@@ -2391,15 +2379,7 @@ public class TabGroupModelFilterImplUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), false);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
-        verify(mTabGroupModelFilterObserver, never())
-                .showUndoGroupSnackbar(
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyList(),
-                        anyString(),
-                        anyInt(),
-                        anyBoolean());
+        verify(mTabGroupModelFilterObserver, never()).showUndoGroupSnackbar(any());
         assertArrayEquals(
                 mTabGroupModelFilter.getRelatedTabList(mTab1.getId()).toArray(),
                 expectedGroup.toArray());
@@ -2415,8 +2395,7 @@ public class TabGroupModelFilterImplUnitTest {
 
         mTabGroupModelFilter.mergeTabsToGroup(mTab1.getId(), mTab4.getId(), true);
         verify(mTabGroupModelFilterObserver).didCreateNewGroup(mTab4, mTabGroupModelFilter);
-        verify(mTabGroupModelFilterObserver, never())
-                .showUndoGroupSnackbar(any(), any(), any(), any(), any(), anyInt(), anyBoolean());
+        verify(mTabGroupModelFilterObserver, never()).showUndoGroupSnackbar(any());
 
         assertEquals(mTab1.getTabGroupId(), tabGroupId);
         assertEquals(mTab4.getTabGroupId(), tabGroupId);
@@ -2921,15 +2900,27 @@ public class TabGroupModelFilterImplUnitTest {
         List<Tab> expectedGroup = Arrays.asList(mTab4, mTab1);
         List<Integer> expectedOriginalIndex = Arrays.asList(POSITION4, POSITION1);
         List<Integer> originalRootId = Arrays.asList(TAB4_ROOT_ID, TAB1_ROOT_ID);
-        List<Token> originalTabGroupId =  Arrays.asList(TAB1_TAB_GROUP_ID, TAB4_TAB_GROUP_ID);
-        verify(mTabGroupModelFilterObserver, mode)
+        List<Token> originalTabGroupId = Arrays.asList(TAB1_TAB_GROUP_ID, TAB4_TAB_GROUP_ID);
+        ArgumentMatcher<UndoGroupMetadata> snackbarMatcher =
+                (metadata) -> {
+                    UndoGroupMetadataImpl undoGroupMetadata = (UndoGroupMetadataImpl) metadata;
+                    assertEquals(expectedGroup, undoGroupMetadata.tabs);
+                    assertEquals(expectedOriginalIndex, undoGroupMetadata.originalIndexes);
+                    assertEquals(originalRootId, undoGroupMetadata.originalRootIds);
+                    assertEquals(originalTabGroupId, undoGroupMetadata.originalTabGroupIds);
+                    return true;
+                };
+        verify(mTabGroupModelFilterObserver, mode).showUndoGroupSnackbar(argThat(snackbarMatcher));
+    }
+
+    private void verifyUndoGroupSnackbarTitleCollapsed(boolean destinationGroupTitleCollapsed) {
+        verify(mTabGroupModelFilterObserver)
                 .showUndoGroupSnackbar(
-                        eq(expectedGroup),
-                        eq(expectedOriginalIndex),
-                        eq(originalRootId),
-                        eq(originalTabGroupId),
-                        anyString(),
-                        anyInt(),
-                        anyBoolean());
+                        argThat(
+                                metadata -> {
+                                    return destinationGroupTitleCollapsed
+                                            == ((UndoGroupMetadataImpl) metadata)
+                                                    .destinationGroupTitleCollapsed;
+                                }));
     }
 }

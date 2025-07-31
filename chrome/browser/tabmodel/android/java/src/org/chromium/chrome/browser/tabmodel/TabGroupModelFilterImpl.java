@@ -81,6 +81,52 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
         }
     }
 
+    /** Class to hold metadata for undo group operations. */
+    @VisibleForTesting
+    static class UndoGroupMetadataImpl implements UndoGroupMetadata {
+        private final Token mDestinationTabGroupId;
+        private final boolean mIsIncognito;
+
+        public final List<Tab> tabs;
+        public final List<Integer> originalIndexes;
+        public final List<Integer> originalRootIds;
+        public final List<Token> originalTabGroupIds;
+        public final @Nullable String destinationGroupTitle;
+        public final int destinationGroupColorId;
+        public final boolean destinationGroupTitleCollapsed;
+
+        UndoGroupMetadataImpl(
+                Token destinationTabGroupId,
+                boolean isIncognito,
+                List<Tab> tabs,
+                List<Integer> originalIndexes,
+                List<Integer> originalRootIds,
+                List<Token> originalTabGroupIds,
+                @Nullable String destinationGroupTitle,
+                int destinationGroupColorId,
+                boolean destinationGroupTitleCollapsed) {
+            mDestinationTabGroupId = destinationTabGroupId;
+            mIsIncognito = isIncognito;
+            this.tabs = tabs;
+            this.originalIndexes = originalIndexes;
+            this.originalRootIds = originalRootIds;
+            this.originalTabGroupIds = originalTabGroupIds;
+            this.destinationGroupTitle = destinationGroupTitle;
+            this.destinationGroupColorId = destinationGroupColorId;
+            this.destinationGroupTitleCollapsed = destinationGroupTitleCollapsed;
+        }
+
+        @Override
+        public Token getTabGroupId() {
+            return mDestinationTabGroupId;
+        }
+
+        @Override
+        public boolean isIncognito() {
+            return mIsIncognito;
+        }
+    }
+
     private final ObserverList<TabModelObserver> mFilteredObservers = new ObserverList<>();
     private final ObserverList<TabGroupModelFilterObserver> mGroupFilterObserver =
             new ObserverList<>();
@@ -350,14 +396,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 // Since the undo group merge logic is unsupported when called from the tab strip,
                 // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
                 if (!skipUpdateTabModel) {
-                    observer.showUndoGroupSnackbar(
-                            tabsIncludingDestination,
-                            originalIndexes,
-                            originalRootIds,
-                            originalTabGroupIds,
-                            destinationGroupTitle,
-                            destinationGroupColorId,
-                            destinationGroupTitleCollapsed);
+                    UndoGroupMetadataImpl undoGroupMetadata =
+                            new UndoGroupMetadataImpl(
+                                    destinationTabGroupId,
+                                    isIncognito(),
+                                    tabsIncludingDestination,
+                                    originalIndexes,
+                                    originalRootIds,
+                                    originalTabGroupIds,
+                                    destinationGroupTitle,
+                                    destinationGroupColorId,
+                                    destinationGroupTitleCollapsed);
+                    observer.showUndoGroupSnackbar(undoGroupMetadata);
                 } else {
                     for (int i = 0; i < tabsIncludingDestination.size(); i++) {
                         Tab tab = tabsIncludingDestination.get(i);
@@ -518,14 +568,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
             // Do not show a snackbar for new tab group creations as they launch a dialog.
             if (notify && !willMergingCreateNewGroup) {
-                observer.showUndoGroupSnackbar(
-                        mergedTabs,
-                        originalIndexes,
-                        originalRootIds,
-                        originalTabGroupIds,
-                        destinationGroupTitle,
-                        destinationGroupColorId,
-                        destinationGroupTitleCollapsed);
+                UndoGroupMetadataImpl undoGroupMetadata =
+                        new UndoGroupMetadataImpl(
+                                assumeNonNull(destinationTabGroupId),
+                                isIncognito(),
+                                mergedTabs,
+                                originalIndexes,
+                                originalRootIds,
+                                originalTabGroupIds,
+                                destinationGroupTitle,
+                                destinationGroupColorId,
+                                destinationGroupTitleCollapsed);
+                observer.showUndoGroupSnackbar(undoGroupMetadata);
             } else {
                 for (int i = 0; i < mergedTabs.size(); i++) {
                     Tab tab = mergedTabs.get(i);
@@ -668,7 +722,59 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
     }
 
     @Override
-    public void undoGroupedTab(
+    public void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata) {
+        UndoGroupMetadataImpl undoGroupMetadataImpl = (UndoGroupMetadataImpl) undoGroupMetadata;
+
+        assert undoGroupMetadataImpl.tabs.size() > 0;
+        int firstRootId = undoGroupMetadataImpl.tabs.get(0).getRootId();
+
+        // The new rootID will be the destination tab group being merged to. If that destination
+        // tab group had no title previously, on undo it may inherit a title from the group that
+        // was merged to it, and persist when merging with other tabs later on. This check deletes
+        // the group title for that rootID on undo since the destination group never had a group
+        // title to begin with, and the merging tabs still have the original group title stored.
+        if (undoGroupMetadataImpl.destinationGroupTitle == null) {
+            deleteTabGroupTitle(firstRootId);
+        }
+
+        // If the destination rootID previously did not have a color id associated with it since it
+        // was either created from a new tab group or was originally a single tab before merge,
+        // delete that color id on undo. This check deletes the group color for that destination
+        // rootID, as all tabs still currently share that ID before the undo operation is performed.
+        if (undoGroupMetadataImpl.destinationGroupColorId == TabGroupColorUtils.INVALID_COLOR_ID) {
+            deleteTabGroupColor(firstRootId);
+        }
+
+        // The action of merging expands the destination group. If it was originally collapsed, we
+        // need to restore that state.
+        if (undoGroupMetadataImpl.destinationGroupTitleCollapsed) {
+            setTabGroupCollapsed(firstRootId, true);
+        }
+
+        for (int i = undoGroupMetadataImpl.tabs.size() - 1; i >= 0; i--) {
+            undoGroupedTab(
+                    undoGroupMetadataImpl.tabs.get(i),
+                    undoGroupMetadataImpl.originalIndexes.get(i),
+                    undoGroupMetadataImpl.originalRootIds.get(i),
+                    undoGroupMetadataImpl.originalTabGroupIds.get(i));
+        }
+    }
+
+    @Override
+    public void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata) {
+        UndoGroupMetadataImpl undoGroupMetadataImpl = (UndoGroupMetadataImpl) undoGroupMetadata;
+
+        for (int i = 0; i < undoGroupMetadataImpl.tabs.size(); i++) {
+            Tab tab = undoGroupMetadataImpl.tabs.get(i);
+            int rootId = undoGroupMetadataImpl.originalRootIds.get(i);
+            if (tab.getRootId() == rootId) continue;
+
+            deleteTabGroupVisualData(rootId);
+        }
+    }
+
+    @VisibleForTesting
+    void undoGroupedTab(
             Tab tab, int originalIndex, int originalRootId, @Nullable Token originalTabGroupId) {
         if (!tab.isInitialized()) return;
 

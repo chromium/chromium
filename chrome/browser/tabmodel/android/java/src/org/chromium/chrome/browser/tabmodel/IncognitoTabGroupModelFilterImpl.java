@@ -282,13 +282,15 @@ public class IncognitoTabGroupModelFilterImpl implements TabGroupModelFilterInte
     }
 
     @Override
-    public void undoGroupedTab(
-            Tab tab,
-            int originalIndex,
-            @TabId int originalRootId,
-            @Nullable Token originalTabGroupId) {
+    public void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata) {
         if (mCurrentFilter == null) return;
-        mCurrentFilter.undoGroupedTab(tab, originalIndex, originalRootId, originalTabGroupId);
+        mCurrentFilter.performUndoGroupOperation(undoGroupMetadata);
+    }
+
+    @Override
+    public void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata) {
+        if (mCurrentFilter == null) return;
+        mCurrentFilter.undoGroupOperationExpired(undoGroupMetadata);
     }
 
     @Override

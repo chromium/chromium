@@ -202,18 +202,21 @@ public interface TabGroupModelFilter extends SupportsTabModelObserver {
 
     // TODO(crbug.com/372068933): This method should probably have more restricted access.
     /**
-     * This method undo the given grouped {@link Tab}.
+     * Undoes a group operation performed by this TabGroupModelFilter.
      *
-     * @param tab undo this grouped {@link Tab}.
-     * @param originalIndex The tab index before grouped.
-     * @param originalRootId The rootId before grouped.
-     * @param originalTabGroupId The tabGroupId before grouped.
+     * @param undoGroupMetadata Metadata to undo the operation provided by {@link
+     *     TabGroupModelFilterObserver#showUndoGroupSnackbar}.
      */
-    void undoGroupedTab(
-            Tab tab,
-            int originalIndex,
-            @TabId int originalRootId,
-            @Nullable Token originalTabGroupId);
+    void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata);
+
+    /**
+     * Notifies that the undo window for a group operation performed by this TabGroupModelFilter has
+     * expired.
+     *
+     * @param undoGroupMetadata Metadata to undo the operation provided by {@link
+     *     TabGroupModelFilterObserver#showUndoGroupSnackbar}.
+     */
+    void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata);
 
     /** Get all tab group IDs that are associated with tab groups. */
     Set<Token> getAllTabGroupIds();

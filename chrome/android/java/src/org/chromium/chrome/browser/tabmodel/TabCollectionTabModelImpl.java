@@ -938,11 +938,12 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     }
 
     @Override
-    public void undoGroupedTab(
-            Tab tab,
-            int originalIndex,
-            @TabId int originalRootId,
-            @Nullable Token originalTabGroupId) {
+    public void performUndoGroupOperation(UndoGroupMetadata undoGroupMetadata) {
+        // TODO(crbug.com/432794806): Support undoable group operations.
+    }
+
+    @Override
+    public void undoGroupOperationExpired(UndoGroupMetadata undoGroupMetadata) {
         // TODO(crbug.com/432794806): Support undoable group operations.
     }
 
