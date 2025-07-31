@@ -1551,13 +1551,10 @@ UIWindow* WindowWithAccessibilityIdentifier(NSString* accessibility_id) {
                       grey_ancestor(grey_kindOfClassName(@"UIToolbar")), nil);
   }
 
-  id<GREYMatcher> toolbarButtonMatcher =
-      grey_allOf(grey_accessibilityID(buttonID),
-                 grey_anyOf(grey_kindOfClassName(@"_UIButtonBarButton"),
-                            grey_kindOfClassName(@"UIButton"), nil),
-                 nil);
-  return grey_allOf(grey_descendant(toolbarButtonMatcher),
-                    grey_accessibilityID(@"Toolbar"), nil);
+  return grey_allOf(grey_accessibilityID(buttonID),
+                    grey_anyOf(grey_kindOfClassName(@"_UIButtonBarButton"),
+                               grey_kindOfClassName(@"UIButton"), nil),
+                    nil);
 }
 
 #pragma mark - Overflow Menu Destinations
