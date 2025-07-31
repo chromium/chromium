@@ -368,8 +368,7 @@ class Worker(object):
             # ensure that the trace is recorded properly.
             tracing_enabled = self._port.get_option(
                 'enable_tracing') is not None or any(
-                    flag.startswith(tracing_command) for tracing_command in
-                    ['--trace-startup', '--trace-shutdown']
+                    flag.startswith('--trace-startup')
                     for flag in self._options.additional_driver_flag)
 
             if tracing_enabled:
