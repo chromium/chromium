@@ -94,17 +94,29 @@ class SpeechTimestampEstimator {
   [[nodiscard]]
   MediaRanges TakeTimestampsInRange(SpeechTimestamp start, SpeechTimestamp end);
 
+  // Similar to `TakeTimestampsInRange`, but this method will only peek at the
+  // current timestamps, and will not discard any data.
+  [[nodiscard]]
+  MediaRanges PeekTimestampsInRange(SpeechTimestamp start, SpeechTimestamp end);
+
  private:
+  // Given a vector of `PlaybackChunk`s, returns a `MediaRanges` vector with the
+  // media start and end presentation timestamps.
+  MediaRanges ConvertToMediaRanges(const std::vector<PlaybackChunk>& playbacks);
+
   // Moves forward the last media timestamp by `running_silence_duration_`.
   void AdjustLastMediaTimestampForSilence(SpeechTimestamp current_speech_time);
 
-  // Removes all `playback_chunks_` in the [0, `end_timestamp`) range, splitting
-  // partial chunks if necessary.
-  void PopFrontUntil(SpeechTimestamp end_timestamp);
+  // Removes all chunks in the given `deque` that are in the [0,
+  // `end_timestamp`) range, splitting partial chunks if necessary.
+  void PopFrontUntil(base::circular_deque<PlaybackChunk>& chunks,
+                     SpeechTimestamp end_timestamp);
 
-  // Returns all `playback_chunks_` in the [0, `end_timestamp`) range, splitting
-  // partial chunks if necessary.
-  std::vector<PlaybackChunk> TakeFrontUntil(SpeechTimestamp end_timestamp);
+  // Returns all chunks in the given `deque` that are in the [0,
+  // `end_timestamp`) range, splitting partial chunks if necessary.
+  std::vector<PlaybackChunk> TakeFrontUntil(
+      base::circular_deque<PlaybackChunk>& chunks,
+      SpeechTimestamp end_timestamp);
 
   // Tracks how much silence was skipped since the last call to
   // AddPlaybackStart() or AddDuration().

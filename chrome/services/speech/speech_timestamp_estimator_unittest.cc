@@ -44,13 +44,16 @@ class SpeechTimestampEstimatorTest : public testing::Test {
   SpeechTimestampEstimatorTest() = default;
   ~SpeechTimestampEstimatorTest() override = default;
 
-  // Helper functions to allow the direct use of `base::TimeDelta`;
+  // Helper functions for taking the timestamps.
   MediaRanges TakeRange(SpeechTimestampRange range) {
     return estimator_.TakeTimestampsInRange(range.first, range.second);
   }
   MediaRanges TakeAllRanges() {
     // Completely empties out `estimator_`.
     return TakeRange(SpeechSecondsRange(0, base::Days(1).InSeconds()));
+  }
+  MediaRanges PeekRange(SpeechTimestampRange range) {
+    return estimator_.PeekTimestampsInRange(range.first, range.second);
   }
 
   void AppendDuration(base::TimeDelta duration) {
@@ -434,6 +437,42 @@ TEST_F(SpeechTimestampEstimatorTest,
 
   VerifyRanges(TakeRange(SpeechSecondsRange(0, 20)),
                {MediaSecondsRange(100, 110), MediaSecondsRange(510, 520)});
+}
+
+TEST_F(SpeechTimestampEstimatorTest, PeekTimestampsInRange) {
+  // Add [100s, 110s). Speech time: [0, 10)
+  AddNewPlayback(base::Seconds(100));
+  AppendDuration(base::Seconds(10));
+
+  // Add [140s, 145s). Speech time: [10, 15)
+  AddNewPlayback(base::Seconds(140));
+  AppendDuration(base::Seconds(5));
+
+  // Add [100s, 110s). Speech time: [15, 25)
+  AddNewPlayback(base::Seconds(100));
+  AppendDuration(base::Seconds(10));
+
+  // 1. Peek into a range.
+  // Speech range [1, 21) should correspond to media ranges:
+  // [101, 110), [140, 145), [100, 106)
+  MediaRanges expected_ranges = {MediaSecondsRange(101, 110),
+                                 MediaSecondsRange(140, 145),
+                                 MediaSecondsRange(100, 106)};
+  VerifyRanges(PeekRange(SpeechSecondsRange(1, 21)), expected_ranges);
+
+  // 2. Verify that peeking again yields the exact same result.
+  // This is the key difference from TakeRange.
+  VerifyRanges(PeekRange(SpeechSecondsRange(1, 21)), expected_ranges);
+
+  // 3. Take the same range to prove the state was indeed unchanged.
+  // The result of taking should be identical to the result of peeking.
+  VerifyRanges(TakeRange(SpeechSecondsRange(1, 21)), expected_ranges);
+
+  // 4. Now that we've *taken* the range [1, 21), the estimator is modified.
+  // Peeking into the full range should now only return the final chunk.
+  // Speech range [21, 25) -> Media range [106, 110)
+  VerifyRanges(PeekRange(SpeechSecondsRange(0, 100)),
+               {MediaSecondsRange(106, 110)});
 }
 
 }  // namespace

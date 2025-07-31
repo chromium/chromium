@@ -81,22 +81,16 @@ void OnSodaResponse(const char* serialized_proto,
     const soda::chrome::SodaRecognitionResult& result =
         response.recognition_result();
 
-    const bool is_final =
-        result.result_type() == soda::chrome::SodaRecognitionResult::FINAL;
+    auto speech_recognition_result = media::SpeechRecognitionResult(
+        result.hypothesis(0),
+        result.result_type() == soda::chrome::SodaRecognitionResult::FINAL);
 
-    auto speech_recognition_result =
-        media::SpeechRecognitionResult(result.hypothesis(0), is_final);
-
-    // TODO(crbug.com/413823334): Check if we can add `TimingInformation` to non
-    // final `SpeechRecognitionResults`, if this proves to be useful downstream.
-    if (is_final && result.has_timing_metrics()) {
-      const auto& timing_metrics = result.timing_metrics();
-
+    if (result.has_timing_metrics()) {
       speech_recognition_result.timing_information = media::TimingInformation();
       speech_recognition_result.timing_information->audio_start_time =
-          base::Microseconds(timing_metrics.audio_start_time_usec());
+          base::Microseconds(result.timing_metrics().audio_start_time_usec());
       speech_recognition_result.timing_information->audio_end_time =
-          base::Microseconds(timing_metrics.event_end_time_usec());
+          base::Microseconds(result.timing_metrics().event_end_time_usec());
     }
 
     DCHECK(result.hypothesis_size());
@@ -213,7 +207,7 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
   if (!client_remote_.is_bound())
     return;
 
-  if (event.is_final && event.timing_information.has_value()) {
+  if (event.timing_information.has_value()) {
     using SpeechTimestamp = SpeechTimestampEstimator::SpeechTimestamp;
     auto& timing_info = event.timing_information.value();
 
@@ -231,9 +225,16 @@ void SpeechRecognitionRecognizerImpl::OnRecognitionEvent(
     //
     // Correctly handling this scenario would add a fair bit more complexity,
     // which might not be warranted at this time.
-    auto media_timestamps = timestamp_estimator_->TakeTimestampsInRange(
-        SpeechTimestamp(timing_info.audio_start_time),
-        SpeechTimestamp(timing_info.audio_end_time));
+    std::vector<media::MediaTimestampRange> media_timestamps;
+    if (event.is_final) {
+      media_timestamps = timestamp_estimator_->TakeTimestampsInRange(
+          SpeechTimestamp(timing_info.audio_start_time),
+          SpeechTimestamp(timing_info.audio_end_time));
+    } else {
+      media_timestamps = timestamp_estimator_->PeekTimestampsInRange(
+          SpeechTimestamp(timing_info.audio_start_time),
+          SpeechTimestamp(timing_info.audio_end_time));
+    }
 
     timing_info.originating_media_timestamps = std::move(media_timestamps);
   }

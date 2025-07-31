@@ -52,17 +52,22 @@ TEST(SpeechRecognitionResultStructTraitsTest, WithTimingInformation) {
 
 TEST(SpeechRecognitionResultStructTraitsTest,
      PartialResultWithTimingInformation) {
-  media::SpeechRecognitionResult invalid_result("hello world", false);
-  invalid_result.timing_information = media::TimingInformation();
-  invalid_result.timing_information->audio_start_time = kZeroTime;
-  invalid_result.timing_information->audio_end_time = base::Seconds(1);
-  std::vector<uint8_t> invalid_data =
-      media::mojom::SpeechRecognitionResult::Serialize(&invalid_result);
-  media::SpeechRecognitionResult invalid_output;
+  media::SpeechRecognitionResult partial_result("hello world", false);
+  partial_result.timing_information = media::TimingInformation();
+  partial_result.timing_information->audio_start_time = base::Seconds(1);
+  partial_result.timing_information->audio_end_time = base::Seconds(2);
+  partial_result.timing_information->originating_media_timestamps =
+      std::vector<media::MediaTimestampRange>();
+  partial_result.timing_information->originating_media_timestamps->push_back(
+      {.start = base::Seconds(10), .end = base::Seconds(11)});
 
-  // Partial results shouldn't have timing information.
-  EXPECT_FALSE(media::mojom::SpeechRecognitionResult::Deserialize(
-      std::move(invalid_data), &invalid_output));
+  std::vector<uint8_t> data =
+      media::mojom::SpeechRecognitionResult::Serialize(&partial_result);
+  media::SpeechRecognitionResult output;
+
+  EXPECT_TRUE(media::mojom::SpeechRecognitionResult::Deserialize(
+      std::move(data), &output));
+  EXPECT_EQ(partial_result, output);
 }
 
 TEST(SpeechRecognitionResultStructTraitsTest, WithInvalidHypothesisParts) {

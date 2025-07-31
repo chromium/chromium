@@ -104,10 +104,6 @@ bool StructTraits<media::mojom::SpeechRecognitionResultDataView,
     return false;
   }
 
-  // Timing information is provided only for final results.
-  if (!data.is_final() && timing_information.has_value())
-    return false;
-
   out->transcription = std::move(transcription);
   out->is_final = data.is_final();
   out->timing_information = std::move(timing_information);
