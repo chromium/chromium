@@ -104,9 +104,9 @@ void AutofillAiLogger::OnSuggestionsShown(
     ukm::SourceId ukm_source_id) {
   for (EntityType type : suggested_entity_types) {
     form_states_[form.global_id()][type].suggestions_shown = true;
+    ukm_logger_.LogFieldEvent(ukm_source_id, form, field, type,
+                              AutofillAiUkmLogger::EventType::kSuggestionShown);
   }
-  ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
-                            AutofillAiUkmLogger::EventType::kSuggestionShown);
 }
 
 void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
@@ -114,20 +114,21 @@ void AutofillAiLogger::OnDidFillSuggestion(const FormStructure& form,
                                            EntityType entity_type,
                                            ukm::SourceId ukm_source_id) {
   form_states_[form.global_id()][entity_type].did_fill_suggestions = true;
-  ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
+  ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_type,
                             AutofillAiUkmLogger::EventType::kSuggestionFilled);
 }
 
 void AutofillAiLogger::OnEditedAutofilledField(const FormStructure& form,
                                                const AutofillField& field,
                                                ukm::SourceId ukm_source_id) {
-  if (auto it = last_filled_entity_.find(field.global_id());
-      it != last_filled_entity_.end()) {
-    EntityType entity_type = it->second;
-    form_states_[form.global_id()][entity_type].edited_autofilled_field = true;
+  auto it = last_filled_entity_.find(field.global_id());
+  if (it == last_filled_entity_.end()) {
+    return;
   }
+  EntityType entity_type = it->second;
+  form_states_[form.global_id()][entity_type].edited_autofilled_field = true;
   ukm_logger_.LogFieldEvent(
-      ukm_source_id, form, field,
+      ukm_source_id, form, field, entity_type,
       AutofillAiUkmLogger::EventType::kEditedAutofilledValue);
 }
 
@@ -136,7 +137,7 @@ void AutofillAiLogger::OnDidFillField(const FormStructure& form,
                                       EntityType entity_type,
                                       ukm::SourceId ukm_source_id) {
   last_filled_entity_.insert({field.global_id(), entity_type});
-  ukm_logger_.LogFieldEvent(ukm_source_id, form, field,
+  ukm_logger_.LogFieldEvent(ukm_source_id, form, field, entity_type,
                             AutofillAiUkmLogger::EventType::kFieldFilled);
 }
 
@@ -160,29 +161,12 @@ void AutofillAiLogger::RecordFormMetrics(const FormStructure& form,
     // TODO(crbug.com/408380915): Remove after M141.
     base::UmaHistogramBoolean("Autofill.Ai.OptInStatus", opt_in_status);
 
-    const bool has_data_to_fill =
-        std::ranges::any_of(states, [&](const auto& type_and_state) {
-          const auto& [type, state] = type_and_state;
-          return state.has_data_to_fill;
-        });
-    const bool suggestions_shown =
-        std::ranges::any_of(states, [&](const auto& type_and_state) {
-          const auto& [type, state] = type_and_state;
-          return state.suggestions_shown;
-        });
-    const bool did_fill_suggestions =
-        std::ranges::any_of(states, [&](const auto& type_and_state) {
-          const auto& [type, state] = type_and_state;
-          return state.did_fill_suggestions;
-        });
-    const bool edited_autofilled_field =
-        std::ranges::any_of(states, [&](const auto& type_and_state) {
-          const auto& [type, state] = type_and_state;
-          return state.edited_autofilled_field;
-        });
-    ukm_logger_.LogKeyMetrics(ukm_source_id, form, has_data_to_fill,
-                              suggestions_shown, did_fill_suggestions,
-                              edited_autofilled_field, opt_in_status);
+    for (const auto& [entity_type, state] : states) {
+      ukm_logger_.LogKeyMetrics(ukm_source_id, form, entity_type,
+                                state.has_data_to_fill, state.suggestions_shown,
+                                state.did_fill_suggestions,
+                                state.edited_autofilled_field, opt_in_status);
+    }
     if (opt_in_status) {
       RecordKeyMetrics(relevant_entities, states);
     }

@@ -30,6 +30,22 @@ namespace autofill {
 
 namespace {
 
+optimization_guide::proto::AutofillAiEntityType GetEntityType(
+    EntityType entity_type) {
+  switch (entity_type.name()) {
+    case EntityTypeName::kPassport:
+      return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_PASSPORT;
+    case EntityTypeName::kDriversLicense:
+      return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_DRIVERS_LICENSE;
+    case EntityTypeName::kVehicle:
+      return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_VEHICLE;
+    case EntityTypeName::kNationalIdCard:
+      return optimization_guide::proto::
+          AUTOFILL_AI_ENTITY_TYPE_NATIONAL_ID_CARD;
+  }
+  return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_UNKNOWN;
+}
+
 optimization_guide::proto::FormatStringSource GetFormatStringSource(
     AutofillField::FormatStringSource format_string_source) {
   switch (format_string_source) {
@@ -108,6 +124,7 @@ AutofillAiUkmLogger::~AutofillAiUkmLogger() = default;
 
 void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
                                         const FormStructure& form,
+                                        EntityType entity_type,
                                         bool data_to_fill_available,
                                         bool suggestions_shown,
                                         bool suggestion_filled,
@@ -162,6 +179,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
         autofill_filled_field_count);
     mqls_key_metrics->set_autofill_ai_filled_field_count(
         autofill_ai_filled_field_count);
+    mqls_key_metrics->set_entity_type(GetEntityType(entity_type));
     mqls_key_metrics->set_filling_readiness(data_to_fill_available);
     mqls_key_metrics->set_filling_assistance(suggestion_filled);
     if (suggestions_shown) {
@@ -184,7 +202,8 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
       .SetFillingAssistance(suggestion_filled)
       .SetOptInStatus(opt_in_status)
       .SetAutofillFilledFieldCount(autofill_filled_field_count)
-      .SetAutofillAiFilledFieldCount(autofill_ai_filled_field_count);
+      .SetAutofillAiFilledFieldCount(autofill_ai_filled_field_count)
+      .SetEntityType(base::to_underlying(entity_type.name()));
   if (suggestions_shown) {
     builder.SetFillingAcceptance(suggestion_filled);
   }
@@ -197,6 +216,7 @@ void AutofillAiUkmLogger::LogKeyMetrics(ukm::SourceId ukm_source_id,
 void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
                                         const FormStructure& form,
                                         const AutofillField& field,
+                                        EntityType entity_type,
                                         EventType event_type) {
   const FormSignature form_signature = form.form_signature();
   const uint64_t form_session_identifier =
@@ -244,6 +264,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
     mqls_field_event->set_form_control_type(
         GetFormControlType(field.form_control_type()));
     mqls_field_event->set_event_type(GetFieldEventType(event_type));
+    mqls_field_event->set_entity_type(GetEntityType(entity_type));
   }
 
   if (!CanLogUkm(ukm_source_id)) {
@@ -260,6 +281,7 @@ void AutofillAiUkmLogger::LogFieldEvent(ukm::SourceId ukm_source_id,
       .SetFieldType(field_type)
       .SetAiFieldType(ai_field_type)
       .SetEventType(base::to_underlying(event_type))
+      .SetEntityType(base::to_underlying(entity_type.name()))
       .Record(client_->GetUkmRecorder());
 }
 

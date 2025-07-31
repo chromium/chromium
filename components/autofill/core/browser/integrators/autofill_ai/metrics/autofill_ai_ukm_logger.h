@@ -26,6 +26,7 @@ class AutofillAiUkmLogger {
 
   void LogKeyMetrics(ukm::SourceId ukm_source_id,
                      const FormStructure& form,
+                     EntityType entity_type,
                      bool data_to_fill_available,
                      bool suggestions_shown,
                      bool suggestion_filled,
@@ -47,6 +48,7 @@ class AutofillAiUkmLogger {
   void LogFieldEvent(ukm::SourceId ukm_source_id,
                      const FormStructure& form,
                      const AutofillField& field,
+                     EntityType entity_type,
                      EventType event_type);
 
  private:

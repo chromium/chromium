@@ -3527,6 +3527,12 @@ be describing additional metrics about the same event.
       The server AI type of the field as classified by autofill's ML model.
     </summary>
   </metric>
+  <metric name="EntityType">
+    <summary>
+      The type of entity for which the current metric record is being logged
+      (E.g. Passport, Driver's License, etc.).
+    </summary>
+  </metric>
   <metric name="EventType">
     <summary>
       Type of the event being recorded, see `AutofillAiUkmLogger::EventType` for
@@ -3606,6 +3612,12 @@ be describing additional metrics about the same event.
       The number of fields at form submission that are autofilled. This will
       include fields that are autofilled by any source except Autocomplete,
       including AutofillAi.
+    </summary>
+  </metric>
+  <metric name="EntityType">
+    <summary>
+      The type of entity for which the current metric record is being logged
+      (E.g. Passport, Driver's License, etc.).
     </summary>
   </metric>
   <metric name="FillingAcceptance">

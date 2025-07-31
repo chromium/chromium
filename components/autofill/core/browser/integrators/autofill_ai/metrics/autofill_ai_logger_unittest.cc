@@ -637,6 +637,7 @@ class AutofillAiMqlsMetricsTest : public BaseAutofillAiTest {
     EXPECT_EQ(base::to_underlying(mqls_field_event.event_type()),
               base::to_underlying(event_type))
         << event;
+    EXPECT_EQ(base::to_underlying(mqls_field_event.entity_type()), 1) << event;
   }
 
  private:
@@ -722,6 +723,7 @@ TEST_F(AutofillAiMqlsMetricsTest, KeyMetrics) {
   EXPECT_FALSE(mqls_key_metrics.filling_correctness());
   EXPECT_EQ(mqls_key_metrics.autofill_filled_field_count(), 2);
   EXPECT_EQ(mqls_key_metrics.autofill_ai_filled_field_count(), 1);
+  EXPECT_EQ(base::to_underlying(mqls_key_metrics.entity_type()), 1);
 }
 
 // Tests that KeyMetrics MQLS metrics aren't recorded if the user is not opted
