@@ -359,8 +359,11 @@ target(link_target_type, "gles2_sources") {
     "//gpu:raster_implementation",
     "//gpu:webgpu_implementation",
     "//third_party/khronos:khronos_headers",
-    "//third_party/angle:no_thread_safety_warnings",
   ]
+
+  # This target pulls in angle headers that can't be built with this
+  # warning active: crbug.com/430317494
+  cflags_cc = [ "-Wno-thread-safety" ]
 
   public_deps = [
     "//base",
