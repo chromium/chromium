@@ -38,6 +38,7 @@ enum class BWGLocationPermissionState {
   kEnterpriseDisabled,
 };
 
+// TODO(crbug.com/434662294): Remove when migration is complete.
 // Enum representing the PageContext state of the BWG experience.
 // This needs to stay in sync with GCRGeminiPageState (and its SDK counterpart).
 enum class BWGPageContextState {
@@ -57,6 +58,42 @@ enum class BWGPageContextState {
   kEnterpriseDisabled,
   // PageContext should be detached due to the user disabling it.
   kUserDisabled,
+};
+
+// Enum representing the page context computation state of the BWG experience.
+// This needs to stay in sync with GCRGeminiPageContextComputationState (and its
+// SDK counterpart).
+enum class BWGPageContextComputationState {
+  // The state of the page context is unknown; this likely means that it was not
+  // set.
+  kUnknown,
+  // The page context was successfully created.
+  kSuccess,
+  // The page context should have been included, but was not gathered
+  // successfully.
+  kError,
+  // The page contains protected content which should not be used for Gemini,
+  // and should not be sent to any server or stored.
+  kProtected,
+  // The page contains blocked content that could be used for Gemini, but will
+  // likely be rejected due to its content.
+  kBlocked,
+};
+
+// Enum representing the page context attachment state of the BWG experience.
+// This needs to stay in sync with GCRGeminiPageContextAttachmentState (and its
+// SDK counterpart).
+enum class BWGPageContextAttachmentState {
+  // The attach state is unknown.
+  kUnknown,
+  // Page context should be attached.
+  kAttached,
+  // Page context should be detached.
+  kDetached,
+  // Page context attachment is disabled by the user.
+  kUserDisabled,
+  // Page context attachment is disabled by an enterprise policy.
+  kEnterpriseDisabled,
 };
 
 // Creates request body data using a prompt and page context.

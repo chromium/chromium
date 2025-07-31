@@ -16,6 +16,8 @@ class AuthenticationService;
 namespace ios::provider {
 enum class BWGLocationPermissionState;
 enum class BWGPageContextState;
+enum class BWGPageContextComputationState;
+enum class BWGPageContextAttachmentState;
 }  // namespace ios::provider
 
 namespace optimization_guide::proto {
@@ -41,9 +43,18 @@ class PageContext;
 @property(nonatomic, assign)
     ios::provider::BWGLocationPermissionState BWGLocationPermissionState;
 
+// TODO(crbug.com/434662294): Remove when migration is complete.
 // The state of the BWG PageContext.
 @property(nonatomic, assign)
     ios::provider::BWGPageContextState BWGPageContextState;
+
+// The state of the BWG PageContext computation.
+@property(nonatomic, assign) ios::provider::BWGPageContextComputationState
+    BWGPageContextComputationState;
+
+// The state of the BWG PageContext attachment.
+@property(nonatomic, assign)
+    ios::provider::BWGPageContextAttachmentState BWGPageContextAttachmentState;
 
 // The favicon of the attached page. Uses a default icon if it's unavailable.
 @property(nonatomic, strong) UIImage* favicon;
