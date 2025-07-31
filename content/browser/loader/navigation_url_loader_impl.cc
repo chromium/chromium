@@ -855,9 +855,116 @@ NavigationURLLoaderImpl::LoaderHolder::LoaderHolder(
 
 NavigationURLLoaderImpl::LoaderHolder::~LoaderHolder() = default;
 
-void NavigationURLLoaderImpl::LoaderHolder::Reset() {
+void NavigationURLLoaderImpl::LoaderHolder::ResetInternal() {
   response_loader_receiver_.reset();
   url_loader_.reset();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::Reset() {
+  switch (exclusive_task_state_) {
+    case ExclusiveTaskState::kNoExclusiveTask:
+      break;
+    case ExclusiveTaskState::kHasExclusiveTask:
+      // If there can be any possible exclusive tasks, the (possibly indirect)
+      // caller of `Reset()` should check `HasExclusiveTask()` and call
+      // `ResetForFailure()` and make the loading fail instead, if any exclusive
+      // tasks. This can't be done here, because we have to cancel the whole
+      // loading (including the new operation that triggers `Reset()`), not only
+      // cancalling the exclusive tasks.
+      // TODO(https://crbug.com/434182226): Add `DUMP_WILL_BE_NOTREACHED()`.
+      // Right now, this can't be added because this fails in some unit tests.
+      break;
+    case ExclusiveTaskState::kCancelExclusiveTask:
+      // It's harmless to reach here, because the issues related to exclusive
+      // tasks should be already handled when transitioned
+      // `kCancelExclusiveTask` (i.e. by the caller of `ResetForFailure()`).
+      //
+      // TODO(https://crbug.com/434182226): Still reaching here might indicate
+      // unexpected operation sequences. Consider adding
+      // `DUMP_WILL_BE_NOTREACHED()`. Right now, this can't be added because
+      // this fails in some unit tests.
+      break;
+  }
+
+  ResetInternal();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::ResetForFailure() {
+  exclusive_task_state_ = ExclusiveTaskState::kCancelExclusiveTask;
+  ResetInternal();
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::OnExclusiveTaskStarted(
+    ExclusiveTaskType exclusive_task_type) {
+  switch (exclusive_task_state_) {
+    case ExclusiveTaskState::kNoExclusiveTask:
+      exclusive_task_state_ = ExclusiveTaskState::kHasExclusiveTask;
+      current_exclusive_task_type_ = exclusive_task_type;
+      break;
+    case ExclusiveTaskState::kHasExclusiveTask:
+      // exclusive tasks shouldn't be started while there is already another
+      // exclusive task.
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
+      break;
+    case ExclusiveTaskState::kCancelExclusiveTask:
+      // exclusive tasks shouldn't be started if exclusive task is to be
+      // cancelled.
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
+      break;
+  }
+}
+
+void NavigationURLLoaderImpl::LoaderHolder::OnExclusiveTaskCompleted(
+    ExclusiveTaskType exclusive_task_type) {
+  switch (exclusive_task_state_) {
+    case ExclusiveTaskState::kHasExclusiveTask:
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_CHECK(current_exclusive_task_type_);
+      DUMP_WILL_BE_CHECK_EQ(*current_exclusive_task_type_, exclusive_task_type);
+      exclusive_task_state_ = ExclusiveTaskState::kNoExclusiveTask;
+      current_exclusive_task_type_.reset();
+      break;
+    case ExclusiveTaskState::kNoExclusiveTask:
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
+      break;
+    case ExclusiveTaskState::kCancelExclusiveTask:
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
+      break;
+  }
+}
+
+bool NavigationURLLoaderImpl::LoaderHolder::HasExclusiveTask() const {
+  switch (exclusive_task_state_) {
+    case ExclusiveTaskState::kNoExclusiveTask:
+      return false;
+    case ExclusiveTaskState::kHasExclusiveTask:
+    case ExclusiveTaskState::kCancelExclusiveTask:
+      return true;
+  }
+}
+
+bool NavigationURLLoaderImpl::LoaderHolder::ShouldCancelExclusiveTask(
+    ExclusiveTaskType exclusive_task_type) const {
+  switch (exclusive_task_state_) {
+    case ExclusiveTaskState::kNoExclusiveTask:
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
+      return false;
+    case ExclusiveTaskState::kHasExclusiveTask:
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_CHECK(current_exclusive_task_type_);
+      DUMP_WILL_BE_CHECK_EQ(*current_exclusive_task_type_, exclusive_task_type);
+      return false;
+    case ExclusiveTaskState::kCancelExclusiveTask:
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_CHECK(current_exclusive_task_type_);
+      DUMP_WILL_BE_CHECK_EQ(*current_exclusive_task_type_, exclusive_task_type);
+      return true;
+  }
 }
 
 void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
@@ -1181,6 +1288,9 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle response_body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!cached_metadata);
+  // TODO(https://crbug.com/434182226): Add
+  // `DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());`. Currently this
+  // fails in unit tests.
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request_->is_outermost_main_frame);
 
@@ -1332,6 +1442,9 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
 void NavigationURLLoaderImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
+  // TODO(https://crbug.com/434182226): Add
+  // `DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());`. Currently this
+  // fails in unit tests.
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
                         resource_request_->is_outermost_main_frame);
   net::Error error = net::OK;
@@ -1371,6 +1484,9 @@ void NavigationURLLoaderImpl::OnReceiveRedirect(
 
   GURL previous_url = url_;
   url_ = redirect_info.new_url;
+
+  loader_holder_.OnExclusiveTaskStarted(
+      LoaderHolder::ExclusiveTaskType::kRedirect);
 
   auto on_receive_redirect =
       base::BindOnce(&NavigationURLLoaderImpl::NotifyRequestRedirected,
@@ -1416,7 +1532,11 @@ void NavigationURLLoaderImpl::OnComplete(
   // Note: Despite having received a response, the HTTP_NOT_MODIFIED(304) ones
   //       are ignored using OnComplete(net::ERR_ABORTED). No interceptor must
   //       be used in this case.
-  if (!received_response_) {
+  //
+  // We also skip interceptors and force the loading to fail when there are
+  // exclusive tasks, because we can't gracefully cancel the exclusive tasks and
+  // switch to the interceptor-induced redirects.
+  if (!received_response_ && !loader_holder_.HasExclusiveTask()) {
     auto response = network::mojom::URLResponseHead::New();
     if (MaybeCreateLoaderForResponse(status, &response)) {
       return;
@@ -1424,7 +1544,7 @@ void NavigationURLLoaderImpl::OnComplete(
   }
 
   // Cancel all loading operations to avoid further URLLoaderClient calls.
-  loader_holder_.Reset();
+  loader_holder_.ResetForFailure();
 
   status_ = status;
   GetUIThreadTaskRunner({})->PostTask(
@@ -1984,6 +2104,13 @@ void NavigationURLLoaderImpl::FollowRedirect(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!redirect_info_.new_url.is_empty());
 
+  if (loader_holder_.ShouldCancelExclusiveTask(
+          LoaderHolder::ExclusiveTaskType::kRedirect)) {
+    return;
+  }
+  loader_holder_.OnExclusiveTaskCompleted(
+      LoaderHolder::ExclusiveTaskType::kRedirect);
+
   // Don't send Accept: application/signed-exchange for fallback redirects.
   // This is also applied to `resource_request_->headers` via
   // `net::RedirectUtil::UpdateHttpRequest()`.
@@ -2122,6 +2249,12 @@ void NavigationURLLoaderImpl::NotifyRequestRedirected(
     net::RedirectInfo redirect_info,
     network::mojom::URLResponseHeadPtr response_head) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  if (loader_holder_.ShouldCancelExclusiveTask(
+          LoaderHolder::ExclusiveTaskType::kRedirect)) {
+    return;
+  }
+
   delegate_->OnRequestRedirected(
       redirect_info,
       resource_request_->trusted_params->isolation_info

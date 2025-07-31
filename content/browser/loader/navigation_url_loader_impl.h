@@ -366,9 +366,20 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
 
     // Cancel the current loading, if any.
     // Any associated pending operations should be cancelled.
-    // TODO(https://crbug.com/434182226): Still some known pending operations
-    // are not cancelled. Actually cancel them.
+    //
+    // Note: The "exclusive tasks" (see `ExclusiveTaskState` below) can't be
+    // gracefully cancelled here and thus `Reset()` should be called only when
+    // there should always be no exclusive tasks. See also `ResetForFailure()`.
     void Reset();
+
+    // When the caller wants to start a new loading operation while there can be
+    // existing exclusive tasks, the caller should check `HasExclusiveTask()`,
+    // and if there are exclusive tasks, call `ResetForFailure()` and fail the
+    // entire loading instead.
+    //
+    // This is similar to `Reset()`, but also instructs exclusive tasks to be
+    // cancelled.
+    void ResetForFailure();
 
     // For starting loading via `url_loader` (transitioning from `kNone` to
     // `kLoadingViaLoader`). THe caller should actually start the loading by
@@ -415,9 +426,28 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
     // `URLLoader::ResetForFollowRedirect()` if needed.
     void ResetForFollowRedirect(network::ResourceRequest& resource_request);
 
+    // See the `ExclusiveTaskState` comment below.
+    // TODO(https://crbug.com/434182226): Add more exclusive tasks handing.
+    enum ExclusiveTaskType {
+      // From `OnReceiveRedirect()` until `FollowRedirect()`.
+      // This contains two possible async tasks:
+      // - Waiting for `network.mojom.NetworkService::ParseHeaders()` and
+      // - Waiting for `NavigationURLLoaderDelegate`: from
+      //   `OnRequestRedirected()` until
+      //   `NavigationURLLoaderImpl::FollowRedirect()` is called.
+      kRedirect,
+    };
+    void OnExclusiveTaskStarted(ExclusiveTaskType exclusive_task_type);
+    void OnExclusiveTaskCompleted(ExclusiveTaskType exclusive_task_type);
+    bool HasExclusiveTask() const;
+    // Should be called only during an exclusive task.
+    bool ShouldCancelExclusiveTask(ExclusiveTaskType exclusive_task_type) const;
+
     bool receiver_is_bound_for_check() const;
 
    private:
+    void ResetInternal();
+
     // `NavigationURLLoaderImpl`'s `URLLoaderClient` methods are called either
     // via `url_loader_` or `response_loader_receiver_`.
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader_;
@@ -447,6 +477,46 @@ class CONTENT_EXPORT NavigationURLLoaderImpl
       net::HttpRequestHeaders modified_cors_exempt_headers_;
     };
     std::optional<ModifiedHeadersOnRedirect> modified_headers_on_redirect_;
+
+    // `NavigationURLLoaderImpl` can be waiting for a certain (possibly async)
+    // "exclusive task" and can't start a new request nor receive
+    // URLLoaderClient method calls until the task completes. For example,
+    // `NavigationURLLoaderImpl`, `NavigationLoaderInterceptor` and
+    // `NavigationRequest` are going through checks before sending an initial or
+    // redirected request and in the middle of updating the request and other
+    // states.
+    //
+    // Not all arbitrary async operations are considered exclusive tasks here.
+    // For example, waiting for URLLoaderClient calls from `url_loader_` or
+    // `response_loader_receiver_` aren't considered exclusive tasks, because
+    // e.g. we can cancel the `url_loader_`, issue a synthetic redirect response
+    // as if it would be received from `url_loader_` and continue on the
+    // synthetic redirect.
+    //
+    // Original design doc:
+    // https://docs.google.com/document/d/1xCq9l9mYc3WE1adspyaX7FnPArxKDyz8BcRGTlpQIu8/edit?usp=sharing
+    enum ExclusiveTaskState {
+      kNoExclusiveTask,
+
+      // There is an exclusive task, and therefore:
+      // - No URLLoaderClient methods should be called (except for unexpected
+      //   `OnComplete()` or error events like timeout).
+      // - No actions that could initiate a new request/redirect etc. are
+      //   allowed. When attempting such actions, `NavigationURLLoaderImpl`
+      //   should call `ResetForFailure()` and make the navigation fail
+      //   immediately.
+      //
+      // There should be at most one exclusive task at a time.
+      kHasExclusiveTask,
+
+      // After `ResetForFailure()` is called, navigation fails and existing
+      // exclusive tasks should be cancelled.
+      kCancelExclusiveTask,
+    };
+
+    ExclusiveTaskState exclusive_task_state_ =
+        ExclusiveTaskState::kNoExclusiveTask;
+    std::optional<ExclusiveTaskType> current_exclusive_task_type_;
   };
 
   LoaderHolder loader_holder_{this};

@@ -822,12 +822,9 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringFollowRedirect) {
   loader->FollowRedirect({}, {}, {});
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `1`, but currently the request continues after `FollowRedirect()` and
-  // receives a response.
-  delegate.WaitForResponseStarted();
+  task_environment_->RunUntilIdle();
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 2);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 // Timeout + MaybeCreateLoaderForResponse() + redirect case (failure) with async
@@ -863,29 +860,25 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringFollowRedirect) {
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
-  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
-  // which triggers `OnReceiveRedirect()` asynchronously.
-  // TODO(https://crbug.com/434182226): `MaybeCreateLoaderForResponse()`
-  // shouldn't be called.
-  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+  // `MaybeCreateLoaderForResponse()` shouldn't be called during an exclusive
+  // task.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 0);
 
   // See Note [*2] above.
   response_interceptor_ptr->set_should_redirect(false);
 
-  // Wait for the redirect due to the timeout + interceptor is notified.
-  delegate.WaitForRequestRedirected();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
   // Finish the async operation.
   loader->FollowRedirect({}, {}, {});
 
   // Check that no further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_request_handled_counter()` should be
-  // `1`, but currently the request continues after `FollowRedirect()` and
-  // receives a response.
-  delegate.WaitForResponseStarted();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
@@ -953,11 +946,8 @@ TEST_F(NavigationURLLoaderImplTest, TimeoutDuringParseHeaders) {
 
   // Finish the async operation (`ParseHeaders()` automatically completes while
   // running the task queue). No further loading should occur.
-  // TODO(https://crbug.com/434182226): `on_redirect_handled_counter()` should
-  // be `0`, but currently the original redirect is notified after
-  // `ParseHeaders()` completes.
-  delegate.WaitForRequestRedirected();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 1);
+  task_environment_->RunUntilIdle();
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
   EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
@@ -998,27 +988,21 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringParseHeaders) {
   EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
   EXPECT_EQ(delegate.on_request_handled_counter(), 0);
 
-  // Interceptor's MaybeCreateLoaderForResponse() is processed synchronously,
-  // which triggers `OnReceiveRedirect()` asynchronously.
-  // TODO(https://crbug.com/434182226): `MaybeCreateLoaderForResponse()`
-  // shouldn't be called.
-  ASSERT_EQ(response_interceptor_ptr->response_count(), 1);
+  // `MaybeCreateLoaderForResponse()` shouldn't be called during an exclusive
+  // task.
+  ASSERT_EQ(response_interceptor_ptr->response_count(), 0);
 
-  // Wait for the redirect due to the timeout + interceptor is notified.
-  // Also finish the async operation (`ParseHeaders()` automatically completes
-  // while running the task queue).
-  // TODO(https://crbug.com/434182226): We currently receive two redirect
-  // notifications (one from the original request delayed by `ParseHeaders()`,
-  // one from the timeout + interceptor), which is wrong.
-  delegate.WaitForRequestRedirected();
-  delegate.WaitForRequestRedirected();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  // Wait for the failure due to the timeout is notified (See Note [*1] above).
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_TIMED_OUT, delegate.net_error());
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 
-  // Check that no further loading should occur.
+  // Finish the async operation (`ParseHeaders()` automatically completes while
+  // running the task queue). No further loading should occur.
   task_environment_->RunUntilIdle();
-  EXPECT_EQ(delegate.on_redirect_handled_counter(), 2);
-  EXPECT_EQ(delegate.on_request_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_redirect_handled_counter(), 0);
+  EXPECT_EQ(delegate.on_request_handled_counter(), 1);
 }
 
 // Successful case with an async interceptor (initial request).
@@ -1145,6 +1129,8 @@ TEST_F(NavigationURLLoaderImplTest, RedirectDuringAsyncInterceptor) {
   // Interceptor's MaybeCreateLoaderForResponse() isn't processed here, because
   // `default_loader_used_` is false. Therefore falling back to the same
   // scenario as the `TimeoutDuringAsyncInterceptor` test above.
+  // Anyway, `MaybeCreateLoaderForResponse()` shouldn't be called during an
+  // exclusive task.
   ASSERT_EQ(response_interceptor_ptr->response_count(), 0);
 
   // See Note [*2] above.
