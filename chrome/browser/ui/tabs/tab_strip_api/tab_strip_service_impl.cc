@@ -5,6 +5,7 @@
 
 #include <algorithm>
 #include <optional>
+#include <utility>
 
 #include "base/strings/string_number_conversions.h"
 #include "base/types/expected.h"
@@ -209,7 +210,7 @@ void TabStripServiceImpl::CloseTabs(const std::vector<tabs_api::NodeId>& ids,
     tab_strip_model_adapter_->CloseTab(idx);
   }
 
-  std::move(callback).Run(mojo_base::mojom::Empty::New());
+  std::move(callback).Run(std::monostate());
 }
 
 void TabStripServiceImpl::ActivateTab(const tabs_api::NodeId& id,
@@ -239,7 +240,7 @@ void TabStripServiceImpl::ActivateTab(const tabs_api::NodeId& id,
   }
 
   tab_strip_model_adapter_->ActivateTab(maybe_idx.value());
-  std::move(callback).Run(mojo_base::mojom::Empty::New());
+  std::move(callback).Run(std::monostate());
 }
 
 void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
@@ -276,7 +277,7 @@ void TabStripServiceImpl::MoveTab(const tabs_api::NodeId& id,
       return;
   }
 
-  std::move(callback).Run(mojo_base::mojom::Empty::New());
+  std::move(callback).Run(std::monostate());
 }
 
 void TabStripServiceImpl::UpdateTabGroupVisual(
@@ -309,7 +310,7 @@ void TabStripServiceImpl::UpdateTabGroupVisual(
   tab_strip_model_adapter_->UpdateTabGroupVisuals(group_id.value(),
                                                   visual_data);
 
-  std::move(callback).Run(mojo_base::mojom::Empty::New());
+  std::move(callback).Run(std::monostate());
 }
 
 void TabStripServiceImpl::Accept(

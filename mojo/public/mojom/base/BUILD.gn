@@ -139,6 +139,15 @@ mojom_component("base") {
     {
       types = [
         {
+          mojom = "mojo_base.mojom.Empty"
+          cpp = "::std::monostate"
+        }
+      ]
+      traits_headers = [ "//mojo/public/cpp/base/empty_mojom_traits.h" ]
+    },
+    {
+      types = [
+        {
           mojom = "mojo_base.mojom.FilePath"
           cpp = "::base::FilePath"
         },
