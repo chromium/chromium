@@ -114,3 +114,18 @@ export function hexToColor(hex: string): Color {
   };
 }
 // </if>
+
+/* Verifies that the array buffer is suitable for the beginning of a PDF.
+ *
+ * @param buffer The beginning of data for a PDF.
+ */
+export function verifyPdfHeader(buffer: ArrayBuffer) {
+  const MIN_FILE_SIZE = '%PDF1.0'.length;
+
+  // Verify the first bytes to make sure it's a PDF.
+  const bufView = new Uint8Array(buffer);
+  assert(bufView.length >= MIN_FILE_SIZE);
+  assert(
+      String.fromCharCode(
+          bufView[0]!, bufView[1]!, bufView[2]!, bufView[3]!) === '%PDF');
+}

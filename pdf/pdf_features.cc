@@ -39,12 +39,6 @@ BASE_FEATURE(kPdfGetSaveDataInBlocks,
              "PdfGetSaveDataInBlocks",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Saves original PDFs to disk from the in-memory copy instead of redownloading
-// them.
-BASE_FEATURE(kPdfSaveOriginalFromMemory,
-             "PdfSaveOriginalFromMemory",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 BASE_FEATURE(kPdfSearchifySave,
              "PdfSearchifySave",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -94,6 +88,13 @@ void SetIsOopifPdfPolicyEnabled(bool is_oopif_pdf_policy_enabled) {
 bool IsOopifPdfEnabled() {
   return g_is_oopif_pdf_policy_enabled &&
          base::FeatureList::IsEnabled(kPdfOopif);
+}
+
+// TODO(crbug.com/394111292): Untangle the two features and add required support
+// code for `kPdfGetSaveDataInBlocks` without `kPdfUseShowSaveFilePicker`.
+bool IsPdfGetSaveDataInBlocksEnabled() {
+  return base::FeatureList::IsEnabled(kPdfUseShowSaveFilePicker) &&
+         base::FeatureList::IsEnabled(kPdfGetSaveDataInBlocks);
 }
 
 }  // namespace chrome_pdf::features

@@ -79,7 +79,7 @@ import type {KeyEventData} from './pdf_viewer_base.js';
 import {PdfViewerBaseElement} from './pdf_viewer_base.js';
 import {PdfViewerPrivateProxyImpl} from './pdf_viewer_private_proxy.js';
 import type {DocumentDimensionsMessageData} from './pdf_viewer_utils.js';
-import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents} from './pdf_viewer_utils.js';
+import {hasCtrlModifier, hasCtrlModifierOnly, shouldIgnoreKeyEvents, verifyPdfHeader} from './pdf_viewer_utils.js';
 // clang-format on
 
 const SaveRequestType = chrome.pdfViewerPrivate.SaveRequestType;
@@ -228,7 +228,6 @@ export class PdfViewerElement extends PdfViewerBaseElement {
       pdfSaveToDriveEnabled_: {type: Boolean},
       // </if>
 
-      pdfUseShowSaveFilePicker_: {type: Boolean},
       showPasswordDialog_: {type: Boolean},
       showPropertiesDialog_: {type: Boolean},
       sidenavCollapsed_: {type: Boolean},
@@ -290,6 +289,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor loadProgress_: number = 0;
   private navigator_: PdfNavigator|null = null;
   protected accessor pageNo_: number = 0;
+  private pdfGetSaveDataInBlocks_: boolean = false;
   // <if expr="enable_pdf_ink2">
   protected accessor pdfInk2Enabled_: boolean = false;
   // </if>
@@ -297,7 +297,7 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   protected accessor pdfSaveToDriveEnabled_: boolean = false;
   // </if>
   private pdfSearchifySaveEnabled_: boolean = false;
-  private accessor pdfUseShowSaveFilePicker_: boolean = false;
+  private pdfUseShowSaveFilePicker_: boolean = false;
   private pluginController_: PluginController = PluginController.getInstance();
   // <if expr="enable_pdf_ink2">
   private restoreAnnotationMode_: AnnotationMode = AnnotationMode.OFF;
@@ -946,6 +946,8 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   override handleStrings(strings: LoadTimeDataRaw) {
     super.handleStrings(strings);
 
+    this.pdfGetSaveDataInBlocks_ =
+        loadTimeData.getBoolean('pdfGetSaveDataInBlocks');
     // <if expr="enable_pdf_ink2">
     this.pdfInk2Enabled_ = loadTimeData.getBoolean('pdfInk2Enabled');
     // </if>
@@ -1435,16 +1437,27 @@ export class PdfViewerElement extends PdfViewerBaseElement {
   }
 
   /**
+   * Shows save file picker and returns a writable.
+   * @param: suggestedName The default value for the filename.
+   * @returns A Writable if successful, otherwise throws an exception.
+   */
+  private async selectFileAndGetWritable_(suggestedName: string) {
+    const fileHandle = await window.showSaveFilePicker({
+      suggestedName: suggestedName,
+      types: [{
+        description: 'PDF Files',
+        accept: {'application/pdf': ['.pdf']},
+      }],
+    });
+
+    return fileHandle.createWritable();
+  }
+
+  /**
    * Saves the current PDF document to disk.
    */
   private async save_(requestType: SaveRequestType) {
     this.recordSaveMetrics_(requestType);
-
-    // TODO(crbug.com/382610226): Update for `SaveRequestType.SEARCHIFIED` to
-    // allow users to select saving original PDF or text extracted one.
-    // To do so, the save type should be asked first, and then content would be
-    // fetched based on the selected type.
-
     // If we have entered annotation mode we must require the local
     // contents to ensure annotations are saved, unless the user specifically
     // requested the original document. Otherwise we would save the cached
@@ -1485,68 +1498,64 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     }
     // </if>
 
-    const result = await this.currentController.save(requestType);
-    if (result === null) {
-      // The content controller handled the save internally.
-      return;
-    }
-
-    // Make sure file extension is .pdf, avoids dangerous extensions.
-    let fileName = result.fileName;
-    if (!fileName.toLowerCase().endsWith('.pdf')) {
-      fileName = fileName + '.pdf';
-    }
-
-    // <if expr="enable_pdf_ink2">
-    if (result.bypassSaveFileForTesting) {
-      // Only set by the mock plugin.
-      this.onSaveSuccessful_(requestType);
-      return;
-    }
-    // </if>
-
-    // Create blob before callback to avoid race condition.
-    const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
-    if (this.pdfUseShowSaveFilePicker_) {
-      try {
-        const fileHandle = await window.showSaveFilePicker({
-          suggestedName: fileName,
-          types: [{
-            description: 'PDF Files',
-            accept: {'application/pdf': ['.pdf']},
-          }],
-        });
-
-        const writable = await fileHandle.createWritable();
-        await writable.write(blob);
-        await writable.close();
-        this.onSaveSuccessful_(requestType);
-      } catch (error: any) {
-        if (error.name !== 'AbortError') {
-          console.error('window.showSaveFilePicker failed: ' + error);
-        }
-      }
+    if (this.pdfGetSaveDataInBlocks_) {
+      this.saveInBlocks_(requestType);
     } else {
-      chrome.fileSystem.chooseEntry(
-          {
-            type: 'saveFile',
-            accepts: [{description: '*.pdf', extensions: ['pdf']}],
-            suggestedName: fileName,
-          },
-          (entry?: FileSystemFileEntry) => {
-            if (chrome.runtime.lastError) {
-              if (chrome.runtime.lastError.message !== 'User cancelled') {
-                console.error(
-                    'chrome.fileSystem.chooseEntry failed: ' +
-                    chrome.runtime.lastError.message);
+      const result = await this.currentController.save(requestType);
+      if (result === null) {
+        // The content controller handled the save internally.
+        return;
+      }
+
+      // Make sure file extension is .pdf, avoids dangerous extensions.
+      let fileName = result.fileName;
+      if (!fileName.toLowerCase().endsWith('.pdf')) {
+        fileName = fileName + '.pdf';
+      }
+
+      // <if expr="enable_pdf_ink2">
+      if (result.bypassSaveFileForTesting) {
+        // Only set by the mock plugin.
+        this.onSaveSuccessful_(requestType);
+        return;
+      }
+      // </if>
+
+      // Create blob before callback to avoid race condition.
+      const blob = new Blob([result.dataToSave], {type: 'application/pdf'});
+      if (this.pdfUseShowSaveFilePicker_) {
+        try {
+          const writable = await this.selectFileAndGetWritable_(fileName);
+          await writable.write(blob);
+          await writable.close();
+          this.onSaveSuccessful_(requestType);
+        } catch (error: any) {
+          if (error.name !== 'AbortError') {
+            console.error('window.showSaveFilePicker failed: ' + error);
+          }
+        }
+      } else {
+        chrome.fileSystem.chooseEntry(
+            {
+              type: 'saveFile',
+              accepts: [{description: '*.pdf', extensions: ['pdf']}],
+              suggestedName: fileName,
+            },
+            (entry?: FileSystemFileEntry) => {
+              if (chrome.runtime.lastError) {
+                if (chrome.runtime.lastError.message !== 'User cancelled') {
+                  console.error(
+                      'chrome.fileSystem.chooseEntry failed: ' +
+                      chrome.runtime.lastError.message);
+                }
+                return;
               }
-              return;
-            }
-            entry!.createWriter((writer: FileWriter) => {
-              writer.write(blob);
-              this.onSaveSuccessful_(requestType);
+              entry!.createWriter((writer: FileWriter) => {
+                writer.write(blob);
+                this.onSaveSuccessful_(requestType);
+              });
             });
-          });
+      }
     }
 
     // <if expr="enable_pdf_ink2">
@@ -1560,6 +1569,72 @@ export class PdfViewerElement extends PdfViewerBaseElement {
     // Saving in Annotation mode is destructive: crbug.com/919364
     this.exitAnnotationMode_();
     // </if>
+  }
+
+  /**
+   * Saves the current PDF document to disk in blocks.
+   *
+   * This function does not perform pre/post steps of saving and should be
+   * called by `save_`.
+   */
+  private async saveInBlocks_(requestType: SaveRequestType) {
+    // TODO(crbug.com/382610226): Update for `SaveRequestType.SEARCHIFIED` to
+    // allow users to select saving original PDF or text extracted one.
+    // To do so, the save type should be asked first, and then content would be
+    // fetched based on the selected type.
+    assert(this.pluginController_.isActive);
+
+    const nameResult = await this.pluginController_.getSuggestedFileName();
+
+    // Make sure file extension is .pdf, avoids dangerous extensions.
+    let fileName = nameResult.fileName;
+    if (!fileName.toLowerCase().endsWith('.pdf')) {
+      fileName = fileName + '.pdf';
+    }
+
+    assert(this.pdfUseShowSaveFilePicker_);
+    try {
+      const writable = await this.selectFileAndGetWritable_(fileName);
+
+      // Total file size is updated after the first results are received.
+      let totalFileSize = 0;
+      let offset = 0;
+      do {
+        // Get save data from plugin in maximum 16 MB blocks.
+        // LINT.IfChange(MaxSaveBufferSize)
+        const MAX_SAVE_BUFFER_SIZE = 16 * 1000 * 1000;
+        // LINT.ThenChange(//pdf/pdf_view_web_plugin.cc:MaxSaveBufferSize)
+
+        // `blockSize` will be 0 on the first call, since the total file size
+        // is not known yet.
+        const blockSize =
+            Math.min(totalFileSize - offset, MAX_SAVE_BUFFER_SIZE);
+
+        const result = await this.pluginController_.getSaveDataBlock(
+            requestType, offset, blockSize);
+        if (offset === 0) {
+          // Update `totalFileSize` after the first block of data is received.
+          totalFileSize = result.totalFileSize;
+          if (totalFileSize === 0) {
+            // File could not be saved.
+            throw new Error('File size is zero.');
+          }
+          verifyPdfHeader(result.dataToSave);
+          assert(result.dataToSave.byteLength !== 0);
+        } else {
+          assert(result.dataToSave.byteLength === blockSize);
+        }
+        offset += result.dataToSave.byteLength;
+        await writable.write(result.dataToSave);
+      } while (offset < totalFileSize);
+      await writable.close();
+      this.onSaveSuccessful_(requestType);
+    } catch (error: any) {
+      this.pluginController_.releaseSaveInBlockBuffers();
+      if (error.name !== 'AbortError') {
+        console.error('window.showSaveFilePicker failed: ' + error);
+      }
+    }
   }
 
   /**
