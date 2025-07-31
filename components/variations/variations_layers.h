@@ -68,6 +68,13 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsLayers {
       const LayerMemberReference& layer_member_reference,
       uint32_t layer_member_id);
 
+  // Returns the soon-to-be-deprecated `layer_member_id` field as a repeated
+  // field. This is a fallback if the `layer_member_ids` field of `ref` is
+  // empty.
+  // TODO: crbug.com/417695924 - Remove once layer_member_ids field is launched.
+  static google::protobuf::RepeatedField<uint32_t> FallbackLayerMemberIds(
+      const LayerMemberReference& ref);
+
   // Checks if the client's slot for that layer is associated with a layer
   // member. Returns whether the layer that's associated with the `layer_id` is
   // active. If not, for the same `layer_id`, IsLayerMemberActive() and

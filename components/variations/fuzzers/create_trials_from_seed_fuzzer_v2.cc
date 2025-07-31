@@ -9,11 +9,13 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_command_line.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/entropy_provider.h"
 #include "components/variations/fuzzers/create_trials_from_seed_test_case.pb.h"
 #include "components/variations/proto/study.pb.h"
+#include "components/variations/service/limited_entropy_randomization.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
 #include "components/variations/variations_test_utils.h"
@@ -128,11 +130,23 @@ void CreateTrialsFromSeedFuzzer(
     return;
   }
 
+  base::HistogramTester histogram_tester;
   auto seed = test_case.seed();
   VariationsLayers layers(seed, entropy_providers);
   VariationsSeedProcessor().CreateTrialsFromSeed(
       seed, *client_state, base::BindRepeating(NoopUIStringOverrideCallback),
       entropy_providers, layers, &feature_list);
+
+  // There are numerous conditions for which the seed could be rejected. They
+  // should all be caught during the initial seed validation. Post validation,
+  // when attempting to actually use the seed, there are some components which,
+  // for safety, repeat some of the validation and signal a generic "invalid
+  // configuration" rejection reason. This state should not be reachable in
+  // practice.
+  CHECK_EQ(histogram_tester.GetBucketCount(
+               kSeedRejectionReasonHistogram,
+               SeedRejectionReason::kInvalidLayerConfiguration),
+           0);
 }
 
 }  // namespace

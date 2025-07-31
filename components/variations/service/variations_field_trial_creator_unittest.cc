@@ -29,6 +29,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -168,31 +169,46 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy() {
 
   auto* layer = seed.add_layers();
   layer->set_id(1);
-  layer->set_num_slots(100);
+  layer->set_num_slots(1 << 20);
   layer->set_entropy_mode(Layer::LIMITED);
 
+  // Add a tiny member, using only 1 slot (20 bits of entropy)
   auto* layer_member = layer->add_members();
   layer_member->set_id(1);
   auto* slot = layer_member->add_slots();
   slot->set_start(0);
-  slot->set_end(99);
+  slot->set_end(0);
 
+  // For completeness, add a large member, using all but 1 slot.
+  layer_member = layer->add_members();
+  layer_member->set_id(2);
+  slot = layer_member->add_slots();
+  slot->set_start(1);
+  slot->set_end(layer->num_slots() - 1);
+
+  // Add a study that uses the tiny member.
   Study* study = seed.add_study();
   study->set_name(kTestLimitedLayerStudyName);
-
-  auto* experiment_1 = study->add_experiment();
-  experiment_1->set_name("experiment_very_small");
-  experiment_1->set_probability_weight(1);
-  experiment_1->set_google_web_experiment_id(100001);
-
-  auto* experiment_2 = study->add_experiment();
-  experiment_2->set_name("experiment");
-  experiment_2->set_probability_weight(999999);
-  experiment_1->set_google_web_experiment_id(100002);
-
   auto* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(1);
   layer_member_reference->add_layer_member_ids(1);
+
+  // Add all platforms to the study's filter.
+  auto* platforms = study->mutable_filter()->mutable_platform();
+  for (int p = static_cast<int>(Study_Platform_Platform_MIN);
+       p <= static_cast<int>(Study_Platform_Platform_MAX); ++p) {
+    platforms->Add(static_cast<Study_Platform>(p));
+  }
+
+  // Add 256 experiment arms, this uses an additional 8 bits of entropy. This
+  // should be enough to exceed the entropy limit of the tiny member on all
+  // platforms.
+  for (int i = 1; i <= 256; ++i) {
+    auto* experiment_1 = study->add_experiment();
+    experiment_1->set_name(base::StrCat({"arm_", base::NumberToString(i)}));
+    experiment_1->set_probability_weight(1);
+    experiment_1->set_google_web_experiment_id(100000 + i);
+  }
 
   return seed;
 }
