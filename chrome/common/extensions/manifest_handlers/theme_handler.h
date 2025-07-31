@@ -39,7 +39,7 @@ struct ThemeInfo : public Extension::ManifestData {
   // A map of display properties.
   base::Value::Dict theme_display_properties_;
 
-  // Maps a palette color key to a hue value (range: -1 to 359).
+  // Maps a palette color key to a hue value (range: -1 to 360).
   // Example:
   // {
   //   "grey_override": 230,
