@@ -11,6 +11,7 @@ source_set("features") {
     "//base",
     "//components/regional_capabilities",
     "//ios/chrome/browser/regional_capabilities/model",
+    "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/model/profile",
   ]
 }
@@ -103,6 +104,7 @@ source_set("first_run_provider") {
     ":features",
     ":field_trial",
     "//base",
+    "//components/regional_capabilities",
     "//components/search_engines",
     "//components/sync/base:features",
     "//ios/chrome/app:tests_hook",
@@ -110,6 +112,7 @@ source_set("first_run_provider") {
     "//ios/chrome/browser/first_run/ui_bundled/omnibox_position:omnibox_position_ui",
     "//ios/chrome/browser/passwords/model:features",
     "//ios/chrome/browser/policy/model",
+    "//ios/chrome/browser/regional_capabilities/model",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider",
     "//ios/chrome/browser/screen/ui_bundled:screen_provider_protected",
     "//ios/chrome/browser/screen/ui_bundled:screen_type",
@@ -180,6 +183,7 @@ source_set("eg2_tests") {
     "//components/policy/core/common:common_constants",
     "//components/policy/test_support",
     "//components/regional_capabilities",
+    "//components/regional_capabilities:test_support",
     "//components/search_engines",
     "//components/signin/internal/identity_manager",
     "//components/signin/ios/browser:features",

@@ -326,4 +326,12 @@
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
+- (void)verifyDefaultBrowserNotDisplayed {
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityID(
+              first_run::kFirstRunDefaultBrowserScreenAccessibilityIdentifier)]
+      assertWithMatcher:grey_notVisible()];
+}
+
 @end

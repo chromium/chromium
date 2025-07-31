@@ -2841,6 +2841,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMigrateAccountPrefsOnMobileName,
      flag_descriptions::kMigrateAccountPrefsOnMobileDescription,
      flags_ui::kOsIos, FEATURE_VALUE_TYPE(syncer::kMigrateAccountPrefs)},
+    {"ios-skip-fre-default-browser-promo-in-eea",
+     flag_descriptions::kSkipDefaultBrowserPromoInFirstRunName,
+     flag_descriptions::kSkipDefaultBrowserPromoInFirstRunDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(first_run::kSkipDefaultBrowserPromoInFirstRun)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

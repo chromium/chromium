@@ -84,6 +84,9 @@ BASE_DECLARE_FEATURE(kBestFeaturesScreenInFirstRun);
 // Flag to enable manual metrics log uploads in the FRE screens.
 BASE_DECLARE_FEATURE(kManualLogUploadsInTheFRE);
 
+// Flag to skip the Default Browser Promo from the FRE in the EU/EEA.
+BASE_DECLARE_FEATURE(kSkipDefaultBrowserPromoInFirstRun);
+
 // Feature to enable updates to the sequence of the first run screens.
 BASE_DECLARE_FEATURE(kUpdatedFirstRunSequence);
 

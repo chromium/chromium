@@ -1511,6 +1511,12 @@ const char kSignInButtonNoAvatarName[] =
 const char kSignInButtonNoAvatarDescription[] =
     "When enabled, the sign-in button is shown without an avatar on the NTP.";
 
+const char kSkipDefaultBrowserPromoInFirstRunName[] =
+    "Skip the FRE Default Browser Promo in EEA";
+const char kSkipDefaultBrowserPromoInFirstRunDescription[] =
+    "When enabled, users in the EEA will not see a Default Browser Promo in "
+    "the FRE.";
+
 const char kNTPBackgroundCustomizationName[] =
     "Enable background customization menu on the NTP";
 const char kNTPBackgroundCustomizationDescription[] =

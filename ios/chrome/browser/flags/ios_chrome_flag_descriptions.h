@@ -884,6 +884,9 @@ extern const char kShowAutofillTypePredictionsDescription[];
 extern const char kSignInButtonNoAvatarName[];
 extern const char kSignInButtonNoAvatarDescription[];
 
+extern const char kSkipDefaultBrowserPromoInFirstRunName[];
+extern const char kSkipDefaultBrowserPromoInFirstRunDescription[];
+
 extern const char kNTPBackgroundCustomizationName[];
 extern const char kNTPBackgroundCustomizationDescription[];
 
