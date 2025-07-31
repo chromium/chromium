@@ -35,6 +35,7 @@ source_set("cells") {
   deps = [
     ":constants",
     "//base",
+    "//components/favicon_base",
     "//components/ntp_tiles",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/content_suggestions/ui_bundled:constants",
@@ -43,6 +44,7 @@ source_set("cells") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells/resources",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:constants",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:magic_stack_module_content_view_delegate",
+    "//ios/chrome/browser/favicon/ui_bundled",
     "//ios/chrome/browser/ntp/ui_bundled:color",
     "//ios/chrome/browser/ntp/ui_bundled:constants",
     "//ios/chrome/browser/shared/public/features",

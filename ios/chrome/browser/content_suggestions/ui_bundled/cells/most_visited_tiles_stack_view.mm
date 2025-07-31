@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_image_data_source.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_utils.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/favicon/favicon_attributes.h"
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
@@ -64,7 +65,12 @@
       }
 
       strongItem.attributes = attributes;
-      [strongView.faviconView configureWithAttributes:attributes];
+
+      if (IsNTPBackgroundCustomizationEnabled()) {
+        [strongView applyBackgroundColors];
+      } else {
+        [strongView.faviconView configureWithAttributes:attributes];
+      }
     };
     [config.imageDataSource fetchFaviconForURL:item.URL completion:completion];
     UITapGestureRecognizer* tapRecognizer = [[UITapGestureRecognizer alloc]

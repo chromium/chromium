@@ -49,6 +49,9 @@
 // The original seed color used to generate the palette.
 @property(nonatomic, strong) UIColor* seedColor;
 
+// The color used for the monograms.
+@property(nonatomic, strong) UIColor* monogramColor;
+
 // The color scheme variant that was used along with the seed color to generate
 // the palette.
 @property(nonatomic, assign) ui::ColorProviderKey::SchemeVariant variant;

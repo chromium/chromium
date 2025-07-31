@@ -5,12 +5,14 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_tile_view.h"
 
 #import "base/check.h"
+#import "components/favicon_base/fallback_icon_style.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_cells_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/content_suggestions_most_visited_item.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/cells/most_visited_tiles_commands.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_menu_elements_provider.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
+#import "ios/chrome/browser/favicon/ui_bundled/favicon_attributes_with_payload.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -19,6 +21,7 @@
 #import "ios/chrome/common/ui/favicon/favicon_view.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "skia/ext/skia_utils_ios.h"
 #import "ui/base/l10n/l10n_util.h"
 
 @interface ContentSuggestionsMostVisitedTileView ()
@@ -196,6 +199,50 @@
   return YES;
 }
 
+#pragma mark - NewTabPageColorUpdating
+
+- (void)applyBackgroundColors {
+  NewTabPageColorPalette* colorPalette =
+      [self.traitCollection objectForNewTabPageTrait];
+
+  // Favicon monogram will only be applied if defaultBackgroundColor is set.
+  if (_config.attributes && _config.attributes.defaultBackgroundColor) {
+    if (colorPalette) {
+      // If a color palette is available, apply its tint and background
+      // colors to the attributes while preserving the other attributes.
+      _config.attributes = [FaviconAttributesWithPayload
+          attributesWithMonogram:_config.attributes.monogramString
+                       textColor:colorPalette.secondaryCellColor
+                 backgroundColor:colorPalette.monogramColor
+          defaultBackgroundColor:_config.attributes.defaultBackgroundColor];
+    } else {
+      // If no color palette is available, fall back to default icon style
+      // colors.
+      std::unique_ptr<favicon_base::FallbackIconStyle> default_icon_style =
+          std::make_unique<favicon_base::FallbackIconStyle>();
+
+      _config.attributes = [FaviconAttributesWithPayload
+          attributesWithMonogram:_config.attributes.monogramString
+                       textColor:skia::UIColorFromSkColor(
+                                     default_icon_style->text_color)
+                 backgroundColor:skia::UIColorFromSkColor(
+                                     default_icon_style->background_color)
+          defaultBackgroundColor:default_icon_style->
+                                 is_default_background_color];
+    }
+  }
+
+  // Update the favicon view with the new attributes.
+  [self.faviconView configureWithAttributes:_config.attributes];
+
+  if (colorPalette) {
+    self.imageContainerView.backgroundColor = colorPalette.tertiaryColor;
+  } else {
+    self.imageContainerView.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+  }
+}
+
 #pragma mark - Private
 
 // Registers a list of UITraits to observe and invokes the
@@ -205,20 +252,6 @@
   if (IsNTPBackgroundCustomizationEnabled()) {
     [self registerForTraitChanges:@[ NewTabPageTrait.class ]
                        withAction:@selector(applyBackgroundColors)];
-  }
-}
-
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundColors {
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-
-  if (colorPalette) {
-    self.imageContainerView.backgroundColor = colorPalette.tertiaryColor;
-  } else {
-    self.imageContainerView.backgroundColor =
-        [UIColor colorNamed:kGrey100Color];
   }
 }
 
