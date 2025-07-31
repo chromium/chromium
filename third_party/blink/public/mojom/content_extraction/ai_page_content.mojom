@@ -156,6 +156,9 @@ enum AIPageContentClickabilityReason {
   // control is currently collapsed.
   kAriaExpandedFalse,
 
+  // The node has the tabIndex attribute set to a valid value.
+  kTabIndex,
+
   // The node has autocomplete, as indicated by the same-named attribute or
   // aria-autocomplete.
   kAutocomplete,

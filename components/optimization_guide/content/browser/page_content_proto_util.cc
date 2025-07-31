@@ -46,6 +46,8 @@ optimization_guide::proto::ClickabilityReason ConvertClickabilityReason(
       return optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_TRUE;
     case blink::mojom::AIPageContentClickabilityReason::kAriaExpandedFalse:
       return optimization_guide::proto::CLICKABILITY_REASON_ARIA_EXPANDED_FALSE;
+    case blink::mojom::AIPageContentClickabilityReason::kTabIndex:
+      return optimization_guide::proto::CLICKABILITY_REASON_TAB_INDEX;
     case blink::mojom::AIPageContentClickabilityReason::kAutocomplete:
       return optimization_guide::proto::CLICKABILITY_REASON_AUTOCOMPLETE;
   }

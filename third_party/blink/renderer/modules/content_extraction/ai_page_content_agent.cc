@@ -280,6 +280,10 @@ void AddClickabilityReasons(
        aria_autocomplete == "both")) {
     interaction_info.clickability_reasons.push_back(Reason::kAutocomplete);
   }
+
+  if (element.HasTabIndexWasSetExplicitly()) {
+    interaction_info.clickability_reasons.push_back(Reason::kTabIndex);
+  }
 }
 
 bool ShouldSkipSubtree(const LayoutObject& object) {

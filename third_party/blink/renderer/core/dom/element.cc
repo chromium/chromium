@@ -7769,6 +7769,10 @@ bool Element::IsClickableFormControlNode() const {
   return false;
 }
 
+bool Element::HasTabIndexWasSetExplicitly() const {
+  return HasElementFlag(ElementFlags::kTabIndexWasSetExplicitly);
+}
+
 bool Element::IsFocusable(UpdateBehavior update_behavior) const {
   return IsFocusableState(update_behavior) != FocusableState::kNotFocusable;
 }

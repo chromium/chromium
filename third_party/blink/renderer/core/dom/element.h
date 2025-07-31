@@ -1771,6 +1771,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
 
   bool IsClickableFormControlNode() const;
 
+  bool HasTabIndexWasSetExplicitly() const;
+
  protected:
   bool HasElementData() const { return static_cast<bool>(element_data_); }
   const ElementData* GetElementData() const { return element_data_.Get(); }
