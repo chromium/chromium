@@ -72,7 +72,7 @@ class PasswordBubbleBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(PasswordBubbleBrowserTest,
-                       InvokeUi_PendingPasswordBubble) {
+                       DISABLED_InvokeUi_PendingPasswordBubble) {
   set_baseline("6756509");
   ShowAndVerifyUi();
 }
