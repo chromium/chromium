@@ -288,8 +288,6 @@ class CORE_EXPORT StyleResolver final : public GarbageCollected<StyleResolver> {
     return computed_style_bytes_used_;
   }
 
-  void ApplyTriggerData(StyleResolverState& state);
-
   void Trace(Visitor*) const;
 
  private:

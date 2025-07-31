@@ -133,9 +133,6 @@ class CORE_EXPORT CSSAnimations final {
                                    CSSAnimationUpdate&,
                                    ComputedStyleBuilder&);
 
-  static void UpdateNamedTriggers(const ComputedStyleBuilder& style_builder,
-                                  Element& element);
-
   const CSSAnimationUpdate& PendingUpdate() const { return pending_update_; }
   void SetPendingUpdate(const CSSAnimationUpdate& update) {
     ClearPendingUpdate();
@@ -468,13 +465,14 @@ class CORE_EXPORT CSSAnimations final {
       TransitionUpdateState& state,
       const PropertyHandle& transitioning_property);
 
-  static AnimationTrigger* ComputeTimelineTrigger(
-      const CSSAnimationData* data,
-      wtf_size_t animation_index,
-      const CSSAnimationUpdate& update,
-      float zoom,
-      Element* element,
-      AnimationTrigger* existing_trigger);
+  // TODO(crbug.com/429392773): Uncomment and use this function.
+  // static AnimationTrigger* ComputeTimelineTrigger(
+  //     Element* element,
+  //     const CSSAnimationData* data,
+  //     wtf_size_t animation_index,
+  //     const CSSAnimationUpdate& update,
+  //     AnimationTrigger* existing_trigger,
+  //     float zoom);
 
   class AnimationEventDelegate final : public AnimationEffect::EventDelegate {
    public:
