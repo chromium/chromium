@@ -91,7 +91,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             ChromeFeatureList.sCctBlockTouchesDuringEnterAnimation.isEnabled();
     private boolean mIsEnterAnimationCompleted;
     private @Nullable AuxiliarySearchController mAuxiliarySearchController;
-
+    private CustomTabActivityTimeoutHandler mTimeoutHandler;
     private final CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
                 @Override
@@ -145,10 +145,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     @Override
     public void performPreInflationStartup() {
         super.performPreInflationStartup();
+        var savedInstanceState = getSavedInstanceState();
+        mTimeoutHandler = new CustomTabActivityTimeoutHandler(this::finish, getIntent());
+
         // If the activity is being recreated, #onEnterAnimationComplete() doesn't get called.
         // So, we need to manually set mIsEnterAnimationCompleted to true. See crbug.com/399194973.
         if (sBlockTouchesDuringEnterAnimation) {
-            var savedInstanceState = getSavedInstanceState();
             if (savedInstanceState != null) {
                 mIsEnterAnimationCompleted = true;
             }
@@ -171,6 +173,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
                         && mEdgeToEdgeControllerSupplier.get().isPageOptedIntoEdgeToEdge();
         CustomTabNavigationBarController.update(
                 getWindow(), getIntentDataProvider(), this, drawEdgeToEdge);
+
+        mTimeoutHandler.restoreInstanceState(savedInstanceState);
     }
 
     @Override
@@ -265,6 +269,12 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    public void onResume() {
+        if (mTimeoutHandler != null) mTimeoutHandler.onResume();
+        super.onResume();
+    }
+
+    @Override
     public void onPause() {
         super.onPause();
 
@@ -277,7 +287,14 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     }
 
     @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        if (mTimeoutHandler != null) mTimeoutHandler.onSaveInstanceState(outState);
+        super.onSaveInstanceState(outState);
+    }
+
+    @Override
     protected void onUserLeaveHint() {
+        if (mTimeoutHandler != null) mTimeoutHandler.onUserLeaveHint();
         if (mOpenTimeRecorder != null) mOpenTimeRecorder.onUserLeaveHint();
         super.onUserLeaveHint();
     }
