@@ -9,6 +9,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/hash/md5.h"
+#import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/task_traits.h"
 #import "base/task/thread_pool.h"
@@ -17,6 +18,7 @@
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/prefs/scoped_user_pref_update.h"
+#import "ios/chrome/browser/download/model/auto_deletion/auto_deletion_histograms.h"
 #import "ios/chrome/browser/download/model/auto_deletion/scheduled_file.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
@@ -42,6 +44,9 @@ void RemoveScheduledFilesHelper(
   // Delete the files from the file system.
   std::string buffer;
   for (const auto& file : files_to_delete) {
+    base::UmaHistogramEnumeration(
+        kAutoDeletionServiceActionsHistogram,
+        AutoDeletionServiceActions::kScheduledFileIdentifiedForRemoval);
     NSString* filename =
         base::apple::FilePathToNSString(file.filepath().BaseName());
     NSFileManager* manager = [NSFileManager defaultManager];
@@ -53,12 +58,25 @@ void RemoveScheduledFilesHelper(
     NSString* path = URL.absoluteURL.path;
 
     if (![manager fileExistsAtPath:path]) {
+      // TODO(crbug.com/433728890): Log failure type to histogram.
       continue;
     }
+
     const std::string hash = HashDownloadData(base::as_byte_span(buffer));
-    if (hash == file.hash()) {
-      [manager removeItemAtPath:path error:nil];
+    if (hash != file.hash()) {
+      // TODO(crbug.com/433728890): Log failure type to histogram.
+      return;
     }
+
+    NSError* error;
+    [manager removeItemAtPath:path error:&error];
+    if (error) {
+      // TODO(crbug.com/433728890): Log failure type to histogram.
+      return;
+    }
+    base::UmaHistogramEnumeration(
+        kAutoDeletionServiceActionsHistogram,
+        AutoDeletionServiceActions::kScheduledFileRemovedFromDevice);
   }
 }
 
@@ -146,6 +164,9 @@ void AutoDeletionService::ScheduleFileForDeletion(web::DownloadTask* task) {
         HashDownloadData(base::apple::NSDataToSpan(details.file_content)),
         base::Time::Now());
     scheduler_.ScheduleFile(file);
+    base::UmaHistogramEnumeration(
+        kAutoDeletionServiceActionsHistogram,
+        AutoDeletionServiceActions::kFileScheduledForAutoDeletion);
   }
   tasks_awaiting_scheduling_.erase(iterator);
 }

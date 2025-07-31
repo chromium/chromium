@@ -1,5 +1,7 @@
 source_set("auto_deletion") {
   sources = [
+    "auto_deletion_histograms.h",
+    "auto_deletion_histograms.mm",
     "auto_deletion_service.h",
     "auto_deletion_service.mm",
     "scheduled_file.h",

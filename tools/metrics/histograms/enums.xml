@@ -781,6 +781,12 @@ uploading your change for review.  These are checked by presubmit scripts.
   <int value="50" label="Unrecognized"/>
 </enum>
 
+<enum name="AutoDeletionServiceActionsType">
+  <int value="0" label="FileScheduledForAutoDeletion"/>
+  <int value="1" label="ScheduledFileIdentifiedForRemoval"/>
+  <int value="2" label="ScheduledFileRemovedFromDevice"/>
+</enum>
+
 <enum name="AutoScreenBrightnessAlsReaderStatus">
   <int value="0" label="Success"/>
   <int value="1" label="InProgress"/>
