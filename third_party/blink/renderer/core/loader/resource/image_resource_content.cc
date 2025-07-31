@@ -56,7 +56,6 @@ class NullImageResourceInfo final
       DoesCurrentFrameHaveSingleSecurityOrigin) const override {
     return true;
   }
-  bool HasCacheControlNoStoreHeader() const override { return false; }
   std::optional<ResourceError> GetResourceError() const override {
     return std::nullopt;
   }
@@ -712,10 +711,6 @@ base::TimeTicks ImageResourceContent::LoadEnd() const {
 
 base::TimeTicks ImageResourceContent::LoadResponseEnd() const {
   return info_->LoadResponseEnd();
-}
-
-bool ImageResourceContent::HasCacheControlNoStoreHeader() const {
-  return info_->HasCacheControlNoStoreHeader();
 }
 
 float ImageResourceContent::DevicePixelRatioHeaderValue() const {

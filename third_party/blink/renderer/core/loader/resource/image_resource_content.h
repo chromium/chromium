@@ -147,8 +147,6 @@ class CORE_EXPORT ImageResourceContent final
   std::optional<ResourceError> GetResourceError() const;
 
   // For FrameSerializer.
-  bool HasCacheControlNoStoreHeader() const;
-
   void EmulateLoadStartedForInspector(ResourceFetcher*,
                                       const AtomicString& initiator_name);
 

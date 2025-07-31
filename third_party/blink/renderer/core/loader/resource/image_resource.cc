@@ -210,9 +210,6 @@ class ImageResource::ImageResourceInfoImpl final
     return resource_->IsAccessAllowed(
         does_current_frame_has_single_security_origin);
   }
-  bool HasCacheControlNoStoreHeader() const override {
-    return resource_->HasCacheControlNoStoreHeader();
-  }
   std::optional<ResourceError> GetResourceError() const override {
     if (resource_->LoadFailedOrCanceled())
       return resource_->GetResourceError();
