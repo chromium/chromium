@@ -433,6 +433,63 @@ that implementation object alive. However, your implementation object has no
 inherent influence over the lifetime of the connection (after all, you're just
 implementing an interface).
 
+
+## Result<T,E> return methods
+
+`result<T,E>` responses are a way to communicate method success or failure. It is
+syntactic sugar on top of [mojo unions](/mojo/public/tools/bindings/README.md#unions).
+For more information about how and when it should be used, refer to the the
+[mojo IDL document](/mojo/public/tools/bindings/README.md#Result-response).
+
+The Java binding uses a [Result](/mojo/public/java/bindings/src/org/chromium/mojo/bindings/Result.java)
+container to resepresent responses for `result<T,E>` return methods.
+`Result#get()` is used to retrieve success results and `Result#getError()`
+is used to get failure results. Users must check `result#isSuccess()` before
+accessing the result. If an invalid access if performed, a
+`NoSuchElementException` will be thrown. If we were to rewrite the error
+handling [Union](#unions) section above with `result<T, E>`, this is what it
+would look like:
+
+```mojom
+
+interface CoffeeMachine {
+    // No need to declare the BrewCoffeeResponse union. The previous cups_of_coffee
+    // is the successful result. The error_message is the failure result.
+    BrewCoffee() => result<uint64, string>;
+};
+```
+
+To make IPC calls:
+
+```java
+// imagine if coffeeMachine is of type CoffeeMachine.proxy.
+coffeeMachine.BrewCoffee(new CoffeeMachine.BrewCoffee_Response() {
+    @override
+    public void call(Result<Integer, String> result) {
+        if (result.isSuccess()) {
+            Log.i("success! cups of coffee is: " + result.get())
+        } else {
+            Log.i("failure! error message is: " + result.getError());
+        }
+    }
+});
+```
+
+To receive IPC calls:
+```java
+class CofeeMachineImpl implements CoffeeMachine {
+    @Override
+    public void brewCoffee(CofeeMachine.BrewCoffee_Response callback) {
+        if (/** success */) {
+            callback.call(Result.of(4));
+        } else {
+            callback.call(Result.ofError("outta beans!"));
+        }
+
+    }
+}
+```
+
 # Registering, mapping, binding, and passing interfaces
 
 ## Working with interface brokers
