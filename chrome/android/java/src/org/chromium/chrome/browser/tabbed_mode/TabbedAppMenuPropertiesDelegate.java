@@ -682,7 +682,9 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     private boolean shouldShowReaderModeItem(@Nullable Tab currentTab) {
-        return currentTab != null && DomDistillerFeatures.showAlwaysOnEntryPoint();
+        return currentTab != null
+                && (DomDistillerFeatures.showAlwaysOnEntryPoint()
+                        || DomDistillerFeatures.sReaderModeDistillInApp.isEnabled());
     }
 
     private MVCListAdapter.ListItem buildReaderModeItem(Tab currentTab) {
