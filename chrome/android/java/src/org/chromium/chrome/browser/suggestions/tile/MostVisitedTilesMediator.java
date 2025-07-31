@@ -163,14 +163,38 @@ public class MostVisitedTilesMediator implements TileGroup.Observer {
     }
 
     /**
-     * Updates the visibility of the Most Visited Tiles section. The section is visible if and only
-     * if the user has chosen to show it and there are tiles to display.
+     * Sets the visibility of the Most Visited Tiles (MVT) section.
+     *
+     * <p>If the `NewTabPageCustomizationForMvt` feature is disabled: The section is visible as long
+     * as it has content, which means there are either tiles to show or custom links are enabled
+     * (showing the "Add new" button).
+     *
+     * <p>If the `NewTabPageCustomizationForMvt` feature is enabled: Visibility is also controlled
+     * by a user accessible toggle. The section will only be visible if the user has the toggle
+     * turned on and the section has content.
+     *
+     * <p>Once the MVT customization feature flag is enabled by default, the code should be changed
+     * to:
+     *
+     * <p>boolean isMvtVisible = !ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled() ||
+     * NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
+     *
+     * <p>mModel.set(IS_VISIBLE, isMvtVisible);
      */
     void updateMvtVisibility() {
-        mModel.set(
-                IS_VISIBLE,
-                NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn()
-                        && !mTileGroup.isEmpty());
+        // The section has content if the "Add new" button is present or there are tiles.
+        boolean hasContent =
+                ChromeFeatureList.sMostVisitedTilesCustomization.isEnabled()
+                        || (mTileGroup != null && !mTileGroup.isEmpty());
+
+        boolean isMvtVisible = hasContent;
+        if (ChromeFeatureList.sNewTabPageCustomizationForMvt.isEnabled()) {
+            // The toggle turns off the whole MVT section regardless the section has something to
+            // show.
+            isMvtVisible &= NtpCustomizationConfigManager.getInstance().getPrefIsMvtToggleOn();
+        }
+
+        mModel.set(IS_VISIBLE, isMvtVisible);
     }
 
     @Override
