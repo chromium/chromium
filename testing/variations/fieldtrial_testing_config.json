@@ -18956,41 +18956,13 @@
             ],
             "experiments": [
                 {
-                    "name": "EnabledAll",
+                    "name": "EnabledAll_20250731",
                     "enable_features": [
                         "ChangeUnfocusedPriority",
                         "ProcessRankPolicyAndroid",
-                        "ProtectedTabsAndroid"
-                    ]
-                },
-                {
-                    "name": "EnabledProcessRankPolicyAndroid",
-                    "enable_features": [
-                        "ProcessRankPolicyAndroid"
-                    ],
-                    "disable_features": [
-                        "ChangeUnfocusedPriority",
-                        "ProtectedTabsAndroid"
-                    ]
-                },
-                {
-                    "name": "EnabledChangeUnfocusedPriority",
-                    "enable_features": [
-                        "ChangeUnfocusedPriority"
-                    ],
-                    "disable_features": [
-                        "ProcessRankPolicyAndroid",
-                        "ProtectedTabsAndroid"
-                    ]
-                },
-                {
-                    "name": "EnabledProtectedTabsAndroid",
-                    "enable_features": [
-                        "ProcessRankPolicyAndroid",
-                        "ProtectedTabsAndroid"
-                    ],
-                    "disable_features": [
-                        "ChangeUnfocusedPriority"
+                        "ProtectedTabsAndroid",
+                        "SubframeImportance",
+                        "SubframePriorityContribution"
                     ]
                 }
             ]
@@ -23114,26 +23086,6 @@
             ]
         }
     ],
-    "ShouldContributePriorityToProcessByFrameLifecycle": [
-        {
-            "platforms": [
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ShouldContributePriorityToProcessByFrameLifecycle"
-                    ]
-                }
-            ]
-        }
-    ],
     "ShowNewTabAnimationsAndroid": [
         {
             "platforms": [
@@ -23913,22 +23865,6 @@
                     "name": "Enabled_20250728",
                     "enable_features": [
                         "StrictHighRankProcessLRU"
-                    ]
-                }
-            ]
-        }
-    ],
-    "SubframeImportance": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SubframeImportance",
-                        "SubframePriorityContribution"
                     ]
                 }
             ]
