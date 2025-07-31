@@ -54,6 +54,11 @@ class VersioningMessageController {
   // callback is called synchronously.
   // See comments on MessageType for when the UI should inform this class about
   // display / dismissed events.
+  //
+  // NOTE: For MessageType::VERSION_UPDATED_MESSAGE, this method has a special
+  // behavior. The callback may be deferred until a shared tab group has been
+  // downloaded. If no shared tab group is ever added during the session, the
+  // callback may not be invoked at all.
   virtual void ShouldShowMessageUiAsync(
       MessageType message_type,
       base::OnceCallback<void(bool)> callback) = 0;

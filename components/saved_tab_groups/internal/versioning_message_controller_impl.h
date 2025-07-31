@@ -38,9 +38,12 @@ class VersioningMessageControllerImpl : public VersioningMessageController,
 
   // TabGroupSyncService::Observer implementation.
   void OnInitialized() override;
+  void OnTabGroupAdded(const SavedTabGroup& group,
+                       TriggerSource source) override;
 
  private:
   void ComputePrefsOnStartup();
+  void MaybeResolvePendingVersionUpdatedCallbacks();
 
   raw_ptr<PrefService> pref_service_;
   raw_ptr<TabGroupSyncService> tab_group_sync_service_;
@@ -50,6 +53,12 @@ class VersioningMessageControllerImpl : public VersioningMessageController,
 
   // Whether the TabGroupSyncService has been initialized.
   bool is_initialized_ = false;
+
+  // Callbacks for VERSION_UPDATED_MESSAGE waiting for a final state
+  // determination.
+  std::vector<base::OnceCallback<void(bool)>>
+      pending_version_updated_callbacks_;
+  bool processed_version_updated_callbacks_ = false;
 
   base::WeakPtrFactory<VersioningMessageControllerImpl> weak_ptr_factory_{this};
 };

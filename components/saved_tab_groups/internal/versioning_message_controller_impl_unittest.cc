@@ -69,6 +69,14 @@ class VersioningMessageControllerImplTest : public testing::Test {
             testing::Return(std::vector<const SavedTabGroup*>({&tab_group1_})));
   }
 
+  void MimicTabGroupAdded(bool is_shared_group) {
+    if (is_shared_group) {
+      tab_group1_.SetCollaborationId(CollaborationId("collaboration_id"));
+    }
+    SetTabGroupSyncServiceCurrentExpectation(is_shared_group);
+    controller_->OnTabGroupAdded(tab_group1_, TriggerSource::REMOTE);
+  }
+
   void InitializeController() {
     controller_ = std::make_unique<VersioningMessageControllerImpl>(
         &pref_service_, &mock_tab_group_sync_service_);
@@ -329,6 +337,97 @@ TEST_F(VersioningMessageControllerImplTest,
   EXPECT_FALSE(callback_called);
   controller_->OnInitialized();
   EXPECT_TRUE(callback_called);
+}
+
+TEST_F(VersioningMessageControllerImplTest,
+       VersionUpdatedCallback_WaitsForGroup) {
+  // Setup: Eligible for updated message, but no shared groups yet.
+  SetupFeatureList(/*version_up_to_date=*/true);
+  SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
+  SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
+  InitializeController();
+
+  base::RunLoop run_loop;
+  bool result = false;
+  controller_->ShouldShowMessageUiAsync(
+      MessageType::VERSION_UPDATED_MESSAGE,
+      base::BindOnce(
+          [](base::RunLoop* run_loop, bool* result, bool received_value) {
+            *result = received_value;
+            run_loop->Quit();
+          },
+          &run_loop, &result));
+
+  // The callback should not have been called yet because we are waiting for a
+  // shared group to be added.
+  task_environment_.RunUntilIdle();
+
+  // Simulate a shared group being added.
+  MimicTabGroupAdded(/*is_shared_group=*/true);
+
+  // Now the callback should be called with true, quitting the run loop.
+  run_loop.Run();
+  EXPECT_TRUE(result);
+}
+
+TEST_F(VersioningMessageControllerImplTest,
+       VersionUpdatedCallback_ResolvesImmediatelyIfIneligible) {
+  // Setup: Not eligible for updated message because version is out of date.
+  SetupFeatureList(/*version_up_to_date=*/false);
+  SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
+  SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
+  InitializeController();
+
+  // The callback should be called immediately with false.
+  EXPECT_FALSE(
+      RunShouldShowMessageUiAsync(MessageType::VERSION_UPDATED_MESSAGE));
+}
+
+TEST_F(VersioningMessageControllerImplTest,
+       VersionUpdatedCallback_ResolvesImmediatelyIfGroupExists) {
+  // Setup: Eligible and a shared group already exists.
+  SetupFeatureList(/*version_up_to_date=*/true);
+  SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
+  SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ true);
+  InitializeController();
+
+  // The callback should be called immediately with true.
+  EXPECT_TRUE(
+      RunShouldShowMessageUiAsync(MessageType::VERSION_UPDATED_MESSAGE));
+}
+
+TEST_F(VersioningMessageControllerImplTest,
+       VersionUpdatedCallback_MultipleCallbacksAreQueued) {
+  // Setup: Eligible for updated message, but no shared groups yet.
+  SetupFeatureList(/*version_up_to_date=*/true);
+  SetPref(prefs::kHasShownAnyVersionOutOfDateMessage, true);
+  SetTabGroupSyncServiceCurrentExpectation(/*has_shared_tab_groups*/ false);
+  InitializeController();
+
+  bool first_callback_called = false;
+  bool second_callback_called = false;
+
+  controller_->ShouldShowMessageUiAsync(
+      MessageType::VERSION_UPDATED_MESSAGE,
+      base::BindOnce([](bool* called, bool /*result*/) { *called = true; },
+                     &first_callback_called));
+  controller_->ShouldShowMessageUiAsync(
+      MessageType::VERSION_UPDATED_MESSAGE,
+      base::BindOnce([](bool* called, bool /*result*/) { *called = true; },
+                     &second_callback_called));
+
+  // No callbacks should have been called yet.
+  task_environment_.RunUntilIdle();
+  EXPECT_FALSE(first_callback_called);
+  EXPECT_FALSE(second_callback_called);
+
+  // Simulate a shared group being added.
+  MimicTabGroupAdded(/*is_shared_group=*/true);
+
+  // Both callbacks should now be called.
+  task_environment_.RunUntilIdle();
+  EXPECT_TRUE(first_callback_called);
+  EXPECT_TRUE(second_callback_called);
 }
 
 TEST_F(VersioningMessageControllerImplTest, MultipleRestarts) {
