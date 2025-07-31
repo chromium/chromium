@@ -6,29 +6,27 @@ import("//chromecast/chromecast.gni")
 import("//chromecast/starboard/starboard.gni")
 
 cast_source_set("starboard_decryptor_cast") {
-  sources = [
-    "starboard_decryptor_cast.cc",
-    "starboard_decryptor_cast.h",
-  ]
+  public = [ "starboard_decryptor_cast.h" ]
+  sources = [ "starboard_decryptor_cast.cc" ]
 
-  deps = [
-    ":starboard_drm_key_tracker",
+  public_deps = [
     ":starboard_drm_wrapper",
     "//base",
-    "//chromecast/media/base",
     "//chromecast/media/cdm",
+    "//media",
+  ]
+  deps = [
+    ":starboard_drm_key_tracker",
+    "//chromecast/media/base",
     "//chromecast/starboard/chromecast/starboard_adapter",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
     "//google_apis",
-    "//media",
   ]
 }
 
 cast_source_set("starboard_drm_wrapper") {
-  sources = [
-    "starboard_drm_wrapper.cc",
-    "starboard_drm_wrapper.h",
-  ]
+  public = [ "starboard_drm_wrapper.h" ]
+  sources = [ "starboard_drm_wrapper.cc" ]
   public_deps = [
     "//base",
     "//chromecast/starboard/media/media:starboard_api_wrapper",
@@ -37,12 +35,10 @@ cast_source_set("starboard_drm_wrapper") {
 }
 
 cast_source_set("starboard_drm_key_tracker") {
-  sources = [
-    "starboard_drm_key_tracker.cc",
-    "starboard_drm_key_tracker.h",
-  ]
+  public = [ "starboard_drm_key_tracker.h" ]
+  sources = [ "starboard_drm_key_tracker.cc" ]
 
-  deps = [ "//base" ]
+  public_deps = [ "//base" ]
 }
 
 test("starboard_cdm_unittests") {
