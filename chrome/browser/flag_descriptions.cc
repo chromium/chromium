@@ -7203,6 +7203,10 @@ const char kImeUsEnglishModelUpdateName[] =
 const char kImeUsEnglishModelUpdateDescription[] =
     "Enable updated US English IME language models for native IME";
 
+const char kJupiterScreensaverName[] = "Jupiter screensaver";
+const char kJupiterScreensaverDescription[] =
+    "Enable Jupiter screensaver on more device types.";
+
 const char kCrosComponentsName[] = "Cros Components";
 const char kCrosComponentsDescription[] =
     "Enable cros-component UI elements, replacing other elements.";

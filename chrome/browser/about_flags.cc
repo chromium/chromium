@@ -5348,6 +5348,9 @@ const FeatureEntry kFeatureEntries[] = {
     {"use-dhcpcd10", flag_descriptions::kUseDHCPCD10Name,
      flag_descriptions::kUseDHCPCD10Description, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kUseDHCPCD10)},
+    {"jupiter-screensaver", flag_descriptions::kJupiterScreensaverName,
+     flag_descriptions::kJupiterScreensaverDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kJupiterScreensaver)},
 #endif  // BUILDFLAG(IS_CHROMEOS)
     {
         "disable-accelerated-video-decode",

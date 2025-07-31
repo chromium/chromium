@@ -4157,6 +4157,9 @@ extern const char kImeSystemEmojiPickerVariantGroupingDescription[];
 extern const char kImeUsEnglishModelUpdateName[];
 extern const char kImeUsEnglishModelUpdateDescription[];
 
+extern const char kJupiterScreensaverName[];
+extern const char kJupiterScreensaverDescription[];
+
 extern const char kCrosComponentsName[];
 extern const char kCrosComponentsDescription[];
 
