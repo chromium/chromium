@@ -43,6 +43,7 @@ class MockContextualCueingService : public ContextualCueingService {
               (std::vector<content::WebContents*>,
                bool,
                std::optional<std::vector<std::string>>,
+               const content::WebContents*,
                GlicSuggestionsCallback));
 };
 

@@ -35,7 +35,9 @@ class ZeroStateSuggestionsRequest {
       OptimizationGuideKeyedService* optimization_guide_keyed_service,
       const optimization_guide::proto::ZeroStateSuggestionsRequest&
           pending_base_request,
-      const std::vector<content::WebContents*>& requested_tabs);
+      const std::vector<content::WebContents*>& requested_tabs,
+      const content::WebContents* focused_tab);
+
   ~ZeroStateSuggestionsRequest();
 
   // Adds a callback for this pending request that gets invoked when suggestions

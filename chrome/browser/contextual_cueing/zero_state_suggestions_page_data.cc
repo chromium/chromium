@@ -379,6 +379,8 @@ ZeroStateSuggestionsPageData::ConstructPageContextProto() const {
 
   optimization_guide::proto::ZeroStatePageContext zero_state_page_context;
   *zero_state_page_context.mutable_page_context() = page_context;
+  zero_state_page_context.set_is_focused(is_focused_);
+
   return zero_state_page_context;
 }
 

@@ -22,7 +22,8 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
     OptimizationGuideKeyedService* optimization_guide_keyed_service,
     const optimization_guide::proto::ZeroStateSuggestionsRequest&
         pending_base_request,
-    const std::vector<content::WebContents*>& requested_tabs)
+    const std::vector<content::WebContents*>& requested_tabs,
+    const content::WebContents* focused_tab)
     : begin_time_(base::TimeTicks::Now()),
       pending_base_request_(pending_base_request),
       optimization_guide_keyed_service_(optimization_guide_keyed_service) {
@@ -38,6 +39,7 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       requested_tabs.size(),
       base::BindOnce(&ZeroStateSuggestionsRequest::OnAllPageContextExtracted,
                      weak_ptr_factory_.GetWeakPtr()));
+
   for (auto* tab : requested_tabs) {
     auto* zss_data =
         ZeroStateSuggestionsPageData::GetOrCreateForPage(tab->GetPrimaryPage());
@@ -56,6 +58,10 @@ ZeroStateSuggestionsRequest::ZeroStateSuggestionsRequest(
       return;
     }
 
+    // If we're in multitab mode, store the information about focused tab.
+    if (focused_tab && tab == focused_tab) {
+      zss_data->set_is_focused_tab();
+    }
     // Otherwise, start grabbing the page context.
     zss_data->GetPageContext(barrier_callback);
   }

@@ -107,6 +107,7 @@ class ContextualCueingService
       std::vector<content::WebContents*> pinned_web_contents,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
+      const content::WebContents* focused_tab,
       GlicSuggestionsCallback callback);
 
  private:
@@ -128,7 +129,7 @@ class ContextualCueingService
       const std::vector<content::WebContents*>& web_contents_list,
       bool is_fre,
       std::optional<std::vector<std::string>> supported_tools,
-      bool is_focused_tab);
+      const content::WebContents* focused_tab);
 
   // Tracker to limit the number of nudges shown over a certain duration.
   NudgeCapTracker recent_nudge_tracker_;

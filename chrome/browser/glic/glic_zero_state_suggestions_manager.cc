@@ -97,9 +97,13 @@ void GlicZeroStateSuggestionsManager::
         MakePendingSuggestionsPtr(),
         mojom::ZeroStateSuggestionsOptions(is_first_run, supported_tools));
 
+    FocusedTabData focused_tab_data = sharing_manager_->GetFocusedTabData();
+    content::WebContents* active_web_contents =
+        focused_tab_data.focus() ? focused_tab_data.focus()->GetContents()
+                                 : nullptr;
     contextual_cueing_service_
         ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
-            pinned_tab_data, is_first_run, supported_tools,
+            pinned_tab_data, is_first_run, supported_tools, active_web_contents,
             mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                 base::BindOnce(&GlicZeroStateSuggestionsManager::
                                    OnZeroStateSuggestionsNotify,
@@ -157,6 +161,7 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
         contextual_cueing_service_
             ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
                 pinned_tabs, is_first_run, supported_tools,
+                /* focused_tab=*/nullptr,
                 mojo::WrapCallbackWithDefaultInvokeIfNotRun(
                     base::BindOnce(&GlicZeroStateSuggestionsManager::
                                        OnZeroStateSuggestionsFetched,

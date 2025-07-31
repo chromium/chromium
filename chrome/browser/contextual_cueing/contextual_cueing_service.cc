@@ -337,7 +337,7 @@ ContextualCueingService::MakeZeroStateSuggestionsRequest(
     const std::vector<content::WebContents*>& web_contents_list,
     bool is_fre,
     std::optional<std::vector<std::string>> supported_tools,
-    bool is_focused_tab) {
+    const content::WebContents* focused_tab) {
   // Construct base request proto.
   optimization_guide::proto::ZeroStateSuggestionsRequest request_proto;
   request_proto.set_is_fre(is_fre);
@@ -347,14 +347,15 @@ ContextualCueingService::MakeZeroStateSuggestionsRequest(
   PopulateSupportedToolsForRequest(supported_tools, pref_service_,
                                    &request_proto);
   // Instantiate the one-of to indicate the request type.
-  if (is_focused_tab) {
+  if (focused_tab && web_contents_list.size() == 1) {
     request_proto.mutable_page_context();
   } else {
     request_proto.mutable_page_context_list();
   }
 
   return std::make_unique<ZeroStateSuggestionsRequest>(
-      optimization_guide_keyed_service_, request_proto, web_contents_list);
+      optimization_guide_keyed_service_, request_proto, web_contents_list,
+      focused_tab);
 }
 
 void ContextualCueingService::
@@ -388,7 +389,7 @@ void ContextualCueingService::
   auto* zss_request_ptr = zss_data->focused_tab_request();
   if (!zss_request_ptr) {
     auto zss_request = MakeZeroStateSuggestionsRequest(
-        {web_contents}, is_fre, supported_tools, /*is_focused_tab=*/true);
+        {web_contents}, is_fre, supported_tools, web_contents);
     zss_request_ptr = zss_request.get();
     zss_data->set_focused_tab_request(std::move(zss_request));
   }
@@ -404,9 +405,9 @@ void ContextualCueingService::
         std::vector<content::WebContents*> pinned_web_contents,
         bool is_fre,
         std::optional<std::vector<std::string>> supported_tools,
+        const content::WebContents* focused_tab,
         GlicSuggestionsCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-
   if (!IsZeroStateSuggestionsEnabled()) {
     std::move(callback).Run({});
     return;
@@ -425,7 +426,7 @@ void ContextualCueingService::
 #if BUILDFLAG(ENABLE_GLIC)
   // Initiate request for suggestions for pinned tabs.
   pinned_tabs_zero_state_suggestions_request_ = MakeZeroStateSuggestionsRequest(
-      pinned_web_contents, is_fre, supported_tools, /*is_focused_tab=*/false);
+      pinned_web_contents, is_fre, supported_tools, focused_tab);
   pinned_tabs_zero_state_suggestions_request_->AddCallback(base::BindOnce(
       &OnSuggestionsReceived, base::TimeTicks::Now(), std::move(callback)));
 #else

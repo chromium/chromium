@@ -80,6 +80,8 @@ class ZeroStateSuggestionsPageData
     return weak_ptr_factory_.GetWeakPtr();
   }
 
+  void set_is_focused_tab() { is_focused_ = true; }
+
  private:
   friend class content::PageUserData<ZeroStateSuggestionsPageData>;
   friend class ContextualCueingServiceTestZeroStateSuggestions;
@@ -160,6 +162,7 @@ class ZeroStateSuggestionsPageData
   // Tracks the state for a page context request.
   PageContextCallbackList page_context_callbacks_;
 
+  bool is_focused_ = false;
   // Not owned and guaranteed to outlive `this`.
   raw_ptr<optimization_guide::PageContextEligibility> page_context_eligibility_;
   raw_ptr<OptimizationGuideKeyedService> optimization_guide_keyed_service_ =

@@ -472,7 +472,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   ContextualCueingServiceFactory::GetForProfile(browser()->profile())
       ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
           {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, future.GetCallback());
+          /*supported_tools=*/{}, initial_web_contents, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 }
@@ -503,7 +503,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   ContextualCueingServiceFactory::GetForProfile(browser()->profile())
       ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
           {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, future.GetCallback());
+          /*supported_tools=*/{}, initial_web_contents, future.GetCallback());
   EXPECT_EQ(3u, future.Get().size());
   EXPECT_EQ("suggestion 1", future.Get()[0]);
   EXPECT_EQ("suggestion 2", future.Get()[1]);
@@ -529,7 +529,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest,
   ContextualCueingServiceFactory::GetForProfile(browser()->profile())
       ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
           {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, future.GetCallback());
+          /*supported_tools=*/{}, nullptr, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_TRUE(future.Get().empty());
 
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_P(ZeroStateSuggestionsBrowserTest, BasicPinnedTabsFlow) {
   ContextualCueingServiceFactory::GetForProfile(browser()->profile())
       ->GetContextualGlicZeroStateSuggestionsForPinnedTabs(
           {initial_web_contents, web_contents2}, /*is_fre=*/false,
-          /*supported_tools=*/{}, future.GetCallback());
+          /*supported_tools=*/{}, initial_web_contents, future.GetCallback());
   ASSERT_TRUE(future.Wait());
   EXPECT_EQ(3u, future.Get().size());
   EXPECT_EQ("suggestion 1", future.Get()[0]);
