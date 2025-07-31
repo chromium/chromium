@@ -16,6 +16,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include <utility>
 #include <vector>
 
 #include "base/strings/sys_string_conversions.h"
@@ -149,7 +150,7 @@ TEST_F(CrashpadIOSClient, DISABLED_ThrowNSException) {
 // during development only.
 TEST_F(CrashpadIOSClient, DISABLED_ThrowException) {
   std::vector<int> empty_vector;
-  empty_vector.at(42);
+  std::ignore = empty_vector.at(42);
 }
 
 }  // namespace

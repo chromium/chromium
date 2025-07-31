@@ -26,6 +26,7 @@
 #include <unistd.h>
 
 #include <thread>
+#include <utility>
 #include <vector>
 
 #import "Service/Sources/EDOHostNamingService.h"
@@ -402,7 +403,7 @@ UIWindow* GetAnyWindow() {
 
 - (void)crashException {
   std::vector<int> empty_vector = {};
-  empty_vector.at(42);
+  std::ignore = empty_vector.at(42);
 }
 
 - (void)crashNSException {
