@@ -1741,10 +1741,8 @@ void HTMLCanvasElement::SetIsDisplayed(bool displayed) {
 
 cc::TextureLayer* HTMLCanvasElement::GetOrCreateCcLayerForCanvas2DIfNeeded() {
   CHECK(IsRenderingContext2D());
+  CHECK(context_->IsComposited());
 
-  if (!IsCompositedForCanvas2D()) {
-    return nullptr;
-  }
   if (!cc_layer_) [[unlikely]] {
     cc_layer_ = cc::TextureLayer::Create(this);
     InitializeLayerWithCSSProperties(cc_layer_.get());
