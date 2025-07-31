@@ -29,6 +29,10 @@ namespace history {
 class HistoryService;
 }  // namespace history
 
+namespace syncer {
+class SyncService;
+}
+
 class ReadingListModel;
 
 namespace user_data_importer {
@@ -58,6 +62,7 @@ class SafariDataImporter {
                      history::HistoryService* history_service,
                      bookmarks::BookmarkModel* bookmark_model,
                      ReadingListModel* reading_list_model,
+                     syncer::SyncService* sync_service,
                      scoped_refptr<BookmarkParser> bookmark_parser,
                      std::string app_locale);
   ~SafariDataImporter();
@@ -202,6 +207,9 @@ class SafariDataImporter {
 
   // Service used to import reading lists.
   const raw_ref<ReadingListModel> reading_list_model_;
+
+  // Stores pointer to `SyncService` instance.
+  raw_ptr<syncer::SyncService> sync_service_;
 
   // Internal state
 

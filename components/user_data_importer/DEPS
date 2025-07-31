@@ -13,6 +13,8 @@ include_rules = [
   "+components/password_manager/services/csv_password",
   "+components/reading_list/core",
   "+components/strings/grit",
+  "+components/sync/test",
+  "+components/sync/service",
   "+mojo/public/cpp/bindings",
   "+ui/base/l10n",
 ]

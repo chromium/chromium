@@ -42,7 +42,8 @@
                     (autofill::PaymentsDataManager*)paymentsDataManager
                      historyService:(history::HistoryService*)historyService
                       bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
-                   readingListModel:(ReadingListModel*)readingListModel {
+                   readingListModel:(ReadingListModel*)readingListModel
+                        syncService:(syncer::SyncService*)syncService {
   self = [super init];
   if (self) {
     _importClient = std::make_unique<IOSSafariDataImportClient>();
@@ -55,7 +56,7 @@
     _importer = std::make_unique<user_data_importer::SafariDataImporter>(
         _importClient.get(), _savedPasswordsPresenter.get(),
         paymentsDataManager, historyService, bookmarkModel, readingListModel,
-        std::move(bookmarkParser), locale);
+        syncService, std::move(bookmarkParser), locale);
   }
   return self;
 }

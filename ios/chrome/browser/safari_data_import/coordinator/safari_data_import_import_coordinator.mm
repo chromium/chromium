@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/safari_data_import/ui/safari_data_item_table_view.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
+#import "ios/chrome/browser/sync/model/sync_service_factory.h"
 #import "ios/chrome/browser/webauthn/model/ios_passkey_model_factory.h"
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller_delegate.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -127,6 +128,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
         ios::BookmarkModelFactory::GetForProfile(profile);
     ReadingListModel* readingListModel =
         ReadingListModelFactory::GetForProfile(profile);
+    syncer::SyncService* syncService =
+        SyncServiceFactory::GetForProfile(profile);
     /// Initialize mediator.
     _mediator = [[SafariDataImportImportMediator alloc]
         initWithSavedPasswordsPresenter:std::move(savedPasswordsPresenter)
@@ -134,7 +137,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
                                              ->payments_data_manager()
                          historyService:historyService
                           bookmarkModel:bookmarkModel
-                       readingListModel:readingListModel];
+                       readingListModel:readingListModel
+                            syncService:syncService];
     _mediator.importStageTransitionHandler = self;
     _mediator.itemConsumer = _tableView;
   }

@@ -25,6 +25,7 @@
 #include "components/bookmarks/test/test_matchers.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/test/history_service_test_util.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/import/csv_password_sequence.h"
 #include "components/password_manager/core/browser/import/import_results.h"
 #include "components/password_manager/core/browser/import/password_importer.h"
@@ -36,6 +37,8 @@
 #include "components/reading_list/core/fake_reading_list_model_storage.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/reading_list/core/reading_list_model_impl.h"
+#include "components/sync/service/sync_service.h"
+#include "components/sync/test/test_sync_service.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -62,6 +65,7 @@ using testing::ElementsAre;
 using testing::Field;
 using testing::IsEmpty;
 using testing::Property;
+using testing::SizeIs;
 
 namespace user_data_importer {
 
@@ -111,6 +115,8 @@ class SafariDataImporterTest : public testing::Test {
   SafariDataImporterTest(const SafariDataImporterTest&) = delete;
   SafariDataImporterTest& operator=(const SafariDataImporterTest&) = delete;
 
+  syncer::TestSyncService sync_service_;
+
  protected:
 #if BUILDFLAG(IS_IOS)
   base::test::TaskEnvironment task_environment_{
@@ -156,7 +162,7 @@ class SafariDataImporterTest : public testing::Test {
         &client_, &presenter_,
         &autofill_client_.GetPersonalDataManager().payments_data_manager(),
         history_service_.get(), bookmark_model_.get(),
-        reading_list_model_.get(), std::move(parser), "en-US");
+        reading_list_model_.get(), &sync_service_, std::move(parser), "en-US");
 
     mojo::PendingRemote<password_manager::mojom::CSVPasswordParser>
         pending_remote{receiver_.BindNewPipeAndPassRemote()};
@@ -252,7 +258,70 @@ class SafariDataImporterTest : public testing::Test {
     return bookmark_model_->other_node();
   }
 
+  // Helper function for the "sync enabled" test.
+  void PasswordsImportToAccountStore() {
+    sync_service_.SetSignedIn(signin::ConsentLevel::kSignin);
+    ASSERT_TRUE(password_manager::features_util::IsAccountStorageEnabled(
+        &sync_service_));
+
+    constexpr char kTestCSVInput[] =
+        "Url,Username,Password,Note\n"
+        "https://account.example.com,user1,pass1,note1\n";
+
+    EXPECT_CALL(client_, OnPasswordsReady(AllOf(
+                             Field(&ImportResults::number_imported, 0u),
+                             Field(&ImportResults::number_to_import, 1u))));
+    PreparePasswords(kTestCSVInput);
+
+    EXPECT_CALL(client_, OnPasswordsImported(AllOf(
+                             Field(&ImportResults::number_imported, 1u),
+                             Field(&ImportResults::number_to_import, 0u))));
+    EXPECT_CALL(client_, OnBookmarksImported(0));
+    EXPECT_CALL(client_, OnHistoryImported(0));
+    EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+    CompleteImport({});
+
+    EXPECT_THAT(account_store()->stored_passwords(), SizeIs(1));
+    EXPECT_THAT(profile_store()->stored_passwords(), IsEmpty());
+  }
+
+  // Helper function for the "sync disabled" test.
+  void PasswordsImportToProfileStore() {
+    sync_service_.SetSignedOut();
+    ASSERT_FALSE(password_manager::features_util::IsAccountStorageEnabled(
+        &sync_service_));
+
+    constexpr char kTestCSVInput[] =
+        "Url,Username,Password,Note\n"
+        "https://profile.example.com,user2,pass2,note2\n";
+
+    EXPECT_CALL(client_, OnPasswordsReady(AllOf(
+                             Field(&ImportResults::number_imported, 0u),
+                             Field(&ImportResults::number_to_import, 1u))));
+    PreparePasswords(kTestCSVInput);
+
+    EXPECT_CALL(client_, OnPasswordsImported(AllOf(
+                             Field(&ImportResults::number_imported, 1u),
+                             Field(&ImportResults::number_to_import, 0u))));
+    EXPECT_CALL(client_, OnBookmarksImported(0));
+    EXPECT_CALL(client_, OnHistoryImported(0));
+    EXPECT_CALL(client_, OnPaymentCardsImported(0));
+
+    CompleteImport({});
+
+    EXPECT_THAT(profile_store()->stored_passwords(), SizeIs(1));
+    EXPECT_THAT(account_store()->stored_passwords(), IsEmpty());
+  }
+
   ReadingListModel* GetReadingListModel() { return reading_list_model_.get(); }
+
+  password_manager::TestPasswordStore* profile_store() {
+    return profile_store_.get();
+  }
+  password_manager::TestPasswordStore* account_store() {
+    return account_store_.get();
+  }
 
   testing::StrictMock<MockSafariDataImportClient> client_;
 
@@ -999,6 +1068,29 @@ TEST_F(SafariDataImporterTest, DuplicateBookmarkFolders) {
                    ElementsAre(IsUrlBookmark(
                        u"Bookmark 2", GURL("https://www.example2.com/"))))));
 #endif
+}
+
+// Tests that passwords are imported to the account store when sync is on.
+TEST_F(SafariDataImporterTest,
+       PasswordsImportedToAccountStoreWhenSyncIsEnabled) {
+  PasswordsImportToAccountStore();
+}
+
+// Tests that passwords are imported to the profile store when sync is off.
+TEST_F(SafariDataImporterTest,
+       PasswordsImportedToProfileStoreWhenSyncIsDisabled) {
+  PasswordsImportToProfileStore();
+}
+
+// Tests both password import scenarios (account and profile) sequentially.
+TEST_F(SafariDataImporterTest, ImportToBothStoresSequentially) {
+  PasswordsImportToAccountStore();
+
+  // Clear the account store before the next import since
+  // `PasswordsImportToProfileStore` expects account store to be empty.
+  account_store()->Clear();
+
+  PasswordsImportToProfileStore();
 }
 
 }  // namespace user_data_importer

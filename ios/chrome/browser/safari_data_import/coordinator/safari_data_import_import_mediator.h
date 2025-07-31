@@ -21,6 +21,9 @@ class BookmarkModel;
 namespace history {
 class HistoryService;
 }
+namespace syncer {
+class SyncService;
+}  // namespace syncer
 @class PasswordImportItem;
 class ReadingListModel;
 @protocol SafariDataImportImportStageTransitionHandler;
@@ -51,6 +54,7 @@ class ReadingListModel;
                      historyService:(history::HistoryService*)historyService
                       bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                    readingListModel:(ReadingListModel*)readingListModel
+                        syncService:(syncer::SyncService*)syncService
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

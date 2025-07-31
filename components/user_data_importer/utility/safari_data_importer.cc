@@ -19,6 +19,7 @@
 #include "components/autofill/core/browser/data_model/payments/credit_card.h"
 #include "components/bookmarks/browser/bookmark_model.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/password_manager/core/browser/features/password_manager_features_util.h"
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/reading_list/core/reading_list_model.h"
 #include "components/strings/grit/components_strings.h"
@@ -193,6 +194,7 @@ SafariDataImporter::SafariDataImporter(
     history::HistoryService* history_service,
     bookmarks::BookmarkModel* bookmark_model,
     ReadingListModel* reading_list_model,
+    syncer::SyncService* sync_service,
     scoped_refptr<BookmarkParser> bookmark_parser,
     std::string app_locale)
     : blocking_queue_(base::ThreadPool::CreateSequencedTaskRunner(
@@ -206,6 +208,7 @@ SafariDataImporter::SafariDataImporter(
       history_service_(CHECK_DEREF(history_service)),
       bookmark_model_(CHECK_DEREF(bookmark_model)),
       reading_list_model_(CHECK_DEREF(reading_list_model)),
+      sync_service_(sync_service),
       app_locale_(std::move(app_locale)) {}
 
 SafariDataImporter::~SafariDataImporter() = default;
@@ -395,10 +398,10 @@ void SafariDataImporter::OnZipArchiveReady(bool success) {
 }
 
 void SafariDataImporter::PreparePasswords(std::string csv_data) {
-  // TODO(crbug.com/407587751): Pick a store based on whether the user is
-  // signed in to their account.
-  password_manager::PasswordForm::Store to_store =
-      password_manager::PasswordForm::Store::kAccountStore;
+  password_manager::PasswordForm::Store to_store = {
+      password_manager::features_util::IsAccountStorageEnabled(sync_service_)
+          ? password_manager::PasswordForm::Store::kAccountStore
+          : password_manager::PasswordForm::Store::kProfileStore};
 
   password_importer_->Import(
       std::move(csv_data), to_store,
