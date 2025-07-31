@@ -9403,6 +9403,21 @@
             ]
         }
     ],
+    "EnableRootNsDnsProxy": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "EnableRootNsDnsProxy"
+                    ]
+                }
+            ]
+        }
+    ],
     "EnableShoppingListIOSM119": [
         {
             "platforms": [
