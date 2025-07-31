@@ -146,14 +146,12 @@ export class ReadAloudHighlighter {
     if (!firstHighlight || !lastHighlight) {
       return bounds;
     }
-    bounds.x = firstHighlight.getBoundingClientRect().x;
-    bounds.y = lastHighlight.getBoundingClientRect().y;
-    bounds.width = Math.max(
-        firstHighlight.getBoundingClientRect().width,
-        lastHighlight.getBoundingClientRect().width);
-    bounds.height = Math.max(
-        firstHighlight.getBoundingClientRect().height,
-        lastHighlight.getBoundingClientRect().height);
+    const firstRect = firstHighlight.getBoundingClientRect();
+    const lastRect = lastHighlight.getBoundingClientRect();
+    bounds.x = Math.min(firstRect.x, lastRect.x);
+    bounds.y = firstRect.y;
+    bounds.width = Math.max(firstRect.right, lastRect.right) - bounds.x;
+    bounds.height = lastRect.bottom - firstRect.y;
     return bounds;
   }
 
