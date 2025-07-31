@@ -421,7 +421,7 @@ class Enum(object):
         'enum': enum
     }
     if self.node.GetProperty('nodoc'):
-      result['nodoc'] = self.node.GetProperty('nodoc')
+      result['nodoc'] = True
     if self.node.GetProperty('deprecated'):
       result['deprecated'] = self.node.GetProperty('deprecated')
     return result

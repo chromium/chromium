@@ -135,6 +135,18 @@ class ModelTest(unittest.TestCase):
         self.model.AddNamespace, test_json[0],
         'path/to/returns_async_missing_parameters_key.json')
 
+  def testNodocSpecifiedAsStringException(self):
+    # Note: there are checks for this on all the valid places nodoc can be used,
+    # but this test only verifies it for a property on a type.
+    test_json = CachedLoad('test/nodoc_specified_as_string.json')
+    self.assertRaisesRegex(
+        model.ParseException,
+        'Model parse exception at:\nnodocException\nSomeType\nNodocProperty\n'
+        '  in path/to/nodoc_specified_as_string.json\n'
+        'The attribute "nodoc" must be specified as <class \'bool\'>, but was '
+        'speficied as <class \'str\'>.', self.model.AddNamespace, test_json[0],
+        'path/to/nodoc_specified_as_string.json')
+
   def testDescription(self):
     self.assertFalse(
         self.permissions.functions['contains'].params[0].description)

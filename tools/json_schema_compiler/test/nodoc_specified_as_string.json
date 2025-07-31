@@ -1,0 +1,19 @@
+[
+  {
+    "namespace": "nodocException",
+    "description": "The nodocException API. Should produce an exception as nodoc is specified on a type property as a string instead of a boolean.",
+    "types": [
+      {
+        "id": "SomeType",
+        "type": "object",
+        "properties": {
+          "NodocProperty": {
+            "type": "any",
+            "nodoc": "true",
+            "description": "nodoc incorrectly specified as a string instead of a boolean."
+          }
+        }
+      }
+    ]
+  }
+]
