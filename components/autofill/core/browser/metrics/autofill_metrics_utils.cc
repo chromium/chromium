@@ -57,8 +57,8 @@ bool IsPostalAddressForm(const FormStructure& form) {
   DenseSet<FieldType> postal_address_field_types;
   for (const auto& field : form.fields()) {
     if (field->Type().group() == FieldTypeGroup::kAddress &&
-        field->Type().GetStorableType() != ADDRESS_HOME_COUNTRY) {
-      postal_address_field_types.insert(field->Type().GetStorableType());
+        field->Type().GetAddressType() != ADDRESS_HOME_COUNTRY) {
+      postal_address_field_types.insert(field->Type().GetAddressType());
     }
   }
   return postal_address_field_types.size() >= 3 &&

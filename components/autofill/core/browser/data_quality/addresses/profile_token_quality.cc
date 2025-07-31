@@ -269,7 +269,7 @@ ObservationType ProfileTokenQuality::GetObservationTypeFromField(
   DCHECK(!base::Contains(other_profiles, profile_->guid(),
                          [](const AutofillProfile* p) { return p->guid(); }));
 
-  const FieldType type = field.Type().GetStorableType();
+  const FieldType type = field.Type().GetAddressType();
   if (field.is_autofilled()) {
     // The filled value was accepted without editing.
     return AutofillProfile::kDatabaseStoredTypes.contains(type)

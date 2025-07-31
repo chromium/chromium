@@ -57,10 +57,9 @@ const autofill::AutofillField* GetFieldToFill(
     bool is_credit_card_form) {
   for (const std::unique_ptr<autofill::AutofillField>& field : fields) {
     if (IsVisibleTextField(*field) && field->value().empty() &&
-        ((!is_credit_card_form &&
-          autofill::IsAddressType(field->Type().GetStorableType())) ||
-         (is_credit_card_form &&
-          field->Type().GetStorableType() == autofill::CREDIT_CARD_NUMBER))) {
+        (is_credit_card_form
+             ? field->Type().GetStorableType() == autofill::CREDIT_CARD_NUMBER
+             : field->Type().GetAddressType() != autofill::UNKNOWN_TYPE)) {
       return field.get();
     }
   }

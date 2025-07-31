@@ -1942,7 +1942,7 @@ TEST_F(BrowserAutofillManagerTest,
   AutofillField* autofill_field = form_structure->field(0);
   ASSERT_TRUE(autofill_field);
   ASSERT_TRUE(firstname_field.global_id() == autofill_field->global_id());
-  autofill_field->set_autofilled_type(autofill_field->Type().GetStorableType());
+  autofill_field->set_autofilled_type(autofill_field->Type().GetAddressType());
 
   OnAskForValuesToFill(form, firstname_field);
   // Test that we sent the right values to the external delegate.
@@ -3403,7 +3403,7 @@ TEST_F(BrowserAutofillManagerTest, GetFieldSuggestionsWithDuplicateValues) {
   ASSERT_TRUE(autofill_field);
   ASSERT_TRUE(field.global_id() == autofill_field->global_id());
   field.set_is_autofilled(true);
-  autofill_field->set_autofilled_type(autofill_field->Type().GetStorableType());
+  autofill_field->set_autofilled_type(autofill_field->Type().GetAddressType());
   field.set_value(u"Elvis");
   OnAskForValuesToFill(form, field);
   // Test that we sent the right values to the external delegate.
@@ -3601,7 +3601,7 @@ TEST_F(BrowserAutofillManagerTest, FillOrPreviewForm_CreditCard_Bnpl) {
 
   CreditCard bnpl_virtual_card = test::GetVirtualCard();
   bnpl_virtual_card.set_issuer_id(
-      autofill::ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm));
+      ConvertToBnplIssuerIdString(BnplIssuer::IssuerId::kBnplAffirm));
   bnpl_virtual_card.set_is_bnpl_card(/*is_bnpl_card=*/true);
 
   TestPaymentsDataManager& test_paydm = static_cast<TestPaymentsDataManager&>(
@@ -3677,8 +3677,7 @@ TEST_F(BrowserAutofillManagerTest,
       features::kAutofillEnableBuyNowPayLaterSyncing);
   BnplIssuer issuer = test::GetTestLinkedBnplIssuer();
   CreditCard credit_card = test::GetVirtualCard();
-  credit_card.set_issuer_id(
-      autofill::ConvertToBnplIssuerIdString(issuer.issuer_id()));
+  credit_card.set_issuer_id(ConvertToBnplIssuerIdString(issuer.issuer_id()));
   credit_card.set_is_bnpl_card(/*is_bnpl_card=*/true);
   test_api(client().GetPersonalDataManager().payments_data_manager())
       .AddBnplIssuer(issuer);
@@ -4568,7 +4567,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
                                        ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY};
   for (size_t i = 0; i < server_types.size(); ++i) {
     EXPECT_EQ(overall_types[i],
-              form_structure->field(i)->Type().GetStorableType());
+              form_structure->field(i)->Type().GetAddressType());
   }
 
   // Simulate form submission.
@@ -4593,7 +4592,7 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
     bool type_changed =
         autofill_field_ptr->parseable_label() == u"Address" ? true : false;
     expected_events.push_back(RationalizationFieldLogEvent{
-        .field_type = autofill_field_ptr->Type().GetStorableType(),
+        .field_type = autofill_field_ptr->Type().GetAddressType(),
         .section_id = 1,
         .type_changed = type_changed,
     });
@@ -8183,7 +8182,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       *form_structure,
       [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
         return pdm_profile->token_quality()
-            .GetObservationTypesForFieldType(field->Type().GetStorableType())
+            .GetObservationTypesForFieldType(field->Type().GetAddressType())
             .empty();
       }));
   // Submit the form and expect observations for all of the form's types. This
@@ -8196,7 +8195,7 @@ TEST_F(BrowserAutofillManagerTest, FillAddressForm_CollectObservations) {
       *form_structure,
       [&pdm_profile](const std::unique_ptr<AutofillField>& field) {
         return pdm_profile->token_quality()
-            .GetObservationTypesForFieldType(field->Type().GetStorableType())
+            .GetObservationTypesForFieldType(field->Type().GetAddressType())
             .empty();
       }));
 }

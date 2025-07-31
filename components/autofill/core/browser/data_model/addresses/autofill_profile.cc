@@ -74,9 +74,8 @@ namespace {
 
 constexpr char kAddressComponentsDefaultLocality[] = "en-US";
 
-// Like |AutofillType::GetStorableType()|, but also returns |NAME_FULL| for
-// first, middle, and last name field types, and groups phone number types
-// similarly.
+// Returns `NAME_FULL` for first, middle, and last name field types, and groups
+// phone number types similarly.
 FieldType GetStorableTypeCollapsingGroupsForPartialType(FieldType type) {
   if (GroupTypeOfFieldType(type) == FieldTypeGroup::kName) {
     return NAME_FULL;
@@ -1058,7 +1057,7 @@ VerificationStatus AutofillProfile::GetVerificationStatus(
 
 std::u16string AutofillProfile::GetInfo(const AutofillType& type,
                                         const std::string& app_locale) const {
-  const FormGroup* form_group = FormGroupForType(type.GetStorableType());
+  const FormGroup* form_group = FormGroupForType(type.GetAddressType());
   if (!form_group) {
     return std::u16string();
   }
@@ -1070,7 +1069,7 @@ bool AutofillProfile::SetInfoWithVerificationStatus(
     const std::u16string& value,
     const std::string& app_locale,
     VerificationStatus status) {
-  FormGroup* form_group = MutableFormGroupForType(type.GetStorableType());
+  FormGroup* form_group = MutableFormGroupForType(type.GetAddressType());
   if (!form_group) {
     return false;
   }

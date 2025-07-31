@@ -219,32 +219,28 @@ FieldTypeSet NameInfo::GetSupportedTypes() const {
 
 std::u16string NameInfo::GetInfo(const AutofillType& type,
                                  const std::string& app_locale) const {
-  return GetRawInfo(type.GetStorableType());
+  return GetRawInfo(type.GetAddressType());
 }
 
 bool NameInfo::SetInfoWithVerificationStatus(const AutofillType& type,
                                              const std::u16string& value,
                                              const std::string& app_locale,
                                              VerificationStatus status) {
-  if (type.GetStorableType() == NAME_FULL ||
-      (type.GetStorableType() == ALTERNATIVE_FULL_NAME &&
-       base::FeatureList::IsEnabled(
-           features::kAutofillSupportPhoneticNameForJP))) {
+  const FieldType ft = type.GetAddressType();
+  if (ft == NAME_FULL || (ft == ALTERNATIVE_FULL_NAME &&
+                          base::FeatureList::IsEnabled(
+                              features::kAutofillSupportPhoneticNameForJP))) {
     // If the set string is token equivalent to the old one, the value can
     // just be updated, otherwise create a new name record and complete it in
     // the end.
     // TODO(crbug.com/40266145): Move this logic to the data model.
-    AreStringTokenEquivalent(value,
-                             GetRootForType(type.GetStorableType())
-                                 ->GetValueForType(type.GetStorableType()))
-        ? GetRootForType(type.GetStorableType())
-              ->SetValueForType(type.GetStorableType(), value, status)
-        : GetRootForType(type.GetStorableType())
-              ->SetValueForType(type.GetStorableType(), value, status,
-                                /*invalidate_child_nodes=*/true);
+    AreStringTokenEquivalent(value, GetRootForType(ft)->GetValueForType(ft))
+        ? GetRootForType(ft)->SetValueForType(ft, value, status)
+        : GetRootForType(ft)->SetValueForType(ft, value, status,
+                                              /*invalidate_child_nodes=*/true);
     return true;
   }
-  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  SetRawInfoWithVerificationStatus(ft, value, status);
   return true;
 }
 
@@ -284,7 +280,7 @@ FieldTypeSet EmailInfo::GetSupportedTypes() const {
 
 std::u16string EmailInfo::GetInfo(const AutofillType& type,
                                   const std::string& app_locale) const {
-  return GetRawInfo(type.GetStorableType());
+  return GetRawInfo(type.GetAddressType());
 }
 
 std::u16string EmailInfo::GetRawInfo(FieldType type) const {
@@ -306,7 +302,7 @@ bool EmailInfo::SetInfoWithVerificationStatus(const AutofillType& type,
                                               const std::u16string& value,
                                               const std::string& app_locale,
                                               const VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
   return true;
 }
 
@@ -342,7 +338,7 @@ void CompanyInfo::GetMatchingTypes(const std::u16string& text,
 
 std::u16string CompanyInfo::GetInfo(const AutofillType& type,
                                     const std::string& app_locale) const {
-  return GetRawInfo(type.GetStorableType());
+  return GetRawInfo(type.GetAddressType());
 }
 
 std::u16string CompanyInfo::GetRawInfo(FieldType type) const {
@@ -361,7 +357,7 @@ bool CompanyInfo::SetInfoWithVerificationStatus(
     const std::u16string& value,
     const std::string& app_locale,
     const VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
   return true;
 }
 

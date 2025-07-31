@@ -174,7 +174,7 @@ void PhoneNumber::GetMatchingTypes(const std::u16string& text,
 // If the phone cannot be normalized, returns the stored value verbatim.
 std::u16string PhoneNumber::GetInfo(const AutofillType& autofill_type,
                                     const std::string& app_locale) const {
-  FieldType type = autofill_type.GetStorableType();
+  FieldType type = autofill_type.GetAddressType();
   UpdateCacheIfNeeded(app_locale);
 
   // When the phone number autofill has stored cannot be normalized, it
@@ -273,7 +273,7 @@ bool PhoneNumber::SetInfoWithVerificationStatus(const AutofillType& type,
                                                 const std::u16string& value,
                                                 const std::string& app_locale,
                                                 VerificationStatus status) {
-  SetRawInfoWithVerificationStatus(type.GetStorableType(), value, status);
+  SetRawInfoWithVerificationStatus(type.GetAddressType(), value, status);
 
   if (number_.empty()) {
     return true;

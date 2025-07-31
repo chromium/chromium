@@ -183,7 +183,7 @@ void LogObservationCountBeforeSubmissionMetric(const FormStructure& form,
     if (const AutofillProfile* profile =
             adm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
       profiles_used.insert(profile);
-      FieldType field_type = field->Type().GetStorableType();
+      FieldType field_type = field->Type().GetAddressType();
       base::UmaHistogramExactLinear(
           base::StrCat({kHistogramPrefix, "ObservationCountBeforeSubmission.",
                         FieldTypeToStringView(field_type)}),
@@ -212,7 +212,7 @@ void LogProfileTokenQualityScoreMetric(const FormStructure& form,
     if (const AutofillProfile* profile =
             adm.GetProfileByGUID(*field->autofill_source_profile_guid())) {
       FieldTypeSet relevant_types = GetMetricRelevantTypes(*profile);
-      FieldType field_type = field->Type().GetStorableType();
+      FieldType field_type = field->Type().GetAddressType();
       if (!relevant_types.contains(field_type)) {
         continue;
       }

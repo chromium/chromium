@@ -17,6 +17,7 @@
 namespace autofill::rationalization {
 namespace {
 
+using ::testing::Contains;
 using ::testing::ElementsAre;
 
 BASE_FEATURE(kTestFeatureForFormStructureRationalizationEngine,
@@ -45,18 +46,23 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
     f->set_label(t.label);
     f->SetTypeTo(AutofillType(t.field_type),
                  AutofillPredictionSource::kHeuristics);
-    DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
+    DCHECK(f->Type().GetTypes().contains(t.field_type));
+    DCHECK_EQ(f->Type().GetTypes(), FieldTypeSet({t.field_type}));
   }
   return result;
 }
 
-std::vector<FieldType> GetTypes(
+std::vector<FieldTypeSet> GetTypes(
     const std::vector<std::unique_ptr<AutofillField>>& fields) {
-  std::vector<FieldType> server_types;
-  std::ranges::transform(
-      fields, std::back_inserter(server_types),
-      [](const auto& field) { return field->Type().GetStorableType(); });
-  return server_types;
+  std::vector<FieldTypeSet> types;
+  for (const auto& field : fields) {
+    types.push_back(field->Type().GetTypes());
+  }
+  return types;
+}
+
+auto FieldTypesAre(auto... types) {
+  return ElementsAre(FieldTypeSet{types}...);
 }
 
 PatternFile GetPatternFile() {
@@ -107,7 +113,7 @@ TEST(FormStructureRationalizationEngine, TestBuilder) {
   EXPECT_EQ(rule.environment_condition->feature,
             &kTestFeatureForFormStructureRationalizationEngine);
   EXPECT_THAT(rule.environment_condition->country_list,
-              testing::ElementsAre(GeoIpCountryCode("MX")));
+              ElementsAre(GeoIpCountryCode("MX")));
 
   EXPECT_EQ(rule.trigger_field.location, FieldLocation::kTriggerField);
   EXPECT_EQ(rule.trigger_field.possible_overall_types,
@@ -207,7 +213,7 @@ TEST(FormStructureRationalizationEngine,
   AutofillField field;
 
   // Unknown type.
-  ASSERT_EQ(field.Type().GetStorableType(), UNKNOWN_TYPE);
+  ASSERT_EQ(field.Type().GetAddressType(), UNKNOWN_TYPE);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
@@ -215,7 +221,7 @@ TEST(FormStructureRationalizationEngine,
 
   // Non-matching type.
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
-  ASSERT_EQ(field.Type().GetStorableType(), NAME_FIRST);
+  ASSERT_EQ(field.Type().GetAddressType(), NAME_FIRST);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
   EXPECT_FALSE(IsFieldConditionFulfilledIgnoringLocation(
@@ -223,7 +229,7 @@ TEST(FormStructureRationalizationEngine,
 
   // Matching type.
   field.set_heuristic_type(GetActiveHeuristicSource(), ADDRESS_HOME_LINE1);
-  ASSERT_EQ(field.Type().GetStorableType(), ADDRESS_HOME_LINE1);
+  ASSERT_EQ(field.Type().GetAddressType(), ADDRESS_HOME_LINE1);
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
       kMXContext, no_possible_types_required, field));
   EXPECT_TRUE(IsFieldConditionFulfilledIgnoringLocation(
@@ -307,10 +313,10 @@ TEST(FormStructureRationalizationEngine, TestRulesAreApplied) {
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
-                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
-                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
+                    /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
+                    /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY,
+                    ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 // Test that no actions are applied if the trigger field does not exist.
@@ -336,9 +342,9 @@ TEST(FormStructureRationalizationEngine,
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, ADDRESS_HOME_LINE1,
-                  /*ADDRESS_HOME_LINE2,*/ ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
-                  ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, ADDRESS_HOME_LINE1,
+                    /*ADDRESS_HOME_LINE2,*/ ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                    ADDRESS_HOME_STATE));
 }
 
 // Test that no actions are applied if the additional condition field does not
@@ -365,9 +371,9 @@ TEST(FormStructureRationalizationEngine,
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, /*ADDRESS_HOME_LINE1,*/
-                  ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
-                  ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME, /*ADDRESS_HOME_LINE1,*/
+                    ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                    ADDRESS_HOME_STATE));
 }
 
 // Test that no actions are applied if the additional condition asks for
@@ -396,9 +402,9 @@ TEST(FormStructureRationalizationEngine,
   internal::ApplyRuleIfApplicable(kMXContext, CreateTestRule(), fields);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
-                          COMPANY_NAME, ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                            COMPANY_NAME, ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 // Test that the kLastClassifiedPredecessor can skip unclassified predecessors.
@@ -427,10 +433,10 @@ TEST(FormStructureRationalizationEngine,
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, UNKNOWN_TYPE,
-                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_ZIP,
-                  ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, COMPANY_NAME,
+                    /*changed*/ ADDRESS_HOME_STREET_ADDRESS, UNKNOWN_TYPE,
+                    /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY,
+                    ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY, ADDRESS_HOME_STATE));
 }
 
 // Test that the actions are applied if all conditions are met.
@@ -452,10 +458,10 @@ TEST(FormStructureRationalizationEngine, TestDEOverflowRuleIsApplied) {
   ApplyRationalizationEngineRules(kDEContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST,
-                          /*changed*/ ADDRESS_HOME_LINE1,
-                          /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST,
+                            /*changed*/ ADDRESS_HOME_LINE1,
+                            /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY));
 }
 
 // Test that a house number field not followed by an apartment is treated
@@ -478,9 +484,9 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptChanged) {
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
-                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Test that the actions are not applied since there is apartment related field
@@ -504,9 +510,9 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptNoChange) {
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
-                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Test that the actions are applied if there is no next field after
@@ -527,8 +533,8 @@ TEST(FormStructureRationalizationEngine, TestPLHouseNumberAndAptWithNoNext) {
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
 }
 
 // Verifies that fields classified as ADDRESS_HOME_LINE1 without a following
@@ -550,8 +556,8 @@ TEST(FormStructureRationalizationEngine, TestPLAddressLine1WithNoNext) {
   ApplyRationalizationEngineRules(kPLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_ADDRESS,
-                          /*changed*/ ADDRESS_HOME_ZIP));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_ADDRESS,
+                            /*changed*/ ADDRESS_HOME_ZIP));
 }
 
 // Verifies that fields classified as ADDRESS_HOME_LINE1 with a following
@@ -574,8 +580,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithAL1Next) {
   ApplyRationalizationEngineRules(kITContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
-                          /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1,
+                            /*changed*/ ADDRESS_HOME_LINE2, ADDRESS_HOME_ZIP));
 }
 
 // Verifies that fields classified as ADDRESS_HOME_LINE1 without a following
@@ -598,8 +604,8 @@ TEST(FormStructureRationalizationEngine, TestITAddressLine1WithNoNext) {
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP));
+      FieldTypesAre(NAME_FIRST, NAME_LAST,
+                    /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP));
 }
 
 // Test that a house number field not followed by an apartment is treated
@@ -622,9 +628,9 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptChanged) {
   ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
-                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Test that the actions are not applied since there is apartment related field
@@ -648,9 +654,9 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptNoChange) {
   ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
-                          ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            ADDRESS_HOME_HOUSE_NUMBER, ADDRESS_HOME_APT_NUM,
+                            ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Test that the actions are applied if there is no next field after
@@ -671,8 +677,8 @@ TEST(FormStructureRationalizationEngine, TestNLHouseNumberAndAptWithNoNext) {
   ApplyRationalizationEngineRules(kNLContext, fields, nullptr);
 
   EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
-                          /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_NAME,
+                            /*changed*/ ADDRESS_HOME_HOUSE_NUMBER_AND_APT));
 }
 
 // Tests that in India, if there is landmark field detected, but there is no
@@ -696,10 +702,11 @@ TEST(FormStructureRationalizationEngine, TestINStreetLocationWithNoLocality) {
   ParsingContext kINContext(kIN, LanguageCode("en"), GetPatternFile());
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
-  EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST,
-                          /*changed*/ ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
-                          ADDRESS_HOME_LANDMARK, ADDRESS_HOME_CITY));
+  EXPECT_THAT(
+      GetTypes(fields),
+      FieldTypesAre(NAME_FIRST, NAME_LAST,
+                    /*changed*/ ADDRESS_HOME_STREET_LOCATION_AND_LOCALITY,
+                    ADDRESS_HOME_LANDMARK, ADDRESS_HOME_CITY));
 }
 
 // Tests that in India, if there is only one street address related field, it is
@@ -721,10 +728,10 @@ TEST(FormStructureRationalizationEngine, TestINAddressLine1WithNoNext) {
   ParsingContext kINContext(kIN, LanguageCode("en"), GetPatternFile());
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
-  EXPECT_THAT(
-      GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST,
-                  /*changed*/ ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST,
+                            /*changed*/ ADDRESS_HOME_STREET_ADDRESS,
+                            ADDRESS_HOME_CITY));
 }
 
 // Tests that in India, if there is locality field detected, but there is no
@@ -748,10 +755,11 @@ TEST(FormStructureRationalizationEngine, TestINStreetLocationWithNoLandmark) {
   ParsingContext kINContext(kIN, LanguageCode("en"), GetPatternFile());
   ApplyRationalizationEngineRules(kINContext, fields, nullptr);
 
-  EXPECT_THAT(GetTypes(fields),
-              ElementsAre(NAME_FIRST, NAME_LAST,
-                          /*changed*/ ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK,
-                          ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY));
+  EXPECT_THAT(
+      GetTypes(fields),
+      FieldTypesAre(NAME_FIRST, NAME_LAST,
+                    /*changed*/ ADDRESS_HOME_STREET_LOCATION_AND_LANDMARK,
+                    ADDRESS_HOME_DEPENDENT_LOCALITY, ADDRESS_HOME_CITY));
 }
 
 // Tests that in India, if there is street location field detected, but there is
@@ -778,9 +786,9 @@ TEST(FormStructureRationalizationEngine,
 
   EXPECT_THAT(
       GetTypes(fields),
-      ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_LOCATION,
-                  /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
-                  ADDRESS_HOME_CITY));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_STREET_LOCATION,
+                    /*changed*/ ADDRESS_HOME_DEPENDENT_LOCALITY_AND_LANDMARK,
+                    ADDRESS_HOME_CITY));
 }
 
 }  // namespace

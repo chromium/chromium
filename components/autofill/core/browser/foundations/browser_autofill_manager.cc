@@ -2878,7 +2878,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
   FieldTypeSet field_types = [&]() -> FieldTypeSet {
     if (current_suggestion_type ==
         SuggestionType::kAddressFieldByFieldFilling) {
-      return {trigger_autofill_field.Type().GetStorableType()};
+      return {trigger_autofill_field.Type().GetAddressType()};
     }
     // If the FormData and FormStructure do not have the same size, we assume
     // as a fallback that all fields are fillable.
@@ -2893,7 +2893,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
     for (size_t i = 0; i < form_structure.field_count(); ++i) {
       if (auto it = skip_reasons.find(form_structure.field(i)->global_id());
           it == skip_reasons.end() || it->second.empty()) {
-        field_types.insert(form_structure.field(i)->Type().GetStorableType());
+        field_types.insert(form_structure.field(i)->Type().GetAddressType());
       }
     }
     return field_types;
@@ -2901,7 +2901,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetProfileSuggestions(
 
   return GetSuggestionsForProfiles(
       client(), field_types, trigger_field,
-      trigger_autofill_field.Type().GetStorableType(), current_suggestion_type,
+      trigger_autofill_field.Type().GetAddressType(), current_suggestion_type,
       std::move(plus_address_email_override));
 }
 

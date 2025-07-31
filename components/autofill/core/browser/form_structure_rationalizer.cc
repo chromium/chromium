@@ -64,7 +64,7 @@ void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
     // This phone number rationalization marks all but the first phone number as
     // `set_only_fill_when_focused(true)`. Since it doesn't change the types, it
     // intentionally uses the rationalized `Type()` (over the `ComputedType()`).
-    FieldType current_field_type = field->Type().GetStorableType();
+    const FieldType current_field_type = field->Type().GetAddressType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
         found_number_field = field;
@@ -162,7 +162,7 @@ void RationalizePhoneNumbersForFilling(std::vector<AutofillField*>& fields) {
   // |only_fill_when_focused| field to true.
   for (AutofillField* field : fields) {
     // As above, using the rationalized `Type()` is intentional.
-    FieldType current_field_type = field->Type().GetStorableType();
+    const FieldType current_field_type = field->Type().GetAddressType();
     switch (current_field_type) {
       case PHONE_HOME_NUMBER:
       case PHONE_HOME_NUMBER_PREFIX:
@@ -807,13 +807,13 @@ void FormStructureRationalizer::RationalizeStreetAddressAndAddressLine(
     return;
   }
   for (auto field = fields_->begin() + 1; field != fields_->end(); ++field) {
-    if ((*field)->ComputedType().GetStorableType() != ADDRESS_HOME_LINE2) {
+    if ((*field)->ComputedType().GetAddressType() != ADDRESS_HOME_LINE2) {
       continue;
     }
     // Rationalize a preceding street address belonging to the same section
     // unless it's a server override.
     AutofillField& previous_field = **(field - 1);
-    if (previous_field.ComputedType().GetStorableType() !=
+    if (previous_field.ComputedType().GetAddressType() !=
             ADDRESS_HOME_STREET_ADDRESS ||
         previous_field.section() != (*field)->section() ||
         previous_field.server_type_prediction_is_override()) {
@@ -835,7 +835,7 @@ void FormStructureRationalizer::RationalizeBetweenStreetFields(
   }
   for (auto field = fields_->begin(); field != fields_->end() - 1; ++field) {
     const bool first_is_between_streets =
-        (*field)->ComputedType().GetStorableType() ==
+        (*field)->ComputedType().GetAddressType() ==
         ADDRESS_HOME_BETWEEN_STREETS;
     if (!first_is_between_streets) {
       continue;
@@ -845,9 +845,9 @@ void FormStructureRationalizer::RationalizeBetweenStreetFields(
     // unless it's a server override.
     AutofillField& next_field = **(field + 1);
     const bool second_is_between_streets_1_or_2 =
-        next_field.ComputedType().GetStorableType() ==
+        next_field.ComputedType().GetAddressType() ==
             ADDRESS_HOME_BETWEEN_STREETS_1 ||
-        next_field.ComputedType().GetStorableType() ==
+        next_field.ComputedType().GetAddressType() ==
             ADDRESS_HOME_BETWEEN_STREETS_2;
     if (!second_is_between_streets_1_or_2) {
       continue;
@@ -873,7 +873,7 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
   // If the type is changed, logs to `log_manager`.
   auto change_type_and_log =
       [&](AutofillField& field, FieldType new_type) {
-        FieldType current_type = field.ComputedType().GetStorableType();
+        FieldType current_type = field.ComputedType().GetAddressType();
         if (current_type == new_type) {
           return;
         }
@@ -889,7 +889,7 @@ void FormStructureRationalizer::RationalizePhoneNumberTrunkTypes(
   // Indicates whether the previous field was a phone country code.
   bool preceding_phone_country_code = false;
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    FieldType type = field->ComputedType().GetStorableType();
+    FieldType type = field->ComputedType().GetAddressType();
     if (type == PHONE_HOME_CITY_AND_NUMBER ||
         type == PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX) {
       change_type_and_log(*field,
@@ -921,8 +921,8 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
   // Group ADDRESS_HOME_STREET_ADDRESS `fields_` by section.
   std::map<Section, std::vector<AutofillField*>> street_address_fields;
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    if (field->IsFocusable() && field->ComputedType().GetStorableType() ==
-                                    ADDRESS_HOME_STREET_ADDRESS) {
+    if (field->IsFocusable() &&
+        field->ComputedType().GetAddressType() == ADDRESS_HOME_STREET_ADDRESS) {
       street_address_fields[field->section()].push_back(field.get());
     }
   }
@@ -955,7 +955,7 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
   // [Ref: https://en.wikipedia.org/wiki/List_of_postal_codes]
   constexpr size_t kMaxZipCodePartLength = 5;
   auto has_zip_type = [](const std::unique_ptr<AutofillField>& field) {
-    FieldType type = field->Type().GetStorableType();
+    FieldType type = field->ComputedType().GetAddressType();
     return field->is_visible() &&
            (type == ADDRESS_HOME_ZIP || type == ADDRESS_HOME_ZIP_SUFFIX);
   };
@@ -1041,12 +1041,12 @@ void FormStructureRationalizer::RationalizePhoneCountryCode(
       PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX};
   if (std::ranges::any_of(*fields_, [&](const auto& field) {
         return kRelevantPhoneTypes.contains(
-            field->ComputedType().GetStorableType());
+            field->ComputedType().GetAddressType());
       })) {
     return;
   }
   for (const std::unique_ptr<AutofillField>& field : *fields_) {
-    if (field->ComputedType().GetStorableType() == PHONE_HOME_COUNTRY_CODE) {
+    if (field->ComputedType().GetAddressType() == PHONE_HOME_COUNTRY_CODE) {
       field->SetTypeTo(AutofillType(UNKNOWN_TYPE),
                        AutofillPredictionSource::kRationalization);
       LOG_AF(log_manager)
