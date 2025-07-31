@@ -12,6 +12,7 @@ source_set("ui") {
     ":constants",
     "//ios/chrome/app/strings:ios_strings_grit",
     "//ios/chrome/browser/shared/ui/util",
+    "//ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid:tabs_closure_animation",
     "//ios/chrome/common/ui/util",
   ]
 }

@@ -43,8 +43,8 @@ ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser)
   web_state_list_scoped_observation_.Observe(browser->GetWebStateList());
 }
 
-void ReaderModeBrowserAgent::ShowReaderModeUI(bool animated) {
-  [delegate_ showReaderModeContentFromBrowserAgent:this];
+void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
+  [delegate_ readerModeBrowserAgent:this showContentAnimated:animated];
 
   __weak id<ReaderModeChipCommands> weak_reader_mode_chip_handler =
       HandlerForProtocol(browser_->GetCommandDispatcher(),
@@ -63,11 +63,11 @@ void ReaderModeBrowserAgent::ShowReaderModeUI(bool animated) {
   UpdateHandlersOnActiveWebState();
 }
 
-void ReaderModeBrowserAgent::HideReaderModeUI() {
+void ReaderModeBrowserAgent::HideReaderModeUI(BOOL animated) {
   id<ReaderModeChipCommands> reader_mode_chip_handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ReaderModeChipCommands);
   [reader_mode_chip_handler hideReaderModeChip];
-  [delegate_ hideReaderModeContentFromBrowserAgent:this];
+  [delegate_ readerModeBrowserAgent:this hideContentAnimated:animated];
 
   UpdateHandlersOnActiveWebState();
 }
@@ -115,10 +115,10 @@ void ReaderModeBrowserAgent::WebStateListDidChange(
       new_tab_helper && (new_tab_helper->GetReaderModeWebState() != nullptr);
   if (!old_reader_mode_web_state_available &&
       new_reader_mode_web_state_available) {
-    ShowReaderModeUI(/* animated= */ false);
+    ShowReaderModeUI(/* animated= */ NO);
   } else if (old_reader_mode_web_state_available &&
              !new_reader_mode_web_state_available) {
-    HideReaderModeUI();
+    HideReaderModeUI(/* animated= */ NO);
   }
 }
 
@@ -134,7 +134,7 @@ void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
-  ShowReaderModeUI(/* animated= */ true);
+  ShowReaderModeUI(/* animated= */ YES);
   crash_keys::SetCurrentlyInReaderMode(true);
 }
 
@@ -142,7 +142,7 @@ void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper) {
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
-  HideReaderModeUI();
+  HideReaderModeUI(/* animated= */ YES);
   crash_keys::SetCurrentlyInReaderMode(false);
 }
 

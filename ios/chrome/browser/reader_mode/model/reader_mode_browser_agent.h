@@ -39,8 +39,8 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   explicit ReaderModeBrowserAgent(Browser* browser);
 
   // Show/hide the Reader mode UI.
-  void ShowReaderModeUI(bool animated);
-  void HideReaderModeUI();
+  void ShowReaderModeUI(BOOL animated);
+  void HideReaderModeUI(BOOL animated);
 
   // Updates any handlers that rely on the non-Reading mode web state when the
   // Reading mode web state has changed.

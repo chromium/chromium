@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
+#import "ios/chrome/browser/tab_switcher/ui_bundled/tab_grid/grid/tabs_closure_animation.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 
 @interface ReaderModeViewController ()
@@ -14,6 +15,7 @@
 
 @implementation ReaderModeViewController {
   UIView* _contentView;
+  TabsClosureAnimation* _tabsClosureAnimation;
 }
 
 #pragma mark - UIViewController
@@ -24,20 +26,49 @@
   self.view.accessibilityIdentifier = kReaderModeViewAccessibilityIdentifier;
 }
 
-- (void)willMoveToParentViewController:(UIViewController*)parent {
-  if (!parent) {
-    [self.view removeFromSuperview];
+#pragma mark - Public
+
+- (void)moveToParentViewController:(UIViewController*)parent
+                          animated:(BOOL)animated {
+  [self willMoveToParentViewController:parent];
+  [parent addChildViewController:self];
+  [parent.view addSubview:self.view];
+  AddSameConstraints(
+      [NamedGuide guideWithName:kContentAreaGuide view:parent.view], self.view);
+  if (animated) {
+    [self.view setNeedsLayout];
+    [self.view layoutIfNeeded];
+    _tabsClosureAnimation =
+        [[TabsClosureAnimation alloc] initWithWindow:self.view
+                                           gridCells:@[ _contentView ]];
+    _tabsClosureAnimation.type = TabsClosureAnimationType::kRevealGridCells;
+    _tabsClosureAnimation.startPoint = CGPointMake(0.5, 0);
+    self.view.userInteractionEnabled = NO;
+    __weak __typeof(self) weakSelf = self;
+    [_tabsClosureAnimation animateWithCompletion:^{
+      [weakSelf tabsClosureAnimationDidComplete];
+    }];
+  } else {
+    [self didMoveToParentViewController:parent];
   }
-  [super willMoveToParentViewController:parent];
 }
 
-- (void)didMoveToParentViewController:(UIViewController*)parent {
-  [super didMoveToParentViewController:parent];
-  if (parent) {
-    [parent.view addSubview:self.view];
-    AddSameConstraints([NamedGuide guideWithName:kContentAreaGuide
-                                            view:parent.view],
-                       self.view);
+- (void)removeFromParentViewControllerAnimated:(BOOL)animated {
+  [self willMoveToParentViewController:nil];
+  if (animated) {
+    _tabsClosureAnimation =
+        [[TabsClosureAnimation alloc] initWithWindow:self.view
+                                           gridCells:@[ _contentView ]];
+    _tabsClosureAnimation.startPoint = CGPointMake(0.5, 0);
+    self.view.userInteractionEnabled = NO;
+    __weak __typeof(self) weakSelf = self;
+    [_tabsClosureAnimation animateWithCompletion:^{
+      [weakSelf tabsClosureAnimationDidComplete];
+    }];
+  } else {
+    [self.view removeFromSuperview];
+    [self removeFromParentViewController];
+    [self didMoveToParentViewController:nil];
   }
 }
 
@@ -45,14 +76,31 @@
 
 - (void)setContentView:(UIView*)contentView {
   if (_contentView) {
+    _contentView.hidden = YES;
     [_contentView removeFromSuperview];
   }
   _contentView = contentView;
   if (_contentView) {
     _contentView.translatesAutoresizingMaskIntoConstraints = NO;
     [self.view addSubview:_contentView];
+    _contentView.hidden = NO;
     AddSameConstraints(self.view, _contentView);
   }
+}
+
+#pragma mark - Private
+
+// First restores user interaction in `self.view`. In case of dismissal, removes
+// the view and view controller from their hierarchy. Then calls
+// `didMoveToParentViewController:` and frees `_tabsClosureAnimation`.
+- (void)tabsClosureAnimationDidComplete {
+  self.view.userInteractionEnabled = YES;
+  if (_tabsClosureAnimation.type == TabsClosureAnimationType::kHideGridCells) {
+    [self.view removeFromSuperview];
+    [self removeFromParentViewController];
+  }
+  [self didMoveToParentViewController:self.parentViewController];
+  _tabsClosureAnimation = nil;
 }
 
 @end

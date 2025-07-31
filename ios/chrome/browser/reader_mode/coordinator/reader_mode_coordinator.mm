@@ -29,9 +29,9 @@
   return _viewController.view;
 }
 
-#pragma mark - ChromeCoordinator
+#pragma mark - Public
 
-- (void)start {
+- (void)startAnimated:(BOOL)animated {
   _viewController = [[ReaderModeViewController alloc] init];
   ProfileIOS* profile = self.browser->GetProfile();
   BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
@@ -39,15 +39,15 @@
       initWithWebStateList:self.browser->GetWebStateList()
                 BWGService:BWGService];
   _mediator.consumer = _viewController;
-  [self.baseViewController addChildViewController:_viewController];
-  [_viewController didMoveToParentViewController:self.baseViewController];
+  [_viewController moveToParentViewController:self.baseViewController
+                                     animated:animated];
   // Start handling Reader mode options commands.
   [self.browser->GetCommandDispatcher()
       startDispatchingToTarget:self
                    forProtocol:@protocol(ReaderModeOptionsCommands)];
 }
 
-- (void)stop {
+- (void)stopAnimated:(BOOL)animated {
   // Stop handling Reader mode options commands.
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
   // Ensure the options UI is dismissed.
@@ -56,9 +56,18 @@
   [_mediator disconnect];
   _mediator = nil;
   // Dismiss Reader mode UI.
-  [_viewController willMoveToParentViewController:nil];
-  [_viewController removeFromParentViewController];
+  [_viewController removeFromParentViewControllerAnimated:animated];
   _viewController = nil;
+}
+
+#pragma mark - ChromeCoordinator
+
+- (void)start {
+  [self startAnimated:NO];
+}
+
+- (void)stop {
+  [self stopAnimated:NO];
 }
 
 #pragma mark - ReaderModeOptionsCommands

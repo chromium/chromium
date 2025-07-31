@@ -5,18 +5,20 @@
 #ifndef IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_DELEGATE_H_
 #define IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_BROWSER_AGENT_DELEGATE_H_
 
+#import <Foundation/Foundation.h>
+
 class ReaderModeBrowserAgent;
 
 // Delegate for ReaderModeBrowserAgent.
 @protocol ReaderModeBrowserAgentDelegate
 
 // Shows the reader mode content.
-- (void)showReaderModeContentFromBrowserAgent:
-    (ReaderModeBrowserAgent*)browserAgent;
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)browserAgent
+           showContentAnimated:(BOOL)animated;
 
 // Hides the reader mode content.
-- (void)hideReaderModeContentFromBrowserAgent:
-    (ReaderModeBrowserAgent*)browserAgent;
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)browserAgent
+           hideContentAnimated:(BOOL)animated;
 
 @end
 

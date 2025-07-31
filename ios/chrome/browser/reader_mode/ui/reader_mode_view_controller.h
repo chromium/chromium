@@ -12,6 +12,18 @@
 // View controller for displaying the Reader mode content.
 @interface ReaderModeViewController : UIViewController <ReaderModeConsumer>
 
+// Adds `self` as child view controller of `parent` and does the appropriate
+// calls to `willMoveToParentViewController:` and
+// `didMoveToParentViewController:`. If `animated` then an animation will be
+// used to add the view.
+- (void)moveToParentViewController:(UIViewController*)parent
+                          animated:(BOOL)animated;
+// Removes `self` as child view controller of `parent` and does the appropriate
+// calls to `willMoveToParentViewController:` and
+// `didMoveToParentViewController:`. If `animated` then an animation will be
+// used to remove the view.
+- (void)removeFromParentViewControllerAnimated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_UI_READER_MODE_VIEW_CONTROLLER_H_

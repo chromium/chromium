@@ -731,23 +731,23 @@ enum class ToolbarKind {
 
 #pragma mark - ReaderModeBrowserAgentDelegate
 
-- (void)showReaderModeContentFromBrowserAgent:
-    (ReaderModeBrowserAgent*)browserAgent {
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)browserAgent
+           showContentAnimated:(BOOL)animated {
   if (_readerModeCoordinator) {
     return;
   }
   _readerModeCoordinator = [[ReaderModeCoordinator alloc]
       initWithBaseViewController:self.viewController
                          browser:self.browser];
-  [_readerModeCoordinator start];
+  [_readerModeCoordinator startAnimated:animated];
 }
 
-- (void)hideReaderModeContentFromBrowserAgent:
-    (ReaderModeBrowserAgent*)browserAgent {
+- (void)readerModeBrowserAgent:(ReaderModeBrowserAgent*)browserAgent
+           hideContentAnimated:(BOOL)animated {
   if (!_readerModeCoordinator) {
     return;
   }
-  [_readerModeCoordinator stop];
+  [_readerModeCoordinator stopAnimated:animated];
   _readerModeCoordinator = nil;
 }
 

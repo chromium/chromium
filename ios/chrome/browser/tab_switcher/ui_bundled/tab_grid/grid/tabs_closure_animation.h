@@ -9,8 +9,21 @@
 
 #import "base/ios/block_types.h"
 
+// Available types of tab closure animation.
+enum class TabsClosureAnimationType {
+  // Grid cells are hidden.
+  kHideGridCells,
+  // Grid cells are revealed.
+  kRevealGridCells,
+};
+
 // Creates and triggers the tab closure animation.
 @interface TabsClosureAnimation : NSObject
+
+// Type of animation. Defaults to `kHideGridCells`.
+@property(nonatomic, assign) TabsClosureAnimationType type;
+// Start point of animation in unit coordinate space. Defaults to (0.5, 1.0).
+@property(nonatomic, assign) CGPoint startPoint;
 
 - (instancetype)initWithWindow:(UIView*)window
                      gridCells:(NSArray<UIView*>*)gridCells

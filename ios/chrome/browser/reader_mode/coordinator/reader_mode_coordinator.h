@@ -13,6 +13,11 @@
 // UIView used for snapshot overlay.
 @property(nonatomic, readonly) UIView* viewForSnapshot;
 
+// Starts/stops the coordinator.
+// If `animated` is true then the UI is presented/dismissed with an animation.
+- (void)startAnimated:(BOOL)animated;
+- (void)stopAnimated:(BOOL)animated;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_COORDINATOR_READER_MODE_COORDINATOR_H_
