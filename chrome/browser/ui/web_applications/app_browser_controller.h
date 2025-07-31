@@ -120,10 +120,6 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   // Returns the text to flash in the title bar on app launch.
   std::u16string GetLaunchFlashText() const;
 
-  // Returns whether this controller was created for a
-  // Chrome App (platform app or legacy packaged app).
-  virtual bool IsHostedApp() const;
-
   // Whether the custom tab bar should be visible.
   virtual bool ShouldShowCustomTabBar() const;
 

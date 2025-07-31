@@ -141,10 +141,6 @@ bool WebAppBrowserController::HasMinimalUiButtons() const {
   return effective_display_mode_ == DisplayMode::kMinimalUi;
 }
 
-bool WebAppBrowserController::IsHostedApp() const {
-  return true;
-}
-
 std::unique_ptr<TabMenuModelFactory>
 WebAppBrowserController::GetTabMenuModelFactory() const {
 #if BUILDFLAG(IS_CHROMEOS)

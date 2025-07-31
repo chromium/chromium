@@ -35,10 +35,6 @@ bool KioskWebAppBrowserController::HasMinimalUiButtons() const {
   return true;
 }
 
-bool KioskWebAppBrowserController::IsHostedApp() const {
-  return true;
-}
-
 bool KioskWebAppBrowserController::HasReloadButton() const {
   return false;
 }

@@ -95,7 +95,6 @@ class WebAppBrowserController : public AppBrowserController,
   void Uninstall(
       webapps::WebappUninstallSource webapp_uninstall_source) override;
   bool IsInstalled() const override;
-  bool IsHostedApp() const override;
   std::unique_ptr<TabMenuModelFactory> GetTabMenuModelFactory() const override;
   bool AppUsesWindowControlsOverlay() const override;
   bool AppUsesTabbed() const override;

@@ -202,10 +202,6 @@ bool HostedAppBrowserController::IsInstalled() const {
   return GetExtension();
 }
 
-bool HostedAppBrowserController::IsHostedApp() const {
-  return true;
-}
-
 void HostedAppBrowserController::OnExtensionUninstallDialogClosed(
     bool success,
     const std::u16string& error) {

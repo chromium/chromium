@@ -474,10 +474,6 @@ std::u16string AppBrowserController::GetLaunchFlashText() const {
   return GetFormattedUrlOrigin();
 }
 
-bool AppBrowserController::IsHostedApp() const {
-  return false;
-}
-
 WebAppBrowserController* AppBrowserController::AsWebAppBrowserController() {
   return nullptr;
 }
