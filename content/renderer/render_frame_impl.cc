@@ -5209,7 +5209,7 @@ void RenderFrameImpl::DidCommitNavigationInternal(
       navigation_state->commit_params().navigation_metrics_token,
       navigation_state->common_params().url,
       navigation_state->common_params().actual_navigation_start,
-      navigation_state->commit_params().commit_sent);
+      navigation_state->commit_params().commit_sent, IsMainFrame());
   // Add any new code above the ProcessNavigationCommit call.
 }
 
