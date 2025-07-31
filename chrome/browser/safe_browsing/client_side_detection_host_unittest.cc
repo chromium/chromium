@@ -2646,15 +2646,18 @@ class ClientSideDetectionHostScamDetectionTest
         .WillOnce(testing::Invoke(
             [=, this](std::string rendered_text,
                       base::OnceCallback<void(
-                          std::optional<
-                              ClientSideDetectionHost::IntelligentScanDelegate::
-                                  IntelligentScanResult>)> callback) {
-              if (!should_return_response) {
-                std::move(callback).Run(std::nullopt);
-                return;
-              }
+                          ClientSideDetectionHost::IntelligentScanDelegate::
+                              IntelligentScanResult)> callback) {
               ClientSideDetectionHost::IntelligentScanDelegate::
                   IntelligentScanResult scam_detection_response;
+              scam_detection_response.execution_success = false;
+              scam_detection_response.model_version = -1;
+              if (!should_return_response) {
+                std::move(callback).Run(scam_detection_response);
+                return;
+              }
+              scam_detection_response.execution_success = true;
+              scam_detection_response.model_version = example_model_version_;
               scam_detection_response.brand = example_brand_;
               scam_detection_response.intent = example_intent_;
               std::move(callback).Run(scam_detection_response);
@@ -2680,6 +2683,8 @@ class ClientSideDetectionHostScamDetectionTest
                           example_brand_);
                 EXPECT_EQ(request->intelligent_scan_info().intent(),
                           example_intent_);
+                EXPECT_EQ(request->intelligent_scan_info().model_version(),
+                          example_model_version_);
               } else {
                 EXPECT_FALSE(request->intelligent_scan_info().has_brand());
                 EXPECT_FALSE(request->intelligent_scan_info().has_intent());
@@ -2810,6 +2815,7 @@ class ClientSideDetectionHostScamDetectionTest
   GURL example_url_{"http://suspiciousurl.com/"};
   std::string example_brand_ = "Example Brand";
   std::string example_intent_ = "Example Intent";
+  int example_model_version_ = 123;
 };
 
 TEST_F(ClientSideDetectionHostScamDetectionTest,
@@ -2846,14 +2852,7 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 }
 
-// TODO(crbug.com/434649088): Re-enable this test
-#if BUILDFLAG(IS_LINUX)
-#define MAYBE_OnDeviceLLMWithEmptyResponse DISABLED_OnDeviceLLMWithEmptyResponse
-#else
-#define MAYBE_OnDeviceLLMWithEmptyResponse OnDeviceLLMWithEmptyResponse
-#endif
-TEST_F(ClientSideDetectionHostScamDetectionTest,
-       MAYBE_OnDeviceLLMWithEmptyResponse) {
+TEST_F(ClientSideDetectionHostScamDetectionTest, OnDeviceLLMWithEmptyResponse) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }

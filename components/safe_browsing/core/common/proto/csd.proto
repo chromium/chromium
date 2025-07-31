@@ -194,6 +194,10 @@ message IntelligentScanInfo {
     TEXT_TOO_SHORT = 5;
   }
   optional NoInfoReason no_info_reason = 3;
+
+  // Model package version of the last used model. This will be non-zero value
+  // if it exists with a value around 1,000,000,000.
+  optional int64 model_version = 4;
 }
 
 message ClientPhishingRequest {
