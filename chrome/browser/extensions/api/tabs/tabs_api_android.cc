@@ -161,8 +161,13 @@ ExtensionFunction::ResponseAction TabsCreateFunction::Run() {
 
   // Kick off navigation. See `TabsUpdateFunction::UpdateURL` for how this is
   // done on Win/Mac/Linux.
-  content::NavigationController::LoadURLParams load_params(
-      GURL(*params->create_properties.url));
+  base::expected<GURL, std::string> url =
+      ExtensionTabUtil::PrepareURLForNavigation(*params->create_properties.url,
+                                                extension(), browser_context());
+  if (!url.has_value()) {
+    return RespondNow(Error(std::move(url.error())));
+  }
+  content::NavigationController::LoadURLParams load_params(*url);
   load_params.is_renderer_initiated = true;
   load_params.initiator_origin = extension()->origin();
   load_params.source_site_instance = content::SiteInstance::CreateForURL(
