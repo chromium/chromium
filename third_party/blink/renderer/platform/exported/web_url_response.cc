@@ -49,6 +49,7 @@
 #include "third_party/blink/public/platform/web_http_header_visitor.h"
 #include "third_party/blink/public/platform/web_string.h"
 #include "third_party/blink/public/platform/web_url.h"
+#include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
@@ -204,6 +205,12 @@ WebURLResponse WebURLResponse::Create(
   response.SetWasCookieInRequest(head.was_cookie_in_request);
   response.SetRecursivePrefetchToken(head.recursive_prefetch_token);
   response.SetDeviceBoundSessionUsage(head.device_bound_session_usage);
+
+  if (head.unencoded_digests) {
+    // Any `issues` will be taken care of in the network stack; we can simply
+    // move the `digests` into the resource response:
+    response.SetUnencodedDigests(std::move(head.unencoded_digests->digests));
+  }
 
   // Check for if the response was not cached and was sent through an IP
   // Protection proxy. Cached responses may contain proxy_chain information
@@ -775,6 +782,12 @@ void WebURLResponse::SetIsIpProtectionUsed(bool is_ip_protection_used) {
 
 bool WebURLResponse::IsIpProtectionUsed() const {
   return resource_response_->IsIpProtectionUsed();
+}
+
+void WebURLResponse::SetUnencodedDigests(
+    std::vector<network::IntegrityMetadata> digests) {
+  resource_response_->SetUnencodedDigests(
+      WTF::Vector<network::IntegrityMetadata>(std::move(digests)));
 }
 
 WebURLResponse::WebURLResponse(ResourceResponse& r) : resource_response_(&r) {}

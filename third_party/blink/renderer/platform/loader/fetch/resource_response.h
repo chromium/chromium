@@ -54,10 +54,12 @@
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace network {
+struct IntegrityMetadata;
+}
+
 namespace blink {
 
-class FeatureContext;
-class UnencodedDigest;
 class ResourceLoadTiming;
 class ServiceWorkerRouterInfo;
 class UseCounter;
@@ -176,7 +178,6 @@ class PLATFORM_EXPORT ResourceResponse final {
   std::optional<base::Time> LastModified(UseCounter&) const;
   // Will always return values >= 0.
   base::TimeDelta CacheControlStaleWhileRevalidate() const;
-  std::optional<blink::UnencodedDigest> UnencodedDigest(const FeatureContext*) const;
 
   unsigned ConnectionID() const;
   void SetConnectionID(unsigned);
@@ -500,6 +501,9 @@ class PLATFORM_EXPORT ResourceResponse final {
     is_ip_protection_used_ = is_ip_protection_used;
   }
 
+  const Vector<network::IntegrityMetadata>& GetUnencodedDigests() const;
+  void SetUnencodedDigests(Vector<network::IntegrityMetadata> digests);
+
  private:
   void UpdateHeaderParsedState(const AtomicString& name);
 
@@ -726,6 +730,8 @@ class PLATFORM_EXPORT ResourceResponse final {
   // Protection proxy. This value is currently only set if
   // kIpPrivacyEnableIppInDevTools is enabled.
   bool is_ip_protection_used_ = false;
+
+  Vector<network::IntegrityMetadata> unencoded_digests_;
 };
 
 }  // namespace blink

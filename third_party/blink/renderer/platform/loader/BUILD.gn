@@ -180,8 +180,6 @@ blink_platform_sources("loader") {
     "subresource_integrity.cc",
     "subresource_integrity.h",
     "tracked_child_url_loader_factory_bundle.cc",
-    "unencoded_digest.cc",
-    "unencoded_digest.h",
     "web_url_request_extra_data.cc",
     "web_url_request_util.cc",
   ]
@@ -258,7 +256,6 @@ source_set("unit_tests") {
     "link_header_test.cc",
     "static_data_navigation_body_loader_test.cc",
     "subresource_integrity_test.cc",
-    "unencoded_digest_unittest.cc",
   ]
 
   configs += [ "//third_party/blink/renderer/platform:blink_platform_config" ]
@@ -274,31 +271,6 @@ source_set("unit_tests") {
     "//third_party/blink/public:test_headers",
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform:test_support",
-  ]
-
-  # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
-  # enable the diagnostic by removing this line.
-  configs += [ "//build/config/compiler:no_exit_time_destructors" ]
-}
-
-test("unencoded_digest_fuzzer") {
-  sources = [ "unencoded_digest_fuzzer.cc" ]
-
-  deps = [
-    "//third_party/blink/renderer/platform",
-    "//third_party/blink/renderer/platform:blink_fuzzer_test_support",
-    "//third_party/blink/renderer/platform:test_support",
-    "//third_party/fuzztest:fuzztest_gtest_main",
-  ]
-
-  configs += [
-    "//third_party/blink/renderer:config",
-    "//third_party/blink/renderer:inside_blink",
-  ]
-
-  fuzztests = [
-    "UnencodedDigest.CreateFuzzer",
-    "UnencodedDigest.MatchFuzzer",
   ]
 
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and

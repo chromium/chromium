@@ -35,6 +35,7 @@
 #include "net/http/structured_headers.h"
 #include "net/ssl/ssl_info.h"
 #include "services/network/public/cpp/cors/cors.h"
+#include "services/network/public/cpp/integrity_metadata.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom-blink.h"
@@ -42,7 +43,6 @@
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/service_worker_router_info.h"
-#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -436,14 +436,6 @@ std::optional<base::Time> ResourceResponse::LastModified(
   return last_modified_;
 }
 
-std::optional<UnencodedDigest> ResourceResponse::UnencodedDigest(
-    const FeatureContext* feature_context) const {
-  if (!RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context)) {
-    return std::nullopt;
-  }
-  return UnencodedDigest::Create(HttpHeaderFields());
-}
-
 bool ResourceResponse::IsAttachment() const {
   static const char kAttachmentString[] = "attachment";
   String value = http_header_fields_.Get(http_names::kContentDisposition);
@@ -556,6 +548,16 @@ ResourceResponse::GetCrossOriginEmbedderPolicy() const {
   } else {
     return network::mojom::CrossOriginEmbedderPolicyValue::kNone;
   }
+}
+
+const Vector<network::IntegrityMetadata>&
+ResourceResponse::GetUnencodedDigests() const {
+  return unencoded_digests_;
+}
+
+void ResourceResponse::SetUnencodedDigests(
+    Vector<network::IntegrityMetadata> digests) {
+  unencoded_digests_ = std::move(digests);
 }
 
 STATIC_ASSERT_ENUM(WebURLResponse::kHTTPVersionUnknown,

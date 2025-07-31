@@ -58,6 +58,11 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
   static String GetSubresourceIntegrityHash(const SegmentedBuffer*,
                                             HashAlgorithm);
 
+  // The caller is responsible for ensuring that `Unencoded-Digests` are enabled
+  // by checking against `RuntimeEnabledFeatures::UnencodedDigestEnabled()`.
+  static bool CheckUnencodedDigests(const Vector<IntegrityMetadata>& digests,
+                                    const SegmentedBuffer* data);
+
   static HashAlgorithm IntegrityAlgorithmToHashAlgorithm(IntegrityAlgorithm);
 
   // The IntegrityMetadataSet argument is an out parameters which contains the
@@ -119,9 +124,6 @@ class PLATFORM_EXPORT SubresourceIntegrity final {
 
   static IntegrityAlgorithm FindBestAlgorithm(
       const WTF::Vector<IntegrityMetadata>&);
-
-  static bool CheckSubresourceIntegrityDigest(const IntegrityMetadata&,
-                                              const SegmentedBuffer* buffer);
 
   static AlgorithmParseResult ParseAttributeAlgorithm(std::string_view token,
                                                       const FeatureContext*,

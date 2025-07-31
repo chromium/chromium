@@ -102,7 +102,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/request_conversion.h"
 #include "third_party/blink/renderer/platform/loader/integrity_report.h"
 #include "third_party/blink/renderer/platform/loader/subresource_integrity.h"
-#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/network_utils.h"
@@ -485,26 +484,24 @@ class FetchManager::Loader final
   class IntegrityVerifier final : public GarbageCollected<IntegrityVerifier>,
                                   public BytesConsumer::Client {
    public:
-    IntegrityVerifier(BytesConsumer* body,
-                      PlaceHolderBytesConsumer* updater,
-                      Response* response,
-                      FetchManager::Loader* loader,
-                      String integrity_metadata,
-                      std::optional<UnencodedDigest> unencoded_digest,
-                      const KURL& url)
+    IntegrityVerifier(
+        BytesConsumer* body,
+        PlaceHolderBytesConsumer* updater,
+        Response* response,
+        FetchManager::Loader* loader,
+        String integrity_metadata,
+        const Vector<network::IntegrityMetadata>& unencoded_digests,
+        const KURL& url)
         : body_(body),
           updater_(updater),
           response_(response),
           loader_(loader),
           integrity_metadata_(integrity_metadata),
-          unencoded_digest_(unencoded_digest),
+          unencoded_digests_(unencoded_digests),
           url_(url) {
       // We need to have some kind of integrity metadata to check: either SRI
       // metadata, or an `Unencoded-Digest` header.
-      DCHECK(!integrity_metadata.empty() ||
-             (unencoded_digest.has_value() &&
-              RuntimeEnabledFeatures::UnencodedDigestEnabled(
-                  loader_->GetExecutionContext())));
+      DCHECK(!integrity_metadata.empty() || !unencoded_digests_.empty());
       body_->SetClient(this);
 
       OnStateChange();
@@ -534,8 +531,11 @@ class FetchManager::Loader final
       finished_ = true;
       if (result == Result::kDone) {
         bool integrity_failed = false;
-        if (unencoded_digest_.has_value() &&
-            !unencoded_digest_->DoesMatch(&buffer_)) {
+
+        if (RuntimeEnabledFeatures::UnencodedDigestEnabled(
+                loader_->GetExecutionContext()) &&
+            !SubresourceIntegrity::CheckUnencodedDigests(unencoded_digests_,
+                                                         &buffer_)) {
           integrity_failed = true;
           error_message =
               "The resource's `unencoded-digest` header asserted "
@@ -591,7 +591,7 @@ class FetchManager::Loader final
     Member<Response> response_;
     Member<FetchManager::Loader> loader_;
     String integrity_metadata_;
-    std::optional<UnencodedDigest> unencoded_digest_;
+    const Vector<network::IntegrityMetadata> unencoded_digests_;
     KURL url_;
     SegmentedBuffer buffer_;
     bool finished_ = false;
@@ -794,10 +794,9 @@ void FetchManager::Loader::DidReceiveResponse(
   Response* r = Response::Create(response_resolver_->GetExecutionContext(),
                                  tainted_response);
   r->headers()->SetGuard(Headers::kImmutableGuard);
-  std::optional<UnencodedDigest> unencoded_digest =
-      response.UnencodedDigest(GetExecutionContext());
   if (GetFetchRequestData()->Integrity().empty() &&
-      !unencoded_digest.has_value()) {
+      (!RuntimeEnabledFeatures::UnencodedDigestEnabled(GetExecutionContext()) ||
+       response.GetUnencodedDigests().empty())) {
     response_resolver_->Resolve(r);
     response_resolver_.Clear();
   } else {
@@ -809,7 +808,7 @@ void FetchManager::Loader::DidReceiveResponse(
 
     integrity_verifier_ = MakeGarbageCollected<IntegrityVerifier>(
         underlying, verified, r, this, GetFetchRequestData()->Integrity(),
-        unencoded_digest, response.CurrentRequestUrl());
+        response.GetUnencodedDigests(), response.CurrentRequestUrl());
   }
 }
 

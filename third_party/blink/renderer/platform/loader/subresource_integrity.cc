@@ -175,6 +175,35 @@ String SubresourceIntegrity::GetSubresourceIntegrityHash(
   return GetIntegrityStringFromDigest(digest, algorithm);
 }
 
+bool SubresourceIntegrity::CheckUnencodedDigests(
+    const Vector<IntegrityMetadata>& digests,
+    const SegmentedBuffer* buffer) {
+  // Performs the "verify `unencoded-digest` assertions" algorithm defined in
+  // https://wicg.github.io/signature-based-sri/#unencoded-digest-validation
+  for (const IntegrityMetadata& digest : digests) {
+    HashAlgorithm algorithm =
+        IntegrityAlgorithmToHashAlgorithm(digest.algorithm);
+    DCHECK(algorithm == blink::HashAlgorithm::kHashAlgorithmSha256 ||
+           algorithm == blink::HashAlgorithm::kHashAlgorithmSha512);
+
+    DigestValue computed_digest;
+    if (!ComputeDigest(algorithm, buffer, computed_digest)) {
+      return false;
+    }
+
+    // If any specified digest doesn't match the digest computed over |buffer|,
+    // matching fails.
+    DigestValue expected_digest(base::as_byte_span(digest.value));
+    if (computed_digest != expected_digest) {
+      return false;
+    }
+  }
+
+  // If no digest failed to match (or if we didn't have any digests in the
+  // first place), matching succeeded.
+  return true;
+}
+
 bool SubresourceIntegrity::CheckSubresourceIntegrityImpl(
     const IntegrityMetadataSet& parsed_metadata,
     const SegmentedBuffer* buffer,
@@ -389,6 +418,7 @@ IntegrityAlgorithm SubresourceIntegrity::FindBestAlgorithm(
 SubresourceIntegrity::AlgorithmParseResult
 SubresourceIntegrity::ParseAttributeAlgorithm(
     std::string_view token,
+
     const FeatureContext* feature_context,
     IntegrityAlgorithm& algorithm) {
   static const AlgorithmPrefixPair kPrefixes[] = {

@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/background_response_processor.h"
-#include "third_party/blink/renderer/platform/loader/unencoded_digest.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/scheduler/public/thread_scheduler.h"
@@ -200,9 +199,9 @@ void Resource::CheckResourceIntegrity() {
   // Otherwise, fall through to validating SRI.
   const FeatureContext* feature_context =
       loader_ ? loader_->GetFeatureContext() : nullptr;
-  auto unencoded_digest = GetResponse().UnencodedDigest(feature_context);
-  if (unencoded_digest.has_value() && !unencoded_digest->DoesMatch(Data())) {
-    DCHECK(RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context));
+  if (RuntimeEnabledFeatures::UnencodedDigestEnabled(feature_context) &&
+      !SubresourceIntegrity::CheckUnencodedDigests(
+          GetResponse().GetUnencodedDigests(), Data())) {
     integrity_disposition_ =
         ResourceIntegrityDisposition::kFailedUnencodedDigest;
     integrity_report_.AddConsoleErrorMessage(StrCat(
@@ -427,10 +426,7 @@ AtomicString Resource::HttpContentType() const {
 }
 
 bool Resource::ForceIntegrityChecks() const {
-  const FeatureContext* feature_context =
-      loader_ ? loader_->GetFeatureContext() : nullptr;
-  return IsLinkPreload() ||
-         GetResponse().UnencodedDigest(feature_context).has_value();
+  return IsLinkPreload() || !GetResponse().GetUnencodedDigests().empty();
 }
 
 bool Resource::MustRefetchDueToIntegrityMetadata(
