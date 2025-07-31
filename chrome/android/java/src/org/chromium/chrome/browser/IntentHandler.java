@@ -319,7 +319,10 @@ public class IntentHandler {
     private static final String YOUTUBE_LINK_PREFIX_HTTPS = "https://www.youtube.com/redirect?";
     private static final String YOUTUBE_LINK_PREFIX_HTTP = "http://www.youtube.com/redirect?";
     private static final String BRING_TAB_TO_FRONT_EXTRA = "BRING_TAB_TO_FRONT";
+    private static final String BRING_TAB_GROUP_TO_FRONT_EXTRA = "BRING_TAB_GROUP_TO_FRONT";
     public static final String BRING_TAB_TO_FRONT_SOURCE_EXTRA = "BRING_TAB_TO_FRONT_SOURCE";
+    public static final String BRING_TAB_GROUP_TO_FRONT_SOURCE_EXTRA =
+            "BRING_TAB_GROUP_TO_FRONT_SOURCE";
     public static final String DAYDREAM_CATEGORY = "com.google.intent.category.DAYDREAM";
     public static final String SHARE_INTENT_HISTOGRAM = "Android.Intent.ShareIntentUrlCount";
 
@@ -438,7 +441,8 @@ public class IntentHandler {
         TabOpenType.CLOBBER_CURRENT_TAB,
         TabOpenType.BRING_TAB_TO_FRONT,
         TabOpenType.OPEN_NEW_INCOGNITO_TAB,
-        TabOpenType.REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB
+        TabOpenType.REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB,
+        TabOpenType.BRING_TAB_GROUP_TO_FRONT,
     })
     @Retention(RetentionPolicy.SOURCE)
     public @interface TabOpenType {
@@ -458,6 +462,8 @@ public class IntentHandler {
         // the intent url is a result of a redirect, so that a tab pointing at the original URL can
         // be reused.
         int REUSE_TAB_MATCHING_ID_ELSE_NEW_TAB = 6;
+        // Bring a tab group to the foreground and open the tab group dialog on suggestion click.
+        int BRING_TAB_GROUP_TO_FRONT = 7;
 
         String REUSE_TAB_MATCHING_ID_STRING = "REUSE_TAB_MATCHING_ID";
         String REUSE_TAB_ORIGINAL_URL_STRING = "REUSE_TAB_ORIGINAL_URL";
@@ -1171,6 +1177,9 @@ public class IntentHandler {
         if (getBringTabToFrontId(intent) != Tab.INVALID_TAB_ID) {
             return TabOpenType.BRING_TAB_TO_FRONT;
         }
+        if (getBringTabGroupToFrontId(intent) != null) {
+            return TabOpenType.BRING_TAB_GROUP_TO_FRONT;
+        }
 
         String appId = IntentUtils.safeGetStringExtra(intent, Browser.EXTRA_APPLICATION_ID);
         // Due to users complaints, we are NOT reusing tabs for apps that do not specify an appId.
@@ -1546,9 +1555,34 @@ public class IntentHandler {
         return intent;
     }
 
+    /**
+     * Creates an Intent that tells Chrome to bring an Activity for a particular Tab back to the
+     * foreground.
+     *
+     * @param tabGroupId The tab group id of the Tab Group to bring to the foreground.
+     * @param bringToFrontSource The source of the bring to front Intent, used for gathering
+     *     metrics.
+     * @return Created Intent or null if this operation isn't possible.
+     */
+    public static Intent createTrustedBringTabGroupToFrontIntent(
+            String tabGroupId, @BringToFrontSource int bringToFrontSource) {
+        Context context = ContextUtils.getApplicationContext();
+        Intent intent = new Intent(context, ChromeLauncherActivity.class);
+        intent.putExtra(Browser.EXTRA_APPLICATION_ID, context.getPackageName());
+        intent.putExtra(BRING_TAB_GROUP_TO_FRONT_EXTRA, tabGroupId);
+        intent.putExtra(BRING_TAB_GROUP_TO_FRONT_SOURCE_EXTRA, bringToFrontSource);
+        IntentUtils.addTrustedIntentExtras(intent);
+        return intent;
+    }
+
     public static int getBringTabToFrontId(Intent intent) {
         if (!wasIntentSenderChrome(intent)) return Tab.INVALID_TAB_ID;
         return IntentUtils.safeGetIntExtra(intent, BRING_TAB_TO_FRONT_EXTRA, Tab.INVALID_TAB_ID);
+    }
+
+    public static @Nullable String getBringTabGroupToFrontId(Intent intent) {
+        if (!wasIntentSenderChrome(intent)) return null;
+        return IntentUtils.safeGetStringExtra(intent, BRING_TAB_GROUP_TO_FRONT_EXTRA);
     }
 
     /** Sets the Tab Id extra for a given intent. Will only be usable by trusted Chrome intents. */
@@ -1599,6 +1633,19 @@ public class IntentHandler {
     public static void bringTabToFront(Tab tab) {
         Intent newIntent =
                 createTrustedBringTabToFrontIntent(tab.getId(), BringToFrontSource.SEARCH_ACTIVITY);
+        newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
+    }
+
+    /**
+     * Bring the browser to foreground and switch to the tab group.
+     *
+     * @param tabGroupId Tab group id of the tab group to switch to.
+     */
+    public static void bringTabGroupToFront(String tabGroupId) {
+        Intent newIntent =
+                createTrustedBringTabGroupToFrontIntent(
+                        tabGroupId, BringToFrontSource.SEARCH_ACTIVITY);
         newIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         IntentUtils.safeStartActivity(ContextUtils.getApplicationContext(), newIntent);
     }

@@ -45501,6 +45501,16 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="TabGroups.HubSearchTabGroupSuggestionClicked">
+  <owner>wylieb@google.com</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>clank-tab-dev@google.com</owner>
+  <description>
+    Recorded when a surfaced tab group suggestion matching the typed user query
+    is clicked in the hub search bar.
+  </description>
+</action>
+
 <action name="TabGroups.RestoreFromTabGroupPane">
   <owner>wylieb@google.com</owner>
   <owner>evanluo@google.com</owner>

@@ -170,6 +170,7 @@ public class SearchActivity extends AsyncInitializationActivity
         TerminationReason.FRE_NOT_COMPLETED,
         TerminationReason.CUSTOM_BACK_ARROW,
         TerminationReason.BRING_TAB_TO_FRONT,
+        TerminationReason.BRING_TAB_GROUP_TO_FRONT,
         TerminationReason.COUNT
     })
     @Retention(RetentionPolicy.SOURCE)
@@ -183,7 +184,8 @@ public class SearchActivity extends AsyncInitializationActivity
         int FRE_NOT_COMPLETED = 6;
         int CUSTOM_BACK_ARROW = 7;
         int BRING_TAB_TO_FRONT = 8;
-        int COUNT = 9;
+        int BRING_TAB_GROUP_TO_FRONT = 9;
+        int COUNT = 10;
     }
 
     // LINT.ThenChange(/tools/metrics/histograms/metadata/android/enums.xml:SearchActivityTerminationReason)
@@ -321,6 +323,7 @@ public class SearchActivity extends AsyncInitializationActivity
                         /* backKeyBehavior= */ this,
                         /* pageInfoAction= */ (tab, pageInfoHighlight) -> {},
                         this::bringTabToFront,
+                        this::bringTabGroupToFront,
                         /*omniboxUma*/ (url, transition, isNtp) -> {},
                         TabWindowManagerSingleton::getInstance,
                         /* bookmarkState= */ (url) -> false,
@@ -885,6 +888,11 @@ public class SearchActivity extends AsyncInitializationActivity
     private void bringTabToFront(Tab tab) {
         finish(TerminationReason.BRING_TAB_TO_FRONT, /* loadUrlParams= */ null);
         IntentHandler.bringTabToFront(tab);
+    }
+
+    private void bringTabGroupToFront(String tabGroupId) {
+        finish(TerminationReason.BRING_TAB_GROUP_TO_FRONT, /* loadUrlParams= */ null);
+        IntentHandler.bringTabGroupToFront(tabGroupId);
     }
 
     /* package */ void setLocationBarCoordinatorForTesting(LocationBarCoordinator coordinator) {

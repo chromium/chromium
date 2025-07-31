@@ -262,6 +262,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabGroupVisualDataManage
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegateProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabModelNotificationDotManager;
+import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherPaneBase;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabsSettings;
 import org.chromium.chrome.browser.tasks.tab_management.archived_tabs_auto_delete_promo.ArchivedTabsAutoDeletePromoManager;
@@ -1656,6 +1657,7 @@ public class ChromeTabbedActivity extends ChromeActivity {
 
             super.onNewIntentWithNative(intent);
             if (!IntentHandler.shouldIgnoreIntent(intent, this, /* isCustomTab= */ false)) {
+                maybeHandleOpenTabGroupIntent(intent);
                 maybeHandleUrlIntent(intent);
             }
 
@@ -1671,6 +1673,40 @@ public class ChromeTabbedActivity extends ChromeActivity {
             maybeShowTabSwitcherAfterTabModelLoad(intent);
         } finally {
             TraceEvent.end("ChromeTabbedActivity.onNewIntentWithNative");
+        }
+    }
+
+    /**
+     * @param intent The received intent.
+     */
+    private void maybeHandleOpenTabGroupIntent(Intent intent) {
+        @TabOpenType int tabOpenType = IntentHandler.getTabOpenType(intent);
+        if (tabOpenType != TabOpenType.BRING_TAB_GROUP_TO_FRONT) return;
+        @Nullable String tabGroupId = IntentHandler.getBringTabGroupToFrontId(intent);
+        @Nullable TabGroupSyncService tabGroupSyncService =
+                TabGroupSyncServiceFactory.getForProfile(mTabModelProfileSupplier.get());
+        // The following logic does not support operations for tab groups in incognito.
+        // TODO(crbug.com/435227138): Update the PaneId and conversion of dependence on
+        // TabGroupSyncService to the TabGroupModelFilter when opening the tab group dialog.
+        if (tabGroupSyncService != null && tabGroupId != null) {
+            TabSwitcherPaneBase tabSwitcherPaneBase =
+                    (TabSwitcherPaneBase)
+                            mHubProvider
+                                    .getHubManagerSupplier()
+                                    .get()
+                                    .getPaneManager()
+                                    .getPaneForId(PaneId.TAB_SWITCHER);
+            TabSwitcherUtils.openTabGroupDialog(
+                    tabGroupId,
+                    tabGroupSyncService,
+                    ((TabbedRootUiCoordinator) mRootUiCoordinator).getTabGroupSyncController(),
+                    mTabModelSelector
+                            .getTabGroupModelFilterProvider()
+                            .getTabGroupModelFilter(/* isIncognito= */ false),
+                    (rootId) -> {
+                        tabSwitcherPaneBase.requestOpenTabGroupDialog(rootId);
+                    });
+            RecordUserAction.record("TabGroups.HubSearchTabGroupSuggestionClicked");
         }
     }
 

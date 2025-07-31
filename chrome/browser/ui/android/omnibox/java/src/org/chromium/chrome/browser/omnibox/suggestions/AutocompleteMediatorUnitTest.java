@@ -213,6 +213,7 @@ public class AutocompleteMediatorUnitTest {
                         null,
                         mLocationBarDataProvider,
                         tab -> {},
+                        tabGroupId -> {},
                         mTabWindowManagerSupplier,
                         url -> false,
                         mOmniboxActionDelegate,

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.omnibox.suggestions;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 
 import android.content.Context;
 import android.content.Intent;
@@ -101,6 +102,7 @@ class AutocompleteMediator
     private final DropdownItemViewInfoListBuilder mDropdownViewInfoListBuilder;
     private final DropdownItemViewInfoListManager mDropdownViewInfoListManager;
     private final Callback<Tab> mBringTabToFrontCallback;
+    private final Callback<String> mBringTabGroupToFrontCallback;
     private final Supplier<TabWindowManager> mTabWindowManagerSupplier;
     private final OmniboxActionDelegate mOmniboxActionDelegate;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
@@ -180,6 +182,7 @@ class AutocompleteMediator
             Supplier<ShareDelegate> shareDelegateSupplier,
             LocationBarDataProvider locationBarDataProvider,
             Callback<Tab> bringTabToFrontCallback,
+            Callback<String> bringTabGroupToFrontCallback,
             Supplier<TabWindowManager> tabWindowManagerSupplier,
             BookmarkState bookmarkState,
             OmniboxActionDelegate omniboxActionDelegate,
@@ -195,6 +198,7 @@ class AutocompleteMediator
         mHandler = handler;
         mDataProvider = locationBarDataProvider;
         mBringTabToFrontCallback = bringTabToFrontCallback;
+        mBringTabGroupToFrontCallback = bringTabGroupToFrontCallback;
         mTabWindowManagerSupplier = tabWindowManagerSupplier;
         mSuggestionModels = mListPropertyModel.get(SuggestionListProperties.SUGGESTION_MODELS);
         mOmniboxActionDelegate = omniboxActionDelegate;
@@ -512,10 +516,19 @@ class AutocompleteMediator
         boolean isAndroidHub =
                 mDataProvider.getPageClassification(/* isPrefetch= */ false)
                         == PageClassification.ANDROID_HUB_VALUE;
-        if (isAndroidHub && suggestion.hasTabMatch() && maybeSwitchToTab(suggestion)) {
-            // This bypasses the execution flow that captures histograms for all other cases.
-            recordMetrics(suggestion, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
-            return;
+        if (isAndroidHub && suggestion.hasTabMatch()) {
+            // Consider switching to tab for all other suggestion types that are not tab groups.
+            if (suggestion.getType() == OmniboxSuggestionType.TAB_GROUP) {
+                switchToTabGroup(suggestion);
+                return;
+            } else {
+                if (maybeSwitchToTab(suggestion)) {
+                    // This bypasses the execution flow that captures histograms for all other
+                    // cases.
+                    recordMetrics(suggestion, matchIndex, WindowOpenDisposition.SWITCH_TO_TAB);
+                    return;
+                }
+            }
         }
 
         mDeferredLoadAction =
@@ -659,6 +672,11 @@ class AutocompleteMediator
         if (tabIndex == TabModel.INVALID_TAB_INDEX) return false;
         tabModel.setIndex(tabIndex, TabSelectionType.FROM_OMNIBOX);
         return true;
+    }
+
+    @VisibleForTesting
+    public void switchToTabGroup(AutocompleteMatch match) {
+        mBringTabGroupToFrontCallback.onResult(assumeNonNull(match.getTabGroupUuid()));
     }
 
     @Override

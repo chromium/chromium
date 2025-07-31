@@ -20,6 +20,7 @@ import static org.chromium.base.test.transit.ViewSpec.viewSpec;
 import android.view.KeyEvent;
 import android.view.View;
 
+import androidx.core.util.Pair;
 import androidx.test.espresso.action.ViewActions;
 import androidx.test.espresso.matcher.ViewMatchers;
 
@@ -165,6 +166,16 @@ public class TabSwitcherSearchStation extends Station<SearchActivity> {
 
         public WebPageStation openPage() {
             return suggestionElement.clickTo().arriveAt(buildDestinationPageStation());
+        }
+
+        public Pair<RegularTabSwitcherStation, TabGroupDialogFacility> openTabGroup(
+                ChromeTabbedActivity activity, List<Integer> tabIdsInGroup, String title) {
+            RegularTabSwitcherStation tabSwitcher =
+                    RegularTabSwitcherStation.from(activity.getTabModelSelector());
+            TabGroupDialogFacility dialog =
+                    new TabGroupDialogFacility<>(tabIdsInGroup, title, null);
+            suggestionElement.clickTo().arriveAtAnd(tabSwitcher).enterFacility(dialog);
+            return new Pair<>(tabSwitcher, dialog);
         }
 
         public WebPageStation openPagePressingEnter() {

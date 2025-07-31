@@ -137,6 +137,8 @@ public class LocationBarCoordinator
      * @param backKeyBehavior Delegate that allows customization of back key behavior.
      * @param pageInfoAction Displays page info popup.
      * @param bringTabToFrontCallback Callback to bring the browser foreground and switch to a tab.
+     * @param bringTabGroupToFrontCallback Callback to bring the browser foreground and switch to a
+     *     tab group.
      * @param omniboxUma Interface for logging UMA histogram.
      * @param tabWindowManagerSupplier Supplier of glue-level TabWindowManager object.
      * @param bookmarkState State of a URL bookmark state.
@@ -175,6 +177,7 @@ public class LocationBarCoordinator
             BackKeyBehaviorDelegate backKeyBehavior,
             PageInfoAction pageInfoAction,
             Callback<Tab> bringTabToFrontCallback,
+            Callback<String> bringTabGroupToFrontCallback,
             OmniboxUma omniboxUma,
             Supplier<TabWindowManager> tabWindowManagerSupplier,
             BookmarkState bookmarkState,
@@ -265,6 +268,7 @@ public class LocationBarCoordinator
                         locationBarDataProvider,
                         profileObservableSupplier,
                         bringTabToFrontCallback,
+                        bringTabGroupToFrontCallback,
                         tabWindowManagerSupplier,
                         bookmarkState,
                         omniboxActionDelegate,

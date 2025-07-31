@@ -103,9 +103,27 @@ public class TabGroupDialogFacility<
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.DATA_SHARING_JOIN_ONLY)) {
             // TODO(ckitagawa): Add handling for an already shared group.
-            if (isAllowedToShare()) {
-                shareButtonElement =
-                        declareView(toolbarElement.descendant(withId(R.id.share_button)));
+            if (mHostStation.getPhase() == Phase.ACTIVE) {
+                // TODO(crbug.com/384533121): When declareElementFactory works with Conditions from
+                // past transitions, remove this check and always use declareElementFactory().
+                if (isAllowedToShare()) {
+                    shareButtonElement =
+                            declareView(toolbarElement.descendant(withId(R.id.share_button)));
+                }
+            } else if (mHostStation.getPhase() != Phase.FINISHED) {
+                // Make this a delayed element check to ensure the tab model is available on check.
+                declareElementFactory(
+                        mHostStation.tabModelElement,
+                        delayedElements -> {
+                            if (isAllowedToShare()) {
+                                shareButtonElement =
+                                        delayedElements.declareView(
+                                                toolbarElement.descendant(
+                                                        withId(R.id.share_button)));
+                            }
+                        });
+            } else { // mHostStation.getPhase() == Phase.FINISHED
+                throw new IllegalStateException("Station is already FINISHED: " + mHostStation);
             }
 
             // Data sharing layout causes the menu button to be hidden due to the rounded corner.

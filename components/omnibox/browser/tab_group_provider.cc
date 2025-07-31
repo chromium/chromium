@@ -147,6 +147,7 @@ AutocompleteMatch TabGroupProvider::CreateTabGroupMatch(
   match.description_class = ClassifyTermMatches(
       description_terms, match.description.size(), ACMatchClassification::MATCH,
       ACMatchClassification::NONE);
+  match.has_tab_match = true;
 
   return match;
 }
