@@ -80,6 +80,8 @@
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/mathml/mathml_element.h"
+#include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/svg/svg_style_element.h"
 #include "third_party/blink/renderer/core/svg/svg_use_element.h"
@@ -87,6 +89,7 @@
 #include "third_party/blink/renderer/platform/bindings/runtime_call_stats.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/url_loader_client.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -181,6 +184,15 @@ static bool IsHTMLBlockElement(const Node* node) {
          IsNonTableCellHTMLBlockElement(node);
 }
 
+// Helper function to check if a node is a MathML math element
+static bool IsMathMLMathElement(const Node* node) {
+  const auto* element = DynamicTo<MathMLElement>(node);
+  if (!element) {
+    return false;
+  }
+  return element->HasTagName(mathml_names::kMathTag);
+}
+
 static HTMLElement* AncestorToRetainStructureAndAppearanceForBlock(
     Element* common_ancestor_block) {
   if (!common_ancestor_block)
@@ -224,7 +236,7 @@ bool PropertyMissingOrEqualToNone(CSSPropertyValueSet* style,
 }
 
 template <typename Strategy>
-static HTMLElement* HighestAncestorToWrapMarkup(
+static Element* HighestAncestorToWrapMarkup(
     const PositionTemplate<Strategy>& start_position,
     const PositionTemplate<Strategy>& end_position,
     const CreateMarkupOptions& options) {
@@ -235,7 +247,7 @@ static HTMLElement* HighestAncestorToWrapMarkup(
       Strategy::CommonAncestor(*start_position.ComputeContainerNode(),
                                *end_position.ComputeContainerNode());
   DCHECK(common_ancestor);
-  HTMLElement* special_common_ancestor = nullptr;
+  Element* special_common_ancestor = nullptr;
   if (options.ShouldAnnotateForInterchange()) {
     // Include ancestors that aren't completely inside the range but are
     // required to retain the structure and appearance of the copied markup.
@@ -250,7 +262,7 @@ static HTMLElement* HighestAncestorToWrapMarkup(
           ContainerNode* ancestor = parent_list_node->parentNode();
           while (ancestor && !IsHTMLListElement(ancestor))
             ancestor = ancestor->parentNode();
-          special_common_ancestor = To<HTMLElement>(ancestor);
+          special_common_ancestor = To<Element>(ancestor);
         }
       }
 
@@ -261,6 +273,18 @@ static HTMLElement* HighestAncestorToWrapMarkup(
                   first_node_position, IsMailHTMLBlockquoteElement,
                   kCanCrossEditingBoundary))) {
         special_common_ancestor = highest_mail_blockquote;
+      }
+
+      // Retain MathML structure by including ancestor <math> elements.
+      // This ensures that when copying MathML content, the semantic context
+      // is preserved even for partial selections within math expressions.
+      if (RuntimeEnabledFeatures::MathMLSerializationOnCopyEnabled()) {
+        if (auto* highest_math_element =
+                To<MathMLElement>(HighestEnclosingNodeOfType(
+                    first_node_position, IsMathMLMathElement,
+                    kCanCrossEditingBoundary))) {
+          special_common_ancestor = highest_math_element;
+        }
       }
     }
   }
@@ -278,11 +302,10 @@ static HTMLElement* HighestAncestorToWrapMarkup(
         options.ConstrainingAncestor()
             ? const_cast<Node*>(options.ConstrainingAncestor())
             : EnclosingBlock(check_ancestor);
-    auto* new_special_common_ancestor =
-        To<HTMLElement>(HighestEnclosingNodeOfType(
-            Position::FirstPositionInNode(*check_ancestor),
-            &IsPresentationalHTMLElement, kCanCrossEditingBoundary,
-            constraining_ancestor));
+    auto* new_special_common_ancestor = To<Element>(HighestEnclosingNodeOfType(
+        Position::FirstPositionInNode(*check_ancestor),
+        &IsPresentationalHTMLElement, kCanCrossEditingBoundary,
+        constraining_ancestor));
     if (new_special_common_ancestor)
       special_common_ancestor = new_special_common_ancestor;
   }
@@ -293,18 +316,18 @@ static HTMLElement* HighestAncestorToWrapMarkup(
   // necessarily be above any tab span that needs to be included.
   if (!special_common_ancestor &&
       IsTabHTMLSpanElementTextNode(common_ancestor)) {
-    special_common_ancestor =
-        To<HTMLSpanElement>(Strategy::Parent(*common_ancestor));
+    special_common_ancestor = To<Element>(Strategy::Parent(*common_ancestor));
   }
   if (!special_common_ancestor && IsTabHTMLSpanElement(common_ancestor))
-    special_common_ancestor = To<HTMLSpanElement>(common_ancestor);
+    special_common_ancestor = To<Element>(common_ancestor);
 
-  if (auto* enclosing_anchor = To<HTMLAnchorElement>(EnclosingElementWithTag(
+  if (auto* enclosing_anchor = To<Element>(EnclosingElementWithTag(
           Position::FirstPositionInNode(special_common_ancestor
                                             ? *special_common_ancestor
                                             : *common_ancestor),
-          html_names::kATag)))
+          html_names::kATag))) {
     special_common_ancestor = enclosing_anchor;
+  }
 
   return special_common_ancestor;
 }
@@ -347,7 +370,7 @@ String CreateMarkupAlgorithm<Strategy>::CreateMarkup(
   DocumentLifecycle::DisallowTransitionScope disallow_transition(
       document->Lifecycle());
 
-  HTMLElement* special_common_ancestor = HighestAncestorToWrapMarkup<Strategy>(
+  Element* special_common_ancestor = HighestAncestorToWrapMarkup<Strategy>(
       start_position, end_position, options);
   StyledMarkupSerializer<Strategy> serializer(start_position, end_position,
                                               special_common_ancestor, options);

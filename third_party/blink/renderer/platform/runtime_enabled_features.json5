@@ -3034,6 +3034,14 @@
       status: "experimental",
     },
     {
+      // Enables MathML ancestor context preservation during copy-paste
+      // serialization. When enabled, copying partial MathML content includes
+      // the containing <math> element to preserve semantic context and
+      // namespace declarations.
+      name: "MathMLSerializationOnCopy",
+      status: "stable",
+    },
+    {
       name:"MeasureMemory",
       status:"stable",
     },
