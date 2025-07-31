@@ -72,6 +72,7 @@ source_set("impl") {
       "//chrome/browser/sync:factories",
       "//chrome/browser/ui/passwords/bubble_controllers",
       "//chrome/browser/ui/tabs:tab_enums",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/webauthn",
       "//components/autofill/content/browser",
       "//components/autofill/core/browser",

@@ -10801,6 +10801,7 @@ if (!is_android) {
     public_deps = [
       "//chrome/browser:test_support_ui",
       "//chrome/browser/ui/exclusive_access",
+      "//chrome/browser/ui/views/frame:toolbar_button_provider",
       "//chrome/browser/ui/views/side_panel",
       "//components/supervised_user/core/browser",
       "//components/webui/chrome_urls",

@@ -62,6 +62,7 @@ source_set("impl") {
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
     "//chrome/browser/ui/toolbar",
+    "//chrome/browser/ui/views/frame:toolbar_button_provider",
     "//chrome/browser/ui/views/side_panel",
     "//chrome/common:constants",
     "//components/bookmarks/browser",
