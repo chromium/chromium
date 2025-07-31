@@ -321,6 +321,7 @@ android_resources("java_resources") {
     "java/res/layout/textbubble_text_with_image.xml",
     "java/res/layout/tile_no_text_view.xml",
     "java/res/layout/tile_no_text_view_condensed.xml",
+    "java/res/layout/tile_text_view.xml",
     "java/res/layout/tile_view_modern.xml",
     "java/res/layout/tile_view_modern_condensed.xml",
     "java/res/layout/title_and_description_layout.xml",

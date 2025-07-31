@@ -57,12 +57,12 @@ public class TileViewCoordinator {
     }
 
     /**
-     * Set whether the Icon Badge should be visible.
+     * Set whether the offline badge should be visible.
      *
-     * @param badgeVisible Whether icon badge should be visible.
+     * @param isVisible Whether offline badge should be visible.
      */
-    public void setBadgeVisible(boolean badgeVisible) {
-        mMediator.setBadgeVisible(badgeVisible);
+    public void setOfflineBadgeVisibility(boolean isVisible) {
+        mMediator.setOfflineBadgeVisibility(isVisible);
     }
 
     /**

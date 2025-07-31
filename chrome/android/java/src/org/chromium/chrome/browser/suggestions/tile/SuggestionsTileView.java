@@ -45,9 +45,11 @@ public class SuggestionsTileView extends TileView {
      */
     @Initializer
     public void initialize(Tile tile, int titleLines) {
+        boolean showPinnedShortcutBadge = tile.getSource() == TileSource.CUSTOM_LINKS;
         super.initialize(
                 TitleUtil.getTitleForDisplay(tile.getTitle(), tile.getUrl()),
                 tile.isOfflineAvailable(),
+                showPinnedShortcutBadge,
                 tile.getIcon(),
                 titleLines);
         mData = tile.getData();

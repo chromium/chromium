@@ -855,11 +855,11 @@ public class NewTabPageTest {
         int expectedTitleTopMargin =
                 res.getDimensionPixelSize(R.dimen.tile_view_title_margin_top_modern);
         TileView suggestionsTileElement = mvTilesLayout.getTileAt(0);
+        View tileTextContainer = suggestionsTileElement.findViewById(R.id.tile_text_container);
         Assert.assertEquals(
-                "The top margin of the tile element's title is wrong.",
+                "The top margin of the tile element's title container is wrong.",
                 expectedTitleTopMargin,
-                ((MarginLayoutParams) suggestionsTileElement.getTitleView().getLayoutParams())
-                        .topMargin);
+                ((MarginLayoutParams) tileTextContainer.getLayoutParams()).topMargin);
     }
 
     /**

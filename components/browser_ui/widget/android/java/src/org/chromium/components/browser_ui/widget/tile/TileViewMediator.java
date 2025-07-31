@@ -48,12 +48,12 @@ class TileViewMediator {
     }
 
     /**
-     * Set whether the Icon Badge should be visible.
+     * Set whether the offline badge should be visible.
      *
-     * @param badgeVisible Whether icon badge should be visible.
+     * @param isVisible Whether offline badge should be visible.
      */
-    void setBadgeVisible(boolean badgeVisible) {
-        mModel.set(TileViewProperties.BADGE_VISIBLE, badgeVisible);
+    void setOfflineBadgeVisibility(boolean isVisible) {
+        mModel.set(TileViewProperties.OFFLINE_BADGE_VISIBLE, isVisible);
     }
 
     /**

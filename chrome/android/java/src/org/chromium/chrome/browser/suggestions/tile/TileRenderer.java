@@ -341,7 +341,12 @@ public class TileRenderer {
                 (TileView)
                         LayoutInflater.from(parent.getContext())
                                 .inflate(mTileLayoutResId, parent, false);
-        tileView.initialize(title, /* showOfflineBadge= */ false, plusIcon, mTitleLinesCount);
+        tileView.initialize(
+                title,
+                /* showOfflineBadge= */ false,
+                /* showPinnedShortcutBadge= */ false,
+                plusIcon,
+                mTitleLinesCount);
         tileView.setIconTint(
                 ChromeColors.getSecondaryIconTint(mContext, /* forceLightIconTint= */ false));
         tileView.setContentDescription(

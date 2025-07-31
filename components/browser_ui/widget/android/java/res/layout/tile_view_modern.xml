@@ -13,16 +13,5 @@ found in the LICENSE file.
 
     <include layout="@layout/tile_no_text_view" />
 
-    <!-- The title. -->
-    <org.chromium.ui.widget.TextViewWithLeading
-        android:id="@+id/tile_view_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/tile_view_title_margin_top_modern"
-        android:ellipsize="end"
-        android:gravity="center_horizontal"
-        android:lines="2"
-        android:textAppearance="@style/TextAppearance.TextSmall.Secondary"
-        app:leading="@dimen/text_size_small_leading" />
-
+    <include layout="@layout/tile_text_view" />
 </merge>
