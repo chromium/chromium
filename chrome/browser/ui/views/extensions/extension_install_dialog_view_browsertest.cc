@@ -87,10 +87,11 @@ void CloseAndWait(views::Widget* widget) {
   waiter.Wait();
 }
 
-class WidgetBoundsChangedWaiter : public views::WidgetObserver {
+class WidgetBoundsEqualWaiter : public views::WidgetObserver {
  public:
-  explicit WidgetBoundsChangedWaiter(views::Widget* widget) {
-    old_bounds_ = widget->GetWindowBoundsInScreen();
+  explicit WidgetBoundsEqualWaiter(views::Widget* widget,
+                                   gfx::Rect target_bounds)
+      : target_bounds_(target_bounds) {
     observation_.Observe(widget);
   }
 
@@ -98,7 +99,7 @@ class WidgetBoundsChangedWaiter : public views::WidgetObserver {
 
   void OnWidgetBoundsChanged(views::Widget* widget,
                              const gfx::Rect& bounds) override {
-    if (bounds != old_bounds_) {
+    if (bounds == target_bounds_) {
       run_loop_.Quit();
     }
   }
@@ -106,7 +107,7 @@ class WidgetBoundsChangedWaiter : public views::WidgetObserver {
  private:
   base::ScopedObservation<views::Widget, views::WidgetObserver> observation_{
       this};
-  gfx::Rect old_bounds_;
+  gfx::Rect target_bounds_;
   base::RunLoop run_loop_;
 };
 
@@ -965,7 +966,7 @@ class ExtensionInstallDialogPictureInPictureInputProtectorTest
     }
 
     {
-      WidgetBoundsChangedWaiter waiter(widget);
+      WidgetBoundsEqualWaiter waiter(widget, target_bounds);
       widget->SetBounds(target_bounds);
       waiter.Wait();
     }
@@ -1010,12 +1011,19 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogPictureInPictureInputProtectorTest,
   ASSERT_NE(nullptr, pip_window_manager);
 
   // Ensure that the extension install dialog and picture-in-picture widgets do
-  // not overlap.
-  ResizeWidgetAndWaitIfNeeded(delegate_view->GetWidget(),
-                              gfx::Rect(0, 0, 256, 256), pip_window_manager);
-
-  ResizeWidgetAndWaitIfNeeded(browser_view->GetWidget(),
-                              gfx::Rect(300, 0, 256, 256), pip_window_manager);
+  // not overlap. Achieved by setting the picture-in-picture window origin equal
+  // to the extension install dialog, with an offset of 100 on the y coordinate.
+  // The y offset is added to the bottom of the extension install dialog, to
+  // ensure the windows do not overlap.
+  const gfx::Rect dialog_bounds =
+      delegate_view->GetWidget()->GetWindowBoundsInScreen();
+  const gfx::Size pip_window_size(
+      browser_view->GetWidget()->GetWindowBoundsInScreen().size());
+  ResizeWidgetAndWaitIfNeeded(
+      browser_view->GetWidget(),
+      gfx::Rect(dialog_bounds.x(), dialog_bounds.bottom() + 100,
+                pip_window_size.width(), pip_window_size.height()),
+      pip_window_manager);
   ASSERT_FALSE(
       WidgetsOverlap(delegate_view->GetWidget(), browser_view->GetWidget()));
 
@@ -1028,10 +1036,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogPictureInPictureInputProtectorTest,
 
   // Ensure that the extension install dialog and picture-in-picture widgets
   // overlap.
-  ResizeWidgetAndWaitIfNeeded(
-      browser_view->GetWidget(),
-      delegate_view->GetWidget()->GetWindowBoundsInScreen(),
-      pip_window_manager);
+  ResizeWidgetAndWaitIfNeeded(browser_view->GetWidget(), dialog_bounds,
+                              pip_window_manager);
   ASSERT_TRUE(
       WidgetsOverlap(delegate_view->GetWidget(), browser_view->GetWidget()));
 
@@ -1079,18 +1085,25 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogPictureInPictureInputProtectorTest,
 
   // Occlude, and immediately un-occlude, the extension install dialog with a
   // picture-in-picture window.
-  ResizeWidgetAndWaitIfNeeded(
-      browser_view->GetWidget(),
-      delegate_view->GetWidget()->GetWindowBoundsInScreen(),
-      pip_window_manager);
+  const gfx::Rect dialog_bounds =
+      delegate_view->GetWidget()->GetWindowBoundsInScreen();
+  ResizeWidgetAndWaitIfNeeded(browser_view->GetWidget(), dialog_bounds,
+                              pip_window_manager);
   ASSERT_TRUE(
       WidgetsOverlap(delegate_view->GetWidget(), browser_view->GetWidget()));
 
-  ResizeWidgetAndWaitIfNeeded(delegate_view->GetWidget(),
-                              gfx::Rect(0, 0, 256, 256), pip_window_manager);
-
-  ResizeWidgetAndWaitIfNeeded(browser_view->GetWidget(),
-                              gfx::Rect(300, 0, 256, 256), pip_window_manager);
+  // Ensure that the extension install dialog and picture-in-picture widgets do
+  // not overlap. Achieved by setting the picture-in-picture window origin equal
+  // to the extension install dialog, with an offset of 100 on the y coordinate.
+  // The y offset is added to the bottom of the extension install dialog, to
+  // ensure the windows do not overlap.
+  const gfx::Size pip_window_size(
+      browser_view->GetWidget()->GetWindowBoundsInScreen().size());
+  ResizeWidgetAndWaitIfNeeded(
+      browser_view->GetWidget(),
+      gfx::Rect(dialog_bounds.x(), dialog_bounds.bottom() + 100,
+                pip_window_size.width(), pip_window_size.height()),
+      pip_window_manager);
   ASSERT_FALSE(
       WidgetsOverlap(delegate_view->GetWidget(), browser_view->GetWidget()));
 
