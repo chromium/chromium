@@ -94,6 +94,7 @@ abstract class ReorderStrategyBase implements ReorderStrategy {
 
     @Override
     public void reorderViewInDirection(
+            StripLayoutTabDelegate tabDelegate,
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,

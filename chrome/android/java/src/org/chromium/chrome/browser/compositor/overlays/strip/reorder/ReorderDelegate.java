@@ -21,6 +21,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -497,6 +498,7 @@ public class ReorderDelegate {
      * Called to trigger an animated reorder when not in reorder mode. This can be triggered through
      * keyboard shortcuts.
      *
+     * @param tabDelegate The {@link StripLayoutTabDelegate} for updating tab visuals.
      * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
@@ -504,6 +506,7 @@ public class ReorderDelegate {
      * @param toLeft {@code True} if reordering the view to the left.
      */
     public void reorderViewInDirection(
+            StripLayoutTabDelegate tabDelegate,
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
@@ -511,10 +514,10 @@ public class ReorderDelegate {
             boolean toLeft) {
         if (reorderingView instanceof StripLayoutTab) {
             mTabStrategy.reorderViewInDirection(
-                    stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+                    tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
         } else if (reorderingView instanceof StripLayoutGroupTitle) {
             mGroupStrategy.reorderViewInDirection(
-                    stripViews, groupTitles, stripTabs, reorderingView, toLeft);
+                    tabDelegate, stripViews, groupTitles, stripTabs, reorderingView, toLeft);
         } else {
             assert false : "Attempted to reorder an invalid view type.";
         }

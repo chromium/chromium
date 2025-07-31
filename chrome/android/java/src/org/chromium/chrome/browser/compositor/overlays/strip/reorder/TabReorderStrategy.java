@@ -17,6 +17,7 @@ import org.chromium.chrome.browser.compositor.overlays.strip.AnimationHost;
 import org.chromium.chrome.browser.compositor.overlays.strip.ScrollDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripTabModelActionListener.ActionType;
@@ -185,6 +186,7 @@ public class TabReorderStrategy extends ReorderStrategyBase {
 
     @Override
     public void reorderViewInDirection(
+            StripLayoutTabDelegate tabDelegate,
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
@@ -210,12 +212,17 @@ public class TabReorderStrategy extends ReorderStrategyBase {
                 curIndex);
 
         // Animate the reordering view and ensure it's foregrounded.
+        // TODO(crbug.com/402775002): Replace the temporary multi-selected visuals once the reorder
+        //  specs are finalized.
+        tabDelegate.setIsTabMultiSelected(tab, /* isMultiSelected= */ true, /* animate= */ false);
         reorderingView.setIsForegrounded(/* isForegrounded= */ true);
         animateViewSliding(
                 reorderingView,
                 new AnimatorListenerAdapter() {
                     @Override
                     public void onAnimationEnd(Animator animation) {
+                        tabDelegate.setIsTabMultiSelected(
+                                tab, /* isMultiSelected= */ false, /* animate= */ false);
                         reorderingView.setIsForegrounded(/* isForegrounded= */ false);
                     }
                 });

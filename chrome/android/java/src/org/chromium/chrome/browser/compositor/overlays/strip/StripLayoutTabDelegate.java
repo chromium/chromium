@@ -162,14 +162,26 @@ public class StripLayoutTabDelegate {
     }
 
     /**
-     * Sets the multi-selection state for a given tab..
+     * Sets the multi-selection state for a given tab.
      *
      * @param tab The {@link StripLayoutTab} to modify.
      * @param isMultiSelected Whether the tab is part of a multi-selection.
      */
     public void setIsTabMultiSelected(StripLayoutTab tab, boolean isMultiSelected) {
+        setIsTabMultiSelected(tab, isMultiSelected, isMultiSelected);
+    }
+
+    /**
+     * Sets the multi-selection state for a given tab.
+     *
+     * @param tab The {@link StripLayoutTab} to modify.
+     * @param isMultiSelected Whether the tab is part of a multi-selection.
+     * @param animate Whether to animate the resulting opacity changes.
+     */
+    public void setIsTabMultiSelected(
+            StripLayoutTab tab, boolean isMultiSelected, boolean animate) {
         tab.setIsMultiSelected(isMultiSelected);
-        updateTabVisualState(tab, isMultiSelected);
+        updateTabVisualState(tab, animate);
     }
 
     /**

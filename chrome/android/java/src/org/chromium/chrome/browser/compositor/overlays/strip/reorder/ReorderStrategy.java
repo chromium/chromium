@@ -10,6 +10,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutGroupTitle;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTab;
+import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutTabDelegate;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutView;
 import org.chromium.chrome.browser.compositor.overlays.strip.reorder.ReorderDelegate.ReorderType;
 
@@ -65,6 +66,7 @@ public interface ReorderStrategy {
      * Called to trigger an animated reorder when not in reorder mode. This can be triggered through
      * keyboard shortcuts.
      *
+     * @param tabDelegate The {@link StripLayoutTabDelegate} for updating tab visuals.
      * @param stripViews The list of {@link StripLayoutView}.
      * @param groupTitles The list of {@link StripLayoutGroupTitle}.
      * @param stripTabs The list of {@link StripLayoutTab}.
@@ -72,6 +74,7 @@ public interface ReorderStrategy {
      * @param toLeft {@code True} if reordering the view to the left.
      */
     void reorderViewInDirection(
+            StripLayoutTabDelegate tabDelegate,
             StripLayoutView[] stripViews,
             StripLayoutGroupTitle[] groupTitles,
             StripLayoutTab[] stripTabs,
