@@ -16,6 +16,8 @@
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_popup_coordinator.h"
 #import "ios/chrome/browser/authentication/ui_bundled/history_sync/history_sync_utils.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_manager.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_mediator.h"
+#import "ios/chrome/browser/authentication/ui_bundled/signin/add_account_signin/add_account_signin_mediator_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_constants.h"
 #import "ios/chrome/browser/authentication/ui_bundled/signin/signin_coordinator+protected.h"
 #import "ios/chrome/browser/shared/coordinator/alert/alert_coordinator.h"
@@ -38,6 +40,7 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @interface AddAccountSigninCoordinator () <AddAccountSigninManagerDelegate,
+                                           AddAccountSigninMediatorDelegate,
                                            HistorySyncPopupCoordinatorDelegate>
 
 // Coordinator to display modal alerts to the user.
@@ -65,6 +68,7 @@ using signin_metrics::PromoAction;
   raw_ptr<AuthenticationService> _authenticationService;
   raw_ptr<syncer::SyncService> _syncService;
   ChangeProfileContinuationProvider _continuationProvider;
+  AddAccountSigninMediator* _mediator;
 }
 
 #pragma mark - Public
@@ -103,6 +107,10 @@ using signin_metrics::PromoAction;
   [super start];
   ProfileIOS* profile = self.profile->GetOriginalProfile();
   _authenticationService = AuthenticationServiceFactory::GetForProfile(profile);
+  _mediator = [[AddAccountSigninMediator alloc]
+      initWithAuthenticationService:AuthenticationServiceFactory::GetForProfile(
+                                        profile)];
+  _mediator.delegate = self;
   switch (_signinIntent) {
     case AddAccountSigninIntent::kAddAccount:
       // It is possible to have a primary identity when adding a secondary
@@ -156,6 +164,9 @@ using signin_metrics::PromoAction;
   [self stopAlertCoordinator];
   [self stopHistorySyncPopupCoordinator];
 
+  [_mediator disconnect];
+  _mediator.delegate = nil;
+  _mediator = nil;
   _accountManagerService = nullptr;
   _identityManager = nullptr;
   _authenticationService = nil;
@@ -398,6 +409,14 @@ using signin_metrics::PromoAction;
       break;
   }
   [self addAccountDoneWithSigninResult:signinResult identity:primaryIdentity];
+}
+
+#pragma mark - AddAccountSigninMediatorDelegate
+
+- (void)mediatorWantsToBeStopped:(AddAccountSigninMediator*)mediator {
+  CHECK_EQ(_mediator, mediator, base::NotFatalUntil::M144);
+  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                   completionIdentity:nil];
 }
 
 #pragma mark - NSObject
