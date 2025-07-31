@@ -280,6 +280,17 @@ void OnDataControlsPasteWarning(
                                  /*bypassed=*/true);
   }
 
+  // If the data currently being pasted was replaced when it was initially
+  // copied from Chrome, replace it back since the warn rule was bypassed. Only do this if
+  // `source` has a known browser context to ensure we're not letting through
+  // data that was replaced by policies that are no longer applicable due to the
+  // profile being closed.
+  if (source.browser_context() &&
+      metadata.seqno == data_controls::GetLastReplacedClipboardData().seqno) {
+    clipboard_paste_data =
+        data_controls::GetLastReplacedClipboardData().clipboard_paste_data;
+  }
+
 #if BUILDFLAG(IS_ANDROID) || !BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
   std::move(callback).Run(std::move(clipboard_paste_data));
 #else

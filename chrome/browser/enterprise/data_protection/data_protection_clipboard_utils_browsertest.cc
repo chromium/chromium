@@ -27,6 +27,8 @@
 #include "components/enterprise/data_controls/core/browser/test_utils.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "content/public/test/browser_test.h"
+#include "ui/base/clipboard/clipboard_monitor.h"
+#include "ui/base/clipboard/test/test_clipboard.h"
 #include "ui/views/widget/widget_delegate.h"
 
 namespace enterprise_data_protection {
@@ -1215,6 +1217,132 @@ IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
 
   auto replacement = future.Get<std::optional<std::u16string>>();
   EXPECT_FALSE(replacement);
+  run_loop_bypass.Run();
+}
+
+IN_PROC_BROWSER_TEST_P(DataControlsClipboardUtilsBrowserTest,
+                       CopyBlockedOsClipboardThenPasteWarnedThenBypassed) {
+  // Set up a block rule for copying to the OS clipboard and a warn rule for all
+  // pastes.
+  data_controls::SetDataControls(browser()->profile()->GetPrefs(),
+                                 {R"({
+                                   "name": "block_os_clipboard",
+                                   "rule_id": "121",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "destinations": {
+                                     "os_clipboard": true
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "BLOCK"}
+                                   ]
+                                 })",
+                                  R"({
+                                   "name": "warn_on_all_pastes",
+                                   "rule_id": "131",
+                                   "sources": {
+                                     "urls": ["*"]
+                                   },
+                                   "destinations": {
+                                     "urls": ["*"]
+                                   },
+                                   "restrictions": [
+                                     {"class": "CLIPBOARD", "level": "WARN"}
+                                   ]
+                                 })"},
+                                 machine_scope());
+
+  content::ClipboardMetadata metadata = {
+      .size = 1234,
+      .format_type = ui::ClipboardFormatType::PlainTextType(),
+      .seqno = ui::Clipboard::GetForCurrentThread()->GetSequenceNumber(
+          ui::ClipboardBuffer::kCopyPaste),
+  };
+
+  base::test::TestFuture<const ui::ClipboardFormatType&,
+                         const content::ClipboardPasteData&,
+                         std::optional<std::u16string>>
+      copy_future;
+  IsClipboardCopyAllowedByPolicy(
+      /*source=*/CreateURLClipboardEndpoint("https://source.com"),
+      /*metadata=*/
+     metadata, MakeClipboardPasteData("foo", "", {}), copy_future.GetCallback());
+
+  ui::ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
+
+  // Check that replacement is populated as copying to the OS clipboard is
+  // blocked.
+  auto replacement = copy_future.Get<std::optional<std::u16string>>();
+  EXPECT_TRUE(replacement);
+
+  base::RunLoop run_loop_warn;
+  auto event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_warn.QuitClosure());
+  event_validator.ExpectDataControlsSensitiveDataEvent(
+      /*expected_url=*/"https://destination.com/",
+      /*expected_tab_url=*/"https://destination.com/",
+      /*expected_source=*/"https://source.com/",
+      /*expected_destination=*/"https://destination.com/",
+      /*expected_mimetypes=*/
+      []() {
+        static std::set<std::string> set = {"text/plain"};
+        return &set;
+      }(),
+      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+      /*triggered_rules=*/{{0, {"131", "warn_on_all_pastes"}}},
+      /*expected_result=*/"EVENT_RESULT_WARNED",
+      /*expected_profile_username=*/kUserName,
+      /*expected_profile_identifier=*/
+      browser()->profile()->GetPath().AsUTF8Unsafe(),
+      /*expected_content_size=*/1234);
+
+  data_controls::DesktopDataControlsDialogTestHelper helper(
+      data_controls::DataControlsDialog::Type::kClipboardPasteWarn);
+  base::test::TestFuture<std::optional<content::ClipboardPasteData>>
+      paste_future;
+  // Simulate clipboard paste data being replaced.
+  PasteIfAllowedByPolicy(CreateURLClipboardEndpoint("https://source.com/"),
+                         CreateURLClipboardEndpoint("https://destination.com"),
+                         metadata,
+                         MakeClipboardPasteData("replacement", "", {}),
+                         paste_future.GetCallback());
+
+  helper.WaitForDialogToInitialize();
+  run_loop_warn.Run();
+
+  base::RunLoop run_loop_bypass;
+  event_validator = event_report_validator_helper_->CreateValidator();
+  event_validator.SetDoneClosure(run_loop_bypass.QuitClosure());
+  event_validator.ExpectDataControlsSensitiveDataEvent(
+      /*expected_url=*/
+      "https://destination.com/",
+      /*expected_tab_url=*/"https://destination.com/",
+      /*expected_source=*/"https://source.com/",
+      /*expected_destination=*/"https://destination.com/",
+      /*expected_mimetypes=*/
+      []() {
+        static std::set<std::string> set = {"text/plain"};
+        return &set;
+      }(),
+      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+      /*triggered_rules=*/{{0, {"131", "warn_on_all_pastes"}}},
+      /*expected_result=*/"EVENT_RESULT_BYPASSED",
+      /*expected_profile_username=*/kUserName,
+      /*expected_profile_identifier=*/
+      browser()->profile()->GetPath().AsUTF8Unsafe(),
+      /*expected_content_size=*/1234);
+
+  EXPECT_FALSE(paste_future.IsReady());
+
+  helper.BypassWarning();
+  helper.WaitForDialogToClose();
+
+  // Check that the paste data is replaced back to the original data after the
+  // bypass.
+  auto paste_data = paste_future.Get();
+  EXPECT_TRUE(paste_data);
+  EXPECT_EQ(paste_data->text, u"foo");
   run_loop_bypass.Run();
 }
 
