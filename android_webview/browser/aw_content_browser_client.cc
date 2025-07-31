@@ -661,6 +661,11 @@ void AwContentBrowserClient::OverrideWebPreferences(
     aw_settings->PopulateWebPreferences(web_prefs);
   }
 
+  // This preference is needed for back-forward transitions, but they are not
+  // enabled for webview (crbug.com/361600214).
+  web_prefs->increment_local_surface_id_for_mainframe_same_doc_navigation =
+      false;
+
   AwWebContentsDelegate* delegate =
       static_cast<AwWebContentsDelegate*>(web_contents->GetDelegate());
   web_prefs->modal_context_menu =
