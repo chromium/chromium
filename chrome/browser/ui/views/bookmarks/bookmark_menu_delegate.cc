@@ -1229,7 +1229,12 @@ MenuItemView* BookmarkMenuDelegate::UpdateOtherNodeSeparator() {
 }
 
 void BookmarkMenuDelegate::BuildOtherNodeMenuHeader(MenuItemView* menu) {
-  CHECK(!menu->HasSubmenu() || menu->GetSubmenu()->children().empty());
+  // This menu can be in an inconsistent state when dragging bookmarks, so
+  // enforce that it's empty before building its contents.
+  other_node_menu_separator_ = nullptr;
+  if (menu->HasSubmenu()) {
+    menu->RemoveAllMenuItems();
+  }
   ui::ImageModel bookmarks_side_panel_icon = ui::ImageModel::FromVectorIcon(
       kBookmarksSidePanelIcon, ui::kColorMenuIcon,
       ui::SimpleMenuModel::kDefaultIconSize);
