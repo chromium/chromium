@@ -9,6 +9,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
+#include "components/saved_tab_groups/public/utils.h"
 
 namespace tab_groups {
 namespace {
@@ -121,6 +122,14 @@ void VersioningMessageControllerImpl::ComputePrefsOnStartup() {
       if (had_any_shared_tab_groups) {
         pref_service_->SetBoolean(
             prefs::kEligibleForVersionOutOfDatePersistentMessage, true);
+
+        // For desktop, instant message should be shown if there are any shared
+        // tab groups in the previous session regardless of whether they were
+        // open or closed.
+        if (!AreLocalIdsPersisted()) {
+          pref_service_->SetBoolean(
+              prefs::kEligibleForVersionOutOfDateInstantMessage, true);
+        }
       }
 
       // Always reset the 'updated' message eligibility when out of date.

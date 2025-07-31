@@ -15,6 +15,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/saved_tab_groups/public/pref_names.h"
+#include "components/saved_tab_groups/public/utils.h"
 #include "components/saved_tab_groups/public/versioning_message_controller.h"
 #include "components/saved_tab_groups/test_support/mock_tab_group_sync_service.h"
 #include "components/saved_tab_groups/test_support/saved_tab_group_test_utils.h"
@@ -228,8 +229,13 @@ TEST_F(VersioningMessageControllerImplTest,
   SetTabGroupSyncServiceExpectation(/*had_shared_tab_groups=*/true,
                                     /*had_open_shared_tab_groups=*/false);
   InitializeController();
-  EXPECT_FALSE(
-      ShouldShowMessageUi(MessageType::VERSION_OUT_OF_DATE_INSTANT_MESSAGE));
+  if (AreLocalIdsPersisted()) {
+    EXPECT_FALSE(
+        ShouldShowMessageUi(MessageType::VERSION_OUT_OF_DATE_INSTANT_MESSAGE));
+  } else {
+    EXPECT_TRUE(
+        ShouldShowMessageUi(MessageType::VERSION_OUT_OF_DATE_INSTANT_MESSAGE));
+  }
   EXPECT_TRUE(
       ShouldShowMessageUi(MessageType::VERSION_OUT_OF_DATE_PERSISTENT_MESSAGE));
   EXPECT_FALSE(ShouldShowMessageUi(MessageType::VERSION_UPDATED_MESSAGE));
