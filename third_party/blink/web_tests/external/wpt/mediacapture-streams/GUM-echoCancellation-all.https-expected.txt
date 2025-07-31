@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] getUserMedia suports "all"
+  promise_test: Unhandled rejection with value: object "OverconstrainedError"
+Harness: the test ran to completion.
+
