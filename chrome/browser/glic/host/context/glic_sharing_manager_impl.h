@@ -118,7 +118,7 @@ class GlicSharingManagerImpl : public GlicSharingManager {
   // The profile for which to manage sharing.
   raw_ptr<Profile> profile_;
 
-  // Enables providing sharing-related-related input to metrics.
+  // Enables providing sharing-related input to metrics.
   raw_ptr<GlicMetrics> metrics_;
 };
 
