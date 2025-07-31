@@ -12,7 +12,6 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/feature_list.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -37,10 +36,6 @@ class OSCryptAsync;
 }
 
 class WDTypedResult;
-
-namespace features {
-WEBDATA_EXPORT BASE_DECLARE_FEATURE(kUseNewEncryptionKeyForWebData);
-}  // namespace features
 
 ////////////////////////////////////////////////////////////////////////////////
 //

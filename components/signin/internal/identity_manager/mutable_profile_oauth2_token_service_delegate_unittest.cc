@@ -24,7 +24,10 @@
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/time/time.h"
+#include "components/os_crypt/async/browser/key_provider.h"
+#include "components/os_crypt/async/browser/os_crypt_async.h"
 #include "components/os_crypt/async/browser/test_utils.h"
+#include "components/os_crypt/async/common/algorithm.mojom.h"
 #include "components/prefs/scoped_user_pref_update.h"
 #include "components/signin/internal/identity_manager/fake_profile_oauth2_token_service_delegate.h"
 #include "components/signin/internal/identity_manager/mock_profile_oauth2_token_service_observer.h"
@@ -45,6 +48,7 @@
 #include "components/unexportable_keys/fake_unexportable_key_service.h"
 #include "components/webdata/common/web_data_service_base.h"
 #include "components/webdata/common/web_database_service.h"
+#include "crypto/kdf.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_constants.h"
 #include "google_apis/gaia/gaia_id.h"
@@ -119,6 +123,31 @@ const ExtractCredentialsTestCase kExtractCredentialsTestCases[] = {
          AccountMoveDecision::kCannotMoveInsertWithoutRefreshToken},
 };
 
+// A test key provider that takes a name and produces a deterministic key based
+// on that name.
+class TestKeyProvider : public os_crypt_async::KeyProvider {
+ public:
+  explicit TestKeyProvider(const std::string& name, bool use_for_encryption)
+      : name_(name), use_for_encryption_(use_for_encryption) {}
+
+ private:
+  void GetKey(KeyCallback callback) final {
+    std::move(callback).Run(
+        name_, os_crypt_async::Encryptor::Key(
+                   crypto::kdf::Hkdf<
+                       os_crypt_async::Encryptor::Key::kAES256GCMKeySize>(
+                       crypto::hash::kSha256, base::as_byte_span(name_),
+                       /*salt=*/{}, /*info=*/{}),
+                   os_crypt_async::mojom::Algorithm::kAES256GCM));
+  }
+
+  bool UseForEncryption() final { return use_for_encryption_; }
+  bool IsCompatibleWithOsCryptSync() final { return false; }
+
+  const std::string name_;
+  const bool use_for_encryption_;
+};
+
 }  // namespace
 
 class MutableProfileOAuth2TokenServiceDelegateTest
@@ -170,13 +199,18 @@ class MutableProfileOAuth2TokenServiceDelegateTest
     base::RunLoop().RunUntilIdle();
   }
 
-  void LoadTokenDatabase() {
+  // Supply an `os_crypt_override` if the caller wishes to override the default
+  // one. The `os_crypt_override` must remain valid until the
+  // `UnloadTokenDatabase` call is made.
+  void LoadTokenDatabase(
+      os_crypt_async::OSCryptAsync* os_crypt_override = nullptr) {
     scoped_refptr<WebDatabaseService> web_database = new WebDatabaseService(
         temp_dir_.GetPath().AppendASCII(kTestTokenDatabase),
         base::SingleThreadTaskRunner::GetCurrentDefault(),
         base::SingleThreadTaskRunner::GetCurrentDefault());
     web_database->AddTable(std::make_unique<TokenServiceTable>());
-    web_database->LoadDatabase(os_crypt_.get());
+    web_database->LoadDatabase(os_crypt_override ? os_crypt_override
+                                                 : os_crypt_.get());
     token_web_data_ = new TokenWebData(
         web_database, base::SingleThreadTaskRunner::GetCurrentDefault());
     token_web_data_->Init(base::NullCallback());
@@ -1545,21 +1579,32 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
   // cleanup at the end of the scope of the test.
   auto SetUpTestAndReturnScopedCleanup =
       [this](bool new_encryption_enabled, bool expect_reencrypt,
-             std::string_view key_prefix,
              base::HistogramBase::Count32 expected_writes)
       -> base::ScopedClosureRunner {
-    auto histograms = std::make_unique<base::HistogramTester>();
-    auto features = std::make_unique<base::test::ScopedFeatureList>();
-    features->InitWithFeatureState(features::kUseNewEncryptionKeyForWebData,
-                                   new_encryption_enabled);
+    std::vector<std::pair<size_t, std::unique_ptr<os_crypt_async::KeyProvider>>>
+        providers;
+    providers.emplace_back(
+        /*precedence=*/5u,
+        std::make_unique<TestKeyProvider>("v1", /*use_for_encryption=*/true));
+    // If `new_encryption_enabled` is true then v2 will be used for encryption
+    // and should trigger a re-encrypt of data previous encrypted to v1 key.
+    providers.emplace_back(
+        /*precedence=*/10u,
+        std::make_unique<TestKeyProvider>(
+            "v2", /*use_for_encryption=*/new_encryption_enabled));
+    const std::string expected_prefix = new_encryption_enabled ? "v2" : "v1";
 
-    LoadTokenDatabase();
+    auto os_crypt =
+        std::make_unique<os_crypt_async::OSCryptAsync>(std::move(providers));
+    auto histograms = std::make_unique<base::HistogramTester>();
+
+    LoadTokenDatabase(os_crypt.get());
     InitializeOAuth2ServiceDelegate(
         signin::AccountConsistencyMethod::kDisabled);
 
     return base::ScopedClosureRunner(base::BindLambdaForTesting(
-        [this, key_prefix, expect_reencrypt, expected_writes,
-         histograms = std::move(histograms), feature = std::move(features)]() {
+        [this, expected_prefix, expect_reencrypt, expected_writes,
+         histograms = std::move(histograms), os_crypt = std::move(os_crypt)]() {
           UnloadTokenDatabase();
           {
             // The APIs available via WebData always return plaintext data so
@@ -1574,7 +1619,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
             ASSERT_TRUE(s.Step());
             std::string encrypted_data;
             ASSERT_TRUE(s.ColumnBlobAsString(0, &encrypted_data));
-            EXPECT_TRUE(base::StartsWith(encrypted_data, key_prefix,
+            EXPECT_TRUE(base::StartsWith(encrypted_data, expected_prefix,
                                          base::CompareCase::SENSITIVE));
             // Should only be one row, the "invalid-token" should be deleted by
             // the time the database is unloaded, and never re-encrypted.
@@ -1594,7 +1639,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // to set up the database.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
         /*new_encryption_enabled=*/false, /*expect_reencrypt=*/false,
-        os_crypt_async::kOsCryptSyncCompatibleTestKeyPrefix,
         /*expected_writes=*/2);
 
     // Verify DB is clean.
@@ -1623,7 +1667,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // re-encrypted to the database, as expected.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
         /*new_encryption_enabled=*/true, /*expect_reencrypt=*/true,
-        os_crypt_async::kDefaultTestKeyPrefix, /*expected_writes=*/2);
+        /*expected_writes=*/2);
 
     // Add another invalid token. This will be not re-encrypted, and removed
     // during LoadAllCredentialsIntoMemory.
@@ -1646,7 +1690,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // no writes are needed.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
         /*new_encryption_enabled=*/true, /*expect_reencrypt=*/false,
-        os_crypt_async::kDefaultTestKeyPrefix, /*expected_writes=*/0);
+        /*expected_writes=*/0);
 
     ResetObserverCounts();
     oauth2_service_delegate_->LoadCredentials(primary_account);
@@ -1664,7 +1708,6 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, TokenReencryption) {
     // key.
     auto cleanup = SetUpTestAndReturnScopedCleanup(
         /*new_encryption_enabled=*/false, /*expect_reencrypt=*/true,
-        os_crypt_async::kOsCryptSyncCompatibleTestKeyPrefix,
         /*expected_writes=*/1);
 
     ResetObserverCounts();
