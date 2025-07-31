@@ -482,6 +482,7 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             if (tab.getTabGroupId() != null
                     && tab.getTabGroupId().equals(destinationTabGroupId)
                     && currentIndex == adjustedDestinationIndexInTabModel) {
+                destinationIndexInTabModel++;
                 continue;
             }
 

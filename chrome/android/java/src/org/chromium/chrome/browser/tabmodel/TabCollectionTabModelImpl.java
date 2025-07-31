@@ -1451,6 +1451,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
             // of the tabs in the list of tabs being merged is replicated in the tab group.
             if (destinationTabGroupId.equals(tab.getTabGroupId())
                     && currentIndex == adjustedDestinationIndexInTabModel) {
+                destinationIndexInTabModel++;
                 continue;
             }
 

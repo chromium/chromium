@@ -1829,6 +1829,31 @@ public class TabCollectionTabModelImplTest {
                 });
     }
 
+    @Test
+    @MediumTest
+    public void testMergeListOfTabsToGroupInternal_MergeTabsWhereTheyAre() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        Tab tab5 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.mergeListOfTabsToGroupInternal(
+                            List.of(tab1, tab2, tab3, tab4, tab5), tab1, false, null, null);
+                    Token groupId = tab1.getTabGroupId();
+                    assertNotNull(groupId);
+
+                    mCollectionModel.mergeListOfTabsToGroupInternal(
+                            List.of(tab2, tab3, tab4), tab2, false, /* indexInGroup= */ 2, null);
+
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+                });
+    }
+
     private void assertTabsInOrderAre(List<Tab> tabs) {
         assertEquals(
                 "Mismatched tab count",

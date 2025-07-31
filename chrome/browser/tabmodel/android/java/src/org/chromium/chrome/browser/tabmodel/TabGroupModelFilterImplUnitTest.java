@@ -1686,6 +1686,47 @@ public class TabGroupModelFilterImplUnitTest {
     }
 
     @Test
+    public void mergeListOfTabsToGroup_TabsAlreadyInGroup() {
+        // State: [1, 2, 3, 4, 5, 6], Groups: (2,3), (5,6)
+        // Action: Merge [4,5,6] into group (2,3) at position null (append to back).
+        // Action: Merge [3,4,5] into group (2,3,4,5,6) at position 2 (where tab 3 is).
+        // Expected: [1,2,3,4,5,6]
+        List<Tab> expectedTabModel =
+                new ArrayList<>(Arrays.asList(mTab1, mTab2, mTab3, mTab4, mTab5, mTab6));
+        List<Tab> tabsToMerge = new ArrayList<>(Arrays.asList(mTab4, mTab5));
+
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge, mTab2, /* indexInGroup= */ null, false);
+
+        // Verification of moves:
+        // Group (2, 3) is at indices 1,2. Insertion point is after tab at group index 2 (mTab3),
+        // which is model index 3.
+        // 1. Move mTab4 (from index 3) to 3. New list: [1,2,3,4,5,6]
+        // 2. Move mTab5 (from index 4) to 4.
+        // Since these tabs are in the right index, we don't have to move them.
+        verify(mTabModel, never()).moveTab(eq(mTab4.getId()), anyInt());
+        verify(mTabModel, never()).moveTab(eq(mTab5.getId()), anyInt());
+
+        assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+        assertEquals(
+                "Tab4 should be in the destination group.",
+                mTab2.getTabGroupId(),
+                mTab4.getTabGroupId());
+        assertEquals(
+                "Tab4 should be in the destination group.",
+                mTab2.getTabGroupId(),
+                mTab5.getTabGroupId());
+
+        tabsToMerge = new ArrayList<>(Arrays.asList(mTab3, mTab4, mTab5));
+        mTabGroupModelFilter.mergeListOfTabsToGroup(
+                tabsToMerge, mTab2, /* indexInGroup= */ mTabModel.indexOf(mTab3), false);
+
+        // We are merging the tabs exactly where they are, no move required.
+        verify(mTabModel, never()).moveTab(anyInt(), anyInt());
+        assertArrayEquals(mTabs.toArray(), expectedTabModel.toArray());
+    }
+
+    @Test
     public void merge_OtherGroupsLastShownIdUnchanged() {
         List<Tab> expectedGroup = new ArrayList<>(Arrays.asList(mTab1, mTab4));
         List<Tab> expectedTabModel =
