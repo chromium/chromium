@@ -127,6 +127,7 @@
 #include "components/autofill/core/browser/single_field_fillers/payments/merchant_promo_code_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/addresses/address_suggestion_generator.h"
+#include "components/autofill/core/browser/suggestions/autofill_ai/autofill_ai_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/one_time_passwords/otp_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/iban_suggestion_generator.h"
 #include "components/autofill/core/browser/suggestions/payments/merchant_promo_code_suggestion_generator.h"
@@ -1167,6 +1168,8 @@ void BrowserAutofillManager::OnAskForValuesToFillImpl(
   // needed.
   suggestion_generators_.clear();
   // TODO(crbug.com/409962888): Populate `suggestion_generators_` here.
+  suggestion_generators_.push_back(
+      std::make_unique<AutofillAiSuggestionGenerator>());
   suggestion_generators_.push_back(
       std::make_unique<IbanSuggestionGenerator>());
   suggestion_generators_.push_back(
