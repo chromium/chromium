@@ -14,8 +14,8 @@
 
 using BrowserWindowInterfaceIteratorBrowserTest = InProcessBrowserTest;
 
-// Test that GetLastActiveBrowserWindowInterface returns the most recently
-// activated browser.
+// Test that GetLastActiveBrowserWindowInterfaceWithAnyProfile returns the most
+// recently activated browser.
 // TODO(crbug.com/431671448): Disable test on Linux until passing.
 #if BUILDFLAG(IS_LINUX)
 #define MAYBE_GetLastActiveBrowserWindowInterface_ReturnsLastActive \
@@ -31,7 +31,7 @@ IN_PROC_BROWSER_TEST_F(
   Browser* const browser1 = browser();
 
   // Verify initial state - the default browser should be the last active.
-  EXPECT_EQ(GetLastActiveBrowserWindowInterface(), browser1);
+  EXPECT_EQ(GetLastActiveBrowserWindowInterfaceWithAnyProfile(), browser1);
 
   // Create a second browser window.
   Browser* const browser2 =
@@ -41,11 +41,13 @@ IN_PROC_BROWSER_TEST_F(
 
   // Activate the second browser.
   browser2->window()->Activate();
-  EXPECT_TRUE(base::test::RunUntil(
-      [&] { return GetLastActiveBrowserWindowInterface() == browser2; }));
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == browser2;
+  }));
 
   // Activate the first browser again.
   browser1->window()->Activate();
-  EXPECT_TRUE(base::test::RunUntil(
-      [&] { return GetLastActiveBrowserWindowInterface() == browser1; }));
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return GetLastActiveBrowserWindowInterfaceWithAnyProfile() == browser1;
+  }));
 }

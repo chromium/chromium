@@ -21,7 +21,7 @@ GetBrowserWindowInterfacesOrderedByActivation() {
   return {};
 }
 
-BrowserWindowInterface* GetLastActiveBrowserWindowInterface() {
+BrowserWindowInterface* GetLastActiveBrowserWindowInterfaceWithAnyProfile() {
   // TODO(https://crbug.com/419057482): Implement this once we have an
   // Android variant of BrowserWindowInterface.
   NOTIMPLEMENTED();
