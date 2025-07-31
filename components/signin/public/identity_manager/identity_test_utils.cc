@@ -712,6 +712,7 @@ void SimulateSuccessfulFetchOfAccountInfo(IdentityManager* identity_manager,
   AccountCapabilities capabilities;
   AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.set_is_subject_to_enterprise_features(managed);
+  mutator.set_is_subject_to_account_level_enterprise_policies(managed);
   account_tracker_service->SetAccountCapabilities(account_id, capabilities);
   CHECK_EQ(account_tracker_service->GetAccountInfo(account_id).IsManaged(),
            signin::TriboolFromBool(managed));

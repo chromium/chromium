@@ -66,6 +66,7 @@
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_switches.h"
+#include "components/signin/public/identity_manager/account_capabilities_test_mutator.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -297,6 +298,9 @@ class AvatarToolbarButtonBaseBrowserTest {
     account_info.picture_url = "SOME_FAKE_URL";
     account_info.hosted_domain = kNoHostedDomainFound;
     account_info.locale = "en";
+
+    AccountCapabilitiesTestMutator(&account_info.capabilities)
+        .set_is_subject_to_account_level_enterprise_policies(false);
 
     // Make sure account is valid so that all changes are persisted properly.
     CHECK(account_info.IsValid());

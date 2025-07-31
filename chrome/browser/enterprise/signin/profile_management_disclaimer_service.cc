@@ -64,6 +64,9 @@ ProfileManagementDisclaimerService::~ProfileManagementDisclaimerService() =
 
 base::ScopedClosureRunner
 ProfileManagementDisclaimerService::DisableManagementDisclaimerUntilReset() {
+  if (!enable_management_disclaimer_) {
+    return base::ScopedClosureRunner();
+  }
   enable_management_disclaimer_ = false;
   return base::ScopedClosureRunner(
       base::BindOnce(&ProfileManagementDisclaimerService::
@@ -150,7 +153,8 @@ void ProfileManagementDisclaimerService::
   AccountInfo info = GetExtendedAccountInfo(account_id);
 
   // Account info is not yet available, wait for extended account info.
-  if (info.IsManaged() == signin::Tribool::kUnknown) {
+  if (info.CanApplyAccountLevelEnterprisePolicies() ==
+      signin::Tribool::kUnknown) {
     state_->extended_account_info_wait_timeout.Start(
         FROM_HERE, base::Seconds(5),
         base::BindOnce(&ProfileManagementDisclaimerService::Reset,
@@ -159,7 +163,8 @@ void ProfileManagementDisclaimerService::
   }
 
   // Account not managed, nothing to do.
-  if (!signin::TriboolToBoolOrDie(info.IsManaged())) {
+  if (!signin::TriboolToBoolOrDie(
+          info.CanApplyAccountLevelEnterprisePolicies())) {
     Reset();
     return;
   }
@@ -236,7 +241,8 @@ void ProfileManagementDisclaimerService::OnExtendedAccountInfoUpdated(
     return;
   }
   // Management status is not yet available, wait for extended account info.
-  if (info.IsManaged() == signin::Tribool::kUnknown) {
+  if (info.CanApplyAccountLevelEnterprisePolicies() ==
+      signin::Tribool::kUnknown) {
     return;
   }
   state_->extended_account_info_wait_timeout.Stop();

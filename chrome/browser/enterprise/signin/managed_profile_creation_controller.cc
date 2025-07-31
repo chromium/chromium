@@ -74,7 +74,8 @@ ManagedProfileCreationController::ManagedProfileCreationController(
       callback_(std::move(callback)) {
   CHECK(source_profile_);
   CHECK(!account_info.IsEmpty());
-  CHECK_EQ(account_info.IsManaged(), signin::Tribool::kTrue);
+  CHECK_EQ(account_info.CanApplyAccountLevelEnterprisePolicies(),
+           signin::Tribool::kTrue);
   source_profile_observation_.Observe(source_profile_);
 }
 

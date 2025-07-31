@@ -286,6 +286,8 @@ class DiceWebSigninInterceptorBrowserTest : public SigninBrowserTestBase {
     mutator.set_is_subject_to_parental_controls(false);
     mutator.set_is_subject_to_enterprise_features(hosted_domain !=
                                                   kNoHostedDomainFound);
+    mutator.set_is_subject_to_account_level_enterprise_policies(
+        hosted_domain != kNoHostedDomainFound);
 
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);

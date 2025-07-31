@@ -187,9 +187,10 @@ AccountInfo FillAccountInfo(
   account_info.hosted_domain = hosted_domain;
   account_info.locale = "en";
   account_info.picture_url = "https://get-avatar.com/foo";
-  AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_features(hosted_domain !=
-                                             kNoHostedDomainFound);
+  bool is_managed = hosted_domain != kNoHostedDomainFound;
+  AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
+  mutator.set_is_subject_to_enterprise_features(is_managed);
+  mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
   return account_info;
 }
 

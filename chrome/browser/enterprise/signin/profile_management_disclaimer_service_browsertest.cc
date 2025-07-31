@@ -219,8 +219,9 @@ class ProfileManagementDisclaimerServiceBrowserFocusBrowserTest
     account_info.picture_url = "https://example.com";
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_enterprise_features(hosted_domain !=
-                                                  kNoHostedDomainFound);
+    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
+    mutator.set_is_subject_to_enterprise_features(is_managed);
 
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
@@ -267,7 +268,7 @@ IN_PROC_BROWSER_TEST_P(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager()
                 ->FindExtendedAccountInfo(primary_account_info)
-                .IsManaged(),
+                .CanApplyAccountLevelEnterprisePolicies(),
             signin::TriboolFromBool(GetParam().is_managed));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 
@@ -376,8 +377,9 @@ class ProfileManagementDisclaimerServiceSigninBrowserTest
     account_info.picture_url = "https://example.com";
 
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
-    mutator.set_is_subject_to_enterprise_features(hosted_domain !=
-                                                  kNoHostedDomainFound);
+    bool is_managed = hosted_domain != kNoHostedDomainFound;
+    mutator.set_is_subject_to_enterprise_features(is_managed);
+    mutator.set_is_subject_to_account_level_enterprise_policies(is_managed);
 
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
@@ -425,7 +427,7 @@ IN_PROC_BROWSER_TEST_P(ProfileManagementDisclaimerServiceSigninBrowserTest,
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
   ASSERT_EQ(identity_manager()
                 ->FindExtendedAccountInfo(primary_account_info)
-                .IsManaged(),
+                .CanApplyAccountLevelEnterprisePolicies(),
             signin::TriboolFromBool(GetParam().is_managed));
   ASSERT_FALSE(enterprise_util::UserAcceptedAccountManagement(GetProfile()));
 

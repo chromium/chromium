@@ -6,6 +6,7 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile_test_util.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
@@ -56,6 +57,13 @@ bool ContainsViewWithId(const views::View* view, ui::ElementIdentifier id) {
 
 class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
  public:
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            GetProfile());
+  }
+
   void ImplicitlySignIn(const std::string& email) {
     AccountInfo account_info = signin::MakeAccountAvailable(
         GetIdentityManager(),
@@ -96,6 +104,7 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
   }
 
  private:
+  base::ScopedClosureRunner disclaimer_service_resetter_;
   base::test::ScopedFeatureList scoped_feature_list_{
       switches::kOfferMigrationToDiceUsers};
 };

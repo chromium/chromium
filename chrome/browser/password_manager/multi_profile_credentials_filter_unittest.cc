@@ -127,7 +127,7 @@ class MultiProfileCredentialsFilterTest : public BrowserWithTestWindowTest {
     account_info.given_name = "givenname";
     account_info.hosted_domain = kNoHostedDomainFound;
     AccountCapabilitiesTestMutator(&account_info.capabilities)
-        .set_is_subject_to_enterprise_features(false);
+        .set_is_subject_to_account_level_enterprise_policies(false);
     account_info.locale = "en";
     account_info.picture_url = "https://example.com";
     DCHECK(account_info.IsValid());
@@ -346,7 +346,7 @@ TEST_F(MultiProfileCredentialsFilterTest, SigninNotIntercepted) {
   account_info.given_name = "givenname";
   account_info.hosted_domain = kNoHostedDomainFound;
   AccountCapabilitiesTestMutator(&account_info.capabilities)
-      .set_is_subject_to_enterprise_features(false);
+      .set_is_subject_to_account_level_enterprise_policies(false);
   account_info.locale = "en";
   account_info.picture_url = "https://example.com";
   DCHECK(account_info.IsValid());

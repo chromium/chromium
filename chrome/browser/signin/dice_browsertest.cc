@@ -743,6 +743,7 @@ class DiceBrowserTest : public InProcessBrowserTest,
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_is_subject_to_parental_controls(false);
     mutator.set_is_subject_to_enterprise_features(false);
+    mutator.set_is_subject_to_account_level_enterprise_policies(false);
 
     CHECK(account_info.IsValid());
     signin::UpdateAccountInfoForAccount(GetIdentityManager(), account_info);

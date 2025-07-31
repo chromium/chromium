@@ -331,13 +331,17 @@ class ManagedProfileCreationBrowserTest
   ManagedProfileCreationBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/true) {}
 
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            GetProfile());
+  }
+
   AccountInfo MakeValidAccountInfoAvailableAndUpdate(
       const std::string& email,
       const std::string& hosted_domain,
       bool primary_account = false) {
-    auto enable_disclaimer_on_primary_account_change_resetter =
-        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
-            GetProfile());
     std::optional<signin::ConsentLevel> consent_level;
     if (primary_account) {
       consent_level = signin::ConsentLevel::kSignin;
@@ -355,6 +359,8 @@ class ManagedProfileCreationBrowserTest
     AccountCapabilitiesTestMutator mutator(&account_info.capabilities);
     mutator.set_is_subject_to_enterprise_features(hosted_domain !=
                                                   kNoHostedDomainFound);
+    mutator.set_is_subject_to_account_level_enterprise_policies(
+        hosted_domain != kNoHostedDomainFound);
 
     DCHECK(account_info.IsValid());
     identity_test_env()->UpdateAccountInfoForAccount(account_info);
@@ -368,6 +374,9 @@ class ManagedProfileCreationBrowserTest
   signin::IdentityManager* GetIdentityManager() {
     return GetIdentityManager(GetProfile());
   }
+
+ private:
+  base::ScopedClosureRunner disclaimer_service_resetter_;
 };
 
 IN_PROC_BROWSER_TEST_P(ManagedProfileCreationBrowserTest, Test) {

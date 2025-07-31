@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
+#include "chrome/browser/enterprise/util/managed_browser_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/account_reconcilor_factory.h"
 #include "chrome/browser/signin/signin_browser_test_base.h"
@@ -205,12 +206,21 @@ class TurnSyncOnHelperBrowserTestWithParam
       : SigninBrowserTestBase(/*use_main_profile=*/false) {
   }
 
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            GetProfile());
+  }
+
  protected:
   bool should_remove_initial_account() const { return std::get<1>(GetParam()); }
 
   TurnSyncOnHelper::SigninAbortedMode aborted_mode() const {
     return std::get<TurnSyncOnHelper::SigninAbortedMode>(GetParam());
   }
+
+  base::ScopedClosureRunner disclaimer_service_resetter_;
 };
 
 // Tests that aborting a Sync opt-in flow started with a secondary account
@@ -330,6 +340,16 @@ class TurnSyncOnHelperBrowserTest : public SigninBrowserTestBase {
  public:
   TurnSyncOnHelperBrowserTest()
       : SigninBrowserTestBase(/*use_main_profile=*/false) {}
+
+  void SetUpOnMainThread() override {
+    SigninBrowserTestBase::SetUpOnMainThread();
+    disclaimer_service_resetter_ =
+        enterprise_util::DisableAutomaticManagementDisclaimerUntilReset(
+            GetProfile());
+  }
+
+ private:
+  base::ScopedClosureRunner disclaimer_service_resetter_;
 };
 
 // Regression test for https://crbug.com/1404961
