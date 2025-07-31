@@ -146,8 +146,14 @@ IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
   }
 }
 
+// TODO(crbug.com/421286357): Flaky on linux builders.
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_TouchExplorationInIframe DISABLED_TouchExplorationInIframe
+#else
+#define MAYBE_TouchExplorationInIframe TouchExplorationInIframe
+#endif
 IN_PROC_BROWSER_TEST_F(TouchAccessibilityBrowserTest,
-                       TouchExplorationInIframe) {
+                       MAYBE_TouchExplorationInIframe) {
   NavigateToUrlAndWaitForAccessibilityTree(embedded_test_server()->GetURL(
       "/accessibility/html/iframe-coordinates.html"));
 
