@@ -142,9 +142,6 @@ std::string GetHeadingHtmlTagForPDF(const ui::AXNode* ax_node,
                                     const std::string& html_tag) {
   // Sometimes whole paragraphs can be formatted as a heading. If the text is
   // longer than 2 lines, assume it was meant to be a paragragh.
-  // LINT.IfChange(MaxLineWidth)
-  static constexpr int kMaxLineWidth = 60;
-  // LINT.ThenChange(//chrome/browser/resources/side_panel/read_anything/app.css:MaxLineWidth)
   if (ax_node->GetTextContentLengthUTF8() > (2 * kMaxLineWidth)) {
     return "p";
   }

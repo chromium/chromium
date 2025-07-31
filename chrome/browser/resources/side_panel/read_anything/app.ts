@@ -172,7 +172,7 @@ export class AppElement extends AppElementBase implements
     // Push ShowUI() callback to the event queue to allow deferred rendering
     // to take place.
     setTimeout(() => chrome.readingMode.shouldShowUi(), 0);
-
+    this.styleUpdater_.setMaxLineWidth();
     this.showLoading();
 
     if (this.isReadAloudEnabled_) {

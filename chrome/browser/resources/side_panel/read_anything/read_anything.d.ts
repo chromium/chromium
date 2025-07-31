@@ -101,6 +101,9 @@ declare namespace chrome {
     // If the speech tree has been initialized in the renderer.
     let isSpeechTreeInitialized: boolean;
 
+    // Max number of characters to display in one line of Reading mode.
+    let maxLineWidth: number;
+
     // Returns whether the reading highlight is currently on.
     function isHighlightOn(): boolean;
 

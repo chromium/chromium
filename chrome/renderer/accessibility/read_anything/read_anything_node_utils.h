@@ -12,6 +12,9 @@
 // ReadAnythingAppModel and ReadAloudAppModel.
 namespace a11y {
 
+// Max number of characters to display in a reading mode line of text.
+static constexpr int kMaxLineWidth = 60;
+
 // Returns whether the given node represents a superscript.
 bool IsSuperscript(const ui::AXNode* ax_node);
 

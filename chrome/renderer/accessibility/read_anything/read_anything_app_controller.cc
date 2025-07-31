@@ -1046,6 +1046,7 @@ gin::ObjectTemplateBuilder ReadAnythingAppController::GetObjectTemplateBuilder(
       .SetProperty(
           "unexpectedUpdateContentStopSource",
           &ReadAnythingAppController::UnexpectedUpdateContentStopSource)
+      .SetProperty("maxLineWidth", &ReadAnythingAppController::MaxLineWidth)
       .SetProperty("speechRate", &ReadAnythingAppController::SpeechRate)
       .SetProperty("isGoogleDocs", &ReadAnythingAppController::IsGoogleDocs)
       .SetProperty("isReadAloudEnabled",
@@ -1341,6 +1342,10 @@ int ReadAnythingAppController::ContentFinishedStopSource() const {
 int ReadAnythingAppController::UnexpectedUpdateContentStopSource() const {
   return base::to_underlying(
       ReadAloudAppModel::ReadAloudStopSource::kUnexpectedUpdateContent);
+}
+
+int ReadAnythingAppController::MaxLineWidth() const {
+  return a11y::kMaxLineWidth;
 }
 
 std::vector<ui::AXNodeID> ReadAnythingAppController::GetChildren(

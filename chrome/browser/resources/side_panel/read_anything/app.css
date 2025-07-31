@@ -101,9 +101,7 @@
   letter-spacing: var(--letter-spacing);
   line-height: var(--line-height);
   margin: 0 auto;
-  /* LINT.IfChange(MaxLineWidth) */
-  max-width: 60ch;
-  /* LINT.ThenChange(//chrome/renderer/accessibility/read_anything/read_anything_node_utils.cc:MaxLineWidth) */
+  max-width: var(--max-width);
   overflow-wrap: break-word;
   padding-left: 20px;
   width: 100%; /* Wrap text to width even with horizontal scroll bar */

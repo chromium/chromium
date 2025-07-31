@@ -38,6 +38,16 @@ suite('AppStyleUpdater', () => {
     updater = new AppStyleUpdater(app);
   });
 
+  test('max line width is max chars', () => {
+    chrome.readingMode.maxLineWidth = 100;
+    updater.setMaxLineWidth();
+    assertEquals('100ch', app.style.getPropertyValue('--max-width'));
+
+    chrome.readingMode.maxLineWidth = 40;
+    updater.setMaxLineWidth();
+    assertEquals('40ch', app.style.getPropertyValue('--max-width'));
+  });
+
   test('line spacing depends on font size', () => {
     setAppFontSize(10);
     chrome.readingMode.lineSpacing = 10;

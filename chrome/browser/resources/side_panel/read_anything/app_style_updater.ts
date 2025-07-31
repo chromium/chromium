@@ -55,6 +55,10 @@ export class AppStyleUpdater {
     this.app_ = app;
   }
 
+  setMaxLineWidth() {
+    this.setStyle_('--max-width', `${chrome.readingMode.maxLineWidth}ch`);
+  }
+
   setAllTextStyles() {
     this.setLineSpacing();
     this.setLetterSpacing();
