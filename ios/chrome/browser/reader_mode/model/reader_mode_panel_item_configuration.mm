@@ -58,7 +58,7 @@ ReaderModePanelItemConfiguration::ReaderModePanelItemConfiguration(
       IDS_IOS_CONTEXTUAL_PANEL_READER_MODE_MODEL_ENTRYPOINT_MESSAGE);
   entrypoint_image_name = base::SysNSStringToUTF8(GetReaderModeSymbolName());
   image_type = ContextualPanelItemConfiguration::EntrypointImageType::SFSymbol;
-  relevance = ContextualPanelItemConfiguration::low_relevance;
+  relevance = ContextualPanelItemConfiguration::low_relevance - 1;
   entrypoint_custom_action =
       base::BindRepeating(&ActivateReaderModeInWebState, web_state->GetWeakPtr());
   large_entrypoint_displayed_duration = kLargeEntrypointDisplayedDuration;
