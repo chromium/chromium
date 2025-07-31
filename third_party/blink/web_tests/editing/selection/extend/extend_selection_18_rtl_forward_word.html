@@ -88,7 +88,7 @@ selection_test(
   selection => selection.modify('extend', 'forward', 'word'),
   behavior === 'mac'
       ? '<div contenteditable dir="rtl">they said^ "\u202Bcar| \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>'
-      : '<div contenteditable dir="rtl">they said^ "\u202Bcar |\u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
+      : '<div contenteditable dir="rtl">they said^ |"\u202Bcar \u05D3\u05D4\u05D5 \u05D0\u05D1\u05D2\u202C."</div>',
   `${behavior} 18-9 rtl forward word`);
 
 selection_test(

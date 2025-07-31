@@ -537,6 +537,12 @@
       status: "stable",
     },
     {
+      // Fix Asymmetric word navigation behavior on Windows when punctuation follows whitespace
+      // See https://crbug.com/40252703
+      name: "AsymmetricWordBoundaryFix",
+      status: "stable",
+    },
+    {
       // When enabled, perform async IPCs from CookieJar::SetCookie to the
       // network service.
       name: "AsyncSetCookie",
