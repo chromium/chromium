@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/policy/model/policy_util.h"
 
+#import <Foundation/Foundation.h>
+
 #import "components/policy/core/common/policy_loader_ios_constants.h"
 #import "components/policy/core/common/policy_pref_names.h"
 #import "components/prefs/pref_service.h"
@@ -11,11 +13,6 @@
 bool HasPlatformPolicies() {
   return [[[NSUserDefaults standardUserDefaults]
              dictionaryForKey:kPolicyLoaderIOSConfigurationKey] count] > 0;
-}
-
-bool IsApplicationManagedByMDM() {
-  return [[NSUserDefaults standardUserDefaults]
-             dictionaryForKey:kPolicyLoaderIOSConfigurationKey] != nil;
 }
 
 bool IsIncognitoPolicyApplied(PrefService* pref_service) {

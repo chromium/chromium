@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/policy/model/management_service_ios_factory.h"
 
+#import "components/policy/core/common/management/platform_management_service.h"
 #import "ios/chrome/browser/policy/model/management_service_ios.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 
@@ -20,6 +21,11 @@ ManagementServiceIOS* ManagementServiceIOSFactory::GetForProfile(
     ProfileIOS* profile) {
   return GetInstance()->GetServiceForProfileAs<ManagementServiceIOS>(
       profile, /*create=*/true);
+}
+
+// static
+ManagementService* ManagementServiceIOSFactory::GetForPlatform() {
+  return PlatformManagementService::GetInstance();
 }
 
 ManagementServiceIOSFactory::ManagementServiceIOSFactory()

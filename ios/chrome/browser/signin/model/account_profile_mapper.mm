@@ -14,6 +14,7 @@
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
+#import "components/policy/core/common/management/platform_management_service.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/core/browser/account_management_type_metrics_recorder.h"
 #import "google_apis/gaia/gaia_id.h"
@@ -990,7 +991,7 @@ AccountProfileMapper::AccountProfileMapper(
   base::UmaHistogramEnumeration(
       "Signin.IOSAccountsOnDeviceManagementTypesSummary",
       account_types_summary);
-  if (IsApplicationManagedByMDM()) {
+  if (policy::PlatformManagementService::GetInstance()->IsManaged()) {
     base::UmaHistogramEnumeration(
         "Signin.IOSAccountsOnDeviceManagementTypesSummary.ManagedDevice",
         account_types_summary);

@@ -375,6 +375,8 @@ source_set("internal") {
 
     if (is_ios) {
       sources += [
+        "management/platform_management_status_provider_ios.h",
+        "management/platform_management_status_provider_ios.mm",
         "policy_loader_ios.h",
         "policy_loader_ios.mm",
       ]
