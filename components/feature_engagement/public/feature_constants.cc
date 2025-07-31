@@ -805,6 +805,10 @@ BASE_FEATURE(kIPHiOSHomepageCustomizationNewBadge,
              "IPH_iOSHomepageCustomizationNewBadge",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+BASE_FEATURE(kIPHiOSOneTimeDefaultBrowserNotificationFeature,
+             "IPH_iOSOneTimeDefaultBrowserNotification",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // Non-FET feature.
 BASE_FEATURE(kDefaultBrowserEligibilitySlidingWindow,
              "DefaultBrowserEligibilitySlidingWindow",

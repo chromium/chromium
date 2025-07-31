@@ -10,9 +10,11 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/bind_post_task.h"
 #import "base/time/time.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_registry_simple.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/push_notification/model/constants.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_client.h"
 #import "ios/chrome/browser/push_notification/model/push_notification_service.h"
@@ -35,6 +37,9 @@ namespace {
 
 // The amount of time used to determine if the user should be classified.
 const base::TimeDelta kClassifyUserRecency = base::Hours(2);
+
+// The trigger time used for the one time default browser notification.
+const base::TimeDelta OneTimeNotificationTriggerDelta = base::Hours(24);
 
 // Returns the first notification from `requests` whose identifier matches
 // `identifier`.
@@ -251,6 +256,21 @@ void TipsNotificationClient::GetPendingRequest(
 void TipsNotificationClient::OnPendingRequestFound(
     UNNotificationRequest* request) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Check for the one-time default browser notification.
+  if (base::FeatureList::IsEnabled(kIOSOneTimeDefaultBrowserNotification)) {
+    ProfileIOS* profile = GetActiveForegroundProfile();
+    if (profile) {
+      TipsNotificationType type = TipsNotificationType::kDefaultBrowser;
+      std::unique_ptr<TipsNotificationCriteria> criteria =
+          std::make_unique<TipsNotificationCriteria>(profile, local_state_,
+                                                     CanSendReactivation());
+      if (criteria->ShouldSendNotification(type)) {
+        one_time_type_ = type;
+      }
+    }
+  }
+
   if (!request) {
     MaybeLogTriggeredNotification();
     MaybeLogDismissedNotification();
@@ -262,10 +282,10 @@ void TipsNotificationClient::OnPendingRequestFound(
   MaybeLogDismissedNotification();
   interacted_type_ = std::nullopt;
 
+  std::optional<TipsNotificationType> type = ParseTipsNotificationType(request);
+
   if (CanSendReactivation()) {
     ClearAllRequestedNotifications();
-    std::optional<TipsNotificationType> type =
-        ParseTipsNotificationType(request);
     if (type.has_value()) {
       MarkNotificationTypeNotSent(type.value());
       // Increment the Reactivation canceled count.
@@ -273,6 +293,16 @@ void TipsNotificationClient::OnPendingRequestFound(
           local_state_->GetInteger(kReactivationNotificationsCanceledCount) + 1;
       local_state_->SetInteger(kReactivationNotificationsCanceledCount,
                                canceled_count);
+    }
+    MaybeRequestNotification(base::DoNothing());
+  }
+
+  if (one_time_type_.has_value()) {
+    // If a pending request is found, clear it to prioritize the one-time
+    // notification.
+    ClearAllRequestedNotifications();
+    if (type.has_value()) {
+      MarkNotificationTypeNotSent(type.value());
     }
     MaybeRequestNotification(base::DoNothing());
   }
@@ -286,16 +316,34 @@ void TipsNotificationClient::MaybeRequestNotification(
     return;
   }
 
-  Browser* browser = GetActiveForegroundBrowser();
-  if (!browser) {
+  ProfileIOS* profile = GetActiveForegroundProfile();
+  if (!profile) {
     std::move(completion).Run();
     return;
   }
-  ProfileIOS* profile = browser->GetProfile();
 
   if (forced_type_.has_value()) {
     RequestNotification(forced_type_.value(), profile->GetProfileName(),
                         std::move(completion));
+    return;
+  }
+
+  if (one_time_type_.has_value()) {
+    if (one_time_type_ == TipsNotificationType::kDefaultBrowser) {
+      // The FET's feature should be triggered.
+      feature_engagement::Tracker* tracker =
+          feature_engagement::TrackerFactory::GetForProfile(profile);
+      if (tracker->ShouldTriggerHelpUI(
+              feature_engagement::
+                  kIPHiOSOneTimeDefaultBrowserNotificationFeature)) {
+        RequestNotification(one_time_type_.value(), profile->GetProfileName(),
+                            std::move(completion));
+        tracker->Dismissed(feature_engagement::
+                               kIPHiOSOneTimeDefaultBrowserNotificationFeature);
+        tracker->NotifyEvent("default_browser_promos_group_trigger");
+      }
+    }
+    one_time_type_ = std::nullopt;
     return;
   }
 
@@ -344,6 +392,9 @@ void TipsNotificationClient::RequestNotification(
 
   base::TimeDelta trigger_delta = TipsNotificationTriggerDelta(
       CanSendReactivation(), user_type_, notification_type);
+  if (one_time_type_.has_value()) {
+    trigger_delta = std::min(trigger_delta, OneTimeNotificationTriggerDelta);
+  }
 
   if (IsNotificationCollisionManagementEnabled()) {
     ScheduledNotificationRequest request = {
@@ -559,4 +610,12 @@ void TipsNotificationClient::ClassifyUser() {
   }
   SetTipsNotificationUserType(local_state_, user_type_);
   base::UmaHistogramEnumeration("IOS.Notifications.Tips.UserType", user_type_);
+}
+
+ProfileIOS* TipsNotificationClient::GetActiveForegroundProfile() const {
+  Browser* browser = GetActiveForegroundBrowser();
+  if (!browser) {
+    return nullptr;
+  }
+  return browser->GetProfile();
 }

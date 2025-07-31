@@ -186,6 +186,7 @@ const base::Feature* const kAllFeatures[] = {
     &kIPHiOSSharedTabGroupForeground,
     &kIPHiOSDefaultBrowserBannerPromoFeature,
     &kIPHiOSDefaultBrowserOffCyclePromoFeature,
+    &kIPHiOSOneTimeDefaultBrowserNotificationFeature,
     &kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
     &kIPHiOSReminderNotificationsOverflowMenuNewBadgeFeature,
     &kIPHiOSSettingsInOverflowMenuBubbleFeature,

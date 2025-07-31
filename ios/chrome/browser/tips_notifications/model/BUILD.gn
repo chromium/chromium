@@ -78,6 +78,7 @@ source_set("unit_tests") {
     ":utils",
     "//base",
     "//base/test:test_support",
+    "//components/feature_engagement/public",
     "//components/feature_engagement/test:test_support",
     "//components/password_manager/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",

@@ -569,6 +569,21 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     return config;
   }
 
+  if (kIPHiOSOneTimeDefaultBrowserNotificationFeature.name == feature->name) {
+    FeatureConfig config;
+    config.valid = true;
+    config.availability = Comparator(ANY, 0);
+    config.session_rate = Comparator(ANY, 0);
+    config.storage_type = StorageType::DEVICE;
+    config.trigger =
+        EventConfig("one_time_default_browser_notification_trigger",
+                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
+                    feature_engagement::kMaxStoragePeriod);
+    config.event_configs.insert(EventConfig(
+        "default_browser_promos_group_trigger", Comparator(EQUAL, 0), 14, 360));
+    return config;
+  }
+
   return std::nullopt;
 }
 }  // namespace

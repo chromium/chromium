@@ -50156,6 +50156,8 @@ should be able to be added at any place in this file.
       label="For iOSLensOverlayEntrypoint IPH feature"/>
   <suffix name="iOSLensOverlayEscapeHatchTip"
       label="For iOSLensOverlayEscapeHatchTip IPH feature"/>
+  <suffix name="iOSOneTimeDefaultBrowserNotification"
+      label="For iOSOneTimeDefaultBrowserNotification feature"/>
   <suffix name="iOSOverflowMenuCustomization"
       label="For iOSOverflowMenuCustomization feature"/>
   <suffix name="IOSPageActionMenu" label="For IOSPageActionMenu IPH"/>
