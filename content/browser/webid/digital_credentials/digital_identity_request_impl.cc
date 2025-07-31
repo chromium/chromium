@@ -40,6 +40,7 @@ namespace {
 using base::Value;
 
 constexpr char kPreviewProtocol[] = "preview";
+constexpr char kOpenid4vpProtocolPrefix[] = "openid4vp";
 
 constexpr char kMdlDocumentType[] = "org.iso.18013.5.1.mDL";
 
@@ -62,12 +63,6 @@ constexpr char kDigitalIdentityDialogParam[] = "dialog";
 constexpr char kDigitalIdentityNoDialogParamValue[] = "no_dialog";
 constexpr char kDigitalIdentityLowRiskDialogParamValue[] = "low_risk";
 constexpr char kDigitalIdentityHighRiskDialogParamValue[] = "high_risk";
-
-base::flat_set<std::string_view> GetOpenid4vpProtocolIdentifiers() {
-  base::flat_set<std::string_view> ids = {"openid4vp", "openid4vp1.0",
-                                          "openid4vp-v1-unsigned"};
-  return ids;
-}
 
 // Returns entry if `dict` has a list with a single dict element for key
 // `list_key`.
@@ -279,7 +274,7 @@ bool CanRequestCredentialBypassInterstitial(const std::string& protocol,
     return false;
   }
 
-  if (GetOpenid4vpProtocolIdentifiers().contains(protocol)) {
+  if (protocol.starts_with(kOpenid4vpProtocolPrefix)) {
     return CanRequestCredentialBypassInterstitialForOpenid4vpProtocol(request);
   }
   return protocol == kPreviewProtocol &&
