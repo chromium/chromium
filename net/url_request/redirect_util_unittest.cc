@@ -166,10 +166,10 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
 
 TEST(RedirectUtilTest, RemovedHeaders) {
   struct TestCase {
-    std::vector<const char*> initial_headers;
-    std::vector<const char*> modified_headers;
+    std::vector<std::pair<const char*, const char*>> initial_headers;
+    std::vector<std::pair<const char*, const char*>> modified_headers;
     std::vector<const char*> removed_headers;
-    std::vector<const char*> final_headers;
+    std::vector<std::pair<const char*, const char*>> final_headers;
   };
   const TestCase kTests[] = {
       // Remove no headers (empty vector).
@@ -181,10 +181,10 @@ TEST(RedirectUtilTest, RemovedHeaders) {
       },
       // Remove an existing header.
       {
-          {"A:0"},  // Initial headers
-          {},       // Modified headers
-          {"A"},    // Removed headers
-          {},       // Final headers
+          {{"A", "0"}},  // Initial headers
+          {},            // Modified headers
+          {"A"},         // Removed headers
+          {},            // Final headers
       },
       // Remove a missing header.
       {
@@ -195,45 +195,48 @@ TEST(RedirectUtilTest, RemovedHeaders) {
       },
       // Remove two different headers.
       {
-          {"A:0", "B:0"},  // Initial headers
-          {},              // Modified headers
-          {"A", "B"},      // Removed headers
-          {},              // Final headers
+          {{"A", "0"}, {"B", "0"}},  // Initial headers
+          {},                        // Modified headers
+          {"A", "B"},                // Removed headers
+          {},                        // Final headers
       },
       // Remove two times the same headers.
       {
-          {"A:0"},     // Initial headers
-          {},          // Modified headers
-          {"A", "A"},  // Removed headers
-          {},          // Final headers
+          {{"A", "0"}},  // Initial headers
+          {},            // Modified headers
+          {"A", "A"},    // Removed headers
+          {},            // Final headers
       },
       // Remove an existing header that is also modified.
       {
-          {"A:0"},  // Initial headers
-          {"A:1"},  // Modified headers
-          {"A"},    // Removed headers
-          {"A:1"},  // Final headers
+          {{"A", "0"}},  // Initial headers
+          {{"A", "1"}},  // Modified headers
+          {"A"},         // Removed headers
+          {{"A", "1"}},  // Final headers
       },
       // Some headers are removed, some aren't.
       {
-          {"A:0", "B:0"},  // Initial headers
-          {},              // Modified headers
-          {"A"},           // Removed headers
-          {"B:0"},         // Final headers
+          {{"A", "0"}, {"B", "0"}},  // Initial headers
+          {},                        // Modified headers
+          {"A"},                     // Removed headers
+          {{"B", "0"}},              // Final headers
       },
   };
 
   for (const auto& test : kTests) {
     HttpRequestHeaders initial_headers, modified_headers, final_headers;
     std::vector<std::string> removed_headers;
-    for (const char* header : test.initial_headers)
-      initial_headers.AddHeaderFromString(header);
-    for (const char* header : test.modified_headers)
-      modified_headers.AddHeaderFromString(header);
+    for (const auto& header : test.initial_headers) {
+      initial_headers.SetHeader(header.first, header.second);
+    }
+    for (const auto& header : test.modified_headers) {
+      modified_headers.SetHeader(header.first, header.second);
+    }
     for (const char* header : test.removed_headers)
       removed_headers.push_back(header);
-    for (const char* header : test.final_headers)
-      final_headers.AddHeaderFromString(header);
+    for (const auto& header : test.final_headers) {
+      final_headers.SetHeader(header.first, header.second);
+    }
     bool should_clear_upload(false);  // unused.
 
     RedirectUtil::UpdateHttpRequest(GURL(),         // original_url
