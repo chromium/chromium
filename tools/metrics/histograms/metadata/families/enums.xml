@@ -287,13 +287,18 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//components/supervised_user/core/common/supervised_user_constants.h:LocalWebApprovalErrorType) -->
 
+<!-- LINT.IfChange(ManagedModeBlockingCommand) -->
+
 <enum name="ManagedModeBlockingCommand">
-  <int value="0" label="Preview"/>
+  <int value="0" label="Preview (deprecated)"/>
   <int value="1" label="Back"/>
-  <int value="2" label="New Tab Page"/>
+  <int value="2" label="New Tab Page (deprecated)"/>
   <int value="3" label="Remote Access Request"/>
   <int value="4" label="Local Access Request"/>
+  <int value="5" label="Learn more"/>
 </enum>
+
+<!-- LINT.ThenChange(//components/supervised_user/core/browser/supervised_user_interstitial.h:ManagedModeBlockingCommand) -->
 
 <enum name="ManagedUserURLRequestPermissionSource">
   <int value="0" label="MAIN_FRAME">Request was made from main frame</int>

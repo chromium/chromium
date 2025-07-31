@@ -12,15 +12,16 @@
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/supervised_user/android/supervised_user_service_platform_delegate.h"
+#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
-#include "chrome/browser/supervised_user/supervised_user_content_filters_service_factory.h"
 #include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/test/base/android/android_browser_test.h"
 #include "chrome/test/base/chrome_test_utils.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/safe_search_api/url_checker_client.h"
 #include "components/supervised_user/core/browser/kids_chrome_management_url_checker_client.h"
+#include "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #include "components/supervised_user/core/browser/supervised_user_test_environment.h"
 #include "components/supervised_user/core/common/features.h"
 #include "content/public/browser/storage_partition.h"
@@ -66,6 +67,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     return browser_content_filters_observer_.get();
   }
   MockUrlCheckerClient* url_checker_client() { return url_checker_client_; }
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   void SetUpOnMainThread() override {
@@ -144,6 +146,7 @@ class SupervisedUserNavigationObserverAndroidBrowserTest
     return bridge;
   }
 
+  base::HistogramTester histogram_tester_;
   raw_ptr<MockUrlCheckerClient> url_checker_client_;
   raw_ptr<FakeContentFiltersObserverBridge> search_content_filters_observer_;
   raw_ptr<FakeContentFiltersObserverBridge> browser_content_filters_observer_;
@@ -304,8 +307,12 @@ IN_PROC_BROWSER_TEST_F(
                   ->GetFilteringBehavior(help_center_url)
                   .IsAllowed());
 
-  // So click the learn more button.
+  histogram_tester().ExpectTotalCount("ManagedMode.BlockingInterstitialCommand",
+                                      0);
   ClickButtonById("learn-more-button");
+  histogram_tester().ExpectBucketCount(
+      "ManagedMode.BlockingInterstitialCommand",
+      SupervisedUserInterstitial::Commands::LEARN_MORE, 1);
 
   // This expectation verifies that the help center page was attempted to be
   // loaded (test don't have internet)
@@ -357,8 +364,14 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(web_contents()->GetTitle(), u"Site blocked");
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), blocked_url);
 
-  // So click the back button - previous page is available back again.
+  // After clicking the back button, the previous page is available back again.
+  histogram_tester().ExpectTotalCount("ManagedMode.BlockingInterstitialCommand",
+                                      0);
   ClickButtonById("back-button");
+  histogram_tester().ExpectBucketCount(
+      "ManagedMode.BlockingInterstitialCommand",
+      SupervisedUserInterstitial::Commands::BACK, 1);
+
   EXPECT_EQ(web_contents()->GetTitle(), u"Supervised User test: simple page");
   EXPECT_EQ(web_contents()->GetLastCommittedURL(), allowed_url);
 }
