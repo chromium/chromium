@@ -285,6 +285,15 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//content/browser/service_worker/service_worker_main_resource_loader.cc:SyntheticResponseEligibility) -->
 
+<!-- LINT.IfChange(SyntheticResponseReloadReason) -->
+
+<enum name="SyntheticResponseReloadReason">
+  <int value="0" label="CachedResponseHeadCleared"/>
+  <int value="1" label="HeaderInconsistent"/>
+</enum>
+
+<!-- LINT.ThenChange(//content/browser/service_worker/service_worker_synthetic_response_manager.cc:SyntheticResponseReloadReason) -->
+
 <enum name="WorkerOrWorkletInterfaceNameType">
   <int value="0" label="kOther"/>
   <int value="1" label="kDedicatedWorkerGlobalScope"/>

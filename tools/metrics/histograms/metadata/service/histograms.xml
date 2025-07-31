@@ -1964,6 +1964,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="ServiceWorker.SyntheticResponse.ReloadReason"
+    enum="SyntheticResponseReloadReason" expires_after="2025-08-31">
+  <owner>sisidovski@chromium.org</owner>
+  <owner>chrome-worker@google.com</owner>
+  <summary>
+    Records the reason why the browser reloads the page when a synthetic
+    response is about to be served.
+
+    This is recorded in navigation, when the browser receives the response from
+    the network, but the browser tell the custom response to reload the page to
+    the renderer for some fallback case e.g. header mismatch.
+  </summary>
+</histogram>
+
 <histogram name="ServiceWorker.UpdateResourceSha256ChecksumsResult"
     enum="ServiceWorkerStatusCode" expires_after="2025-09-28">
   <owner>sisidovski@chromium.org</owner>

@@ -25,6 +25,19 @@ namespace {
 
 constexpr char kHistogramIsHeaderConsistent[] =
     "ServiceWorker.SyntheticResponse.IsHeaderConsistent";
+constexpr char kHistogramSyntheticResponseReloadReason[] =
+    "ServiceWorker.SyntheticResponse.ReloadReason";
+
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+//
+// LINT.IfChange(SyntheticResponseReloadReason)
+enum class SyntheticResponseReloadReason {
+  kCachedResponseHeadCleared = 0,
+  kHeaderInconsistent = 1,
+  kMaxValue = kHeaderInconsistent,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/service/enums.xml:SyntheticResponseReloadReason)
 
 // When this is enabled, the browser stores response headers for synthetic
 // responses even if there is no opt-in header in its response. This is for
@@ -48,6 +61,11 @@ const std::string& GetIgnoredHeadersForBypass() {
   static const base::NoDestructor<std::string> ignored_headers(
       kServiceWorkerBypassSyntheticResponseIgnoredHeaders.Get());
   return *ignored_headers;
+}
+
+void RecordReloadReason(SyntheticResponseReloadReason reason) {
+  base::UmaHistogramEnumeration(kHistogramSyntheticResponseReloadReason,
+                                reason);
 }
 
 }  // namespace
@@ -260,25 +278,36 @@ void ServiceWorkerSyntheticResponseManager::OnReceiveResponse(
   switch (status_) {
     case SyntheticResponseStatus::kReady: {
       CHECK(write_buffer_manager_.has_value());
-      bool is_header_consistent =
-          CheckHeaderConsistency(response_head->headers);
-      if (is_header_consistent) {
-        simple_buffer_manager_.emplace(std::move(body));
-        simple_buffer_manager_->Clone(
-            write_buffer_manager_->ReleaseProducerHandle(),
-            base::BindOnce(
-                &ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
-                weak_factory_.GetWeakPtr()));
+      bool is_header_consistent = false;
+      if (version_->GetResponseHeadForSyntheticResponse()) {
+        is_header_consistent = CheckHeaderConsistency(response_head->headers);
+        if (is_header_consistent) {
+          simple_buffer_manager_.emplace(std::move(body));
+          simple_buffer_manager_->Clone(
+              write_buffer_manager_->ReleaseProducerHandle(),
+              base::BindOnce(
+                  &ServiceWorkerSyntheticResponseManager::OnCloneCompleted,
+                  weak_factory_.GetWeakPtr()));
+        } else {
+          // Clear the stored header when it's inconsistent with the header from
+          // the network so that the next navigation won't get the header
+          // mismatch and reloading consistently.
+          //
+          // TODO(crbug.com/352578800): Consider setting the response header
+          // here rather than resetting it in order to improve the synthetic
+          // response coverage. Revisit this after collecting coverage data.
+          version_->ResetResponseHeadForSyntheticResponse();
+          NotifyReloading();
+          RecordReloadReason(
+              SyntheticResponseReloadReason::kHeaderInconsistent);
+        }
       } else {
-        // Clear the stored header when it's inconsistent with the header from
-        // the network so that the next navigation won't get the header mismatch
-        // and reloading consistently.
-        //
-        // TODO(crbug.com/352578800): Consider setting the response header here
-        // rather than resetting it in order to improve the synthetic response
-        // coverage. Revisit this after collecting coverage data.
-        version_->ResetResponseHeadForSyntheticResponse();
+        // The cached response head may have been cleared by another request
+        // that detected a header inconsistency. Tell the client to reload to
+        // get the latest version.
         NotifyReloading();
+        RecordReloadReason(
+            SyntheticResponseReloadReason::kCachedResponseHeadCleared);
       }
       base::UmaHistogramBoolean(kHistogramIsHeaderConsistent,
                                 is_header_consistent);
