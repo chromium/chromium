@@ -186,8 +186,7 @@ bool SavedPasswordsPresenter::RemoveBackupPassword(
   undo_helper_->StartGroupingActions();
   for (const auto& current_form : forms_to_update) {
     PasswordForm without_backup(current_form);
-    // TODO(crbug.com/433971266): Delete the note instead of making it empty.
-    without_backup.SetPasswordBackupNote(std::u16string());
+    without_backup.DeletePasswordBackupNote();
     // |current_form| is unchanged result obtained from
     // 'OnGetPasswordStoreResultsFrom'. So it can be present only in one
     // store at a time.
