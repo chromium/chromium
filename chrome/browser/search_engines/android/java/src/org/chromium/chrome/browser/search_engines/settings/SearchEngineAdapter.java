@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.ui.favicon.FaviconUtils;
 import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.favicon.LargeIconBridge.GoogleFaviconServerCallback;
 import org.chromium.components.favicon.LargeIconBridge.LargeIconCallback;
+import org.chromium.components.omnibox.OmniboxFeatures;
 import org.chromium.components.regional_capabilities.RegionalCapabilitiesService;
 import org.chromium.components.search_engines.ChoiceMadeLocation;
 import org.chromium.components.search_engines.TemplateUrl;
@@ -479,7 +480,8 @@ public class SearchEngineAdapter extends BaseAdapter
                 new GURL(
                         templateUrlService.getSearchEngineUrlFromTemplateUrl(
                                 templateUrl.getKeyword()));
-        updateLogo(logoView, faviconUrl);
+
+        updateLogo(logoView, templateUrl, faviconUrl);
 
         // To improve the explore-by-touch experience, the radio button is hidden from accessibility
         // and instead, "checked" or "not checked" is read along with the search engine's name, e.g.
@@ -506,10 +508,19 @@ public class SearchEngineAdapter extends BaseAdapter
         return view;
     }
 
-    private void updateLogo(ImageView logoView, GURL faviconUrl) {
+    private void updateLogo(ImageView logoView, TemplateUrl templateUrl, GURL faviconUrl) {
         if (mIconCache.containsKey(faviconUrl)) {
             logoView.setImageBitmap(mIconCache.get(faviconUrl));
             return;
+        }
+
+        if (OmniboxFeatures.sOmniboxParityRetrieveBuiltInEngineIcon.getValue()) {
+            @Nullable Bitmap bitmap = templateUrl.getBuiltInSearchEngineIcon();
+            if (bitmap != null) {
+                mIconCache.put(faviconUrl, bitmap);
+                logoView.setImageBitmap(bitmap);
+                return;
+            }
         }
 
         // Use a placeholder image while trying to fetch the logo.

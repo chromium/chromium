@@ -49,6 +49,7 @@ android_library("java") {
     "//components/embedder_support/android:util_java",
     "//components/favicon/android:java",
     "//components/location/android:location_java",
+    "//components/omnibox/common:features_java",
     "//components/regional_capabilities/android:java",
     "//components/search_engines/android:java",
     "//content/public/android:content_java",
