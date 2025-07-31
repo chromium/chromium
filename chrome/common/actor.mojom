@@ -137,6 +137,8 @@ union ToolAction {
 // optimization_guide.proto.BrowserActionResult.  New Codes may be added to
 // unused values, but existing codes should not be removed, reordered, or
 // renumbered.
+// Googlers: When making additions, also add the new value here:
+// http://shortn/_gLyPxrRm6p
 enum ActionResultCode {
   kOk = 0,
 
@@ -212,6 +214,7 @@ enum ActionResultCode {
   // hit test on the live DOM.
   kObservedTargetElementChanged = 31,
 
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 100-199: Errors for navigation. (Not part of the ToolAction union
@@ -220,11 +223,15 @@ enum ActionResultCode {
   // The requested URL was not valid.
   kNavigateInvalidUrl = 100,
 
+  // Please see the comment above about adding new values.
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 200-299: Errors for ClickAction.
 
   // The click event was suppressed.
   kClickSuppressed = 200,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 300-399: Errors for DragAndRelease.
@@ -247,11 +254,15 @@ enum ActionResultCode {
   // The mouse up event was suppressed.
   kDragAndReleaseUpSuppressed = 305,
 
+  // Please see the comment above about adding new values.
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 400-499: Errors for MouseMoveAction.
 
   // The mouse move event was suppressed.
   kMouseMoveEventSuppressed = 400,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 500-599: Errors for ScrollAction.
@@ -268,6 +279,8 @@ enum ActionResultCode {
   // The offset of the target element didn't change after scrolling.
   kScrollOffsetDidNotChange = 502,
 
+  // Please see the comment above about adding new values.
+
   ///////////////////////////////////////////////////////////////////////
   // Codes 600-699: Errors for SelectAction.
 
@@ -282,6 +295,8 @@ enum ActionResultCode {
 
   // The invoking the tool resulted in an unexpected value.
   kSelectUnexpectedValue = 603,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 700-799: Errors for TypeAction.
@@ -300,6 +315,8 @@ enum ActionResultCode {
 
   // The key down event for one of the chars was suppressed by Blink.
   kTypeKeyDownSuppressed = 704,
+
+  // Please see the comment above about adding new values.
 
   ///////////////////////////////////////////////////////////////////////
   // Codes 800-899: Errors for history tool. (Not part of the ToolAction union
@@ -322,6 +339,8 @@ enum ActionResultCode {
 
   // History navigation committed to an error page.
   kHistoryErrorPage = 805,
+
+  // Please see the comment above about adding new values.
 };
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/actor/enums.xml:ActionResultCode)
