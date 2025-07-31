@@ -982,12 +982,12 @@
     {
         "name": "espresso-core",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-rc01"
+        "version": "3.7.0"
     },
     {
         "name": "espresso-idling-resource",
         "group": "androidx.test.espresso",
-        "version": "3.7.0-rc01"
+        "version": "3.7.0"
     },
     {
         "name": "espresso-intents",
@@ -1002,12 +1002,12 @@
     {
         "name": "junit",
         "group": "androidx.test.ext",
-        "version": "1.3.0-rc01"
+        "version": "1.3.0"
     },
     {
         "name": "storage",
         "group": "androidx.test.services",
-        "version": "1.6.0-rc01"
+        "version": "1.6.0"
     },
     {
         "name": "uiautomator",
@@ -1022,22 +1022,22 @@
     {
         "name": "core",
         "group": "androidx.test",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "monitor",
         "group": "androidx.test",
-        "version": "1.8.0-rc01"
+        "version": "1.8.0"
     },
     {
         "name": "rules",
         "group": "androidx.test",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "runner",
         "group": "androidx.test",
-        "version": "1.7.0-rc01"
+        "version": "1.7.0"
     },
     {
         "name": "tracing",
