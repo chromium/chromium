@@ -1906,22 +1906,12 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 - (void)closeActivitySheet {
   if ([ChromeEarlGrey isIPadIdiom]) {
-    // Tap the share button to dismiss the popover.
-    [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+    // Tap the button outside the activity sheet to dismiss the popover on iPad.
+    [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
         performAction:grey_tap()];
   } else {
-    if (@available(iOS 17, *)) {
-      [EarlGrey closeActivitySheetWithError:nil];
-    } else {
-      NSString* dismissLabel = @"Close";
-      [[EarlGrey
-          selectElementWithMatcher:
-              grey_allOf(
-                  chrome_test_util::ButtonWithAccessibilityLabel(dismissLabel),
-                  grey_not(
-                      grey_accessibilityTrait(UIAccessibilityTraitNotEnabled)),
-                  grey_interactable(), nullptr)] performAction:grey_tap()];
-    }
+    GREYAssertTrue([EarlGrey closeActivitySheetWithError:nil],
+                   @"Failed to close the activity sheet");
   }
 }
 
