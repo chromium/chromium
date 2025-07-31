@@ -978,6 +978,8 @@ bool NavigationURLLoaderImpl::LoaderHolder::ShouldCancelExclusiveTask(
 void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
     mojo::PendingReceiver<network::mojom::URLLoaderClient> pending_receiver,
     scoped_refptr<base::SequencedTaskRunner> task_runner) {
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
   response_loader_receiver_.reset();
   response_loader_receiver_.Bind(std::move(pending_receiver),
                                  std::move(task_runner));
@@ -986,6 +988,8 @@ void NavigationURLLoaderImpl::LoaderHolder::BindReceiver(
 
 void NavigationURLLoaderImpl::LoaderHolder::SetLoader(
     std::unique_ptr<blink::ThrottlingURLLoader> url_loader) {
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
   url_loader_ = std::move(url_loader);
 }
 
@@ -1018,6 +1022,8 @@ void NavigationURLLoaderImpl::LoaderHolder::SetModifiedHeadersOnRedirect(
     std::vector<std::string> removed_headers,
     net::HttpRequestHeaders modified_headers,
     net::HttpRequestHeaders modified_cors_exempt_headers) {
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!modified_headers_on_redirect_);
   modified_headers_on_redirect_.emplace(
       std::move(removed_headers), std::move(modified_headers),
       std::move(modified_cors_exempt_headers));
