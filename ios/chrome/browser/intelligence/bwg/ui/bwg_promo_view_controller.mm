@@ -46,11 +46,14 @@ const CGFloat kOuterBoxSize = 64.0;
 // Height of the separator line.
 const CGFloat kSeparatorHeight = 1.0;
 
-// Spacing between the scrollView and the buttons.
+// Spacing between primary and secondary buttons.
 const CGFloat kSpacingPrimarySecondaryButtons = 0.0;
 
-// Spacing between primary and secondary buttons.
+// Spacing between the scrollView and the buttons.
 const CGFloat kSpacingScrollViewAndButtons = 24.0;
+
+// Spacing between the main title and summary.
+const CGFloat kSpacingTitleAndSummary = 10.0;
 
 // Constants for gradient Gemini logo.
 #if BUILDFLAG(IOS_USE_BRANDED_SYMBOLS)
@@ -140,7 +143,8 @@ const CGFloat kBaselineAdjustment = 10.0;
   ]];
 
   [_mainStackView addArrangedSubview:[self createMainTitle]];
-  [_mainStackView setCustomSpacing:10 afterView:_titleContainerView];
+  [_mainStackView setCustomSpacing:kSpacingTitleAndSummary
+                         afterView:_titleContainerView];
 
   UIImageSymbolConfiguration* config = [UIImageSymbolConfiguration
       configurationWithPointSize:kIconSize
@@ -196,7 +200,6 @@ const CGFloat kBaselineAdjustment = 10.0;
   [_titleContainerView addSubview:mainTitleLabel];
 
   AddSameConstraints(mainTitleLabel, _titleContainerView);
-  [_mainStackView setCustomSpacing:20 afterView:_titleContainerView];
   return _titleContainerView;
 }
 
@@ -396,7 +399,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   return contentHorizontalStackView;
 }
 
-// Creates the primary button.
+// Creates the Primary Button.
 - (UIButton*)createPrimaryButton {
   UIButton* primaryButton = [BWGUIUtils
       createPrimaryButtonWithTitle:l10n_util::GetNSString(
@@ -409,7 +412,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   return primaryButton;
 }
 
-// Creates the secondary button.
+// Creates the Secondary Button.
 - (UIButton*)createSecondaryButton {
   UIButton* secondaryButton = [BWGUIUtils
       createSecondaryButtonWithTitle:l10n_util::GetNSString(
@@ -422,7 +425,7 @@ const CGFloat kBaselineAdjustment = 10.0;
   return secondaryButton;
 }
 
-// Configures primary and secondary buttons.
+// Configures Primary and Secondary Buttons.
 - (void)configureButtons {
   UIView* primaryButtonView = [self createPrimaryButton];
   [_mainStackView addArrangedSubview:primaryButtonView];
