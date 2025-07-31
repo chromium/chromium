@@ -506,9 +506,9 @@ std::unique_ptr<HttpStream>
 HttpStreamPool::JobController::MaybeCreateStreamFromExistingQuicSessionInternal(
     const QuicSessionAliasKey& key) {
   if (!key.destination().IsValid() ||
-      !pool_->CanUseQuic(
-          key.destination(), key.session_key().network_anonymization_key(),
-          enable_ip_based_pooling_, enable_alternative_services_)) {
+      !pool_->CanUseQuic(key.destination(),
+                         key.session_key().network_anonymization_key(),
+                         enable_alternative_services_)) {
     return nullptr;
   }
 
@@ -548,8 +548,8 @@ bool HttpStreamPool::JobController::MaybeStartAlternativeJob() {
 }
 
 bool HttpStreamPool::JobController::CanUseExistingQuicSession() {
-  return pool_->CanUseExistingQuicSession(
-      origin_quic_key_, enable_ip_based_pooling_, enable_alternative_services_);
+  return pool_->CanUseExistingQuicSession(origin_quic_key_,
+                                          enable_alternative_services_);
 }
 
 void HttpStreamPool::JobController::StartAltSvcQuicPreconnect() {

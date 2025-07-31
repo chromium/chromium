@@ -5326,10 +5326,7 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicPreconnectMatchingIpSession) {
                                                      quic_key2.destination()));
 }
 
-// Tests that when disabled IP-based pooling, QUIC attempts are also disabled.
-// TODO(crbug.com/346835898): Make sure this behavior is what we actually want.
-// In production code, we currently disable both IP-based pooling and QUIC at
-// the same time.
+// Tests that disabling IP-based pooling for H2 doesn't interfare QUIC attempts.
 TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSessionDisabled) {
   base::WeakPtr<FakeServiceEndpointRequest> endpoint_request =
       resolver()->AddFakeRequest();
@@ -5346,12 +5343,12 @@ TEST_F(HttpStreamPoolAttemptManagerTest, QuicMatchingIpSessionDisabled) {
   requester.set_destination(kDefaultDestination)
       .set_enable_ip_based_pooling(false)
       .RequestStream(pool());
-  RunUntilIdle();
+  requester.WaitForResult();
 
   EXPECT_THAT(requester.result(), Optional(IsOk()));
-  ASSERT_FALSE(requester.associated_attempt_manager()
-                   ->GetQuicAttemptResultForTesting()
-                   .has_value());
+  ASSERT_TRUE(requester.associated_attempt_manager()
+                  ->GetQuicAttemptResultForTesting()
+                  .has_value());
 }
 
 TEST_F(HttpStreamPoolAttemptManagerTest, DelayStreamAttemptQuicOk) {

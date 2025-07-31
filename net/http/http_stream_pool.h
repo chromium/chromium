@@ -272,7 +272,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Returns true when QUIC can be used for `destination`.
   bool CanUseQuic(const url::SchemeHostPort& destination,
                   const NetworkAnonymizationKey& network_anonymization_key,
-                  bool enable_ip_based_pooling,
                   bool enable_alternative_services);
 
   // Returns the first quic::ParsedQuicVersion that has been advertised in
@@ -286,7 +285,6 @@ class NET_EXPORT_PRIVATE HttpStreamPool
   // Returns true when there is an existing QUIC session for `quic_session_key`.
   bool CanUseExistingQuicSession(
       const QuicSessionAliasKey& quic_session_alias_key,
-      bool enable_ip_based_pooling,
       bool enable_alternative_services);
 
   CompletionOnceCallback GetAltSvcQuicPreconnectCallback();

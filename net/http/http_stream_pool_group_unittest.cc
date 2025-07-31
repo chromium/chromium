@@ -478,13 +478,11 @@ TEST_F(HttpStreamPoolGroupTest, EnableDisableQuic) {
   set_enable_quic(true);
   InitializePool();
   ASSERT_TRUE(pool().CanUseQuic(kHost, NetworkAnonymizationKey(),
-                                /*enable_ip_based_pooling=*/true,
                                 /*enable_alternative_services=*/true));
 
   set_enable_quic(false);
   InitializePool();
   ASSERT_FALSE(pool().CanUseQuic(kHost, NetworkAnonymizationKey(),
-                                 /*enable_ip_based_pooling=*/true,
                                  /*enable_alternative_services=*/true));
 }
 

@@ -388,13 +388,12 @@ bool HttpStreamPool::IsQuicBroken(
 bool HttpStreamPool::CanUseQuic(
     const url::SchemeHostPort& destination,
     const NetworkAnonymizationKey& network_anonymization_key,
-    bool enable_ip_based_pooling,
     bool enable_alternative_services) {
   if (http_network_session()->ShouldForceQuic(destination, ProxyInfo::Direct(),
                                               /*is_websocket=*/false)) {
     return true;
   }
-  return http_network_session()->IsQuicEnabled() && enable_ip_based_pooling &&
+  return http_network_session()->IsQuicEnabled() &&
          enable_alternative_services &&
          GURL::SchemeIsCryptographic(destination.scheme()) &&
          !RequiresHTTP11(destination, network_anonymization_key) &&
@@ -412,14 +411,13 @@ quic::ParsedQuicVersion HttpStreamPool::SelectQuicVersion(
 
 bool HttpStreamPool::CanUseExistingQuicSession(
     const QuicSessionAliasKey& quic_session_alias_key,
-    bool enable_ip_based_pooling,
     bool enable_alternative_services) {
   const url::SchemeHostPort& destination = quic_session_alias_key.destination();
   return destination.IsValid() &&
          CanUseQuic(
              destination,
              quic_session_alias_key.session_key().network_anonymization_key(),
-             enable_ip_based_pooling, enable_alternative_services) &&
+             enable_alternative_services) &&
          http_network_session()->quic_session_pool()->CanUseExistingSession(
              quic_session_alias_key.session_key(), destination);
 }

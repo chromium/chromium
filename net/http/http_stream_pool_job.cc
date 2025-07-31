@@ -52,7 +52,6 @@ NextProtoSet CalculateAllowedAlpns(HttpStreamPool::Job::Delegate* delegate,
   if (!group->pool()->CanUseQuic(
           group->stream_key().destination(),
           group->stream_key().network_anonymization_key(),
-          delegate->enable_ip_based_pooling(),
           delegate->enable_alternative_services())) {
     allowed_alpns.Remove(NextProto::kProtoQUIC);
   }
