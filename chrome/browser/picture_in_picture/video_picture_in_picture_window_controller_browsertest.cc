@@ -426,8 +426,18 @@ IN_PROC_BROWSER_TEST_F(VideoPictureInPictureWindowControllerBrowserTest,
 
   // Wait for controls to become visible. This might not be immediate, if the
   // window has been moved.
-  ASSERT_TRUE(base::test::RunUntil(
-      [&]() { return GetOverlayWindow()->AreControlsVisible(); }));
+  //
+  // To avoid flakes, before checking the wait condition a call to
+  // `MoveMouseOverOverlayWindow` is made. The additional calls are needed due
+  // to the ordering and timing of events, there could be cases where the window
+  // is moved multiple times, every move prevents the controls from being
+  // visible for `VideoOverlayWindowViews::kControlHideDelayAfterMove` ms. After
+  // 250ms the fade animation will complete, and the controls will no longer be
+  // visible.
+  ASSERT_TRUE(base::test::RunUntil([&]() {
+    MoveMouseOverOverlayWindow();
+    return GetOverlayWindow()->AreControlsVisible();
+  }));
 
   EXPECT_TRUE(GetOverlayWindow()->AreControlsVisible());
 }
