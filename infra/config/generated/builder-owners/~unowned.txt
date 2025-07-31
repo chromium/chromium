@@ -73,7 +73,6 @@ ci/mac-perfetto-rel
 ci/mac-rust-x64-dbg
 ci/mac-ubsan-fyi-rel
 ci/metadata-exporter
-ci/rts-model-packager
 ci/rts-suite-analysis
 ci/win-annotator-rel
 ci/win-fieldtrial-rel
