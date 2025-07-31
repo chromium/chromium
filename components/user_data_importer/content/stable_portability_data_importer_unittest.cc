@@ -16,6 +16,7 @@
 #include "base/functional/bind.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -52,6 +53,30 @@ using testing::IsEmpty;
 using testing::UnorderedElementsAre;
 
 namespace user_data_importer {
+
+MATCHER_P(URLResultEq, expected, "") {
+  if (arg.url() != expected.url()) {
+    *result_listener << "which has url " << arg.url();
+    return false;
+  }
+  if (arg.title() != expected.title()) {
+    *result_listener << "which has title " << arg.title();
+    return false;
+  }
+  if (arg.visit_count() != expected.visit_count()) {
+    *result_listener << "which has visit_count " << arg.visit_count();
+    return false;
+  }
+  if (arg.typed_count() != expected.typed_count()) {
+    *result_listener << "which has typed_count " << arg.typed_count();
+    return false;
+  }
+  if (arg.last_visit() != expected.last_visit()) {
+    *result_listener << "which has last_visit " << arg.last_visit();
+    return false;
+  }
+  return true;
+}
 
 class StablePortabilityDataImporterTest : public testing::Test {
  public:
@@ -494,16 +519,28 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
   ImportHistory(kHistoryJson);
   EXPECT_EQ(GetNumberOfHistoryImported(), 2);
 
-  history::QueryResults results = QueryAllHistory();
-  ASSERT_EQ(results.size(), 2u);
+  history::QueryResults query_results = QueryAllHistory();
+  std::vector<history::URLResult> results(query_results.begin(),
+                                          query_results.end());
 
-  std::set<GURL> actual_urls;
-  for (const auto& result : results) {
-    actual_urls.insert(result.url());
-  }
-  EXPECT_THAT(actual_urls,
-              UnorderedElementsAre(GURL("https://www.google.com/"),
-                                   GURL("https://www.chromium.org/")));
+  history::URLResult expected_row1;
+  expected_row1.set_url(GURL("https://www.google.com/"));
+  expected_row1.set_title(u"Google");
+  expected_row1.set_visit_count(5);
+  expected_row1.set_typed_count(2);
+  expected_row1.set_last_visit(
+      base::Time::UnixEpoch() + base::Microseconds(1674205200000000));
+
+  history::URLResult expected_row2;
+  expected_row2.set_url(GURL("https://www.chromium.org/"));
+  expected_row2.set_title(u"Chromium");
+  expected_row2.set_visit_count(1);
+  expected_row2.set_typed_count(0);
+  expected_row2.set_last_visit(
+      base::Time::UnixEpoch() + base::Microseconds(1674205260000000));
+
+  EXPECT_THAT(results, UnorderedElementsAre(URLResultEq(expected_row1),
+                                            URLResultEq(expected_row2)));
 }
 
 // Tests parsing an invalid JSON file.
@@ -554,19 +591,23 @@ TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
   ImportHistory(history_json);
   EXPECT_EQ(GetNumberOfHistoryImported(), num_visits);
 
-  history::QueryResults results = QueryAllHistory();
-  ASSERT_EQ(results.size(), static_cast<size_t>(num_visits));
+  history::QueryResults query_results = QueryAllHistory();
+  std::vector<history::URLResult> results(query_results.begin(),
+                                          query_results.end());
 
-  std::set<GURL> actual_urls;
+  std::vector<testing::Matcher<history::URLResult>> matchers;
   for (int i = 0; i < num_visits; ++i) {
-     actual_urls.insert(results[i].url());
+    history::URLResult expected_row;
+    expected_row.set_url(GURL(absl::StrFormat("https://www.example.com/%d", i)));
+    expected_row.set_title(
+        base::UTF8ToUTF16(absl::StrFormat("Title %d", i)));
+    expected_row.set_visit_count(1);
+    expected_row.set_typed_count(0);
+    expected_row.set_last_visit(base::Time::UnixEpoch() +
+                                base::Microseconds(1674205200000000ULL + i));
+    matchers.push_back(URLResultEq(expected_row));
   }
-
-  std::set<GURL> expected_urls;
-  for(int i = 0; i < num_visits; ++i){
-    expected_urls.insert(GURL(absl::StrFormat("https://www.example.com/%d", i)));
-  }
-  EXPECT_EQ(actual_urls, expected_urls);
+  EXPECT_THAT(results, UnorderedElementsAreArray(matchers));
 }
 
 // Tests importing invalid files that do not exist.
