@@ -1371,24 +1371,21 @@ void ClientSideDetectionHost::OnInnerTextComplete(
 void ClientSideDetectionHost::OnInquireOnDeviceModelDone(
     std::unique_ptr<ClientPhishingRequest> verdict,
     std::optional<bool> did_match_high_confidence_allowlist,
-    IntelligentScanDelegate::IntelligentScanResult response) {
+    std::optional<IntelligentScanDelegate::IntelligentScanResult> response) {
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse",
-      response.execution_success);
+      response.has_value());
   base::UmaHistogramBoolean(
       "SBClientPhishing.OnDeviceModelHasSuccessfulResponse." +
           GetRequestTypeName(verdict->client_side_detection_type()),
-      response.execution_success);
+      response.has_value());
   IntelligentScanInfo intelligent_scan_info;
-  if (response.execution_success) {
-    intelligent_scan_info.set_brand(response.brand);
-    intelligent_scan_info.set_intent(response.intent);
+  if (response.has_value()) {
+    intelligent_scan_info.set_brand(response->brand);
+    intelligent_scan_info.set_intent(response->intent);
   } else {
     intelligent_scan_info.set_no_info_reason(
         IntelligentScanInfo::ON_DEVICE_MODEL_OUTPUT_MISSING);
-  }
-  if (response.model_version > 0) {
-    intelligent_scan_info.set_model_version(response.model_version);
   }
   *verdict->mutable_intelligent_scan_info() = std::move(intelligent_scan_info);
 
