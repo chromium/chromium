@@ -231,6 +231,7 @@ def libfuzzer_builder(
         target_bits = None,
         target_platform = None,
         target_arch = None,
+        swarming_mixins = None,
         builderless = True,
         sanitizer = None,
         branch_selector = None,
@@ -322,7 +323,10 @@ def libfuzzer_builder(
         # Use the builderless machine pool.
         builderless = True,
         # Build and run fuzzing unit tests.
-        targets = targets.bundle(targets = ["fuzzing_unittests"]),
+        targets = targets.bundle(
+            targets = ["fuzzing_unittests"],
+            mixins = ["chromium-tester-service-account"] + swarming_mixins,
+        ),
         # TODO(https://crbug.com/432407787): Add to a gardening rotation
         # once the bots are proven green enough.
         gardener_rotations = args.ignore_default(None),
@@ -342,6 +346,7 @@ def libfuzzer_linux_builder(
     ] + gn_extra_configs
 
     return libfuzzer_builder(
+        swarming_mixins = ["linux-jammy"],
         target_platform = target_platform,
         gn_extra_configs = gn_configs,
         **kwargs
@@ -1100,6 +1105,7 @@ libfuzzer_mac_asan_builder(
     cpu = cpu.ARM64,
     target_arch = builder_config.target_arch.ARM,
     console_short_name = "mac-arm64-asan",
+    swarming_mixins = ["mac_15_arm64"],
     # Even if we don't actively fuzz this build configuration yet, it is useful
     # to test that things nominally work and do not regress.
     test_builder_name = "mac-arm64-libfuzzer-asan-rel-tests",
@@ -1130,6 +1136,7 @@ libfuzzer_builder(
     max_concurrent_invocations = 3 if settings.is_main else None,
     sanitizer = "asan",
     siso_remote_jobs = siso.remote_jobs.HIGH_JOBS_FOR_CI,
+    swarming_mixins = ["win10-any"],
     test_builder_name = "win-x64-libfuzzer-asan-rel-tests",
     use_component_build = False,
 )
