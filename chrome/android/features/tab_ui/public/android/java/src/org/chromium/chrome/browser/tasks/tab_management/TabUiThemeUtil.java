@@ -85,14 +85,20 @@ public class TabUiThemeUtil {
         return SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
     }
 
-    /** Returns the tab strip multi-selected tab color. */
+    /**
+     * Returns the tab strip multi-selected tab color. This is a semitransparent color intended to
+     * be shown on the tab strip. To prevent transparency issues with overlapping tab strip views,
+     * the returned color is fully opaque, but constructed by overlaying the semitransparent color
+     * on top of the tab strip background color.
+     */
     public static @ColorInt int getTabStripMultiSelectedTabColor(
             Context context, boolean isIncognito) {
-        int baseColor = SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
-
-        float alpha =
+        int baseColor = getTabStripBackgroundColor(context, isIncognito);
+        int overlayColor = SurfaceColorUpdateUtils.getDefaultThemeColor(context, isIncognito);
+        float overlayAlpha =
                 ResourcesCompat.getFloat(context.getResources(), R.dimen.multi_selected_tab_alpha);
-        return ColorUtils.setAlphaComponentWithFloat(baseColor, alpha);
+
+        return ColorUtils.getColorWithOverlay(baseColor, overlayColor, overlayAlpha);
     }
 
     /** Returns the tab strip multi-selected and hovered tab color. */
