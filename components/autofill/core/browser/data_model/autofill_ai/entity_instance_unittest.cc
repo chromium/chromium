@@ -73,9 +73,11 @@ TEST(AutofillEntityInstanceTest, Attributes_NormalizedType) {
   EXPECT_EQ(GetInfo(passport_name, NAME_FIRST), u"John");
   EXPECT_EQ(GetInfo(passport_name, NAME_LAST), u"Doe");
   EXPECT_EQ(GetInfo(passport_name, ADDRESS_HOME_STREET_NAME), u"John Doe");
+  EXPECT_EQ(GetInfo(passport_name, UNKNOWN_TYPE), u"John Doe");
 
   EXPECT_EQ(GetInfo(passport_number, PASSPORT_NUMBER), u"LR0123456");
   EXPECT_EQ(GetInfo(passport_number, ADDRESS_HOME_STREET_NAME), u"LR0123456");
+  EXPECT_EQ(GetInfo(passport_number, UNKNOWN_TYPE), u"LR0123456");
 }
 
 // Tests that AttributeInstance localizes the country name.
@@ -91,6 +93,9 @@ TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
   EXPECT_EQ(GetInfo(passport_country, ADDRESS_HOME_COUNTRY,
                     {.app_locale = kAppLocaleUS}),
             u"Sweden");
+  EXPECT_EQ(
+      GetInfo(passport_country, UNKNOWN_TYPE, {.app_locale = kAppLocaleUS}),
+      u"Sweden");
 
   EXPECT_EQ(GetInfo(passport_country, PASSPORT_ISSUING_COUNTRY,
                     {.app_locale = "de-DE"}),
@@ -98,6 +103,8 @@ TEST(AutofillEntityInstanceTest, Attributes_CountryLocalization) {
   EXPECT_EQ(
       GetInfo(passport_country, ADDRESS_HOME_COUNTRY, {.app_locale = "de-DE"}),
       u"Schweden");
+  EXPECT_EQ(GetInfo(passport_country, UNKNOWN_TYPE, {.app_locale = "de-DE"}),
+            u"Schweden");
 }
 
 // Tests that AttributeInstance appropriately manages structured names.
