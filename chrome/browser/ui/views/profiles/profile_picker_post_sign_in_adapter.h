@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_POST_SIGN_IN_ADAPTER_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_POST_SIGN_IN_ADAPTER_H_
 
 #include <optional>
 
@@ -37,21 +37,20 @@ class WebContents;
 //   - The host is closed and a browser is opened, via `FinishAndOpenBrowser()`;
 //   - The host is not closed and the profile switch screen is shown, via
 //     `SwitchToProfileSwitch()`.
-class ProfilePickerSignedInFlowController
-    : public content::WebContentsDelegate {
+class ProfilePickerPostSignInAdapter : public content::WebContentsDelegate {
  public:
-  ProfilePickerSignedInFlowController(
+  ProfilePickerPostSignInAdapter(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       signin_metrics::AccessPoint signin_access_point,
       std::optional<SkColor> profile_color);
-  ~ProfilePickerSignedInFlowController() override;
-  ProfilePickerSignedInFlowController(
-      const ProfilePickerSignedInFlowController&) = delete;
-  ProfilePickerSignedInFlowController& operator=(
-      const ProfilePickerSignedInFlowController&) = delete;
+  ~ProfilePickerPostSignInAdapter() override;
+  ProfilePickerPostSignInAdapter(const ProfilePickerPostSignInAdapter&) =
+      delete;
+  ProfilePickerPostSignInAdapter& operator=(
+      const ProfilePickerPostSignInAdapter&) = delete;
 
   // Inits the flow, must be called before any other calls below.
   virtual void Init(StepSwitchFinishedCallback step_switch_callback);
@@ -86,7 +85,7 @@ class ProfilePickerSignedInFlowController
   // switch screen. It uses the system profile for showing the switch screen.
   void SwitchToProfileSwitch(const base::FilePath& profile_path);
 
-  base::WeakPtr<ProfilePickerSignedInFlowController> GetWeakPtr() {
+  base::WeakPtr<ProfilePickerPostSignInAdapter> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
 
@@ -166,8 +165,7 @@ class ProfilePickerSignedInFlowController
 
   GURL url_to_open_;
 
-  base::WeakPtrFactory<ProfilePickerSignedInFlowController> weak_ptr_factory_{
-      this};
+  base::WeakPtrFactory<ProfilePickerPostSignInAdapter> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGNED_IN_FLOW_CONTROLLER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_POST_SIGN_IN_ADAPTER_H_

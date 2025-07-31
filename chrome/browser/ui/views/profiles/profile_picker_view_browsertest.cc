@@ -75,7 +75,7 @@
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/profiles/avatar_toolbar_button.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_test_base.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
@@ -471,8 +471,8 @@ class ProfilePickerCreationFlowBrowserTest
     // Simulate a click on the signin button.
     base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
     EXPECT_CALL(switch_finished_callback, Run(true));
-    ProfilePicker::SwitchToDiceSignIn(kProfileColor,
-                                      switch_finished_callback.Get());
+    ProfilePicker::SwitchToSignIn(kProfileColor,
+                                  switch_finished_callback.Get());
 
     // The DICE navigation happens in a new web contents (for the profile being
     // created), wait for it.
@@ -1555,8 +1555,7 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   // Simulate a click on the signin button.
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
   EXPECT_CALL(switch_finished_callback, Run).Times(0);
-  ProfilePicker::SwitchToDiceSignIn(kProfileColor,
-                                    switch_finished_callback.Get());
+  ProfilePicker::SwitchToSignIn(kProfileColor, switch_finished_callback.Get());
 
   // Close the flow immediately with the [X] button before
   // `switch_finished_callback` gets called (and before the respective profile
@@ -1621,8 +1620,8 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerCreationFlowBrowserTest,
   const SkColor kDifferentProfileColor = SK_ColorBLUE;
   base::MockCallback<base::OnceCallback<void(bool)>> switch_finished_callback;
   EXPECT_CALL(switch_finished_callback, Run(true));
-  ProfilePicker::SwitchToDiceSignIn(kDifferentProfileColor,
-                                    switch_finished_callback.Get());
+  ProfilePicker::SwitchToSignIn(kDifferentProfileColor,
+                                switch_finished_callback.Get());
 
   // Simulate a successful Gaia sign-in.
   FinishDiceSignIn(profile_being_created, "joe.consumer@gmail.com", "Joe");

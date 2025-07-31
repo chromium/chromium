@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
 
 #include <utility>
 
@@ -50,7 +50,7 @@ END_METADATA
 
 }  // namespace
 
-ProfilePickerDiceSignInToolbar::ProfilePickerDiceSignInToolbar() {
+ProfilePickerSignInToolbar::ProfilePickerSignInToolbar() {
   SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kHorizontal)
       .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
@@ -63,9 +63,9 @@ ProfilePickerDiceSignInToolbar::ProfilePickerDiceSignInToolbar() {
                                        views::MaximumFlexSizeRule::kPreferred));
 }
 
-ProfilePickerDiceSignInToolbar::~ProfilePickerDiceSignInToolbar() = default;
+ProfilePickerSignInToolbar::~ProfilePickerSignInToolbar() = default;
 
-void ProfilePickerDiceSignInToolbar::BuildToolbar(
+void ProfilePickerSignInToolbar::BuildToolbar(
     base::RepeatingClosure on_back_callback) {
   DCHECK(children().empty());
   // Create the toolbar back button.
@@ -75,12 +75,12 @@ void ProfilePickerDiceSignInToolbar::BuildToolbar(
   UpdateToolbarColor();
 }
 
-void ProfilePickerDiceSignInToolbar::OnThemeChanged() {
+void ProfilePickerSignInToolbar::OnThemeChanged() {
   UpdateToolbarColor();
   View::OnThemeChanged();
 }
 
-void ProfilePickerDiceSignInToolbar::UpdateToolbarColor() {
+void ProfilePickerSignInToolbar::UpdateToolbarColor() {
   if (!GetColorProvider()) {
     return;
   }
@@ -93,5 +93,5 @@ void ProfilePickerDiceSignInToolbar::UpdateToolbarColor() {
   parent()->SetBackground(views::CreateSolidBackground(background_color));
 }
 
-BEGIN_METADATA(ProfilePickerDiceSignInToolbar)
+BEGIN_METADATA(ProfilePickerSignInToolbar)
 END_METADATA

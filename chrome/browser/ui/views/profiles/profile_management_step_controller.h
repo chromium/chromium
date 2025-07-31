@@ -11,11 +11,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engine_choice/search_engine_choice_dialog_service.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "url/gurl.h"
 
-class ProfilePickerSignedInFlowController;
+class ProfilePickerPostSignInAdapter;
 class ProfilePickerWebContentsHost;
 
 namespace content {
@@ -34,26 +34,25 @@ class ProfileManagementStepController {
 
   // Forwards the profile and account specific arguments obtained from the
   // sign-in step to the caller, see
-  // `ProfilePickerDiceSignInProvider::SignedInCallback` for more info.
+  // `ProfilePickerSignInProvider::SignedInCallback` for more info.
   // If a step if shown after this one, the `StepSwitchFinishedCallback` will
   // be called when the new step is shown. Otherwise, it might just be dropped
   // as the host gets cleared.
-  using DiceSignInStepFinishedCallback = base::OnceCallback<void(
+  using SignInStepFinishedCallback = base::OnceCallback<void(
       Profile*,
       const CoreAccountInfo&,
       std::unique_ptr<content::WebContents>,
       StepSwitchFinishedCallback step_switch_finished_callback)>;
 
-  static std::unique_ptr<ProfileManagementStepController> CreateForDiceSignIn(
+  static std::unique_ptr<ProfileManagementStepController> CreateForSignIn(
       ProfilePickerWebContentsHost* host,
-      std::unique_ptr<ProfilePickerDiceSignInProvider> dice_sign_in_provider,
-      DiceSignInStepFinishedCallback signed_in_callback);
+      std::unique_ptr<ProfilePickerSignInProvider> sign_in_provider,
+      SignInStepFinishedCallback signed_in_callback);
 
-  // Creates a step controller that will take over from the Dice sign-in step
-  // during a SAML sign-in flow, and transition the flow into a browser window
-  // where it can be completed.
-  // `contents` should be the one used to render the Dice sign-in page. The
-  // next steps of the flow will continue in that same `WebContents`.
+  // Creates a step controller that will take over from the sign-in step during
+  // a SAML sign-in flow, and transition the flow into a browser window where it
+  // can be completed. `contents` should be the one used to render the sign-in
+  // page. The next steps of the flow will continue in that same `WebContents`.
   // `finish_picker_section_callback` will be called by the controller to
   // request the in-picker flow to be terminated, passing a
   // `PostHostClearedCallback` that should then be executed to resume the flow
@@ -68,7 +67,7 @@ class ProfileManagementStepController {
   static std::unique_ptr<ProfileManagementStepController>
   CreateForPostSignInFlow(
       ProfilePickerWebContentsHost* host,
-      std::unique_ptr<ProfilePickerSignedInFlowController> signed_in_flow);
+      std::unique_ptr<ProfilePickerPostSignInAdapter> signed_in_flow);
 
   static std::unique_ptr<ProfileManagementStepController>
   CreateForSearchEngineChoice(

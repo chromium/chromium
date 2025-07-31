@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/profiles/profile_picker.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service.h"
 #include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -66,9 +67,9 @@ void OpenSettingsInBrowser(Browser* browser) {
 }  // namespace
 
 ProfilePickerTurnSyncOnDelegate::ProfilePickerTurnSyncOnDelegate(
-    base::WeakPtr<ProfilePickerSignedInFlowController> controller,
+    base::WeakPtr<ProfilePickerPostSignInAdapter> adapter,
     Profile* profile)
-    : controller_(controller), profile_(profile) {}
+    : adapter_(adapter), profile_(profile) {}
 
 ProfilePickerTurnSyncOnDelegate::~ProfilePickerTurnSyncOnDelegate() = default;
 
@@ -76,8 +77,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
     const SigninUIError& error) {
   LogOutcome(ProfileMetrics::ProfileSignedInFlowOutcome::kLoginError);
 
-  // If the controller is null we cannot treat the error.
-  if (!controller_) {
+  // If the adapter is null we cannot treat the error.
+  if (!adapter_) {
     return;
   }
 
@@ -86,7 +87,7 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   // profile.
   if (error.type() ==
       SigninUIError::Type::kAccountAlreadyUsedByAnotherProfile) {
-    controller_->SwitchToProfileSwitch(error.another_profile_path());
+    adapter_->SwitchToProfileSwitch(error.another_profile_path());
     return;
   }
 
@@ -97,14 +98,14 @@ void ProfilePickerTurnSyncOnDelegate::ShowLoginError(
   if (signin_util::IsForceSigninEnabled() &&
       error.type() ==
           SigninUIError::Type::kUsernameNotAllowedByPatternFromPrefs) {
-    controller_->ResetHostAndShowErrorDialog(
+    adapter_->ResetHostAndShowErrorDialog(
         ForceSigninUIError::SigninPatternNotMatching(
             base::UTF16ToUTF8(error.email())));
     return;
   }
 
   // Open the browser and when it's done, show the login error.
-  controller_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
+  adapter_->FinishAndOpenBrowser(PostHostClearedCallback(base::BindOnce(
       &TurnSyncOnHelper::Delegate::ShowLoginErrorForBrowser, error)));
 }
 
@@ -163,8 +164,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncDisabledConfirmation(
 
 void ProfilePickerTurnSyncOnDelegate::ShowSyncSettings() {
   // Open the browser and when it's done, open settings in the browser.
-  if (controller_) {
-    controller_->FinishAndOpenBrowser(
+  if (adapter_) {
+    adapter_->FinishAndOpenBrowser(
         PostHostClearedCallback(base::BindOnce(&OpenSettingsInBrowser)));
   }
 }
@@ -209,8 +210,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowSyncConfirmationScreen() {
   scoped_login_ui_service_observation_.Observe(
       LoginUIServiceFactory::GetForProfile(profile_));
 
-  if (controller_) {
-    controller_->SwitchToSyncConfirmation();
+  if (adapter_) {
+    adapter_->SwitchToSyncConfirmation();
   }
 }
 
@@ -225,8 +226,8 @@ void ProfilePickerTurnSyncOnDelegate::ShowManagedUserNotice(
   DCHECK(sync_confirmation_callback_);
   // Unretained as the delegate lives until `sync_confirmation_callback_` gets
   // called and thus always outlives the notice screen.
-  if (controller_) {
-    controller_->SwitchToManagedUserProfileNotice(
+  if (adapter_) {
+    adapter_->SwitchToManagedUserProfileNotice(
         type, base::BindOnce(
                   &ProfilePickerTurnSyncOnDelegate::OnManagedUserNoticeClosed,
                   base::Unretained(this), type));

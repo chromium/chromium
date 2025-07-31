@@ -146,7 +146,7 @@ class ProfilePicker {
     // signed in profile.
     const std::string& initial_email() const { return initial_email_; }
 
-    // Builds parameter with the `kFirstRun` (on Dice) entry point.
+    // Builds parameter with the `kFirstRun` entry point.
     //
     // `profile_path` is the profile for which to open the FRE.
     // `first_run_exited_callback` is called when the first run experience is
@@ -217,7 +217,7 @@ class ProfilePicker {
   // - A file path for an existing profile.
   using ProfileInfo = std::variant<std::optional<SkColor>, base::FilePath>;
 
-  // Starts the Dice sign-in flow. The layout of the window gets updated for the
+  // Starts the sign-in flow. The layout of the window gets updated for the
   // sign-in flow while the profiles are created/loaded.
   // The sign in flow can be triggered for a new or existing profile.
   // For new profiles, the expected color is expected to be given as the
@@ -230,7 +230,7 @@ class ProfilePicker {
   // rendered with the profile.
   // `switch_finished_callback` gets informed whether the creation of the new
   // profile succeeded and the sign-in page gets displayed.
-  static void SwitchToDiceSignIn(
+  static void SwitchToSignIn(
       ProfileInfo profile_info,
       base::OnceCallback<void(bool)> switch_finished_callback);
 

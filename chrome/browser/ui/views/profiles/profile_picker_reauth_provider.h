@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_REAUTH_PROVIDER_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_REAUTH_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_REAUTH_PROVIDER_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_REAUTH_PROVIDER_H_
 
 #include "base/scoped_observation.h"
 #include "base/timer/timer.h"
@@ -49,23 +49,21 @@ enum class ProfilePickerReauthResult {
 // - We finish the flow by replying to the callback based on the success of the
 // last step (checking if the account that got reauthed matches with the
 // original one).
-class ProfilePickerDiceReauthProvider
-    : public signin::IdentityManager::Observer,
-      public content::WebContentsObserver {
+class ProfilePickerReauthProvider : public signin::IdentityManager::Observer,
+                                    public content::WebContentsObserver {
  public:
-  ProfilePickerDiceReauthProvider(
+  ProfilePickerReauthProvider(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       const GaiaId& gaia_id_to_reauth,
       const std::string& email_to_reauth,
       base::OnceCallback<void(bool, const ForceSigninUIError&)>
           on_reauth_completed);
-  ~ProfilePickerDiceReauthProvider() override;
+  ~ProfilePickerReauthProvider() override;
 
-  ProfilePickerDiceReauthProvider(const ProfilePickerDiceReauthProvider&) =
+  ProfilePickerReauthProvider(const ProfilePickerReauthProvider&) = delete;
+  ProfilePickerReauthProvider& operator=(const ProfilePickerReauthProvider&) =
       delete;
-  ProfilePickerDiceReauthProvider& operator=(
-      const ProfilePickerDiceReauthProvider&) = delete;
 
   content::WebContents* contents() const { return contents_.get(); }
 
@@ -141,4 +139,4 @@ class ProfilePickerDiceReauthProvider
       scoped_identity_manager_observation_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_REAUTH_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_REAUTH_PROVIDER_H_

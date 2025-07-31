@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 
 #include "base/functional/callback_helpers.h"
 #include "base/test/mock_callback.h"
@@ -41,10 +41,10 @@ Profile* GetContentsProfile(content::WebContents* contents) {
 
 }  // namespace
 
-class ProfilePickerDiceSignInProviderBrowserTest : public InProcessBrowserTest {
+class ProfilePickerSignInProviderBrowserTest : public InProcessBrowserTest {
  public:
-  ProfilePickerDiceSignInProviderBrowserTest() = default;
-  ~ProfilePickerDiceSignInProviderBrowserTest() override = default;
+  ProfilePickerSignInProviderBrowserTest() = default;
+  ~ProfilePickerSignInProviderBrowserTest() override = default;
 
   testing::NiceMock<MockProfilePickerWebContentsHost>* host() { return &host_; }
 
@@ -52,19 +52,19 @@ class ProfilePickerDiceSignInProviderBrowserTest : public InProcessBrowserTest {
   testing::NiceMock<MockProfilePickerWebContentsHost> host_;
 };
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
+IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
                        SwitchToSignInThenExit) {
   ProfileDeletionObserver observer;
   base::FilePath provider_profile_path;
   base::RunLoop switch_finished_loop;
-  base::MockCallback<ProfilePickerDiceSignInProvider::SignedInCallback>
+  base::MockCallback<ProfilePickerSignInProvider::SignedInCallback>
       signin_finished_callback;
 
   // Sign-in is exited, the callback should never run.
   EXPECT_CALL(signin_finished_callback, Run(_, _, _)).Times(0);
 
   {
-    ProfilePickerDiceSignInProvider provider{
+    ProfilePickerSignInProvider provider{
         host(), signin_metrics::AccessPoint::kUnknown, std::string()};
 
     EXPECT_CALL(*host(), ShowScreen(_, _, _))
@@ -97,18 +97,18 @@ IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
   EXPECT_EQ(entry, nullptr);
 }
 
-IN_PROC_BROWSER_TEST_F(ProfilePickerDiceSignInProviderBrowserTest,
+IN_PROC_BROWSER_TEST_F(ProfilePickerSignInProviderBrowserTest,
                        SwitchToSignInThenExit_ForFirstRun) {
   base::FilePath provider_profile_path;
   base::RunLoop switch_finished_loop;
-  base::MockCallback<ProfilePickerDiceSignInProvider::SignedInCallback>
+  base::MockCallback<ProfilePickerSignInProvider::SignedInCallback>
       signin_finished_callback;
 
   // Sign-in is exited, the callback should never run.
   EXPECT_CALL(signin_finished_callback, Run(_, _, _)).Times(0);
 
   {
-    ProfilePickerDiceSignInProvider provider{
+    ProfilePickerSignInProvider provider{
         host(), signin_metrics::AccessPoint::kForYouFre, std::string(),
         browser()->profile()->GetPath()};
 

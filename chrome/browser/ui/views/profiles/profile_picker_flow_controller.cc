@@ -40,9 +40,9 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_handler.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
@@ -135,7 +135,7 @@ void MaybeShowProfileIPHs(Browser* browser) {
 
 // Class triggering the signed-in section of the profile management flow, most
 // notably featuring the sync confirmation. In addition to what its base class
-// `ProfilePickerSignedInFlowController` is doing, this class:
+// `ProfilePickerPostSignInAdapter` is doing, this class:
 // - shows in product help and customization bubble at the end of the flow
 // - applies profile customizations (theme, profile name)
 // - finalizes the profile (deleting it if the flow is aborted, marks it
@@ -143,10 +143,9 @@ void MaybeShowProfileIPHs(Browser* browser) {
 // `step_completed_callback` is not called if the flow is canceled.
 // Note that `account_id` has been added to the `IdentityManager` but may not
 // be set as primary yet, because this operation is asynchronous.
-class ProfileCreationSignedInFlowController
-    : public ProfilePickerSignedInFlowController {
+class ProfileCreationPostSignInAdapter : public ProfilePickerPostSignInAdapter {
  public:
-  ProfileCreationSignedInFlowController(
+  ProfileCreationPostSignInAdapter(
       ProfilePickerWebContentsHost* host,
       Profile* profile,
       const CoreAccountInfo& account_info,
@@ -154,20 +153,20 @@ class ProfileCreationSignedInFlowController
       std::optional<SkColor> profile_color,
       base::OnceCallback<void(PostHostClearedCallback, bool)>
           step_completed_callback)
-      : ProfilePickerSignedInFlowController(host,
-                                            profile,
-                                            account_info,
-                                            std::move(contents),
-                                            kAccessPoint,
-                                            profile_color),
+      : ProfilePickerPostSignInAdapter(host,
+                                       profile,
+                                       account_info,
+                                       std::move(contents),
+                                       kAccessPoint,
+                                       profile_color),
         step_completed_callback_(std::move(step_completed_callback)) {}
 
-  ProfileCreationSignedInFlowController(
-      const ProfilePickerSignedInFlowController&) = delete;
-  ProfileCreationSignedInFlowController& operator=(
-      const ProfilePickerSignedInFlowController&) = delete;
+  ProfileCreationPostSignInAdapter(const ProfileCreationPostSignInAdapter&) =
+      delete;
+  ProfileCreationPostSignInAdapter& operator=(
+      const ProfileCreationPostSignInAdapter&) = delete;
 
-  ~ProfileCreationSignedInFlowController() override {
+  ~ProfileCreationPostSignInAdapter() override {
     // Record unfinished signed-in profile creation.
     if (!is_finishing_) {
       // TODO(crbug.com/40216113): Consider moving this recording into
@@ -177,7 +176,7 @@ class ProfileCreationSignedInFlowController
     }
   }
 
-  // ProfilePickerSignedInFlowController:
+  // ProfilePickerPostSignInAdapter:
   void Init(StepSwitchFinishedCallback step_switch_callback) override {
     // Stop with the sign-in navigation and show a spinner instead. The spinner
     // will be shown until TurnSyncOnHelper figures out whether it's a
@@ -186,7 +185,7 @@ class ProfileCreationSignedInFlowController
     host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true),
                        base::OnceClosure());
 
-    ProfilePickerSignedInFlowController::Init(std::move(step_switch_callback));
+    ProfilePickerPostSignInAdapter::Init(std::move(step_switch_callback));
 
     // Listen for extended account info getting fetched.
     signin::IdentityManager* identity_manager =
@@ -217,7 +216,7 @@ class ProfileCreationSignedInFlowController
         std::move(callback), CreateFreshProfileExperienceCallback());
 
     profile_name_resolver_->RunWithProfileName(base::BindOnce(
-        &ProfileCreationSignedInFlowController::FinishFlow,
+        &ProfileCreationPostSignInAdapter::FinishFlow,
         // Unretained ok: `this` outlives `profile_name_resolver_`.
         base::Unretained(this), std::move(callback), is_continue_callback));
   }
@@ -248,7 +247,7 @@ class ProfileCreationSignedInFlowController
   void FinishFlow(PostHostClearedCallback post_host_cleared_callback,
                   bool is_continue_callback,
                   std::u16string name_for_signed_in_profile) {
-    TRACE_EVENT1("browser", "ProfileCreationSignedInFlowController::FinishFlow",
+    TRACE_EVENT1("browser", "ProfileCreationPostSignInAdapter::FinishFlow",
                  "profile_path", profile()->GetPath().AsUTF8Unsafe());
     CHECK(!name_for_signed_in_profile.empty());
     DCHECK(post_host_cleared_callback.value());
@@ -279,7 +278,7 @@ class ReauthFlowStepController : public ProfileManagementStepController {
  public:
   explicit ReauthFlowStepController(
       ProfilePickerWebContentsHost* host,
-      std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider,
+      std::unique_ptr<ProfilePickerReauthProvider> reauth_provider,
       Profile* profile)
       : ProfileManagementStepController(host),
         reauth_provider_(std::move(reauth_provider)) {}
@@ -298,7 +297,7 @@ class ReauthFlowStepController : public ProfileManagementStepController {
   }
 
  private:
-  std::unique_ptr<ProfilePickerDiceReauthProvider> reauth_provider_;
+  std::unique_ptr<ProfilePickerReauthProvider> reauth_provider_;
 };
 
 std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
@@ -313,7 +312,7 @@ std::unique_ptr<ProfileManagementStepController> CreateReauthtep(
 
   return std::make_unique<ReauthFlowStepController>(
       host,
-      std::make_unique<ProfilePickerDiceReauthProvider>(
+      std::make_unique<ProfilePickerReauthProvider>(
           host, profile, entry->GetGAIAId(),
           base::UTF16ToUTF8(entry->GetUserName()),
           std::move(on_reauth_completed)),
@@ -500,7 +499,7 @@ void ProfilePickerFlowController::Init() {
   SwitchToStep(Step::kProfilePicker, /*reset_state=*/true);
 }
 
-void ProfilePickerFlowController::SwitchToDiceSignIn(
+void ProfilePickerFlowController::SwitchToSignIn(
     ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
   DCHECK_EQ(Step::kProfilePicker, current_step());
@@ -533,7 +532,7 @@ void ProfilePickerFlowController::SwitchToReauth(
   // reauth is properly initialised and the current reauth step is cleaned.
   //
   // TODO(crbug.com/40280498): Cleanup the unregistration of the step with a
-  // proper resetable state within the `ProfilePickerDiceReauthProvider`, and
+  // proper resettable state within the `ProfilePickerReauthProvider`, and
   // using the `ProfileManagementFlowController::SwitchToStep()` `reset_state`
   // value to trigger the reset.
   if (IsStepInitialized(Step::kReauth)) {
@@ -592,8 +591,8 @@ void ProfilePickerFlowController::OnProfilePickerStepShownReauthError(
 
 base::FilePath ProfilePickerFlowController::GetSwitchProfilePathOrEmpty()
     const {
-  if (weak_signed_in_flow_controller_) {
-    return weak_signed_in_flow_controller_->switch_profile_path();
+  if (weak_post_sign_in_adapter_) {
+    return weak_post_sign_in_adapter_->switch_profile_path();
   }
   return base::FilePath();
 }
@@ -638,12 +637,12 @@ std::u16string ProfilePickerFlowController::GetFallbackAccessibleWindowTitle()
   return l10n_util::GetStringUTF16(IDS_PROFILE_PICKER_MAIN_VIEW_TITLE);
 }
 
-std::unique_ptr<ProfilePickerSignedInFlowController>
-ProfilePickerFlowController::CreateSignedInFlowController(
+std::unique_ptr<ProfilePickerPostSignInAdapter>
+ProfilePickerFlowController::CreatePostSignInAdapter(
     Profile* signed_in_profile,
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
-  DCHECK(!weak_signed_in_flow_controller_);
+  DCHECK(!weak_post_sign_in_adapter_);
 
   created_profile_ = signed_in_profile->GetWeakPtr();
   auto step_completed_callback =
@@ -655,10 +654,10 @@ ProfilePickerFlowController::CreateSignedInFlowController(
                      // and will be alive until this callback runs.
                      base::Unretained(created_profile_.get()));
 
-  auto signed_in_flow = std::make_unique<ProfileCreationSignedInFlowController>(
+  auto signed_in_flow = std::make_unique<ProfileCreationPostSignInAdapter>(
       host(), signed_in_profile, account_info, std::move(contents),
       suggested_profile_color_, std::move(step_completed_callback));
-  weak_signed_in_flow_controller_ = signed_in_flow->GetWeakPtr();
+  weak_post_sign_in_adapter_ = signed_in_flow->GetWeakPtr();
   return signed_in_flow;
 }
 
@@ -774,10 +773,10 @@ ProfilePickerFlowController::RegisterPostIdentitySteps(
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
 
   content::WebContents* web_contents = nullptr;
-  if (weak_signed_in_flow_controller_) {
+  if (weak_post_sign_in_adapter_) {
     // TODO(crbug.com/40942098): Find a way to get the web contents without
     // relying on the weak ptr.
-    web_contents = weak_signed_in_flow_controller_->contents();
+    web_contents = weak_post_sign_in_adapter_->contents();
     CHECK(web_contents);
   } else {
     // TODO(crbug.com/40942098): Find another way to fetch the web contents.

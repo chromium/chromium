@@ -413,7 +413,7 @@ void ProfilePickerHandler::TryLaunchLockedProfile(
   if (entry.GetActiveTime().is_null()) {
     // Triggers a fresh sign in via profile picker without existing email
     // address.
-    ProfilePicker::SwitchToDiceSignIn(
+    ProfilePicker::SwitchToSignIn(
         entry.GetPath(), CombineCallbacks<StepSwitchFinishedCallback, bool>(
                              StepSwitchFinishedCallback(base::BindOnce(
                                  &ProfilePickerHandler::OnLoadSigninFinished,
@@ -743,7 +743,7 @@ void ProfilePickerHandler::HandleSelectNewAccount(
     // profile color. Generate a new profile color here.
     profile_color = GenerateNewProfileColor().color;
   }
-  ProfilePicker::SwitchToDiceSignIn(
+  ProfilePicker::SwitchToSignIn(
       profile_color, CombineCallbacks<StepSwitchFinishedCallback, bool>(
                          StepSwitchFinishedCallback(base::BindOnce(
                              &ProfilePickerHandler::OnLoadSigninFinished,

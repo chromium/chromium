@@ -36,14 +36,14 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/views/accelerator_table.h"
-#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_toolbar.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_feature_promo_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_glic_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_toolbar.h"
 #include "chrome/browser/ui/webui/signin/profile_picker_ui.h"
 #include "chrome/browser/ui/webui/signin/signin_url_utils.h"
 #include "chrome/browser/user_education/user_education_service_factory.h"
@@ -188,11 +188,11 @@ base::FilePath ProfilePicker::GetSwitchProfilePath() {
 }
 
 // static
-void ProfilePicker::SwitchToDiceSignIn(
+void ProfilePicker::SwitchToSignIn(
     ProfilePicker::ProfileInfo profile_info,
     base::OnceCallback<void(bool)> switch_finished_callback) {
   if (g_profile_picker_view) {
-    g_profile_picker_view->SwitchToDiceSignIn(
+    g_profile_picker_view->SwitchToSignIn(
         std::move(profile_info),
         StepSwitchFinishedCallback(std::move(switch_finished_callback)));
   }
@@ -681,7 +681,7 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
                        // Unretained ok because the controller is owned
                        // by this through `initialized_steps_`.
                        base::Unretained(&params_));
-    return std::make_unique<FirstRunFlowControllerDice>(
+    return std::make_unique<FirstRunFlowController>(
         /*host=*/this, std::move(clear_host_callback), picker_profile,
         std::move(first_run_exited_callback));
   }
@@ -703,10 +703,10 @@ ProfilePickerView::CreateFlowController(Profile* picker_profile,
       params_.on_select_profile_target_url(), params_.initial_email());
 }
 
-void ProfilePickerView::SwitchToDiceSignIn(
+void ProfilePickerView::SwitchToSignIn(
     ProfilePicker::ProfileInfo profile_info,
     StepSwitchFinishedCallback switch_finished_callback) {
-  GetProfilePickerFlowController()->SwitchToDiceSignIn(
+  GetProfilePickerFlowController()->SwitchToSignIn(
       std::move(profile_info), std::move(switch_finished_callback));
 }
 
@@ -847,9 +847,9 @@ void ProfilePickerView::BuildLayout() {
           views::FlexSpecification(views::MinimumFlexSizeRule::kScaleToMinimum,
                                    views::MaximumFlexSizeRule::kUnbounded));
 
-  auto toolbar = std::make_unique<ProfilePickerDiceSignInToolbar>();
+  auto toolbar = std::make_unique<ProfilePickerSignInToolbar>();
   toolbar_ = AddChildView(std::move(toolbar));
-  // Toolbar gets built and set visible once we it's needed for the Dice signin.
+  // Toolbar gets built and set visible once we it's needed for the signin.
   SetNativeToolbarVisible(false);
 
   auto web_view = std::make_unique<views::WebView>();

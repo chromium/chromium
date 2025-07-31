@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_reauth_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_reauth_provider.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -56,7 +56,7 @@ ForceSigninUIError ComputeReauthUIError(ProfilePickerReauthResult result,
 
 }  // namespace
 
-ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
+ProfilePickerReauthProvider::ProfilePickerReauthProvider(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     const GaiaId& gaia_id_to_reauth,
@@ -73,9 +73,9 @@ ProfilePickerDiceReauthProvider::ProfilePickerDiceReauthProvider(
   DCHECK(!email_to_reauth_.empty());
 }
 
-ProfilePickerDiceReauthProvider::~ProfilePickerDiceReauthProvider() = default;
+ProfilePickerReauthProvider::~ProfilePickerReauthProvider() = default;
 
-void ProfilePickerDiceReauthProvider::SwitchToReauth(
+void ProfilePickerReauthProvider::SwitchToReauth(
     StepSwitchFinishedCallback step_switch_callback) {
   CHECK(!contents_);
   CHECK(!step_switch_callback->is_null());
@@ -92,9 +92,8 @@ void ProfilePickerDiceReauthProvider::SwitchToReauth(
                     /*navigation_finished_closure=*/base::OnceClosure());
   timer_.Start(
       FROM_HERE, base::Seconds(kDiceTokenFetchTimeoutSeconds),
-      base::BindOnce(
-          &ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut,
-          base::Unretained(this)));
+      base::BindOnce(&ProfilePickerReauthProvider::OnForceSigninVerifierTimeOut,
+                     base::Unretained(this)));
 
   // Attempt to create the `force_signin_verifier_` here, otherwise it will be
   // done after the refresh tokens are loaded in `OnRefreshTokensLoaded()`.
@@ -102,13 +101,13 @@ void ProfilePickerDiceReauthProvider::SwitchToReauth(
   TryCreateForceSigninVerifier();
 }
 
-void ProfilePickerDiceReauthProvider::OnRefreshTokensLoaded() {
+void ProfilePickerReauthProvider::OnRefreshTokensLoaded() {
   // If the verifier was not created before, we should create it now after the
   // refresh tokens were properly loaded.
   TryCreateForceSigninVerifier();
 }
 
-void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
+void ProfilePickerReauthProvider::OnForceSigninVerifierTimeOut() {
   // TODO(crbug.com/40280498): Improve the error message if this timeout
   // occurs. Currently the error that will be displayed is the one that is shown
   // if the wrong account is being reauth-ed.
@@ -116,17 +115,16 @@ void ProfilePickerDiceReauthProvider::OnForceSigninVerifierTimeOut() {
   std::move(step_switch_callback_.value()).Run(false);
 }
 
-void ProfilePickerDiceReauthProvider::TryCreateForceSigninVerifier() {
+void ProfilePickerReauthProvider::TryCreateForceSigninVerifier() {
   if (!force_signin_verifier_ && identity_manager_->AreRefreshTokensLoaded()) {
     force_signin_verifier_ = std::make_unique<ForceSigninVerifier>(
         &*profile_, &*identity_manager_,
-        base::BindOnce(&ProfilePickerDiceReauthProvider::OnTokenFetchComplete,
+        base::BindOnce(&ProfilePickerReauthProvider::OnTokenFetchComplete,
                        base::Unretained(this)));
   }
 }
 
-void ProfilePickerDiceReauthProvider::OnTokenFetchComplete(
-    bool token_is_valid) {
+void ProfilePickerReauthProvider::OnTokenFetchComplete(bool token_is_valid) {
   // Stop the timeout check for the ForceSigninVerifier. The response happened.
   timer_.Stop();
 
@@ -141,7 +139,7 @@ void ProfilePickerDiceReauthProvider::OnTokenFetchComplete(
   ShowReauth();
 }
 
-void ProfilePickerDiceReauthProvider::ShowReauth() {
+void ProfilePickerReauthProvider::ShowReauth() {
   // Recreating the web contents so that the loading screen is not part of the
   // history when pressing the back button.
   contents_ = content::WebContents::Create(
@@ -177,24 +175,24 @@ void ProfilePickerDiceReauthProvider::ShowReauth() {
       DiceTabHelper::EnableSyncCallback(),
       DiceTabHelper::EnableHistorySyncOptinCallback(),
       base::BindRepeating(
-          &ProfilePickerDiceReauthProvider::OnDiceSigninHeaderReceived,
+          &ProfilePickerReauthProvider::OnDiceSigninHeaderReceived,
           base::Unretained(this)),
-      base::BindRepeating(&ProfilePickerDiceReauthProvider::OnSigninError,
+      base::BindRepeating(&ProfilePickerReauthProvider::OnSigninError,
                           base::Unretained(this)));
 }
 
-void ProfilePickerDiceReauthProvider::OnDiceSigninHeaderReceived() {
+void ProfilePickerReauthProvider::OnDiceSigninHeaderReceived() {
   signin_event_received_ = true;
 }
 
-void ProfilePickerDiceReauthProvider::OnSigninError(
+void ProfilePickerReauthProvider::OnSigninError(
     Profile* profile,
     content::WebContents* web_contents,
     const SigninUIError& error) {
   Finish(false, ProfilePickerReauthResult::kTimeoutSigninError);
 }
 
-void ProfilePickerDiceReauthProvider::DidFinishNavigation(
+void ProfilePickerReauthProvider::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
   // If we get to the continue URL without exiting previously, then we wait for
   // potential valid refresh token. If by the delay set, we obtain no token we
@@ -227,7 +225,7 @@ void ProfilePickerDiceReauthProvider::DidFinishNavigation(
   }
 }
 
-void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
+void ProfilePickerReauthProvider::OnRefreshTokenUpdatedForAccount(
     const CoreAccountInfo& account_info) {
   if (!identity_manager_->AreRefreshTokensLoaded() || !force_signin_verifier_) {
     return;
@@ -263,8 +261,8 @@ void ProfilePickerDiceReauthProvider::OnRefreshTokenUpdatedForAccount(
                           : ProfilePickerReauthResult::kErrorUsedNewEmail);
 }
 
-void ProfilePickerDiceReauthProvider::Finish(bool success,
-                                             ProfilePickerReauthResult result) {
+void ProfilePickerReauthProvider::Finish(bool success,
+                                         ProfilePickerReauthResult result) {
   RecordReauthResult(result);
   scoped_identity_manager_observation_.Reset();
   content::WebContentsObserver::Observe(nullptr);

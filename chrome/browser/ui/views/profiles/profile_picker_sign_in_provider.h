@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_PROVIDER_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_PROVIDER_H_
 
 #include <optional>
 
@@ -29,9 +29,8 @@ class WebContents;
 }  // namespace content
 
 // Class responsible for the GAIA sign-in within profile management flows.
-class ProfilePickerDiceSignInProvider
-    : public content::WebContentsDelegate,
-      public ChromeWebModalDialogManagerDelegate {
+class ProfilePickerSignInProvider : public content::WebContentsDelegate,
+                                    public ChromeWebModalDialogManagerDelegate {
  public:
   // The callback returns the newly created profile and a valid WebContents
   // instance within this profile. If the account info is empty, sign-in is not
@@ -51,16 +50,15 @@ class ProfilePickerDiceSignInProvider
   // `initial_email` is used to pre-fill the email field in the sign-in screen.
   // If no `profile_path` is provided, a new profile (and associated directory)
   // will be created.
-  explicit ProfilePickerDiceSignInProvider(
+  explicit ProfilePickerSignInProvider(
       ProfilePickerWebContentsHost* host,
       signin_metrics::AccessPoint signin_access_point,
       const std::string& initial_email,
       base::FilePath profile_path = base::FilePath());
-  ~ProfilePickerDiceSignInProvider() override;
-  ProfilePickerDiceSignInProvider(const ProfilePickerDiceSignInProvider&) =
+  ~ProfilePickerSignInProvider() override;
+  ProfilePickerSignInProvider(const ProfilePickerSignInProvider&) = delete;
+  ProfilePickerSignInProvider& operator=(const ProfilePickerSignInProvider&) =
       delete;
-  ProfilePickerDiceSignInProvider& operator=(
-      const ProfilePickerDiceSignInProvider&) = delete;
 
   // Initiates switching the flow to sign-in (which is normally asynchronous).
   // If a sign-in was in progress before in the lifetime of this class, it only
@@ -172,7 +170,7 @@ class ProfilePickerDiceSignInProvider
 
   bool tab_helper_is_initialized_ = false;
 
-  base::WeakPtrFactory<ProfilePickerDiceSignInProvider> weak_ptr_factory_{this};
+  base::WeakPtrFactory<ProfilePickerSignInProvider> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_DICE_SIGN_IN_PROVIDER_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_PROFILE_PICKER_SIGN_IN_PROVIDER_H_

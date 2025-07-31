@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/first_run_flow_controller_dice.h"
+#include "chrome/browser/ui/views/profiles/first_run_flow_controller.h"
 
 #include <memory>
 #include <utility>
@@ -32,7 +32,7 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller_impl.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 #include "chrome/browser/ui/views/profiles/profile_picker_web_contents_host.h"
 #include "chrome/browser/ui/webui/intro/intro_ui.h"
 #include "chrome/common/pref_names.h"
@@ -398,11 +398,7 @@ using IdentityStepsCompletedCallback =
 
 // Instance allowing `TurnSyncOnHelper` to drive the interface in the
 // `kPostSignIn` step.
-//
-// Not following the `*SignedInFlowController` naming pattern to avoid confusion
-// with `*StepController` and `*FlowController` that we also have here.
-// `ProfilePickerSignedInFlowController` should eventually be renamed.
-class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
+class FirstRunPostSignInAdapter : public ProfilePickerPostSignInAdapter {
  public:
   FirstRunPostSignInAdapter(
       ProfilePickerWebContentsHost* host,
@@ -410,12 +406,12 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents,
       IdentityStepsCompletedCallback step_completed_callback)
-      : ProfilePickerSignedInFlowController(host,
-                                            profile,
-                                            account_info,
-                                            std::move(contents),
-                                            kAccessPoint,
-                                            /*profile_color=*/std::nullopt),
+      : ProfilePickerPostSignInAdapter(host,
+                                       profile,
+                                       account_info,
+                                       std::move(contents),
+                                       kAccessPoint,
+                                       /*profile_color=*/std::nullopt),
         step_completed_callback_(std::move(step_completed_callback)) {
     DCHECK(step_completed_callback_);
   }
@@ -428,7 +424,7 @@ class FirstRunPostSignInAdapter : public ProfilePickerSignedInFlowController {
     host()->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/true),
                        /*navigation_finished_closure=*/base::OnceClosure());
 
-    ProfilePickerSignedInFlowController::Init(std::move(step_switch_callback));
+    ProfilePickerPostSignInAdapter::Init(std::move(step_switch_callback));
   }
 
   PostHostClearedCallback CreateSupervisedUserIphCallback() {
@@ -476,7 +472,7 @@ std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
                                                enable_animations);
 }
 
-FirstRunFlowControllerDice::FirstRunFlowControllerDice(
+FirstRunFlowController::FirstRunFlowController(
     ProfilePickerWebContentsHost* host,
     ClearHostClosure clear_host_callback,
     Profile* profile,
@@ -490,7 +486,7 @@ FirstRunFlowControllerDice::FirstRunFlowControllerDice(
   DCHECK(first_run_exited_callback_);
 }
 
-FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
+FirstRunFlowController::~FirstRunFlowController() {
   if (!first_run_exited_callback_) {
     // As the callback gets executed by `PreFinishWithBrowser()`,
     // this indicates that `FinishFlowAndRunInBrowser()` has already run.
@@ -511,14 +507,14 @@ FirstRunFlowControllerDice::~FirstRunFlowControllerDice() {
   }
 }
 
-void FirstRunFlowControllerDice::Init() {
+void FirstRunFlowController::Init() {
   RegisterStep(
       Step::kIntro,
-      CreateIntroStep(host(),
-                      base::BindRepeating(
-                          &FirstRunFlowControllerDice::HandleIntroSigninChoice,
-                          weak_ptr_factory_.GetWeakPtr()),
-                      /*enable_animations=*/true));
+      CreateIntroStep(
+          host(),
+          base::BindRepeating(&FirstRunFlowController::HandleIntroSigninChoice,
+                              weak_ptr_factory_.GetWeakPtr()),
+          /*enable_animations=*/true));
   SwitchToStep(Step::kIntro, /*reset_state=*/true);
 
   signin_metrics::LogSignInOffered(
@@ -526,7 +522,7 @@ void FirstRunFlowControllerDice::Init() {
                         PROMO_ACTION_NEW_ACCOUNT_NO_EXISTING_ACCOUNT);
 }
 
-void FirstRunFlowControllerDice::CancelPostSignInFlow() {
+void FirstRunFlowController::CancelPostSignInFlow() {
   // Called when the user declines enterprise management. Unfortunately, for
   // some technical and historical reasons, management is already marked as
   // accepted before we show the prompt. So here we need to revert it.
@@ -539,21 +535,21 @@ void FirstRunFlowControllerDice::CancelPostSignInFlow() {
                                /*is_continue_callback=*/false);
 }
 
-void FirstRunFlowControllerDice::PickProfile(
+void FirstRunFlowController::PickProfile(
     const base::FilePath& profile_path,
     ProfilePicker::ProfilePickingArgs args,
     base::OnceCallback<void(bool)> pick_profile_complete_callback) {
   NOTREACHED() << "FRE is not expected to handle this flow";
 }
 
-bool FirstRunFlowControllerDice::PreFinishWithBrowser() {
+bool FirstRunFlowController::PreFinishWithBrowser() {
   DCHECK(first_run_exited_callback_);
   std::move(first_run_exited_callback_)
       .Run(ProfilePicker::FirstRunExitStatus::kCompleted);
   return true;
 }
 
-void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
+void FirstRunFlowController::HandleIntroSigninChoice(IntroChoice choice) {
   if (choice == IntroChoice::kQuit) {
     // The view is getting destroyed. The class destructor will handle the rest.
     return;
@@ -570,40 +566,40 @@ void FirstRunFlowControllerDice::HandleIntroSigninChoice(IntroChoice choice) {
       kAccessPoint, profile_->GetPath());
 }
 
-std::unique_ptr<ProfilePickerSignedInFlowController>
-FirstRunFlowControllerDice::CreateSignedInFlowController(
+std::unique_ptr<ProfilePickerPostSignInAdapter>
+FirstRunFlowController::CreatePostSignInAdapter(
     Profile* signed_in_profile,
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   DCHECK_EQ(profile_, signed_in_profile);
   return std::make_unique<FirstRunPostSignInAdapter>(
       host(), signed_in_profile, account_info, std::move(contents),
-      base::BindOnce(&FirstRunFlowControllerDice::HandleIdentityStepsCompleted,
+      base::BindOnce(&FirstRunFlowController::HandleIdentityStepsCompleted,
                      // Unretained ok: the callback is passed to a step that
                      // the `this` will own and outlive.
                      base::Unretained(this), base::Unretained(profile_)));
 }
 
-void FirstRunFlowControllerDice::RunFinishFlowCallback() {
+void FirstRunFlowController::RunFinishFlowCallback() {
   if (finish_flow_callback_) {
     std::move(finish_flow_callback_).Run();
   }
 }
 
 base::queue<ProfileManagementFlowController::Step>
-FirstRunFlowControllerDice::RegisterPostIdentitySteps(
+FirstRunFlowController::RegisterPostIdentitySteps(
     PostHostClearedCallback post_host_cleared_callback) {
   base::queue<ProfileManagementFlowController::Step> post_identity_steps;
 
   finish_flow_callback_ = base::BindOnce(
-      &FirstRunFlowControllerDice::FinishFlowAndRunInBrowser,
+      &FirstRunFlowController::FinishFlowAndRunInBrowser,
       base::Unretained(this),
       // Unretained ok: the steps register a profile keep-alive and
       // will be alive until this callback runs.
       base::Unretained(profile_), std::move(post_host_cleared_callback));
 
   auto search_engine_choice_step_completed =
-      base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
+      base::BindOnce(&FirstRunFlowController::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
   SearchEngineChoiceDialogService* search_engine_choice_dialog_service =
       SearchEngineChoiceDialogServiceFactory::GetForProfile(profile_);
@@ -618,7 +614,7 @@ FirstRunFlowControllerDice::RegisterPostIdentitySteps(
       ProfileManagementFlowController::Step::kSearchEngineChoice);
 
   auto default_browser_promo_step_completed =
-      base::BindOnce(&FirstRunFlowControllerDice::AdvanceToNextPostIdentityStep,
+      base::BindOnce(&FirstRunFlowController::AdvanceToNextPostIdentityStep,
                      base::Unretained(this));
   RegisterStep(Step::kDefaultBrowser,
                std::make_unique<DefaultBrowserStepController>(
@@ -629,9 +625,8 @@ FirstRunFlowControllerDice::RegisterPostIdentitySteps(
   RegisterStep(
       Step::kFinishFlow,
       ProfileManagementStepController::CreateForFinishFlowAndRunInBrowser(
-          host(),
-          base::BindOnce(&FirstRunFlowControllerDice::RunFinishFlowCallback,
-                         base::Unretained(this))));
+          host(), base::BindOnce(&FirstRunFlowController::RunFinishFlowCallback,
+                                 base::Unretained(this))));
   post_identity_steps.emplace(
       ProfileManagementFlowController::Step::kFinishFlow);
   return post_identity_steps;

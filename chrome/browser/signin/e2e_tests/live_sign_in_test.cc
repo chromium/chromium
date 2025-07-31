@@ -630,7 +630,7 @@ IN_PROC_BROWSER_TEST_F(LiveSignInTest, MANUAL_CreateSignedInProfile) {
 
   // Simulate a click on the signin button.
   base::test::TestFuture<bool> proceed_future;
-  ProfilePicker::SwitchToDiceSignIn(SK_ColorRED, proceed_future.GetCallback());
+  ProfilePicker::SwitchToSignIn(SK_ColorRED, proceed_future.GetCallback());
   EXPECT_TRUE(proceed_future.Get());
 
   // Signin on Gaia.

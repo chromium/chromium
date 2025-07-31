@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -69,7 +69,7 @@ bool IsExternalURL(const GURL& url) {
 
 }  // namespace
 
-ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
+ProfilePickerSignInProvider::ProfilePickerSignInProvider(
     ProfilePickerWebContentsHost* host,
     signin_metrics::AccessPoint signin_access_point,
     const std::string& initial_email,
@@ -79,7 +79,7 @@ ProfilePickerDiceSignInProvider::ProfilePickerDiceSignInProvider(
       initial_email_(initial_email),
       profile_path_(profile_path) {}
 
-ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
+ProfilePickerSignInProvider::~ProfilePickerSignInProvider() {
   // Handle unfinished signed-in profile creation (i.e. when callback was not
   // called yet).
   if (callback_) {
@@ -92,7 +92,7 @@ ProfilePickerDiceSignInProvider::~ProfilePickerDiceSignInProvider() {
   }
 }
 
-void ProfilePickerDiceSignInProvider::SwitchToSignIn(
+void ProfilePickerSignInProvider::SwitchToSignIn(
     StepSwitchFinishedCallback switch_finished_callback,
     SignedInCallback signin_finished_callback) {
   // Update the callback even if the profile is already initialized (to respect
@@ -110,7 +110,7 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
   }
 
   auto profile_init_callback = base::BindOnce(
-      &ProfilePickerDiceSignInProvider::OnProfileInitialized,
+      &ProfilePickerSignInProvider::OnProfileInitialized,
       weak_ptr_factory_.GetWeakPtr(), std::move(switch_finished_callback));
   ProfileManager* profile_manager = g_browser_process->profile_manager();
   if (!profile_path_.empty()) {
@@ -128,14 +128,14 @@ void ProfilePickerDiceSignInProvider::SwitchToSignIn(
   }
 }
 
-void ProfilePickerDiceSignInProvider::ReloadSignInPage() {
+void ProfilePickerSignInProvider::ReloadSignInPage() {
   if (IsInitialized() && contents()) {
     contents()->GetController().Reload(content::ReloadType::BYPASSING_CACHE,
                                        true);
   }
 }
 
-void ProfilePickerDiceSignInProvider::NavigateBack() {
+void ProfilePickerSignInProvider::NavigateBack() {
   if (!IsInitialized() || !contents()) {
     return;
   }
@@ -152,14 +152,14 @@ void ProfilePickerDiceSignInProvider::NavigateBack() {
   host_->SetNativeToolbarVisible(false);
 }
 
-bool ProfilePickerDiceSignInProvider::HandleContextMenu(
+bool ProfilePickerSignInProvider::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
 }
 
-content::WebContents* ProfilePickerDiceSignInProvider::AddNewContents(
+content::WebContents* ProfilePickerSignInProvider::AddNewContents(
     content::WebContents* source,
     std::unique_ptr<content::WebContents> new_contents,
     const GURL& target_url,
@@ -188,13 +188,13 @@ content::WebContents* ProfilePickerDiceSignInProvider::AddNewContents(
   return nullptr;
 }
 
-bool ProfilePickerDiceSignInProvider::HandleKeyboardEvent(
+bool ProfilePickerSignInProvider::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
   return host_->GetWebContentsDelegate()->HandleKeyboardEvent(source, event);
 }
 
-void ProfilePickerDiceSignInProvider::NavigationStateChanged(
+void ProfilePickerSignInProvider::NavigationStateChanged(
     content::WebContents* source,
     content::InvalidateTypes changed_flags) {
   if (source != contents_.get()) {
@@ -213,7 +213,7 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
     // next step of the flow causing a navigation.
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
-        base::BindOnce(&ProfilePickerDiceSignInProvider::FinishFlow,
+        base::BindOnce(&ProfilePickerSignInProvider::FinishFlow,
                        weak_ptr_factory_.GetWeakPtr(), primary_account));
   } else if (IsExternalURL(contents_->GetVisibleURL()) &&
              // SAML with ForceSignin in Profile Picker should follow the
@@ -231,11 +231,11 @@ void ProfilePickerDiceSignInProvider::NavigationStateChanged(
 }
 
 web_modal::WebContentsModalDialogHost*
-ProfilePickerDiceSignInProvider::GetWebContentsModalDialogHost() {
+ProfilePickerSignInProvider::GetWebContentsModalDialogHost() {
   return host_->GetWebContentsModalDialogHost();
 }
 
-void ProfilePickerDiceSignInProvider::OnProfileInitialized(
+void ProfilePickerSignInProvider::OnProfileInitialized(
     StepSwitchFinishedCallback switch_finished_callback,
     Profile* new_profile) {
   if (!new_profile) {
@@ -303,11 +303,11 @@ void ProfilePickerDiceSignInProvider::OnProfileInitialized(
   InitializeOrUpdateDiceTabHelper(*tab_helper, DiceTabHelperMode::kInPicker);
 }
 
-bool ProfilePickerDiceSignInProvider::IsInitialized() const {
+bool ProfilePickerSignInProvider::IsInitialized() const {
   return profile_ != nullptr;
 }
 
-void ProfilePickerDiceSignInProvider::FinishFlow(
+void ProfilePickerSignInProvider::FinishFlow(
     const CoreAccountInfo& account_info) {
   DCHECK(IsInitialized());
   host_->SetNativeToolbarVisible(false);
@@ -315,7 +315,7 @@ void ProfilePickerDiceSignInProvider::FinishFlow(
   std::move(callback_).Run(profile_.get(), account_info, std::move(contents_));
 }
 
-void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
+void ProfilePickerSignInProvider::FinishFlowInPicker(
     Profile* profile,
     signin_metrics::AccessPoint /*access_point*/,
     signin_metrics::PromoAction /*promo_action*/,
@@ -325,13 +325,13 @@ void ProfilePickerDiceSignInProvider::FinishFlowInPicker(
   FinishFlow(account_info);
 }
 
-void ProfilePickerDiceSignInProvider::ResetWebContentsDelegates() {
+void ProfilePickerSignInProvider::ResetWebContentsDelegates() {
   contents()->SetDelegate(nullptr);
   web_modal::WebContentsModalDialogManager::FromWebContents(contents())
       ->SetDelegate(nullptr);
 }
 
-GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
+GURL ProfilePickerSignInProvider::BuildSigninURL() const {
   // Use the Emebedded flow if we are in the context of ForceSignin.
   signin::Flow signin_flow = signin_util::IsForceSigninEnabled()
                                  ? signin::Flow::EMBEDDED_PROMO
@@ -344,7 +344,7 @@ GURL ProfilePickerDiceSignInProvider::BuildSigninURL() const {
   });
 }
 
-void ProfilePickerDiceSignInProvider::InitializeOrUpdateDiceTabHelper(
+void ProfilePickerSignInProvider::InitializeOrUpdateDiceTabHelper(
     DiceTabHelper& helper,
     DiceTabHelperMode mode) {
   DiceTabHelper::EnableSyncCallback enable_sync_callback;
@@ -359,9 +359,9 @@ void ProfilePickerDiceSignInProvider::InitializeOrUpdateDiceTabHelper(
       // assuming that this is not SAML. If the user uses a SAML account, a
       // browser window will open, and the `DiceTabHelper` will be reinitialized
       // with the `kInBrowser` mode.
-      enable_sync_callback = base::BindRepeating(
-          &ProfilePickerDiceSignInProvider::FinishFlowInPicker,
-          weak_ptr_factory_.GetWeakPtr());
+      enable_sync_callback =
+          base::BindRepeating(&ProfilePickerSignInProvider::FinishFlowInPicker,
+                              weak_ptr_factory_.GetWeakPtr());
       // TODO(crbug.com/40276801): Handle signin errors in the profile
       // picker.
       show_signin_error_callback = base::DoNothing();

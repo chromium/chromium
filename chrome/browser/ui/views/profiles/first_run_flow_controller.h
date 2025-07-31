@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_DICE_H_
-#define CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_DICE_H_
+#ifndef CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_H_
+#define CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_H_
 
 #include <memory>
 
@@ -28,16 +28,16 @@ std::unique_ptr<ProfileManagementStepController> CreateIntroStep(
     base::RepeatingCallback<void(IntroChoice)> choice_callback,
     bool enable_animations);
 
-class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
+class FirstRunFlowController : public ProfileManagementFlowControllerImpl {
  public:
   // Profile management flow controller that will run the FRE for `profile` in
   // `host`.
-  FirstRunFlowControllerDice(
+  FirstRunFlowController(
       ProfilePickerWebContentsHost* host,
       ClearHostClosure clear_host_callback,
       Profile* profile,
       ProfilePicker::FirstRunExitedCallback first_run_exited_callback);
-  ~FirstRunFlowControllerDice() override;
+  ~FirstRunFlowController() override;
 
   // ProfileManagementFlowControllerImpl:
   void Init() override;
@@ -51,8 +51,7 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   // ProfileManagementFlowControllerImpl
   bool PreFinishWithBrowser() override;
   // `account_info` may not be set as the primary account yet.
-  std::unique_ptr<ProfilePickerSignedInFlowController>
-  CreateSignedInFlowController(
+  std::unique_ptr<ProfilePickerPostSignInAdapter> CreatePostSignInAdapter(
       Profile* signed_in_profile,
       const CoreAccountInfo& account_info,
       std::unique_ptr<content::WebContents> contents) override;
@@ -71,7 +70,7 @@ class FirstRunFlowControllerDice : public ProfileManagementFlowControllerImpl {
   // The callback that will finish the flow and open the browser.
   base::OnceClosure finish_flow_callback_;
 
-  base::WeakPtrFactory<FirstRunFlowControllerDice> weak_ptr_factory_{this};
+  base::WeakPtrFactory<FirstRunFlowController> weak_ptr_factory_{this};
 };
 
-#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_DICE_H_
+#endif  // CHROME_BROWSER_UI_VIEWS_PROFILES_FIRST_RUN_FLOW_CONTROLLER_H_

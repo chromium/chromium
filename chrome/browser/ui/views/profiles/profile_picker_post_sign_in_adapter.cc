@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
 
 #include "base/strings/string_util.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -46,7 +46,7 @@ void OpenNewTabInBrowser(const GURL& url, Browser* browser) {
 
 }  //  namespace
 
-ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
+ProfilePickerPostSignInAdapter::ProfilePickerPostSignInAdapter(
     ProfilePickerWebContentsHost* host,
     Profile* profile,
     const CoreAccountInfo& account_info,
@@ -70,13 +70,13 @@ ProfilePickerSignedInFlowController::ProfilePickerSignedInFlowController(
   }
 }
 
-ProfilePickerSignedInFlowController::~ProfilePickerSignedInFlowController() {
+ProfilePickerPostSignInAdapter::~ProfilePickerPostSignInAdapter() {
   if (contents()) {
     contents()->SetDelegate(nullptr);
   }
 }
 
-void ProfilePickerSignedInFlowController::Init(
+void ProfilePickerPostSignInAdapter::Init(
     StepSwitchFinishedCallback step_switch_callback) {
   DCHECK(!IsInitialized());
   CHECK(!step_switch_callback->is_null());
@@ -93,7 +93,7 @@ void ProfilePickerSignedInFlowController::Init(
   email_ = account_info.email;
 
   base::OnceClosure sync_consent_completed_closure =
-      base::BindOnce(&ProfilePickerSignedInFlowController::FinishAndOpenBrowser,
+      base::BindOnce(&ProfilePickerPostSignInAdapter::FinishAndOpenBrowser,
                      weak_ptr_factory_.GetWeakPtr(), PostHostClearedCallback());
 
   // TurnSyncOnHelper deletes itself once done.
@@ -107,9 +107,9 @@ void ProfilePickerSignedInFlowController::Init(
       std::move(sync_consent_completed_closure));
 }
 
-void ProfilePickerSignedInFlowController::Cancel() {}
+void ProfilePickerPostSignInAdapter::Cancel() {}
 
-void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
+void ProfilePickerPostSignInAdapter::FinishAndOpenBrowser(
     PostHostClearedCallback callback) {
   bool is_continue_callback = !callback->is_null();
 
@@ -123,21 +123,22 @@ void ProfilePickerSignedInFlowController::FinishAndOpenBrowser(
   FinishAndOpenBrowserInternal(std::move(callback), is_continue_callback);
 }
 
-void ProfilePickerSignedInFlowController::SwitchToSyncConfirmation() {
+void ProfilePickerPostSignInAdapter::SwitchToSyncConfirmation() {
   DCHECK(IsInitialized());
   if (!step_switch_callback_->is_null()) {
     std::move(step_switch_callback_.value()).Run(true);
   }
-  host_->ShowScreen(contents(), GetSyncConfirmationURL(/*loading=*/false),
-                    /*navigation_finished_closure=*/
-                    base::BindOnce(&ProfilePickerSignedInFlowController::
-                                       SwitchToSyncConfirmationFinished,
-                                   // Unretained is enough as the callback is
-                                   // called by the owner of this instance.
-                                   base::Unretained(this)));
+  host_->ShowScreen(
+      contents(), GetSyncConfirmationURL(/*loading=*/false),
+      /*navigation_finished_closure=*/
+      base::BindOnce(
+          &ProfilePickerPostSignInAdapter::SwitchToSyncConfirmationFinished,
+          // Unretained is enough as the callback is
+          // called by the owner of this instance.
+          base::Unretained(this)));
 }
 
-void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
+void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNotice(
     ManagedUserProfileNoticeUI::ScreenType type,
     signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
@@ -147,7 +148,7 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
   host_->ShowScreen(contents(),
                     GURL(chrome::kChromeUIManagedUserProfileNoticeUrl),
                     /*navigation_finished_closure=*/
-                    base::BindOnce(&ProfilePickerSignedInFlowController::
+                    base::BindOnce(&ProfilePickerPostSignInAdapter::
                                        SwitchToManagedUserProfileNoticeFinished,
                                    // Unretained is enough as the callback is
                                    // called by the owner of this instance.
@@ -155,7 +156,7 @@ void ProfilePickerSignedInFlowController::SwitchToManagedUserProfileNotice(
                                    std::move(process_user_choice_callback)));
 }
 
-void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
+void ProfilePickerPostSignInAdapter::SwitchToProfileSwitch(
     const base::FilePath& profile_path) {
   DCHECK(IsInitialized());
   if (!step_switch_callback_->is_null()) {
@@ -170,7 +171,7 @@ void ProfilePickerSignedInFlowController::SwitchToProfileSwitch(
       base::OnceClosure());
 }
 
-void ProfilePickerSignedInFlowController::ResetHostAndShowErrorDialog(
+void ProfilePickerPostSignInAdapter::ResetHostAndShowErrorDialog(
     const ForceSigninUIError& error) {
   CHECK(IsInitialized());
   if (!step_switch_callback_->is_null()) {
@@ -183,8 +184,7 @@ void ProfilePickerSignedInFlowController::ResetHostAndShowErrorDialog(
                      base::Unretained(host_), error)));
 }
 
-std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
-    const {
+std::optional<SkColor> ProfilePickerPostSignInAdapter::GetProfileColor() const {
   // The new profile theme may be overridden by an existing policy theme. This
   // check ensures the correct theme is applied to the sync confirmation window.
   auto* theme_service = ThemeServiceFactory::GetForProfile(profile_);
@@ -194,7 +194,7 @@ std::optional<SkColor> ProfilePickerSignedInFlowController::GetProfileColor()
   return profile_color_;
 }
 
-GURL ProfilePickerSignedInFlowController::GetSyncConfirmationURL(bool loading) {
+GURL ProfilePickerPostSignInAdapter::GetSyncConfirmationURL(bool loading) {
   GURL url = GURL(chrome::kChromeUISyncConfirmationURL);
   return AppendSyncConfirmationQueryParams(
       loading ? url.Resolve(chrome::kChromeUISyncConfirmationLoadingPath) : url,
@@ -202,24 +202,24 @@ GURL ProfilePickerSignedInFlowController::GetSyncConfirmationURL(bool loading) {
 }
 
 std::unique_ptr<content::WebContents>
-ProfilePickerSignedInFlowController::ReleaseContents() {
+ProfilePickerPostSignInAdapter::ReleaseContents() {
   return std::move(contents_);
 }
 
-bool ProfilePickerSignedInFlowController::HandleContextMenu(
+bool ProfilePickerPostSignInAdapter::HandleContextMenu(
     content::RenderFrameHost& render_frame_host,
     const content::ContextMenuParams& params) {
   // Ignores context menu.
   return true;
 }
 
-bool ProfilePickerSignedInFlowController::HandleKeyboardEvent(
+bool ProfilePickerPostSignInAdapter::HandleKeyboardEvent(
     content::WebContents* source,
     const input::NativeWebKeyboardEvent& event) {
   return host_->GetWebContentsDelegate()->HandleKeyboardEvent(source, event);
 }
 
-void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
+void ProfilePickerPostSignInAdapter::SwitchToSyncConfirmationFinished() {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   SyncConfirmationUI* sync_confirmation_ui =
@@ -228,10 +228,9 @@ void ProfilePickerSignedInFlowController::SwitchToSyncConfirmationFinished() {
   sync_confirmation_ui->InitializeMessageHandlerWithBrowser(nullptr);
 }
 
-void ProfilePickerSignedInFlowController::
-    SwitchToManagedUserProfileNoticeFinished(
-        ManagedUserProfileNoticeUI::ScreenType type,
-        signin::SigninChoiceCallback process_user_choice_callback) {
+void ProfilePickerPostSignInAdapter::SwitchToManagedUserProfileNoticeFinished(
+    ManagedUserProfileNoticeUI::ScreenType type,
+    signin::SigninChoiceCallback process_user_choice_callback) {
   DCHECK(IsInitialized());
   // Initialize the WebUI page once we know it's committed.
   ManagedUserProfileNoticeUI* managed_user_profile_notice_ui =
@@ -257,7 +256,7 @@ void ProfilePickerSignedInFlowController::
           /*done_callback=*/base::OnceClosure()));
 }
 
-bool ProfilePickerSignedInFlowController::IsInitialized() const {
+bool ProfilePickerPostSignInAdapter::IsInitialized() const {
   // `email_` is set in Init(), use it as the proxy here.
   return !email_.empty();
 }

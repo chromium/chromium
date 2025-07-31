@@ -25,7 +25,7 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_delegate.h"
 
-class ProfilePickerDiceSignInToolbar;
+class ProfilePickerSignInToolbar;
 class Profile;
 class ScopedProfileKeepAlive;
 class ProfileManagementFlowController;
@@ -187,8 +187,8 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Switches the layout to the sign-in screen (and creates a new profile or
   // load an existing one based on the `profile_info` content).
-  void SwitchToDiceSignIn(ProfilePicker::ProfileInfo profile_info,
-                          StepSwitchFinishedCallback switch_finished_callback);
+  void SwitchToSignIn(ProfilePicker::ProfileInfo profile_info,
+                      StepSwitchFinishedCallback switch_finished_callback);
 
   // Switches the profile picker layout to display the reauth page to the main
   // account of the given `profile` if needed. On success the `profile` is
@@ -262,7 +262,7 @@ class ProfilePickerView : public views::WidgetDelegateView,
 
   // Toolbar view displayed on top of the WebView for GAIA sign-in, owned by the
   // view hierarchy.
-  raw_ptr<ProfilePickerDiceSignInToolbar> toolbar_ = nullptr;
+  raw_ptr<ProfilePickerSignInToolbar> toolbar_ = nullptr;
 
   std::unique_ptr<ProfileManagementFlowController> flow_controller_;
 

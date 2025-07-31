@@ -16,7 +16,7 @@ struct CoreAccountInfo;
 class Profile;
 class ProfilePickerWebContentsHost;
 class ProfileManagementStepController;
-class ProfilePickerSignedInFlowController;
+class ProfilePickerPostSignInAdapter;
 
 namespace content {
 class WebContents;
@@ -33,11 +33,10 @@ class ProfileManagementFlowControllerImpl
   ~ProfileManagementFlowControllerImpl() override;
 
  protected:
-  virtual std::unique_ptr<ProfilePickerSignedInFlowController>
-  CreateSignedInFlowController(
-      Profile* signed_in_profile,
-      const CoreAccountInfo& account_info,
-      std::unique_ptr<content::WebContents> contents) = 0;
+  virtual std::unique_ptr<ProfilePickerPostSignInAdapter>
+  CreatePostSignInAdapter(Profile* signed_in_profile,
+                          const CoreAccountInfo& account_info,
+                          std::unique_ptr<content::WebContents> contents) = 0;
 
   // To be called when the sign-in and/or sync steps of the flow are completed
   // (or skipped), to proceed with additional steps or finish the flow.

@@ -14,8 +14,8 @@
 #include "chrome/browser/ui/views/profiles/profile_management_flow_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_step_controller.h"
 #include "chrome/browser/ui/views/profiles/profile_management_types.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_dice_sign_in_provider.h"
-#include "chrome/browser/ui/views/profiles/profile_picker_signed_in_flow_controller.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_post_sign_in_adapter.h"
+#include "chrome/browser/ui/views/profiles/profile_picker_sign_in_provider.h"
 #include "content/public/browser/web_contents.h"
 #include "google_apis/gaia/core_account_id.h"
 
@@ -43,9 +43,9 @@ void ProfileManagementFlowControllerImpl::
   if (step_needs_registration) {
     RegisterStep(
         Step::kAccountSelection,
-        ProfileManagementStepController::CreateForDiceSignIn(
+        ProfileManagementStepController::CreateForSignIn(
             host(),
-            std::make_unique<ProfilePickerDiceSignInProvider>(
+            std::make_unique<ProfilePickerSignInProvider>(
                 host(), access_point, initial_email, std::move(profile_path)),
             base::BindOnce(
                 &ProfileManagementFlowControllerImpl::HandleSignInCompleted,
@@ -71,8 +71,8 @@ ProfileManagementFlowControllerImpl::CreatePostSignInStep(
     const CoreAccountInfo& account_info,
     std::unique_ptr<content::WebContents> contents) {
   return ProfileManagementStepController::CreateForPostSignInFlow(
-      host(), CreateSignedInFlowController(signed_in_profile, account_info,
-                                           std::move(contents)));
+      host(), CreatePostSignInAdapter(signed_in_profile, account_info,
+                                      std::move(contents)));
 }
 
 std::unique_ptr<ProfileManagementStepController>
