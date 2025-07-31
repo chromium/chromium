@@ -10,6 +10,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "components/collaboration/internal/collaboration_controller.h"
+#include "components/collaboration/public/pref_names.h"
 #include "components/collaboration/test_support/mock_collaboration_controller_delegate.h"
 #include "components/data_sharing/public/data_sharing_service.h"
 #include "components/data_sharing/public/features.h"
@@ -67,11 +68,13 @@ class CollaborationServiceImplTest : public testing::Test {
     }
 #endif
     test_sync_service_ = std::make_unique<syncer::TestSyncService>();
-    profile_pref_service_.registry()->RegisterBooleanPref(prefs::kSigninAllowed,
-                                                          true);
+    profile_pref_service_.registry()->RegisterIntegerPref(
+        prefs::kSharedTabGroupsManagedAccountSetting, 0 /* enabled */);
+    profile_pref_service_.registry()->RegisterBooleanPref(
+        ::prefs::kSigninAllowed, true);
 #if BUILDFLAG(IS_IOS)
     local_pref_service_.registry()->RegisterIntegerPref(
-        prefs::kBrowserSigninPolicy,
+        ::prefs::kBrowserSigninPolicy,
         static_cast<int>(BrowserSigninMode::kEnabled));
 #endif
     InitService();
@@ -179,7 +182,7 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
       data_sharing::features::kDataSharingFeature);
 
   // Set signin preference to disable signin.
-  profile_pref_service_.SetBoolean(prefs::kSigninAllowed, false);
+  profile_pref_service_.SetBoolean(::prefs::kSigninAllowed, false);
 
   InitService();
 
@@ -191,7 +194,7 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_SigninDisabled) {
   EXPECT_EQ(service_->GetServiceStatus().IsAllowedToCreate(), false);
 
 #if !BUILDFLAG(IS_IOS)
-  profile_pref_service_.SetManagedPref(prefs::kSigninAllowed,
+  profile_pref_service_.SetManagedPref(::prefs::kSigninAllowed,
                                        base::Value(false));
   EXPECT_EQ(service_->GetServiceStatus().collaboration_status,
             CollaborationStatus::kDisabledForPolicy);
@@ -203,6 +206,8 @@ TEST_F(CollaborationServiceImplTest, GetServiceStatus_ManagedAccount) {
   feature_list.InitAndEnableFeature(
       data_sharing::features::kDataSharingFeature);
   InitService();
+  profile_pref_service_.SetInteger(prefs::kSharedTabGroupsManagedAccountSetting,
+                                   1 /* disabled */);
 
   EXPECT_EQ(service_->GetServiceStatus().signin_status,
             SigninStatus::kNotSignedIn);
