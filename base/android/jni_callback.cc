@@ -96,7 +96,7 @@ ScopedJavaLocalRef<jobject> ToJniCallback(
     JNIEnv* env,
     const base::RepeatingCallback<void()>& callback) {
   return ToJniCallback(
-      env, base::BindOnce(
+      env, base::BindRepeating(
                [](const base::RepeatingCallback<void()>& captured_callback,
                   const jni_zero::JavaRef<jobject>& j_null) {
                  // For callbacks with no parameters, the parameter from Java
