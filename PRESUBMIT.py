@@ -7144,17 +7144,18 @@ def CheckTranslationExpectations(input_api,
 
 def CheckStableMojomChanges(input_api, output_api):
     """Changes to [Stable] mojom types must preserve backward-compatibility."""
-    no_mojo_stable_checks = input_api.change.GitFootersFromDescription().get(
+    no_stable_mojom_checks = input_api.change.GitFootersFromDescription().get(
         'No-Stable-Mojom-Checks', None)
 
     expect_stable_mojom_failures = False
-    if no_mojo_stable_checks:
-        if no_mojo_stable_checks == 'true':
+    if no_stable_mojom_checks:
+        if no_stable_mojom_checks == ['true']:
             expect_stable_mojom_failures = True
         else:
             return [
                 output_api.PresubmitError(
-                    'If present, No-Stable-Mojom-Checks only accepts the value "true".'
+                    f'If present, No-Stable-Mojom-Checks only accepts the value '
+                    f'"true", but got "{no_stable_mojom_checks}" instead.'
                 )
             ]
 

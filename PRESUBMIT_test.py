@@ -4602,7 +4602,7 @@ class MojomStabilityCheckTest(unittest.TestCase):
         ],
                                                footers={
                                                    'No-Stable-Mojom-Checks':
-                                                   'true',
+                                                   ['true'],
                                                })
         self.assertEqual(1, len(errors))
         self.assertTrue('unnecessary git footer' in errors[0].message)
@@ -4624,7 +4624,7 @@ class MojomStabilityCheckTest(unittest.TestCase):
         ],
                                                footers={
                                                    'No-Stable-Mojom-Checks':
-                                                   'true',
+                                                   ['true'],
                                                })
         self.assertEqual(1, len(errors))
         self.assertTrue('unnecessary git footer' in errors[0].message)
@@ -4647,7 +4647,7 @@ class MojomStabilityCheckTest(unittest.TestCase):
         ],
                                                footers={
                                                    'No-Stable-Mojom-Checks':
-                                                   'true',
+                                                   ['true'],
                                                })
         self.assertEqual([], errors)
 
@@ -4659,7 +4659,7 @@ class MojomStabilityCheckTest(unittest.TestCase):
         ],
                                                footers={
                                                    'No-Stable-Mojom-Checks':
-                                                   '🐮',
+                                                   ['🐮'],
                                                })
         self.assertEqual(1, len(errors))
         self.assertTrue('only accepts the value "true"' in errors[0].message)
