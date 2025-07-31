@@ -312,13 +312,13 @@
             ],
             "experiments": [
                 {
-                    "name": "Control",
+                    "name": "Control2025-07-08",
                     "disable_features": [
                         "AccessibilityPerformanceMeasurementExperiment"
                     ]
                 },
                 {
-                    "name": "EnabledWithAXModeComplete",
+                    "name": "EnabledWithAXModeComplete2025-07-08",
                     "params": {
                         "accessibility_performance_group_name": "AXModeComplete"
                     },
@@ -327,7 +327,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithWebContentsOnly",
+                    "name": "EnabledWithWebContentsOnly2025-07-08",
                     "params": {
                         "accessibility_performance_group_name": "WebContentsOnly"
                     },
@@ -336,7 +336,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithAXModeCompleteNoInlineTextBoxes",
+                    "name": "EnabledWithAXModeCompleteNoInlineTextBoxes2025-07-08",
                     "params": {
                         "accessibility_performance_group_name": "AXModeCompleteNoInlineTextBoxes"
                     },
@@ -345,7 +345,7 @@
                     ]
                 },
                 {
-                    "name": "EnabledWithRendererSerializationOnly",
+                    "name": "EnabledWithRendererSerializationOnly2025-07-08",
                     "params": {
                         "accessibility_performance_group_name": "RendererSerializationOnly"
                     },
