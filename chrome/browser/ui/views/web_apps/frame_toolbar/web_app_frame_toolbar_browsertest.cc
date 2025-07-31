@@ -84,6 +84,7 @@
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/caption_buttons/frame_caption_button_container_view.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/permissions/permission_request_manager.h"
@@ -1410,8 +1411,32 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 // the ChromeOS's frame_view to have access to the caption_button_container_ so
 // it cannot be run on any other platform.
 #if BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       WindowControlsOverlayFrameViewHeight) {
+class WebAppFrameToolbarBrowserTest_WindowControlsOverlay_RoundedWindows
+    : public WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+      public testing::WithParamInterface<bool> {
+ public:
+  WebAppFrameToolbarBrowserTest_WindowControlsOverlay_RoundedWindows() {
+    if (GetParam()) {
+      scoped_feature_list_.InitWithFeatures(
+          {chromeos::features::kFeatureManagementRoundedWindows}, {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {}, {chromeos::features::kFeatureManagementRoundedWindows});
+    }
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    /* no prefix */,
+    WebAppFrameToolbarBrowserTest_WindowControlsOverlay_RoundedWindows,
+    ::testing::Bool());
+
+IN_PROC_BROWSER_TEST_P(
+    WebAppFrameToolbarBrowserTest_WindowControlsOverlay_RoundedWindows,
+    WindowControlsOverlayFrameViewHeight) {
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
@@ -1427,10 +1452,11 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   // Frame view minimum height also includes radius of window to ensure correct
   // rounding of window. See b/294588040.
-  int window_radius = chromeos::features::RoundedWindowsRadius();
+  int bottom_window_radius =
+      GetParam() ? chromeos::kRoundedWindowCornerRadius : 0;
 
-  EXPECT_EQ(frame_view_height,
-            caption_container_height + client_view_height + window_radius);
+  EXPECT_EQ(frame_view_height, caption_container_height + client_view_height +
+                                   bottom_window_radius);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 

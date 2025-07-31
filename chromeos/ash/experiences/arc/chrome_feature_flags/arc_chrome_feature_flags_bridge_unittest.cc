@@ -12,6 +12,7 @@
 #include "chromeos/ash/experiences/arc/session/arc_service_manager.h"
 #include "chromeos/ash/experiences/arc/test/fake_chrome_feature_flags_instance.h"
 #include "chromeos/constants/chromeos_features.h"
+#include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "components/user_prefs/test/test_browser_context_with_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -76,21 +77,10 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat) {
             mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
-  scoped_feature_list()->InitWithFeaturesAndParameters(
-      {{chromeos::features::kFeatureManagementRoundedWindows, {}},
-       {chromeos::features::kRoundedWindows,
-        {{chromeos::features::kRoundedWindowsRadius, "8"}}}},
-      {});
+TEST_F(ArcChromeFeatureFlagsBridgeTest, RoundedWindowsRadius) {
   Connect();
-  EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 8);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(
-      chromeos::features::kRoundedWindows);
-  Connect();
-  EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius, 0);
+  EXPECT_EQ(instance()->flags_called_value()->rounded_window_radius,
+            chromeos::kRoundedWindowCornerRadius);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyResizeCompat_Enabled) {

@@ -255,7 +255,7 @@ VirtualTrackpadView::VirtualTrackpadView() {
   blurred_background_ = std::make_unique<BlurredBackgroundShield>(
       this, SK_ColorTRANSPARENT, ColorProvider::kBackgroundBlurSigma,
       gfx::RoundedCornersF(
-          static_cast<float>(chromeos::kTopCornerRadiusWhenRestored)));
+          static_cast<float>(chromeos::kRoundedWindowSmallCornerRadius)));
 }
 
 VirtualTrackpadView::~VirtualTrackpadView() = default;

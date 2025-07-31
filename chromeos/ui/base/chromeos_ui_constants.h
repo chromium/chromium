@@ -10,8 +10,10 @@
 
 namespace chromeos {
 
-// Radius of the header's top corners when the window is restored.
-inline constexpr int kTopCornerRadiusWhenRestored = 2;
+// Radius of the window corner radius when the window is restored.
+// See `chromeos::GetWindowRoundedCorners()` for the context.
+inline constexpr int kRoundedWindowCornerRadius = 12;
+inline constexpr int kRoundedWindowSmallCornerRadius = 2;
 
 // Rounded corner radius for Pip window.
 inline constexpr int kPipRoundedCornerRadius = 12;

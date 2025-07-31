@@ -114,8 +114,8 @@ SnapDirection GetSnapDirectionForWindow(aura::Window* window, bool left_top) {
 
 gfx::RoundedCornersF GetWindowRoundedCorners() {
   const int corner_radius = features::IsRoundedWindowsEnabled()
-                                ? features::RoundedWindowsRadius()
-                                : kTopCornerRadiusWhenRestored;
+                                ? kRoundedWindowCornerRadius
+                                : kRoundedWindowSmallCornerRadius;
 
   const bool rounded_bottom_corners = features::IsRoundedWindowsEnabled();
   return gfx::RoundedCornersF(corner_radius, corner_radius,

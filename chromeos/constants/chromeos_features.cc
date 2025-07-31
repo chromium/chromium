@@ -355,10 +355,6 @@ BASE_FEATURE(kMicrosoftOneDriveIntegrationForEnterprise,
              "MicrosoftOneDriveIntegrationForEnterprise",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kRoundedWindows,
-             "RoundedWindows",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables CloudFileSystem for FileSystemProvider extensions.
 BASE_FEATURE(kFileSystemProviderCloudFileSystem,
              "FileSystemProviderCloudFileSystem",
@@ -390,8 +386,6 @@ BASE_FEATURE(kNotebookLmAppShelfPinReset,
 BASE_FEATURE(kWebAppManifestProtocolHandlerSupport,
              "WebAppManifestProtocolHandlerSupport",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kRoundedWindowsRadius[] = "window_radius";
 
 bool IsApnPoliciesEnabled() {
   return base::FeatureList::IsEnabled(kApnPolicies);
@@ -577,8 +571,7 @@ bool IsMicrosoftOneDriveIntegrationForEnterpriseEnabled() {
 
 bool IsRoundedWindowsEnabled() {
   static bool is_enabled =
-      base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows) &&
-      base::FeatureList::IsEnabled(kRoundedWindows);
+      base::FeatureList::IsEnabled(kFeatureManagementRoundedWindows);
   return is_enabled;
 }
 
@@ -589,16 +582,6 @@ bool IsSystemBlurEnabled() {
 
 bool IsFeatureManagementHistoryEmbeddingEnabled() {
   return base::FeatureList::IsEnabled(kFeatureManagementHistoryEmbedding);
-}
-
-int RoundedWindowsRadius() {
-  if (!IsRoundedWindowsEnabled()) {
-    return 0;
-  }
-
-  return base::GetFieldTrialParamByFeatureAsInt(kRoundedWindows,
-                                                kRoundedWindowsRadius,
-                                                /*default_value=*/12);
 }
 
 bool IsWebAppManifestProtocolHandlerSupportEnabled() {

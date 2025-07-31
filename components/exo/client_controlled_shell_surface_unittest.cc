@@ -607,7 +607,7 @@ TEST_F(ClientControlledShellSurfaceTest,
   ui::Shadow* shadow = wm::ShadowController::GetShadowForWindow(window);
   ASSERT_TRUE(shadow);
   EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
-            chromeos::kTopCornerRadiusWhenRestored);
+            chromeos::kRoundedWindowSmallCornerRadius);
 
   shell_surface->SetPip();
   root_surface->Commit();
@@ -622,7 +622,7 @@ TEST_F(ClientControlledShellSurfaceTest,
 
   ASSERT_TRUE(shadow);
   EXPECT_EQ(shadow->rounded_corner_radius_for_testing(),
-            chromeos::kTopCornerRadiusWhenRestored);
+            chromeos::kRoundedWindowSmallCornerRadius);
 }
 
 namespace {
