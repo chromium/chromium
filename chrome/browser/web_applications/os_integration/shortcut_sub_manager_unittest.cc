@@ -27,6 +27,7 @@
 #include "chrome/common/chrome_features.h"
 #include "components/sync/base/time.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -79,12 +80,20 @@ class ShortcutSubManagerTestBase : public WebAppTest {
   }
 
   webapps::AppId InstallWebAppWithShortcuts(
-      std::map<SquareSizePx, SkBitmap> icon_map) {
+      std::map<SquareSizePx, SkBitmap> icon_map,
+      bool skip_trusted_icons = false) {
     std::unique_ptr<WebAppInstallInfo> info =
         WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-    info->icon_bitmaps.any = std::move(icon_map);
+    info->icon_bitmaps.any = icon_map;
+    if (!skip_trusted_icons) {
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+      info->trusted_icon_bitmaps.maskable = icon_map;
+#else
+      info->trusted_icon_bitmaps.any = icon_map;
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+    }
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
     provider().scheduler().InstallFromInfoWithParams(
@@ -116,9 +125,23 @@ class ShortcutSubManagerTestBase : public WebAppTest {
       test_override_;
 };
 
-using ShortcutSubManagerConfigureTest = ShortcutSubManagerTestBase;
+class ShortcutSubManagerConfigureTest
+    : public ShortcutSubManagerTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ShortcutSubManagerConfigureTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kWebAppUsePrimaryIcon);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kWebAppUsePrimaryIcon);
+    }
+  }
 
-TEST_F(ShortcutSubManagerConfigureTest, ConfigureAppInstall) {
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+TEST_P(ShortcutSubManagerConfigureTest, ConfigureAppInstall) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
@@ -126,26 +149,59 @@ TEST_F(ShortcutSubManagerConfigureTest, ConfigureAppInstall) {
       CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
   icon_map[icon_size::k512] =
       CreateSolidColorIcon(icon_size::k512, SK_ColorYELLOW);
-  const webapps::AppId& app_id =
-      InstallWebAppWithShortcuts(std::move(icon_map));
+  const webapps::AppId& app_id = InstallWebAppWithShortcuts(icon_map);
 
   auto state =
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
 
-    ASSERT_THAT(state.value().shortcut().title(), testing::Eq("Test App"));
+  ASSERT_THAT(state.value().shortcut().title(), testing::Eq("Test App"));
+
+  // TODO(crbug.com/427566193): Hook up InstallFromInfoWithParams() to support
+  // automatically populating trusted app icon bitmaps.
+  if (GetParam()) {
+    ASSERT_THAT(state.value().shortcut().icon_data_any_size(), icon_map.size());
+  } else {
     ASSERT_THAT(state.value().shortcut().icon_data_any_size(),
                 testing::Eq(kTotalIconSizes));
+  }
 
-    for (const proto::os_state::ShortcutIconData& icon_time_map_data :
-         state.value().shortcut().icon_data_any()) {
-      ASSERT_THAT(
-          syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
-          testing::IsFalse());
-    }
+  for (const proto::os_state::ShortcutIconData& icon_time_map_data :
+       state.value().shortcut().icon_data_any()) {
+    ASSERT_THAT(
+        syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
+        testing::IsFalse());
+  }
 }
 
-TEST_F(ShortcutSubManagerConfigureTest, ConfigureAppUninstall) {
+TEST_P(ShortcutSubManagerConfigureTest, FallbackToManifestIconsNoTrusted) {
+  std::map<SquareSizePx, SkBitmap> icon_map;
+  icon_map[icon_size::k128] =
+      CreateSolidColorIcon(icon_size::k128, SK_ColorGREEN);
+  icon_map[icon_size::k512] =
+      CreateSolidColorIcon(icon_size::k512, SK_ColorYELLOW);
+  const webapps::AppId& app_id =
+      InstallWebAppWithShortcuts(icon_map, /*skip_trusted_icons=*/true);
+
+  auto state =
+      provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
+  ASSERT_TRUE(state.has_value());
+
+  // Instead of the specific trusted icons of 2 sizes being used, the test will
+  // use all possible sizes that are used by the manifest icons (AKA
+  // web_app::SizesToGenerate() + one size of k512).
+  ASSERT_THAT(state.value().shortcut().title(), testing::Eq("Test App"));
+  EXPECT_EQ(7, state.value().shortcut().icon_data_any_size());
+
+  for (const proto::os_state::ShortcutIconData& icon_time_map_data :
+       state.value().shortcut().icon_data_any()) {
+    ASSERT_THAT(
+        syncer::ProtoTimeToTime(icon_time_map_data.timestamp()).is_null(),
+        testing::IsFalse());
+  }
+}
+
+TEST_P(ShortcutSubManagerConfigureTest, ConfigureAppUninstall) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
@@ -162,8 +218,26 @@ TEST_F(ShortcutSubManagerConfigureTest, ConfigureAppUninstall) {
   ASSERT_FALSE(state.has_value());
 }
 
-class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
+INSTANTIATE_TEST_SUITE_P(All,
+                         ShortcutSubManagerConfigureTest,
+                         ::testing::Bool(),
+                         [](::testing::TestParamInfo<bool> info) {
+                           return info.param ? "TrustedIconsOn"
+                                             : "TrustedIconsOff";
+                         });
+
+class ShortcutSubManagerExecuteTest
+    : public ShortcutSubManagerTestBase,
+      public ::testing::WithParamInterface<bool> {
  public:
+  ShortcutSubManagerExecuteTest() {
+    if (GetParam()) {
+      feature_list_.InitAndEnableFeature(features::kWebAppUsePrimaryIcon);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kWebAppUsePrimaryIcon);
+    }
+  }
+
   bool HasShortcutsOsIntegration() {
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
     return true;
@@ -212,7 +286,12 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
     updated_info->title = u"New App";
     updated_info->user_display_mode =
         web_app::mojom::UserDisplayMode::kStandalone;
-    updated_info->icon_bitmaps.any = std::move(updated_icons);
+    updated_info->icon_bitmaps.any = updated_icons;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+    updated_info->trusted_icon_bitmaps.maskable = updated_icons;
+#else
+    updated_info->trusted_icon_bitmaps.any = updated_icons;
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         update_future;
@@ -233,7 +312,13 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
         WebAppInstallInfo::CreateWithStartUrlForTesting(kWebAppUrl);
     info->title = u"Test App";
     info->user_display_mode = web_app::mojom::UserDisplayMode::kStandalone;
-    info->icon_bitmaps.any = std::move(icon_map);
+    info->icon_bitmaps.any = icon_map;
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+    info->trusted_icon_bitmaps.maskable = icon_map;
+#else
+    info->trusted_icon_bitmaps.any = icon_map;
+#endif  // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
+
     base::test::TestFuture<const webapps::AppId&, webapps::InstallResultCode>
         result;
     // InstallFromInfoNoIntegrationForTesting() does not trigger OS integration.
@@ -250,9 +335,12 @@ class ShortcutSubManagerExecuteTest : public ShortcutSubManagerTestBase {
               webapps::InstallResultCode::kSuccessNewInstall);
     return result.Get<webapps::AppId>();
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
-TEST_F(ShortcutSubManagerExecuteTest, InstallAppVerifyCorrectShortcuts) {
+TEST_P(ShortcutSubManagerExecuteTest, InstallAppVerifyCorrectShortcuts) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
@@ -280,7 +368,7 @@ TEST_F(ShortcutSubManagerExecuteTest, InstallAppVerifyCorrectShortcuts) {
   }
 }
 
-TEST_F(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
+TEST_P(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
   icon_map[icon_size::k128] =
@@ -315,7 +403,6 @@ TEST_F(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
   ASSERT_TRUE(updated_state.has_value());
 
   if (HasShortcutsOsIntegration()) {
-
     // Verify shortcut changes for both name and color.
 // TODO(crbug.com/40261124): Enable once PList parsing code is added to
 // OsIntegrationTestOverride for Mac shortcut checking.
@@ -331,7 +418,7 @@ TEST_F(ShortcutSubManagerExecuteTest, UpdateAppVerifyCorrectShortcuts) {
   }
 }
 
-TEST_F(ShortcutSubManagerExecuteTest,
+TEST_P(ShortcutSubManagerExecuteTest,
        TwoConsecutiveInstallsUpdateShortcutLocations) {
   // Install an app with icons but no shortcuts.
   std::map<SquareSizePx, SkBitmap> icon_map;
@@ -414,7 +501,7 @@ TEST_F(ShortcutSubManagerExecuteTest,
   }
 }
 
-TEST_F(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
+TEST_P(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k16] =
       CreateSolidColorIcon(icon_size::k16, SK_ColorYELLOW);
@@ -445,7 +532,7 @@ TEST_F(ShortcutSubManagerExecuteTest, UninstallAppRemovesShortcuts) {
   }
 }
 
-TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
+TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
@@ -475,7 +562,7 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppInRegistry) {
   }
 }
 
-TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
+TEST_P(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   std::map<SquareSizePx, SkBitmap> icon_map;
   icon_map[icon_size::k16] = CreateSolidColorIcon(icon_size::k16, SK_ColorBLUE);
   icon_map[icon_size::k24] = CreateSolidColorIcon(icon_size::k24, SK_ColorRED);
@@ -512,6 +599,13 @@ TEST_F(ShortcutSubManagerExecuteTest, ForceUnregisterAppNotInRegistry) {
   }
 }
 
-}  // namespace
+INSTANTIATE_TEST_SUITE_P(All,
+                         ShortcutSubManagerExecuteTest,
+                         ::testing::Bool(),
+                         [](::testing::TestParamInfo<bool> info) {
+                           return info.param ? "TrustedIconsOn"
+                                             : "TrustedIconsOff";
+                         });
 
+}  // namespace
 }  // namespace web_app

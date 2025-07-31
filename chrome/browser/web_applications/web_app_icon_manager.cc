@@ -429,13 +429,17 @@ ReadIconsLastUpdateTimeBlocking(scoped_refptr<FileUtilsWrapper> utils,
                                 const base::FilePath& web_apps_directory,
                                 const webapps::AppId& app_id,
                                 IconPurpose purpose,
-                                const std::vector<SquareSizePx>& icon_sizes) {
+                                const std::vector<SquareSizePx>& icon_sizes,
+                                bool consider_trusted_icons) {
   TRACE_EVENT0("ui", "web_app_icon_manager::ReadIconsLastUpdateTimeBlocking");
   TypedResult<base::flat_map<SquareSizePx, base::Time>> result;
 
   for (SquareSizePx icon_size_px : icon_sizes) {
     IconId icon_id(app_id, purpose, icon_size_px);
-    base::FilePath icon_file = GetIconFileName(web_apps_directory, icon_id);
+    base::FilePath icon_file =
+        consider_trusted_icons
+            ? GetTrustedIconsFileName(web_apps_directory, icon_id)
+            : GetIconFileName(web_apps_directory, icon_id);
     TypedResult<base::Time> read_result =
         ReadIconTimeBlocking(utils, icon_file);
     base::Extend(result.error_log, std::move(read_result.error_log));
@@ -1195,14 +1199,44 @@ void WebAppIconManager::ReadIconsLastUpdateTime(
     return;
   }
 
-  const SortedSizesPx& sizes_px =
-      web_app->downloaded_icon_sizes(IconPurpose::ANY);
+  // Consider maskable trusted icons depending on OS, or fallback to reading
+  // trusted icons of purpose `any`. If that is not available, fallback to
+  // reading untrusted manifest icons.
+  SortedSizesPx sizes_px{};
+  bool consider_trusted_icons = false;
+  IconPurpose purpose = IconPurpose::ANY;
+
+  if (base::FeatureList::IsEnabled(features::kWebAppUsePrimaryIcon)) {
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+    if (!web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE).empty()) {
+      sizes_px = web_app->stored_trusted_icon_sizes(IconPurpose::MASKABLE);
+      consider_trusted_icons = true;
+      purpose = IconPurpose::MASKABLE;
+    }
+#endif  //  BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
+
+    if (sizes_px.empty() &&
+        !web_app->stored_trusted_icon_sizes(IconPurpose::ANY).empty()) {
+      sizes_px = web_app->stored_trusted_icon_sizes(IconPurpose::ANY);
+      consider_trusted_icons = true;
+      purpose = IconPurpose::ANY;
+    }
+  }
+
+  if (sizes_px.empty()) {
+    // If no trusted icons are found, fallback to reading manifest icons.
+    sizes_px = web_app->downloaded_icon_sizes(IconPurpose::ANY);
+    consider_trusted_icons = false;
+    purpose = IconPurpose::ANY;
+  }
+
   icon_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           ReadIconsLastUpdateTimeBlocking, provider_->file_utils(),
-          web_apps_directory_, app_id, IconPurpose::ANY,
-          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end())),
+          web_apps_directory_, app_id, purpose,
+          std::vector<SquareSizePx>(sizes_px.begin(), sizes_px.end()),
+          consider_trusted_icons),
       base::BindOnce(
           &LogErrorsCallCallback<base::flat_map<SquareSizePx, base::Time>>,
           GetWeakPtr(), std::move(callback)));
