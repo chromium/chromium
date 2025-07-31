@@ -13,10 +13,14 @@
 #import "ios/web/public/navigation/navigation_context.h"
 #import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
+#import "ios/web/public/web_state.h"
+#import "ios/web/public/web_state_observer.h"
 #import "net/base/apple/url_conversions.h"
 
 ReaderModeContentTabHelper::ReaderModeContentTabHelper(web::WebState* web_state)
-    : web::WebStatePolicyDecider(web_state) {}
+    : web::WebStatePolicyDecider(web_state) {
+  web_state_observation_.Observe(web_state);
+}
 
 ReaderModeContentTabHelper::~ReaderModeContentTabHelper() = default;
 
@@ -41,9 +45,6 @@ void ReaderModeContentTabHelper::LoadContent(GURL content_url,
     navigation_manager->Restore(0, std::move(navigation_items));
   }
   web_state()->LoadData(content_data, @"text/html", std::move(content_url));
-  if (delegate_) {
-    delegate_->ReaderModeContentDidLoadData(this);
-  }
 }
 
 void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
@@ -89,4 +90,22 @@ void ReaderModeContentTabHelper::ShouldAllowRequest(
   if (delegate_) {
     delegate_->ReaderModeContentDidCancelRequest(this, request, request_info);
   }
+}
+
+void ReaderModeContentTabHelper::WebStateDestroyed() {
+  web_state_observation_.Reset();
+}
+
+#pragma mark - WebStateObserver
+
+void ReaderModeContentTabHelper::PageLoaded(
+    web::WebState* web_state,
+    web::PageLoadCompletionStatus load_completion_status) {
+  if (delegate_) {
+    delegate_->ReaderModeContentDidLoadData(this);
+  }
+}
+
+void ReaderModeContentTabHelper::WebStateDestroyed(web::WebState* web_state) {
+  web_state_observation_.Reset();
 }

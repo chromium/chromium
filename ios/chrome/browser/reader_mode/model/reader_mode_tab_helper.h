@@ -133,10 +133,12 @@ class ReaderModeTabHelper : public web::WebStateObserver,
       const std::string& title,
       const std::string& csp_nonce);
 
-  // Creates `reader_mode_web_state_` and starts distillation.
-  void CreateReaderModeWebState();
-  // Destroys `reader_mode_web_state_` and stops any ongoing distillation.
-  void DestroyReaderModeWebState();
+  // Creates `reader_mode_web_state_` if necessary, adds a content tab helper
+  // and starts distillation.
+  void CreateReaderModeContent();
+  // Destroys the content tab helper in `reader_mode_web_state_` and stops any
+  // ongoing distillation.
+  void DestroyReaderModeContent();
 
   // Sets the last committed URL. If `url` is the equal to the previous value
   // ignoring ref, then this is a no-op.
@@ -151,7 +153,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   bool active_ = false;
   // Whether the Reader mode WebState content was loaded.
   bool reader_mode_web_state_content_loaded_ = false;
-  // WebState used to render the Reader mode content.
+  // WebState used to render the Reader mode content. Lazily created the first
+  // time Reader mode is activated and persists until the tab is closed.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
   id<SnackbarCommands> snackbar_handler_;
   base::OneShotTimer trigger_reader_mode_timer_;

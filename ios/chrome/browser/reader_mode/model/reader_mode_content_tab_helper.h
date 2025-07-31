@@ -20,7 +20,8 @@ class ReaderModeContentDelegate;
 // and forwards them to its delegate instead.
 class ReaderModeContentTabHelper
     : public web::WebStateUserData<ReaderModeContentTabHelper>,
-      public web::WebStatePolicyDecider {
+      public web::WebStatePolicyDecider,
+      public web::WebStateObserver {
  public:
   explicit ReaderModeContentTabHelper(web::WebState* web_state);
   ~ReaderModeContentTabHelper() override;
@@ -38,6 +39,13 @@ class ReaderModeContentTabHelper
   void ShouldAllowRequest(NSURLRequest* request,
                           RequestInfo request_info,
                           PolicyDecisionCallback callback) override;
+  void WebStateDestroyed() override;
+
+  // WebStateObserver overrides:
+  void PageLoaded(
+      web::WebState* web_state,
+      web::PageLoadCompletionStatus load_completion_status) override;
+  void WebStateDestroyed(web::WebState* web_state) override;
 
  private:
   // Forwarding class for WebStateDelegate.
@@ -48,6 +56,8 @@ class ReaderModeContentTabHelper
   bool content_url_request_allowed_ = false;
   // Delegate.
   raw_ptr<ReaderModeContentDelegate> delegate_ = nullptr;
+  base::ScopedObservation<web::WebState, web::WebStateObserver>
+      web_state_observation_{this};
 };
 
 #endif  // IOS_CHROME_BROWSER_READER_MODE_MODEL_READER_MODE_CONTENT_TAB_HELPER_H_

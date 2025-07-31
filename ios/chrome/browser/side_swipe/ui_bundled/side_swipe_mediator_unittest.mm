@@ -193,7 +193,7 @@ TEST_F(SideSwipeMediatorTest, TestEdgeNavigationEnabledForReaderMode) {
   LoadWebpage(fake_web_state.get(), test_url);
   EnableReaderMode(fake_web_state.get(),
                    ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForAvailableReaderModeContentInWebState(fake_web_state.get());
 
   [side_swipe_mediator_
       updateNavigationEdgeSwipeForWebState:fake_web_state.get()];

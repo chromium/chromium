@@ -57,11 +57,13 @@ class ReaderModeBrowserAgentTest : public ReaderModeTest {
 
     EnableReaderMode(GetWebStateList()->GetWebStateAt(1),
                      ReaderModeAccessPoint::kContextualChip);
-    WaitForReaderModeContentReady();
+    WaitForAvailableReaderModeContentInWebState(
+        GetWebStateList()->GetWebStateAt(1));
 
     EnableReaderMode(GetWebStateList()->GetWebStateAt(3),
                      ReaderModeAccessPoint::kContextualChip);
-    WaitForReaderModeContentReady();
+    WaitForAvailableReaderModeContentInWebState(
+        GetWebStateList()->GetWebStateAt(3));
   }
 
   void TearDown() override { GetReaderModeBrowserAgent()->SetDelegate(nil); }
@@ -152,7 +154,7 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingReaderModeStatus) {
   OCMExpect([delegate_
       showReaderModeContentFromBrowserAgent:GetReaderModeBrowserAgent()]);
   EnableReaderMode(GetActiveWebState(), ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForAvailableReaderModeContentInWebState(GetActiveWebState());
   EXPECT_OCMOCK_VERIFY(delegate_);
 
   OCMExpect([delegate_

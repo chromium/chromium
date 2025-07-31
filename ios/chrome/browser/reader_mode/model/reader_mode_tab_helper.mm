@@ -104,9 +104,9 @@ void ReaderModeTabHelper::ActivateReader(ReaderModeAccessPoint access_point) {
   active_ = true;
   metrics_helper_.RecordReaderDistillerTriggered(access_point);
 
-  // If Reader mode is being activated, create the secondary WebState where
-  // the content will be rendered and start distillation.
-  CreateReaderModeWebState();
+  // If Reader mode is being activated, lazily create the secondary WebState
+  // where the content will be rendered and start distillation.
+  CreateReaderModeContent();
 }
 
 void ReaderModeTabHelper::DeactivateReader() {
@@ -114,9 +114,9 @@ void ReaderModeTabHelper::DeactivateReader() {
     return;
   }
   active_ = false;
-  // If Reader mode is being deactivated, destroy the secondary WebState and
-  // ensure the Reader mode UI is dismissed.
-  DestroyReaderModeWebState();
+  // If Reader mode is being deactivated, keep the secondary WebState but make
+  // the content unavailable and ensure the Reader mode UI is dismissed.
+  DestroyReaderModeContent();
 }
 
 web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
@@ -364,17 +364,19 @@ void ReaderModeTabHelper::PageDistillationCompleted(
   }
 }
 
-void ReaderModeTabHelper::CreateReaderModeWebState() {
-  web::WebState::CreateParams create_params = web::WebState::CreateParams(
-      ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
-          ->GetOffTheRecordProfile());
-  reader_mode_web_state_ = web::WebState::Create(create_params);
+void ReaderModeTabHelper::CreateReaderModeContent() {
+  if (!reader_mode_web_state_) {
+    web::WebState::CreateParams create_params = web::WebState::CreateParams(
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
+            ->GetOffTheRecordProfile());
+    reader_mode_web_state_ = web::WebState::Create(create_params);
+    reader_mode_web_state_->SetWebUsageEnabled(true);
+  }
   ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
   ReaderModeContentTabHelper* content_tab_helper =
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get());
   content_tab_helper->SetDelegate(this);
   content_tab_helper->AttachSupportedTabHelpers(web_state_.get());
-  reader_mode_web_state_->SetWebUsageEnabled(true);
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);
@@ -390,7 +392,7 @@ void ReaderModeTabHelper::CreateReaderModeWebState() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReaderModeTabHelper::DestroyReaderModeWebState() {
+void ReaderModeTabHelper::DestroyReaderModeContent() {
   metrics_helper_.Flush();
 
   WebViewProxyTabHelper* tab_helper =
@@ -402,7 +404,7 @@ void ReaderModeTabHelper::DestroyReaderModeWebState() {
     observer.ReaderModeWebStateWillBecomeUnavailable(this);
   }
   reader_mode_web_state_content_loaded_ = false;
-  reader_mode_web_state_.reset();
+  ReaderModeContentTabHelper::RemoveFromWebState(reader_mode_web_state_.get());
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();
   // Update the snapshot with the original web page.

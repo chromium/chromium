@@ -116,7 +116,7 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicSkippedOnNewNavigation) {
   ASSERT_EQ(0u, GetHeuristicResultEntries().size());
 
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
@@ -144,10 +144,10 @@ TEST_F(ReaderModeTabHelperTest, TriggerHeuristicFlushedOnNewNavigation) {
   SetReaderModeState(web_state(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
@@ -168,7 +168,7 @@ TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
 
   // Destroy the web state, which also flushes metrics.
   web_state_.reset();
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // Metrics reflect that the heuristic was canceled before running on page
   // load.
@@ -188,7 +188,7 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNtp) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
 
   LoadWebpage(web_state(), ntp_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
 }
@@ -200,7 +200,7 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNonHTML) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
   web_state()->SetContentIsHTML(false);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
 }
@@ -212,7 +212,7 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleForSamePageNavigation) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
 
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // Start same page navigation.
   GURL test_url_with_ref("https://test.url/ref#");
@@ -244,7 +244,7 @@ TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlEligibilityResult) {
             std::move(current_page_supports_reader_mode);
       }));
   EXPECT_FALSE(current_page_supports_reader_mode_completion_result.has_value());
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
   ASSERT_TRUE(current_page_supports_reader_mode_completion_result.has_value());
   EXPECT_TRUE(current_page_supports_reader_mode_completion_result.value());
 }
@@ -264,7 +264,7 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "Content");
 
   // Initially, no observer methods should be called.
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // When ActivateReader() is called and distillation completes,
   // ReaderModeWebStateDidLoadContent should be called.
@@ -272,7 +272,7 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
               ReaderModeWebStateDidLoadContent(reader_mode_tab_helper()));
   reader_mode_tab_helper()->ActivateReader(
       ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForAvailableReaderModeContentInWebState(web_state());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // When DeactivateReader() is called,
@@ -315,7 +315,7 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
 
   // Initially, no observer methods should be called.
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // When ActivateReader() is called and distillation fails,
   // ReaderModeDistillationFailed should be called.
@@ -323,7 +323,7 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfDistillationFailure) {
               ReaderModeDistillationFailed(reader_mode_tab_helper()));
   reader_mode_tab_helper()->ActivateReader(
       ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   // Access point metric should still be triggered on distillation failure.
@@ -345,7 +345,7 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
   LoadWebpage(web_state(), test_url);
   SetReaderModeState(web_state(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "Content");
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   MockReaderModeTabHelperObserver mock_observer;
   base::ScopedObservation<ReaderModeTabHelper, ReaderModeTabHelper::Observer>
@@ -356,7 +356,7 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
               ReaderModeWebStateDidLoadContent(reader_mode_tab_helper()));
   reader_mode_tab_helper()->ActivateReader(
       ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForAvailableReaderModeContentInWebState(web_state());
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 
   id<CRWWebViewProxy> reader_mode_proxy =
@@ -381,11 +381,11 @@ TEST_F(ReaderModeTabHelperTest, TestTabHelpers) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "Content");
 
   // Initially, no observer methods should be called.
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   reader_mode_tab_helper()->ActivateReader(
       ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForAvailableReaderModeContentInWebState(web_state());
   web::WebState* reader_mode_web_state =
       reader_mode_tab_helper()->GetReaderModeWebState();
   EXPECT_NE(nullptr, reader_mode_web_state);
@@ -404,13 +404,13 @@ TEST_F(ReaderModeTabHelperTest, TestEligibleContentIsDisplayed) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "Content");
 
   // Initially, no observer methods should be called.
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // When ActivateReader() is called and distillation completes,
   // ReaderModeWebStateDidBecomeAvailable should be called.
   reader_mode_tab_helper()->ActivateReader(
       ReaderModeAccessPoint::kContextualChip);
-  WaitForReaderModeContentReady();
+  WaitForAvailableReaderModeContentInWebState(web_state());
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
@@ -437,7 +437,7 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationTimeout) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "Content");
 
   // Move past the custom heuristic page load time.
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // When ActivateReader() is called and distillation completes,
   // ReaderModeWebStateDidBecomeAvailable should be called.
@@ -469,13 +469,13 @@ TEST_F(ReaderModeTabHelperTest, TestDistillationCompletedAfterTimeout) {
                      ReaderModeHeuristicResult::kReaderModeEligible, "Content");
 
   // Move past the custom heuristic page load time.
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // When ActivateReader() is called and distillation completes,
   // ReaderModeWebStateDidBecomeAvailable should be called.
   reader_mode_tab_helper()->ActivateReader(
       ReaderModeAccessPoint::kContextualChip);
-  task_environment()->RunUntilIdle();
+  WaitForAvailableReaderModeContentInWebState(web_state());
 
   // The completion is recorded.
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
@@ -510,7 +510,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
   SetReaderModeState(web_state(), test_url, eligibility, "");
 
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
             reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
@@ -553,7 +553,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest,
   SetReaderModeState(web_state(), test_url, eligibility, "");
 
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
             reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
@@ -580,7 +580,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerDistillationOnActive) {
   SetReaderModeState(web_state(), test_url, GetParam(), "");
 
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   // The user explicitly requests distillation independent of the Reader Mode
   // eligibility.

@@ -80,7 +80,7 @@ TEST_F(ReaderModeModelTest, FetchConfigurationForHTMLContent) {
   SetReaderModeState(web_state(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
   LoadWebpage(web_state(), test_url);
-  WaitForReaderModeContentReady();
+  WaitForPageLoadDelayAndRunUntilIdle();
 
   model.FetchConfigurationForWebState(
       web_state(),

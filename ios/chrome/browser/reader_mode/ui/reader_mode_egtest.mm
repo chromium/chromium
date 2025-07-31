@@ -11,6 +11,7 @@
 #import "ios/chrome/browser/badges/ui_bundled/badge_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey.h"
@@ -329,7 +330,8 @@ id<GREYMatcher> VisibleContextMenuItem(int message_id) {
                                    grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:tableViewMatcher] performAction:grey_tap()];
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssertTrue([ReaderModeAppInterface waitUntilReaderModeWebStateIsReady],
+                 @"Reader mode content could not be loaded");
 
   ExpectBodyHasThemeAndFont("light", "sans-serif");
 

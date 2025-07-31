@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/metrics/model/metrics_app_interface.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
+#import "ios/chrome/browser/reader_mode/test/reader_mode_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/test/earl_grey/chrome_actions.h"
@@ -983,7 +984,8 @@ void RelaunchApp() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssertTrue([ReaderModeAppInterface waitUntilReaderModeWebStateIsReady],
+                 @"Reader mode content could not be loaded");
 
   [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
 
@@ -1023,11 +1025,11 @@ void RelaunchApp() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
-  [ChromeEarlGrey waitForPageToFinishLoading];
+  GREYAssertTrue([ReaderModeAppInterface waitUntilReaderModeWebStateIsReady],
+                 @"Reader mode content could not be loaded");
 
   [ChromeEarlGreyUI
       longPressElementOnWebView:ElementSelectorToLongPressImage()];
-
   TapOnContextMenuButton(OpenImageButton());
   [ChromeEarlGrey waitForPageToFinishLoading];
 

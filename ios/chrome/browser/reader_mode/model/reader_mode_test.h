@@ -46,8 +46,11 @@ class ReaderModeTest : public PlatformTest {
                           ReaderModeHeuristicResult eligibility,
                           std::string distilled_content);
 
-  // Waits for Reader Mode content to be loaded and ready to query.
-  void WaitForReaderModeContentReady();
+  // Waits after a page load for the page content to be distillable.
+  void WaitForPageLoadDelayAndRunUntilIdle();
+
+  // Waits for Reader mode content availability.
+  bool WaitForAvailableReaderModeContentInWebState(web::WebState* web_state);
 
   web::WebTaskEnvironment* task_environment() { return &task_environment_; }
 
