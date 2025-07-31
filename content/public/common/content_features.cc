@@ -1595,11 +1595,7 @@ const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{
 
 BASE_FEATURE(kPwaNavigationCapturing,
              "PwaNavigationCapturing",
-#if BUILDFLAG(IS_CHROMEOS)
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#else
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
 
 const base::FeatureParam<CapturingState>::Option kNavigationCapturingParams[] =
     {{CapturingState::kDefaultOn, "on_by_default"},

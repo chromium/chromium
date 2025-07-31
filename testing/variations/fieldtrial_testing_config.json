@@ -16642,24 +16642,6 @@
             ]
         }
     ],
-    "PWANavigationCapturingV2ChromeOS": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledSettingOffByDefault",
-                    "params": {
-                        "link_capturing_state": "reimpl_default_off"
-                    },
-                    "enable_features": [
-                        "PwaNavigationCapturing"
-                    ]
-                }
-            ]
-        }
-    ],
     "PWANavigationCapturingV2WindowMacLinux": [
         {
             "platforms": [
