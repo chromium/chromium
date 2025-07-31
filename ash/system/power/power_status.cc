@@ -320,6 +320,11 @@ void PowerStatus::CalculateBatteryImageInfo(BatteryImageInfo* info) const {
         chromeos::features::IsBatteryBadgeIconEnabled()
             ? &kUnifiedMenuBatteryUnreliableOutlineMaskIcon
             : &kUnifiedMenuBatteryUnreliableOutlineMaskLegacyIcon;
+  } else if (IsLinePowerConnected() &&
+             features::IsBatteryChargeLimitAvailable() &&
+             IsBatteryChargeLimited()) {
+    info->icon_badge = &kChargeLimitShieldIcon;
+    info->badge_outline = &kChargeLimitShieldOutlineMaskIcon;
   } else if (IsLinePowerConnected()) {
     info->icon_badge = chromeos::features::IsBatteryBadgeIconEnabled()
                            ? &kUnifiedMenuBatteryBoltIcon
