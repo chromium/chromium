@@ -467,7 +467,7 @@ TEST_F(GpuDataManagerImplPrivateTest, GpuStartsWithGraphiteFeatureFlag) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 }
 
-// On Mac graphite should fallback to Swiftshader immediately. On other
+// On Mac-ARM graphite should fallback to Swiftshader immediately. On other
 // platforms graphite should fallback to Ganesh/GL.
 TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
@@ -477,7 +477,11 @@ TEST_F(GpuDataManagerImplPrivateTest, FallbackFromGraphite) {
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
+  EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
+#else
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GL, manager->GetGpuMode());
+#endif
 }
 
 // Android and Chrome OS do not support software compositing, while Fuchsia does
@@ -566,7 +570,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
+  // On Mac-ARM we don't fall back to Ganesh from Graphite.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   manager->FallBackToNextGpuMode();
+#endif
   manager->FallBackToNextGpuMode();
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
@@ -585,7 +592,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
+  // On Mac-ARM we don't fall back to Ganesh from Graphite.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   manager->FallBackToNextGpuMode();
+#endif
   manager->FallBackToNextGpuMode();
 
   EXPECT_EQ(gpu::GpuMode::SOFTWARE_GL, manager->GetGpuMode());
@@ -605,7 +615,11 @@ TEST_F(GpuDataManagerImplPrivateTest,
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
   manager->FallBackToNextGpuMode();
+
+  // On Mac-ARM we don't fall back to Ganesh from Graphite.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   manager->FallBackToNextGpuMode();
+#endif
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
   EXPECT_EQ(expected_mode, manager->GetGpuMode());
@@ -627,7 +641,10 @@ TEST_F(GpuDataManagerImplPrivateTest,
   ScopedGpuDataManagerImplPrivate manager;
   EXPECT_EQ(gpu::GpuMode::HARDWARE_GRAPHITE, manager->GetGpuMode());
 
+  // On Mac-ARM we don't fall back to Ganesh from Graphite.
+#if !(BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64))
   manager->FallBackToNextGpuMode();
+#endif
   manager->FallBackToNextGpuMode();
 
   gpu::GpuMode expected_mode = gpu::GpuMode::DISPLAY_COMPOSITOR;
