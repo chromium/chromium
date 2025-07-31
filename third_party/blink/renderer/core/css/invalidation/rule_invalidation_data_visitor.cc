@@ -344,6 +344,37 @@ RuleInvalidationDataVisitor<VisitorType>::CollectFeaturesFromSelector(
   return SelectorPreMatch::kMayMatch;
 }
 
+namespace {
+
+// True if a selector list pointed to by '&' can possibly match something.
+//
+// For example, a rule like `::before { & {} }` is valid parse-time,
+// but can never match anything (since '&' can't represent a pseudo-element).
+//
+// Note that cases with mixed allowed/disallowed selectors
+// can not be handled here. This is instead handled per argument
+// in SelectorChecker::CheckPseudoElement, via the check on
+// context.in_nested_complex_selector.
+bool ParentPseudoListCanMatchSomething(const CSSSelector* selector_list) {
+  if (!selector_list) {
+    // A '&' selector with no list is valid, and matches like :scope.
+    return true;
+  }
+  for (const CSSSelector* s = selector_list; s; s = CSSSelectorList::Next(*s)) {
+    // Recurse into any inner '&' to catch cases like: ::before { & { & {} } }.
+    if (s->GetPseudoType() == CSSSelector::kPseudoParent) {
+      if (ParentPseudoListCanMatchSomething(s->SelectorListOrParent())) {
+        return true;
+      }
+    } else if (s->IsAllowedInParentPseudo()) {
+      return true;
+    }
+  }
+  return false;
+}
+
+}  // namespace
+
 template <RuleInvalidationDataVisitorType VisitorType>
 SelectorPreMatch
 RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
@@ -370,16 +401,8 @@ RuleInvalidationDataVisitor<VisitorType>::CollectMetadataFromSelector(
                                         metadata);
         break;
       case CSSSelector::kPseudoParent:
-        if (const CSSSelector* selector_list = current->SelectorListOrParent();
-            selector_list &&
-            !CSSSelectorList::IsAnyAllowedInParentPseudo(selector_list)) {
-          // A rule like `::before { & {} }` is valid parse-time,
-          // but can never match anything.
-          //
-          // Note that cases with mixed allowed/disallowed selectors
-          // can not be handled here. This is instead handled per argument
-          // in SelectorChecker::CheckPseudoElement, via the check on
-          // context.in_nested_complex_selector.
+        if (!ParentPseudoListCanMatchSomething(
+                current->SelectorListOrParent())) {
           return SelectorPreMatch::kNeverMatches;
         }
         CollectMetadataFromSelectorList(current->SelectorListOrParent(),
