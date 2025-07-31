@@ -135,6 +135,21 @@ TEST_F(ArcDlcInstallerTest, MaybeEnableArc_WithPolicyUnset) {
   PrepareArcAndWait(/*expected_result=*/false);
 }
 
+TEST_F(ArcDlcInstallerTest, VerifyNotifications_DlcServiceNotAvailable) {
+  test_install_attributes_.Get()->SetCloudManaged("example.com",
+                                                  "fake-device-id");
+  // Add arcvm-dlc command flag.
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kEnableArcVmDlc);
+  SetFlexArcPreloadEnabled(true);
+  fake_dlcservice_client()->set_service_availability(false);
+
+  PrepareArcAndWait(/*expected_result=*/false);
+
+  VerifyNotifications(
+      {arc_dlc_install_notification_manager::kArcVmPreloadFailedId});
+}
+
 TEST_F(ArcDlcInstallerTest, VerifyNotifications_InstallSuccess) {
   test_install_attributes_.Get()->SetCloudManaged("example.com",
                                                   "fake-device-id");

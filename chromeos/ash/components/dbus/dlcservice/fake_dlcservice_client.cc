@@ -119,6 +119,12 @@ void FakeDlcserviceClient::RemoveObserver(Observer* observer) {
   observers_.RemoveObserver(observer);
 }
 
+void FakeDlcserviceClient::WaitForServiceToBeAvailable(
+    base::OnceCallback<void(bool service_available)> callback) {
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), service_available_));
+}
+
 std::string FakeDlcserviceClient::GetInstallError() {
   if (extra_install_errs_.empty()) {
     return install_err_;

@@ -63,6 +63,10 @@ class ArcDlcInstaller {
   void OnHardwareCheckComplete(base::OnceCallback<void(bool)> callback,
                                bool is_compatible);
 
+  // Called when the availability of the DLC service is determined. If
+  // available, this function initiates the installation of the ARCVM DLC.
+  void OnDlcServiceAvailable(bool service_available);
+
   // Handles the result of the ARCVM DLC installation. If successful, shows a
   // success notification, configures and starts necessary Upstart jobs, and
   // invokes the callback. If installation fails, logs the error, shows a
@@ -81,6 +85,7 @@ class ArcDlcInstaller {
 
   std::unique_ptr<ArcDlcInstallHardwareChecker> hardware_checker_;
   raw_ptr<ash::CrosSettings> cros_settings_;
+  base::OnceCallback<void(bool)> prepare_arc_callback_;
   base::WeakPtrFactory<ArcDlcInstaller> weak_ptr_factory_{this};
 };
 

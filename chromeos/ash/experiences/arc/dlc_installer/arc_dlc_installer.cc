@@ -57,18 +57,37 @@ void ArcDlcInstaller::OnHardwareCheckComplete(
     return;
   }
 
+  VLOG(1) << "Device is compatible for ARC. Checking DLC service.";
+  prepare_arc_callback_ = std::move(callback);
+  ash::DlcserviceClient::Get()->WaitForServiceToBeAvailable(base::BindOnce(
+      &ArcDlcInstaller::OnDlcServiceAvailable, weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ArcDlcInstaller::OnDlcServiceAvailable(bool service_available) {
+  DCHECK(prepare_arc_callback_);
+
+  if (!service_available) {
+    LOG(ERROR) << "DLC service is not available, cannot install ARCVM DLC.";
+    arc_dlc_install_notification_manager::Show(
+        arc_dlc_install_notification_manager::NotificationType::
+            kArcVmPreloadFailed);
+    base::UmaHistogramBoolean("Arc.DlcInstaller.Install", false);
+    std::move(prepare_arc_callback_).Run(false);
+    return;
+  }
+
   auto installation_triggered = std::make_unique<bool>(false);
   auto* installation_triggered_ptr = installation_triggered.get();
   dlcservice::InstallRequest install_request;
   install_request.set_id(kArcvmDlcId);
 
-  VLOG(1) << "Device is compatible for ARC. Installing ARCVM DLC.";
+  VLOG(1) << "Device service is available. Installing ARCVM DLC.";
   base::TimeTicks start_installation_time = base::TimeTicks::Now();
   ash::DlcserviceClient::Get()->Install(
       install_request,
       base::BindOnce(&ArcDlcInstaller::OnDlcInstalled,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-                     start_installation_time,
+                     weak_ptr_factory_.GetWeakPtr(),
+                     std::move(prepare_arc_callback_), start_installation_time,
                      std::move(installation_triggered)),
       base::BindRepeating(&ArcDlcInstaller::OnDlcProgress,
                           weak_ptr_factory_.GetWeakPtr(),
@@ -130,6 +149,7 @@ void ArcDlcInstaller::OnDlcInstalled(
     return;
   }
 
+  VLOG(1) << "ARCVM DLC installed successfully.";
   base::TimeDelta install_duration =
       base::TimeTicks::Now() - start_installation_time;
   base::UmaHistogramLongTimes("Arc.DlcInstaller.InstallTime", install_duration);

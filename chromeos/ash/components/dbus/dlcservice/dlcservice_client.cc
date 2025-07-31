@@ -197,6 +197,11 @@ class DlcserviceClientImpl : public DlcserviceClient {
     observers_.RemoveObserver(observer);
   }
 
+  void WaitForServiceToBeAvailable(
+      base::OnceCallback<void(bool)> callback) override {
+    dlcservice_proxy_->WaitForServiceToBeAvailable(std::move(callback));
+  }
+
   void Init(dbus::Bus* bus) {
     dlcservice_proxy_ = bus->GetObjectProxy(
         dlcservice::kDlcServiceServiceName,
