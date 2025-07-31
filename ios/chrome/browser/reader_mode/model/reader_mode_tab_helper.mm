@@ -6,12 +6,14 @@
 
 #import <MaterialComponents/MaterialSnackbar.h>
 
+#import "base/containers/fixed_flat_set.h"
 #import "base/metrics/histogram_macros.h"
 #import "base/strings/string_number_conversions.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "components/dom_distiller/core/extraction_utils.h"
+#import "components/google/core/common/google_util.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
@@ -36,18 +38,17 @@
 
 namespace {
 
+// These are known google websites that don't support reader mode.
+static constexpr auto kGoogleWorkspaceBlocklist =
+    base::MakeFixedFlatSet<std::string_view>(
+        {"assistant.google.com", "calendar.google.com", "docs.google.com",
+         "drive.google.com", "mail.google.com", "photos.google.com"});
+
 // Helper function to generate the snackbar message.
 NSString* GenerateSnackbarMessage(bool is_distillable_page) {
   std::string message = "\nDistillation Result: ";
   message += (is_distillable_page ? "Distillable" : "Not Distillable");
   return base::SysUTF8ToNSString(message);
-}
-
-// Returns whether `web_state` currently satisfies basic requirements for Reader
-// mode before running a distillation heuristic.
-bool CurrentPageSupportsReaderModeHeuristic(web::WebState* web_state) {
-  return web_state && !web_state->IsBeingDestroyed() &&
-         !IsUrlNtp(web_state->GetVisibleURL()) && web_state->ContentIsHTML();
 }
 
 // Returns the Readability heuristic result if it is available otherwise returns
@@ -101,6 +102,9 @@ void ReaderModeTabHelper::ActivateReader(ReaderModeAccessPoint access_point) {
   if (active_) {
     return;
   }
+  // It is not expected to activate reader mode for a page that is not
+  // eligible.
+  CHECK(CurrentPageIsEligibleForReaderMode());
   active_ = true;
   metrics_helper_.RecordReaderDistillerTriggered(access_point);
 
@@ -126,8 +130,24 @@ web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
   return reader_mode_web_state_.get();
 }
 
+bool ReaderModeTabHelper::CurrentPageIsEligibleForReaderMode() const {
+  bool eligible = web_state_ && !web_state_->IsBeingDestroyed() &&
+                  web_state_->ContentIsHTML();
+  if (!eligible) {
+    return false;
+  }
+  GURL current_url = web_state_->GetLastCommittedURL();
+  return current_url.SchemeIsHTTPOrHTTPS() &&
+         !google_util::IsGoogleHomePageUrl(current_url) &&
+         !google_util::IsGoogleSearchUrl(current_url) &&
+         !google_util::IsYoutubeDomainUrl(
+             current_url, google_util::ALLOW_SUBDOMAIN,
+             google_util::ALLOW_NON_STANDARD_PORTS) &&
+         !kGoogleWorkspaceBlocklist.contains(current_url.host_piece());
+}
+
 bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
-  return web_state_ && CurrentPageSupportsReaderModeHeuristic(web_state_) &&
+  return CurrentPageIsEligibleForReaderMode() &&
          last_committed_url_eligibility_ready_ &&
          last_committed_url_without_ref_.is_valid() &&
          last_committed_url_without_ref_.EqualsIgnoringRef(
@@ -287,7 +307,7 @@ void ReaderModeTabHelper::TriggerReaderModeHeuristic(const GURL& url) {
   if (!IsReaderModeAvailable()) {
     return;
   }
-  if (web_state_ && !CurrentPageSupportsReaderModeHeuristic(web_state_)) {
+  if (!CurrentPageIsEligibleForReaderMode()) {
     // If the current page does not support running the heuristic, then the
     // eligibility of the current page is already know.
     last_committed_url_eligibility_ready_ = true;

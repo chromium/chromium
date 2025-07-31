@@ -69,6 +69,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // null if Reader mode is active, or non-null while Reader mode is inactive.
   web::WebState* GetReaderModeWebState();
 
+  // Returns whether the current page should be considered for Reader Mode.
+  bool CurrentPageIsEligibleForReaderMode() const;
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
   // - If the eligibility of the last committed URL is already known, calls

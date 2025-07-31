@@ -181,8 +181,68 @@ TEST_F(ReaderModeTabHelperTest, WebStateDestructionCancelsHeuristic) {
   EXPECT_EQ(0u, ukm_entries.size());
 }
 
-// Tests that reader mode is not supported on NTP.
-TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNtp) {
+// Tests that reader mode is not eligible on google search result page.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleSearch) {
+  GURL google_search_url("https://www.google.com/search?q=test");
+  SetReaderModeState(web_state(), google_search_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), google_search_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+}
+
+// Tests that reader mode is not eligible on google home page.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleHomePage) {
+  GURL google_home_page_url("https://www.google.com");
+  SetReaderModeState(web_state(), google_home_page_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), google_home_page_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+}
+
+// Tests that reader mode is not eligible on youtube page.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnYoutube) {
+  GURL youtube_url("https://www.youtube.com/watch?v=test");
+  SetReaderModeState(web_state(), youtube_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), youtube_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+}
+
+// Tests that reader mode is not eligible on google workspace page.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnGoogleWorkspace) {
+  GURL docs_url("https://docs.google.com/document/d/test");
+  SetReaderModeState(web_state(), docs_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), docs_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+}
+
+// Tests that reader mode is not eligible on chrome URLs.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnChromeURL) {
+  GURL chrome_url("chrome://version");
+  SetReaderModeState(web_state(), chrome_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), chrome_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+}
+
+// Tests that reader mode is not eligible on NTP.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNtp) {
   GURL ntp_url("chrome://newtab");
   SetReaderModeState(web_state(), ntp_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
@@ -193,8 +253,25 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNtp) {
   ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
 }
 
-// Tests that reader mode is not supported on pages that are not html.
-TEST_F(ReaderModeTabHelperTest, ReaderModeNotSupportedOnNonHTML) {
+// Tests that reader mode is eligible on a regular page.
+TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleOnRegularPage) {
+  GURL test_url("https://www.regular.com");
+  SetReaderModeState(web_state(), test_url,
+                     ReaderModeHeuristicResult::kReaderModeEligible, "");
+
+  LoadWebpage(web_state(), test_url);
+  WaitForPageLoadDelayAndRunUntilIdle();
+
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsEligibleForReaderMode());
+  reader_mode_tab_helper()->ActivateReader(
+      ReaderModeAccessPoint::kContextualChip);
+  ASSERT_TRUE(reader_mode_tab_helper()->IsActive());
+  WaitForAvailableReaderModeContentInWebState(web_state());
+  histogram_tester_.ExpectTotalCount(kReaderModeHeuristicResultHistogram, 1);
+}
+
+// Tests that reader mode is not eligible on pages that are not html.
+TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNonHTML) {
   GURL test_url("https://test.url/");
   SetReaderModeState(web_state(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "");

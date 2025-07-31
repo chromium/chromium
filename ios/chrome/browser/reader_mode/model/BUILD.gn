@@ -39,6 +39,7 @@ source_set("model") {
     "//components/dom_distiller/core",
     "//components/dom_distiller/core/proto",
     "//components/dom_distiller/ios",
+    "//components/google/core/common",
     "//components/keyed_service/core",
     "//components/prefs",
     "//components/strings",
