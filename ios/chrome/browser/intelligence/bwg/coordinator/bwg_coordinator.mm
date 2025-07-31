@@ -142,7 +142,10 @@ const CGFloat kPromoMaxImpressionCount = 3;
                                         animated:shouldAnimatePresentation
                                       completion:^{
                                         BWGCoordinator* strongSelf = weakSelf;
-                                        strongSelf->_wasPromoShown = showPromo;
+                                        if (strongSelf) {
+                                          strongSelf->_wasPromoShown =
+                                              showPromo;
+                                        }
                                       }];
 
   if (BWGTabHelper) {
