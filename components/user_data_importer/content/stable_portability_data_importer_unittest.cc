@@ -18,6 +18,7 @@
 #include "base/strings/string_util.h"
 #include "base/test/run_until.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "components/bookmarks/browser/bookmark_model.h"
@@ -59,9 +60,6 @@ class StablePortabilityDataImporterTest : public testing::Test {
  protected:
   void SetUp() override {
     CHECK(history_dir_.CreateUniqueTempDir());
-    history_service_ = history::CreateHistoryService(history_dir_.GetPath(),
-                                                     /*create_db=*/false);
-
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();
@@ -71,17 +69,13 @@ class StablePortabilityDataImporterTest : public testing::Test {
         syncer::WipeModelUponSyncDisabledBehavior::kNever,
         base::DefaultClock::GetInstance());
     storage_raw->TriggerLoadCompletion();
-
-    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
-        pending_remote{receiver_.BindNewPipeAndPassRemote()};
-    auto parser = base::MakeRefCounted<ContentBookmarkParser>();
-    parser->SetServiceForTesting(std::move(pending_remote));
-    importer_ = std::make_unique<StablePortabilityDataImporter>(
-        history_service_.get(), bookmark_model_.get(),
-        reading_list_model_.get(), std::move(parser));
   }
 
   void TearDown() override { task_environment_.RunUntilIdle(); }
+
+  history::HistoryService* history_service() const {
+    return history_service_.get();
+  }
 
   int GetNumberOfBookmarksImported() const {
     return number_bookmarks_imported_;
@@ -98,10 +92,6 @@ class StablePortabilityDataImporterTest : public testing::Test {
   }
 
   const ReadingListModel& GetReadingListModel() { return *reading_list_model_; }
-
-  const std::vector<StablePortabilityHistoryEntry>& GetPendingHistory() const {
-    return importer_->pending_history_entries_;
-  }
 
   void ImportBookmarks(const std::string& html_data) {
     bookmarks_callback_called_ = false;
@@ -138,7 +128,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     base::File file(bookmarks_file,
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-    importer_->ImportBookmarks(
+    importer()->ImportBookmarks(
         std::move(file),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -157,7 +147,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     base::File file(reading_list_file,
                     base::File::FLAG_OPEN | base::File::FLAG_READ);
 
-    importer_->ImportReadingList(
+    importer()->ImportReadingList(
         std::move(file),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -173,7 +163,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     PrepareCallbacks();
 
     const size_t default_batch_size = 10;
-    importer_->ImportHistory(
+    importer()->ImportHistory(
         history_file,
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
@@ -185,7 +175,45 @@ class StablePortabilityDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return history_callback_called_; }));
   }
 
+  history::QueryResults QueryAllHistory() {
+    // Wait for any pending tasks to complete.
+    base::RunLoop run_loop;
+    history_service()->FlushForTest(run_loop.QuitClosure());
+    run_loop.Run();
+
+    base::test::TestFuture<history::QueryResults> future;
+    base::CancelableTaskTracker tracker;
+    history::QueryOptions options;
+    history_service()->QueryHistory(std::u16string(), options,
+                                    future.GetCallback(), &tracker);
+    return future.Take();
+  }
+
+  void InitializeHistoryService() { CreateImporterAndService(true); }
+
  private:
+  StablePortabilityDataImporter* importer() {
+    if (!importer_) {
+      CreateImporterAndService(/*create_history_db=*/false);
+    }
+    return importer_.get();
+  }
+
+  // We need to perform a lazy initialization of the importer because the
+  // history database is created lazily. This is necessary to ensure that each
+  // test starts with a clean slate.
+  void CreateImporterAndService(bool create_history_db) {
+    history_service_ = history::CreateHistoryService(history_dir_.GetPath(),
+                                                     create_history_db);
+    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
+        pending_remote{receiver_.BindNewPipeAndPassRemote()};
+    auto parser = base::MakeRefCounted<ContentBookmarkParser>();
+    parser->SetServiceForTesting(std::move(pending_remote));
+    importer_ = std::make_unique<StablePortabilityDataImporter>(
+        history_service_.get(), bookmark_model_.get(),
+        reading_list_model_.get(), std::move(parser));
+  }
+
   void OnBookmarksConsumed(int number_imported) {
     bookmarks_callback_called_ = true;
     number_bookmarks_imported_ = number_imported;
@@ -442,6 +470,7 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
 
 // Tests parsing a simple JSON file with two history entries.
 TEST_F(StablePortabilityDataImporterTest, History_Basic) {
+  InitializeHistoryService();
   const char kHistoryJson[] = R"({
     "metadata": {
       "data_type": "history_visits"
@@ -465,26 +494,21 @@ TEST_F(StablePortabilityDataImporterTest, History_Basic) {
   ImportHistory(kHistoryJson);
   EXPECT_EQ(GetNumberOfHistoryImported(), 2);
 
-  ASSERT_EQ(GetPendingHistory().size(), 2u);
-  const auto& entry1 = GetPendingHistory()[0];
-  EXPECT_TRUE(entry1.synced);
-  EXPECT_EQ(entry1.title, "Google");
-  EXPECT_EQ(entry1.url, "https://www.google.com/");
-  EXPECT_EQ(entry1.visit_time_unix_epoch_usec, 1674205200000000u);
-  EXPECT_EQ(entry1.visit_count, 5u);
-  EXPECT_EQ(entry1.typed_count, 2u);
+  history::QueryResults results = QueryAllHistory();
+  ASSERT_EQ(results.size(), 2u);
 
-  const auto& entry2 = GetPendingHistory()[1];
-  EXPECT_FALSE(entry2.synced);
-  EXPECT_EQ(entry2.title, "Chromium");
-  EXPECT_EQ(entry2.url, "https://www.chromium.org/");
-  EXPECT_EQ(entry2.visit_time_unix_epoch_usec, 1674205260000000u);
-  EXPECT_EQ(entry2.visit_count, 1u);
-  EXPECT_EQ(entry2.typed_count, 0u);
+  std::set<GURL> actual_urls;
+  for (const auto& result : results) {
+    actual_urls.insert(result.url());
+  }
+  EXPECT_THAT(actual_urls,
+              UnorderedElementsAre(GURL("https://www.google.com/"),
+                                   GURL("https://www.chromium.org/")));
 }
 
 // Tests parsing an invalid JSON file.
 TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
+  InitializeHistoryService();
   const char kHistoryJson[] = R"({
     "metadata": {
       "data_type": "history_visits"
@@ -496,11 +520,11 @@ TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
   })";  // Invalid JSON, missing closing brackets.
   ImportHistory(kHistoryJson);
   EXPECT_EQ(GetNumberOfHistoryImported(), 0);
-  EXPECT_THAT(GetPendingHistory(), IsEmpty());
 }
 
 // Tests parsing a valid JSON file with no history entries.
 TEST_F(StablePortabilityDataImporterTest, History_NoEntries) {
+  InitializeHistoryService();
   const char kHistoryJson[] = R"({
     "metadata": {
       "data_type": "history_visits"
@@ -509,11 +533,11 @@ TEST_F(StablePortabilityDataImporterTest, History_NoEntries) {
   })";
   ImportHistory(kHistoryJson);
   EXPECT_EQ(GetNumberOfHistoryImported(), 0);
-  EXPECT_THAT(GetPendingHistory(), IsEmpty());
 }
 
 // Tests parsing a large JSON file that is processed in chunks.
 TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
+  InitializeHistoryService();
   const int num_visits = 15;
   std::vector<std::string> visits;
   for (int i = 0; i < num_visits; ++i) {
@@ -530,12 +554,19 @@ TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
   ImportHistory(history_json);
   EXPECT_EQ(GetNumberOfHistoryImported(), num_visits);
 
+  history::QueryResults results = QueryAllHistory();
+  ASSERT_EQ(results.size(), static_cast<size_t>(num_visits));
+
+  std::set<GURL> actual_urls;
   for (int i = 0; i < num_visits; ++i) {
-    const auto& entry = GetPendingHistory()[i];
-    EXPECT_EQ(entry.url, "https://www.example.com/" + base::NumberToString(i));
-    EXPECT_EQ(entry.title, "Title " + base::NumberToString(i));
-    EXPECT_EQ(entry.visit_time_unix_epoch_usec, 1674205200000000ULL + i);
+     actual_urls.insert(results[i].url());
   }
+
+  std::set<GURL> expected_urls;
+  for(int i = 0; i < num_visits; ++i){
+    expected_urls.insert(GURL(absl::StrFormat("https://www.example.com/%d", i)));
+  }
+  EXPECT_EQ(actual_urls, expected_urls);
 }
 
 // Tests importing invalid files that do not exist.

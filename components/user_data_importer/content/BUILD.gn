@@ -18,6 +18,7 @@ source_set("content") {
   deps = [
     "//base",
     "//components/favicon_base",
+    "//components/history/core/browser",
     "//components/search_engines",
     "//components/strings:components_strings_grit",
     "//components/user_data_importer/common",

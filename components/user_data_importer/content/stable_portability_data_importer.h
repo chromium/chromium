@@ -152,11 +152,6 @@ class StablePortabilityDataImporter {
 
   SEQUENCE_CHECKER(sequence_checker_);
 
-  // History entries which have been parsed, but not yet committed to permanent
-  // storage.
-  std::vector<StablePortabilityHistoryEntry> pending_history_entries_
-      GUARDED_BY_CONTEXT(sequence_checker_);
-
   // The task runner from which the import task was launched. The purpose of
   // this task runner is to post tasks on the thread where the importer lives,
   // which we have to do for all import callbacks.

@@ -54,6 +54,7 @@ enum VisitSource {
   SOURCE_IE_IMPORTED = 4,
   SOURCE_SAFARI_IMPORTED = 5,
   SOURCE_ACTOR = 6,
+  SOURCE_OS_MIGRATION_IMPORTED = 7,
 };
 
 // Corresponds to the "id" column of the "visits" SQL table.

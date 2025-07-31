@@ -6,10 +6,13 @@
 
 #include "base/check_deref.h"
 #include "base/files/file.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/types/expected_macros.h"
+#include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/url_row.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/user_data_importer/utility/bookmark_util.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
@@ -169,16 +172,51 @@ void StablePortabilityDataImporter::OnReadingListParsed(
   PostCallback(std::move(reading_list_callback), imported_count);
 }
 
+std::string_view RustStringToStringView(const rust::String& rust_string) {
+  return std::string_view(rust_string.data(), rust_string.length());
+}
+
+std::u16string RustStringToUTF16(const rust::String& rust_string) {
+  return base::UTF8ToUTF16(RustStringToStringView(rust_string));
+}
+
+std::optional<history::URLRow> ConvertToURLRow(
+    const user_data_importer::StablePortabilityHistoryEntry& history_entry) {
+  GURL gurl(RustStringToStringView(history_entry.url));
+  if (!gurl.is_valid()) {
+    return std::nullopt;
+  }
+
+  history::URLRow url_row(gurl);
+  url_row.set_title(RustStringToUTF16(history_entry.title));
+  url_row.set_visit_count(history_entry.visit_count);
+
+  url_row.set_last_visit(
+      base::Time::UnixEpoch() +
+      base::Microseconds(history_entry.visit_time_unix_epoch_usec));
+  url_row.set_typed_count(history_entry.typed_count);
+
+  return url_row;
+}
+
 void StablePortabilityDataImporter::TransferHistoryEntries(
     std::vector<StablePortabilityHistoryEntry> history_entries) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // TODO(crbug.com/431204966): Add the history entries to the user's storage.
-  pending_history_entries_.insert(
-      pending_history_entries_.end(),
-      std::make_move_iterator(history_entries.begin()),
-      std::make_move_iterator(history_entries.end()));
+  history::URLRows url_rows;
+  url_rows.reserve(history_entries.size());
+  for (StablePortabilityHistoryEntry history_entry : history_entries) {
+    std::optional<history::URLRow> opt_row = ConvertToURLRow(history_entry);
+    if (opt_row) {
+      url_rows.push_back(std::move(opt_row.value()));
+    }
+  }
+
+  if (!url_rows.empty()) {
+    history_service_->AddPagesWithDetails(
+        url_rows, history::SOURCE_OS_MIGRATION_IMPORTED);
+  }
 }
 
 void StablePortabilityDataImporter::ImportHistory(
