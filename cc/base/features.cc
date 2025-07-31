@@ -157,14 +157,6 @@ BASE_FEATURE(kAllowLCDTextWithFilter,
              "AllowLCDTextWithFilter",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-BASE_FEATURE(kMultipleImplOnlyScrollAnimations,
-             "MultipleImplOnlyScrollAnimations",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-bool MultiImplOnlyScrollAnimationsSupported() {
-  return base::FeatureList::IsEnabled(
-      features::kMultipleImplOnlyScrollAnimations);
-}
-
 BASE_FEATURE(kRenderSurfacePixelAlignment,
              "RenderSurfacePixelAlignment",
              base::FEATURE_ENABLED_BY_DEFAULT);

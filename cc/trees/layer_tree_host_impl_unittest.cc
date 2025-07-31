@@ -2890,81 +2890,6 @@ TEST_P(LayerTreeHostImplTest, ScrollSnapAfterAnimatedScroll) {
             GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
 }
 
-TEST_P(LayerTreeHostImplTest, SnapAnimationTargetUpdated) {
-  // If MultiImplOnlyScrollAnimations is enabled this test is not valid because
-  // that flag makes InputHandler forget the latched ScrollNode at the beginning
-  // of the snap animation rather than at the end. And so, processing a
-  // ScrollUpdate (without a corresponding ScrollBegin) after the snap animation
-  // has kicked off is invalid.
-  // TODO(crbug.com/372627916): remove this test when deleting this flag.
-  if (features::MultiImplOnlyScrollAnimationsSupported()) {
-    return;
-  }
-  LayerImpl* overflow = CreateLayerForSnapping();
-
-  gfx::Point pointer_position(10, 10);
-  gfx::Vector2dF y_delta(0, 20);
-  EXPECT_EQ(ScrollThread::kScrollOnImplThread,
-            GetInputHandler()
-                .ScrollBegin(BeginState(pointer_position, y_delta,
-                                        ui::ScrollInputType::kWheel)
-                                 .get(),
-                             ui::ScrollInputType::kWheel)
-                .thread);
-  EXPECT_POINTF_EQ(gfx::PointF(0, 0), CurrentScrollOffset(overflow));
-
-  GetInputHandler().ScrollUpdate(
-      UpdateState(pointer_position, y_delta, ui::ScrollInputType::kWheel));
-  EXPECT_FALSE(
-      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
-
-  viz::BeginFrameArgs begin_frame_args =
-      viz::CreateBeginFrameArgsForTesting(BEGINFRAME_FROM_HERE, 0, 1);
-  GetInputHandler().ScrollEnd(true);
-  base::TimeTicks start_time = base::TimeTicks() + base::Milliseconds(100);
-  BeginImplFrameAndAnimate(begin_frame_args, start_time);
-
-  // Finish smooth wheel scroll animation which starts a snap animation.
-  BeginImplFrameAndAnimate(begin_frame_args,
-                           start_time + base::Milliseconds(100));
-  EXPECT_TRUE(
-      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
-  EXPECT_EQ(TargetSnapAreaElementIds(),
-            GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
-
-  gfx::PointF current_offset = CurrentScrollOffset(overflow);
-  EXPECT_GT(50, current_offset.y());
-  EXPECT_LT(20, current_offset.y());
-
-  // Update wheel scroll animation target. This should no longer be considered
-  // as animating a snap scroll, which should happen at the end of this
-  // animation.
-  GetInputHandler().ScrollUpdate(
-      AnimatedUpdateState(gfx::Point(10, 10), gfx::Vector2dF(0, -10)));
-  EXPECT_FALSE(
-      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
-  // Finish the smooth scroll animation for wheel.
-  BeginImplFrameAndAnimate(begin_frame_args,
-                           start_time + base::Milliseconds(150));
-
-  // At the end of the previous scroll animation, a new animation for the
-  // snapping should have started.
-  EXPECT_TRUE(
-      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
-
-  // Finish the snap animation.
-  BeginImplFrameAndAnimate(begin_frame_args,
-                           start_time + base::Milliseconds(1000));
-
-  EXPECT_FALSE(
-      GetInputHandler().animating_for_snap_for_testing(overflow->element_id()));
-  // At the end of snap animation we should have updated the
-  // TargetSnapAreaElementIds.
-  EXPECT_EQ(TargetSnapAreaElementIds(ElementId(), ElementId(10)),
-            GetSnapContainerData(overflow)->GetTargetSnapAreaElementIds());
-  EXPECT_POINTF_EQ(gfx::PointF(0, 50), CurrentScrollOffset(overflow));
-}
-
 TEST_P(LayerTreeHostImplTest, SnapAnimationCancelledByScroll) {
   LayerImpl* overflow = CreateLayerForSnapping();
 
@@ -19391,11 +19316,6 @@ TEST_P(LayerTreeHostImplTest, VisbilityUpdateToLayers) {
 
 class ConcurrentImplOnlyScrollAnimationsTest : public LayerTreeHostImplTest {
  public:
-  void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMultipleImplOnlyScrollAnimations);
-    LayerTreeHostImplTest::SetUp();
-  }
   gfx::PointF CreateAndTickScrollAnimations();
   void CompleteScrollAnimations();
 
@@ -19544,8 +19464,6 @@ TEST_P(ConcurrentImplOnlyScrollAnimationsTest, RemovedByCommit) {
 class ConcurrentSnapAnimationsTest : public LayerTreeHostImplTest {
  public:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kMultipleImplOnlyScrollAnimations);
     LayerTreeHostImplTest::SetUp();
     gfx::Size viewport_size(100, 100);
     gfx::Size content_size(100, 5000);

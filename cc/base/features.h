@@ -152,10 +152,6 @@ CC_BASE_EXPORT extern const base::FeatureParam<std::string>
 // Killswitch M135.
 CC_BASE_EXPORT BASE_DECLARE_FEATURE(kAllowLCDTextWithFilter);
 
-// When enabled, impl-only scroll animations may execute concurrently.
-CC_BASE_EXPORT BASE_DECLARE_FEATURE(kMultipleImplOnlyScrollAnimations);
-CC_BASE_EXPORT extern bool MultiImplOnlyScrollAnimationsSupported();
-
 // When enabled, for a render surface with fractional translation, we'll try to
 // align the texels in the render surface to screen pixels to avoid blurriness
 // during compositing.

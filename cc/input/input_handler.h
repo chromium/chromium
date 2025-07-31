@@ -825,11 +825,6 @@ class CC_EXPORT InputHandler : public InputDelegateForCompositor {
   // over.
   bool deferred_scroll_end_ = false;
 
-  // Set to true when a scroll gesture being handled on the compositor has
-  // ended. i.e. When a GSE has arrived and any ongoing scroll animation has
-  // ended.
-  bool scroll_gesture_did_end_ = false;
-
   // True iff some of the delta has been consumed for the current scroll
   // sequence on the specific axis.
   bool did_scroll_x_for_scroll_gesture_ = false;
