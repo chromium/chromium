@@ -3932,7 +3932,7 @@ failing to fetch the updates which puts users' security at risk. -->
 </histogram>
 
 <histogram name="SafeBrowsing.WebView.AppOptIn" enum="SafeBrowsingAppOptIn"
-    expires_after="2025-01-05">
+    expires_after="2026-07-30">
   <owner>ntfschr@chromium.org</owner>
   <owner>src/android_webview/OWNERS</owner>
   <summary>
@@ -3940,8 +3940,8 @@ failing to fetch the updates which puts users' security at risk. -->
     Browsing by manifest tag, or if they're relying on the default behavior.
     This is recorded once during startup.
 
-    Warning: this histogram was expired from 2024-06-06 to 2024-07-16; data may
-    be missing.
+    Warning: this histogram was expired from 2024-06-06 to 2024-07-16 and
+    2025-01-05 to 2025-07-30; data may be missing.
   </summary>
 </histogram>
 
