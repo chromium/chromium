@@ -10,7 +10,7 @@
 #include "base/time/time.h"
 #include "components/services/storage/public/cpp/buckets/bucket_id.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
-#include "third_party/blink/public/mojom/buckets/bucket_manager_host.mojom.h"
+#include "third_party/blink/public/mojom/quota/quota_types.mojom-forward.h"
 
 namespace storage {
 
