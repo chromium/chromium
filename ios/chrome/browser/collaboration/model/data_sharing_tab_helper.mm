@@ -11,6 +11,7 @@
 #import "components/collaboration/public/collaboration_service.h"
 #import "components/data_sharing/public/data_sharing_utils.h"
 #import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
+#import "ios/chrome/browser/collaboration/model/features.h"
 #import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser/browser_list.h"
@@ -78,6 +79,7 @@ void DataSharingTabHelper::ShouldAllowRequest(
 
   GURL url = net::GURLWithNSURL(request.URL);
   if (collaboration_service &&
+      IsSharedTabGroupsJoinEnabled(collaboration_service) &&
       data_sharing::DataSharingUtils::ShouldInterceptNavigationForShareURL(
           url)) {
     BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);

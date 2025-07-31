@@ -48,6 +48,7 @@ source_set("model") {
   ]
 
   deps = [
+    ":features",
     "//base",
     "//components/collaboration/internal",
     "//components/data_sharing/public:features",
