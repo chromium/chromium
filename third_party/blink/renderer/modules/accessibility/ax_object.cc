@@ -1470,13 +1470,6 @@ void AXObject::SerializeBoundingBoxAttributes(ui::AXNodeData& dst) const {
   gfx::Point scroll_offset = GetScrollOffset();
   AXObjectCache().SetCachedBoundingBox(AXObjectID(), dst.relative_bounds,
                                        scroll_offset.x(), scroll_offset.y());
-
-#if BUILDFLAG(IS_ANDROID)
-  if (blink::features::IsXrDevice() && GetPaintOrder() > 0) {
-    dst.AddIntAttribute(ax::mojom::blink::IntAttribute::kPaintOrder,
-                        GetPaintOrder());
-  }
-#endif
 }
 
 static bool AXShouldIncludePageScaleFactorInRoot() {
@@ -4348,35 +4341,6 @@ bool AXObject::IsExcludedByFormControlsFilter() const {
 
   return true;
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void AXObject::AnnotateXrHitTestOrder(const Document& document,
-                                      const HashMap<DOMNodeId, int>& order_map,
-                                      int inherited_paint_order) {
-  CHECK(blink::features::IsXrDevice());
-  if (IsDetached() || GetDocument() != &document) {
-    return;
-  }
-
-  // If we don't find a paint order for this node, use the paint order
-  // inherited from its nearest ancestor.
-  paint_order_ = inherited_paint_order;
-  Node* node = GetNode();
-  if (node) {
-    DOMNodeId dom_node_id = node->GetDomNodeId();
-    if (dom_node_id != kInvalidDOMNodeId) {
-      auto it = order_map.find(dom_node_id);
-      if (it != order_map.end()) {
-        paint_order_ = it->value;
-      }
-    }
-  }
-
-  for (auto& child : CachedChildrenIncludingIgnored()) {
-    child->AnnotateXrHitTestOrder(document, order_map, paint_order_);
-  }
-}
-#endif
 
 bool AXObject::ComputeIsIgnoredButIncludedInTree() {
   CHECK(!IsDetached());

@@ -2514,12 +2514,4 @@ BrowserAccessibilityAndroid::GenerateAccessibilityNodeInfoString() const {
   return manager->GenerateAccessibilityNodeInfoString(GetUniqueId());
 }
 
-int BrowserAccessibilityAndroid::GetPaintOrder() const {
-  if (HasIntAttribute(ax::mojom::IntAttribute::kPaintOrder)) {
-    return GetData().GetPaintOrder();
-  } else {
-    return 0;
-  }
-}
-
 }  // namespace content

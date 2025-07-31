@@ -407,7 +407,6 @@ struct AX_BASE_EXPORT AXNodeData final {
   void SetRestriction(ax::mojom::Restriction restriction);
   ax::mojom::ListStyle GetListStyle() const;
   void SetListStyle(ax::mojom::ListStyle list_style);
-  int GetPaintOrder() const;
   ax::mojom::TextAlign GetTextAlign() const;
   void SetTextAlign(ax::mojom::TextAlign text_align);
   ax::mojom::WritingDirection GetTextDirection() const;

@@ -1299,10 +1299,6 @@ class CORE_EXPORT LocalFrameView final
   bool is_updating_layout_;
 #endif
 
-#if BUILDFLAG(IS_ANDROID)
-  bool needs_accessibility_xr_hit_test_update_ = false;
-#endif
-
   FRIEND_TEST_ALL_PREFIXES(FrameThrottlingTest, ForAllThrottledLocalFrameViews);
 };
 

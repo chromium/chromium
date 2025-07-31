@@ -83,7 +83,6 @@ import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBu
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_OFFSCREEN;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_BOTTOM;
 import static org.chromium.content.browser.accessibility.AccessibilityNodeInfoBuilder.EXTRAS_KEY_UNCLIPPED_TOP;
-import static org.chromium.content.browser.accessibility.WebContentsAccessibilityImpl.EXTRA_DATA_ABSOLUTE_DRAWING_ORDER_KEY;
 import static org.chromium.ui.accessibility.AccessibilityState.EVENT_TYPE_MASK_NONE;
 import static org.chromium.ui.accessibility.AccessibilityState.KNOWN_SCREEN_READER_SERVICE_IDS;
 import static org.chromium.ui.accessibility.AccessibilityState.StateIdentifierForTesting.EVENT_TYPE_MASK;
@@ -127,7 +126,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
-import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
@@ -2065,102 +2063,6 @@ public class WebContentsAccessibilityTest {
         Assert.assertTrue(
                 IMAGE_DATA_BUNDLE_EXTRA_ERROR,
                 mNodeInfo.getExtras().getByteArray(EXTRAS_KEY_IMAGE_DATA).length > 50);
-    }
-
-    private int getAbsoluteDrawingOrderForId(String id) {
-        // Wait until we find a node in the accessibility tree with the specified text.
-        int textNodeVirtualViewId = waitForNodeMatching(sViewIdResourceNameMatcher, id);
-        mNodeInfo = createAccessibilityNodeInfo(textNodeVirtualViewId);
-        Assert.assertNotNull(NODE_TIMEOUT_ERROR, mNodeInfo);
-
-        // Call the API we want to test - addExtraDataToAccessibilityNodeInfo.
-        // This needs to run on the UI thread.
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    mActivityTestRule.mNodeProvider.addExtraDataToAccessibilityNodeInfo(
-                            textNodeVirtualViewId,
-                            mNodeInfo,
-                            EXTRA_DATA_ABSOLUTE_DRAWING_ORDER_KEY,
-                            null);
-                });
-
-        Bundle extras = mNodeInfo.getExtras();
-        return extras.getInt(EXTRA_DATA_ABSOLUTE_DRAWING_ORDER_KEY);
-    }
-
-    /** Test |AccessibilityNodeInfo| object for correct paint order values. */
-    @Test
-    @SmallTest
-    @EnableFeatures("XrDevice") // Paint order only available on XR devices for performance reasons
-    @CommandLineFlags.Add({"force-renderer-accessibility"})
-    public void testNodeInfo_extraDataAdded_paintOrder() {
-        // Green box with a red box on top of it, and a blue box on top of both.
-        // We include JS handlers in case we optimize out non-interactable regions in the future.
-        setupTestWithHTML(
-                """
-                <div id="red" style="position: absolute; top: 10px;
-                                     left: 10px; width: 60px; height: 60px;
-                                     background: red; z-index: 1;">red</div>
-                <div id="blue" style="position: absolute; top: 30px;
-                                      left: 30px; width: 60px; height: 60px;
-                                      background: blue; z-index: 1;">blue</div>
-                <div id="green" style="width: 100px; height: 100px;
-                                       background: lightgreen;">green</div>
-                <script>
-                    red.onclick = () => alert('red');
-                    blue.onclick = () => alert('blue');
-                    green.onclick = () => alert('green');
-                </script>
-                """);
-
-        int resultRed = getAbsoluteDrawingOrderForId("red");
-        int resultBlue = getAbsoluteDrawingOrderForId("blue");
-        int resultGreen = getAbsoluteDrawingOrderForId("green");
-
-        // They should be in correct order.
-        Assert.assertTrue(resultGreen < resultRed);
-        Assert.assertTrue(resultRed < resultBlue);
-    }
-
-    /**
-     * Test |AccessibilityNodeInfo| object for correct paint order values, this time adding
-     * "will-change: transform" to each of the divs to force Chromium to put them on different
-     * cc::Layers.
-     */
-    @Test
-    @SmallTest
-    @EnableFeatures("XrDevice") // Paint order only available on XR devices for performance reasons
-    @CommandLineFlags.Add({"force-renderer-accessibility"})
-    public void testNodeInfo_extraDataAdded_paintOrderWillChangeTransform() {
-        // Green box with a red box on top of it, and a blue box on top of both.
-        // We include JS handlers in case we optimize out non-interactable regions in the future.
-        setupTestWithHTML(
-                """
-                <div id="red" style="position: absolute; top: 10px;
-                                     left: 10px; width: 60px; height: 60px;
-                                     background: red; z-index: 1;
-                                     will-change: transform;">red</div>
-                <div id="blue" style="position: absolute; top: 30px;
-                                      left: 30px; width: 60px; height: 60px;
-                                      background: blue; z-index: 1;
-                                      will-change: transform;">blue</div>
-                <div id="green" style="width: 100px; height: 100px;
-                                       background: lightgreen;
-                                       will-change: transform;">green</div>
-                <script>
-                    red.onclick = () => alert('red');
-                    blue.onclick = () => alert('blue');
-                    green.onclick = () => alert('green');
-                </script>
-                """);
-
-        int resultRed = getAbsoluteDrawingOrderForId("red");
-        int resultBlue = getAbsoluteDrawingOrderForId("blue");
-        int resultGreen = getAbsoluteDrawingOrderForId("green");
-
-        // They should be in correct order.
-        Assert.assertTrue(resultGreen < resultRed);
-        Assert.assertTrue(resultRed < resultBlue);
     }
 
     @Test

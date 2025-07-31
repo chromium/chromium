@@ -1198,20 +1198,6 @@ void Layer::SetWheelEventRegion(Region wheel_event_region) {
   SetNeedsCommit();
 }
 
-#if BUILDFLAG(IS_ANDROID)
-void Layer::SetXrHitTestOrder(std::vector<ElementId> xr_hit_test_order) {
-  CHECK(IsPropertyChangeAllowed());
-  const auto& rare_inputs = inputs_.Read(*this).rare_inputs;
-  if (!rare_inputs && xr_hit_test_order.empty()) {
-    return;
-  }
-  if (rare_inputs && rare_inputs->xr_hit_test_order == xr_hit_test_order) {
-    return;
-  }
-  EnsureRareInputs().xr_hit_test_order = std::move(xr_hit_test_order);
-}
-#endif
-
 RenderSurfaceReason Layer::GetRenderSurfaceReason() const {
   if (!IsAttached())
     return RenderSurfaceReason::kNone;

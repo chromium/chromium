@@ -187,7 +187,6 @@ std::string IntAttrToString(const ui::AXNode& node,
     case ax::mojom::IntAttribute::kTextSelStart:
     case ax::mojom::IntAttribute::kTextStyle:
     case ax::mojom::IntAttribute::kMaxLength:
-    case ax::mojom::IntAttribute::kPaintOrder:
     case ax::mojom::IntAttribute::kNone:
       break;
   }

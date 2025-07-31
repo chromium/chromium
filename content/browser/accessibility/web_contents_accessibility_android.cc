@@ -2227,22 +2227,6 @@ jboolean WebContentsAccessibilityAndroid::GetImageData(
   return true;
 }
 
-jint WebContentsAccessibilityAndroid::GetPaintOrder(JNIEnv* env,
-                                                    jint unique_id) {
-  BrowserAccessibilityManagerAndroid* root_manager =
-      GetRootBrowserAccessibilityManager();
-  if (!root_manager) {
-    return static_cast<jint>(0);
-  }
-
-  BrowserAccessibilityAndroid* node = GetAXFromUniqueID(unique_id);
-  if (!node) {
-    return static_cast<jint>(0);
-  }
-
-  return static_cast<jint>(node->GetPaintOrder());
-}
-
 BrowserAccessibilityManagerAndroid*
 WebContentsAccessibilityAndroid::GetRootBrowserAccessibilityManager() const {
   if (snapshot_root_manager_) {

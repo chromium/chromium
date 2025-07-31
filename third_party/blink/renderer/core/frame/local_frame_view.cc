@@ -48,7 +48,6 @@
 #include "cc/trees/layer_tree_host.h"
 #include "cc/view_transition/view_transition_request.h"
 #include "components/paint_preview/common/paint_preview_tracker.h"
-#include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/frame/remote_frame.mojom-blink.h"
@@ -2762,47 +2761,10 @@ void LocalFrameView::RunAccessibilitySteps() {
   auto display_lock_memoization_scope =
       DisplayLockUtilities::CreateLockCheckMemoizationScope();
 
-  bool ax_changed = false;
-
-  bool pending_xr_hit_test_order = blink::features::IsXrDevice();
-#if BUILDFLAG(IS_ANDROID)
-  pending_xr_hit_test_order &= needs_accessibility_xr_hit_test_update_;
-#endif
-  ForAllNonThrottledLocalFrameViews([&ax_changed, pending_xr_hit_test_order](
-                                        LocalFrameView& frame_view) {
-    if (AXObjectCache* cache = frame_view.ExistingAXObjectCache()) {
-      // If XR hit test is pending we set force=true so that Root() will be
-      // available
-      ax_changed |= cache->CommitAXUpdates(*frame_view.GetFrame().GetDocument(),
-                                           /*force=*/pending_xr_hit_test_order);
-    }
-  });
-
-#if BUILDFLAG(IS_ANDROID)
-  // Update paint order for Android XR over entire widget
-  if (pending_xr_hit_test_order) {
-    // Run ComputeXrHitTestOrder() once on root local view to compute order over
-    // widget
-    HashMap<DOMNodeId, int> paint_order_map;
-    if (AXObjectCache* cache = ExistingAXObjectCache()) {
-      cache->ComputeXrHitTestOrder(paint_order_map);
-    }
-
-    // Now apply the computed paint order map to all frames separately
-    ForAllNonThrottledLocalFrameViews(
-        [&paint_order_map](LocalFrameView& frame_view) {
-          if (AXObjectCache* cache = frame_view.ExistingAXObjectCache()) {
-            cache->ApplyXrHitTestOrder(paint_order_map);
-          }
-        });
-
-    needs_accessibility_xr_hit_test_update_ = false;
-  }
-#endif
-
   ForAllNonThrottledLocalFrameViews([](LocalFrameView& frame_view) {
     if (AXObjectCache* cache = frame_view.ExistingAXObjectCache()) {
-      cache->SerializeAXUpdatesIfNeeded(*frame_view.GetFrame().GetDocument());
+      cache->CommitAXUpdates(*frame_view.GetFrame().GetDocument(),
+                             /*force=*/false);
     }
   });
 }
@@ -3050,12 +3012,6 @@ void LocalFrameView::PushPaintArtifactToCompositor(bool repainted) {
 
   WTF::Vector<std::unique_ptr<ViewTransitionRequest>> view_transition_requests;
   AppendViewTransitionRequests(view_transition_requests);
-
-#if BUILDFLAG(IS_ANDROID)
-  if (blink::features::IsXrDevice()) {
-    needs_accessibility_xr_hit_test_update_ = true;
-  }
-#endif
 
   paint_artifact_compositor_->Update(
       paint_controller_persistent_data_->GetPaintArtifact(),

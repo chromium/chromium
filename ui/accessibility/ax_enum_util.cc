@@ -1588,8 +1588,6 @@ const char* ToString(ax::mojom::IntAttribute int_attribute) {
       return "ariaNotificationPriority";
     case ax::mojom::IntAttribute::kMaxLength:
       return "maxLength";
-    case ax::mojom::IntAttribute::kPaintOrder:
-      return "paintOrder";
   }
 
   return "";

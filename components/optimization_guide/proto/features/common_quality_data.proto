@@ -1631,8 +1631,6 @@ enum AXIntAttribute {
   AX_IA_DETAILSFROM = 66;
 
   AX_IA_MAXLENGTH = 67;
-
-  AX_IA_PAINTORDER = 68;
 }
 
 // AX Float attribute enum.

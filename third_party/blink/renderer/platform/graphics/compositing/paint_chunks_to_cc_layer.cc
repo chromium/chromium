@@ -1165,9 +1165,6 @@ class LayerPropertiesUpdater {
   TouchAction ShouldDisableCursorControl();
   void UpdateTouchActionRegion(const HitTestData&);
   void UpdateWheelEventRegion(const HitTestData&);
-#if BUILDFLAG(IS_ANDROID)
-  void UpdateXrTargetRegion(const HitTestData&);
-#endif
 
   void UpdateScrollHitTestData(const PaintChunk&);
   void AddNonCompositedScroll(const PaintChunk&);
@@ -1194,9 +1191,6 @@ class LayerPropertiesUpdater {
   const ScrollPaintPropertyNode* last_disable_cursor_control_scroll_ = nullptr;
 
   cc::Region wheel_event_region_;
-#if BUILDFLAG(IS_ANDROID)
-  Vector<cc::ElementId> xr_hit_test_order_;
-#endif
   cc::Region main_thread_scroll_hit_test_region_;
   viz::RegionCaptureBounds capture_bounds_;
 
@@ -1267,13 +1261,6 @@ void LayerPropertiesUpdater::UpdateWheelEventRegion(
         chunk_to_layer_mapper_.MapVisualRect(wheel_event_rect));
   }
 }
-
-#if BUILDFLAG(IS_ANDROID)
-void LayerPropertiesUpdater::UpdateXrTargetRegion(
-    const HitTestData& hit_test_data) {
-  xr_hit_test_order_.AppendVector(hit_test_data.xr_regions);
-}
-#endif
 
 void LayerPropertiesUpdater::UpdateScrollHitTestData(const PaintChunk& chunk) {
   const HitTestData& hit_test_data = *chunk.hit_test_data;
@@ -1563,9 +1550,6 @@ void LayerPropertiesUpdater::Update() {
       if (chunk.hit_test_data) {
         UpdateTouchActionRegion(*chunk.hit_test_data);
         UpdateWheelEventRegion(*chunk.hit_test_data);
-#if BUILDFLAG(IS_ANDROID)
-        UpdateXrTargetRegion(*chunk.hit_test_data);
-#endif
         UpdateScrollHitTestData(chunk);
       }
       UpdatePreviousNonCompositedScrolls(chunk);
@@ -1586,12 +1570,6 @@ void LayerPropertiesUpdater::Update() {
   if (!selection_only_) {
     layer_.SetTouchActionRegion(std::move(touch_action_region_));
     layer_.SetWheelEventRegion(std::move(wheel_event_region_));
-
-#if BUILDFLAG(IS_ANDROID)
-    layer_.SetXrHitTestOrder(std::vector<cc::ElementId>(
-        xr_hit_test_order_.begin(), xr_hit_test_order_.end()));
-#endif
-
     layer_.SetCaptureBounds(std::move(capture_bounds_));
 
     std::vector<cc::ScrollHitTestRect> non_composited_scroll_hit_test_rects;

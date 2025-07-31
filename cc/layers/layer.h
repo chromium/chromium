@@ -15,6 +15,7 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/base/protected_sequence_synchronizer.h"
@@ -538,16 +539,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     return Region::Empty();
   }
 
-#if BUILDFLAG(IS_ANDROID)
-  void SetXrHitTestOrder(std::vector<ElementId> xr_hit_test_order);
-  const std::vector<ElementId>* xr_hit_test_order() const {
-    if (const auto& rare_inputs = inputs_.Read(*this).rare_inputs) {
-      return &rare_inputs->xr_hit_test_order;
-    }
-    return nullptr;
-  }
-#endif
-
   // For layer tree mode only.
   // In layer list mode, use ScrollTree::SetScrollCallbacks() instead.
   // Sets a RepeatingCallback that is run during a main frame, before layers are
@@ -1023,10 +1014,6 @@ class CC_EXPORT Layer : public base::RefCounted<Layer>,
     Region main_thread_scroll_hit_test_region;
     std::vector<ScrollHitTestRect> non_composited_scroll_hit_test_rects;
     Region wheel_event_region;
-#if BUILDFLAG(IS_ANDROID)
-    // Rare because only used on Android XR platform
-    std::vector<ElementId> xr_hit_test_order;
-#endif
     PaintFlags::FilterQuality filter_quality = PaintFlags::FilterQuality::kLow;
     PaintFlags::DynamicRangeLimitMixture dynamic_range_limit{
         PaintFlags::DynamicRangeLimit::kHigh};

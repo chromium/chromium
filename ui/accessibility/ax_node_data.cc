@@ -169,7 +169,6 @@ bool IsNodeIdIntAttribute(ax::mojom::IntAttribute attr) {
     case ax::mojom::IntAttribute::kDOMNodeIdDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationInterruptDeprecated:
     case ax::mojom::IntAttribute::kAriaNotificationPriorityDeprecated:
-    case ax::mojom::IntAttribute::kPaintOrder:
       return false;
   }
 
@@ -746,10 +745,6 @@ void AXNodeData::SetDefaultActionVerb(
     AddIntAttribute(ax::mojom::IntAttribute::kDefaultActionVerb,
                     static_cast<int32_t>(default_action_verb));
   }
-}
-
-int AXNodeData::GetPaintOrder() const {
-  return GetIntAttribute(ax::mojom::IntAttribute::kPaintOrder);
 }
 
 ax::mojom::HasPopup AXNodeData::GetHasPopup() const {
@@ -1545,9 +1540,6 @@ std::string AXNodeData::ToString(bool verbose) const {
         break;
       case ax::mojom::IntAttribute::kMaxLength:
         result += " maxlength=" + value;
-        break;
-      case ax::mojom::IntAttribute::kPaintOrder:
-        result += " paintorder=" + value;
         break;
       case ax::mojom::IntAttribute::kNone:
         break;
