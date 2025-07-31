@@ -13103,6 +13103,21 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(features::kPrewarm)},
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+    {"apply-clientside-model-predictions-for-password-types",
+     flag_descriptions::kApplyClientsideModelPredictionsForPasswordTypesName,
+     flag_descriptions::
+         kApplyClientsideModelPredictionsForPasswordTypesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kApplyClientsideModelPredictionsForPasswordTypes)},
+
+    {"apply-clientside-model-predictions-for-otps",
+     flag_descriptions::kApplyClientsideModelPredictionsForOtpsName,
+     flag_descriptions::kApplyClientsideModelPredictionsForOtpsDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kApplyClientsideModelPredictionsForOtps)},
+
     // Add new entries above this line.
 
     // NOTE: Adding a new flag requires adding a corresponding entry to enum

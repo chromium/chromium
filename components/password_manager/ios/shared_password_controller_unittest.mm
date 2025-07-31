@@ -401,8 +401,12 @@ TEST_F(SharedPasswordControllerTest,
 // form.
 TEST_F(SharedPasswordControllerTest,
        PasswordManagerIsNotifiedAboutModelPredictions) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kPasswordFormClientsideClassifier);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::
+           kApplyClientsideModelPredictionsForPasswordTypes},
+      /*disabled_features=*/{});
 
   const LocalFrameToken main_frame_local_frame_token(MakeLocalFrameToken());
 

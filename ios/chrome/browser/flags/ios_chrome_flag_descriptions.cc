@@ -26,6 +26,16 @@ const char kAppBackgroundRefreshDescription[] =
     "Schedules app background refresh after some minimum period of time has "
     "passed after the last refresh.";
 
+const char kApplyClientsideModelPredictionsForPasswordTypesName[] =
+    "Apply clientside model predictions for password forms.";
+const char kApplyClientsideModelPredictionsForPasswordTypesDescription[] =
+    "Enable using clientside model predictions to fill password forms.";
+
+const char kApplyClientsideModelPredictionsForOtpsName[] =
+    "Apply clientside model predictions for OTPs.";
+const char kApplyClientsideModelPredictionsForOtpsDescription[] =
+    "Enable using clientside model predictions to fill OTP forms.";
+
 // Title and description for the flag that enables autofill across iframes.
 extern const char kAutofillAcrossIframesName[] =
     "Enables Autofill across iframes";

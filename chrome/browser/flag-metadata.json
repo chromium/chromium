@@ -447,7 +447,17 @@
     "owners": [ "hiramahmood@google.com", "bling-flags@google.com" ],
     "expiry_milestone": 120
   },
-    {
+  {
+    "name": "apply-clientside-model-predictions-for-otps",
+    "owners": [ "kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 146
+  },
+  {
+    "name": "apply-clientside-model-predictions-for-password-types",
+    "owners": [ "kazinova@google.com", "vasilii@chromium.org", "chrome-password-manager-team@google.com"],
+    "expiry_milestone": 146
+  },
+  {
     "name": "approximate-geolocation-permission",
     "owners": [ "tommasin@chromium.org", "dullweber@chromium.org",
     "//components/permissions/PERMISSIONS_OWNERS"],

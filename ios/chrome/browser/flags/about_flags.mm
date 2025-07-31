@@ -2846,6 +2846,19 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kSkipDefaultBrowserPromoInFirstRunDescription,
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(first_run::kSkipDefaultBrowserPromoInFirstRun)},
+    {"apply-clientside-model-predictions-for-password-types",
+     flag_descriptions::kApplyClientsideModelPredictionsForPasswordTypesName,
+     flag_descriptions::
+         kApplyClientsideModelPredictionsForPasswordTypesDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(password_manager::features::
+                            kApplyClientsideModelPredictionsForPasswordTypes)},
+    {"apply-clientside-model-predictions-for-otps",
+     flag_descriptions::kApplyClientsideModelPredictionsForOtpsName,
+     flag_descriptions::kApplyClientsideModelPredictionsForOtpsDescription,
+     flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(
+         password_manager::features::kApplyClientsideModelPredictionsForOtps)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

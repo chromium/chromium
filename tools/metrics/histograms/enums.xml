@@ -10301,6 +10301,8 @@ from previous Chrome versions.
   <int value="-1407904527"
       label="OmniboxRemoveSuggestionHeaderCapitalization:disabled"/>
   <int value="-1407251816" label="AutofillContentEditables:enabled"/>
+  <int value="-1406306789"
+      label="ApplyClientsideModelPredictionsForPasswordTypes:enabled"/>
   <int value="-1405349891" label="PictureInPictureAPI:enabled"/>
   <int value="-1405048637" label="OfflinePagesResourceBasedSnapshot:enabled"/>
   <int value="-1404988115"
@@ -11538,6 +11540,8 @@ from previous Chrome versions.
   <int value="-954789862" label="ProductivityLauncher:enabled"/>
   <int value="-954302223" label="OfflineItemsInNotifications:enabled"/>
   <int value="-954034543" label="ForceHistoryOptInScreen:disabled"/>
+  <int value="-953903910"
+      label="ApplyClientsideModelPredictionsForOtps:enabled"/>
   <int value="-953440781" label="SimplifiedBookmarkSaveFlow:disabled"/>
   <int value="-953330528" label="UserAgentOverrideExperiment:disabled"/>
   <int value="-953215709" label="StorageAccessAPI:enabled"/>
@@ -13997,6 +14001,8 @@ from previous Chrome versions.
       label="AutofillEnableCvcStorageAndFillingEnhancement:enabled"/>
   <int value="-38104294" label="AudioSelectionImprovement:disabled"/>
   <int value="-37966026" label="PermissionPredictions:enabled"/>
+  <int value="-36671802"
+      label="ApplyClientsideModelPredictionsForOtps:disabled"/>
   <int value="-36550471" label="HTMLPopoverAttribute:enabled"/>
   <int value="-36503306" label="HomepageLocationPolicy:enabled"/>
   <int value="-36234530" label="PluginVmShowMicrophonePermissions:enabled"/>
@@ -16646,6 +16652,8 @@ from previous Chrome versions.
   <int value="936341613" label="OfflinePagesCT:disabled"/>
   <int value="937305086" label="EnableBoundSessionCredentials:enabled"/>
   <int value="937557884" label="PostQuantumKyber:disabled"/>
+  <int value="937805280"
+      label="ApplyClientsideModelPredictionsForPasswordTypes:disabled"/>
   <int value="938191241" label="VrShell:enabled"/>
   <int value="939050961" label="OnTheFlyMhtmlHashComputation:disabled"/>
   <int value="939366135" label="DownloadsLocationChange:disabled"/>

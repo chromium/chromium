@@ -778,8 +778,12 @@ TEST_F(ChromePasswordManagerClientTest, ReceivesAutofillPredictions) {
 
 TEST_F(ChromePasswordManagerClientTest,
        ReceivesPasswordFormClassifierPredictions) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kPasswordFormClientsideClassifier);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::
+           kApplyClientsideModelPredictionsForPasswordTypes},
+      /*disabled_features=*/{});
   constexpr char kUrl[] = "https://www.foo.com/login.html";
 
   NavigateAndCommit(GURL(kUrl));
@@ -2126,8 +2130,11 @@ TEST_F(ChromePasswordManagerClientTest,
 
 TEST_F(ChromePasswordManagerClientTest,
        PasswordChangeDelegateIsNotifiedAboutOTP) {
-  base::test::ScopedFeatureList features(
-      password_manager::features::kPasswordFormClientsideClassifier);
+  base::test::ScopedFeatureList features;
+  features.InitWithFeatures(
+      {password_manager::features::kPasswordFormClientsideClassifier,
+       password_manager::features::kApplyClientsideModelPredictionsForOtps},
+      /*disabled_features=*/{});
 
   PasswordChangeDelegateMock mock;
   ON_CALL(*password_change_service(), GetPasswordChangeDelegate)

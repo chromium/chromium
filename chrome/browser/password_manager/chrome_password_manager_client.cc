@@ -1997,12 +1997,6 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
     autofill::AutofillManager& manager,
     autofill::FormGlobalId form_id,
     FieldTypeSource source) {
-  if (source != FieldTypeSource::kAutofillServer &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordFormClientsideClassifier)) {
-    return;
-  }
-
   std::optional<autofill::RendererForms> renderer_forms =
       autofill::RendererFormsFromBrowserForm(manager, form_id);
   if (!renderer_forms.has_value()) {
@@ -2037,10 +2031,17 @@ void ChromePasswordManagerClient::OnFieldTypesDetermined(
         auto predictions = manager.GetHeursticPredictionForForm(
             autofill::HeuristicSource::kPasswordManagerMachineLearning, form_id,
             field_ids);
-        password_manager_.ProcessClassificationModelPredictions(driver, form,
-                                                                predictions);
+        if (base::FeatureList::IsEnabled(
+                password_manager::features::
+                    kApplyClientsideModelPredictionsForPasswordTypes)) {
+          password_manager_.ProcessClassificationModelPredictions(driver, form,
+                                                                  predictions);
+        }
 
-        if (PredictionsContainOtpFields(predictions)) {
+        if (PredictionsContainOtpFields(predictions) &&
+            base::FeatureList::IsEnabled(
+                password_manager::features::
+                    kApplyClientsideModelPredictionsForOtps)) {
           otp_manager_.ProcessClassificationModelPredictions(form, predictions);
         }
         break;

@@ -932,6 +932,12 @@ extern const char kAccessibilityMouseKeysDescription[];
 extern const char kAccessibilityCaptionsOnBrailleDisplayName[];
 extern const char kAccessibilityCaptionsOnBrailleDisplayDescription[];
 
+extern const char kApplyClientsideModelPredictionsForPasswordTypesName[];
+extern const char kApplyClientsideModelPredictionsForPasswordTypesDescription[];
+
+extern const char kApplyClientsideModelPredictionsForOtpsName[];
+extern const char kApplyClientsideModelPredictionsForOtpsDescription[];
+
 #if BUILDFLAG(IS_ANDROID)
 extern const char kBiometricAuthIdentityCheckName[];
 extern const char kBiometricAuthIdentityCheckDescription[];

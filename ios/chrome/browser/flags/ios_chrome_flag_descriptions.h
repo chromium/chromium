@@ -32,6 +32,12 @@ extern const char kOmniboxDRSPrototypeDescription[];
 extern const char kAppBackgroundRefreshName[];
 extern const char kAppBackgroundRefreshDescription[];
 
+extern const char kApplyClientsideModelPredictionsForPasswordTypesName[];
+extern const char kApplyClientsideModelPredictionsForPasswordTypesDescription[];
+
+extern const char kApplyClientsideModelPredictionsForOtpsName[];
+extern const char kApplyClientsideModelPredictionsForOtpsDescription[];
+
 extern const char kAutofillAcrossIframesName[];
 extern const char kAutofillAcrossIframesDescription[];
 

@@ -459,12 +459,6 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
                        forForm:(FormGlobalId)formId
                     fromSource:
                         (AutofillManager::Observer::FieldTypeSource)source {
-  if (source != AutofillManager::Observer::FieldTypeSource::kAutofillServer &&
-      !base::FeatureList::IsEnabled(
-          password_manager::features::kPasswordFormClientsideClassifier)) {
-    return;
-  }
-
   autofill::FormStructure* form_structure = manager.FindCachedFormById(formId);
   if (!form_structure) {
     return;
@@ -1176,11 +1170,15 @@ AcceptedGeneratedPasswordSourceType DetermineGeneratedPasswordSource(
           manager.GetServerPredictionsForForm(globalFormId, field_ids));
       break;
     case AutofillManager::Observer::FieldTypeSource::kHeuristicsOrAutocomplete:
-      _passwordManager->ProcessClassificationModelPredictions(
-          driver, form,
-          manager.GetHeursticPredictionForForm(
-              autofill::HeuristicSource::kPasswordManagerMachineLearning,
-              globalFormId, field_ids));
+      if (base::FeatureList::IsEnabled(
+              password_manager::features::
+                  kApplyClientsideModelPredictionsForPasswordTypes)) {
+        _passwordManager->ProcessClassificationModelPredictions(
+            driver, form,
+            manager.GetHeursticPredictionForForm(
+                autofill::HeuristicSource::kPasswordManagerMachineLearning,
+                globalFormId, field_ids));
+      }
       break;
   }
 }
