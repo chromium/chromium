@@ -7,6 +7,8 @@
 
 #include <cstdint>
 #include <memory>
+#include <optional>
+#include <vector>
 
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -18,6 +20,7 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/metrics_proto/dwa/deidentified_web_analytics.pb.h"
+#include "third_party/metrics_proto/private_metrics/private_metrics.pb.h"
 
 namespace metrics::dwa {
 
@@ -54,6 +57,39 @@ class DwaService {
   // would mean undercounting for k-anonymity).
   static uint64_t GetEphemeralClientId(PrefService& local_state);
 
+  // Computes a persistent hash for the given `coarse_system_info`.
+  static uint64_t HashCoarseSystemInfo(
+      const ::dwa::CoarseSystemInfo& coarse_system_info);
+
+  // Computes a persistent hash for a repeated list of field trials names and
+  // groups. An empty optional is returned if `repeated_field_trials` cannot be
+  // serialized into a value.
+  static std::optional<uint64_t> HashRepeatedFieldTrials(
+      const google::protobuf::RepeatedPtrField<
+          ::metrics::SystemProfileProto::FieldTrial>& repeated_field_trials);
+
+  // Builds the k-anonymity buckets for the `k_anonymity_buckets` field in
+  // PrivateMetricReport protocol buffer. Each event may contain multiple
+  // buckets that need to pass the k-anonymity filter. Buckets may contain
+  // quasi-identifiers. We treat the k-anonymity bucket
+  // values as opaque and do not attempt to interpret them. An empty vector is
+  // returned and dropped from being reported if there is an error in building
+  // k-anonymity buckets for `dwa_event` as there would be no way to enforce the
+  // k-anonymity filter without the k-anonymity buckets. For `dwa_event`, the
+  // combination of `dwa_event.coarse_system_info`, `dwa_event.event_hash`, and
+  // `dwa_event.field_trials` builds the first k-anbonymity bucket because the
+  // combination describes an user invoking an action. We want to verify there
+  // is a sufficient number of users who perform this action before allowing the
+  // `dwa_event` past the k-anonymity filter. Similarly,
+  // `dwa_event.content_metrics.content_hash` builds the second k-anonymity
+  // bucket because we want to confirm that the subresource's eTLD+1 is a domain
+  // with which a substantial number of users have interacted with.
+  // TODO(crbug.com/418025635): After we remove client-side aggregation of DWA
+  // events, we should also include `content_hash` as a k-anonymity bucket. This
+  // should be completed prior to 100% rollout of private metrics.
+  static std::vector<uint64_t> BuildKAnonymityBuckets(
+      const ::dwa::DeidentifiedWebAnalyticsEvent& dwa_event);
+
   // Register prefs from `dwa_pref_names.h`.
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -67,7 +103,13 @@ class DwaService {
 
   // Constructs a new DeidentifiedWebAnalyticsReport from available data and
   // stores it in |unsent_log_store_|.
-  void BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason reason);
+  void BuildDwaReportAndStoreLog(
+      metrics::MetricsLogsEventManager::CreateReason reason);
+
+  // Constructs a new PrivateMetricReport from available data and
+  // stores it in `unsent_log_store_`.
+  void BuildPrivateMetricReportAndStoreLog(
+      metrics::MetricsLogsEventManager::CreateReason reason);
 
   // Retrieves the storage parameters to control the reporting service.
   static UnsentLogStore::UnsentLogStoreLimits GetLogStoreLimits();

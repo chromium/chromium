@@ -4,13 +4,17 @@
 
 #include "components/metrics/dwa/dwa_service.h"
 
+#include <algorithm>
 #include <memory>
 #include <string>
 #include <string_view>
 
 #include "base/containers/fixed_flat_set.h"
 #include "base/i18n/timezone.h"
+#include "base/json/json_writer.h"
+#include "base/metrics/metrics_hashes.h"
 #include "base/rand_util.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/version.h"
 #include "components/metrics/dwa/dwa_pref_names.h"
@@ -21,6 +25,23 @@
 #include "components/version_info/version_info.h"
 
 namespace metrics::dwa {
+
+namespace {
+
+// TODO(crbug.com/411369489): Encrypt private metric report. Current
+// implementation only serializes the report and moves the serialized report
+// into the encrypted field without actually encrypting it.
+::private_metrics::EncryptedPrivateMetricReport EncryptPrivateMetricReport(
+    const ::private_metrics::PrivateMetricReport& report) {
+  std::string serialized_log;
+  report.SerializeToString(&serialized_log);
+
+  ::private_metrics::EncryptedPrivateMetricReport encrypted_report;
+  *encrypted_report.mutable_encrypted_report() = std::move(serialized_log);
+  return encrypted_report;
+}
+
+}  // namespace
 
 // Set of countries in the European Economic Area. Used by
 // RecordCoarseSystemInformation to set geo_designation fields in
@@ -119,7 +140,7 @@ void DwaService::Flush(metrics::MetricsLogsEventManager::CreateReason reason) {
     return;
   }
 
-  BuildAndStoreLog(reason);
+  BuildDwaReportAndStoreLog(reason);
   reporting_service_.unsent_log_store()->TrimAndPersistUnsentLogs(true);
 }
 
@@ -229,16 +250,78 @@ uint64_t DwaService::GetEphemeralClientId(PrefService& local_state) {
   return client_id;
 }
 
+// static
+uint64_t DwaService::HashCoarseSystemInfo(
+    const ::dwa::CoarseSystemInfo& coarse_system_info) {
+  return base::HashMetricName(base::JoinString(
+      {base::NumberToString(coarse_system_info.channel()),
+       base::NumberToString(coarse_system_info.platform()),
+       base::NumberToString(coarse_system_info.geo_designation()),
+       base::NumberToString(coarse_system_info.client_age()),
+       base::NumberToString(coarse_system_info.milestone_prefix_trimmed()),
+       base::NumberToString(coarse_system_info.is_ukm_enabled())},
+      "-"));
+}
+
+// static
+std::optional<uint64_t> DwaService::HashRepeatedFieldTrials(
+    const google::protobuf::RepeatedPtrField<
+        ::metrics::SystemProfileProto::FieldTrial>& repeated_field_trials) {
+  std::vector<std::pair<uint32_t, uint32_t>> field_trials_vector;
+  field_trials_vector.reserve(repeated_field_trials.size());
+  for (const auto& field_trials : repeated_field_trials) {
+    field_trials_vector.emplace_back(field_trials.name_id(),
+                                     field_trials.group_id());
+  }
+
+  std::sort(field_trials_vector.begin(), field_trials_vector.end());
+
+  base::Value::List value_list;
+  for (const auto& field_trials : field_trials_vector) {
+    base::Value::List field_trial_pair;
+    field_trial_pair.Append(base::NumberToString(field_trials.first));
+    field_trial_pair.Append(base::NumberToString(field_trials.second));
+    value_list.Append(std::move(field_trial_pair));
+  }
+
+  auto serialized_json = base::WriteJson(value_list);
+  if (!serialized_json.has_value()) {
+    return std::nullopt;
+  }
+  return base::HashMetricName(serialized_json.value());
+}
+
+// static
+std::vector<uint64_t> DwaService::BuildKAnonymityBuckets(
+    const ::dwa::DeidentifiedWebAnalyticsEvent& dwa_event) {
+  auto coarse_system_info_hash =
+      HashCoarseSystemInfo(dwa_event.coarse_system_info());
+  auto field_trials_hash = HashRepeatedFieldTrials(dwa_event.field_trials());
+
+  if (!field_trials_hash.has_value()) {
+    return std::vector<uint64_t>();
+  }
+
+  std::vector<uint64_t> k_anonymity_buckets;
+  k_anonymity_buckets.push_back(base::HashMetricName(
+      base::JoinString({base::NumberToString(coarse_system_info_hash),
+                        base::NumberToString(dwa_event.event_hash()),
+                        base::NumberToString(field_trials_hash.value())},
+                       "-")));
+  return k_anonymity_buckets;
+}
+
 void DwaService::RotateLog() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (!reporting_service_.unsent_log_store()->has_unsent_logs()) {
-    BuildAndStoreLog(metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
+    BuildDwaReportAndStoreLog(
+        metrics::MetricsLogsEventManager::CreateReason::kPeriodic);
   }
   reporting_service_.Start();
   scheduler_->RotationFinished();
 }
 
-void DwaService::BuildAndStoreLog(
+void DwaService::BuildDwaReportAndStoreLog(
     metrics::MetricsLogsEventManager::CreateReason reason) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   // There are no new events, so no new logs should be created.
@@ -260,6 +343,51 @@ void DwaService::BuildAndStoreLog(
 
   std::string serialized_log;
   report.SerializeToString(&serialized_log);
+
+  LogMetadata metadata;
+  reporting_service_.unsent_log_store()->StoreLog(serialized_log, metadata,
+                                                  reason);
+}
+
+void DwaService::BuildPrivateMetricReportAndStoreLog(
+    metrics::MetricsLogsEventManager::CreateReason reason) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // There are no new events, so no new logs should be created.
+  if (!recorder_->HasEntries()) {
+    return;
+  }
+
+  ::private_metrics::PrivateMetricReport report;
+  report.set_ephemeral_id(GetEphemeralClientId(*pref_service_));
+
+  std::vector<::dwa::DeidentifiedWebAnalyticsEvent> dwa_events =
+      recorder_->TakeDwaEvents();
+
+  for (auto& dwa_event : dwa_events) {
+    RecordCoarseSystemInformation(*client_, *pref_service_,
+                                  dwa_event.mutable_coarse_system_info());
+
+    auto k_anonymity_buckets = BuildKAnonymityBuckets(dwa_event);
+    // Since there are no k-anonymity buckets, the k-anonymity filter cannot be
+    // enforced. As such, the bucket should be dropped.
+    // TODO(crbug.com/432764678): Add UMA metric when dwa_event is dropped due
+    // to empty k-anonymity buckets.
+    if (k_anonymity_buckets.empty()) {
+      continue;
+    }
+
+    auto* event = report.add_events();
+    event->mutable_k_anonymity_buckets()->Add(
+        std::make_move_iterator(k_anonymity_buckets.begin()),
+        std::make_move_iterator(k_anonymity_buckets.end()));
+    *event->mutable_dwa_event() = std::move(dwa_event);
+  }
+
+  ::private_metrics::EncryptedPrivateMetricReport encrypted_report =
+      EncryptPrivateMetricReport(report);
+
+  std::string serialized_log;
+  encrypted_report.SerializeToString(&serialized_log);
 
   LogMetadata metadata;
   reporting_service_.unsent_log_store()->StoreLog(serialized_log, metadata,
