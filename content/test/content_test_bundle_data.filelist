@@ -8086,6 +8086,8 @@ data/page-with-trust-token-permissions-policy-disabled.html
 data/page-with-trust-token-permissions-policy-disabled.html.mock-http-headers
 data/page204.html
 data/page204.html.mock-http-headers
+data/page304.html
+data/page304.html.mock-http-headers
 data/page404.html
 data/page404.html.mock-http-headers
 data/page500.html

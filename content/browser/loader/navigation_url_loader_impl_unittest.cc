@@ -311,6 +311,17 @@ class NavigationURLLoaderImplTest : public testing::Test {
   std::unique_ptr<NavigationSimulator> pending_navigation_;
 };
 
+// 304 responses should abort the navigation, rather than display the page.
+TEST_F(NavigationURLLoaderImplTest, Response304) {
+  ASSERT_TRUE(http_test_server_.Start());
+  const GURL url = http_test_server_.GetURL("/page304.html");
+  TestNavigationURLLoaderDelegate delegate;
+  auto loader = CreateTestLoader(url, std::string(), "GET", &delegate);
+  loader->Start();
+  delegate.WaitForRequestFailed();
+  EXPECT_EQ(net::ERR_ABORTED, delegate.net_error());
+}
+
 TEST_F(NavigationURLLoaderImplTest, IsolationInfoOfMainFrameNavigation) {
   ASSERT_TRUE(http_test_server_.Start());
 

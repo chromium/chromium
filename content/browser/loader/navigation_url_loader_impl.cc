@@ -1238,13 +1238,7 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     return;
   }
 
-  network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints =
-      loader_holder_.Unbind();
-
   // 304 responses should abort the navigation, rather than display the page.
-  // This needs to be after the URLLoader has been moved to
-  // `url_loader_client_endpoints` in order to abort the request, to avoid
-  // receiving unexpected call.
   if (head->headers &&
       head->headers->response_code() == net::HTTP_NOT_MODIFIED) {
     // Call CancelWithError instead of OnComplete so that if there is an
@@ -1254,6 +1248,9 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
         std::string_view(base::NumberToString(net::ERR_ABORTED)));
     return;
   }
+
+  network::mojom::URLLoaderClientEndpointsPtr url_loader_client_endpoints =
+      loader_holder_.Unbind();
 
   bool must_download = download_utils::MustDownload(
       browser_context_, url_, head->headers.get(), head->mime_type);
