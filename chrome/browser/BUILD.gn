@@ -2028,6 +2028,7 @@ static_library("browser") {
     "//chrome/browser/segmentation_platform",
     "//chrome/browser/send_tab_to_self",
     "//chrome/browser/serial",
+    "//chrome/browser/sessions",
     "//chrome/browser/share",
     "//chrome/browser/sharing:buildflags",
     "//chrome/browser/signin",
@@ -8167,10 +8168,8 @@ static_library("browser") {
       "sessions/session_data_service_factory.cc",
       "sessions/session_data_service_factory.h",
       "sessions/session_restore.cc",
-      "sessions/session_restore.h",
       "sessions/session_restore_delegate.cc",
       "sessions/session_restore_delegate.h",
-      "sessions/session_restore_observer.h",
       "sessions/session_restore_stats_collector.cc",
       "sessions/session_restore_stats_collector.h",
       "sessions/session_service.cc",
@@ -9153,6 +9152,7 @@ static_library("test_support") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resource_coordinator",
     "//chrome/browser/safe_browsing:test_support",
+    "//chrome/browser/sessions",
     "//chrome/browser/ui:test_support",
   ]
   deps = [

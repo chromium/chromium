@@ -32,6 +32,7 @@ static_library("floating_workspace") {
     "//chrome/browser/ash/login/session",
     "//chrome/browser/ash/profiles",
     "//chrome/browser/profiles:profile",
+    "//chrome/browser/sessions",
     "//chrome/browser/sync",
     "//chrome/browser/ui/ash/desks",
     "//chrome/browser/ui/ash/multi_user",

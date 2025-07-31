@@ -921,6 +921,7 @@ source_set("extensions") {
       "//chrome/browser/search/background",
       "//chrome/browser/search_engine_choice",
       "//chrome/browser/search_engines",
+      "//chrome/browser/sessions",
       "//chrome/browser/sync",
       "//chrome/browser/themes",
       "//chrome/browser/ui:ui_features",

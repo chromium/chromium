@@ -30,7 +30,10 @@ static_library("instance_throttle") {
     "arcvm_kiosk_mode_throttle_observer.h",
   ]
 
-  public_deps = [ "//chrome/browser:browser_public_dependencies" ]
+  public_deps = [
+    "//chrome/browser:browser_public_dependencies",
+    "//chrome/browser/sessions",
+  ]
 
   deps = [
     "//ash/public/cpp",
