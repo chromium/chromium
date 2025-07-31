@@ -52,14 +52,13 @@ public class DisplayAndroidManager {
         }
 
         // DisplayListener implementation:
-
         @Override
         public void onDisplayAdded(int sdkDisplayId) {
             // Ignore display addition if Window Management is enabled. The addition is processed
             // inside {@link DisplayAndroidManager#updateDisplayTopology(SparseArray<RectF>
-            // absoluteCoordinates)} when {@link
+            // newDisplaysAbsoluteCoordinates)} when {@link
             // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
-            // absoluteCoordinates)} is triggered.
+            // absoluteBounds)} is triggered.
             // If Window Management is disabled, then DisplayAndroid is added lazily on first use.
         }
 
@@ -67,9 +66,9 @@ public class DisplayAndroidManager {
         public void onDisplayRemoved(int sdkDisplayId) {
             // Ignore display removal if Window Management is enabled. The removal is processed
             // inside {@link DisplayAndroidManager#updateDisplayTopology(SparseArray<RectF>
-            // absoluteCoordinates)} when {@link
+            // newDisplaysAbsoluteCoordinates)} when {@link
             // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
-            // absoluteCoordinates)} is triggered.
+            // absoluteBounds)} is triggered.
             if (!isWindowManagementEnabled()) {
                 removeDisplay(sdkDisplayId);
             }
@@ -82,8 +81,8 @@ public class DisplayAndroidManager {
     }
 
     /**
-     * DisplayListenerBackend is used to handle the actual listening of display changes. It handles
-     * it via the Android DisplayListener API.
+     * DisplayTopologyListenerBackend is used to handle the actual listening of display topology
+     * changes. It handles it via the Android Display Manager API.
      */
     class DisplayTopologyListenerBackend
             implements AconfigFlaggedApiDelegate.DisplayTopologyListener {
@@ -93,6 +92,7 @@ public class DisplayAndroidManager {
                             getDisplayManager(), getContext().getMainExecutor(), this);
         }
 
+        // AconfigFlaggedApiDelegate.DisplayTopologyListener implementation:
         @Override
         public void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds) {
             updateDisplayTopology(absoluteBounds);
@@ -313,13 +313,13 @@ public class DisplayAndroidManager {
         for (int i = 0; i < newDisplaysAbsoluteCoordinates.size(); ++i) {
             int sdkDisplayId = newDisplaysAbsoluteCoordinates.keyAt(i);
             RectF displayAbsoluteCoordinates = mDisplaysAbsoluteCoordinates.get(sdkDisplayId);
+            RectF newDisplayAbsoluteCoordinates = newDisplaysAbsoluteCoordinates.valueAt(i);
 
             if (displayAbsoluteCoordinates == null) {
-                addDisplayById(sdkDisplayId, newDisplaysAbsoluteCoordinates.valueAt(i));
-            } else if (!displayAbsoluteCoordinates.equals(
-                    newDisplaysAbsoluteCoordinates.valueAt(i))) {
+                addDisplayById(sdkDisplayId, newDisplayAbsoluteCoordinates);
+            } else if (!displayAbsoluteCoordinates.equals(newDisplayAbsoluteCoordinates)) {
                 assumeNonNull((PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId))
-                        .updateBounds(newDisplaysAbsoluteCoordinates.valueAt(i));
+                        .updateBounds(newDisplayAbsoluteCoordinates);
             }
         }
 
