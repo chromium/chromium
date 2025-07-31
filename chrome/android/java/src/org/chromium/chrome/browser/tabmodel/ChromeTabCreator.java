@@ -157,6 +157,8 @@ public class ChromeTabCreator extends TabCreator
                 return "LongpressForegroundInGroup";
             case TabLaunchType.FROM_TAB_LIST_INTERFACE:
                 return "TabListInterface";
+            case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW:
+                return "LinkToNewWindow";
             default:
                 assert false : "Unexpected serialization of tabLaunchType: " + tabLaunchType;
                 return "TypeUnknown";
@@ -705,6 +707,7 @@ public class ChromeTabCreator extends TabCreator
                 break;
             case TabLaunchType.FROM_RESTORE:
             case TabLaunchType.FROM_LINK:
+            case TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW:
             case TabLaunchType.FROM_EXTERNAL_APP:
             case TabLaunchType.FROM_BROWSER_ACTIONS:
                 // FROM_API ensures intent handling isn't used.

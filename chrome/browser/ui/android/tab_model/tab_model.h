@@ -148,6 +148,8 @@ class TabModel : public TabListInterface {
     // Open tab using the TabListInterface API. This tab is created
     // programmatically from operations such as OpenTab or DuplicateTab.
     FROM_TAB_LIST_INTERFACE,
+    // Open a link, creating a new window.
+    FROM_LINK_CREATING_NEW_WINDOW,
     // Must be last.
     SIZE
   };

@@ -642,7 +642,8 @@ chromium-metrics-reviews@google.com.
   <int value="29" label="From History Navigation Foreground"/>
   <int value="30" label="From Longpress Foreground In Group"/>
   <int value="31" label="From Tab List Interface"/>
-  <int value="32" label="Size"/>
+  <int value="32" label="From Link, Creating New Window"/>
+  <int value="33" label="Size"/>
 </enum>
 
 <!-- LINT.ThenChange(//chrome/browser/ui/android/tab_model/tab_model.h:TabLaunchType) -->

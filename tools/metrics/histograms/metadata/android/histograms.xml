@@ -255,6 +255,8 @@ chromium-metrics-reviews@google.com.
   <variant name="LauncherShortcut"
       summary="tabs opened from launcher shortcut"/>
   <variant name="Link" summary="tabs opened from a link"/>
+  <variant name="LinkCreatingNewWindow"
+      summary="tabs opened from a link, creating a new window"/>
   <variant name="LongpressBackground"
       summary="tabs opened from the long press context menu which are opened
                in the background"/>
