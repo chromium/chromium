@@ -949,19 +949,39 @@ void FormStructureRationalizer::RationalizeRepeatedStreetAddressFields(
 
 void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
     LogManager* log_manager) {
+  // The max split zip code part length is 5.
+  // The prefix length is equal 5 in US, BR.
+  // The suffix length can be equal 5 in IR, LT.
+  // [Ref: https://en.wikipedia.org/wiki/List_of_postal_codes]
+  constexpr size_t kMaxZipCodePartLength = 5;
   auto has_zip_type = [](const std::unique_ptr<AutofillField>& field) {
+    FieldType type = field->Type().GetStorableType();
     return field->is_visible() &&
-           field->ComputedType().GetStorableType() == ADDRESS_HOME_ZIP;
+           (type == ADDRESS_HOME_ZIP || type == ADDRESS_HOME_ZIP_SUFFIX);
   };
-  // Invariant: All fields in [begin, end[ are ADDRESS_HOME_ZIP.
+  // Invariant: All fields in [begin, end[ are ADDRESS_HOME_ZIP or
+  // ADDRESS_HOME_ZIP_SUFFIX.
   auto begin = fields_->begin();
   auto end = begin;
   while ((begin = std::find_if(end, fields_->end(), has_zip_type)) !=
          fields_->end()) {
     end = std::find_if_not(begin + 1, fields_->end(), has_zip_type);
-    if (end - begin == 2) {
-      AutofillField& first_zip = **begin;
-      AutofillField& second_zip = **(begin + 1);
+    if (end - begin != 2) {
+      continue;
+    }
+    AutofillField& first_zip = **begin;
+    AutofillField& second_zip = **(begin + 1);
+    const bool is_max_length_small =
+        first_zip.max_length() <= kMaxZipCodePartLength &&
+        second_zip.max_length() <= kMaxZipCodePartLength;
+    if (second_zip.Type().GetStorableType() == ADDRESS_HOME_ZIP_SUFFIX) {
+      LOG_AF(log_manager)
+          << LoggingScope::kRationalization << LogMessage::kRationalization
+          << "Zip Code Rationalization: Converting sequence of (zip, "
+             "zip_suffix) to (zip_prefix, zip_suffix)";
+      first_zip.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP_PREFIX),
+                          AutofillPredictionSource::kRationalization);
+    } else if (is_max_length_small) {
       LOG_AF(log_manager)
           << LoggingScope::kRationalization << LogMessage::kRationalization
           << "Zip Code Rationalization: Converting sequence of (zip, "
@@ -971,6 +991,24 @@ void FormStructureRationalizer::RationalizeRepeatedZipCodeFields(
       second_zip.SetTypeTo(AutofillType(ADDRESS_HOME_ZIP_SUFFIX),
                            AutofillPredictionSource::kRationalization);
     }
+  }
+}
+
+void FormStructureRationalizer::RationalizeZipCodeSuffixFields(
+    LogManager* log_manager) {
+  FieldType prev_type = UNKNOWN_TYPE;
+  for (const std::unique_ptr<AutofillField>& field : *fields_) {
+    FieldType type = field->Type().GetStorableType();
+    if (type == ADDRESS_HOME_ZIP_SUFFIX &&
+        prev_type != ADDRESS_HOME_ZIP_PREFIX) {
+      field->SetTypeTo(AutofillType(ADDRESS_HOME_ZIP),
+                       AutofillPredictionSource::kRationalization);
+      LOG_AF(log_manager)
+          << "Zip Code Rationalization: Converting "
+             "ADDRESS_HOME_ZIP_SUFFIX field to ADDRESS_HOME_ZIP"
+             "since previous field is not ADDRESS_HOME_ZIP_PREFIX.";
+    }
+    prev_type = type;
   }
 }
 
@@ -986,6 +1024,7 @@ void FormStructureRationalizer::RationalizeFieldTypePredictions(
   RationalizeRepeatedStreetAddressFields(log_manager);
   if (base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
     RationalizeRepeatedZipCodeFields(log_manager);
+    RationalizeZipCodeSuffixFields(log_manager);
   }
   RationalizeStreetAddressAndAddressLine(log_manager);
   RationalizeBetweenStreetFields(log_manager);

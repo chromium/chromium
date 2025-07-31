@@ -103,9 +103,15 @@ class FormStructureRationalizer {
   // 2 and 3.
   void RationalizeRepeatedStreetAddressFields(LogManager* log_manager);
 
-  // Rewrites sequence of visible (zip, zip) fields into (zip_prefix,
-  // zip_suffix).
+  // Rewrites sequence of visible (zip, zip) fields into
+  // (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX) if a small max_length
+  // value is set for both fields or the second zip field type is
+  // ADDRESS_HOME_ZIP_SUFFIX.
   void RationalizeRepeatedZipCodeFields(LogManager* log_manager);
+
+  // Rewrites all ADDRESS_HOME_ZIP_SUFFIX fields into ADDRESS_HOME_ZIP
+  // if previous field is not ADDRESS_HOME_ZIP_PREFIX.
+  void RationalizeZipCodeSuffixFields(LogManager* log_manager);
 
   // Rewrites sequences of (street address, address_line2) into (address_line1,
   // address_line2) as server predictions sometimes introduce wrong street

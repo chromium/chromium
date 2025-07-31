@@ -5360,39 +5360,75 @@
     ]
   },
   "ZIP_4": {
-    "en": [
-      {
-        "positive_pattern": "zip|^-$|post2",
-        "positive_score": 1.1,
-        "negative_pattern": "\\.zip",
-        "negative_patterns_explainer": ".zip refers to a file extension",
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_NUMBER"
-        ]
-      }
-    ],
-    "pt": [
-      {
-        "positive_pattern": "codpos2",
-        "positive_score": 1.1,
-        "negative_pattern": null,
-        "match_field_attributes": [
-          "LABEL",
-          "NAME"
-        ],
-        "form_control_types": [
-          "INPUT_TEXT",
-          "INPUT_TELEPHONE",
-          "INPUT_NUMBER"
-        ]
-      }
-    ]
+    "en": {
+      "": [
+        {
+          "positive_pattern": "zip|^-$|post2",
+          "positive_score": 1.1,
+          "negative_pattern": "\\.zip",
+          "negative_patterns_explainer": ".zip refers to a file extension",
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "AutofillSupportSplitZipCode": [
+        {
+          "positive_pattern": "(?:(?:zip|post(?:al)?)[\\W_]*code|zip)[\\W_]*(?:0?2|ext|plus|complement|suffix|second)",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    },
+    "pt": {
+      "": [
+        {
+          "positive_pattern": "codpos2",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ],
+      "AutofillSupportSplitZipCode": [
+        {
+          "positive_pattern": "(?:codigo[\\W_]?postal|cep)[\\W_]?2",
+          "positive_score": 1.1,
+          "negative_pattern": null,
+          "match_field_attributes": [
+            "LABEL",
+            "NAME"
+          ],
+          "form_control_types": [
+            "INPUT_TEXT",
+            "INPUT_TELEPHONE",
+            "INPUT_NUMBER"
+          ]
+        }
+      ]
+    }
   },
   "ZIP_CODE": {
     "de": [

@@ -67,6 +67,8 @@ class AddressFieldParser : public FormFieldParser {
 
   bool ParseZipCode(ParsingContext& context, AutofillScanner* scanner);
 
+  bool ParseZipCodeSuffix(ParsingContext& context, AutofillScanner* scanner);
+
   bool ParseCity(ParsingContext& context, AutofillScanner* scanner);
 
   bool ParseState(ParsingContext& context, AutofillScanner* scanner);
@@ -124,11 +126,16 @@ class AddressFieldParser : public FormFieldParser {
       const char* regex_name,
       std::optional<FieldAndMatchInfo>* match);
 
+  // The following applies to all `ParseNameAndLabelForX()` functions:
   // Run matches on the name and label separately. If the return result is
   // RESULT_MATCH_NAME_LABEL, then `scanner` advances and the field is set.
   // Otherwise `scanner` rewinds and the field is cleared.
   ParseNameLabelResult ParseNameAndLabelForZipCode(ParsingContext& context,
                                                    AutofillScanner* scanner);
+
+  ParseNameLabelResult ParseNameAndLabelForZipCodeSuffix(
+      ParsingContext& context,
+      AutofillScanner* scanner);
 
   ParseNameLabelResult ParseNameAndLabelForDependentLocality(
       ParsingContext& context,
@@ -203,7 +210,7 @@ class AddressFieldParser : public FormFieldParser {
   std::optional<FieldAndMatchInfo> city_;
   std::optional<FieldAndMatchInfo> state_;
   std::optional<FieldAndMatchInfo> zip_;
-  std::optional<FieldAndMatchInfo> zip_suffix_;  // Classified but not filled
+  std::optional<FieldAndMatchInfo> zip_suffix_;
   std::optional<FieldAndMatchInfo> country_;
   std::optional<FieldAndMatchInfo> landmark_;
   std::optional<FieldAndMatchInfo> between_streets_;

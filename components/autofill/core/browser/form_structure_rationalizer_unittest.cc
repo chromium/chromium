@@ -1372,14 +1372,23 @@ class RationalizeRepeatedZipTest : public FormStructureRationalizerTest {
 };
 
 // Tests that two consecutive ADDRESS_HOME_ZIP fields are rationalized
-// to ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX.
+// to ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX if max_length is
+// specified and small enough on both fields.
 TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZip) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
-          {"Full Name", "fullName", NAME_FULL},
-          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-          {"Zip", "zip", ADDRESS_HOME_ZIP},
-          {"Zip2", "zip2", ADDRESS_HOME_ZIP},
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Address",
+           .name = "address",
+           .field_type = ADDRESS_HOME_STREET_ADDRESS},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 5},
+          {.label = "Zip2",
+           .name = "zip2",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 4},
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
@@ -1387,16 +1396,67 @@ TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZip) {
                           ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX));
 }
 
+// Tests that two consecutive ADDRESS_HOME_ZIP fields are not rationalized
+// to ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX if max_length values
+// are too big.
+TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZipBigMaxLength) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 6},
+          {.label = "Zip2",
+           .name = "zip2",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 4},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
+                          ADDRESS_HOME_CITY));
+}
+
+// Tests that two consecutive ADDRESS_HOME_ZIP fields are not rationalized
+// to ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX if max_length values
+// are not set.
+TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZipMaxLengthNotSet) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip", .name = "zip", .field_type = ADDRESS_HOME_ZIP},
+          {.label = "Zip2", .name = "zip2", .field_type = ADDRESS_HOME_ZIP},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
+                          ADDRESS_HOME_CITY));
+}
+
 // Tests that 3 consecutive ADDRESS_HOME_ZIP fields are not affected
 // by the rationalization.
 TEST_F(RationalizeRepeatedZipTest, ThreeConsecutiveZip) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
-          {"Full Name", "fullName", NAME_FULL},
-          {"Address", "address", ADDRESS_HOME_STREET_ADDRESS},
-          {"Zip", "zip", ADDRESS_HOME_ZIP},
-          {"Zip2", "zip2", ADDRESS_HOME_ZIP},
-          {"Zip3", "zip3", ADDRESS_HOME_ZIP},
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Address",
+           .name = "address",
+           .field_type = ADDRESS_HOME_STREET_ADDRESS},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 3},
+          {.label = "Zip2",
+           .name = "zip2",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 3},
+          {.label = "Zip3",
+           .name = "zip3",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 3},
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(
@@ -1410,17 +1470,95 @@ TEST_F(RationalizeRepeatedZipTest, ThreeConsecutiveZip) {
 TEST_F(RationalizeRepeatedZipTest, TwoNonConsecutiveZip) {
   std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
       {
-          {"Full Name", "fullName", NAME_FULL},
-          {"Zip", "zip", ADDRESS_HOME_ZIP},
-          {"City", "city", ADDRESS_HOME_CITY},
-          {"Full Name", "fullName", NAME_FULL},
-          {"Zip", "zip", ADDRESS_HOME_ZIP},
-          {"City", "city", ADDRESS_HOME_CITY},
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 5},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP,
+           .max_length = 4},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
               ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
                           NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
+// Tests that ADDRESS_HOME_ZIP_SUFFIX without previous ADDRESS_HOME_ZIP is
+// rationalized to ADDRESS_HOME_ZIP.
+TEST_F(RationalizeRepeatedZipTest, LonelyZipSuffixField) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip2",
+           .name = "zip2",
+           .field_type = ADDRESS_HOME_ZIP_SUFFIX},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+}
+
+// Tests that (ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP_SUFFIX) is rationalized to
+// (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX).
+TEST_F(RationalizeRepeatedZipTest, ZipAndZipSuffix) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip", .name = "zip", .field_type = ADDRESS_HOME_ZIP},
+          {.label = "Zip2",
+           .name = "zip2",
+           .field_type = ADDRESS_HOME_ZIP_SUFFIX},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
+                          ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
+}
+
+// Tests that (ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_ZIP_SUFFIX) is rationalized
+// to (ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX).
+TEST_F(RationalizeRepeatedZipTest, TwoZipSuffix) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP_SUFFIX},
+          {.label = "Zip2",
+           .name = "zip2",
+           .field_type = ADDRESS_HOME_ZIP_SUFFIX},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
+                          ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
+}
+
+// Tests that (ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_ZIP) is rationalized
+// to (ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP) if max_length not set.
+TEST_F(RationalizeRepeatedZipTest, ZipSuffixAndZip) {
+  std::unique_ptr<FormStructure> form_structure = BuildFormStructure(
+      {
+          {.label = "Full Name", .name = "fullName", .field_type = NAME_FULL},
+          {.label = "Zip",
+           .name = "zip",
+           .field_type = ADDRESS_HOME_ZIP_SUFFIX},
+          {.label = "Zip2", .name = "zip2", .field_type = ADDRESS_HOME_ZIP},
+          {.label = "City", .name = "city", .field_type = ADDRESS_HOME_CITY},
+      },
+      /*run_heuristics=*/false);
+  EXPECT_THAT(GetTypes(*form_structure),
+              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
+                          ADDRESS_HOME_CITY));
 }
 
 }  // namespace
