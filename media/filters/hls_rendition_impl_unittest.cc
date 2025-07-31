@@ -855,4 +855,123 @@ TEST_F(HlsRenditionImplUnittest, TestAES128Content) {
   task_environment_.RunUntilIdle();
 }
 
+TEST_F(HlsRenditionImplUnittest, TestCanPlayWhenThereIsAGap) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> empty_range;
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Seconds(0), base::Milliseconds(998));
+  split_range.Add(base::Seconds(3), base::Milliseconds(3999));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(empty_range))   // CheckState #1
+      .WillOnce(Return(split_range));  // OnSegmentData #1
+  RespondToUrl("https://example.com/bip00.ts", content);
+  RequireAppend(base::as_byte_span(content));
+  rendition->CheckState(base::Seconds(0), 0.0, BindCheck0Sec());
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCantSkipOverLargeGaps) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Seconds(0), base::Milliseconds(998));
+  split_range.Add(base::Seconds(3), base::Milliseconds(3999));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range));
+  EXPECT_CALL(*mock_hrh_, Quit(_));
+  rendition->CheckState(base::Milliseconds(999), 0.0, BindCheckStateNoExpect());
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCantSkipIntoTinyRangeMiddle) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> split_range;
+  Ranges<base::TimeDelta> truncated;
+  split_range.Add(base::Milliseconds(10), base::Milliseconds(80));
+  split_range.Add(base::Milliseconds(100), base::Milliseconds(102));
+  split_range.Add(base::Milliseconds(104), base::Milliseconds(112));
+  split_range.Add(base::Milliseconds(114), base::Milliseconds(130));
+  split_range.Add(base::Milliseconds(132), base::Milliseconds(190));
+  truncated.Add(base::Milliseconds(132), base::Milliseconds(190));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range))
+      .WillOnce(Return(truncated));
+
+  EXPECT_CALL(*mock_mdeh_,
+              Remove(_, base::Seconds(0), base::Milliseconds(130)));
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Milliseconds(132)));
+  rendition->CheckState(base::Milliseconds(90), 0.0,
+                        BindCheckState(kNoTimestamp));
+}
+
+TEST_F(HlsRenditionImplUnittest, TestSkipsAheadIfBehind) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Milliseconds(100), base::Milliseconds(102));
+  split_range.Add(base::Milliseconds(104), base::Milliseconds(112));
+  split_range.Add(base::Milliseconds(114), base::Milliseconds(130));
+  split_range.Add(base::Milliseconds(132), base::Milliseconds(190));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillRepeatedly(Return(split_range));
+
+  EXPECT_CALL(*mock_mdeh_, RequestSeek(base::Milliseconds(100)));
+  rendition->CheckState(base::Milliseconds(0), 1, BindCheckState(kNoTimestamp));
+}
+
+TEST_F(HlsRenditionImplUnittest, TestCantSkipIntoTheFarFuture) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Milliseconds(3100), base::Milliseconds(3102));
+  split_range.Add(base::Milliseconds(3104), base::Milliseconds(3112));
+  split_range.Add(base::Milliseconds(3114), base::Milliseconds(3130));
+  split_range.Add(base::Milliseconds(3132), base::Milliseconds(3190));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range));
+
+  EXPECT_CALL(*mock_hrh_, Quit(_));
+  rendition->CheckState(base::Milliseconds(0), 1, BindCheckStateNoExpect());
+}
+
+TEST_F(HlsRenditionImplUnittest, TestWillDelayUntilRangeWhenBufferFull) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  Ranges<base::TimeDelta> split_range;
+  split_range.Add(base::Seconds(0), base::Seconds(2));
+  split_range.Add(base::Seconds(3), base::Seconds(20));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillRepeatedly(Return(split_range));
+
+  // The delay is set until the end of the first loaded range, because it is
+  // closer than the "ideal buffer size"
+  rendition->CheckState(base::Seconds(1), 1, BindCheckState(base::Seconds(1)));
+}
+
+TEST_F(HlsRenditionImplUnittest, TestRemoveOldDataForSkipRemovesAllBuffers) {
+  auto rendition = MakeVodRendition(kDiscontinuous);
+  ASSERT_NE(rendition, nullptr);
+  std::string content = "123";
+  Ranges<base::TimeDelta> split_range;
+  Ranges<base::TimeDelta> truncated;
+  split_range.Add(base::Milliseconds(10), base::Milliseconds(80));
+  split_range.Add(base::Milliseconds(100), base::Milliseconds(102));
+  split_range.Add(base::Milliseconds(104), base::Milliseconds(112));
+  split_range.Add(base::Milliseconds(114), base::Milliseconds(130));
+  split_range.Add(base::Milliseconds(132), base::Milliseconds(190));
+  EXPECT_CALL(*mock_mdeh_, GetBufferedRanges("test"))
+      .WillOnce(Return(split_range))
+      .WillOnce(Return(truncated));
+
+  EXPECT_CALL(*mock_mdeh_,
+              Remove(_, base::Seconds(0), base::Milliseconds(130)));
+  EXPECT_CALL(*mock_hrh_, Quit(_));
+  rendition->CheckState(base::Milliseconds(90), 0.0, BindCheckStateNoExpect());
+}
+
 }  // namespace media
