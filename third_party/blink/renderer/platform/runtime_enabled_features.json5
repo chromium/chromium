@@ -4385,6 +4385,11 @@
       status: "stable",
     },
     {
+      // See https://chromestatus.com/feature/4811835974615040
+      name: "SelectivePermissionsIntervention",
+      status: "experimental",
+    },
+    {
       // If enabled, the select element will not dispatch a mouseup event when
       // an option is selected using the keyboard.
       // This should ship in M135, and it can be removed after M137.

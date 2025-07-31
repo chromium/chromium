@@ -121,6 +121,9 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
     // The filterlist rule that caused the root (last) script in
     // `ancestry_chain` to be ad-tagged.
     subresource_filter::ScopedRule root_script_filterlist_rule;
+
+    // A brief summary of the ancestry. Useful for intervention reports.
+    String ToString() const;
   };
 
   // Finds an AdTracker for a given ExecutionContext.
@@ -220,7 +223,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
   bool IsKnownAdScript(ExecutionContext*, const String& url);
   bool IsKnownAdScriptForCheckedContext(
       ExecutionContext&,
-      const String& url,
       std::optional<AdScriptIdentifier>* out_ad_script);
 
   // Adds the given `url` and its associated `ad_provenance` to the set of known

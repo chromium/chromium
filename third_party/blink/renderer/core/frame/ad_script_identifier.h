@@ -9,6 +9,7 @@
 #include "base/hash/hash.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
+#include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "v8/include/v8-inspector.h"
 
 namespace blink {
@@ -20,7 +21,9 @@ struct CORE_EXPORT AdScriptIdentifier {
   // Creates an empty/unspecified identifier.
   AdScriptIdentifier();
 
-  AdScriptIdentifier(const v8_inspector::V8DebuggerId& context_id, int id);
+  AdScriptIdentifier(const v8_inspector::V8DebuggerId& context_id,
+                     int id,
+                     String name);
 
   bool operator==(const AdScriptIdentifier& other) const;
 
@@ -29,6 +32,12 @@ struct CORE_EXPORT AdScriptIdentifier {
 
   // The script's v8 identifier.
   int id;
+
+  // The script's url (or generated name based on id if inline script). This is
+  // a convenience field useful for intervention messages and debugging, as only
+  // `context_id` and `id` are needed to identify the script. This field is not
+  // used for equality and hash comparisons.
+  String name;
 };
 
 template <>

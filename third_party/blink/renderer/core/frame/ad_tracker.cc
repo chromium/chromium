@@ -68,6 +68,23 @@ v8_inspector::V8DebuggerId GetDebuggerIdForContext(
 
 }  // namespace
 
+String AdTracker::AdScriptAncestry::ToString() const {
+  if (ancestry_chain.empty() || !root_script_filterlist_rule.IsValid()) {
+    return "";
+  }
+
+  StringBuilder builder;
+  builder.AppendFormat("Debug info: adscript '%s' ",
+                       ancestry_chain[0].name.Ascii().c_str());
+  for (size_t i = 1; i < ancestry_chain.size(); ++i) {
+    builder.AppendFormat("(loaded by '%s') ",
+                         ancestry_chain[i].name.Ascii().c_str());
+  }
+  builder.AppendFormat("matched ad filterlist rule: %s",
+                       root_script_filterlist_rule.ToString().c_str());
+  return builder.ToString();
+}
+
 // static
 AdTracker* AdTracker::FromExecutionContext(
     ExecutionContext* execution_context) {
@@ -168,8 +185,8 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
   if (is_ad) {
     if (num_ads_in_stack_ == 0) {
       // Stash the first ad script on the stack.
-      bottom_most_ad_script_ =
-          AdScriptIdentifier(GetDebuggerIdForContext(v8_context), script_id);
+      bottom_most_ad_script_ = AdScriptIdentifier(
+          GetDebuggerIdForContext(v8_context), script_id, url);
     }
     num_ads_in_stack_ += 1;
   }
@@ -371,8 +388,7 @@ bool AdTracker::IsAdScriptInStackHelper(
   // (e.g., when v8 is executed) but not the entire stack. For a small cost we
   // can also check the top of the stack (this is much cheaper than getting the
   // full stack from v8).
-  return IsKnownAdScriptForCheckedContext(*execution_context, String(),
-                                          out_ad_script);
+  return IsKnownAdScriptForCheckedContext(*execution_context, out_ad_script);
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
@@ -396,7 +412,6 @@ bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
 
 bool AdTracker::IsKnownAdScriptForCheckedContext(
     ExecutionContext& execution_context,
-    const String& url,
     std::optional<AdScriptIdentifier>* out_ad_script) {
   DCHECK(!IsKnownAdExecutionContext(&execution_context));
   auto it = context_known_ad_scripts_.find(&execution_context);
@@ -417,8 +432,12 @@ bool AdTracker::IsKnownAdScriptForCheckedContext(
   if (is_ad_script && out_ad_script) {
     v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
 
+    // We don't know the script name/url here, but that's okay. `GetAncestry()`
+    // will look up the ancestry node by script_id and use the
+    // AdScriptIdentifier from that.
     *out_ad_script = AdScriptIdentifier(
-        GetDebuggerIdForContext(isolate->GetCurrentContext()), top_script_id);
+        GetDebuggerIdForContext(isolate->GetCurrentContext()), top_script_id,
+        "");
   }
 
   return is_ad_script;
@@ -476,8 +495,8 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
   // URL, and are intended to share the same provenance. While this approach
   // might not perfectly mirror the script loading ancestry in all complex
   // scenarios, it's considered sufficient for our tracking purposes.
-  AdScriptIdentifier current_ad_script =
-      AdScriptIdentifier(GetDebuggerIdForContext(v8_context), script_id);
+  AdScriptIdentifier current_ad_script = AdScriptIdentifier(
+      GetDebuggerIdForContext(v8_context), script_id, script_name);
 
   ad_script_provenances_.insert(current_ad_script, ad_provenance->Clone());
 }
@@ -485,7 +504,6 @@ void AdTracker::OnScriptIdAvailableForKnownAdScript(
 AdTracker::AdScriptAncestry AdTracker::GetAncestry(
     const AdScriptIdentifier& ad_script) {
   AdTracker::AdScriptAncestry ancestry;
-  ancestry.ancestry_chain.push_back(ad_script);
 
   // Limits the ancestry chain length to protect against potential cycles in the
   // ancestry graph (though unexpected).
@@ -494,8 +512,15 @@ AdTracker::AdScriptAncestry AdTracker::GetAncestry(
 
   // TODO(yaoxia): Determine if we should CHECK that that the script ID in each
   // step is guaranteed to be present in `ad_script_provenances_`.
-  auto provenance_it =
-      ad_script_provenances_.find(ancestry.ancestry_chain.back());
+  auto provenance_it = ad_script_provenances_.find(ad_script);
+  if (provenance_it == ad_script_provenances_.end()) {
+    return ancestry;
+  }
+
+  // The input `ad_script` may not have a name set, but anything stored in
+  // ad_script_provenances_ should, so prefer that AdScriptIdentifier.
+  ancestry.ancestry_chain.push_back(provenance_it->key);
+
   while (provenance_it != ad_script_provenances_.end()) {
     const std::unique_ptr<AdProvenance>& ad_provenance = provenance_it->value;
 
