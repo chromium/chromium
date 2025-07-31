@@ -64,6 +64,11 @@ public interface SiteSettingsDelegate {
     boolean isIncognitoModeEnabled();
 
     /**
+     * @return true if the delegate is for an incognito-branded profile.
+     */
+    boolean isIncognito();
+
+    /**
      * @return true if the QuietNotificationPrompts Feature is enabled.
      */
     boolean isQuietNotificationPromptsFeatureEnabled();

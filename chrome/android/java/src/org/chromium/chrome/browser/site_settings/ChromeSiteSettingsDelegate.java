@@ -183,6 +183,11 @@ public class ChromeSiteSettingsDelegate implements SiteSettingsDelegate {
     }
 
     @Override
+    public boolean isIncognito() {
+        return mProfile.isIncognitoBranded();
+    }
+
+    @Override
     public boolean isQuietNotificationPromptsFeatureEnabled() {
         return ChromeFeatureList.isEnabled(ChromeFeatureList.QUIET_NOTIFICATION_PROMPTS);
     }
