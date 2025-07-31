@@ -862,10 +862,13 @@ def install_packages(options):
   try:
     packages = find_missing_packages(options)
     if packages:
-      cmd = ["sudo", "apt-get", "install"]
+      cmd = ["apt-get", "install"]
       if options.no_prompt:
-        cmd += ["-qq", "--allow-downgrades", "--assume-yes"]
-      subprocess.check_call(cmd + packages)
+        cmd = [
+            "DEBIAN_FRONTEND=noninteractive", *cmd, "-qq", "--allow-downgrades",
+            "--assume-yes"
+        ]
+      subprocess.check_call(["sudo", *cmd, *packages])
       logger.info("")
     else:
       logger.info("No missing packages, and the packages are up to date.")
