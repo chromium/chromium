@@ -1454,11 +1454,12 @@ export class BrowsingContextImpl {
                   !(
                     element instanceof HTMLElement ||
                     element instanceof Document ||
-                    element instanceof DocumentFragment
+                    element instanceof DocumentFragment ||
+                    element instanceof SVGElement
                   )
                 ) {
                   throw new Error(
-                    'startNodes in css selector should be HTMLElement, Document or DocumentFragment',
+                    'startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment',
                   );
                 }
                 return [...element.querySelectorAll(cssSelector)];
@@ -1865,10 +1866,10 @@ export class BrowsingContextImpl {
       // Heuristic to detect if the `startNode` is not an `HTMLElement` in css selector.
       if (
         locatorResult.exceptionDetails.text ===
-        'Error: startNodes in css selector should be HTMLElement, Document or DocumentFragment'
+        'Error: startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment'
       ) {
         throw new InvalidArgumentException(
-          'startNodes in css selector should be HTMLElement, Document or DocumentFragment',
+          'startNodes in css selector should be HTMLElement, SVGElement or Document or DocumentFragment',
         );
       }
       throw new UnknownErrorException(
