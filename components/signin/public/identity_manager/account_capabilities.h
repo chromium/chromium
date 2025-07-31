@@ -116,6 +116,10 @@ class AccountCapabilities {
   // Chrome applies parental controls to accounts with this capability.
   signin::Tribool is_opted_in_to_parental_supervision() const;
 
+  // Chrome applies account level enterprise policies to profiles signed in
+  // with accounts with this capability.
+  signin::Tribool is_subject_to_account_level_enterprise_policies() const;
+
   // Chrome must show the notice before using the privacy sandbox restricted
   // measurement API
   signin::Tribool

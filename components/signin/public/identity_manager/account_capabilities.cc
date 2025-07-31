@@ -154,6 +154,12 @@ signin::Tribool AccountCapabilities::is_opted_in_to_parental_supervision()
 }
 
 signin::Tribool AccountCapabilities::
+    is_subject_to_account_level_enterprise_policies() const {
+  return GetCapabilityByName(
+      kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName);
+}
+
+signin::Tribool AccountCapabilities::
     is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice() const {
   return GetCapabilityByName(
       kIsSubjectToChromePrivacySandboxRestrictedMeasurementNotice);

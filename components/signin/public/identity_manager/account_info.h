@@ -109,6 +109,12 @@ struct AccountInfo : public CoreAccountInfo {
   // if `hosted_domain` is still unknown (empty).
   signin::Tribool IsManaged() const;
 
+  // Returns `kTrue` if the account is managed and can apply account level
+  // enterprise policies. Returns `kFalse` if the account is not managed or if
+  // the account is managed but cannot apply account level enterprise policies.
+  // Returns `kUnknown` the value is unknown.
+  signin::Tribool CanApplyAccountLevelEnterprisePolicies() const;
+
   bool IsEduAccount() const;
 
   // Returns true if the account email can be used in display fields.

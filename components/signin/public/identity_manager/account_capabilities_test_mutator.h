@@ -43,6 +43,7 @@ class AccountCapabilitiesTestMutator {
   void set_can_use_speaker_label_in_recorder_app(bool value);
   void set_is_allowed_for_machine_learning(bool value);
   void set_is_opted_in_to_parental_supervision(bool value);
+  void set_is_subject_to_account_level_enterprise_policies(bool value);
   void set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
       bool value);
   void set_is_subject_to_enterprise_features(bool value);

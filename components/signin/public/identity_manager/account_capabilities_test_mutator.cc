@@ -120,6 +120,12 @@ void AccountCapabilitiesTestMutator::set_is_opted_in_to_parental_supervision(
 }
 
 void AccountCapabilitiesTestMutator::
+    set_is_subject_to_account_level_enterprise_policies(bool value) {
+  capabilities_->capabilities_map_
+      [kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName] = value;
+}
+
+void AccountCapabilitiesTestMutator::
     set_is_subject_to_chrome_privacy_sandbox_restricted_measurement_notice(
         bool value) {
   capabilities_->capabilities_map_

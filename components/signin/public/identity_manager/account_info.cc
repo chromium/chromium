@@ -164,11 +164,15 @@ bool AccountInfo::IsMemberOfFlexOrg() const {
 }
 
 signin::Tribool AccountInfo::IsManaged() const {
+  return IsManaged(hosted_domain);
+}
+
+signin::Tribool AccountInfo::CanApplyAccountLevelEnterprisePolicies() const {
   if (base::FeatureList::IsEnabled(
           kUseAccountCapabilityToDetermineAccountManagement)) {
-    return capabilities.is_subject_to_enterprise_features();
+    return capabilities.is_subject_to_account_level_enterprise_policies();
   }
-  return IsManaged(hosted_domain);
+  return IsManaged();
 }
 
 bool AccountInfo::IsEduAccount() const {

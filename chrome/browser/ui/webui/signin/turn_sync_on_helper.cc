@@ -600,7 +600,7 @@ void TurnSyncOnHelper::ShowSyncConfirmationUI() {
   }
   // Use the email-based heuristic if `account_info_` isn't fully initialized.
   const bool is_managed_account = signin::TriboolToBoolOr(
-      account_info_.IsManaged(),
+      account_info_.CanApplyAccountLevelEnterprisePolicies(),
       signin::AccountManagedStatusFinder::MayBeEnterpriseUserBasedOnEmail(
           account_info_.email));
   delegate_->ShowSyncDisabledConfirmation(

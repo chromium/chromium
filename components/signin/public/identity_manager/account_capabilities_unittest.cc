@@ -206,6 +206,21 @@ TEST_F(AccountCapabilitiesTest, IsAllowedForMachineLearning) {
             signin::Tribool::kFalse);
 }
 
+TEST_F(AccountCapabilitiesTest, IsSubjectToAccountLevelEnterprisePolicies) {
+  AccountCapabilities capabilities;
+  EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
+            signin::Tribool::kUnknown);
+
+  AccountCapabilitiesTestMutator mutator(&capabilities);
+  mutator.set_is_subject_to_account_level_enterprise_policies(true);
+  EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
+            signin::Tribool::kTrue);
+
+  mutator.set_is_subject_to_account_level_enterprise_policies(false);
+  EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
+            signin::Tribool::kFalse);
+}
+
 TEST_F(AccountCapabilitiesTest, IsSubjectToEnterpriseFeatures) {
   AccountCapabilities capabilities;
   EXPECT_EQ(capabilities.is_subject_to_enterprise_features(),
