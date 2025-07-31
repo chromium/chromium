@@ -1809,4 +1809,9 @@ public abstract class ChromeFeatureList {
     public static final MutableBooleanParamWithSafeDefault sAndroidTabDeclutterAutoDeletePromoTest =
             sAndroidTabDeclutterAutoDelete.newBooleanParam(
                     "android_tab_declutter_auto_delete_promo_test", false);
+
+    public static final MutableBooleanParamWithSafeDefault sShowNewTabAnimationsLogs =
+            sShowNewTabAnimations.newBooleanParam("logs", false);
+    public static final MutableBooleanParamWithSafeDefault sShowNewTabAnimationsListeners =
+            sShowNewTabAnimations.newBooleanParam("listeners", false);
 }

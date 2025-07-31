@@ -25,6 +25,7 @@ import androidx.annotation.ColorInt;
 import androidx.annotation.Px;
 
 import org.chromium.base.Callback;
+import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.build.annotations.EnsuresNonNull;
@@ -90,6 +91,8 @@ public class NewTabAnimationLayout extends Layout {
     private static final long FOREGROUND_ANIMATION_DURATION_MS = 300L;
     private static final long FOREGROUND_FADE_DURATION_MS = 150L;
     private static final long ANIMATION_TIMEOUT_MS = 800L;
+    private static final String TAG = "NewTabAnimation";
+    private final boolean mLogsEnabled;
     private final LayoutStateProvider mLayoutStateProvider;
     private final ViewGroup mContentContainer;
     private final ViewGroup mAnimationHostView;
@@ -156,6 +159,7 @@ public class NewTabAnimationLayout extends Layout {
         mScrimVisibilitySupplier = scrimVisibilitySupplier;
         mCustomTabCount = mToolbarManager.getCustomTabCount();
         mBrowserVisibilityDelegate = browserControlsManager.getBrowserVisibilityDelegate();
+        mLogsEnabled = ChromeFeatureList.sShowNewTabAnimationsLogs.getValue();
     }
 
     @Override
@@ -235,16 +239,26 @@ public class NewTabAnimationLayout extends Layout {
     @Override
     protected void forceAnimationToFinish() {
         if (mSkipForceAnimationToFinish) {
+            if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: skipped");
             mSkipForceAnimationToFinish = false;
             return;
         }
         runQueuedRunnableIfExists();
         if (mTabCreatedForegroundAnimation != null) {
+            if (mLogsEnabled) {
+                Log.i(TAG, "forceAnimationToFinish: mTabCreatedForegroundAnimation#cancel");
+            }
             mTabCreatedForegroundAnimation.cancel();
         } else if (mFadeAnimator != null) {
+            if (mLogsEnabled) Log.i(TAG, "forceAnimationToFinish: mFadeAnimator#end");
             mFadeAnimator.end();
         }
-        if (mTabCreatedBackgroundAnimation != null) mTabCreatedBackgroundAnimation.end();
+        if (mTabCreatedBackgroundAnimation != null) {
+            if (mLogsEnabled) {
+                Log.i(TAG, "forceAnimationToFinish: mTabCreatedBackgroundAnimation#end");
+            }
+            mTabCreatedBackgroundAnimation.end();
+        }
     }
 
     @Override
@@ -362,6 +376,12 @@ public class NewTabAnimationLayout extends Layout {
     @Override
     public boolean isRunningAnimations() {
         return mTabCreatedForegroundAnimation != null;
+    }
+
+    @Override
+    public void startHiding() {
+        if (mLogsEnabled) Log.i(TAG, "startHiding");
+        super.startHiding();
     }
 
     private void reset() {
@@ -589,12 +609,51 @@ public class NewTabAnimationLayout extends Layout {
                 RoundedCornerAnimatorUtil.createRoundedCornerAnimator(
                         mRectView, startRadii, endRadii);
 
+        if (ChromeFeatureList.sShowNewTabAnimationsListeners.getValue()) {
+            mRectAnimator.addListener(
+                    new CancelAwareAnimatorListener() {
+                        @Override
+                        public void onStart(Animator animation) {
+                            Log.i(TAG, "mRectAnimator#onStart");
+                        }
+
+                        @Override
+                        public void onEnd(Animator animation) {
+                            Log.i(TAG, "mRectAnimator#onEnd");
+                        }
+
+                        @Override
+                        public void onCancel(Animator animation) {
+                            Log.i(TAG, "mRectAnimator#onCancel");
+                        }
+                    });
+
+            mCornerAnimator.addListener(
+                    new CancelAwareAnimatorListener() {
+                        @Override
+                        public void onStart(Animator animation) {
+                            Log.i(TAG, "mCornerAnimator#onStart");
+                        }
+
+                        @Override
+                        public void onEnd(Animator animation) {
+                            Log.i(TAG, "mCornerAnimator#onEnd");
+                        }
+
+                        @Override
+                        public void onCancel(Animator animation) {
+                            Log.i(TAG, "mCornerAnimator#onCancel");
+                        }
+                    });
+        }
+
         mFadeAnimator = ObjectAnimator.ofFloat(mRectView, ShrinkExpandImageView.ALPHA, 1f, 0f);
         mFadeAnimator.setInterpolator(Interpolators.FAST_OUT_LINEAR_IN_INTERPOLATOR);
         mFadeAnimator.setDuration(FOREGROUND_FADE_DURATION_MS);
         mFadeAnimator.addListener(
                 new CancelAwareAnimatorListener() {
                     private void internalForegroundCleanUp() {
+                        if (mLogsEnabled) Log.i(TAG, "mFadeAnimator#internalForegroundCleanUp");
                         mFadeAnimator = null;
                         mAnimationHostView.removeView(mForegroundHostView);
                         mRectView = null;
@@ -603,11 +662,13 @@ public class NewTabAnimationLayout extends Layout {
 
                     @Override
                     public void onEnd(Animator animation) {
+                        if (mLogsEnabled) Log.i(TAG, "mFadeAnimator#onEnd");
                         internalForegroundCleanUp();
                     }
 
                     @Override
                     public void onCancel(Animator animation) {
+                        if (mLogsEnabled) Log.i(TAG, "mFadeAnimator#onCancel");
                         internalForegroundCleanUp();
                     }
                 });
@@ -619,6 +680,9 @@ public class NewTabAnimationLayout extends Layout {
         mTabCreatedForegroundAnimation.addListener(
                 new CancelAwareAnimatorListener() {
                     private void switchToNewTab() {
+                        if (mLogsEnabled) {
+                            Log.i(TAG, "mTabCreatedForegroundAnimation#switchToNewTab");
+                        }
                         mTabCreatedForegroundAnimation = null;
                         startHiding();
                         assumeNonNull(mTabModelSelector);
@@ -631,6 +695,7 @@ public class NewTabAnimationLayout extends Layout {
 
                     @Override
                     public void onEnd(Animator animation) {
+                        if (mLogsEnabled) Log.i(TAG, "mTabCreatedForegroundAnimation#onEnd");
                         mSkipForceAnimationToFinish = true;
                         if (mFadeAnimator != null) mFadeAnimator.start();
                         switchToNewTab();
@@ -638,6 +703,7 @@ public class NewTabAnimationLayout extends Layout {
 
                     @Override
                     public void onCancel(Animator animation) {
+                        if (mLogsEnabled) Log.i(TAG, "mTabCreatedForegroundAnimation#onCancel");
                         if (mFadeAnimator != null) mFadeAnimator.end();
                         switchToNewTab();
                     }

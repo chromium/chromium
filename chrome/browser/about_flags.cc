@@ -3005,6 +3005,23 @@ const FeatureEntry::FeatureVariation kBoardingPassDetectorVariations[] = {
 };
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+
+const FeatureEntry::FeatureParam kShowNewTabAnimationsLogs[] = {
+    {"logs", "true"},
+    {"listeners", "false"}};
+const FeatureEntry::FeatureParam kShowNewTabAnimationsListeners[] = {
+    {"logs", "true"},
+    {"listeners", "true"}};
+const FeatureEntry::FeatureVariation kShowNewTabAnimationsVariations[] = {
+    {"- Add logs", kShowNewTabAnimationsLogs,
+     std::size(kShowNewTabAnimationsLogs), nullptr},
+    {"- Add logs and listeners", kShowNewTabAnimationsListeners,
+     std::size(kShowNewTabAnimationsListeners), nullptr},
+};
+
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // TODO(crbug.com/991082,1015377): Remove after proper support for back/forward
 // cache is implemented.
 const FeatureEntry::FeatureParam kBackForwardCache_ForceCaching[] = {
@@ -7938,7 +7955,9 @@ const FeatureEntry kFeatureEntries[] = {
 
     {"show-new-tab-animations", flag_descriptions::kShowNewTabAnimationsName,
      flag_descriptions::kShowNewTabAnimationsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(chrome::android::kShowNewTabAnimations)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kShowNewTabAnimations,
+                                    kShowNewTabAnimationsVariations,
+                                    "ShowNewTabAnimations")},
 
     {"global-cache-list-for-gating-notification-protections",
      flag_descriptions::kGlobalCacheListForGatingNotificationProtectionsName,
