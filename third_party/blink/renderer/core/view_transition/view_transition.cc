@@ -637,10 +637,6 @@ void ViewTransition::ProcessCurrentState() {
         if (style_tracker_->HasActiveAnimations())
           break;
 
-        CHECK_NE(creation_type_, CreationType::kForSnapshot);
-        CHECK(script_delegate_);
-        script_delegate_->DidFinishAnimating();
-
         // Post a task to run the next state (cleanup) outside of the current
         // lifecycle update.
         document_->GetTaskRunner(TaskType::kMiscPlatformAPI)
@@ -667,6 +663,11 @@ void ViewTransition::ProcessCurrentState() {
         LogIfDocumentElementChanged();
 
         style_tracker_ = nullptr;
+
+        CHECK_NE(creation_type_, CreationType::kForSnapshot);
+        CHECK(script_delegate_);
+        script_delegate_->DidFinishAnimating();
+
         process_next_state = AdvanceTo(State::kFinished);
         DCHECK(IsTerminalState(state_));
         break;
