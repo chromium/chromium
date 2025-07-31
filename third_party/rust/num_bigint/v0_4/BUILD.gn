@@ -53,7 +53,7 @@ cargo_crate("lib") {
   cargo_pkg_repository = "https://github.com/rust-num/num-bigint"
   cargo_pkg_version = "0.4.6"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   deps = [
     "//third_party/rust/num_integer/v0_1:lib",

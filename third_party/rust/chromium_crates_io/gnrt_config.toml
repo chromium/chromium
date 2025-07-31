@@ -263,7 +263,7 @@ extra_src_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
 [crate.icu_casemap.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.icu_casemap_data]
 extra_input_roots = ['../data']
@@ -282,13 +282,13 @@ extra_src_roots = ['../data']
 extra_kv = { allow_unsafe = false }
 
 [crate.icu_experimental.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.icu_experimental_data.extra_kv]
 allow_unsafe = false
 
 [crate.icu_list.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.icu_list_data.extra_kv]
 allow_unsafe = false
@@ -324,7 +324,7 @@ extra_kv = { allow_unsafe = false }
 allow_unsafe = true
 
 [crate.icu_plurals.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.icu_plurals_data]
 extra_input_roots = ['../data']
@@ -401,7 +401,7 @@ configs_to_remove = ['//build/config/compiler:default_optimization']
 configs_to_add = ['//build/config/compiler:optimize']
 
 [crate.num-bigint.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.num-integer.extra_kv]
 allow_unsafe = false
@@ -448,7 +448,7 @@ extra_src_roots = ['../generated']
 extra_kv = { allow_unsafe = false }
 
 [crate.regex-automata.extra_kv]
-allow_unsafe = false
+allow_unsafe = true
 
 [crate.regex-syntax.extra_kv]
 allow_unsafe = false

@@ -98,7 +98,7 @@ cargo_crate("lib") {
       "https://github.com/rust-lang/regex/tree/master/regex-automata"
   cargo_pkg_version = "0.4.9"
 
-  allow_unsafe = false
+  allow_unsafe = true
 
   features = [ "dfa-search" ]
 
