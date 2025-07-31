@@ -46,6 +46,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.annotation.concurrent.GuardedBy;
+
 // A service for importing user data coming from other browsers. It implements
 // a gRPC API, called the "OS migration system app API".
 @NullMarked
@@ -179,7 +181,10 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             public int ignoredItemCount;
         }
 
+        @GuardedBy("mPendingImportsLock")
         private final Map<ByteString, ImportResults> mPendingImports = new HashMap<>();
+
+        private final Object mPendingImportsLock = new Object();
 
         // Must only be created and used on the UI thread.
         @Nullable DataImporterBridge mBridge;
@@ -235,10 +240,12 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                 Status.INVALID_ARGUMENT.withDescription("Missing session_id")));
                 return;
             }
-            ImportResults importResults = mPendingImports.get(sessionId);
-            if (importResults == null) {
-                importResults = new ImportResults();
-                mPendingImports.put(sessionId, importResults);
+            synchronized (mPendingImportsLock) {
+                ImportResults importResults = mPendingImports.get(sessionId);
+                if (importResults == null) {
+                    importResults = new ImportResults();
+                    mPendingImports.put(sessionId, importResults);
+                }
             }
 
             ParcelFileDescriptor pfd = PFD_CONTEXT_KEY.get(Context.current());
@@ -276,10 +283,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                 TaskTraits.UI_DEFAULT,
                                 () ->
                                         importBookmarksOnUiThread(
-                                                pfd.detachFd(), responseObserverForUiThread));
-                        // TODO(crbug.com/431218724): Plumb the actual import result (success or
-                        // failure) back here, so it can be properly reported in importItemsDone().
-                        importResults.successItemCount++;
+                                                sessionId,
+                                                pfd.detachFd(),
+                                                responseObserverForUiThread));
                         return;
                     }
                 case BROWSER_FILE_TYPE_READING_LIST:
@@ -295,10 +301,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                 TaskTraits.UI_DEFAULT,
                                 () ->
                                         importReadingListOnUiThread(
-                                                pfd.detachFd(), responseObserverForUiThread));
-                        // TODO(crbug.com/431218724): Plumb the actual import result (success or
-                        // failure) back here, so it can be properly reported in importItemsDone().
-                        importResults.successItemCount++;
+                                                sessionId,
+                                                pfd.detachFd(),
+                                                responseObserverForUiThread));
                         return;
                     }
                 case BROWSER_FILE_TYPE_BROWSING_HISTORY:
@@ -314,10 +319,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                 TaskTraits.UI_DEFAULT,
                                 () ->
                                         importHistoryOnUiThread(
-                                                pfd.detachFd(), responseObserverForUiThread));
-                        // TODO(crbug.com/431218724): Plumb the actual import result (success or
-                        // failure) back here, so it can be properly reported in importItemsDone().
-                        importResults.successItemCount++;
+                                                sessionId,
+                                                pfd.detachFd(),
+                                                responseObserverForUiThread));
                         return;
                     }
                 case UNRECOGNIZED:
@@ -354,30 +358,33 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                                 Status.INVALID_ARGUMENT.withDescription("Missing session_id")));
                 return;
             }
-            ImportResults importResults = mPendingImports.get(sessionId);
-            if (importResults == null) {
-                responseObserver.onError(
-                        new StatusRuntimeException(
-                                Status.INVALID_ARGUMENT.withDescription("Unknown session_id")));
-                return;
+            ImportItemsDoneResponse.Builder responseBuilder = ImportItemsDoneResponse.newBuilder();
+            synchronized (mPendingImportsLock) {
+                ImportResults importResults = mPendingImports.get(sessionId);
+                if (importResults == null) {
+                    responseObserver.onError(
+                            new StatusRuntimeException(
+                                    Status.INVALID_ARGUMENT.withDescription("Unknown session_id")));
+                    return;
+                }
+
+                responseBuilder
+                        .setSuccessItemCount(importResults.successItemCount)
+                        .setFailedItemCount(importResults.failedItemCount)
+                        .setIgnoredItemCount(importResults.ignoredItemCount);
+
+                // This import session is completed; clean up the corresponding stats.
+                mPendingImports.remove(sessionId);
+
+                // If this was the last (most likely, only) import session ongoing, the bridge isn't
+                // needed anymore
+                if (mPendingImports.isEmpty()) {
+                    PostTask.postTask(TaskTraits.UI_DEFAULT, this::destroyBridgeOnUiThread);
+                }
             }
 
-            responseObserver.onNext(
-                    ImportItemsDoneResponse.newBuilder()
-                            .setSuccessItemCount(importResults.successItemCount)
-                            .setFailedItemCount(importResults.failedItemCount)
-                            .setIgnoredItemCount(importResults.ignoredItemCount)
-                            .build());
+            responseObserver.onNext(responseBuilder.build());
             responseObserver.onCompleted();
-
-            // This import session is completed; clean up the corresponding stats.
-            mPendingImports.remove(sessionId);
-
-            // If this was the last (most likely, only) import session ongoing, the bridge isn't
-            // needed anymore
-            if (mPendingImports.isEmpty()) {
-                PostTask.postTask(TaskTraits.UI_DEFAULT, this::destroyBridgeOnUiThread);
-            }
         }
 
         private void prepareForImport() {
@@ -397,7 +404,9 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
         }
 
         private void importBookmarksOnUiThread(
-                int ownedFd, StreamObserver<ImportItemResponse> responseObserver) {
+                ByteString sessionId,
+                int ownedFd,
+                StreamObserver<ImportItemResponse> responseObserver) {
             ThreadUtils.assertOnUiThread();
 
             prepareForImport();
@@ -407,13 +416,22 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "Bookmarks imported: %d", count);
+                        synchronized (mPendingImportsLock) {
+                            ImportResults importResults = mPendingImports.get(sessionId);
+                            assert (importResults != null);
+                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
+                            // failure) back here, so it can be properly reported.
+                            importResults.successItemCount++;
+                        }
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
         }
 
         private void importReadingListOnUiThread(
-                int ownedFd, StreamObserver<ImportItemResponse> responseObserver) {
+                ByteString sessionId,
+                int ownedFd,
+                StreamObserver<ImportItemResponse> responseObserver) {
             ThreadUtils.assertOnUiThread();
 
             prepareForImport();
@@ -423,13 +441,22 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "ReadingList imported: %d", count);
+                        synchronized (mPendingImportsLock) {
+                            ImportResults importResults = mPendingImports.get(sessionId);
+                            assert (importResults != null);
+                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
+                            // failure) back here, so it can be properly reported.
+                            importResults.successItemCount++;
+                        }
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
         }
 
         private void importHistoryOnUiThread(
-                int ownedFd, StreamObserver<ImportItemResponse> responseObserver) {
+                ByteString sessionId,
+                int ownedFd,
+                StreamObserver<ImportItemResponse> responseObserver) {
             ThreadUtils.assertOnUiThread();
 
             prepareForImport();
@@ -439,6 +466,13 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "History imported: %d", count);
+                        synchronized (mPendingImportsLock) {
+                            ImportResults importResults = mPendingImports.get(sessionId);
+                            assert (importResults != null);
+                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
+                            // failure) back here, so it can be properly reported.
+                            importResults.successItemCount++;
+                        }
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
