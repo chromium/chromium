@@ -1586,7 +1586,7 @@ class SessionServiceKioskTest : public SessionServiceTest {
   }
 
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    chromeos::SetUpFakeKioskSession(std::string(email));
+    chromeos::SetUpFakeChromeAppKioskSession(std::string(email));
   }
 };
 

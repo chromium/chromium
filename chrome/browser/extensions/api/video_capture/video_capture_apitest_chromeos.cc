@@ -58,7 +58,7 @@ class VideoCaptureApiTestChromeOs : public PlatformAppBrowserTest {
  protected:
   void EnterKioskSession() {
     user_manager_.Reset(std::make_unique<ash::FakeChromeUserManager>());
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
   }
 
   void SetAutoLaunchApp() {

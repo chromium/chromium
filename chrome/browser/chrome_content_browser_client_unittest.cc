@@ -412,7 +412,7 @@ class ChromeContentBrowserClientWindowKioskTest
   }
 
   void LogIn(std::string_view email, const GaiaId& gaia_id) override {
-    chromeos::SetUpFakeKioskSession(email);
+    chromeos::SetUpFakeChromeAppKioskSession(email);
   }
 };
 

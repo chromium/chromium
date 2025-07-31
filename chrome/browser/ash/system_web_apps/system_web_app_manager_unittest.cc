@@ -1429,7 +1429,7 @@ class SystemWebAppManagerInKioskTest : public ChromeRenderViewHostTestHarness,
     user_manager_.Reset(std::make_unique<user_manager::FakeUserManager>(
         TestingBrowserProcess::GetGlobal()->local_state()));
     ash::ProfileHelper::Get();  // Instantiate BrowserContextHelper.
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
     ChromeRenderViewHostTestHarness::SetUp();
   }
 

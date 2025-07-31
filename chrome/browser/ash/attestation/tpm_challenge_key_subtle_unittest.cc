@@ -482,7 +482,7 @@ class KioskTpmChallengeKeySubtleTest : public TpmChallengeKeySubtleTestBase {
   ~KioskTpmChallengeKeySubtleTest() override = default;
 
   TestingProfile* CreateKioskProfile() override {
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
     auto* user = fake_user_manager_->GetActiveUser();
     kiosk_user_email_ = user->GetAccountId().GetUserEmail();
     auto* testing_profile =

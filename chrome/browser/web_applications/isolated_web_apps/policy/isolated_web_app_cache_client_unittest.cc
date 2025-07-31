@@ -60,7 +60,7 @@ class IwaCacheClientTest : public ::testing::TestWithParam<SessionType> {
         chromeos::SetUpFakeWebKioskSession();
         break;
       case SessionType::kChromeAppKiosk:
-        chromeos::SetUpFakeKioskSession();
+        chromeos::SetUpFakeChromeAppKioskSession();
         break;
       case SessionType::kManagedGuestSession:
         test_managed_guest_session_ = std::make_unique<

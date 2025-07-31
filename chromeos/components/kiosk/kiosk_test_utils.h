@@ -12,10 +12,7 @@ namespace chromeos {
 // Sets up a fake kiosk session for unit tests.
 // Make sure to enable `UserManagerImpl` to be returned from
 // `UserManager::Get()` prior to calling this function.
-// TODO(b/40286020): remove the default parameter. That is only for transition
-// purpose.
-// TODO(crbug.com/434672174): rename to SetUpFakeChromeAppKioskSession.
-extern void SetUpFakeKioskSession(
+extern void SetUpFakeChromeAppKioskSession(
     std::string_view email = "example@kiosk-apps.device-local.localhost");
 
 extern void SetUpFakeWebKioskSession(

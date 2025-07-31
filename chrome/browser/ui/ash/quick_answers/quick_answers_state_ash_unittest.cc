@@ -370,7 +370,7 @@ class QuickAnswersStateAshKioskTest : public QuickAnswersStateAshTest {
   user_manager::User* StartUserSession() override {
     // TODO(crbug.com/278643115): Consider to return Session instance by
     // chromeos::SetUpFakeKioskSession().
-    chromeos::SetUpFakeKioskSession();
+    chromeos::SetUpFakeChromeAppKioskSession();
     return user_manager::UserManager::Get()->GetActiveUser();
   }
 };

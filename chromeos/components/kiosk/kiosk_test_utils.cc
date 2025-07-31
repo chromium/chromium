@@ -50,7 +50,7 @@ void AddKioskUser(std::string_view email, KioskType kiosk_type) {
 
 }  // namespace
 
-void SetUpFakeKioskSession(std::string_view email) {
+void SetUpFakeChromeAppKioskSession(std::string_view email) {
   AddKioskUser(email, KioskType::kChromeAppKiosk);
 }
 
