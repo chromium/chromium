@@ -718,7 +718,7 @@ const CGFloat kIdentityDiscMaxFontSize = 24;
                                                     self.traitCollection)];
   self.fakeOmnibox.hidden =
       CanShowTabStrip(self) &&
-      (_searchEngineLogoState != SearchEngineLogoState::kNone);
+      (_searchEngineLogoState == SearchEngineLogoState::kNone);
   [self.headerView layoutIfNeeded];
   self.headerViewHeightConstraint.constant =
       content_suggestions::HeightForLogoHeader(_searchEngineLogoState,
