@@ -1156,13 +1156,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Copy Link context menu action for a reading list entry.
-// TODO(crbug.com/378900884): Flaky on ios simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuCopyLink DISABLED_testContextMenuCopyLink
-#else
-#define MAYBE_testContextMenuCopyLink testContextMenuCopyLink
+- (void)testContextMenuCopyLink {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    }
+  }
 #endif
-- (void)MAYBE_testContextMenuCopyLink {
   AddEntriesAndOpenReadingList();
   LongPressEntry(kReadTitle);
 
@@ -1171,13 +1173,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Open in New Tab context menu action for a reading list entry.
-// TODO(crbug.com/435093473): Reenable this test.
 - (void)testContextMenuOpenInNewTab {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
     if (!@available(iOS 18, *)) {
-      EARL_GREY_TEST_DISABLED(@"Failing on iPhone Simulator iOS 17");
+      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
     }
   }
+#endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
   [self addURLToReadingList:distillablePageURL];
   LongPressEntry(kDistillableTitle);
@@ -1194,7 +1198,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    }
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
@@ -1208,14 +1214,15 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 }
 
 // Tests the Mark as Read/Unread context menu action for a reading list entry.
-// TODO(crbug.com/378900884): Flaky on ios simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testContextMenuMarkAsReadAndBack \
-  DISABLED_testContextMenuMarkAsReadAndBack
-#else
-#define MAYBE_testContextMenuMarkAsReadAndBack testContextMenuMarkAsReadAndBack
+- (void)testContextMenuMarkAsReadAndBack {
+#if TARGET_IPHONE_SIMULATOR
+  // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
+  if ([ChromeEarlGrey isIPhoneIdiom]) {
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    }
+  }
 #endif
-- (void)MAYBE_testContextMenuMarkAsReadAndBack {
   AddEntriesAndOpenReadingList();
 
   AssertAllEntriesVisible();
@@ -1260,7 +1267,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    }
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
@@ -1276,7 +1285,9 @@ void AssertIsShowingDistillablePage(bool online, const GURL& distillable_url) {
 #if TARGET_IPHONE_SIMULATOR
   // TODO(crbug.com/433982582): Flaky on an iPhone simulator.
   if ([ChromeEarlGrey isIPhoneIdiom]) {
-    EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    if (!@available(iOS 18, *)) {
+      EARL_GREY_TEST_DISABLED(@"Flakes on iPhone.");
+    }
   }
 #endif
   GURL distillablePageURL(self.testServer->GetURL(kDistillableURL));
