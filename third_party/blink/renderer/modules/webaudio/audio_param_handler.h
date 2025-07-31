@@ -150,7 +150,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
   // Intrinsic value.
   float Value();
-  void SetValue(float);
+  void SetValue(float value);
 
   AutomationRate GetAutomationRate() const {
     base::AutoLock rate_locker(RateLock());
@@ -170,7 +170,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // Must be called in the audio thread.
   float FinalValue();
 
-  float DefaultValue() const { return static_cast<float>(default_value_); }
+  float DefaultValue() const { return default_value_; }
   float MinValue() const { return min_value_; }
   float MaxValue() const { return max_value_; }
 
@@ -319,7 +319,7 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
     // Create CancelValues event
     ParamEvent(Type, double time, std::unique_ptr<ParamEvent> saved_event);
 
-    Type type_;
+    const Type type_;
 
     // The value for the event.  The interpretation of this depends on
     // the event type. Not used for SetValueCurve. For CancelValues,
@@ -333,31 +333,31 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
 
     // Initial value and time to use for linear and exponential ramps that
     // don't have a preceding event.
-    float initial_value_;
-    double call_time_;
+    const float initial_value_;
+    const double call_time_;
 
     // Only used for SetTarget events
-    double time_constant_;
+    const double time_constant_;
 
     // The following items are only used for SetValueCurve events.
     //
     // The duration of the curve.
-    double duration_;
+    const double duration_;
     // The array of curve points.
     Vector<float> curve_;
     // The number of curve points per second. it is used to compute
     // the curve index step when running the automation.
-    double curve_points_per_second_;
+    const double curve_points_per_second_;
     // The default value to use at the end of the curve.  Normally
     // it's the last entry in m_curve, but cancelling a SetValueCurve
     // will set this to a new value.
-    float curve_end_value_;
+    const float curve_end_value_;
 
     // For CancelValues. If CancelValues is in the middle of an event, this
     // holds the event that is being cancelled, so that processing can
     // continue as if the event still existed up until we reach the actual
     // scheduled cancel time.
-    std::unique_ptr<ParamEvent> saved_event_;
+    const std::unique_ptr<ParamEvent> saved_event_;
 
     // True if a default value has been assigned to the CancelValues event.
     bool has_default_cancelled_value_;
@@ -595,11 +595,9 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   // they're defined by the user.
   String custom_param_name_;
 
-  // Intrinsic value
   std::atomic<float> intrinsic_value_;
-  void SetIntrinsicValue(float new_value);
 
-  float default_value_;
+  const float default_value_;
 
   // Protects `automation_rate_`.
   mutable base::Lock rate_lock_;
@@ -612,8 +610,8 @@ class AudioParamHandler final : public ThreadSafeRefCounted<AudioParamHandler>,
   const AutomationRateMode rate_mode_;
 
   // Nominal range for the value
-  float min_value_;
-  float max_value_;
+  const float min_value_;
+  const float max_value_;
 
   // Vector of all automation events for the AudioParam.
   Vector<std::unique_ptr<ParamEvent>> events_ GUARDED_BY(events_lock_);

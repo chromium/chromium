@@ -320,17 +320,13 @@ float AudioParamHandler::Value() {
     }
   }
 
-  SetIntrinsicValue(v);
+  SetValue(v);
   return v;
 }
 
-void AudioParamHandler::SetIntrinsicValue(float new_value) {
-  new_value = ClampTo(new_value, min_value_, max_value_);
-  intrinsic_value_.store(new_value, std::memory_order_relaxed);
-}
-
 void AudioParamHandler::SetValue(float value) {
-  SetIntrinsicValue(value);
+  value = ClampTo(value, min_value_, max_value_);
+  intrinsic_value_.store(value, std::memory_order_relaxed);
 }
 
 float AudioParamHandler::FinalValue() {
@@ -370,7 +366,7 @@ void AudioParamHandler::CalculateFinalValues(base::span<float> values,
     }
 
     std::ranges::fill(values, value);
-    SetIntrinsicValue(value);
+    SetValue(value);
   }
 
   // If there are any connections, sum all of the audio-rate connections
@@ -432,10 +428,9 @@ void AudioParamHandler::CalculateTimelineValues(base::span<float> values) {
 
   // Note we're running control rate at the sample-rate.
   // Pass in the current value as default value.
-  SetIntrinsicValue(
-      ValuesForFrameRange(start_frame, end_frame, IntrinsicValue(), values,
-                          sample_rate, sample_rate, MinValue(), MaxValue(),
-                          GetDeferredTaskHandler().RenderQuantumFrames()));
+  SetValue(ValuesForFrameRange(start_frame, end_frame, IntrinsicValue(), values,
+                               sample_rate, sample_rate, MinValue(), MaxValue(),
+                               GetDeferredTaskHandler().RenderQuantumFrames()));
 }
 
 String AudioParamHandler::EventToString(const ParamEvent& event) const {
