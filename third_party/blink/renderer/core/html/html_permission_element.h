@@ -46,7 +46,8 @@ class CORE_EXPORT HTMLPermissionElement
  public:
   static bool isTypeSupported(const AtomicString& type);
 
-  explicit HTMLPermissionElement(Document&);
+  explicit HTMLPermissionElement(Document&,
+                                 std::optional<QualifiedName> = std::nullopt);
 
   ~HTMLPermissionElement() override;
 

@@ -363,8 +363,10 @@ bool HTMLPermissionElement::isTypeSupported(const AtomicString& type) {
   return !ParsePermissionDescriptorsFromString(type).empty();
 }
 
-HTMLPermissionElement::HTMLPermissionElement(Document& document)
-    : HTMLElement(html_names::kPermissionTag, document),
+HTMLPermissionElement::HTMLPermissionElement(
+    Document& document,
+    std::optional<QualifiedName> tag_name)
+    : HTMLElement(tag_name.value_or(html_names::kPermissionTag), document),
       ScrollSnapshotClient(GetDocument().GetFrame()),
       permission_service_(document.GetExecutionContext()),
       embedded_permission_control_receiver_(this,

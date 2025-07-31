@@ -11,7 +11,7 @@
 namespace blink {
 
 HTMLGeolocationElement::HTMLGeolocationElement(Document& document)
-    : HTMLPermissionElement(document) {
+    : HTMLPermissionElement(document, html_names::kGeolocationTag) {
   CHECK(RuntimeEnabledFeatures::GeolocationElementEnabled(
       document.GetExecutionContext()));
   setType(AtomicString("geolocation"));
