@@ -1439,18 +1439,6 @@ targets.mixin(
     ),
 )
 
-# TODO(crbug.com/40201775): Remove the xenial mixin once the MSAN bots have
-# migrated to focal.
-targets.mixin(
-    name = "linux-xenial",
-    generate_pyl_entry = False,
-    swarming = targets.swarming(
-        dimensions = {
-            "os": "Ubuntu-16.04",
-        },
-    ),
-)
-
 targets.mixin(
     name = "linux-noble",
     generate_pyl_entry = False,

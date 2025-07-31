@@ -200,7 +200,6 @@ try/linux-gcc-rel
 try/linux-headless-shell-rel
 try/linux-js-code-coverage
 try/linux-js-coverage-rel
-try/linux-layout-tests-edit-ng
 try/linux-libfuzzer-asan-rel
 try/linux-msan-chained-origins-rel
 try/linux-msan-no-origins-rel

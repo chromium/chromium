@@ -485,7 +485,6 @@ exempted_from_description_builders = {
         "linux-headless-shell-rel",
         "linux-js-code-coverage",
         "linux-js-coverage-rel",
-        "linux-layout-tests-edit-ng",
         "linux-libfuzzer-asan-rel",
         "linux-msan-chained-origins-rel",
         "linux-msan-no-origins-rel",
@@ -847,7 +846,6 @@ exempted_from_contact_builders = {
         "linux-headless-shell-rel",
         "linux-js-code-coverage",
         "linux-js-coverage-rel",
-        "linux-layout-tests-edit-ng",
         "linux-libfuzzer-asan-rel",
         "linux-msan-chained-origins-rel",
         "linux-msan-no-origins-rel",
@@ -1110,7 +1108,6 @@ exempted_gardened_mirrors_in_cq_builders = [
 
 standalone_trybot_excluded_builders = [
     "android_blink_rel",  # Same reason 'tryserver.blink' is excluded below.
-    "linux-layout-tests-edit-ng",  # Unclear why this one is standalone.
     # The GPU optional-CQ bots likely have some special coverage/testing
     # requirements. But being standalone shouldn't be a requirement.
     "android_optional_gpu_tests_rel",
