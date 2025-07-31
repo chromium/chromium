@@ -5765,23 +5765,6 @@
             ]
         }
     ],
-    "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection"
-                    ]
-                }
-            ]
-        }
-    ],
     "ClientSideDetectionOnlyExtractVisualFeatures": [
         {
             "platforms": [
@@ -5856,6 +5839,30 @@
                     "name": "Enabled",
                     "enable_features": [
                         "ClientSideDetectionSendLlamaForcedTriggerInfo"
+                    ]
+                }
+            ]
+        }
+    ],
+    "ClientSideDetectionShowLlamaScamVerdictWarning": [
+        {
+            "platforms": [
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnabledWithWarning",
+                    "enable_features": [
+                        "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection",
+                        "ClientSideDetectionShowLlamaScamVerdictWarning"
+                    ]
+                },
+                {
+                    "name": "EnabledMetricsCollection",
+                    "enable_features": [
+                        "ClientSideDetectionLlamaForcedTriggerInfoForScamDetection"
                     ]
                 }
             ]
