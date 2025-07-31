@@ -881,18 +881,15 @@ void NavigationURLLoaderImpl::LoaderHolder::Reset() {
       // tasks. This can't be done here, because we have to cancel the whole
       // loading (including the new operation that triggers `Reset()`), not only
       // cancalling the exclusive tasks.
-      // TODO(https://crbug.com/434182226): Add `DUMP_WILL_BE_NOTREACHED()`.
-      // Right now, this can't be added because this fails in some unit tests.
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
       break;
     case ExclusiveTaskState::kCancelExclusiveTask:
       // It's harmless to reach here, because the issues related to exclusive
       // tasks should be already handled when transitioned
       // `kCancelExclusiveTask` (i.e. by the caller of `ResetForFailure()`).
-      //
-      // TODO(https://crbug.com/434182226): Still reaching here might indicate
-      // unexpected operation sequences. Consider adding
-      // `DUMP_WILL_BE_NOTREACHED()`. Right now, this can't be added because
-      // this fails in some unit tests.
+      // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+      DUMP_WILL_BE_NOTREACHED();
       break;
   }
 
@@ -1301,9 +1298,8 @@ void NavigationURLLoaderImpl::OnReceiveResponse(
     mojo::ScopedDataPipeConsumerHandle response_body,
     std::optional<mojo_base::BigBuffer> cached_metadata) {
   DCHECK(!cached_metadata);
-  // TODO(https://crbug.com/434182226): Add
-  // `DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());`. Currently this
-  // fails in unit tests.
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveResponse",
                         resource_request_->is_outermost_main_frame);
 
@@ -1455,9 +1451,8 @@ void NavigationURLLoaderImpl::CallOnReceivedResponse(
 void NavigationURLLoaderImpl::OnReceiveRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
-  // TODO(https://crbug.com/434182226): Add
-  // `DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());`. Currently this
-  // fails in unit tests.
+  // TODO(https://crbug.com/434182226): Remove DUMP_WILL_BE_.
+  DUMP_WILL_BE_CHECK(!loader_holder_.HasExclusiveTask());
   LogQueueTimeHistogram("Navigation.QueueTime.OnReceiveRedirect",
                         resource_request_->is_outermost_main_frame);
   net::Error error = net::OK;
