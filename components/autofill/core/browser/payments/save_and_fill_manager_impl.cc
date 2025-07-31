@@ -14,6 +14,7 @@
 #include "components/autofill/core/browser/payments/payments_request_details.h"
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
+#include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 
 namespace autofill::payments {
@@ -201,6 +202,10 @@ void SaveAndFillManagerImpl::OfferUploadSaveAndFill(
       std::move(parsed_legal_message_lines),
       base::BindOnce(&SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave,
                      weak_ptr_factory_.GetWeakPtr()));
+
+  payments_autofill_client()->LoadRiskData(
+      base::BindOnce(&SaveAndFillManagerImpl::OnDidLoadRiskData,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
@@ -209,6 +214,35 @@ void SaveAndFillManagerImpl::OnUserDidDecideOnUploadSave(
         user_provided_card_save_and_fill_details) {
   // TODO(crbug.com/378164165): Implement logic to handle user decision for
   // upload Save and Fill dialog.
+  switch (user_decision) {
+    case CardSaveAndFillDialogUserDecision::kAccepted:
+      upload_save_and_fill_dialog_accepted_ = true;
+      break;
+    case CardSaveAndFillDialogUserDecision::kDeclined:
+      break;
+  }
+}
+
+void SaveAndFillManagerImpl::OnDidLoadRiskData(const std::string& risk_data) {
+  upload_details_.risk_data = risk_data;
+  if (upload_save_and_fill_dialog_accepted_) {
+    SendCreateCardRequest();
+  }
+}
+
+void SaveAndFillManagerImpl::SendCreateCardRequest() {
+  payments_autofill_client()
+      ->GetMultipleRequestPaymentsNetworkInterface()
+      ->CreateCard(upload_details_,
+                   base::BindOnce(&SaveAndFillManagerImpl::OnDidCreateCard,
+                                  weak_ptr_factory_.GetWeakPtr()));
+}
+
+void SaveAndFillManagerImpl::OnDidCreateCard(
+    PaymentsAutofillClient::PaymentsRpcResult result,
+    const std::string& instrument_id) {
+  // TODO(crbug.com/378164165): Implement logic to handle CreateCard response
+  // and the instrument id.
 }
 
 }  // namespace autofill::payments

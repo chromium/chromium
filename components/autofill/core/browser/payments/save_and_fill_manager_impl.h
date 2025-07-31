@@ -75,6 +75,17 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
       const UserProvidedCardSaveAndFillDetails&
           user_provided_card_save_and_fill_details);
 
+  // Callback invoked when risk data is fetched.
+  void OnDidLoadRiskData(const std::string& risk_data);
+
+  // Helper function to send CreateCard request to the server with the
+  // `upload_details_`.
+  void SendCreateCardRequest();
+
+  // Callback invoked when the CreateCard response is received.
+  void OnDidCreateCard(PaymentsAutofillClient::PaymentsRpcResult result,
+                       const std::string& instrument_id);
+
   PaymentsAutofillClient* payments_autofill_client() const {
     return autofill_client_->GetPaymentsAutofillClient();
   }
@@ -87,6 +98,10 @@ class SaveAndFillManagerImpl : public SaveAndFillManager {
   payments::UploadCardRequestDetails upload_details_;
 
   FillCardCallback fill_card_callback_;
+
+  // Boolean value indicates whether the upload Save and Fill dialog has been
+  // accepted.
+  bool upload_save_and_fill_dialog_accepted_ = false;
 
   base::WeakPtrFactory<SaveAndFillManagerImpl> weak_ptr_factory_{this};
 };

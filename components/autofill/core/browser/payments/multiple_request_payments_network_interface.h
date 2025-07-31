@@ -43,7 +43,7 @@ class MultipleRequestPaymentsNetworkInterface
       GetDetailsForCreateCardCallback callback);
 
   // Sends a request to save the card.
-  RequestId CreateCard(
+  virtual RequestId CreateCard(
       const UploadCardRequestDetails& details,
       base::OnceCallback<void(PaymentsAutofillClient::PaymentsRpcResult,
                               const std::string&)> callback);

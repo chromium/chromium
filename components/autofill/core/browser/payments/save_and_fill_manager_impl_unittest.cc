@@ -70,6 +70,11 @@ class TestPaymentsAutofillClientMock : public TestPaymentsAutofillClient {
               ShowCreditCardUploadSaveAndFillDialog,
               (const LegalMessageLines&, CardSaveAndFillDialogCallback),
               (override));
+
+  MOCK_METHOD(void,
+              LoadRiskData,
+              (base::OnceCallback<void(const std::string&)>),
+              (override));
 };
 
 }  // namespace
@@ -467,6 +472,40 @@ TEST_F(SaveAndFillManagerImplTest,
 
   save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
       fill_card_callback_.Get());
+}
+
+TEST_F(SaveAndFillManagerImplTest, LoadRiskData) {
+  save_and_fill_manager_impl_->SetCreditCardUploadEnabledOverrideForTesting(
+      true);
+  SetUpGetDetailsForCreateCardResponse(
+      PaymentsAutofillClient::PaymentsRpcResult::kSuccess,
+      /*create_valid_legal_message=*/true);
+
+  EXPECT_CALL(*payments_autofill_client_, ShowCreditCardUploadSaveAndFillDialog)
+      .WillOnce([](const LegalMessageLines&,
+                   TestPaymentsAutofillClient::CardSaveAndFillDialogCallback
+                       callback) {
+        std::move(callback).Run(CardSaveAndFillDialogUserDecision::kAccepted,
+                                UserProvidedCardSaveAndFillDetails());
+      });
+
+  base::OnceCallback<void(const std::string&)> risk_data_loaded_callback;
+  EXPECT_CALL(*payments_autofill_client_, LoadRiskData)
+      .WillOnce([&](base::OnceCallback<void(const std::string&)> callback) {
+        risk_data_loaded_callback = std::move(callback);
+      });
+
+  UploadCardRequestDetails details;
+  EXPECT_CALL(*mock_network_interface_, CreateCard)
+      .WillOnce(testing::DoAll(testing::SaveArg<0>(&details),
+                               testing::Return(RequestId("11223344"))));
+
+  save_and_fill_manager_impl_->OnDidAcceptCreditCardSaveAndFillSuggestion(
+      fill_card_callback_.Get());
+
+  std::move(risk_data_loaded_callback).Run("some risk data");
+
+  EXPECT_EQ(details.risk_data, "some risk data");
 }
 
 }  // namespace autofill::payments
