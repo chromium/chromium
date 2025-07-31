@@ -79,13 +79,7 @@ void ArcChromeFeatureFlagsBridge::NotifyFeatureFlags() {
   flags->jelly_colors = true;
   flags->touchscreen_emulation = true;
   flags->rounded_window_compat_strategy =
-      base::FeatureList::IsEnabled(arc::kRoundedWindowCompat)
-          ? static_cast<mojom::RoundedWindowCompatStrategy>(
-                base::GetFieldTrialParamByFeatureAsInt(
-                    kRoundedWindowCompat, kRoundedWindowCompatStrategy,
-                    static_cast<int>(mojom::RoundedWindowCompatStrategy::
-                                         kLeftRightBottomGesture)))
-          : mojom::RoundedWindowCompatStrategy::kDisabled;
+      mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture;
   flags->rounded_window_radius = chromeos::features::RoundedWindowsRadius();
   flags->enable_pip_double_tap = true;
   flags->render_arc_notifications_by_chrome =

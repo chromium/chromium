@@ -70,39 +70,10 @@ TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyJelly) {
   EXPECT_TRUE(instance()->flags_called_value()->jelly_colors);
 }
 
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Enabled) {
-  scoped_feature_list()->InitAndEnableFeature(kRoundedWindowCompat);
+TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat) {
   Connect();
   EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
             mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyRoundedWindowCompat_EnabledBottomOnly) {
-  scoped_feature_list()->InitAndEnableFeatureWithParameters(
-      kRoundedWindowCompat, {{kRoundedWindowCompatStrategy,
-                              kRoundedWindowCompatStrategy_BottomOnlyGesture}});
-  Connect();
-  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
-            mojom::RoundedWindowCompatStrategy::kBottomOnlyGesture);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest,
-       NotifyRoundedWindowCompat_EnabledLeftRightBottom) {
-  scoped_feature_list()->InitAndEnableFeatureWithParameters(
-      kRoundedWindowCompat,
-      {{kRoundedWindowCompatStrategy,
-        kRoundedWindowCompatStrategy_LeftRightBottomGesture}});
-  Connect();
-  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
-            mojom::RoundedWindowCompatStrategy::kLeftRightBottomGesture);
-}
-
-TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindowCompat_Disabled) {
-  scoped_feature_list()->InitAndDisableFeature(kRoundedWindowCompat);
-  Connect();
-  EXPECT_EQ(instance()->flags_called_value()->rounded_window_compat_strategy,
-            mojom::RoundedWindowCompatStrategy::kDisabled);
 }
 
 TEST_F(ArcChromeFeatureFlagsBridgeTest, NotifyRoundedWindows_Enabled) {
