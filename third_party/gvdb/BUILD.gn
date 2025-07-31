@@ -1,4 +1,5 @@
 import("//build/config/linux/pkg_config.gni")
+import("//third_party/gvdb/visibility.gni")
 
 assert(is_linux)
 

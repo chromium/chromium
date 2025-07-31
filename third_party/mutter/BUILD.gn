@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//third_party/mutter/visibility.gni")
+
 import("//build/config/linux/pkg_config.gni")
 import("//build/config/ui.gni")
 import("//third_party/wayland/wayland_protocol.gni")
