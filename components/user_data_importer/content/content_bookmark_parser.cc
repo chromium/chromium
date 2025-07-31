@@ -40,8 +40,7 @@ void ContentBookmarkParser::SetServiceForTesting(
 void ContentBookmarkParser::Parse(
     const base::FilePath& file_path,
     BookmarkParser::BookmarkParsingCallback callback) {
-  // TODO(crbug.com/432010608): Add CHECK for not running on the UI thread once
-  // SafariDataImporter posts this is the background thread.
+  CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   std::string raw_html;
   // ReadFileToString can return false, but still populate something into
   // `raw_html`. In that case, try to recover as much data as possible.

@@ -197,7 +197,7 @@ SafariDataImporter::SafariDataImporter(
     std::string app_locale)
     : blocking_queue_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      blocking_worker_(blocking_queue_),
+      blocking_worker_(blocking_queue_, std::move(bookmark_parser)),
       password_importer_(std::make_unique<password_manager::PasswordImporter>(
           presenter,
           /*user_confirmation_required=*/true)),
@@ -206,7 +206,6 @@ SafariDataImporter::SafariDataImporter(
       history_service_(CHECK_DEREF(history_service)),
       bookmark_model_(CHECK_DEREF(bookmark_model)),
       reading_list_model_(CHECK_DEREF(reading_list_model)),
-      bookmark_parser_(std::move(bookmark_parser)),
       app_locale_(std::move(app_locale)) {}
 
 SafariDataImporter::~SafariDataImporter() = default;
@@ -272,7 +271,10 @@ void SafariDataImporter::CancelImport() {
   blocking_worker_.AsyncCall(&BlockingWorker::CloseZipFileArchive);
 }
 
-SafariDataImporter::BlockingWorker::BlockingWorker() = default;
+SafariDataImporter::BlockingWorker::BlockingWorker(
+    scoped_refptr<BookmarkParser> bookmark_parser)
+    : bookmark_parser_(std::move(bookmark_parser)) {}
+
 SafariDataImporter::BlockingWorker::~BlockingWorker() = default;
 
 bool SafariDataImporter::BlockingWorker::CreateZipFileArchive(
@@ -332,6 +334,13 @@ SafariDataImporter::BlockingWorker::WriteBookmarksToTmpFile() {
     return std::nullopt;
   }
   return path;
+}
+
+void SafariDataImporter::BlockingWorker::ParseBookmarks(
+    std::optional<base::FilePath> bookmarks_html,
+    user_data_importer::BookmarkParser::BookmarkParsingCallback
+        bookmarks_callback) {
+  bookmark_parser_->Parse(*bookmarks_html, std::move(bookmarks_callback));
 }
 
 std::vector<PaymentCardEntry>
@@ -422,11 +431,12 @@ void SafariDataImporter::PrepareBookmarks(
     return;
   }
 
-  bookmark_parser_->Parse(
-      *bookmarks_html,
-      base::BindPostTask(GetRunner(),
-                         base::BindOnce(&SafariDataImporter::OnBookmarksParsed,
-                                        weak_factory_.GetWeakPtr())));
+  auto import_bookmarks_callback = base::BindPostTask(
+      GetRunner(), base::BindOnce(&SafariDataImporter::OnBookmarksParsed,
+                                  weak_factory_.GetWeakPtr()));
+
+  blocking_worker_.AsyncCall(&BlockingWorker::ParseBookmarks)
+      .WithArgs(bookmarks_html, std::move(import_bookmarks_callback));
 }
 
 void SafariDataImporter::OnBookmarksParsed(

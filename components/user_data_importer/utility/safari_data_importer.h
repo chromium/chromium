@@ -83,7 +83,7 @@ class SafariDataImporter {
   // `SafariDataImporter`.
   class BlockingWorker {
    public:
-    BlockingWorker();
+    explicit BlockingWorker(scoped_refptr<BookmarkParser> bookmark_parser);
     ~BlockingWorker();
 
     // Creates the zip file Rust archive from file provided by "zip_filename".
@@ -108,6 +108,10 @@ class SafariDataImporter {
     // could not be created.
     std::optional<base::FilePath> WriteBookmarksToTmpFile();
 
+    void ParseBookmarks(
+        std::optional<base::FilePath> bookmarks_html,
+        BookmarkParser::BookmarkParsingCallback bookmarks_callback);
+
     // Finds a file containing payment cards in the ZIP archive, parses it, and
     // returns the output. Returns empty on error.
     std::vector<PaymentCardEntry> ParsePaymentCards();
@@ -118,6 +122,9 @@ class SafariDataImporter {
     // is called once, at the end.
     void ImportHistory(std::unique_ptr<RustHistoryCallback> callback,
                        size_t history_size_threshold);
+
+    // The model-layer object used to parse bookmarks from an HTML file.
+    scoped_refptr<BookmarkParser> bookmark_parser_;
 
     // The Rust zip file archive.
     std::optional<rust::Box<ZipFileArchive>> zip_file_archive_;
@@ -195,9 +202,6 @@ class SafariDataImporter {
 
   // Service used to import reading lists.
   const raw_ref<ReadingListModel> reading_list_model_;
-
-  // The model-layer object used to parse bookmarks from an HTML file.
-  scoped_refptr<BookmarkParser> bookmark_parser_;
 
   // Internal state
 
