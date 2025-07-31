@@ -29,12 +29,15 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.WarmupManager;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -523,6 +526,35 @@ public class ChromeTabCreatorTest {
                                             currentTab);
                     assertNull("Expected tab to not be in a group", newTab.getTabGroupId());
                 });
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Browser"})
+    @RequiresRestart // Avoid having multiple windows mess up the other tests
+    public void testCreateNewTabInNewWindow() {
+        Tab currentTab = mActivityTestRule.getActivity().getActivityTab();
+        String testPath = mTestServer.getURL(TEST_PATH);
+        ThreadUtils.runOnUiThreadBlocking(
+                () ->
+                        mActivityTestRule
+                                .getActivity()
+                                .getCurrentTabCreator()
+                                .createNewTab(
+                                        new LoadUrlParams(testPath),
+                                        TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW,
+                                        currentTab));
+
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            CriteriaHelper.pollUiThread(
+                    () -> MultiWindowUtils.getInstanceCount() == 2,
+                    "Expected a new window to be created");
+        } else {
+            assertEquals(
+                    "Expected a new tab to be created",
+                    2,
+                    mActivityTestRule.getActivity().getCurrentTabModel().getCount());
+        }
     }
 
     private Intent createIntent(int tabIndex) {

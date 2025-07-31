@@ -26,6 +26,7 @@ import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingDelegateFact
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
 import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,6 +65,7 @@ public class ChromeTabCreator extends TabCreator
     private final AsyncTabParamsManager mAsyncTabParamsManager;
     private final Supplier<TabModelSelector> mTabModelSelectorSupplier;
     private final Supplier<CompositorViewHolder> mCompositorViewHolderSupplier;
+    private final @Nullable MultiInstanceManager mMultiInstanceManager;
 
     private TabModel mTabModel;
     private TabModelOrderController mOrderController;
@@ -76,7 +78,8 @@ public class ChromeTabCreator extends TabCreator
             boolean incognito,
             AsyncTabParamsManager asyncTabParamsManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            @Nullable MultiInstanceManager multiInstanceManager) {
         mActivity = activity;
         mNativeWindow = nativeWindow;
         mTabDelegateFactorySupplier = tabDelegateFactory;
@@ -85,6 +88,7 @@ public class ChromeTabCreator extends TabCreator
         mAsyncTabParamsManager = asyncTabParamsManager;
         mTabModelSelectorSupplier = tabModelSelectorSupplier;
         mCompositorViewHolderSupplier = compositorViewHolderSupplier;
+        mMultiInstanceManager = multiInstanceManager;
     }
 
     /**
@@ -453,6 +457,10 @@ public class ChromeTabCreator extends TabCreator
                 creationState = TabCreationState.LIVE_IN_BACKGROUND;
             }
             mTabModel.addTab(tab, position, type, creationState);
+            if (type == TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW
+                    && mMultiInstanceManager != null) {
+                mMultiInstanceManager.moveTabToNewWindow(tab);
+            }
             return tab;
         }
     }

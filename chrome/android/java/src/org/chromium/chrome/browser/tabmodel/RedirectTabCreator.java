@@ -12,6 +12,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.profiles.ProfileProvider;
 import org.chromium.chrome.browser.tab.Tab;
@@ -34,7 +35,8 @@ public class RedirectTabCreator extends ChromeTabCreator {
             boolean incognito,
             AsyncTabParamsManager asyncTabParamsManager,
             Supplier<TabModelSelector> tabModelSelectorSupplier,
-            Supplier<CompositorViewHolder> compositorViewHolderSupplier) {
+            Supplier<CompositorViewHolder> compositorViewHolderSupplier,
+            MultiInstanceManager multiInstanceManager) {
         super(
                 activity,
                 nativeWindow,
@@ -43,7 +45,8 @@ public class RedirectTabCreator extends ChromeTabCreator {
                 incognito,
                 asyncTabParamsManager,
                 tabModelSelectorSupplier,
-                compositorViewHolderSupplier);
+                compositorViewHolderSupplier,
+                multiInstanceManager);
     }
 
     @SuppressWarnings("WrongConstant")

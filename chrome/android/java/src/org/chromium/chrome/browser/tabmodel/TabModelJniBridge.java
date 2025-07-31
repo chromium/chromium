@@ -263,7 +263,9 @@ public abstract class TabModelJniBridge implements TabModelInternal {
         @TabLaunchType int tabLaunchType = TabLaunchType.FROM_LONGPRESS_FOREGROUND;
 
         switch (disposition) {
-            case WindowOpenDisposition.NEW_WINDOW: // fall through
+            case WindowOpenDisposition.NEW_WINDOW:
+                tabLaunchType = TabLaunchType.FROM_LINK_CREATING_NEW_WINDOW;
+                break;
             case WindowOpenDisposition.NEW_FOREGROUND_TAB:
                 tabLaunchType =
                         parent.getTabGroupId() == null

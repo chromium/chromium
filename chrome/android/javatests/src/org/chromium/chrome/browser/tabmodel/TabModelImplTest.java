@@ -34,11 +34,13 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Features;
+import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroid;
 import org.chromium.chrome.browser.media.MediaCaptureDevicesDispatcherAndroidJni;
+import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabCreationState;
 import org.chromium.chrome.browser.tab.TabLaunchType;
@@ -50,6 +52,8 @@ import org.chromium.chrome.test.transit.Journeys;
 import org.chromium.chrome.test.transit.ntp.RegularNewTabPageStation;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.chrome.test.util.ChromeTabUtils;
+import org.chromium.content_public.common.ResourceRequestBody;
+import org.chromium.ui.mojom.WindowOpenDisposition;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -1252,6 +1256,39 @@ public class TabModelImplTest {
                             "Tab 2 should not be selected.",
                             tabModel.isTabMultiSelected(tab2.getId()));
                 });
+    }
+
+    @Test
+    @SmallTest
+    @RequiresRestart // Avoid having multiple windows mess up the other tests
+    public void testLaunchTypeForNewWindow() {
+        createTabs(1);
+
+        TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
+
+        int numTabsBeforeTest = tabModel.getCount();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Use WindowOpenDisposition.NEW_WINDOW. The other values don't matter.
+                    mTabModelJni.openNewTab(
+                            tabModel.getTabAt(0),
+                            new GURL("https://www.chromium.org"),
+                            /* initiatorOrigin= */ null,
+                            /* extraHeaders= */ "",
+                            /* postData= */ ResourceRequestBody.createFromBytes(new byte[] {}),
+                            WindowOpenDisposition.NEW_WINDOW,
+                            /* persistParentage= */ false,
+                            /* isRendererInitiated= */ false);
+                });
+        if (MultiWindowUtils.isMultiInstanceApi31Enabled()) {
+            CriteriaHelper.pollUiThread(
+                    () -> MultiWindowUtils.getInstanceCount() == 2,
+                    "Expected new window to be created");
+        } else {
+            assertEquals(
+                    "Expected a new tab to be created", numTabsBeforeTest + 1, tabModel.getCount());
+        }
     }
 
     private void assertMoveTabToIndex(
