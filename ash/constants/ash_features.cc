@@ -740,13 +740,6 @@ BASE_FEATURE(kEcheSWACheckAndroidNetworkInfo,
              "EcheSWACheckAndroidNetworkInfo",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enables background blur for the app list, shelf, unified system tray,
-// autoclick menu, etc. Also enables the AppsGridView mask layer, slower devices
-// may have choppier app list animations while in this mode. crbug.com/765292.
-BASE_FEATURE(kEnableBackgroundBlur,
-             "EnableBackgroundBlur",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables settings to control internal display brightness and auto-brightness.
 BASE_FEATURE(kEnableBrightnessControlInSettings,
              "EnableBrightnessControlInSettings",
@@ -3317,20 +3310,6 @@ bool IsAutoNightLightEnabled() {
 
 bool IsAutoSignOutEnabled() {
   return base::FeatureList::IsEnabled(kAutoSignOut);
-}
-
-bool IsBackgroundBlurEnabled() {
-  bool enabled_by_feature_flag =
-      base::FeatureList::IsEnabled(kEnableBackgroundBlur);
-#if defined(ARCH_CPU_ARM_FAMILY)
-  // Enable background blur on Mali when GPU rasterization is enabled.
-  // See crbug.com/996858 for the condition.
-  return enabled_by_feature_flag &&
-         base::CommandLine::ForCurrentProcess()->HasSwitch(
-             switches::kAshEnableTabletMode);
-#else
-  return enabled_by_feature_flag;
-#endif
 }
 
 bool IsBabelOrcaAvailable() {

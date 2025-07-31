@@ -38,7 +38,6 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_view.h"
-#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
@@ -51,9 +50,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/vector_icons/vector_icons.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/themed_vector_icon.h"
@@ -517,10 +514,7 @@ class AppListViewTest : public views::ViewsTestBase {
 // Tests app list view layout for different screen sizes.
 class AppListViewScalableLayoutTest : public AppListViewTest {
  public:
-  AppListViewScalableLayoutTest() {
-    scoped_feature_list_.InitWithFeatures(
-        {ash::features::kEnableBackgroundBlur}, {});
-  }
+  AppListViewScalableLayoutTest() = default;
   ~AppListViewScalableLayoutTest() override = default;
 
   void SetUp() override {
@@ -538,9 +532,6 @@ class AppListViewScalableLayoutTest : public AppListViewTest {
     delegate_->GetTestModel()->PopulateApps(kInitialItems);
     Show();
   }
-
- protected:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Tests of focus, optionally parameterized by RTL.
@@ -831,7 +822,6 @@ class AppListViewFocusTest : public views::ViewsTestBase,
 
  protected:
   bool is_rtl_ = false;
-  base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
   AshColorProvider ash_color_provider_;

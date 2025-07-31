@@ -5245,13 +5245,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kDisableCancelAllTouchesDescription, kOsCrOS,
      SINGLE_VALUE_TYPE(switches::kDisableCancelAllTouches)},
     {
-        "enable-background-blur",
-        flag_descriptions::kEnableBackgroundBlurName,
-        flag_descriptions::kEnableBackgroundBlurDescription,
-        kOsCrOS,
-        FEATURE_VALUE_TYPE(ash::features::kEnableBackgroundBlur),
-    },
-    {
         "enable-brightness-control-in-settings",
         flag_descriptions::kEnableBrightnessControlInSettingsName,
         flag_descriptions::kEnableBrightnessControlInSettingsDescription,

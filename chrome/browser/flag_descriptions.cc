@@ -6683,10 +6683,6 @@ const char kDriveFsShowCSEFilesDescription[] =
     "Enable listing of CSE files in DriveFS, which will result in these files "
     "being visible in the Files App's Google Drive item.";
 
-const char kEnableBackgroundBlurName[] = "Enable background blur.";
-const char kEnableBackgroundBlurDescription[] =
-    "Enables background blur for the Launcher, Shelf, Unified System Tray etc.";
-
 const char kEnableBrightnessControlInSettingsName[] =
     "Enable brightness controls in Settings";
 const char kEnableBrightnessControlInSettingsDescription[] =

@@ -3848,9 +3848,6 @@ extern const char kDriveFsMirroringDescription[];
 extern const char kDriveFsShowCSEFilesName[];
 extern const char kDriveFsShowCSEFilesDescription[];
 
-extern const char kEnableBackgroundBlurName[];
-extern const char kEnableBackgroundBlurDescription[];
-
 extern const char kEnableBrightnessControlInSettingsName[];
 extern const char kEnableBrightnessControlInSettingsDescription[];
 
