@@ -941,7 +941,7 @@ void HTMLCanvasElement::DoDeferredPaintInvalidation() {
     if (dirty_rect_.IsEmpty())
       return;
 
-    if (cc_layer_ && IsCompositedForCanvas2D()) {
+    if (cc_layer_ && context_->IsComposited()) {
       cc_layer_->SetNeedsDisplayRect(gfx::ToEnclosingRect(invalidation_rect));
     }
   }
