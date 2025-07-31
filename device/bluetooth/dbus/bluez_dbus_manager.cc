@@ -86,11 +86,9 @@ BluezDBusManager::BluezDBusManager(dbus::Bus* bus,
           bluez_object_manager::kBluezObjectManagerServiceName,
           dbus::ObjectPath(
               bluetooth_object_manager::kBluetoothObjectManagerServicePath))
-      ->CallMethodWithErrorCallback(
+      ->CallMethodWithErrorResponse(
           &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-          base::BindOnce(&BluezDBusManager::OnObjectManagerSupported,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&BluezDBusManager::OnObjectManagerNotSupported,
+          base::BindOnce(&BluezDBusManager::OnObjectManagerResponse,
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -204,25 +202,21 @@ BluetoothDeviceClient* BluezDBusManager::GetAlternateBluetoothDeviceClient() {
   return client_bundle_->alternate_bluetooth_device_client();
 }
 
-void BluezDBusManager::OnObjectManagerSupported(dbus::Response* response) {
-  DVLOG(1) << "Bluetooth supported. Initializing clients.";
-  object_manager_supported_ = true;
+void BluezDBusManager::OnObjectManagerResponse(
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  if (response) {
+    DVLOG(1) << "Bluetooth supported. Initializing clients.";
+    object_manager_supported_ = true;
 
-  client_bundle_ =
-      std::make_unique<BluetoothDBusClientBundle>(false /* use_fakes */);
-  InitializeClients();
-
-  object_manager_support_known_ = true;
-  if (object_manager_support_known_callback_)
-    std::move(object_manager_support_known_callback_).Run();
-}
-
-void BluezDBusManager::OnObjectManagerNotSupported(
-    dbus::ErrorResponse* response) {
-  DVLOG(1) << "Bluetooth not supported.";
-  object_manager_supported_ = false;
-
-  // We don't initialize clients since the clients need ObjectManager.
+    client_bundle_ =
+        std::make_unique<BluetoothDBusClientBundle>(false /* use_fakes */);
+    InitializeClients();
+  } else {
+    DVLOG(1) << "Bluetooth not supported.";
+    object_manager_supported_ = false;
+    // We don't initialize clients since the clients need ObjectManager.
+  }
 
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_)
@@ -242,25 +236,25 @@ void BluezDBusManager::OnFlossManagerServiceAvailable(bool is_available) {
                                      dbus::kObjectManagerGetManagedObjects);
   GetSystemBus()
       ->GetObjectProxy(floss::kManagerService, dbus::ObjectPath("/"))
-      ->CallMethodWithErrorCallback(
+      ->CallMethodWithErrorResponse(
           &floss_method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-          base::BindOnce(&BluezDBusManager::OnFlossObjectManagerSupported,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&BluezDBusManager::OnFlossObjectManagerNotSupported,
+          base::BindOnce(&BluezDBusManager::OnFlossObjectManagerResponse,
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
-void BluezDBusManager::OnFlossObjectManagerSupported(dbus::Response* response) {
-  DVLOG(1) << "Floss manager present. Making sure Floss is enabled/disabled.";
-  floss_manager_client_ = floss::FlossManagerClient::Create();
-  floss_manager_client_->Init(GetSystemBus(), floss::kManagerInterface,
-                              /*adapter_index=*/0, base::Version(),
-                              base::DoNothing());
-}
-
-void BluezDBusManager::OnFlossObjectManagerNotSupported(
-    dbus::ErrorResponse* response) {
-  LOG(WARNING) << "Floss manager not present, cannot set Floss enable/disable.";
+void BluezDBusManager::OnFlossObjectManagerResponse(
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  if (response) {
+    DVLOG(1) << "Floss manager present. Making sure Floss is enabled/disabled.";
+    floss_manager_client_ = floss::FlossManagerClient::Create();
+    floss_manager_client_->Init(GetSystemBus(), floss::kManagerInterface,
+                                /*adapter_index=*/0, base::Version(),
+                                base::DoNothing());
+  } else {
+    LOG(WARNING)
+        << "Floss manager not present, cannot set Floss enable/disable.";
+  }
 }
 
 void BluezDBusManager::InitializeClients() {

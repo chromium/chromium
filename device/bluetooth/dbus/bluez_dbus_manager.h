@@ -165,12 +165,11 @@ class DEVICE_BLUETOOTH_EXPORT BluezDBusManager {
                                    dbus::Bus* alternate_bus,
                                    bool use_stubs);
 
-  void OnObjectManagerSupported(dbus::Response* response);
-  void OnObjectManagerNotSupported(dbus::ErrorResponse* response);
-
+  void OnObjectManagerResponse(dbus::Response* response,
+                               dbus::ErrorResponse* error_response);
   void OnFlossManagerServiceAvailable(bool is_available);
-  void OnFlossObjectManagerSupported(dbus::Response* response);
-  void OnFlossObjectManagerNotSupported(dbus::ErrorResponse* response);
+  void OnFlossObjectManagerResponse(dbus::Response* response,
+                                    dbus::ErrorResponse* error_response);
 
   // Initializes all currently stored DBusClients with the system bus and
   // performs additional setup.

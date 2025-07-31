@@ -161,15 +161,11 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
 
     writer.CloseContainer(&array_writer);
 
-    object_proxy_->CallMethodWithErrorCallback(
+    object_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(
-            &BluetoothProfileManagerClientImpl::OnRegisterProfileSuccess,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-            /*start_time=*/base::Time::Now()),
-        base::BindOnce(
-            &BluetoothProfileManagerClientImpl::OnRegisterProfileError,
-            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
+        base::BindOnce(&BluetoothProfileManagerClientImpl::OnRegisterProfile,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(error_callback), base::Time::Now()));
   }
 
   // BluetoothProfileManagerClient override.
@@ -183,15 +179,11 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
     dbus::MessageWriter writer(&method_call);
     writer.AppendObjectPath(profile_path);
 
-    object_proxy_->CallMethodWithErrorCallback(
+    object_proxy_->CallMethodWithErrorResponse(
         &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
-        base::BindOnce(
-            &BluetoothProfileManagerClientImpl::OnUnregisterProfileSuccess,
-            weak_ptr_factory_.GetWeakPtr(), std::move(callback),
-            /*start_time=*/base::Time::Now()),
-        base::BindOnce(
-            &BluetoothProfileManagerClientImpl::OnUnregisterProfileError,
-            weak_ptr_factory_.GetWeakPtr(), std::move(error_callback)));
+        base::BindOnce(&BluetoothProfileManagerClientImpl::OnUnregisterProfile,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                       std::move(error_callback), base::Time::Now()));
   }
 
  protected:
@@ -205,32 +197,32 @@ class BluetoothProfileManagerClientImpl : public BluetoothProfileManagerClient {
   }
 
  private:
-  void OnRegisterProfileSuccess(base::OnceClosure callback,
-                                base::Time start_time,
-                                dbus::Response* response) {
-    DCHECK(response);
-    RecordSuccess(kRegisterProfileMethod, start_time);
-    std::move(callback).Run();
+  void OnRegisterProfile(base::OnceClosure callback,
+                         ErrorCallback error_callback,
+                         base::Time start_time,
+                         dbus::Response* response,
+                         dbus::ErrorResponse* error_response) {
+    if (response) {
+      RecordSuccess(kRegisterProfileMethod, start_time);
+      std::move(callback).Run();
+    } else {
+      RecordFailure(kRegisterProfileMethod, error_response);
+      OnError(std::move(error_callback), error_response);
+    }
   }
 
-  void OnRegisterProfileError(ErrorCallback error_callback,
-                              dbus::ErrorResponse* response) {
-    RecordFailure(kRegisterProfileMethod, response);
-    OnError(std::move(error_callback), response);
-  }
-
-  void OnUnregisterProfileSuccess(base::OnceClosure callback,
-                                  base::Time start_time,
-                                  dbus::Response* response) {
-    DCHECK(response);
-    RecordSuccess(kUnregisterProfileMethod, start_time);
-    std::move(callback).Run();
-  }
-
-  void OnUnregisterProfileError(ErrorCallback error_callback,
-                                dbus::ErrorResponse* response) {
-    RecordFailure(kUnregisterProfileMethod, response);
-    OnError(std::move(error_callback), response);
+  void OnUnregisterProfile(base::OnceClosure callback,
+                           ErrorCallback error_callback,
+                           base::Time start_time,
+                           dbus::Response* response,
+                           dbus::ErrorResponse* error_response) {
+    if (response) {
+      RecordSuccess(kUnregisterProfileMethod, start_time);
+      std::move(callback).Run();
+    } else {
+      RecordFailure(kUnregisterProfileMethod, error_response);
+      OnError(std::move(error_callback), error_response);
+    }
   }
 
   // Called when a response for a failed method call is received.

@@ -404,11 +404,9 @@ void FlossDBusManager::OnManagerServiceAvailable(bool is_available) {
   // registered on the root object "/"
   GetSystemBus()
       ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
-      ->CallMethodWithErrorCallback(
+      ->CallMethodWithErrorResponse(
           &method_call, kDBusTimeoutMs,
-          base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
-                         weak_ptr_factory_.GetWeakPtr()),
-          base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,
+          base::BindOnce(&FlossDBusManager::OnObjectManagerResponse,
                          weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -426,6 +424,16 @@ void FlossDBusManager::OnObjectManagerNotSupported(
   object_manager_support_known_ = true;
   if (object_manager_support_known_callback_) {
     std::move(object_manager_support_known_callback_).Run();
+  }
+}
+
+void FlossDBusManager::OnObjectManagerResponse(
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response) {
+  if (response) {
+    OnObjectManagerSupported(response);
+  } else {
+    OnObjectManagerNotSupported(error_response);
   }
 }
 
