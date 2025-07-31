@@ -265,7 +265,8 @@ class LocalFrameMojoHandler
       bool animate,
       const std::optional<cc::BrowserControlsOffsetTagModifications>&
           offset_tag_modifications) override;
-  void Discard() final;
+  void Discard(
+      mojom::blink::LocalMainFrame::DiscardCallback completion_callback) final;
   void FinalizeNavigationConfidence(
       double randomized_trigger_rate,
       mojom::blink::ConfidenceLevel confidence) final;

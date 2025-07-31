@@ -13,6 +13,7 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
+#include "base/test/run_until.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -188,7 +189,7 @@ class TabManagerTest : public InProcessBrowserTest,
   TabManagerTest()
       : scoped_set_clocks_for_testing_(&test_clock_, &test_tick_clock_) {
     scoped_feature_list_.InitWithFeatureState(features::kWebContentsDiscard,
-                                              GetParam());
+                                              IsRetainedWebContents());
     // Start with a non-null TimeTicks, as there is no discard protection for
     // a tab with a null focused timestamp.
     test_tick_clock_.Advance(kShortDelay);
@@ -238,6 +239,8 @@ class TabManagerTest : public InProcessBrowserTest,
     return GetTabLifecycleUnitSource()->GetTabLifecycleUnit(
         GetWebContentsAt(index));
   }
+
+  bool IsRetainedWebContents() const { return GetParam(); }
 
   memory_pressure::test::FakeMemoryPressureMonitor
       fake_memory_pressure_monitor_;
@@ -767,6 +770,72 @@ IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs, TabUrgentDiscardAndNavigate) {
 
   // document.wasDiscarded is true on navigate after discard.
   EXPECT_EQ(true, content::EvalJs(GetWebContentsAt(0), kDiscardedStateJS));
+}
+
+IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs,
+                       EmitsLatencyMetrics_NoFastShutdown) {
+  base::HistogramTester histogram_tester;
+
+  const GURL test_page(ui_test_utils::GetTestUrl(
+      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
+
+  // Increment the worker ref count of the renderer process to keep it alive and
+  // guarantee the renderer is able to perform the discard and notify the
+  // Browser.
+  content::RenderProcessHost* process =
+      GetWebContentsAt(0)->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_TRUE(process->IsInitializedAndNotDead());
+  process->IncrementWorkerRefCount();
+
+  // Discard the tab.
+  EXPECT_EQ(LifecycleUnitState::ACTIVE, GetLifecycleUnitAt(0)->GetState());
+  EXPECT_TRUE(
+      GetLifecycleUnitAt(0)->Discard(LifecycleUnitDiscardReason::EXTERNAL));
+  EXPECT_EQ(LifecycleUnitState::DISCARDED, GetLifecycleUnitAt(0)->GetState());
+
+  // Assert the Browser acknowledges and records the discard latency.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return histogram_tester
+               .GetAllSamples("Discarding.TabLifecycleUnit.DiscardLatency")
+               .size() == 1;
+  }));
+  process->DecrementWorkerRefCount();
+}
+
+IN_PROC_BROWSER_TEST_P(TabManagerTestWithTwoTabs,
+                       EmitsLatencyMetrics_FastShutdown) {
+  base::HistogramTester histogram_tester;
+
+  const GURL test_page(ui_test_utils::GetTestUrl(
+      base::FilePath(), base::FilePath(FILE_PATH_LITERAL("simple.html"))));
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), test_page));
+
+  // Increment the worker ref count of the renderer process to keep it alive and
+  // guarantee the renderer is able to perform the discard and notify the
+  // Browser.
+  content::RenderProcessHost* process =
+      GetWebContentsAt(0)->GetPrimaryMainFrame()->GetProcess();
+  EXPECT_TRUE(process->IsInitializedAndNotDead());
+
+  // Advance time so everything is urgent discardable.
+  test_tick_clock_.Advance(kBackgroundUrgentProtectionTime);
+
+  // Discard the tab and wait for the process to exit.
+  WindowedRenderProcessHostExitObserver observer;
+  EXPECT_EQ(LifecycleUnitState::ACTIVE, GetLifecycleUnitAt(0)->GetState());
+  EXPECT_TRUE(GetLifecycleUnitAt(0)->Discard(LifecycleUnitDiscardReason::URGENT,
+                                             /*resident_set_size_estimate=*/0));
+  EXPECT_EQ(LifecycleUnitState::DISCARDED, GetLifecycleUnitAt(0)->GetState());
+  observer.Wait();
+  EXPECT_FALSE(process->IsInitializedAndNotDead());
+
+  // Assert the Browser acknowledges and records the discard latency.
+  EXPECT_TRUE(base::test::RunUntil([&] {
+    return histogram_tester
+               .GetAllSamples("Discarding.TabLifecycleUnit.DiscardLatency")
+               .size() == 1;
+  }));
 }
 
 IN_PROC_BROWSER_TEST_P(TabManagerTest, DiscardedTabHasNoProcess) {

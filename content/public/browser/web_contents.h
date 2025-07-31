@@ -768,7 +768,15 @@ class WebContents : public PageNavigator, public base::SupportsUserData {
   virtual const std::string& GetEncoding() = 0;
 
   // Discards the RenderFrame. Use is guarded by kWebContentsDiscard.
-  virtual void Discard() = 0;
+  // `on_discarded_cb` will be called immediately after the discard operation
+  // has completed. A discard operation may complete after being successfully
+  // processed in the renderer and acknowledged by the Browser, or if the
+  // discarded WebContents' renderer was proactively terminated.
+  // Discard can fail if attempted on a WebContents with a speculative RFH that
+  // has a navigation waiting to commit.
+  // TODO(crbug.com/433627400): Consider updating `on_discarded_cb` to return a
+  // bool to indicate whether the operation completed successfully.
+  virtual void Discard(base::OnceClosure on_discarded_cb) = 0;
 
   // Indicates that the tab was previously discarded.
   // wasDiscarded is exposed on Document after discard, see:

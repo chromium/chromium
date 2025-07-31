@@ -1314,7 +1314,7 @@ interface LocalMainFrame {
 
   // Replaces the active document with an empty document to free resources,
   // e.g. for supporting tab discard.
-  Discard();
+  Discard() => ();
 
   // Updates the frame's finalized locally differentially private
   // navigation confidence.

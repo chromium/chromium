@@ -1100,8 +1100,8 @@ void FrameTree::FocusOuterFrameTrees() {
   }
 }
 
-void FrameTree::Discard() {
-  const auto attempt_discard = [this]() {
+void FrameTree::Discard(base::OnceClosure on_discarded_cb) {
+  const auto attempt_discard = [this](base::OnceClosure on_discarded_cb) {
     // A speculative pending-commit rfh should not be cancelled or deleted. In
     // this case ignore the discard request and allow the navigation to complete
     // as normal.
@@ -1112,13 +1112,14 @@ void FrameTree::Discard() {
     }
 
     root()->set_was_discarded();
-    root()->current_frame_host()->DiscardFrame();
+    root()->current_frame_host()->DiscardFrame(std::move(on_discarded_cb));
     NavigationControllerImpl& navigation_controller = controller();
     navigation_controller.SetNeedsReload();
     navigation_controller.GetBackForwardCache().Flush();
     return true;
   };
-  base::UmaHistogramBoolean("Discarding.DiscardFrameTree", attempt_discard());
+  base::UmaHistogramBoolean("Discarding.DiscardFrameTree",
+                            attempt_discard(std::move(on_discarded_cb)));
 }
 
 }  // namespace content

@@ -588,7 +588,7 @@ class CONTENT_EXPORT FrameTree {
   // Discards the frame tree. The root frame is transitioned to an empty
   // document in blink and BFCache entries are cleared. The tree is configured
   // to reload when activated.
-  void Discard();
+  void Discard(base::OnceClosure on_discarded_cb = base::NullCallback());
 
  private:
   friend class FrameTreeTest;

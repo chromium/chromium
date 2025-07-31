@@ -2649,7 +2649,7 @@ const std::string& WebContentsImpl::GetEncoding() {
   return GetPrimaryPage().GetEncoding();
 }
 
-void WebContentsImpl::Discard() {
+void WebContentsImpl::Discard(base::OnceClosure on_discarded_cb) {
   if (!base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
     NOTREACHED();
   }
@@ -2657,7 +2657,7 @@ void WebContentsImpl::Discard() {
   AboutToBeDiscarded(this);
   notify_disconnection_ = false;
   CancelAllPrerendering();
-  primary_frame_tree_.Discard();
+  primary_frame_tree_.Discard(std::move(on_discarded_cb));
   NotifyWasDiscarded();
 }
 

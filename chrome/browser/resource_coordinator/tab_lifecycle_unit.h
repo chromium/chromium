@@ -139,7 +139,8 @@ class TabLifecycleUnitSource::TabLifecycleUnit
   // when kWebContentsDiscard is enabled.
   void FinishDiscardAndPreserveWebContents(
       LifecycleUnitDiscardReason discard_reason,
-      uint64_t tab_resident_set_size_estimate);
+      uint64_t tab_resident_set_size_estimate,
+      base::TimeTicks discard_start_time);
 
   // Attempts to fast kill the process hosting the main frame of `web_contents`
   // if only hosting the main frame.

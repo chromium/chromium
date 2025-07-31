@@ -443,13 +443,19 @@ void TabLifecycleUnitSource::TabLifecycleUnit::FinishDiscard(
 void TabLifecycleUnitSource::TabLifecycleUnit::
     FinishDiscardAndPreserveWebContents(
         LifecycleUnitDiscardReason discard_reason,
-        uint64_t tab_memory_footprint_estimate) {
+        uint64_t tab_memory_footprint_estimate,
+        const base::TimeTicks discard_start_time) {
   UpdatePreDiscardResourceUsage(web_contents(), discard_reason,
                                 tab_memory_footprint_estimate);
 
   AttemptFastKillForDiscard(web_contents(), discard_reason);
 
-  web_contents()->Discard();
+  web_contents()->Discard(base::BindOnce(
+      [](const base::TimeTicks start_time) {
+        base::UmaHistogramTimes("Discarding.TabLifecycleUnit.DiscardLatency",
+                                NowTicks() - start_time);
+      },
+      discard_start_time));
   tab_strip_model_->UpdateWebContentsStateAt(
       tab_strip_model_->GetIndexOfWebContents(web_contents()),
       TabChangeType::kAll);
@@ -492,6 +498,7 @@ void TabLifecycleUnitSource::TabLifecycleUnit::AttemptFastKillForDiscard(
 bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
     LifecycleUnitDiscardReason reason,
     uint64_t tab_memory_footprint_estimate) {
+  const base::TimeTicks discard_start_time = NowTicks();
   // These values are persisted to logs. Entries should not be renumbered and
   // numeric values should never be reused.
   // LINT.IfChange(DiscardTabOutcome)
@@ -530,9 +537,12 @@ bool TabLifecycleUnitSource::TabLifecycleUnit::Discard(
   discard_reason_ = reason;
 
   if (base::FeatureList::IsEnabled(features::kWebContentsDiscard)) {
-    FinishDiscardAndPreserveWebContents(reason, tab_memory_footprint_estimate);
+    FinishDiscardAndPreserveWebContents(reason, tab_memory_footprint_estimate,
+                                        discard_start_time);
   } else {
     FinishDiscard(reason, tab_memory_footprint_estimate);
+    base::UmaHistogramTimes("Discarding.TabLifecycleUnit.DiscardLatency",
+                            NowTicks() - discard_start_time);
   }
 
   outcome = DiscardTabOutcome::kSuccess;

@@ -1643,7 +1643,7 @@ class CONTENT_EXPORT RenderFrameHostImpl
 
   // Requests that the renderer discard the frame associated with this host,
   // freeing up as many resources as possible.
-  void DiscardFrame();
+  void DiscardFrame(base::OnceClosure on_discarded_cb);
 
   // BEGIN IPC REVIEW BOUNDARY: to enforce security review for IPC, these
   // methods are defined in render_frame_host_impl_interface_bindings.cc.
@@ -4419,6 +4419,11 @@ class CONTENT_EXPORT RenderFrameHostImpl
   media::PictureInPictureEventsInfo::AutoPipReasonCallback
   CreateAutoPipReasonCallback();
 
+  // Notifies discard clients the operation completed successfully. This may be
+  // called either when the renderer acknowledges the operation completed
+  // successfully or the renderer was proactively terminated.
+  void MaybeNotifyDiscardedFrame();
+
   // The RenderViewHost that this RenderFrameHost is associated with.
   //
   // It is kept alive as long as any RenderFrameHosts or RenderFrameProxyHosts
@@ -4740,6 +4745,13 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // Returns whether the tab was previously discarded.
   // This is passed to CommitNavigationParams in NavigationRequest.
   bool was_discarded_ = false;
+
+  // Callback invoked once the discard operation has finished. The operation may
+  // finish with an acknowledgement from the renderer or a process-kill (in
+  // which case the renderer will have terminated before acknowledging
+  // completion).
+  // Defined only if there is a discard operation being processed by this frame.
+  base::OnceClosure on_discarded_cb_;
 
   // Indicates whether this RenderFrameHost is in the process of loading a
   // document or not, and if so, whether it should show loading UI.

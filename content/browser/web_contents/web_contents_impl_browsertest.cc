@@ -5842,7 +5842,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsTitle) {
   EXPECT_CALL(observer, AboutToBeDiscarded(contents)).Times(1);
   EXPECT_CALL(observer, WasDiscarded()).Times(1);
   EXPECT_FALSE(contents->WasDiscarded());
-  contents->Discard();
+  contents->Discard(base::NullCallback());
   EXPECT_TRUE(contents->WasDiscarded());
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   ASSERT_TRUE(
@@ -5907,7 +5907,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsDiscardBrowserTest, DiscardRetainsFavicon) {
   EXPECT_CALL(observer, AboutToBeDiscarded(contents)).Times(1);
   EXPECT_CALL(observer, WasDiscarded()).Times(1);
   EXPECT_FALSE(contents->WasDiscarded());
-  contents->Discard();
+  contents->Discard(base::NullCallback());
   EXPECT_TRUE(contents->WasDiscarded());
   FrameTreeNode* root = contents->GetPrimaryFrameTree().root();
   ASSERT_TRUE(
@@ -6511,7 +6511,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsPrerenderWithDiscardBrowserTest,
   EXPECT_CALL(observer, AboutToBeDiscarded(web_contents())).Times(1);
   EXPECT_CALL(observer, WasDiscarded()).Times(1);
   EXPECT_FALSE(web_contents()->WasDiscarded());
-  web_contents()->Discard();
+  web_contents()->Discard(base::NullCallback());
   EXPECT_TRUE(web_contents()->WasDiscarded());
   EXPECT_FALSE(registry->FindNonReservedHostById(host_id));
 }

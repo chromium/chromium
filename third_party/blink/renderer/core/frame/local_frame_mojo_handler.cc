@@ -1327,8 +1327,10 @@ void LocalFrameMojoHandler::UpdateBrowserControlsState(
       constraints, current, animate, offset_tag_modifications);
 }
 
-void LocalFrameMojoHandler::Discard() {
+void LocalFrameMojoHandler::Discard(
+    mojom::blink::LocalMainFrame::DiscardCallback completion_callback) {
   frame_->Discard();
+  std::move(completion_callback).Run();
 }
 
 void LocalFrameMojoHandler::FinalizeNavigationConfidence(

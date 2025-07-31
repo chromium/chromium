@@ -273,6 +273,32 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Discarding.TabLifecycleUnit.DiscardLatency" units="ms"
+    expires_after="2025-12-14">
+  <owner>tluk@chromium.org</owner>
+  <owner>catan-team@chromium.org</owner>
+  <summary>
+    Records discard latency for the TabLifecycleUnit::Discard() operation.
+
+    For the discard implementation that replaces the discarded tab's WebContents
+    this is measured as the time from when a TabLifecycleUnit::Discard() is
+    called for a tab, to when the Tab's WebContents is replaced. This is emitted
+    immediately after the Tab's WebContents is replaced.
+
+    For the discard implementation that retains the discarded tab's WebContents
+    this is measured as the time from when a TabLifecycleUnit::Discard() is
+    called for a tab, to when the Discard() operation was completed in the
+    renderer and completion was acknowledged by the Browser or when the frame's
+    renderer is terminated. This is emitted immediately after the
+    acknowledgement of the Discard operation by the RenderFrameHost in the
+    Browser or once the frame is notified its renderer has terminated.
+
+    The retained discard implementation is behind the WebContentsDiscard flag
+    and eventually the old implementation that replaces the WebContents will be
+    removed.
+  </summary>
+</histogram>
+
 <histogram name="Tab.AgeAtDeletion" units="ms" expires_after="2026-01-05">
   <owner>ewannpv@chromium.org</owner>
   <owner>gambard@chromium.org</owner>
