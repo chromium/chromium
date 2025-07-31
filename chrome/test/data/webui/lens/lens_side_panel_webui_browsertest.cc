@@ -14,8 +14,7 @@ class LensSidePanelWebUIBrowserTest : public WebUIMochaBrowserTest {
     set_test_loader_scheme(content::kChromeUIUntrustedScheme);
     set_test_loader_host(chrome::kChromeUILensSidePanelHost);
     scoped_feature_list_.InitWithFeatures(
-        {lens::features::kLensOverlay,
-         lens::features::kLensSearchSidePanelScrollToAPI},
+        {lens::features::kLensOverlay},
         {lens::features::kLensOverlayContextualSearchbox});
   }
 

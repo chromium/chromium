@@ -103,9 +103,6 @@ LensSidePanelUntrustedUI::LensSidePanelUntrustedUI(content::WebUI* web_ui)
   html_source->AddBoolean(
       "newFeedbackEnabled",
       lens::features::IsLensSearchSidePanelNewFeedbackEnabled());
-  html_source->AddBoolean(
-      "scrollToEnabled",
-      lens::features::IsLensSearchSidePanelScrollToAPIEnabled());
   html_source->AddString("resultsSearchURL",
                          lens::features::GetLensOverlayResultsSearchURL());
   html_source->AddBoolean(

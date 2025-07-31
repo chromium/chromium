@@ -14141,24 +14141,6 @@
             ]
         }
     ],
-    "LensSearchSidePanelScrollToAPI": [
-        {
-            "platforms": [
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "LensSearchSidePanelScrollToAPIEnabled",
-                    "enable_features": [
-                        "LensSearchSidePanelScrollToAPI"
-                    ]
-                }
-            ]
-        }
-    ],
     "LinkCrossDeviceDogFoodFeedback": [
         {
             "platforms": [

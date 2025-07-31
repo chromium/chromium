@@ -32,9 +32,7 @@ export class PostMessageReceiver {
 
   // Being listening to message events on the window.
   listen() {
-    if (loadTimeData.getBoolean('scrollToEnabled')) {
-      this.eventTracker.add(window, 'message', this.onMessage.bind(this));
-    }
+    this.eventTracker.add(window, 'message', this.onMessage.bind(this));
   }
 
   // Stop listening to message events.

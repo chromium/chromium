@@ -31,7 +31,6 @@ suite('PostMessageCommunication', () => {
     SidePanelBrowserProxyImpl.setInstance(testBrowserProxy);
 
     loadTimeData.overrideValues({
-      'scrollToEnabled': true,
       'resultsSearchURL': RESULTS_SEARCH_URL,
     });
 
@@ -56,22 +55,6 @@ suite('PostMessageCommunication', () => {
         testBrowserProxy.handler.getArgs('onScrollToMessage')[0];
     assertDeepEquals(textFragments, fragment);
     assertEquals(pdfPageNumber, page);
-  });
-
-  test('ListenOnlyWorksIfScrollToEnabled', () => {
-    loadTimeData.overrideValues({'scrollToEnabled': false});
-    postMessageReceiver.listen();
-
-    const textFragments = ['hello', 'world'];
-    const pdfPageNumber = 0;
-    const data = JSON.stringify({
-      [ParamType.MESSAGE_TYPE]: MessageType.SCROLL_TO,
-      [ParamType.TEXT_FRAGMENTS]: textFragments,
-      [ParamType.PDF_PAGE_NUMBER]: pdfPageNumber,
-    });
-
-    dispatchMessageEvent(data, RESULTS_SEARCH_URL_ORIGIN);
-    assertEquals(0, testBrowserProxy.handler.getCallCount('onScrollToMessage'));
   });
 
   test('ListenOnlyWorksForExpectedOrigin', () => {
