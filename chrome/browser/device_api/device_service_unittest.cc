@@ -218,14 +218,8 @@ class DeviceAPIServiceWebAppTest : public DeviceAPIServiceTest,
 
   void SetUp() override {
     WebAppTest::SetUp();
-    {
-      // TODO(https://crbug.com/433225653) The WebApp database can sometimes
-      // take longer to process than the default action_timeout
-      const base::test::ScopedRunLoopTimeout specific_timeout(
-          FROM_HERE, TestTimeouts::action_max_timeout());
-      web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
-      InstallTrustedApps();
-    }
+    web_app::test::AwaitStartWebAppProviderAndSubsystems(profile());
+    InstallTrustedApps();
     profile()->SetPermissionControllerDelegate(
         permissions::GetPermissionControllerDelegate(profile()));
 #if BUILDFLAG(IS_CHROMEOS)
