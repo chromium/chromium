@@ -68,112 +68,7 @@
 
 namespace content {
 
-namespace {
-
 using testing::Optional;
-
-class TestNavigationLoaderInterceptor : public NavigationLoaderInterceptor {
- public:
-  explicit TestNavigationLoaderInterceptor()
-      : shared_resource_checker_(empty_cookie_settings_) {
-    net::URLRequestContextBuilder url_request_context_builder;
-    url_request_context_builder.set_proxy_resolution_service(
-        net::ConfiguredProxyResolutionService::CreateDirect());
-    url_request_context_ = url_request_context_builder.Build();
-    url_loader_context_.set_url_request_context(url_request_context_.get());
-
-    resource_scheduler_client_ =
-        base::MakeRefCounted<network::ResourceSchedulerClient>(
-            network::ResourceScheduler::ClientId::Create(),
-            network::IsBrowserInitiated(false), &resource_scheduler_,
-            url_request_context_->network_quality_estimator());
-    url_loader_context_.set_resource_scheduler_client(
-        resource_scheduler_client_);
-
-    url_loader_context_.mutable_factory_params().process_id =
-        network::mojom::kBrowserProcessId;
-    url_loader_context_.mutable_factory_params().is_orb_enabled = false;
-  }
-
-  ~TestNavigationLoaderInterceptor() override {
-    url_loader_ = nullptr;
-    resource_scheduler_client_ = nullptr;
-    url_loader_context_.Detach();
-  }
-
-  void MaybeCreateLoader(const network::ResourceRequest& resource_request,
-                         BrowserContext* browser_context,
-                         LoaderCallback callback,
-                         FallbackCallback fallback_callback) override {
-    std::move(callback).Run(NavigationLoaderInterceptor::Result(
-        base::MakeRefCounted<network::SingleRequestURLLoaderFactory>(
-            base::BindOnce(&TestNavigationLoaderInterceptor::StartLoader,
-                           base::Unretained(this))),
-        /*subresource_loader_params=*/{}));
-  }
-
-  void StartLoader(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-    url_loader_ = std::make_unique<network::URLLoader>(
-        url_loader_context_,
-        base::BindOnce(&TestNavigationLoaderInterceptor::DeleteURLLoader,
-                       base::Unretained(this)),
-        std::move(receiver), /*options=*/0, resource_request, std::move(client),
-        /*sync_url_loader_client=*/nullptr, TRAFFIC_ANNOTATION_FOR_TESTS,
-        /*request_id=*/0,
-        /*keepalive_request_size=*/0,
-        /*keepalive_statistics_recorder=*/nullptr,
-        /*trust_token_helper=*/nullptr,
-        /*shared_dictionary_manager=*/nullptr,
-        /*shared_dictionary_checker=*/nullptr,
-        /*cookie_observer=*/
-        network::ObserverWrapper<network::mojom::CookieAccessObserver>(),
-        /*trust_token_observer=*/
-        network::ObserverWrapper<network::mojom::TrustTokenAccessObserver>(),
-        /*url_loader_network_observer=*/
-        network::ObserverWrapper<
-            network::mojom::URLLoaderNetworkServiceObserver>(),
-        /*devtools_observer=*/
-        network::ObserverWrapper<network::mojom::DevToolsObserver>(),
-        /*device_bound_session_observer=*/
-        network::ObserverWrapper<
-            network::mojom::DeviceBoundSessionAccessObserver>(),
-        /*accept_ch_frame_observer=*/mojo::NullRemote(),
-        /*shared_storage_writable=*/false, shared_resource_checker_);
-  }
-
-  bool MaybeCreateLoaderForResponse(
-      const network::URLLoaderCompletionStatus& status,
-      const network::ResourceRequest& request,
-      network::mojom::URLResponseHeadPtr* response,
-      mojo::ScopedDataPipeConsumerHandle* response_body,
-      mojo::PendingRemote<network::mojom::URLLoader>* loader,
-      mojo::PendingReceiver<network::mojom::URLLoaderClient>* client_receiver,
-      blink::ThrottlingURLLoader* url_loader,
-      bool* skip_other_interceptors) override {
-    return false;
-  }
-
- private:
-  void DeleteURLLoader(network::URLLoader* url_loader) {
-    DCHECK_EQ(url_loader_.get(), url_loader);
-    url_loader_.reset();
-  }
-
-  network::ResourceScheduler resource_scheduler_;
-  network::URLLoaderContextForTests url_loader_context_;
-  std::unique_ptr<net::URLRequestContext> url_request_context_;
-  scoped_refptr<network::ResourceSchedulerClient> resource_scheduler_client_;
-  std::unique_ptr<network::URLLoader> url_loader_;
-  network::CookieSettings empty_cookie_settings_;
-  network::SharedResourceChecker shared_resource_checker_;
-
-  const network::cors::OriginAccessList kEmptyOriginAccessList;
-};
-
-}  // namespace
 
 class NavigationURLLoaderImplTest : public testing::Test {
  public:
@@ -301,7 +196,6 @@ class NavigationURLLoaderImplTest : public testing::Test {
             is_ad_tagged /* is_ad_tagged */,
             false /* force_no_https_upgrade */));
     std::vector<std::unique_ptr<NavigationLoaderInterceptor>> interceptors;
-    interceptors.push_back(std::make_unique<TestNavigationLoaderInterceptor>());
 
     return std::make_unique<NavigationURLLoaderImpl>(
         browser_context_.get(), browser_context_->GetDefaultStoragePartition(),
