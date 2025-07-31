@@ -97,7 +97,6 @@ clang_plugin("find_bad_constructs") {
     # dynamically.
     plugin = "find-bad-constructs"
     plugin_arguments = [
-      "span-ctor-from-string-literal",
       "raw-ref-template-as-trivial-member",
       "raw-span-template-as-trivial-member",
       "check-stack-allocated",
