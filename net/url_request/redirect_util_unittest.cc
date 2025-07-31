@@ -5,6 +5,7 @@
 #include "net/url_request/redirect_util.h"
 
 #include <string>
+#include <string_view>
 
 #include "net/http/http_request_headers.h"
 #include "net/url_request/redirect_info.h"
@@ -29,16 +30,16 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
   const char kCustomHeaderValue[] = "custom header value";
 
   struct TestCase {
-    const char* original_method;
-    const char* new_method;
-    const char* new_url;
+    std::string_view original_method;
+    std::string_view new_method;
+    std::string_view new_url;
     const struct {
-      const char* name;
-      const char* value;
+      std::string_view name;
+      std::string_view value;
     } modified_headers[2];
     bool expected_should_clear_upload;
     // std::nullopt if the origin header should not exist
-    std::optional<const char*> expected_origin_header;
+    std::optional<std::string_view> expected_origin_header;
   };
   const TestCase kTests[] = {
       {
@@ -102,7 +103,7 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
 
     net::HttpRequestHeaders modified_headers;
     for (const auto& headers : test.modified_headers) {
-      ASSERT_TRUE(!!headers.name);  // Currently all test case has this.
+      ASSERT_TRUE(!headers.name.empty());  // Currently all test case has this.
       modified_headers.SetHeader(headers.name, headers.value);
     }
     std::optional<std::string> expected_modified_header1 =
@@ -166,10 +167,10 @@ TEST(RedirectUtilTest, UpdateHttpRequest) {
 
 TEST(RedirectUtilTest, RemovedHeaders) {
   struct TestCase {
-    std::vector<std::pair<const char*, const char*>> initial_headers;
-    std::vector<std::pair<const char*, const char*>> modified_headers;
-    std::vector<const char*> removed_headers;
-    std::vector<std::pair<const char*, const char*>> final_headers;
+    std::vector<std::pair<std::string_view, std::string_view>> initial_headers;
+    std::vector<std::pair<std::string_view, std::string_view>> modified_headers;
+    std::vector<std::string_view> removed_headers;
+    std::vector<std::pair<std::string_view, std::string_view>> final_headers;
   };
   const TestCase kTests[] = {
       // Remove no headers (empty vector).
@@ -232,8 +233,9 @@ TEST(RedirectUtilTest, RemovedHeaders) {
     for (const auto& header : test.modified_headers) {
       modified_headers.SetHeader(header.first, header.second);
     }
-    for (const char* header : test.removed_headers)
-      removed_headers.push_back(header);
+    for (const auto& header : test.removed_headers) {
+      removed_headers.emplace_back(header);
+    }
     for (const auto& header : test.final_headers) {
       final_headers.SetHeader(header.first, header.second);
     }
