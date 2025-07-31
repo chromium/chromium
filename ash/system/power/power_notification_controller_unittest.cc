@@ -331,8 +331,8 @@ TEST_F(PowerNotificationControllerTest,
       power_manager::PowerSupplyProperties_ExternalPower_USB);
   not_full_proto.set_battery_state(
       power_manager::PowerSupplyProperties_BatteryState_CHARGING);
-  full_proto.set_battery_percent(90.0);
-  full_proto.set_is_calculating_battery_time(false);
+  not_full_proto.set_battery_percent(90.0);
+  not_full_proto.set_is_calculating_battery_time(false);
 
   // When the battery is reported as full, a notification shouldn't be displayed
   // for a low-power charger: http://b/64913617

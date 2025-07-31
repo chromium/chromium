@@ -164,6 +164,10 @@ class ASH_EXPORT PowerStatus : public chromeos::PowerManagerClient::Observer {
   // Returns true if a battery is present.
   virtual bool IsBatteryPresent() const;
 
+  // Returns true if the battery sustainer feature is currently preventing the
+  // battery from falling below the target threshold (i.e., 80%).
+  bool IsBatteryChargeLimited() const;
+
   // Returns true if the battery is full. This also implies that a charger
   // is connected.
   bool IsBatteryFull() const;

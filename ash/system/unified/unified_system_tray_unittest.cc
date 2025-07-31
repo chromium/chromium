@@ -1194,10 +1194,12 @@ TEST_F(UnifiedSystemTrayAccessibilityTest, NameWithFullBatteryPower) {
   std::vector<std::u16string> status;
   CreateDefaultStatusForTesting(&status);
 
-  // The default state of the battery is FULL so no need to manually set that.
+  // The default state of the battery is FULL, but the battery percentage needs
+  // to be near 100% for the UI to consider the battery actually full.
   power_manager::PowerSupplyProperties prop;
   FakePowerStatus* fake_power_status = GetFakePowerStatus();
   fake_power_status->SetProtoForTesting(prop);
+  fake_power_status->SetBatteryPercent(100.0);
 
   // `OnPowerStatusChanged` is called in an asynchronous method, but for the
   // purpose of this test, it is called explicitly.

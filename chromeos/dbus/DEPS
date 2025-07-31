@@ -1,6 +1,7 @@
 noparent = True
 
 include_rules = [
+  "+ash/constants",
   "+base",
   # Please do not add any chromeos/ dependencies here: https://crbug.com/863439
   # Unless what is added is itself a standalone component,

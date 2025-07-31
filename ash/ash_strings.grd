@@ -3063,6 +3063,9 @@ Some features are limited to increase battery life.
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING_CHARGE_LEVEL" desc="The label in the tray dialog indicating that the battery charge level is being calculated.">
         Calculating battery %...
       </message>
+      <message name="IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD" desc="The label in the tray dialog indicating that charging has paused." translateable="false">
+        Charging on hold
+      </message>
       <message name="IDS_ASH_STATUS_TRAY_BATTERY_TIME_LEFT_SHORT" desc="The label in the tray bubble settings row to show a time estimate until the battery is empty.">
         <ph name="time">$1<ex>2:53</ex></ph> left
       </message>

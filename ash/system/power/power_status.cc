@@ -168,9 +168,19 @@ bool PowerStatus::IsBatteryPresent() const {
          power_manager::PowerSupplyProperties_BatteryState_NOT_PRESENT;
 }
 
+bool PowerStatus::IsBatteryChargeLimited() const {
+  return proto_.charge_limited();
+}
+
 bool PowerStatus::IsBatteryFull() const {
+  // In a special scenario, the battery can be reported as full when a battery
+  // charge limit is enabled, but the percentage is significantly lowered than
+  // 100% (i.e., FULL = 80%). Therefore, a battery should only be considered
+  // "full" in the UI if the battery percentage is close to total battery
+  // capacity (percent >= 99).
   return proto_.battery_state() ==
-         power_manager::PowerSupplyProperties_BatteryState_FULL;
+             power_manager::PowerSupplyProperties_BatteryState_FULL &&
+         GetRoundedBatteryPercent() >= 99;
 }
 
 bool PowerStatus::IsBatteryCharging() const {
@@ -442,6 +452,10 @@ std::pair<std::u16string, std::u16string> PowerStatus::GetStatusStrings()
     if (IsUsbChargerConnected()) {
       status = l10n_util::GetStringUTF16(
           IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_UNRELIABLE);
+    } else if (features::IsBatteryChargeLimitAvailable() &&
+               IsBatteryChargeLimited()) {
+      status = l10n_util::GetStringUTF16(
+          IDS_ASH_STATUS_TRAY_BATTERY_CHARGING_ON_HOLD);
     } else if (IsBatteryTimeBeingCalculated()) {
       status =
           l10n_util::GetStringUTF16(IDS_ASH_STATUS_TRAY_BATTERY_CALCULATING);
