@@ -124,6 +124,7 @@ const int kColorsID = kMaxID - 3;
 const int kDisplayPropertiesID = kMaxID - 4;
 const int kSourceImagesID = kMaxID - 5;
 const int kScaleFactorsID = kMaxID - 6;
+const int kTabGroupColorPaletteShadesID = kMaxID - 7;
 
 struct PersistingImagesTable {
   // A non-changing integer ID meant to be saved in theme packs. This ID must
@@ -844,6 +845,13 @@ scoped_refptr<BrowserThemePack> BrowserThemePack::BuildFromDataPack(
   pack->display_properties_ = reinterpret_cast<DisplayPropertyPair*>(
       const_cast<char*>(pointer->data()));
 
+  pointer = data_pack->GetStringView(kTabGroupColorPaletteShadesID);
+  if (!pointer) {
+    return nullptr;
+  }
+  std::memcpy(pack->tab_group_color_palette_shades_.data(), pointer->data(),
+              sizeof(pack->tab_group_color_palette_shades_));
+
   pointer = data_pack->GetStringView(kSourceImagesID);
   if (!pointer) {
     return nullptr;
@@ -971,6 +979,9 @@ bool BrowserThemePack::WriteToDisk(const base::FilePath& path) const {
   resources[kDisplayPropertiesID] =
       std::string_view(reinterpret_cast<const char*>(display_properties_.get()),
                        sizeof(DisplayPropertyPair[kDisplayPropertiesSize]));
+  resources[kTabGroupColorPaletteShadesID] = std::string_view(
+      reinterpret_cast<const char*>(tab_group_color_palette_shades_.data()),
+      sizeof(tab_group_color_palette_shades_));
 
   int source_count = 1;
   SourceImage* end = source_images_;
