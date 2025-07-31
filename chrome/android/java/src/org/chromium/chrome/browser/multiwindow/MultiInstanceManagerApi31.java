@@ -491,7 +491,18 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
             Activity a = getActivityById(i);
             if (a != null) {
                 // The task for the activity must match the one found in our mapping.
-                assert getTaskFromMap(i) == a.getTaskId();
+                int taskIdFromTaskMap = getTaskFromMap(i);
+                int activityTaskId = a.getTaskId();
+                String error =
+                        "Invalid instance-task mapping for activity="
+                                + a
+                                + " with id="
+                                + i
+                                + ". Expected (stored) taskId="
+                                + taskIdFromTaskMap
+                                + ", activity's taskId="
+                                + activityTaskId;
+                assert taskIdFromTaskMap == activityTaskId : error;
                 if (a == mActivity) {
                     type = InstanceInfo.Type.CURRENT;
                     currentItemPos = result.size();
