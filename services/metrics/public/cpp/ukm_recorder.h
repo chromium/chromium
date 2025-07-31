@@ -53,10 +53,6 @@ namespace safe_browsing {
 class NotificationContentDetectionUkmUtil;
 }
 
-namespace weblayer {
-class BackgroundSyncDelegateImpl;
-}
-
 namespace ukm {
 
 class DelegatingUkmRecorder;
@@ -232,7 +228,6 @@ class METRICS_EXPORT UkmRecorder {
                                            SourceIdType type);
 
  private:
-  friend weblayer::BackgroundSyncDelegateImpl;
   friend DelegatingUkmRecorder;
   friend TestRecordingHelper;
   friend UkmBackgroundRecorderService;
