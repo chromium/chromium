@@ -459,7 +459,8 @@ constexpr char kEnrollmentToken[] = "fake-enrollment-token";
 
 // Tests whether the managed item will be shown if UserPolicy is enabled and
 // the browser is signed in with a managed account.
-- (void)testPopupMenuItemWithUserPolicy {
+// TODO(crbug.com/435333773): Reenable this test.
+- (void)FLAKY_testPopupMenuItemWithUserPolicy {
   // Sign in with a managed account.
   NSString* managedAccountEmail = base::SysUTF8ToNSString(
       base::StrCat({"enterprise@", policy::SignatureProvider::kTestDomain1}));

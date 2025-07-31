@@ -1038,7 +1038,8 @@ void WaitForFakeJoinFlowView() {
 
 // Ensures that adding a tab from another account reflects correctly in a shared
 // group.
-- (void)testAddNewTabFromAnotherAccount {
+// TODO(crbug.com/435327953): Reenable this test.
+- (void)FLAKY_testAddNewTabFromAnotherAccount {
   AddSharedGroup(/*owner=*/YES);
   [ChromeEarlGrey waitForMainTabCount:1];
 

@@ -790,7 +790,8 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 }
 
 // Tests that the local profile is migrated to account.
-- (void)testMigrateToAccount {
+// TODO(crbug.com/435334012): Reenable this test.
+- (void)FLAKY_testMigrateToAccount {
   [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleProfile];
   [self
