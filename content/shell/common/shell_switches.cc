@@ -15,7 +15,8 @@ namespace switches {
 // ContentShellBrowserTestActivity.java#getUserDataDirectoryCommandLineSwitch().
 const char kContentShellUserDataDir[] = "user-data-dir";
 
-// The directory breakpad should store minidumps in.
+// The directory Crashpad should store minidumps in.
+// iOS and tvOS default to app's cache directory.
 const char kCrashDumpsDir[] = "crash-dumps-dir";
 
 // Disables the check for the system font when specified.
