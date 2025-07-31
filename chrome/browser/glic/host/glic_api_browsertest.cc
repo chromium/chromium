@@ -75,6 +75,7 @@
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "net/dns/mock_host_resolver.h"
 #include "pdf/buildflags.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -218,11 +219,17 @@ class GlicApiTest : public NonInteractiveGlicTest {
   }
   ~GlicApiTest() override = default;
 
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("a.com", "127.0.0.1");
+    host_resolver()->AddRule("b.com", "127.0.0.1");
+    NonInteractiveGlicTest::SetUpOnMainThread();
+  }
+
   void TearDownOnMainThread() override {
     if (next_step_required_) {
       FAIL() << "Test not finished: call ContinueJsTest()";
     }
-    test::InteractiveGlicTest::TearDownOnMainThread();
+    NonInteractiveGlicTest::TearDownOnMainThread();
   }
 
   GlicKeyedService* GetService() {
@@ -1619,6 +1626,40 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTab, testPinTabsWithTwoTabs) {
   RunTestSequence(AddInstrumentedTab(kSecondTab, page_url()));
   ExecuteJsTest();
   browser()->tab_strip_model()->SelectPreviousTab();
+  ContinueJsTest();
+}
+
+IN_PROC_BROWSER_TEST_F(GlicApiTest, testUnpinTabsThatNavigateInBackground) {
+  // Use HTTPS test server for this test to test same-origin navigation.
+  ASSERT_TRUE(embedded_https_test_server().Start());
+
+  RunTestSequence(
+      InstrumentTab(kFirstTab),
+      NavigateWebContents(kFirstTab, embedded_https_test_server().GetURL(
+                                         "a.com", "/test_data/page.html?one")),
+
+      AddInstrumentedTab(kSecondTab, embedded_https_test_server().GetURL(
+                                         "a.com", "/test_data/page.html?two")));
+  RunTestSequence(OpenGlicWindow(GlicWindowMode::kDetached,
+                                 GlicInstrumentMode::kHostAndContents));
+  ExecuteJsTest();
+
+  RunTestSequence(
+      // Navigate to a different origin. Because it's hidden and the glic window
+      // is hidden, it will be unpinned.
+      NavigateWebContents(kSecondTab,
+                          embedded_https_test_server().GetURL(
+                              "b.com", "/test_data/page.html?changedTwo")),
+      // Navigate to the same origin, this tab should not be unpinned.
+      NavigateWebContents(kFirstTab,
+                          embedded_https_test_server().GetURL(
+                              "a.com", "/test_data/page.html?sameOrigin")),
+      // Show the glic window and navigate the remaining tab. It should not be
+      // unpinned.
+      ToggleGlicWindow(GlicWindowMode::kDetached),
+      NavigateWebContents(kFirstTab,
+                          embedded_https_test_server().GetURL(
+                              "b.com", "/test_data/page.html?changedOne")));
   ContinueJsTest();
 }
 

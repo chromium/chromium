@@ -120,8 +120,13 @@ class InteractiveGlicTestT : public T {
     Test::embedded_test_server()->ServeFilesFromDirectory(
         base::PathService::CheckedGet(base::DIR_ASSETS)
             .AppendASCII("gen/chrome/test/data/webui/glic/"));
+    Test::embedded_https_test_server().ServeFilesFromDirectory(
+        base::PathService::CheckedGet(base::DIR_ASSETS)
+            .AppendASCII("gen/chrome/test/data/webui/glic/"));
 
     Test::embedded_test_server()->ServeFilesFromSourceDirectory(
+        "chrome/test/data/webui/glic/");
+    Test::embedded_https_test_server().ServeFilesFromSourceDirectory(
         "chrome/test/data/webui/glic/");
 
     ASSERT_TRUE(test_server_handle_ =

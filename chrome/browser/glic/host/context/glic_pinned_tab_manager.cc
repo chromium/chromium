@@ -18,6 +18,7 @@
 #include "chrome/browser/glic/host/context/glic_pin_candidate_comparator.h"
 #include "chrome/browser/glic/host/context/glic_sharing_utils.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
+#include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tab_strip_tracker.h"
@@ -25,6 +26,7 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_contents.h"
+#include "url/origin.h"
 
 namespace glic {
 
@@ -46,15 +48,11 @@ bool IsForeground(content::Visibility visibility) {
 class GlicPinnedTabManager::PinnedTabObserver
     : public content::WebContentsObserver {
  public:
-  PinnedTabObserver(
-      tabs::TabInterface* tab,
-      base::RepeatingCallback<void(tabs::TabHandle, mojom::TabDataPtr)>
-          tab_data_changed,
-      base::OnceCallback<void(tabs::TabHandle)> tab_will_close)
+  PinnedTabObserver(GlicPinnedTabManager* pinned_tab_manager,
+                    tabs::TabInterface* tab)
       : content::WebContentsObserver(tab->GetContents()),
-        tab_(tab),
-        tab_data_changed_(std::move(tab_data_changed)),
-        tab_will_close_(std::move(tab_will_close)) {
+        pinned_tab_manager_(pinned_tab_manager),
+        tab_(tab) {
     will_discard_contents_subscription_ =
         tab_->RegisterWillDiscardContents(base::BindRepeating(
             &PinnedTabObserver::OnWillDiscardContents, base::Unretained(this)));
@@ -65,6 +63,8 @@ class GlicPinnedTabManager::PinnedTabObserver
     if (web_contents) {
       is_audible_ = web_contents->IsCurrentlyAudible();
       is_foreground_ = IsForeground(web_contents->GetVisibility());
+      last_origin_ =
+          web_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin();
     }
   }
   ~PinnedTabObserver() override { ClearObservation(); }
@@ -89,12 +89,17 @@ class GlicPinnedTabManager::PinnedTabObserver
     }
   }
 
+  void PrimaryPageChanged(content::Page& page) override {
+    CheckOriginChangeAndMaybeDeleteSelf(
+        page.GetMainDocument().GetLastCommittedOrigin());
+  }
+
   // tabs::TabInterface
   void OnWillDetach(tabs::TabInterface* tab,
                     tabs::TabInterface::DetachReason reason) {
     if (reason == tabs::TabInterface::DetachReason::kDelete) {
       ClearObservation();
-      std::move(tab_will_close_).Run(tab->GetHandle());
+      pinned_tab_manager_->OnTabWillClose(tab->GetHandle());
     }
   }
 
@@ -103,6 +108,8 @@ class GlicPinnedTabManager::PinnedTabObserver
                              content::WebContents* new_contents) {
     CHECK_EQ(web_contents(), old_contents);
     StartObservation(tab, new_contents);
+    CheckOriginChangeAndMaybeDeleteSelf(
+        new_contents->GetPrimaryMainFrame()->GetLastCommittedOrigin());
   }
 
   void FocusedTabDataChanged(mojom::TabDataPtr tab_data) {
@@ -112,10 +119,20 @@ class GlicPinnedTabManager::PinnedTabObserver
   bool IsObservable() const { return is_foreground_ || is_audible_; }
 
  private:
+  void CheckOriginChangeAndMaybeDeleteSelf(const url::Origin& new_origin) {
+    if (last_origin_ == new_origin) {
+      return;
+    }
+    last_origin_ = new_origin;
+    // May delete this.
+    pinned_tab_manager_->OnTabChangedOrigin(tab_->GetHandle());
+  }
+
   void UpdateTabDataAndSend(mojom::TabDataPtr tab_data) {
     // Add observability info.
     tab_data->is_observable = IsObservable();
-    tab_data_changed_.Run(tab_->GetHandle(), std::move(tab_data));
+    pinned_tab_manager_->OnTabDataChanged(tab_->GetHandle(),
+                                          std::move(tab_data));
   }
 
   void StartObservation(tabs::TabInterface* tab,
@@ -132,6 +149,8 @@ class GlicPinnedTabManager::PinnedTabObserver
     tab_data_observer_.reset();
   }
 
+  // Owns this.
+  raw_ptr<GlicPinnedTabManager> pinned_tab_manager_;
   raw_ptr<tabs::TabInterface> tab_;
 
   base::CallbackListSubscription will_discard_contents_subscription_;
@@ -139,12 +158,9 @@ class GlicPinnedTabManager::PinnedTabObserver
 
   bool is_foreground_ = false;
   bool is_audible_ = false;
+  url::Origin last_origin_;
 
   std::unique_ptr<TabDataObserver> tab_data_observer_;
-  base::RepeatingCallback<void(tabs::TabHandle, mojom::TabDataPtr)>
-      tab_data_changed_;
-
-  base::OnceCallback<void(tabs::TabHandle)> tab_will_close_;
 };
 
 GlicPinnedTabManager::PinnedTabEntry::PinnedTabEntry(
@@ -210,8 +226,12 @@ class GlicPinnedTabManager::UpdateThrottler {
   base::TimeDelta current_delay_ = kInitialDelay;
 };
 
-GlicPinnedTabManager::GlicPinnedTabManager(Profile* profile)
-    : profile_(profile), max_pinned_tabs_(kDefaultMaxPinnedTabs) {
+GlicPinnedTabManager::GlicPinnedTabManager(
+    Profile* profile,
+    GlicWindowController* window_controller)
+    : profile_(profile),
+      window_controller_(window_controller),
+      max_pinned_tabs_(kDefaultMaxPinnedTabs) {
   pin_candidate_updater_ = std::make_unique<UpdateThrottler>(
       base::BindRepeating(&GlicPinnedTabManager::SendPinCandidatesUpdate,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -262,14 +282,8 @@ bool GlicPinnedTabManager::PinTabs(
       tab->GetContents()->GetController().LoadIfNecessary();
     }
 
-    pinned_tabs_.emplace_back(
-        tab_handle,
-        std::make_unique<PinnedTabObserver>(
-            tab_handle.Get(),
-            base::BindRepeating(&GlicPinnedTabManager::OnTabDataChanged,
-                                weak_ptr_factory_.GetWeakPtr()),
-            base::BindOnce(&GlicPinnedTabManager::OnTabWillClose,
-                           weak_ptr_factory_.GetWeakPtr())));
+    pinned_tabs_.emplace_back(tab_handle, std::make_unique<PinnedTabObserver>(
+                                              this, tab_handle.Get()));
     pinning_status_changed_callback_list_.Notify(tab_handle.Get(), true);
   }
   NotifyPinnedTabsChanged();
@@ -449,6 +463,13 @@ void GlicPinnedTabManager::OnTabDataChanged(tabs::TabHandle tab_handle,
                                                          : nullptr);
 }
 
+void GlicPinnedTabManager::OnTabChangedOrigin(tabs::TabHandle tab_handle) {
+  CHECK(IsTabPinned(tab_handle));
+  if (!IsGlicWindowShowing()) {
+    UnpinTabs({tab_handle});
+  }
+}
+
 void GlicPinnedTabManager::OnTabWillClose(tabs::TabHandle tab_handle) {
   // TODO(b/426644733): Avoid n^2 work when closing all tabs.
   CHECK(UnpinTabs({tab_handle}));
@@ -463,6 +484,10 @@ bool GlicPinnedTabManager::IsBrowserValidForSharing(
 bool GlicPinnedTabManager::IsValidForSharing(
     content::WebContents* web_contents) {
   return IsTabValidForSharing(web_contents);
+}
+
+bool GlicPinnedTabManager::IsGlicWindowShowing() {
+  return window_controller_->IsShowing();
 }
 
 }  // namespace glic

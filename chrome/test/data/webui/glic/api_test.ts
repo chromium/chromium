@@ -1132,6 +1132,36 @@ class ApiTests extends ApiTestFixtureBase {
     await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 0);
   }
 
+  // Tests that tabs which navigate are unpinned if the glic window is closed.
+  async testUnpinTabsThatNavigateInBackground() {
+    assertDefined(this.host.getPinCandidates);
+    assertDefined(this.host.pinTabs);
+    assertDefined(this.host.getPinnedTabs);
+    assertDefined(this.host.closePanel);
+
+    // Pin all tabs.
+    const pinnedTabsUpdates = observeSequence(this.host.getPinnedTabs());
+    const candidates = await observeSequence(this.host.getPinCandidates({
+                         maxCandidates: 3,
+                       })).next();
+    assertEquals(candidates.length, 2);
+    assertTrue(await this.host.pinTabs(candidates.map(c => c.tabData.tabId)));
+    await pinnedTabsUpdates.waitFor((tabs) => tabs.length === 2);
+
+    await this.host.closePanel();
+
+    // Open glic window again.
+    await this.advanceToNextStep();
+
+    // Wait for pin updates. We should see one fewer pinned tab, and one
+    // navigated tab.
+    // Note: pinned tab updates will see the navigation just before the tab is
+    // unpinned.
+    await pinnedTabsUpdates.waitFor(
+        tabs => tabs.map(t => new URL(t.url).search).sort().join(',') ===
+            '?changedOne');
+  }
+
   // Helper for `testFetchInactiveTabScreenshot` and
   // `testFetchInactiveTabScreenshotWhileMinimized`.
   async fetchInactiveTabScreenshot() {
@@ -1703,15 +1733,16 @@ async function improveStackTrace(stack: string) {
         outLines.push(`[${stackLevel}] ${line.trim()}:`);
         const spacePrefixedIntroLines =
             lines.slice(failureLineNo - contextLines, failureLineNo)
-                .map((l) => '| ' + l);
+                .map((l) => ' |' + l);
         outLines.push(...spacePrefixedIntroLines);
         const lineStr = lines[failureLineNo];
-        outLines.push(`> ${lineStr}`);
-        outLines.push(`__${'_'.repeat(Number(column) - 1)}^`);
+        outLines.push(` ├>${lineStr}`);
+        outLines.push(` ├╌${'╌'.repeat(Number(column) - 1)}^`);
         const spacePrefixedOutroLines =
             lines.slice(failureLineNo + 1, failureLineNo + contextLines + 1)
-                .map((l) => '| ' + l);
+                .map((l) => ' |' + l);
         outLines.push(...spacePrefixedOutroLines);
+        outLines.push('');
       } catch (e) {
         outLines.push(`${line}`);
       }
