@@ -20,14 +20,21 @@ class ActorKeyedService;
 
 namespace actor::ui {
 
+class ActorUiTabControllerFactory
+    : public ActorUiTabControllerFactoryInterface {
+ public:
+  std::unique_ptr<HandoffButtonController> CreateHandoffButtonController(
+      tabs::TabInterface& tab) override;
+  std::unique_ptr<ActorOverlayViewController> CreateActorOverlayViewController(
+      tabs::TabInterface& tab) override;
+};
+
 class ActorUiTabController : public ActorUiTabControllerInterface {
  public:
-  ActorUiTabController(tabs::TabInterface& tab,
-                       ActorKeyedService* actor_service,
-                       std::unique_ptr<ActorOverlayViewController>
-                           actor_overlay_view_controller = nullptr,
-                       std::unique_ptr<HandoffButtonController>
-                           handoff_button_controller = nullptr);
+  ActorUiTabController(
+      tabs::TabInterface& tab,
+      ActorKeyedService* actor_service,
+      std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory);
   ~ActorUiTabController() override;
 
   // ActorUiTabControllerInterface:
@@ -48,6 +55,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) override;
 
  private:
+  // Called only once on startup to initialize tab subscriptions.
+  void RegisterTabSubscriptions();
+
   // Called to propagate a UiTabState and tab status change to UI controllers.
   void UpdateState(const UiTabState& ui_tab_state,
                    bool tab_active_status,
@@ -67,6 +77,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
       .actor_overlay = ActorOverlayState(),
       .handoff_button = HandoffButtonState(),
   };
+
   // The current active status of the tab.
   bool current_tab_active_status_ = false;
   // The last active task id actuating on this tab.
@@ -79,10 +90,12 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // The Actor Keyed Service for the associated profile.
   raw_ptr<ActorKeyedService> actor_keyed_service_ = nullptr;
 
+  // Owned controllers:
   // The Actor Overlay View controller for this tab.
   std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller_;
   // The Handoff Button controller for this tab.
   std::unique_ptr<HandoffButtonController> handoff_button_controller_;
+  std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

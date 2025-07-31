@@ -264,7 +264,8 @@ void TabFeatures::Init(TabInterface& tab, Profile* profile) {
         profile->IsRegularProfile()) {
       actor_ui_tab_controller_ =
           std::make_unique<actor::ui::ActorUiTabController>(
-              tab, actor::ActorKeyedService::Get(profile));
+              tab, actor::ActorKeyedService::Get(profile),
+              std::make_unique<actor::ui::ActorUiTabControllerFactory>());
     }
   }  // IsInNormalWindow() end.
 

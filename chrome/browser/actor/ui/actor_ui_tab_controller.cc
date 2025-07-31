@@ -26,41 +26,49 @@ void LogAndIgnoreCallbackError(const std::string_view source_name,
 }
 }  // namespace
 
+std::unique_ptr<HandoffButtonController>
+ActorUiTabControllerFactory::CreateHandoffButtonController(
+    tabs::TabInterface& tab) {
+  return std::make_unique<HandoffButtonController>(tab);
+}
+
+std::unique_ptr<ActorOverlayViewController>
+ActorUiTabControllerFactory::CreateActorOverlayViewController(
+    tabs::TabInterface& tab) {
+  return std::make_unique<ActorOverlayViewController>(tab);
+}
+
 ActorUiTabController::ActorUiTabController(
     tabs::TabInterface& tab,
     ActorKeyedService* actor_service,
-    std::unique_ptr<ActorOverlayViewController> actor_overlay_view_controller,
-    std::unique_ptr<HandoffButtonController> handoff_button_controller)
+    std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory)
     : tab_(tab),
       actor_keyed_service_(actor_service),
-      actor_overlay_view_controller_(std::move(actor_overlay_view_controller)),
-      handoff_button_controller_(std::move(handoff_button_controller)) {
-  // Explicitly initialize UI component controllers if a nullptr is provided.
-  if (!handoff_button_controller_) {
-    handoff_button_controller_ =
-        std::make_unique<HandoffButtonController>(*tab_);
-  }
-  if (!actor_overlay_view_controller_) {
-    actor_overlay_view_controller_ =
-        std::make_unique<ActorOverlayViewController>(*tab_);
-  }
-
+      controller_factory_(std::move(controller_factory)) {
   CHECK(actor_keyed_service_);
+  actor_overlay_view_controller_ =
+      controller_factory_->CreateActorOverlayViewController(tab);
+  handoff_button_controller_ =
+      controller_factory_->CreateHandoffButtonController(tab);
+  RegisterTabSubscriptions();
+}
+
+ActorUiTabController::~ActorUiTabController() = default;
+
+void ActorUiTabController::RegisterTabSubscriptions() {
   if (features::kGlicActorUiOverlay.Get()) {
     tab_subscriptions_.push_back(tab_->RegisterWillDetach(base::BindRepeating(
         &ActorUiTabController::OnTabWillDetach, weak_factory_.GetWeakPtr())));
     tab_subscriptions_.push_back(tab_->RegisterDidInsert(base::BindRepeating(
         &ActorUiTabController::OnTabDidInsert, weak_factory_.GetWeakPtr())));
   }
-  tab_subscriptions_.push_back(tab.RegisterDidActivate(
+  tab_subscriptions_.push_back(tab_->RegisterDidActivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/true)));
-  tab_subscriptions_.push_back(tab.RegisterWillDeactivate(
+  tab_subscriptions_.push_back(tab_->RegisterWillDeactivate(
       base::BindRepeating(&ActorUiTabController::OnTabActiveStatusChanged,
                           weak_factory_.GetWeakPtr(), /*is_activated=*/false)));
 }
-
-ActorUiTabController::~ActorUiTabController() = default;
 
 void ActorUiTabController::OnUiTabStateChange(const UiTabState& ui_tab_state,
                                               UiResultCallback callback) {
@@ -119,7 +127,6 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
         current_ui_tab_state_.actor_overlay, ComputeActorOverlayVisibility());
   }
 
-  // TODO(crbug.com/428216197): Only notify relevant UI components on change.
   if (features::kGlicActorUiHandoffButton.Get()) {
     // The Handoff Button's visibility is always false through this entrypoint.
     // It's visibility will only be updated via  SetHandoffButtonVisibility().
@@ -175,6 +182,7 @@ void ActorUiTabController::SetHandoffButtonVisibility(bool is_visible) {
   if (!features::kGlicActorUiHandoffButton.Get()) {
     return;
   }
+
   bool should_be_visible = is_visible && current_tab_active_status_;
   handoff_button_controller_->UpdateState(current_ui_tab_state_.handoff_button,
                                           should_be_visible);

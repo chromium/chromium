@@ -7,12 +7,13 @@
 
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/ui/actor_overlay.mojom.h"
-#include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "components/tabs/public/tab_interface.h"
 
 namespace actor::ui {
+class HandoffButtonController;
+class ActorOverlayViewController;
 using UiResultCallback = base::OnceCallback<void(bool)>;
 
 struct UiTabState {
@@ -28,6 +29,15 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
+class ActorUiTabControllerFactoryInterface {
+ public:
+  virtual ~ActorUiTabControllerFactoryInterface() = default;
+  virtual std::unique_ptr<HandoffButtonController>
+  CreateHandoffButtonController(tabs::TabInterface& tab) = 0;
+  virtual std::unique_ptr<ActorOverlayViewController>
+  CreateActorOverlayViewController(tabs::TabInterface& tab) = 0;
+};
+
 class ActorUiTabControllerInterface {
  public:
   virtual ~ActorUiTabControllerInterface() = default;
@@ -40,7 +50,10 @@ class ActorUiTabControllerInterface {
   // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskPaused() = 0;
 
+  // Sets the last active task id's state to resume. If there is no task
+  // associated to the active task id, this function will do nothing.
   virtual void SetActorTaskResume() = 0;
+
   // Tab subscriptions:
   // Called when the tab's active state changes.
   virtual void OnTabActiveStatusChanged(bool tab_active_status,
