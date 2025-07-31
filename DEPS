@@ -3782,7 +3782,7 @@ deps = {
 
   'src/services/shape_detection/internal': {
       'url': Var('chrome_git') + '/chrome/services/shape_detection.git' + '@' +
-        '81105616ab31c0d7dd222d8f4dbf135c0b51faa0',
+        'b048cee6b7831af7bca5d25a74419f59a29f691f',
       'condition': 'checkout_src_internal',
   },
 
