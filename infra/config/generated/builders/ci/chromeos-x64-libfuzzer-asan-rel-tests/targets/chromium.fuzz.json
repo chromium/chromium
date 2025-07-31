@@ -1,0 +1,12 @@
+{
+  "chromeos-x64-libfuzzer-asan-rel-tests": {
+    "gtest_tests": [
+      {
+        "name": "fuzzing_unittests",
+        "swarming": {},
+        "test": "fuzzing_unittests",
+        "test_id_prefix": "ninja://testing/libfuzzer/tests:fuzzing_unittests/"
+      }
+    ]
+  }
+}

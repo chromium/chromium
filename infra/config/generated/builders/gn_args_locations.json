@@ -303,7 +303,15 @@
     "UBSan Release": "ci/UBSan Release/gn-args.json",
     "UBSan vptr Release": "ci/UBSan vptr Release/gn-args.json",
     "Win ASan Release": "ci/Win ASan Release/gn-args.json",
-    "Win ASan Release Media": "ci/Win ASan Release Media/gn-args.json"
+    "Win ASan Release Media": "ci/Win ASan Release Media/gn-args.json",
+    "chromeos-x64-libfuzzer-asan-rel-tests": "ci/chromeos-x64-libfuzzer-asan-rel-tests/gn-args.json",
+    "linux-x64-libfuzzer-asan-dbg-tests": "ci/linux-x64-libfuzzer-asan-dbg-tests/gn-args.json",
+    "linux-x64-libfuzzer-asan-rel-tests": "ci/linux-x64-libfuzzer-asan-rel-tests/gn-args.json",
+    "linux-x64-libfuzzer-msan-rel-tests": "ci/linux-x64-libfuzzer-msan-rel-tests/gn-args.json",
+    "linux-x64-libfuzzer-ubsan-rel-tests": "ci/linux-x64-libfuzzer-ubsan-rel-tests/gn-args.json",
+    "linux-x86-libfuzzer-asan-rel-tests": "ci/linux-x86-libfuzzer-asan-rel-tests/gn-args.json",
+    "mac-arm64-libfuzzer-asan-rel-tests": "ci/mac-arm64-libfuzzer-asan-rel-tests/gn-args.json",
+    "win-x64-libfuzzer-asan-rel-tests": "ci/win-x64-libfuzzer-asan-rel-tests/gn-args.json"
   },
   "chromium.fyi": {
     "Linux Viz": "ci/Linux Viz/gn-args.json",
