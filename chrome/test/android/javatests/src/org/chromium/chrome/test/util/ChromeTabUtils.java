@@ -55,7 +55,6 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
-import java.util.concurrent.atomic.AtomicReference;
 
 /** A utility class that contains methods generic to all Tabs tests. */
 public class ChromeTabUtils {
@@ -131,31 +130,32 @@ public class ChromeTabUtils {
                 && !tab.getWebContents().shouldShowLoadingUI();
     }
 
-    public static String getTitleOnUiThread(Tab tab) {
-        AtomicReference<String> res = new AtomicReference<>();
-        ThreadUtils.runOnUiThreadBlocking(
+    public static String getCurrentTabTitleOnUiThread(ChromeActivity activity) {
+        return ThreadUtils.runOnUiThreadBlocking(
                 () -> {
-                    res.set(tab.getTitle());
+                    Tab tab = activity.getActivityTab();
+                    return tab.getTitle();
                 });
-        return res.get();
+    }
+
+    public static String getTitleOnUiThread(Tab tab) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> tab.getTitle());
+    }
+
+    public static String getCurrentTabUrlOnUiThread(ChromeActivity activity) {
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    Tab tab = activity.getActivityTab();
+                    return tab.getUrl().getSpec();
+                });
     }
 
     public static String getUrlStringOnUiThread(Tab tab) {
-        AtomicReference<String> res = new AtomicReference<>();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    res.set(tab.getUrl().getSpec());
-                });
-        return res.get();
+        return ThreadUtils.runOnUiThreadBlocking(() -> tab.getUrl().getSpec());
     }
 
     public static GURL getUrlOnUiThread(Tab tab) {
-        AtomicReference<GURL> res = new AtomicReference<>();
-        ThreadUtils.runOnUiThreadBlocking(
-                () -> {
-                    res.set(tab.getUrl());
-                });
-        return res.get();
+        return ThreadUtils.runOnUiThreadBlocking(() -> tab.getUrl());
     }
 
     /**

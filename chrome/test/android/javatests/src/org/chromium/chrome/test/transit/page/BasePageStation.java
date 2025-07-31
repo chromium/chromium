@@ -448,7 +448,7 @@ public class BasePageStation<HostActivity extends ChromeActivity>
 
         private CorrectActivityTabCondition(
                 Supplier<ActivityT> activitySupplier, Supplier<Tab> expectedTabSupplier) {
-            super(/* isRunOnUiThread= */ false);
+            super(/* isRunOnUiThread= */ true);
             mActivitySupplier = dependOnSupplier(activitySupplier, "ChromeActivity");
             mExpectedTab = dependOnSupplier(expectedTabSupplier, "ExpectedTab");
         }

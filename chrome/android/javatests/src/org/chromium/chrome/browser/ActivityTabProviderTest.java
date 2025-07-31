@@ -113,7 +113,8 @@ public class ActivityTabProviderTest {
      * @return The {@link Tab} that the active model currently has selected.
      */
     private Tab getModelSelectedTab() {
-        return mActivity.getTabModelSelector().getCurrentTab();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> mActivity.getTabModelSelector().getCurrentTab());
     }
 
     /**

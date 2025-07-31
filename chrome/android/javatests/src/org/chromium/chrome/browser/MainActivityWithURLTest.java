@@ -17,7 +17,6 @@ import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.FreshCtaTransitTestRule;
@@ -41,8 +40,7 @@ public class MainActivityWithURLTest {
         // Launch chrome
         mActivityTestRule.startOnTestServerUrl("/chrome/test/data/android/simple.html");
         String expectedTitle = "Activity test page";
-        TabModel model = mActivityTestRule.getActivity().getCurrentTabModel();
-        String title = ChromeTabUtils.getTitleOnUiThread(model.getTabAt(model.index()));
+        String title = ChromeTabUtils.getCurrentTabTitleOnUiThread(mActivityTestRule.getActivity());
         Assert.assertEquals(expectedTitle, title);
     }
 
@@ -55,8 +53,7 @@ public class MainActivityWithURLTest {
         // Launch chrome
         mActivityTestRule.startFromLauncherAtNtp();
         String currentUrl =
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab());
+                ChromeTabUtils.getCurrentTabUrlOnUiThread(mActivityTestRule.getActivity());
         Assert.assertNotNull(currentUrl);
         Assert.assertEquals(false, currentUrl.isEmpty());
     }
@@ -71,19 +68,15 @@ public class MainActivityWithURLTest {
     public void testNewTabPageLaunch() {
         // Launch chrome with NTP.
         mActivityTestRule.startOnNtp();
-        String currentUrl =
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab());
+        ChromeTabbedActivity activity = mActivityTestRule.getActivity();
+        String currentUrl = ChromeTabUtils.getCurrentTabUrlOnUiThread(activity);
         Assert.assertNotNull(currentUrl);
         Assert.assertEquals(false, currentUrl.isEmpty());
 
         // Open NTP.
-        ChromeTabUtils.newTabFromMenu(
-                InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
+        ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), activity);
 
-        currentUrl =
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab());
+        currentUrl = ChromeTabUtils.getCurrentTabUrlOnUiThread(activity);
         Assert.assertNotNull(currentUrl);
         Assert.assertEquals(false, currentUrl.isEmpty());
     }
