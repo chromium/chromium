@@ -125,12 +125,6 @@ void WebNNContextImpl::CreateTensor(
     mojo_base::BigBuffer tensor_data,
     mojom::WebNNContext::CreateTensorCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  // Must use CreateTensorFromMailbox for WebGPU Interop.
-  if (tensor_info->usage.Has(MLTensorUsageFlags::kWebGpuInterop)) {
-    receiver_.ReportBadMessage(kBadMessageInvalidTensor);
-    return;
-  }
-
   if (!ValidateTensor(properties_, tensor_info->descriptor).has_value()) {
     receiver_.ReportBadMessage(kBadMessageInvalidTensor);
     return;
