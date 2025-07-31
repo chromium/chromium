@@ -218,9 +218,15 @@ views::BubbleDialogDelegate* SessionCrashedBubbleView::GetInstanceForTest() {
 views::BubbleDialogDelegate* SessionCrashedBubbleView::ShowBubble(
     Browser* browser,
     bool offer_uma_optin) {
-  views::View* anchor_view = BrowserView::GetBrowserViewForBrowser(browser)
-                                 ->toolbar_button_provider()
-                                 ->GetAppMenuButton();
+  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  // TODO(webium): WebUI browser does not use BrowserView. Make an WebUI anchor
+  // for the bubble.
+  if (!browser_view) {
+    return nullptr;
+  }
+
+  views::View* anchor_view =
+      browser_view->toolbar_button_provider()->GetAppMenuButton();
 
   auto bubble_delegate_unique =
       std::make_unique<SessionCrashedBubbleDelegate>(browser->profile());
