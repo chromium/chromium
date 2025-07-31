@@ -1562,7 +1562,9 @@ AutocompleteResult::GetMatchComparisonFields(const AutocompleteMatch& match) {
     type = AutocompleteMatchDedupeType::kVerbatimProvider;
   } else if (match.type == ACMatchType::CALCULATOR) {
     type = AutocompleteMatchDedupeType::kCalculator;
-  } else if (match.IsSearchAimSuggestion()) {
+  } else if (match.IsSearchAimSuggestion() &&
+             omnibox_feature_configs::AiModeEchoMatch::Get()
+                 .do_not_dedupe_aim_suggestions) {
     type = AutocompleteMatchDedupeType::kAiMode;
   } else {
     type = AutocompleteMatchDedupeType::kNormal;

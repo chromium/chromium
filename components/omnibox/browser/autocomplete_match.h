@@ -162,7 +162,13 @@ enum class AutocompleteMatchDedupeType {
   kVerbatimProvider,  // Matches that come from the verbatim provider, which
                       // does not include the verbatim SWYT match.
   kHistoryEmbeddingAnswer,  // Matches with type `HISTORY_EMBEDDINGS_ANSWER`.
-  kAiMode,                  // Matches that activate to the DSE's AI Mode
+  kAiMode,  // Matches that activate the DSE's AI Mode. AIM suggestions' URLs
+            // are discerned by a query param `udm=50`. But deduping doesn't
+            // consider extra query params; `google.com/?q=query&udm=50` and
+            // `google.com/?q=query` would usually be deduped. `kAiMode` allows
+            // matches with `udm=50` in their suggest template to not be deduped
+            // with matches without it. But this does not apply to `udm=50` in
+            // the actual match URL; nor to udm values other than 50.
 };
 
 // AutocompleteMatch ----------------------------------------------------------

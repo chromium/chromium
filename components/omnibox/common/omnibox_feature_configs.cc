@@ -38,6 +38,17 @@ CalcProvider::CalcProvider() {
           .Get();
 }
 
+BASE_FEATURE(AiModeEchoMatch::kAiModeEchoMatch,
+             "AiModeEchoMatch",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+AiModeEchoMatch::AiModeEchoMatch() {
+  enabled = base::FeatureList::IsEnabled(kAiModeEchoMatch);
+  do_not_dedupe_aim_suggestions =
+      base::FeatureParam<bool>(&kAiModeEchoMatch, "DoNotDedupeAimSuggestions",
+                               do_not_dedupe_aim_suggestions)
+          .Get();
+}
+
 BASE_FEATURE(ContextualSearch::kContextualSuggestionsAblateOthersWhenPresent,
              "ContextualSuggestionsAblateOthersWhenPresent",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -118,6 +118,25 @@ struct CalcProvider : Config<CalcProvider> {
   size_t num_non_calc_inputs;
 };
 
+// Chromium-side tweaks to accommodate AI mode echo matches from the server.
+// Disabling this won't actually disable AI mode echo matches altogether; that's
+// controlled server side. This just changes client side behavior to allow them
+// to work well.
+struct AiModeEchoMatch : Config<AiModeEchoMatch> {
+  DECLARE_FEATURE(kAiModeEchoMatch);
+
+  AiModeEchoMatch();
+
+  bool enabled;
+
+  // Deduping doesn't consider extra query params like `udm=50`.
+  // `google.com/?q=query&udm=50` and `google.com/?q=query` would usually be
+  // deduped. This param makes `udm=50` in the match's suggest template a
+  // differentiating signal in deduping. Does not apply to `udm=50` in normal
+  // URLs. Does not apply to e.g. `udm=49` in the suggest template.
+  bool do_not_dedupe_aim_suggestions = true;
+};
+
 // A config struct for features related to contextual search in omnibox.
 struct ContextualSearch : Config<ContextualSearch> {
   ContextualSearch();
