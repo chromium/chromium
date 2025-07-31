@@ -1877,7 +1877,7 @@ config("libcxx_module") {
     cflags_cc =
         [
           "-fmodules",
-          "-fno-implicit-module-maps",
+          clang_arg_prefix + "-fno-implicit-module-maps",
           "-fno-implicit-modules",
 
           "-Xclang",

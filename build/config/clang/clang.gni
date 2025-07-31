@@ -65,3 +65,9 @@ if (defined(clang_warning_suppression_file) &&
 # The leading space is important, if the string is non-empty.
 rbe_bug_326584510_missing_inputs =
     " -inputs=" + string_join(",", rbe_bug_326584510_missing_input_list)
+
+if (is_win) {
+  clang_arg_prefix = "/clang:"
+} else {
+  clang_arg_prefix = ""
+}

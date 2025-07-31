@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/clang/clang.gni")
+
 if (is_ios) {
   import("//build/config/ios/ios_sdk.gni")
   sdk_path = ios_sdk_path
@@ -29,12 +31,11 @@ if (use_clang_modules) {
     sysroot_modulemaps = [ sysroot_modulemap ]
   }
 
-  module_map_flags = [
-    "-fmodule-map-file=" + rebase_path(
+  module_map_flags =
+      [ "-fmodule-map-file=" + rebase_path(
             "${root_gen_dir}/third_party/libc++/src/include/module.modulemap",
-            root_build_dir),
-    "-fbuiltin-module-map",
-  ]
+            root_build_dir) ]
+  module_map_flags += [ clang_arg_prefix + "-fbuiltin-module-map" ]
   foreach(modulemap, sysroot_modulemaps) {
     module_map_flags +=
         [ "-fmodule-map-file=" + rebase_path(modulemap, root_build_dir) ]

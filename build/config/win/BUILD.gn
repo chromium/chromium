@@ -81,7 +81,6 @@ config("compiler") {
   # for precompiled headers where the same source file is compiled in both
   # modes.
   cflags_c = [ "/TC" ]
-  cflags_cc = [ "/TP" ]
 
   if (is_clang) {
     # Required to make the 19041 SDK compatible with clang-cl.
