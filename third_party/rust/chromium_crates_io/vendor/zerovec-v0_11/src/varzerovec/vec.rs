@@ -192,7 +192,7 @@ impl<'a, T: ?Sized + VarULE, F: VarZeroVecFormat> From<VarZeroVec<'a, T, F>>
     }
 }
 
-impl<T: VarULE + ?Sized> Default for VarZeroVec<'_, T> {
+impl<T: VarULE + ?Sized, F: VarZeroVecFormat> Default for VarZeroVec<'_, T, F> {
     #[inline]
     fn default() -> Self {
         Self::new()
