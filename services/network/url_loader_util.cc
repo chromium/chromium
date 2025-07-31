@@ -37,6 +37,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/resource_request_body.h"
 #include "services/network/public/cpp/sri_message_signatures.h"
+#include "services/network/public/cpp/unencoded_digests.h"
 #include "services/network/public/mojom/client_security_state.mojom.h"
 #include "services/network/public/mojom/fetch_api.mojom-shared.h"
 #include "services/network/public/mojom/network_context.mojom-shared.h"
@@ -801,6 +802,11 @@ mojom::URLResponseHeadPtr BuildResponseHead(
 
   url_request.GetClientSideContentDecodingTypes(
       &response->client_side_content_decoding_types);
+
+  if (response->headers) {
+    response->unencoded_digests =
+        ParseUnencodedDigestsFromHeaders(*response->headers.get());
+  }
 
   return response;
 }

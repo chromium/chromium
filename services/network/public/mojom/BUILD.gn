@@ -677,6 +677,7 @@ mojom("url_loader_base") {
     ":mojom_shared_storage",
     ":mojom_source_location",
     ":mojom_storage_access_api",
+    ":mojom_unencoded_digest",
     ":mojom_web_sandbox_flags",
     "//mojo/public/mojom/base",
     "//services/proxy_resolver/public/mojom",
