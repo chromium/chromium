@@ -113,18 +113,24 @@
 
 namespace {
 
-std::u16string GetSyncErrorButtonText(AvatarSyncErrorType error) {
+std::u16string GetSyncErrorButtonText(Profile* profile,
+                                      AvatarSyncErrorType error) {
   switch (error) {
-    case AvatarSyncErrorType::kSyncPaused:
     case AvatarSyncErrorType::kUnrecoverableError:
+      if (!ChromeSigninClientFactory::GetForProfile(profile)
+               ->IsClearPrimaryAccountAllowed(
+                   IdentityManagerFactory::GetForProfile(profile)
+                       ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
+        // As opposed to the corresponding error in an unmanaged account,
+        // sign-out hasn't happened here yet. The button directs to the sign-out
+        // confirmation dialog in settings.
+        return l10n_util::GetStringUTF16(
+            IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
+      }
+      [[fallthrough]];
+    case AvatarSyncErrorType::kSyncPaused:
       // The user was signed out. Offer them to sign in again.
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNIN_BUTTON);
-    case AvatarSyncErrorType::kManagedUserUnrecoverableError:
-      // As opposed to the corresponding error in an unmanaged account
-      // (AvatarSyncErrorType::kUnrecoverableError), sign-out hasn't happened
-      // here yet. The button directs to the sign-out confirmation dialog in
-      // settings.
-      return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_SIGNOUT_BUTTON);
     case AvatarSyncErrorType::kUpgradeClientError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_UPGRADE_BUTTON);
     case AvatarSyncErrorType::kPassphraseError:
@@ -355,12 +361,18 @@ void ProfileMenuView::OnSyncErrorButtonClicked(AvatarSyncErrorType error) {
 
   // The logic below must be consistent with GetSyncInfoForAvatarErrorType().
   switch (error) {
-    case AvatarSyncErrorType::kManagedUserUnrecoverableError:
-      chrome::ShowSettingsSubPage(&browser(), chrome::kSignOutSubPage);
-      break;
     case AvatarSyncErrorType::kUnrecoverableError: {
       signin::IdentityManager* identity_manager =
           IdentityManagerFactory::GetForProfile(&profile());
+      // Managed users get directed to the sign-out confirmation dialog in
+      // settings.
+      if (!ChromeSigninClientFactory::GetForProfile(&profile())
+               ->IsClearPrimaryAccountAllowed(
+                   identity_manager->HasPrimaryAccount(
+                       signin::ConsentLevel::kSync))) {
+        chrome::ShowSettingsSubPage(&browser(), chrome::kSignOutSubPage);
+        break;
+      }
       // This error means that the Sync engine failed to initialize. Shutdown
       // Sync engine by revoking sync consent.
       identity_manager->GetPrimaryAccountMutator()->RevokeSyncConsent(
@@ -676,7 +688,7 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
     params.subtitle =
         GetAvatarSyncErrorDescription(*error, primary_account_info.email);
-    params.button_text = GetSyncErrorButtonText(error.value());
+    params.button_text = GetSyncErrorButtonText(&profile(), error.value());
     params.button_action =
         base::BindRepeating(&ProfileMenuView::OnSyncErrorButtonClicked,
                             base::Unretained(this), error.value());

@@ -297,6 +297,7 @@ SyncStatusLabels GetSyncStatusLabelsForSettings(
 }
 
 SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
+    Profile* profile,
     AvatarSyncErrorType error) {
   switch (error) {
     case AvatarSyncErrorType::kSyncPaused:
@@ -347,13 +348,17 @@ SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
               SyncStatusActionType::kConfirmSyncSettings};
 
-    case AvatarSyncErrorType::kManagedUserUnrecoverableError:
-      return {SyncStatusMessageType::kSyncError,
-              IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
-              IDS_SYNC_RELOGIN_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
-              SyncStatusActionType::kReauthenticate};
-
     case AvatarSyncErrorType::kUnrecoverableError:
+      // Managed users get different labels.
+      if (!ChromeSigninClientFactory::GetForProfile(profile)
+               ->IsClearPrimaryAccountAllowed(
+                   IdentityManagerFactory::GetForProfile(profile)
+                       ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
+        return {SyncStatusMessageType::kSyncError,
+                IDS_SYNC_STATUS_UNRECOVERABLE_ERROR_NEEDS_SIGNOUT,
+                IDS_SYNC_RELOGIN_BUTTON, IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
+                SyncStatusActionType::kReauthenticate};
+      }
       return {SyncStatusMessageType::kSyncError,
               IDS_SYNC_STATUS_UNRECOVERABLE_ERROR, IDS_SYNC_RELOGIN_BUTTON,
               IDS_PROFILES_ACCOUNT_REMOVAL_TITLE,
@@ -376,13 +381,6 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
     // RequiresClientUpgrade() is unrecoverable, but is treated separately
     // below.
     if (service->HasUnrecoverableError() && !service->RequiresClientUpgrade()) {
-      // Display different messages and buttons for managed accounts.
-      if (!ChromeSigninClientFactory::GetForProfile(profile)
-               ->IsClearPrimaryAccountAllowed(
-                   IdentityManagerFactory::GetForProfile(profile)
-                       ->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
-        return AvatarSyncErrorType::kManagedUserUnrecoverableError;
-      }
       return AvatarSyncErrorType::kUnrecoverableError;
     }
   }
@@ -435,7 +433,6 @@ std::u16string GetAvatarSyncErrorDescription(AvatarSyncErrorType error,
           IDS_SYNC_ERROR_TRUSTED_VAULT_USER_MENU_ERROR_DESCRIPTION,
           base::UTF8ToUTF16(user_email));
     case AvatarSyncErrorType::kSettingsUnconfirmedError:
-    case AvatarSyncErrorType::kManagedUserUnrecoverableError:
     case AvatarSyncErrorType::kUnrecoverableError:
       return l10n_util::GetStringUTF16(IDS_SYNC_ERROR_USER_MENU_TITLE);
   }

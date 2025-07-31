@@ -56,8 +56,6 @@ enum class SyncStatusActionType {
 
 // Sync errors that should be exposed to the user through the avatar button.
 enum AvatarSyncErrorType {
-  // Unrecoverable error for managed users.
-  kManagedUserUnrecoverableError,
   // Unrecoverable error for regular users.
   kUnrecoverableError,
   // Sync paused (e.g. persistent authentication error).
@@ -108,7 +106,8 @@ SyncStatusMessageType GetSyncStatusMessageType(Profile* profile);
 SyncStatusLabels GetSyncStatusLabelsForSettings(
     const syncer::SyncService* service);
 
-SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(AvatarSyncErrorType error);
+SyncStatusLabels GetAvatarSyncErrorLabelsForSettings(Profile* profile,
+                                                     AvatarSyncErrorType error);
 
 // Gets the error in the sync machinery (if any) that should be exposed to the
 // user through the titlebar avatar button. If std::nullopt is returned, this

@@ -1207,7 +1207,8 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
   if (error.has_value() &&
       (error.value() != AvatarSyncErrorType::kSyncPaused ||
        identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
-    status_labels = GetAvatarSyncErrorLabelsForSettings(error.value());
+    status_labels =
+        GetAvatarSyncErrorLabelsForSettings(profile_, error.value());
   } else {
     status_labels = GetSyncStatusLabelsForSettings(
         SyncServiceFactory::GetForProfile(profile_));
