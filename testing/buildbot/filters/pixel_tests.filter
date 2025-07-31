@@ -157,6 +157,7 @@ TranslateBubbleVisualTest.InvokeUi_*
 UpdateRecommendedDialogTest.*
 *WatermarkBrowserTest.*
 *WatermarkDisabledBrowserTest.*
+*WatermarkTestPageBrowserTest.*
 WebAppConfirmViewBrowserTest.*
 WebAppMenuBrowserTest.*
 WebAppUpdateReviewDialog.*

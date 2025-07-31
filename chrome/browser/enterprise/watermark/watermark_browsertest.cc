@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/watermark/settings.h"
 #include "chrome/browser/enterprise/watermark/watermark_features.h"
@@ -11,6 +12,7 @@
 #include "chrome/browser/ui/test/test_browser_ui.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/common/chrome_features.h"
+#include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/enterprise/connectors/core/connectors_prefs.h"
@@ -111,6 +113,37 @@ INSTANTIATE_TEST_SUITE_P(All,
                          WatermarkBrowserTest,
                          testing::Values(kMultilingualWatermarkMessage,
                                          kLongLinesWatermarkMessage));
+
+class WatermarkTestPageBrowserTest : public UiBrowserTest {
+ public:
+  WatermarkTestPageBrowserTest() {
+    scoped_feature_list_.InitAndEnableFeature(kEnableWatermarkTestPage);
+  }
+
+  void ShowUi(const std::string& name) override {
+    base::RunLoop().RunUntilIdle();
+  }
+
+  bool VerifyUi() override {
+    const auto* const test_info =
+        testing::UnitTest::GetInstance()->current_test_info();
+    return VerifyPixelUi(BrowserView::GetBrowserViewForBrowser(browser())
+                             ->contents_container(),
+                         test_info->test_suite_name(),
+                         test_info->name()) != ui::test::ActionResult::kFailed;
+  }
+
+  void WaitForUserDismissal() override {}
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(WatermarkTestPageBrowserTest, InvokeUi_default) {
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(
+      browser(), GURL(chrome::kChromeUIWatermarkURL)));
+  ShowAndVerifyUi();
+}
 
 class WatermarkSettingsBrowserTest : public InProcessBrowserTest,
                                      public testing::WithParamInterface<bool> {
