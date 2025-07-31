@@ -19,8 +19,8 @@ import {ContentSettingsType} from '../content_settings_types.mojom-webui.js';
 import type {ActorTaskState as ActorTaskStateMojo, FocusedTabData as FocusedTabDataMojo, GetPinCandidatesOptions as GetPinCandidatesOptionsMojo, GetTabContextOptions as TabContextOptionsMojo, OpenPanelInfo as OpenPanelInfoMojo, OpenSettingsOptions as OpenSettingsOptionsMojo, PanelOpeningData as PanelOpeningDataMojo, PanelState as PanelStateMojo, PinCandidate as PinCandidateMojo, PinCandidatesObserver, ScrollToSelector as ScrollToSelectorMojo, TabContext as TabContextMojo, TabData as TabDataMojo, ViewChangeRequest as ViewChangeRequestMojo, WebClientHandlerInterface, WebClientInterface, ZeroStateSuggestionsOptions as ZeroStateSuggestionsOptionsMojo, ZeroStateSuggestionsV2 as ZeroStateSuggestionsV2Mojo} from '../glic.mojom-webui.js';
 import {CurrentView as CurrentViewMojo, PinCandidatesObserverReceiver, SettingsPageField as SettingsPageFieldMojo, WebClientHandlerRemote, WebClientMode, WebClientReceiver} from '../glic.mojom-webui.js';
 import type {HostCapability as HostCapabilityMojo} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, ActorTaskState, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
-import {ActInFocusedTabErrorReason, CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ScrollToErrorReason} from '../glic_api/glic_api.js';
+import type {ActorTaskState, DraggableArea, GetPinCandidatesOptions, HostCapability, Journal, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, Screenshot, ScrollToParams, TabContextOptions, ViewChangedNotification, ViewChangeRequest, WebPageData, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import {CaptureScreenshotErrorReason, ClientView, CreateTaskErrorReason, DEFAULT_INNER_TEXT_BYTES_LIMIT, DEFAULT_PDF_SIZE_LIMIT, PerformActionsErrorReason, ScrollToErrorReason} from '../glic_api/glic_api.js';
 import {ObservableValue} from '../observable.js';
 import type {ObservableValueReadOnly} from '../observable.js';
 import {OneShotTimer} from '../timer.js';
@@ -28,7 +28,7 @@ import {OneShotTimer} from '../timer.js';
 import {replaceProperties} from './conversions.js';
 import type {PostMessageRequestHandler} from './post_message_transport.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender, ResponseExtras} from './post_message_transport.js';
-import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabDataPrivate, HostRequestTypes, PdfDocumentDataPrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientInitialStatePrivate} from './request_types.js';
 import {ErrorWithReasonImpl, exceptionFromTransferable, ImageAlphaType, ImageColorType, requestTypeToHistogramSuffix} from './request_types.js';
 
 export enum WebClientState {
@@ -506,34 +506,6 @@ class HostMessageHandler implements HostMessageHandlerInterface {
           (errorReason as PerformActionsErrorReason | undefined) ??
               PerformActionsErrorReason.UNKNOWN);
     }
-  }
-
-  async glicBrowserActInFocusedTab(
-      request: {actInFocusedTabParams: ActInFocusedTabParams},
-      extras: ResponseExtras):
-      Promise<{actInFocusedTabResult: ActInFocusedTabResultPrivate}> {
-    const {
-      result: {errorReason, actInFocusedTabResponse},
-    } =
-        await this.handler.actInFocusedTab(
-          byteArrayFromClient(request.actInFocusedTabParams.actionProto),
-            tabContextOptionsFromClient(
-                request.actInFocusedTabParams.tabContextOptions));
-    if (!actInFocusedTabResponse) {
-      throw new ErrorWithReasonImpl(
-          'actInFocusedTab',
-          (errorReason as ActInFocusedTabErrorReason | undefined) ??
-              ActInFocusedTabErrorReason.UNKNOWN);
-    }
-
-    const tabContextResult =
-        tabContextToClient(actInFocusedTabResponse.tabContext, extras);
-    return {
-      actInFocusedTabResult: {
-        tabContextResult: tabContextResult,
-        actionResult: actInFocusedTabResponse.actionResult,
-      },
-    };
   }
 
   glicBrowserStopActorTask(request: {taskId: number}): void {

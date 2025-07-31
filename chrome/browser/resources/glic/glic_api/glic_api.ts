@@ -199,7 +199,8 @@ export declare interface GlicBrowserHost {
   setMaximumNumberOfPinnedTabs?(numTabs: number): Promise<number>;
 
   /**
-   * @deprecated Use CreateTask and PerformActions instead.
+   * @deprecated Use CreateTask and PerformActions instead. This method
+   * is undefined in Chrome and calling it is not supported.
    *
    * Inform Chrome about an action. Chrome Takes an action based on the
    * action proto and returns new context based on the tab context options.
@@ -217,7 +218,6 @@ export declare interface GlicBrowserHost {
    *
    * @throws {ActInFocusedTabError} on failure.
    *
-   * @todo Not yet implemented. https://crbug.com/425681926
    */
   createTask?(): Promise<number>;
 
@@ -229,7 +229,6 @@ export declare interface GlicBrowserHost {
    *
    * The output corresponds to the ActionsResult proto.
    *
-   * @todo Not yet implemented. https://crbug.com/425681926
    */
   performActions?(actions: ArrayBuffer): Promise<ArrayBuffer>;
 

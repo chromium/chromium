@@ -833,17 +833,6 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
     glic_service_->PerformActions(actions_proto, std::move(callback));
   }
 
-  void ActInFocusedTab(const std::vector<uint8_t>& action_proto,
-                       glic::mojom::GetTabContextOptionsPtr options,
-                       ActInFocusedTabCallback callback) override {
-    if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
-      receiver_.ReportBadMessage(
-          "ActInFocusedTab cannot be called without GlicActor enabled.");
-      return;
-    }
-    glic_service_->ActInFocusedTab(action_proto, *options, std::move(callback));
-  }
-
   void StopActorTask(int32_t task_id) override {
     if (!base::FeatureList::IsEnabled(features::kGlicActor)) {
       receiver_.ReportBadMessage(

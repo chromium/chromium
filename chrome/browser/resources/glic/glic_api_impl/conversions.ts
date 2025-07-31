@@ -76,9 +76,6 @@ assertNever<CheckEnumCompatibility<
 assertNever<CheckEnumCompatibility<
     Omit<typeof mojom.WebClientMode, 'kUnknown'>, typeof api.WebClientMode>>();
 assertNever<CheckEnumCompatibility<
-    typeof mojom.ActInFocusedTabErrorReason,
-    typeof api.ActInFocusedTabErrorReason>>();
-assertNever<CheckEnumCompatibility<
     typeof mojom.CaptureScreenshotErrorReason,
     typeof api.CaptureScreenshotErrorReason>>();
 assertNever<CheckEnumCompatibility<

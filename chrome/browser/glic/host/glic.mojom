@@ -157,24 +157,6 @@ enum CreateTaskErrorReason {
 
 // LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:CreateTaskErrorReason)
 
-// Reason for failure while acting in a focused tab. This MUST be kept in
-// sync with the glic_api.ts enum.
-// LINT.IfChange(ActInFocusedTabErrorReason)
-[Stable, Extensible]
-enum ActInFocusedTabErrorReason {
-  [Default] kUnknown = 0,
-  // Capturing Context after acting failed.
-  kGetContextFailed = 1,
-  // The action proto is invalid.
-  kInvalidActionProto = 2,
-  // Action target is not found.
-  kTargetNotFound = 3,
-  // Failed to start a new task.
-  [MinVersion=1] kFailedToStartTask = 4,
-};
-
-// LINT.ThenChange(//tools/metrics/histograms/metadata/glic/enums.xml:ActInFocusedTabErrorReason)
-
 // The state of an actor task. This MUST be kept in sync with the glic_api.ts
 // enum.
 [Stable, Extensible]
@@ -206,11 +188,6 @@ union GetContextResult {
 union CaptureScreenshotResult {
   CaptureScreenshotErrorReason error_reason;
   Screenshot screenshot;
-};
-
-union ActInFocusedTabResult {
-  ActInFocusedTabErrorReason error_reason;
-  ActInFocusedTabResponse act_in_focused_tab_response;
 };
 
 // Information about the user profile.
@@ -559,18 +536,6 @@ interface WebClientHandler {
   // proto.
   PerformActions(array<uint8> actions_proto) =>
       result<mojo_base.mojom.ProtoWrapper, PerformActionsErrorReason>;
-
-  // TODO(crbug.com/411462297) DEPRECATED - new callers should use
-  // PerformActions.
-  //
-  // Starts an action in the currently focused tab. `action_proto` is a
-  // serialized proto of type optimization_guide::proto::BrowserAction. Returns
-  // the result of the action when it is completed along with an observation of
-  // the page, taken using the given `options`.
-  //
-  // It is an error to act with a paused task.
-  ActInFocusedTab(array<uint8> action_proto, GetTabContextOptions options)
-      => (ActInFocusedTabResult result);
 
   // Immediately stops the actor from taking any further actions associated with
   // the given id and exits acting mode. Any in flight actions are canceled and
@@ -974,17 +939,6 @@ struct TabContext {
   // Information about the annotated page content. Provided if the document is
   // a web page and annotated page content was requested.
   AnnotatedPageData? annotated_page_data;
-};
-
-struct ActInFocusedTabResponse {
-  // The context of the focused tab after the action was completed.
-  TabContext tab_context;
-  // The outcome of the action.
-  // Note that this is an enum ActionResultCode from chrome/common/actor.mojom.
-  // It would be tedious to import the actual enum here and the renderer doesn't
-  // need the type, so we just use an int here. It is expected that the client
-  // has an equivalent enum definition. See http://shortn/_gLyPxrRm6p
-  int32 action_result;
 };
 
 // Information about a web page being rendered in a tab.

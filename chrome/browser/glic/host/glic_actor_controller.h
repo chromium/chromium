@@ -31,15 +31,6 @@ class GlicActorController {
   GlicActorController& operator=(const GlicActorController&) = delete;
   ~GlicActorController();
 
-  // ActorKeyedService, the underlying framework, supports multi-tab actuation.
-  // But this class does not because it does not expose the concept of
-  // start/stop task. Instead it keeps track of any ongoing task, and implicitly
-  // creates one for Act() if one does not already exist.
-  // Invokes the actor to complete an action.
-  void Act(const optimization_guide::proto::BrowserAction& action,
-           const mojom::GetTabContextOptions& options,
-           mojom::WebClientHandler::ActInFocusedTabCallback callback);
-
   void StopTask(actor::TaskId task_id);
   void PauseTask(actor::TaskId task_id);
   void ResumeTask(
@@ -47,26 +38,10 @@ class GlicActorController {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
-  // TODO(crbug.com/418280472): This temporarily gates providing observations
-  // after action failure, to avoid confusing the client before it's updated.
-  static bool ProvideObservationOnActionFailureEnabled();
-
  private:
-  // Handles the result of the action, returning new page context if necessary.
-  void OnActionFinished(
-      actor::TaskId task_id,
-      const mojom::GetTabContextOptions& options,
-      mojom::WebClientHandler::ActInFocusedTabCallback callback,
-      actor::mojom::ActionResultCode result,
-      std::optional<size_t> index_of_failed_action) const;
-
   actor::ActorTask* GetCurrentTask() const;
 
-  base::WeakPtr<const GlicActorController> GetWeakPtr() const;
-  base::WeakPtr<GlicActorController> GetWeakPtr();
-
   raw_ptr<Profile> profile_;
-  base::WeakPtrFactory<GlicActorController> weak_ptr_factory_{this};
 };
 
 }  // namespace glic

@@ -419,27 +419,6 @@ void GlicKeyedService::PerformActions(
       base::BindOnce(PerformActionsFinished, std::move(callback)));
 }
 
-void GlicKeyedService::ActInFocusedTab(
-    const std::vector<uint8_t>& action_proto,
-    const mojom::GetTabContextOptions& options,
-    mojom::WebClientHandler::ActInFocusedTabCallback callback) {
-  CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
-
-  optimization_guide::proto::BrowserAction action;
-  if (!action.ParseFromArray(action_proto.data(), action_proto.size())) {
-    mojom::ActInFocusedTabResultPtr result =
-        mojom::ActInFocusedTabResult::NewErrorReason(
-            mojom::ActInFocusedTabErrorReason::kInvalidActionProto);
-
-    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-        FROM_HERE, base::BindOnce(std::move(callback), std::move(result)));
-    return;
-  }
-
-  CHECK(actor_controller_);
-  actor_controller_->Act(action, options, std::move(callback));
-}
-
 // TODO(crbug.com/411462297): Stop/Pause/Resume task need to be routed to go
 // through the ActorKeyedService, rather than the deprecated ActorController
 // which ignores the task_id.

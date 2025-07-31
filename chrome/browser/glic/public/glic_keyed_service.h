@@ -160,11 +160,6 @@ class GlicKeyedService : public KeyedService {
   void PerformActions(const std::vector<uint8_t>& actions_proto,
                       mojom::WebClientHandler::PerformActionsCallback callback);
 
-  void ActInFocusedTab(
-      const std::vector<uint8_t>& action_proto,
-      const mojom::GetTabContextOptions& options,
-      mojom::WebClientHandler::ActInFocusedTabCallback callback);
-
   void StopActorTask(actor::TaskId task_id);
   void PauseActorTask(actor::TaskId task_id);
   void ResumeActorTask(

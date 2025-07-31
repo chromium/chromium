@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import {type WebClientInitialState} from '../glic.mojom-webui.js';
-import type {ActInFocusedTabParams, ActInFocusedTabResult, ActorTaskState, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {ActorTaskState, AnnotatedPageData, ChromeVersion, DraggableArea, ErrorReasonTypes, ErrorWithReason, FocusedTabDataHasFocus, FocusedTabDataHasNoFocus, GetPinCandidatesOptions, HostCapability, Journal, OpenPanelInfo, OpenSettingsOptions, PageMetadata, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 
 /*
 This file defines messages sent over postMessage in-between the Glic WebUI
@@ -113,14 +113,6 @@ export declare interface HostRequestTypes {
     },
     response: {
       actionsResult: ArrayBuffer,
-    },
-  };
-  glicBrowserActInFocusedTab: {
-    request: {
-      actInFocusedTabParams: ActInFocusedTabParams,
-    },
-    response: {
-      actInFocusedTabResult: ActInFocusedTabResultPrivate,
     },
   };
   glicBrowserStopActorTask: {
@@ -483,7 +475,6 @@ type HostRequestEnumNamesType = {
     GetContextFromTab: 0,
     GetContextForActorFromTab: 0,
     SetMaximumNumberOfPinnedTabs: 0,
-    ActInFocusedTab: 0,
     StopActorTask: 0,
     PauseActorTask: 0,
     ResumeActorTask: 0,
@@ -660,11 +651,6 @@ export declare interface TabContextResultPrivate extends
   tabData: TabDataPrivate;
   pdfDocumentData?: PdfDocumentDataPrivate;
   annotatedPageData?: AnnotatedPageDataPrivate;
-}
-
-export declare interface ActInFocusedTabResultPrivate extends
-    Omit<ActInFocusedTabResult, 'tabContextResult'> {
-  tabContextResult: TabContextResultPrivate;
 }
 
 export declare interface UserProfileInfoPrivate extends

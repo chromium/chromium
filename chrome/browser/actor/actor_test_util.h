@@ -49,48 +49,41 @@ auto UiEventDispatcherCallback(
 /////////////////////////
 // Proto action makers
 
-optimization_guide::proto::BrowserAction MakeClick(
-    content::RenderFrameHost& rfh,
-    int content_node_id);
-optimization_guide::proto::BrowserAction MakeClick(
-    tabs::TabHandle tab_handle,
-    const gfx::Point& click_point);
-optimization_guide::proto::BrowserAction MakeHistoryBack(
+optimization_guide::proto::Actions MakeClick(content::RenderFrameHost& rfh,
+                                             int content_node_id);
+optimization_guide::proto::Actions MakeClick(tabs::TabHandle tab_handle,
+                                             const gfx::Point& click_point);
+optimization_guide::proto::Actions MakeHistoryBack(tabs::TabHandle tab_handle);
+optimization_guide::proto::Actions MakeHistoryForward(
     tabs::TabHandle tab_handle);
-optimization_guide::proto::BrowserAction MakeHistoryForward(
-    tabs::TabHandle tab_handle);
-optimization_guide::proto::BrowserAction MakeMouseMove(
-    content::RenderFrameHost& rfh,
-    int content_node_id);
-optimization_guide::proto::BrowserAction MakeMouseMove(
-    const gfx::Point& move_point);
-optimization_guide::proto::BrowserAction MakeNavigate(
-    tabs::TabHandle tab_handle,
-    std::string_view target_url);
-optimization_guide::proto::BrowserAction MakeCreateTab(SessionID window_id,
-                                                       bool foreground);
-optimization_guide::proto::BrowserAction MakeType(content::RenderFrameHost& rfh,
-                                                  int content_node_id,
-                                                  std::string_view text,
-                                                  bool follow_by_enter);
-optimization_guide::proto::BrowserAction MakeType(const gfx::Point& type_point,
-                                                  std::string_view text,
-                                                  bool follow_by_enter);
-optimization_guide::proto::BrowserAction MakeSelect(
-    content::RenderFrameHost& rfh,
-    int content_node_id,
-    std::string_view value);
-optimization_guide::proto::BrowserAction MakeScroll(
+optimization_guide::proto::Actions MakeMouseMove(content::RenderFrameHost& rfh,
+                                                 int content_node_id);
+optimization_guide::proto::Actions MakeMouseMove(const gfx::Point& move_point);
+optimization_guide::proto::Actions MakeNavigate(tabs::TabHandle tab_handle,
+                                                std::string_view target_url);
+optimization_guide::proto::Actions MakeCreateTab(SessionID window_id,
+                                                 bool foreground);
+optimization_guide::proto::Actions MakeType(content::RenderFrameHost& rfh,
+                                            int content_node_id,
+                                            std::string_view text,
+                                            bool follow_by_enter);
+optimization_guide::proto::Actions MakeType(const gfx::Point& type_point,
+                                            std::string_view text,
+                                            bool follow_by_enter);
+optimization_guide::proto::Actions MakeSelect(content::RenderFrameHost& rfh,
+                                              int content_node_id,
+                                              std::string_view value);
+optimization_guide::proto::Actions MakeScroll(
     content::RenderFrameHost& rfh,
     std::optional<int> content_node_id,
     float scroll_offset_x,
     float scroll_offset_y);
-optimization_guide::proto::BrowserAction MakeDragAndRelease(
+optimization_guide::proto::Actions MakeDragAndRelease(
     const gfx::Point& from_point,
     const gfx::Point& to_point);
-optimization_guide::proto::BrowserAction MakeWait();
-optimization_guide::proto::BrowserAction MakeAttemptLogin();
-optimization_guide::proto::BrowserAction MakeScriptTool(
+optimization_guide::proto::Actions MakeWait();
+optimization_guide::proto::Actions MakeAttemptLogin();
+optimization_guide::proto::Actions MakeScriptTool(
     content::RenderFrameHost& rfh,
     const std::string& name,
     const std::string& input_arguments);

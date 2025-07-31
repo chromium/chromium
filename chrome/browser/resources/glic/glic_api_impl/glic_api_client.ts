@@ -2,14 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import type {ActInFocusedTabParams, ActInFocusedTabResult, AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
+import type {AnnotatedPageData, ChromeVersion, CreateTabOptions, DraggableArea, FocusedTabData, GetPinCandidatesOptions, GlicBrowserHost, GlicBrowserHostJournal, GlicBrowserHostMetrics, GlicHostRegistry, GlicWebClient, HostCapability, Journal, Observable, ObservableValue, OpenPanelInfo, OpenSettingsOptions, PanelOpeningData, PanelState, PdfDocumentData, PinCandidate, ResizeWindowOptions, Screenshot, ScrollToParams, TabContextOptions, TabContextResult, TabData, UserProfileInfo, ViewChangedNotification, ViewChangeRequest, ZeroStateSuggestions, ZeroStateSuggestionsOptions, ZeroStateSuggestionsV2} from '../glic_api/glic_api.js';
 import {ActorTaskState} from '../glic_api/glic_api.js';
 import {ObservableValue as ObservableValueImpl, Subject} from '../observable.js';
 
 import {replaceProperties} from './conversions.js';
 import {newSenderId, PostMessageRequestReceiver, PostMessageRequestSender} from './post_message_transport.js';
 import type {ResponseExtras} from './post_message_transport.js';
-import type {ActInFocusedTabResultPrivate, AnnotatedPageDataPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
+import type {AnnotatedPageDataPrivate, FocusedTabDataPrivate, PdfDocumentDataPrivate, PinCandidatePrivate, RequestRequestType, RequestResponseType, RgbaImage, TabContextResultPrivate, TabDataPrivate, TransferableException, WebClientRequestTypes} from './request_types.js';
 import {ImageAlphaType, ImageColorType, newTransferableException} from './request_types.js';
 
 
@@ -300,7 +300,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     if (!state.enableActInFocusedTab) {
       this.createTask = undefined;
       this.performActions = undefined;
-      this.actInFocusedTab = undefined;
       this.stopActorTask = undefined;
       this.pauseActorTask = undefined;
       this.resumeActorTask = undefined;
@@ -461,14 +460,6 @@ class GlicBrowserHostImpl implements GlicBrowserHost {
     const result = await this.sender.requestWithResponse(
         'glicBrowserPerformActions', {actions});
     return result.actionsResult;
-  }
-
-  async actInFocusedTab?(actInFocusedTabParams: ActInFocusedTabParams):
-      Promise<ActInFocusedTabResult> {
-    const context = await this.sender.requestWithResponse(
-        'glicBrowserActInFocusedTab', {actInFocusedTabParams});
-    return convertActInFocusedTabResultFromPrivate(
-        context.actInFocusedTabResult);
   }
 
   stopActorTask?(taskId?: number): void {
@@ -1002,11 +993,4 @@ function convertTabContextResultFromPrivate(data: TabContextResultPrivate):
   const annotatedPageData = data.annotatedPageData &&
       convertAnnotatedPageDataFromPrivate(data.annotatedPageData);
   return replaceProperties(data, {tabData, pdfDocumentData, annotatedPageData});
-}
-
-function convertActInFocusedTabResultFromPrivate(
-    data: ActInFocusedTabResultPrivate): ActInFocusedTabResult {
-  const tabContextResult =
-      convertTabContextResultFromPrivate(data.tabContextResult);
-  return replaceProperties(data, {tabContextResult});
 }
