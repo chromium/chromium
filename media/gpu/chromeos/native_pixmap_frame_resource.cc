@@ -5,7 +5,6 @@
 #include "media/gpu/chromeos/native_pixmap_frame_resource.h"
 
 #include <atomic>
-#include <limits>
 #include <utility>
 
 #include "base/feature_list.h"
@@ -26,13 +25,6 @@
 namespace media {
 
 namespace {
-gfx::GenericSharedMemoryId GetNextSharedMemoryId() {
-  static base::NoDestructor<base::Lock> id_lock;
-  static int next_id = 0;
-  base::AutoLock lock(*id_lock);
-  CHECK_LT(next_id, std::numeric_limits<int>::max());
-  return gfx::GenericSharedMemoryId(next_id++);
-}
 
 // IsValidSize() performs size validity checks similar to those in
 // VideoFrame::IsValidConfigInternal().
@@ -146,8 +138,7 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
   // STORAGE_GPU_MEMORY_BUFFER VideoFrame.
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout, visible_rect,
-      natural_size, timestamp, *buffer_format, GetNextSharedMemoryId(),
-      base::UnguessableToken::Create(),
+      natural_size, timestamp, *buffer_format, base::UnguessableToken::Create(),
       /*buffer_usage=*/std::nullopt, std::move(handle));
 }
 
@@ -205,8 +196,8 @@ scoped_refptr<NativePixmapFrameResource> NativePixmapFrameResource::Create(
 
   return base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), *layout, visible_rect,
-      natural_size, timestamp, GetNextSharedMemoryId(),
-      base::UnguessableToken::Create(), buffer_usage, std::move(pixmap));
+      natural_size, timestamp, base::UnguessableToken::Create(), buffer_usage,
+      std::move(pixmap));
 }
 
 NativePixmapFrameResource::NativePixmapFrameResource(
@@ -216,7 +207,6 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
     gfx::BufferFormat buffer_format,
-    gfx::GenericSharedMemoryId id,
     const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     gfx::NativePixmapHandle handle)
@@ -226,7 +216,6 @@ NativePixmapFrameResource::NativePixmapFrameResource(
           visible_rect,
           natural_size,
           timestamp,
-          id,
           tracking_token,
           buffer_usage,
           base::MakeRefCounted<gfx::NativePixmapDmaBuf>(layout.coded_size(),
@@ -239,12 +228,10 @@ NativePixmapFrameResource::NativePixmapFrameResource(
     const gfx::Rect& visible_rect,
     const gfx::Size& natural_size,
     base::TimeDelta timestamp,
-    gfx::GenericSharedMemoryId id,
     const base::UnguessableToken& tracking_token,
     std::optional<gfx::BufferUsage> buffer_usage,
     scoped_refptr<const gfx::NativePixmapDmaBuf> pixmap)
     : pixmap_(std::move(pixmap)),
-      id_(id),
       buffer_usage_(buffer_usage),
       layout_(layout),
       visible_rect_(visible_rect),
@@ -431,7 +418,7 @@ scoped_refptr<FrameResource> NativePixmapFrameResource::CreateWrappingFrame(
   // constructor.
   auto wrapping_frame = base::MakeRefCounted<NativePixmapFrameResource>(
       base::PassKey<NativePixmapFrameResource>(), layout(), visible_rect,
-      natural_size, timestamp(), id_, tracking_token(), buffer_usage_, pixmap_);
+      natural_size, timestamp(), tracking_token(), buffer_usage_, pixmap_);
 
   // All other metadata is copied to the "wrapping" frame.
   wrapping_frame->metadata().MergeMetadataFrom(metadata());
