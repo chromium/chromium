@@ -24,6 +24,7 @@
 #import "ios/chrome/test/earl_grey/chrome_test_case.h"
 #import "ios/chrome/test/earl_grey/chrome_xcui_actions.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/chrome/test/scoped_eg_traits_overrider.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
@@ -1150,6 +1151,10 @@ void TapTabGridEditButton() {
 // Tests closing all tabs and groups in grid, and that the closing is reversible
 // when pressing the undo button.
 - (void)testCloseAllAndUndo {
+  // Disable the synchronization, otherwise the test waits until the animation
+  // that the snackbar appears and disappears is finished.
+  ScopedSynchronizationDisabler disabler;
+
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1187,6 +1192,7 @@ void TapTabGridEditButton() {
                                           1)] assertWithMatcher:grey_nil()];
 
   // Check that the snackbar is displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupSnackBar(1)];
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 
@@ -1664,6 +1670,10 @@ void TapTabGridEditButton() {
 
 // Tests closing a group in grid using the selection mode.
 - (void)testCloseFromSelection {
+  // Disable the synchronization, otherwise the test waits until the animation
+  // that the snackbar appears and disappears is finished.
+  ScopedSynchronizationDisabler disabler;
+
   // Create a tab cell with `Tab 1` as its title.
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab1Title)];
   [ChromeEarlGreyUI openTabGrid];
@@ -1697,6 +1707,7 @@ void TapTabGridEditButton() {
   [ChromeEarlGrey waitForMainTabCount:0 inWindowWithNumber:0];
 
   // Check that the snackbar is displayed.
+  [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGroupSnackBar(1)];
   [[EarlGrey selectElementWithMatcher:TabGroupSnackBar(1)]
       assertWithMatcher:grey_sufficientlyVisible()];
 }
