@@ -743,6 +743,7 @@
     "fuchsia-x64-perf-cast-receiver-rel": "try/fuchsia-x64-perf-cast-receiver-rel/gn-args.json"
   },
   "tryserver.chromium.fuzz": {
+    "chromeos-x64-libfuzzer-asan-rel-tests": "try/chromeos-x64-libfuzzer-asan-rel-tests/gn-args.json",
     "linux-asan-dbg": "try/linux-asan-dbg/gn-args.json",
     "linux-asan-media-rel": "try/linux-asan-media-rel/gn-args.json",
     "linux-asan-media-v8-arm-rel": "try/linux-asan-media-v8-arm-rel/gn-args.json",
@@ -760,11 +761,18 @@
     "linux-tsan-rel": "try/linux-tsan-rel/gn-args.json",
     "linux-ubsan-rel": "try/linux-ubsan-rel/gn-args.json",
     "linux-ubsan-vptr-rel": "try/linux-ubsan-vptr-rel/gn-args.json",
+    "linux-x64-libfuzzer-asan-dbg-tests": "try/linux-x64-libfuzzer-asan-dbg-tests/gn-args.json",
+    "linux-x64-libfuzzer-asan-rel-tests": "try/linux-x64-libfuzzer-asan-rel-tests/gn-args.json",
+    "linux-x64-libfuzzer-msan-rel-tests": "try/linux-x64-libfuzzer-msan-rel-tests/gn-args.json",
+    "linux-x64-libfuzzer-ubsan-rel-tests": "try/linux-x64-libfuzzer-ubsan-rel-tests/gn-args.json",
+    "linux-x86-libfuzzer-asan-rel-tests": "try/linux-x86-libfuzzer-asan-rel-tests/gn-args.json",
     "mac-arm64-asan-rel": "try/mac-arm64-asan-rel/gn-args.json",
+    "mac-arm64-libfuzzer-asan-rel-tests": "try/mac-arm64-libfuzzer-asan-rel-tests/gn-args.json",
     "mac-asan-media-rel": "try/mac-asan-media-rel/gn-args.json",
     "mac-asan-rel": "try/mac-asan-rel/gn-args.json",
     "win-asan-media-rel": "try/win-asan-media-rel/gn-args.json",
-    "win-asan-rel": "try/win-asan-rel/gn-args.json"
+    "win-asan-rel": "try/win-asan-rel/gn-args.json",
+    "win-x64-libfuzzer-asan-rel-tests": "try/win-x64-libfuzzer-asan-rel-tests/gn-args.json"
   },
   "tryserver.chromium.linux": {
     "chromeos-js-code-coverage": "try/chromeos-js-code-coverage/gn-args.json",

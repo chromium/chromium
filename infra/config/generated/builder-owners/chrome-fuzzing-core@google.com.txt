@@ -22,7 +22,15 @@ ci/linux-x86-libfuzzer-asan-rel-tests
 ci/mac-arm64-libfuzzer-asan-rel-tests
 ci/win-x64-libfuzzer-asan-rel-tests
 try/chromeos-libfuzzer-asan-rel
+try/chromeos-x64-libfuzzer-asan-rel-tests
 try/linux-centipede-high-end-asan-dcheck
 try/linux-libfuzzer-high-end-asan-dbg
 try/linux-libfuzzer-high-end-asan-rel
+try/linux-x64-libfuzzer-asan-dbg-tests
+try/linux-x64-libfuzzer-asan-rel-tests
+try/linux-x64-libfuzzer-msan-rel-tests
+try/linux-x64-libfuzzer-ubsan-rel-tests
+try/linux-x86-libfuzzer-asan-rel-tests
+try/mac-arm64-libfuzzer-asan-rel-tests
 try/mac-libfuzzer-asan-rel
+try/win-x64-libfuzzer-asan-rel-tests

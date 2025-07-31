@@ -1,0 +1,12 @@
+{
+  "linux-x64-libfuzzer-ubsan-rel-tests": {
+    "gtest_tests": [
+      {
+        "name": "fuzzing_unittests",
+        "swarming": {},
+        "test": "fuzzing_unittests",
+        "test_id_prefix": "ninja://testing/libfuzzer/tests:fuzzing_unittests/"
+      }
+    ]
+  }
+}

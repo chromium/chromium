@@ -34,6 +34,15 @@ def _builder(mirror_of = None, **kwargs):
         **kwargs
     )
 
+def _mirror_builder(name = None, **kwargs):
+    """Defines a builder that mirrors the CI builder of the same name."""
+    _builder(
+        name = name,
+        mirror_of = "ci/" + name,
+        contact_team_email = "chrome-fuzzing-core@google.com",
+        **kwargs
+    )
+
 _builder(
     name = "linux-asan-dbg",
     mirror_of = "ci/ASAN Debug",
@@ -178,4 +187,30 @@ try_.builder(
         ],
     ),
     contact_team_email = "chrome-fuzzing-core@google.com",
+)
+
+# Libfuzzer test bots.
+
+_mirror_builder(name = "chromeos-x64-libfuzzer-asan-rel-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-asan-dbg-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-asan-rel-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-msan-rel-tests")
+
+_mirror_builder(name = "linux-x64-libfuzzer-ubsan-rel-tests")
+
+_mirror_builder(name = "linux-x86-libfuzzer-asan-rel-tests")
+
+_mirror_builder(
+    name = "mac-arm64-libfuzzer-asan-rel-tests",
+    cores = None,
+    os = os.MAC_DEFAULT,
+    cpu = cpu.ARM64,
+)
+
+_mirror_builder(
+    name = "win-x64-libfuzzer-asan-rel-tests",
+    os = os.WINDOWS_DEFAULT,
 )
