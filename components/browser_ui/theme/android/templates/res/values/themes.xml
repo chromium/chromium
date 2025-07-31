@@ -137,6 +137,12 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal</item>
         <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical</item>
 
+        <!-- Location bar action button dimensions(e.g. bookmark, downloads). -->
+        <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width</item>
+        <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height</item>
+        <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal</item>
+        <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical</item>
+
         <!-- Close button dimensions. -->
         <item name="closeButtonWidth">@dimen/close_button_width</item>
         <item name="closeButtonHeight">@dimen/close_button_height</item>
@@ -289,5 +295,9 @@ Note: This is a jinja2 template, processed at build time into the final resource
         <item name="toolbarButtonHeight">@dimen/toolbar_button_height_desktop</item>
         <item name="toolbarButtonMarginHorizontal">@dimen/toolbar_button_margin_horizontal_desktop</item>
         <item name="toolbarButtonMarginVertical">@dimen/toolbar_button_margin_vertical_desktop</item>
+        <item name="locationBarActionButtonWidth">@dimen/location_bar_action_icon_width_desktop</item>
+        <item name="locationBarActionButtonHeight">@dimen/location_bar_action_icon_height_desktop</item>
+        <item name="locationBarActionButtonMarginHorizontal">@dimen/location_bar_action_icon_margin_horizontal_desktop</item>
+        <item name="locationBarActionButtonMarginVertical">@dimen/location_bar_action_icon_margin_vertical_desktop</item>
     </style>
 </resources>
