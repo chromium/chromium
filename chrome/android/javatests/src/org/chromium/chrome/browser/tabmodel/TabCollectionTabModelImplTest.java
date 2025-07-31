@@ -1545,6 +1545,95 @@ public class TabCollectionTabModelImplTest {
 
     @Test
     @MediumTest
+    public void testGetLazyAllTabGroupIds() {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        Tab tab4 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4));
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group 1 with tab0, tab1.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+                    Token groupId1 = tab0.getTabGroupId();
+                    assertNotNull(groupId1);
+
+                    // Create group 2 with tab2, tab3.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3), tab2, /* notify= */ false);
+                    Token groupId2 = tab2.getTabGroupId();
+                    assertNotNull(groupId2);
+
+                    // Case 1: No exclusions, no pending closures. (Fast path)
+                    Set<Token> allGroupIds =
+                            mCollectionModel
+                                    .getLazyAllTabGroupIds(
+                                            Collections.emptyList(),
+                                            /* includePendingClosures= */ false)
+                                    .get();
+                    assertEquals(2, allGroupIds.size());
+                    assertTrue(allGroupIds.contains(groupId1));
+                    assertTrue(allGroupIds.contains(groupId2));
+
+                    // Case 2: No exclusions, with pending closures. (Slow path, but same result)
+                    allGroupIds =
+                            mCollectionModel
+                                    .getLazyAllTabGroupIds(
+                                            Collections.emptyList(),
+                                            /* includePendingClosures= */ true)
+                                    .get();
+                    assertEquals(2, allGroupIds.size());
+                    assertTrue(allGroupIds.contains(groupId1));
+                    assertTrue(allGroupIds.contains(groupId2));
+
+                    // Case 3: Exclude one tab from a group.
+                    Set<Token> groupIdsWithExclusion =
+                            mCollectionModel
+                                    .getLazyAllTabGroupIds(
+                                            List.of(tab0), /* includePendingClosures= */ false)
+                                    .get();
+                    assertEquals(2, groupIdsWithExclusion.size());
+                    assertTrue(groupIdsWithExclusion.contains(groupId1));
+                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+
+                    // Case 4: Exclude all tabs from a group.
+                    groupIdsWithExclusion =
+                            mCollectionModel
+                                    .getLazyAllTabGroupIds(
+                                            List.of(tab0, tab1),
+                                            /* includePendingClosures= */ false)
+                                    .get();
+                    assertEquals(1, groupIdsWithExclusion.size());
+                    assertFalse(groupIdsWithExclusion.contains(groupId1));
+                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+
+                    // Case 5: Exclude all tabs from a group, with pending closures.
+                    groupIdsWithExclusion =
+                            mCollectionModel
+                                    .getLazyAllTabGroupIds(
+                                            List.of(tab0, tab1), /* includePendingClosures= */ true)
+                                    .get();
+                    assertEquals(1, groupIdsWithExclusion.size());
+                    assertFalse(groupIdsWithExclusion.contains(groupId1));
+                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+
+                    // Case 6: Exclude an ungrouped tab.
+                    groupIdsWithExclusion =
+                            mCollectionModel
+                                    .getLazyAllTabGroupIds(
+                                            List.of(tab4), /* includePendingClosures= */ false)
+                                    .get();
+                    assertEquals(2, groupIdsWithExclusion.size());
+                    assertTrue(groupIdsWithExclusion.contains(groupId1));
+                    assertTrue(groupIdsWithExclusion.contains(groupId2));
+                });
+    }
+
+    @Test
+    @MediumTest
     public void testMergeListOfTabsToGroup_CreateNewGroup() throws Exception {
         Tab tab0 = getTabAt(0);
         Tab tab1 = createTab();

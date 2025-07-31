@@ -21,6 +21,7 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.supplier.LazyOneshotSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.flags.ActivityType;
@@ -980,8 +981,31 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
     @Override
     public LazyOneshotSupplier<Set<Token>> getLazyAllTabGroupIds(
             List<Tab> tabsToExclude, boolean includePendingClosures) {
-        // TODO(crbug.com/429145597): Implement this method using a filter on getAllTabGroupIds().
-        return LazyOneshotSupplier.fromValue(Collections.emptySet());
+        assertOnUiThread();
+        if (mNativeTabCollectionTabModelImplPtr == 0) {
+            return LazyOneshotSupplier.fromValue(Collections.emptySet());
+        }
+
+        if (!includePendingClosures && tabsToExclude.isEmpty()) {
+            return LazyOneshotSupplier.fromSupplier(() -> getAllTabGroupIds());
+        }
+
+        // TODO(crbug.com/428692223): A dedicated JNI method for the !includePendingClosures case
+        // would likely perform better as the tabs could be iterated over only a single time.
+        Supplier<Set<Token>> supplier =
+                () -> {
+                    Set<Token> tabGroupIds = new HashSet<>();
+                    TabList tabList = includePendingClosures ? getComprehensiveModel() : this;
+                    for (Tab tab : tabList) {
+                        if (tabsToExclude.contains(tab)) continue;
+                        Token tabGroupId = tab.getTabGroupId();
+                        if (tabGroupId != null) {
+                            tabGroupIds.add(tabGroupId);
+                        }
+                    }
+                    return tabGroupIds;
+                };
+        return LazyOneshotSupplier.fromSupplier(supplier);
     }
 
     @Override
