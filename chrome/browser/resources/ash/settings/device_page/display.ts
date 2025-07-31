@@ -667,8 +667,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
       const id = 'displayResolutionMenuItem';
       const refreshRate = Math.round(mode.refreshRate * 100) / 100;
       const resolution = this.i18n(
-          id, mode.width.toString(), mode.height.toString(),
-          refreshRate.toString());
+          id, mode.widthInNativePixels.toString(),
+          mode.heightInNativePixels.toString(), refreshRate.toString());
 
       optionList.push({
         name: resolution,
@@ -689,24 +689,30 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     const modes = new Map();
     for (let i = 0; i < selectedDisplay.modes.length; ++i) {
       const mode = selectedDisplay.modes[i];
-      if (!modes.has(mode.width)) {
-        modes.set(mode.width, new Map());
+      if (!modes.has(mode.widthInNativePixels)) {
+        modes.set(mode.widthInNativePixels, new Map());
       }
 
-      if (!modes.get(mode.width).has(mode.height)) {
-        modes.get(mode.width).set(mode.height, new Map());
+      if (!modes.get(mode.widthInNativePixels).has(mode.heightInNativePixels)) {
+        modes.get(mode.widthInNativePixels)
+            .set(mode.heightInNativePixels, new Map());
       }
 
       // Prefer the first native mode we find, for consistency.
-      if (modes.get(mode.width).get(mode.height).has(mode.refreshRate)) {
-        const existingModeIndex =
-            modes.get(mode.width).get(mode.height).get(mode.refreshRate);
+      if (modes.get(mode.widthInNativePixels)
+              .get(mode.heightInNativePixels)
+              .has(mode.refreshRate)) {
+        const existingModeIndex = modes.get(mode.widthInNativePixels)
+                                      .get(mode.heightInNativePixels)
+                                      .get(mode.refreshRate);
         const existingMode = selectedDisplay.modes[existingModeIndex];
         if (existingMode.isNative || !mode.isNative) {
           continue;
         }
       }
-      modes.get(mode.width).get(mode.height).set(mode.refreshRate, i);
+      modes.get(mode.widthInNativePixels)
+          .get(mode.heightInNativePixels)
+          .set(mode.refreshRate, i);
     }
     return modes;
   }
@@ -764,8 +770,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     // Construct mode->parentMode map so we can get parent modes later.
     for (let i = 0; i < selectedDisplay.modes.length; i++) {
       const mode = selectedDisplay.modes[i];
-      const parentModeIndex =
-          this.getParentModeIndex_(modes.get(mode.width)!.get(mode.height)!);
+      const parentModeIndex = this.getParentModeIndex_(
+          modes.get(mode.widthInNativePixels)!.get(mode.heightInNativePixels)!);
       this.modeToParentModeMap_.set(i, parentModeIndex);
     }
     assert(this.modeToParentModeMap_.size === selectedDisplay.modes.length);
@@ -1159,8 +1165,8 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     }
     const mode =
         castExists(this.selectedDisplay.modes[this.selectedModePref_.value]);
-    const widthStr = mode.width.toString();
-    const heightStr = mode.height.toString();
+    const widthStr = mode.widthInNativePixels.toString();
+    const heightStr = mode.heightInNativePixels.toString();
     if (this.isBestMode_(this.selectedDisplay, mode)) {
       return this.i18n('displayResolutionTextBest', widthStr, heightStr);
     } else if (mode.isNative) {
@@ -1417,8 +1423,9 @@ export class SettingsDisplayElement extends SettingsDisplayElementBase {
     const currentMode =
         this.selectedDisplay.modes[this.currentSelectedModeIndex_];
     const newMode = this.selectedDisplay.modes[this.selectedModePref_.value];
-    const displaySettingsType = (currentMode.height === newMode.height &&
-                                 currentMode.width === newMode.width) ?
+    const displaySettingsType =
+        (currentMode.heightInNativePixels === newMode.heightInNativePixels &&
+         currentMode.widthInNativePixels === newMode.widthInNativePixels) ?
         DisplaySettingsType.kRefreshRate :
         DisplaySettingsType.kResolution;
     this.displaySettingsProvider.recordChangingDisplaySettings(
