@@ -8,11 +8,16 @@
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller.h"
 
 @class PasswordImportItem;
+@protocol SafariDataImportImportStageTransitionHandler;
+@protocol SafariDataImportPasswordConflictMutator;
 
 /// View controller listing password conflicts introduced by Safari data import
 /// and allowing the user to resolve them.
 @interface SafariDataImportPasswordConflictResolutionViewController
     : ChromeTableViewController
+
+/// Mutator object to handle conflict resolution decision.
+@property(nonatomic, weak) id<SafariDataImportPasswordConflictMutator> mutator;
 
 - (instancetype)initWithPasswordConflicts:
     (NSArray<PasswordImportItem*>*)passwords NS_DESIGNATED_INITIALIZER;

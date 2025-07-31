@@ -69,7 +69,7 @@
 }
 
 - (void)importItems {
-  _importer->CompleteImport(/*selected_password_ids=*/std::vector<int>());
+  [self continueToImportPasswords:[NSArray array]];
 }
 
 - (NSArray<PasswordImportItem*>*)conflictingPasswords {
@@ -86,6 +86,17 @@
   _savedPasswordsPresenter.reset();
   _importClient.reset();
   _disconnected = YES;
+}
+
+#pragma mark - SafariDataImportPasswordConflictMutator
+
+- (void)continueToImportPasswords:(NSArray<NSNumber*>*)passwordIdentifiers {
+  std::vector<int> selected_password_ids;
+  for (NSNumber* identifier in passwordIdentifiers) {
+    selected_password_ids.push_back([identifier intValue]);
+  }
+  [self.importStageTransitionHandler transitionToNextImportStage];
+  _importer->CompleteImport(selected_password_ids);
 }
 
 #pragma mark - UIDocumentPickerDelegate

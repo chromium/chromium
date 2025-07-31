@@ -11,6 +11,7 @@ source_set("ui") {
     "safari_data_import_import_stage_transition_handler.h",
     "safari_data_import_import_view_controller.h",
     "safari_data_import_import_view_controller.mm",
+    "safari_data_import_password_conflict_mutator.h",
     "safari_data_import_password_conflict_resolution_view_controller.h",
     "safari_data_import_password_conflict_resolution_view_controller.mm",
     "safari_data_item_table_view.h",

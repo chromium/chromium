@@ -248,16 +248,18 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
       [self.mediator conflictingPasswords];
   CHECK(passwordConflicts);
   if (passwordConflicts.count == 0) {
-    [self transitionToNextImportStage];
     [self.mediator importItems];
     return;
   }
   /// Wraps the password conflict view in a navigation controller to display
   /// navigation bar and toolbar.
-  UINavigationController* wrapper = [[UINavigationController alloc]
-      initWithRootViewController:
+  SafariDataImportPasswordConflictResolutionViewController*
+      conflictResolutionViewController =
           [[SafariDataImportPasswordConflictResolutionViewController alloc]
-              initWithPasswordConflicts:passwordConflicts]];
+              initWithPasswordConflicts:passwordConflicts];
+  conflictResolutionViewController.mutator = self.mediator;
+  UINavigationController* wrapper = [[UINavigationController alloc]
+      initWithRootViewController:conflictResolutionViewController];
   wrapper.toolbarHidden = NO;
   [self presentViewController:wrapper];
 }

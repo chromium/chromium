@@ -10,6 +10,7 @@
 #import <memory>
 
 #import "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
+#import "ios/chrome/browser/safari_data_import/ui/safari_data_import_password_conflict_mutator.h"
 
 namespace autofill {
 class PaymentsDataManager;
@@ -27,7 +28,9 @@ class ReadingListModel;
 
 /// Mediator for the safari data import screen. Handles stages of importing a
 /// .zip file generated from Safari data to Chrome.
-@interface SafariDataImportImportMediator : NSObject <UIDocumentPickerDelegate>
+@interface SafariDataImportImportMediator
+    : NSObject <SafariDataImportPasswordConflictMutator,
+                UIDocumentPickerDelegate>
 
 /// Transition handler for import stage. This needs to be set before selecting a
 /// file.
@@ -54,8 +57,8 @@ class ReadingListModel;
 /// Resets the mediator to the state before any file is selected or processed.
 - (void)reset;
 
-/// Imports the items that are ready for import. Should only be invoked when
-/// items are ready.
+/// Imports the items that are ready for import, and increments the import stage
+/// . Should only be invoked when items are ready.
 - (void)importItems;
 
 /// List of password conflicts with the information retrieved from the source
