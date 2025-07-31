@@ -1042,6 +1042,7 @@ void NavigationURLLoaderImpl::LoaderHolder::FollowRedirect() {
       std::move(modified_headers_on_redirect_->removed_headers_),
       std::move(modified_headers_on_redirect_->modified_headers_),
       std::move(modified_headers_on_redirect_->modified_cors_exempt_headers_));
+  modified_headers_on_redirect_.reset();
 }
 
 bool NavigationURLLoaderImpl::LoaderHolder::receiver_is_bound_for_check()
