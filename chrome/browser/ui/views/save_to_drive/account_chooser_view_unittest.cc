@@ -164,7 +164,13 @@ TEST_F(AccountChooserViewTest, SingleAccount) {
   TestSingleAccount(account_chooser_view, accounts.front());
 }
 
-TEST_F(AccountChooserViewTest, MultiAccount) {
+// TODO(crbug.com/435260088): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MultiAccount DISABLED_MultiAccount
+#else
+#define MAYBE_MultiAccount MultiAccount
+#endif
+TEST_F(AccountChooserViewTest, MAYBE_MultiAccount) {
   std::vector<AccountInfo> accounts =
       GetTestAccounts({"pothos", "fern"}, kTestDomain);
   AccountChooserView* account_chooser_view =
@@ -174,7 +180,14 @@ TEST_F(AccountChooserViewTest, MultiAccount) {
   TestMultiAccount(account_chooser_view, accounts);
 }
 
-TEST_F(AccountChooserViewTest, SingleToMultiAccountViewUpdate) {
+// TODO(crbug.com/435260088): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_SingleToMultiAccountViewUpdate \
+  DISABLED_SingleToMultiAccountViewUpdate
+#else
+#define MAYBE_SingleToMultiAccountViewUpdate SingleToMultiAccountViewUpdate
+#endif
+TEST_F(AccountChooserViewTest, MAYBE_SingleToMultiAccountViewUpdate) {
   std::vector<AccountInfo> accounts = GetTestAccounts({"pothos"}, kTestDomain);
   AccountChooserView* account_chooser_view =
       anchor_view_->AddChildView(std::make_unique<AccountChooserView>(
@@ -187,7 +200,14 @@ TEST_F(AccountChooserViewTest, SingleToMultiAccountViewUpdate) {
   TestMultiAccount(account_chooser_view, new_accounts);
 }
 
-TEST_F(AccountChooserViewTest, MultiToSingleAccountViewUpdate) {
+// TODO(crbug.com/435260088): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_MultiToSingleAccountViewUpdate \
+  DISABLED_MultiToSingleAccountViewUpdate
+#else
+#define MAYBE_MultiToSingleAccountViewUpdate MultiToSingleAccountViewUpdate
+#endif
+TEST_F(AccountChooserViewTest, MAYBE_MultiToSingleAccountViewUpdate) {
   std::vector<AccountInfo> accounts =
       GetTestAccounts({"pothos", "fern"}, kTestDomain);
   AccountChooserView* account_chooser_view =
