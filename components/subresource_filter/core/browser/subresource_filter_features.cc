@@ -13,8 +13,8 @@
 #include <utility>
 
 #include "base/containers/contains.h"
-#include "base/lazy_instance.h"
 #include "base/metrics/field_trial_params.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -230,11 +230,15 @@ std::string_view GetLexicographicallyGreatestRulesetFlavor(
 
 // Globals --------------------------------------------------------------------
 
-base::LazyInstance<base::Lock>::Leaky g_active_configurations_lock =
-    LAZY_INSTANCE_INITIALIZER;
+base::Lock& GetActiveConfigurationsLock() {
+  static base::NoDestructor<base::Lock> lock;
+  return *lock;
+}
 
-base::LazyInstance<scoped_refptr<ConfigurationList>>::Leaky
-    g_active_configurations = LAZY_INSTANCE_INITIALIZER;
+scoped_refptr<ConfigurationList>& GetActiveConfigurations() {
+  static base::NoDestructor<scoped_refptr<ConfigurationList>> configurations;
+  return *configurations;
+}
 
 }  // namespace
 
@@ -412,12 +416,12 @@ ConfigurationList::ConfigurationList(std::vector<Configuration> configs)
 ConfigurationList::~ConfigurationList() = default;
 
 scoped_refptr<ConfigurationList> GetEnabledConfigurations() {
-  base::AutoLock lock(g_active_configurations_lock.Get());
-  if (!g_active_configurations.Get()) {
-    g_active_configurations.Get() =
+  base::AutoLock lock(GetActiveConfigurationsLock());
+  if (!GetActiveConfigurations()) {
+    GetActiveConfigurations() =
         base::MakeRefCounted<ConfigurationList>(ParseEnabledConfigurations());
   }
-  return g_active_configurations.Get();
+  return GetActiveConfigurations();
 }
 
 bool HasEnabledConfiguration(const Configuration& config) {
@@ -429,9 +433,9 @@ namespace testing {
 
 scoped_refptr<ConfigurationList> GetAndSetActivateConfigurations(
     scoped_refptr<ConfigurationList> new_configs) {
-  base::AutoLock lock(g_active_configurations_lock.Get());
-  auto old_configs = std::move(g_active_configurations.Get());
-  g_active_configurations.Get() = std::move(new_configs);
+  base::AutoLock lock(GetActiveConfigurationsLock());
+  auto old_configs = std::move(GetActiveConfigurations());
+  GetActiveConfigurations() = std::move(new_configs);
   return old_configs;
 }
 

@@ -7,18 +7,14 @@
 #include <string>
 #include <vector>
 
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_samples.h"
 #include "base/metrics/statistics_recorder.h"
+#include "base/no_destructor.h"
 #include "base/thread_annotations.h"
 #include "components/metrics/histogram_encoder.h"
 
 namespace metrics {
-
-// TODO(rtenneti): move g_histogram_manager into java code.
-static base::LazyInstance<HistogramManager>::Leaky g_histogram_manager =
-    LAZY_INSTANCE_INITIALIZER;
 
 HistogramManager::HistogramManager() : histogram_snapshot_manager_(this) {}
 
@@ -26,7 +22,8 @@ HistogramManager::~HistogramManager() = default;
 
 // static
 HistogramManager* HistogramManager::GetInstance() {
-  return g_histogram_manager.Pointer();
+  static base::NoDestructor<HistogramManager> histogram_manager;
+  return histogram_manager.get();
 }
 
 void HistogramManager::RecordDelta(const base::HistogramBase& histogram,

@@ -8,9 +8,9 @@
 
 #include "base/check.h"
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
 #include "base/tracing/protos/chrome_track_event.pbzero.h"
@@ -116,9 +116,6 @@ class UnboundWidgetInputHandler : public blink::mojom::WidgetInputHandler {
     NOTREACHED() << "Input request on unbound interface";
   }
 };
-
-base::LazyInstance<UnboundWidgetInputHandler>::Leaky g_unbound_input_handler =
-    LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -239,7 +236,8 @@ blink::mojom::WidgetInputHandler* RenderInputRouter::GetWidgetInputHandler() {
   // the main frame is remote. This is because of ordering issues during
   // widget shutdown, so we present an UnboundWidgetInputHandler had
   // DLOGS the message calls.
-  return g_unbound_input_handler.Pointer();
+  static base::NoDestructor<UnboundWidgetInputHandler> unbound_input_handler;
+  return unbound_input_handler.get();
 }
 
 void RenderInputRouter::OnImeCompositionRangeChanged(

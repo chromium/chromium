@@ -13,10 +13,10 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/clock.h"
@@ -522,8 +522,10 @@ void SSLErrorHandlerDelegateImpl::OnBlockingPageReady(
 
 }  // namespace
 
-static base::LazyInstance<ConfigSingleton>::Leaky g_config =
-    LAZY_INSTANCE_INITIALIZER;
+ConfigSingleton& GetConfig() {
+  static base::NoDestructor<ConfigSingleton> config;
+  return *config;
+}
 
 void SSLErrorHandler::HandleSSLError(
     content::WebContents* web_contents,
@@ -550,7 +552,7 @@ void SSLErrorHandler::HandleSSLError(
               web_contents, ssl_info, web_contents->GetBrowserContext(),
               cert_error, options_mask, request_url, captive_portal_service,
               std::move(blocking_page_factory),
-              g_config.Pointer()->on_blocking_page_shown_callback(),
+              GetConfig().on_blocking_page_shown_callback(),
               std::move(blocking_page_ready_callback))),
       web_contents, cert_error, ssl_info, network_time_tracker,
       captive_portal_service, request_url);
@@ -560,30 +562,30 @@ void SSLErrorHandler::HandleSSLError(
 
 // static
 void SSLErrorHandler::ResetConfigForTesting() {
-  g_config.Pointer()->ResetForTesting();
+  GetConfig().ResetForTesting();
 }
 
 // static
 void SSLErrorHandler::SetInterstitialDelayForTesting(
     const base::TimeDelta& delay) {
-  g_config.Pointer()->SetInterstitialDelayForTesting(delay);
+  GetConfig().SetInterstitialDelayForTesting(delay);
 }
 
 // static
 void SSLErrorHandler::SetInterstitialTimerStartedCallbackForTesting(
     TimerStartedCallback* callback) {
-  g_config.Pointer()->SetTimerStartedCallbackForTesting(callback);
+  GetConfig().SetTimerStartedCallbackForTesting(callback);
 }
 
 // static
 void SSLErrorHandler::SetClockForTesting(base::Clock* testing_clock) {
-  g_config.Pointer()->SetClockForTesting(testing_clock);
+  GetConfig().SetClockForTesting(testing_clock);
 }
 
 // static
 void SSLErrorHandler::SetReportNetworkConnectivityCallbackForTesting(
     base::OnceClosure closure) {
-  g_config.Pointer()->SetReportNetworkConnectivityCallbackForTesting(
+  GetConfig().SetReportNetworkConnectivityCallbackForTesting(
       std::move(closure));
 }
 
@@ -594,14 +596,13 @@ std::string SSLErrorHandler::GetHistogramNameForTesting() {
 
 // static
 int SSLErrorHandler::GetErrorAssistantProtoVersionIdForTesting() {
-  return g_config.Pointer()->GetErrorAssistantProtoVersionIdForTesting();
+  return GetConfig().GetErrorAssistantProtoVersionIdForTesting();
 }
 
 // static
 void SSLErrorHandler::SetOSReportsCaptivePortalForTesting(
     bool os_reports_captive_portal) {
-  g_config.Pointer()->SetOSReportsCaptivePortalForTesting(
-      os_reports_captive_portal);
+  GetConfig().SetOSReportsCaptivePortalForTesting(os_reports_captive_portal);
 }
 
 bool SSLErrorHandler::IsTimerRunningForTesting() const {
@@ -611,13 +612,13 @@ bool SSLErrorHandler::IsTimerRunningForTesting() const {
 // static
 void SSLErrorHandler::SetErrorAssistantProto(
     std::unique_ptr<chrome_browser_ssl::SSLErrorAssistantConfig> config_proto) {
-  g_config.Pointer()->SetErrorAssistantProto(std::move(config_proto));
+  GetConfig().SetErrorAssistantProto(std::move(config_proto));
 }
 
 // static
 void SSLErrorHandler::SetClientCallbackOnInterstitialsShown(
     OnBlockingPageShownCallback callback) {
-  g_config.Pointer()->SetClientCallbackOnInterstitialsShown(callback);
+  GetConfig().SetClientCallbackOnInterstitialsShown(callback);
 }
 
 SSLErrorHandler::SSLErrorHandler(
@@ -658,8 +659,8 @@ void SSLErrorHandler::StartHandlingError() {
   }
 
   std::optional<DynamicInterstitialInfo> dynamic_interstitial =
-      g_config.Pointer()->MatchDynamicInterstitial(
-          ssl_info_, delegate_->IsErrorOverridable());
+      GetConfig().MatchDynamicInterstitial(ssl_info_,
+                                           delegate_->IsErrorOverridable());
   if (dynamic_interstitial) {
     ShowDynamicInterstitial(dynamic_interstitial.value());
     return;
@@ -681,10 +682,10 @@ void SSLErrorHandler::StartHandlingError() {
   // opens a new tab if it detects a portal ignoring the types of SSL errors. To
   // be consistent with captive portal detector, use the result of OS detection
   // without checking only_error_is_name_mismatch.
-  if ((g_config.Pointer()->DoesOSReportCaptivePortalForTesting() ||  // IN-TEST
+  if ((GetConfig().DoesOSReportCaptivePortalForTesting() ||  // IN-TEST
        delegate_->DoesOSReportCaptivePortal())) {
     delegate_->ReportNetworkConnectivity(
-        g_config.Pointer()->report_network_connectivity_callback());
+        GetConfig().report_network_connectivity_callback());
     RecordUMA(OS_REPORTS_CAPTIVE_PORTAL);
 
     if (!is_captive_portal_login_tab) {
@@ -702,7 +703,7 @@ void SSLErrorHandler::StartHandlingError() {
   // helpful place to direct the user to go.
   if (only_error_is_name_mismatch) {
     delegate_->ReportNetworkConnectivity(
-        g_config.Pointer()->report_network_connectivity_callback());
+        GetConfig().report_network_connectivity_callback());
   }
 
   // The MITM software interstitial is displayed if and only if:
@@ -713,7 +714,7 @@ void SSLErrorHandler::StartHandlingError() {
   if (IsMITMSoftwareInterstitialEnabled() && !delegate_->IsErrorOverridable() &&
       IsOnlyCertError(net::CERT_STATUS_AUTHORITY_INVALID)) {
     const std::string found_mitm_software =
-        g_config.Pointer()->MatchKnownMITMSoftware(ssl_info_.cert);
+        GetConfig().MatchKnownMITMSoftware(ssl_info_.cert);
     if (!found_mitm_software.empty()) {
       ShowMITMSoftwareInterstitial(found_mitm_software);
       return;
@@ -742,11 +743,12 @@ void SSLErrorHandler::StartHandlingError() {
           suggested_url,
           base::BindOnce(&SSLErrorHandler::CommonNameMismatchHandlerCallback,
                          weak_ptr_factory_.GetWeakPtr()));
-      timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(), this,
+      timer_.Start(FROM_HERE, GetConfig().interstitial_delay(), this,
                    &SSLErrorHandler::ShowSSLInterstitial);
 
-      if (g_config.Pointer()->timer_started_callback())
-        g_config.Pointer()->timer_started_callback()->Run(web_contents());
+      if (GetConfig().timer_started_callback()) {
+        GetConfig().timer_started_callback()->Run(web_contents());
+      }
 
       // Do not check for a captive portal in this case, because a captive
       // portal most likely cannot serve a valid certificate which passes the
@@ -765,10 +767,11 @@ void SSLErrorHandler::StartHandlingError() {
 
   if (!is_captive_portal_login_tab) {
     delegate_->CheckForCaptivePortal();
-    timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(), this,
+    timer_.Start(FROM_HERE, GetConfig().interstitial_delay(), this,
                  &SSLErrorHandler::ShowSSLInterstitial);
-    if (g_config.Pointer()->timer_started_callback())
-      g_config.Pointer()->timer_started_callback()->Run(web_contents());
+    if (GetConfig().timer_started_callback()) {
+      GetConfig().timer_started_callback()->Run(web_contents());
+    }
     return;
   }
 #endif
@@ -904,7 +907,7 @@ void SSLErrorHandler::DeleteSSLErrorHandler() {
 
 void SSLErrorHandler::HandleCertDateInvalidError() {
   const base::TimeTicks now = base::TimeTicks::Now();
-  timer_.Start(FROM_HERE, g_config.Pointer()->interstitial_delay(),
+  timer_.Start(FROM_HERE, GetConfig().interstitial_delay(),
                base::BindOnce(&SSLErrorHandler::HandleCertDateInvalidErrorImpl,
                               base::Unretained(this), now));
   // Try kicking off a time fetch to get an up-to-date estimate of the
@@ -921,14 +924,15 @@ void SSLErrorHandler::HandleCertDateInvalidError() {
     return;
   }
 
-  if (g_config.Pointer()->timer_started_callback())
-    g_config.Pointer()->timer_started_callback()->Run(web_contents());
+  if (GetConfig().timer_started_callback()) {
+    GetConfig().timer_started_callback()->Run(web_contents());
+  }
 }
 
 void SSLErrorHandler::HandleCertDateInvalidErrorImpl(
     base::TimeTicks started_handling_error) {
   timer_.Stop();
-  base::Clock* testing_clock = g_config.Pointer()->clock();
+  base::Clock* testing_clock = GetConfig().clock();
   const base::Time now =
       testing_clock ? testing_clock->Now() : base::Time::NowFromSystemTime();
 

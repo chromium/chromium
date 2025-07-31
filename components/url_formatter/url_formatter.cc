@@ -10,8 +10,8 @@
 #include <utility>
 #include <vector>
 
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
+#include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -276,8 +276,10 @@ std::u16string FormatViewSourceUrl(
   return result;
 }
 
-base::LazyInstance<IDNSpoofChecker>::Leaky g_idn_spoof_checker =
-    LAZY_INSTANCE_INITIALIZER;
+IDNSpoofChecker& GetIDNSpoofChecker() {
+  static base::NoDestructor<IDNSpoofChecker> idn_spoof_checker;
+  return *idn_spoof_checker;
+}
 
 // Computes the top level domain from |host|. top_level_domain_unicode will
 // contain the unicode version of top_level_domain. top_level_domain_unicode can
@@ -364,7 +366,7 @@ IDNConversionResult IDNToUnicodeWithAdjustmentsImpl(
   // Leave as punycode any inputs that spoof top domains.
   if (result.has_idn_component) {
     result.matching_top_domain =
-        g_idn_spoof_checker.Get().GetSimilarTopDomain(out16);
+        GetIDNSpoofChecker().GetSimilarTopDomain(out16);
     if (!ignore_spoof_check_results &&
         !result.matching_top_domain.domain.empty()) {
       if (adjustments) {
@@ -401,11 +403,11 @@ IDNSpoofChecker::Result SpoofCheckIDNComponent(
     std::u16string_view label,
     std::string_view top_level_domain,
     std::u16string_view top_level_domain_unicode) {
-  return g_idn_spoof_checker.Get().SafeToDisplayAsUnicode(
-      label, top_level_domain, top_level_domain_unicode);
+  return GetIDNSpoofChecker().SafeToDisplayAsUnicode(label, top_level_domain,
+                                                     top_level_domain_unicode);
 }
 
-// A wrapper to use LazyInstance<>::Leaky with ICU's UIDNA, a C pointer to
+// A wrapper to use base::NoDestructor with ICU's UIDNA, a C pointer to
 // a UTS46/IDNA 2008 handling object opened with uidna_openUTS46().
 //
 // We use UTS46 with BiDiCheck to migrate from IDNA 2003 to IDNA 2008 with the
@@ -438,11 +440,15 @@ struct UIDNAWrapper {
                           << "the required data tables for libicu. See "
                           << "https://crbug.com/778929.";
   }
+  ~UIDNAWrapper() = delete;
 
   raw_ptr<UIDNA> value;
 };
 
-base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;
+UIDNAWrapper& GetUIDNA() {
+  static base::NoDestructor<UIDNAWrapper> uidna;
+  return *uidna;
+}
 
 // Converts one component (label) of a host (between dots) to Unicode if safe.
 // If |ignore_spoof_check_results| is true and input is valid unicode, ignores
@@ -471,7 +477,7 @@ ComponentResult IDNToUnicodeOneComponent(
     return result;
   }
 
-  UIDNA* uidna = g_uidna.Get().value;
+  UIDNA* uidna = GetUIDNA().value;
   DCHECK(uidna != nullptr);
   size_t original_length = out->length();
   int32_t output_length = 64;
@@ -845,16 +851,16 @@ std::string StripMobilePrefix(const std::string& text) {
 }
 
 Skeletons GetSkeletons(const std::u16string& host) {
-  return g_idn_spoof_checker.Get().GetSkeletons(host);
+  return GetIDNSpoofChecker().GetSkeletons(host);
 }
 
 TopDomainEntry LookupSkeletonInTopDomains(const std::string& skeleton,
                                           const SkeletonType type) {
-  return g_idn_spoof_checker.Get().LookupSkeletonInTopDomains(skeleton, type);
+  return GetIDNSpoofChecker().LookupSkeletonInTopDomains(skeleton, type);
 }
 
 std::u16string MaybeRemoveDiacritics(const std::u16string& host) {
-  return g_idn_spoof_checker.Get().MaybeRemoveDiacritics(host);
+  return GetIDNSpoofChecker().MaybeRemoveDiacritics(host);
 }
 
 }  // namespace url_formatter
