@@ -10,8 +10,8 @@
 
 #include "base/callback_list.h"
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "chrome/browser/devtools/global_confirm_info_bar.h"
@@ -27,7 +27,10 @@ namespace extensions {
 namespace {
 
 using Delegates = std::map<ExtensionId, ExtensionDevToolsInfoBarDelegate*>;
-base::LazyInstance<Delegates>::Leaky g_delegates = LAZY_INSTANCE_INITIALIZER;
+Delegates& GetDelegates() {
+  static base::NoDestructor<Delegates> delegates;
+  return *delegates;
+}
 
 }  // namespace
 
@@ -38,7 +41,7 @@ base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
     const ExtensionId& extension_id,
     const std::string& extension_name,
     base::OnceClosure destroyed_callback) {
-  Delegates& delegates = g_delegates.Get();
+  Delegates& delegates = GetDelegates();
   const auto it = delegates.find(extension_id);
   if (it != delegates.end()) {
     it->second->timer_.Stop();
@@ -58,7 +61,7 @@ base::CallbackListSubscription ExtensionDevToolsInfoBarDelegate::Create(
 
 ExtensionDevToolsInfoBarDelegate::~ExtensionDevToolsInfoBarDelegate() {
   callback_list_.Notify();
-  const size_t erased = g_delegates.Get().erase(extension_id_);
+  const size_t erased = GetDelegates().erase(extension_id_);
   DCHECK(erased);
 }
 

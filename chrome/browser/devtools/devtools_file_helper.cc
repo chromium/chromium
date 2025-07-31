@@ -14,7 +14,7 @@
 #include "base/functional/callback.h"
 #include "base/hash/md5.h"
 #include "base/json/values_util.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/bind_post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -50,8 +50,10 @@ static const char kIllegalType[] = "<illegal type>";
 static const char kPermissionDenied[] = "<permission denied>";
 static const char kSelectionCancelled[] = "<selection cancelled>";
 
-base::LazyInstance<base::FilePath>::Leaky g_last_save_path =
-    LAZY_INSTANCE_INITIALIZER;
+base::FilePath& GetLastSavePath() {
+  static base::NoDestructor<base::FilePath> last_save_path;
+  return *last_save_path;
+}
 
 void WriteToFile(const base::FilePath& path,
                  const std::string& content,
@@ -157,9 +159,9 @@ void DevToolsFileHelper::Save(const std::string& url,
       suggested_file_name = suggested_file_name.substr(0, 64);
     }
     // TODO(crbug.com/40839171): Ensure suggested_file_name is an ASCII string
-    if (!g_last_save_path.Pointer()->empty()) {
-      initial_path = g_last_save_path.Pointer()->DirName().AppendASCII(
-          suggested_file_name);
+    if (!GetLastSavePath().empty()) {
+      initial_path =
+          GetLastSavePath().DirName().AppendASCII(suggested_file_name);
     } else {
       base::FilePath download_path =
           DownloadPrefs::FromDownloadManager(profile_->GetDownloadManager())
@@ -192,7 +194,7 @@ void DevToolsFileHelper::SaveToFileSelected(const std::string& url,
                                             bool is_base64,
                                             SaveCallback callback,
                                             const base::FilePath& path) {
-  *g_last_save_path.Pointer() = path;
+  GetLastSavePath() = path;
   saved_files_[url] = path;
 
   ScopedDictPrefUpdate update(profile_->GetPrefs(),

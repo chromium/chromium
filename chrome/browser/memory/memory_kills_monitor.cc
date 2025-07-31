@@ -4,9 +4,9 @@
 
 #include "chrome/browser/memory/memory_kills_monitor.h"
 
-#include "base/lazy_instance.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/memory/memory_kills_histogram.h"
@@ -17,8 +17,10 @@ namespace memory {
 
 namespace {
 
-base::LazyInstance<MemoryKillsMonitor>::Leaky g_memory_kills_monitor_instance =
-    LAZY_INSTANCE_INITIALIZER;
+MemoryKillsMonitor& GetMemoryKillsMonitorInstance() {
+  static base::NoDestructor<MemoryKillsMonitor> instance;
+  return *instance;
+}
 
 }  // namespace
 
@@ -37,7 +39,7 @@ void MemoryKillsMonitor::Initialize() {
 
   auto* login_state = ash::LoginState::Get();
   if (login_state)
-    login_state->AddObserver(g_memory_kills_monitor_instance.Pointer());
+    login_state->AddObserver(&GetMemoryKillsMonitorInstance());
   else
     LOG(ERROR) << "LoginState is not initialized";
 }
@@ -47,8 +49,8 @@ void MemoryKillsMonitor::LogLowMemoryKill(const std::string& type,
                                           int estimated_freed_kb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  g_memory_kills_monitor_instance.Get().LogLowMemoryKillImpl(
-      type, estimated_freed_kb);
+  GetMemoryKillsMonitorInstance().LogLowMemoryKillImpl(type,
+                                                       estimated_freed_kb);
 }
 
 void MemoryKillsMonitor::LoggedInStateChanged() {
@@ -109,7 +111,7 @@ void MemoryKillsMonitor::LogLowMemoryKillImpl(const std::string& type,
 }
 
 MemoryKillsMonitor* MemoryKillsMonitor::GetForTesting() {
-  return g_memory_kills_monitor_instance.Pointer();
+  return &GetMemoryKillsMonitorInstance();
 }
 
 }  // namespace memory

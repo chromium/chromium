@@ -7,8 +7,8 @@
 
 #include <memory>
 
-#include "base/lazy_instance.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/no_destructor.h"
 
 namespace i18n {
 namespace addressinput {
@@ -30,7 +30,7 @@ class ValidationRulesStorageFactory {
       const ValidationRulesStorageFactory&) = delete;
 
  private:
-  friend struct base::LazyInstanceTraitsBase<ValidationRulesStorageFactory>;
+  friend class base::NoDestructor<ValidationRulesStorageFactory>;
 
   ValidationRulesStorageFactory();
   ~ValidationRulesStorageFactory();

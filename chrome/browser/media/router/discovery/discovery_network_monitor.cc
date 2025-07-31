@@ -10,8 +10,8 @@
 
 #include "base/check_op.h"
 #include "base/hash/sha1.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -44,9 +44,6 @@ std::string ComputeNetworkId(
   return base::ToLowerASCII(base::HexEncode(hash));
 }
 
-base::LazyInstance<DiscoveryNetworkMonitor>::Leaky g_discovery_monitor =
-    LAZY_INSTANCE_INITIALIZER;
-
 }  // namespace
 
 // static
@@ -56,7 +53,8 @@ constexpr char const DiscoveryNetworkMonitor::kNetworkIdUnknown[];
 
 // static
 DiscoveryNetworkMonitor* DiscoveryNetworkMonitor::GetInstance() {
-  return g_discovery_monitor.Pointer();
+  static base::NoDestructor<DiscoveryNetworkMonitor> instance;
+  return instance.get();
 }
 
 // static

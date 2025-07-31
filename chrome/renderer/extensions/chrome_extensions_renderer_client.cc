@@ -6,8 +6,8 @@
 
 #include <utility>
 
-#include "base/lazy_instance.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "chrome/common/chrome_isolated_world_ids.h"
 #include "chrome/renderer/extensions/chrome_resource_request_policy_delegate.h"
 #include "chrome/renderer/extensions/renderer_permissions_policy_delegate.h"
@@ -59,9 +59,7 @@ ChromeExtensionsRendererClient::~ChromeExtensionsRendererClient() {
 
 // static
 void ChromeExtensionsRendererClient::Create() {
-  static base::LazyInstance<ChromeExtensionsRendererClient>::Leaky client =
-      LAZY_INSTANCE_INITIALIZER;
-  client.Pointer();
+  static base::NoDestructor<ChromeExtensionsRendererClient> client;
 }
 
 bool ChromeExtensionsRendererClient::IsIncognitoProcess() const {

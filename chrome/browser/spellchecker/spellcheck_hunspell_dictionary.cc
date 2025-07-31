@@ -12,8 +12,8 @@
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
 #include "base/location.h"
+#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list.h"
 #include "base/path_service.h"
@@ -48,8 +48,10 @@ using content::BrowserThread;
 
 namespace {
 
-base::LazyInstance<GURL>::Leaky g_download_url_for_testing =
-    LAZY_INSTANCE_INITIALIZER;
+GURL& GetDownloadUrlForTesting() {
+  static base::NoDestructor<GURL> download_url_for_testing;
+  return *download_url_for_testing;
+}
 
 // Close the file.
 void CloseDictionary(base::File file) {
@@ -263,12 +265,13 @@ void SpellcheckHunspellDictionary::OnSimpleLoaderComplete(
 }
 
 void SpellcheckHunspellDictionary::SetDownloadURLForTesting(const GURL url) {
-  g_download_url_for_testing.Get() = url;
+  GetDownloadUrlForTesting() = url;
 }
 
 GURL SpellcheckHunspellDictionary::GetDictionaryURL() {
-  if (g_download_url_for_testing.Get() != GURL())
-    return g_download_url_for_testing.Get();
+  if (GetDownloadUrlForTesting() != GURL()) {
+    return GetDownloadUrlForTesting();
+  }
 
   std::string bdict_file = dictionary_file_.path.BaseName().MaybeAsASCII();
   DCHECK(!bdict_file.empty());

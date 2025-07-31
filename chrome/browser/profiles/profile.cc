@@ -67,16 +67,23 @@
 #if DCHECK_IS_ON()
 
 #include <set>
+
 #include "base/check_op.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 
 namespace {
 
-base::LazyInstance<base::Lock>::Leaky g_profile_instances_lock =
-    LAZY_INSTANCE_INITIALIZER;
-base::LazyInstance<std::set<content::BrowserContext*>>::Leaky
-    g_profile_instances = LAZY_INSTANCE_INITIALIZER;
+base::Lock& GetProfileInstancesLock() {
+  static base::NoDestructor<base::Lock> profile_instances_lock;
+  return *profile_instances_lock;
+}
+
+std::set<content::BrowserContext*>& GetProfileInstances() {
+  static base::NoDestructor<std::set<content::BrowserContext*>>
+      profile_instances;
+  return *profile_instances;
+}
 
 }  // namespace
 
@@ -234,8 +241,8 @@ Profile::Profile(const OTRProfileID* otr_profile_id)
 #endif
 
 #if DCHECK_IS_ON()
-  base::AutoLock lock(g_profile_instances_lock.Get());
-  g_profile_instances.Get().insert(this);
+  base::AutoLock lock(GetProfileInstancesLock());
+  GetProfileInstances().insert(this);
 #endif  // DCHECK_IS_ON()
 
   BrowserContextDependencyManager::GetInstance()->MarkBrowserContextLive(this);
@@ -251,8 +258,8 @@ Profile::~Profile() {
 #endif
 
 #if DCHECK_IS_ON()
-  base::AutoLock lock(g_profile_instances_lock.Get());
-  g_profile_instances.Get().erase(this);
+  base::AutoLock lock(GetProfileInstancesLock());
+  GetProfileInstances().erase(this);
 #endif  // DCHECK_IS_ON()
 }
 
@@ -266,8 +273,8 @@ Profile* Profile::FromBrowserContext(content::BrowserContext* browser_context) {
   // testing, however, there are several BrowserContext subclasses that are not
   // Profile subclasses, and we can catch them. http://crbug.com/725276
 #if DCHECK_IS_ON()
-  base::AutoLock lock(g_profile_instances_lock.Get());
-  if (!g_profile_instances.Get().count(browser_context)) {
+  base::AutoLock lock(GetProfileInstancesLock());
+  if (!GetProfileInstances().count(browser_context)) {
     DCHECK(false)
         << "Non-Profile BrowserContext passed to Profile::FromBrowserContext! "
            "If you have a test linked in chrome/ you need a chrome/ based test "

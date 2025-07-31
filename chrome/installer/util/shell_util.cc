@@ -36,8 +36,8 @@
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
 #include "base/hash/md5.h"
-#include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/cstring_view.h"
 #include "base/strings/strcat.h"
@@ -156,7 +156,7 @@ class UserSpecificRegistrySuffix {
  public:
   // All the initialization is done in the constructor to be able to build the
   // suffix in a thread-safe manner when used in conjunction with a
-  // LazyInstance.
+  // static local instance.
   UserSpecificRegistrySuffix();
 
   UserSpecificRegistrySuffix(const UserSpecificRegistrySuffix&) = delete;
@@ -2432,13 +2432,14 @@ bool ShellUtil::ResetShortcutFileAttributes(ShortcutLocation location,
                              shortcut_operation, location, level, nullptr);
 }
 
+// static
 bool ShellUtil::GetUserSpecificRegistrySuffix(std::wstring* suffix) {
   // Use a thread-safe cache for the user's suffix.
-  static base::LazyInstance<UserSpecificRegistrySuffix>::Leaky suffix_instance =
-      LAZY_INSTANCE_INITIALIZER;
-  return suffix_instance.Get().GetSuffix(suffix);
+  static base::NoDestructor<UserSpecificRegistrySuffix> suffix_instance;
+  return suffix_instance->GetSuffix(suffix);
 }
 
+// static
 bool ShellUtil::GetOldUserSpecificRegistrySuffix(std::wstring* suffix) {
   wchar_t user_name[256];
   DWORD size = std::size(user_name);

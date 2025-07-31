@@ -9,7 +9,7 @@
 #include <vector>
 
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/observer_list_threadsafe.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -75,7 +75,7 @@ class DiscoveryNetworkMonitor
   friend class DiscoveryNetworkMonitorTest;
   friend class AccessCodeCastSinkServiceTest;
   friend struct std::default_delete<DiscoveryNetworkMonitor>;
-  friend struct base::LazyInstanceTraitsBase<DiscoveryNetworkMonitor>;
+  friend class base::NoDestructor<DiscoveryNetworkMonitor>;
 
   DiscoveryNetworkMonitor();
   explicit DiscoveryNetworkMonitor(NetworkInfoFunction strategy);

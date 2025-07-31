@@ -8,7 +8,7 @@
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
@@ -29,8 +29,10 @@ namespace {
 const char kHarnessScript[] = "Tests.js";
 
 typedef std::vector<DevToolsWindowTesting*> DevToolsWindowTestings;
-base::LazyInstance<DevToolsWindowTestings>::Leaky
-    g_devtools_window_testing_instances = LAZY_INSTANCE_INITIALIZER;
+DevToolsWindowTestings& GetDevToolsWindowTestingInstances() {
+  static base::NoDestructor<DevToolsWindowTestings> instances;
+  return *instances;
+}
 }
 
 DevToolsWindowTesting::DevToolsWindowTesting(DevToolsWindow* window)
@@ -38,15 +40,14 @@ DevToolsWindowTesting::DevToolsWindowTesting(DevToolsWindow* window)
   DCHECK(window);
   window->close_callback_ =
       base::BindOnce(&DevToolsWindowTesting::WindowClosed, window);
-  g_devtools_window_testing_instances.Get().push_back(this);
+  GetDevToolsWindowTestingInstances().push_back(this);
 }
 
 DevToolsWindowTesting::~DevToolsWindowTesting() {
-  DevToolsWindowTestings* instances =
-      g_devtools_window_testing_instances.Pointer();
-  auto it = std::ranges::find(*instances, this);
-  CHECK(it != instances->end());
-  instances->erase(it);
+  DevToolsWindowTestings& instances = GetDevToolsWindowTestingInstances();
+  auto it = std::ranges::find(instances, this);
+  CHECK(it != instances.end());
+  instances.erase(it);
   if (!close_callback_.is_null())
     std::move(close_callback_).Run();
 
@@ -67,13 +68,10 @@ DevToolsWindowTesting* DevToolsWindowTesting::Get(DevToolsWindow* window) {
 
 // static
 DevToolsWindowTesting* DevToolsWindowTesting::Find(DevToolsWindow* window) {
-  if (!g_devtools_window_testing_instances.IsCreated())
-    return nullptr;
-  DevToolsWindowTestings* instances =
-      g_devtools_window_testing_instances.Pointer();
-  for (auto it(instances->begin()); it != instances->end(); ++it) {
-    if ((*it)->devtools_window_ == window)
-      return *it;
+  for (auto& instance : GetDevToolsWindowTestingInstances()) {
+    if (instance->devtools_window_ == window) {
+      return instance;
+    }
   }
   return nullptr;
 }

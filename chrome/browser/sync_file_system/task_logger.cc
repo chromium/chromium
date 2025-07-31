@@ -6,7 +6,7 @@
 
 #include <stddef.h>
 
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/observer_list.h"
 #include "base/synchronization/lock.h"
 
@@ -16,12 +16,11 @@ namespace {
 
 const size_t kMaxLogSize = 500;
 
-int g_next_log_id = 1;
-base::LazyInstance<base::Lock>::Leaky g_log_id_lock = LAZY_INSTANCE_INITIALIZER;
-
 int GenerateLogID() {
-  base::AutoLock lock(g_log_id_lock.Get());
-  return g_next_log_id++;
+  static int next_log_id = 1;
+  static base::NoDestructor<base::Lock> log_id_lock;
+  base::AutoLock lock(*log_id_lock);
+  return next_log_id++;
 }
 
 }  // namespace

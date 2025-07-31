@@ -9,7 +9,7 @@
 #include "base/check_deref.h"
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "base/types/expected_macros.h"
 #include "base/version.h"
 #include "chrome/browser/web_applications/callback_utils.h"
@@ -443,12 +443,11 @@ std::unique_ptr<IwaInstaller> IwaInstallerFactory::Create(
 
 IwaInstallerFactory::IwaInstallerFactoryCallback&
 IwaInstallerFactory::GetIwaInstallerFactory() {
-  static base::LazyInstance<IwaInstallerFactoryCallback>::Leaky
-      iwa_installer_factory = LAZY_INSTANCE_INITIALIZER;
-  if (!iwa_installer_factory.Get()) {
-    iwa_installer_factory.Get() = GetDefaultIwaInstallerFactory();
+  static base::NoDestructor<IwaInstallerFactoryCallback> iwa_installer_factory;
+  if (!*iwa_installer_factory) {
+    *iwa_installer_factory = GetDefaultIwaInstallerFactory();
   }
-  return iwa_installer_factory.Get();
+  return *iwa_installer_factory;
 }
 
 IwaInstallerFactory::IwaInstallerFactoryCallback

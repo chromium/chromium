@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/functional/callback.h"
-#include "base/lazy_instance.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_presentation_receiver.h"
 
 class Profile;
@@ -47,8 +47,7 @@ class WiredDisplayPresentationReceiverFactory {
   static void SetCreateReceiverCallbackForTest(CreateReceiverCallback callback);
 
  private:
-  friend struct base::LazyInstanceTraitsBase<
-      WiredDisplayPresentationReceiverFactory>;
+  friend class base::NoDestructor<WiredDisplayPresentationReceiverFactory>;
 
   WiredDisplayPresentationReceiverFactory();
   virtual ~WiredDisplayPresentationReceiverFactory();

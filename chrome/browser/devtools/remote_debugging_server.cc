@@ -9,7 +9,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -41,7 +40,7 @@
 
 namespace {
 
-base::LazyInstance<bool>::Leaky g_tethering_enabled = LAZY_INSTANCE_INITIALIZER;
+bool g_tethering_enabled = false;
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool g_enable_default_user_data_dir_check_for_chromium_branding_for_testing =
@@ -92,8 +91,9 @@ class TCPServerSocketFactory
 
   std::unique_ptr<net::ServerSocket> CreateForTethering(
       std::string* name) override {
-    if (!g_tethering_enabled.Get())
+    if (!g_tethering_enabled) {
       return nullptr;
+    }
 
     if (last_tethering_port_ == kMaxTetheringPort)
       last_tethering_port_ = kMinTetheringPort;
@@ -137,7 +137,7 @@ RemoteDebuggingServer::RemoteDebuggingServer() = default;
 
 // static
 void RemoteDebuggingServer::EnableTetheringForDebug() {
-  g_tethering_enabled.Get() = true;
+  g_tethering_enabled = true;
 }
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)

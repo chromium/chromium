@@ -20,10 +20,10 @@
 #include "base/functional/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
-#include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_view_util.h"
@@ -347,8 +347,10 @@ bool ExtensionMayAttachToAgentHost(const Extension& extension,
 // ExtensionDevToolsClientHost ------------------------------------------------
 
 using AttachedClientHosts = std::set<ExtensionDevToolsClientHost*>;
-base::LazyInstance<AttachedClientHosts>::Leaky g_attached_client_hosts =
-    LAZY_INSTANCE_INITIALIZER;
+AttachedClientHosts& GetAttachedClientHosts() {
+  static base::NoDestructor<AttachedClientHosts> attached_client_hosts;
+  return *attached_client_hosts;
+}
 
 class ExtensionDevToolsClientHost : public content::DevToolsAgentHostClient,
                                     public ExtensionRegistryObserver,
@@ -447,7 +449,7 @@ ExtensionDevToolsClientHost::ExtensionDevToolsClientHost(
       extension_service_worker_id_(std::move(extension_service_worker_id)) {
   CopyDebuggee(&debuggee_, debuggee);
 
-  g_attached_client_hosts.Get().insert(this);
+  GetAttachedClientHosts().insert(this);
 
   // ExtensionRegistryObserver listen extension unloaded and detach debugger
   // from there.
@@ -499,7 +501,7 @@ bool ExtensionDevToolsClientHost::Attach() {
 }
 
 ExtensionDevToolsClientHost::~ExtensionDevToolsClientHost() {
-  g_attached_client_hosts.Get().erase(this);
+  GetAttachedClientHosts().erase(this);
 
   // Decrement the associated worker keepalive, if any.
   if (service_worker_keepalive_) {
@@ -745,7 +747,7 @@ bool DebuggerFunction::InitAgentHost(std::string* error) {
       // really be a singleton.
       // Re-use existing browser agent hosts.
       const ExtensionId& extension_id = extension()->id();
-      AttachedClientHosts& hosts = g_attached_client_hosts.Get();
+      AttachedClientHosts& hosts = GetAttachedClientHosts();
       auto it = std::ranges::find_if(
           hosts, [&extension_id](ExtensionDevToolsClientHost* client_host) {
             return client_host->extension_id() == extension_id &&
@@ -790,7 +792,7 @@ ExtensionDevToolsClientHost* DebuggerFunction::FindClientHost() {
 
   const ExtensionId& extension_id = extension()->id();
   DevToolsAgentHost* agent_host = agent_host_.get();
-  AttachedClientHosts& hosts = g_attached_client_hosts.Get();
+  AttachedClientHosts& hosts = GetAttachedClientHosts();
   auto it = std::ranges::find_if(
       hosts,
       [&agent_host, &extension_id](ExtensionDevToolsClientHost* client_host) {
