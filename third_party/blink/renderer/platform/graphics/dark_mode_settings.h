@@ -18,13 +18,13 @@ enum class DarkModeInversionAlgorithm {
   kLast = kInvertLightnessLAB,       // Last enum value.
 };
 
+// This enum will be removed soon to make dark mode simpler.
 enum class DarkModeImagePolicy {
-  kFilterAll,    // Apply dark-mode filter to all images.
-  kFilterNone,   // Never apply dark-mode filter to any images.
   kFilterSmart,  // Apply dark-mode based on image content.
+  kFilterNone,   // Never apply dark-mode filter to any images.
 
-  kFirst = kFilterAll,   // First enum value.
-  kLast = kFilterSmart,  // Last enum value.
+  kFirst = kFilterSmart,  // First enum value.
+  kLast = kFilterNone,    // Last enum value.
 };
 
 enum class DarkModeImageClassifierPolicy {
