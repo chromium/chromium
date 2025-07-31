@@ -95,6 +95,7 @@
 #include "third_party/blink/renderer/modules/mediastream/media_stream_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/peerconnection/peer_connection_dependency_factory.h"
+#include "third_party/blink/renderer/modules/peerconnection/peer_connection_features.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_certificate_generator.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_data_channel.h"
@@ -2547,12 +2548,12 @@ void RTCPeerConnection::DidModifyTransceivers(
     MaybeDispatchEvent(track_event);
   }
 
-  // Unmute "pc.ontrack" tracks. Fires "track.onunmute" synchronously.
-  // TODO(https://crbug.com/889487): The correct thing to do is to unmute in
-  // response to receiving RTP packets.
-  for (auto& transceiver : track_events) {
-    transceiver->receiver()->track()->Component()->Source()->SetReadyState(
-        MediaStreamSource::kReadyStateLive);
+  // TODO(https://crbug.com/40821064): Remove killswitch after rollout.
+  if (!base::FeatureList::IsEnabled(kWebRtcUnmuteTracksWhenPacketArrives)) {
+    for (auto& transceiver : track_events) {
+      transceiver->receiver()->track()->Component()->Source()->SetReadyState(
+          MediaStreamSource::kReadyStateLive);
+    }
   }
 
   // Transceiver modifications can cause changes in the set of ICE
