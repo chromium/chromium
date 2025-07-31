@@ -14,9 +14,8 @@
 //
 // Developer note: this macro must be kept in sync with the definition of
 // STACK_ALLOCATED_IGNORE in /base/memory/stack_allocated.h.
-#define GC_PLUGIN_IGNORE(reason)                     \
-  __attribute__((annotate("blink_gc_plugin_ignore"), \
-                 annotate("stack_allocated_ignore")))
+#define GC_PLUGIN_IGNORE(reason) \
+  __attribute__((annotate("blink_gc_plugin_ignore")))
 // GC_PLUGIN_IGNORE_FILE is used to make the Blink GC plugin ignore a whole
 // file. All classes, fields, methods and variables in that file will be skipped
 // by the plugin. Any incorrect usages in the file will not be reported by the
