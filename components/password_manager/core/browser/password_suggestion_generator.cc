@@ -522,6 +522,9 @@ PasswordSuggestionGenerator::GetProactiveRecoverySuggestions(
   suggestion.additional_label = std::u16string(
       payload.backup_password->size(), constants::kPasswordReplacementChar);
   suggestion.additional_label_alignment_right = true;
+  // This prevents the label from including the masked password string.
+  suggestion.voice_over = l10n_util::GetStringUTF16(
+      IDS_PASSWORD_MANAGER_UI_PROACTIVE_RECOVERY_SUGGESTION);
   suggestions.emplace_back(std::move(suggestion));
 
   Suggestion separator(SuggestionType::kSeparator);
