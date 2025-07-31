@@ -3992,7 +3992,6 @@ crbug.com/346088872 [ Mac12 ] external/wpt/html/semantics/embedded-content/media
 crbug.com/346088872 [ Mac12 ] external/wpt/html/semantics/embedded-content/media-elements/readyState_during_canplay.html [ Timeout ]
 crbug.com/346088873 [ Mac12 ] external/wpt/scroll-to-text-fragment/non-html-documents.html [ Skip Timeout ]
 crbug.com/346368829 [ Mac12 ] external/wpt/service-workers/service-worker/fetch-event-respond-with-custom-response.https.html [ Timeout ]
-crbug.com/434622490 [ Mac12 ] external/wpt/service-workers/service-worker/tentative/static-router/static-router-resource-timing.https.html [ Failure ]
 crbug.com/346042379 [ Mac12 ] external/wpt/video-rvfc/request-video-frame-callback-dom.html [ Timeout ]
 crbug.com/346368830 [ Mac12 ] external/wpt/webaudio/the-audio-api/the-pannernode-interface/pannernode-basic.window.html [ Timeout ]
 crbug.com/346042379 [ Mac13 ] external/wpt/webrtc-encoded-transform/tentative/RTCPeerConnection-insertable-streams-worker.https.html [ Timeout ]
