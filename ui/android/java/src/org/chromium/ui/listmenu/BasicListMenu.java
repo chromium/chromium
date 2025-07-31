@@ -29,6 +29,7 @@ import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.UiUtils;
+import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -166,6 +167,12 @@ public class BasicListMenu implements ListMenu {
             hairline.setBackgroundColor(bottomHairlineColor);
         }
 
+        AccessibilityListObserver observer =
+                new AccessibilityListObserver(mContentView, mHeaderModelList, mContentModelList);
+        if (mHeaderModelList != null) {
+            mHeaderModelList.addObserver(observer);
+        }
+        mContentModelList.addObserver(observer);
         mListView.setOnScrollChangeListener(new ContentListOnScrollChangeListener(hairline));
     }
 

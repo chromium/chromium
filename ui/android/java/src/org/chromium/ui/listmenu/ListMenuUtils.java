@@ -4,20 +4,28 @@
 
 package org.chromium.ui.listmenu;
 
+import static org.chromium.ui.base.KeyNavigationUtil.isGoBackward;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE_ID;
+import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuSubmenuItemProperties.SUBMENU_ITEMS;
 
+import android.content.res.Resources;
 import android.view.View;
 import android.widget.ListView;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.StringRes;
+import androidx.core.view.ViewCompat;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.ui.R;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
+import org.chromium.ui.modelutil.ListObservable;
+import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
@@ -107,17 +115,27 @@ public class ListMenuUtils {
         contentModelList.clear();
         if (headerModelList != null) headerModelList.clear();
         // Add the clicked item as a header to the submenu.
+        Runnable headerBackClick =
+                () -> {
+                    if (headerModelList != null && parentHeaderModelList != null) {
+                        setModelListContent(headerModelList, parentHeaderModelList);
+                    }
+                    setModelListContent(contentModelList, parentModelList);
+                };
         final PropertyModel model =
                 new PropertyModel.Builder(ListMenuSubmenuHeaderItemProperties.ALL_KEYS)
                         .with(TITLE, item.model.get(TITLE))
                         .with(ENABLED, true)
+                        .with(CLICK_LISTENER, (unusedView) -> headerBackClick.run())
                         .with(
-                                CLICK_LISTENER,
-                                (unusedView) -> {
-                                    if (headerModelList != null && parentHeaderModelList != null) {
-                                        setModelListContent(headerModelList, parentHeaderModelList);
+                                KEY_LISTENER,
+                                (view, keyCode, keyEvent) -> {
+                                    if (isGoBackward(keyEvent)) {
+                                        headerBackClick.run();
+                                        return true;
                                     }
-                                    setModelListContent(contentModelList, parentModelList);
+                                    // Return false because the listener has not consumed the event.
+                                    return false;
                                 })
                         .build();
         (headerModelList == null ? contentModelList : headerModelList)
@@ -226,6 +244,55 @@ public class ListMenuUtils {
         for (ListItem listItem : contentModelList) {
             setupCallbacksRecursivelyForItem(
                     headerModelList, contentModelList, listItem, dismissDialog);
+        }
+    }
+
+    /** Watches a ModelList and updates the accessibility pane title of the View accordingly. */
+    public static class AccessibilityListObserver implements ListObserver<Void> {
+
+        private final View mView;
+        private final @Nullable ModelList mHeaderModelList;
+        private final ModelList mContentModelList;
+
+        /**
+         * Returns a {@link AccessibilityListObserver} that reacts to changes in {@param
+         * headerModelList and {@param contentModelList}, the are backing models for {@param view}.
+         */
+        public AccessibilityListObserver(
+                View view, @Nullable ModelList headerModelList, ModelList contentModelList) {
+            mView = view;
+            mHeaderModelList = headerModelList;
+            mContentModelList = contentModelList;
+        }
+
+        // Note: because ListMenuUtils methods clear the ModelList and add elements one-by-one,
+        // we need to listen to a "0th item added" signal to determine when we have a new header.
+        @Override
+        public void onItemRangeInserted(ListObservable source, int index, int count) {
+            if (index != 0) return; // If the 1st element wasn't changed, the "header" is the same.
+            String accessibilityPaneTitle =
+                    mView.getContext().getString(R.string.listmenu_a11y_default_pane_title);
+            Object firstItem = null;
+            if (mHeaderModelList != null && !mHeaderModelList.isEmpty()) {
+                firstItem = mHeaderModelList.get(0);
+            } else if (!mContentModelList.isEmpty()) {
+                firstItem = mContentModelList.get(0);
+            }
+            if (firstItem instanceof ListItem firstListItem && firstListItem.model != null) {
+                if (firstListItem.model.containsKey(TITLE)) {
+                    CharSequence title = firstListItem.model.get(TITLE);
+                    if (title.length() != 0) {
+                        accessibilityPaneTitle = String.valueOf(title);
+                    }
+                } else if (firstListItem.model.containsKey(TITLE_ID)) {
+                    @StringRes int titleId = firstListItem.model.get(TITLE_ID);
+                    if (titleId != Resources.ID_NULL) {
+                        accessibilityPaneTitle =
+                                mView.getContext().getString(firstListItem.model.get(TITLE_ID));
+                    }
+                }
+            }
+            ViewCompat.setAccessibilityPaneTitle(mView, accessibilityPaneTitle);
         }
     }
 }

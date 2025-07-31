@@ -7,6 +7,7 @@ package org.chromium.ui.listmenu;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
+import static org.chromium.ui.listmenu.ListMenuSubmenuHeaderItemProperties.KEY_LISTENER;
 
 import android.view.View;
 import android.widget.TextView;
@@ -31,6 +32,8 @@ class ListMenuSubmenuHeaderViewBinder {
             textView.setEnabled(model.get(ENABLED));
         } else if (propertyKey == CLICK_LISTENER) {
             view.setOnClickListener(model.get(CLICK_LISTENER));
+        } else if (propertyKey == KEY_LISTENER) {
+            view.setOnKeyListener(model.get(KEY_LISTENER));
         }
     }
 }

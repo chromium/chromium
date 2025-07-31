@@ -12,7 +12,8 @@ found in the LICENSE file.
     android:background="?android:attr/selectableItemBackground"
     android:orientation="horizontal"
     android:minHeight="?android:attr/listPreferredItemHeightSmall"
-    style="@style/ListMenuItemStyle" >
+    style="@style/ListMenuItemStyle"
+    android:contentDescription="@string/submenu_header_back">
 
     <ImageView
         android:id="@+id/submenu_arrow"

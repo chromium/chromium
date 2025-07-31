@@ -42,6 +42,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.listmenu.ListMenuUtils;
+import org.chromium.ui.listmenu.ListMenuUtils.AccessibilityListObserver;
 import org.chromium.ui.modelutil.LayoutViewBuilder;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -325,6 +326,8 @@ public class ContextMenuCoordinator implements ContextMenuUi {
                     activity.getResources()
                             .getDimensionPixelSize(R.dimen.context_menu_fading_edge_size));
         }
+        listItems.addObserver(
+                new AccessibilityListObserver(mListView, /* headerModelList= */ null, listItems));
         mWebContentsObserver =
                 new WebContentsObserver(mWebContents) {
                     @Override

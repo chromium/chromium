@@ -8,11 +8,16 @@ import static org.chromium.ui.listmenu.ListMenuItemProperties.CLICK_LISTENER;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.ENABLED;
 import static org.chromium.ui.listmenu.ListMenuItemProperties.TITLE;
 
+import android.view.View;
+
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
 
 /** The properties controlling submenu header item in context menus. */
 @NullMarked
 public class ListMenuSubmenuHeaderItemProperties {
-    public static final PropertyKey[] ALL_KEYS = {TITLE, CLICK_LISTENER, ENABLED};
+    public static final PropertyModel.WritableObjectPropertyKey<View.OnKeyListener> KEY_LISTENER =
+            new PropertyModel.WritableObjectPropertyKey<>();
+    public static final PropertyKey[] ALL_KEYS = {TITLE, CLICK_LISTENER, KEY_LISTENER, ENABLED};
 }
