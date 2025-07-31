@@ -52,9 +52,10 @@ class SitePermissionsHelperBrowserTest : public ExtensionBrowserTest {
     ASSERT_TRUE(extension_);
 
     // Navigate to a page where the extension wants to run.
+    auto* web_contents = GetActiveWebContents();
     original_url_ = embedded_test_server()->GetURL("/simple.html");
-    ASSERT_TRUE(NavigateToURL(original_url_));
-    ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+    ASSERT_TRUE(NavigateToURL(web_contents, original_url_));
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
     original_nav_id_ =
         active_nav_controller().GetLastCommittedEntry()->GetUniqueID();
 
@@ -305,11 +306,13 @@ class SitePermissionsHelperExecuteSciptBrowserTest
     ASSERT_TRUE(extension_);
 
     // Navigate to a page where the extension can run.
+    auto* web_contents = GetActiveWebContents();
     original_url_ = embedded_test_server()->GetURL("/simple.html");
     ExtensionTestMessageListener listener("injection succeeded");
-    ASSERT_TRUE(NavigateToURL(original_url_));
-    ASSERT_TRUE(GetActiveWebContents());
-    ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+    ASSERT_TRUE(NavigateToURL(web_contents, original_url_));
+    ASSERT_EQ(web_contents, GetActiveWebContents());
+    ASSERT_TRUE(web_contents);
+    ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 
     permissions_manager_ = PermissionsManager::Get(profile());
     ASSERT_EQ(
@@ -328,9 +331,11 @@ class SitePermissionsHelperExecuteSciptBrowserTest
 
   // Navigates to `host_name` with `relative_url`. `host_name` must be added as
   // a rule in SetUpOnMainThread().
-  void NavigateTo(std::string_view host_name, std::string_view relative_url) {
+  void NavigateTo(content::WebContents* web_contents,
+                  std::string_view host_name,
+                  std::string_view relative_url) {
     GURL url = embedded_test_server()->GetURL(host_name, relative_url);
-    ASSERT_TRUE(NavigateToURL(url));
+    ASSERT_TRUE(NavigateToURL(web_contents, url));
   }
 };
 
@@ -488,16 +493,17 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
   // Withheld extension's site access.
   ScriptingPermissionsModifier(profile(), extension_.get())
       .SetWithholdHostPermissions(true);
+  auto* web_contents = GetActiveWebContents();
 
   {
     // Navigate to a.com. Script is not injected since extension has withheld
     // site access.
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
-    NavigateTo("a.com", "/simple.html");
+    NavigateTo(web_contents, "a.com", "/simple.html");
     blocked_action_waiter.Wait();
-    ASSERT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
-                                                      GetActiveWebContents()),
-              SitePermissionsHelper::SiteInteraction::kWithheld);
+    ASSERT_EQ(
+        permissions_helper_->GetSiteInteraction(*extension_, web_contents),
+        SitePermissionsHelper::SiteInteraction::kWithheld);
     EXPECT_FALSE(ContentScriptInjected());
     EXPECT_TRUE(ExtensionWantsToRun());
   }
@@ -509,9 +515,9 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
     active_action_runner()->GrantTabPermissions({extension_.get()});
     ASSERT_TRUE(WaitForReloadToFinish());
     ASSERT_TRUE(script_injection_listener.WaitUntilSatisfied());
-    EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
-                                                      GetActiveWebContents()),
-              SitePermissionsHelper::SiteInteraction::kGranted);
+    EXPECT_EQ(
+        permissions_helper_->GetSiteInteraction(*extension_, web_contents),
+        SitePermissionsHelper::SiteInteraction::kGranted);
     EXPECT_TRUE(ContentScriptInjected());
     EXPECT_FALSE(ExtensionWantsToRun());
   }
@@ -520,11 +526,11 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
     // Navigate to b.com. Script is not injected since extension has withheld
     // site access.
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
-    NavigateTo("b.com", "/simple.html");
+    NavigateTo(web_contents, "b.com", "/simple.html");
     blocked_action_waiter.Wait();
-    EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
-                                                      GetActiveWebContents()),
-              SitePermissionsHelper::SiteInteraction::kWithheld);
+    EXPECT_EQ(
+        permissions_helper_->GetSiteInteraction(*extension_, web_contents),
+        SitePermissionsHelper::SiteInteraction::kWithheld);
     EXPECT_FALSE(ContentScriptInjected());
     EXPECT_TRUE(ExtensionWantsToRun());
   }
@@ -534,11 +540,11 @@ IN_PROC_BROWSER_TEST_F(SitePermissionsHelperExecuteSciptBrowserTest,
     // back to a.com it should not have tab permissions anymore. Thus, the
     // script is not injected.
     BlockedActionWaiter blocked_action_waiter(active_action_runner());
-    NavigateTo("a.com", "/simple.html");
+    NavigateTo(web_contents, "a.com", "/simple.html");
     blocked_action_waiter.Wait();
-    EXPECT_EQ(permissions_helper_->GetSiteInteraction(*extension_,
-                                                      GetActiveWebContents()),
-              SitePermissionsHelper::SiteInteraction::kWithheld);
+    EXPECT_EQ(
+        permissions_helper_->GetSiteInteraction(*extension_, web_contents),
+        SitePermissionsHelper::SiteInteraction::kWithheld);
     EXPECT_FALSE(ContentScriptInjected());
     EXPECT_TRUE(ExtensionWantsToRun());
   }

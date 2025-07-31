@@ -614,12 +614,13 @@ class WebAccessibleResourcesServiceWorkerBrowserTest
   void RegisterServiceWorker(const std::string& host_name,
                              const std::string& worker_path,
                              const std::optional<std::string>& scope) {
+    auto* web_contents = GetActiveWebContents();
     GURL url = embedded_test_server()->GetURL(
         host_name, "/service_worker/create_service_worker.html");
-    EXPECT_TRUE(NavigateToURL(url));
+    EXPECT_TRUE(NavigateToURL(web_contents, url));
     std::string script = content::JsReplace("register($1, $2);", worker_path,
                                             scope ? *scope : std::string());
-    EXPECT_EQ("DONE", EvalJs(GetActiveWebContents(), script));
+    EXPECT_EQ("DONE", EvalJs(web_contents, script));
   }
 };
 
@@ -634,8 +635,10 @@ IN_PROC_BROWSER_TEST_F(WebAccessibleResourcesServiceWorkerBrowserTest,
   // Register a service worker and navigate to a page it controls.
   RegisterServiceWorker("example.com", "fetch_event_pass_through.js",
                         std::nullopt);
-  EXPECT_TRUE(NavigateToURL(embedded_test_server()->GetURL(
-      "example.com", "/service_worker/fetch_from_page.html")));
+  EXPECT_TRUE(NavigateToURL(
+      browser_window_interface(),
+      embedded_test_server()->GetURL("example.com",
+                                     "/service_worker/fetch_from_page.html")));
 
   const Extension* extension = LoadExtension(test_data_dir_.AppendASCII(
       "web_accessible_resources/dnr/redirect_with_initiator"));
