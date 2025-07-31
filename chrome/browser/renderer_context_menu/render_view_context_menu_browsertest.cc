@@ -2546,7 +2546,6 @@ class LensBrowserBaseTest : public InProcessBrowserTest {
       std::string image_path,
       int event_flags,
       ContextMenuNotificationObserver::MenuShownCallback callback) {
-    ASSERT_TRUE(embedded_test_server()->Start());
     GURL image_url(embedded_test_server()->GetURL(image_path));
     GURL page("data:text/html,<img src='" + image_url.spec() + "'>");
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), page));
