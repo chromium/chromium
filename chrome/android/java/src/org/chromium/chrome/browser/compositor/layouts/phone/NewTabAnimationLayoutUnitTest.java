@@ -329,7 +329,7 @@ public class NewTabAnimationLayoutUnitTest {
         assertEquals(2, layoutTabs.length);
         assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
         assertEquals(NEW_TAB_ID, layoutTabs[1].getId());
-        verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
+        verify(mNewTabAnimationLayout, times(1)).forceAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isRunningAnimations());
         verify(mAnimationHostView, times(1)).addView(any(NewForegroundTabAnimationHostView.class));
 
@@ -361,7 +361,7 @@ public class NewTabAnimationLayoutUnitTest {
         layoutTabs = mNewTabAnimationLayout.getLayoutTabsToRender();
         assertEquals(1, layoutTabs.length);
         assertEquals(CURRENT_TAB_ID, layoutTabs[0].getId());
-        verify(mNewTabAnimationLayout, times(1)).forceNewTabAnimationToFinish();
+        verify(mNewTabAnimationLayout, times(1)).forceAnimationToFinish();
         assertTrue(mNewTabAnimationLayout.isStartingToHide());
         verify(mBrowserVisibilityDelegate, times(1)).showControlsPersistent();
         verify(mAnimationHostView, times(1)).addView(any(NewBackgroundTabAnimationHostView.class));
