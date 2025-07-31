@@ -1700,13 +1700,7 @@ public class TabCollectionTabModelImplTest {
         Tab tab2 = createTab();
         Tab tab3 = createTab();
 
-        // TODO(crbug.com/429145597): Remove this once the implementation is further along.
-        // Create a tab that is not in a group to act as the current tab. This is required to
-        // prevent TabListMediator from being created and failing a bunch of lookups for
-        // representative tabs that are not yet implemented.
-        Tab tab4 = createTab();
-
-        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4));
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
 
         CallbackHelper didRemoveTabGroupHelper = new CallbackHelper();
         ThreadUtils.runOnUiThreadBlocking(
@@ -1745,7 +1739,7 @@ public class TabCollectionTabModelImplTest {
                     assertEquals(groupId2, tab1.getTabGroupId());
                     assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
                     assertFalse(mCollectionModel.tabGroupExists(groupId1));
-                    assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1, tab4));
+                    assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1));
                 });
 
         didRemoveTabGroupHelper.waitForOnly();

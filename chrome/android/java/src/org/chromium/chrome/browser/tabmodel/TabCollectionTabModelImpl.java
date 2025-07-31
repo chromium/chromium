@@ -1605,7 +1605,7 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
         if (isMovingOutOfGroup) {
             assumeNonNull(oldTabGroupId);
             boolean wasLastTabInGroup =
-                    wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(tab, oldTabGroupId, finalIndex);
+                    wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(tab, oldTabGroupId);
             // TODO(crbug.com/429145597): Also close the detached tab group if this is not an
             // undoable merge.
             if (wasLastTabInGroup && newTabGroupId == null) {
@@ -1663,12 +1663,11 @@ public class TabCollectionTabModelImpl extends TabModelJniBridge
      * Notifies observers that a tab has moved out of a group. Returns true if the tab was the last
      * tab in the group.
      */
-    private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(
-            Tab tab, Token oldTabGroupId, int finalIndex) {
+    private boolean wasLastTabInGroupAndNotifyDidMoveTabOutOfGroup(Tab tab, Token oldTabGroupId) {
         int prevFilterIndex = representativeIndexOf(getLastShownTabForGroup(oldTabGroupId));
         boolean isLastTabInGroup = prevFilterIndex == TabList.INVALID_TAB_INDEX;
         if (isLastTabInGroup) {
-            prevFilterIndex = finalIndex;
+            prevFilterIndex = representativeIndexOf(tab);
         }
         for (TabGroupModelFilterObserver observer : mTabGroupObservers) {
             observer.didMoveTabOutOfGroup(tab, prevFilterIndex);
