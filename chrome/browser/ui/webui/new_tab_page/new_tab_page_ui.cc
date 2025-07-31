@@ -545,6 +545,8 @@ content::WebUIDataSource* CreateAndAddNewTabPageUiHtmlSource(Profile* profile) {
   source->AddBoolean("searchboxShowComposebox",
                      ntp_composebox::FeatureConfig::Get().enabled &&
                          omnibox::IsAimAllowedByPolicy(profile->GetPrefs()));
+  source->AddBoolean("composeboxShowZps",
+                     ntp_composebox::kShowComposeboxZps.Get());
 
   source->AddBoolean("composeboxCloseByEscape",
                      composebox_config.close_by_escape());

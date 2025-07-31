@@ -27,6 +27,7 @@ function generateZeroId(): string {
 suite('NewTabPageComposeboxTest', () => {
   let composeboxElement: ComposeboxElement;
   let handler: TestMock<PageHandlerRemote>;
+  let searchboxHandler: TestMock<SearchboxPageHandlerRemote>;
   let callbackRouterRemote: PageRemote;
   let metrics: MetricsTracker;
 
@@ -39,6 +40,9 @@ suite('NewTabPageComposeboxTest', () => {
             new SearchboxPageCallbackRouter())));
     callbackRouterRemote = ComposeboxProxyImpl.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
+    searchboxHandler = installMock(
+        SearchboxPageHandlerRemote,
+        mock => ComposeboxProxyImpl.getInstance().searchboxHandler = mock);
     metrics = fakeMetricsPrivate();
   });
 
@@ -570,5 +574,17 @@ suite('NewTabPageComposeboxTest', () => {
     assertEquals(
         composeboxElement.$.cancelIcon.getAttribute('title'),
         loadTimeData.getString('composeboxCancelButtonTitleInput'));
+  });
+
+  test('composebox queries autocomplete on load', async () => {
+    loadTimeData.overrideValues({composeboxShowZps: true});
+    createComposeboxElement();
+    await microtasksFinished();
+
+    // Autocomplete should be queried when the composebox is created.
+    assertEquals(searchboxHandler.getCallCount('queryAutocomplete'), 1);
+
+    // Restore.
+    loadTimeData.overrideValues({composeboxShowZps: false});
   });
 });

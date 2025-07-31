@@ -7,8 +7,36 @@
 #include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
+#include "chrome/browser/ui/webui/searchbox/searchbox_omnibox_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
 #include "content/public/browser/page_navigator.h"
+
+namespace {
+class ComposeboxOmniboxClient final : public SearchboxOmniboxClient {
+ public:
+  ComposeboxOmniboxClient(Profile* profile, content::WebContents* web_contents);
+  ~ComposeboxOmniboxClient() override;
+
+  // OmniboxClient:
+  metrics::OmniboxEventProto::PageClassification GetPageClassification(
+      bool is_prefetch) const override;
+};
+
+ComposeboxOmniboxClient::ComposeboxOmniboxClient(
+    Profile* profile,
+    content::WebContents* web_contents)
+    : SearchboxOmniboxClient(profile, web_contents) {}
+
+ComposeboxOmniboxClient::~ComposeboxOmniboxClient() = default;
+
+metrics::OmniboxEventProto::PageClassification
+ComposeboxOmniboxClient::GetPageClassification(bool is_prefetch) const {
+  // TODO(crbug.com/434711904): Create new page classification
+  return metrics::OmniboxEventProto::NTP_REALBOX;
+}
+
+}  // namespace
 
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
@@ -30,6 +58,14 @@ ComposeboxHandler::ComposeboxHandler(
       page_{std::move(pending_page)},
       handler_(this, std::move(pending_handler)) {
   query_controller_->AddObserver(this);
+
+  // TODO(crbug.com/435470637): Consider moving to SearchboxHandler base class.
+  owned_controller_ = std::make_unique<OmniboxController>(
+      /*view=*/nullptr,
+      std::make_unique<ComposeboxOmniboxClient>(profile_, web_contents_));
+  controller_ = owned_controller_.get();
+
+  autocomplete_controller_observation_.Observe(autocomplete_controller());
 }
 
 ComposeboxHandler::~ComposeboxHandler() {

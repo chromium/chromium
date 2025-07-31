@@ -6,6 +6,7 @@ import './icons.html.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {assert} from '//resources/js/assert.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
@@ -14,6 +15,8 @@ import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/ung
 import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.js';
+import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
+import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
 import type {PageCallbackRouter, PageHandlerRemote} from '../composebox.mojom-webui.js';
 import {FileUploadErrorType, FileUploadStatus} from '../composebox_query.mojom-webui.js';
@@ -86,6 +89,7 @@ export class ComposeboxElement extends I18nMixinLit
         reflect: true,
         type: Boolean,
       },
+      result_: {type: Object},
       submitEnabled_: {
         reflect: true,
         type: Boolean,
@@ -119,16 +123,24 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor submitting_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
   protected accessor errorMessage_: string = '';
+  protected accessor result_: AutocompleteResult|null;
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
   private maxFileCount_: number =
       loadTimeData.getInteger('composeboxFileMaxCount');
   private maxFileSize_: number =
       loadTimeData.getInteger('composeboxFileMaxSize');
+  private showZps: boolean = loadTimeData.getBoolean('composeboxShowZps');
+  private browserProxy: ComposeboxProxyImpl = ComposeboxProxyImpl.getInstance();
   private callbackRouter_: PageCallbackRouter;
+  private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
+  private searchboxHandler_: SearchboxPageHandlerRemote;
   private setFileUploadStatusListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
+  private listenerIds: number[];
+  private searchboxListenerIds: number[];
+
 
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
@@ -137,6 +149,9 @@ export class ComposeboxElement extends I18nMixinLit
     super();
     this.callbackRouter_ = ComposeboxProxyImpl.getInstance().callbackRouter;
     this.pageHandler_ = ComposeboxProxyImpl.getInstance().handler;
+    this.searchboxCallbackRouter_ =
+        ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
+    this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
     this.pageHandler_.notifySessionStarted();
     recordLoadDuration(
         'NewTabPage.Composebox.FromNTPLoadToSessionStart',
@@ -146,58 +161,76 @@ export class ComposeboxElement extends I18nMixinLit
   override connectedCallback() {
     super.connectedCallback();
 
-    this.setFileUploadStatusListenerId_ =
-        this.callbackRouter_.onFileUploadStatusChanged.addListener(
-            (token: UnguessableToken, status: FileUploadStatus,
-             errorType: FileUploadErrorType) => {
-              let file = this.files_.get(token);
-              if (file) {
-                if ([
-                      FileUploadStatus.kValidationFailed,
-                      FileUploadStatus.kUploadFailed,
-                      FileUploadStatus.kUploadExpired,
-                    ].includes(status)) {
-                  this.files_.delete(token);
+    this.listenerIds = [
+      this.callbackRouter_.onFileUploadStatusChanged.addListener(
+          (token: UnguessableToken, status: FileUploadStatus,
+           errorType: FileUploadErrorType) => {
+            let file = this.files_.get(token);
+            if (file) {
+              if ([
+                    FileUploadStatus.kValidationFailed,
+                    FileUploadStatus.kUploadFailed,
+                    FileUploadStatus.kUploadExpired,
+                  ].includes(status)) {
+                this.files_.delete(token);
 
-                  switch (status) {
-                    case FileUploadStatus.kValidationFailed:
-                      this.errorMessage_ = this.i18n(
-                          FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
-                          'composeboxFileUploadValidationFailed');
-                      break;
-                    case FileUploadStatus.kUploadFailed:
-                      this.errorMessage_ =
-                          this.i18n('composeboxFileUploadFailed');
-                      break;
-                    case FileUploadStatus.kUploadExpired:
-                      this.errorMessage_ =
-                          this.i18n('composeboxFileUploadExpired');
-                      break;
-                  }
-                  this.showErrorScrim_ = true;
-                } else {
-                  file = {...file, status: status};
-                  this.files_.set(token, file);
-
-                  if (status === FileUploadStatus.kUploadSuccessful) {
-                    const announcer = getAnnouncerInstance();
-                    announcer.announce(
-                        this.i18n('composeboxFileUploadCompleteText'));
-                  }
+                switch (status) {
+                  case FileUploadStatus.kValidationFailed:
+                    this.errorMessage_ = this.i18n(
+                        FILE_VALIDATION_ERRORS_MAP.get(errorType) ??
+                        'composeboxFileUploadValidationFailed');
+                    break;
+                  case FileUploadStatus.kUploadFailed:
+                    this.errorMessage_ =
+                        this.i18n('composeboxFileUploadFailed');
+                    break;
+                  case FileUploadStatus.kUploadExpired:
+                    this.errorMessage_ =
+                        this.i18n('composeboxFileUploadExpired');
+                    break;
                 }
-                this.files_ = new Map([...this.files_]);
+                this.showErrorScrim_ = true;
+              } else {
+                file = {...file, status: status};
+                this.files_.set(token, file);
+
+                if (status === FileUploadStatus.kUploadSuccessful) {
+                  const announcer = getAnnouncerInstance();
+                  announcer.announce(
+                      this.i18n('composeboxFileUploadCompleteText'));
+                }
               }
-            });
+              this.files_ = new Map([...this.files_]);
+            }
+          }),
+    ];
+
+    this.searchboxListenerIds = [
+      this.searchboxCallbackRouter_.autocompleteResultChanged.addListener(
+          this.onAutocompleteResultChanged_.bind(this)),
+    ];
+
 
     this.eventTracker_.add(this.$.input, 'input', () => {
       this.submitEnabled_ = this.$.input.value.trim().length > 0;
     });
     this.$.input.focus();
+    if (this.showZps) {
+      this.searchboxHandler_.queryAutocomplete(
+          stringToMojoString16(this.$.input.value), false);
+    }
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback();
-    this.callbackRouter_.removeListener(this.setFileUploadStatusListenerId_!);
+    this.listenerIds.forEach(
+        id => assert(this.browserProxy.callbackRouter.removeListener(id)));
+    this.searchboxListenerIds.forEach(
+        id => assert(
+            this.browserProxy.searchboxCallbackRouter.removeListener(id)));
+    this.listenerIds = [];
+    this.searchboxListenerIds = [];
+
     this.eventTracker_.removeAll();
   }
 
@@ -373,6 +406,11 @@ export class ComposeboxElement extends I18nMixinLit
     chrome.metricsPrivate.recordEnumerationValue(
         'NewTabPage.Composebox.File.WebUI.UploadAttemptFailure', enumValue,
         ComposeboxFileValidationError.MAX_VALUE + 1);
+  }
+
+  private onAutocompleteResultChanged_(result: AutocompleteResult) {
+    // TODO(crbug.com/434748455): Display suggestions below composebox.
+    this.result_ = result;
   }
 }
 
