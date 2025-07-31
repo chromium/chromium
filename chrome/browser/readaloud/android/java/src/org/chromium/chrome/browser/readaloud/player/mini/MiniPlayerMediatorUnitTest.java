@@ -23,6 +23,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
@@ -100,8 +101,7 @@ public class MiniPlayerMediatorUnitTest {
         // Simulate the layout reporting its height.
         mMediator.onHeightKnown(HEIGHT_PX);
         // Bottom controls resize should be triggered.
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX), eq(false));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(false));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
         assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 
@@ -130,8 +130,7 @@ public class MiniPlayerMediatorUnitTest {
         // Simulate the layout reporting its height.
         mMediator.onHeightKnown(HEIGHT_PX);
         // Bottom controls resize should be triggered.
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX), eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
         assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
 
@@ -197,8 +196,7 @@ public class MiniPlayerMediatorUnitTest {
         // Simulate the layout reporting its height.
         mMediator.onHeightKnown(HEIGHT_PX);
         // Bottom controls resize should be triggered.
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX), eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
         assertEquals(HEIGHT_PX, mModel.get(Properties.HEIGHT));
@@ -232,8 +230,7 @@ public class MiniPlayerMediatorUnitTest {
         // Simulate the layout reporting its height.
         mMediator.onHeightKnown(HEIGHT_PX);
         // Bottom controls resize should be triggered.
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(eq(HEIGHT_PX), eq(HEIGHT_PX), eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsHeight();
         doReturn(HEIGHT_PX).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
         verify(mBottomControlsStacker).notifyBackgroundColor(0xAABBCCDD);
@@ -253,7 +250,7 @@ public class MiniPlayerMediatorUnitTest {
     }
 
     @Test
-    public void testDismissDoestTriggerDelayedRunnable() {
+    public void testDismissDoesTriggerDelayedRunnable() {
         // Show once.
         mMediator.show(/* animate= */ true);
         mMediator.onHeightKnown(HEIGHT_PX);
@@ -272,12 +269,14 @@ public class MiniPlayerMediatorUnitTest {
         // Start by fading out.
         assertFalse(mModel.get(Properties.CONTENTS_OPAQUE));
 
+        Mockito.clearInvocations(mBottomControlsStacker);
+
         // Simulate the layout calling back after setting its opacity.
         mMediator.onZeroOpacityReached();
 
         // Layout should be GONE and bottom controls resizing should be triggered.
         assertEquals(View.GONE, mModel.get(Properties.ANDROID_VIEW_VISIBILITY));
-        verify(mBottomControlsStacker).setBottomControlsHeight(eq(1), eq(0), eq(false));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(false));
         doReturn(0).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
 
         onBottomControlsHeightChanged(0, 0);
@@ -307,12 +306,14 @@ public class MiniPlayerMediatorUnitTest {
         // Start by fading out.
         assertFalse(mModel.get(Properties.CONTENTS_OPAQUE));
 
+        Mockito.clearInvocations(mBottomControlsStacker);
+
         // Simulate the layout calling back after setting its opacity.
         mMediator.onZeroOpacityReached();
 
         // Layout should be GONE and bottom controls resizing should be triggered.
         assertEquals(View.GONE, mModel.get(Properties.ANDROID_VIEW_VISIBILITY));
-        verify(mBottomControlsStacker).setBottomControlsHeight(eq(1), eq(0), eq(false));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(false));
         doReturn(0).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
 
         // Simulate the bottom controls being resized instantly.
@@ -350,7 +351,7 @@ public class MiniPlayerMediatorUnitTest {
 
         // Layout should be GONE and bottom controls resizing should be triggered.
         assertEquals(View.GONE, mModel.get(Properties.ANDROID_VIEW_VISIBILITY));
-        verify(mBottomControlsStacker).setBottomControlsHeight(eq(1), eq(0), eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
         doReturn(0).when(mBrowserControlsStateProvider).getBottomControlsMinHeight();
 
         // Simulate the bottom controls being resized over a few externally driven
@@ -401,7 +402,6 @@ public class MiniPlayerMediatorUnitTest {
     @Test
     public void testShowWithOtherBottomControls() {
         final int otherBottomControlsHeight = 134;
-        final int totalHeight = otherBottomControlsHeight + HEIGHT_PX;
         doReturn(otherBottomControlsHeight)
                 .when(mBrowserControlsStateProvider)
                 .getBottomControlsHeight();
@@ -411,8 +411,7 @@ public class MiniPlayerMediatorUnitTest {
         assertEquals(View.VISIBLE, mModel.get(Properties.ANDROID_VIEW_VISIBILITY));
 
         // Bottom controls resize should take previous height into account.
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(eq(totalHeight), eq(HEIGHT_PX), eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
 
         // Simulate the animated resize.
         onControlsOffsetChanged(-HEIGHT_PX, 0, true, /* layerYOffset= */ 0);
@@ -441,8 +440,7 @@ public class MiniPlayerMediatorUnitTest {
 
         // Bottom controls resize should take previous height into account.
         int totalHeight = otherBottomControlsMinHeight + HEIGHT_PX;
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(eq(totalHeight), eq(totalHeight), eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
 
         // Simulate the animated resize.
         onControlsOffsetChanged(
@@ -497,11 +495,7 @@ public class MiniPlayerMediatorUnitTest {
 
         // Layout should be GONE and bottom controls resizing should be triggered.
         assertEquals(View.GONE, mModel.get(Properties.ANDROID_VIEW_VISIBILITY));
-        verify(mBottomControlsStacker)
-                .setBottomControlsHeight(
-                        eq(otherBottomControlsMinHeight),
-                        eq(otherBottomControlsMinHeight),
-                        eq(true));
+        verify(mBottomControlsStacker).requestLayerUpdate(eq(true));
         doReturn(otherBottomControlsMinHeight)
                 .when(mBrowserControlsStateProvider)
                 .getBottomControlsMinHeight();

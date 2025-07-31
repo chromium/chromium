@@ -169,7 +169,7 @@ public class MiniPlayerMediator implements BottomControlsLayer {
     // (2) Finished fading out, now pull down.
     void onZeroOpacityReached() {
         mModel.set(Properties.ANDROID_VIEW_VISIBILITY, View.GONE);
-        shrinkBottomControls();
+        updateBottomControlsHeight();
         mLayoutHeightPx = 0;
     }
 
@@ -200,26 +200,13 @@ public class MiniPlayerMediator implements BottomControlsLayer {
             mBottomControlsStacker.notifyBackgroundColor(
                     mModel.get(Properties.BACKGROUND_COLOR_ARGB));
         }
-        int minHeight = getBrowserControls().getBottomControlsMinHeight();
-        setBottomControlsHeight(
-                getBrowserControls().getBottomControlsHeight() + mLayoutHeightPx,
-                mLayoutHeightPx + minHeight);
+        updateBottomControlsHeight();
     }
 
-    private void shrinkBottomControls() {
-        // Hack: Bottom controls animation doesn't work if the new height is 0. Shrink
-        // to 1 pixel instead in this case.
-        // TODO(b/320750931): fix the underlying issue in browser controls code
-        int minHeight = getBrowserControls().getBottomControlsMinHeight();
-        setBottomControlsHeight(
-                Math.max(getBrowserControls().getBottomControlsHeight() - mLayoutHeightPx, 1),
-                Math.max(minHeight - mLayoutHeightPx, 0));
-    }
-
-    private void setBottomControlsHeight(int height, int minHeight) {
+    private void updateBottomControlsHeight() {
         mIsAnimationStarted = false;
         boolean animate = mModel.get(Properties.ANIMATE_VISIBILITY_CHANGES);
-        mBottomControlsStacker.setBottomControlsHeight(height, minHeight, animate);
+        mBottomControlsStacker.requestLayerUpdate(animate);
     }
 
     private BrowserControlsStateProvider getBrowserControls() {

@@ -145,8 +145,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
 
     private int mTotalHeight = INVALID_HEIGHT;
     private int mTotalMinHeight = INVALID_HEIGHT;
-    private int mTotalHeightFromSetter = INVALID_HEIGHT;
-    private int mTotalMinHeightFromSetter = INVALID_HEIGHT;
 
     private @Nullable BrowserControlsOffsetTagsInfo mOffsetTagsInfo;
 
@@ -282,34 +280,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     }
 
     /**
-     * Note: New callers should just use #requestLayerUpdate directly.
-     *
-     * <p>Request update the bottom controls height. Internally, the call is routed to the inner
-     * {@link BrowserControlsSizer}.
-     *
-     * @param height The new height for the bottom browser controls
-     * @param minHeight The new min height for the bottom browser controls.
-     * @param animate Whether the height change required to be animated.
-     * @see BrowserControlsSizer#setBottomControlsHeight(int, int)
-     * @see BrowserControlsSizer#setAnimateBrowserControlsHeightChanges(boolean)
-     */
-    @Deprecated
-    public void setBottomControlsHeight(int height, int minHeight, boolean animate) {
-        mTotalHeightFromSetter = height;
-        mTotalMinHeightFromSetter = minHeight;
-
-        requestLayerUpdate(animate);
-        // Verify the height and min height match the layer setup.
-        logIfHeightMismatch(
-                /* expected= */ "HeightFromSetter",
-                mTotalHeightFromSetter,
-                mTotalMinHeightFromSetter,
-                /* actual= */ "LayerHeightCalc",
-                mTotalHeight,
-                mTotalMinHeight);
-    }
-
-    /**
      * @see BrowserControlsSizer#notifyBackgroundColor(int).
      */
     public void notifyBackgroundColor(@ColorInt int color) {
@@ -365,24 +335,6 @@ public class BottomControlsStacker implements BrowserControlsStateProvider.Obser
     @Override
     public void onBottomControlsHeightChanged(
             int bottomControlsHeight, int bottomControlsMinHeight) {
-        // Use warning instead of assert, as there are still use cases that's referenced
-        // from custom tabs.
-        logIfHeightMismatch(
-                /* expected= */ "HeightFromSetter",
-                mTotalHeightFromSetter,
-                mTotalMinHeightFromSetter,
-                /* actual= */ "onBottomControlsHeightChanged",
-                bottomControlsHeight,
-                bottomControlsMinHeight);
-
-        logIfHeightMismatch(
-                /* expected= */ "LayerHeightCalc",
-                mTotalHeight,
-                mTotalMinHeight,
-                /* actual= */ "onBottomControlsHeightChanged",
-                bottomControlsHeight,
-                bottomControlsMinHeight);
-
         // If animations are enabled, calls to #onControlsOffsetChanged will reposition the
         // layers. If animations aren't enabled, no such calls will occur, and #repositionLayers
         // should be triggered here.
