@@ -8,6 +8,7 @@ import {FileUploadErrorType, FileUploadStatus} from 'chrome://new-tab-page/compo
 import {ComposeboxElement, ComposeboxProxyImpl} from 'chrome://new-tab-page/lazy_load.js';
 import {$$} from 'chrome://new-tab-page/new_tab_page.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
+import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import type {MetricsTracker} from 'chrome://webui-test/metrics_test_support.js';
 import {fakeMetricsPrivate} from 'chrome://webui-test/metrics_test_support.js';
@@ -33,8 +34,9 @@ suite('NewTabPageComposeboxTest', () => {
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         PageHandlerRemote,
-        mock => ComposeboxProxyImpl.setInstance(
-            new ComposeboxProxyImpl(mock, new PageCallbackRouter())));
+        mock => ComposeboxProxyImpl.setInstance(new ComposeboxProxyImpl(
+            mock, new PageCallbackRouter(), new SearchboxPageHandlerRemote(),
+            new SearchboxPageCallbackRouter())));
     callbackRouterRemote = ComposeboxProxyImpl.getInstance()
                                .callbackRouter.$.bindNewPipeAndPassRemote();
     metrics = fakeMetricsPrivate();

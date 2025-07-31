@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/new_tab_page/composebox/composebox_handler.h"
 
+#include "base/notreached.h"
 #include "base/time/time.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "components/omnibox/composebox/composebox_image_helper.h"
@@ -12,10 +13,18 @@
 ComposeboxHandler::ComposeboxHandler(
     mojo::PendingReceiver<composebox::mojom::PageHandler> pending_handler,
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler>
+        pending_searchbox_handler,
     std::unique_ptr<ComposeboxQueryController> query_controller,
     std::unique_ptr<ComposeboxMetricsRecorder> metrics_recorder,
-    content::WebContents* web_contents)
-    : query_controller_(std::move(query_controller)),
+    Profile* profile,
+    content::WebContents* web_contents,
+    MetricsReporter* metrics_reporter)
+    : SearchboxHandler(std::move(pending_searchbox_handler),
+                       profile,
+                       web_contents,
+                       metrics_reporter),
+      query_controller_(std::move(query_controller)),
       metrics_recorder_(std::move(metrics_recorder)),
       web_contents_(web_contents),
       page_{std::move(pending_page)},
@@ -133,4 +142,28 @@ void ComposeboxHandler::OnFileUploadStatusChanged(
   page_->OnFileUploadStatusChanged(file_token, file_upload_status, error_type);
   metrics_recorder_->OnFileUploadStatusChanged(mime_type, file_upload_status,
                                                error_type);
+}
+
+void ComposeboxHandler::DeleteAutocompleteMatch(uint8_t line, const GURL& url) {
+  NOTREACHED();
+}
+
+void ComposeboxHandler::ExecuteAction(uint8_t line,
+                                      uint8_t action_index,
+                                      const GURL& url,
+                                      base::TimeTicks match_selection_timestamp,
+                                      uint8_t mouse_button,
+                                      bool alt_key,
+                                      bool ctrl_key,
+                                      bool meta_key,
+                                      bool shift_key) {
+  NOTREACHED();
+}
+
+void ComposeboxHandler::PopupElementSizeChanged(const gfx::Size& size) {
+  NOTREACHED();
+}
+
+void ComposeboxHandler::OnThumbnailRemoved() {
+  NOTREACHED();
 }

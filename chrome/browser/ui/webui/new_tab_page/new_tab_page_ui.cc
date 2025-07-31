@@ -936,11 +936,16 @@ void NewTabPageUI::CreatePageHandler(
 
 void NewTabPageUI::CreatePageHandler(
     mojo::PendingRemote<composebox::mojom::Page> pending_page,
-    mojo::PendingReceiver<composebox::mojom::PageHandler>
-        pending_page_handler) {
+    mojo::PendingReceiver<composebox::mojom::PageHandler> pending_page_handler,
+    mojo::PendingRemote<searchbox::mojom::Page> pending_searchbox_page,
+    mojo::PendingReceiver<searchbox::mojom::PageHandler>
+        pending_searchbox_handler) {
   DCHECK(pending_page.is_valid());
+  MetricsReporterService* service =
+      MetricsReporterService::GetFromWebContents(web_ui()->GetWebContents());
   composebox_handler_ = std::make_unique<ComposeboxHandler>(
       std::move(pending_page_handler), std::move(pending_page),
+      std::move(pending_searchbox_handler),
       std::make_unique<ComposeboxQueryController>(
           IdentityManagerFactory::GetForProfile(profile_),
           g_browser_process->shared_url_loader_factory(), chrome::GetChannel(),
@@ -948,8 +953,11 @@ void NewTabPageUI::CreatePageHandler(
           TemplateURLServiceFactory::GetForProfile(profile_),
           profile_->GetVariationsClient(),
           ntp_composebox::kSendLnsSurfaceParam.Get()),
-      std::make_unique<ComposeboxMetricsRecorder>("NewTabPage."),
-      web_contents());
+      std::make_unique<ComposeboxMetricsRecorder>("NewTabPage."), profile_,
+      web_contents(), service->metrics_reporter());
+
+  // TODO(crbug.com/435288212): Move searchbox mojom to use factory pattern.
+  composebox_handler_->SetPage(std::move(pending_searchbox_page));
 }
 
 void NewTabPageUI::CreateHelpBubbleHandler(

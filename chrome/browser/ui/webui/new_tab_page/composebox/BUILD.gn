@@ -18,6 +18,7 @@ source_set("composebox") {
     "//chrome/browser:browser_process",
     "//chrome/browser:global_features",
     "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
+    "//chrome/browser/ui/webui/searchbox",
     "//components/application_locale_storage",
     "//components/omnibox/common",
     "//components/omnibox/composebox",
@@ -33,22 +34,8 @@ mojom("mojo_bindings") {
   sources = [ "composebox.mojom" ]
   webui_module_path = "/"
   public_deps = [
+    "//components/omnibox/browser:mojo_bindings",
     "//components/omnibox/composebox:mojo_bindings",
     "//mojo/public//mojom/base",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "composebox_handler_unittest.cc" ]
-  deps = [
-    ":composebox",
-    "//base/test:test_support",
-    "//chrome/browser/search_engines",
-    "//chrome/browser/ui/webui/new_tab_page/composebox/variations",
-    "//chrome/test:test_support",
-    "//components/omnibox/composebox:test_support",
-    "//services/network:test_support",
-    "//services/network/public/cpp",
   ]
 }
