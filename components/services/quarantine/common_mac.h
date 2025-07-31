@@ -13,6 +13,8 @@ class FilePath;
 
 namespace quarantine {
 
+// Returns a dictionary of quarantine properties. Returns an empty dictionary
+// upon any error or failure.
 NSDictionary* GetQuarantineProperties(const base::FilePath& file);
 
 }  // namespace quarantine

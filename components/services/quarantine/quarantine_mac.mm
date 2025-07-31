@@ -91,6 +91,69 @@ bool AddOriginMetadataToFile(const base::FilePath& file,
   return true;
 }
 
+// Adds quarantine metadata to `file`, assuming it has already been quarantined
+// by the OS. `source` is the source URL for the download, and `referrer` is the
+// URL the user initiated the download from.
+//
+// The OS will automatically quarantine files due to the LSFileQuarantineEnabled
+// entry in our Info.plist, but it knows relatively little about the files. This
+// adds more information about the download to improve the UI shown by the OS
+// when the users try to open the file.
+//
+// Note that as of macOS 12.4 this information is not stored by macOS, but a
+// contact at Apple asked us to ensure it is continued to be set, as "the
+// system still does try to consult and utilize the information to as part of
+// local policy decisions." Therefore, this function is best-effort and does not
+// return a success value.
+void AddQuarantineMetadataToFile(const base::FilePath& file,
+                                 const GURL& source,
+                                 const GURL& referrer) {
+  base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
+                                                base::BlockingType::MAY_BLOCK);
+
+  NSMutableDictionary* properties = [GetQuarantineProperties(file) mutableCopy];
+  if (!properties) {
+    // If there are no quarantine properties, then either there was some error
+    // or the file isn't quarantined (e.g. because the user set exclusions for
+    // certain file types). Don't add any metadata, because that will cause the
+    // file to be quarantined against the user's wishes.
+    return;
+  }
+
+  // kLSQuarantineAgentNameKey, kLSQuarantineAgentBundleIdentifierKey, and
+  // kLSQuarantineTimeStampKey are automatically set (see LSQuarantine.h), so
+  // only values that the OS can't infer must be set here.
+
+  if (!properties[base::apple::CFToNSPtrCast(kLSQuarantineTypeKey)]) {
+    CFStringRef type = source.SchemeIsHTTPOrHTTPS()
+                           ? kLSQuarantineTypeWebDownload
+                           : kLSQuarantineTypeOtherDownload;
+    properties[base::apple::CFToNSPtrCast(kLSQuarantineTypeKey)] =
+        base::apple::CFToNSPtrCast(type);
+  }
+
+  if (!properties[base::apple::CFToNSPtrCast(kLSQuarantineDataURLKey)]) {
+    properties[base::apple::CFToNSPtrCast(kLSQuarantineDataURLKey)] =
+        base::SysUTF8ToNSString(source.spec());
+  }
+
+  if (!properties[base::apple::CFToNSPtrCast(kLSQuarantineOriginURLKey)] &&
+      referrer.is_valid()) {
+    properties[base::apple::CFToNSPtrCast(kLSQuarantineOriginURLKey)] =
+        base::SysUTF8ToNSString(referrer.spec());
+  }
+
+  NSURL* file_url = base::apple::FilePathToNSURL(file);
+  if (!file_url) {
+    return;
+  }
+
+  NSError* error = nullptr;
+  [file_url setResourceValue:properties
+                      forKey:NSURLQuarantinePropertiesKey
+                       error:&error];
+}
+
 }  // namespace
 
 void QuarantineFile(const base::FilePath& file,
@@ -104,20 +167,15 @@ void QuarantineFile(const base::FilePath& file,
     return;
   }
 
-  // By default, all items downloaded from Chromium are quarantined, due to the
-  // LSFileQuarantineEnabled in the Info.plist. As of macOS 12.4, additional
-  // metadata added to the quarantine database is ignored (see
-  // https://crbug.com/1334495#c26), so don't bother including it. Do continue
-  // to populate the origin metadata, though, as it's useful to an end-user.
-
   GURL source_url = SanitizeUrlForQuarantine(source_url_unsafe);
   GURL referrer_url = SanitizeUrlForQuarantine(referrer_url_unsafe);
   if (source_url.is_empty() && request_initiator.has_value()) {
     source_url = SanitizeUrlForQuarantine(request_initiator->GetURL());
   }
 
-  // Don't consider it an error if we fail to add origin metadata.
+  // Both origin and quarantine metadata are best-effort.
   AddOriginMetadataToFile(file, source_url, referrer_url);
+  AddQuarantineMetadataToFile(file, source_url, referrer_url);
 
   std::move(callback).Run(QuarantineFileResult::OK);
 }
