@@ -653,6 +653,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="LocalStorage.DatabaseOnDiskSizeKB" units="KB"
+    expires_after="2026-01-20">
+  <owner>fergal@chromium.org</owner>
+  <owner>rahsin@microsoft.com</owner>
+  <owner>chrome-owp-storage@google.com</owner>
+  <summary>
+    Records the on disk size of the LocalStorage database for a given browser
+    Profile. This is reported when the DomStorageContextWrapper is created in
+    the Browser process and binds the LocalStorage endpoint in the Storage
+    process.
+  </summary>
+</histogram>
+
 <histogram name="LocalStorage.DatabaseOpen" enum="LevelDBStatus"
     expires_after="2025-10-31">
   <owner>arichiv@chromium.org</owner>
