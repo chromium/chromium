@@ -37,7 +37,6 @@
 #include "gpu/command_buffer/service/transfer_buffer_manager.h"
 #include "gpu/ipc/common/gpu_client_ids.h"
 #include "gpu/ipc/in_process_command_buffer.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gl/gl_context.h"
@@ -94,9 +93,7 @@ GpuFeatureInfo GLManager::g_gpu_feature_info;
 
 GLManager::Options::Options() = default;
 
-GLManager::GLManager()
-    : gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {
+GLManager::GLManager() {
   const base::CommandLine& command_line =
       *base::CommandLine::ForCurrentProcess();
   InitializeGpuPreferencesForTestingFromCommandLine(command_line,

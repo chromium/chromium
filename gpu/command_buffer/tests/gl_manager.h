@@ -35,7 +35,6 @@ class GLSurface;
 namespace gpu {
 
 class CommandBufferDirect;
-class GpuMemoryBufferFactory;
 class TransferBuffer;
 
 namespace gles2 {
@@ -170,7 +169,6 @@ class GLManager : private GpuControl {
   std::unique_ptr<gles2::GLES2CmdHelper> gles2_helper_;
   std::unique_ptr<TransferBuffer> transfer_buffer_;
   std::unique_ptr<gles2::GLES2Implementation> gles2_implementation_;
-  std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;
   SharedImageManager shared_image_manager_;
 
   bool use_iosurface_memory_buffers_ = false;
