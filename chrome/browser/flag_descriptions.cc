@@ -4146,6 +4146,13 @@ const char kTranslationAPIDescription[] =
     "See https://github.com/WICG/translation-api/blob/main/README.md";
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN)
+const char kAvatarButtonSyncPromoName[] = "Avatar Sync Promo";
+const char kAvatarButtonSyncPromoDescription[] =
+    "Enables the avatar button sync promo for eligible users. Only available "
+    "on Windows.";
+#endif
+
 const char kTreatInsecureOriginAsSecureName[] =
     "Insecure origins treated as secure";
 const char kTreatInsecureOriginAsSecureDescription[] =

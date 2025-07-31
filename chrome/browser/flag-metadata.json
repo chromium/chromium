@@ -1021,6 +1021,11 @@
     "owners": [ "gangwu@chromium.org", "chrome-mobile-search@google.com" ],
     "expiry_milestone": 160
   },
+    {
+    "name": "avatar-button-sync-promo",
+    "owners": [ "rsult@google.com", "chrome-signin-desktop-team@google.com" ],
+    "expiry_milestone": 148
+  },
   {
     "name": "back-forward-cache",
     "owners": [ "bfcache-dev@chromium.org" ],

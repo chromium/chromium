@@ -940,6 +940,11 @@ class HistorySyncOptinCoordinator
   }
 
   void OnNewSession() {
+    // Do not trigger the Sync promo on activity for this feature.
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      return;
+    }
+
     // NOTE: All history sync opt-in triggers for enterprise badging are
     // considered "on inactivity" (`kHistorySyncOptinExpansionPillOnInactivity`
     // access point).
@@ -988,6 +993,8 @@ class HistorySyncOptinCoordinator
       identity_manager_observation_{this};
 };
 
+// With the addition of `switches::kAvatarButtonSyncPromo` feature, this
+// provider may either show a SyncPromo or a HistorySyncPromo.
 class HistorySyncOptinStateProvider : public StateProvider {
  public:
   explicit HistorySyncOptinStateProvider(Browser* browser,
@@ -1002,6 +1009,10 @@ class HistorySyncOptinStateProvider : public StateProvider {
   bool IsActive() const override { return coordinator_->triggered(); }
 
   std::u16string GetText() const override {
+    if (switches::IsAvatarSyncPromoFeatureEnabled()) {
+      return l10n_util::GetStringUTF16(IDS_AVATAR_BUTTON_SYNC_PROMO);
+    }
+
     switch (switches::kHistorySyncOptinExpansionPillOption.Get()) {
       case switches::HistorySyncOptinExpansionPillOption::kBrowseAcrossDevices:
       case switches::HistorySyncOptinExpansionPillOption::
@@ -1798,7 +1809,8 @@ void AvatarToolbarButtonStateManager::CreateStatesAndListeners(
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
     if (base::FeatureList::IsEnabled(
-            switches::kEnableHistorySyncOptinExpansionPill)) {
+            switches::kEnableHistorySyncOptinExpansionPill) ||
+        switches::IsAvatarSyncPromoFeatureEnabled()) {
       auto history_sync_optin_state_provider =
           std::make_unique<HistorySyncOptinStateProvider>(
               browser,

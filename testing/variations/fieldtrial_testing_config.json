@@ -3023,6 +3023,21 @@
             ]
         }
     ],
+    "AvatarButtonSyncPromoWindows": [
+        {
+            "platforms": [
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AvatarButtonSyncPromo"
+                    ]
+                }
+            ]
+        }
+    ],
     "AvoidDuplicateDelayBeginFrame": [
         {
             "platforms": [

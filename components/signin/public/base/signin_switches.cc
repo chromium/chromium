@@ -9,6 +9,10 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/signin_pref_names.h"
 
+#if BUILDFLAG(IS_WIN)
+#include "base/win/windows_version.h"
+#endif
+
 namespace switches {
 
 // All switches in alphabetical order.
@@ -359,6 +363,31 @@ BASE_FEATURE(kEnforceManagementDisclaimer,
              "EnforceManagementDisclaimer",
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
+
+#if BUILDFLAG(IS_WIN)
+// Enables expanding the Avatar Pill to show a sync promo. Expected to be used
+// by Windows users only.
+BASE_FEATURE(kAvatarButtonSyncPromo,
+             "AvatarButtonSyncPromo",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+// Convenient testing flag for `kAvatarButtonSyncPromo` on all platforms.
+BASE_FEATURE(kAvatarButtonSyncPromoForTesting,
+             "AvatarButtonSyncPromoForTesting",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsAvatarSyncPromoFeatureEnabled() {
+  if (base::FeatureList::IsEnabled(
+          switches::kAvatarButtonSyncPromoForTesting)) {
+    return true;
+  }
+#if BUILDFLAG(IS_WIN)
+  return (base::win::GetVersion() <= base::win::Version::WIN10_22H2) &&
+         base::FeatureList::IsEnabled(switches::kAvatarButtonSyncPromo);
+#else
+  return false;
+#endif
+}
 
 }  // namespace switches
 

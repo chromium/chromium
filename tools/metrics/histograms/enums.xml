@@ -9936,6 +9936,7 @@ from previous Chrome versions.
   <int value="-1532645183" label="ReleaseNotesNotification:enabled"/>
   <int value="-1532501905"
       label="MediaPlaybackWhileNotVisiblePermissionPolicy:disabled"/>
+  <int value="-1532138473" label="AvatarButtonSyncPromo:enabled"/>
   <int value="-1532100164" label="WebViewMeasureScreenCoverage:enabled"/>
   <int value="-1532035450" label="DragTabsInTabletMode:disabled"/>
   <int value="-1532014193" label="disable-encryption-migration"/>
@@ -14241,6 +14242,7 @@ from previous Chrome versions.
   <int value="46201270" label="Taiyaki:disabled"/>
   <int value="46334141"
       label="FeatureNotificationGuideSkipCheckForLowEngagedUsers:enabled"/>
+  <int value="46893781" label="AvatarButtonSyncPromo:disabled"/>
   <int value="48159177" label="reduced-referrer-granularity"/>
   <int value="48619644" label="MostVisitedTilesVisualDeduplication:enabled"/>
   <int value="48666910" label="ClipboardHistoryLongpress:disabled"/>

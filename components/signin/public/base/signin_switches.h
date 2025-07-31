@@ -266,6 +266,16 @@ COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kEnforceManagementDisclaimer);
 #endif
 
+#if BUILDFLAG(IS_WIN)
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kAvatarButtonSyncPromo);
+#endif
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE(kAvatarButtonSyncPromoForTesting);
+
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+bool IsAvatarSyncPromoFeatureEnabled();
+
 }  // namespace switches
 
 // TODO(crbug.com/337879458): Move switches below into the switches namespace.

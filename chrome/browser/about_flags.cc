@@ -10726,6 +10726,12 @@ const FeatureEntry kFeatureEntries[] = {
          "EnableHistorySyncOptinExpansionPill")},
 #endif
 
+#if BUILDFLAG(IS_WIN)
+    {"avatar-button-sync-promo", flag_descriptions::kAvatarButtonSyncPromoName,
+     flag_descriptions::kAvatarButtonSyncPromoDescription, kOsWin,
+     FEATURE_VALUE_TYPE(switches::kAvatarButtonSyncPromo)},
+#endif
+
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)
     {"enable-extensions-explicit-browser-signin",
      flag_descriptions::kEnableExtensionsExplicitBrowserSigninName,

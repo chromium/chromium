@@ -1173,6 +1173,10 @@
     <message name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
       See tabs from other devices?
     </message>
+    <!-- TODO(crbug.com/435113265): Finalize the string and make it translateable. -->
+    <message translateable="false" name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button.">
+      Back-up your stuff
+    </message>
     <!-- Profile Menu Sync Promo Desktop -->
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Browse across devices?' history sync opt-in identity pill.">
       To pick up where you left off on other devices, sync your history and tabs to <ph name="ACCOUNT_EMAIL">$1<ex>elisa.beckett@gmail.com</ex></ph>

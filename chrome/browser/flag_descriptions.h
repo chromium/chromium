@@ -2371,6 +2371,11 @@ extern const char kTranslationAPIName[];
 extern const char kTranslationAPIDescription[];
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 
+#if BUILDFLAG(IS_WIN)
+extern const char kAvatarButtonSyncPromoName[];
+extern const char kAvatarButtonSyncPromoDescription[];
+#endif
+
 extern const char kTreatInsecureOriginAsSecureName[];
 extern const char kTreatInsecureOriginAsSecureDescription[];
 
