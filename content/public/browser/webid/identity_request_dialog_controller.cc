@@ -65,6 +65,11 @@ void IdentityRequestDialogController::SetIsInterceptionEnabled(bool enabled) {
   is_interception_enabled_ = enabled;
 }
 
+void IdentityRequestDialogController::ShouldShowAccountsPassiveDialog(
+    ShouldShowAccountsPassiveDialogCallback cb) {
+  std::move(cb).Run(true);
+}
+
 bool IdentityRequestDialogController::ShowAccountsDialog(
     content::RelyingPartyData rp_data,
     const std::vector<scoped_refptr<content::IdentityProviderData>>& idp_list,

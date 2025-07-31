@@ -314,6 +314,14 @@ class CONTENT_EXPORT FederatedAuthRequestImpl
       std::vector<blink::mojom::IdentityProviderRequestOptionsPtr>& providers);
 
   void MaybeShowAccountsDialog();
+  void OnShouldShowAccountsPassiveDialogResult(
+      bool did_succeed_for_at_least_one_idp,
+      bool should_show);
+  // To be called immediately after ShowAccountsDialog for correct devtools
+  // integration and metrics reporting.
+  // `did_succeed_for_at_least_one_idp` needs to be passed as a parameter
+  // because `fetch_data_` has been cleared at this point.
+  void AfterAccountsDialogShown(bool did_succeed_for_at_least_one_idp);
   void ShowModalDialog(DialogType dialog_type,
                        const GURL& idp_config_url,
                        const GURL& url_to_show);

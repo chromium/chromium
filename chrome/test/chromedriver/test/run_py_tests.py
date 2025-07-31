@@ -9043,11 +9043,8 @@ class FedCmSpecificTest(ChromeDriverBaseTestWithWebServer):
       """ % self._url_prefix, 'utf-8')
     self._https_server.SetDataForPath('/fedcm.html', script_content)
 
-    # Disable SegmentationPlatformFedCmUser for chromedriver tests since it is
-    # possible for segmentation platform to suppress the UI.
     self.chrome_switches = ['host-resolver-rules=MAP *:443 127.0.0.1:%s' % port,
-            'enable-experimental-web-platform-features',
-            'disable-features=SegmentationPlatformFedCmUser']
+            'enable-experimental-web-platform-features']
     self._driver = self.CreateDriver(
         accept_insecure_certs=True,
         chrome_switches=self.chrome_switches)

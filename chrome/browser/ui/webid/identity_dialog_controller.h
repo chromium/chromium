@@ -64,6 +64,8 @@ class IdentityDialogController
   int GetBrandIconIdealSize(blink::mojom::RpMode rp_mode) override;
 
   // content::IdentityRequestDialogController
+  void ShouldShowAccountsPassiveDialog(
+      ShouldShowAccountsPassiveDialogCallback cb) override;
   bool ShowAccountsDialog(
       content::RelyingPartyData rp_data,
       const std::vector<IdentityProviderDataPtr>& identity_provider_data,
@@ -142,11 +144,7 @@ class IdentityDialogController
 
   // Called when |RequestUiVolumeRecommendation| returns a result.
   void OnRequestUiVolumeRecommendationResultReceived(
-      const content::RelyingPartyData& rp_data,
-      const std::vector<IdentityProviderDataPtr>& identity_provider_data,
-      const std::vector<IdentityRequestAccountPtr>& accounts,
-      blink::mojom::RpMode rp_mode,
-      const std::vector<IdentityRequestAccountPtr>& new_accounts,
+      ShouldShowAccountsPassiveDialogCallback cb,
       const segmentation_platform::ClassificationResult&
           ui_volume_recommendation);
 

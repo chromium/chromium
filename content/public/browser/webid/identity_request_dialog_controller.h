@@ -164,6 +164,8 @@ class CONTENT_EXPORT IdentityRequestDialogController {
   // GENERATED_JAVA_CLASS_NAME_OVERRIDE: IdentityRequestDialogLinkType
   enum class LinkType { PRIVACY_POLICY, TERMS_OF_SERVICE };
 
+  using ShouldShowAccountsPassiveDialogCallback =
+      base::OnceCallback<void(bool)>;
   using AccountSelectionCallback =
       base::OnceCallback<void(const GURL& idp_config_url,
                               const std::string& /*account_id*/,
@@ -197,6 +199,12 @@ class CONTENT_EXPORT IdentityRequestDialogController {
 
   // When this is true, the dialog should not be immediately auto-accepted.
   virtual void SetIsInterceptionEnabled(bool enabled);
+
+  // Computes whether to show the dialog. Will be called before
+  // ShowAccountsDialog, but only in passive mode. If false is passed to the
+  // callback, the request will be cancelled.
+  virtual void ShouldShowAccountsPassiveDialog(
+      ShouldShowAccountsPassiveDialogCallback cb);
 
   // Shows and accounts selections for the given IDP. The `on_selected` callback
   // is called with the selected account id or empty string otherwise.

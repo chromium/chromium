@@ -32,6 +32,7 @@
 #include "url/origin.h"
 
 using testing::_;
+using testing::SaveArg;
 
 namespace {
 
@@ -462,15 +463,16 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformShowUi) {
           CreateMockSegmentationPlatformService("FedCmUserLoud", run_loop),
           CreateMockOptimizationGuideDecider());
 
-  // Show should be called.
-  std::unique_ptr<MockAccountSelectionView> account_selection_view =
-      std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _)).Times(1);
-  controller->SetAccountSelectionViewForTesting(
-      std::move(account_selection_view));
+  base::MockCallback<
+      IdentityDialogController::ShouldShowAccountsPassiveDialogCallback>
+      should_show_callback;
+  bool value = false;
+  EXPECT_CALL(should_show_callback, Run).WillOnce(SaveArg<0>(&value));
 
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+  controller->ShouldShowAccountsPassiveDialog(should_show_callback.Get());
+
   run_loop.Run();
+  EXPECT_EQ(true, value);
 }
 
 TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
@@ -486,20 +488,16 @@ TEST_F(IdentityDialogControllerTest, SegmentationPlatformDontShowUi) {
           CreateMockSegmentationPlatformService("FedCmUserQuiet", run_loop),
           CreateMockOptimizationGuideDecider());
 
-  // Show should not be called.
-  std::unique_ptr<MockAccountSelectionView> account_selection_view =
-      std::make_unique<MockAccountSelectionView>();
-  EXPECT_CALL(*account_selection_view, Show(_, _, _, _, _)).Times(0);
-  controller->SetAccountSelectionViewForTesting(
-      std::move(account_selection_view));
+  base::MockCallback<
+      IdentityDialogController::ShouldShowAccountsPassiveDialogCallback>
+      should_show_callback;
+  bool value = true;
+  EXPECT_CALL(should_show_callback, Run).WillOnce(SaveArg<0>(&value));
 
-  // Dismiss callback should be run.
-  base::MockCallback<DismissCallback> dismiss_callback;
-  EXPECT_CALL(dismiss_callback, Run).WillOnce(testing::Return());
+  controller->ShouldShowAccountsPassiveDialog(should_show_callback.Get());
 
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive,
-                     dismiss_callback.Get());
   run_loop.Run();
+  EXPECT_EQ(false, value);
 }
 
 TEST_F(IdentityDialogControllerTest,
@@ -529,8 +527,9 @@ TEST_F(IdentityDialogControllerTest,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
     run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
     // User selects an account.
     controller->OnAccountSelected(GURL(kIdpEtldPlusOne), accounts_[0]->id,
@@ -552,8 +551,9 @@ TEST_F(IdentityDialogControllerTest,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
     run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
     // User closes the dialog.
     controller->OnDismiss(
@@ -575,8 +575,9 @@ TEST_F(IdentityDialogControllerTest,
                 CollectTrainingData(_, _, _, _, _))
         .Times(1);
 
-    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+    controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
     run_loop.Run();
+    ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
 
     // Dialog gets dismissed for other reasons.
     controller->OnDismiss(IdentityDialogController::DismissReason::kOther);
@@ -601,7 +602,7 @@ TEST_F(IdentityDialogControllerTest,
   controller->SetAccountSelectionViewForTesting(
       std::make_unique<MockAccountSelectionView>());
 
-  ShowAccountsDialog(controller.get(), blink::mojom::RpMode::kPassive);
+  controller->ShouldShowAccountsPassiveDialog(base::DoNothing());
 
   // Reset the controller before running
   // `segmentation_platform_service_callback_`. This should not crash.

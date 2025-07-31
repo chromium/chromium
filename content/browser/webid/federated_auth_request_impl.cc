@@ -1154,6 +1154,14 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       return;
     }
   } else {
+    if (rp_mode_ == RpMode::kPassive) {
+      request_dialog_controller_->ShouldShowAccountsPassiveDialog(
+          base::BindOnce(&FederatedAuthRequestImpl::
+                             OnShouldShowAccountsPassiveDialogResult,
+                         weak_ptr_factory_.GetWeakPtr(),
+                         did_succeed_for_at_least_one_idp));
+      return;
+    }
     if (!request_dialog_controller_->ShowAccountsDialog(
             CreateRpData(), idp_data_for_display_, accounts_, rp_mode_,
             new_accounts_,
@@ -1169,6 +1177,36 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
       return;
     }
   }
+  AfterAccountsDialogShown(did_succeed_for_at_least_one_idp);
+}
+
+void FederatedAuthRequestImpl::OnShouldShowAccountsPassiveDialogResult(
+    bool did_succeed_for_at_least_one_idp,
+    bool should_show) {
+  if (!should_show) {
+    OnDialogDismissed(
+        IdentityRequestDialogController::DismissReason::kSuppressed);
+    return;
+  }
+  if (!request_dialog_controller_->ShowAccountsDialog(
+          CreateRpData(), idp_data_for_display_, accounts_, rp_mode_,
+          new_accounts_,
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountSelected,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindRepeating(&FederatedAuthRequestImpl::LoginToIdP,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              /*can_append_hints=*/false),
+          base::BindOnce(&FederatedAuthRequestImpl::OnDialogDismissed,
+                         weak_ptr_factory_.GetWeakPtr()),
+          base::BindOnce(&FederatedAuthRequestImpl::OnAccountsDisplayed,
+                         weak_ptr_factory_.GetWeakPtr()))) {
+    return;
+  }
+  AfterAccountsDialogShown(did_succeed_for_at_least_one_idp);
+}
+
+void FederatedAuthRequestImpl::AfterAccountsDialogShown(
+    bool did_succeed_for_at_least_one_idp) {
   did_show_ui_ = true;
 
   devtools_instrumentation::DidShowFedCmDialog(render_frame_host());
@@ -1254,6 +1292,7 @@ void FederatedAuthRequestImpl::NotifyAutofillSuggestionAccepted(
                          weak_ptr_factory_.GetWeakPtr()))) {
     return;
   }
+  // TODO(crbug.com/435216589): Should we call AfterAccountsDialogShown here?
 }
 
 void FederatedAuthRequestImpl::OnAccountsDisplayed() {
