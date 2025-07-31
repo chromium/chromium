@@ -26,6 +26,12 @@ BASE_FEATURE(kAdditionalOpaqueOriginEnforcements,
              "AdditionalOpaqueOriginEnforcements",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Capture Android key event objects to send them to the web contents when the
+// IME sends composition texts.
+BASE_FEATURE(kAndroidCaptureKeyEvents,
+             "AndroidCaptureKeyEvents",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Fallback to next named service slot if launching a privileged service process
 // hangs. In practice, this means if GPU launch hanges, then retry it once.
 BASE_FEATURE(kAndroidFallbackToNextSlot,

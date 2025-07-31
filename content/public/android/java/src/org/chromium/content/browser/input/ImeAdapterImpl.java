@@ -69,6 +69,8 @@ import org.chromium.content.browser.WindowEventObserver;
 import org.chromium.content.browser.WindowEventObserverManager;
 import org.chromium.content.browser.picker.InputDialogContainer;
 import org.chromium.content.browser.webcontents.WebContentsImpl;
+import org.chromium.content_public.browser.ContentFeatureList;
+import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.InputMethodManagerWrapper;
@@ -90,31 +92,29 @@ import java.lang.ref.WeakReference;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 /**
- * Implementation of the interface {@link ImeAdapter} providing an interface
- * in both ways native <-> java:
+ * Implementation of the interface {@link ImeAdapter} providing an interface in both ways native <->
+ * java:
  *
- * 1. InputConnectionAdapter notifies native code of text composition state and
- *    dispatch key events from java -> WebKit.
- * 2. Native ImeAdapter notifies java side to clear composition text.
+ * <p>1. InputConnectionAdapter notifies native code of text composition state and dispatch key
+ * events from java -> WebKit. 2. Native ImeAdapter notifies java side to clear composition text.
  *
- * The basic flow is:
- * 1. When InputConnectionAdapter gets called with composition or result text:
- *    If we receive a composition text or a result text, then we just need to
- *    dispatch a synthetic key event with special keycode 229, and then dispatch
- *    the composition or result text.
- * 2. Intercept dispatchKeyEvent() method for key events not handled by IME, we
- *   need to dispatch them to webkit and check webkit's reply. Then inject a
- *   new key event for further processing if webkit didn't handle it.
+ * <p>The basic flow is: 1. When InputConnectionAdapter gets called with composition or result text:
+ * If we receive a composition text or a result text, then we just need to dispatch a synthetic key
+ * event with special keycode 229, and then dispatch the composition or result text. 2. Intercept
+ * dispatchKeyEvent() method for key events not handled by IME, we need to dispatch them to webkit
+ * and check webkit's reply. Then inject a new key event for further processing if webkit didn't
+ * handle it.
  *
- * Note that the native peer object does not take any strong reference onto the
- * instance of this java object, hence it is up to the client of this class (e.g.
- * the ViewEmbedder implementor) to hold a strong reference to it for the required
- * lifetime of the object.
+ * <p>Note that the native peer object does not take any strong reference onto the instance of this
+ * java object, hence it is up to the client of this class (e.g. the ViewEmbedder implementor) to
+ * hold a strong reference to it for the required lifetime of the object.
  */
 @JNINamespace("content")
 @NullMarked
@@ -183,6 +183,8 @@ public class ImeAdapterImpl
     // system is active and stylus is used to edit input text. This is used to show the soft
     // keyboard from Direct writing toolbar.
     private boolean mForceShowKeyboardDuringStylusWriting;
+
+    private final ArrayDeque<KeyEvent> mKeyDownEvents = new ArrayDeque<>();
 
     /**
      * {@ResultReceiver} passed in InputMethodManager#showSoftInput}. We need this to scroll to the
@@ -377,6 +379,35 @@ public class ImeAdapterImpl
     @Override
     public boolean onCheckIsTextEditor() {
         return isTextInputType(mTextInputType);
+    }
+
+    @Override
+    public void onKeyPreIme(int keyCode, KeyEvent event) {
+        // HACK: Remember key down events to use it later in sendCompositionToNative().
+        // TODO(b/432367402): Use a new Android API to replace this hack with a proper solution.
+        if (ContentFeatureMap.isEnabled(ContentFeatureList.ANDROID_CAPTURE_KEY_EVENTS)
+                && Build.VERSION.SDK_INT <= 38) {
+            int unicodeChar = event.getUnicodeChar();
+            int action = event.getAction();
+            if (action == KeyEvent.ACTION_DOWN && unicodeChar != 0) {
+                removeOldKeyDownEvents();
+                mKeyDownEvents.add(new KeyEvent(event));
+                long maxQueueSize = 1000;
+                if (mKeyDownEvents.size() > maxQueueSize) {
+                    mKeyDownEvents.remove();
+                }
+            }
+        }
+    }
+
+    private void removeOldKeyDownEvents() {
+        // Remove events that happened more than a second ago.
+        long timestampMs = SystemClock.uptimeMillis();
+        long thresholdMs = 1000;
+        while (!mKeyDownEvents.isEmpty()
+                && timestampMs - mKeyDownEvents.element().getEventTime() >= thresholdMs) {
+            mKeyDownEvents.remove();
+        }
     }
 
     /** Whether the focused node is editable or not. */
@@ -1036,9 +1067,56 @@ public class ImeAdapterImpl
     boolean sendCompositionToNative(
             CharSequence text, int newCursorPosition, boolean isCommit, int unicodeFromKeyEvent) {
         if (!isValid()) return false;
-
         onImeEvent();
         long timestampMs = SystemClock.uptimeMillis();
+
+        // HACK: When the user types text using a physical keyboard, Gboard consumes key down events
+        // and commits the typed characters even if there is no conversion happening. This doesn't
+        // work well with web apps expecting keypress DOM events. b/416494348
+        // Ideally Gboard should be fixed to send the consumed key events back to chrome using the
+        // sendKeyEvent() API, but as a workaround here we send the corresponding key down event
+        // captured in onKeyPreIme() if any.
+        if (isCommit && !mKeyDownEvents.isEmpty() && text.length() == 1) {
+            removeOldKeyDownEvents();
+            // Look for a key down event that matches with the committed text.
+            KeyEvent lastKeyDownEvent = null;
+            for (KeyEvent event : mKeyDownEvents) {
+                if (Character.toString(event.getUnicodeChar()).contentEquals(text)) {
+                    lastKeyDownEvent = event;
+                    // If there is a matching event, remove all events before it.
+                    Iterator<KeyEvent> it = mKeyDownEvents.iterator();
+                    while (it.hasNext()) {
+                        KeyEvent currentEvent = it.next();
+                        it.remove();
+                        if (currentEvent == event) {
+                            break;
+                        }
+                    }
+                    break;
+                }
+            }
+
+            if (lastKeyDownEvent != null) {
+                if (DEBUG_LOGS) {
+                    Log.i(
+                            TAG,
+                            "sendCompositionToNative: Found a key down event " + lastKeyDownEvent);
+                }
+                ImeAdapterImplJni.get()
+                        .sendKeyEvent(
+                                mNativeImeAdapterAndroid,
+                                lastKeyDownEvent,
+                                EventType.KEY_DOWN,
+                                getModifiers(lastKeyDownEvent.getMetaState()),
+                                lastKeyDownEvent.getEventTime(),
+                                lastKeyDownEvent.getKeyCode(),
+                                lastKeyDownEvent.getScanCode(),
+                                false,
+                                lastKeyDownEvent.getUnicodeChar());
+                return true;
+            }
+        }
+
         ImeAdapterImplJni.get()
                 .sendKeyEvent(
                         mNativeImeAdapterAndroid,
@@ -1605,7 +1683,8 @@ public class ImeAdapterImpl
     }
 
     @CalledByNative
-    private void onConnectedToRenderProcess() {
+    @VisibleForTesting
+    void onConnectedToRenderProcess() {
         if (DEBUG_LOGS) Log.i(TAG, "onConnectedToRenderProcess");
         mIsConnected = true;
         createInputConnectionFactory();

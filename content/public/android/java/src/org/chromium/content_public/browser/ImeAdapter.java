@@ -6,6 +6,7 @@ package org.chromium.content_public.browser;
 
 import android.content.Context;
 import android.os.ResultReceiver;
+import android.view.KeyEvent;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 
@@ -70,6 +71,11 @@ public interface ImeAdapter {
      * @see View#onCheckIsTextEditor()
      */
     boolean onCheckIsTextEditor();
+
+    /**
+     * @see View#onKeyPreIme(int, KeyEvent)
+     */
+    void onKeyPreIme(int keyCode, KeyEvent event);
 
     /** Whether the focused node is editable or not. */
     boolean focusedNodeEditable();

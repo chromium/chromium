@@ -383,6 +383,14 @@ public class ContentView extends FrameLayout
     }
 
     @Override
+    public boolean onKeyPreIme(int keyCode, KeyEvent event) {
+        if (hasValidWebContents()) {
+            ImeAdapter.fromWebContents(mWebContents).onKeyPreIme(keyCode, event);
+        }
+        return super.onKeyPreIme(keyCode, event);
+    }
+
+    @Override
     public boolean onKeyUp(int keyCode, KeyEvent event) {
         EventForwarder forwarder = getEventForwarder();
         return forwarder != null ? forwarder.onKeyUp(event) : false;
