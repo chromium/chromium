@@ -1,6 +1,6 @@
 {
-  "version": "61.2",
-  "log_list_timestamp": "2025-07-30T12:53:08Z",
+  "version": "62.1",
+  "log_list_timestamp": "2025-07-31T12:54:08Z",
   "operators": [
     {
       "name": "Google",
@@ -756,6 +756,40 @@
           "temporal_interval": {
             "start_inclusive": "2026-07-01T00:00:00Z",
             "end_exclusive": "2027-01-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys 'Tuscolo2027h1'",
+          "log_id": "WW5sM4aUsllyolbIoOjdkEp26Ag92oc7AQg4KBQ87lk=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEOYwwGoaNpZ/SQW0VNGICP7wGRQsSeEowTRl4DPSdPjSkO/+ouvFH78I8sQTR3FWPZDScALbclBqnqL0ptY8beA==",
+          "submission_url": "https://tuscolo2027h1.sunlight.geomys.org/",
+          "monitoring_url": "https://tuscolo2027h1.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-07-29T21:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-01-01T00:00:00Z",
+            "end_exclusive": "2027-07-01T00:00:00Z"
+          }
+        },
+        {
+          "description": "Geomys 'Tuscolo2027h2'",
+          "log_id": "1d5V7roItgyf/BjFE75qYLoARga8WVuWu0T2LMV9Ofo=",
+          "key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAEIAz2gOD7wIptaiLTnmR4k7AQwp5kFmqmGHY/8JmMJxaSHyAipoFA/YSBCTX7ZowxIkSKpZYGlqLtdLVcLWDS5w==",
+          "submission_url": "https://tuscolo2027h2.sunlight.geomys.org/",
+          "monitoring_url": "https://tuscolo2027h2.skylight.geomys.org/",
+          "mmd": 60,
+          "state": {
+            "qualified": {
+              "timestamp": "2025-07-29T21:00:00Z"
+            }
+          },
+          "temporal_interval": {
+            "start_inclusive": "2027-07-01T00:00:00Z",
+            "end_exclusive": "2028-01-01T00:00:00Z"
           }
         }
       ]
