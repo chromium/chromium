@@ -339,22 +339,21 @@ void ExpectUpdateCheckSequence(UpdaterScope scope,
       ")]}'\n");
 }
 
-void ExpectUpdateSequence(
-    UpdaterScope scope,
-    ScopedServer* test_server,
-    const std::string& app_id,
-    const std::string& install_data_index,
-    UpdateService::Priority priority,
-    int event_type,
-    const base::Version& from_version,
-    const base::Version& to_version,
-    bool do_fault_injection,
-    bool skip_download,
-    const base::FilePath& crx_path,
-    const std::string& run_action,
-    const std::string& arguments,
-    const base::Version& updater_version = base::Version(kUpdaterVersion),
-    const std::string& event_regex = ".*") {
+void ExpectUpdateSequence(UpdaterScope scope,
+                          ScopedServer* test_server,
+                          const std::string& app_id,
+                          const std::string& install_data_index,
+                          UpdateService::Priority priority,
+                          int event_type,
+                          const base::Version& from_version,
+                          const base::Version& to_version,
+                          bool do_fault_injection,
+                          bool skip_download,
+                          const base::FilePath& crx_path,
+                          const std::string& run_action,
+                          const std::string& arguments,
+                          const base::Version& updater_version,
+                          const std::string& event_regex = ".*") {
   ASSERT_TRUE(base::PathExists(crx_path));
 
   // First request: update check.
@@ -1484,7 +1483,8 @@ void ExpectEnterpriseCompanionAppOTAInstallSequence(ScopedServer* test_server) {
       /*event_type=*/2, base::Version({0, 0, 0, 0}),
       base::Version(kEnterpriseCompanionVersion),
       /*do_fault_injection=*/false, /*skip_download=*/false, crx_path,
-      kEnterpriseCompanionCRXRun, kEnterpriseCompanionCRXArguments);
+      kEnterpriseCompanionCRXRun, kEnterpriseCompanionCRXArguments,
+      base::Version(kUpdaterVersion));
 }
 
 // Runs multiple cycles of instantiating the update service, calling
@@ -1653,6 +1653,10 @@ VersionProcessFilter::VersionProcessFilter()
     : versions_([] {
         std::vector<base::Version> versions;
         for (const auto& updater_version : GetRealUpdaterVersions()) {
+          versions.push_back(updater_version.version);
+        }
+        for (const auto& updater_version :
+             GetRealUpdaterLowerVersions("_sans_iid")) {
           versions.push_back(updater_version.version);
         }
         return versions;

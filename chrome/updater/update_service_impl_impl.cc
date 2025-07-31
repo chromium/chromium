@@ -762,7 +762,9 @@ void UpdateServiceImplImpl::RegisterApp(
                          .IsValid() &&
                     request.version.IsValid() &&
                     request.version > base::Version(kNullVersion) &&
-                    !config_->GetUpdaterPersistedData()->GetEulaRequired();
+                    !config_->GetUpdaterPersistedData()->GetEulaRequired() &&
+                    !base::EqualsCaseInsensitiveASCII(
+                        request.app_id, enterprise_companion::kCompanionAppId);
   config_->GetUpdaterPersistedData()->RegisterApp(request);
   if (send_event) {
     update_client::CrxComponent install_data;
