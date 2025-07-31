@@ -68,10 +68,6 @@ class CONTENT_EXPORT KeySystemSupportImpl final
   // Sets up permission listeners for updates.
   void SetUpPermissionListeners();
 
-  // Initializes `is_protected_identifier_allowed_` with `status`.
-  void OnProtectedMediaIdentifierPermissionInitialized(
-      blink::mojom::PermissionStatus status);
-
   // Updates `is_protected_identifier_allowed_` with `status`.
   void OnProtectedMediaIdentifierPermissionUpdated(
       blink::mojom::PermissionStatus status);

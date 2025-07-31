@@ -1545,6 +1545,32 @@ TEST_F(PageSpecificContentSettingsTest, ObjectBasedInUseIndicator) {
 }
 #endif
 
+#if BUILDFLAG(IS_WIN)
+TEST_F(PageSpecificContentSettingsTest, ProtectedMediaIdentifier) {
+  MockPageSpecificContentSettingsDelegate* mock_delegate =
+      InstallMockDelegate();
+  NavigateAndCommit(GURL("http://google.com"));
+
+  PageSpecificContentSettings* pscs = PageSpecificContentSettings::GetForFrame(
+      web_contents()->GetPrimaryMainFrame());
+  ASSERT_NE(pscs, nullptr);
+
+  // Allowed
+  EXPECT_CALL(*mock_delegate,
+              OnContentAllowed(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER))
+      .Times(1);
+  pscs->OnProtectedMediaIdentifierPermissionSet(
+      web_contents()->GetLastCommittedURL(), /*allowed=*/true);
+
+  // Blocked
+  EXPECT_CALL(*mock_delegate,
+              OnContentBlocked(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER))
+      .Times(1);
+  pscs->OnProtectedMediaIdentifierPermissionSet(
+      web_contents()->GetLastCommittedURL(), /*allowed=*/false);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 class PageSpecificContentSettingsIframeTest
     : public PageSpecificContentSettingsTest {
  public:

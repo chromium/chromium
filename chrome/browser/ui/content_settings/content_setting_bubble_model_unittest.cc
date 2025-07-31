@@ -1491,3 +1491,87 @@ TEST_F(ContentSettingBubbleModelTest, SmartCard) {
             l10n_util::GetStringUTF16(IDS_ACCESSED_SMART_CARD_READER_BODY));
 }
 #endif
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(ContentSettingBubbleModelTest, ProtectedMediaIdentifier_Allowed) {
+  // Arrange
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetDefaultContentSetting(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ALLOW);
+
+  // Act
+  content_settings->OnContentAllowed(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(),
+          ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
+  const auto& bubble_content = content_setting_bubble_model->bubble_content();
+
+  // Assert
+  EXPECT_EQ(bubble_content.title,
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_TITLE));
+  EXPECT_EQ(bubble_content.message,
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+  EXPECT_EQ(bubble_content.radio_group.radio_items[0],
+            l10n_util::GetStringUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION));
+  EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+            l10n_util::GetStringFUTF16(
+                IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_BLOCK,
+                url_formatter::FormatUrlForSecurityDisplay(
+                    web_contents()->GetLastCommittedURL())));
+  EXPECT_EQ(bubble_content.radio_group.default_item, 0);
+}
+
+TEST_F(ContentSettingBubbleModelTest, ProtectedMediaIdentifier_Blocked) {
+  // Arrange
+  WebContentsTester::For(web_contents())
+      ->NavigateAndCommit(GURL("https://www.example.com"));
+  PageSpecificContentSettings* content_settings =
+      PageSpecificContentSettings::GetForFrame(
+          web_contents()->GetPrimaryMainFrame());
+  HostContentSettingsMap* settings_map =
+      HostContentSettingsMapFactory::GetForProfile(profile());
+  settings_map->SetDefaultContentSetting(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ALLOW);
+
+  // Act
+  content_settings->OnContentBlocked(
+      ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
+
+  std::unique_ptr<ContentSettingBubbleModel> content_setting_bubble_model(
+      ContentSettingBubbleModel::CreateContentSettingBubbleModel(
+          nullptr, web_contents(),
+          ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
+  const auto& bubble_content = content_setting_bubble_model->bubble_content();
+
+  // Assert
+  EXPECT_EQ(bubble_content.title,
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_TITLE));
+  EXPECT_EQ(bubble_content.message,
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE));
+  ASSERT_EQ(bubble_content.radio_group.radio_items.size(), 2U);
+  EXPECT_EQ(bubble_content.radio_group.radio_items[0],
+            l10n_util::GetStringFUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_UNBLOCK,
+                url_formatter::FormatUrlForSecurityDisplay(
+                    web_contents()->GetLastCommittedURL())));
+  EXPECT_EQ(bubble_content.radio_group.radio_items[1],
+            l10n_util::GetStringUTF16(
+                IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION));
+  EXPECT_EQ(bubble_content.radio_group.default_item, 0);
+}
+#endif  // BUILDFLAG(IS_WIN)

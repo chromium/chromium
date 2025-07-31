@@ -19135,6 +19135,34 @@ Please help our engineers fix this problem. Tell us what happened right before y
       </message>
     </if>
 
+    <!-- Protected content identifiers permission -->
+    <if expr="is_win">
+      <message name="IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_TITLE" desc="Title of the info bubble shown when a site has been allowed to use identifiers to play protected content.">
+        Protected content identifiers allowed
+      </message>
+      <message name="IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_TITLE" desc="Title of the info bubble shown when a site has been denied to to use identifiers to play protected content.">
+        Protected content identifiers denied
+      </message>
+      <message name="IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been allowed to use identifiers to play protected content.">
+        This site can use identifiers to play protected content.
+      </message>
+      <message name="IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_BLOCK" desc="Radio button to block to use identifiers to play protected content">
+        Always block <ph name="HOST">$1<ex>example.com</ex></ph> from using identifiers to play protected content
+      </message>
+      <message name="IDS_ALLOWED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION" desc="Radio button to keep allowing to use identifiers to play protected content">
+        Continue allowing this site to use identifiers to play protected content
+      </message>
+      <message name="IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_MESSAGE" desc="Info bubble message and location bar icon tooltip text shown when a site has been denied to use identifiers to play protected content.">
+        This site has been blocked from using identifiers to play protected content.
+      </message>
+      <message name="IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_UNBLOCK" desc="Radio button choice to unblock a site from using identifiers to play protected content.">
+        Always allow <ph name="HOST">$1<ex>mail.google.com</ex></ph> to use identifiers to play protected content
+      </message>
+      <message name="IDS_BLOCKED_PROTECTED_CONTENT_IDENTIFIERS_NO_ACTION" desc="Radio button choice to continue blocking a site from using identifiers to play protected content.">
+        Continue blocking this site from using identifiers to play protected content
+      </message>
+    </if>
+
     <!-- New Tab Page browser feature promotions. -->
     <if expr="not is_android">
       <message name="IDS_NTP_CUSTOMIZATION_PROMO" desc="The text shown in the body of the New Tab Page browser customization promotion">

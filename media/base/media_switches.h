@@ -283,6 +283,9 @@ MEDIA_EXPORT extern const base::FeatureParam<int>
 MEDIA_EXPORT extern const base::FeatureParam<bool>
     kHardwareSecureDecryptionFallbackOnHardwareContextReset;
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kHardwareSecureDecryptionAv1);
+#if BUILDFLAG(IS_WIN)
+MEDIA_EXPORT BASE_DECLARE_FEATURE(kProtectedMediaIdentifierIndicator);
+#endif
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kInternalMediaSession);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kOnDeviceWebSpeech);
 MEDIA_EXPORT BASE_DECLARE_FEATURE(kLiveCaption);

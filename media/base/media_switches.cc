@@ -1061,6 +1061,14 @@ BASE_FEATURE(kHardwareSecureDecryptionAv1,
              "HardwareSecureDecryptionAv1",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables showing permission indicator in the omnibox when a site is allowed or
+// denied to to use protected content IDs to play protected content.
+#if BUILDFLAG(IS_WIN)
+BASE_FEATURE(kProtectedMediaIdentifierIndicator,
+             "ProtectedMediaIdentifierIndicator",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#endif
+
 // Enables handling of hardware media keys for controlling media.
 BASE_FEATURE(kHardwareMediaKeyHandling,
              "HardwareMediaKeyHandling",

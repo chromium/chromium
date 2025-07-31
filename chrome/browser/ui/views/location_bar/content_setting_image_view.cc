@@ -81,6 +81,9 @@ std::optional<ViewID> GetViewID(
 #if BUILDFLAG(IS_CHROMEOS)
     case ImageType::SMART_CARD:
 #endif
+#if BUILDFLAG(IS_WIN)
+    case ImageType::PROTECTED_MEDIA_IDENTIFIER:
+#endif
       return std::nullopt;
 
     case ImageType::NUM_IMAGE_TYPES:

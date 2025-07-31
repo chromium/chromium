@@ -244,6 +244,7 @@ if (current_toolchain == default_toolchain) {
       "sync_chrome_refresh.icon",
       "sync_off_chrome_refresh.icon",
       "sync_problem_chrome_refresh.icon",
+      "sync_saved_locally.icon",
       "tab_search.icon",
       "tenancy.icon",
       "thumb_down.icon",
@@ -277,6 +278,7 @@ if (current_toolchain == default_toolchain) {
       "vr_headset_off_chrome_refresh.icon",
       "warning.icon",
       "warning_outline.icon",
+      "web_asset_off.icon",
       "work.icon",
     ]
 

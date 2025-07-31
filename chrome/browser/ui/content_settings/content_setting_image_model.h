@@ -56,6 +56,9 @@ class ContentSettingImageModel {
 #if BUILDFLAG(IS_CHROMEOS)
     SMART_CARD = 22,
 #endif
+#if BUILDFLAG(IS_WIN)
+    PROTECTED_MEDIA_IDENTIFIER = 23,
+#endif
 
     NUM_IMAGE_TYPES
   };
