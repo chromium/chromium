@@ -6,7 +6,7 @@ import("//build/config/c++/c++.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//build/toolchain/toolchain.gni")
-import("//buildtools/third_party/libc++/libcxx_headers.gni")
+import("//buildtools/third_party/libc++/generated_libcxx_headers.gni")
 import("//buildtools/third_party/libc++/modules.gni")
 
 if (is_mac) {
