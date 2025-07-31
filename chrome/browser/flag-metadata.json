@@ -1344,6 +1344,14 @@
       "expiry_milestone": 140
   },
   {
+    "name": "bwg-precise-location",
+    "owners": [
+      "joemerramos@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 160
+  },
+  {
     "name": "bwg-promo-consent",
     "owners": ["adamta@google.com", "bling-alchemy-eng@google.com"],
     "expiry_milestone":150

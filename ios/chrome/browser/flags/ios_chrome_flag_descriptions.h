@@ -167,6 +167,9 @@ extern const char kBlueDotOnToolsMenuButtonDescription[];
 extern const char kBottomOmniboxDefaultSettingName[];
 extern const char kBottomOmniboxDefaultSettingDescription[];
 
+extern const char kBWGPreciseLocationName[];
+extern const char kBWGPreciseLocationDescription[];
+
 extern const char kBreakpadNoDelayInitialUploadName[];
 extern const char kBreakpadNoDelayInitialUploadDescription[];
 
