@@ -4962,18 +4962,6 @@ const char kAndroidPinnedTabsDescription[] =
     "Enables the ability to pin tabs through various entry points like context "
     "menus and overflow menu items.";
 
-const char kDynamicSafeAreaInsetsName[] = "DynamicSafeAreaInsets";
-const char kDynamicSafeAreaInsetsDescription[] =
-    "Dynamically change the safe area insets based on the bottom browser "
-    "controls visibility.";
-
-const char kDynamicSafeAreaInsetsOnScrollName[] =
-    "DynamicSafeAreaInsetsOnScroll";
-const char kDynamicSafeAreaInsetsOnScrollDescription[] =
-    "Dynamically change the safe area insets on the main thread as browser "
-    "controls scrolls. "
-    "Requires DynamicSafeAreaInsets to also be enabled.";
-
 const char kEducationalTipDefaultBrowserPromoCardName[] =
     "Educational Tip Default Browser Promo Card";
 const char kEducationalTipDefaultBrowserPromoCardDescription[] =

@@ -785,15 +785,7 @@ public class EdgeToEdgeControllerImpl
         // when Chrome does not draw into the system bar region. See https://crbug.com/359659885.
         boolean hasBottomSafeArea =
                 (mIsDrawingToEdge && !mFullscreenManager.getPersistentFullscreenMode());
-        // When pushSafeAreaInsetsForNonOptInPages is not enabled, we are only pushing safe area
-        // insets to pages that are opted into e2e and no bottom controls are presented.
-        boolean pushSafeAreaInsets =
-                EdgeToEdgeUtils.pushSafeAreaInsetsForNonOptInPages()
-                        || (mCurrentTab != null
-                                && mIsPageOptedIntoEdgeToEdge
-                                && mBottomControlsHeight == 0);
-        int bottomInsetOnSafeArea =
-                pushSafeAreaInsets && hasBottomSafeArea ? mSystemInsets.bottom : 0;
+        int bottomInsetOnSafeArea = hasBottomSafeArea ? mSystemInsets.bottom : 0;
         mInsetObserver.updateBottomInsetForEdgeToEdge(bottomInsetOnSafeArea);
     }
 

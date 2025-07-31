@@ -2854,12 +2854,6 @@ extern const char kDrawChromePagesEdgeToEdgeDescription[];
 extern const char kDrawCutoutEdgeToEdgeName[];
 extern const char kDrawCutoutEdgeToEdgeDescription[];
 
-extern const char kDynamicSafeAreaInsetsName[];
-extern const char kDynamicSafeAreaInsetsDescription[];
-
-extern const char kDynamicSafeAreaInsetsOnScrollName[];
-extern const char kDynamicSafeAreaInsetsOnScrollDescription[];
-
 extern const char kEdgeToEdgeBottomChinName[];
 extern const char kEdgeToEdgeBottomChinDescription[];
 

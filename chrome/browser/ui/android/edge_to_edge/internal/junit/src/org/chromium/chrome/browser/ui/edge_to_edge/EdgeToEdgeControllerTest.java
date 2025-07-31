@@ -458,7 +458,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void onObservingDifferentTab_changeToWebEnabled() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
@@ -471,7 +470,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void onObservingDifferentTab_changeToWebEnabled_SetsDecor() {
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
         when(mTab.isNativePage()).thenReturn(false);
@@ -484,7 +482,6 @@ public class EdgeToEdgeControllerTest {
     }
 
     @Test
-    @EnableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
     public void onObservingDifferentTab_viewportFitChanged() {
         // Start with web always-enabled.
         EdgeToEdgeUtils.setAlwaysDrawWebEdgeToEdgeForTesting(true);
@@ -614,40 +611,6 @@ public class EdgeToEdgeControllerTest {
         WebContentsObserver secondObserver = mEdgeToEdgeControllerImpl.getWebContentsObserver();
         assertNotNull(secondObserver);
         assertNotEquals(firstObserver, secondObserver);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
-    public void bottomInsetForSafeArea_noTab() {
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
-        assertToEdgeExpectations();
-        assertBottomInsetForSafeArea(0);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
-    public void bottomInsetForSafeArea_noBrowserControlsOnOptInPages() {
-        doReturn(false).when(mTab).isNativePage();
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
-
-        assertToEdgeExpectations();
-        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(0, 0);
-        assertBottomInsetForSafeArea(SYSTEM_INSETS.bottom);
-    }
-
-    @Test
-    @DisableFeatures(ChromeFeatureList.DYNAMIC_SAFE_AREA_INSETS)
-    public void bottomInsetForSafeArea_hasBrowserControlsOnOptInPages() {
-        doReturn(false).when(mTab).isNativePage();
-        mTabProvider.set(mTab);
-        verifyInteractions(mTab);
-        mEdgeToEdgeControllerImpl.drawToEdge(true, /* changedWindowState= */ false);
-        assertToEdgeExpectations();
-
-        mEdgeToEdgeControllerImpl.onBottomControlsHeightChanged(1, 0);
-        assertBottomInsetForSafeArea(0);
     }
 
     @Test

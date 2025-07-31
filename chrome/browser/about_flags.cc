@@ -6071,13 +6071,6 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_WITH_PARAMS_VALUE_TYPE(chrome::android::kEdgeToEdgeTablet,
                                     kEdgeToEdgeTabletVariations,
                                     "EdgeToEdgeTablet")},
-    {"dynamic-safe-area-insets", flag_descriptions::kDynamicSafeAreaInsetsName,
-     flag_descriptions::kDynamicSafeAreaInsetsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kDynamicSafeAreaInsets)},
-    {"dynamic-safe-area-insets-on-scroll",
-     flag_descriptions::kDynamicSafeAreaInsetsOnScrollName,
-     flag_descriptions::kDynamicSafeAreaInsetsOnScrollDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(blink::features::kDynamicSafeAreaInsetsOnScroll)},
 
     // Android floating snackbar
     {"floating-snackbar", flag_descriptions::kFloatingSnackbarName,
