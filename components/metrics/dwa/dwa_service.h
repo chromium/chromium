@@ -11,9 +11,9 @@
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/metrics/dwa/dwa_recorder.h"
-#include "components/metrics/dwa/dwa_reporting_service.h"
 #include "components/metrics/metrics_rotation_scheduler.h"
 #include "components/metrics/metrics_service_client.h"
+#include "components/metrics/private_metrics/private_metrics_reporting_service.h"
 #include "components/metrics/unsent_log_store.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -81,8 +81,8 @@ class DwaService {
   // A weak pointer to the PrefService used to read and write preferences.
   raw_ptr<PrefService> pref_service_;
 
-  // Service for uploading serialized logs.
-  DwaReportingService reporting_service_;
+  // Service for uploading serialized logs to Private Metrics endpoint.
+  private_metrics::PrivateMetricsReportingService reporting_service_;
 
   // The scheduler for determining when uploads should happen.
   std::unique_ptr<MetricsRotationScheduler> scheduler_;

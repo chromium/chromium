@@ -1,11 +1,11 @@
-// Copyright 2024 The Chromium Authors
+// Copyright 2025 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file defines a service that sends DWA logs to a server.
+// This file defines a service that sends private metrics logs to a server.
 
-#ifndef COMPONENTS_METRICS_DWA_DWA_REPORTING_SERVICE_H_
-#define COMPONENTS_METRICS_DWA_DWA_REPORTING_SERVICE_H_
+#ifndef COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_METRICS_REPORTING_SERVICE_H_
+#define COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_METRICS_REPORTING_SERVICE_H_
 
 #include <stdint.h>
 
@@ -21,24 +21,26 @@ class PrefRegistrySimple;
 namespace metrics {
 class MetricsServiceClient;
 
-namespace dwa {
+namespace private_metrics {
 
-// A service that uploads logs to the DWA server.
-class DwaReportingService : public metrics::ReportingService {
+// A service that uploads logs to the private metrics server.
+class PrivateMetricsReportingService : public metrics::ReportingService {
  public:
-  // Creates the DwaReportingService with the given |client|, |local_state|, and
-  // |storage_limits|. Does not take ownership of the parameters; instead stores
-  // a weak pointer to each. Caller should ensure that the parameters are valid
-  // for the lifetime of this class.
-  DwaReportingService(
+  // Creates the PrivateMetricsReportingService with the given `client`,
+  // `local_state`, and `storage_limits`. Does not take ownership of the
+  // parameters; instead stores a weak pointer to each. Caller should ensure
+  // that the parameters are valid for the lifetime of this class.
+  PrivateMetricsReportingService(
       metrics::MetricsServiceClient* client,
       PrefService* local_state,
       const UnsentLogStore::UnsentLogStoreLimits& storage_limits);
 
-  DwaReportingService(const DwaReportingService&) = delete;
-  DwaReportingService& operator=(const DwaReportingService&) = delete;
+  PrivateMetricsReportingService(const PrivateMetricsReportingService&) =
+      delete;
+  PrivateMetricsReportingService& operator=(
+      const PrivateMetricsReportingService&) = delete;
 
-  ~DwaReportingService() override;
+  ~PrivateMetricsReportingService() override;
 
   metrics::UnsentLogStore* unsent_log_store();
 
@@ -64,7 +66,7 @@ class DwaReportingService : public metrics::ReportingService {
   metrics::UnsentLogStore unsent_log_store_;
 };
 
-}  // namespace dwa
+}  // namespace private_metrics
 }  // namespace metrics
 
-#endif  // COMPONENTS_METRICS_DWA_DWA_REPORTING_SERVICE_H_
+#endif  // COMPONENTS_METRICS_PRIVATE_METRICS_PRIVATE_METRICS_REPORTING_SERVICE_H_

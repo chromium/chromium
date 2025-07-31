@@ -14,8 +14,7 @@ UnsentLogStoreMetricsImpl::~UnsentLogStoreMetricsImpl() = default;
 
 void UnsentLogStoreMetricsImpl::RecordLogReadStatus(
     metrics::UnsentLogStoreMetrics::LogReadStatus status) {
-  UMA_HISTOGRAM_ENUMERATION("UKM.PersistentLogRecall.Status", status,
-                            metrics::UnsentLogStoreMetrics::END_RECALL_STATUS);
+  UMA_HISTOGRAM_ENUMERATION("UKM.PersistentLogRecall.Status", status);
 }
 
 void UnsentLogStoreMetricsImpl::RecordCompressionRatio(size_t compressed_size,

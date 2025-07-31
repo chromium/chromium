@@ -270,7 +270,7 @@ void DwaService::BuildAndStoreLog(
 void DwaService::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterUint64Pref(prefs::kDwaClientId, 0u);
   registry->RegisterTimePref(prefs::kDwaClientIdLastUpdated, base::Time());
-  DwaReportingService::RegisterPrefs(registry);
+  private_metrics::PrivateMetricsReportingService::RegisterPrefs(registry);
 }
 
 metrics::UnsentLogStore* DwaService::unsent_log_store() {
