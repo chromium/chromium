@@ -1202,7 +1202,11 @@ base::Value::Dict PeopleHandler::GetSyncStatusDictionary() const {
 
   const std::optional<AvatarSyncErrorType> error =
       GetAvatarSyncErrorType(profile_);
-  if (error.has_value()) {
+  // Avoid reacting to AvatarSyncErrorType::kSyncPaused in case of no sync
+  // consent, as the signin-pending state is not considered to be an error here.
+  if (error.has_value() &&
+      (error.value() != AvatarSyncErrorType::kSyncPaused ||
+       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
     status_labels = GetAvatarSyncErrorLabelsForSettings(error.value());
   } else {
     status_labels = GetSyncStatusLabelsForSettings(

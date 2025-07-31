@@ -385,11 +385,11 @@ std::optional<AvatarSyncErrorType> GetAvatarSyncErrorType(Profile* profile) {
       }
       return AvatarSyncErrorType::kUnrecoverableError;
     }
+  }
 
-    if (service->GetTransportState() ==
-        syncer::SyncService::TransportState::PAUSED) {
-      return AvatarSyncErrorType::kSyncPaused;
-    }
+  if (service->GetTransportState() ==
+      syncer::SyncService::TransportState::PAUSED) {
+    return AvatarSyncErrorType::kSyncPaused;
   }
 
   if (service->RequiresClientUpgrade()) {

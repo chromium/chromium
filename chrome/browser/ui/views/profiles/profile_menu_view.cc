@@ -669,8 +669,11 @@ ProfileMenuView::GetIdentitySectionParams(const ProfileAttributesEntry& entry) {
     return params;
   }
 
-  // Sync error, including "paused".
-  if (error.has_value()) {
+  // Avoid reacting to AvatarSyncErrorType::kSyncPaused in case of no sync
+  // consent, as kSignInPending is handled differently below.
+  if (error.has_value() &&
+      (error.value() != AvatarSyncErrorType::kSyncPaused ||
+       identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync))) {
     params.subtitle =
         GetAvatarSyncErrorDescription(*error, primary_account_info.email);
     params.button_text = GetSyncErrorButtonText(error.value());

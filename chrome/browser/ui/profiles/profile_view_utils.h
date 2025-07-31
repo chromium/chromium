@@ -17,7 +17,7 @@ struct AccountInfo;
 // Navigates to the Google Account page.
 void NavigateToGoogleAccountPage(Profile* profile, const std::string& email);
 
-// Returns true if account sync is paused.
+// Returns true if account sync is paused, and a sync consent is present.
 bool IsSyncPaused(Profile* profile);
 
 // Returns true if there is an unconstented profile.

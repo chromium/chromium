@@ -47,7 +47,11 @@ void NavigateToGoogleAccountPage(Profile* profile, const std::string& email) {
 }
 
 bool IsSyncPaused(Profile* profile) {
-  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kSyncPaused;
+  // Avoid returning true in case of no sync consent, as kSignInPending should
+  // be handled differently.
+  return GetAvatarSyncErrorType(profile) == AvatarSyncErrorType::kSyncPaused &&
+         IdentityManagerFactory::GetForProfile(profile)->HasPrimaryAccount(
+             signin::ConsentLevel::kSync);
 }
 
 bool HasUnconstentedProfile(Profile* profile) {

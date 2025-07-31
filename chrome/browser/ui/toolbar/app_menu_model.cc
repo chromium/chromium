@@ -614,10 +614,17 @@ bool ProfileSubMenuModel::BuildSyncSection() {
       GetAvatarSyncErrorType(profile_);
   if (error.has_value()) {
     if (error == AvatarSyncErrorType::kSyncPaused) {
-      // If sync is paused the menu item will be specific to the paused error.
-      AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SIGNIN_WHEN_PAUSED,
-                                       IDS_PROFILE_ROW_SIGN_IN_AGAIN,
-                                       vector_icons::kSyncOffChromeRefreshIcon);
+      if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+        // If sync is paused the menu item will be specific to the paused error.
+        AddItemWithStringIdAndVectorIcon(
+            this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILE_ROW_SIGN_IN_AGAIN,
+            vector_icons::kSyncOffChromeRefreshIcon);
+      } else {
+        AddItemWithStringIdAndVectorIcon(
+            this, IDC_SHOW_SIGNIN_WHEN_PAUSED,
+            IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
+            vector_icons::kAccountCircleOffChromeRefreshIcon);
+      }
     } else {
       // All remaining errors will have the same menu item.
       AddItemWithStringIdAndVectorIcon(
@@ -627,11 +634,7 @@ bool ProfileSubMenuModel::BuildSyncSection() {
     return true;
   }
 
-  if (signin_util::IsSigninPending(identity_manager)) {
-    AddItemWithStringIdAndVectorIcon(
-        this, IDC_SHOW_SIGNIN_WHEN_PAUSED, IDS_PROFILES_VERIFY_ACCOUNT_BUTTON,
-        vector_icons::kAccountCircleOffChromeRefreshIcon);
-  } else if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+  if (identity_manager->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
     AddItemWithStringIdAndVectorIcon(this, IDC_SHOW_SYNC_SETTINGS,
                                      IDS_PROFILE_ROW_SYNC_IS_ON,
                                      vector_icons::kSyncChromeRefreshIcon);
