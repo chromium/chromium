@@ -5,7 +5,17 @@
 #ifndef COMPONENTS_REGIONAL_CAPABILITIES_PROGRAM_SETTINGS_H_
 #define COMPONENTS_REGIONAL_CAPABILITIES_PROGRAM_SETTINGS_H_
 
+namespace country_codes {
+class CountryId;
+}
+
 namespace regional_capabilities {
+
+enum class Program {
+  kTaiyaki,
+  kWaffle,
+  kDefault,
+};
 
 // Describes how search engines should be listed.
 enum class SearchEngineListType {
@@ -18,6 +28,7 @@ enum class SearchEngineListType {
 
 // Describes how features should adjust themselves based on the program.
 struct ProgramSettings {
+  Program program;
   SearchEngineListType search_engine_list_type;
   bool can_show_search_engine_choice_screen;
 };
@@ -25,6 +36,9 @@ struct ProgramSettings {
 extern const ProgramSettings kWaffleSettings;
 extern const ProgramSettings kTaiyakiSettings;
 extern const ProgramSettings kDefaultSettings;
+
+bool IsInProgramRegion(Program program,
+                       country_codes::CountryId profile_country);
 
 }  // namespace regional_capabilities
 

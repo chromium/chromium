@@ -112,6 +112,8 @@ class RegionalCapabilitiesService : public KeyedService {
   // in tests.
   void ClearCountryIdCacheForTesting();
 
+  Program GetActiveProgramForTesting();
+
 #if BUILDFLAG(IS_ANDROID)
   // -- JNI Interface ---------------------------------------------------------
 
@@ -129,9 +131,6 @@ class RegionalCapabilitiesService : public KeyedService {
 #endif
 
  private:
-  FRIEND_TEST_ALL_PREFIXES(RegionalCapabilitiesServiceTest,
-                           GetActiveProgram_CommandLineOverride);
-
   // Returns how features should adjust themselves based on the active country
   // or program.
   const ProgramSettings& GetActiveProgramSettings();

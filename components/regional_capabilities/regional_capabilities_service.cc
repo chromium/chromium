@@ -27,6 +27,7 @@
 #include "regional_capabilities_metrics.h"
 #include "third_party/abseil-cpp/absl/functional/overload.h"
 #include "third_party/search_engines_data/resources/definitions/prepopulated_engines.h"
+#include "ui/base/device_form_factor.h"
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
@@ -163,16 +164,26 @@ std::pair<CountryId, LoadedCountrySource> SelectCountryId(
 }
 
 const ProgramSettings* CountryIdToProgram(CountryId country_id) {
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
-  if (base::FeatureList::IsEnabled(switches::kTaiyaki)) {
-    // Not final logic.
-    // TODO(crbug.com/423882950): Update logic for iOS.
-    // TODO(crbug.com/423883216): Update logic for Android.
-    return &kTaiyakiSettings;
+#if BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/423883216): Update logic to support Android.
+  if (IsInProgramRegion(Program::kTaiyaki, country_id)) {
+    switch (ui::GetDeviceFormFactor()) {
+      case ui::DEVICE_FORM_FACTOR_PHONE:
+      case ui::DEVICE_FORM_FACTOR_FOLDABLE:
+        if (base::FeatureList::IsEnabled(switches::kTaiyaki)) {
+          return &kTaiyakiSettings;
+        }
+        break;
+      case ui::DEVICE_FORM_FACTOR_DESKTOP:
+      case ui::DEVICE_FORM_FACTOR_TABLET:
+      case ui::DEVICE_FORM_FACTOR_TV:
+      case ui::DEVICE_FORM_FACTOR_AUTOMOTIVE:
+        break;
+    }
   }
-#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
-  if (regional_capabilities::IsEeaCountry(country_id)) {
+  if (IsInProgramRegion(Program::kWaffle, country_id)) {
     return &kWaffleSettings;
   }
 
@@ -253,7 +264,7 @@ bool RegionalCapabilitiesService::IsInEeaCountry() {
   // override.
   // TODO(crbug.com/328040066): Introduce granular program settings APIs and
   // deprecate `IsInEeaCountry()` in favour of these.
-  return &GetActiveProgramSettings() == &kWaffleSettings;
+  return GetActiveProgramSettings().program == Program::kWaffle;
 }
 
 CountryIdHolder RegionalCapabilitiesService::GetCountryId() {
@@ -334,6 +345,10 @@ void RegionalCapabilitiesService::EnsureRegionalScopeCacheInitialized() {
 void RegionalCapabilitiesService::ClearCountryIdCacheForTesting() {
   CHECK_IS_TEST();
   country_id_cache_.reset();
+}
+
+Program RegionalCapabilitiesService::GetActiveProgramForTesting() {
+  return GetActiveProgramSettings().program;
 }
 
 CountryId RegionalCapabilitiesService::GetPersistedCountryId() {
