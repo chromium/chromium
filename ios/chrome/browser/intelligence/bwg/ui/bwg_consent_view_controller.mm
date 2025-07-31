@@ -271,7 +271,7 @@ NSString* const kSecondBoxLink2ActionNonManagedAccount =
 
   [self.view addSubview:_mainStackView];
   AddSameConstraintsWithInsets(
-      _mainStackView, self.view.safeAreaLayoutGuide,
+      _mainStackView, self.view,
       NSDirectionalEdgeInsetsMake(0, kMainStackHorizontalInset, 0,
                                   kMainStackHorizontalInset));
   [_mainStackView addArrangedSubview:[self createBoxesStackView]];
