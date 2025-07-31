@@ -1144,10 +1144,11 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   ASSERT_TRUE(extension);
   const ExtensionId kExtensionId = extension->id();
 
+  // The page should not load because it has a slash at the end.
   GURL page_url = extension->ResolveExtensionURL("script.js/");
-  // The page should not load.
-  ASSERT_FALSE(NavigateToURL(page_url));
-  ASSERT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_FALSE(NavigateToURL(web_contents, page_url));
+  ASSERT_FALSE(content::WaitForLoadStop(web_contents));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   DisableReasonSet reasons = prefs->GetDisableReasons(kExtensionId);
   EXPECT_TRUE(reasons.empty());
@@ -1166,8 +1167,9 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
 
   GURL page_url = extension->ResolveExtensionURL("script.js.");
   // The page should not load.
-  ASSERT_FALSE(NavigateToURL(page_url));
-  ASSERT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
+  auto* web_contents = GetActiveWebContents();
+  ASSERT_FALSE(NavigateToURL(web_contents, page_url));
+  ASSERT_FALSE(content::WaitForLoadStop(web_contents));
   ExtensionPrefs* prefs = ExtensionPrefs::Get(profile());
   DisableReasonSet reasons = prefs->GetDisableReasons(kExtensionId);
   EXPECT_TRUE(reasons.empty());
@@ -1190,15 +1192,16 @@ IN_PROC_BROWSER_TEST_F(ContentVerifierTest,
   TestContentVerifySingleJobObserver job_observer(
       extension_id, base::FilePath().AppendASCII(kIncorrectCasePath));
 
+  auto* web_contents = GetActiveWebContents();
   GURL page_url = extension->GetResourceURL(kIncorrectCasePath);
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   // Some platforms are case insensitive, load should succeed.
-  ASSERT_TRUE(NavigateToURL(page_url));
-  ASSERT_TRUE(content::WaitForLoadStop(GetActiveWebContents()));
+  ASSERT_TRUE(NavigateToURL(web_contents, page_url));
+  ASSERT_TRUE(content::WaitForLoadStop(web_contents));
 #else
   // On case-sensitive platforms, load should fail.
-  ASSERT_FALSE(NavigateToURL(page_url));
-  ASSERT_FALSE(content::WaitForLoadStop(GetActiveWebContents()));
+  ASSERT_FALSE(NavigateToURL(web_contents, page_url));
+  ASSERT_FALSE(content::WaitForLoadStop(web_contents));
 #endif
 
   // Ensure that ContentVerifyJob has finished checking the resource.

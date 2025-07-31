@@ -29,6 +29,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/features/feature_channel.h"
 
+class BrowserWindowInterface;
 class OwningTestTabModel;
 class Profile;
 
@@ -233,7 +234,22 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
 
   // Navigates to a `url` in the active web contents and waits until the
   // navigation finishes. Returns true on success.
+  // DEPRECATED: Use the version of this method that takes a WebContents or the
+  // version that takes a BrowserWindowInterface.
+  // TODO(crbug.com/434990953): Remove this method.
   [[nodiscard]] bool NavigateToURL(const GURL& url);
+
+  // Navigates `web_contents` to a `url` in and waits until the navigation
+  // finishes. Returns true on success.
+  [[nodiscard]] bool NavigateToURL(content::WebContents* web_contents,
+                                   const GURL& url);
+
+  // Navigates the active tab in `browser_window` to a `url` in and waits until
+  // the navigation finishes. Returns true on success.
+  // NOTE: Only supported on Win/Mac/Linux/ChromeOS. Intentionally fails on
+  // Android.
+  [[nodiscard]] bool NavigateToURL(BrowserWindowInterface* browser_window,
+                                   const GURL& url);
 
   // Puts the current tab title in |title|. Returns true on success.
   bool GetCurrentTabTitle(std::u16string* title);
@@ -345,6 +361,12 @@ class ExtensionBrowserTest : public PlatformBrowserTest,
 
   // WebContents* of the default tab or nullptr if the default tab is destroyed.
   content::WebContents* web_contents();
+
+  // Returns the BrowserWindowInterface for the initially-created browser.
+  // NOTE: Only supported on Win/Mac/Linux/ChromeOS. Returns nullptr on Android.
+  // TODO(crbug.com/434990953): Convert callers of NavigateToURL() to use this
+  // method.
+  BrowserWindowInterface* browser_window_interface();
 
   const ExtensionId& last_loaded_extension_id() {
     return last_loaded_extension_id_;

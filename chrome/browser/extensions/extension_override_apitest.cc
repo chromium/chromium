@@ -94,8 +94,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTab) {
     // Navigate to the new tab page.  The overridden new tab page
     // will call chrome.test.sendMessage('controlled by first').
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension->id()));
+    auto* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension->id()));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by first", listener.message());
   }
@@ -126,12 +127,14 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   const std::string extension2_id =
       InstallExtensionWithPermissionsGranted(extension2_path, 1)->id();
 
+  auto* web_contents = GetActiveWebContents();
+
   {
     // Navigate to the new tab page. Last extension installed wins, so
     // the new tab page should be controlled by the second extension.
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension2_id));
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension2_id));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by second", listener.message());
   }
@@ -143,8 +146,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   {
     // The page should still be controlled by the second extension.
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension2_id));
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension2_id));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by second", listener.message());
   }
@@ -169,8 +172,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
   {
     // The page should still be controlled by the second extension.
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension2_id));
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension2_id));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by second", listener.message());
   }
@@ -181,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabMultiple) {
 
   {
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension1_id));
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension1_id));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by first upgrade", listener.message());
   }
@@ -197,12 +200,13 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
       LoadExtension(data_dir().AppendASCII("newtab"))->id();
   const std::string extension2_id =
       LoadExtension(data_dir().AppendASCII("newtab2"))->id();
+  auto* web_contents = GetActiveWebContents();
   {
     // Navigate to the new tab page. Last extension installed wins, so
     // the new tab page should be controlled by the second extension.
     ExtensionTestMessageListener listener;
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://newtab/")));
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension2_id));
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://newtab/")));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension2_id));
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by second", listener.message());
   }
@@ -214,13 +218,12 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest,
     UnloadExtension(extension2_id);
     EXPECT_TRUE(listener.WaitUntilSatisfied());
     EXPECT_EQ("controlled by first", listener.message());
-    EXPECT_TRUE(ExtensionControlsPage(GetActiveWebContents(), extension1_id));
+    EXPECT_TRUE(ExtensionControlsPage(web_contents, extension1_id));
   }
 
   UnloadExtension(extension1_id);
-  content::WebContents* active_tab = GetActiveWebContents();
-  EXPECT_TRUE(content::WaitForLoadStop(active_tab));
-  EXPECT_FALSE(ExtensionControlsPage(active_tab, extension1_id));
+  EXPECT_TRUE(content::WaitForLoadStop(web_contents));
+  EXPECT_FALSE(ExtensionControlsPage(web_contents, extension1_id));
 }
 
 IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, OverrideNewTabIncognito) {
@@ -255,8 +258,8 @@ IN_PROC_BROWSER_TEST_F(
   // Navigate to the new tab page.  The overridden new tab page
   // will call chrome.test.sendMessage('controlled by first').
   ExtensionTestMessageListener listener("controlled by first");
-  ASSERT_TRUE(NavigateToURL(GURL(chrome::kChromeUINewTabURL)));
-  WebContents* contents = GetActiveWebContents();
+  auto* contents = GetActiveWebContents();
+  ASSERT_TRUE(NavigateToURL(contents, GURL(chrome::kChromeUINewTabURL)));
   EXPECT_TRUE(ExtensionControlsPage(contents, extension->id()));
   EXPECT_TRUE(listener.WaitUntilSatisfied());
 
@@ -291,7 +294,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionOverrideTest, MAYBE_OverrideHistory) {
     ResultCatcher catcher;
     // Navigate to the history page.  The overridden history page
     // will call chrome.test.notifyPass() .
-    ASSERT_TRUE(NavigateToURL(GURL("chrome://history/")));
+    auto* web_contents = GetActiveWebContents();
+    ASSERT_TRUE(NavigateToURL(web_contents, GURL("chrome://history/")));
     ASSERT_TRUE(catcher.GetNextResult());
   }
 }

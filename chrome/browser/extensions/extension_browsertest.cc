@@ -774,7 +774,11 @@ base::FilePath ExtensionBrowserTest::PackExtensionWithOptions(
 }
 
 bool ExtensionBrowserTest::NavigateToURL(const GURL& url) {
-  content::WebContents* web_contents = GetActiveWebContents();
+  return NavigateToURL(GetActiveWebContents(), url);
+}
+
+bool ExtensionBrowserTest::NavigateToURL(content::WebContents* web_contents,
+                                         const GURL& url) {
   content::TestNavigationObserver observer(web_contents);
   // The return value is ignored because some tests load URLs that cause
   // redirects, or are blocked URLs, which make NavigateToURL return false.
@@ -782,6 +786,17 @@ bool ExtensionBrowserTest::NavigateToURL(const GURL& url) {
   // Ensure the navigation happened.
   observer.Wait();
   return observer.last_navigation_succeeded();
+}
+
+bool ExtensionBrowserTest::NavigateToURL(BrowserWindowInterface* browser_window,
+                                         const GURL& url) {
+#if BUILDFLAG(IS_ANDROID)
+  NOTREACHED() << "Not supported on Android.";
+#else
+  auto* web_contents =
+      browser_window->GetTabStripModel()->GetActiveWebContents();
+  return NavigateToURL(web_contents, url);
+#endif
 }
 
 bool ExtensionBrowserTest::GetCurrentTabTitle(std::u16string* title) {
@@ -1026,6 +1041,14 @@ Profile* ExtensionBrowserTest::profile() {
 
 content::WebContents* ExtensionBrowserTest::web_contents() {
   return web_contents_.get();
+}
+
+BrowserWindowInterface* ExtensionBrowserTest::browser_window_interface() {
+#if BUILDFLAG(IS_ANDROID)
+  return nullptr;
+#else
+  return browser();
+#endif
 }
 
 ExtensionService* ExtensionBrowserTest::extension_service() {

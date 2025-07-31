@@ -224,12 +224,12 @@ void ExtensionActionRunnerBrowserTest::RunActiveScriptsTest(
   ASSERT_TRUE(runner);
 
   ExtensionTestMessageListener inject_success_listener(kInjectSucceeded);
-  auto navigate = [this]() {
+  auto navigate = [this, web_contents]() {
     // Navigate to an URL (which matches the explicit host specified in the
     // extension content_scripts_explicit_hosts). All extensions should
     // inject the script.
-    ASSERT_TRUE(NavigateToURL(
-        embedded_test_server()->GetURL("/extensions/test_file.html")));
+    ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                                "/extensions/test_file.html")));
   };
 
   if (requires_consent == DOES_NOT_REQUIRE_CONSENT) {
@@ -338,8 +338,8 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   ASSERT_TRUE(action_runner);
 
   ASSERT_TRUE(embedded_test_server()->Start());
-  ASSERT_TRUE(NavigateToURL(
-      embedded_test_server()->GetURL("/extensions/test_file.html")));
+  ASSERT_TRUE(NavigateToURL(web_contents, embedded_test_server()->GetURL(
+                                              "/extensions/test_file.html")));
 
   // Both extensions should have pending requests.
   EXPECT_TRUE(action_runner->WantsToRun(extension1.get()));
@@ -382,7 +382,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
 
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   // The extension shouldn't be allowed to run.
   EXPECT_TRUE(action_runner->WantsToRun(extension));
@@ -396,7 +396,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
 
   // Navigate again - this time, the extension should execute immediately (and
   // should not need to ask the script controller for permission).
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_FALSE(action_runner->WantsToRun(extension));
   EXPECT_EQ(0, action_runner->num_page_requests());
   EXPECT_TRUE(inject_success_listener.WaitUntilSatisfied());
@@ -407,7 +407,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest,
   EXPECT_TRUE(RunAllPendingInRenderer(web_contents));
 
   // Re-navigate; the extension should again need permission to run.
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(action_runner->WantsToRun(extension));
   EXPECT_EQ(1, action_runner->num_page_requests());
   EXPECT_FALSE(inject_success_listener.was_satisfied());
@@ -445,9 +445,9 @@ IN_PROC_BROWSER_TEST_P(ExtensionActionRunnerRunActionBubbleBrowserTest,
       .SetWithholdHostPermissions(true);
 
   // Navigate to a page where the extension wants to run.
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
-  ASSERT_TRUE(NavigateToURL(url));
   content::WebContents* web_contents = GetActiveWebContents();
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
   content::NavigationController& web_controller = web_contents->GetController();
   const int nav_id = web_controller.GetLastCommittedEntry()->GetUniqueID();
@@ -513,9 +513,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerBrowserTest, RunBlockedActions) {
       .SetWithholdHostPermissions(true);
 
   // Navigate to a page where the extension wants to run.
-  const GURL url = embedded_test_server()->GetURL("/simple.html");
-  ASSERT_TRUE(NavigateToURL(url));
   content::WebContents* web_contents = GetActiveWebContents();
+  const GURL url = embedded_test_server()->GetURL("/simple.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_TRUE(content::WaitForLoadStop(web_contents));
 
   // The extension should want to run on the page at first.
@@ -584,9 +584,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   ScriptingPermissionsModifier(profile(), extension)
       .SetWithholdHostPermissions(true);
 
-  GURL initial_url = embedded_test_server()->GetURL("a.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(initial_url));
   content::WebContents* web_contents = GetActiveWebContents();
+  GURL initial_url = embedded_test_server()->GetURL("a.com", "/simple.html");
+  ASSERT_TRUE(NavigateToURL(web_contents, initial_url));
 
   ExtensionActionRunner* runner =
       ExtensionActionRunner::GetForWebContents(web_contents);
@@ -629,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   // Active extensions should be cleared after navigating a test url on the
   // primary main frame.
   GURL test_url = embedded_test_server()->GetURL("c.com", "/simple.html");
-  ASSERT_TRUE(NavigateToURL(test_url));
+  ASSERT_TRUE(NavigateToURL(web_contents, test_url));
   EXPECT_EQ(active_tab_granter->granted_extensions_.size(), 0U);
 }
 
@@ -651,7 +651,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
   inject_success_listener.set_extension_id(extension->id());
 
   GURL url = embedded_test_server()->GetURL("/extensions/test_file.html");
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
 
   ScriptingPermissionsModifier modifier(profile(), extension);
   modifier.SetWithholdHostPermissions(false);
@@ -671,7 +671,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionActionRunnerFencedFrameBrowserTest,
 
   // Navigate again on the primary main frame. Pending script injection requests
   // and scripts should be cleared.
-  ASSERT_TRUE(NavigateToURL(url));
+  ASSERT_TRUE(NavigateToURL(web_contents, url));
   EXPECT_EQ(0, action_runner->num_page_requests());
   EXPECT_EQ(0U, action_runner->pending_scripts_.size());
 }
