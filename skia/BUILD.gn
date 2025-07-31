@@ -464,6 +464,7 @@ component("skia") {
     # fonts. See content/zygote/zygote_main_linux.cc
     # Note that this requires expat.
     sources += skia_ports_fontmgr_android_sources
+    sources += skia_ports_fontmgr_android_parser_sources
   }
 
   if (is_fuchsia) {
