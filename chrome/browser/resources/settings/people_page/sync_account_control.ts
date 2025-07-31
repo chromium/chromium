@@ -431,11 +431,16 @@ export class SettingsSyncAccountControlElement extends
   }
 
   /**
-   * Determines whether the sync button should be hidden, in the case where the
-   * user has sync enabled, is in sign in paused, or if the property to hide
-   * the banner was explicitly set.
+   * Determines whether the sync button should be hidden, in the case where
+   * `replaceSyncPromosWithSignInPromos` is enabled, the user has sync enabled,
+   * is in sign in paused, or if the property to hide the banner was explicitly
+   * set.
    */
   private shouldHideSyncButton_(): boolean {
+    if (loadTimeData.getBoolean('replaceSyncPromosWithSignInPromos')) {
+      return true;
+    }
+
     if (this.syncStatus.signedInState === SignedInState.WEB_ONLY_SIGNED_IN) {
       return true;
     }

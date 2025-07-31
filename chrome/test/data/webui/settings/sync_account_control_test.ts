@@ -7,7 +7,7 @@ import 'chrome://settings/settings.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import type {CrActionMenuElement, SettingsSyncAccountControlElement, StoredAccount} from 'chrome://settings/settings.js';
-import {Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
+import {resetRouterForTesting, Router, SignedInState, StatusAction, SyncBrowserProxyImpl} from 'chrome://settings/settings.js';
 import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible, isVisible} from 'chrome://webui-test/test_util.js';
 
@@ -20,6 +20,9 @@ suite('SyncAccountControl', function() {
   let testElement: SettingsSyncAccountControlElement;
 
   setup(async function() {
+    loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: false});
+    resetRouterForTesting();
+
     browserProxy = new TestSyncBrowserProxy();
     SyncBrowserProxyImpl.setInstance(browserProxy);
 
@@ -187,6 +190,21 @@ suite('SyncAccountControl', function() {
     items[2]!.click();
     await browserProxy.whenCalled('startSignIn');
   });
+
+  test(
+      'sync button not visible with replaceSyncPromosWithSignInPromos',
+      function() {
+        loadTimeData.overrideValues({replaceSyncPromosWithSignInPromos: true});
+        resetRouterForTesting();
+
+        testElement.syncStatus = {
+          signedInState: SignedInState.SIGNED_IN,
+          statusAction: StatusAction.NO_ACTION,
+        };
+        flush();
+
+        assertFalse(isChildVisible(testElement, '#sync-button'));
+      });
 
   test(
       'Updated UI shown when sync off', function() {
