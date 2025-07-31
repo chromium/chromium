@@ -59,7 +59,7 @@ TEST(LibcppHardeningTest, Assertions) {
   EXPECT_DEATH(std::ignore = vec[3],
                Not(ContainsRegex(".*assertion.*failed:")));
 #else
-  GTEST_UNSUPPORTED_DEATH_TEST(vec[3], "", );
+  GTEST_UNSUPPORTED_DEATH_TEST(std::ignore = vec[3], "", );
 #endif  // GTEST_HAS_DEATH_TEST && !GTEST_OS_LINUX_ANDROID
 #endif  // CHECK_WILL_STREAM()
 }
