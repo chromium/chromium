@@ -5981,7 +5981,13 @@ TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
 }
 
 // Tests --load-extension works for non-ESB users.
-TEST_F(ExtensionServiceTest, LoadsFromCommandLineForNonESBUsers) {
+// --load-extension was disabled in https://crbug.com/401529219
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LoadsFromCommandLineForNonESBUsers DISABLE_LoadsFromCommandLineForNonESBUsers
+#else
+#define MAYBE_LoadsFromCommandLineForNonESBUsers LoadsFromCommandLineForNonESBUsers
+#endif
+TEST_F(ExtensionServiceTest, MAYBE_LoadsFromCommandLineForNonESBUsers) {
   base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
   // Disable ESB.
@@ -6029,7 +6035,13 @@ TEST_F(ExtensionServiceTest,
 // Tests --load-extension and --disable-extensions-except work for users with
 // policy ExtensionInstallTypeBlocklist not containing "command_line" (default
 // value)
-TEST_F(ExtensionServiceTest, LoadsFromCommandLineForUsersWithoutPolicy) {
+// --load-extension was disabled in https://crbug.com/401529219
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_LoadsFromCommandLineForUsersWithoutPolicy DISABLE_LoadsFromCommandLineForUsersWithoutPolicy
+#else
+#define MAYBE_LoadsFromCommandLineForUsersWithoutPolicy LoadsFromCommandLineForUsersWithoutPolicy
+#endif
+TEST_F(ExtensionServiceTest, MAYBE_LoadsFromCommandLineForUsersWithoutPolicy) {
   base::HistogramTester histograms;
   InitializeEmptyExtensionServiceWithTestingPrefs();
   // Not setting pref as false is default value.
