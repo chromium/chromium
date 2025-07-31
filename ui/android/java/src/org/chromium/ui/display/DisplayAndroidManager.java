@@ -47,15 +47,6 @@ public class DisplayAndroidManager {
      */
     @VisibleForTesting
     class DisplayListenerBackend implements DisplayListener {
-        private static final long IS_NULL_DISPLAY_REMOVED_DELAY_MS = 1000;
-
-        @VisibleForTesting
-        static final String IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME =
-                "Android.Display.IsNullDisplayRemoved";
-
-        private final Handler mHandler = new Handler(Looper.getMainLooper());
-        private final HashSet<Integer> mNullDisplayIds = new HashSet<>();
-
         public void startListening() {
             getDisplayManager().registerDisplayListener(this, null);
         }
@@ -64,65 +55,29 @@ public class DisplayAndroidManager {
 
         @Override
         public void onDisplayAdded(int sdkDisplayId) {
-            if (!isWindowManagementEnabled()) {
-                return;
-            }
-
-            Display display = getDisplayManager().getDisplay(sdkDisplayId);
-            if (display != null) {
-                addDisplay(display);
-                return;
-            }
-
-            mNullDisplayIds.add(sdkDisplayId);
-            mHandler.postDelayed(
-                    () -> {
-                        // Record whether sdkDisplayId was still in mNullDisplayIds at
-                        // this point. This indicates if an onDisplayRemoved call for
-                        // sdkDisplayId did not occur within
-                        // IS_NULL_DISPLAY_REMOVED_DELAY_MS
-                        // after its corresponding onDisplayAdded.
-                        // - true: sdkDisplayId was already removed; onDisplayRemoved
-                        // occurred and processed it.
-                        // - false: sdkDisplayId was present and removed now;
-                        // onDisplayRemoved was missed or late.
-                        RecordHistogram.recordBooleanHistogram(
-                                IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME,
-                                !mNullDisplayIds.remove(sdkDisplayId));
-                    },
-                    IS_NULL_DISPLAY_REMOVED_DELAY_MS);
+            // Ignore display addition if Window Management is enabled. The addition is processed
+            // inside {@link DisplayAndroidManager#updateDisplayTopology(SparseArray<RectF>
+            // absoluteCoordinates)} when {@link
+            // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
+            // absoluteCoordinates)} is triggered.
+            // If Window Management is disabled, then DisplayAndroid is added lazily on first use.
         }
 
         @Override
         public void onDisplayRemoved(int sdkDisplayId) {
-            if (isWindowManagementEnabled()) {
-                mNullDisplayIds.remove(sdkDisplayId);
+            // Ignore display removal if Window Management is enabled. The removal is processed
+            // inside {@link DisplayAndroidManager#updateDisplayTopology(SparseArray<RectF>
+            // absoluteCoordinates)} when {@link
+            // DisplayTopologyListenerBackend#onDisplayTopologyChanged(SparseArray<RectF>
+            // absoluteCoordinates)} is triggered.
+            if (!isWindowManagementEnabled()) {
+                removeDisplay(sdkDisplayId);
             }
-
-            // Never remove the primary display.
-            if (sdkDisplayId == mMainSdkDisplayId) return;
-
-            PhysicalDisplayAndroid displayAndroid =
-                    (PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId);
-            if (displayAndroid == null) return;
-
-            displayAndroid.onDisplayRemoved();
-            if (mNativePointer != 0) {
-                DisplayAndroidManagerJni.get().removeDisplay(mNativePointer, sdkDisplayId);
-            }
-            mIdMap.remove(sdkDisplayId);
         }
 
         @Override
         public void onDisplayChanged(int sdkDisplayId) {
-            PhysicalDisplayAndroid displayAndroid =
-                    (PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId);
-            Display display = getDisplayManager().getDisplay(sdkDisplayId);
-            // Note display null check here is needed because there appear to be an edge case in
-            // android display code, similar to onDisplayAdded.
-            if (displayAndroid != null && display != null) {
-                displayAndroid.updateFromDisplay(display);
-            }
+            updateDisplay(sdkDisplayId);
         }
     }
 
@@ -139,9 +94,8 @@ public class DisplayAndroidManager {
         }
 
         @Override
-        public void onDisplayTopologyChanged(SparseArray<RectF> absoluteCoordinates) {
-            // TODO(crbug.com/429396645): Add reading a new display topology and update all displays
-            // with new global coordinates.
+        public void onDisplayTopologyChanged(SparseArray<RectF> absoluteBounds) {
+            updateDisplayTopology(absoluteBounds);
         }
     }
 
@@ -149,13 +103,24 @@ public class DisplayAndroidManager {
 
     private static boolean sDisableHdrSdkRatioCallback;
 
+    private static final long IS_NULL_DISPLAY_REMOVED_DELAY_MS = 1000;
+
+    @VisibleForTesting
+    static final String IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME =
+            "Android.Display.IsNullDisplayRemoved";
+
     private long mNativePointer;
     private int mMainSdkDisplayId;
     @VisibleForTesting final SparseArray<DisplayAndroid> mIdMap = new SparseArray<>();
-    @VisibleForTesting final DisplayListenerBackend mBackend = new DisplayListenerBackend();
+    private final DisplayListenerBackend mBackend = new DisplayListenerBackend();
+
+    private final HashSet<Integer> mNullDisplayIds = new HashSet<>();
+    private final Handler mHandler = new Handler(Looper.getMainLooper());
 
     private final @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate =
             ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+    @VisibleForTesting @Nullable DisplayTopologyListenerBackend mDisplayTopologyListenerBackend;
+    private @Nullable SparseArray<RectF> mDisplaysAbsoluteCoordinates;
 
     /* package */ static DisplayAndroidManager getInstance() {
         ThreadUtils.assertOnUiThread();
@@ -206,7 +171,6 @@ public class DisplayAndroidManager {
         return ContextUtils.getApplicationContext();
     }
 
-    @SuppressLint("NewApi")
     private static DisplayManager getDisplayManager() {
         return (DisplayManager) getContext().getSystemService(Context.DISPLAY_SERVICE);
     }
@@ -234,13 +198,19 @@ public class DisplayAndroidManager {
         mMainSdkDisplayId = defaultDisplay.getDisplayId(); // Note this display is never removed.
 
         if (isWindowManagementEnabled()) {
-            // TODO(429396645): Use AconfigFlaggedApiDelegate.getAbsoluteBounds() to read the
-            // display topology and initialize all displays with global coordinates.
-            for (Display display : getDisplayManager().getDisplays()) {
-                addDisplay(display);
+            mDisplaysAbsoluteCoordinates =
+                    assumeNonNull(
+                            assumeNonNull(mAconfigFlaggedApiDelegate)
+                                    .getAbsoluteBounds(getDisplayManager()));
+            for (int i = 0; i < mDisplaysAbsoluteCoordinates.size(); ++i) {
+                int sdkDisplayId = mDisplaysAbsoluteCoordinates.keyAt(i);
+                addDisplayById(sdkDisplayId, mDisplaysAbsoluteCoordinates.valueAt(i));
             }
+
+            mDisplayTopologyListenerBackend = new DisplayTopologyListenerBackend();
+            mDisplayTopologyListenerBackend.startListening();
         } else {
-            addDisplay(defaultDisplay);
+            addDisplay(defaultDisplay, null);
         }
 
         mBackend.startListening();
@@ -255,29 +225,112 @@ public class DisplayAndroidManager {
         }
     }
 
+    /* package */ boolean isWindowManagementEnabled() {
+        return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()
+                && mAconfigFlaggedApiDelegate != null
+                && mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable();
+    }
+
     /* package */ DisplayAndroid getDisplayAndroid(Display display) {
         int sdkDisplayId = display.getDisplayId();
         DisplayAndroid displayAndroid = mIdMap.get(sdkDisplayId);
         if (displayAndroid == null) {
-            displayAndroid = addDisplay(display);
+            displayAndroid = addDisplay(display, null);
         }
         return displayAndroid;
     }
 
-    private DisplayAndroid addDisplay(Display display) {
+    private DisplayAndroid addDisplay(Display display, @Nullable RectF displayAbsoluteCoordinates) {
         int sdkDisplayId = display.getDisplayId();
         PhysicalDisplayAndroid displayAndroid =
-                new PhysicalDisplayAndroid(display, sDisableHdrSdkRatioCallback);
+                new PhysicalDisplayAndroid(
+                        display, displayAbsoluteCoordinates, sDisableHdrSdkRatioCallback);
         assert mIdMap.get(sdkDisplayId) == null;
         mIdMap.put(sdkDisplayId, displayAndroid);
         displayAndroid.updateFromDisplay(display);
         return displayAndroid;
     }
 
-    private boolean isWindowManagementEnabled() {
-        return UiAndroidFeatureList.sAndroidWindowManagementWebApi.isEnabled()
-                && mAconfigFlaggedApiDelegate != null
-                && mAconfigFlaggedApiDelegate.isDisplayTopologyAvailable();
+    private void addDisplayById(int sdkDisplayId, RectF displayAbsoluteCoordinates) {
+        Display display = getDisplayManager().getDisplay(sdkDisplayId);
+        if (display != null) {
+            addDisplay(display, displayAbsoluteCoordinates);
+            return;
+        }
+
+        mNullDisplayIds.add(sdkDisplayId);
+        mHandler.postDelayed(
+                () -> {
+                    // Record whether sdkDisplayId was still in mNullDisplayIds at
+                    // this point. This indicates if an onDisplayRemoved call for
+                    // sdkDisplayId did not occur within
+                    // IS_NULL_DISPLAY_REMOVED_DELAY_MS
+                    // after its corresponding onDisplayAdded.
+                    // - true: sdkDisplayId was already removed; onDisplayRemoved
+                    // occurred and processed it.
+                    // - false: sdkDisplayId was present and removed now;
+                    // onDisplayRemoved was missed or late.
+                    RecordHistogram.recordBooleanHistogram(
+                            IS_NULL_DISPLAY_REMOVED_HISTOGRAM_NAME,
+                            !mNullDisplayIds.remove(sdkDisplayId));
+                },
+                IS_NULL_DISPLAY_REMOVED_DELAY_MS);
+    }
+
+    private void removeDisplay(int sdkDisplayId) {
+        if (isWindowManagementEnabled()) {
+            mNullDisplayIds.remove(sdkDisplayId);
+        }
+
+        // Never remove the primary display.
+        if (sdkDisplayId == mMainSdkDisplayId) return;
+
+        PhysicalDisplayAndroid displayAndroid = (PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId);
+        if (displayAndroid == null) return;
+
+        displayAndroid.onDisplayRemoved();
+        if (mNativePointer != 0) {
+            DisplayAndroidManagerJni.get().removeDisplay(mNativePointer, sdkDisplayId);
+        }
+        mIdMap.remove(sdkDisplayId);
+    }
+
+    private void updateDisplay(int sdkDisplayId) {
+        PhysicalDisplayAndroid displayAndroid = (PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId);
+        Display display = getDisplayManager().getDisplay(sdkDisplayId);
+
+        // Note display null check here is needed because there appear to be an edge case in
+        // android display code, similar to onDisplayAdded.
+        if (displayAndroid != null && display != null) {
+            displayAndroid.updateFromDisplay(display);
+        }
+    }
+
+    @SuppressLint("NewApi")
+    private void updateDisplayTopology(SparseArray<RectF> newDisplaysAbsoluteCoordinates) {
+        assumeNonNull(mDisplaysAbsoluteCoordinates);
+
+        for (int i = 0; i < newDisplaysAbsoluteCoordinates.size(); ++i) {
+            int sdkDisplayId = newDisplaysAbsoluteCoordinates.keyAt(i);
+            RectF displayAbsoluteCoordinates = mDisplaysAbsoluteCoordinates.get(sdkDisplayId);
+
+            if (displayAbsoluteCoordinates == null) {
+                addDisplayById(sdkDisplayId, newDisplaysAbsoluteCoordinates.valueAt(i));
+            } else if (!displayAbsoluteCoordinates.equals(
+                    newDisplaysAbsoluteCoordinates.valueAt(i))) {
+                assumeNonNull((PhysicalDisplayAndroid) mIdMap.get(sdkDisplayId))
+                        .updateBounds(newDisplaysAbsoluteCoordinates.valueAt(i));
+            }
+        }
+
+        for (int i = 0; i < mDisplaysAbsoluteCoordinates.size(); ++i) {
+            int sdkDisplayId = mDisplaysAbsoluteCoordinates.keyAt(i);
+            if (!newDisplaysAbsoluteCoordinates.contains(sdkDisplayId)) {
+                removeDisplay(sdkDisplayId);
+            }
+        }
+
+        mDisplaysAbsoluteCoordinates = newDisplaysAbsoluteCoordinates;
     }
 
     /* package */ void updateDisplayOnNativeSide(DisplayAndroid displayAndroid) {

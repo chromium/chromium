@@ -387,15 +387,27 @@ public abstract class DisplayUtil {
      */
     public static Pair<Integer, Rect> getLocalCoordinatesPx(
             RectF globalCoordinatesDp, DisplayAndroid targetDisplay) {
-        float displayDensity = targetDisplay.getDipScale();
-        int targetDisplayId = targetDisplay.getDisplayId();
+        return Pair.create(
+                targetDisplay.getDisplayId(),
+                convertDipToPixelDisplayCoordinates(
+                        globalCoordinatesDp, targetDisplay.getDipScale()));
+    }
 
-        int leftPx = Math.round(globalCoordinatesDp.left * displayDensity);
-        int topPx = Math.round(globalCoordinatesDp.top * displayDensity);
-        int rightPx = Math.round(globalCoordinatesDp.right * displayDensity);
-        int bottomPx = Math.round(globalCoordinatesDp.bottom * displayDensity);
+    /**
+     * Convert DIP display coordinates to pixel coordinates.
+     *
+     * @param dipDisplayCoordinates Display coordinates in DIP.
+     * @param displayDensity Display density.
+     * @return Display coordinates in pixels.
+     */
+    public static Rect convertDipToPixelDisplayCoordinates(
+            RectF dipDisplayCoordinates, float displayDensity) {
+        int leftPx = Math.round(dipDisplayCoordinates.left * displayDensity);
+        int topPx = Math.round(dipDisplayCoordinates.top * displayDensity);
+        int rightPx = Math.round(dipDisplayCoordinates.right * displayDensity);
+        int bottomPx = Math.round(dipDisplayCoordinates.bottom * displayDensity);
 
-        return Pair.create(targetDisplayId, new Rect(leftPx, topPx, rightPx, bottomPx));
+        return new Rect(leftPx, topPx, rightPx, bottomPx);
     }
 
     /**

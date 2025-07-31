@@ -13,6 +13,7 @@ import android.graphics.Insets;
 import android.graphics.PixelFormat;
 import android.graphics.Point;
 import android.graphics.Rect;
+import android.graphics.RectF;
 import android.hardware.display.DeviceProductInfo;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -156,9 +157,13 @@ import java.util.function.Consumer;
     private final @Nullable WindowManager mWindowManager;
     private final @Nullable ComponentCallbacks mComponentCallbacks;
     private final Display mDisplay;
+    private @Nullable RectF mDisplayAbsoluteCoordinates;
     private @Nullable Consumer<Display> mHdrSdrRatioCallback;
 
-    /* package */ PhysicalDisplayAndroid(Display display, boolean disableHdrSdkRatioCallback) {
+    /* package */ PhysicalDisplayAndroid(
+            Display display,
+            @Nullable RectF displayAbsoluteCoordinates,
+            boolean disableHdrSdkRatioCallback) {
         super(display.getDisplayId());
         if (USE_CONFIGURATION) {
             Context appContext = ContextUtils.getApplicationContext();
@@ -184,6 +189,7 @@ import java.util.function.Consumer;
             mWindowContext.registerComponentCallbacks(mComponentCallbacks);
             mWindowManager = mWindowContext.getSystemService(WindowManager.class);
             mDisplay = mWindowContext.getDisplay();
+            mDisplayAbsoluteCoordinates = displayAbsoluteCoordinates;
             updateFromConfiguration();
         } else {
             mWindowContext = null;
@@ -221,14 +227,23 @@ import java.util.function.Consumer;
     }
 
     @RequiresApi(VERSION_CODES.R)
+    /* package */ void updateBounds(RectF displayAbsoluteCoordinates) {
+        mDisplayAbsoluteCoordinates = displayAbsoluteCoordinates;
+        updateFromConfiguration();
+    }
+
+    @RequiresApi(VERSION_CODES.R)
     private void updateFromConfiguration() {
         assumeNonNull(mWindowContext);
         assumeNonNull(mWindowManager);
 
-        Rect bounds = mWindowManager.getMaximumWindowMetrics().getBounds();
-        Insets insets = getWindowInsets();
-
         DisplayMetrics displayMetrics = mWindowContext.getResources().getDisplayMetrics();
+        Insets insets = getWindowInsets();
+        Rect bounds =
+                (mDisplayAbsoluteCoordinates != null)
+                        ? DisplayUtil.convertDipToPixelDisplayCoordinates(
+                                mDisplayAbsoluteCoordinates, displayMetrics.density)
+                        : mWindowManager.getMaximumWindowMetrics().getBounds();
 
         if (DeviceInfo.isAutomotive()
                 && CommandLine.getInstance()
