@@ -11,18 +11,10 @@
 
 @protocol ActivityServiceCommands;
 @protocol EditMenuAlertDelegate;
-class WebStateList;
 
 // Mediator that mediates between the browser container views and the
 // link_to_text tab helpers.
 @interface LinkToTextMediator : NSObject <EditMenuBuilder>
-
-// Initializer for a mediator. `webStateList` is the WebStateList for the
-// Browser whose content is shown within the BrowserContainerConsumer. It must
-// be non-null. `consumer` is the consumer of link-to-text updates.
-- (instancetype)initWithWebStateList:(WebStateList*)webStateList
-    NS_DESIGNATED_INITIALIZER;
-- (instancetype)init NS_UNAVAILABLE;
 
 // The delegate to present error message alerts.
 @property(nonatomic, weak) id<EditMenuAlertDelegate> alertDelegate;
@@ -31,11 +23,11 @@ class WebStateList;
 @property(nonatomic, weak) id<ActivityServiceCommands> activityServiceHandler;
 
 // Returns whether the link to text feature should be offered for the current
-// user selection.
-- (BOOL)shouldOfferLinkToText;
+// user selection in `webState`.
+- (BOOL)shouldOfferLinkToTextInWebState:(web::WebState*)webState;
 
-// Handles the link to text menu item selection.
-- (void)handleLinkToTextSelection;
+// Handles the link to text menu item selection in `webState`.
+- (void)handleLinkToTextSelectionInWebState:(web::WebState*)webState;
 
 @end
 

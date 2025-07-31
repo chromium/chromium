@@ -99,8 +99,7 @@
                              browser:browser
                             modality:OverlayModality::kWebContentArea];
 
-  _linkToTextMediator =
-      [[LinkToTextMediator alloc] initWithWebStateList:webStateList];
+  _linkToTextMediator = [[LinkToTextMediator alloc] init];
   _linkToTextMediator.alertDelegate = self;
   _linkToTextMediator.activityServiceHandler = HandlerForProtocol(
       browser->GetCommandDispatcher(), ActivityServiceCommands);

@@ -10,8 +10,6 @@
 #import "ios/chrome/browser/link_to_text/ui_bundled/link_to_text_mediator.h"
 #import "ios/chrome/browser/partial_translate/ui_bundled/partial_translate_mediator.h"
 #import "ios/chrome/browser/shared/model/profile/test/test_profile_ios.h"
-#import "ios/chrome/browser/shared/model/web_state_list/test/fake_web_state_list_delegate.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/web/model/chrome_web_client.h"
 #import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
@@ -369,8 +367,7 @@ void AddLinkToText(NSMutableArray* menu) {
 class BrowserEditMenuHandlerTest : public PlatformTest {
  public:
   BrowserEditMenuHandlerTest()
-      : web_client_(std::make_unique<ChromeWebClient>()),
-        web_state_list_(&web_state_list_delegate_) {
+      : web_client_(std::make_unique<ChromeWebClient>()) {
     profile_ = TestProfileIOS::Builder().Build();
 
     web::WebState::CreateParams params(profile_.get());
@@ -423,8 +420,6 @@ class BrowserEditMenuHandlerTest : public PlatformTest {
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   web::ScopedTestingWebClient web_client_;
   std::unique_ptr<TestProfileIOS> profile_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
   std::unique_ptr<web::WebState> web_state_;
   TestViewController* base_view_controller_;
   ScopedKeyWindow scoped_key_window_;
@@ -454,8 +449,7 @@ TEST_F(BrowserEditMenuHandlerTest, CheckCustomizedMenuDescription) {
                 fullscreenController:nullptr
                            incognito:NO];
 
-  LinkToTextMediator* link_to_text_mediator =
-      [[LinkToTextMediator alloc] initWithWebStateList:&web_state_list_];
+  LinkToTextMediator* link_to_text_mediator = [[LinkToTextMediator alloc] init];
   BrowserEditMenuHandler* handler = [[BrowserEditMenuHandler alloc] init];
   handler.partialTranslateDelegate = partial_translate_mediator;
   handler.linkToTextDelegate = link_to_text_mediator;

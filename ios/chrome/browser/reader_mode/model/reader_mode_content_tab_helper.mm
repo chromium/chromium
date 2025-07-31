@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 
 #import "ios/chrome/browser/browser_container/model/edit_menu_tab_helper.h"
+#import "ios/chrome/browser/link_to_text/model/link_to_text_tab_helper.h"
 #import "ios/chrome/browser/overlays/model/public/overlay_request_queue.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_delegate.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_web_state_delegate.h"
@@ -59,6 +60,7 @@ void ReaderModeContentTabHelper::AttachSupportedTabHelpers(
         ->SetEditMenuBuilder(
             main_tab_edit_menu_builder_tab_helper->GetEditMenuBuilder());
     WebSelectionTabHelper::CreateForWebState(web_state());
+    LinkToTextTabHelper::CreateForWebState(web_state());
   }
 
   ImageFetchTabHelper::CreateForWebState(web_state());
