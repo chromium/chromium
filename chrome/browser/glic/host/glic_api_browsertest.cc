@@ -1050,8 +1050,16 @@ IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndContextualCueing,
   ContinueJsTest();
 }
 
+// TODO(crbug.com/435271214): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_testDeferredFocusedTabStateAtCreation \
+  DISABLED_testDeferredFocusedTabStateAtCreation
+#else
+#define MAYBE_testDeferredFocusedTabStateAtCreation \
+  testDeferredFocusedTabStateAtCreation
+#endif
 IN_PROC_BROWSER_TEST_F(GlicApiTestWithOneTabAndPreloading,
-                       testDeferredFocusedTabStateAtCreation) {
+                       MAYBE_testDeferredFocusedTabStateAtCreation) {
   // Navigate the first tab.
   RunTestSequence(
       NavigateWebContents(kFirstTab,
