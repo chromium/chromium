@@ -51,6 +51,7 @@ bool WaitForFileWritable(const base::FilePath& path) {
     // if it does not exist.
     if (base::File file(path, base::File::FLAG_OPEN | base::File::FLAG_WRITE |
                                   base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                  base::File::FLAG_WIN_EXCLUSIVE_READ |
                                   base::File::FLAG_WIN_SHARE_DELETE);
         file.IsValid() ||
         file.error_details() == base::File::FILE_ERROR_NOT_FOUND) {
