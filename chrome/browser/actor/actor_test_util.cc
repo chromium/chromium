@@ -432,6 +432,11 @@ void ExpectOkResult(const mojom::ActionResult& result) {
       << "Expected OK result, got " << ToDebugString(result);
 }
 
+void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future) {
+  const auto& result = *(future.Get<0>());
+  ExpectOkResult(result);
+}
+
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr,
                                            std::optional<size_t>>& future) {
   const auto& result = *(future.Get<0>());

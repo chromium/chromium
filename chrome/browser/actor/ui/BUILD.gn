@@ -206,6 +206,7 @@ source_set("browser_tests") {
     ":ui_event_types",
     "//base/test:test_support",
     "//chrome/browser/actor",
+    "//chrome/browser/actor:test_support",
     "//chrome/browser/profiles:profile",
     "//chrome/browser/ui",
     "//chrome/browser/ui/browser_window",

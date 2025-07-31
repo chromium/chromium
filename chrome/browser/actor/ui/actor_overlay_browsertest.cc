@@ -3,7 +3,9 @@
 // found in the LICENSE file.
 
 #include "base/test/run_until.h"
+#include "base/test/test_future.h"
 #include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_test_util.h"
 #include "chrome/browser/actor/ui/actor_overlay_window_controller.h"
 #include "chrome/browser/actor/ui/actor_ui_state_manager_interface.h"
 #include "chrome/browser/actor/ui/ui_event.h"
@@ -15,6 +17,7 @@
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -24,6 +27,8 @@
 #include "content/public/test/browser_test.h"
 
 namespace {
+using actor::mojom::ActionResultPtr;
+using base::test::TestFuture;
 
 class ActorOverlayTest : public InProcessBrowserTest {
  public:
@@ -187,9 +192,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
   // actor::PageTarget page_target(gfx::Point(100, 200));
   tabs::TabHandle tab_handle =
       browser()->tab_strip_model()->GetActiveTab()->GetHandle();
+  TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(
       actor::ui::StartingToActOnTab(tab_handle, actor::TaskId(1)),
-      base::DoNothing());
+      result.GetCallback());
+  actor::ExpectOkResult(result);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()
         ->GetBrowserView()
@@ -240,9 +247,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
   ASSERT_NE(state_manager, nullptr);
   tabs::TabHandle tab_handle =
       browser()->tab_strip_model()->GetActiveTab()->GetHandle();
+  TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(
       actor::ui::StartingToActOnTab(tab_handle, actor::TaskId(1)),
-      base::DoNothing());
+      result.GetCallback());
+  actor::ExpectOkResult(result);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser()
         ->GetBrowserView()
@@ -341,9 +350,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   ASSERT_EQ(browser_2->tab_strip_model()->count(), 1);
   // Start actor actuation on tab_2, which is in browser_1.
   // This should make the Actor Overlay visible in browser_1.
+  TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(
       actor::ui::StartingToActOnTab(tab_2->GetHandle(), actor::TaskId(1)),
-      base::DoNothing());
+      result.GetCallback());
+  actor::ExpectOkResult(result);
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return browser_1->GetBrowserView()
         .GetActiveContentsContainerView()
@@ -398,9 +409,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   tabs::TabInterface* tab_1 = browser()->tab_strip_model()->GetActiveTab();
   ASSERT_NE(tab_1, nullptr);
   // Start actor actuation on tab_1.
+  TestFuture<ActionResultPtr> result;
   state_manager->OnUiEvent(
       actor::ui::StartingToActOnTab(tab_1->GetHandle(), actor::TaskId(1)),
-      base::DoNothing());
+      result.GetCallback());
+  actor::ExpectOkResult(result);
   Browser* browser_with_actuated_tab;
   // Loop to repeatedly move the actuated tab to new browser windows. This
   // verifies the overlay's persistence and re-parenting across window changes.

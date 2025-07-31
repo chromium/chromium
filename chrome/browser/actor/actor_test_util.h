@@ -166,6 +166,7 @@ std::vector<std::unique_ptr<ToolRequest>> ToRequestList(T&& first,
 }
 
 void ExpectOkResult(const mojom::ActionResult& result);
+void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr>& future);
 void ExpectOkResult(base::test::TestFuture<mojom::ActionResultPtr,
                                            std::optional<size_t>>& future);
 void ExpectErrorResult(base::test::TestFuture<mojom::ActionResultPtr,
