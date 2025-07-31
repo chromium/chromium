@@ -554,6 +554,17 @@ mojom("mojom_integrity_metadata") {
   blink_cpp_typemaps = shared_cpp_typemaps
 }
 
+mojom("mojom_unencoded_digest") {
+  generate_java = true
+  sources = [ "unencoded_digest.mojom" ]
+  public_deps = [ ":mojom_integrity_metadata" ]
+  if (!is_ios) {
+    export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+    export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+    export_header_blink = "third_party/blink/public/platform/web_common.h"
+  }
+}
+
 mojom("mojom_source_location") {
   generate_java = true
   sources = [ "source_location.mojom" ]
@@ -1733,6 +1744,7 @@ mojom("mojom") {
     ":mojom_shared_storage",
     ":mojom_storage_access_api",
     ":mojom_structured_headers",
+    ":mojom_unencoded_digest",
     ":url_loader_base",
     ":websocket_mojom",
     "//components/content_settings/core/common:mojo_bindings",

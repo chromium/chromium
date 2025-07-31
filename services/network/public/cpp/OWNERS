@@ -17,6 +17,7 @@ per-file cross_origin_resource_policy*=file://third_party/blink/SECURITY_OWNERS
 per-file document_isolation_policy*=file://third_party/blink/SECURITY_OWNERS
 per-file integrity_metadata*=file://third_party/blink/SECURITY_OWNERS
 per-file sri_message_signatures*=file://third_party/blink/SECURITY_OWNERS
+per-file unencoded_digests*=file://third_party/blink/SECURITY_OWNERS
 per-file web_sandbox_flags*=file://third_party/blink/SECURITY_OWNERS
 per-file x_frame_options*=file://third_party/blink/SECURITY_OWNERS
 
