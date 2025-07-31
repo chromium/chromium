@@ -278,8 +278,9 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
   }
 
   void TearDown() override {
+    bubble_view_ = nullptr;
+    bubble_widget_.ExtractAsDangling()->CloseNow();
     about_flags::GetCurrentFlagsState()->Reset();
-    bubble_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
     TestWithBrowserView::TearDown();
   }
 
@@ -356,8 +357,8 @@ class ChromeLabsViewControllerTest : public TestWithBrowserView {
 
  protected:
   ScopedChromeLabsModelDataForTesting scoped_chrome_labs_model_data_;
-  raw_ptr<ChromeLabsBubbleView, DanglingUntriaged> bubble_view_;
-  raw_ptr<views::Widget, DanglingUntriaged> bubble_widget_;
+  raw_ptr<ChromeLabsBubbleView> bubble_view_;
+  raw_ptr<views::Widget> bubble_widget_;
 
  private:
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
