@@ -720,6 +720,12 @@
   <message name="IDS_AUTOFILL_AI_VEHICLE_ENTITY_NAME" desc="The label for something that a user can save when submitting a form. For context, a user has been able to save credit cards within Chrome for many users. Now a user can also save a “Vehicle”.">
     Vehicle
   </message>
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME" translateable="false">
+    Known traveler number
+  </message>
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ENTITY_NAME" translateable="false">
+    Redress number
+  </message>
 
   <!-- Add entity strings -->
   <message name="IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within Chrome settings that allows a user to explicitly create a driver’s license. Beneath the title is a form. Instead of the autofill service prompting the user to save values at the moment they submit a form, the user can explicitly add data to the autofill service with this interface. This is similar to adding a Credit card to Chrome.">
@@ -748,6 +754,12 @@
   <message name="IDS_AUTOFILL_AI_EDIT_VEHICLE_ENTITY" desc="The title of a dialog box that allows the user to edit their information.">
     Edit vehicle
   </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY" translateable="false">
+    Edit known traveler number
+  </message>
+  <message name="IDS_AUTOFILL_AI_EDIT_REDRESS_NUMBER_ENTITY" translateable="false">
+    Edit redress number
+  </message>
 
   <!-- Delete entity strings -->
   <message name="IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a driver's license. The user opened this dialog by choosing 'Delete' from the more options menu.">
@@ -761,6 +773,12 @@
   </message>
   <message name="IDS_AUTOFILL_AI_DELETE_VEHICLE_ENTITY" desc="A title of a dialog within settings that allows a user to delete a vehicle. The user opened this dialog by choosing 'Delete' from the more options menu.">
     Delete vehicle
+  </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_KNOWN_TRAVELER_NUMBER_ENTITY" translateable="false">
+    Delete known traveler number
+  </message>
+  <message name="IDS_AUTOFILL_AI_DELETE_REDRESS_NUMBER_ENTITY" translateable="false">
+    Delete redress number
   </message>
 
     <!-- Attributes of the driver's license entity -->
@@ -795,6 +813,26 @@
   </message>
   <message name="IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ISSUE_DATE_ATTRIBUTE_NAME" translateable="false">
     Issue date
+  </message>
+
+  <!-- Attributes of the known traveler number entity -->
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME" translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME" translateable="false">
+    Number
+  </message>
+  <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME" translateable="false">
+    Expiration date
+  </message>
+
+
+  <!-- Attributes of redress number entity -->
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME" translateable="false">
+    Name
+  </message>
+  <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_ATTRIBUTE_NAME" translateable="false">
+    Number
   </message>
 
   <!-- Attributes of the passport entity -->
@@ -889,6 +927,12 @@
   <message name="IDS_AUTOFILL_AI_SAVE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to save information they just filled in on a form. For example, the user has filled in details related to their car. When they click Submit, we offer to save the data in Chrome. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data saved at this moment. This is a similar moment to saving a password or credit card with Chrome.">
     Save vehicle?
   </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE" translateable="false">
+    Save known traveler number?
+  </message>
+  <message name="IDS_AUTOFILL_AI_SAVE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE" translateable="false">
+    Save redress number?
+  </message>
 
   <message name="IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their driver’s license. Now, the user is filling out a new form either with additional details associated with the driver’s license or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the driver’s license that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update driver's license?
@@ -901,6 +945,12 @@
   </message>
   <message name="IDS_AUTOFILL_AI_UPDATE_VEHICLE_ENTITY_DIALOG_TITLE" desc="The title of a dialog that prompts the user to update information associated with something they have previously saved. For example, the user previously saved information related to their car. Now, the user is filling out a new form either with additional details associated with the car or with different values than what was previously saved. The interface shows new or modified values at the top with blue dots to indicate they’re new. Existing information associated with the vehicle that isn’t changing appears at the bottom without blue dots. Depending on the form and what Chrome recognizes, there might be just one or several pieces of data updated at this moment. This is a similar moment to updating a password or credit card with Chrome.">
     Update vehicle?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE" translateable="false">
+    Update known traveler number?
+  </message>
+  <message name="IDS_AUTOFILL_AI_UPDATE_REDRESS_NUMBER_ENTITY_DIALOG_TITLE" translateable="false">
+    Update redress number?
   </message>
   <message name="IDS_AUTOFILL_AI_SAVE_ENTITY_DIALOG_SUBTITLE" desc="A description that appears beneath the Save title prompt. This sentence essentially defines Autofill in Chrome. We prompt the user to save their information with Chrome with the promise that Chrome can then help the user fill out forms more quickly using their saved info.">
     Save your info so that autofill can fill in more fields for you next time
