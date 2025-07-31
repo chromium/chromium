@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/session/session_observer.h"
+#include "ash/system/time/astronomer_util.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -60,22 +61,6 @@ class ASH_EXPORT GeolocationController
       public chromeos::PowerManagerClient::Observer,
       public SessionObserver {
  public:
-  // Possible errors for `GetSunsetTime()` and `GetSunriseTime()`.
-  enum class SunRiseSetError {
-    // The current geolocation has no sunrise/sunset (24 hours of daylight or
-    // darkness).
-    kNoSunRiseSet,
-    // Sunrise/set are temporarily unavailable, including the default values of
-    // 6 AM/PM local time. Caller should handle this gracefully and try again
-    // later.
-    kUnavailable
-  };
-
-  static constexpr base::expected<base::Time, SunRiseSetError> kNoSunRiseSet =
-      base::unexpected(SunRiseSetError::kNoSunRiseSet);
-  static constexpr base::expected<base::Time, SunRiseSetError>
-      kSunRiseSetUnavailable = base::unexpected(SunRiseSetError::kUnavailable);
-
   class Observer : public base::CheckedObserver {
    public:
     // Emitted when the Geoposition is updated with
@@ -119,12 +104,7 @@ class ASH_EXPORT GeolocationController
   // Returns sunset and sunrise time calculated from the most recently observed
   // geoposition. If a geoposition has not been observed, defaults to sunset
   // 6 PM and sunrise 6 AM.
-  base::expected<base::Time, SunRiseSetError> GetSunsetTime() const {
-    return GetSunRiseSet(/*sunrise=*/false);
-  }
-  base::expected<base::Time, SunRiseSetError> GetSunriseTime() const {
-    return GetSunRiseSet(/*sunrise=*/true);
-  }
+  base::expected<SunRiseSetTime, SunRiseSetError> GetSunRiseSetTime() const;
 
   static base::TimeDelta GetNextRequestDelayAfterSuccessForTesting();
 

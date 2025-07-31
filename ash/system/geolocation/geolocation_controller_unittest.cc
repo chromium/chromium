@@ -6,6 +6,7 @@
 
 #include <string_view>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/geolocation_access_level.h"
 #include "ash/session/session_controller_impl.h"
@@ -21,6 +22,7 @@
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
@@ -44,13 +46,19 @@ constexpr std::string_view kTestNow = "23 Dec 2021 12:00:00";
 
 constexpr double kTestLatitude1 = 23.5;
 constexpr double kTestLongitude1 = 35.88;
-constexpr std::string_view kTestSunriseTime1 = "23 Dec 2021 04:14:36.626";
-constexpr std::string_view kTestSunsetTime1 = "23 Dec 2021 14:59:58.459";
+constexpr std::string_view kTestSunriseTimeICU1 = "23 Dec 2021 04:14:36.626";
+constexpr std::string_view kTestSunsetTimeICU1 = "23 Dec 2021 14:59:58.459";
+
+constexpr std::string_view kTestSunriseTime1 = "23 Dec 2021 04:14:0.000";
+constexpr std::string_view kTestSunsetTime1 = "23 Dec 2021 14:56:00.000";
 
 constexpr double kTestLatitude2 = 37.5;
 constexpr double kTestLongitude2 = -100.5;
-constexpr std::string_view kTestSunriseTime2 = "23 Dec 2021 13:55:13.306";
-constexpr std::string_view kTestSunsetTime2 = "23 Dec 2021 23:33:46.855";
+constexpr std::string_view kTestSunriseTimeICU2 = "23 Dec 2021 13:55:13.306";
+constexpr std::string_view kTestSunsetTimeICU2 = "23 Dec 2021 23:33:46.855";
+
+constexpr std::string_view kTestSunriseTime2 = "23 Dec 2021 13:53:00.000";
+constexpr std::string_view kTestSunsetTime2 = "23 Dec 2021 23:28:00.000";
 
 constexpr SimpleGeoposition kSanJoseGeoposition = {37.335480, -121.893028};
 
@@ -110,11 +118,19 @@ class FakeGeolocationController : public GeolocationController {
 };
 
 // Base test fixture.
-class GeolocationControllerTest : public NoSessionAshTestBase {
+class GeolocationControllerTest : public NoSessionAshTestBase,
+                                  public testing::WithParamInterface<bool> {
  public:
   GeolocationControllerTest()
       : NoSessionAshTestBase(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+    const bool use_icu = GetParam();
+    if (use_icu) {
+      feature_list_.InitAndEnableFeature(features::kUseICUForGetSunRiseSet);
+    } else {
+      feature_list_.InitAndDisableFeature(features::kUseICUForGetSunRiseSet);
+    }
+  }
   GeolocationControllerTest(const GeolocationControllerTest&) = delete;
   GeolocationControllerTest& operator=(const GeolocationControllerTest&) =
       delete;
@@ -184,7 +200,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
     // Fast forward the scheduler to reach the time when the controller
     // requests for geoposition from the server in
     // `GeolocationController::RequestGeoposition`.
-    timer_ptr_->FireNow();
+    timer_ptr()->FireNow();
     // Waits for the observers to receive the geoposition from the server.
     waiter.Wait();
   }
@@ -206,6 +222,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<FakeGeolocationController> controller_;
   base::SimpleTestClock test_clock_;
   raw_ptr<base::OneShotTimer, DanglingUntriaged> timer_ptr_;
@@ -214,7 +231,7 @@ class GeolocationControllerTest : public NoSessionAshTestBase {
 
 // Tests adding and removing an observer should request and stop receiving
 // a position update.
-TEST_F(GeolocationControllerTest, Observer) {
+TEST_P(GeolocationControllerTest, Observer) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Add an observer should start the timer requesting the geoposition.
@@ -234,7 +251,7 @@ TEST_F(GeolocationControllerTest, Observer) {
 
 // Tests adding and removing observer and make sure that only observing ones
 // receive the position updates.
-TEST_F(GeolocationControllerTest, MultipleObservers) {
+TEST_P(GeolocationControllerTest, MultipleObservers) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Add an observer should start the timer requesting for the first
@@ -278,7 +295,7 @@ TEST_F(GeolocationControllerTest, MultipleObservers) {
 }
 
 // Tests that controller only pushes valid positions.
-TEST_F(GeolocationControllerTest, InvalidPositions) {
+TEST_P(GeolocationControllerTest, InvalidPositions) {
   GeolocationControllerObserver observer;
   // Update to an invalid position
   Geoposition invalid_position(position());
@@ -301,7 +318,7 @@ TEST_F(GeolocationControllerTest, InvalidPositions) {
 }
 
 // Tests that timezone changes result.
-TEST_F(GeolocationControllerTest, TimezoneChanges) {
+TEST_P(GeolocationControllerTest, TimezoneChanges) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
   controller()->SetCurrentTimezoneIdForTesting(u"America/Los_Angeles");
 
@@ -324,7 +341,7 @@ TEST_F(GeolocationControllerTest, TimezoneChanges) {
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 
-TEST_F(GeolocationControllerTest, SystemGeolocationPermissionChanges) {
+TEST_P(GeolocationControllerTest, SystemGeolocationPermissionChanges) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   GeolocationControllerObserver observer;
@@ -350,7 +367,7 @@ TEST_F(GeolocationControllerTest, SystemGeolocationPermissionChanges) {
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 
-TEST_F(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
+TEST_P(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // This will start scheduling.
@@ -378,7 +395,7 @@ TEST_F(GeolocationControllerTest, StopSchedulingWhileResponseIsComing) {
   controller()->RemoveObserver(&observer);
 }
 
-TEST_F(GeolocationControllerTest, StopSchedulingWhenObserverListIsEmpty) {
+TEST_P(GeolocationControllerTest, StopSchedulingWhenObserverListIsEmpty) {
   EXPECT_FALSE(timer_ptr()->IsRunning());
 
   // Add the first observer. This will kick off scheduling.
@@ -405,18 +422,20 @@ TEST_F(GeolocationControllerTest, StopSchedulingWhenObserverListIsEmpty) {
 
 // Tests obtaining sunset/sunrise time when there is no valid geoposition, for
 // example, due to lack of connectivity.
-TEST_F(GeolocationControllerTest, SunsetSunriseDefault) {
+TEST_P(GeolocationControllerTest, SunsetSunriseDefault) {
   // If geoposition is unset, the controller should return the default sunset
   // and sunrise time .
-  EXPECT_EQ(controller()->GetSunsetTime(),
+  auto result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  EXPECT_EQ(result->sunset,
             ToTimeToday(TimeOfDay(kDefaultSunsetTimeOffsetMinutes)));
-  EXPECT_EQ(controller()->GetSunriseTime(),
+  EXPECT_EQ(result->sunrise,
             ToTimeToday(TimeOfDay(kDefaultSunriseTimeOffsetMinutes)));
 }
 
 // Tests the behavior when there is a valid geoposition, sunrise and sunset
 // times are calculated correctly.
-TEST_F(GeolocationControllerTest, GetSunRiseSet) {
+TEST_P(GeolocationControllerTest, GetSunRiseSet) {
   test_clock()->SetNow(ToUTCTime(kTestNow));
 
   // Add an observer and make sure that sunset and sunrise time are not
@@ -424,8 +443,15 @@ TEST_F(GeolocationControllerTest, GetSunRiseSet) {
   GeolocationControllerObserver observer1;
   controller()->AddObserver(&observer1);
   EXPECT_TRUE(timer_ptr()->IsRunning());
-  EXPECT_NE(controller()->GetSunsetTime(), ToUTCTime(kTestSunsetTime1));
-  EXPECT_NE(controller()->GetSunriseTime(), ToUTCTime(kTestSunriseTime1));
+  auto result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  if (base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)) {
+    EXPECT_NE(result->sunset, ToUTCTime(kTestSunsetTimeICU1));
+    EXPECT_NE(result->sunrise, ToUTCTime(kTestSunriseTimeICU1));
+  } else {
+    EXPECT_NE(result->sunset, ToUTCTime(kTestSunsetTime1));
+    EXPECT_NE(result->sunrise, ToUTCTime(kTestSunriseTime1));
+  }
   EXPECT_EQ(0, observer1.position_received_num());
 
   // Prepare a valid geoposition.
@@ -441,14 +467,21 @@ TEST_F(GeolocationControllerTest, GetSunRiseSet) {
   SetServerPosition(position);
   FireTimerToFetchGeoposition();
   EXPECT_EQ(1, observer1.position_received_num());
-  EXPECT_EQ(controller()->GetSunsetTime(), ToUTCTime(kTestSunsetTime1));
-  EXPECT_EQ(controller()->GetSunriseTime(), ToUTCTime(kTestSunriseTime1));
+  result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  if (base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)) {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTimeICU1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTimeICU1));
+  } else {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTime1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTime1));
+  }
   EXPECT_TRUE(timer_ptr()->IsRunning());
 }
 
 // Tests that when there is a geoposition with 24 hours of daylight or darkness,
 // sunrise and sunset times honor the API.
-TEST_F(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
+TEST_P(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
   test_clock()->SetNow(ToUTCTime(kNoDaylightDarknessTimestamp));
 
   Geoposition position;
@@ -462,10 +495,8 @@ TEST_F(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
   // updated correctly.
   SetServerPosition(position);
   FireTimerToFetchGeoposition();
-  EXPECT_EQ(controller()->GetSunsetTime(),
-            GeolocationController::kNoSunRiseSet);
-  EXPECT_EQ(controller()->GetSunriseTime(),
-            GeolocationController::kNoSunRiseSet);
+  EXPECT_EQ(controller()->GetSunRiseSetTime().error(),
+            SunRiseSetError::kNoSunRiseSet);
 
   position.latitude = kNoDaylightGeoposition.latitude;
   position.longitude = kNoDaylightGeoposition.longitude;
@@ -474,15 +505,13 @@ TEST_F(GeolocationControllerTest, GetSunRiseSetWithAllDaylightOrDarkness) {
   // updated correctly.
   SetServerPosition(position);
   FireTimerToFetchGeoposition();
-  EXPECT_EQ(controller()->GetSunsetTime(),
-            GeolocationController::kNoSunRiseSet);
-  EXPECT_EQ(controller()->GetSunriseTime(),
-            GeolocationController::kNoSunRiseSet);
+  EXPECT_EQ(controller()->GetSunRiseSetTime().error(),
+            SunRiseSetError::kNoSunRiseSet);
 }
 
 // Tests that if device sleeps more than a day, the geoposition is fetched
 // instantly.
-TEST_F(GeolocationControllerTest, RequestGeopositionAfterSuspend) {
+TEST_P(GeolocationControllerTest, RequestGeopositionAfterSuspend) {
   const base::TimeDelta zero_duration = base::Seconds(0);
   auto* power_manager_client = chromeos::FakePowerManagerClient::Get();
   const base::TimeDelta next_request_delay_after_success = base::Days(1);
@@ -521,7 +550,7 @@ TEST_F(GeolocationControllerTest, RequestGeopositionAfterSuspend) {
 
 // Tests the behavior when there is no valid geoposition for example due to lack
 // of connectivity.
-TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
+TEST_P(GeolocationControllerTest, AbsentValidGeoposition) {
   test_clock()->SetNow(ToUTCTime(kTestNow));
 
   // Initially, no values are stored in either of the two users' prefs.
@@ -542,18 +571,28 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
 
   // Switch to user 2 and expect that geoposition is loaded from pref.
   SwitchActiveUser(kUser2Email);
-  EXPECT_EQ(controller()->GetSunsetTime(), ToUTCTime(kTestSunsetTime1));
-  EXPECT_EQ(controller()->GetSunriseTime(), ToUTCTime(kTestSunriseTime1));
+  auto result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  if (base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)) {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTimeICU1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTimeICU1));
+  } else {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTime1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTime1));
+  }
 
   // Switching to user 1 should ignore the current geoposition since it's
   // a cached value from user 2's prefs rather than a newly-updated value.
   SwitchActiveUser(kUser1Email);
+
+  result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
   EXPECT_EQ(
-      controller()->GetSunsetTime(),
+      result->sunset,
       ToTimeToday(
           TimeOfDay(kDefaultSunsetTimeOffsetMinutes).SetClock(test_clock())));
   EXPECT_EQ(
-      controller()->GetSunriseTime(),
+      result->sunrise,
       ToTimeToday(
           TimeOfDay(kDefaultSunriseTimeOffsetMinutes).SetClock(test_clock())));
 
@@ -566,8 +605,15 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
   position.timestamp = ToUTCTime(kTestNow);
   SetServerPosition(position);
   FireTimerToFetchGeoposition();
-  EXPECT_EQ(controller()->GetSunsetTime(), ToUTCTime(kTestSunsetTime1));
-  EXPECT_EQ(controller()->GetSunriseTime(), ToUTCTime(kTestSunriseTime1));
+  result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  if (base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)) {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTimeICU1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTimeICU1));
+  } else {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTime1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTime1));
+  }
 
   // Update user 2's prefs with different geoposition.
   user2_pref_service()->SetDouble(prefs::kDeviceGeolocationCachedLatitude,
@@ -578,8 +624,15 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
   // Now switching to user 2 should completely ignore their cached geopsoition,
   // since from now on we have a valid newly-retrieved value.
   SwitchActiveUser(kUser2Email);
-  EXPECT_EQ(controller()->GetSunsetTime(), ToUTCTime(kTestSunsetTime1));
-  EXPECT_EQ(controller()->GetSunriseTime(), ToUTCTime(kTestSunriseTime1));
+  result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  if (base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)) {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTimeICU1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTimeICU1));
+  } else {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTime1));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTime1));
+  }
 
   // Clear all cached geoposition prefs for all users, just to make sure getting
   // a new geoposition will persist it for all users not just the active one.
@@ -593,8 +646,17 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
   position.longitude = kTestLongitude2;
   SetServerPosition(position);
   FireTimerToFetchGeoposition();
-  EXPECT_EQ(controller()->GetSunsetTime(), ToUTCTime(kTestSunsetTime2));
-  EXPECT_EQ(controller()->GetSunriseTime(), ToUTCTime(kTestSunriseTime2));
+
+  result = controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(result.has_value());
+  if (base::FeatureList::IsEnabled(features::kUseICUForGetSunRiseSet)) {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTimeICU2));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTimeICU2));
+  } else {
+    EXPECT_EQ(result->sunset, ToUTCTime(kTestSunsetTime2));
+    EXPECT_EQ(result->sunrise, ToUTCTime(kTestSunriseTime2));
+  }
+
   EXPECT_EQ(kTestLatitude2, user1_pref_service()->GetDouble(
                                 prefs::kDeviceGeolocationCachedLatitude));
   EXPECT_EQ(kTestLongitude2, user1_pref_service()->GetDouble(
@@ -606,7 +668,7 @@ TEST_F(GeolocationControllerTest, AbsentValidGeoposition) {
 }
 
 // Tests that the `possible_change_in_timezone` is correct.
-TEST_F(GeolocationControllerTest, ObserverPossibleChangeInTimezone) {
+TEST_P(GeolocationControllerTest, ObserverPossibleChangeInTimezone) {
   test_clock()->SetNow(ToUTCTime(kTestNow));
 
   GeolocationControllerObserver observer;
@@ -643,7 +705,7 @@ TEST_F(GeolocationControllerTest, ObserverPossibleChangeInTimezone) {
 
 // Tests that the `possible_change_in_timezone` is correct when areas with no
 // daylight/darkness are involved.
-TEST_F(GeolocationControllerTest,
+TEST_P(GeolocationControllerTest,
        ObserverPossibleChangeInTimezoneNoDaylightDarkness) {
   test_clock()->SetNow(ToUTCTime(kNoDaylightDarknessTimestamp));
 
@@ -676,6 +738,8 @@ TEST_F(GeolocationControllerTest,
 
   controller()->RemoveObserver(&observer);
 }
+
+INSTANTIATE_TEST_SUITE_P(All, GeolocationControllerTest, testing::Bool());
 
 }  // namespace
 

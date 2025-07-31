@@ -5159,14 +5159,10 @@ TEST_P(WallpaperControllerTest, UpdateWallpaperOnScheduleCheckpointChanged) {
 }
 
 TEST_P(WallpaperControllerAutoScheduleTest, UpdateWallpaperOnAutoColorMode) {
-  base::expected<base::Time, GeolocationController::SunRiseSetError>
-      sunrise_time = Shell::Get()->geolocation_controller()->GetSunriseTime();
-  base::expected<base::Time, GeolocationController::SunRiseSetError>
-      sunset_time = Shell::Get()->geolocation_controller()->GetSunsetTime();
-  ASSERT_TRUE(sunrise_time.has_value());
-  ASSERT_TRUE(sunset_time.has_value());
+  auto time = Shell::Get()->geolocation_controller()->GetSunRiseSetTime();
+  ASSERT_TRUE(time.has_value());
 
-  SetSimulatedStartTime(sunrise_time.value());
+  SetSimulatedStartTime(time->sunrise);
   SimulateUserLogin(kAccountId1);
 
   ClearWallpaperCount();
@@ -5191,8 +5187,8 @@ TEST_P(WallpaperControllerAutoScheduleTest, UpdateWallpaperOnAutoColorMode) {
   base::Time original_timestamp = actual.date;
 
   // Forward time to trigger checkpoints.
-  ASSERT_GT(sunset_time.value(), Now());
-  task_environment()->FastForwardBy(sunset_time.value() - Now());
+  ASSERT_GT(time->sunset, Now());
+  task_environment()->FastForwardBy(time->sunset - Now());
   RunAllTasksUntilIdle();
 
   WallpaperInfo expected = WallpaperInfo(
