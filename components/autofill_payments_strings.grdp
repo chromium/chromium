@@ -919,16 +919,16 @@
       Now you can autofill your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> cards because your <ph name="CARD_ISSUER_NAME">$1<ex>PayPay</ex></ph> account is linked to Google Pay.
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm and Zip.">
-      Now you can pay over time using Affirm or Zip
+      Use Affirm or Zip to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_OR_ZIP_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm and Zip.">
-      Now you can pay over time using Affirm or Zip
+      Use Affirm or Zip to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm, Zip, and Klarna.">
-      Now you can pay over time using Affirm, Zip, or Klarna
+      Use Affirm, Zip, or Klarna to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_AFFIRM_ZIP_OR_KLARNA_SUGGESTION_IPH_BUBBLE_LABEL_DESKTOP_SCREENREADER" desc="Text shown in the `In-Product Help(IPH)` bubble to educate users when using BNPL suggestion you can pay over time on Chrome Desktop. Used when the possible available BNPL issuers are Affirm, Zip, and Klarna.">
-      Now you can pay over time using Affirm, Zip, or Klarna
+      Use Affirm, Zip, or Klarna to pay over time
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_AFFIRM_AND_AFTERPAY" desc="Text for the payment option button in the BNPL select provider screen, explaining that users can pay monthly or in installments. It is specifically for Affirm and Afterpay options.">
       Pay in 4 interest-free or monthly installments (subject to eligibility)
@@ -948,19 +948,19 @@
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_PAYMENT_OPTION_CHECKOUT_AMOUNT_TOO_HIGH" desc="Text for the payment option button in the BNPL select provider screen, explaining that the checkout amount is too high for the BNPL issuer to support.">
       Purchase must be under <ph name="CHECKOUT_AMOUNT_MAXIMUM">$1<ex>$10,000.00</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider screen, instructing users how to hide the pay over time options.">
-  To hide pay over time options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION" desc="Text shown in the footnote of the BNPL select provider screen, instructing users how to hide the pay later options.">
+  To hide pay later options, go to <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT">$1<ex>payment settings</ex></ph>
   </message>
   <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" desc="Text for the payment settings link in the BNPL footnote.">
   payment settings
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE" desc="Title of the BNPL select provider screen that prompts the user to choose a pay over time provider.">
-    Choose a pay over time provider
+  <message name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_TITLE" desc="Title of the BNPL select provider screen that prompts the user to choose a pay later provider.">
+    Choose a pay later provider
   </message>
     <message name="IDS_AUTOFILL_BNPL_SELECT_PROVIDER_TITLE_DESCRIPTION" desc="Accessibility description for the title of the BNPL select provider screen containing the combined GPay logo image.">
-    <ph name="SELECT_PROVIDER_TITLE">$1<ex>Choose a pay over time provider</ex></ph>. <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay logo</ex></ph>
+    <ph name="SELECT_PROVIDER_TITLE">$1<ex>Choose a pay later provider</ex></ph>. <ph name="LOGO_DESCRIPTION">$2<ex>Google Pay logo</ex></ph>
   </message>
-  <message name="IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL" desc="Label for the linked issuer pill view, which may be displayed on the BNPL select provider screen that prompts the user to choose a pay over time provider. If this label is present, it indicates that the user has previously associated this BNPL provider with their Google account.">
+  <message name="IDS_AUTOFILL_CARD_BNPL_LINKED_ISSUER_PILL_LABEL" desc="Label for the linked issuer pill view, which may be displayed on the BNPL select provider screen that prompts the user to choose a pay later provider. If this label is present, it indicates that the user has previously associated this BNPL provider with their Google account.">
     Linked
   </message>
   <message name="IDS_AUTOFILL_CARD_INFO_RETRIEVAL_SUGGESTION_IPH_BUBBLE_FALLBACK_LABEL" desc="Text shown in the `In-Product Help(IPH)` bubble for card info retrieval suggestions on Chrome Android when the issuer_id is not present in the card. It is specifically for card info retrieval enrolled card. Card info will be copied after the user clicks the suggestion.">
@@ -1120,7 +1120,7 @@
     Something went wrong
   </message>
   <message name="IDS_AUTOFILL_BNPL_TEMPORARY_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a temporary error occurred in the Buy Now Pay Later flow.">
-    Pay over time isn't available right now. Try again later.
+    Pay later is unavailable at this time. Try again or choose another payment method.
   </message>
   <message name="IDS_AUTOFILL_BNPL_PERMANENT_ERROR_DESCRIPTION" desc="The description text of an error dialog informing the user that a permanent error occurred in the Buy Now Pay Later flow.">
     Contact the provider for more information

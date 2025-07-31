@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
 IN_PROC_BROWSER_TEST_F(SelectBnplIssuerDialogInteractiveUiTest,
                        AccessibleWindowTitleIsSet) {
   const std::u16string expected_title =
-      u"Choose a pay over time provider. Google Pay logo";
+      u"Choose a pay later provider. Google Pay logo";
 
   RunTestSequence(
       InvokeUiAndWaitForShow(
