@@ -709,18 +709,6 @@ crbug.com/693834 external/wpt/css/css-images/object-fit-scale-down-svg-006o.html
 
 # Minor rendering difference to the ref image because of filtering or positioning.
 # (Possibly because of the use of 'image-rendering: crisp-edges' in some cases.)
-crbug.com/1174873 external/wpt/css/css-images/object-fit-cover-png-001c.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-fit-cover-png-002c.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-001c.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-001e.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-001i.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-001o.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-001p.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-002c.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-002e.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-002i.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-002o.html [ Failure ]
-crbug.com/1174873 external/wpt/css/css-images/object-position-png-002p.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001e.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001i.html [ Failure ]
 crbug.com/1174873 external/wpt/css/css-images/object-position-svg-001o.html [ Failure ]
