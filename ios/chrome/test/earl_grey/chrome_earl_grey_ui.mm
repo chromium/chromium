@@ -146,13 +146,26 @@ const int kMaxNumberOfAttemptsAtTypingTextInOmnibox = 3;
       [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuView()]
           performAction:grey_swipeFastInDirection(kGREYDirectionDown)];
     }
+    return;
+  }
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
+  if (@available(iOS 26.0, *)) {
+    // In iOS26, the assumption that a scrim coverts the whole window is
+    // violated. Therefore, the solution is to tap on the PopoverDismissRegion
+    // embedded within the ToolsMenu to dismiss the popover.
+    [[EarlGrey
+        selectElementWithMatcher:grey_accessibilityID(@"PopoverDismissRegion")]
+        performAction:grey_tap()];
   } else {
+#endif
     // A scrim covers the whole window and tapping on this scrim dismisses the
     // tools menu.  The "Tools Menu" button happens to be outside of the bounds
     // of the menu and is a convenient place to tap to activate the scrim.
     [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
         performAction:grey_tap()];
+#if defined(__IPHONE_26_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_26_0
   }
+#endif
 }
 
 - (void)openToolsMenuInWindowWithNumber:(int)windowNumber {
