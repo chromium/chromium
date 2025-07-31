@@ -462,7 +462,7 @@ def _CheckTextAppearance(input_api, output_api):
         ...
       </style>
 
-    Please contact arminaforoughi@chromium.org for UX approval, and
+    Please contact clank-ux@google.com for UX approval, and
     src/chrome/android/java/res/OWNERS for questions.
     See https://crbug.com/775198 for more information.
   ''')
@@ -492,7 +492,7 @@ def _CheckNewTextAppearance(input_api, output_api):
     If you are removing or editing an existing text appearance style, or your
     new text appearance style is approved by UX, please bypass this check.
 
-    Otherwise, please contact arminaforoughi@chromium.org for UX approval, and
+    Otherwise, please contact clank-ux@google.com for UX approval, and
     src/chrome/android/java/res/OWNERS for questions.
     See https://crbug.com/775198 for more information.
   ''', errors)
