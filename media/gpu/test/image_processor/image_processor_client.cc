@@ -73,9 +73,7 @@ std::unique_ptr<ImageProcessorClient> ImageProcessorClient::Create(
 
 ImageProcessorClient::ImageProcessorClient(
     std::vector<std::unique_ptr<VideoFrameProcessor>> frame_processors)
-    : gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)),
-      test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
+    : test_sii_(base::MakeRefCounted<gpu::TestSharedImageInterface>()),
       frame_processors_(std::move(frame_processors)),
       image_processor_client_thread_("ImageProcessorClientThread"),
       output_cv_(&output_lock_),
