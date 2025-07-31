@@ -14,7 +14,7 @@ Note that you do not need to rebuild after changing the test data.
 ## Adding test data
 
 1. Add a test method if necessary in
-   [validation test interfaces](../validation_test_interfaces.mojom).
+   [validation test interfaces](../validation_test_interfaces.test-mojom).
 1. Add a .data and .expected file in [validations](validations).
    * The syntax for the .data file can be found in the
      [validation test input parser](/mojo/public/cpp/bindings/tests/validation_test_input_parser.h).
