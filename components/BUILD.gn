@@ -778,7 +778,6 @@ test("components_unittests") {
       "//components/peripherals/logging:unit_tests",
       "//components/reporting/health:unit_tests",
       "//components/user_manager:unit_tests",
-      "//components/variations/cros_evaluate_seed:unit_tests",
     ]
   }
 
