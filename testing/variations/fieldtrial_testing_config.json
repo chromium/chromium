@@ -20318,6 +20318,27 @@
             ]
         }
     ],
+    "RenderArcNotificationsByChrome": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_20230913_Dogfood",
+                    "enable_features": [
+                        "RenderArcNotificationsByChrome"
+                    ]
+                },
+                {
+                    "name": "Enabled_20230913",
+                    "enable_features": [
+                        "RenderArcNotificationsByChrome"
+                    ]
+                }
+            ]
+        }
+    ],
     "RenderBlockingFullFrameRate": [
         {
             "platforms": [
