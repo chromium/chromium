@@ -39,7 +39,6 @@ import androidx.annotation.RequiresApi;
 import com.android.webview.chromium.SharedStatics.ApiCall;
 import com.android.webview.chromium.WebViewChromiumAwInit.CallSite;
 
-import org.chromium.android_webview.ApkType;
 import org.chromium.android_webview.AwBrowserMainParts;
 import org.chromium.android_webview.AwBrowserProcess;
 import org.chromium.android_webview.AwContentsStatics;
@@ -130,10 +129,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private static final String ASSET_PATH_WORKAROUND_HISTOGRAM_NAME =
             "Android.WebView.AssetPathWorkaroundUsed.FactoryInit";
-
-    // This is an ID hardcoded by WebLayer for resources stored in locale splits. See
-    // WebLayerImpl.java for more info.
-    private static final int SHARED_LIBRARY_MAX_ID = 36;
 
     @GuardedBy("mAwInit.getLazyInitLock()")
     private TracingController mTracingController;
@@ -429,11 +424,6 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
                 RecordHistogram.recordBooleanHistogram(ASSET_PATH_WORKAROUND_HISTOGRAM_NAME, true);
                 addWebViewAssetPath(ctx);
                 packageId = webViewDelegate.getPackageId(ctx.getResources(), resourcePackage);
-            }
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q
-                    && AwBrowserProcess.getApkType() != ApkType.TRICHROME
-                    && packageId > SHARED_LIBRARY_MAX_ID) {
-                throw new RuntimeException("Package ID too high for WebView: " + packageId);
             }
 
             mAwInit.setUpResourcesOnBackgroundThread(packageId, ctx);

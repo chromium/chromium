@@ -41,7 +41,7 @@ import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.TimeUnit;
 
-/** A Service to fetch Components files in WebView and WebLayer. */
+/** A Service to fetch Components files in WebView. */
 public class ComponentsProviderService extends Service {
     // Result receiver constants.
     public static final int RESULT_OK = 0;

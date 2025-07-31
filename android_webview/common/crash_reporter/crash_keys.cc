@@ -20,9 +20,6 @@ const char kContextLossReason[] = "context-loss-reason";
 
 const char kSupportLibraryWebkitVersion[] = "androidx-webkit-version";
 
-extern const char kWeblayerWebViewCompatMode[] =
-    "WEBLAYER_WEB_VIEW_COMPAT_MODE";
-
 // clang-format off
 const char* const kWebViewCrashKeyAllowList[] = {
     kAppPackageName,
@@ -170,8 +167,6 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // sandbox/linux
     "seccomp-sigsys",
-
-    kWeblayerWebViewCompatMode,
 
     // Used to report switches/feature flags overridden in the DevUI
     "commandline-enabled-feature-*",

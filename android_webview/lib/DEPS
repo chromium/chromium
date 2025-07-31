@@ -21,10 +21,3 @@ include_rules = [
   "+ui/base",
   "+ui/gl",
 ]
-
-specific_include_rules = {
-    # Special-case where webview composes webview+weblayer.
-    "webview_entry_point\.cc": [
-        "+weblayer",
-    ],
-}

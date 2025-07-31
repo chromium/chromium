@@ -41,7 +41,7 @@ class MetricsStateManager;
 extern const char kCrashpadHistogramAllocatorName[];
 
 // AndroidMetricsServiceClient is a singleton which manages metrics collection
-// intended for use by WebView & WebLayer.
+// intended for use by WebView.
 //
 // Metrics should be enabled iff all these conditions are met:
 //  - The user has not opted out.
