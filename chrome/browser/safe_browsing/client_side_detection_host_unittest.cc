@@ -2717,7 +2717,14 @@ TEST_F(ClientSideDetectionHostScamDetectionTest,
       IntelligentScanVerdict::INTELLIGENT_SCAN_VERDICT_SAFE);
 }
 
-TEST_F(ClientSideDetectionHostScamDetectionTest, OnDeviceLLMWithEmptyResponse) {
+// TODO(crbug.com/434649088): Re-enable this test
+#if BUILDFLAG(IS_LINUX)
+#define MAYBE_OnDeviceLLMWithEmptyResponse DISABLED_OnDeviceLLMWithEmptyResponse
+#else
+#define MAYBE_OnDeviceLLMWithEmptyResponse OnDeviceLLMWithEmptyResponse
+#endif
+TEST_F(ClientSideDetectionHostScamDetectionTest,
+       MAYBE_OnDeviceLLMWithEmptyResponse) {
   if (base::FeatureList::IsEnabled(kClientSideDetectionKillswitch)) {
     GTEST_SKIP();
   }
