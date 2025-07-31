@@ -711,7 +711,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     self.AIPrototypeAction = [self openAIPrototypeAction];
   }
 
-  if ([self isAIHubAvailable]) {
+  if ([self isGeminiAvailable]) {
     self.askBWGAction = [self openAskBWGAction];
   }
 
@@ -1765,8 +1765,9 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   }
 }
 
-/// Returns whether the AI Hub is currently available for the web state.
-- (BOOL)isAIHubAvailable {
+/// Returns whether the Ask Gemini feature is currently available for the web
+/// state.
+- (BOOL)isGeminiAvailable {
   if (!IsPageActionMenuEnabled()) {
     return NO;
   }
@@ -2134,7 +2135,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
     actions.push_back(overflow_menu::ActionType::AIPrototype);
   }
 
-  if ([self isAIHubAvailable]) {
+  if ([self isGeminiAvailable]) {
     actions.push_back(overflow_menu::ActionType::AskBWG);
   }
 

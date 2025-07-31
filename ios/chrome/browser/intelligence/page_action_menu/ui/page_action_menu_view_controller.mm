@@ -442,7 +442,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
         [self createSmallButtonWithIcon:[self askGeminiIcon]
                                   title:l10n_util::GetNSString(
                                             IDS_IOS_AI_HUB_GEMINI_LABEL)
-                                enabled:YES];
+                                enabled:[self isGeminiAvailable]];
     [BWGSmallButton addTarget:self
                        action:@selector(handleBWGTapped:)
              forControlEvents:UIControlEventTouchUpInside];
@@ -550,6 +550,11 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   return DefaultSymbolWithPointSize(kGeminiNonBrandedLogoImage,
                                     kSmallButtonIconSize);
 #endif
+}
+
+// Whether Ask Gemini is currently available.
+- (BOOL)isGeminiAvailable {
+  return self.BWGHandler != nil;
 }
 
 // Whether the Reader mode is currently available.

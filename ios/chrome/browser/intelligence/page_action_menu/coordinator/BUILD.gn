@@ -15,6 +15,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
     "//ios/chrome/browser/intelligence/bwg/model",
+    "//ios/chrome/browser/intelligence/bwg/model:bwg_service",
     "//ios/chrome/browser/intelligence/bwg/model:bwg_service_factory",
     "//ios/chrome/browser/intelligence/page_action_menu/ui",
     "//ios/chrome/browser/intelligence/page_action_menu/utils",

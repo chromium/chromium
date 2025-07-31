@@ -229,7 +229,7 @@ const CGFloat kIconPointSize = 16.0;
           ProfileIOS::FromBrowserState(webState->GetBrowserState());
       BwgService* BWGService = BwgServiceFactory::GetForProfile(profile);
       if (BWGService) {
-        return BWGService->IsBwgAvailableForWebState(webState);
+        return BWGService->IsProfileEligibleForBwg();
       }
     }
   }

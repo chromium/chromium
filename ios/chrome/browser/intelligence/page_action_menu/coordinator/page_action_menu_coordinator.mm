@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
+#import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_mediator.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller.h"
 #import "ios/chrome/browser/intelligence/page_action_menu/ui/page_action_menu_view_controller_delegate.h"
@@ -50,31 +52,39 @@ const CGFloat kMenuCornerRadius = 20;
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  web::WebState* activeWebState =
+      self.browser->GetWebStateList()->GetActiveWebState();
   BOOL readerModeActive = NO;
-  ReaderModeTabHelper* readerModeTabHelper = ReaderModeTabHelper::FromWebState(
-      self.browser->GetWebStateList()->GetActiveWebState());
+  ReaderModeTabHelper* readerModeTabHelper =
+      ReaderModeTabHelper::FromWebState(activeWebState);
   if (readerModeTabHelper) {
     readerModeActive = readerModeTabHelper->IsActive();
 
     DistillerService* distillerService =
-        DistillerServiceFactory::GetForProfile(self.browser->GetProfile());
+        DistillerServiceFactory::GetForProfile(self.profile);
     _readerModeOptionsMediator = [[ReaderModeOptionsMediator alloc]
         initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
                       webStateList:self.browser->GetWebStateList()];
   }
-  _viewController = [[PageActionMenuViewController alloc]
-      initWithReaderModeActive:readerModeActive];
-  _viewController.delegate = self;
-  _mediator = [[PageActionMenuMediator alloc] init];
-  _viewController.BWGHandler =
-      HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
   if (readerModeTabHelper &&
       readerModeTabHelper->CurrentPageSupportsReaderMode()) {
     _viewController.readerModeHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), ReaderModeCommands);
   }
+  _viewController = [[PageActionMenuViewController alloc]
+      initWithReaderModeActive:readerModeActive];
+  _viewController.delegate = self;
+  _mediator = [[PageActionMenuMediator alloc] init];
+
   _viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);
+
+  BwgService* BWGService = BwgServiceFactory::GetForProfile(self.profile);
+  if (BWGService->IsBwgAvailableForWebState(activeWebState)) {
+    CHECK(BWGService->IsProfileEligibleForBwg());
+    _viewController.BWGHandler =
+        HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
+  }
 
   if (IsLensOverlayAvailable(self.profile->GetPrefs())) {
     _viewController.lensOverlayHandler = HandlerForProtocol(
@@ -86,6 +96,7 @@ const CGFloat kMenuCornerRadius = 20;
   _navigationController.delegate = self;
   _navigationController.presentationController.delegate = self;
   _navigationController.modalPresentationStyle = UIModalPresentationPageSheet;
+
   // Configure presentation sheet.
   __weak __typeof(self) weakSelf = self;
   auto detentResolver = ^CGFloat(
