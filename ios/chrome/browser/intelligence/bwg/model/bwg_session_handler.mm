@@ -60,6 +60,17 @@
   }];
 }
 
+- (void)didSendQueryWithInputType:(BWGInputType)inputType
+              pageContextAttached:(BOOL)pageContextAttached {
+  // TODO(crbug.com/434758568): Add metrics logging for query sent events.
+}
+
+// Called when a new chat button is tapped.
+- (void)didTapNewChatButtonWithSessionID:(NSString*)sessionID
+                          conversationID:(NSString*)conversationID {
+  // NO-OP.
+}
+
 #pragma mark - Private
 
 // Finds the web state with the given client ID as unique identifier.
