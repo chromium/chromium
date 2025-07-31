@@ -588,6 +588,10 @@ std::string_view FieldTypeToStringView(FieldType type);
 // Returns a string describing `type`.
 std::string FieldTypeToString(FieldType type);
 
+// Returns a comma-separated list of string representations of the elements of
+// `s`.
+std::string FieldTypeSetToString(FieldTypeSet s);
+
 // Inverse FieldTypeToStringView(). Returns UNKNOWN_TYPE for unknown FieldType
 // string representations.
 FieldType TypeNameToFieldType(std::string_view type_name);

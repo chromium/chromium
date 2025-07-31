@@ -329,7 +329,18 @@ FormDataPredictions FormStructure::GetFieldTypePredictions() const {
       annotated_field.format_string = base::UTF16ToUTF8(*format_string);
     }
     annotated_field.html_type = FieldTypeToStringView(field->html_type());
-    annotated_field.overall_type = std::string(field->Type().ToStringView());
+    annotated_field.overall_type = [&] {
+      AutofillType overall_type = field->Type();
+      if (FieldTypeSet field_types = overall_type.GetTypes();
+          field_types.size() > 1 &&
+          base::FeatureList::IsEnabled(
+              features::test::
+                  kAutofillUnionTypesSingleTypeInAutofillInformation)) {
+        return FieldTypeToString(*field_types.begin());
+      }
+      return overall_type.ToString();
+    }();
+
     annotated_field.parseable_name = base::UTF16ToUTF8(field->parseable_name());
     annotated_field.parseable_label =
         base::UTF16ToUTF8(field->parseable_label());
@@ -940,7 +951,7 @@ std::ostream& operator<<(std::ostream& buffer, const FormStructure& form) {
                        HashFormSignature(field->host_form_signature()))});
     buffer << "\n  Name: " << field->parseable_name();
 
-    auto type = field->Type().ToStringView();
+    auto type = field->Type().ToString();
     auto regex_heuristic_type =
         FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
     std::string ml_heuristic_part;
@@ -1048,7 +1059,7 @@ LogBuffer& operator<<(LogBuffer& buffer, const FormStructure& form) {
     buffer << Tr{} << "Name:" << field->parseable_name();
     buffer << Tr{} << "Placeholder:" << field->placeholder();
 
-    auto type = field->Type().ToStringView();
+    auto type = field->Type().ToString();
     auto regex_heuristic_type =
         FieldTypeToStringView(field->heuristic_type(HeuristicSource::kRegexes));
     std::string ml_heuristic_part;

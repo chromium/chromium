@@ -1022,6 +1022,16 @@ const base::FeatureParam<bool> kAutofillShowTypePredictionsVerboseParam{
 const base::FeatureParam<bool> kAutofillShowTypePredictionsAsTitleParam{
     &kAutofillShowTypePredictions, "as-title", false};
 
+// If enabled, ensures that the "autofill-information" attribute only contains a
+// single FieldType in "overall type: <FieldTypes>". For example,
+// "overall type: NAME_FULL, USERNAME" becomes "overall type: NAME_FULL" if the
+// feature is enabled.
+// TODO(crbug.com/435354393): Migrate the infrastructure to union types and
+// remove this feature.
+BASE_FEATURE(kAutofillUnionTypesSingleTypeInAutofillInformation,
+             "AutofillUnionTypesSingleTypeInAutofillInformation",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Autofill upload throttling limits uploading a form to the Autofill server
 // more than once over a `kAutofillUploadThrottlingPeriodInDays` period.
 // This feature is for testing purposes and is not supposed

@@ -7,8 +7,10 @@
 #include <string_view>
 
 #include "base/containers/fixed_flat_map.h"
+#include "base/containers/to_vector.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/strings/string_util.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 
@@ -345,6 +347,12 @@ std::string_view FieldTypeToStringView(FieldType type) {
 
 std::string FieldTypeToString(FieldType type) {
   return std::string(FieldTypeToStringView(type));
+}
+
+std::string FieldTypeSetToString(FieldTypeSet s) {
+  return base::JoinString(
+      base::ToVector(s, [](FieldType t) { return FieldTypeToStringView(t); }),
+      ", ");
 }
 
 FieldType TypeNameToFieldType(std::string_view type_name) {

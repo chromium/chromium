@@ -116,7 +116,7 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
       form_field_data_android->UpdateFieldTypes(
           FormFieldDataAndroid::FieldTypes(
               autofill_field->heuristic_type(), autofill_field->server_type(),
-              autofill_field->ComputedType().ToStringView(),
+              autofill_field->ComputedType().ToString(),
               std::move(server_predictions)));
     }
   }
