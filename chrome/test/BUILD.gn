@@ -6937,7 +6937,6 @@ test("unit_tests") {
     "//chrome/browser/ui/profiles",
     "//chrome/browser/ui/profiles:unit_tests",
     "//chrome/browser/ui/safety_hub:test_support",
-    "//chrome/browser/ui/save_to_drive:test_support",
     "//chrome/browser/ui/search_engines:unit_tests",
     "//chrome/browser/ui/serial:unit_tests",
     "//chrome/browser/ui/sync:unit_tests",
@@ -8151,12 +8150,6 @@ test("unit_tests") {
       "../browser/ui/views/passwords/password_save_update_view_unittest.cc",
       "../browser/ui/views/passwords/post_save_compromised_bubble_view_unittest.cc",
       "../browser/ui/views/passwords/shared_passwords_notification_view_unittest.cc",
-      "../browser/ui/views/save_to_drive/account_chooser_radio_group_view_unittest.cc",
-      "../browser/ui/views/save_to_drive/account_chooser_test_util.cc",
-      "../browser/ui/views/save_to_drive/account_chooser_test_util.h",
-      "../browser/ui/views/save_to_drive/account_chooser_view_unittest.cc",
-      "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.cc",
-      "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.h",
       "../browser/ui/views/side_panel/side_panel_entry_key_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_infobar_unittest.cc",
       "../browser/ui/views/tab_sharing/tab_sharing_status_message_view_unittest.cc",
@@ -10131,6 +10124,18 @@ test("unit_tests") {
       "//services/network/public/mojom:url_loader_base",
       "//url",
     ]
+  }
+
+  if (enable_pdf_save_to_drive) {
+    sources += [
+      "../browser/ui/views/save_to_drive/account_chooser_radio_group_view_unittest.cc",
+      "../browser/ui/views/save_to_drive/account_chooser_test_util.cc",
+      "../browser/ui/views/save_to_drive/account_chooser_test_util.h",
+      "../browser/ui/views/save_to_drive/account_chooser_view_unittest.cc",
+      "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.cc",
+      "../browser/ui/views/save_to_drive/mock_account_chooser_radio_button_delegate.h",
+    ]
+    deps += [ "//chrome/browser/ui/save_to_drive:test_support" ]
   }
 
   if (enable_plugins) {
