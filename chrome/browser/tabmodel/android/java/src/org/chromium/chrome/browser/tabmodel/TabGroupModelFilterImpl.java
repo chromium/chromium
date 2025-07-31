@@ -383,6 +383,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 }
             }
 
+            UndoGroupMetadataImpl undoGroupMetadata =
+                    new UndoGroupMetadataImpl(
+                            destinationTabGroupId,
+                            isIncognito(),
+                            tabsIncludingDestination,
+                            originalIndexes,
+                            originalRootIds,
+                            originalTabGroupIds,
+                            destinationGroupTitle,
+                            destinationGroupColorId,
+                            destinationGroupTitleCollapsed);
+
             // TODO(b/339480989): Resequence this so that we iterate over observers multiple times
             // and emit one event per loop to be consistent with other usages.
             for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
@@ -396,17 +408,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
                 // Since the undo group merge logic is unsupported when called from the tab strip,
                 // skip notifying the UndoGroupSnackbarController observer which shows the snackbar.
                 if (!skipUpdateTabModel) {
-                    UndoGroupMetadataImpl undoGroupMetadata =
-                            new UndoGroupMetadataImpl(
-                                    destinationTabGroupId,
-                                    isIncognito(),
-                                    tabsIncludingDestination,
-                                    originalIndexes,
-                                    originalRootIds,
-                                    originalTabGroupIds,
-                                    destinationGroupTitle,
-                                    destinationGroupColorId,
-                                    destinationGroupTitleCollapsed);
                     observer.showUndoGroupSnackbar(undoGroupMetadata);
                 } else {
                     for (int i = 0; i < tabsIncludingDestination.size(); i++) {
@@ -561,6 +562,18 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
             }
         }
 
+        UndoGroupMetadataImpl undoGroupMetadata =
+                new UndoGroupMetadataImpl(
+                        assumeNonNull(destinationTabGroupId),
+                        isIncognito(),
+                        mergedTabs,
+                        originalIndexes,
+                        originalRootIds,
+                        originalTabGroupIds,
+                        destinationGroupTitle,
+                        destinationGroupColorId,
+                        destinationGroupTitleCollapsed);
+
         for (TabGroupModelFilterObserver observer : mGroupFilterObserver) {
             if (willMergingCreateNewGroup) {
                 observer.didCreateNewGroup(destinationTab, this);
@@ -568,17 +581,6 @@ public class TabGroupModelFilterImpl implements TabGroupModelFilterInternal, Tab
 
             // Do not show a snackbar for new tab group creations as they launch a dialog.
             if (notify && !willMergingCreateNewGroup) {
-                UndoGroupMetadataImpl undoGroupMetadata =
-                        new UndoGroupMetadataImpl(
-                                assumeNonNull(destinationTabGroupId),
-                                isIncognito(),
-                                mergedTabs,
-                                originalIndexes,
-                                originalRootIds,
-                                originalTabGroupIds,
-                                destinationGroupTitle,
-                                destinationGroupColorId,
-                                destinationGroupTitleCollapsed);
                 observer.showUndoGroupSnackbar(undoGroupMetadata);
             } else {
                 for (int i = 0; i < mergedTabs.size(); i++) {
