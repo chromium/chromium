@@ -139,8 +139,6 @@ SK_API void SkDebugf_FileLine(const char* file,
 
 #define SK_DISABLE_LEGACY_NONRECORDER_IMAGE_APIS
 
-#define SK_DISABLE_CLIP_DRAW_GEOMETRIC_INTERSECTION
-
 #define SK_DISABLE_BLUR_OVERSCALING
 
 ///////////////////////// Imported from BUILD.gn and skia_common.gypi
