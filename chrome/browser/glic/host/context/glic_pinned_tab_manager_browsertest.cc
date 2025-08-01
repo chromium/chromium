@@ -9,6 +9,7 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
+#include "chrome/browser/glic/public/glic_keyed_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -123,8 +124,11 @@ class GlicPinnedTabManagerBrowserTest : public InProcessBrowserTest {
     https_server_handle_ = https_server_.StartAndReturnHandle();
     ASSERT_TRUE(https_server_handle_);
 
+    auto* metrics =
+        GlicKeyedServiceFactory::GetGlicKeyedService(browser()->profile())
+            ->metrics();
     pinned_tab_manager_ = std::make_unique<GlicPinnedTabManagerWithOverrides>(
-        browser()->profile(), /*window_controller=*/nullptr);
+        browser()->profile(), /*window_controller=*/nullptr, metrics);
     ON_CALL(*pinned_tab_manager_, IsBrowserValidForSharing(_))
         .WillByDefault(Return(true));
     // TODO(mcrouse): Add tests for invalid candidates once testing harness for sharing manager is enabled.

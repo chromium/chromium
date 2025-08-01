@@ -13,6 +13,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "chrome/browser/glic/glic_metrics.h"
 #include "chrome/browser/glic/glic_pref_names.h"
 #include "chrome/browser/glic/host/context/glic_page_context_fetcher.h"
 #include "chrome/browser/glic/host/context/glic_pin_candidate_comparator.h"
@@ -228,9 +229,11 @@ class GlicPinnedTabManager::UpdateThrottler {
 
 GlicPinnedTabManager::GlicPinnedTabManager(
     Profile* profile,
-    GlicWindowController* window_controller)
+    GlicWindowController* window_controller,
+    GlicMetrics* metrics)
     : profile_(profile),
       window_controller_(window_controller),
+      metrics_(metrics),
       max_pinned_tabs_(kDefaultMaxPinnedTabs) {
   pin_candidate_updater_ = std::make_unique<UpdateThrottler>(
       base::BindRepeating(&GlicPinnedTabManager::SendPinCandidatesUpdate,
@@ -263,12 +266,17 @@ bool GlicPinnedTabManager::PinTabs(
   for (const auto tab_handle : tab_handles) {
     if (pinned_tabs_.size() == static_cast<size_t>(max_pinned_tabs_)) {
       pinning_fully_succeeded = false;
-      break;
+      metrics_->OnTabPinnedForSharing(
+          GlicTabPinnedForSharingResult::kPinTabForSharingFailedTooManyTabs);
+      continue;
     }
     auto* tab = tab_handle.Get();
     if (!tab || IsTabPinned(tab_handle) ||
         !IsBrowserValidForSharing(tab->GetBrowserWindowInterface())) {
       pinning_fully_succeeded = false;
+      metrics_->OnTabPinnedForSharing(
+          GlicTabPinnedForSharingResult::
+              kPinTabForSharingFailedNotValidForSharing);
       continue;
     }
 
@@ -285,6 +293,8 @@ bool GlicPinnedTabManager::PinTabs(
     pinned_tabs_.emplace_back(tab_handle, std::make_unique<PinnedTabObserver>(
                                               this, tab_handle.Get()));
     pinning_status_changed_callback_list_.Notify(tab_handle.Get(), true);
+    metrics_->OnTabPinnedForSharing(
+        GlicTabPinnedForSharingResult::kPinTabForSharingSucceeded);
   }
   NotifyPinnedTabsChanged();
   return pinning_fully_succeeded;
