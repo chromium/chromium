@@ -388,7 +388,8 @@ bool IsAvatarSyncPromoFeatureEnabled() {
     return true;
   }
 #if BUILDFLAG(IS_WIN)
-  return (base::win::GetVersion() <= base::win::Version::WIN10_22H2) &&
+  return (base::win::GetVersion() >= base::win::Version::WIN7 &&
+          base::win::GetVersion() <= base::win::Version::WIN10_22H2) &&
          base::FeatureList::IsEnabled(switches::kAvatarButtonSyncPromo);
 #else
   return false;
