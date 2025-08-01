@@ -88,6 +88,13 @@ constexpr Diagnostic diagnostics[] = {
         Severity::kWarning,
         "'icon_variants' file path unsupported mime type.",
     },
+    {
+        Feature::kIconVariants,
+        Id::kIconVariantPathInvalid,
+        Surface::kManifest,
+        Severity::kWarning,
+        "'icon_variants' invalid file path.",
+    },
 };
 
 // TODO(crbug.com/343748805): Use e.g. flat_map when there are many diagnostics.

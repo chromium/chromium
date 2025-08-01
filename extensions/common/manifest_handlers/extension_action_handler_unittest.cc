@@ -540,6 +540,31 @@ TEST_F(ExtensionActionIconVariantsTest, All) {
     EXPECT_TRUE(icon_variants.empty());
   }
 
+  // Warn, don't error, if manifest.json has an icon with an invalid path.
+  {
+    ManifestData manifest_data = ManifestData::FromJSON(
+        R"({
+          "name": "Test",
+          "version": "1",
+          "manifest_version": 3,
+          "action": {"icon_variants": [{
+            "16": "C:\\icon_variants.16.png"
+          }]}
+        })");
+    scoped_refptr<extensions::Extension> extension(
+        LoadAndExpectSuccess(manifest_data));
+    warnings_test_util::HasInstallWarning(extension,
+                                          "'icon_variants' invalid file path.");
+
+    const ActionInfo* action_info =
+        GetActionInfoOfType(*extension, ActionInfo::Type::kAction);
+    ASSERT_TRUE(action_info);
+    // TODO(crbug.com/344639840): Get() using filters to avoid manual retrieval.
+    const std::vector<ExtensionIconVariant>& icon_variants =
+        action_info->icon_variants->GetList();
+    EXPECT_TRUE(icon_variants.empty());
+  }
+
   // Valid "action.icon_variants" value.
   {
     ManifestData manifest_data = ManifestData::FromJSON(
@@ -561,8 +586,11 @@ TEST_F(ExtensionActionIconVariantsTest, All) {
     const std::vector<ExtensionIconVariant>& icon_variants =
         action_info->icon_variants->GetList();
     EXPECT_EQ(1u, icon_variants.size());
-    EXPECT_EQ("icon_variants.16.png",
-              icon_variants[0].GetSizes().find(16)->second);
+    EXPECT_EQ("icon_variants.16.png", icon_variants[0]
+                                          .GetSizes()
+                                          .find(16)
+                                          ->second.relative_path()
+                                          .AsUTF8Unsafe());
   }
 }
 

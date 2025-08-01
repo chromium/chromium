@@ -23,12 +23,13 @@ ExtensionIconVariants::ExtensionIconVariants(ExtensionIconVariants&& other) =
 ExtensionIconVariants::ExtensionIconVariants(
     const ExtensionIconVariants& other) = default;
 
-void ExtensionIconVariants::Parse(const base::Value::List* list) {
+void ExtensionIconVariants::Parse(const Extension& extension,
+                                  const base::Value::List* list) {
   // Parse each icon variant in `icon_variants`.
   for (auto& entry : *list) {
     std::string issue;
     std::unique_ptr<ExtensionIconVariant> icon_variant =
-        ExtensionIconVariant::Parse(entry);
+        ExtensionIconVariant::Parse(extension, entry);
     if (!icon_variant) {
       diagnostics_.emplace_back(diagnostics::icon_variants::GetDiagnostic(
           diagnostics::icon_variants::Feature::kIconVariants,

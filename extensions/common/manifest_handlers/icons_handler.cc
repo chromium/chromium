@@ -82,7 +82,7 @@ bool IconsHandler::Parse(Extension* extension, std::u16string* error) {
 
   std::vector<std::string> warnings;
   if (!manifest_handler_helpers::LoadIconsFromDictionary(
-          *icons_dict, &icons_info->icons, error, &warnings)) {
+          *extension, *icons_dict, &icons_info->icons, error, &warnings)) {
     return false;
   }
   for (const auto& warning : warnings) {
