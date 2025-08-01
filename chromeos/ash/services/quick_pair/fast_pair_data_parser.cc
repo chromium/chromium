@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/quick_pair/fast_pair_data_parser.h"
 
 #include <algorithm>
@@ -17,6 +12,7 @@
 #include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/fast_pair/fast_pair_decoder.h"
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/strings/string_number_conversions.h"
@@ -367,7 +363,8 @@ void FastPairDataParser::ParseMessageStreamMessages(
 
     mojom::MessageStreamMessagePtr message = ParseMessageStreamMessage(
         message_group.value(), message_code,
-        base::span<uint8_t>(additional_data.begin(), additional_data.end()));
+        UNSAFE_TODO(base::span<uint8_t>(additional_data.begin(),
+                                        additional_data.end())));
 
     // Only add a completely parsed message to the return vector.
     if (message)

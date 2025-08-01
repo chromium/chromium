@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/arc_util.h"
 
 #include <algorithm>
@@ -18,6 +13,7 @@
 #include "ash/system/time/calendar_utils.h"
 #include "ash/system/time/date_helper.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -367,8 +363,8 @@ std::optional<int> GetWindowTaskId(const aura::Window* window) {
 
 std::optional<int> GetTaskIdFromWindowAppId(const std::string& window_app_id) {
   int task_id;
-  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d", &task_id) !=
-      1) {
+  if (UNSAFE_TODO(std::sscanf(window_app_id.c_str(), "org.chromium.arc.%d",
+                              &task_id)) != 1) {
     return std::nullopt;
   }
   return task_id;
@@ -388,8 +384,9 @@ std::optional<int> GetWindowSessionId(const aura::Window* window) {
 std::optional<int> GetSessionIdFromWindowAppId(
     const std::string& window_app_id) {
   int session_id;
-  if (std::sscanf(window_app_id.c_str(), "org.chromium.arc.session.%d",
-                  &session_id) != 1) {
+  if (UNSAFE_TODO(std::sscanf(window_app_id.c_str(),
+                              "org.chromium.arc.session.%d", &session_id)) !=
+      1) {
     return std::nullopt;
   }
   return session_id;
@@ -744,8 +741,8 @@ bool ShouldDeferArcActivationUntilUserSessionStartUpTaskCompletion(
   const auto& history =
       prefs->GetList(prefs::kArcFirstActivationDuringUserSessionStartUpHistory);
   const size_t window_size = std::min<size_t>(history.size(), max_window_size);
-  base::span<const base::Value> history_window(history.end() - window_size,
-                                               history.end());
+  base::span<const base::Value> UNSAFE_TODO(
+      history_window(history.end() - window_size, history.end()));
   return std::ranges::count(history_window, base::Value(true)) < threshold;
 }
 

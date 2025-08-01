@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <gtest/gtest.h>
 #include <stddef.h>
 
@@ -15,6 +10,7 @@
 
 #include "base/at_exit.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/memory/raw_ptr.h"
@@ -119,15 +115,16 @@ class RegistryTestRunner : public TestRunner {
   bool ProcessReceivedCharacter(char received, size_t stream) {
     if (stream >= std::size(left_to_check_index_))
       return false;
-    bool success = left_to_check_index_[stream] < expected_line_.length() &&
-        expected_line_[left_to_check_index_[stream]] == received;
+    bool success =
+        UNSAFE_TODO(left_to_check_index_[stream]) < expected_line_.length() &&
+        expected_line_[UNSAFE_TODO(left_to_check_index_[stream])] == received;
     if (success)
-      left_to_check_index_[stream]++;
-    if (left_to_check_index_[stream] == expected_line_.length() &&
+      UNSAFE_TODO(left_to_check_index_[stream])++;
+    if (UNSAFE_TODO(left_to_check_index_[stream]) == expected_line_.length() &&
         lines_left_ > 0) {
       // Take another line to test for this stream, if there are any lines left.
       // If not, this stream is done.
-      left_to_check_index_[stream] = 0;
+      UNSAFE_TODO(left_to_check_index_[stream]) = 0;
       lines_left_--;
     }
     return success;

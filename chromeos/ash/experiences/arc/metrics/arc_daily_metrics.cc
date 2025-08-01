@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/metrics/arc_daily_metrics.h"
 
 #include <unordered_set>
 
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ref.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
@@ -218,8 +214,8 @@ void ArcDailyMetrics::OnLowMemoryKillCounts(
 
   // All background VM counters don't care what other VMs are running.
   for (int i = kKillCountFirstBackgroundVm; i < kKillCountNum; i++) {
-    if (vms.count(kKillCountTypeVm[i]) != 0) {
-      kills_[i]->Increment(oom, foreground, perceptible, cached);
+    if (vms.count(UNSAFE_TODO(kKillCountTypeVm[i])) != 0) {
+      UNSAFE_TODO(kills_[i])->Increment(oom, foreground, perceptible, cached);
     }
   }
 

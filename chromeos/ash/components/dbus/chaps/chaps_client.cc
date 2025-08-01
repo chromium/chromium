@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/chaps/chaps_client.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -256,7 +252,8 @@ void ChapsClientImpl::ReceiveData(DataCallback callback,
 
   return std::move(callback).Run(
       actual_out_length,
-      std::vector<uint8_t>(data_bytes, data_bytes + data_length), result_code);
+      std::vector<uint8_t>(data_bytes, UNSAFE_TODO(data_bytes + data_length)),
+      result_code);
 }
 
 void ChapsClientImpl::GetSlotList(bool token_present,
@@ -403,7 +400,7 @@ void ChapsClientImpl::DidGetAttributeValue(GetAttributeValueCallback callback,
 
   return std::move(callback).Run(
       std::vector<uint8_t>(attributes_bytes,
-                           attributes_bytes + attributes_length),
+                           UNSAFE_TODO(attributes_bytes + attributes_length)),
       result_code);
 }
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/shill/modem_3gpp_client.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/run_loop.h"
@@ -106,7 +102,8 @@ class Modem3gppClientTest : public testing::Test {
     EXPECT_TRUE(reader.PopArrayOfBytes(&configuration, &conf_len));
     EXPECT_EQ(conf_len, expected_configuration_.size());
     for (size_t i = 0; i < conf_len; i++) {
-      EXPECT_EQ(expected_configuration_.c_str()[i], (char)configuration[i]);
+      UNSAFE_TODO(EXPECT_EQ(expected_configuration_.c_str()[i],
+                            (char)configuration[i]));
     }
     EXPECT_FALSE(reader.HasMoreData());
 

@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/memory/userspace_swap/swap_storage.h"
 
 #include <fcntl.h>
@@ -18,8 +13,10 @@
 #include <sys/syscall.h>
 #include <sys/vfs.h>
 #include <unistd.h>
+
 #include <cstring>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -238,9 +235,9 @@ bool SwapFile::WriteToSwap(const Region& src, Region* swap_region) {
   swap_region->length = 0;
 
   while (swap_region->length < src.length) {
-    int bytes_written = HANDLE_EINTR(write(
+    int bytes_written = UNSAFE_TODO(HANDLE_EINTR(write(
         fd_.get(), reinterpret_cast<char*>(src.address) + swap_region->length,
-        src.length - swap_region->length));
+        src.length - swap_region->length)));
 
     if (bytes_written <= 0) {
       // We want the user to see errno from the write(2) call and not from
@@ -272,9 +269,9 @@ ssize_t SwapFile::ReadFromSwap(const Region& swap_region, const Region& dest) {
 
   uint64_t bytes_read = 0;
   while (bytes_read < swap_region.length) {
-    int64_t res = HANDLE_EINTR(pread(
+    int64_t res = UNSAFE_TODO(HANDLE_EINTR(pread(
         fd_.get(), reinterpret_cast<char*>(dest.address) + bytes_read,
-        swap_region.length - bytes_read, swap_region.address + bytes_read));
+        swap_region.length - bytes_read, swap_region.address + bytes_read)));
     if (res <= 0) {
       return res;
     }
@@ -366,8 +363,8 @@ ssize_t CompressedSwapFile::ReadFromSwap(const Region& swap_region,
 }
 
 EncryptedSwapFile::~EncryptedSwapFile() {
-  memset(key_.data(), 0, key_.size());
-  memset(nonce_.data(), 0, nonce_.size());
+  UNSAFE_TODO(memset(key_.data(), 0, key_.size()));
+  UNSAFE_TODO(memset(nonce_.data(), 0, nonce_.size()));
 }
 
 EncryptedSwapFile::EncryptedSwapFile(base::ScopedFD fd)
@@ -424,8 +421,8 @@ ssize_t EncryptedSwapFile::ReadFromSwap(const Region& swap_region,
     return -1;
   }
 
-  memcpy(reinterpret_cast<void*>(dest.address), decrypted.value().data(),
-         decrypted.value().size());
+  UNSAFE_TODO(memcpy(reinterpret_cast<void*>(dest.address),
+                     decrypted.value().data(), decrypted.value().size()));
   return decrypted.value().size();
 }
 

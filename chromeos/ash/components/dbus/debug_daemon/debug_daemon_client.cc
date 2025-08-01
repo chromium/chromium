@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/debug_daemon/debug_daemon_client.h"
 
 #include <fcntl.h>
@@ -20,6 +15,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_file.h"
 #include "base/functional/bind.h"
@@ -999,7 +995,7 @@ class DebugDaemonClientImpl : public DebugDaemonClient {
       return;
     }
 
-    std::vector<uint8_t> data(bytes, bytes + length);
+    std::vector<uint8_t> data(bytes, UNSAFE_TODO(bytes + length));
     std::move(callback).Run(data);
   }
 

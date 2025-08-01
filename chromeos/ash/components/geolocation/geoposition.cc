@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/geolocation/geoposition.h"
 
+#include "base/compiler_specific.h"
 #include "base/strings/stringprintf.h"
 
 namespace {
@@ -43,7 +39,8 @@ std::string Geoposition::ToString() const {
       "error_message='%s', status=%u (%s)",
       latitude, longitude, accuracy, error_code, error_message.c_str(),
       (unsigned)status,
-      (status < std::size(status2string) ? status2string[status] : "unknown"));
+      (status < std::size(status2string) ? UNSAFE_TODO(status2string[status])
+                                         : "unknown"));
 }
 
 }  // namespace ash

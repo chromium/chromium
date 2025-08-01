@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/services/recording/audio_capture_test_base.h"
 
+#include "base/compiler_specific.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 
 namespace recording {
@@ -35,7 +31,7 @@ bool AudioCaptureTestBase::AreBusesEqual(const media::AudioBus& bus1,
     const auto* const bus1_channel = bus1.channel(i);
     const auto* const bus2_channel = bus2.channel(i);
     for (int j = 0; j < bus1.frames(); ++j) {
-      if (bus1_channel[j] != bus2_channel[j]) {
+      if (UNSAFE_TODO(bus1_channel[j]) != UNSAFE_TODO(bus2_channel[j])) {
         return false;
       }
     }

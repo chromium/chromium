@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 
 #include <pk11pub.h>
@@ -14,6 +9,7 @@
 
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/hash/sha1.h"
 #include "crypto/scoped_nss_types.h"
 #include "net/cert/x509_util_nss.h"
@@ -38,7 +34,7 @@ std::vector<uint8_t> SECItemToBytes(const crypto::ScopedSECItem& id) {
   if (!id || id->len == 0) {
     return {};
   }
-  return std::vector<uint8_t>(id->data, id->data + id->len);
+  return std::vector<uint8_t>(id->data, UNSAFE_TODO(id->data + id->len));
 }
 
 std::vector<uint8_t> MakePkcs11IdForEcKey(base::span<const uint8_t> key_data) {
@@ -133,7 +129,8 @@ std::vector<uint8_t> GetEcParamsDer(const EC_KEY* ec_key) {
     return {};
   }
   bssl::UniquePtr<uint8_t> der_deleter(ec_params_der);
-  return std::vector<uint8_t>(ec_params_der, ec_params_der + ec_params_der_len);
+  return std::vector<uint8_t>(ec_params_der,
+                              UNSAFE_TODO(ec_params_der + ec_params_der_len));
 }
 
 bool IsKeyEcType(const bssl::UniquePtr<EVP_PKEY>& key) {

@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 
 #include <algorithm>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/test/mock_callback.h"
@@ -43,7 +39,7 @@ constexpr uint64_t kFakeSecureHandle = 75;
 
 template <size_t size>
 std::vector<uint8_t> ToVector(const char (&array)[size]) {
-  return std::vector<uint8_t>(array, array + size - 1);
+  return std::vector<uint8_t>(array, UNSAFE_TODO(array + size - 1));
 }
 
 MATCHER_P(MatchesDecoderBuffer, buffer, "") {

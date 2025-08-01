@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/attestation/fake_certificate.h"
 
 #include <stdint.h>
 
+#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "crypto/rsa_private_key.h"
 #include "net/cert/x509_certificate.h"
@@ -65,7 +61,8 @@ bool GetFakeCertificateDER(const base::TimeDelta& expiry,
   }
   std::unique_ptr<crypto::RSAPrivateKey> test_key(
       crypto::RSAPrivateKey::CreateFromPrivateKeyInfo(std::vector<uint8_t>(
-          &kTestKeyData[0], &kTestKeyData[std::size(kTestKeyData)])));
+          &kTestKeyData[0],
+          &UNSAFE_TODO(kTestKeyData[std::size(kTestKeyData)]))));
   if (!test_key.get()) {
     return false;
   }

@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include <memory>
 #include <string>
 #include <string_view>
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
@@ -291,7 +287,8 @@ void ShillToONCTranslator::TranslateOpenVPN() {
 
   for (const chromeos::onc::OncFieldSignature* field_signature =
            onc_signature_->fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     const std::string& onc_field_name = field_signature->onc_field_name;
     if (onc_field_name == ::onc::openvpn::kRemoteCertKU ||
         onc_field_name == ::onc::openvpn::kServerCAPEMs) {
@@ -1014,7 +1011,8 @@ void ShillToONCTranslator::CopyPropertiesAccordingToSignature(
     return;
   for (const chromeos::onc::OncFieldSignature* field_signature =
            value_signature->fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     CopyProperty(field_signature);
   }
 }
@@ -1058,7 +1056,8 @@ void ShillToONCTranslator::SetDefaultsAccordingToSignature(
     return;
   for (const chromeos::onc::OncFieldSignature* field_signature =
            value_signature->fields;
-       field_signature->onc_field_name != nullptr; ++field_signature) {
+       field_signature->onc_field_name != nullptr;
+       UNSAFE_TODO(++field_signature)) {
     if (!field_signature->default_value_setter) {
       continue;
     }

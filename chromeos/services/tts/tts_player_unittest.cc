@@ -2,13 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/services/tts/tts_player.h"
 
+#include "base/compiler_specific.h"
 #include "chromeos/services/tts/constants.h"
 #include "chromeos/services/tts/tts_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -108,7 +104,7 @@ TEST_F(TtsPlayerTest, RenderSingleFrame) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(1, frames_rendered);
-  std::vector<float> actual(bus->channel(0), bus->channel(0) + 1);
+  std::vector<float> actual(bus->channel(0), UNSAFE_TODO(bus->channel(0) + 1));
   std::vector<float> expected = {0.7};
   EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 }
@@ -139,7 +135,7 @@ TEST_F(TtsPlayerTest, RenderFramesFromPartialBuffers) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  std::vector<float> actual(bus->channel(0), bus->channel(0) + 5);
+  std::vector<float> actual(bus->channel(0), UNSAFE_TODO(bus->channel(0) + 5));
   std::vector<float> expected = {0.1, 0.2, 0.3, 0.4, 0.5};
   EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 }
@@ -180,7 +176,7 @@ TEST_F(TtsPlayerTest, RenderBusWithFramesFromEmptyAndPartialBuffers) {
   EXPECT_EQ(0, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  std::vector<float> actual(bus->channel(0), bus->channel(0) + 5);
+  std::vector<float> actual(bus->channel(0), UNSAFE_TODO(bus->channel(0) + 5));
   std::vector<float> expected = {0.1, 0.2, 0.3, 0.4, 0.5};
   EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 }
@@ -218,7 +214,8 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   EXPECT_EQ(0, backing_observer_.end_count);
 
   EXPECT_EQ(5, frames_rendered);
-  std::vector<float> actual(first_bus->channel(0), first_bus->channel(0) + 5);
+  std::vector<float> actual(first_bus->channel(0),
+                            UNSAFE_TODO(first_bus->channel(0) + 5));
   std::vector<float> expected = {0.1, 0.2, 0.3, 0.4, 0.5};
   EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 
@@ -235,8 +232,8 @@ TEST_F(TtsPlayerTest, RenderMultiBusFromMultiBuffers) {
   EXPECT_EQ(1, backing_observer_.end_count);
 
   EXPECT_EQ(2, frames_rendered);
-  actual =
-      std::vector<float>(second_bus->channel(0), second_bus->channel(0) + 2);
+  actual = std::vector<float>(second_bus->channel(0),
+                              UNSAFE_TODO(second_bus->channel(0) + 2));
   expected = {0.6, 0.7};
   EXPECT_THAT(actual, testing::ElementsAreArray(expected));
 }

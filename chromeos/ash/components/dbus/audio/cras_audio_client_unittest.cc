@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/audio/cras_audio_client.h"
 
 #include <memory>
@@ -14,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
@@ -178,7 +174,7 @@ void ExpectInt32AndArrayOfDoublesArguments(
   ASSERT_TRUE(reader->PopArrayOfDoubles(&doubles, &size));
   EXPECT_EQ(expected_doubles.size(), size);
   for (size_t i = 0; i < size; ++i) {
-    EXPECT_EQ(expected_doubles[i], doubles[i]);
+    UNSAFE_TODO(EXPECT_EQ(expected_doubles[i], doubles[i]));
   }
   EXPECT_FALSE(reader->HasMoreData());
 }

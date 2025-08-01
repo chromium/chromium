@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/session/arc_vm_client_adapter.h"
 
 #include <inttypes.h>
@@ -23,6 +18,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "base/command_line.h"
+#include "base/compiler_specific.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
@@ -260,8 +256,9 @@ class TestArcVmBootNotificationServer
         << "abstract_addr is too long: " << abstract_addr;
     ASSERT_EQ('\0', abstract_addr[0])
         << "abstract_addr is not abstract: " << abstract_addr;
-    memset(addr.sun_path, 0, sizeof(addr.sun_path));
-    memcpy(addr.sun_path, abstract_addr.data(), abstract_addr.size());
+    UNSAFE_TODO(memset(addr.sun_path, 0, sizeof(addr.sun_path)));
+    UNSAFE_TODO(
+        memcpy(addr.sun_path, abstract_addr.data(), abstract_addr.size()));
     LOG(INFO) << "Abstract address: \\0" << &(addr.sun_path[1]);
 
     ASSERT_EQ(HANDLE_EINTR(bind(fd_.get(), reinterpret_cast<sockaddr*>(&addr),

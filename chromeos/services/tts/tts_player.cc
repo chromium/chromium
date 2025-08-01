@@ -2,12 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/services/tts/tts_player.h"
+
+#include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
 
 namespace chromeos {
@@ -84,7 +81,8 @@ int TtsPlayer::Render(base::TimeDelta delay,
         }
         buffer = &buffers_.front();
       }
-      channel[output_index] = buffer->frames[buffer->current_frame_index];
+      UNSAFE_TODO(channel[output_index]) =
+          buffer->frames[buffer->current_frame_index];
     }
 
     CHECK(!buffer->frames.empty());

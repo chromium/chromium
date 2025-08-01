@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/shill/shill_client_unittest_base.h"
 
 #include <stddef.h>
@@ -16,6 +11,7 @@
 #include <optional>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/json/json_writer.h"
 #include "base/location.h"
@@ -221,7 +217,7 @@ void ShillClientUnittestBase::ExpectArrayOfBytesArgument(
   ASSERT_TRUE(reader->PopArrayOfBytes(&bytes, &size));
   EXPECT_EQ(expected_bytes.size(), size);
   for (size_t i = 0; i < size; ++i) {
-    EXPECT_EQ(expected_bytes[i], bytes[i]);
+    UNSAFE_TODO(EXPECT_EQ(expected_bytes[i], bytes[i]));
   }
   EXPECT_FALSE(reader->HasMoreData());
 }

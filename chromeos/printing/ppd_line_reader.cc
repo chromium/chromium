@@ -2,17 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/printing/ppd_line_reader.h"
 
 #include <memory>
 #include <string>
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ref.h"
@@ -53,7 +49,8 @@ class StringSourceStream : public net::SourceStream {
       return net::OK;
     const size_t read_size =
         std::min(src_->size() - read_ofs_, static_cast<size_t>(buffer_size));
-    memcpy(dest_buffer->data(), src_->data() + read_ofs_, read_size);
+    UNSAFE_TODO(
+        memcpy(dest_buffer->data(), src_->data() + read_ofs_, read_size));
     read_ofs_ += read_size;
     return read_size;
   }
@@ -105,8 +102,8 @@ class PpdLineReaderImpl : public PpdLineReader {
   }
 
   std::string RemainingContent() override {
-    std::string content(read_buf_->data() + read_ofs_,
-                        read_buf_->data() + read_buf_size_);
+    std::string content(UNSAFE_TODO(read_buf_->data() + read_ofs_),
+                        UNSAFE_TODO(read_buf_->data() + read_buf_size_));
     for (ReadNextChunk(); read_buf_size_ > 0; ReadNextChunk()) {
       content.append(read_buf_->data(), read_buf_size_);
     }
@@ -166,7 +163,7 @@ class PpdLineReaderImpl : public PpdLineReader {
         return '\0';
       }
     }
-    return read_buf_->data()[read_ofs_++];
+    return UNSAFE_TODO(read_buf_->data()[read_ofs_++]);
   }
 
   bool Eof() const { return eof_; }

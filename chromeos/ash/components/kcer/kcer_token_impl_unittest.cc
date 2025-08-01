@@ -2,16 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/kcer_token_impl.h"
 
 #include <string_view>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gmock_move_support.h"
 #include "base/test/test_future.h"
@@ -162,7 +158,7 @@ bool SpanEqual(base::span<const uint8_t> s1, base::span<const uint8_t> s2) {
 // `value` must outlive the returned span.
 template <typename T>
 base::span<const uint8_t> MakeSpan(T* value) {
-  return base::as_bytes(base::span<T>(value, /*count=*/1u));
+  return base::as_bytes(UNSAFE_TODO(base::span<T>(value, /*count=*/1u)));
 }
 
 void AddAttribute(chaps::AttributeList& attr_list,

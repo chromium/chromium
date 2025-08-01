@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/experiences/arc/metrics/arc_metrics_service.h"
 
 #include <sys/sysinfo.h>
@@ -16,6 +11,7 @@
 #include <utility>
 
 #include "ash/public/cpp/app_types_util.h"
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -990,7 +986,7 @@ void ArcMetricsService::OnArcStarted() {
         FROM_HERE,
         base::BindOnce(&ArcMetricsService::MeasureLoadAverage,
                        weak_ptr_factory_.GetWeakPtr(), index),
-        kLoadAverageHistograms[index].duration);
+        UNSAFE_TODO(kLoadAverageHistograms[index]).duration);
   }
 }
 
@@ -1073,13 +1069,14 @@ void ArcMetricsService::MeasureLoadAverage(size_t index) {
   if (sysinfo(&info) < 0) {
     DCHECK_LT(index, std::size(kLoadAverageHistograms));
     PLOG(ERROR) << "sysinfo() failed when trying to record "
-                << kLoadAverageHistograms[index].name;
+                << UNSAFE_TODO(kLoadAverageHistograms[index]).name;
     return;
   }
   DCHECK_LT(index, std::size(info.loads));
   // Load average values returned by sysinfo() are scaled up by
   // 1 << SI_LOAD_SHIFT.
-  const int loadx100 = info.loads[index] * 100 / (1 << SI_LOAD_SHIFT);
+  const int loadx100 =
+      UNSAFE_TODO(info.loads[index]) * 100 / (1 << SI_LOAD_SHIFT);
   // _SC_NPROCESSORS_ONLN instead of base::SysInfo::NumberOfProcessors() which
   // uses _SC_NPROCESSORS_CONF to get the number of online processors in case
   // some cores are disabled.
@@ -1099,7 +1096,8 @@ void ArcMetricsService::MaybeRecordLoadAveragePerProcessor() {
     const int loadx100_per_processor = value.second;
     DCHECK_LT(index, std::size(kLoadAverageHistograms));
     base::UmaHistogramCustomCounts(
-        kLoadAverageHistograms[index].name + BootTypeToString(boot_type_),
+        UNSAFE_TODO(kLoadAverageHistograms[index]).name +
+            BootTypeToString(boot_type_),
         loadx100_per_processor, 0, 5000, 50);
   }
   // Erase the values to avoid recording them again.

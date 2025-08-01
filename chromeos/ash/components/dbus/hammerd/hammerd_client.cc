@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/dbus/hammerd/hammerd_client.h"
 
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
@@ -138,7 +134,7 @@ class HammerdClientImpl : public HammerdClient {
 
     for (auto& observer : observers_) {
       observer.PairChallengeSucceeded(
-          std::vector<uint8_t>(data, data + length));
+          std::vector<uint8_t>(data, UNSAFE_TODO(data + length)));
     }
   }
 

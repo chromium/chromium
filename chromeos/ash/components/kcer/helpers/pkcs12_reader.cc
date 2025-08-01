@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/helpers/pkcs12_reader.h"
 
 #include <stdint.h>
@@ -15,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/logging.h"
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
@@ -135,7 +131,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetIssuerNameDer(
   if (!X509_NAME_get0_der(issuer_name, &name_der, &name_der_size)) {
     return Pkcs12ReaderStatusCode::kPkcs12CertIssuerDerNameFailed;
   }
-  issuer_name_data = {name_der, name_der_size};
+  issuer_name_data = UNSAFE_TODO({name_der, name_der_size});
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 
@@ -180,7 +176,7 @@ Pkcs12ReaderStatusCode Pkcs12Reader::GetSubjectNameDer(
   if (!X509_NAME_get0_der(subject_name, &name_der, &name_der_size)) {
     return Pkcs12ReaderStatusCode::kPkcs12CertSubjectNameDerFailed;
   }
-  subject_name_data = {name_der, name_der_size};
+  subject_name_data = UNSAFE_TODO({name_der, name_der_size});
   return Pkcs12ReaderStatusCode::kSuccess;
 }
 

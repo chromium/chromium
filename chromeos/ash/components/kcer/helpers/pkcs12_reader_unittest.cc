@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/helpers/pkcs12_reader.h"
 
 #include <pk11pub.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/base64.h"
+#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "chromeos/ash/components/kcer/helpers/key_helper.h"
 #include "crypto/scoped_test_nss_db.h"
@@ -361,8 +357,8 @@ TEST_F(Pkcs12ReaderTest, FindRawCertsWithSubject) {
   {
     PK11SlotInfo* slot = nss_test_db_.slot();
     const uint8_t subject_name[] = "subject_name";
-    base::span<const uint8_t> required_subject_name{subject_name,
-                                                    std::size(subject_name)};
+    base::span<const uint8_t> UNSAFE_TODO(
+        required_subject_name{subject_name, std::size(subject_name)});
     CERTCertificateList* found_certs = nullptr;
 
     Pkcs12ReaderStatusCode result = pkcs12Reader_->FindRawCertsWithSubject(

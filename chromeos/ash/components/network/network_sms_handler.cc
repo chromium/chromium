@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/network/network_sms_handler.h"
 
 #include <stddef.h>
@@ -17,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
 #include "base/functional/bind.h"
 #include "base/logging.h"
@@ -176,8 +172,8 @@ void NetworkSmsHandler::ModemManager1NetworkSmsDeviceHandler::ListCallback(
 
   NET_LOG(EVENT) << "Bulk fetched [" << paths->size() << "] message(s)";
   retrieval_queue_.reserve(paths->size());
-  retrieval_queue_.assign(std::make_move_iterator(paths->begin()),
-                          std::make_move_iterator(paths->end()));
+  UNSAFE_TODO(retrieval_queue_.assign(std::make_move_iterator(paths->begin()),
+                                      std::make_move_iterator(paths->end())));
   if (retrieving_messages_) {
     NET_LOG(DEBUG) << "Already retrieving messages, not starting queue";
     return;

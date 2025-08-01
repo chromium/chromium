@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/components/cdm_factory_daemon/output_protection_impl.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
@@ -83,11 +79,11 @@ class OutputProtectionImplTest : public testing::Test {
         display::DISPLAY_CONNECTION_TYPE_DISPLAYPORT,
         display::DISPLAY_CONNECTION_TYPE_VGA};
     for (size_t i = 0; i < std::size(kDisplayIds); ++i) {
-      displays_[i] = display::FakeDisplaySnapshot::Builder()
-                         .SetId(kDisplayIds[i])
-                         .SetType(conn_types[i])
-                         .SetCurrentMode(kDisplayMode.Clone())
-                         .Build();
+      UNSAFE_TODO(displays_[i]) = display::FakeDisplaySnapshot::Builder()
+                                      .SetId(UNSAFE_TODO(kDisplayIds[i]))
+                                      .SetType(UNSAFE_TODO(conn_types[i]))
+                                      .SetCurrentMode(kDisplayMode.Clone())
+                                      .Build();
     }
 
     UpdateDisplays(2);
@@ -101,7 +97,7 @@ class OutputProtectionImplTest : public testing::Test {
 
     cached_displays_.clear();
     for (size_t i = 0; i < count; ++i)
-      cached_displays_.push_back(displays_[i].get());
+      cached_displays_.push_back(UNSAFE_TODO(displays_[i]).get());
   }
 
   ~OutputProtectionImplTest() override {
@@ -167,7 +163,7 @@ TEST_F(OutputProtectionImplTest, ApplyToMultipleDisplays) {
   EXPECT_CALL(*delegate_, cached_displays())
       .WillOnce(ReturnRef(cached_displays_));
   for (int i = 0; i < 4; i++)
-    ExpectProtectionCall(kDisplayIds[i],
+    ExpectProtectionCall(UNSAFE_TODO(kDisplayIds[i]),
                          display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0, true);
 
   base::MockCallback<cdm::mojom::OutputProtection::EnableProtectionCallback>
@@ -183,8 +179,9 @@ TEST_F(OutputProtectionImplTest, ApplyToMultipleDisplaysOneFails) {
   EXPECT_CALL(*delegate_, cached_displays())
       .WillOnce(ReturnRef(cached_displays_));
   for (int i = 0; i < 4; i++) {
-    ExpectProtectionCall(
-        kDisplayIds[i], display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0, i != 2);
+    ExpectProtectionCall(UNSAFE_TODO(kDisplayIds[i]),
+                         display::CONTENT_PROTECTION_METHOD_HDCP_TYPE_0,
+                         i != 2);
   }
   base::MockCallback<cdm::mojom::OutputProtection::EnableProtectionCallback>
       callback_mock;
@@ -208,12 +205,12 @@ TEST_F(OutputProtectionImplTest, ApplyDoesNotAggregateTypes) {
       display::CONTENT_PROTECTION_METHOD_NONE};
 
   for (size_t i = 0; i < std::size(applied_types); ++i) {
-    ExpectProtectionCall(kDisplayIds[0], expected_types[i], true);
+    ExpectProtectionCall(kDisplayIds[0], UNSAFE_TODO(expected_types[i]), true);
 
     base::MockCallback<OutputProtection::EnableProtectionCallback>
         callback_mock;
     EXPECT_CALL(callback_mock, Run(true));
-    output_protection_mojo_->EnableProtection(applied_types[i],
+    output_protection_mojo_->EnableProtection(UNSAFE_TODO(applied_types[i]),
                                               callback_mock.Get());
     base::RunLoop().RunUntilIdle();
   }

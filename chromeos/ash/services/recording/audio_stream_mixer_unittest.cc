@@ -2,20 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
+#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 
 #include <algorithm>
 #include <memory>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chromeos/ash/services/recording/audio_capture_test_base.h"
 #include "chromeos/ash/services/recording/audio_capture_util.h"
 #include "chromeos/ash/services/recording/audio_stream.h"
-#include "chromeos/ash/services/recording/audio_stream_mixer.h"
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -37,7 +34,8 @@ std::unique_ptr<media::AudioBus> AddBuses(const media::AudioBus& bus1,
     const auto* const bus2_channel = bus2.channel(i);
     auto* const output_bus_channel = output_bus->channel(i);
     for (int j = 0; j < bus1.frames(); ++j) {
-      output_bus_channel[j] = bus1_channel[j] + bus2_channel[j];
+      UNSAFE_TODO(output_bus_channel[j]) =
+          UNSAFE_TODO(bus1_channel[j]) + UNSAFE_TODO(bus2_channel[j]);
     }
   }
 

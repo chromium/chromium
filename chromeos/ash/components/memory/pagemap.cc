@@ -2,18 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/memory/pagemap.h"
 
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+
 #include <string>
 
+#include "base/compiler_specific.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
 #include "base/posix/eintr_wrapper.h"
@@ -65,15 +62,15 @@ bool Pagemap::GetEntries(uint64_t address,
   uint64_t pagemap_offset = (address / kPageSize) * sizeof(PagemapEntry);
   uint64_t pagemap_len = num_pages * sizeof(PagemapEntry);
 
-  memset(entries->data(), 0, pagemap_len);
+  UNSAFE_TODO(memset(entries->data(), 0, pagemap_len));
 
   // The caller was expected to provide a buffer large enough for the number of
   // pages in the region.
   uint64_t total_read = 0;
   while (total_read < pagemap_len) {
-    ssize_t bytes_read = HANDLE_EINTR(
+    ssize_t bytes_read = UNSAFE_TODO(HANDLE_EINTR(
         pread(fd_.get(), reinterpret_cast<char*>(entries->data()) + total_read,
-              pagemap_len - total_read, pagemap_offset + total_read));
+              pagemap_len - total_read, pagemap_offset + total_read)));
 
     if (bytes_read <= 0) {
       return false;

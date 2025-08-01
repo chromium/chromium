@@ -2,15 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/dbus/ip_peripheral/ip_peripheral_service_client.h"
 
 #include <utility>
 
+#include "base/compiler_specific.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -19,7 +15,6 @@
 #include "dbus/bus.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"
-
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -93,7 +88,7 @@ void OnGetControlMethod(IpPeripheralServiceClient::GetControlCallback callback,
   }
 
   while (length-- != 0) {
-    control_response.push_back(*output_bytes++);
+    control_response.push_back(*UNSAFE_TODO(output_bytes++));
   }
 
   std::move(callback).Run(true, std::move(control_response));

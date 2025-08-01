@@ -2,11 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifdef UNSAFE_BUFFERS_BUILD
-// TODO(crbug.com/40285824): Remove this and convert code to safer constructs.
-#pragma allow_unsafe_buffers
-#endif
-
 #include "chromeos/ash/components/kcer/kcer_impl.h"
 
 #include <stdint.h>
@@ -16,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_list.h"
+#include "base/compiler_specific.h"
 #include "base/containers/flat_set.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -180,7 +176,7 @@ void KcerImpl::ImportX509Cert(Token token,
   const CRYPTO_BUFFER* buffer = cert->cert_buffer();
   CertDer cert_der(std::vector<uint8_t>(
       CRYPTO_BUFFER_data(buffer),
-      CRYPTO_BUFFER_data(buffer) + CRYPTO_BUFFER_len(buffer)));
+      UNSAFE_TODO(CRYPTO_BUFFER_data(buffer) + CRYPTO_BUFFER_len(buffer))));
 
   return ImportCertFromBytes(token, std::move(cert_der), std::move(callback));
 }
