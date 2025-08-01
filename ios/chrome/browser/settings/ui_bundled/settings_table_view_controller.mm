@@ -326,9 +326,6 @@ struct EnhancedSafeBrowsingActivePromoData
 // dot.
 @property(nonatomic, assign) BOOL showingDefaultBrowserNotificationDot;
 
-// YES if the sign-in is in progress.
-@property(nonatomic, assign) BOOL isSigninInProgress;
-
 // Account manager service to retrieve Chrome identities.
 @property(nonatomic, assign) ChromeAccountManagerService* accountManagerService;
 
@@ -2160,13 +2157,12 @@ struct EnhancedSafeBrowsingActivePromoData
 #pragma mark - Sign in
 
 - (void)showSignIn {
-  if (self.isSigninInProgress) {
+  if (_signinAndHistorySyncCoordinator) {
     // According to crbug.com/1498153, it is possible for the user to tap twice
     // on the sign-in cell from the settings to open the sign-in dialog.
     // If this happens, the second tap should ignored.
     return;
   }
-  self.isSigninInProgress = YES;
   __weak __typeof(self) weakSelf = self;
   ChangeProfileContinuationProvider provider =
       base::BindRepeating(&CreateChangeProfileSettingsContinuation);
@@ -2193,6 +2189,7 @@ struct EnhancedSafeBrowsingActivePromoData
 }
 
 - (void)didFinishSignin {
+  CHECK(_signinAndHistorySyncCoordinator, base::NotFatalUntil::M144);
   [self stopSigninCoordinator];
   if (_settingsAreDismissed) {
     return;
@@ -2200,8 +2197,6 @@ struct EnhancedSafeBrowsingActivePromoData
 
   // The sign-in is done. The sign-in promo cell or account cell can be
   // reloaded.
-  DCHECK(self.isSigninInProgress);
-  self.isSigninInProgress = NO;
   [self reloadData];
 
   // Post the task to show signin IPH so that the UI has had time to refresh
@@ -2594,7 +2589,7 @@ struct EnhancedSafeBrowsingActivePromoData
   // in UI is appearing or disappearing. The TableView will be reloaded once
   // the animation is finished.
   // See: -[SettingsTableViewController didFinishSignin].
-  if (self.isSigninInProgress) {
+  if (_signinAndHistorySyncCoordinator) {
     return;
   }
   // Sign in state changes are rare. Just reload the entire table when
