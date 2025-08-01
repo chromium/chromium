@@ -167,6 +167,7 @@ const char* const kWebViewCrashKeyAllowList[] = {
 
     // sandbox/linux
     "seccomp-sigsys",
+    "seccomp-sigsys-ioctl",
 
     // Used to report switches/feature flags overridden in the DevUI
     "commandline-enabled-feature-*",
