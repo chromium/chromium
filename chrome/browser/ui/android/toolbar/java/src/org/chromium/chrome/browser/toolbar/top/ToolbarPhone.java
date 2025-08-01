@@ -2300,6 +2300,23 @@ public class ToolbarPhone extends ToolbarLayout
                 && getVisibility() == View.VISIBLE;
     }
 
+    @Override
+    public void onToEdgeChange(int newTopPadding) {
+        // The status bar hides when the newTopInset value is greater than zero. When the New Tab
+        // Page (NTP) transitions to an edge-to-edge display at the top, we add the original status
+        // bar height as the top padding to the toolbar. This ensures the toolbar stays in its
+        // original screen position, and the entire top area (status bar and toolbar) is rendered
+        // with the toolbar's color.
+        ViewGroup.MarginLayoutParams marginLayoutParams =
+                (ViewGroup.MarginLayoutParams) getLayoutParams();
+        int height =
+                getResources().getDimensionPixelSize(R.dimen.toolbar_height_no_shadow)
+                        + newTopPadding;
+        marginLayoutParams.height = height;
+
+        setPaddingRelative(getPaddingStart(), newTopPadding, getPaddingEnd(), getPaddingBottom());
+    }
+
     private boolean hideShadowForIncognitoNtp() {
         return isIncognitoBranded()
                 && UrlUtilities.isNtpUrl(getToolbarDataProvider().getCurrentGurl());

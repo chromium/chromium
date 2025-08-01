@@ -96,6 +96,7 @@ import org.chromium.chrome.browser.multiwindow.MultiInstanceManager;
 import org.chromium.chrome.browser.ntp.IncognitoNewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.ntp.NewTabPageUma;
+import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
 import org.chromium.chrome.browser.offlinepages.OfflinePageTabData;
 import org.chromium.chrome.browser.omaha.UpdateMenuItemHelper;
 import org.chromium.chrome.browser.omnibox.BackKeyBehaviorDelegate;
@@ -233,6 +234,7 @@ public class ToolbarManager
     private AppThemeColorProvider mAppThemeColorProvider;
     private final SettableThemeColorProvider mCustomTabThemeColorProvider;
     private final TopToolbarCoordinator mToolbar;
+    private final ToolbarLayout mToolbarLayout;
     private final ToolbarControlContainer mControlContainer;
     private final View mToolbarHairline;
     private final BrowserControlsStateProvider.Observer mBrowserControlsObserver;
@@ -314,6 +316,7 @@ public class ToolbarManager
     private final UserEducationHelper mUserEducationHelper;
     private final ToolbarLongPressMenuHandler mToolbarLongPressMenuHandler;
     private final OverrideUrlLoadingDelegateImpl mOverrideUrlLoadingDelegate;
+    private final ObservableSupplier<TopInsetCoordinator> mTopInsetCoordinatorSupplier;
 
     private HomeButtonCoordinator mHomeButtonCoordinator;
     private HomePageButtonsCoordinator mHomePageButtonsCoordinator;
@@ -739,6 +742,7 @@ public class ToolbarManager
      * @param tabBookmarkerSupplier Supplier of {@link TabBookmarker} for bookmarking a given tab.
      * @param menuButtonVisibilityDelegate Delegate for handling the visibility of the menu button.
      * @param topControlsStacker TopControlsStacker to manage the view's y-offset.
+     * @param topInsetCoordinatorSupplier Supplier of (@link TopInsetCoordinator}.
      * @param xrSpaceModeObservableSupplier Supplies current XR space mode status. True for XR full
      *     space mode, false otherwise.
      */
@@ -790,6 +794,7 @@ public class ToolbarManager
             @NonNull ObservableSupplier<TabBookmarker> tabBookmarkerSupplier,
             @Nullable MenuButtonCoordinator.VisibilityDelegate menuButtonVisibilityDelegate,
             TopControlsStacker topControlsStacker,
+            ObservableSupplier<TopInsetCoordinator> topInsetCoordinatorSupplier,
             @Nullable ObservableSupplier<Boolean> xrSpaceModeObservableSupplier) {
         TraceEvent.begin("ToolbarManager.ToolbarManager");
         mActivity = activity;
@@ -825,6 +830,7 @@ public class ToolbarManager
         mOverrideUrlLoadingDelegate = new OverrideUrlLoadingDelegateImpl();
         mMultiInstanceManager = multiInstanceManager;
         mTabBookmarkerSupplier = tabBookmarkerSupplier;
+        mTopInsetCoordinatorSupplier = topInsetCoordinatorSupplier;
         mCustomTabCount =
                 new CustomTabCount(
                         tabModelSelectorSupplier.get().getCurrentModelTabCountSupplier());
@@ -834,8 +840,8 @@ public class ToolbarManager
                         && ChromeFeatureList.sNewTabPageCustomization.isEnabled()
                         && ChromeFeatureList.sNewTabPageCustomizationToolbarButton.isEnabled();
 
-        ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
-        mNtpDelegate = createNewTabPageDelegate(toolbarLayout);
+        mToolbarLayout = mActivity.findViewById(R.id.toolbar);
+        mNtpDelegate = createNewTabPageDelegate();
         mLocationBarModel =
                 new LocationBarModel(
                         activity,
@@ -938,7 +944,7 @@ public class ToolbarManager
         ThemeColorProvider overviewModeThemeColorProvider = mAppThemeColorProvider;
 
         Runnable requestFocusRunnable = compositorViewHolder::requestFocus;
-        mIsCustomTab = toolbarLayout instanceof CustomTabToolbar;
+        mIsCustomTab = mToolbarLayout instanceof CustomTabToolbar;
         ThemeColorProvider menuButtonThemeColorProvider =
                 mIsCustomTab ? mCustomTabThemeColorProvider : browsingModeThemeColorProvider;
 
@@ -1094,7 +1100,6 @@ public class ToolbarManager
         mToolbar =
                 createTopToolbarCoordinator(
                         controlContainer,
-                        toolbarLayout,
                         buttonDataProviders,
                         browsingModeThemeColorProvider,
                         mIncognitoStateProvider,
@@ -1114,7 +1119,7 @@ public class ToolbarManager
         tabObscuringHandler.addObserver(this);
 
         if (mIsCustomTab) {
-            CustomTabToolbar customTabToolbar = ((CustomTabToolbar) toolbarLayout);
+            CustomTabToolbar customTabToolbar = ((CustomTabToolbar) mToolbarLayout);
             mLocationBar =
                     customTabToolbar.createLocationBar(
                             mLocationBarModel,
@@ -1135,8 +1140,8 @@ public class ToolbarManager
                             mTabCreatorManager.getTabCreator(
                                     mIncognitoStateProvider.isIncognitoSelected()));
             OmniboxSuggestionsDropdownScrollListener scrollListener =
-                    toolbarLayout instanceof OmniboxSuggestionsDropdownScrollListener
-                            ? (OmniboxSuggestionsDropdownScrollListener) toolbarLayout
+                    mToolbarLayout instanceof OmniboxSuggestionsDropdownScrollListener
+                            ? (OmniboxSuggestionsDropdownScrollListener) mToolbarLayout
                             : null;
 
             Supplier<Integer> bottomWindowPaddingSupplier =
@@ -1148,7 +1153,7 @@ public class ToolbarManager
             LocationBarCoordinator locationBarCoordinator =
                     new LocationBarCoordinator(
                             mActivity.findViewById(R.id.location_bar),
-                            toolbarLayout,
+                            mToolbarLayout,
                             mProfileSupplier,
                             mLocationBarModel,
                             mActionModeController.getActionModeCallback(),
@@ -1184,9 +1189,9 @@ public class ToolbarManager
                             mBrowserControlsSizer,
                             ToolbarPositionController.isToolbarPositionCustomizationEnabled(
                                     mActivity, mIsCustomTab));
-            toolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
-            toolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
-            toolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
+            mToolbarLayout.setLocationBarCoordinator(locationBarCoordinator);
+            mToolbarLayout.setBrowserControlsVisibilityDelegate(mControlsVisibilityDelegate);
+            mToolbarLayout.setBrowserControlsStateProvider(mBrowserControlsSizer);
             mLocationBar = locationBarCoordinator;
         }
 
@@ -1440,8 +1445,7 @@ public class ToolbarManager
                         mLocationBarModel.notifyDidStartNavigation(
                                 navigationHandle.isSameDocument());
                         if (mIsCustomTab) {
-                            ToolbarLayout toolbarLayout = mActivity.findViewById(R.id.toolbar);
-                            ((CustomTabToolbar) toolbarLayout).resetOptionalButtonState();
+                            ((CustomTabToolbar) mToolbarLayout).resetOptionalButtonState();
                         }
                     }
 
@@ -1774,11 +1778,13 @@ public class ToolbarManager
                         keyboardAccessoryStateSupplier,
                         mWindowAndroid.getKeyboardDelegate(),
                         mControlContainer,
+                        mToolbarLayout,
                         mBottomControlsStacker,
                         mBottomToolbarControlsOffsetSupplier,
                         mProgressBarContainer,
                         controlContainerTranslationSupplier,
                         controlContainerHeightSupplier,
+                        mTopInsetCoordinatorSupplier,
                         new Handler(Looper.getMainLooper()),
                         mActivity);
         if (ChromeFeatureList.sMiniOriginBar.isEnabled()) {
@@ -1836,7 +1842,6 @@ public class ToolbarManager
 
     private TopToolbarCoordinator createTopToolbarCoordinator(
             ToolbarControlContainer controlContainer,
-            ToolbarLayout toolbarLayout,
             List<ButtonDataProvider> buttonDataProviders,
             ThemeColorProvider browsingModeThemeColorProvider,
             IncognitoStateProvider incognitoStateProvider,
@@ -1848,7 +1853,7 @@ public class ToolbarManager
         TopToolbarCoordinator toolbar =
                 new TopToolbarCoordinator(
                         controlContainer,
-                        toolbarLayout,
+                        mToolbarLayout,
                         mLocationBarModel,
                         mToolbarTabController,
                         mUserEducationHelper,
@@ -2051,15 +2056,15 @@ public class ToolbarManager
         }
     }
 
-    private NewTabPageDelegate createNewTabPageDelegate(ToolbarLayout toolbarLayout) {
-        if (toolbarLayout instanceof ToolbarPhone) {
+    private NewTabPageDelegate createNewTabPageDelegate() {
+        if (mToolbarLayout instanceof ToolbarPhone) {
             return new ToolbarNtpDelegate() {
                 @Override
                 protected boolean shouldUpdateListener() {
                     return mVisibleNtp.isLocationBarShownInNtp();
                 }
             };
-        } else if (toolbarLayout instanceof ToolbarTablet) {
+        } else if (mToolbarLayout instanceof ToolbarTablet) {
             return new ToolbarNtpDelegate() {
                 @Override
                 public void setSearchBoxScrollListener(Callback<Float> scrollCallback) {
@@ -3184,7 +3189,7 @@ public class ToolbarManager
      * @return The {@link ToolbarLayout} that constitutes the toolbar.
      */
     public ToolbarLayout getToolbarLayoutForTesting() {
-        return mToolbar.getToolbarLayoutForTesting();
+        return mToolbarLayout;
     }
 
     public HomeButtonCoordinator getHomeButtonCoordinatorForTesting() {

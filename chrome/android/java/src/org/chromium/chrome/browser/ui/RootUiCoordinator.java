@@ -1581,6 +1581,7 @@ public class RootUiCoordinator
                             mTabBookmarkerSupplier,
                             getMenuButtonVisibilityDelegate(),
                             mTopControlsStacker,
+                            mTopInsetCoordinatorSupplier,
                             mXrSpaceModeObservableSupplier);
             if (!mSupportsAppMenuSupplier.getAsBoolean()) {
                 mToolbarManager.getToolbar().disableMenuButton();

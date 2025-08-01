@@ -929,4 +929,13 @@ public abstract class ToolbarLayout extends FrameLayout
 
     /** Requests keyboard focus on the toolbar row. */
     public abstract void requestKeyboardFocus();
+
+    /**
+     * Called when the top padding should be updated for the Toolbar layout.
+     *
+     * @param newTopPadding The new top padding to add on the toolbar layout. When system's Status
+     *     bar is hidden, the new top padding equals the height of the Status bar, otherwise, it is
+     *     0.
+     */
+    public void onToEdgeChange(int newTopPadding) {}
 }
