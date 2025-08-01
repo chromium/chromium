@@ -13,6 +13,8 @@ namespace ml {
 
 namespace {
 
+namespace odmm = ::on_device_model::mojom;
+
 float GetTemperature(std::optional<float> temperature) {
   return std::max(kMinTemperature, temperature.value_or(kMinTemperature));
 }
@@ -141,6 +143,22 @@ void SessionAccessor::SizeInTokens(on_device_model::mojom::InputPtr input,
                                 std::move(size_in_tokens_fn)));
 }
 
+void SessionAccessor::CreateAsrStream(
+    odmm::AsrStreamOptionsPtr options,
+    const ChromeMLASRStreamOutputFn output_fn) {
+  DCHECK(output_fn);
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SessionAccessor::CreateAsrStreamInternal,
+                                base::Unretained(this), std::move(options),
+                                std::move(output_fn)));
+}
+
+void SessionAccessor::AsrAddAudioChunk(odmm::AudioDataPtr data) {
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&SessionAccessor::AsrAddAudioChunkInternal,
+                                base::Unretained(this), std::move(data)));
+}
+
 DISABLE_CFI_DLSYM
 void SessionAccessor::CloneFrom(SessionAccessor* other) {
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
@@ -246,6 +264,31 @@ void SessionAccessor::SizeInTokensInternal(
   chrome_ml_->api().SessionSizeInTokensInputPiece(
       session_, model_, input->pieces.data(), input->pieces.size(),
       size_in_tokens_fn);
+}
+
+DISABLE_CFI_DLSYM
+void SessionAccessor::CreateAsrStreamInternal(
+    odmm::AsrStreamOptionsPtr asr_options,
+    const ChromeMLASRStreamOutputFn output_fn) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK_EQ(asr_stream_, 0u);  // Multiple streams on a session is not supported.
+  ChromeMLASRStreamOptions options{
+      .sample_rate_hz = asr_options->sample_rate_hz,
+      .output_fn = &output_fn,
+  };
+  asr_stream_ = chrome_ml_->api().asr_api.CreateStream(session_, &options);
+}
+
+DISABLE_CFI_DLSYM
+void SessionAccessor::AsrAddAudioChunkInternal(odmm::AudioDataPtr data) {
+  DCHECK(task_runner_->RunsTasksInCurrentSequence());
+  CHECK_NE(asr_stream_, 0u) << "ASR stream must be created first.";
+  ml::AudioBuffer audio;
+  audio.sample_rate_hz = data->sample_rate;
+  audio.num_channels = data->channel_count;
+  audio.num_frames = data->frame_count;
+  audio.data = std::move(data->data);
+  chrome_ml_->api().asr_api.AddAudioChunk(asr_stream_, &audio);
 }
 
 }  // namespace ml

@@ -235,7 +235,7 @@ interface Session {
   // the |response| pipe.
   [MinVersion=1]
   Generate@7(
-      GenerateOptions options, pending_remote<StreamingResponder> response);
+      GenerateOptions options, pending_remote<StreamingResponder> responder);
 
   // Gets the size of the given text in tokens. Will return 0 if the text is
   // empty or error occurred.
@@ -261,6 +261,12 @@ interface Session {
   // priority. Priority for new sessions defaults to kForeground.
   [MinVersion=4]
   SetPriority@9(Priority priority);
+
+  // Stream audio and response for Automatic Speech Recognition.
+  [MinVersion=5]
+  AsrStream@10(AsrStreamOptions options,
+               pending_receiver<AsrStreamInput> stream,
+               pending_remote<AsrStreamResponder> responder);
 };
 
 // A loaded model which can be queried. This interface must be controlled by the
@@ -350,6 +356,31 @@ struct AudioData {
 
   // Channel data.
   array<float> data;
+};
+
+[Stable]
+struct SpeechRecognitionResult {
+  string transcript;
+  bool is_final;
+};
+
+// Interface used for listening for ASR transcription results.
+[Stable]
+interface AsrStreamResponder {
+  // This is called each time a list of transcription results is available.
+  OnResponse@0(array<SpeechRecognitionResult> result);
+};
+
+[Stable]
+struct AsrStreamOptions {
+  uint32 sample_rate_hz = 0;
+};
+
+// Used to feed audio into an ASR stream.
+[Stable]
+interface AsrStreamInput {
+  // Add an audio chunk to the session.
+  AddAudioChunk@0(AudioData data);
 };
 
 struct DevicePerformanceInfo {

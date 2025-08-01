@@ -101,6 +101,17 @@ std::unique_ptr<BackendSession> BackendSessionImplAndroid::Clone() {
   return nullptr;
 }
 
+void BackendSessionImplAndroid::AsrStream(
+    on_device_model::mojom::AsrStreamOptionsPtr options,
+    mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder> responder) {
+  NOTIMPLEMENTED();
+}
+
+void BackendSessionImplAndroid::AsrAddAudioChunk(
+    on_device_model::mojom::AudioDataPtr data) {
+  NOTIMPLEMENTED();
+}
+
 void BackendSessionImplAndroid::OnResponse(const std::string& response) {
   auto chunk = on_device_model::mojom::ResponseChunk::New();
   chunk->text = response;

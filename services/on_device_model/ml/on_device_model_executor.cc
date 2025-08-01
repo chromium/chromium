@@ -42,10 +42,11 @@
 #include "third_party/rust/chromium_crates_io/vendor/llguidance-v1/llguidance.h"
 #endif
 
-using on_device_model::mojom::LoadModelResult;
-
 namespace ml {
 namespace {
+
+namespace odmm = ::on_device_model::mojom;
+using odmm::LoadModelResult;
 
 constexpr uint32_t kReserveTokensForSafety = 2;
 
@@ -221,6 +222,48 @@ class Responder final {
   base::OnceClosure on_complete_;
   SessionAccessor::Ptr session_;
   base::WeakPtrFactory<Responder> weak_ptr_factory_{this};
+};
+
+// Handles sending and cancelling ASR streams.
+class AsrStreamResponder final {
+ public:
+  explicit AsrStreamResponder(
+      mojo::PendingRemote<odmm::AsrStreamResponder> responder,
+      SessionAccessor::Ptr session)
+      : responder_(std::move(responder)), session_(std::move(session)) {
+    responder_.set_disconnect_handler(
+        base::BindOnce(&AsrStreamResponder::Cancel, base::Unretained(this)));
+  }
+  ~AsrStreamResponder() { Cancel(); }
+  SessionAccessor* session() { return session_.get(); }
+  ChromeMLASRStreamOutputFn CreateOutputFn() {
+    return [weak_ptr = weak_ptr_factory_.GetWeakPtr(),
+            task_runner = base::SequencedTaskRunner::GetCurrentDefault()](
+               const ChromeMLASRStreamOutput& output) {
+      std::vector<odmm::SpeechRecognitionResultPtr> result;
+      result.reserve(output.size());
+      for (const auto& t : output) {
+        result.push_back(
+            odmm::SpeechRecognitionResult::New(t.transcript, t.is_final));
+      }
+      task_runner->PostTask(
+          FROM_HERE, base::BindOnce(&AsrStreamResponder::OnOutput, weak_ptr,
+                                    std::move(result)));
+    };
+  }
+
+  base::WeakPtr<AsrStreamResponder> AsWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
+  void Cancel() { session_ = nullptr; }
+  void OnOutput(std::vector<odmm::SpeechRecognitionResultPtr> output) {
+    responder_->OnResponse(std::move(output));
+  }
+  mojo::Remote<odmm::AsrStreamResponder> responder_;
+  SessionAccessor::Ptr session_;
+  base::WeakPtrFactory<AsrStreamResponder> weak_ptr_factory_{this};
 };
 
 // Handles calling the ContextClient on completion and canceling the context
@@ -428,6 +471,27 @@ void SessionImpl::GetProbabilitiesBlocking(
     base::OnceCallback<void(const std::vector<float>&)> callback) {
   session_->GetProbabilitiesBlocking(input,
                                      ConvertCallbackToFn(std::move(callback)));
+}
+
+DISABLE_CFI_DLSYM
+void SessionImpl::AsrStream(
+    odmm::AsrStreamOptionsPtr options,
+    mojo::PendingRemote<odmm::AsrStreamResponder> responder) {
+  DCHECK_EQ(asr_responder_, nullptr);
+  auto cloned = session_->Clone();
+  auto cloned_raw = cloned.get();  // For CreateAsrStream after std::move
+  asr_responder_ = std::make_unique<AsrStreamResponder>(std::move(responder),
+                                                        std::move(cloned));
+  ChromeMLASRStreamOutputFn output_fn = asr_responder_->CreateOutputFn();
+  cloned_raw->CreateAsrStream(std::move(options), output_fn);
+}
+
+DISABLE_CFI_DLSYM
+void SessionImpl::AsrAddAudioChunk(odmm::AudioDataPtr data) {
+  if (!asr_responder_) {
+    return;
+  }
+  asr_responder_->session()->AsrAddAudioChunk(std::move(data));
 }
 
 std::unique_ptr<on_device_model::BackendSession> SessionImpl::Clone() {

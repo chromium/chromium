@@ -44,6 +44,8 @@ using ChromeMLSession = uintptr_t;
 using ChromeMLCancel = uintptr_t;
 // Opaque handle to an instance of a ChromeMLTS model.
 using ChromeMLTSModel = uintptr_t;
+// Opaque handle to an instance of a ChromeML ASR stream.
+using ChromeMLASRStream = uintptr_t;
 // Opaque handle to a video-frame-specific ML inference engine.
 using ChromeMLInferenceEngine = uintptr_t;
 // Opaque handle to a constraint object.
@@ -394,6 +396,32 @@ struct ChromeMLTSAPI {
                                              size_t* num_scores);
 };
 
+struct ChromeMLASRStreamOutputTranscript {
+  const char* transcript;
+  bool is_final;
+};
+using ChromeMLASRStreamOutput = std::vector<ChromeMLASRStreamOutputTranscript>;
+
+using ChromeMLASRStreamOutputFn =
+    std::function<void(const ChromeMLASRStreamOutput&)>;
+
+struct ChromeMLASRStreamOptions {
+  uint32_t sample_rate_hz;
+  // Function to call with transcribed audio.
+  const ChromeMLASRStreamOutputFn* output_fn;
+};
+
+struct ChromeMLASRAPI {
+  // Create a new ASR stream on an existing ML session.
+  ChromeMLASRStream (*CreateStream)(ChromeMLSession session,
+                                    const ChromeMLASRStreamOptions* options);
+  // Add an audio chunk to the ASR session.
+  void (*AddAudioChunk)(ChromeMLASRStream stream,
+                        ml::AudioBuffer* audio_buffer);
+  // Note: This does not destroy the parent ChromeMLSession.
+  void (*DestroyStream)(ChromeMLASRStream stream);
+};
+
 // IMPORTANT: All functions that call ChromeMLAPI should be annotated with
 // DISABLE_CFI_DLSYM.
 
@@ -558,6 +586,7 @@ struct ChromeMLAPI {
   void (*DestroyGpuDelegate)(TfLiteDelegate* delegate);
 
   ChromeMLTSAPI ts_api;
+  ChromeMLASRAPI asr_api;
 };
 
 // Signature of the GetChromeMLAPI() function which the shared library exports.

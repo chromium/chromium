@@ -37,6 +37,10 @@ class BackendSessionImplAndroid : public BackendSession {
       const std::string& input,
       base::OnceCallback<void(const std::vector<float>&)> callback) override;
   std::unique_ptr<BackendSession> Clone() override;
+  void AsrStream(on_device_model::mojom::AsrStreamOptionsPtr options,
+                 mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
+                     response) override;
+  void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data) override;
 
   // Called by Java:
   // Called when the response of `Generate` is received from the AiCoreSession.

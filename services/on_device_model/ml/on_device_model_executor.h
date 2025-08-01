@@ -37,6 +37,7 @@ namespace ml {
 class ContextHolder;
 class OnDeviceModelExecutor;
 class Responder;
+class AsrStreamResponder;
 
 class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) BackendImpl final
     : public on_device_model::Backend {
@@ -94,6 +95,10 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
       const std::string& input,
       base::OnceCallback<void(const std::vector<float>&)> callback) override;
   std::unique_ptr<BackendSession> Clone() override;
+  void AsrStream(on_device_model::mojom::AsrStreamOptionsPtr options,
+                 mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
+                     response) override;
+  void AsrAddAudioChunk(on_device_model::mojom::AudioDataPtr data) override;
 
  private:
   void RemoveContext(ContextHolder* context);
@@ -103,6 +108,7 @@ class COMPONENT_EXPORT(ON_DEVICE_MODEL_ML) SessionImpl final
   SessionAccessor::Ptr session_;
   const uint32_t max_tokens_;
   std::unique_ptr<Responder> responder_;
+  std::unique_ptr<AsrStreamResponder> asr_responder_;
   std::set<std::unique_ptr<ContextHolder>> context_holders_;
   std::optional<uint32_t> adaptation_id_;
   std::optional<std::string> model_response_prefix_;

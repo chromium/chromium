@@ -83,29 +83,36 @@ class FakeOnDeviceSession final : public mojom::Session {
 
   void Generate(
       mojom::GenerateOptionsPtr input,
-      mojo::PendingRemote<mojom::StreamingResponder> response) override;
+      mojo::PendingRemote<mojom::StreamingResponder> responder) override;
 
   void GetSizeInTokens(mojom::InputPtr input,
                        GetSizeInTokensCallback callback) override;
 
   void Score(const std::string& text, ScoreCallback callback) override;
-
   void GetProbabilitiesBlocking(
       const std::string& text,
       GetProbabilitiesBlockingCallback callback) override;
-
   void Clone(
       mojo::PendingReceiver<on_device_model::mojom::Session> session) override;
-
   void SetPriority(mojom::Priority priority) override;
+  void AsrStream(
+      on_device_model::mojom::AsrStreamOptionsPtr options,
+      mojo::PendingReceiver<on_device_model::mojom::AsrStreamInput> stream,
+      mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder> responder)
+      override;
 
  private:
   void GenerateImpl(mojom::GenerateOptionsPtr options,
-                    mojo::PendingRemote<mojom::StreamingResponder> response);
+                    mojo::PendingRemote<mojom::StreamingResponder> responder);
   void AppendImpl(mojom::AppendOptionsPtr options,
                   mojo::Remote<mojom::ContextClient> client);
   void CloneImpl(
       mojo::PendingReceiver<on_device_model::mojom::Session> session);
+  void AsrStreamImpl(
+      on_device_model::mojom::AsrStreamOptionsPtr options,
+      mojo::PendingReceiver<on_device_model::mojom::AsrStreamInput> stream,
+      mojo::PendingRemote<on_device_model::mojom::AsrStreamResponder>
+          responder);
 
   raw_ptr<FakeOnDeviceServiceSettings> settings_;
   std::string adaptation_model_weight_;
