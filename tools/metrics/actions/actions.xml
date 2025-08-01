@@ -26463,20 +26463,20 @@ should be able to be added at any place in this file.
 </action>
 
 <action name="MobileReauthFailed">
+  <obsolete>Deprecated as of 08/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
-    Reported when reauthentication failed. iOS only. TODO(crbug.com/409680593):
-    This user action was added to investigate a crash. Remove when done with the
-    investigation.
+    Reported when reauthentication failed. iOS only. This user action was added
+    to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
 <action name="MobileReauthSuccessful">
+  <obsolete>Deprecated as of 08/2025</obsolete>
   <owner>noemies@google.com</owner>
   <description>
-    Reported when reauthentication succeeded. iOS only.
-    TODO(crbug.com/409680593): This user action was added to investigate a
-    crash. Remove when done with the investigation.
+    Reported when reauthentication succeeded. iOS only. This user action was
+    added to investigate a crash, see crbug.com/409680593.
   </description>
 </action>
 
