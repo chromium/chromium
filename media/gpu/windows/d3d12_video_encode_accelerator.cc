@@ -485,6 +485,8 @@ void D3D12VideoEncodeAccelerator::InitializeTask(const Config& config) {
   constexpr uint8_t kFullFramerate = 255;
   encoder_info_.fps_allocation[0] = {kFullFramerate};
   encoder_info_.reports_average_qp = encoder_->ReportsAverageQp();
+  encoder_info_.requested_resolution_alignment = 2;
+  encoder_info_.apply_alignment_to_all_simulcast_layers = true;
 
   child_task_runner_->PostTask(
       FROM_HERE,
