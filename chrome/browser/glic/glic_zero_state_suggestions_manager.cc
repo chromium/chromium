@@ -48,6 +48,12 @@ void GlicZeroStateSuggestionsManager::
     return;
   }
 
+  // Pinned tabs are a more intentional sharing choice than focused tab, so
+  // don't refresh the suggestions on focus change if there are pinned tabs.
+  if (sharing_manager_->GetNumPinnedTabs()) {
+    return;
+  }
+
   content::WebContents* active_web_contents =
       sharing_manager_->GetFocusedTabData().focus()
           ? sharing_manager_->GetFocusedTabData().focus()->GetContents()
@@ -83,12 +89,12 @@ void GlicZeroStateSuggestionsManager::
   if (pinned_tab_data.size() >
       static_cast<size_t>(
           contextual_cueing::kMaxPinnedPagesForTriggeringSuggestions.Get())) {
-    if (pause_pinned_subscription_updates) {
+    if (pause_pinned_subscription_updates_) {
       return;
     }
-    pause_pinned_subscription_updates = true;
+    pause_pinned_subscription_updates_ = true;
   } else {
-    pause_pinned_subscription_updates = false;
+    pause_pinned_subscription_updates_ = false;
   }
 
   if (contextual_cueing_service_) {
@@ -111,6 +117,15 @@ void GlicZeroStateSuggestionsManager::
                 /*returned_suggestions=*/
                 std::vector<std::string>({})));
   }
+}
+
+void GlicZeroStateSuggestionsManager::
+    NotifyZeroStateSuggestionsOnPinnedTabDataChanged(
+        bool is_first_run,
+        const std::vector<std::string>& supported_tools,
+        const mojom::TabData* data) {
+  NotifyZeroStateSuggestionsOnPinnedTabChanged(
+      is_first_run, supported_tools, sharing_manager_->GetPinnedTabs());
 }
 
 void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
@@ -137,6 +152,11 @@ void GlicZeroStateSuggestionsManager::ObserveZeroStateSuggestions(
         sharing_manager_->AddPinnedTabsChangedCallback(base::BindRepeating(
             &GlicZeroStateSuggestionsManager::
                 NotifyZeroStateSuggestionsOnPinnedTabChanged,
+            GetWeakPtr(), is_first_run, supported_tools));
+    current_zero_state_suggestions_pinned_tab_data_change_subscription_ =
+        sharing_manager_->AddPinnedTabDataChangedCallback(base::BindRepeating(
+            &GlicZeroStateSuggestionsManager::
+                NotifyZeroStateSuggestionsOnPinnedTabDataChanged,
             GetWeakPtr(), is_first_run, supported_tools));
 
     auto* active_web_contents =
@@ -214,6 +234,7 @@ void GlicZeroStateSuggestionsManager::OnZeroStateSuggestionsNotify(
 void GlicZeroStateSuggestionsManager::Reset() {
   current_zero_state_suggestions_focus_change_subscription_ = {};
   current_zero_state_suggestions_pinned_tab_change_subscription_ = {};
+  current_zero_state_suggestions_pinned_tab_data_change_subscription_ = {};
 }
 
 base::WeakPtr<GlicZeroStateSuggestionsManager>

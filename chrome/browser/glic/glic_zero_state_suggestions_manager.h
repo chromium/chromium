@@ -42,6 +42,13 @@ class GlicZeroStateSuggestionsManager {
       const std::vector<std::string>& supported_tools,
       const std::vector<content::WebContents*>& pinned_tab_data);
 
+  // Callback to send zero state suggestions to the webui when pinned tab data
+  // changes.
+  void NotifyZeroStateSuggestionsOnPinnedTabDataChanged(
+      bool is_first_run,
+      const std::vector<std::string>& supported_tools,
+      const mojom::TabData* data);
+
   // This handles calls from the webui to return a suggestion, and begin to
   // notify the webui of changes to the zero state suggestsions.
   void ObserveZeroStateSuggestions(
@@ -85,7 +92,10 @@ class GlicZeroStateSuggestionsManager {
   base::CallbackListSubscription
       current_zero_state_suggestions_pinned_tab_change_subscription_;
 
-  bool pause_pinned_subscription_updates = false;
+  base::CallbackListSubscription
+      current_zero_state_suggestions_pinned_tab_data_change_subscription_;
+
+  bool pause_pinned_subscription_updates_ = false;
 
   base::WeakPtrFactory<GlicZeroStateSuggestionsManager> weak_ptr_factory_{this};
 };
