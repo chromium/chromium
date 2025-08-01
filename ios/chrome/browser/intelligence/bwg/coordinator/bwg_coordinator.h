@@ -28,6 +28,9 @@
 // coordinator.
 - (void)stopWithCompletion:(ProceduralBlock)completion;
 
+// Presents the page action menu IPH.
+- (void)presentPageActionMenuIPH;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_COORDINATOR_BWG_COORDINATOR_H_

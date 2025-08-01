@@ -104,6 +104,12 @@ const CGFloat kPromoMaxImpressionCount = 3;
   [super stop];
 }
 
+- (void)presentPageActionMenuIPH {
+  if (_wasPromoShown && _entryPoint != bwg::EntryPoint::AIHub) {
+    [_helpCommandsHandler
+        presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
+  }
+}
 #pragma mark - BWGMediatorDelegate
 
 - (BOOL)maybePresentBWGFRE {
@@ -213,14 +219,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   return ShouldForceBWGPromo() ||
          ([self shouldShowBWGConsent] && !promoImpressionsExhausted);
-}
-
-// Presents the page action menu IPH.
-- (void)presentPageActionMenuIPH {
-  if (_wasPromoShown && _entryPoint != bwg::EntryPoint::AIHub) {
-    [_helpCommandsHandler
-        presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
-  }
 }
 
 // Returns YES if the account is managed.

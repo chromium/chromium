@@ -3007,6 +3007,12 @@ enum class ToolbarKind {
   }
 }
 
+- (void)dismissBWGFlowFromSession {
+  [_BWGCoordinator presentPageActionMenuIPH];
+  [_BWGCoordinator stopWithCompletion:nil];
+  _BWGCoordinator = nil;
+}
+
 #pragma mark - PromosManagerCommands
 
 - (void)showPromo {

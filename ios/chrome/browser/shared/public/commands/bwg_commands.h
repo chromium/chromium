@@ -24,6 +24,9 @@ enum class EntryPoint;
 // web state is eligible. If the page is ineligible, does nothing.
 - (void)showBWGPromoIfPageIsEligible;
 
+// Dismiss BWG flow from a BWG session.
+- (void)dismissBWGFlowFromSession;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_BWG_COMMANDS_H_

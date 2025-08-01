@@ -40,6 +40,7 @@
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID {
+  [_BWGHandler dismissBWGFlowFromSession];
   [self setSessionActive:NO clientID:clientID];
 }
 
