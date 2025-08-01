@@ -177,7 +177,8 @@ ProcessDiceHeaderDelegateImpl::Create(content::WebContents* web_contents) {
   OnSigninHeaderReceived on_signin_header_received;
   ShowSigninErrorCallback show_signin_error_callback;
 
-  DiceTabHelper* tab_helper = DiceTabHelper::FromWebContents(web_contents);
+  DiceTabHelper* tab_helper =
+      web_contents ? DiceTabHelper::FromWebContents(web_contents) : nullptr;
   if (tab_helper) {
     is_sync_signin_tab = tab_helper->IsSyncSigninInProgress();
     redirect_url = tab_helper->redirect_url();
