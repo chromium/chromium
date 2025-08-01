@@ -544,6 +544,17 @@ class GlicActorControllerUiTest : public test::InteractiveGlicTest {
         expected)));
   }
 
+  auto CheckIsWebContentsCaptured(ui::ElementIdentifier tab, bool expected) {
+    return Steps(InAnyContext(CheckElement(
+        tab,
+        [](ui::TrackedElement* el) {
+          content::WebContents* tab_contents =
+              AsInstrumentedWebContents(el)->web_contents();
+          return tab_contents->IsBeingCaptured();
+        },
+        expected)));
+  }
+
   // Check ExecutionEngine caches the last apc observation.
   auto CheckExecutionEngineHasAnnotatedPageContentCache() {
     return Steps(Do([&]() {
@@ -1097,6 +1108,35 @@ IN_PROC_BROWSER_TEST_F(GlicActorControllerWithActorDisabledUiTest,
                   InAnyContext(CheckJsResult(
                       kGlicContentsElementId,
                       "() => { return !(client.browser.actInFocusedTab); }")));
+}
+
+IN_PROC_BROWSER_TEST_F(GlicActorControllerUiTest,
+                       ActuationSucceedsOnBackgroundTab) {
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kNewActorTabId);
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherTabId);
+
+  constexpr std::string_view kClickableButtonLabel = "clickable";
+
+  const GURL task_url =
+      embedded_test_server()->GetURL("/actor/page_with_clickable_element.html");
+
+  RunTestSequence(
+      // clang-format off
+      InitializeWithOpenGlicWindow(),
+      StartActorTaskInNewTab(task_url, kNewActorTabId),
+      GetPageContextFromFocusedTab(),
+      SetOnIncompatibleAction(OnIncompatibleAction::kSkipTest,
+                              kActivateSurfaceIncompatibilityNotice),
+      AddInstrumentedTab(kOtherTabId, GURL(chrome::kChromeUISettingsURL)),
+      FocusWebContents(kOtherTabId),
+      CheckIsWebContentsCaptured(kNewActorTabId, true),
+      ClickAction(kClickableButtonLabel),
+      WaitForJsResult(kNewActorTabId, "() => button_clicked"),
+      CheckIsActingOnTab(kNewActorTabId, true),
+      CheckIsActingOnTab(kOtherTabId, false),
+      StopActorTask(),
+      CheckIsWebContentsCaptured(kNewActorTabId, false));
+  // clang-format on
 }
 
 }  //  namespace

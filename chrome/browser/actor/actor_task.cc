@@ -18,6 +18,7 @@
 #include "chrome/common/actor.mojom-forward.h"
 #include "chrome/common/actor/action_result.h"
 #include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/web_contents.h"
 
 namespace actor {
 
@@ -148,6 +149,17 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
         FROM_HERE, base::BindOnce(std::move(callback), MakeOkResult()));
     return;
   }
+
+  CHECK(!actuation_mode_runners_.contains(tab_handle));
+  if (tab_handle.Get() && tab_handle.Get()->GetContents()) {
+    content::WebContents* web_contents = tab_handle.Get()->GetContents();
+    actuation_mode_runners_.emplace(
+        tab_handle, web_contents->IncrementCapturerCount(gfx::Size(),
+                                                         /*stay_hidden=*/false,
+                                                         /*stay_awake=*/true,
+                                                         /*is_activity=*/true));
+  }
+
   // Notify the UI of the new tab.
   tab_handles_.insert(tab_handle);
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -159,6 +171,10 @@ void ActorTask::AddTab(tabs::TabHandle tab_handle, AddTabCallback callback) {
 }
 
 void ActorTask::RemoveTab(tabs::TabHandle tab_handle) {
+  // Erasing the ScopedClosureRunner from the map triggers its destructor, which
+  // automatically calls DecrementCapturerCount on the WebContents.
+  actuation_mode_runners_.erase(tab_handle);
+
   auto num_removed = tab_handles_.erase(tab_handle);
   if (num_removed > 0) {
     // Notify the UI of the tab removal.
