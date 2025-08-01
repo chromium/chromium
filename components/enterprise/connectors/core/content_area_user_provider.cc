@@ -19,27 +19,33 @@ namespace enterprise_connectors {
 
 namespace {
 
-bool IncludeContentAreaAccountEmail(const GURL& url) {
+const std::set<std::string_view>& TabWorkspaceDomains() {
+  static const std::set<std::string_view> kDomains = {
+      "mail.google.com",        "meet.google.com",
+      "calendar.google.com",    "drive.google.com",
+      "docs.google.com",        "sites.google.com",
+      "keep.google.com",        "script.google.com",
+      "cloudsearch.google.com", "console.cloud.google.com",
+      "datastudio.google.com",
+  };
+  return kDomains;
+}
+
+const std::set<std::string_view>& FrameWorkspaceDomains() {
+  static const std::set<std::string_view> kDomains = {
+      "ogs.google.com",
+  };
+  return kDomains;
+}
+
+bool IncludeContentAreaAccountEmail(
+    const GURL& url,
+    const std::set<std::string_view>& allowed_domains) {
   if (!base::FeatureList::IsEnabled(kEnterpriseActiveUserDetection)) {
     return false;
   }
 
-  static constexpr auto kWorkspaceDomains =
-      base::MakeFixedFlatSet<std::string_view>({
-          "mail.google.com",
-          "meet.google.com",
-          "calendar.google.com",
-          "drive.google.com",
-          "docs.google.com",
-          "sites.google.com",
-          "keep.google.com",
-          "script.google.com",
-          "cloudsearch.google.com",
-          "console.cloud.google.com",
-          "datastudio.google.com",
-      });
-
-  for (const auto& domain : kWorkspaceDomains) {
+  for (const auto& domain : allowed_domains) {
     if (url.DomainIs(domain)) {
       return true;
     }
@@ -64,15 +70,7 @@ std::optional<size_t> GetUserIndex(const GURL& url) {
   return std::nullopt;
 }
 
-}  // namespace
-
-// static
-std::string GetActiveContentAreaUser(signin::IdentityManager* im,
-                                     const GURL& url) {
-  if (!IncludeContentAreaAccountEmail(url)) {
-    return "";
-  }
-
+std::string GetEmailFromUrl(signin::IdentityManager* im, const GURL& url) {
   if (!im) {
     return "";
   }
@@ -83,12 +81,39 @@ std::string GetActiveContentAreaUser(signin::IdentityManager* im,
     return accounts.GetAllAccounts()[0].email;
   }
 
-  size_t user_index = GetUserIndex(url).value_or(0);
-  if (user_index >= accounts.GetAllAccounts().size()) {
+  std::optional<size_t> user_index = GetUserIndex(url);
+  if (!user_index.has_value()) {
     return "";
   }
 
-  return accounts.GetAllAccounts()[user_index].email;
+  if (*user_index >= accounts.GetAllAccounts().size()) {
+    return "";
+  }
+
+  return accounts.GetAllAccounts()[*user_index].email;
+}
+
+}  // namespace
+
+// static
+std::string GetActiveContentAreaUser(signin::IdentityManager* im,
+                                     const GURL& tab_url) {
+  if (!IncludeContentAreaAccountEmail(tab_url, TabWorkspaceDomains())) {
+    return "";
+  }
+
+  return GetEmailFromUrl(im, tab_url);
+}
+
+std::string GetActiveFrameUser(signin::IdentityManager* im,
+                               const GURL& tab_url,
+                               const GURL& frame_url) {
+  if (!IncludeContentAreaAccountEmail(tab_url, TabWorkspaceDomains()) ||
+      !IncludeContentAreaAccountEmail(frame_url, FrameWorkspaceDomains())) {
+    return "";
+  }
+
+  return GetEmailFromUrl(im, frame_url);
 }
 
 }  // namespace enterprise_connectors

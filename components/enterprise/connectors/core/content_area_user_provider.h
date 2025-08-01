@@ -18,7 +18,14 @@ namespace enterprise_connectors {
 // sites.
 // TODO(crbug.com/415002299): Add tests for this.
 std::string GetActiveContentAreaUser(signin::IdentityManager* im,
-                                     const GURL& url);
+                                     const GURL& tab_url);
+
+// Returns email of the active Gaia user based on the values found in the
+// provided frame URL and identity manager. Only returns a value if `tab_url` is
+// a Workspace site.
+std::string GetActiveFrameUser(signin::IdentityManager* im,
+                               const GURL& tab_url,
+                               const GURL& frame_url);
 
 }  // namespace enterprise_connectors
 

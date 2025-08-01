@@ -13,6 +13,7 @@
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
 #include "chrome/test/base/test_browser_window.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/enterprise/connectors/core/content_area_user_provider.h"
 #include "components/enterprise/connectors/core/features.h"
 #include "components/signin/public/identity_manager/test_identity_manager_observer.h"
 #include "content/public/test/browser_test.h"
@@ -113,11 +114,12 @@ std::vector<ActiveUserTestCase> TestCases() {
       ActiveUserTestCase{
           .url = "https://docs.google.com/",
           .emails = {"foo@gmail.com", "bar@gmail.com"},
-          .expected_active_email = "foo@gmail.com",
+          .expected_active_email = "",
       },
       ActiveUserTestCase{
           .url = "https://console.cloud.google.com/",
           .emails = {"bar@gmail.com"},
+          // With only 1 user it has to be the active one.
           .expected_active_email = "bar@gmail.com",
       },
       ActiveUserTestCase{
@@ -159,6 +161,108 @@ class ActiveUserEmailFeatureDisabledBrowserTest
   }
 };
 
+struct ActiveFrameUserTestCase {
+  const char* tab_url;
+  const char* frame_url;
+  std::vector<const char*> emails;
+  const char* expected_active_email;
+};
+
+std::vector<ActiveFrameUserTestCase> FrameUserTestCases() {
+  return {
+      // Invalid Workspace tab URL with invalid frame URL test case.
+      ActiveFrameUserTestCase{
+          .tab_url = "https://bar.baz.com/",
+          .frame_url = "https://foo.bar/",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "",
+      },
+      // Valid Workspace tab URL with invalid frame URL test case.
+      ActiveFrameUserTestCase{
+          .tab_url = "https://mail.google.com/",
+          .frame_url = "https://foo.bar/",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "",
+      },
+      // Invalid Workspace tab URL with valid frame URL test case.
+      ActiveFrameUserTestCase{
+          .tab_url = "https://foo.bar/",
+          .frame_url = "https://ogs.google.com/u/0/",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "",
+      },
+      // Valid "/u/<N>/" test cases.
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/u/0/",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "foo@gmail.com",
+      },
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/abcd/efgh/u/1/ijkl/",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "bar@gmail.com",
+      },
+      // Valid "authuser=<N>"/ test cases.
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/?authuser=0",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "foo@gmail.com",
+      },
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/abcd/efgh/ijkl/?authuser=1",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "bar@gmail.com",
+      },
+      // Valid URLs with no valid index test cases.
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "",
+      },
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/abcd/efgh/ijkl/?authuser=foo",
+          .emails = {"foo@gmail.com", "bar@gmail.com"},
+          .expected_active_email = "",
+      },
+      ActiveFrameUserTestCase{
+          .tab_url = "https://docs.google.com/",
+          .frame_url = "https://ogs.google.com/",
+          .emails = {"bar@gmail.com"},
+          // With only 1 user it has to be the active one.
+          .expected_active_email = "bar@gmail.com",
+      },
+  };
+}
+
+class ActiveFrameUserEmailBrowserTest
+    : public MixinBasedInProcessBrowserTest,
+      public testing::WithParamInterface<ActiveFrameUserTestCase> {
+ public:
+  ActiveFrameUserEmailBrowserTest() {
+    active_user_test_mixin_ = std::make_unique<test::ActiveUserTestMixin>(
+        &mixin_host_, this, &embedded_https_test_server(), GetParam().emails);
+  }
+
+  GURL tab_url() const { return GURL(GetParam().tab_url); }
+  GURL frame_url() const { return GURL(GetParam().frame_url); }
+
+  std::string expected_active_email() const {
+    return GetParam().expected_active_email;
+  }
+
+ protected:
+  base::test::ScopedFeatureList scoped_feature_list_{
+      kEnterpriseActiveUserDetection};
+
+  std::unique_ptr<test::ActiveUserTestMixin> active_user_test_mixin_;
+};
+
 }  // namespace
 
 IN_PROC_BROWSER_TEST_P(ActiveUserEmailBrowserTest, GetActiveUser) {
@@ -185,5 +289,18 @@ IN_PROC_BROWSER_TEST_P(ActiveUserEmailFeatureDisabledBrowserTest,
 INSTANTIATE_TEST_SUITE_P(,
                          ActiveUserEmailFeatureDisabledBrowserTest,
                          testing::ValuesIn(TestCases()));
+
+IN_PROC_BROWSER_TEST_P(ActiveFrameUserEmailBrowserTest, GetActiveUserForFrame) {
+  active_user_test_mixin_->SetFakeCookieValue();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), tab_url()));
+  ASSERT_EQ(expected_active_email(),
+            GetActiveFrameUser(
+                IdentityManagerFactory::GetForProfile(browser()->profile()),
+                tab_url(), frame_url()));
+}
+
+INSTANTIATE_TEST_SUITE_P(,
+                         ActiveFrameUserEmailBrowserTest,
+                         testing::ValuesIn(FrameUserTestCases()));
 
 }  // namespace enterprise_connectors
