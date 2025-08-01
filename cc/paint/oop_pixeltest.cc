@@ -2793,7 +2793,8 @@ TEST_P(OopYUVToRGBPixelTest, CopyI420SharedImage) {
       ri, sii, options, viz::SinglePlaneFormat::kRGBA_8888, dest_color_space);
 
   scoped_refptr<gpu::ClientSharedImage> yuv_client_si =
-      CreateClientSharedImage(ri, sii, options, viz::MultiPlaneFormat::kI420);
+      CreateClientSharedImage(ri, sii, options, viz::MultiPlaneFormat::kI420,
+                              gfx::ColorSpace::CreateREC709());
 
   SkPixmap pixmaps[SkYUVAInfo::kMaxPlanes] = {};
 

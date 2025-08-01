@@ -381,7 +381,12 @@ TEST_F(PaintCanvasVideoRendererTest, CopyTransparentFrame) {
 
 TEST_F(PaintCanvasVideoRendererTest, ReinterpretAsSRGB) {
   FillFrameWithColor(natural_frame(), kRed);
-  natural_frame()->set_color_space(gfx::ColorSpace::CreateHDR10());
+  // Set to HDR PQ color space but with default 601 matrix and range as I420
+  // formats cannot convert to RGB color spaces with RGB matrix.
+  auto hdr_cs = gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::BT2020, gfx::ColorSpace::TransferID::PQ,
+      gfx::ColorSpace::MatrixID::SMPTE170M, gfx::ColorSpace::RangeID::LIMITED);
+  natural_frame()->set_color_space(hdr_cs);
 
   cc::PaintFlags flags;
   flags.setBlendMode(SkBlendMode::kSrcOver);
