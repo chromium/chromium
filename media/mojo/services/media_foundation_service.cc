@@ -133,14 +133,14 @@ bool IsTypeSupportedInternal(
   return supported;
 }
 
-bool IsTypeSupportedInternalEx(
-    ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
-    const std::string& key_system,
-    bool is_hw_secure,
-    const std::string& content_type) {
+bool IsTypeSupportedByOsCdm(ComPtr<IMFExtendedDRMTypeSupport> mf_type_support,
+                            const std::string& key_system,
+                            bool is_hw_secure,
+                            const std::string& content_type) {
   const base::TimeTicks start_time = base::TimeTicks::Now();
+  // Force the use of the hardware based PlayReady key system.
   bool supported = IsMediaFoundationContentTypeSupported(
-      mf_type_support, key_system, content_type);
+      mf_type_support, kPlayReadyKeySystemRecommendationHwSecure, content_type);
   // The above function may take seconds to run. Report UMA to understand the
   // actual performance impact. Report UMA only for success cases.
   if (supported) {
@@ -612,10 +612,8 @@ void MediaFoundationService::IsKeySystemSupported(
       return;
     }
 
-    // Force the use of the hardware based PlayReady key system.
-    is_type_supported_cb =
-        base::BindRepeating(&IsTypeSupportedInternalEx, mf_type_support,
-                            kPlayReadyKeySystemRecommendationHwSecure);
+    is_type_supported_cb = base::BindRepeating(&IsTypeSupportedByOsCdm,
+                                               mf_type_support, key_system);
   } else {
     is_type_supported_cb =
         base::BindRepeating(&IsTypeSupportedInternal, cdm_factory, key_system);
