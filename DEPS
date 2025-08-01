@@ -3561,7 +3561,7 @@ deps = {
 
   'src/chrome/browser/resources/webui_browser/internal': {
       'url': Var('chrome_git') + '/chrome/browser/resources/webui_browser/internal.git' + '@' +
-        '9ead2ea7645ae98342974de132ce9c6fe7c0c626',
+        '54ba496f51ce3792b7ef8161558985b192ac078b',
       'condition': 'checkout_src_internal',
   },
 
