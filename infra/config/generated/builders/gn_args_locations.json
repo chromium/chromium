@@ -88,7 +88,8 @@
     "android-15-x64-fyi-rel": "ci/android-15-x64-fyi-rel/gn-args.json",
     "android-16-x64-fyi-rel": "ci/android-16-x64-fyi-rel/gn-args.json",
     "android-annotator-rel": "ci/android-annotator-rel/gn-args.json",
-    "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json"
+    "android-cronet-asan-x86-rel": "ci/android-cronet-asan-x86-rel/gn-args.json",
+    "android-structured-test-ids-16-x64-rel-fyi": "ci/android-structured-test-ids-16-x64-rel-fyi/gn-args.json"
   },
   "chromium.angle": {
     "android-angle-chromium-arm64-builder": "ci/android-angle-chromium-arm64-builder/gn-args.json",

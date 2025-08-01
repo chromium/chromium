@@ -7801,6 +7801,27 @@
           }
         ]
       },
+      "android-structured-test-ids-16-x64-rel-fyi": {
+        "contact_team_email": "chrome-browser-infra-team@google.com",
+        "problem_specs": [
+          {
+            "name": "Unhealthy",
+            "period_days": 7,
+            "score": 5,
+            "thresholds": {
+              "_default": "_default"
+            }
+          },
+          {
+            "name": "Low Value",
+            "period_days": 90,
+            "score": 1,
+            "thresholds": {
+              "_default": "_default"
+            }
+          }
+        ]
+      },
       "android-webview-10-x86-rel-tests": {
         "contact_team_email": "woa-engprod@google.com",
         "problem_specs": [
