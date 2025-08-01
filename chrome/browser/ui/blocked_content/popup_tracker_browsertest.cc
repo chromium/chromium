@@ -141,8 +141,9 @@ IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
       entry, kUkmNumGestureScrollBeginInteractions, 0u);
 }
 
+// TODO(crbug.com/435578530): Re-enable this test.
 IN_PROC_BROWSER_TEST_F(PopupTrackerBrowserTest,
-                       WindowOpenPopup_WithInteraction) {
+                       DISABLED_WindowOpenPopup_WithInteraction) {
   base::HistogramTester tester;
   const GURL first_url = embedded_test_server()->GetURL("/title1.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), first_url));
