@@ -621,7 +621,10 @@ void ConvertFrameData(
     optimization_guide::proto::FrameData* proto_frame_data,
     blink::mojom::PageMetadata& metadata,
     FrameTokenSet& frame_token_set) {
-  ConvertFrameMetadata(render_frame_info.url, mojom_frame_data, metadata);
+  ConvertFrameMetadata(
+      render_frame_info.source_origin.GetTupleOrPrecursorTupleIfOpaque()
+          .GetURL(),
+      mojom_frame_data, metadata);
   SecurityOriginSerializer::Serialize(
       render_frame_info.source_origin,
       proto_frame_data->mutable_security_origin());
