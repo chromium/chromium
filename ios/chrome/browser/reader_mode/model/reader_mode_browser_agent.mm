@@ -45,6 +45,7 @@ ReaderModeBrowserAgent::ReaderModeBrowserAgent(Browser* browser)
 }
 
 void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
+  crash_keys::SetCurrentlyInReaderMode(true);
   [delegate_ readerModeBrowserAgent:this showContentAnimated:animated];
 
   __weak id<ReaderModeChipCommands> weak_reader_mode_chip_handler =
@@ -65,6 +66,7 @@ void ReaderModeBrowserAgent::ShowReaderModeUI(BOOL animated) {
 }
 
 void ReaderModeBrowserAgent::HideReaderModeUI(BOOL animated) {
+  crash_keys::SetCurrentlyInReaderMode(false);
   id<ReaderModeChipCommands> reader_mode_chip_handler = HandlerForProtocol(
       browser_->GetCommandDispatcher(), ReaderModeChipCommands);
   [reader_mode_chip_handler hideReaderModeChip];
@@ -139,7 +141,6 @@ void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
   ShowReaderModeUI(/* animated= */ YES);
-  crash_keys::SetCurrentlyInReaderMode(true);
 }
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
@@ -151,7 +152,6 @@ void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
   const bool animated =
       reason == ReaderModeDeactivationReason::kUserDeactivated;
   HideReaderModeUI(animated);
-  crash_keys::SetCurrentlyInReaderMode(false);
 }
 
 void ReaderModeBrowserAgent::ReaderModeDistillationFailed(
