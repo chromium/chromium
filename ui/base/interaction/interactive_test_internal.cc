@@ -29,6 +29,9 @@ namespace ui::test::internal {
 DEFINE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
+const char kInteractiveTestFailedMessagePrefix[] = "Interactive test failed ";
+const char kNoCheckDescriptionSpecified[] = "[no description specified]";
+
 StateObserverElement::StateObserverElement(ElementIdentifier id,
                                            ElementContext context)
     : TestElementBase(id, context) {}

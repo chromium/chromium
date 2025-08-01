@@ -24,9 +24,9 @@ class ScopedEventSelector;
 
 namespace ui {
 
-inline constexpr char kIncr[] = "INCR";
-inline constexpr char kSaveTargets[] = "SAVE_TARGETS";
-inline constexpr char kTargets[] = "TARGETS";
+COMPONENT_EXPORT(UI_BASE_X) extern const char kIncr[];
+COMPONENT_EXPORT(UI_BASE_X) extern const char kSaveTargets[];
+COMPONENT_EXPORT(UI_BASE_X) extern const char kTargets[];
 
 // Owns a specific X11 selection on an X window.
 //

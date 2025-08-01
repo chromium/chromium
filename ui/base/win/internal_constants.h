@@ -11,19 +11,20 @@ namespace ui {
 
 // This window property if set on the window does not activate the window for a
 // touch based WM_MOUSEACTIVATE message.
-inline constexpr wchar_t kIgnoreTouchMouseActivateForWindow[] =
-    L"Chrome.IgnoreMouseActivate";
+COMPONENT_EXPORT(UI_BASE)
+extern const wchar_t kIgnoreTouchMouseActivateForWindow[];
 
 // This class name is assigned to legacy windows created for screen readers that
 // expect each web content container to be in its own HWNDs.
-inline constexpr wchar_t kLegacyRenderWidgetHostHwnd[] =
-    L"Chrome_RenderWidgetHostHWND";
+COMPONENT_EXPORT(UI_BASE) extern const wchar_t kLegacyRenderWidgetHostHwnd[];
 
 // This property is put on an HWND so the compositor output knows to treat it
 // as transparent and draw to it using WS_EX_LAYERED (if using the software
 // compositor).
-inline constexpr wchar_t kWindowTranslucent[] = L"Chrome.WindowTranslucent";
+COMPONENT_EXPORT(UI_BASE) extern const wchar_t kWindowTranslucent[];
 
 }  // namespace ui
 
 #endif  // UI_BASE_WIN_INTERNAL_CONSTANTS_H_
+
+

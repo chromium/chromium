@@ -55,10 +55,8 @@ namespace internal {
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kInteractiveTestPivotElementId);
 DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(kInteractiveTestPivotEventType);
 
-inline constexpr char kInteractiveTestFailedMessagePrefix[] =
-    "Interactive test failed ";
-inline constexpr char kNoCheckDescriptionSpecified[] =
-    "[no description specified]";
+extern const char kInteractiveTestFailedMessagePrefix[];
+extern const char kNoCheckDescriptionSpecified[];
 
 class StateObserverElement;
 

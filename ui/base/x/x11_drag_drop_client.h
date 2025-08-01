@@ -22,18 +22,7 @@ namespace ui {
 class OSExchangeData;
 class XOSExchangeDataProvider;
 
-// Window property on the source window and message used by the XDS protocol.
-// This atom name intentionally includes the XDS protocol version (0).
-// After the source sends the XdndDrop message, this property stores the
-// (path-less) name of the file to be saved, and has the type text/plain, with
-// an optional charset attribute.
-// When receiving an XdndDrop event, the target needs to check for the
-// XdndDirectSave property on the source window. The target then modifies the
-// XdndDirectSave on the source window, and sends an XdndDirectSave message to
-// the source.
-// After the target sends the XdndDirectSave message, this property stores an
-// URL indicating the location where the source should save the file.
-inline constexpr char kXdndDirectSave0[] = "XdndDirectSave0";
+extern const char kXdndDirectSave0[];
 
 // Converts the current set of X masks into the set of ui::EventFlags.
 COMPONENT_EXPORT(UI_BASE_X) int XGetMaskAsEventFlags();
