@@ -156,6 +156,17 @@ bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
              reader_mode_eligible_url_);
 }
 
+bool ReaderModeTabHelper::CurrentPageDistillationAlreadyFailed() const {
+  return distillation_already_failed_;
+}
+
+void ReaderModeTabHelper::RecordDistillationFailure() {
+  distillation_already_failed_ = true;
+  for (auto& observer : observers_) {
+    observer.ReaderModeDistillationFailed(this);
+  }
+}
+
 void ReaderModeTabHelper::FetchLastCommittedUrlEligibilityResult(
     base::OnceCallback<void(std::optional<bool>)> callback) {
   if (last_committed_url_eligibility_ready_) {
@@ -236,6 +247,7 @@ void ReaderModeTabHelper::ResetUrlEligibility(const GURL& url) {
   // Do not reset URL eligibility for same-page navigations.
   if (!reader_mode_eligible_url_.EqualsIgnoringRef(url)) {
     reader_mode_eligible_url_ = GURL();
+    distillation_already_failed_ = false;
   }
 }
 
@@ -392,11 +404,9 @@ void ReaderModeTabHelper::PageDistillationCompleted(
       ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get())
           ->LoadContent(page_url, content_data);
     } else {
+      RecordDistillationFailure();
       // If the page could not be distilled, deactivate Reader mode in this tab.
       DeactivateReader();
-      for (auto& observer : observers_) {
-        observer.ReaderModeDistillationFailed(this);
-      }
     }
   }
 }
@@ -473,8 +483,6 @@ void ReaderModeTabHelper::CallLastCommittedUrlEligibilityCallbacks(
 
 void ReaderModeTabHelper::CancelDistillation() {
   metrics_helper_.RecordReaderDistillerTimedOut();
+  RecordDistillationFailure();
   DeactivateReader();
-  for (auto& observer : observers_) {
-    observer.ReaderModeDistillationFailed(this);
-  }
 }

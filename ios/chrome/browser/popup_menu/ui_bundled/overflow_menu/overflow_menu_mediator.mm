@@ -1634,10 +1634,12 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   // triggering heuristic is disabled.
   if (!base::FeatureList::IsEnabled(
           kEnableReaderModePageEligibilityForToolsMenu)) {
-    return helper && helper->CurrentPageIsEligibleForReaderMode();
+    return helper && helper->CurrentPageIsEligibleForReaderMode() &&
+           !helper->CurrentPageDistillationAlreadyFailed();
   }
 
-  return helper && helper->CurrentPageSupportsReaderMode();
+  return helper && helper->CurrentPageSupportsReaderMode() &&
+         !helper->CurrentPageDistillationAlreadyFailed();
 }
 
 // Whether or not text zoom is enabled for this page.

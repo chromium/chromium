@@ -74,6 +74,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   bool CurrentPageIsEligibleForReaderMode() const;
   // Returns whether the current page supports Reading mode.
   bool CurrentPageSupportsReaderMode() const;
+
+  // Returns whether the distillation failed already in the current page
+  bool CurrentPageDistillationAlreadyFailed() const;
+
   // - If the eligibility of the last committed URL is already known, calls
   // `callback` immediately with a boolean value as argument indicating whether
   // the last committed URL is eligible.
@@ -156,10 +160,18 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Cancels any ongoing distillation and destroys the `reader_mode_web_state_`.
   void CancelDistillation();
 
+  // Records the current page distillation failure, when called
+  // `distillation_already_failed_` is set to true.
+  void RecordDistillationFailure();
+
   // Whether Reader mode is active in this tab.
   bool active_ = false;
   // Whether the Reader mode WebState content was loaded.
   bool reader_mode_web_state_content_loaded_ = false;
+
+  // Whether the distillation failed already in the current navigation.
+  bool distillation_already_failed_ = false;
+
   // WebState used to render the Reader mode content. Lazily created the first
   // time Reader mode is activated and persists until the tab is closed.
   std::unique_ptr<web::WebState> reader_mode_web_state_;
