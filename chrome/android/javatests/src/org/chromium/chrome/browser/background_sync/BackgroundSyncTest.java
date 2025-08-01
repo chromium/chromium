@@ -143,7 +143,7 @@ public final class BackgroundSyncTest {
 
     @SuppressWarnings("MissingFail")
     private void assertTitleBecomes(String expectedTitle) {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         TabTitleObserver titleObserver = new TabTitleObserver(tab, expectedTitle);
         try {
             titleObserver.waitForTitleUpdate(TITLE_UPDATE_TIMEOUT_SECONDS);

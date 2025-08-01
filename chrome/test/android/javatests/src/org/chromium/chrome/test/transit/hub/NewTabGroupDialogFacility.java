@@ -24,6 +24,7 @@ import androidx.annotation.Nullable;
 
 import org.hamcrest.Matcher;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.test.transit.Element;
 import org.chromium.base.test.transit.Facility;
@@ -144,7 +145,9 @@ public class NewTabGroupDialogFacility<
                 tabGroupIdElement,
                 delayedElements -> {
                     TabGroupModelFilter filter = mHostStation.tabGroupModelFilterElement.get();
-                    List<Tab> tabsInGroup = filter.getTabsInGroup(tabGroupIdElement.get());
+                    List<Tab> tabsInGroup =
+                            ThreadUtils.runOnUiThreadBlocking(
+                                    () -> filter.getTabsInGroup(tabGroupIdElement.get()));
                     mTabIdsToGroup = TabModelUtils.getTabIds(tabsInGroup);
                     mTitle = TabGroupUtil.getNumberOfTabsString(mTabIdsToGroup.size());
                     titleInputElement = delayedElements.declareView(createTitleViewSpec());

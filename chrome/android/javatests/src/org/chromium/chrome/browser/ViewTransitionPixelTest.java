@@ -134,7 +134,7 @@ public class ViewTransitionPixelTest {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getActivityTab().getWebContents();
     }
 
     private void showAndWaitForKeyboard() throws Throwable {
@@ -187,7 +187,7 @@ public class ViewTransitionPixelTest {
 
     private void setLocationAndWaitForLoad(String url) {
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(),
+                mActivityTestRule.getActivityTab(),
                 url,
                 () -> {
                     try {
@@ -267,8 +267,7 @@ public class ViewTransitionPixelTest {
     }
 
     private String getCurrentUrl() {
-        return ChromeTabUtils.getUrlStringOnUiThread(
-                mActivityTestRule.getActivity().getActivityTab());
+        return ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab());
     }
 
     /**

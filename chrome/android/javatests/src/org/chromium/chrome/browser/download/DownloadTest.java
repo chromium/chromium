@@ -267,7 +267,7 @@ public class DownloadTest {
     public void testHttpGetDownload() throws Exception {
         loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "get.html"));
         waitForFocus();
-        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivityTab().getView();
 
         int callCount = sDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
@@ -281,7 +281,7 @@ public class DownloadTest {
     public void testHttpPostDownload() throws Exception {
         loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "post.html"));
         waitForFocus();
-        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivityTab().getView();
 
         int callCount = sDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
@@ -299,7 +299,7 @@ public class DownloadTest {
         waitForFocus();
         final int initialTabCount = sDownloadTestRule.getActivity().getCurrentTabModel().getCount();
         int currentCallCount = sDownloadTestRule.getChromeDownloadCallCount();
-        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivityTab().getView();
         TouchCommon.singleClickView(currentView);
         Assert.assertTrue(sDownloadTestRule.waitForChromeDownloadToFinish(currentCallCount));
 
@@ -317,7 +317,7 @@ public class DownloadTest {
     public void testUrlEscaping() throws Exception {
         loadUrl(sTestServer.getURL(TEST_DOWNLOAD_DIRECTORY + "urlescaping.html"));
         waitForFocus();
-        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivityTab().getView();
 
         int callCount = sDownloadTestRule.getChromeDownloadCallCount();
         TouchCommon.singleClickView(currentView);
@@ -329,7 +329,7 @@ public class DownloadTest {
         sDownloadTestRule.loadUrlInTab(
                 url,
                 PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR,
-                sDownloadTestRule.getActivity().getActivityTab(),
+                sDownloadTestRule.getActivityTab(),
                 20L // 20 seconds timeout
                 );
     }
@@ -376,7 +376,7 @@ public class DownloadTest {
     }
 
     private void waitForFocus() {
-        View currentView = sDownloadTestRule.getActivity().getActivityTab().getView();
+        View currentView = sDownloadTestRule.getActivityTab().getView();
         if (!currentView.hasFocus()) {
             TouchCommon.singleClickView(currentView);
         }

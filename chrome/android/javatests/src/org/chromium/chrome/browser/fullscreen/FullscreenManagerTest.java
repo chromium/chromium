@@ -771,7 +771,7 @@ public class FullscreenManagerTest {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererResponsive);
 
         // TODO(tedchoc): This is running into timing issues with the renderer offset logic.
-        // waitForBrowserControlsToBeMoveable(getActivity().getActivityTab());
+        // waitForBrowserControlsToBeMoveable(getActivityTab());
     }
 
     @Test
@@ -803,7 +803,7 @@ public class FullscreenManagerTest {
         PostTask.runOrPostTask(TaskTraits.UI_DEFAULT, delegate::rendererResponsive);
 
         // TODO(tedchoc): This is running into timing issues with the renderer offset logic.
-        // waitForBrowserControlsToBeMoveable(getActivity().getActivityTab());
+        // waitForBrowserControlsToBeMoveable(getActivityTab());
     }
 
     @Test
@@ -1263,7 +1263,7 @@ public class FullscreenManagerTest {
                         .getResources()
                         .getDisplayMetrics()
                         .density;
-        View tabView = mActivityTestRule.getActivity().getActivityTab().getContentView();
+        View tabView = mActivityTestRule.getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
 
@@ -1283,12 +1283,12 @@ public class FullscreenManagerTest {
                         .getResources()
                         .getDisplayMetrics()
                         .density;
-        View tabView = mActivityTestRule.getActivity().getActivityTab().getContentView();
+        View tabView = mActivityTestRule.getActivityTab().getContentView();
         Assert.assertEquals(tabView.getHeight() / pixelDensity, getPageHeight(), 1);
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     private int getPageHeight() throws Throwable {

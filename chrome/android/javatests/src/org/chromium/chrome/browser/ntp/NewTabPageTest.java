@@ -202,7 +202,7 @@ public class NewTabPageTest {
         mSuggestionsDeps.getFactory().mostVisitedSites = mMostVisitedSites;
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(mTab);
 
         Assert.assertTrue(mTab.getNativePage() instanceof NewTabPage);

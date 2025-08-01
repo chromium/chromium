@@ -97,7 +97,8 @@ public class LauncherShortcutTest {
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(IncognitoParams.class)
     public void testLauncherShortcut(boolean incognito) throws Exception {
-        int initialTabCount = mTabModelSelector.getTotalTabCount();
+        int initialTabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> mTabModelSelector.getTotalTabCount());
 
         Intent intent =
                 new Intent(
@@ -112,9 +113,7 @@ public class LauncherShortcutTest {
 
         // Verify NTP was created.
 
-        Tab activityTab =
-                ThreadUtils.runOnUiThreadBlocking(
-                        () -> mActivityTestRule.getActivity().getActivityTab());
+        Tab activityTab = mActivityTestRule.getActivityTab();
         Assert.assertEquals(
                 "Incorrect tab launch type.",
                 TabLaunchType.FROM_LAUNCHER_SHORTCUT,
@@ -129,18 +128,16 @@ public class LauncherShortcutTest {
                 "Incorrect tab model selected.",
                 incognito,
                 mTabModelSelector.isIncognitoSelected());
-        Assert.assertEquals(
-                "Incorrect total tab count.",
-                initialTabCount + 1,
-                mTabModelSelector.getTotalTabCount());
+        int tabCount = ThreadUtils.runOnUiThreadBlocking(() -> mTabModelSelector.getTotalTabCount());
+        Assert.assertEquals("Incorrect total tab count.", initialTabCount + 1, tabCount);
         Assert.assertEquals(
                 "Incorrect normal tab count.",
                 incognito ? initialTabCount : initialTabCount + 1,
-                mTabModelSelector.getModel(false).getCount());
+                mActivityTestRule.tabsCount(false));
         Assert.assertEquals(
                 "Incorrect incognito tab count.",
                 incognito ? 1 : 0,
-                mTabModelSelector.getModel(true).getCount());
+                mActivityTestRule.tabsCount(true));
     }
 
     @Test

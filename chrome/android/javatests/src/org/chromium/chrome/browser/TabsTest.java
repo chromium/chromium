@@ -160,7 +160,7 @@ public class TabsTest {
     @CommandLineFlags.Add(ContentSwitches.DISABLE_POPUP_BLOCKING)
     public void testSpawnPopupOnBackgroundTab() {
         mActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         mActivityTestRule.newIncognitoTabFromMenu();
 
@@ -190,7 +190,7 @@ public class TabsTest {
     public void testAlertDialogDoesNotChangeActiveModel() {
         mActivityTestRule.newIncognitoTabFromMenu();
         mActivityTestRule.loadUrl(getUrl(TEST_FILE_PATH));
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
         runOnUiThreadBlocking(
                 () ->
                         tab.getWebContents()
@@ -419,7 +419,7 @@ public class TabsTest {
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 
         // Make sure we're on the NTP
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
 
         mActivityTestRule.loadUrl(INITIAL_SIZE_TEST_URL);
@@ -512,8 +512,7 @@ public class TabsTest {
             assertEquals(
                     "URL mismatch after switching back to the tab from tab-switch mode",
                     urls[lastUrlIndex],
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab()));
+                    ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab()));
         }
     }
 
@@ -526,7 +525,7 @@ public class TabsTest {
 
         assertTrue(
                 "Current Tab should be an incognito tab.",
-                mActivityTestRule.getActivity().getActivityTab().isIncognito());
+                mActivityTestRule.getActivityTab().isIncognito());
     }
 
     /** Test that orientation changes cause the live tab reflow. */
@@ -835,7 +834,7 @@ public class TabsTest {
     @MediumTest
     @Feature({"Android-TabSwitcher"})
     public void testTabsAreDestroyedOnModelDestruction() throws Exception {
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         final CallbackHelper webContentsDestroyed = new CallbackHelper();
 
@@ -918,7 +917,7 @@ public class TabsTest {
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         TabModelSelectorImpl selector =
                 (TabModelSelectorImpl) mActivityTestRule.getActivity().getTabModelSelector();
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Start undoable tab closure.
         runOnUiThreadBlocking(

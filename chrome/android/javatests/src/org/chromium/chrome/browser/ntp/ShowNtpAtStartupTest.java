@@ -104,7 +104,7 @@ public class ShowNtpAtStartupTest {
                 2,
                 UrlConstants.NTP_URL,
                 /* expectHomeSurfaceUiShown= */ true);
-        waitForNtpLoaded(mActivityTestRule.getActivity().getActivityTab());
+        waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         histogram.assertExpected();
     }
@@ -200,11 +200,12 @@ public class ShowNtpAtStartupTest {
                                             .build(),
                                     /* allowDialog= */ false);
                 });
-        Assert.assertEquals(2, cta.getCurrentTabModel().getCount());
+        Assert.assertEquals(2, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
 
         // Tests to set another tracking Tab on the NTP.
-        Tab newTrackingTab = cta.getCurrentTabModel().getTabAt(0);
+        Tab newTrackingTab =
+                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getTabAt(0));
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     ntp.showMagicStack(newTrackingTab);
@@ -221,7 +222,7 @@ public class ShowNtpAtStartupTest {
                                             .build(),
                                     /* allowDialog= */ false);
                 });
-        Assert.assertEquals(1, cta.getCurrentTabModel().getCount());
+        Assert.assertEquals(1, mActivityTestRule.tabsCount(false));
         Assert.assertFalse(ntp.isMagicStackVisibleForTesting());
     }
 
@@ -534,7 +535,9 @@ public class ShowNtpAtStartupTest {
 
     private void verifyTabCountAndActiveTabUrl(
             ChromeTabbedActivity cta, int tabCount, String url, Boolean expectHomeSurfaceUiShown) {
-        Assert.assertEquals(tabCount, cta.getCurrentTabModel().getCount());
+        int currentTabCount =
+                ThreadUtils.runOnUiThreadBlocking(() -> cta.getCurrentTabModel().getCount());
+        Assert.assertEquals(tabCount, currentTabCount);
         Tab tab = HomeSurfaceTestUtils.getCurrentTabFromUiThread(cta);
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

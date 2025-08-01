@@ -226,7 +226,7 @@ public class AppBannerManagerTest {
 
     private void navigateToUrlAndWaitForBannerManager(
             ChromeActivityTestRule<? extends ChromeActivity> rule, String url) throws Exception {
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         new TabLoadObserver(tab).fullyLoadUrl(url);
         waitForBannerManager(tab);
     }
@@ -236,8 +236,7 @@ public class AppBannerManagerTest {
         CriteriaHelper.pollUiThread(
                 () -> {
                     AppBannerManager manager =
-                            getAppBannerManager(
-                                    rule.getActivity().getActivityTab().getWebContents());
+                            getAppBannerManager(rule.getActivityTab().getWebContents());
                     Criteria.checkThat(mDetailsDelegate.mNumRetrieved, Matchers.is(numExpected));
                     Criteria.checkThat(manager.isRunningForTesting(), Matchers.is(false));
                 });
@@ -270,7 +269,7 @@ public class AppBannerManagerTest {
         rule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(rule, url);
 
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         tapAndWaitForModalBanner(tab);
 
         if (!installApp) return;
@@ -330,7 +329,7 @@ public class AppBannerManagerTest {
             waitUntilAppDetailsRetrieved(rule, 1);
         }
 
-        Tab tab = rule.getActivity().getActivityTab();
+        Tab tab = rule.getActivityTab();
         tapAndWaitForModalBanner(tab);
 
         // Explicitly dismiss the banner. We should be able to show the banner after dismissing.
@@ -380,7 +379,7 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
+                        mTabbedActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
@@ -414,7 +413,7 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mCustomTabActivityTestRule.getActivity().getActivityTab(),
+                        mCustomTabActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
@@ -447,9 +446,7 @@ public class AppBannerManagerTest {
 
         // The userChoice promise should resolve (and cause the title to change). appinstalled is
         // not fired for native apps
-        new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: accepted")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(
@@ -471,9 +468,7 @@ public class AppBannerManagerTest {
 
         // The userChoice promise should resolve (and cause the title to change). appinstalled is
         // not fired for native apps
-        new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: accepted")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(
@@ -500,8 +495,7 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mCustomTabActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: accepted")
+                        mCustomTabActivityTestRule.getActivityTab(), "Got userChoice: accepted")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(
@@ -718,7 +712,7 @@ public class AppBannerManagerTest {
 
         // The appinstalled event should fire (and cause the title to change).
         new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
+                        mTabbedActivityTestRule.getActivityTab(),
                         "Got appinstalled: listener, attr")
                 .waitForTitleUpdate(3);
 
@@ -758,9 +752,7 @@ public class AppBannerManagerTest {
         waitUntilBottomSheetStatus(BottomSheetController.SheetState.HIDDEN);
 
         // Ensure userChoice is resolved.
-        new TabTitleObserver(
-                        mTabbedActivityTestRule.getActivity().getActivityTab(),
-                        "Got userChoice: dismissed")
+        new TabTitleObserver(mTabbedActivityTestRule.getActivityTab(), "Got userChoice: dismissed")
                 .waitForTitleUpdate(3);
 
         Assert.assertEquals(
@@ -849,7 +841,7 @@ public class AppBannerManagerTest {
         mTabbedActivityTestRule.loadUrlInNewTab(ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         navigateToUrlAndWaitForBannerManager(mTabbedActivityTestRule.getActivityTestRule(), url);
 
-        Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mTabbedActivityTestRule.getActivityTab();
         tapAndWaitForModalBanner(tab);
 
         // Navigate and check that the dialog was dismissed.

@@ -497,7 +497,8 @@ public class BrowsingDataBridgeTest {
                 /* incognito= */ false);
 
         // Survey should be triggered on the first activity.
-        WebContents firstWebContents = firstActivity.getCurrentWebContents();
+        WebContents firstWebContents =
+                ThreadUtils.runOnUiThreadBlocking(() -> firstActivity.getCurrentWebContents());
         verify(mBrowsingDataBridgeJniMock, times(1))
                 .triggerHatsSurvey(any(), eq(firstWebContents), eq(false));
 

@@ -206,7 +206,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(PASSWORD_NODE_ID, generatedPassword);
         clickNode(SUBMIT_NODE_ID);
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
+                mActivityTestRule.getActivityTab(), mTestServer.getURL(DONE_URL));
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -239,7 +239,7 @@ public class PasswordGenerationIntegrationTest {
         assertPasswordText(PASSWORD_NODE_ID_MANUAL, generatedPassword);
         clickNode(SUBMIT_NODE_ID_MANUAL);
         ChromeTabUtils.waitForTabPageLoaded(
-                mActivityTestRule.getActivity().getActivityTab(), mTestServer.getURL(DONE_URL));
+                mActivityTestRule.getActivityTab(), mTestServer.getURL(DONE_URL));
         waitForMessageShown();
         CriteriaHelper.pollUiThread(
                 () -> {
@@ -340,7 +340,7 @@ public class PasswordGenerationIntegrationTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     Assert.assertFalse(
-                            InfoBarContainer.from(mActivityTestRule.getActivity().getActivityTab())
+                            InfoBarContainer.from(mActivityTestRule.getActivityTab())
                                     .hasInfoBars());
                 });
     }

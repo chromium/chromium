@@ -796,7 +796,7 @@ public class ContextMenuTest {
     @LargeTest
     public void testOpenLinksInNewTabsAndVerifyTabIndexOrdering() throws TimeoutException {
         TabModel tabModel = sDownloadTestRule.getActivity().getCurrentTabModel();
-        int numOpenedTabs = tabModel.getCount();
+        int numOpenedTabs = ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getCount());
         Tab tab = sDownloadTestRule.getActivityTab();
         ContextMenuUtils.selectContextMenuItem(
                 InstrumentationRegistry.getInstrumentation(),

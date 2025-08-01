@@ -191,14 +191,16 @@ public class BrowsingDataRemoverIntegrationTest {
 
         Assert.assertTrue(
                 UrlUtilities.isNtpUrl(mActivityTestRule.getWebContents().getVisibleUrl()));
-        Assert.assertEquals(
-                new GURL(testUrl),
-                mActivityTestRule
-                        .getActivity()
-                        .getTabModelSelectorSupplier()
-                        .get()
-                        .getModel(/* incognito= */ true)
-                        .getTabAt(0)
-                        .getUrl());
+        GURL url =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () ->
+                                mActivityTestRule
+                                        .getActivity()
+                                        .getTabModelSelectorSupplier()
+                                        .get()
+                                        .getModel(/* incognito= */ true)
+                                        .getTabAt(0)
+                                        .getUrl());
+        Assert.assertEquals(new GURL(testUrl), url);
     }
 }

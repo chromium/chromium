@@ -257,7 +257,7 @@ public class FindTest {
     public void testFullscreen() {
         loadTestAndVerifyFindInPage("pitts", "1/7");
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         FullscreenTestUtils.togglePersistentFullscreenAndAssert(
                 tab, true, mActivityTestRule.getActivity());
         waitForFindInPageVisibility(false);

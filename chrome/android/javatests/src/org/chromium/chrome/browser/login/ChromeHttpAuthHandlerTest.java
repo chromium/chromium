@@ -69,8 +69,7 @@ public class ChromeHttpAuthHandlerTest {
         ChromeHttpAuthHandler handler = triggerAuth();
         verifyAuthDialogVisibility(handler, true);
         ChromeTabUtils.loadUrlOnUiThread(
-                mActivityTestRule.getActivity().getActivityTab(),
-                ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
+                mActivityTestRule.getActivityTab(), ContentUrlConstants.ABOUT_BLANK_DISPLAY_URL);
         verifyAuthDialogVisibility(handler, false);
     }
 
@@ -103,7 +102,7 @@ public class ChromeHttpAuthHandlerTest {
     @Restriction(Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE)
     @DisabledTest(message = "https://crbug.com/1218039")
     public void authDialogSuppressedOnBackgroundTab() throws Exception {
-        Tab firstTab = mActivityTestRule.getActivity().getActivityTab();
+        Tab firstTab = mActivityTestRule.getActivityTab();
         ChromeTabUtils.newTabFromMenu(
                 InstrumentationRegistry.getInstrumentation(), mActivityTestRule.getActivity());
         // If the first tab was closed due to OOM, then just exit the test.
@@ -116,7 +115,7 @@ public class ChromeHttpAuthHandlerTest {
     }
 
     private ChromeHttpAuthHandler triggerAuth() throws Exception {
-        return triggerAuthForTab(mActivityTestRule.getActivity().getActivityTab());
+        return triggerAuthForTab(mActivityTestRule.getActivityTab());
     }
 
     private ChromeHttpAuthHandler triggerAuthForTab(Tab tab) throws Exception {

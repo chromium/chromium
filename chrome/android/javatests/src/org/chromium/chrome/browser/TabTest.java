@@ -93,7 +93,7 @@ public class TabTest {
 
     @Before
     public void setUp() throws Exception {
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> mTab.addObserver(mTabObserver));
         mOnTitleUpdatedHelper = new CallbackHelper();
         mRootIdForReset = mTab.getRootId();

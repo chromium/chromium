@@ -258,7 +258,7 @@ public class JavascriptAppModalDialogTest {
                     WebContentsUtils.getGestureListenerManager(mActivityTestRule.getWebContents())
                             .addListener(tapGestureStateListener);
                 });
-        TouchCommon.singleClickView(mActivityTestRule.getActivity().getActivityTab().getView());
+        TouchCommon.singleClickView(mActivityTestRule.getActivityTab().getView());
         tapGestureStateListener.waitForTap(callCount);
     }
 
