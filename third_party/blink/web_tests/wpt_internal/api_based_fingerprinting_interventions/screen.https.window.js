@@ -75,6 +75,9 @@ function generate_test(flagState, permissionState, expectReduction) {
       // 4. Color/pixel depth is 24.
       assert_equals(popup.screen.colorDepth, 24, "Color Depth");
       assert_equals(popup.screen.pixelDepth, 24, "Pixel Depth");
+
+      // 5. Color Gamut is `srgb`:
+      assert_true(popup.matchMedia(`(color-gamut: srgb)`).matches, "Color Gamut");
     } else {
       // Height/Width
       assert_not_equals(popup.screen.width, popup.innerWidth, "Width");
@@ -93,7 +96,7 @@ function generate_test(flagState, permissionState, expectReduction) {
       // TODO: There doesn't seem to be any way to pretend that `isExtended` should
       // be true, which makes it hard to test in its unreduced state.
       //
-      // TODO: There doesn't seem to be any way to pretend that the color depth is
+      // TODO: There doesn't seem to be any way to pretend that the color depth/gamut is
       // anything other than the default value.
     }
   }, `Flag ${flagState ? "enabled" : "disabled"}, ` +

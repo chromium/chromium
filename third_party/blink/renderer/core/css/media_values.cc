@@ -403,8 +403,13 @@ ColorSpaceGamut MediaValues::CalculateColorGamut(LocalFrame* frame) {
       frame->GetPage()->GetMediaFeatureOverrides();
   std::optional<ColorSpaceGamut> override_value =
       overrides ? overrides->GetColorGamut() : std::nullopt;
-  return override_value.value_or(color_space_utilities::GetColorSpaceGamut(
-      frame->GetPage()->GetChromeClient().GetScreenInfo(*frame)));
+  ColorSpaceGamut actual = color_space_utilities::GetColorSpaceGamut(
+      frame->GetPage()->GetChromeClient().GetScreenInfo(*frame));
+  if (frame->DomWindow() &&
+      frame->DomWindow()->screen()->ShouldReduceScreenSize()) {
+    actual = ColorSpaceGamut::SRGB;
+  }
+  return override_value.value_or(actual);
 }
 
 mojom::blink::PreferredColorScheme MediaValues::CalculatePreferredColorScheme(
