@@ -29,6 +29,11 @@ class FindMatchingTestFilesTest(TestCase):
     self.assertEqual(['foo_unittest.cc'],
                      autotest.FindMatchingTestFiles('foo_unittest.cc'))
 
+  def test_mm_test(self):
+    self.create_cc_test('foo_unittest.mm')
+    self.assertEqual(['foo_unittest.mm'],
+                     autotest.FindMatchingTestFiles('foo_unittest.mm'))
+
   def test_cc_alt_test(self):
     self.fs.create_file('foo.cc')
     self.create_cc_test('foo_unittest.cc')
@@ -54,6 +59,18 @@ class FindMatchingTestFilesTest(TestCase):
         autotest.FindMatchingTestFiles('foo.cc')
     self.assertRegex(stderr_buf.getvalue(),
                      "foo.cc doesn't look like a test file")
+
+  def test_h_for_cc_test(self):
+    self.fs.create_file('foo.h')
+    self.create_cc_test('foo_unittest.cc')
+    self.assertEqual(['foo_unittest.cc'],
+                     autotest.FindMatchingTestFiles('foo.h'))
+
+  def test_h_for_mm_test(self):
+    self.fs.create_file('foo.h')
+    self.create_cc_test('foo_unittest.mm')
+    self.assertEqual(['foo_unittest.mm'],
+                     autotest.FindMatchingTestFiles('foo.h'))
 
   def test_java(self):
     self.fs.create_file('Foo.java')

@@ -171,8 +171,8 @@ _PREF_MAPPING_FILE_PATTERN = re.escape(
 
 TEST_FILE_NAME_REGEX = re.compile(
     r'(.*Test\.java)' +
-    r'|(.*_[a-z]*test(?:_win|_mac|_linux|_chromeos|_android)?\.cc)' + r'|(' +
-    _PREF_MAPPING_FILE_PATTERN + r')')
+    r'|(.*_[a-z]*test(?:_win|_mac|_linux|_chromeos|_android)?\.(cc|mm))' +
+    r'|(' + _PREF_MAPPING_FILE_PATTERN + r')')
 
 # Some tests don't directly include gtest.h and instead include it via gmock.h
 # or a test_utils.h file, so make sure these cases are captured. Also include
@@ -217,7 +217,7 @@ def FindRemoteCandidates(target):
 def IsTestFile(file_path):
   if not TEST_FILE_NAME_REGEX.match(file_path):
     return TestValidity.NOT_A_TEST
-  if file_path.endswith('.cc'):
+  if file_path.endswith('.cc') or file_path.endswith('.mm'):
     # Try a bit harder to remove non-test files for c++. Without this,
     # 'autotest.py base/' finds non-test files.
     try:
@@ -343,25 +343,9 @@ def FindTestFilesInDirectory(directory):
 def FindMatchingTestFiles(target, remote_search=False):
   # Return early if there's an exact file match.
   if os.path.isfile(target):
-    # If the target is a C++ implementation file, try to guess the test file.
-    if target.endswith('.cc') or target.endswith('.h'):
-      target_validity = IsTestFile(target)
-      if target_validity is TestValidity.VALID_TEST:
-        return [target]
-      alternate = f"{target.rsplit('.', 1)[0]}_unittest.cc"
-      alt_validity = TestValidity.NOT_A_TEST if not os.path.isfile(
-          alternate) else IsTestFile(alternate)
-      if alt_validity is TestValidity.VALID_TEST:
-        return [alternate]
-
-      # If neither the target nor its alternative were valid, check if they just
-      # didn't include the gtest files before deciding to exit.
-      if target_validity is TestValidity.MAYBE_A_TEST:
-        return [target]
-      if alt_validity is TestValidity.MAYBE_A_TEST:
-        return [alternate]
-      ExitWithMessage(f"{target} doesn't look like a test file")
-    return [target]
+    if test_file := _FindTestForFile(target):
+      return [test_file]
+    ExitWithMessage(f"{target} doesn't look like a test file")
   # If this is a directory, return all the test files it contains.
   if os.path.isdir(target):
     files = FindTestFilesInDirectory(target)
@@ -418,6 +402,32 @@ def FindMatchingTestFiles(target, remote_search=False):
   if not test_files:
     ExitWithMessage(f'Target "{target}" did not match any files.')
   return test_files
+
+
+def _FindTestForFile(target: os.PathLike) -> str | None:
+  root, ext = os.path.splitext(target)
+  # If the target is a C++ implementation file, try to guess the test file.
+  # Candidates should be ordered most to least promising.
+  test_candidates = [target]
+  if ext == '.h':
+    # `*_unittest.{cc,mm}` are both possible.
+    test_candidates.append(f'{root}_unittest.cc')
+    test_candidates.append(f'{root}_unittest.mm')
+  elif ext == '.cc' or ext == '.mm':
+    test_candidates.append(f'{root}_unittest{ext}')
+  else:
+    return target
+
+  maybe_valid = []
+  for candidate in test_candidates:
+    if not os.path.isfile(candidate):
+      continue
+    validity = IsTestFile(candidate)
+    if validity is TestValidity.VALID_TEST:
+      return candidate
+    elif validity is TestValidity.MAYBE_A_TEST:
+      maybe_valid.append(candidate)
+  return maybe_valid[0] if maybe_valid else None
 
 
 def HaveUserPickFile(paths):
@@ -605,7 +615,11 @@ SPECIAL_TEST_FILTERS = [(_PREF_MAPPING_FILE_REGEX, _PREF_MAPPING_GTEST_FILTER)]
 
 def BuildTestFilter(filenames, line):
   java_files = [f for f in filenames if f.endswith('.java')]
-  cc_files = [f for f in filenames if f.endswith('.cc')]
+  # TODO(crbug.com/434009870): Support EarlGrey tests, which don't use
+  # Googletest's macros or pascal case naming convention.
+  cc_files = [
+      f for f in filenames if f.endswith('.cc') or f.endswith('_unittest.mm')
+  ]
   filters = []
   if java_files:
     filters.append(BuildJavaTestFilter(java_files))
