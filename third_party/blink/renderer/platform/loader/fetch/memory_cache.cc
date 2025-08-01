@@ -624,6 +624,7 @@ void MemoryCache::PruneStrongReferences() {
 
 void MemoryCache::ClearStrongReferences() {
   strong_references_.clear();
+  tiered_strong_references_.clear();
 }
 
 double MemoryCache::CalculateResourceValue(const Resource* resource) const {
