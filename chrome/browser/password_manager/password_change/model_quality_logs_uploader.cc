@@ -95,8 +95,8 @@ ModelQualityLogsUploader::QualityStatus GetVerifySubmissionQualityStatus(
       PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS;
 }
 
-optimization_guide::proto::PasswordChangeQuality_StepQuality* GetNextStep(
-    optimization_guide::proto::LogAiDataRequest& log) {
+optimization_guide::proto::PasswordChangeQuality_StepQuality*
+GetNextStepQuality(optimization_guide::proto::LogAiDataRequest& log) {
   optimization_guide::proto::PasswordChangeQuality* quality =
       log.mutable_password_change_submission()->mutable_quality();
   if (quality->submit_form().status() !=
@@ -111,6 +111,26 @@ optimization_guide::proto::PasswordChangeQuality_StepQuality* GetNextStep(
     return quality->mutable_submit_form();
   }
   return quality->mutable_open_form();
+}
+
+optimization_guide::proto::PasswordChangeQuality_StepQuality* GetStepQuality(
+    ModelQualityLogsUploader::FlowStep step,
+    optimization_guide::proto::LogAiDataRequest& log) {
+  optimization_guide::proto::PasswordChangeQuality* quality =
+      log.mutable_password_change_submission()->mutable_quality();
+  switch (step) {
+    case ModelQualityLogsUploader::FlowStep::
+        PasswordChangeRequest_FlowStep_OPEN_FORM_STEP:
+      return quality->mutable_open_form();
+    case ModelQualityLogsUploader::FlowStep::
+        PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP:
+      return quality->mutable_submit_form();
+    case ModelQualityLogsUploader::FlowStep::
+        PasswordChangeRequest_FlowStep_VERIFY_SUBMISSION_STEP:
+      return quality->mutable_verify_submission();
+    default:
+      NOTREACHED();
+  }
 }
 
 }  // namespace
@@ -199,17 +219,25 @@ void ModelQualityLogsUploader::SetOpenFormUnexpectedFailure() {
 }
 
 void ModelQualityLogsUploader::SetFlowInterrupted() {
-  GetNextStep(final_log_data_)
+  GetNextStepQuality(final_log_data_)
       ->set_status(
           QualityStatus::
               PasswordChangeQuality_StepQuality_SubmissionStatus_FLOW_INTERRUPTED);
 }
 
 void ModelQualityLogsUploader::SetOtpDetected() {
-  GetNextStep(final_log_data_)
+  GetNextStepQuality(final_log_data_)
       ->set_status(
           QualityStatus::
               PasswordChangeQuality_StepQuality_SubmissionStatus_OTP_DETECTED);
+}
+
+void ModelQualityLogsUploader::MarkStepSkipped(
+    optimization_guide::proto::PasswordChangeRequest::FlowStep step) {
+  GetStepQuality(step, final_log_data_)
+      ->set_status(
+          QualityStatus::
+              PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED);
 }
 
 void ModelQualityLogsUploader::OpenFormTargetElementNotFound() {

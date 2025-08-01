@@ -22,6 +22,10 @@ namespace {
 
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
+constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
+    kOpenFormFlowStep = optimization_guide::proto::PasswordChangeRequest::
+        FlowStep::PasswordChangeRequest_FlowStep_OPEN_FORM_STEP;
+
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   auto options = optimization_guide::DefaultAIPageContentOptions();
   // WebContents where password change is happening is hidden, and renderer
@@ -60,6 +64,7 @@ ChangePasswordFormFinder::ChangePasswordFormFinder(
       change_password_url_(change_password_url),
       callback_(std::move(callback)),
       login_form_found_callback_(std::move(login_form_found_callback)) {
+  CHECK(logs_uploader_);
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
@@ -108,6 +113,7 @@ void ChangePasswordFormFinder::OnInitialFormWaitingResult(
 
   // Change password form found, invoke callback immediately.
   if (result.change_password_form_manager) {
+    logs_uploader_->MarkStepSkipped(kOpenFormFlowStep);
     std::move(callback_).Run(result.change_password_form_manager);
     return;
   }
@@ -151,8 +157,7 @@ void ChangePasswordFormFinder::OnPageContentReceived(
   }
 
   optimization_guide::proto::PasswordChangeRequest request;
-  request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
-                       PasswordChangeRequest_FlowStep_OPEN_FORM_STEP);
+  request.set_step(kOpenFormFlowStep);
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(content->proto);
   *request.mutable_page_context()->mutable_title() =

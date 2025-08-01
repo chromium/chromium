@@ -22,6 +22,7 @@ class ModelQualityLogsUploader {
       optimization_guide::proto::PasswordChangeSubmissionLoggingData;
   using QualityStatus = optimization_guide::proto::
       PasswordChangeQuality_StepQuality_SubmissionStatus;
+  using FlowStep = optimization_guide::proto::PasswordChangeRequest::FlowStep;
 
   explicit ModelQualityLogsUploader(content::WebContents* web_contents);
   ~ModelQualityLogsUploader();
@@ -55,6 +56,11 @@ class ModelQualityLogsUploader {
   // To be called if the flow is halted
   // because an OTP was detected.
   void SetOtpDetected();
+
+  // Marks a flow step as skipped, indicating no
+  // model call was made for this step.
+  void MarkStepSkipped(
+      optimization_guide::proto::PasswordChangeRequest::FlowStep step);
 
   // To be called if element to click was not found
   // in Step=OPEN_FORM_STEP.

@@ -27,6 +27,10 @@ namespace {
 
 using Logger = password_manager::BrowserSavePasswordProgressLogger;
 
+constexpr optimization_guide::proto::PasswordChangeRequest::FlowStep
+    kSubmitFormFlowStep = optimization_guide::proto::PasswordChangeRequest::
+        FlowStep::PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP;
+
 blink::mojom::AIPageContentOptionsPtr GetAIPageContentOptions() {
   auto options = blink::mojom::AIPageContentOptions::New();
   // WebContents where password change is happening is hidden, and renderer
@@ -62,6 +66,7 @@ ChangePasswordFormFillingSubmissionHelper::
       client_(client),
       logs_uploader_(logs_uploader),
       callback_(std::move(callback)) {
+  CHECK(logs_uploader_);
   capture_annotated_page_content_ =
       base::BindOnce(&optimization_guide::GetAIPageContent, web_contents,
                      GetAIPageContentOptions());
@@ -242,6 +247,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnSubmitWithEnterResult(
   }
 
   if (success) {
+    logs_uploader_->MarkStepSkipped(kSubmitFormFlowStep);
     OnFormSubmitted();
     return;
   }
@@ -263,8 +269,7 @@ void ChangePasswordFormFillingSubmissionHelper::OnPageContentReceived(
     return;
   }
   optimization_guide::proto::PasswordChangeRequest request;
-  request.set_step(optimization_guide::proto::PasswordChangeRequest::FlowStep::
-                       PasswordChangeRequest_FlowStep_SUBMIT_FORM_STEP);
+  request.set_step(kSubmitFormFlowStep);
   *request.mutable_page_context()->mutable_annotated_page_content() =
       std::move(content->proto);
   optimization_guide::ExecuteModelWithLogging(

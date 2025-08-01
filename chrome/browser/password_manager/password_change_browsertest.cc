@@ -527,10 +527,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest, NewPasswordIsSaved) {
   VerifyUniqueQualityLog(
       /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /*verify_submission_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_ACTION_SUCCESS,
@@ -719,10 +719,10 @@ IN_PROC_BROWSER_TEST_F(PasswordChangeBrowserTest,
   VerifyUniqueQualityLog(
       /*open_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /* submit_form_status=*/
       QualityStatus::
-          PasswordChangeQuality_StepQuality_SubmissionStatus_UNKNOWN_STATUS,
+          PasswordChangeQuality_StepQuality_SubmissionStatus_STEP_SKIPPED,
       /*verify_submission_status=*/
       QualityStatus::
           PasswordChangeQuality_StepQuality_SubmissionStatus_FAILURE_STATUS,
