@@ -573,19 +573,70 @@ TEST_F(FasterSplitScreenTest, SnapActionSourceLimitations) {
 }
 
 TEST_F(FasterSplitScreenTest, CycleSnap) {
+  auto* snap_group_controller = SnapGroupController::Get();
   std::unique_ptr<aura::Window> w1(CreateAppWindow());
   auto* window_state = WindowState::Get(w1.get());
 
-  // Cycle snap to the left.
-  const WindowSnapWMEvent cycle_snap_primary(WM_EVENT_CYCLE_SNAP_PRIMARY);
-  window_state->OnWMEvent(&cycle_snap_primary);
-  auto* overview_controller = Shell::Get()->overview_controller();
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+  for (auto event_type :
+       {WM_EVENT_CYCLE_SNAP_PRIMARY, WM_EVENT_CYCLE_SNAP_SECONDARY}) {
+    auto state_type = event_type == WM_EVENT_CYCLE_SNAP_PRIMARY
+                          ? chromeos::WindowStateType::kPrimarySnapped
+                          : chromeos::WindowStateType::kSecondarySnapped;
+    // Cycle snap to the left.
+    const WindowSnapWMEvent cycle_snap(event_type);
+    window_state->OnWMEvent(&cycle_snap);
+    auto* overview_controller = Shell::Get()->overview_controller();
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    EXPECT_EQ(window_state->GetStateType(), state_type);
+    EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
 
-  // Cycle snap to the right.
-  const WindowSnapWMEvent cycle_snap_secondary(WM_EVENT_CYCLE_SNAP_SECONDARY);
-  window_state->OnWMEvent(&cycle_snap_secondary);
-  EXPECT_FALSE(overview_controller->InOverviewSession());
+    // Next cycle will restore the window.
+    window_state->OnWMEvent(&cycle_snap);
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    EXPECT_TRUE(window_state->IsNormalStateType());
+    EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+  }
+
+  std::unique_ptr<aura::Window> w2(CreateAppWindow());
+  auto* window_state2 = WindowState::Get(w2.get());
+
+  // Snapgroup test.
+  for (auto event_type :
+       {WM_EVENT_CYCLE_SNAP_PRIMARY, WM_EVENT_CYCLE_SNAP_SECONDARY}) {
+    {
+      const WindowSnapWMEvent snap(event_type == WM_EVENT_CYCLE_SNAP_PRIMARY
+                                       ? WM_EVENT_SNAP_SECONDARY
+                                       : WM_EVENT_SNAP_PRIMARY);
+      window_state2->OnWMEvent(&snap);
+      EXPECT_EQ(window_state2->GetStateType(),
+                event_type == WM_EVENT_CYCLE_SNAP_PRIMARY
+                    ? chromeos::WindowStateType::kSecondarySnapped
+                    : chromeos::WindowStateType::kPrimarySnapped);
+    }
+
+    auto state_type = event_type == WM_EVENT_CYCLE_SNAP_PRIMARY
+                          ? chromeos::WindowStateType::kPrimarySnapped
+                          : chromeos::WindowStateType::kSecondarySnapped;
+    // Cycle snap to the left.
+    const WindowSnapWMEvent cycle_snap(event_type);
+    window_state->OnWMEvent(&cycle_snap);
+    auto* overview_controller = Shell::Get()->overview_controller();
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    EXPECT_EQ(window_state->GetStateType(), state_type);
+    EXPECT_TRUE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+
+    // Next cycle will remove snap group.
+    window_state->OnWMEvent(&cycle_snap);
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    EXPECT_EQ(window_state->GetStateType(), state_type);
+    EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+
+    // Next cycle will restore the window.
+    window_state->OnWMEvent(&cycle_snap);
+    EXPECT_FALSE(overview_controller->InOverviewSession());
+    EXPECT_TRUE(window_state->IsNormalStateType());
+    EXPECT_FALSE(snap_group_controller->GetSnapGroupForGivenWindow(w1.get()));
+  }
 }
 
 TEST_F(FasterSplitScreenTest, EndSplitViewOverviewSession) {

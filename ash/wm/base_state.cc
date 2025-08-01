@@ -35,8 +35,9 @@ BaseState::~BaseState() = default;
 void BaseState::OnWMEvent(WindowState* window_state, const WMEvent* event) {
   if (event->IsWorkspaceEvent()) {
     HandleWorkspaceEvents(window_state, event);
-    if (window_state->IsSnapped() && !window_state->CanSnap())
+    if (window_state->IsSnapped() && !window_state->CanSnap()) {
       window_state->Restore();
+    }
     return;
   }
   if ((window_state->IsTrustedPinned() || window_state->IsPinned()) &&
@@ -146,11 +147,20 @@ void BaseState::CycleSnap(WindowState* window_state, WMEventType event) {
                                    : IDS_WM_SNAP_WINDOW_TO_RIGHT_ON_SHORTCUT);
     return;
   }
-  // If |window| is already in |desired_snap_state|, then unsnap |window|.
+  // If |window| is in a snap group, ungroup it. If it's not in a snap group and
+  // it's already snapped, restore it.
   if (window_state->IsSnapped()) {
-    window_state->Restore();
-    window_state->ReadOutWindowCycleSnapAction(
-        IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT);
+    auto* snap_group_controller = Shell::Get()->snap_group_controller();
+    auto* snap_group = snap_group_controller->GetSnapGroupForGivenWindow(
+        window_state->window());
+    if (snap_group) {
+      snap_group_controller->RemoveSnapGroup(
+          snap_group, SnapGroupExitPoint::kToggleSnapGroupAccelerator);
+    } else {
+      window_state->Restore();
+      window_state->ReadOutWindowCycleSnapAction(
+          IDS_WM_RESTORE_SNAPPED_WINDOW_ON_SHORTCUT);
+    }
     return;
   }
   // If |window| cannot be snapped, then do a window bounce animation.
