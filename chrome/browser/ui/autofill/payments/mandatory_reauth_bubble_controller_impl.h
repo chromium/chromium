@@ -30,9 +30,10 @@ class MandatoryReauthBubbleControllerImpl
       const MandatoryReauthBubbleControllerImpl&) = delete;
   ~MandatoryReauthBubbleControllerImpl() override;
 
-  void ShowBubble(base::OnceClosure accept_mandatory_reauth_callback,
-                  base::OnceClosure cancel_mandatory_reauth_callback,
-                  base::RepeatingClosure close_mandatory_reauth_callback);
+  void SetupAndShowBubble(
+      base::OnceClosure accept_mandatory_reauth_callback,
+      base::OnceClosure cancel_mandatory_reauth_callback,
+      base::RepeatingClosure close_mandatory_reauth_callback);
   void ReshowBubble();
 
   // MandatoryReauthBubbleController:

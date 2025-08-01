@@ -177,7 +177,7 @@ class SaveCardBubbleControllerImpl
   friend class SaveCardBubbleViewsFullFormBrowserTest;
 
   // Displays both the offer-to-save bubble and is associated omnibox icon.
-  void ShowBubble();
+  void SetupAndShowBubble();
 
   // Displays the omnibox icon without popping up the offer-to-save bubble.
   void ShowIconOnly();

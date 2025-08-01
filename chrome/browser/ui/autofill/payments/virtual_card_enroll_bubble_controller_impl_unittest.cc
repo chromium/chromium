@@ -157,7 +157,7 @@ class VirtualCardEnrollBubbleControllerImplBubbleViewTest
   }
 
   void ShowBubble() {
-    controller()->ShowBubble(
+    controller()->SetupAndShowBubble(
         virtual_card_enrollment_fields(),
         /*accept_virtual_card_callback=*/base::DoNothing(),
         /*decline_virtual_card_callback=*/base::DoNothing());

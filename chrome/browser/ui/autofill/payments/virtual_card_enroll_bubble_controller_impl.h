@@ -42,7 +42,7 @@ class VirtualCardEnrollBubbleControllerImpl
   // Displays both the virtual card enroll bubble and its associated omnibox
   // icon. Sets virtual card enrollment fields as well as the closure for the
   // accept and decline bubble events.
-  void ShowBubble(
+  void SetupAndShowBubble(
       const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
       base::OnceClosure accept_virtual_card_callback,
       base::OnceClosure decline_virtual_card_callback);

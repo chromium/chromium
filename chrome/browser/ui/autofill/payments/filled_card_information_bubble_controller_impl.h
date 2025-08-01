@@ -34,7 +34,7 @@ class FilledCardInformationBubbleControllerImpl
       const FilledCardInformationBubbleControllerImpl&) = delete;
 
   // Show the bubble view.
-  void ShowBubble(const FilledCardInformationBubbleOptions& options);
+  void SetupAndShowBubble(const FilledCardInformationBubbleOptions& options);
 
   // Invoked when the omnibox icon is clicked.
   void ReshowBubble();

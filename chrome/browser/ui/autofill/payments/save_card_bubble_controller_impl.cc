@@ -113,7 +113,7 @@ void SaveCardBubbleControllerImpl::OfferLocalSave(
           : BubbleType::LOCAL_SAVE;
 
   if (options.show_prompt) {
-    ShowBubble();
+    SetupAndShowBubble();
   } else {
     ShowIconOnly();
   }
@@ -159,7 +159,7 @@ void SaveCardBubbleControllerImpl::OfferUploadSave(
   }
 
   if (options_.show_prompt) {
-    ShowBubble();
+    SetupAndShowBubble();
   } else {
     ShowIconOnly();
   }
@@ -170,7 +170,7 @@ void SaveCardBubbleControllerImpl::ShowBubbleForManageCardsForTesting(
     const CreditCard& card) {
   card_ = card;
   current_bubble_type_ = BubbleType::MANAGE_CARDS;
-  ShowBubble();
+  SetupAndShowBubble();
 }
 
 void SaveCardBubbleControllerImpl::ReshowBubble(
@@ -182,7 +182,7 @@ void SaveCardBubbleControllerImpl::ReshowBubble(
 
   is_reshow_ = true;
   is_triggered_by_user_gesture_ = is_triggered_by_user_gesture;
-  ShowBubble();
+  SetupAndShowBubble();
 }
 
 void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
@@ -204,7 +204,7 @@ void SaveCardBubbleControllerImpl::ShowConfirmationBubbleView(
   on_confirmation_closed_callback_ = std::move(on_confirmation_closed_callback);
 
   // Show upload confirmation bubble.
-  ShowBubble();
+  SetupAndShowBubble();
 
   // Auto close confirmation bubble when card saved is successful.
   if (card_saved) {
@@ -774,7 +774,7 @@ void SaveCardBubbleControllerImpl::DoShowBubble() {
   }
 }
 
-void SaveCardBubbleControllerImpl::ShowBubble() {
+void SaveCardBubbleControllerImpl::SetupAndShowBubble() {
   CHECK(current_bubble_type_ != BubbleType::INACTIVE);
   // Upload save callback should not be null for UPLOAD_SAVE or
   // UPLOAD_CVC_SAVE state.

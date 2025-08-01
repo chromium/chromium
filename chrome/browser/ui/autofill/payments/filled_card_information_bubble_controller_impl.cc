@@ -57,7 +57,7 @@ FilledCardInformationBubbleController::Get(content::WebContents* web_contents) {
 FilledCardInformationBubbleControllerImpl::
     ~FilledCardInformationBubbleControllerImpl() = default;
 
-void FilledCardInformationBubbleControllerImpl::ShowBubble(
+void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
     const FilledCardInformationBubbleOptions& options) {
   // If another bubble is visible, dismiss it and show a new one since the card
   // information can be different.

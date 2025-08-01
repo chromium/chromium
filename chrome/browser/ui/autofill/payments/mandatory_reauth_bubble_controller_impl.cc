@@ -45,7 +45,7 @@ MandatoryReauthBubbleControllerImpl::~MandatoryReauthBubbleControllerImpl() {
 #endif
 }
 
-void MandatoryReauthBubbleControllerImpl::ShowBubble(
+void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
     base::OnceClosure accept_mandatory_reauth_callback,
     base::OnceClosure cancel_mandatory_reauth_callback,
     base::RepeatingClosure close_mandatory_reauth_callback) {

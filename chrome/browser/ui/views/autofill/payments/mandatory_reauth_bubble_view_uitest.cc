@@ -61,8 +61,8 @@ class MandatoryReauthBubbleViewUiTest
 
   void ShowBubble() {
     MandatoryReauthBubbleControllerImpl* controller = GetController();
-    controller->ShowBubble(accept_callback.Get(), cancel_callback.Get(),
-                           close_callback.Get());
+    controller->SetupAndShowBubble(accept_callback.Get(), cancel_callback.Get(),
+                                   close_callback.Get());
     views::test::WidgetVisibleWaiter visible_waiter(
         GetOptInBubbleView()->GetWidget());
     visible_waiter.Wait();

@@ -416,9 +416,9 @@ void ChromePaymentsAutofillClient::ShowVirtualCardEnrollDialog(
   VirtualCardEnrollBubbleControllerImpl* controller =
       VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents());
   DCHECK(controller);
-  controller->ShowBubble(virtual_card_enrollment_fields,
-                         std::move(accept_virtual_card_callback),
-                         std::move(decline_virtual_card_callback));
+  controller->SetupAndShowBubble(virtual_card_enrollment_fields,
+                                 std::move(accept_virtual_card_callback),
+                                 std::move(decline_virtual_card_callback));
 }
 
 void ChromePaymentsAutofillClient::VirtualCardEnrollCompleted(
@@ -473,7 +473,7 @@ void ChromePaymentsAutofillClient::OnCardDataAvailable(
   FilledCardInformationBubbleControllerImpl* controller =
       FilledCardInformationBubbleControllerImpl::FromWebContents(
           web_contents());
-  controller->ShowBubble(options);
+  controller->SetupAndShowBubble(options);
 #endif
 }
 
@@ -788,9 +788,9 @@ void ChromePaymentsAutofillClient::ShowMandatoryReauthOptInPrompt(
     base::RepeatingClosure close_mandatory_reauth_callback) {
   MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
   MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
-      ->ShowBubble(std::move(accept_mandatory_reauth_callback),
-                   std::move(cancel_mandatory_reauth_callback),
-                   std::move(close_mandatory_reauth_callback));
+      ->SetupAndShowBubble(std::move(accept_mandatory_reauth_callback),
+                           std::move(cancel_mandatory_reauth_callback),
+                           std::move(close_mandatory_reauth_callback));
 }
 
 IbanManager* ChromePaymentsAutofillClient::GetIbanManager() {

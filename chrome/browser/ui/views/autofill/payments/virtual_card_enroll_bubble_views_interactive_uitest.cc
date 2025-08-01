@@ -101,7 +101,7 @@ class VirtualCardEnrollBubbleViewsInteractiveUiTest
     test_api(*GetController())
         .SetBubbleShownClosure(bubble_shown_closure_for_testing_);
 
-    GetController()->ShowBubble(
+    GetController()->SetupAndShowBubble(
         virtual_card_enrollment_fields,
         /*accept_virtual_card_callback*/ base::DoNothing(),
         /*decline_virtual_card_callback*/ base::DoNothing());

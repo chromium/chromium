@@ -49,7 +49,7 @@ VirtualCardEnrollBubbleController::GetOrCreate(
   return VirtualCardEnrollBubbleControllerImpl::FromWebContents(web_contents);
 }
 
-void VirtualCardEnrollBubbleControllerImpl::ShowBubble(
+void VirtualCardEnrollBubbleControllerImpl::SetupAndShowBubble(
     const VirtualCardEnrollmentFields& virtual_card_enrollment_fields,
     base::OnceClosure accept_virtual_card_callback,
     base::OnceClosure decline_virtual_card_callback) {

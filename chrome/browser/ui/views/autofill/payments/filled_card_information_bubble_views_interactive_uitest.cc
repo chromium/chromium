@@ -129,7 +129,7 @@ class FilledCardInformationBubbleViewsInteractiveUiTest
     options.filled_card = *filled_card;
     options.cvc = cvc;
     options.card_image = card_image_;
-    GetController()->ShowBubble(options);
+    GetController()->SetupAndShowBubble(options);
     ASSERT_TRUE(event_waiter_->Wait());
   }
 

@@ -49,8 +49,8 @@ class MandatoryReauthBubbleControllerImplTest
   }
 
   void ShowBubble() {
-    controller()->ShowBubble(accept_callback.Get(), cancel_callback.Get(),
-                             close_callback.Get());
+    controller()->SetupAndShowBubble(
+        accept_callback.Get(), cancel_callback.Get(), close_callback.Get());
   }
 
   void ReshowBubble() { controller()->ReshowBubble(); }
