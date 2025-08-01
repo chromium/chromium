@@ -88,6 +88,7 @@ LayerMemberReference CreateLayerMemberReference(
 Study CreateTestStudy(const std::vector<Study::Experiment>& experiments) {
   Study study;
   study.set_name("test_study");
+  study.set_consistency(Study::PERMANENT);
 
   std::vector<Study::Experiment> copied_experiments(experiments);
   for (size_t i = 0; i < copied_experiments.size(); ++i) {
@@ -234,6 +235,26 @@ TEST_F(LimitedEntropyRandomizationTest,
   // Seed should not be rejected since it's not using LIMITED entropy mode.
   EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 10));
 
+  histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
+}
+
+// This is exactly the same test as SeedRejection_EntropyOveruse, below, except
+// that the study has session consistency so it does not consume entropy.
+TEST_F(LimitedEntropyRandomizationTest, SessionConsistency) {
+  // Creates a layer with LIMITED entropy mode that takes 1 bit of entropy from
+  // the layer member.
+  auto test_layer = CreateLayer(
+      /*layer_id=*/kTestLayerId, /*num_slots=*/100,
+      /*entropy_mode=*/Layer::LIMITED,
+      /*layer_members=*/{CreateLayerMember(kTestLayerMemberId, {{0, 49}})});
+  auto test_study = CreateTestStudy(CreateExperimentsWithTwoBitsOfEntropy(),
+                                     CreateLayerMemberReference(
+                                         kTestLayerId, {kTestLayerMemberId}));
+  test_study.set_consistency(Study::SESSION);
+  auto test_seed = CreateTestSeed({test_layer}, {test_study});
+  // Seed should not be rejected since the study is session consistency, which
+  // does not consume entropy.
+  EXPECT_FALSE(SeedHasMisconfiguredEntropy(client_state_, test_seed, 2));
   histogram_tester_.ExpectTotalCount(kSeedRejectionReasonHistogram, 0);
 }
 

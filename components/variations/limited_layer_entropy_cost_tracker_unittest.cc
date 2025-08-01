@@ -79,6 +79,7 @@ Study CreateTestStudy(const std::vector<Study::Experiment>& experiments,
                           layer_member_reference = std::nullopt) {
   Study study;
   study.set_name("test_study");
+  study.set_consistency(Study::PERMANENT);
 
   for (size_t i = 0; i < experiments.size(); ++i) {
     Study_Experiment* experiment_to_add = study.add_experiment();
@@ -459,6 +460,24 @@ TEST_F(LimitedLayerEntropyCostTrackerTest,
 
   EXPECT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(test_study));
   EXPECT_EQ(2, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
+}
+
+TEST_F(LimitedLayerEntropyCostTrackerTest,
+       TestAddEntropyUsedByStudy_SessionConsistency) {
+  std::vector<Study::Experiment> experiments = {
+      CreateTriggerExperiment(25, 100001), CreateTriggerExperiment(25, 100002),
+      CreateExperiment(50)};
+  auto test_layer = CreateLayer(
+      kTestLayerId, /*num_slots=*/100, /*entropy_mode=*/Layer::LIMITED,
+      {CreateLayerMember(kTestLayerMemberId, {{0, 99}})});
+  auto test_study = CreateTestStudy(
+      experiments,
+      CreateLayerMemberReference(kTestLayerId, {kTestLayerMemberId}));
+  test_study.set_consistency(Study::SESSION);
+  LimitedLayerEntropyCostTracker limited_entropy_tracker(test_layer, 13);
+
+  EXPECT_TRUE(limited_entropy_tracker.AddEntropyUsedByStudy(test_study));
+  EXPECT_EQ(0, limited_entropy_tracker.GetMaxEntropyUsedForTesting());
 }
 
 TEST_F(LimitedLayerEntropyCostTrackerTest,

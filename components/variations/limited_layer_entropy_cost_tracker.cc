@@ -34,6 +34,12 @@ double ConvertToBitsOfEntropy(uint64_t numerator, uint64_t denominator) {
 
 // Returns the number of bits of entropy used by a single study.
 double GetEntropyUsedByStudy(const Study& study) {
+  if (study.consistency() == Study::SESSION) {
+    // Session-consistent studies do not consume entropy. They are randomized
+    // for each Chrome browser process' lifetime; they use neither the low
+    // entropy source nor the limited entropy randomization source.
+    return 0.0;
+  }
   // Use uint32_t to match the type of `probability_weight` field in the
   // experiment proto.
   uint32_t min_weight = std::numeric_limits<uint32_t>::max();

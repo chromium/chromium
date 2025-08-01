@@ -121,6 +121,7 @@ VariationsSeed CreateTestSeed() {
   VariationsSeed seed;
   Study* study = seed.add_study();
   study->set_name(kTestSeedStudyName);
+  study->set_consistency(Study::PERMANENT);
   study->set_default_experiment_name(kTestSeedExperimentName);
   Study_Experiment* experiment = study->add_experiment();
   experiment->set_name(kTestSeedExperimentName);
@@ -150,6 +151,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayer() {
 
   auto* study = seed.add_study();
   study->set_name(kTestLimitedLayerStudyName);
+  study->set_consistency(Study::PERMANENT);
 
   auto* experiment = study->add_experiment();
   experiment->set_name(kTestSeedExperimentName);
@@ -188,6 +190,7 @@ VariationsSeed CreateTestSeedWithLimitedEntropyLayerUsingExcessiveEntropy() {
   // Add a study that uses the tiny member.
   Study* study = seed.add_study();
   study->set_name(kTestLimitedLayerStudyName);
+  study->set_consistency(Study::PERMANENT);
   auto* layer_member_reference = study->mutable_layer();
   layer_member_reference->set_layer_id(1);
   layer_member_reference->add_layer_member_ids(1);
