@@ -40,6 +40,11 @@ class CommentsSidePanelCoordinator : public TabStripModelObserver {
       TabStripModel* tab_strip_model,
       const TabStripModelChange& change,
       const TabStripSelectionChange& selection) override;
+  void TabGroupedStateChanged(TabStripModel* tab_strip_model,
+                              std::optional<tab_groups::TabGroupId> old_group,
+                              std::optional<tab_groups::TabGroupId> new_group,
+                              tabs::TabInterface* tab,
+                              int index) override;
 
   // Returns whether CommentsSidePanelCoordinator is supported.
   // If this returns false, it should not be registered with the side
@@ -57,7 +62,10 @@ class CommentsSidePanelCoordinator : public TabStripModelObserver {
 
   // Determine if the comments action should be shown in the toolbar for the
   // active tab.
-  bool ShouldShowCommentsAction(const TabStripSelectionChange& selection);
+  bool ShouldShowCommentsAction(const tabs::TabInterface* tab);
+
+  // Updates the visuals of the comments action and side panel.
+  void UpdateVisuals(const tabs::TabInterface* tab);
 
   // Updates the visibility of the comments action in the toolbar.
   void UpdateCommentsActionVisibility(bool should_show_comments_action);

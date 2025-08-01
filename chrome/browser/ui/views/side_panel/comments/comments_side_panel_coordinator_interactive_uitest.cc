@@ -168,6 +168,34 @@ IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
       WaitForShow(kSharedTabGroupCommentsActionElementId));
 }
 
+// Verify the comments action is shown when a tab is added to a shared group.
+IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,
+                       CommentActionIsVisible_AddingTabToGroup) {
+  tab_groups::TabGroupId group_id = CreateNewTabGroup();
+  ShareTabGroup(group_id, syncer::CollaborationId("fake_collaboration_id"),
+                data_sharing::MemberRole::kOwner, /*should_sign_in=*/false);
+
+  // Simplest way to add a tab to group is to add the tab at the beginning of
+  // the tab strip and drag it to group header to its right.
+  EXPECT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
+  const int ungrouped_tab_index = 0;
+
+  browser()->tab_strip_model()->ActivateTabAt(ungrouped_tab_index);
+
+  RunTestSequence(WaitForShow(kTabGroupHeaderElementId),
+                  EnsureNotPresent(kSharedTabGroupCommentsActionElementId),
+                  HoverTabAt(ungrouped_tab_index),
+                  DragMouseTo(kTabGroupHeaderElementId), Do([&]() {
+                    // Verify the tab was added to the group.
+                    TabGroupModel* tab_group_model =
+                        browser()->tab_strip_model()->group_model();
+                    EXPECT_EQ(
+                        tab_group_model->GetTabGroup(group_id)->tab_count(), 2);
+                  }),
+                  WaitForShow(kSharedTabGroupCommentsActionElementId));
+}
+
 // Verify the comments side panel will resume visilibity when switching to a
 // non-shared tab and back.
 IN_PROC_BROWSER_TEST_F(CommentsSidePanelCoordinatorInteractiveUiTest,

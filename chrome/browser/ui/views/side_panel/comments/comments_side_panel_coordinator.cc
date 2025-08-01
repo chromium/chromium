@@ -49,28 +49,49 @@ void CommentsSidePanelCoordinator::OnTabStripModelChanged(
     TabStripModel* tab_strip_model,
     const TabStripModelChange& change,
     const TabStripSelectionChange& selection) {
-  // TODO(crbug.com/433773768): This should also handle when the current tab
-  // group becomes shared or when the active tab is added to a shared group.
-  if (selection.active_tab_changed()) {
-    // Only update the title if change contains a new tab.
-    if (selection.new_tab) {
-      UpdateSidePanelTitle(GetSharedTabGroupName(selection.new_tab));
-    }
-
-    const bool should_show_comments_action =
-        ShouldShowCommentsAction(selection);
-    UpdateCommentsActionVisibility(should_show_comments_action);
-    UpdateCommentsSidePanelVisibility(should_show_comments_action);
+  // Only handle changing the active tab.
+  if (!selection.active_tab_changed()) {
+    return;
   }
+
+  UpdateVisuals(selection.new_tab);
+}
+
+void CommentsSidePanelCoordinator::TabGroupedStateChanged(
+    TabStripModel* tab_strip_model,
+    std::optional<tab_groups::TabGroupId> old_group,
+    std::optional<tab_groups::TabGroupId> new_group,
+    tabs::TabInterface* tab,
+    int index) {
+  // Only handle group changes to the active tab.
+  if (!tab->IsActivated() || old_group == new_group) {
+    return;
+  }
+
+  UpdateVisuals(tab);
+}
+
+// TODO(crbug.com/433773768): This should also be called when the current tab
+// group becomes shared/unshared.
+void CommentsSidePanelCoordinator::UpdateVisuals(
+    const tabs::TabInterface* tab) {
+  // Only update the title if change contains a new tab.
+  if (tab) {
+    UpdateSidePanelTitle(GetSharedTabGroupName(tab));
+  }
+
+  const bool should_show_comments_action = ShouldShowCommentsAction(tab);
+  UpdateCommentsActionVisibility(should_show_comments_action);
+  UpdateCommentsSidePanelVisibility(should_show_comments_action);
 }
 
 bool CommentsSidePanelCoordinator::ShouldShowCommentsAction(
-    const TabStripSelectionChange& selection) {
-  if (!selection.new_tab) {
+    const tabs::TabInterface* tab) {
+  if (!tab) {
     return false;
   }
 
-  std::optional<tab_groups::TabGroupId> group = selection.new_tab->GetGroup();
+  std::optional<tab_groups::TabGroupId> group = tab->GetGroup();
   if (!group.has_value()) {
     return false;
   }
