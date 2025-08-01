@@ -49,6 +49,10 @@
 //    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
 //    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
 
+// Mapping to some Rust conditionals:
+//
+// * `#[cfg(unix)]` ~= `BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)`
+
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
 
