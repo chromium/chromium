@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/check.h"
+#include "base/containers/fixed_flat_set.h"
 #include "base/debug/crash_logging.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -257,36 +258,70 @@ net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
 
   std::optional<std::string> proxy_status_header_value =
       response_headers.GetNormalizedHeader("Proxy-Status");
-  if (proxy_status_header_value) {
-    std::optional<net::structured_headers::List> proxy_status_list =
-        net::structured_headers::ParseList(*proxy_status_header_value);
-    if (proxy_status_list) {
-      for (const auto& p_member : *proxy_status_list) {
-        if (p_member.member_is_inner_list) {
-          continue;
-        }
-        for (const auto& param : p_member.params) {
-          if (param.first == "error" && param.second.is_token()) {
-            const std::string& error_val = param.second.GetString();
+  if (!proxy_status_header_value) {
+    return net::ERR_PROXY_TUNNEL_REQUEST_FAILED;
+  }
 
-            // These RFC 9209 errors indicate a destination-side problem.
-            // For these, we should NOT fall back.
-            // TODO(crbug.com/435482005): The handling of "dns_error" can
-            // be more granular.
-            if (error_val == "dns_timeout" || error_val == "dns_error" ||
-                error_val == "destination_not_found" ||
-                error_val == "destination_unavailable" ||
-                error_val == "destination_ip_unroutable" ||
-                error_val == "connection_refused" ||
-                error_val == "connection_terminated" ||
-                error_val == "connection_timeout" ||
-                error_val == "proxy_loop_detected") {
-              return net::ERR_TUNNEL_CONNECTION_FAILED;
-            }
-          }
-        }
+  std::optional<net::structured_headers::List> proxy_status_list =
+      net::structured_headers::ParseList(*proxy_status_header_value);
+  if (!proxy_status_list) {
+    return net::ERR_PROXY_TUNNEL_REQUEST_FAILED;
+  }
+
+  net::structured_headers::List parsed_list = proxy_status_list.value();
+  // For IP Protection there will only ever be one proxy server per connection,
+  // so there should only ever be one element in the list corresponding to that
+  // proxy server. Even for the connection to Proxy B, this request is not
+  // visible by Proxy A and thus the Proxy-Status header can't be modified by
+  // it.
+  if (parsed_list.size() != 1) {
+    return net::ERR_PROXY_TUNNEL_REQUEST_FAILED;
+  }
+  const net::structured_headers::ParameterizedMember& p_member = parsed_list[0];
+  // `p_member` can either be a single Item or an inner list, and we expect the
+  // format here for this Proxy-Status header to be considered valid.
+  if (p_member.member_is_inner_list) {
+    return net::ERR_PROXY_TUNNEL_REQUEST_FAILED;
+  }
+
+  bool error_is_dns_error = false;
+  bool rcode_is_nxdomain = false;
+  for (const auto& [name, item] : p_member.params) {
+    if (name == "error" && item.is_token()) {
+      static constexpr auto kDestinationErrors =
+          base::MakeFixedFlatSet<std::string_view>({
+              "dns_timeout",
+              "destination_not_found",
+              "destination_unavailable",
+              "destination_ip_unroutable",
+              "connection_refused",
+              "connection_terminated",
+              "connection_timeout",
+              "proxy_loop_detected",
+          });
+      const std::string& error_val = item.GetString();
+      // These RFC 9209 errors indicate a destination-side problem.
+      // For these, we should NOT fall back.
+      if (kDestinationErrors.contains(error_val)) {
+        return net::ERR_TUNNEL_CONNECTION_FAILED;
       }
+      if (error_val == "dns_error") {
+        error_is_dns_error = true;
+      }
+      continue;
     }
+    // TODO(crbug.com/435524190): We can enforce that the value is a string
+    // type once all proxy B providers adhere to the spec for this.
+    if (name == "rcode" && (item.is_token() || item.is_string())) {
+      const std::string& rcode_val = item.GetString();
+      if (rcode_val == "NXDOMAIN") {
+        rcode_is_nxdomain = true;
+      }
+      continue;
+    }
+  }
+  if (error_is_dns_error && rcode_is_nxdomain) {
+    return net::ERR_TUNNEL_CONNECTION_FAILED;
   }
 
   // If no specific destination error was found, we assume it's a proxy

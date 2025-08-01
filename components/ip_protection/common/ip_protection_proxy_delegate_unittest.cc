@@ -1559,13 +1559,93 @@ TEST_F(IpProtectionProxyDelegateTest,
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(
           "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
-          "error=\"dns_error\"\n"));
+          "error=dns_error\n"));
 
   // For non-IPP chains, the delegate should return `net::OK` to allow the
   // default network stack handling to process the response.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(non_ipp_chain,
                                                 /*chain_index=*/0, *headers),
               IsOk());
+}
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsProxyTunnelConnectionFailedForBareDnsError) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
+          "error=dns_error\n"));
+
+  // We should treat dns_error without a corresponding rcode field as needing
+  // fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
+}
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsProxyTunnelConnectionFailedForDnsServFail) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
+          "error=dns_error;rcode=\"SERVFAIL\"\n"));
+
+  // All rcodes except NXDOMAIN indicate server failure and should trigger
+  // fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnTunnelHeadersReceivedReturnsTunnelConnectionFailedForDnsNxdomain) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
+          "error=dns_error;rcode=\"NXDOMAIN\"\n"));
+
+  // An NXDOMAIN rcode should not trigger fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
+}
+
+// TODO(crbug.com/435524190): Can remove this test once we remove the
+// corresponding logic in `OnTunnelHeadersReceived()`.
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsTunnelConnectionFailedForDnsNxdomainToken) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
+          "error=dns_error;rcode=NXDOMAIN\n"));
+
+  // An NXDOMAIN rcode should not trigger fallback even if the value is a token
+  // instead of a string.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
 }
 
 TEST_F(
@@ -1672,14 +1752,16 @@ TEST_P(IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
                          testing::Values("dns_timeout",
-                                         "dns_error",
                                          "destination_not_found",
                                          "destination_unavailable",
                                          "destination_ip_unroutable",
                                          "connection_refused",
                                          "connection_terminated",
                                          "connection_timeout",
-                                         "proxy_loop_detected"));
+                                         "proxy_loop_detected"),
+                         [](const testing::TestParamInfo<const char*>& info) {
+                           return info.param;
+                         });
 
 TEST_F(
     IpProtectionProxyDelegateTest,
@@ -1692,13 +1774,13 @@ TEST_F(
   auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(
           "HTTP/1.1 502 Bad Gateway\n"
-          "Proxy-Status: PxyA; info=\"ok\", PxyB; error=dns_error\n"));
+          "Proxy-Status: PxyA; info=\"ok\", Invalid; error=dns_error\n"));
 
-  // As long as one of the entries indicates a destination error, we should not
-  // fall back.
+  // For IP Protection there is only ever one proxy in the path for any given
+  // connection, so treat multiple entities in the Proxy-Status line as invalid.
   EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
                                                 /*chain_index=*/0, *headers),
-              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
 }
 
 }  // namespace ip_protection
