@@ -1321,6 +1321,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigrationDialog.CloseReason"
+    enum="DiceMigrationDialogCloseReason" expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the reason why the DICe migration dialog was closed. This is
+    recorded only once per dialog.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceResponseHeader" enum="SigninDiceResponseHeader"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the Dice feature and for troubleshooting.  -->

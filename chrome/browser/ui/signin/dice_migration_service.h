@@ -51,6 +51,25 @@ class DiceMigrationService : public KeyedService,
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAcceptButtonElementId);
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kCancelButtonElementId);
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(DialogCloseReason)
+  enum class DialogCloseReason {
+    kUnspecified = 0,  // The dialog was closed without a specific reason, most
+                       // likely to be a browser shutdown.
+    kAccepted = 1,
+    kCancelled = 2,
+    kClosed = 3,
+    kEscKeyPressed = 4,
+    kPrimaryAccountCleared = 5,
+    kPrimaryAccountChanged = 6,
+    kAvatarButtonClicked = 7,
+    kServiceDestroyed = 8,
+    kMaxValue = kServiceDestroyed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceMigrationDialogCloseReason)
+
   // `task_runner` is used to schedule the dialog trigger timer during testing.
   explicit DiceMigrationService(Profile* profile,
                                 scoped_refptr<base::SingleThreadTaskRunner>
@@ -74,15 +93,10 @@ class DiceMigrationService : public KeyedService,
   // `signin::IdentityManager::Observer`:
   void OnPrimaryAccountChanged(
       const signin::PrimaryAccountChangeEvent& event) override;
-  void OnErrorStateOfRefreshTokenUpdatedForAccount(
-      const CoreAccountInfo& account_info,
-      const GoogleServiceAuthError& error,
-      signin_metrics::SourceForRefreshTokenOperation token_operation_source)
-      override;
 
   void OnTimerFinishOrAccountManagedStatusKnown();
 
-  void StopTimerOrCloseDialog();
+  void StopTimerOrCloseDialog(DialogCloseReason reason);
 
   // Shows the Dice migration offer dialog if the user is eligible for it.
   void ShowDiceMigrationOfferDialogIfUserEligible();
@@ -113,6 +127,9 @@ class DiceMigrationService : public KeyedService,
 
   // Observes the avatar button to close the dialog when it is clicked.
   std::unique_ptr<AvatarButtonObserver> avatar_button_observer_;
+
+  // This stores the reason why the dialog was manually closed by the service.
+  std::optional<DialogCloseReason> dialog_close_reason_;
 };
 
 #endif  // CHROME_BROWSER_UI_SIGNIN_DICE_MIGRATION_SERVICE_H_

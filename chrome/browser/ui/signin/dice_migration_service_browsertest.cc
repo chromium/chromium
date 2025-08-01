@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "chrome/browser/enterprise/util/managed_browser_utils.h"
@@ -34,6 +35,9 @@ namespace {
 constexpr char kTestEmail[] = "test@gmail.com";
 constexpr char kEnterpriseTestEmail[] = "test@google.com";
 constexpr char kIndeterminableTestEmail[] = "test@indeterminable.com";
+
+constexpr char kDiceMigrationDialogCloseReasonHistogram[] =
+    "Signin.DiceMigrationDialog.CloseReason";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
@@ -103,10 +107,11 @@ class DiceMigrationServiceBrowserTest : public InProcessBrowserTest {
         ->GetAvatarToolbarButton();
   }
 
- private:
-  base::ScopedClosureRunner disclaimer_service_resetter_;
-  base::test::ScopedFeatureList scoped_feature_list_{
+ protected:
+  const base::test::ScopedFeatureList scoped_feature_list_{
       switches::kOfferMigrationToDiceUsers};
+  base::ScopedClosureRunner disclaimer_service_resetter_;
+  base::HistogramTester histogram_tester_;
 };
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, NotSignedIn) {
@@ -309,9 +314,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount), 1);
 
   views::test::WidgetDestroyedWaiter waiter(widget);
-  // Simulate the dialog being closed without any shown.
-  GetDiceMigrationService()->GetDialogWidgetForTesting()->CloseWithReason(
-      views::Widget::ClosedReason::kUnspecified);
+  // Simulate the dialog being closed without any user interaction.
+  signin::ClearPrimaryAccount(GetIdentityManager());
   waiter.Wait();
 
   // The dialog shown count is not incremented.
@@ -527,11 +531,16 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   ASSERT_TRUE(dialog_widget);
 
   views::test::WidgetDestroyedWaiter waiter(dialog_widget);
-  // Simulate a persistent auth error.
+  // Simulate a persistent auth error. This should cause the implicitly
+  // signed-in account to be removed, thereby becoming similar to the case of
+  // the user signing out.
   signin::SetInvalidRefreshTokenForPrimaryAccount(GetIdentityManager());
   waiter.Wait();
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kDiceMigrationDialogCloseReasonHistogram,
+      DiceMigrationService::DialogCloseReason::kPrimaryAccountCleared, 1);
 }
 
 // This can happen due to race condition between the timer firing and the dialog
@@ -589,6 +598,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, CloseDialogUponSignout) {
   waiter.Wait();
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kDiceMigrationDialogCloseReasonHistogram,
+      DiceMigrationService::DialogCloseReason::kPrimaryAccountCleared, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -620,6 +632,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   waiter.Wait();
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kDiceMigrationDialogCloseReasonHistogram,
+      DiceMigrationService::DialogCloseReason::kPrimaryAccountChanged, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -637,6 +652,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   waiter.Wait();
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+  histogram_tester_.ExpectUniqueSample(
+      kDiceMigrationDialogCloseReasonHistogram,
+      DiceMigrationService::DialogCloseReason::kAvatarButtonClicked, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -651,6 +669,28 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   views::Widget* dialog_widget =
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(dialog_widget);
+
+  histogram_tester_.ExpectTotalCount(kDiceMigrationDialogCloseReasonHistogram,
+                                     0);
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      CloseDialogUponBrowserClose) {
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  views::Widget* dialog_widget =
+      GetDiceMigrationService()->GetDialogWidgetForTesting();
+  ASSERT_TRUE(dialog_widget);
+
+  views::test::WidgetDestroyedWaiter waiter(dialog_widget);
+  // Browser is closed.
+  CloseBrowserAsynchronously(browser());
+  waiter.Wait();
+
+  histogram_tester_.ExpectUniqueSample(
+      kDiceMigrationDialogCloseReasonHistogram,
+      DiceMigrationService::DialogCloseReason::kUnspecified, 1);
 }
 
 class DiceMigrationServiceSyncTest : public SyncTest {

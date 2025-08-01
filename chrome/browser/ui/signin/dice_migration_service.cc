@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/signin/dice_migration_service.h"
 
 #include "base/check_is_test.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_avatar_icon_util.h"
@@ -39,6 +40,13 @@ namespace {
 
 constexpr char kHelpCenterUrl[] =
     "https://support.google.com/chrome/answer/185277";
+
+constexpr char kDialogCloseReasonHistogram[] =
+    "Signin.DiceMigrationDialog.CloseReason";
+
+void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
+  base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
+}
 
 void OnHelpCenterLinkClicked(Browser* browser) {
   browser->OpenGURL(GURL(kHelpCenterUrl),
@@ -144,8 +152,8 @@ class DiceMigrationService::AvatarButtonObserver
   // `AvatarToolbarButton::Observer`:
   void OnButtonPressed() override {
     CHECK(dice_migration_service_->dialog_widget_);
-    dice_migration_service_->dialog_widget_->CloseWithReason(
-        views::Widget::ClosedReason::kUnspecified);
+    dice_migration_service_->StopTimerOrCloseDialog(
+        DialogCloseReason::kAvatarButtonClicked);
     avatar_button_observation_.Reset();
   }
 
@@ -196,7 +204,9 @@ DiceMigrationService::DiceMigrationService(
 }
 
 DiceMigrationService::~DiceMigrationService() {
-  StopTimerOrCloseDialog();
+  // Most likely a no-op since the dialog gets closed before this during browser
+  // shutdown.
+  StopTimerOrCloseDialog(DialogCloseReason::kServiceDestroyed);
 }
 
 // static
@@ -294,14 +304,16 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
   dialog_widget_ = nullptr;
   Browser* browser = browser_.get();
   browser_.reset();
-  // TODO(crbug.com/399838468): Add actions for the different close reasons.
   switch (widget->closed_reason()) {
     // Losing focus should not close the dialog.
     case views::Widget::ClosedReason::kLostFocus:
       NOTREACHED();
     case views::Widget::ClosedReason::kUnspecified:
+      LogDialogCloseReason(
+          dialog_close_reason_.value_or(DialogCloseReason::kUnspecified));
       return;
     case views::Widget::ClosedReason::kAcceptButtonClicked:
+      LogDialogCloseReason(DialogCloseReason::kAccepted);
       if (MaybeMigrateUser(profile_) && browser) {
         MaybeShowToast(browser);
       }
@@ -309,12 +321,15 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
     case views::Widget::ClosedReason::kCancelButtonClicked:
       // Cancel button is only available in the non-"final" variant.
       CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount - 1);
+      LogDialogCloseReason(DialogCloseReason::kCancelled);
       break;
     case views::Widget::ClosedReason::kCloseButtonClicked:
       // Close button is only available in the "final" variant.
       CHECK_EQ(GetDialogShownCount(), kMaxDialogShownCount - 1);
+      LogDialogCloseReason(DialogCloseReason::kClosed);
       break;
     case views::Widget::ClosedReason::kEscKeyPressed:
+      LogDialogCloseReason(DialogCloseReason::kEscKeyPressed);
       break;
   }
   // The dialog is considered shown if the user interacts with it, i.e. the user
@@ -328,24 +343,16 @@ void DiceMigrationService::OnPrimaryAccountChanged(
     const signin::PrimaryAccountChangeEvent& event) {
   switch (event.GetEventTypeFor(signin::ConsentLevel::kSignin)) {
     case signin::PrimaryAccountChangeEvent::Type::kSet:
+      CHECK_EQ(primary_account_info_, event.GetPreviousState().primary_account);
+      StopTimerOrCloseDialog(DialogCloseReason::kPrimaryAccountChanged);
+      break;
     case signin::PrimaryAccountChangeEvent::Type::kCleared:
       CHECK_EQ(primary_account_info_, event.GetPreviousState().primary_account);
-      StopTimerOrCloseDialog();
+      StopTimerOrCloseDialog(DialogCloseReason::kPrimaryAccountCleared);
       break;
     case signin::PrimaryAccountChangeEvent::Type::kNone:
       CHECK_EQ(primary_account_info_, event.GetCurrentState().primary_account);
       break;
-  }
-}
-
-void DiceMigrationService::OnErrorStateOfRefreshTokenUpdatedForAccount(
-    const CoreAccountInfo& account_info,
-    const GoogleServiceAuthError& error,
-    signin_metrics::SourceForRefreshTokenOperation token_operation_source) {
-  if (account_info == primary_account_info_ && error.IsPersistentError()) {
-    // The user is in persistent error state. As soon as the user re-auths, they
-    // will enter the explicitly signed in state.
-    StopTimerOrCloseDialog();
   }
 }
 
@@ -372,10 +379,12 @@ void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
   }
 }
 
-void DiceMigrationService::StopTimerOrCloseDialog() {
+void DiceMigrationService::StopTimerOrCloseDialog(
+    DiceMigrationService::DialogCloseReason reason) {
   CHECK(!dialog_trigger_timer_.IsRunning() || !dialog_widget_);
   identity_manager_observation_.Reset();
   if (dialog_widget_) {
+    dialog_close_reason_ = reason;
     dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   } else if (dialog_trigger_timer_.IsRunning()) {
     dialog_trigger_timer_.Stop();

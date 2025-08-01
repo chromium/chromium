@@ -379,6 +379,22 @@ chromium-metrics-reviews@google.com.
 
 <!-- LINT.ThenChange(//chrome/browser/ui/signin/chrome_signout_confirmation_prompt.h:ChromeSignoutConfirmationChoice) -->
 
+<!-- LINT.IfChange(DiceMigrationDialogCloseReason) -->
+
+<enum name="DiceMigrationDialogCloseReason">
+  <int value="0" label="Unspecified (likely browser shutdown)"/>
+  <int value="1" label="Accepted"/>
+  <int value="2" label="Cancelled"/>
+  <int value="3" label="Closed"/>
+  <int value="4" label="Esc key pressed"/>
+  <int value="5" label="Primary account cleared"/>
+  <int value="6" label="Primary account changed"/>
+  <int value="7" label="Avatar button clicked"/>
+  <int value="8" label="Service destroyed"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/browser/ui/signin/dice_migration_service.h:DialogCloseReason) -->
+
 <!-- LINT.IfChange(DiceTokenBindingOutcome) -->
 
 <enum name="DiceTokenBindingOutcome">
