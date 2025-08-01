@@ -76,8 +76,10 @@ PreresolveJob::PreresolveJob(
           std::move(connection_change_observer_client)),
       info(info),
       creation_time(base::TimeTicks::Now()) {
-  DCHECK_GE(num_sockets, 0);
-  DCHECK(!this->network_anonymization_key.IsEmpty());
+  CHECK_GE(num_sockets, 0);
+
+  CHECK(!this->network_anonymization_key.IsEmpty() ||
+        !net::NetworkAnonymizationKey::IsPartitioningEnabled());
 }
 
 PreresolveJob::PreresolveJob(

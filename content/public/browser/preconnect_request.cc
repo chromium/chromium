@@ -13,8 +13,9 @@ PreconnectRequest::PreconnectRequest(
     : origin(origin),
       num_sockets(num_sockets),
       network_anonymization_key(network_anonymization_key) {
-  DCHECK_GE(num_sockets, 0);
-  DCHECK(!network_anonymization_key.IsEmpty());
+  CHECK_GE(num_sockets, 0);
+  CHECK(!network_anonymization_key.IsEmpty() ||
+        !net::NetworkAnonymizationKey::IsPartitioningEnabled());
 }
 
 }  // namespace content
