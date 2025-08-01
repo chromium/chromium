@@ -178,7 +178,7 @@ public class ReaderModeActionProvider implements ContextualPageActionController.
     }
 
     @Override
-    public void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {
+    public void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {
         if (tab == null || tab.isLoading()) return;
         final boolean isReaderMode =
                 action == AdaptiveToolbarButtonVariant.READER_MODE

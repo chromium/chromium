@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.segmentation_platform;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.os.Handler;
 import android.os.Looper;
 
@@ -16,6 +18,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.bookmarks.BookmarkModel;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.CurrentTabObserver;
@@ -39,6 +43,7 @@ import java.util.function.BooleanSupplier;
  * segmentation platform for on-demand model execution on page load triggers. Provides updated
  * button data to the toolbar when asked for it.
  */
+@NullMarked
 public class ContextualPageActionController {
     /**
      * The interface to be implemented by the individual feature backends to provide signals
@@ -60,17 +65,17 @@ public class ContextualPageActionController {
          * @param tab The current tab for which the action was shown.
          * @param action Enum value of the action shown.
          */
-        default void onActionShown(Tab tab, @AdaptiveToolbarButtonVariant int action) {}
+        default void onActionShown(@Nullable Tab tab, @AdaptiveToolbarButtonVariant int action) {}
 
         @Override
         default void destroy() {}
     }
 
     private final ObservableSupplier<Profile> mProfileSupplier;
-    private final ObservableSupplier<Tab> mTabSupplier;
+    private final ObservableSupplier<@Nullable Tab> mTabSupplier;
     private final AdaptiveToolbarButtonController mAdaptiveToolbarButtonController;
-    private CurrentTabObserver mCurrentTabObserver;
-    private SignalAccumulator mSignalAccumulator;
+    private @Nullable CurrentTabObserver mCurrentTabObserver;
+    private @Nullable SignalAccumulator mSignalAccumulator;
     private BooleanSupplier mButtonVisibilitySupplier = () -> true;
 
     // The action provider backends.
@@ -86,7 +91,7 @@ public class ContextualPageActionController {
      */
     public ContextualPageActionController(
             ObservableSupplier<Profile> profileSupplier,
-            ObservableSupplier<Tab> tabSupplier,
+            ObservableSupplier<@Nullable Tab> tabSupplier,
             AdaptiveToolbarButtonController adaptiveToolbarButtonController,
             Supplier<ShoppingService> shoppingServiceSupplier,
             Supplier<BookmarkModel> bookmarkModelSupplier) {
@@ -154,15 +159,16 @@ public class ContextualPageActionController {
                     new DiscountsActionProvider(shoppingServiceSupplier));
         }
         if (AdaptiveToolbarFeatures.isTabGroupingPageActionEnabled()) {
-            Supplier<GroupSuggestionsButtonController> groupSuggestionButtonControllerSupplier =
-                    () -> {
-                        if (!mProfileSupplier.hasValue()
-                                || mProfileSupplier.get().isOffTheRecord()) {
-                            return null;
-                        }
-                        return GroupSuggestionsButtonControllerFactory.getForProfile(
-                                mProfileSupplier.get());
-                    };
+            Supplier<@Nullable GroupSuggestionsButtonController>
+                    groupSuggestionButtonControllerSupplier =
+                            () -> {
+                                if (!mProfileSupplier.hasValue()
+                                        || mProfileSupplier.get().isOffTheRecord()) {
+                                    return null;
+                                }
+                                return GroupSuggestionsButtonControllerFactory.getForProfile(
+                                        mProfileSupplier.get());
+                            };
             mActionProviders.put(
                     AdaptiveToolbarButtonVariant.TAB_GROUPING,
                     new TabGroupingActionProvider(groupSuggestionButtonControllerSupplier));
@@ -195,7 +201,7 @@ public class ContextualPageActionController {
         mActionProviders.clear();
     }
 
-    private void activeTabChanged(Tab tab) {
+    private void activeTabChanged(@Nullable Tab tab) {
         // If the tab is loading or if it's going to load later then we'll also get a call to
         // onPageLoadFinished.
         if (tab != null && !tab.isLoading() && !tab.isFrozen()) {
@@ -224,6 +230,7 @@ public class ContextualPageActionController {
         Tab tab = getValidActiveTab();
         if (tab == null) return;
         InputContext inputContext = new InputContext();
+        assumeNonNull(mSignalAccumulator);
         inputContext.addEntry(
                 Constants.CONTEXTUAL_PAGE_ACTIONS_PRICE_TRACKING_INPUT,
                 ProcessedValue.fromFloat(
@@ -282,7 +289,7 @@ public class ContextualPageActionController {
     }
 
     /** @return The active regular tab. Null for incognito. */
-    private Tab getValidActiveTab() {
+    private @Nullable Tab getValidActiveTab() {
         if (mProfileSupplier == null || mProfileSupplier.get().isOffTheRecord()) return null;
         Tab tab = mTabSupplier.get();
         if (tab == null || tab.isIncognito() || tab.isDestroyed()) return null;

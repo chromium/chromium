@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.segmentation_platform;
 
 import org.chromium.base.supplier.Supplier;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.toolbar.adaptive.AdaptiveToolbarButtonVariant;
 import org.chromium.components.commerce.core.ShoppingService;
@@ -12,6 +14,7 @@ import org.chromium.components.commerce.core.ShoppingService.PriceInsightsInfo;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 
 /** Provides price insights signal for showing contextual page action for a given tab. */
+@NullMarked
 public class PriceInsightsActionProvider implements ContextualPageActionController.ActionProvider {
     private final Supplier<ShoppingService> mShoppingServiceSupplier;
 
@@ -41,7 +44,7 @@ public class PriceInsightsActionProvider implements ContextualPageActionControll
                 });
     }
 
-    private boolean hasPriceInsightsInfoData(PriceInsightsInfo info) {
+    private boolean hasPriceInsightsInfoData(@Nullable PriceInsightsInfo info) {
         return info != null
                 && !info.currencyCode.isEmpty()
                 && info.catalogHistoryPrices != null
