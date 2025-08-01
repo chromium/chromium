@@ -195,7 +195,7 @@ SafariDataImporter::SafariDataImporter(
     bookmarks::BookmarkModel* bookmark_model,
     ReadingListModel* reading_list_model,
     syncer::SyncService* sync_service,
-    scoped_refptr<BookmarkParser> bookmark_parser,
+    std::unique_ptr<BookmarkParser> bookmark_parser,
     std::string app_locale)
     : blocking_queue_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
@@ -275,7 +275,7 @@ void SafariDataImporter::CancelImport() {
 }
 
 SafariDataImporter::BlockingWorker::BlockingWorker(
-    scoped_refptr<BookmarkParser> bookmark_parser)
+    std::unique_ptr<BookmarkParser> bookmark_parser)
     : bookmark_parser_(std::move(bookmark_parser)) {}
 
 SafariDataImporter::BlockingWorker::~BlockingWorker() = default;

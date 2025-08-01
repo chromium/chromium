@@ -125,7 +125,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
 
-    auto parser = base::MakeRefCounted<ContentBookmarkParser>();
+    auto parser = std::make_unique<ContentBookmarkParser>();
     parser->SetServiceForTesting(receiver_.BindNewPipeAndPassRemote());
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();

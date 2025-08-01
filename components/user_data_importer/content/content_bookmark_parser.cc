@@ -17,8 +17,8 @@
 namespace user_data_importer {
 
 // Declared in bookmark_parser.h.
-scoped_refptr<BookmarkParser> MakeBookmarkParser() {
-  return base::MakeRefCounted<ContentBookmarkParser>();
+std::unique_ptr<BookmarkParser> MakeBookmarkParser() {
+  return std::make_unique<ContentBookmarkParser>();
 }
 
 ContentBookmarkParser::ContentBookmarkParser() {
@@ -93,7 +93,7 @@ void ContentBookmarkParser::ParseImpl(
   html_parser_remote_->Parse(
       std::move(raw_html),
       base::BindOnce(&ContentBookmarkParser::OnParseFinished,
-                     base::WrapRefCounted(this), std::move(callback)));
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void ContentBookmarkParser::OnParseFinished(

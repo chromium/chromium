@@ -29,7 +29,7 @@ DataImporterBridge::DataImporterBridge(Profile* profile) : profile_(profile) {
   importer_ =
       std::make_unique<user_data_importer::StablePortabilityDataImporter>(
           history_service, bookmark_model, reading_list_model,
-          base::MakeRefCounted<user_data_importer::ContentBookmarkParser>());
+          std::make_unique<user_data_importer::ContentBookmarkParser>());
 }
 
 DataImporterBridge::~DataImporterBridge() = default;

@@ -63,7 +63,7 @@ class SafariDataImporter {
                      bookmarks::BookmarkModel* bookmark_model,
                      ReadingListModel* reading_list_model,
                      syncer::SyncService* sync_service,
-                     scoped_refptr<BookmarkParser> bookmark_parser,
+                     std::unique_ptr<BookmarkParser> bookmark_parser,
                      std::string app_locale);
   ~SafariDataImporter();
 
@@ -88,7 +88,7 @@ class SafariDataImporter {
   // `SafariDataImporter`.
   class BlockingWorker {
    public:
-    explicit BlockingWorker(scoped_refptr<BookmarkParser> bookmark_parser);
+    explicit BlockingWorker(std::unique_ptr<BookmarkParser> bookmark_parser);
     ~BlockingWorker();
 
     // Creates the zip file Rust archive from file provided by "zip_filename".
@@ -129,7 +129,7 @@ class SafariDataImporter {
                        size_t history_size_threshold);
 
     // The model-layer object used to parse bookmarks from an HTML file.
-    scoped_refptr<BookmarkParser> bookmark_parser_;
+    std::unique_ptr<BookmarkParser> bookmark_parser_;
 
     // The Rust zip file archive.
     std::optional<rust::Box<ZipFileArchive>> zip_file_archive_;

@@ -57,7 +57,7 @@ StablePortabilityDataImporter::StablePortabilityDataImporter(
     history::HistoryService* history_service,
     bookmarks::BookmarkModel* bookmark_model,
     ReadingListModel* reading_list_model,
-    scoped_refptr<ContentBookmarkParser> bookmark_parser)
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
     : history_service_(history_service),
       bookmark_model_(bookmark_model),
       reading_list_model_(reading_list_model),
@@ -65,7 +65,7 @@ StablePortabilityDataImporter::StablePortabilityDataImporter(
           base::SequencedTaskRunner::GetCurrentDefault()),
       background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
-      background_worker_(background_task_runner_, std::move(bookmark_parser)){
+      background_worker_(background_task_runner_, std::move(bookmark_parser)) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
 
@@ -253,7 +253,7 @@ void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {
 }
 
 StablePortabilityDataImporter::BackgroundWorker::BackgroundWorker(
-    scoped_refptr<ContentBookmarkParser> bookmark_parser)
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser)
     : bookmark_parser_(std::move(bookmark_parser)) {}
 
 StablePortabilityDataImporter::BackgroundWorker::~BackgroundWorker() = default;

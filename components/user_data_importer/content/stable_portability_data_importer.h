@@ -48,7 +48,7 @@ class StablePortabilityDataImporter {
       history::HistoryService* history_service,
       bookmarks::BookmarkModel* bookmark_model,
       ReadingListModel* reading_list_model,
-      scoped_refptr<ContentBookmarkParser> bookmark_parser);
+      std::unique_ptr<ContentBookmarkParser> bookmark_parser);
   ~StablePortabilityDataImporter();
 
   // Attempts to import bookmarks from the given `file`. `bookmarks_callback` is
@@ -107,7 +107,7 @@ class StablePortabilityDataImporter {
   class BackgroundWorker {
    public:
     explicit BackgroundWorker(
-        scoped_refptr<ContentBookmarkParser> bookmark_parser);
+        std::unique_ptr<ContentBookmarkParser> bookmark_parser);
     ~BackgroundWorker();
 
     void ParseBookmarks(
@@ -123,7 +123,7 @@ class StablePortabilityDataImporter {
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
    private:
-    scoped_refptr<ContentBookmarkParser> bookmark_parser_;
+    std::unique_ptr<ContentBookmarkParser> bookmark_parser_;
   };
 
   friend class StablePortabilityDataImporterTest;

@@ -30,6 +30,7 @@ class BookmarkHtmlParser;
 class ContentBookmarkParser : public BookmarkParser {
  public:
   ContentBookmarkParser();
+  ~ContentBookmarkParser() override;
 
   // BookmarkParser:
   // Reads the file contents and then launches the actual parsing on the utility
@@ -45,10 +46,6 @@ class ContentBookmarkParser : public BookmarkParser {
           parser);
 
  private:
-  friend class base::RefCountedThreadSafe<ContentBookmarkParser>;
-
-  ~ContentBookmarkParser() override;
-
   void ParseImpl(std::string raw_html,
                  BookmarkParser::BookmarkParsingCallback callback);
 
@@ -64,6 +61,8 @@ class ContentBookmarkParser : public BookmarkParser {
   mojo::PendingRemote<mojom::BookmarkHtmlParser> html_parser_for_testing_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<ContentBookmarkParser> weak_ptr_factory_{this};
 };
 
 }  // namespace user_data_importer

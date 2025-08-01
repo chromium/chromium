@@ -6,7 +6,6 @@
 #define COMPONENTS_USER_DATA_IMPORTER_UTILITY_BOOKMARK_PARSER_H_
 
 #include "base/functional/callback.h"
-#include "base/memory/ref_counted.h"
 #include "base/types/expected.h"
 #include "components/favicon_base/favicon_usage_data.h"
 #include "components/user_data_importer/common/imported_bookmark_entry.h"
@@ -19,9 +18,7 @@ class FilePath;
 namespace user_data_importer {
 
 // Interface for opening and parsing an HTML file containing bookmarks.
-// RefCountedThreadSafe because one of its implementations needs to jump between
-// sequences. See `ContentBookmarkParser`.
-class BookmarkParser : public base::RefCountedThreadSafe<BookmarkParser> {
+class BookmarkParser {
  public:
   // Result of a successful invocation of `ParseBookmarks` below.
   struct ParsedBookmarks {
@@ -65,6 +62,8 @@ class BookmarkParser : public base::RefCountedThreadSafe<BookmarkParser> {
     kOther
   };
 
+  virtual ~BookmarkParser() = default;
+
   using BookmarkParsingResult =
       base::expected<ParsedBookmarks, BookmarkParsingError>;
   using BookmarkParsingCallback =
@@ -77,16 +76,11 @@ class BookmarkParser : public base::RefCountedThreadSafe<BookmarkParser> {
   // Invokes `callback` with the result of parsing.
   virtual void Parse(const base::FilePath& bookmarks_html,
                      BookmarkParsingCallback callback) = 0;
-
- protected:
-  friend class base::RefCountedThreadSafe<BookmarkParser>;
-
-  virtual ~BookmarkParser() = default;
 };
 
 // Returns a suitable concrete BookmarkParser instance. See implementations in
 // ios_bookmark_parser.mm and content_bookmark_parser.cc.
-scoped_refptr<BookmarkParser> MakeBookmarkParser();
+std::unique_ptr<BookmarkParser> MakeBookmarkParser();
 
 }  //  namespace user_data_importer
 

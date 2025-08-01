@@ -151,7 +151,7 @@ class SafariDataImporterTest : public testing::Test {
 #if BUILDFLAG(IS_IOS)
     auto parser = MakeBookmarkParser();
 #else
-    auto parser = base::MakeRefCounted<ContentBookmarkParser>();
+    auto parser = std::make_unique<ContentBookmarkParser>();
     parser->SetServiceForTesting(
         html_parser_receiver_.BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_IOS)
