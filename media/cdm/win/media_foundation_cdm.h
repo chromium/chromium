@@ -181,6 +181,9 @@ class MEDIA_EXPORT MediaFoundationCdm final : public ContentDecryptionModule,
   // Copy of the last client token we stored.
   std::vector<uint8_t> cached_client_token_;
 
+  // Whether SetServerCertificate() has been called successfully.
+  bool server_certificate_set_ = false;
+
   // This must be the last member.
   base::WeakPtrFactory<MediaFoundationCdm> weak_factory_{this};
 };

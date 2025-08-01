@@ -9,13 +9,17 @@
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "media/base/media_switches.h"
 #include "media/base/mock_filters.h"
 #include "media/base/test_helpers.h"
 #include "media/base/win/hresults.h"
 #include "media/base/win/media_foundation_cdm_proxy.h"
 #include "media/base/win/mf_helpers.h"
 #include "media/base/win/mf_mocks.h"
+#include "media/cdm/win/media_foundation_cdm_module.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -170,6 +174,7 @@ class MediaFoundationCdmTest : public testing::Test {
   bool can_initialize_ = true;
   std::string session_id_;
   scoped_refptr<MediaFoundationCdmProxy> mf_cdm_proxy_;
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 TEST_F(MediaFoundationCdmTest, SetServerCertificate) {
@@ -655,6 +660,93 @@ TEST_F(MediaFoundationCdmTest, HardwareContextReset_InitializeFailure) {
       std::make_unique<MockCdmSessionPromise>(/*expect_success=*/false,
                                               &session_id_));
   task_environment_.RunUntilIdle();
+}
+
+TEST_F(MediaFoundationCdmTest, RequireServerCert_Enabled_NonOsCdm_NoCert) {
+  // For non-OS CDMs, CreateSessionAndGenerateRequest should work
+  // without SetServerCertificate when the feature is enabled
+  scoped_feature_list_.InitAndEnableFeature(
+      kHardwareSecureDecryptionRequireServerCert);
+  Initialize();
+  MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(false);
+  COM_EXPECT_CALL(mf_cdm_, SetServerCertificate(_, _)).Times(0);
+  CreateSessionAndGenerateRequest();
+}
+
+TEST_F(MediaFoundationCdmTest, RequireServerCert_Disabled_NonOsCdm_NoCert) {
+  // For non-OS CDMs, CreateSessionAndGenerateRequest should work
+  // without SetServerCertificate when the feature is disabled
+  scoped_feature_list_.InitAndDisableFeature(
+      kHardwareSecureDecryptionRequireServerCert);
+  Initialize();
+  MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(false);
+  COM_EXPECT_CALL(mf_cdm_, SetServerCertificate(_, _)).Times(0);
+  CreateSessionAndGenerateRequest();
+}
+
+TEST_F(MediaFoundationCdmTest, RequireServerCert_Disabled_OsCdm_NoCert) {
+  // For OS CDMs, CreateSessionAndGenerateRequest should work
+  // without SetServerCertificate when the feature is disabled
+  scoped_feature_list_.InitAndDisableFeature(
+      kHardwareSecureDecryptionRequireServerCert);
+  Initialize();
+  MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(true);
+  COM_EXPECT_CALL(mf_cdm_, SetServerCertificate(_, _)).Times(0);
+  CreateSessionAndGenerateRequest();
+}
+
+TEST_F(MediaFoundationCdmTest, RequireServerCert_Enabled_OsCdm) {
+  // Set a shorter timeout then the default
+  // since this test is expected to run quickly.
+  base::test::ScopedRunLoopTimeout timeout(FROM_HERE, base::Seconds(5));
+
+  // Enable the feature flag that requires SetServerCertificate
+  // before CreateSessionAndGenerateRequest for OS CDMs.
+  scoped_feature_list_.InitAndEnableFeature(
+      kHardwareSecureDecryptionRequireServerCert);
+
+  Initialize();
+  MediaFoundationCdmModule::GetInstance()->SetIsOsCdmForTesting(true);
+
+  // For OS CDMs, CreateSessionAndGenerateRequest should fail
+  // without SetServerCertificate when the feature is enabled
+  std::vector<uint8_t> init_data = StringToVector("init_data");
+
+  COM_EXPECT_CALL(mf_cdm_, SetServerCertificate(_, _)).Times(0);
+
+  // First try CreateSessionAndGenerateRequest without calling
+  // SetServerCertificate. This should fail for OS CDMs when the
+  // feature is enabled
+  cdm_->CreateSessionAndGenerateRequest(
+      CdmSessionType::kTemporary, EmeInitDataType::WEBM, init_data,
+      std::make_unique<MockCdmSessionPromise>(/*expect_success=*/false,
+                                              &session_id_));
+  ASSERT_TRUE(base::test::RunUntil([&]() { return session_id_.empty(); }));
+
+  // Now call SetServerCertificate first
+  std::vector<uint8_t> certificate = StringToVector("certificate");
+  COM_EXPECT_CALL(mf_cdm_, SetServerCertificate(NotNull(), certificate.size()))
+      .WillOnce(Return(S_OK));
+
+  cdm_->SetServerCertificate(
+      certificate, std::make_unique<MockCdmPromise>(/*expect_success=*/true));
+
+  // Now CreateSessionAndGenerateRequest should succeed
+  COM_EXPECT_CALL(mf_cdm_,
+                  CreateSession(MF_MEDIAKEYSESSION_TYPE_TEMPORARY, _, _))
+      .WillOnce(DoAll(SaveComPtr<1>(&mf_cdm_session_callbacks_),
+                      SetComPointee<2>(mf_cdm_session_.Get()), Return(S_OK)));
+
+  SetGenerateRequestExpectations(mf_cdm_session_, kSessionId,
+                                 &mf_cdm_session_callbacks_);
+
+  cdm_->CreateSessionAndGenerateRequest(
+      CdmSessionType::kTemporary, EmeInitDataType::WEBM, init_data,
+      std::make_unique<MockCdmSessionPromise>(/*expect_success=*/true,
+                                              &session_id_));
+
+  ASSERT_TRUE(
+      base::test::RunUntil([&]() { return session_id_ == kSessionId; }));
 }
 
 }  // namespace media
