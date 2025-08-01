@@ -6,6 +6,7 @@
 #include <string>
 #include <vector>
 
+#include "partition_alloc/allocator_config.h"
 #include "partition_alloc/build_config.h"
 #include "partition_alloc/partition_alloc_config.h"
 #include "partition_alloc/partition_alloc_for_testing.h"
@@ -81,17 +82,29 @@ TEST(HardeningTest, MetadataPointerCrashing) {
   uintptr_t slot_start = root.ObjectToSlotStart(data);
   auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start, &root);
 
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
-  // Crashes, because `metadata` points outside of giga cage.
-  // `GetPoolInfo()` will hit NOTREACHED().
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) && \
+    !PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
   EXPECT_DEATH(FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true),
                "");
-#else
-  FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
-
-  // Crashes, because |metadata| points inside the metadata area.
-  EXPECT_DEATH(root.Alloc(kAllocSize), "");
 #endif
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) && \
+    PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
+  if (ExternalMetadataTrialGroup::kEnabled == GetExternalMetadataTrialGroup()) {
+    EXPECT_DEATH(
+        FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true), "");
+  } else
+#endif
+#if !PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) || \
+    PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
+  {
+    FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
+
+    // Crashes, because |metadata| points inside the metadata area.
+    EXPECT_DEATH(root.Alloc(kAllocSize), "");
+  }
+#endif  // !PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) ||
+        // PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
 }
 #endif  // PA_USE_DEATH_TESTS() && PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 
@@ -169,15 +182,28 @@ TEST(HardeningTest, PoolOffsetMetadataPointerCrashing) {
   uintptr_t slot_start = root.ObjectToSlotStart(data);
   auto* metadata = SlotSpanMetadata::FromSlotStart(slot_start, &root);
 
-#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE)
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) && \
+    !PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
   EXPECT_DEATH(FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true),
                "");
-#else
-  FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
-
-  // Crashes, because |metadata| points inside the metadata area.
-  EXPECT_DEATH(root.Alloc(kAllocSize), "");
 #endif
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) && \
+    PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
+  if (ExternalMetadataTrialGroup::kEnabled == GetExternalMetadataTrialGroup()) {
+    EXPECT_DEATH(
+        FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true), "");
+  } else
+#endif
+#if !PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) || \
+    PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
+  {
+    FreelistEntry::EmplaceAndInitForTest(slot_start, metadata, true);
+
+    // Crashes, because |metadata| points inside the metadata area.
+    EXPECT_DEATH(root.Alloc(kAllocSize), "");
+  }
+#endif  // !PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) ||
+        // PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
 }
 #endif  // PA_USE_DEATH_TESTS() && PA_CONFIG(HAS_FREELIST_SHADOW_ENTRY)
 

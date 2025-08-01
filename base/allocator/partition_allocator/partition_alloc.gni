@@ -344,6 +344,16 @@ declare_args() {
 }
 
 declare_args() {
+  enable_move_metadata_outside_gigacage_trial =
+      false && move_metadata_outside_gigacage
+}
+
+assert(!enable_move_metadata_outside_gigacage_trial ||
+           move_metadata_outside_gigacage,
+       "Can't enable PartitionAllocExternalMetadata synthetic trial " +
+           "without move_metadata_outside_gigacage=true.")
+
+declare_args() {
   # Use full MTE protection available by changing the feature flag default
   # values. So sync mode on all processes. Also disables permissive MTE.
   #

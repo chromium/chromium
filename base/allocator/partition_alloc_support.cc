@@ -45,6 +45,7 @@
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "partition_alloc/allocation_guard.h"
+#include "partition_alloc/allocator_config.h"
 #include "partition_alloc/buildflags.h"
 #include "partition_alloc/dangling_raw_ptr_checks.h"
 #include "partition_alloc/in_slot_metadata.h"
@@ -306,6 +307,23 @@ std::map<std::string, std::string> ProposeSyntheticFinchTrials() {
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 #endif  // PA_BUILDFLAG(HAS_MEMORY_TAGGING)
+
+#if PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) && \
+    PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
+  switch (partition_alloc::GetExternalMetadataTrialGroup()) {
+    case partition_alloc::ExternalMetadataTrialGroup::kEnabled:
+      trials.emplace(partition_alloc::kExternalMetadataTrialName,
+                     partition_alloc::kExternalMetadataTrialGroup_Enabled);
+      break;
+    case partition_alloc::ExternalMetadataTrialGroup::kDisabled:
+      trials.emplace(partition_alloc::kExternalMetadataTrialName,
+                     partition_alloc::kExternalMetadataTrialGroup_Disabled);
+      break;
+    default:
+      break;
+  }
+#endif  // PA_CONFIG(MOVE_METADATA_OUT_OF_GIGACAGE) &&
+        // PA_BUILDFLAG(ENABLE_MOVE_METADATA_OUT_OF_GIGACAGE_TRIAL)
 
   return trials;
 }
