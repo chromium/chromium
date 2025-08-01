@@ -43,10 +43,10 @@ class ActorOverlayViewControllerTest : public testing::Test {
 
 TEST_F(ActorOverlayViewControllerTest, OnHoverStatusChanged) {
   EXPECT_CALL(*overlay_view_controller->GetTabController(),
-              SetHandoffButtonVisibility(true))
+              SetOverlayHoverStatus(true))
       .Times(1);
   EXPECT_CALL(*overlay_view_controller->GetTabController(),
-              SetHandoffButtonVisibility(false))
+              SetOverlayHoverStatus(false))
       .Times(1);
   overlay_view_controller->OnHoverStatusChanged(true);
   overlay_view_controller->OnHoverStatusChanged(false);

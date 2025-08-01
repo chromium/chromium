@@ -29,6 +29,9 @@ inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
             << "}";
 }
 
+static constexpr base::TimeDelta kUpdateStateDebounceDelay =
+    base::Milliseconds(150);
+
 class ActorUiTabControllerFactoryInterface {
  public:
   virtual ~ActorUiTabControllerFactoryInterface() = default;
@@ -67,8 +70,9 @@ class ActorUiTabControllerInterface {
   // Clears the last active task id actuating on this tab.
   virtual void ClearActiveTaskId() = 0;
 
-  // Sets the visibility of the handoff button.
-  virtual void SetHandoffButtonVisibility(bool is_visible) = 0;
+  // Called when the hover status changes on the overlay and handoff button.
+  virtual void SetOverlayHoverStatus(bool is_hovering) = 0;
+  virtual void SetHandoffButtonHoverStatus(bool is_hovering) = 0;
 
   virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
   virtual void BindActorOverlay(

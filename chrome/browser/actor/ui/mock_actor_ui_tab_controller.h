@@ -38,12 +38,17 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
 
   MOCK_METHOD(void, SetActorTaskResume, (), (override));
 
+  MOCK_METHOD(void, SetOverlayHoverStatus, (bool is_hovering), (override));
+
+  MOCK_METHOD(void,
+              SetHandoffButtonHoverStatus,
+              (bool is_hovering),
+              (override));
+
   MOCK_METHOD(void,
               BindActorOverlay,
               (mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
               (override));
-
-  MOCK_METHOD(void, SetHandoffButtonVisibility, (bool is_visible), (override));
 
  private:
   base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};

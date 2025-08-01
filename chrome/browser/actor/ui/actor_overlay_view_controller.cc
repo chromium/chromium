@@ -34,7 +34,7 @@ ActorUiTabControllerInterface* ActorOverlayViewController::GetTabController() {
 // handoff button should be visible. Look into ways of tracking mouse movements
 // directly.
 void ActorOverlayViewController::OnHoverStatusChanged(bool is_hovering) {
-  GetTabController()->SetHandoffButtonVisibility(is_hovering);
+  GetTabController()->SetOverlayHoverStatus(is_hovering);
 }
 
 void ActorOverlayViewController::UpdateState(const ActorOverlayState& state,

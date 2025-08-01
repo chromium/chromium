@@ -36,6 +36,20 @@ namespace actor::ui {
 inline const char16_t* const TAKE_OVER_TASK_TEXT = u"Take over task";
 inline const char16_t* const GIVE_TASK_BACK_TEXT = u"Give task back";
 
+class HandoffButtonWidget : public views::Widget {
+ public:
+  HandoffButtonWidget();
+  ~HandoffButtonWidget() override;
+
+  using HoverCallback = base::RepeatingCallback<void(bool)>;
+
+  void SetHoveredCallback(HoverCallback callback);
+  void OnMouseEvent(::ui::MouseEvent* event) override;
+
+ private:
+  HoverCallback hover_callback_;
+};
+
 class HandoffButtonController {
  public:
   explicit HandoffButtonController(tabs::TabInterface& tab_interface);
@@ -50,9 +64,10 @@ class HandoffButtonController {
   void OnButtonPressed();
   void ShouldShowButton(bool& show);
   gfx::Rect GetHandoffButtonBounds(views::Widget* widget);
+  void UpdateButtonHoverStatus(bool is_hovered);
 
   std::unique_ptr<views::WidgetDelegate> delegate_ = nullptr;
-  std::unique_ptr<views::Widget> widget_ = nullptr;
+  std::unique_ptr<HandoffButtonWidget> widget_ = nullptr;
   raw_ptr<views::LabelButton> button_view_ = nullptr;
 
  private:

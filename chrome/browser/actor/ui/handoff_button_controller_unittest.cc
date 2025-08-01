@@ -4,12 +4,15 @@
 
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 
+#include <memory>
+
 #include "chrome/browser/actor/ui/mock_actor_ui_tab_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_dialog_manager.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "components/tabs/public/mock_tab_interface.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/events/event_utils.h"
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/test/button_test_api.h"
 #include "ui/views/test/views_test_base.h"
@@ -20,6 +23,10 @@ namespace actor::ui {
 namespace {
 
 using enum actor::ui::HandoffButtonState::ControlOwnership;
+using ::testing::_;
+using ::ui::EventTimeForNow;
+using ::ui::EventType;
+using ::ui::MouseEvent;
 
 class TestHandoffButtonController : public HandoffButtonController {
  public:
@@ -29,7 +36,7 @@ class TestHandoffButtonController : public HandoffButtonController {
   }
   ~TestHandoffButtonController() override = default;
 
-  void SetWidgetAndButtonForTest(std::unique_ptr<views::Widget> widget,
+  void SetWidgetAndButtonForTest(std::unique_ptr<HandoffButtonWidget> widget,
                                  views::LabelButton* button) {
     widget_ = std::move(widget);
     button_view_ = button;
@@ -76,6 +83,7 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
                          views::Widget::InitParams::TYPE_WINDOW);
     parent_widget_->Show();
 
+    auto widget = std::make_unique<HandoffButtonWidget>();
     auto delegate = std::make_unique<views::WidgetDelegate>();
     auto* button =
         delegate->SetContentsView(std::make_unique<views::LabelButton>());
@@ -84,14 +92,19 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
         views::Widget::InitParams::Ownership::CLIENT_OWNS_WIDGET);
     params.delegate = delegate.get();
     params.parent = parent_widget_->GetNativeView();
-
-    auto widget = CreateTestWidget(std::move(params));
+    widget->Init(std::move(params));
 
     widget_ = widget.get();
     button_ = button;
 
     controller_->SetWidgetAndButtonForTest(std::move(widget), button_);
     delegate_ = std::move(delegate);
+  }
+
+  void SetHoveredCallback(testing::MockFunction<void(bool)>& mock_callback) {
+    widget_->SetHoveredCallback(
+        base::BindRepeating(&testing::MockFunction<void(bool)>::Call,
+                            base::Unretained(&mock_callback)));
   }
 
   void TearDown() override {
@@ -104,7 +117,7 @@ class HandoffButtonControllerTest : public views::ViewsTestBase {
 
  protected:
   std::unique_ptr<views::Widget> parent_widget_;
-  raw_ptr<views::Widget> widget_;
+  raw_ptr<HandoffButtonWidget> widget_;
   raw_ptr<views::LabelButton> button_ = nullptr;
   std::unique_ptr<views::WidgetDelegate> delegate_;
   tabs::MockTabInterface mock_tab_interface_;
@@ -177,5 +190,41 @@ TEST_F(HandoffButtonControllerTest,
   controller_->PressButton();
 }
 
+TEST_F(HandoffButtonControllerTest,
+       MouseEnteringWidgetFiresHoverCallbackToShowButton) {
+  testing::MockFunction<void(bool)> mock_callback;
+  SetHoveredCallback(mock_callback);
+
+  EXPECT_CALL(mock_callback, Call(true));
+
+  gfx::Point enter_point =
+      widget_->GetContentsView()->GetLocalBounds().CenterPoint();
+  ui::MouseEvent mouse_enter_event(ui::EventType::kMouseEntered, enter_point,
+                                   enter_point, ui::EventTimeForNow(), 0, 0);
+
+  widget_->OnMouseEvent(&mouse_enter_event);
+}
+
+TEST_F(HandoffButtonControllerTest,
+       MouseLeavingWidgetFiresHoverCallbackToHideButton) {
+  testing::MockFunction<void(bool)> mock_callback;
+  SetHoveredCallback(mock_callback);
+  // Set widget into a hovered state.
+  EXPECT_CALL(mock_callback, Call(true));
+  gfx::Point enter_point =
+      widget_->GetContentsView()->GetLocalBounds().CenterPoint();
+  ui::MouseEvent enter_event(ui::EventType::kMouseEntered, enter_point,
+                             enter_point, ui::EventTimeForNow(), 0, 0);
+  widget_->OnMouseEvent(&enter_event);
+  testing::Mock::VerifyAndClearExpectations(&mock_callback);
+
+  EXPECT_CALL(mock_callback, Call(false));
+
+  // Simulate a mouse event far outside the widget's bounds.
+  gfx::Point exit_point(-100, -100);
+  ui::MouseEvent exit_event(ui::EventType::kMouseExited, exit_point, exit_point,
+                            ui::EventTimeForNow(), 0, 0);
+  widget_->OnMouseEvent(&exit_event);
+}
 }  // namespace
 }  // namespace actor::ui
