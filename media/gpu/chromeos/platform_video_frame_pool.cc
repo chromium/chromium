@@ -116,11 +116,10 @@ scoped_refptr<FrameResource> PlatformVideoFramePool::GetFrame() {
     // visible rect for |new_frame|.
     //
     // TODO(b/230370976): after https://crrev.com/c/3597211,
-    // PlatformVideoFramePool doesn't use a GpuMemoryBufferFactory for
-    // allocating dma-bufs which means DRM framebuffers won't be created for a
-    // dma-buf at allocation time (instead, it will be created at the moment of
-    // creating a SharedImage). That means that we probably don't need to take
-    // the |visible_rect_| into account for IsSameFormat_Locked() any more which
+    // PlatformVideoFramePool doesn't create DRM framebuffers for a dma-buf at
+    // allocation time (instead, they will be created at the moment of creating
+    // a SharedImage). That means that we probably don't need to take the
+    // |visible_rect| into account for IsSameFormat_Locked() any more which
     // implies that we can create |new_frame| using gfx::Rect(coded_size) as
     // the visible rectangle.
     CHECK(use_linear_buffers_.has_value());
@@ -225,9 +224,8 @@ CroStatus::Or<GpuBufferLayout> PlatformVideoFramePool::Initialize(
   // the same bottom-right corner map to the same framebuffer size.
   //
   // TODO(b/230370976): after https://crrev.com/c/3597211,
-  // PlatformVideoFramePool doesn't use a GpuMemoryBufferFactory for allocating
-  // dma-bufs which means DRM framebuffers won't be created for a dma-buf at
-  // allocation time (instead, it will be created at the moment of creating a
+  // PlatformVideoFramePool doesn't create DRM framebuffers for a dma-buf at
+  // allocation time (instead, they will be created at the moment of creating a
   // SharedImage). That means that we probably don't need to take the
   // |visible_rect| into account for IsSameFormat_Locked() any more.
   if (!IsSameFormat_Locked(format, coded_size, visible_rect, use_protected)) {
