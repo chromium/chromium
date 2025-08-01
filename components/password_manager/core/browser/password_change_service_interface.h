@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_SERVICE_INTERFACE_H_
 #define COMPONENTS_PASSWORD_MANAGER_CORE_BROWSER_PASSWORD_CHANGE_SERVICE_INTERFACE_H_
 
+#include <vector>
+
 #include "components/autofill/core/common/language_code.h"
 #include "url/gurl.h"
 
@@ -24,7 +26,7 @@ class PasswordChangeServiceInterface {
 };
 
 // Return overridden change password URL passed to chrome switch.
-GURL GetChangePasswordUrlOverride();
+std::vector<GURL> GetChangePasswordUrlOverrides();
 
 }  // namespace password_manager
 

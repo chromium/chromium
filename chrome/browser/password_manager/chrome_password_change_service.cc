@@ -32,22 +32,28 @@ namespace {
 
 // Returns whether chrome switch for change password URLs is used.
 bool HasChangePasswordUrlOverride() {
-  return password_manager::GetChangePasswordUrlOverride().is_valid();
+  return !password_manager::GetChangePasswordUrlOverrides().empty();
 }
 
 // Returns whether overridden change password URL matches with `url`.
-bool IsUrlMatchingOverride(const GURL& url) {
+GURL GetChangePasswordURLOverride(const GURL& url) {
   if (!HasChangePasswordUrlOverride()) {
-    return false;
+    return GURL();
   }
 
-  GURL change_password_url = password_manager::GetChangePasswordUrlOverride();
-  if (!url.is_valid() || !change_password_url.is_valid()) {
-    return false;
+  if (!url.is_valid()) {
+    return GURL();
   }
 
-  return affiliations::IsExtendedPublicSuffixDomainMatch(
-      url, change_password_url, {});
+  for (auto& override_url : password_manager::GetChangePasswordUrlOverrides()) {
+    if (!override_url.is_valid() ||
+        !affiliations::IsExtendedPublicSuffixDomainMatch(url, override_url,
+                                                         {})) {
+      continue;
+    }
+    return std::move(override_url);
+  }
+  return GURL();
 }
 
 std::string GetVariationConfigCountryCode() {
@@ -134,7 +140,7 @@ bool ChromePasswordChangeService::IsPasswordChangeSupported(
     return false;
   }
 
-  if (IsUrlMatchingOverride(url)) {
+  if (GetChangePasswordURLOverride(url).is_valid()) {
     return true;
   }
 
@@ -169,9 +175,11 @@ void ChromePasswordChangeService::OfferPasswordChangeUi(
     const std::u16string& password,
     content::WebContents* web_contents) {
 #if !BUILDFLAG(IS_ANDROID)
-  GURL change_pwd_url = IsUrlMatchingOverride(url)
-                            ? password_manager::GetChangePasswordUrlOverride()
-                            : affiliation_service_->GetChangePasswordURL(url);
+  GURL change_pwd_url = GetChangePasswordURLOverride(url);
+  if (!change_pwd_url.is_valid()) {
+    change_pwd_url = affiliation_service_->GetChangePasswordURL(url);
+  }
+
   CHECK(change_pwd_url.is_valid());
 
   std::unique_ptr<PasswordChangeDelegate> delegate =

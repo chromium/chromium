@@ -68,7 +68,7 @@ bool ShouldNotifyAboutFillingOnPageload(
     const std::optional<PasswordForm>& preferred_match) {
   // Change password url override is provided. Always notify about filling on
   // page load.
-  if (GetChangePasswordUrlOverride().is_valid()) {
+  if (!GetChangePasswordUrlOverrides().empty()) {
     return true;
   }
   // TODO(crbug.com/392020509): Consider removing check for leak when password
