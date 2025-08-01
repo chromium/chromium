@@ -2932,6 +2932,27 @@
     "expires": "Apr 30, 2025"
   },
   {
+    "prefix": "restrict-own-audio",
+    "platforms": [
+      "Win11",
+      "Mac14",
+      "Mac15"
+    ],
+    "bases": [
+      "external/wpt/screen-capture/getdisplaymedia-restrictOwnAudio.https.html"
+    ],
+    "exclusive_tests": "ALL",
+    "args": [
+      "--enable-features=MacCatapLoopbackAudioForScreenShare,RestrictOwnAudio"
+    ],
+    "owners": [
+      "guidou@chromium.org",
+      "olka@chromium.org"
+    ],
+    "expires": "Nov 29, 2025"
+  },
+
+  {
     "prefix": "sandbox-allow-same-site-none-cookies-3PC-blocked",
     "platforms": [
       "Linux",
