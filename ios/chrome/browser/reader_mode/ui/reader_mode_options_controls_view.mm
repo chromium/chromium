@@ -185,7 +185,7 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   configuration.titleAlignment = UIButtonConfigurationTitleAlignmentLeading;
   configuration.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.background.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   configuration.background.cornerRadius = kCornerRadius;
   UIButton* button = [UIButton buttonWithConfiguration:configuration
                                          primaryAction:nil];
@@ -312,7 +312,7 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   UIButtonConfiguration* configuration =
       [UIButtonConfiguration plainButtonConfiguration];
   configuration.background.backgroundColor =
-      [UIColor colorNamed:kSecondaryBackgroundColor];
+      [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   configuration.baseForegroundColor = [UIColor colorNamed:kTextPrimaryColor];
   configuration.background.cornerRadius = 0;
   UIFont* font = [UIFont systemFontOfSize:fontSize];
@@ -420,7 +420,7 @@ constexpr CGFloat kUnselectedThemeBorderWidth = 1.0;
   configuration.background.backgroundColor = backgroundColor;
   configuration.background.strokeColor =
       selected ? [UIColor colorNamed:kBlue600Color]
-               : [UIColor colorNamed:kSecondaryBackgroundColor];
+               : [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
   configuration.background.strokeWidth =
       selected ? kSelectedThemeBorderWidth : kUnselectedThemeBorderWidth;
   configuration.background.cornerRadius = kSecondRowHeight / 2.0;

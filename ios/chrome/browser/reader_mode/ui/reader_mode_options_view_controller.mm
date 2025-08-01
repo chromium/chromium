@@ -67,7 +67,7 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
 
   // Add blurred background.
   UIBlurEffect* blurEffect =
-      [UIBlurEffect effectWithStyle:UIBlurEffectStyleRegular];
+      [UIBlurEffect effectWithStyle:UIBlurEffectStyleSystemThickMaterial];
   UIVisualEffectView* blurEffectView =
       [[UIVisualEffectView alloc] initWithEffect:blurEffect];
   blurEffectView.translatesAutoresizingMaskIntoConstraints = NO;
@@ -159,8 +159,9 @@ constexpr CGFloat kBlurEffectBackgroundControlsOpacity = 0.95;
   ReaderModeOptionsControlsView* controlsView =
       [[ReaderModeOptionsControlsView alloc] init];
   controlsView.translatesAutoresizingMaskIntoConstraints = NO;
-  controlsView.backgroundColor = [[UIColor colorNamed:kPrimaryBackgroundColor]
-      colorWithAlphaComponent:kBlurEffectBackgroundControlsOpacity];
+  controlsView.backgroundColor =
+      [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
+          colorWithAlphaComponent:kBlurEffectBackgroundControlsOpacity];
 
   _controlsView = controlsView;
   return _controlsView;
