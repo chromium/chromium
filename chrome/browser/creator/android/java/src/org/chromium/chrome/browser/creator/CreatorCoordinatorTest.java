@@ -328,7 +328,6 @@ public class CreatorCoordinatorTest {
         CreatorCoordinator creatorCoordinator =
                 newCreatorCoordinator(
                         null, mWebFeedIdDefault, mEntryPointDefault, mFollowingDefault);
-        PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
         creatorCoordinator.queryFeedStream(mFeedActionDelegate, mShareDelegateSupplier);
         verify(mWebFeedBridgeJniMock).queryWebFeedId(anyString(), any());
     }
@@ -337,7 +336,6 @@ public class CreatorCoordinatorTest {
     public void testCreatorCoordinator_QueryFeed_nullWebFeedId() {
         CreatorCoordinator creatorCoordinator =
                 newCreatorCoordinator(DEFAULT_URL, null, mEntryPointDefault, mFollowingDefault);
-        PropertyModel creatorModel = creatorCoordinator.getCreatorModel();
         creatorCoordinator.queryFeedStream(mFeedActionDelegate, mShareDelegateSupplier);
         verify(mWebFeedBridgeJniMock).queryWebFeed(anyString(), any());
     }
