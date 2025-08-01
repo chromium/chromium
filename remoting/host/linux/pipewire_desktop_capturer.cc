@@ -29,9 +29,6 @@ PipewireDesktopCapturer::~PipewireDesktopCapturer() {
     creating_sequence_->PostTask(
         FROM_HERE,
         base::BindOnce(&PipewireCaptureStream::StopVideoCapture, stream_));
-    // The callback proxy may continue to receive frames until StopVideoCapture
-    // is called, so ensure it is deleted after that.
-    creating_sequence_->DeleteSoon(FROM_HERE, callback_proxy_.release());
   } else if (stream_) {
     stream_->StopVideoCapture();
   }
@@ -47,17 +44,15 @@ void PipewireDesktopCapturer::Start(Callback* callback) {
   // the sequence that calls Start().
   capture_sequence_ = base::SequencedTaskRunner::GetCurrentDefault();
   callback_ = callback;
-  callback_proxy_ = std::make_unique<CallbackProxy>(
-      capture_sequence_, weak_ptr_factory_.GetWeakPtr());
   if (!creating_sequence_->RunsTasksInCurrentSequence()) {
     // Unretained is safe because callback_proxy_ is always deleted on the
     // creating sequence after StopVideoCapture is called.
     creating_sequence_->PostTask(
         FROM_HERE,
-        base::BindOnce(&PipewireCaptureStream::StartVideoCapture, stream_,
-                       base::Unretained(callback_proxy_.get())));
+        base::BindOnce(&PipewireCaptureStream::SetCallback, stream_,
+                       capture_sequence_, weak_ptr_factory_.GetWeakPtr()));
   } else if (stream_) {
-    stream_->StartVideoCapture(callback_proxy_.get());
+    stream_->SetCallback(capture_sequence_, weak_ptr_factory_.GetWeakPtr());
   }
 }
 
@@ -84,35 +79,15 @@ void PipewireDesktopCapturer::SetMaxFrameRate(std::uint32_t max_frame_rate) {
   }
 }
 
-PipewireDesktopCapturer::CallbackProxy::CallbackProxy(
-    scoped_refptr<base::SequencedTaskRunner> capture_sequence,
-    base::WeakPtr<PipewireDesktopCapturer> capturer)
-    : capture_sequence_(std::move(capture_sequence)),
-      capturer_(std::move(capturer)) {}
-
-PipewireDesktopCapturer::CallbackProxy::~CallbackProxy() = default;
-
-void PipewireDesktopCapturer::CallbackProxy::OnFrameCaptureStart() {
-  capture_sequence_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&PipewireDesktopCapturer::OnFrameCaptureStart, capturer_));
-}
-
-void PipewireDesktopCapturer::CallbackProxy::OnCaptureResult(
-    Result result,
-    std::unique_ptr<webrtc::DesktopFrame> frame) {
-  capture_sequence_->PostTask(
-      FROM_HERE, base::BindOnce(&PipewireDesktopCapturer::OnCaptureResult,
-                                capturer_, result, std::move(frame)));
-}
-
 void PipewireDesktopCapturer::OnFrameCaptureStart() {
+  DCHECK(capture_sequence_->RunsTasksInCurrentSequence());
   callback_->OnFrameCaptureStart();
 }
 
 void PipewireDesktopCapturer::OnCaptureResult(
     Result result,
     std::unique_ptr<webrtc::DesktopFrame> frame) {
+  DCHECK(capture_sequence_->RunsTasksInCurrentSequence());
   callback_->OnCaptureResult(result, std::move(frame));
 }
 

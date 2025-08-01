@@ -404,6 +404,9 @@ void GnomeInteractionStrategy::OnPipeWireStreamAdded(
 
   capture_stream_.SetPipeWireStream(get<0>(args), kInitialResolution,
                                     mapping_id, webrtc::kInvalidPipeWireFd);
+  // Start capturing now, which creates the virtual monitor and allows the
+  // video capturer to be created.
+  capture_stream_.StartVideoCapture();
 
   std::move(init_callback_).Run(base::ok());
 }
