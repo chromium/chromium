@@ -406,6 +406,20 @@ be describing additional metrics about the same event.
   </metric>
 </event>
 
+<event name="Accessibility.ReadAnything.Distillation">
+  <owner>lwinston@google.com</owner>
+  <owner>kristislee@google.com</owner>
+  <summary>
+    Records a distillation success / failure after a new page has been opened
+    with reading mode.
+  </summary>
+  <metric name="DistillationStatus" enum="ReadAnythingDistillationStatus">
+    <summary>
+      The status of the distillation
+    </summary>
+  </metric>
+</event>
+
 <event name="Accessibility.ReadAnything.EmptyState">
   <owner>abigailbklein@google.com</owner>
   <summary>

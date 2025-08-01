@@ -2109,6 +2109,17 @@ Unknown properties are collapsed to zero. -->
 
 <!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:Colors) -->
 
+<!-- LINT.IfChange(ReadAnythingDistillationStatus) -->
+
+<enum name="ReadAnythingDistillationStatus">
+  <int value="0" label="Failed"/>
+  <int value="1" label="Success"/>
+  <int value="2" label="Still running"/>
+  <int value="3" label="Restarted"/>
+</enum>
+
+<!-- LINT.ThenChange(//chrome/common/read_anything/read_anything.mojom:DistillationStatus) -->
+
 <!-- LINT.IfChange(ReadAnythingEmptyState) -->
 
 <enum name="ReadAnythingEmptyState">

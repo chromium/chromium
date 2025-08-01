@@ -78,6 +78,11 @@
 
 namespace {
 
+// The amount of time after a new page has been opened in reading mode that
+// reading mode waits before logging whether the distillation was successful,
+// the distillation failed, or the distillation is still processing.
+constexpr int kDistillationLoggingDelayMs = 5000;
+
 constexpr char kUndeterminedLocale[] = "und";
 
 // The number of seconds to wait before distilling after a user has stopped
@@ -683,6 +688,16 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
 
   ExecuteJavaScript("chrome.readingMode.showLoading();");
 
+  // After the active tree has changed, start a timer for logging distillation
+  // success or failures. Logging this via a timer reduces duplicate
+  // distillation / failures being logged.
+  distillationsCompleted_ = 0;
+  timer_.Stop();
+  timer_.Start(
+      FROM_HERE, base::Milliseconds(kDistillationLoggingDelayMs),
+      base::BindOnce(&ReadAnythingAppController::RecordDistillationSuccess,
+                     base::Unretained(this)));
+
   // When the UI first constructs, this function may be called before tree_id
   // has been added to the tree list in AccessibilityEventReceived. In that
   // case, do not distill.
@@ -690,6 +705,26 @@ void ReadAnythingAppController::OnActiveAXTreeIDChanged(
       model_.ContainsActiveTree()) {
     Distill();
   }
+}
+
+void ReadAnythingAppController::RecordDistillationSuccess() {
+  read_anything::mojom::DistillationStatus distillationStatus;
+  if (model_.distillation_in_progress()) {
+    distillationStatus =
+        distillationsCompleted_ > 0
+            ? read_anything::mojom::DistillationStatus::kRestarted
+            : read_anything::mojom::DistillationStatus::kStillRunning;
+  } else if (!model_.content_node_ids().empty()) {
+    distillationStatus = read_anything::mojom::DistillationStatus::kSuccess;
+  } else {
+    distillationStatus = read_anything::mojom::DistillationStatus::kFailure;
+  }
+
+  ukm::builders::Accessibility_ReadAnything_Distillation(
+      model_.GetUkmSourceId())
+      .SetDistillationStatus(static_cast<int>(distillationStatus))
+      .Record(ukm_recorder_.get());
+  distillationsCompleted_ = 0;
 }
 
 void ReadAnythingAppController::RecordNumSelections() {
@@ -831,6 +866,8 @@ void ReadAnythingAppController::OnAXTreeDistilled(
     // that call checks if the current selection is inside the currently
     // displayed nodes. Thus, we have to calculate the display nodes first.
     model_.ComputeDisplayNodeIdsForDistilledTree();
+
+    distillationsCompleted_++;
   }
 
   // If there's no distillable content on the active tree, allow child tree

@@ -107,6 +107,17 @@ enum HighlightGranularity {
   [MinVersion=1] kSentence = 4
 };
 
+// LINT.IfChange(DistillationStatus)
+// Distillation status after a page has been opened with reading mode. Used for
+// metrics logging.
+enum DistillationStatus {
+  kFailure = 0,
+  kSuccess = 1,
+  kStillRunning = 2,
+  kRestarted = 3
+};
+// LINT.ThenChange(/tools/metrics/histograms/metadata/accessibility/enums.xml:ReadAnythingDistillationStatus)
+
 // Browser-side handler for requests from untrusted WebUI page.
 interface UntrustedPageHandler {
   // Called by the renderer to load the dependency parser model used for
