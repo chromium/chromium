@@ -383,8 +383,8 @@ class PredictionBasedPermissionUiExpectedHoldbackChanceTest
         {});
   }
 
-  // Checks for the selected histogram that is has a bucket count of 1 and
-  // also ensures that no other histogram was changed.
+  // Checks for the selected histogram that has a bucket count of 1 and also
+  // ensures that no other histogram was changed.
   void CheckHistogramsAreEmptyExcept(
       const std::vector<std::string_view>& updated_histograms) {
     // Static list of all histogram names to check

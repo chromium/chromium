@@ -117,6 +117,7 @@ constexpr char kCpssV3InquiryDurationHistogram[] =
     "Permissions.PredictionService.InquiryDuration";
 constexpr char kTFLiteLibAvailableHistogram[] =
     "Permissions.PredictionService.TFLiteLibAvailable";
+constexpr char kMSBBHistogram[] = "Permissions.PredictionService.MSBB";
 
 // Aiv3 relevant histograms
 constexpr std::string_view kAiv3NotificationsModelExecutionSuccessHistogram =
@@ -925,6 +926,9 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
   histogram_tester().ExpectBucketCount(kAiv3SnapshotTakenHistogram,
+                                       /*sample=*/true,
+                                       /*expected_count=*/1);
+  histogram_tester().ExpectBucketCount(kMSBBHistogram,
                                        /*sample=*/true,
                                        /*expected_count=*/1);
   histogram_tester().ExpectTotalCount(kAiv3SnapshotTakenDurationHistogram,

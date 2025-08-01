@@ -614,6 +614,9 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   const bool is_msbb_enabled = profile_->GetPrefs()->GetBoolean(
       unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
 
+  base::UmaHistogramBoolean("Permissions.PredictionService.MSBB",
+                            is_msbb_enabled);
+
   VLOG(1) << "[CPSS] GetPredictionTypeToUse MSBB: " << is_msbb_enabled;
 
   const bool is_notification_cpss_enabled =

@@ -917,6 +917,18 @@ chromium-metrics-reviews@google.com.
   <token key="PermissionType" variants="AllPermissionTypes"/>
 </histogram>
 
+<histogram name="Permissions.PredictionService.MSBB" enum="BooleanEnabled"
+    expires_after="2025-10-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a notifications or geolocation permission is sent to the
+    prediction service. Records whether the user has Make Searches and Browsing
+    Better enabled.
+  </summary>
+</histogram>
+
 <histogram name="Permissions.PredictionService.PredictionSource"
     enum="PermissionPredictionSource" expires_after="2026-01-18">
   <owner>ravjit@chromium.org</owner>
