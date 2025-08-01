@@ -580,4 +580,40 @@ IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
   EXPECT_FALSE(GlicActorButtonContainer()->GetVisible());
   EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
 }
+
+IN_PROC_BROWSER_TEST_F(TabStripActionContainerBrowserTest,
+                       ResetTaskIconOnCheckTaskToActiveStateChange) {
+  auto* task_icon_controller =
+      browser()->browser_window_features()->glic_actor_task_icon_controller();
+
+  task_icon_controller->OnStateUpdate(
+      actor::ui::ActorUiStateManagerInterface::UiState::kCheckTasks,
+      glic::GlicWindowController::State::kClosed);
+
+  ASSERT_TRUE(tab_strip_action_container()
+                  ->animation_session_for_testing()
+                  ->expansion_animation()
+                  ->IsShowing());
+
+  EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
+  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
+  EXPECT_TRUE(GlicActorTaskIcon()->GetIsShowingNudge());
+  // TODO(crbug.com/431015299): Replace with finalized strings when ready.
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), u"Your task needs attention");
+
+  ResetAnimation(1);
+
+  task_icon_controller->OnStateUpdate(
+      actor::ui::ActorUiStateManagerInterface::UiState::kActive,
+      glic::GlicWindowController::State::kClosed);
+
+  EXPECT_TRUE(GlicActorButtonContainer()->GetVisible());
+  EXPECT_TRUE(GlicActorTaskIcon()->GetVisible());
+  // Check that GlicButton was added to the GlicActorButtonContainer.
+  ASSERT_THAT(GlicActorButtonContainer()->children(), SizeIs(2));
+  EXPECT_EQ(tab_strip_action_container()->GetGlicButton(),
+            GlicActorButtonContainer()->children()[1]);
+  EXPECT_EQ(GlicActorTaskIcon()->GetText(), std::u16string());
+  EXPECT_FALSE(GlicActorTaskIcon()->GetIsShowingNudge());
+}
 #endif  // BUILDFLAG(ENABLE_GLIC)

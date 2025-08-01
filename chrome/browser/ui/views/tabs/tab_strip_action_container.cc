@@ -604,6 +604,12 @@ void TabStripActionContainer::ShowGlicActorTaskIcon() {
 #if BUILDFLAG(ENABLE_GLIC)
   CHECK(glic_actor_button_container_);
   CHECK(glic_button_);
+  // If the nudge is showing (ex: previous state was CheckTasks), hide the nudge
+  // and reset the icon
+  if (glic_actor_task_icon_->GetIsShowingNudge()) {
+    HideTabStripNudge(glic_actor_task_icon_);
+    glic_actor_task_icon_->SetTaskIconToDefault();
+  }
   glic_button_ =
       glic_actor_button_container_->AddChildView(std::move(glic_button_));
   glic_actor_button_container_->SetVisible(true);
