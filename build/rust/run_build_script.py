@@ -72,6 +72,9 @@ def set_cargo_cfg_target_env_variables(rustc_path, env):
   # (derived from `rustflags` maybe?).
   args = [rustc_path, "--print=cfg", f"--target={target_triple}"]
 
+  # TODO(https://crbug.com/435437947): Ideally `rustc --print=cfg
+  # --target=...` would only be invoked **once** per build (not once per
+  # `run_cxxbridge.py` and once per `run_build_script.py`).
   proc = subprocess.Popen(args, stdout=subprocess.PIPE)
   for line in io.TextIOWrapper(proc.stdout, encoding="utf-8"):
     line = line.strip()

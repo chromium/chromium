@@ -125,6 +125,10 @@ template("rust_cxx") {
       output_h,
       "--cc",
       output_cc,
+      "--rust-prefix",
+      rebase_path("${rust_sysroot}/bin", root_build_dir),
+      "--target",
+      rust_abi_target,
       "{{source}}",
       "--",
     ]
