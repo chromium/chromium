@@ -810,6 +810,23 @@ TEST(IndexedDBLevelDBCodingTest, ExtractAndCompareIDBKeys) {
   }
 }
 
+// Basic verification that the variable length encoding for strings is working
+// as expected.
+TEST(IndexedDBLevelDBCodingTest, EncodeSortableString) {
+  // Two equal length strings that only use characters < 127 have the same
+  // length when encoded.
+  EXPECT_EQ(EncodeSortableIDBKey(IndexedDBKey(u"Hello world")).size(),
+            EncodeSortableIDBKey(IndexedDBKey(u"Hello w0rld")).size());
+
+  // But when one string uses a character >= 127, that takes up another byte.
+  EXPECT_EQ(EncodeSortableIDBKey(IndexedDBKey(u"Hello world")).size(),
+            EncodeSortableIDBKey(IndexedDBKey(u"H\x82llo world")).size() - 1);
+
+  // A character that doesn't fit in 14 bits uses 3 bytes.
+  EXPECT_EQ(EncodeSortableIDBKey(IndexedDBKey(u"Hello world")).size(),
+            EncodeSortableIDBKey(IndexedDBKey(u"H\xf082llo world")).size() - 2);
+}
+
 TEST(IndexedDBLevelDBCodingTest, EncodeAndCompareIDBKeysWithSentinels) {
   const char16_t kJunkString[] = {0xdead, 0xbeef, '\0'};
 
