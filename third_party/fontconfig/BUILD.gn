@@ -94,6 +94,7 @@ if (use_bundled_fontconfig) {
       "src/src/fcdbg.c",
       "src/src/fcdefault.c",
       "src/src/fcdir.c",
+      "src/src/fcfontations.c",
       "src/src/fcformat.c",
       "src/src/fcfreetype.c",
       "src/src/fcfs.c",
@@ -123,7 +124,10 @@ if (use_bundled_fontconfig) {
       "include/src",
     ]
 
-    defines = [ "HAVE_CONFIG_H" ]
+    defines = [
+      "HAVE_CONFIG_H",
+      "ENABLE_FONTATIONS",
+    ]
 
     # Fontconfig symbols should not be exported from chrome, nacl_helper, or
     # anything else.
