@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/feature_list.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/tabs/alert/tab_alert.h"
+#include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/vr/vr_tab_helper.h"
@@ -88,6 +90,13 @@ std::vector<tabs::TabAlert> GetTabAlertStatesForTab(
   if (contents->IsCapabilityActive(
           content::WebContentsCapabilityType::kSerial)) {
     states.push_back(tabs::TabAlert::SERIAL_CONNECTED);
+  }
+
+  if (auto* actor_controller = tab->GetTabFeatures()->actor_ui_tab_controller();
+      actor_controller && actor_controller->ShouldShowActorTabIndicator()) {
+    // TODO(crbug.com/422538779) Create a new Alert for the Actor code instead
+    // of relying on the GLIC_ACCESSING alert.
+    states.push_back(tabs::TabAlert::GLIC_ACCESSING);
   }
 
 #if BUILDFLAG(ENABLE_GLIC)

@@ -226,6 +226,8 @@ COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiToast);
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<bool>(kGlicActorUiHandoffButton);
+COMPONENT_EXPORT(CHROME_FEATURES)
+extern const base::FeatureParam<bool>(kGlicActorUiTabIndicator);
 
 COMPONENT_EXPORT(CHROME_FEATURES)
 extern const base::FeatureParam<base::TimeDelta>(

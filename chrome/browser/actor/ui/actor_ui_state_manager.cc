@@ -32,33 +32,34 @@ namespace {
 constexpr int kToastShownMax = 2;
 
 using tabs::TabInterface;
+using enum HandoffButtonState::ControlOwnership;
 
 // TODO(crbug.com/424495020): Hardcoded states; Move this out to it's own file
 // to be shared with tab controller.
 const UiTabState& GetActorControlledUiTabState() {
   static const UiTabState kActorState = {
       .actor_overlay = ActorOverlayState(/*is_active=*/true),
-      .handoff_button = {
-          .is_active = true,
-          .controller = HandoffButtonState::ControlOwnership::kActor}};
+      .handoff_button = {.is_active = true, .controller = kActor},
+      .tab_indicator_visible = true,
+  };
   return kActorState;
 }
 
 const UiTabState& GetPausedUiTabState() {
   static const UiTabState kPausedState = {
       .actor_overlay = ActorOverlayState(/*is_active=*/false),
-      .handoff_button = {
-          .is_active = true,
-          .controller = HandoffButtonState::ControlOwnership::kClient}};
+      .handoff_button = {.is_active = true, .controller = kClient},
+      .tab_indicator_visible = false,
+  };
   return kPausedState;
 }
 
 const UiTabState& GetCompletedUiTabState() {
   static const UiTabState kCompletedState = {
       .actor_overlay = ActorOverlayState(/*is_active=*/false),
-      .handoff_button = {
-          .is_active = false,
-          .controller = HandoffButtonState::ControlOwnership::kClient}};
+      .handoff_button = {.is_active = false, .controller = kClient},
+      .tab_indicator_visible = false,
+  };
   return kCompletedState;
 }
 

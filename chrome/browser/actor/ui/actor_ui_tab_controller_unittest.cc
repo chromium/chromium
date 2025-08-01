@@ -16,6 +16,8 @@
 #include "chrome/browser/actor/ui/states/actor_overlay_state.h"
 #include "chrome/browser/actor/ui/states/handoff_button_state.h"
 #include "chrome/browser/ui/browser_window/test/mock_browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/testing_profile.h"
@@ -65,7 +67,7 @@ class MockActorUiTabControllerFactory
 
 class ActorUiTabControllerTest : public testing::Test {
  public:
-  ActorUiTabControllerTest() = default;
+  ActorUiTabControllerTest() : tab_strip_model_(&delegate_, profile()) {}
   ~ActorUiTabControllerTest() override = default;
 
   // testing::Test:
@@ -88,6 +90,8 @@ class ActorUiTabControllerTest : public testing::Test {
         .WillByDefault(Return(&mock_browser_window_interface_));
     ON_CALL(mock_browser_window_interface_, GetProfile)
         .WillByDefault(Return(profile()));
+    ON_CALL(mock_browser_window_interface_, GetTabStripModel)
+        .WillByDefault(Return(&tab_strip_model_));
 
     actor_ui_tab_controller_ = std::make_unique<ActorUiTabController>(
         mock_tab_, actor_keyed_service(), std::move(controller_factory));
@@ -137,6 +141,8 @@ class ActorUiTabControllerTest : public testing::Test {
   std::unique_ptr<ActorKeyedServiceFake> actor_keyed_service_;
   MockTabInterface mock_tab_;
   MockBrowserWindowInterface mock_browser_window_interface_;
+  TestTabStripModelDelegate delegate_;
+  TabStripModel tab_strip_model_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TaskId task_id_;
   std::unique_ptr<ActorUiTabController> actor_ui_tab_controller_;

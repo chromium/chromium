@@ -43,6 +43,7 @@ source_set("ui") {
     "//chrome/browser/profiles:profile",
     "//chrome/browser/resources/actor_overlay:resources",
     "//chrome/browser/ui/browser_window",
+    "//chrome/browser/ui/tabs:tab_strip",
     "//chrome/browser/ui/tabs:tabs_public",
     "//chrome/browser/ui/toasts",
     "//chrome/browser/ui/toasts/api:toasts",
@@ -180,6 +181,7 @@ source_set("unit_tests") {
     "//chrome/browser/actor:impl",
     "//chrome/browser/actor:test_support",
     "//chrome/browser/ui/tabs:tabs_public",
+    "//chrome/browser/ui/tabs:test_support",
     "//chrome/common",
     "//chrome/test:test_support",
     "//components/tabs:public",
@@ -199,7 +201,10 @@ source_set("browser_tests") {
 
   defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
 
-  sources = [ "actor_overlay_browsertest.cc" ]
+  sources = [
+    "actor_overlay_browsertest.cc",
+    "actor_ui_tab_controller_browsertest.cc",
+  ]
 
   deps = [
     ":ui",

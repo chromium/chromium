@@ -54,6 +54,7 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               SetCallbackForTesting,
               (base::OnceClosure callback),
               (override));
+  MOCK_METHOD(bool, ShouldShowActorTabIndicator, (), (override));
 
  private:
   base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};

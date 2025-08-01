@@ -50,6 +50,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetOverlayHoverStatus(bool is_hovering) override;
   void SetHandoffButtonHoverStatus(bool is_hovering) override;
   void SetCallbackForTesting(base::OnceClosure callback) override;
+  bool ShouldShowActorTabIndicator() override;
 
   // Binds the Mojo receiver to the tab's ActorOverlayViewController.
   // Called by ActorOverlayUI when the chrome://actor-overlay page loads.
@@ -85,6 +86,9 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // Run the test callback after updates have been made.
   void OnUpdateFinished();
 
+  // Sets the Tab Indicator visibility.
+  void SetActorTabIndicatorVisibility(bool should_show_tab_indicator);
+
   // The current UiTabState.
   UiTabState current_ui_tab_state_ = {
       .actor_overlay = ActorOverlayState(),
@@ -118,6 +122,8 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   // The Handoff Button controller for this tab.
   std::unique_ptr<HandoffButtonController> handoff_button_controller_;
   std::unique_ptr<ActorUiTabControllerFactoryInterface> controller_factory_;
+
+  bool should_show_actor_tab_indicator_ = false;
 
   base::WeakPtrFactory<ActorUiTabController> weak_factory_{this};
 };

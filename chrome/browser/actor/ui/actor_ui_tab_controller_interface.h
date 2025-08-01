@@ -20,12 +20,15 @@ struct UiTabState {
   bool operator==(const UiTabState& other) const = default;
   ActorOverlayState actor_overlay;
   HandoffButtonState handoff_button;
+  bool tab_indicator_visible = false;
 };
 
 inline std::ostream& operator<<(std::ostream& os, UiTabState state) {
   return os << "UiTabState{\n"
             << "  actor_overlay: " << state.actor_overlay << ",\n"
             << "  handoff_button: " << state.handoff_button << "\n"
+            << "  tab_indicator_visible: " << state.tab_indicator_visible
+            << "\n"
             << "}";
 }
 
@@ -73,6 +76,9 @@ class ActorUiTabControllerInterface {
   // Called when the hover status changes on the overlay and handoff button.
   virtual void SetOverlayHoverStatus(bool is_hovering) = 0;
   virtual void SetHandoffButtonHoverStatus(bool is_hovering) = 0;
+
+  // Returns whether the tab should show the actor tab indicator.
+  virtual bool ShouldShowActorTabIndicator() = 0;
 
   virtual base::WeakPtr<ActorUiTabControllerInterface> GetWeakPtr() = 0;
   virtual void BindActorOverlay(

@@ -11,6 +11,8 @@
 #include "chrome/browser/actor/ui/handoff_button_controller.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_features.h"
 #include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
+#include "chrome/browser/ui/tabs/tab_change_type.h"
+#include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_features.h"
 #include "components/tabs/public/tab_interface.h"
 
@@ -100,6 +102,27 @@ void ActorUiTabController::OnTabDidInsert(TabInterface* tab) {
   }
 }
 
+bool ActorUiTabController::ShouldShowActorTabIndicator() {
+  return features::kGlicActorUiTabIndicator.Get() &&
+         should_show_actor_tab_indicator_;
+}
+
+void ActorUiTabController::SetActorTabIndicatorVisibility(
+    bool should_show_tab_indicator) {
+  // When GLIC isn't enabled, we never set the tab indicator.
+  // TODO(crbug.com/422538779) remove GLIC dependency once the tab
+  // alert migrates away from the GLIC_ACCESSING alert.
+#if BUILDFLAG(ENABLE_GLIC)
+  if (should_show_actor_tab_indicator_ == should_show_tab_indicator) {
+    return;
+  }
+  should_show_actor_tab_indicator_ = should_show_tab_indicator;
+  tab_->GetBrowserWindowInterface()->GetTabStripModel()->NotifyTabChanged(
+      base::to_address(tab_), TabChangeType::kAll);
+#endif
+  return;
+}
+
 void ActorUiTabController::MaybeUpdateState(const UiTabState& ui_tab_state,
                                             bool tab_active_status,
                                             UiResultCallback callback) {
@@ -139,6 +162,11 @@ void ActorUiTabController::UpdateState(const UiTabState& ui_tab_state,
     handoff_button_controller_->UpdateState(
         current_ui_tab_state_.handoff_button, ComputeHandoffButtonVisibility());
   }
+
+  if (features::kGlicActorUiTabIndicator.Get()) {
+    SetActorTabIndicatorVisibility(ui_tab_state.tab_indicator_visible);
+  }
+
   // TODO(crbug.com/425952887): Change this once ui components are implemented,
   // for now always return true.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
