@@ -24,7 +24,6 @@ class RenderFrameHost;
 
 namespace actor {
 
-class AggregatedJournal;
 class PageToolRequest;
 class RenderFrameChangeObserver;
 
@@ -34,7 +33,7 @@ class RenderFrameChangeObserver;
 class PageTool : public Tool {
  public:
   PageTool(TaskId task_id,
-           AggregatedJournal& journal,
+           ToolDelegate& tool_delegate,
            const PageToolRequest& params);
   ~PageTool() override;
 

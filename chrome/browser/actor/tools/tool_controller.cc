@@ -40,15 +40,15 @@ ToolController::ActiveState::ActiveState(
 }
 ToolController::ActiveState::~ActiveState() = default;
 
-ToolController::ToolController(ActorTask& task, AggregatedJournal& journal)
-    : task_(&task), journal_(journal.GetSafeRef()) {
+ToolController::ToolController(ActorTask& task, ToolDelegate& tool_delegate)
+    : task_(&task), tool_delegate_(tool_delegate) {
   CHECK(base::FeatureList::IsEnabled(features::kGlicActor));
 }
 
 ToolController::~ToolController() = default;
 
 void ToolController::SetState(State state) {
-  journal_->Log(active_state_ ? active_state_->tool->JournalURL() : GURL(),
+  journal().Log(active_state_ ? active_state_->tool->JournalURL() : GURL(),
                 task_->id(), mojom::JournalTrack::kActor,
                 "ToolControllerStateChange",
                 absl::StrFormat("State: %s -> %s", StateToString(state_),
@@ -104,13 +104,13 @@ void ToolController::CreateToolAndValidate(
     ResultCallback result_callback) {
   SetState(State::kCreating);
   ToolRequest::CreateToolResult create_result =
-      request.CreateTool(task_->id(), *journal_);
+      request.CreateTool(task_->id(), *tool_delegate_);
   VLOG(4) << "Creating Tool for " << request.JournalEvent() << " "
           << request.GetURLForJournal();
 
   if (!IsOk(*create_result.result)) {
     CHECK(!create_result.tool);
-    journal_->Log(request.GetURLForJournal(), task_->id(),
+    journal().Log(request.GetURLForJournal(), task_->id(),
                   mojom::JournalTrack::kActor,
                   "ToolController CreateToolAndValidate Failed",
                   create_result.result->message);
@@ -122,7 +122,7 @@ void ToolController::CreateToolAndValidate(
   std::unique_ptr<Tool>& tool = create_result.tool;
   CHECK(tool);
 
-  auto journal_event = journal_->CreatePendingAsyncEntry(
+  auto journal_event = journal().CreatePendingAsyncEntry(
       tool->JournalURL(), task_->id(), mojom::JournalTrack::kActor,
       tool->JournalEvent(), tool->DebugString());
   active_state_.emplace(std::move(tool), std::move(result_callback),
@@ -162,7 +162,7 @@ void ToolController::Invoke(ResultCallback result_callback) {
   mojom::ActionResultPtr toctou_result =
       active_state_->tool->TimeOfUseValidation(active_state_->last_observation);
   if (!IsOk(*toctou_result)) {
-    journal_->Log(active_state_->tool->JournalURL(), task_->id(),
+    journal().Log(active_state_->tool->JournalURL(), task_->id(),
                   mojom::JournalTrack::kActor, "TOCTOU Check Failed",
                   ToDebugString(*toctou_result));
     CompleteToolRequest(std::move(toctou_result));

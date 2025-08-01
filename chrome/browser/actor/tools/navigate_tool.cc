@@ -34,10 +34,10 @@ mojom::ActionResultPtr MayActOnUrlToResult(bool may_act) {
 }  // namespace
 
 NavigateTool::NavigateTool(TaskId task_id,
-                           AggregatedJournal& journal,
+                           ToolDelegate& tool_delegate,
                            TabInterface& tab,
                            const GURL& url)
-    : Tool(task_id, journal),
+    : Tool(task_id, tool_delegate),
       WebContentsObserver(tab.GetContents()),
       url_(url),
       tab_handle_(tab.GetHandle()) {}

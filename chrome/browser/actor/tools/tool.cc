@@ -9,8 +9,8 @@
 
 namespace actor {
 
-Tool::Tool(TaskId task_id, AggregatedJournal& journal)
-    : task_id_(task_id), journal_(journal.GetSafeRef()) {}
+Tool::Tool(TaskId task_id, ToolDelegate& tool_delegate)
+    : task_id_(task_id), tool_delegate_(tool_delegate) {}
 Tool::~Tool() = default;
 
 mojom::ActionResultPtr Tool::TimeOfUseValidation(

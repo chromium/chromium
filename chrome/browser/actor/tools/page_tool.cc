@@ -248,9 +248,9 @@ class RenderFrameChangeObserver : public WebContentsObserver {
 };
 
 PageTool::PageTool(TaskId task_id,
-                   AggregatedJournal& journal,
+                   ToolDelegate& tool_delegate,
                    const PageToolRequest& request)
-    : Tool(task_id, journal), request_(request.Clone()) {}
+    : Tool(task_id, tool_delegate), request_(request.Clone()) {}
 
 PageTool::~PageTool() = default;
 

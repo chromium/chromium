@@ -17,7 +17,7 @@ namespace actor {
 class WaitTool : public Tool {
  public:
   explicit WaitTool(TaskId task_id,
-                    AggregatedJournal& journal,
+                    ToolDelegate& tool_delegate,
                     base::TimeDelta wait_duration);
   ~WaitTool() override;
 

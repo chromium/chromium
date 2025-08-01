@@ -29,7 +29,7 @@ namespace actor {
 class HistoryTool : public Tool, content::WebContentsObserver {
  public:
   HistoryTool(TaskId task_id,
-              AggregatedJournal& journal,
+              ToolDelegate& tool_delegate,
               tabs::TabInterface& tab,
               HistoryToolRequest::Direction direction);
   ~HistoryTool() override;

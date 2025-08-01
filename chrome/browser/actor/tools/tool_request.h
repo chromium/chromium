@@ -18,8 +18,8 @@
 
 namespace actor {
 
-class AggregatedJournal;
 class Tool;
+class ToolDelegate;
 class ToolRequestVisitorFunctor;
 
 // Base class for all tool requests. For tools scoped to a tab (e.g. History
@@ -63,7 +63,7 @@ class ToolRequest {
 
   // Instantiates the tool requested by this object.
   virtual CreateToolResult CreateTool(TaskId task_id,
-                                      AggregatedJournal& journal) const = 0;
+                                      ToolDelegate& tool_delegate) const = 0;
 };
 
 // Tool requests targeting a specific, existing tab should inherit from this

@@ -20,6 +20,8 @@
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
 #include "chrome/browser/actor/tools/tool_controller.h"
+#include "chrome/browser/actor/tools/tool_delegate.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_service.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
 #include "components/tabs/public/tab_interface.h"
@@ -48,7 +50,7 @@ class UiEventDispatcher;
 }
 
 // Coordinates the execution of a multi-step task.
-class ExecutionEngine {
+class ExecutionEngine : public ToolDelegate {
  public:
   // State machine (success case)
   //
@@ -79,7 +81,7 @@ class ExecutionEngine {
   ExecutionEngine(Profile* profile, tabs::TabInterface* tab);
   ExecutionEngine(const ExecutionEngine&) = delete;
   ExecutionEngine& operator=(const ExecutionEngine&) = delete;
-  ~ExecutionEngine();
+  ~ExecutionEngine() override;
 
   static std::unique_ptr<ExecutionEngine> CreateForTesting(
       Profile* profile,
@@ -112,6 +114,13 @@ class ExecutionEngine {
 
   // Invalidated anytime `action_sequence_` is reset.
   base::WeakPtr<ExecutionEngine> GetWeakPtr();
+
+  // ToolDelegate:
+  AggregatedJournal& GetJournal() override;
+  actor_login::ActorLoginService& GetActorLoginService() override;
+
+  void SetActorLoginServiceForTesting(
+      std::unique_ptr<actor_login::ActorLoginService> test_service);
 
   static std::string StateToString(State state);
 
@@ -174,6 +183,7 @@ class ExecutionEngine {
   // Created when task_ is set. Handles execution details for an individual tool
   // request.
   std::unique_ptr<ToolController> tool_controller_;
+  std::unique_ptr<actor_login::ActorLoginService> actor_login_service_;
   std::unique_ptr<ui::UiEventDispatcher> ui_event_dispatcher_;
 
   std::vector<std::unique_ptr<ToolRequest>> action_sequence_;

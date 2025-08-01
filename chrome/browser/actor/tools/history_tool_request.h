@@ -30,7 +30,7 @@ class HistoryToolRequest : public TabToolRequest {
 
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
-                              AggregatedJournal& journal) const override;
+                              ToolDelegate& tool_delegate) const override;
   std::string JournalEvent() const override;
 
   // Whether the navigation is backwards or forwards in session history.

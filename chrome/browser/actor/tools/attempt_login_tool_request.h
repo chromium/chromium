@@ -22,7 +22,7 @@ class AttemptLoginToolRequest : public TabToolRequest {
 
   // ToolRequest:
   CreateToolResult CreateTool(TaskId task_id,
-                              AggregatedJournal& journal) const override;
+                              ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string JournalEvent() const override;
 };

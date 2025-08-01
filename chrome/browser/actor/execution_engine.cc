@@ -28,6 +28,8 @@
 #include "chrome/browser/actor/tools/tool_controller.h"
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/ui/event_dispatcher.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_service.h"
+#include "chrome/browser/password_manager/actor_login/actor_login_service_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
@@ -106,7 +108,8 @@ ExecutionEngine::~ExecutionEngine() {
 
 void ExecutionEngine::SetOwner(ActorTask* task) {
   task_ = task;
-  tool_controller_ = std::make_unique<ToolController>(*task_, *journal_);
+  actor_login_service_ = std::make_unique<actor_login::ActorLoginServiceImpl>();
+  tool_controller_ = std::make_unique<ToolController>(*task_, *this);
 }
 
 void ExecutionEngine::SetState(State state) {
@@ -435,6 +438,19 @@ const AnnotatedPageContent* ExecutionEngine::GetLastObservedPageContent() {
 
 base::WeakPtr<ExecutionEngine> ExecutionEngine::GetWeakPtr() {
   return actions_weak_ptr_factory_.GetWeakPtr();
+}
+
+AggregatedJournal& ExecutionEngine::GetJournal() {
+  return *journal_;
+}
+
+actor_login::ActorLoginService& ExecutionEngine::GetActorLoginService() {
+  return *actor_login_service_;
+}
+
+void ExecutionEngine::SetActorLoginServiceForTesting(
+    std::unique_ptr<actor_login::ActorLoginService> test_service) {
+  actor_login_service_ = std::move(test_service);
 }
 
 const ToolRequest& ExecutionEngine::GetNextAction() const {

@@ -23,7 +23,7 @@ namespace actor {
 class NavigateTool : public Tool, content::WebContentsObserver {
  public:
   NavigateTool(TaskId task_id,
-               AggregatedJournal& journal,
+               ToolDelegate& tool_delegate,
                tabs::TabInterface& tab,
                const GURL& url);
   ~NavigateTool() override;

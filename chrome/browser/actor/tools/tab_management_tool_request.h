@@ -22,7 +22,7 @@ class CreateTabToolRequest : public ToolRequest {
   bool AddsTabToObservationSet() const override;
 
   CreateToolResult CreateTool(TaskId task_id,
-                              AggregatedJournal& journal) const override;
+                              ToolDelegate& tool_delegate) const override;
 
   void Apply(ToolRequestVisitorFunctor& f) const override;
 
@@ -39,7 +39,7 @@ class ActivateTabToolRequest : public TabToolRequest {
   explicit ActivateTabToolRequest(tabs::TabHandle tab);
   ~ActivateTabToolRequest() override;
   CreateToolResult CreateTool(TaskId task_id,
-                              AggregatedJournal& journal) const override;
+                              ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string JournalEvent() const override;
 };
@@ -50,7 +50,7 @@ class CloseTabToolRequest : public TabToolRequest {
   explicit CloseTabToolRequest(tabs::TabHandle tab);
   ~CloseTabToolRequest() override;
   CreateToolResult CreateTool(TaskId task_id,
-                              AggregatedJournal& journal) const override;
+                              ToolDelegate& tool_delegate) const override;
   void Apply(ToolRequestVisitorFunctor& f) const override;
   std::string JournalEvent() const override;
 };

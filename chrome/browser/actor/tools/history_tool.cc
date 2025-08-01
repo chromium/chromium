@@ -34,10 +34,10 @@ using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
 HistoryTool::HistoryTool(TaskId task_id,
-                         AggregatedJournal& journal,
+                         ToolDelegate& tool_delegate,
                          TabInterface& tab,
                          HistoryToolRequest::Direction direction)
-    : Tool(task_id, journal),
+    : Tool(task_id, tool_delegate),
       WebContentsObserver(tab.GetContents()),
       direction_(direction),
       tab_handle_(tab.GetHandle()) {}

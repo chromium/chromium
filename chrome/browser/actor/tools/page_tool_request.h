@@ -19,8 +19,6 @@
 
 namespace actor {
 
-class AggregatedJournal;
-
 mojom::ToolTargetPtr ToMojo(const PageTarget& target);
 
 // Tool requests targeting a specific, existing document should inherit from
@@ -46,7 +44,7 @@ class PageToolRequest : public TabToolRequest {
 
   // ToolRequest
   CreateToolResult CreateTool(TaskId task_id,
-                              AggregatedJournal& journal) const override;
+                              ToolDelegate& tool_delegate) const override;
 
   // Returns what in the page the tool should act upon.
   const PageTarget& GetTarget() const;

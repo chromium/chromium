@@ -26,19 +26,19 @@ namespace actor {
 using ::tabs::TabHandle;
 
 TabManagementTool::TabManagementTool(TaskId task_id,
-                                     AggregatedJournal& journal,
+                                     ToolDelegate& tool_delegate,
                                      int32_t window_id,
                                      WindowOpenDisposition create_disposition)
-    : Tool(task_id, journal),
+    : Tool(task_id, tool_delegate),
       action_(Action::kCreate),
       create_disposition_(create_disposition),
       window_id_(window_id) {}
 
 TabManagementTool::TabManagementTool(TaskId task_id,
-                                     AggregatedJournal& journal,
+                                     ToolDelegate& tool_delegate,
                                      Action action,
                                      TabHandle tab_handle)
-    : Tool(task_id, journal), action_(action), target_tab_(tab_handle) {}
+    : Tool(task_id, tool_delegate), action_(action), target_tab_(tab_handle) {}
 
 TabManagementTool::~TabManagementTool() = default;
 

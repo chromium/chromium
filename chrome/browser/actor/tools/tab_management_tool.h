@@ -29,12 +29,12 @@ class TabManagementTool : public Tool,
 
   // Create constructor
   TabManagementTool(TaskId task_id,
-                    AggregatedJournal& journal,
+                    ToolDelegate& tool_delegate,
                     int32_t window,
                     WindowOpenDisposition create_disposition);
   // Activate|Close constructor.
   TabManagementTool(TaskId task_id,
-                    AggregatedJournal& journal,
+                    ToolDelegate& tool_delegate,
                     Action action,
                     tabs::TabHandle target_tab);
 

@@ -17,8 +17,8 @@ WaitToolRequest::~WaitToolRequest() = default;
 
 ToolRequest::CreateToolResult WaitToolRequest::CreateTool(
     TaskId task_id,
-    AggregatedJournal& journal) const {
-  return {std::make_unique<WaitTool>(task_id, journal, wait_duration_),
+    ToolDelegate& tool_delegate) const {
+  return {std::make_unique<WaitTool>(task_id, tool_delegate, wait_duration_),
           MakeOkResult()};
 }
 

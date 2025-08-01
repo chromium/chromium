@@ -21,14 +21,14 @@ NavigateToolRequest::~NavigateToolRequest() = default;
 
 ToolRequest::CreateToolResult NavigateToolRequest::CreateTool(
     TaskId task_id,
-    AggregatedJournal& journal) const {
+    ToolDelegate& tool_delegate) const {
   TabInterface* tab = GetTabHandle().Get();
   if (!tab) {
     return {/*tool=*/nullptr, MakeResult(mojom::ActionResultCode::kTabWentAway,
                                          "The tab is no longer present.")};
   }
 
-  return {std::make_unique<NavigateTool>(task_id, journal, *tab, url_),
+  return {std::make_unique<NavigateTool>(task_id, tool_delegate, *tab, url_),
           MakeOkResult()};
 }
 
