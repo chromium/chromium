@@ -36,6 +36,7 @@
 #include "base/version.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
+#include "components/language/core/browser/locale_util.h"
 #include "components/metrics/metrics_state_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/variations/active_field_trials.h"
@@ -55,6 +56,8 @@
 #include "components/variations/variations_switches.h"
 #include "components/version_info/version_info.h"
 #include "ui/base/device_form_factor.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/base/resource/resource_bundle.h"
 
 namespace variations {
 namespace {
@@ -198,11 +201,12 @@ Study::Channel ConvertProductChannelToStudyChannel(
 VariationsFieldTrialCreatorBase::VariationsFieldTrialCreatorBase(
     VariationsServiceClient* client,
     std::unique_ptr<VariationsSeedStore> seed_store,
-    base::OnceCallback<std::string(PrefService*)> locale_cb)
+    const UIStringOverrider& ui_string_overrider)
     : client_(client),
       seed_store_(std::move(seed_store)),
       application_locale_(
-          std::move(locale_cb).Run(seed_store_->local_state())) {}
+          language::GetApplicationLocale(seed_store_->local_state())),
+      ui_string_overrider_(ui_string_overrider) {}
 
 VariationsFieldTrialCreatorBase::~VariationsFieldTrialCreatorBase() = default;
 
@@ -496,6 +500,54 @@ void VariationsFieldTrialCreatorBase::OverrideVariationsPlatform(
   platform_override_ = platform_override;
 }
 
+base::Time VariationsFieldTrialCreatorBase::GetSeedFetchTime() {
+  // TODO(crbug.com/40274989): Consider comparing the server-provided fetch time
+  // with the network time.
+  return seed_type_ == SeedType::kSafeSeed
+             ? GetSeedStore()->GetSafeSeedFetchTime()
+             : GetSeedStore()->GetLatestSeedFetchTime();
+}
+
+base::Time VariationsFieldTrialCreatorBase::GetLatestSeedFetchTime() {
+  return GetSeedStore()->GetLatestSeedFetchTime();
+}
+
+void VariationsFieldTrialCreatorBase::OverrideCachedUIStrings() {
+  DCHECK(ui::ResourceBundle::HasSharedInstance());
+
+  ui::ResourceBundle* bundle = &ui::ResourceBundle::GetSharedInstance();
+  bundle->CheckCanOverrideStringResources();
+
+  for (auto const& it : overridden_strings_map_) {
+    bundle->OverrideLocaleStringResource(it.first, it.second);
+  }
+
+  overridden_strings_map_.clear();
+}
+
+bool VariationsFieldTrialCreatorBase::IsOverrideResourceMapEmpty() {
+  return overridden_strings_map_.empty();
+}
+
+void VariationsFieldTrialCreatorBase::OverrideUIString(
+    uint32_t resource_hash,
+    const std::u16string& str) {
+  int resource_id = ui_string_overrider_.GetResourceIndex(resource_hash);
+  if (resource_id == -1) {
+    return;
+  }
+
+  // This function may be called before the resource bundle is initialized. So
+  // we cache the UI strings and override them after the full browser starts.
+  if (!ui::ResourceBundle::HasSharedInstance()) {
+    overridden_strings_map_[resource_id] = str;
+    return;
+  }
+
+  ui::ResourceBundle::GetSharedInstance().OverrideLocaleStringResource(
+      resource_id, str);
+}
+
 Study::Platform VariationsFieldTrialCreatorBase::GetPlatform() {
   if (platform_override_.has_value()) {
     return platform_override_.value();
@@ -519,14 +571,6 @@ void VariationsFieldTrialCreatorBase::ApplyFieldTrialTestingConfig(
       GetPlatform(), GetCurrentFormFactor(), feature_list);
 }
 #endif  // BUILDFLAG(FIELDTRIAL_TESTING_ENABLED)
-
-base::Time VariationsFieldTrialCreatorBase::GetSeedFetchTime() {
-  // TODO(crbug.com/40274989): Consider comparing the server-provided fetch time
-  // with the network time.
-  return seed_type_ == SeedType::kSafeSeed
-             ? GetSeedStore()->GetSafeSeedFetchTime()
-             : GetSeedStore()->GetLatestSeedFetchTime();
-}
 
 bool VariationsFieldTrialCreatorBase::HasSeedExpired() {
   const base::Time fetch_time = GetSeedFetchTime();
@@ -775,10 +819,6 @@ void VariationsFieldTrialCreatorBase::LoadSeedFromJsonFile(
 
 VariationsSeedStore* VariationsFieldTrialCreatorBase::GetSeedStore() {
   return seed_store_.get();
-}
-
-base::Time VariationsFieldTrialCreatorBase::GetLatestSeedFetchTime() {
-  return GetSeedStore()->GetLatestSeedFetchTime();
 }
 
 }  // namespace variations

@@ -32,24 +32,6 @@ class VariationsFieldTrialCreator : public VariationsFieldTrialCreatorBase {
       delete;
 
   ~VariationsFieldTrialCreator() override;
-
-  // Overrides cached UI strings on the resource bundle once it is initialized.
-  void OverrideCachedUIStrings() override;
-
-  // Returns whether the map of the cached UI strings to override is empty.
-  bool IsOverrideResourceMapEmpty() override;
-
- protected:
-  // Overrides the string resource specified by |hash| with |str| in the
-  // resource bundle. Protected for testing.
-  void OverrideUIString(uint32_t hash, const std::u16string& str) override;
-
- private:
-  UIStringOverrider ui_string_overrider_;
-
-  // Caches the UI strings which need to be overridden in the resource bundle.
-  // These strings are cached before the resource bundle is initialized.
-  std::unordered_map<int, std::u16string> overridden_strings_map_;
 };
 
 }  // namespace variations

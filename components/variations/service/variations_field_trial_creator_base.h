@@ -5,19 +5,6 @@
 #ifndef COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_FIELD_TRIAL_CREATOR_BASE_H_
 #define COMPONENTS_VARIATIONS_SERVICE_VARIATIONS_FIELD_TRIAL_CREATOR_BASE_H_
 
-// This file contains a base class for VariationsFieldTrialCreator. Its primary
-// goal is to minimize generated code size, even at the expense of
-// functionality, and to be usable in ChromeOS early boot as part of a
-// standalone executable.
-// In particular, it will *not*:
-// 1) determine locale (this requires linking in libicu, which is several
-//    hundred KiB). Instead, it will accept locale as a parameter to the
-//    constructor.
-// 2) modify cached UI strings (we remove the ui::ResourceBundle dep entirely)
-//
-// All such functionality must be implemented by subclasses (e.g.
-// VariationsFieldTrialCreator)
-
 #include <cstdint>
 #include <memory>
 #include <optional>
@@ -38,6 +25,7 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/service/buildflags.h"
 #include "components/variations/service/safe_seed_manager.h"
+#include "components/variations/service/ui_string_overrider.h"
 #include "components/variations/service/variations_service_client.h"
 #include "components/variations/variations_seed_store.h"
 #include "components/version_info/channel.h"
@@ -123,11 +111,10 @@ class VariationsFieldTrialCreatorBase {
   //
   // |client| provides some platform-specific operations for variations.
   // |seed_store| manages seed data.
-  // |locale_cb| computes the locale, given a PrefService for local_state.
   VariationsFieldTrialCreatorBase(
       VariationsServiceClient* client,
       std::unique_ptr<VariationsSeedStore> seed_store,
-      base::OnceCallback<std::string(PrefService*)> locale_cb);
+      const UIStringOverrider& ui_string_overrider);
 
   VariationsFieldTrialCreatorBase(const VariationsFieldTrialCreatorBase&) =
       delete;
@@ -220,24 +207,26 @@ class VariationsFieldTrialCreatorBase {
   // latest seed. Returns base::Time() if there is no seed.
   base::Time GetSeedFetchTime();
 
+  // Returns the client-side time when the seed was last fetched. Returns
+  // base::Time() if there is no seed.
+  base::Time GetLatestSeedFetchTime();
+
   // Returns the locale that was used for evaluating trials.
   const std::string& application_locale() const { return application_locale_; }
 
   SeedType seed_type() const { return seed_type_; }
 
   // Overrides cached UI strings on the resource bundle once it is initialized.
-  // To be implemented by subclasses, if they have need for UI strings.
-  virtual void OverrideCachedUIStrings() = 0;
+  void OverrideCachedUIStrings();
 
   // Returns whether the map of the cached UI strings to override is empty.
-  // To be implemented by subclasses, if they have need for UI strings.
-  virtual bool IsOverrideResourceMapEmpty() = 0;
-
-  // Returns the client-side time when the seed was last fetched. Returns
-  // base::Time() if there is no seed.
-  base::Time GetLatestSeedFetchTime();
+  bool IsOverrideResourceMapEmpty();
 
  protected:
+  // Overrides the string resource specified by |hash| with |str| in the
+  // resource bundle. Protected for testing.
+  void OverrideUIString(uint32_t hash, const std::u16string& str);
+
   // Get the platform we're running on, respecting OverrideVariationsPlatform().
   // Protected for testing.
   Study::Platform GetPlatform();
@@ -255,11 +244,6 @@ class VariationsFieldTrialCreatorBase {
   // Read the google group memberships from local-state prefs.
   // Protected for testing.
   base::flat_set<uint64_t> GetGoogleGroupsFromPrefs();
-
-  // Overrides the string resource specified by |hash| with |str| in the
-  // resource bundle. Protected for testing.
-  // To be implemented by subclasses if they need UI string overrides.
-  virtual void OverrideUIString(uint32_t hash, const std::u16string& str) = 0;
 
  private:
   // Returns true if the loaded VariationsSeed has expired. An expired seed is
@@ -329,16 +313,18 @@ class VariationsFieldTrialCreatorBase {
   // platform.
   std::optional<Study::Platform> platform_override_;
 
-  // Caches the UI strings which need to be overridden in the resource bundle.
-  // These strings are cached before the resource bundle is initialized.
-  std::unordered_map<int, std::u16string> overridden_strings_map_;
-
   // Holds the country code to use for filtering permanent consistency studies
   std::string permanent_consistency_country_;
 
   // Tracks whether |permanent_consistency_country_| has been initialized to
   // ensure it contains a relevant value.
   bool permanent_consistency_country_initialized_ = false;
+
+  UIStringOverrider ui_string_overrider_;
+
+  // Caches the UI strings which need to be overridden in the resource bundle.
+  // These strings are cached before the resource bundle is initialized.
+  std::unordered_map<int, std::u16string> overridden_strings_map_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
