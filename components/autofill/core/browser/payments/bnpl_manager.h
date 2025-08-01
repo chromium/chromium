@@ -87,6 +87,10 @@ class BnplManager {
   // 3. The URL being visited is within the BNPL issuer allowlist.
   bool IsEligibleForBnpl() const;
 
+  // Returns true if the issuer for the ongoing flow contains the required
+  // action `PaymentInstrument::ActionRequired::kAcceptTos`.
+  bool AcceptTosActionRequired() const;
+
  private:
   friend class BnplManagerTestApi;
   friend class BnplManagerTest;
@@ -160,6 +164,10 @@ class BnplManager {
   // Runs after users select a BNPL issuer, and will redirect to plan selection
   // or terms of services depending on the issuer.
   void OnIssuerSelected(BnplIssuer selected_issuer);
+
+  // This function makes the appropriate server call to retrieve the ToS legal
+  // message for the issuer.
+  void GetLegalMessageFromServer();
 
   // This function makes the appropriate call to the payments server to get info
   // from the server for creating an instrument for the selected issuer.
