@@ -11,7 +11,10 @@
 #include <vector>
 
 #include "base/time/time.h"
-#include "components/privacy_sandbox/masked_domain_list/masked_domain_list.pb.h"
+
+namespace masked_domain_list {
+class Resource;
+}
 
 namespace ip_protection {
 
