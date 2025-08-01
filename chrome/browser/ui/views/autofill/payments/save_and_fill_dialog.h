@@ -9,6 +9,7 @@
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
 #include "components/autofill/core/browser/ui/payments/save_and_fill_dialog_view.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
+#include "ui/views/controls/throbber.h"
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/window/dialog_delegate.h"
 
@@ -54,6 +55,10 @@ class SaveAndFillDialog : public views::DialogDelegateView,
   // Create a view with a legal message.
   std::unique_ptr<views::View> CreateLegalMessageView();
 
+  void CreateMainContentView();
+  void CreatePendingView();
+  void ToggleThrobberVisibility(bool visible);
+
   base::WeakPtr<SaveAndFillDialogController> controller_;
   base::RepeatingCallback<void(const GURL&)> on_legal_message_link_clicked_;
 
@@ -65,6 +70,11 @@ class SaveAndFillDialog : public views::DialogDelegateView,
   LabeledTextfieldWithErrorMessage cvc_data_;
   LabeledTextfieldWithErrorMessage expiration_date_data_;
   LabeledTextfieldWithErrorMessage name_on_card_data_;
+
+  raw_ptr<views::View> container_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> main_view_ = nullptr;
+  raw_ptr<views::BoxLayoutView> pending_view_ = nullptr;
+  raw_ptr<views::Throbber> throbber_ = nullptr;
 };
 
 }  // namespace autofill

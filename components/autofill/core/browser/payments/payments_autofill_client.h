@@ -640,6 +640,13 @@ class PaymentsAutofillClient : public RiskDataLoader {
       const LegalMessageLines& legal_message_lines,
       CardSaveAndFillDialogCallback callback);
 
+  // Shows a pending state dialog with a throbber while the preflight
+  // response is being fetched. This pending state is a precursor to either the
+  // local or upload Save and Fill dialog. If the preflight call fails, the
+  // dialog transitions to the local version. If it succeeds, the dialog
+  // transitions to the server version.
+  virtual void ShowCreditCardSaveAndFillPendingDialog();
+
   // Gets the payments Save and Fill manager owned by the client. This will be
   // used to handle the Save and Fill dialog.
   virtual payments::SaveAndFillManager* GetSaveAndFillManager();

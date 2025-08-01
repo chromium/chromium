@@ -20,8 +20,8 @@ class SaveAndFillDialogControllerImplTest : public testing::Test {
   SaveAndFillDialogControllerImplTest() = default;
   ~SaveAndFillDialogControllerImplTest() override = default;
 
-  void SetIsUploadSaveAndFill(bool is_upload) {
-    controller_->is_upload_save_and_fill_ = is_upload;
+  void SetDialogState(SaveAndFillDialogState dialog_state) {
+    controller_->dialog_state_ = dialog_state;
   }
 
   void SetUp() override {
@@ -79,7 +79,7 @@ TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
   EXPECT_EQ(controller()->GetWindowTitle(),
             l10n_util::GetStringUTF16(IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_TITLE));
 
-  SetIsUploadSaveAndFill(false);
+  SetDialogState(SaveAndFillDialogState::kLocalDialog);
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL));
@@ -109,7 +109,7 @@ TEST_F(SaveAndFillDialogControllerImplTest, CorrectStringsAreReturned) {
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_INVALID_CARD_NUMBER));
 
   // Test for upload Save and Fill explanatory message.
-  SetIsUploadSaveAndFill(true);
+  SetDialogState(SaveAndFillDialogState::kUploadDialog);
   EXPECT_EQ(controller()->GetExplanatoryMessage(),
             l10n_util::GetStringUTF16(
                 IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD));

@@ -216,6 +216,7 @@ class ChromePaymentsAutofillClient : public PaymentsAutofillClient,
   void ShowCreditCardUploadSaveAndFillDialog(
       const LegalMessageLines& legal_message_lines,
       CardSaveAndFillDialogCallback callback) override;
+  void ShowCreditCardSaveAndFillPendingDialog() override;
   payments::SaveAndFillManager* GetSaveAndFillManager() override;
   void ShowSelectBnplIssuerDialog(
       std::vector<BnplIssuerContext> bnpl_issuer_context,

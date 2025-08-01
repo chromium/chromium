@@ -37,6 +37,8 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
   fill_card_callback_ = std::move(fill_card_callback);
 
   if (IsCreditCardUploadEnabled()) {
+    payments_autofill_client()->ShowCreditCardSaveAndFillPendingDialog();
+
     PopulateInitialUploadDetails();
 
     payments_autofill_client()

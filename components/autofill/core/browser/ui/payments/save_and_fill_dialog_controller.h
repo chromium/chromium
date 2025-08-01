@@ -11,6 +11,16 @@
 
 namespace autofill {
 
+enum class SaveAndFillDialogState {
+  // Local version of the Save and Fill dialog.
+  kLocalDialog,
+  // Pending state where a throbber is shown while waiting for the preflight
+  // call response.
+  kPendingDialog,
+  // Upload version of the Save and Fill dialog.
+  kUploadDialog,
+};
+
 // Interface that exposes controller functionality to
 // SaveAndFillDialogView.
 class SaveAndFillDialogController {
@@ -37,7 +47,11 @@ class SaveAndFillDialogController {
       size_t old_cursor_position,
       size_t& new_cursor_position) const = 0;
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
-  virtual bool IsUploadSaveAndFill() const = 0;
+
+  // Returns the current state of the Save and Fill dialog. This state
+  // can be a local card save, an upload card save, or a pending state while
+  // waiting for the preflight response.
+  virtual SaveAndFillDialogState GetDialogState() const = 0;
   virtual bool IsValidCreditCardNumber(
       std::u16string_view input_text) const = 0;
   virtual bool IsValidCvc(std::u16string_view input_text) const = 0;

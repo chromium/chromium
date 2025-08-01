@@ -26,6 +26,7 @@ void SaveAndFillDialogControllerImpl::ShowLocalDialog(
         create_and_show_view_callback,
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
+  dialog_state_ = SaveAndFillDialogState::kLocalDialog;
   dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
@@ -38,11 +39,19 @@ void SaveAndFillDialogControllerImpl::ShowUploadDialog(
         create_and_show_view_callback,
     payments::PaymentsAutofillClient::CardSaveAndFillDialogCallback
         card_save_and_fill_dialog_callback) {
+  dialog_state_ = SaveAndFillDialogState::kUploadDialog;
+  legal_message_lines_ = legal_message_lines;
   dialog_view_ = std::move(create_and_show_view_callback).Run();
   card_save_and_fill_dialog_callback_ =
       std::move(card_save_and_fill_dialog_callback);
-  legal_message_lines_ = legal_message_lines;
-  is_upload_save_and_fill_ = true;
+  CHECK(dialog_view_);
+}
+
+void SaveAndFillDialogControllerImpl::ShowPendingDialog(
+    base::OnceCallback<std::unique_ptr<SaveAndFillDialogView>()>
+        create_and_show_view_callback) {
+  dialog_state_ = SaveAndFillDialogState::kPendingDialog;
+  dialog_view_ = std::move(create_and_show_view_callback).Run();
   CHECK(dialog_view_);
 }
 
@@ -52,10 +61,16 @@ std::u16string SaveAndFillDialogControllerImpl::GetWindowTitle() const {
 }
 
 std::u16string SaveAndFillDialogControllerImpl::GetExplanatoryMessage() const {
-  return l10n_util::GetStringUTF16(
-      IsUploadSaveAndFill()
-          ? IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD
-          : IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);
+  switch (dialog_state_) {
+    case SaveAndFillDialogState::kUploadDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_UPLOAD);
+    case SaveAndFillDialogState::kLocalDialog:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_SAVE_AND_FILL_DIALOG_EXPLANATION_LOCAL);
+    case SaveAndFillDialogState::kPendingDialog:
+      return std::u16string();
+  }
 }
 
 std::u16string SaveAndFillDialogControllerImpl::GetCardNumberLabel() const {
@@ -151,8 +166,8 @@ std::u16string SaveAndFillDialogControllerImpl::FormatExpirationDateInput(
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
-bool SaveAndFillDialogControllerImpl::IsUploadSaveAndFill() const {
-  return is_upload_save_and_fill_;
+SaveAndFillDialogState SaveAndFillDialogControllerImpl::GetDialogState() const {
+  return dialog_state_;
 }
 
 bool SaveAndFillDialogControllerImpl::IsValidCreditCardNumber(

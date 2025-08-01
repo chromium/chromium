@@ -291,6 +291,8 @@ void PaymentsAutofillClient::ShowCreditCardUploadSaveAndFillDialog(
     const LegalMessageLines& legal_message_lines,
     CardSaveAndFillDialogCallback callback) {}
 
+void PaymentsAutofillClient::ShowCreditCardSaveAndFillPendingDialog() {}
+
 payments::SaveAndFillManager* PaymentsAutofillClient::GetSaveAndFillManager() {
   return nullptr;
 }
