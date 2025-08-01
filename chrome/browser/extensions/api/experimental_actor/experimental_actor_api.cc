@@ -406,6 +406,14 @@ ExperimentalActorPerformActionsFunction::Run() {
 
   actor::TaskId task_id(actions.task_id());
 
+  // If the client didn't create a task or passed in the wrong task id, return
+  // failure.
+  actor::ActorTask* task = actor_service->GetTask(task_id);
+  if (!task) {
+    return RespondNow(
+        Error(absl::StrFormat("Invalid task_id[%d].", task_id.value())));
+  }
+
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
 
   if (!requests.has_value()) {
@@ -413,7 +421,7 @@ ExperimentalActorPerformActionsFunction::Run() {
         FROM_HERE,
         base::BindOnce(
             &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
-            actor::mojom::ActionResultCode::kArgumentsInvalid,
+            task_id, actor::mojom::ActionResultCode::kArgumentsInvalid,
             requests.error()));
     return RespondLater();
   }
@@ -421,24 +429,48 @@ ExperimentalActorPerformActionsFunction::Run() {
   actor_service->PerformActions(
       task_id, std::move(requests.value()),
       base::BindOnce(
-          &ExperimentalActorPerformActionsFunction::OnActionsFinished, this));
+          &ExperimentalActorPerformActionsFunction::OnActionsFinished, this,
+          task_id));
 
   return RespondLater();
 }
 
 void ExperimentalActorPerformActionsFunction::OnActionsFinished(
+    actor::TaskId task_id,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action) {
-  optimization_guide::proto::ActionsResult response =
-      actor::BuildActionsResult(result_code, index_of_failed_action);
+  auto* actor_service = actor::ActorKeyedService::Get(browser_context());
+  actor::ActorTask* task = actor_service->GetTask(task_id);
 
-  // TODO(crbug.com/411462297) Request observations and fill in the response
-  // with them (remembering to convert to session tab ids)
+  // Task is checked when calling PerformActions and it cannot be removed once
+  // added (a stopped task is no longer active but will still be retrieved by
+  // GetTask).
+  CHECK(task);
 
-  std::vector<uint8_t> data_buffer(response.ByteSizeLong());
-  if (!data_buffer.empty()) {
-    response.SerializeToArray(&data_buffer[0], response.ByteSizeLong());
+  actor::BuildActionsResultWithObservations(
+      *browser_context(), result_code, index_of_failed_action, *task,
+      base::BindOnce(
+          &ExperimentalActorPerformActionsFunction::OnObservationResult, this));
+}
+
+void ExperimentalActorPerformActionsFunction::OnObservationResult(
+    std::unique_ptr<optimization_guide::proto::ActionsResult> response) {
+  CHECK(response);
+
+  // Convert back from tab handle to session tab id.
+  for (optimization_guide::proto::TabObservation& observation :
+       *response->mutable_tabs()) {
+    // Note: session_tab_id will be -1 if the tab if couldn't be mapped.
+    int32_t session_tab_id =
+        ConvertTabHandleToSessionTabId(observation.id(), browser_context());
+    observation.set_id(session_tab_id);
   }
+
+  std::vector<uint8_t> data_buffer(response->ByteSizeLong());
+  if (!data_buffer.empty()) {
+    response->SerializeToArray(data_buffer.data(), response->ByteSizeLong());
+  }
+
   Respond(ArgumentList(api::experimental_actor::PerformActions::Results::Create(
       std::move(data_buffer))));
 }
@@ -488,8 +520,10 @@ void ExperimentalActorRequestTabObservationFunction::OnObservationFinished(
     return;
   }
 
-  optimization_guide::proto::TabObservation& tab_observation =
-      **observation_result;
+  // TODO(bokan): This doesn't set the (tab) `id` field, maybe unneeded in this
+  // case but would be good for consistency.
+  optimization_guide::proto::TabObservation tab_observation =
+      actor::ConvertToTabObservation(**observation_result);
   std::vector<uint8_t> data_buffer(tab_observation.ByteSizeLong());
   if (!data_buffer.empty()) {
     tab_observation.SerializeToArray(&data_buffer[0], data_buffer.size());

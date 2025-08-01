@@ -100,7 +100,15 @@ class ActorTask {
   // TODO(crbug.com/411462297): This will be replaced by GetTabs soon.
   tabs::TabInterface* GetTabForObservation() const;
 
+  // The set of tabs that have been acted on at any point during this task.
   const absl::flat_hash_set<tabs::TabHandle>& GetTabs() const {
+    return tab_handles_;
+  }
+
+  // The set of tabs that were acted on by the last call to Act.
+  const absl::flat_hash_set<tabs::TabHandle>& GetLastActedTabs() const {
+    // TODO(bokan): Currently the client only acts on a single tab but this
+    // should track which tabs were acted on in the last call to Act.
     return tab_handles_;
   }
 

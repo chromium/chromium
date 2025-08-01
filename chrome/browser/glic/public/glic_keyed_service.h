@@ -20,6 +20,7 @@
 #include "chrome/browser/glic/host/glic.mojom.h"
 #include "chrome/browser/glic/public/context/glic_sharing_manager.h"
 #include "chrome/browser/glic/widget/glic_window_controller.h"
+#include "chrome/common/actor.mojom-forward.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/web_contents.h"
 
@@ -221,6 +222,12 @@ class GlicKeyedService : public KeyedService {
 
   void FinishPreload(GlicPrewarmingChecksResult reason);
   void FinishPreloadFre(bool should_preload);
+
+  void PerformActionsFinished(
+      mojom::WebClientHandler::PerformActionsCallback callback,
+      actor::TaskId task_id,
+      actor::mojom::ActionResultCode result_code,
+      std::optional<size_t> index_of_failed_action);
 
   // List of callbacks to be notified when the client requests a change to the
   // context access indicator status.

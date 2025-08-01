@@ -61,6 +61,7 @@
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "mojo/public/cpp/base/proto_wrapper.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 #include "third_party/abseil-cpp/absl/strings/str_format.h"
 #include "third_party/blink/public/common/web_preferences/web_preferences.h"
 #include "ui/base/page_transition_types.h"
@@ -367,18 +368,39 @@ void GlicKeyedService::CreateTask(
   std::move(callback).Run(task_id.value());
 }
 
-void PerformActionsFinished(
+void GlicKeyedService::PerformActionsFinished(
     mojom::WebClientHandler::PerformActionsCallback callback,
+    actor::TaskId task_id,
     actor::mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action) {
-  optimization_guide::proto::ActionsResult response =
-      actor::BuildActionsResult(result_code, index_of_failed_action);
-  std::move(callback).Run(mojo_base::ProtoWrapper(response));
+  actor::ActorTask* task =
+      actor::ActorKeyedService::Get(profile_)->GetTask(task_id);
+
+  // Task is checked when calling PerformActions and it doesn't go away.
+  CHECK(task);
+
+  // The callback doesn't need any weak semantics since all it does is wrap the
+  // result and pass it to the mojo callback. If `this` is destroyed the mojo
+  // connection is closed so this will be a no-op but the callback doesn't touch
+  // any freed memory.
+  auto result_callback = base::BindOnce(
+      [](mojom::WebClientHandler::PerformActionsCallback callback,
+         std::unique_ptr<optimization_guide::proto::ActionsResult> result) {
+        CHECK(result);
+        std::move(callback).Run(mojo_base::ProtoWrapper(*result));
+      },
+      std::move(callback));
+
+  actor::BuildActionsResultWithObservations(*profile_, result_code,
+                                            index_of_failed_action, *task,
+                                            std::move(result_callback));
 }
 
 void GlicKeyedService::PerformActions(
     const std::vector<uint8_t>& actions_proto,
     mojom::WebClientHandler::PerformActionsCallback callback) {
+  // TODO(bokan): Refactor the actor code in this class into an actor-specific
+  // wrapper for proto-to-actor conversion.
   optimization_guide::proto::Actions actions;
   if (!actions.ParseFromArray(actions_proto.data(), actions_proto.size())) {
     std::move(callback).Run(
@@ -399,6 +421,16 @@ void GlicKeyedService::PerformActions(
   }
 
   actor::TaskId task_id(actions.task_id());
+  if (!actor_service->GetTask(task_id)) {
+    actor_service->GetJournal().Log(
+        GURL::EmptyGURL(), task_id, actor::mojom::JournalTrack::kActor,
+        "Act Failed", absl::StrFormat("No task with id[%d]", task_id.value()));
+    optimization_guide::proto::ActionsResult response =
+        actor::BuildErrorActionsResult(
+            actor::mojom::ActionResultCode::kTaskWentAway, std::nullopt);
+    std::move(callback).Run(mojo_base::ProtoWrapper(response));
+    return;
+  }
 
   actor::BuildToolRequestResult requests = actor::BuildToolRequest(actions);
   if (!requests.has_value()) {
@@ -408,7 +440,7 @@ void GlicKeyedService::PerformActions(
         absl::StrFormat("Failed to convert proto::Actions[%d] to ToolRequest",
                         requests.error()));
     optimization_guide::proto::ActionsResult response =
-        actor::BuildActionsResult(
+        actor::BuildErrorActionsResult(
             actor::mojom::ActionResultCode::kArgumentsInvalid,
             requests.error());
     std::move(callback).Run(mojo_base::ProtoWrapper(response));
@@ -417,7 +449,8 @@ void GlicKeyedService::PerformActions(
 
   actor_service->PerformActions(
       task_id, std::move(requests.value()),
-      base::BindOnce(PerformActionsFinished, std::move(callback)));
+      base::BindOnce(&GlicKeyedService::PerformActionsFinished, GetWeakPtr(),
+                     std::move(callback), task_id));
 }
 
 // TODO(crbug.com/411462297): Stop/Pause/Resume task need to be routed to go

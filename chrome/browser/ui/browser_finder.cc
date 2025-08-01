@@ -257,10 +257,16 @@ Browser* FindBrowserWithProfile(Profile* profile) {
                                         /*match_not_closing=*/false);
 }
 
-std::vector<Browser*> FindAllTabbedBrowsersWithProfile(Profile* profile) {
+std::vector<Browser*> FindAllTabbedBrowsersWithProfile(
+    Profile* profile,
+    bool ignore_closing_browsers) {
+  uint32_t match_types = kMatchNormal;
+  if (ignore_closing_browsers) {
+    match_types |= kMatchNotClosing;
+  }
   std::vector<Browser*> browsers;
   for (Browser* browser : *BrowserList::GetInstance()) {
-    if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, kMatchNormal,
+    if (BrowserMatches(browser, profile, Browser::FEATURE_NONE, match_types,
                        display::kInvalidDisplayId)) {
       browsers.emplace_back(browser);
     }

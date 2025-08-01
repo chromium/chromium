@@ -23,9 +23,9 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor.mojom.h"
 #include "chrome/common/actor/action_result.h"
+#include "third_party/abseil-cpp/absl/strings/str_format.h"
 
 namespace {
-
 void RunLater(base::OnceClosure task) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(FROM_HERE,
                                                               std::move(task));
@@ -152,38 +152,27 @@ void ActorKeyedService::RequestTabObservation(
       optimization_guide::ActionableAIPageContentOptions();
   page_content_annotations::FetchPageContext(
       *tab.GetContents(), options,
-      base::BindOnce(&ActorKeyedService::OnTabOservationResult,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
-}
+      base::BindOnce(
+          [](base::OnceCallback<void(TabObservationResult)> callback,
+             TabObservationResult result) {
+            if (result.has_value()) {
+              // Context for actor observations should always have an APC and a
+              // screenshot, return failure if either is missing.
+              auto& fetch_result = **result;
+              bool has_apc =
+                  fetch_result.annotated_page_content_result.has_value();
+              bool has_screenshot = fetch_result.screenshot_result.has_value();
+              if (!has_apc || !has_screenshot) {
+                std::move(callback).Run(base::unexpected(absl::StrFormat(
+                    "Failed Observation: hasAPC[%g] hasScreenshot[%g]", has_apc,
+                    has_screenshot)));
+                return;
+              }
 
-void ActorKeyedService::OnTabOservationResult(
-    base::OnceCallback<void(TabObservationResult)> callback,
-    page_content_annotations::FetchPageContextResultCallbackArg fetch_result) {
-  if (!fetch_result.has_value()) {
-    std::move(callback).Run(base::unexpected(fetch_result.error()));
-    return;
-  }
-  auto& page_context = **fetch_result;
-  if (!page_context.screenshot_result.has_value() ||
-      !page_context.annotated_page_content_result.has_value()) {
-    std::move(callback).Run(
-        base::unexpected<std::string>("Failed Observation"));
-    return;
-  }
-  std::unique_ptr<optimization_guide::proto::TabObservation> result =
-      std::make_unique<optimization_guide::proto::TabObservation>();
-  if (page_context.screenshot_result) {
-    auto& data = page_context.screenshot_result->jpeg_data;
-    if (data.size() != 0) {
-      result->set_screenshot_mime_type("image/jpeg");
-      result->set_screenshot(data.data(), data.size());
-    }
-  }
-  if (page_context.annotated_page_content_result) {
-    result->mutable_annotated_page_content()->Swap(
-        &page_context.annotated_page_content_result->proto);
-  }
-  std::move(callback).Run(std::move(result));
+              std::move(callback).Run(std::move(result));
+            }
+          },
+          std::move(callback)));
 }
 
 void ActorKeyedService::ConvertToBrowserActionResult(
@@ -193,8 +182,9 @@ void ActorKeyedService::ConvertToBrowserActionResult(
     int32_t tab_id,
     const GURL& url,
     actor::mojom::ActionResultPtr action_result,
-    base::expected<std::unique_ptr<optimization_guide::proto::TabObservation>,
-                   std::string> context_result) {
+    base::expected<
+        std::unique_ptr<page_content_annotations::FetchPageContextResult>,
+        std::string> context_result) {
   optimization_guide::proto::BrowserActionResult browser_action_result;
   if (!context_result.has_value()) {
     VLOG(1) << "Execute Action failed: Error fetching context.";
@@ -203,26 +193,27 @@ void ActorKeyedService::ConvertToBrowserActionResult(
         base::BindOnce(std::move(callback), std::move(browser_action_result)));
     return;
   }
-  auto& tab_observation = **context_result;
-  if (tab_observation.has_annotated_page_content()) {
-    size_t size = tab_observation.annotated_page_content().ByteSizeLong();
-    std::vector<uint8_t> buffer(size);
-    tab_observation.annotated_page_content().SerializeToArray(buffer.data(),
-                                                              size);
-    journal_.LogAnnotatedPageContent(url, task_id, buffer);
+  auto& fetch_result = **context_result;
 
-    browser_action_result.mutable_annotated_page_content()->Swap(
-        tab_observation.mutable_annotated_page_content());
-  }
-  if (tab_observation.has_screenshot()) {
-    journal_.LogScreenshot(url, task_id, tab_observation.screenshot_mime_type(),
-                           base::as_byte_span(tab_observation.screenshot()));
+  CHECK(fetch_result.annotated_page_content_result.has_value());
+  CHECK(fetch_result.screenshot_result.has_value());
 
-    browser_action_result.set_screenshot(tab_observation.screenshot().data(),
-                                         tab_observation.screenshot().size());
-    browser_action_result.set_screenshot_mime_type(
-        tab_observation.screenshot_mime_type());
-  }
+  size_t size =
+      fetch_result.annotated_page_content_result->proto.ByteSizeLong();
+  std::vector<uint8_t> buffer(size);
+  fetch_result.annotated_page_content_result->proto.SerializeToArray(
+      buffer.data(), size);
+  journal_.LogAnnotatedPageContent(url, task_id, buffer);
+
+  browser_action_result.mutable_annotated_page_content()->Swap(
+      &fetch_result.annotated_page_content_result->proto);
+  auto& data = fetch_result.screenshot_result->jpeg_data;
+  journal_.LogScreenshot(url, task_id, kMimeTypeJpeg, base::as_byte_span(data));
+
+  // TODO(bokan): Can we avoid a copy here?
+  browser_action_result.set_screenshot(data.data(), data.size());
+  browser_action_result.set_screenshot_mime_type(kMimeTypeJpeg);
+
   browser_action_result.set_task_id(task_id.value());
   browser_action_result.set_tab_id(tab_id);
   browser_action_result.set_action_result(actor::IsOk(*action_result) ? 1 : 0);

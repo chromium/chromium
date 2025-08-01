@@ -120,8 +120,11 @@ class ExperimentalActorPerformActionsFunction
  protected:
   ~ExperimentalActorPerformActionsFunction() override;
   ResponseAction Run() override;
-  void OnActionsFinished(actor::mojom::ActionResultCode result_code,
+  void OnActionsFinished(actor::TaskId task_id,
+                         actor::mojom::ActionResultCode result_code,
                          std::optional<size_t> index_of_failed_action);
+  void OnObservationResult(
+      std::unique_ptr<optimization_guide::proto::ActionsResult> response);
   DECLARE_EXTENSION_FUNCTION("experimentalActor.performActions",
                              EXPERIMENTALACTOR_PERFORMACTIONS)
 };

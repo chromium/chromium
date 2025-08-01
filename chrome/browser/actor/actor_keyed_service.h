@@ -17,6 +17,7 @@
 #include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/aggregated_journal.h"
 #include "chrome/browser/actor/task_id.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
 #include "chrome/common/buildflags.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
@@ -29,10 +30,6 @@ class Profile;
 namespace content {
 class BrowserContext;
 }  // namespace content
-
-namespace page_content_annotations {
-struct FetchPageContextResult;
-}  // namespace page_content_annotations
 
 namespace actor {
 namespace ui {
@@ -108,9 +105,9 @@ class ActorKeyedService : public KeyedService {
   bool IsAnyTaskActingOnTab(const tabs::TabInterface& tab) const;
   Profile* GetProfile();
 
-  using TabObservationResult =
-      base::expected<std::unique_ptr<optimization_guide::proto::TabObservation>,
-                     std::string>;
+  using TabObservationResult = base::expected<
+      std::unique_ptr<page_content_annotations::FetchPageContextResult>,
+      std::string>;
 
   // Request a TabOservation be generated from the given tab.
   void RequestTabObservation(

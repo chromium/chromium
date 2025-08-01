@@ -44,6 +44,7 @@ source_set("actor") {
     ":types",
     "//base",
     "//chrome/browser/actor/ui:states",
+    "//chrome/browser/page_content_annotations:fetcher",
     "//chrome/browser/profiles",
     "//chrome/common",
     "//components/optimization_guide/content/browser",

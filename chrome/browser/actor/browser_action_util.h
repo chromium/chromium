@@ -11,6 +11,9 @@
 #include "base/types/expected.h"
 #include "chrome/common/actor.mojom-forward.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "components/tabs/public/tab_interface.h"
+#include "content/public/browser/browser_context.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_set.h"
 
 // Conversion function for turning optimization_guide::proto::* types into
 // ToolRequests usable by the actor framework.
@@ -22,12 +25,16 @@ class Actions;
 class BrowserAction;
 }  // namespace optimization_guide::proto
 
-namespace tabs {
-class TabInterface;
-}
+namespace page_content_annotations {
+struct FetchPageContextResult;
+}  // namespace page_content_annotations
 
 namespace actor {
+class ActorTask;
 class ToolRequest;
+
+// The mime type used for screenshots.
+inline constexpr std::string kMimeTypeJpeg = "image/jpeg";
 
 // Build a ToolRequest from the provided optimization_guide Action proto. If the
 // action proto doesn't provide a tab_id, and the fallback_tab parameter is
@@ -59,8 +66,17 @@ BuildToolRequestResult BuildToolRequest(
     const optimization_guide::proto::Actions& actions);
 
 // Builds the ActionsResult proto from the output of a call to the
-// ActorKeyedService::PerformActions API.
-optimization_guide::proto::ActionsResult BuildActionsResult(
+// ActorKeyedService::PerformActions API and fetches new observations for
+// tabs relevant to the actions.
+void BuildActionsResultWithObservations(
+    content::BrowserContext& browser_context,
+    mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action,
+    const ActorTask& task,
+    base::OnceCallback<void(
+        std::unique_ptr<optimization_guide::proto::ActionsResult>)> callback);
+
+optimization_guide::proto::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action);
 
@@ -71,6 +87,13 @@ optimization_guide::proto::ActionsResult BuildActionsResult(
 BuildToolRequestResult BuildToolRequest(
     const optimization_guide::proto::BrowserAction& actions,
     tabs::TabInterface* deprecated_fallback_tab);
+
+// Converts a FetchPageContext result to a TabObservation proto. Note that this
+// does not fill in the (tab) `id` field on the proto, the caller is responsible
+// for that.
+optimization_guide::proto::TabObservation ConvertToTabObservation(
+    const page_content_annotations::FetchPageContextResult&
+        page_context_result);
 
 // Builds the BrowserActionResult proto from the output of a call to the
 // ActorKeyedService::ActInFocusedTab API.

@@ -67,6 +67,8 @@ void HandleFetchPageResult(
             page_context.inner_text_result->truncated));
   }
 
+  // TODO(crbug.com/411462297): Remove actor specific bits in this class once
+  // all actor entry points are removed.
   actor::AggregatedJournal* journal = nullptr;
   if (web_contents) {
     if (auto* actor_keyed_service =
@@ -146,8 +148,6 @@ void FetchPageContext(
       tab_context_options.include_viewport_screenshot;
 
   if (tab_context_options.include_annotated_page_content) {
-    // TODO(crbug.com/409564704): Move actor page content extraction to the
-    // actor coordinator.
     if (tab_context_options.annotated_page_content_mode ==
         optimization_guide::proto::
             ANNOTATED_PAGE_CONTENT_MODE_ACTIONABLE_ELEMENTS) {

@@ -4,13 +4,19 @@
 
 #include "chrome/browser/actor/browser_action_util.h"
 
+#include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <optional>
 
+#include "base/barrier_closure.h"
 #include "base/base64.h"
+#include "base/functional/callback_helpers.h"
 #include "base/notimplemented.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/types/expected.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
 #include "chrome/browser/actor/shared_types.h"
 #include "chrome/browser/actor/tools/attempt_login_tool_request.h"
 #include "chrome/browser/actor/tools/click_tool_request.h"
@@ -25,11 +31,16 @@
 #include "chrome/browser/actor/tools/tool_request.h"
 #include "chrome/browser/actor/tools/type_tool_request.h"
 #include "chrome/browser/actor/tools/wait_tool_request.h"
+#include "chrome/browser/page_content_annotations/multi_source_page_context_fetcher.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/common/actor/action_result.h"
 #include "chrome/common/actor/actor_constants.h"
 #include "chrome/common/actor/actor_logging.h"
 #include "components/optimization_guide/content/browser/page_content_proto_provider.h"
 #include "components/optimization_guide/proto/features/actions_data.pb.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
 
@@ -57,6 +68,9 @@ using apc::SelectAction;
 using apc::TypeAction;
 using apc::WaitAction;
 using ::optimization_guide::DocumentIdentifierUserData;
+using ::page_content_annotations::FetchPageContextOptions;
+using ::page_content_annotations::FetchPageContextResult;
+using ::page_content_annotations::FetchPageContextResultCallbackArg;
 using ::tabs::TabHandle;
 using ::tabs::TabInterface;
 
@@ -541,14 +555,135 @@ BuildToolRequest(const optimization_guide::proto::Actions& actions) {
   return requests;
 }
 
-optimization_guide::proto::ActionsResult BuildActionsResult(
+apc::TabObservation ConvertToTabObservation(
+    const page_content_annotations::FetchPageContextResult& fetch_result) {
+  apc::TabObservation tab_observation;
+
+  if (fetch_result.screenshot_result) {
+    auto& data = fetch_result.screenshot_result->jpeg_data;
+    if (data.size() != 0) {
+      tab_observation.set_screenshot_mime_type(kMimeTypeJpeg);
+      // TODO(bokan): Can we avoid a copy here?
+      tab_observation.set_screenshot(data.data(), data.size());
+    }
+  }
+
+  if (fetch_result.annotated_page_content_result) {
+    *tab_observation.mutable_annotated_page_content() =
+        fetch_result.annotated_page_content_result->proto;
+  }
+
+  return tab_observation;
+}
+
+namespace {
+
+void FetchCallback(base::RepeatingClosure barrier,
+                   apc::TabObservation* tab_observation,
+                   ActorKeyedService::TabObservationResult result) {
+  base::ScopedClosureRunner run_barrier_at_return(barrier);
+
+  if (!result.has_value()) {
+    // TODO(crbug.com/435210098): There should be some way to message failure to
+    // observe.
+    return;
+  }
+
+  FetchPageContextResult& fetch_result = **result;
+
+  // RequestTabObservation should return an error if these aren't filled in.
+  CHECK(fetch_result.screenshot_result.has_value());
+  CHECK(fetch_result.annotated_page_content_result.has_value());
+
+  *tab_observation = ConvertToTabObservation(fetch_result);
+}
+
+}  // namespace
+
+void BuildActionsResultWithObservations(
+    content::BrowserContext& browser_context,
+    mojom::ActionResultCode result_code,
+    std::optional<size_t> index_of_failed_action,
+    const ActorTask& task,
+    base::OnceCallback<void(std::unique_ptr<apc::ActionsResult>)> callback) {
+  auto response = std::make_unique<apc::ActionsResult>();
+
+  response->set_action_result(static_cast<int32_t>(result_code));
+  if (index_of_failed_action) {
+    response->set_index_of_failed_action(*index_of_failed_action);
+  }
+
+  auto* profile = Profile::FromBrowserContext(&browser_context);
+
+  std::vector<Browser*> browsers = chrome::FindAllTabbedBrowsersWithProfile(
+      profile, /*ignore_closing_browsers=*/true);
+
+  for (Browser* browser : browsers) {
+    apc::WindowObservation* window_observation = response->add_windows();
+    window_observation->set_id(browser->session_id().id());
+    window_observation->set_active(browser->IsActive());
+
+    if (tabs::TabInterface* tab = browser->GetActiveTabInterface()) {
+      window_observation->set_activated_tab_id(tab->GetHandle().raw_value());
+    }
+
+    for (const tabs::TabInterface* tab : *browser->GetTabStripModel()) {
+      window_observation->add_tab_ids(tab->GetHandle().raw_value());
+    }
+  }
+
+  absl::flat_hash_set<tabs::TabInterface*> tabs_to_fetch;
+
+  for (const tabs::TabHandle& handle : task.GetLastActedTabs()) {
+    // Include a TabObservation entry for acted on tabs. If the tab no longer
+    // exists or the fetch context failed, the observation will be empty.
+    // TODO(crbug.com/392167142): Check for a crashed tab here.
+    // TODO(crbug.com/434263095): We should probably avoid capturing
+    // observations if an action fails with kUrlBlocked. That might be better
+    // implemented by not putting the tab into the LastActedTabs set.
+    TabInterface* tab = handle.Get();
+    if (!tab) {
+      // TODO(crbug.com/435210098): There should be some way to message failure
+      // to capture an observation to the model (here and in FetchCallback). For
+      // now we leave the observation empty.
+      apc::TabObservation* tab_observation = response->add_tabs();
+      tab_observation->set_id(handle.raw_value());
+    } else {
+      tabs_to_fetch.insert(tab);
+    }
+  }
+
+  apc::ActionsResult* raw_response = response.get();
+  base::RepeatingClosure barrier = base::BarrierClosure(
+      tabs_to_fetch.size(),
+      base::BindOnce(std::move(callback), std::move(response)));
+
+  auto* actor_service = actor::ActorKeyedService::Get(profile);
+  CHECK(actor_service);
+
+  for (const tabs::TabInterface* tab : tabs_to_fetch) {
+    apc::TabObservation* tab_observation = raw_response->add_tabs();
+    tab_observation->set_id(tab->GetHandle().raw_value());
+
+    // tab_observation can be Unretained because the underlying APC is owned by
+    // the barrier which is ref-counted.
+    actor_service->RequestTabObservation(
+        *tab, base::BindOnce(FetchCallback, barrier,
+                             base::Unretained(tab_observation)));
+  }
+}
+
+apc::ActionsResult BuildErrorActionsResult(
     mojom::ActionResultCode result_code,
     std::optional<size_t> index_of_failed_action) {
-  optimization_guide::proto::ActionsResult response;
+  apc::ActionsResult response;
+  CHECK(!IsOk(result_code));
+
   response.set_action_result(static_cast<int32_t>(result_code));
   if (index_of_failed_action) {
     response.set_index_of_failed_action(*index_of_failed_action);
   }
+
   return response;
 }
 
