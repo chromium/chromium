@@ -10,15 +10,12 @@
 
 namespace content {
 
-// Default value for is_background_suspend_enabled is determined statically in
-// Chromium, but some content embedders (e.g. Cast) may need to change it at
-// runtime.
-CONTENT_EXPORT extern const bool kIsBackgroundMediaSuspendEnabled;
+CONTENT_EXPORT bool IsBackgroundMediaSuspendEnabled();
 
 struct RenderFrameMediaPlaybackOptions {
   // Whether the renderer should automatically suspend media playback on
   // background tabs for given |render_frame|.
-  bool is_background_suspend_enabled = kIsBackgroundMediaSuspendEnabled;
+  bool is_background_suspend_enabled = IsBackgroundMediaSuspendEnabled();
 
   // Whether background video is allowed to play for given |render_frame|.
   bool is_background_video_playback_enabled = true;
