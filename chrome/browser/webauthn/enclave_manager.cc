@@ -864,11 +864,14 @@ ParseRecoveryKeyStoreWrapResponse(
     return std::nullopt;
   }
 
-  it = response.find(cbor::Value("serial"));
-  if (it == response.end() || !it->second.is_integer()) {
-    return std::nullopt;
+  int cert_xml_serial_number = 0;
+  if (base::FeatureList::IsEnabled(device::kWebAuthnWrapCohortData)) {
+    it = response.find(cbor::Value("serial"));
+    if (it == response.end() || !it->second.is_integer()) {
+      return std::nullopt;
+    }
+    cert_xml_serial_number = it->second.GetInteger();
   }
-  int cert_xml_serial_number = it->second.GetInteger();
 
   auto vault = std::make_unique<trusted_vault_pb::Vault>();
   auto* params = vault->mutable_vault_parameters();

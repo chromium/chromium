@@ -33,6 +33,7 @@
 #include "base/task/current_thread.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
 #include "base/threading/platform_thread.h"
@@ -65,6 +66,7 @@
 #include "device/fido/enclave/constants.h"
 #include "device/fido/enclave/enclave_authenticator.h"
 #include "device/fido/enclave/types.h"
+#include "device/fido/features.h"
 #include "device/fido/fido_authenticator.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_types.h"
@@ -505,6 +507,8 @@ class EnclaveManagerTest : public testing::Test, EnclaveManager::Observer {
   std::unique_ptr<FakeRecoveryKeyStore> recovery_key_store_;
   std::unique_ptr<crypto::ScopedFakeUnexportableKeyProvider> fake_hw_provider_;
   EnclaveManager manager_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      device::kWebAuthnWrapCohortData};
 };
 
 TEST_F(EnclaveManagerTest, TestInfrastructure) {
