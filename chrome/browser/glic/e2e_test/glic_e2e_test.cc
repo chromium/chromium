@@ -69,16 +69,18 @@ const char kIgnoreCertificateErrorsSPKIListValue[] =
     "PoNnQAwghMiLUPg1YNFtvTfGreNT8r9oeLEyzgNCJWc=";
 }  // namespace
 
-GlicE2ETest::GlicE2ETest() = default;
-GlicE2ETest::~GlicE2ETest() = default;
-
-void GlicE2ETest::SetUp() {
+GlicE2ETest::GlicE2ETest() {
   scoped_feature_list_.InitWithFeatures(
       /*enabled_features=*/{features::kGlic, features::kTabstripComboButton,
                             features::kGlicKeyboardShortcutNewBadge,
                             features::kGlicRollout,
                             contextual_cueing::kContextualCueing},
       /*disabled_features=*/{});
+}
+
+GlicE2ETest::~GlicE2ETest() = default;
+
+void GlicE2ETest::SetUp() {
   const base::CommandLine* command_line_of_test =
       base::CommandLine::ForCurrentProcess();
 
