@@ -379,30 +379,6 @@ const size_t kDiskWeightedIOTime = 13;
 
 }  // namespace
 
-Value::Dict SystemMemoryInfoKB::ToDict() const {
-  Value::Dict res;
-  res.Set("total", total);
-  res.Set("free", free);
-  res.Set("available", available);
-  res.Set("buffers", buffers);
-  res.Set("cached", cached);
-  res.Set("active_anon", active_anon);
-  res.Set("inactive_anon", inactive_anon);
-  res.Set("active_file", active_file);
-  res.Set("inactive_file", inactive_file);
-  res.Set("swap_total", swap_total);
-  res.Set("swap_free", swap_free);
-  res.Set("swap_used", swap_total - swap_free);
-  res.Set("dirty", dirty);
-  res.Set("reclaimable", reclaimable);
-#if BUILDFLAG(IS_CHROMEOS)
-  res.Set("shmem", shmem);
-  res.Set("slab", slab);
-#endif
-
-  return res;
-}
-
 bool ParseProcMeminfo(std::string_view meminfo_data,
                       SystemMemoryInfoKB* meminfo) {
   // The format of /proc/meminfo is:
@@ -553,16 +529,6 @@ bool GetSystemMemoryInfo(SystemMemoryInfoKB* meminfo) {
   return true;
 }
 
-Value::Dict VmStatInfo::ToDict() const {
-  Value::Dict res;
-  // TODO(crbug.com/40228085): Make base::Value able to hold uint64_t and remove
-  // casts below.
-  res.Set("pswpin", static_cast<int>(pswpin));
-  res.Set("pswpout", static_cast<int>(pswpout));
-  res.Set("pgmajfault", static_cast<int>(pgmajfault));
-  return res;
-}
-
 bool GetVmStatInfo(VmStatInfo* vmstat) {
   // Synchronously reading files in /proc is safe.
   ScopedAllowBlockingForProcessMetrics allow_blocking;
@@ -597,26 +563,6 @@ SystemDiskInfo::SystemDiskInfo() {
 SystemDiskInfo::SystemDiskInfo(const SystemDiskInfo&) = default;
 
 SystemDiskInfo& SystemDiskInfo::operator=(const SystemDiskInfo&) = default;
-
-Value::Dict SystemDiskInfo::ToDict() const {
-  Value::Dict res;
-
-  // Write out uint64_t variables as doubles.
-  // Note: this may discard some precision, but for JS there's no other option.
-  res.Set("reads", static_cast<double>(reads));
-  res.Set("reads_merged", static_cast<double>(reads_merged));
-  res.Set("sectors_read", static_cast<double>(sectors_read));
-  res.Set("read_time", static_cast<double>(read_time));
-  res.Set("writes", static_cast<double>(writes));
-  res.Set("writes_merged", static_cast<double>(writes_merged));
-  res.Set("sectors_written", static_cast<double>(sectors_written));
-  res.Set("write_time", static_cast<double>(write_time));
-  res.Set("io", static_cast<double>(io));
-  res.Set("io_time", static_cast<double>(io_time));
-  res.Set("weighted_io_time", static_cast<double>(weighted_io_time));
-
-  return res;
-}
 
 bool IsValidDiskName(std::string_view candidate) {
   if (candidate.length() < 3) {
@@ -732,32 +678,6 @@ TimeDelta GetUserCpuTimeSinceBoot() {
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
-Value::Dict SwapInfo::ToDict() const {
-  Value::Dict res;
-
-  // Write out uint64_t variables as doubles.
-  // Note: this may discard some precision, but for JS there's no other option.
-  res.Set("num_reads", static_cast<double>(num_reads));
-  res.Set("num_writes", static_cast<double>(num_writes));
-  res.Set("orig_data_size", static_cast<double>(orig_data_size));
-  res.Set("compr_data_size", static_cast<double>(compr_data_size));
-  res.Set("mem_used_total", static_cast<double>(mem_used_total));
-  double ratio = compr_data_size ? static_cast<double>(orig_data_size) /
-                                       static_cast<double>(compr_data_size)
-                                 : 0;
-  res.Set("compression_ratio", ratio);
-
-  return res;
-}
-
-Value::Dict GraphicsMemoryInfoKB::ToDict() const {
-  Value::Dict res;
-
-  res.Set("gpu_objects", gpu_objects);
-  res.Set("gpu_memory_size", static_cast<double>(gpu_memory_size));
-
-  return res;
-}
 
 bool ParseZramMmStat(std::string_view mm_stat_data, SwapInfo* swap_info) {
   // There are 7 columns in /sys/block/zram0/mm_stat,

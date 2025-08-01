@@ -69,27 +69,6 @@ SystemMetrics SystemMetrics::Sample() {
   return system_metrics;
 }
 
-Value::Dict SystemMetrics::ToDict() const {
-  Value::Dict res;
-
-  res.Set("committed_memory", static_cast<int>(committed_memory_));
-#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
-  Value::Dict meminfo = memory_info_.ToDict();
-  meminfo.Merge(vmstat_info_.ToDict());
-  res.Set("meminfo", std::move(meminfo));
-  res.Set("diskinfo", disk_info_.ToDict());
-#endif
-#if BUILDFLAG(IS_CHROMEOS)
-  res.Set("swapinfo", swap_info_.ToDict());
-  res.Set("gpu_meminfo", gpu_memory_info_.ToDict());
-#endif
-#if BUILDFLAG(IS_WIN)
-  res.Set("perfinfo", performance_.ToDict());
-#endif
-
-  return res;
-}
-
 ProcessMetrics::~ProcessMetrics() = default;
 
 std::unique_ptr<ProcessMetrics> ProcessMetrics::CreateCurrentProcessMetrics() {
