@@ -1331,6 +1331,52 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigrationDialog.DaysSinceLastShown" units="days"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the number of days between the last time the DICe migration dialog
+    was shown and the current time. This is recorded once per profile load, only
+    for eligible users, that is, implicitly signed-in users and only if the
+    dialog has not been shown the maximum number of times yet.
+  </summary>
+</histogram>
+
+<histogram name="Signin.DiceMigrationDialog.PreviouslyShownCount" units="count"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the number of times the DICe migration dialog has previously been
+    shown. This is recorded once per profile load, only for eligible users, that
+    is, implicitly signed-in users.
+  </summary>
+</histogram>
+
+<histogram name="Signin.DiceMigrationDialog.Shown" enum="Boolean"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the DICe migration dialog was shown. This is recorded once
+    per profile load, only for users who were eligible for the dialog till the
+    time the timer fired but were not shown the dialog due to, for example,them
+    not being eligible anymore or the browser instance not being available or
+    the avatar button not being shown.
+  </summary>
+</histogram>
+
+<histogram name="Signin.DiceMigrationDialog.TimerStarted" enum="Boolean"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the timer was started to show the DICe migration dialog.
+    This is recorded once per profile load for all users.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceResponseHeader" enum="SigninDiceResponseHeader"
     expires_after="never">
 <!-- expires-never: used to monitor the health of the Dice feature and for troubleshooting.  -->

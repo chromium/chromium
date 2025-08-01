@@ -43,6 +43,13 @@ constexpr char kHelpCenterUrl[] =
 
 constexpr char kDialogCloseReasonHistogram[] =
     "Signin.DiceMigrationDialog.CloseReason";
+constexpr char kDialogTimerStartedHistogram[] =
+    "Signin.DiceMigrationDialog.TimerStarted";
+constexpr char kDialogPreviouslyShownCountHistogram[] =
+    "Signin.DiceMigrationDialog.PreviouslyShownCount";
+constexpr char kDialogDaysSinceLastShownHistogram[] =
+    "Signin.DiceMigrationDialog.DaysSinceLastShown";
+constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
 
 void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
   base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
@@ -166,13 +173,11 @@ DiceMigrationService::DiceMigrationService(
     Profile* profile,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
     : profile_(profile) {
-  if (!IsUserEligibleForDiceMigration(profile_) ||
-      // Show the dialog at most `kMaxDialogShownCount` times.
-      GetDialogShownCount() >= kMaxDialogShownCount ||
-      // Show the dialog at least one week after the last time it was shown.
-      GetDialogLastShownTime() >
-          base::Time::Now() -
-              switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get()) {
+  const bool should_start_dialog_trigger_timer =
+      ShouldStartDialogTriggerTimer();
+  base::UmaHistogramBoolean(kDialogTimerStartedHistogram,
+                            should_start_dialog_trigger_timer);
+  if (!should_start_dialog_trigger_timer) {
     return;
   }
 
@@ -216,7 +221,34 @@ void DiceMigrationService::RegisterProfilePrefs(
   registry->RegisterTimePref(kDiceMigrationDialogLastShownTime, base::Time());
 }
 
-void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
+bool DiceMigrationService::ShouldStartDialogTriggerTimer() {
+  if (!IsUserEligibleForDiceMigration(profile_)) {
+    return false;
+  }
+  const int dialog_shown_count = GetDialogShownCount();
+  base::UmaHistogramExactLinear(kDialogPreviouslyShownCountHistogram,
+                                dialog_shown_count, kMaxDialogShownCount + 1);
+  // Show the dialog at most `kMaxDialogShownCount` times.
+  if (dialog_shown_count >= kMaxDialogShownCount) {
+    return false;
+  }
+
+  if (const base::Time last_shown_time = GetDialogLastShownTime();
+      !last_shown_time.is_null()) {
+    const base::TimeDelta duration_since_last_shown =
+        base::Time::Now() - last_shown_time;
+    base::UmaHistogramCounts100(kDialogDaysSinceLastShownHistogram,
+                                duration_since_last_shown.InDays());
+    // Show the dialog at least one week after the last time it was shown.
+    if (duration_since_last_shown <
+        switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get()) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   CHECK(!dialog_trigger_timer_.IsRunning());
   CHECK(!dialog_widget_);
   CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
@@ -225,12 +257,12 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
                switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get());
 
   if (!IsUserEligibleForDiceMigration(profile_)) {
-    return;
+    return false;
   }
 
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser || !browser->window()) {
-    return;
+    return false;
   }
 
   ui::DialogModelLabel::TextReplacement learn_more_link =
@@ -274,7 +306,7 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
           ->GetAvatarToolbarButton();
   if (!avatar_button) {
     // Skip showing the dialog if the avatar button is not available.
-    return;
+    return false;
   }
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
@@ -287,6 +319,8 @@ void DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   // Close the dialog when the avatar pill is clicked.
   avatar_button_observer_ =
       std::make_unique<AvatarButtonObserver>(avatar_button, this);
+
+  return true;
 }
 
 views::Widget* DiceMigrationService::GetDialogWidgetForTesting() {
@@ -357,8 +391,7 @@ void DiceMigrationService::OnPrimaryAccountChanged(
 }
 
 void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
-  if (dialog_trigger_timer_.IsRunning() ||
-      !IsUserEligibleForDiceMigration(profile_)) {
+  if (dialog_trigger_timer_.IsRunning()) {
     return;
   }
   switch (account_managed_status_finder_->GetOutcome()) {
@@ -369,9 +402,10 @@ void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
     // Consumer accounts.
     case signin::AccountManagedStatusFinderOutcome::kConsumerGmail:
     case signin::AccountManagedStatusFinderOutcome::kConsumerWellKnown:
-    case signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown:
-      ShowDiceMigrationOfferDialogIfUserEligible();
-      break;
+    case signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown: {
+      const bool shown = ShowDiceMigrationOfferDialogIfUserEligible();
+      base::UmaHistogramBoolean(kDialogShownHistogram, shown);
+    } break;
     // Managed accounts are not shown the migration dialog.
     case signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom:
     case signin::AccountManagedStatusFinderOutcome::kEnterprise:

@@ -36,8 +36,15 @@ constexpr char kTestEmail[] = "test@gmail.com";
 constexpr char kEnterpriseTestEmail[] = "test@google.com";
 constexpr char kIndeterminableTestEmail[] = "test@indeterminable.com";
 
-constexpr char kDiceMigrationDialogCloseReasonHistogram[] =
+constexpr char kDialogCloseReasonHistogram[] =
     "Signin.DiceMigrationDialog.CloseReason";
+constexpr char kDialogTimerStartedHistogram[] =
+    "Signin.DiceMigrationDialog.TimerStarted";
+constexpr char kDialogPreviouslyShownCountHistogram[] =
+    "Signin.DiceMigrationDialog.PreviouslyShownCount";
+constexpr char kDialogDaysSinceLastShownHistogram[] =
+    "Signin.DiceMigrationDialog.DaysSinceLastShown";
+constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
@@ -123,6 +130,8 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, NotSignedIn) {
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_Syncing) {
@@ -138,6 +147,8 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, Syncing) {
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -156,6 +167,8 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -174,9 +187,37 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, true, 1);
+
   // Trigger the timer.
   FireDialogTriggerTimer();
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogShownHistogram, true, 1);
+}
+
+DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
+                      ShouldNotShowDialogIfNotEligibleAnymore) {
+  // The user is implicitly signed in.
+  ASSERT_TRUE(
+      GetIdentityManager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  ASSERT_FALSE(
+      GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin));
+
+  // Set the explicit sign-in pref to true. This should make the user ineligible
+  // for the migration, but the timer still runs. This is a test-only scenario
+  // and should not happen in production.
+  GetProfile()->GetPrefs()->SetBoolean(prefs::kExplicitBrowserSignin, true);
+  ASSERT_TRUE(
+      GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  // Show the migration bubble.
+  FireDialogTriggerTimer();
+
+  // The dialog is not shown.
+  EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogShownHistogram, false, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
@@ -336,6 +377,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetProfile()->GetPrefs()->GetTime(kDiceMigrationDialogLastShownTime),
       time_now);
 
+  // Not logged since the dialog was never shown before.
+  histogram_tester_.ExpectTotalCount(kDialogDaysSinceLastShownHistogram, 0);
+
   // Show the migration bubble.
   FireDialogTriggerTimer();
 
@@ -383,6 +427,14 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
 
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      kDialogDaysSinceLastShownHistogram,
+      (switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get() -
+       base::Days(1))
+          .InDays(),
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -408,6 +460,14 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
 
   EXPECT_TRUE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, true, 1);
+
+  histogram_tester_.ExpectUniqueSample(
+      kDialogDaysSinceLastShownHistogram,
+      (switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get() +
+       base::Days(1))
+          .InDays(),
+      1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
@@ -539,7 +599,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
   histogram_tester_.ExpectUniqueSample(
-      kDiceMigrationDialogCloseReasonHistogram,
+      kDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kPrimaryAccountCleared, 1);
 }
 
@@ -599,7 +659,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, CloseDialogUponSignout) {
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
   histogram_tester_.ExpectUniqueSample(
-      kDiceMigrationDialogCloseReasonHistogram,
+      kDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kPrimaryAccountCleared, 1);
 }
 
@@ -633,7 +693,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
   histogram_tester_.ExpectUniqueSample(
-      kDiceMigrationDialogCloseReasonHistogram,
+      kDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kPrimaryAccountChanged, 1);
 }
 
@@ -653,7 +713,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
 
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
   histogram_tester_.ExpectUniqueSample(
-      kDiceMigrationDialogCloseReasonHistogram,
+      kDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kAvatarButtonClicked, 1);
 }
 
@@ -670,8 +730,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
       GetDiceMigrationService()->GetDialogWidgetForTesting();
   ASSERT_TRUE(dialog_widget);
 
-  histogram_tester_.ExpectTotalCount(kDiceMigrationDialogCloseReasonHistogram,
-                                     0);
+  histogram_tester_.ExpectTotalCount(kDialogCloseReasonHistogram, 0);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -689,7 +748,7 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   waiter.Wait();
 
   histogram_tester_.ExpectUniqueSample(
-      kDiceMigrationDialogCloseReasonHistogram,
+      kDialogCloseReasonHistogram,
       DiceMigrationService::DialogCloseReason::kUnspecified, 1);
 }
 
@@ -827,10 +886,15 @@ IN_PROC_BROWSER_TEST_P(
 
   // The timer is started only if the preconditions are met, i.e. the dialog
   // shown count is below the limit.
+  const bool should_timer_be_running =
+      GetParam() < DiceMigrationService::kMaxDialogShownCount;
   EXPECT_EQ(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning(),
-      GetParam() < DiceMigrationService::kMaxDialogShownCount);
+      should_timer_be_running);
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram,
+                                       should_timer_be_running, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(
@@ -853,6 +917,9 @@ IN_PROC_BROWSER_TEST_P(
   ASSERT_EQ(
       GetProfile()->GetPrefs()->GetInteger(kDiceMigrationDialogShownCount),
       GetParam());
+
+  histogram_tester_.ExpectUniqueSample(kDialogPreviouslyShownCountHistogram,
+                                       GetParam(), 1);
 
   // Show the migration bubble.
   base::OneShotTimer& timer =

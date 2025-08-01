@@ -98,8 +98,10 @@ class DiceMigrationService : public KeyedService,
 
   void StopTimerOrCloseDialog(DialogCloseReason reason);
 
+  bool ShouldStartDialogTriggerTimer();
+
   // Shows the Dice migration offer dialog if the user is eligible for it.
-  void ShowDiceMigrationOfferDialogIfUserEligible();
+  bool ShowDiceMigrationOfferDialogIfUserEligible();
 
   // Getters/setter for the dialog shown count and last shown time prefs.
   int GetDialogShownCount() const;
