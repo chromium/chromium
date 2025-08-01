@@ -14,12 +14,15 @@
 #include "base/memory/stack_allocated.h"
 #include "base/numerics/checked_math.h"
 #include "base/task/bind_post_task.h"
+#include "base/task/thread_pool.h"
 #include "base/types/expected.h"
+#include "base/types/fixed_array.h"
 #include "base/types/pass_key.h"
 #include "services/webnn/error.h"
 #include "services/webnn/public/cpp/graph_validation_utils.h"
 #include "services/webnn/public/cpp/operand_descriptor.h"
 #include "services/webnn/public/cpp/supported_data_types.h"
+#include "services/webnn/public/cpp/webnn_trace.h"
 #include "services/webnn/public/cpp/webnn_types.h"
 #include "services/webnn/public/mojom/webnn_error.mojom.h"
 #include "services/webnn/webnn_constant_operand.h"
@@ -2686,6 +2689,90 @@ bool OperationValidationContext::ValidateOperation(
   }
 }
 
+uint32_t GetLinearOffset(base::span<const uint32_t> multi_dim_index,
+                         base::span<const uint32_t> strides) {
+  uint32_t offset = 0;
+  for (uint32_t i = 0; i < multi_dim_index.size(); ++i) {
+    offset += multi_dim_index[i] * strides[i];
+  }
+  return offset;
+}
+
+base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>
+TransposePendingPermutation(
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
+        constant_operands) {
+  ScopedTrace scoped_trace("TransposePendingPermutation");
+  // TODO(crbug.com/432040141): Consider using XNNPack for transposing
+  // constants.
+  for (auto& [operand_id, constant] : constant_operands) {
+    if (constant->descriptor().pending_permutation().empty()) {
+      continue;
+    }
+    base::span<const uint8_t> data = constant->ByteSpan();
+    auto& descriptor = constant->descriptor();
+    uint32_t rank = descriptor.Rank();
+    auto& permutation = descriptor.pending_permutation();
+    CHECK_EQ(rank, permutation.size());
+
+    // TODO(crbug.com/428232161): Support sub-byte transposes.
+    size_t bit_size =
+        OperandDescriptor::GetBitsPerElement(descriptor.data_type());
+    CHECK_GE(bit_size, 8u);
+
+    size_t element_size = bit_size / 8;
+
+    base::FixedArray<uint32_t> inverse_permutation(rank);
+    for (size_t i = 0; i < rank; ++i) {
+      inverse_permutation[permutation[i]] = i;
+    }
+    auto& transposed_shape = descriptor.shape();
+    base::FixedArray<uint32_t> original_shape(rank);
+    for (size_t i = 0; i < rank; ++i) {
+      original_shape[i] = descriptor.shape()[inverse_permutation[i]];
+    }
+
+    std::vector<uint32_t> original_strides = CalculateStrides(original_shape);
+    std::vector<uint32_t> transposed_strides =
+        CalculateStrides(transposed_shape);
+
+    // Current logical index in transposed tensor.
+    base::FixedArray<uint32_t> transposed_idx(rank, 0);
+    base::FixedArray<uint32_t> original_idx(rank);
+
+    auto transposed_data = base::HeapArray<uint8_t>::Uninit(data.size());
+    base::span<uint8_t> transposed_span = transposed_data.as_span();
+
+    // Loop through all elements in the transposed tensor.
+    for (size_t i = 0; i < descriptor.NumberOfElements(); ++i) {
+      for (size_t d = 0; d < rank; ++d) {
+        original_idx[d] = transposed_idx[inverse_permutation[d]];
+      }
+
+      uint32_t original_offset =
+          GetLinearOffset(original_idx, original_strides);
+      uint32_t transposed_offset =
+          GetLinearOffset(transposed_idx, transposed_strides);
+
+      transposed_span.subspan(transposed_offset * element_size, element_size)
+          .copy_from(
+              data.subspan(original_offset * element_size, element_size));
+
+      for (int dimension = rank - 1; dimension >= 0; --dimension) {
+        transposed_idx[dimension]++;
+        if (transposed_idx[dimension] < transposed_shape[dimension]) {
+          // Not overflowed, continue to next element.
+          break;
+        }
+        // Reset and carry over.
+        transposed_idx[dimension] = 0;
+      }
+    }
+    constant->SetData(std::move(transposed_data));
+  }
+  return std::move(constant_operands);
+}
+
 }  // namespace
 
 WebNNGraphBuilderImpl::ValidateGraphSuccessResult::ValidateGraphSuccessResult(
@@ -2775,16 +2862,17 @@ void WebNNGraphBuilderImpl::CreateGraph(mojom::GraphInfoPtr graph_info,
     return;
   }
 
-  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
-  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
-  context_->CreateGraphImpl(
-      std::move(receiver), std::move(graph_info),
-      std::move(validate_graph_result->compute_resource_info),
-      std::move(validate_graph_result->constant_operands),
-      std::move(validate_graph_result->constant_tensor_operands),
-      base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
-                     weak_factory_.GetWeakPtr(), std::move(callback),
-                     std::move(remote)));
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE,
+      {base::TaskPriority::USER_BLOCKING,
+       base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN, base::MayBlock()},
+      base::BindOnce(&TransposePendingPermutation,
+                     std::move(validate_graph_result->constant_operands)),
+      base::BindOnce(&WebNNGraphBuilderImpl::DidTransposePendingPermutations,
+                     weak_factory_.GetWeakPtr(), std::move(graph_info),
+                     std::move(validate_graph_result->compute_resource_info),
+                     std::move(validate_graph_result->constant_tensor_operands),
+                     std::move(callback)));
 }
 
 void WebNNGraphBuilderImpl::SetId(
@@ -2801,6 +2889,27 @@ void WebNNGraphBuilderImpl::IsValidGraphForTesting(
       ValidateGraphImpl(context_properties, *graph_info,
                         /*keep_builder_resources_for_testing=*/true)
           .has_value());
+}
+
+void WebNNGraphBuilderImpl::DidTransposePendingPermutations(
+    mojom::GraphInfoPtr graph_info,
+    WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+    base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+    CreateGraphCallback callback,
+    base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
+        constant_operands) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote;
+  auto receiver = remote.InitWithNewEndpointAndPassReceiver();
+
+  context_->CreateGraphImpl(
+      std::move(receiver), std::move(graph_info),
+      std::move(compute_resource_info), std::move(constant_operands),
+      std::move(constant_tensor_operands),
+      base::BindOnce(&WebNNGraphBuilderImpl::DidCreateGraph,
+                     weak_factory_.GetWeakPtr(), std::move(callback),
+                     std::move(remote)));
 }
 
 void WebNNGraphBuilderImpl::DidCreateGraph(

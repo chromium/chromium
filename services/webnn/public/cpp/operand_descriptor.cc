@@ -73,6 +73,31 @@ base::expected<uint64_t, std::string> ValidateAndGetByteLength(
   return number_of_bytes;
 }
 
+base::expected<void, std::string> IsValidPermutation(
+    base::span<const uint32_t> permutation,
+    OperandDataType data_type,
+    base::span<const uint32_t> shape) {
+  // TODO(crbug.com/428232161): Support sub-byte transposes.
+  if (OperandDescriptor::GetBitsPerElement(data_type) < 8u) {
+    return base::unexpected(
+        "Invalid descriptor: Permutation is not supported for sub-byte data "
+        "types.");
+  }
+  if (permutation.size() != shape.size()) {
+    return base::unexpected(
+        "Invalid descriptor: Permutation size doesn't match with shape.");
+  }
+  std::vector<uint32_t> sorted_permutation = base::ToVector(permutation);
+  std::ranges::sort(sorted_permutation);
+  for (size_t i = 0; i < sorted_permutation.size(); ++i) {
+    if (sorted_permutation[i] != i) {
+      return base::unexpected(
+          "Invalid descriptor: Permutation contains invalid dimension.");
+    }
+  }
+  return base::ok();
+}
+
 }  // namespace
 
 // static
@@ -94,18 +119,25 @@ base::expected<OperandDescriptor, std::string> OperandDescriptor::Create(
 
 // static
 base::expected<OperandDescriptor, std::string>
-OperandDescriptor::CreateForDeserialization(OperandDataType data_type,
-                                            base::span<const uint32_t> shape) {
+OperandDescriptor::CreateForDeserialization(
+    OperandDataType data_type,
+    base::span<const uint32_t> shape,
+    base::span<const uint32_t> pending_permutation) {
   RETURN_IF_ERROR(ValidateAndGetByteLength(data_type, shape));
-
-  return OperandDescriptor(data_type, base::ToVector(shape));
+  if (!pending_permutation.empty()) {
+    RETURN_IF_ERROR(IsValidPermutation(pending_permutation, data_type, shape));
+  }
+  return OperandDescriptor(data_type, base::ToVector(shape),
+                           base::ToVector(pending_permutation));
 }
 
 // static
 OperandDescriptor OperandDescriptor::UnsafeCreateForTesting(
     OperandDataType data_type,
-    base::span<const uint32_t> shape) {
-  return OperandDescriptor(data_type, base::ToVector(shape));
+    base::span<const uint32_t> shape,
+    base::span<const uint32_t> pending_permutation) {
+  return OperandDescriptor(data_type, base::ToVector(shape),
+                           base::ToVector(pending_permutation));
 }
 
 // static
@@ -139,6 +171,13 @@ OperandDescriptor::OperandDescriptor(OperandDataType data_type,
                                      std::vector<uint32_t> shape)
     : data_type_(data_type), shape_(std::move(shape)) {}
 
+OperandDescriptor::OperandDescriptor(OperandDataType data_type,
+                                     std::vector<uint32_t> shape,
+                                     std::vector<uint32_t> pending_permutation)
+    : data_type_(data_type),
+      shape_(std::move(shape)),
+      pending_permutation_(std::move(pending_permutation)) {}
+
 OperandDescriptor::OperandDescriptor(const OperandDescriptor&) = default;
 OperandDescriptor& OperandDescriptor::operator=(const OperandDescriptor&) =
     default;
@@ -166,4 +205,9 @@ size_t OperandDescriptor::NumberOfElements() const {
                          std::multiplies());
 }
 
+void OperandDescriptor::SetPendingPermutation(
+    base::span<const uint32_t> permutation) {
+  CHECK(IsValidPermutation(permutation, data_type_, shape_).has_value());
+  pending_permutation_.assign(permutation.begin(), permutation.end());
+}
 }  // namespace webnn

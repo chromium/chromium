@@ -10,6 +10,7 @@
 
 namespace blink {
 
+class MLConstantOperand;
 using OperandIndex = wtf_size_t;
 
 class MODULES_EXPORT MLGraphTransformer
@@ -50,6 +51,12 @@ class MODULES_EXPORT MLGraphTransformer
       MLOperand* old_operand,
       const Vector<uint32_t>& new_shape);
 
+  // Replace constant operand with a new constant operand, the constant handle
+  // gets reused for the new constant.
+  static MLConstantOperand* ReplaceConstantOperandWithNewShape(
+      const MLConstantOperand* old_operand,
+      const Vector<uint32_t>& new_shape);
+
   static MLOperand* ReplaceOperandWithNewDataType(
       MLOperand* old_operand,
       webnn::OperandDataType new_data_type);
@@ -72,7 +79,8 @@ class MODULES_EXPORT MLGraphTransformer
       const MLOperand* operand,
       webnn::OperandDataType data_type);
 
-  static void ReplaceOperand(MLOperand* old_operand, MLOperand* new_operand);
+  static void ReplaceOperand(const MLOperand* old_operand,
+                             MLOperand* new_operand);
 };
 
 }  // namespace blink

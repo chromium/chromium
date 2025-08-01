@@ -89,6 +89,7 @@ class WebnnGraphLPMFuzzer {
 
     webnn::mojom::Device device;
     mojolpm::FromProto(action.device(), device);
+    // TODO(crbug.com/432040141): Fuzz test `CreatePendingConstant`.
     BuildGraph(create_graph.graph_info(), device);
   }
 

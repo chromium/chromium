@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_builder_test_utils.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/constant_folding_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/ml_graph_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/qdq_detection_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/transpose_elimination_transformer.h"
@@ -1673,7 +1674,7 @@ TEST_F(MLGraphTest, MLTransposeEliminationTransformerTest) {
     ASSERT_THAT(builder, testing::NotNull());
 
     // [a] -> transpose -> [b] -> transpose -> [c]
-    // This shouldn't be eliminated otherwise the graph will have no operation.
+    // This shouldn't be eliminated otherwise the graph will have no operations.
     auto* a = BuildInput(scope.GetScriptState(), builder, "a", {3, 4, 5},
                          V8MLOperandDataType::Enum::kFloat32, exception_state);
     auto* transpose_options = MLTransposeOptions::Create();
@@ -2186,6 +2187,83 @@ TEST_F(MLGraphTest, MLQDQDetectionTest) {
     // successfully here.
     ASSERT_THAT(graph, testing::NotNull());
   }
+}
+
+TEST_F(MLGraphTest, MLConstantFoldingTransformerNoOpTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  MLContext* context = CreateContext(scope, MLContextOptions::Create());
+
+  DummyExceptionStateForTesting exception_state;
+  auto* builder =
+      MLGraphBuilder::Create(scope.GetScriptState(), context, exception_state);
+  ASSERT_THAT(builder, testing::NotNull());
+
+  // [a] -> transpose -> [b]
+  // This shouldn't be eliminated otherwise the graph will have no operations.
+  auto* a = BuildConstant(scope.GetScriptState(), builder, {3, 4, 5},
+                          V8MLOperandDataType::Enum::kFloat32, exception_state);
+  auto* transpose_options = MLTransposeOptions::Create();
+  transpose_options->setPermutation({0, 2, 1});
+  auto* b = builder->transpose(a, transpose_options, exception_state);
+  ASSERT_THAT(b, testing::NotNull());
+
+  EXPECT_EQ(b->Shape(), std::vector<uint32_t>({3, 5, 4}));
+  MLNamedOperands named_outputs = {{"b", b}};
+
+  auto* constant_folding_transformer =
+      MakeGarbageCollected<ConstantFoldingTransformer>(builder);
+  constant_folding_transformer->Transform(named_outputs);
+
+  // Expect no change in the graph.
+  EXPECT_EQ(b->Operator()->Inputs()[0], a);
+
+  auto [graph, error_name, error_message] =
+      BuildGraph(scope, builder, named_outputs);
+  ASSERT_THAT(graph, testing::NotNull());
+}
+
+TEST_F(MLGraphTest, MLConstantFoldingTransformerTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  MLContext* context = CreateContext(scope, MLContextOptions::Create());
+  DummyExceptionStateForTesting exception_state;
+  auto* builder =
+      MLGraphBuilder::Create(scope.GetScriptState(), context, exception_state);
+  ASSERT_THAT(builder, testing::NotNull());
+
+  // [a] -> transpose -> reshape -> transpose -> relu -> [e]
+  auto* a = BuildConstant(scope.GetScriptState(), builder, {3, 4, 5},
+                          V8MLOperandDataType::Enum::kFloat32, exception_state);
+  auto* transpose_options = MLTransposeOptions::Create();
+  transpose_options->setPermutation({0, 2, 1});
+  auto* b = builder->transpose(a, transpose_options, exception_state);
+  ASSERT_THAT(b, testing::NotNull());
+  auto* c = builder->reshape(b, {3, 20}, MLOperatorOptions::Create(),
+                             exception_state);
+  ASSERT_THAT(c, testing::NotNull());
+  auto* d =
+      builder->transpose(c, MLTransposeOptions::Create(), exception_state);
+  ASSERT_THAT(d, testing::NotNull());
+  auto* e = builder->relu(d, MLOperatorOptions::Create(), exception_state);
+  ASSERT_THAT(e, testing::NotNull());
+
+  MLNamedOperands named_outputs = {{"e", e}};
+
+  auto* constant_folding_transformer =
+      MakeGarbageCollected<ConstantFoldingTransformer>(builder);
+  constant_folding_transformer->Transform(named_outputs);
+  auto& relu_input = e->Operator()->Inputs()[0];
+  EXPECT_EQ(relu_input->Kind(), webnn::mojom::blink::Operand::Kind::kConstant);
+  Vector<uint32_t> expected_shape{20, 3};
+  EXPECT_EQ(e->shape(), expected_shape);
+  EXPECT_EQ(e->shape(), relu_input->shape());
+
+  auto [graph, error_name, error_message] =
+      BuildGraph(scope, builder, named_outputs);
+  ASSERT_THAT(graph, testing::NotNull());
 }
 
 }  // namespace blink

@@ -26,7 +26,7 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   // Add an input.
   constexpr base::cstring_view input = "input";
   auto input_desc = OperandDescriptor::CreateForDeserialization(
-      OperandDataType::kUint32, {4, 2, 4});
+      OperandDataType::kUint32, {4, 2, 4}, {});
   ASSERT_TRUE(input_desc.has_value());
   mojom::OperandPtr input_operand =
       mojom::Operand::New(mojom::Operand::Kind::kInput,
@@ -38,7 +38,7 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   std::array<uint32_t, 32> add_initializer_data;  // 128 bytes
   add_initializer_data.fill(1);
   auto add_initializer_desc = OperandDescriptor::CreateForDeserialization(
-      OperandDataType::kUint32, {4, 2, 4});
+      OperandDataType::kUint32, {4, 2, 4}, {});
   ASSERT_TRUE(add_initializer_desc.has_value());
   auto add_initializer_operand = std::make_unique<WebNNConstantOperand>(
       std::move(add_initializer_desc.value()),
@@ -52,7 +52,8 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
   std::array<int64_t, 4> gather_indices_initializer_data = {0, 1, 0,
                                                             1};  // 32 bytes
   auto gather_indices_initializer_desc =
-      OperandDescriptor::CreateForDeserialization(OperandDataType::kInt64, {4});
+      OperandDescriptor::CreateForDeserialization(OperandDataType::kInt64, {4},
+                                                  {});
   ASSERT_TRUE(gather_indices_initializer_desc.has_value());
   auto gather_indices_initializer_operand =
       std::make_unique<WebNNConstantOperand>(
@@ -85,7 +86,7 @@ TEST_F(WebNNOrtModelEditorTest, AddAndGather) {
 
   // Add an output.
   auto output_desc = OperandDescriptor::CreateForDeserialization(
-      OperandDataType::kUint32, {4, 4, 4});
+      OperandDataType::kUint32, {4, 4, 4}, {});
   ASSERT_TRUE(output_desc.has_value());
   mojom::OperandPtr output_operand =
       mojom::Operand::New(mojom::Operand::Kind::kOutput,
@@ -104,7 +105,7 @@ TEST_F(WebNNOrtModelEditorTest, ReshapeToScalar) {
   // Add an input.
   constexpr base::cstring_view input = "input";
   auto input_desc = OperandDescriptor::CreateForDeserialization(
-      OperandDataType::kInt32, {1, 1, 1, 1});
+      OperandDataType::kInt32, {1, 1, 1, 1}, {});
   ASSERT_TRUE(input_desc.has_value());
   mojom::OperandPtr input_operand =
       mojom::Operand::New(mojom::Operand::Kind::kInput,
@@ -128,8 +129,8 @@ TEST_F(WebNNOrtModelEditorTest, ReshapeToScalar) {
       reshape_outputs);
 
   // Add an output.
-  auto output_desc =
-      OperandDescriptor::CreateForDeserialization(OperandDataType::kInt32, {});
+  auto output_desc = OperandDescriptor::CreateForDeserialization(
+      OperandDataType::kInt32, {}, {});
   ASSERT_TRUE(output_desc.has_value());
   mojom::OperandPtr output_operand =
       mojom::Operand::New(mojom::Operand::Kind::kOutput,

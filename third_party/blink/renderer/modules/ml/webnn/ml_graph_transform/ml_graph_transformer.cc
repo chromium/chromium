@@ -15,6 +15,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_cell_options.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_ml_lstm_options.h"
 #include "third_party/blink/renderer/modules/ml/ml_context.h"
+#include "third_party/blink/renderer/modules/ml/webnn/ml_constant_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_utils.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 
@@ -332,12 +333,14 @@ MLOperand* MLGraphTransformer::CloneOperandAndResetDataType(
 }
 
 // static
-void MLGraphTransformer::ReplaceOperand(MLOperand* old_operand,
+void MLGraphTransformer::ReplaceOperand(const MLOperand* old_operand,
                                         MLOperand* new_operand) {
-  auto* op = old_operand->Operator();
-  for (auto& output : op->outputs_) {
-    if (output == old_operand) {
-      output = new_operand;
+  if (old_operand->Kind() == webnn::mojom::blink::Operand::Kind::kOutput) {
+    auto* op = old_operand->Operator();
+    for (auto& output : op->outputs_) {
+      if (output == old_operand) {
+        output = new_operand;
+      }
     }
   }
 
@@ -357,6 +360,23 @@ MLOperand* MLGraphTransformer::ReplaceOperandWithNewShape(
     MLOperand* old_operand,
     const Vector<uint32_t>& new_shape) {
   auto* new_operand = CloneOperandAndResetShape(old_operand, new_shape);
+  ReplaceOperand(old_operand, new_operand);
+  return new_operand;
+}
+
+MLConstantOperand* MLGraphTransformer::ReplaceConstantOperandWithNewShape(
+    const MLConstantOperand* old_operand,
+    const Vector<uint32_t>& new_shape) {
+  auto descriptor = webnn::OperandDescriptor::Create(
+      old_operand->Builder()->GetContext()->GetProperties(),
+      old_operand->DataType(), new_shape, /*label=*/"");
+  CHECK(descriptor.has_value());
+  CHECK_EQ(old_operand->NumberOfElements(), descriptor->NumberOfElements());
+
+  MLConstantOperand* new_operand = MakeGarbageCollected<MLConstantOperand>(
+      old_operand->Builder(), descriptor.value(), old_operand->handle());
+
+  new_operand->dependent_operators_ = old_operand->dependent_operators_;
   ReplaceOperand(old_operand, new_operand);
   return new_operand;
 }

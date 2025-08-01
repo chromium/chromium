@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/pipeline.h"
 
+#include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/constant_folding_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/layout_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/qdq_detection_transformer.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_transform/transpose_elimination_transformer.h"
@@ -24,6 +25,8 @@ void MLGraphTransformPipeline::InitTransformers(MLGraphBuilder* graph_builder) {
       MakeGarbageCollected<LayoutTransformer>(graph_builder));
 
   // Non-essential transformers. For better performance.
+  transformers_.push_back(
+      MakeGarbageCollected<ConstantFoldingTransformer>(graph_builder));
   transformers_.push_back(
       MakeGarbageCollected<QDQDetectionTransformer>(graph_builder));
   transformers_.push_back(

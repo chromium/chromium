@@ -32,6 +32,9 @@ enum DataType {
 struct OperandDescriptor {
   DataType data_type;
   array<uint32> shape;
+  // Permutation that needs to be performed on service side for constant
+  // operands.
+  array<uint32> pending_permutation;
 };
 
 struct OperandId {

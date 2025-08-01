@@ -46,13 +46,15 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
   // validated tensor size limit later.
   static base::expected<OperandDescriptor, std::string>
   CreateForDeserialization(OperandDataType data_type,
-                           base::span<const uint32_t> shape);
+                           base::span<const uint32_t> shape,
+                           base::span<const uint32_t> pending_permutation);
 
   // Same as above, but skip validation checks. This may be used to create an
   // invalid descriptor to test that its deserialization fails.
   static OperandDescriptor UnsafeCreateForTesting(
       OperandDataType data_type,
-      base::span<const uint32_t> shape);
+      base::span<const uint32_t> shape,
+      base::span<const uint32_t> pending_permutation = {});
 
   static size_t GetBitsPerElement(OperandDataType data_type);
 
@@ -70,6 +72,9 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
 
   OperandDataType data_type() const { return data_type_; }
   const std::vector<uint32_t>& shape() const { return shape_; }
+  const std::vector<uint32_t>& pending_permutation() const {
+    return pending_permutation_;
+  }
 
   uint32_t Rank() const { return static_cast<uint32_t>(shape_.size()); }
   // Total byte length assuming perfect packing. Some tensors described by this
@@ -77,14 +82,29 @@ class COMPONENT_EXPORT(WEBNN_PUBLIC_CPP) OperandDescriptor {
   size_t PackedByteLength() const;
   size_t NumberOfElements() const;
 
+  void SetPendingPermutation(base::span<const uint32_t> permutation);
+
   friend constexpr auto operator<=>(const OperandDescriptor& lhs,
-                                    const OperandDescriptor& rhs) = default;
+                                    const OperandDescriptor& rhs) {
+    if (auto cmp = lhs.data_type_ <=> rhs.data_type_; cmp != 0) {
+      return cmp;
+    }
+    return lhs.shape_ <=> rhs.shape_;
+  }
+  friend constexpr bool operator==(const OperandDescriptor& lhs,
+                                   const OperandDescriptor& rhs) {
+    return lhs.data_type_ == rhs.data_type_ && lhs.shape_ == rhs.shape_;
+  }
 
  private:
   OperandDescriptor(OperandDataType data_type, std::vector<uint32_t> shape);
+  OperandDescriptor(OperandDataType data_type,
+                    std::vector<uint32_t> shape,
+                    std::vector<uint32_t> permutation);
 
   OperandDataType data_type_;
   std::vector<uint32_t> shape_;
+  std::vector<uint32_t> pending_permutation_;
 };
 
 }  // namespace webnn

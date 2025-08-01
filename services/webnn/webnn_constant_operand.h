@@ -37,6 +37,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNConstantOperand {
   base::span<const uint8_t> ByteSpan() const LIFETIME_BOUND { return data_; }
 
   base::HeapArray<uint8_t> TakeData() { return std::move(data_); }
+  void SetData(base::HeapArray<uint8_t>&& data);
 
  private:
   const OperandDescriptor descriptor_;

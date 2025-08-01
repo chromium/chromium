@@ -54,6 +54,7 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
       const blink::WebNNPendingConstantToken& constant_handle,
       OperandDataType data_type,
       mojo_base::BigBuffer data) override;
+
   void CreateGraph(mojom::GraphInfoPtr graph_info,
                    CreateGraphCallback callback) override;
   void IsValidGraphForTesting(const ContextProperties& context_properties,
@@ -103,6 +104,13 @@ class COMPONENT_EXPORT(WEBNN_SERVICE) WebNNGraphBuilderImpl
       bool keep_builder_resources_for_testing);
 
  private:
+  void DidTransposePendingPermutations(
+      mojom::GraphInfoPtr graph_info,
+      WebNNGraphImpl::ComputeResourceInfo compute_resource_info,
+      base::flat_map<OperandId, WebNNTensorImpl*> constant_tensor_operands,
+      CreateGraphCallback callback,
+      base::flat_map<OperandId, std::unique_ptr<WebNNConstantOperand>>&&
+          constant_operands);
   void DidCreateGraph(
       CreateGraphCallback callback,
       mojo::PendingAssociatedRemote<mojom::WebNNGraph> remote,

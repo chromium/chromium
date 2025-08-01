@@ -14,4 +14,8 @@ WebNNConstantOperand::WebNNConstantOperand(OperandDescriptor descriptor,
 
 WebNNConstantOperand::~WebNNConstantOperand() = default;
 
+void WebNNConstantOperand::SetData(base::HeapArray<uint8_t>&& data) {
+  data_ = std::move(data);
+}
+
 }  // namespace webnn

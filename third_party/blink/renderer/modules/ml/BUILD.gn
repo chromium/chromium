@@ -22,6 +22,8 @@ blink_modules_sources("ml") {
     "webnn/ml_graph.h",
     "webnn/ml_graph_builder.cc",
     "webnn/ml_graph_builder.h",
+    "webnn/ml_graph_transform/constant_folding_transformer.cc",
+    "webnn/ml_graph_transform/constant_folding_transformer.h",
     "webnn/ml_graph_transform/layout_transformer.cc",
     "webnn/ml_graph_transform/layout_transformer.h",
     "webnn/ml_graph_transform/ml_graph_transformer.cc",

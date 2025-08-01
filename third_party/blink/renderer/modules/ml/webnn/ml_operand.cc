@@ -124,9 +124,9 @@ V8MLOperandDataType MLOperand::dataType() const {
   return ToBlinkDataType(descriptor_.data_type());
 }
 
-MLConstantOperand const* MLOperand::AsConstantOperand() const {
+MLConstantOperand* MLOperand::AsConstantOperand() {
   CHECK_EQ(kind_, webnn::mojom::blink::Operand::Kind::kConstant);
-  return static_cast<MLConstantOperand const*>(this);
+  return static_cast<MLConstantOperand*>(this);
 }
 
 void MLOperand::AddDependentOperator(MLOperator* ml_operator) {
