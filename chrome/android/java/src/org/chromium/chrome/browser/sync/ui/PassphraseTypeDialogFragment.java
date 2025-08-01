@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.sync.ui;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.components.sync.Passphrase.isExplicitPassphraseType;
 
 import android.app.Dialog;
@@ -18,6 +19,8 @@ import android.widget.CheckedTextView;
 import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.DialogFragment;
 
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.sync.PassphraseType;
@@ -26,6 +29,7 @@ import org.chromium.ui.text.SpanApplier.SpanInfo;
 import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /** Dialog to ask the user select what type of password to use for encryption. */
+@NullMarked
 public class PassphraseTypeDialogFragment extends DialogFragment
         implements DialogInterface.OnClickListener {
     public interface Listener {
@@ -55,7 +59,7 @@ public class PassphraseTypeDialogFragment extends DialogFragment
     }
 
     @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         final View dialog =
                 getActivity().getLayoutInflater().inflate(R.layout.sync_passphrase_types, null);
 
@@ -111,7 +115,7 @@ public class PassphraseTypeDialogFragment extends DialogFragment
     }
 
     private void onCustomPassphraseCheckboxClicked(View unused) {
-        ((Listener) getTargetFragment()).onChooseCustomPassphraseRequested();
+        assumeNonNull((Listener) getTargetFragment()).onChooseCustomPassphraseRequested();
         dismiss();
     }
 }
