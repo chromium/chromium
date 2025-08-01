@@ -283,7 +283,16 @@ class ProfileMenuViewPixelTest
   ProfileMenuViewPixelTest()
       : ProfilesPixelTestBaseT<DialogBrowserTest>(GetParam().pixel_test_param) {
     // Disabled by default but may be overridden by `extra_features_and_params`.
+    // `switches::kAvatarButtonSyncPromo` and
+    // `switches::kEnableHistorySyncOptinExpansionPill` are not compatible and
+    // cannot be activated at the same time. Params should ensure that one of
+    // the two (or none) are activated at the right time.
     base::flat_set<base::test::FeatureRef> disabled_features = {
+#if BUILDFLAG(IS_WIN)
+        // TODO(crbug.com/435113265): Add test params that activates this
+        // feature.
+        switches::kAvatarButtonSyncPromo,
+#endif
         switches::kEnableHistorySyncOptinExpansionPill};
     for (const auto& [feature, _] : GetParam().extra_features_and_params) {
       disabled_features.erase(feature.get());

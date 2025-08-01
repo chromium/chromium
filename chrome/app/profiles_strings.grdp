@@ -1173,9 +1173,8 @@
     <message name="IDS_AVATAR_BUTTON_SEE_TABS_FROM_OTHER_DEVICES" desc="The avatar button label for the history sync promo. When clicked, it opens the profile menu with the sync button.">
       See tabs from other devices?
     </message>
-    <!-- TODO(crbug.com/435113265): Finalize the string and make it translateable. -->
-    <message translateable="false" name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button.">
-      Back-up your stuff
+    <message name="IDS_AVATAR_BUTTON_SYNC_PROMO" desc="The avatar button label for the sync promo. When clicked, it opens the profile menu with the sync button.">
+      Back up your stuff?
     </message>
     <!-- Profile Menu Sync Promo Desktop -->
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_BROWSE_ACROSS_DEVICES_DESCRIPTION" desc="The description for the sync promo in the profile menu opened from the 'Browse across devices?' history sync opt-in identity pill.">
@@ -1192,6 +1191,12 @@
     </message>
     <message name="IDS_PROFILE_MENU_SYNC_PROMO_ROW_BUTTON_LABEL" desc="The button label for the history sync promo. When clicked, it opens the turn on sync dialog.">
       Browse across devices
+    </message>
+    <message name="IDS_PROFILE_MENU_DESCRIPTION_WITH_SYNC_PROMO" desc="The description of the identity section in the Profile Menu for users that can see the Sync Promo in the Avatar button. This describes the action presented right below it in the button.">
+      Back up your passwords, bookmarks, and more, so you can easily get them on all your devices
+    </message>
+    <message name="IDS_PROFILE_MENU_BUTTON_LABEL_WITH_SYNC_PROMO" desc="The button label in the Profile Menu identity section for users that can see the Sync Promo in the Avatar button. When clicked, it opens the turn on sync dialog.">
+      Continue
     </message>
   </if>
 </grit-part>
