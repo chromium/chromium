@@ -1568,12 +1568,7 @@ class EnclaveManager::StateMachine {
       }
 
       is_pin_renewal_ = true;
-      if (base::FeatureList::IsEnabled(
-              device::kSyncSecurityDomainBeforePINRenewal)) {
-        SyncWithSecurityDomain();
-      } else {
-        DownloadRecoveryKeyStoreKeys();
-      }
+      SyncWithSecurityDomain();
       return;
     }
 

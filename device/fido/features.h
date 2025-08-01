@@ -108,11 +108,6 @@ BASE_DECLARE_FEATURE(kWebAuthnNewBfCacheHandling);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnNoAccountTimeout);
 
-// When enabled, a sync with the Security Domain Service is performed before a
-// GPM PIN renewal.
-COMPONENT_EXPORT(DEVICE_FIDO)
-BASE_DECLARE_FEATURE(kSyncSecurityDomainBeforePINRenewal);
-
 // Enables using the Microsoft Software Key Storage Provider to store
 // unexportable keys when a TPM is not available.
 COMPONENT_EXPORT(DEVICE_FIDO)
