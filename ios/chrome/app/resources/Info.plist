@@ -174,7 +174,7 @@
 		</dict>
 	</array>
 	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen.storyboard</string>
+	<string>LaunchScreen</string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>googledrive</string>
