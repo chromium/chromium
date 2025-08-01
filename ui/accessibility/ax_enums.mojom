@@ -810,6 +810,10 @@ enum IntAttribute {
 
   // The maximum length of a textfield.
   [MinVersion=5] kMaxLength = 67,
+
+  // Paint order, indicates when this node is painted relative to
+  // other nodes, larger is later.
+  [MinVersion=6] kPaintOrder = 68,
 };
 
 // Next version: 2
