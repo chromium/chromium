@@ -183,10 +183,6 @@ class CONTENT_EXPORT IndexedDBContextImpl
   base::FilePath GetDataPath(
       const storage::BucketLocator& bucket_locator) const;
   const base::FilePath GetLegacyDataPath() const;
-  base::FilePath GetBlobStorePath(
-      const storage::BucketLocator& bucket_locator) const;
-  base::FilePath GetLevelDBPath(
-      const storage::BucketLocator& bucket_locator) const;
 
   int64_t ReadUsageFromDisk(const storage::BucketLocator& bucket_locator,
                             bool write_in_progress) const;
@@ -291,10 +287,10 @@ class CONTENT_EXPORT IndexedDBContextImpl
   std::set<storage::BucketLocator> bucket_set_;
 
   // This map is a cache of the size used by a given bucket. It's calculated by
-  // summing the system-reported sizes of all blob and LevelDB files. This cache
-  // is cleared after transactions that can change the size of the database
-  // (i.e. those that are not readonly), and re-populated lazily. There are
-  // three possible states for each bucket in this map:
+  // summing the system-reported sizes of all blob and database files. This
+  // cache is cleared after transactions that can change the size of the
+  // database (i.e. those that are not readonly), and re-populated lazily. There
+  // are three possible states for each bucket in this map:
   //
   // 1) Not present. This indicates that the `ReadUsageFromDisk()` should be
   //    called to calculate usage (and be stored in the map).

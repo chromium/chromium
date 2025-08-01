@@ -83,10 +83,6 @@
   if (using_sqlite_) {                                  \
     return;                                             \
   }
-#define DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING() \
-  if (using_sqlite_) {                                \
-    return;                                           \
-  }
 
 using storage::QuotaManager;
 using storage::mojom::FailClass;
@@ -556,12 +552,10 @@ class IndexedDBBrowserTestWithLowQuota : public IndexedDBBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithLowQuota, QuotaTest) {
-  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   SimpleTest(GetTestUrl("indexeddb", "quota_test.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithLowQuota, QuotaTestWithCommit) {
-  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   SimpleTest(GetTestUrl("indexeddb", "bug_1203335.html"));
 }
 
@@ -869,8 +863,15 @@ IN_PROC_BROWSER_TEST_F(IndexedDBLevelDBOnlyTest, LevelDBLogFileTest) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, CanDeleteWhenOverQuotaTest) {
-  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
-  SetQuota(5);
+  // The test needs to successfully add at least one record to the object store
+  // so that it can verify that the record can be deleted when over quota. The
+  // disk usage of a database with one object store and record is ~80KB when
+  // backed by SQLite but much lower with LevelDB, so set the initial quota
+  // accordingly.
+  constexpr int kInitialQuotaKilobytesForLevelDb = 5;
+  constexpr int kInitialQuotaKilobytesForSqlite = 100;
+  SetQuota(using_sqlite_ ? kInitialQuotaKilobytesForSqlite
+                         : kInitialQuotaKilobytesForLevelDb);
   const GURL kTestUrl = GetTestUrl("indexeddb", "fill_quota.html");
   SimpleTest(kTestUrl);
   SetQuota(1);
@@ -901,12 +902,15 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, EmptyBlob) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, BlobsCountAgainstQuota) {
-  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
+  if (using_sqlite_) {
+    // TODO(crbug.com/433318798): Enable this test after reclaiming disk space
+    // on data deletion.
+    return;
+  }
   SimpleTest(GetTestUrl("indexeddb", "blobs_use_quota.html"));
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
-  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_4mb_blob.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(kTestUrl));
@@ -929,6 +933,11 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataDeletesBlobs) {
 //   5. the blob reference is dropped and GC'd again
 //   6. don't crash
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
+  if (using_sqlite_) {
+    // TODO(crbug.com/419208485): Enable this test after implementing
+    // `InvalidateBlobReferences()`.
+    return;
+  }
   const GURL kTestUrl = GetTestUrl("indexeddb", "write_and_read_blob.html");
   SimpleTest(kTestUrl);
   DeleteBucketData(
@@ -949,7 +958,6 @@ IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTestWithGCExposed, ForceCloseWithBlob) {
 }
 
 IN_PROC_BROWSER_TEST_P(IndexedDBBrowserTest, DeleteBucketDataIncognito) {
-  DISABLED_FOR_SQLITE_PENDING_USAGE_REPORTING();
   const GURL test_url = GetTestUrl("indexeddb", "fill_up_5k.html");
   const blink::StorageKey kTestStorageKey =
       blink::StorageKey::CreateFirstParty(url::Origin::Create(test_url));

@@ -84,6 +84,21 @@ BASE_FEATURE(kIdbExpediteBackendProcessingForForegroundClients,
 
 namespace {
 
+base::FilePath GetBlobStorePath(const base::FilePath& data_path,
+                                const BucketLocator& bucket_locator) {
+  return data_path.Append(indexed_db::GetBlobStoreFileName(bucket_locator));
+}
+
+base::FilePath GetLevelDBPath(const base::FilePath& data_path,
+                              const BucketLocator& bucket_locator) {
+  return data_path.Append(indexed_db::GetLevelDBFileName(bucket_locator));
+}
+
+base::FilePath GetSqlitePath(const base::FilePath& data_path,
+                             const BucketLocator& bucket_locator) {
+  return data_path.Append(indexed_db::GetSqliteDbDirectory(bucket_locator));
+}
+
 base::TaskPriority GetBaseTaskPriority() {
   if (base::FeatureList::IsEnabled(
           kIdbExpediteBackendProcessingForForegroundClients)) {
@@ -578,7 +593,8 @@ void IndexedDBContextImpl::GetBaseDataPathForTesting(
 void IndexedDBContextImpl::GetFilePathForTesting(
     const BucketLocator& bucket_locator,
     GetFilePathForTestingCallback callback) {
-  std::move(callback).Run(GetLevelDBPath(bucket_locator));
+  std::move(callback).Run(
+      GetLevelDBPath(GetDataPath(bucket_locator), bucket_locator));
 }
 
 void IndexedDBContextImpl::ResetCachesForTesting(base::OnceClosure callback) {
@@ -593,7 +609,8 @@ void IndexedDBContextImpl::GetPathForBlobForTesting(
     int64_t blob_number,
     GetPathForBlobForTestingCallback callback) {
   std::move(callback).Run(indexed_db::GetBlobFileNameForKey(
-      GetBlobStorePath(bucket_locator), database_id, blob_number));
+      GetBlobStorePath(GetDataPath(bucket_locator), bucket_locator),
+      database_id, blob_number));
 }
 
 void IndexedDBContextImpl::FlushBackingStoreForTesting(
@@ -682,7 +699,9 @@ base::Time IndexedDBContextImpl::GetBucketLastModified(
     return base::Time();
   }
 
-  base::FilePath idb_directory = GetLevelDBPath(bucket_locator);
+  // TODO(crbug.com/40253999): Also account for SQLite databases.
+  base::FilePath idb_directory =
+      GetLevelDBPath(GetDataPath(bucket_locator), bucket_locator);
   base::File::Info info;
   if (base::GetFileInfo(idb_directory, &info)) {
     return info.last_modified;
@@ -692,9 +711,13 @@ base::Time IndexedDBContextImpl::GetBucketLastModified(
 
 std::vector<base::FilePath> IndexedDBContextImpl::GetStoragePaths(
     const BucketLocator& bucket_locator) const {
-  std::vector<base::FilePath> paths = {GetLevelDBPath(bucket_locator),
-                                       GetBlobStorePath(bucket_locator)};
-  return paths;
+  const base::FilePath& data_path = GetDataPath(bucket_locator);
+  if (indexed_db::ShouldUseLegacyFilePath(bucket_locator)) {
+    return {GetLevelDBPath(data_path, bucket_locator),
+            GetBlobStorePath(data_path, bucket_locator),
+            GetSqlitePath(data_path, bucket_locator)};
+  }
+  return {data_path};
 }
 
 base::FilePath IndexedDBContextImpl::GetDataPath(
@@ -833,20 +856,6 @@ void IndexedDBContextImpl::Shutdown(
                          std::move(context), base::TimeTicks::Now())));
 }
 
-base::FilePath IndexedDBContextImpl::GetBlobStorePath(
-    const BucketLocator& bucket_locator) const {
-  DCHECK(!in_memory());
-  return GetDataPath(bucket_locator)
-      .Append(indexed_db::GetBlobStoreFileName(bucket_locator));
-}
-
-base::FilePath IndexedDBContextImpl::GetLevelDBPath(
-    const BucketLocator& bucket_locator) const {
-  DCHECK(!in_memory());
-  return GetDataPath(bucket_locator)
-      .Append(indexed_db::GetLevelDBFileName(bucket_locator));
-}
-
 int64_t IndexedDBContextImpl::ReadUsageFromDisk(
     const BucketLocator& bucket_locator,
     bool write_in_progress) const {
@@ -855,8 +864,10 @@ int64_t IndexedDBContextImpl::ReadUsageFromDisk(
 #if BUILDFLAG(IS_WIN)
   // Touch all files in the LevelDB directory to update directory entry
   // metadata. See note for `bucket_size_map_` about why this is necessary.
+  // TODO(crbug.com/419203257): Determine if this is also needed for SQLite.
   if (write_in_progress) {
-    const base::FilePath leveldb_dir = GetLevelDBPath(bucket_locator);
+    const base::FilePath leveldb_dir =
+        GetLevelDBPath(GetDataPath(bucket_locator), bucket_locator);
     base::FileEnumerator file_iter(leveldb_dir, /*recursive=*/true,
                                    base::FileEnumerator::FILES);
     for (base::FilePath file_path = file_iter.Next(); !file_path.empty();

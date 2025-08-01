@@ -83,6 +83,9 @@ class DatabaseConnection {
   // corresponding to active blobs, but no object stores, records, etc.
   bool IsZygotic() const;
 
+  // Get the size of the database opened in-memory.
+  uint64_t GetInMemorySize() const;
+
   // Exposed to `BackingStoreDatabaseImpl`.
   std::unique_ptr<BackingStoreTransactionImpl> CreateTransaction(
       base::PassKey<BackingStoreDatabaseImpl>,

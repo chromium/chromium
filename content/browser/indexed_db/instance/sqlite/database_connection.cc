@@ -774,6 +774,28 @@ int64_t DatabaseConnection::GetCommittedVersion() const {
   return metadata_snapshot_ ? metadata_snapshot_->version : metadata_.version;
 }
 
+uint64_t DatabaseConnection::GetInMemorySize() const {
+  CHECK(path_.empty());
+  // TODO(crbug.com/419203257): For consistency, consider using this logic while
+  // reporting usage of on-disk databases too.
+  //
+  // The maximum page count is ~2^32: https://www.sqlite.org/limits.html.
+  uint32_t page_count = 0;
+  // The maximum page size is 65536 bytes.
+  uint16_t page_size = 0;
+  {
+    sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_count"));
+    TRANSIENT_CHECK(statement.Step());
+    page_count = static_cast<uint32_t>(statement.ColumnInt(0));
+  }
+  {
+    sql::Statement statement(db_->GetReadonlyStatement("PRAGMA page_size"));
+    TRANSIENT_CHECK(statement.Step());
+    page_size = static_cast<uint16_t>(statement.ColumnInt(0));
+  }
+  return static_cast<uint64_t>(page_count) * page_size;
+}
+
 std::unique_ptr<BackingStoreTransactionImpl>
 DatabaseConnection::CreateTransaction(
     base::PassKey<BackingStoreDatabaseImpl>,

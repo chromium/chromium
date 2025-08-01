@@ -70,8 +70,11 @@ void BackingStoreImpl::StartPreCloseTasks(base::OnceClosure on_done) {
 void BackingStoreImpl::StopPreCloseTasks() {}
 
 int64_t BackingStoreImpl::GetInMemorySize() const {
-  NOTIMPLEMENTED();
-  return 0;
+  uint64_t total_size = 0;
+  for (const auto& [_, connection] : open_connections_) {
+    total_size += connection->GetInMemorySize();
+  }
+  return total_size;
 }
 
 StatusOr<bool> BackingStoreImpl::DatabaseExists(std::u16string_view name) {

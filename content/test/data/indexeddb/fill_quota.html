@@ -27,7 +27,10 @@ function startNewTransaction() {
 
   var trans = db.transaction(['test123'], 'readwrite');
   trans.onabort = e => {
-    if (trans.error.name === 'QuotaExceededError') done();
+    if (trans.error.name === 'QuotaExceededError') {
+      shouldBeTrue("numTransactions > 0");
+      done();
+    }
     else fail('unexpected error ' + trans.error.name);
   };
   trans.oncomplete = getQuotaAndUsage;
