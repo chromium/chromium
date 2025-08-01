@@ -15,6 +15,10 @@
 class AuthenticationService;
 @class InstantSigninMediator;
 
+namespace signin {
+class IdentityManager;
+}  // namespace signin
+
 namespace signin_metrics {
 enum class AccessPoint;
 }  // namespace signin_metrics
@@ -40,6 +44,7 @@ enum class AccessPoint;
 - (instancetype)
       initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
     authenticationService:(AuthenticationService*)authenticationService
+          identityManager:(signin::IdentityManager*)identityManager
      continuationProvider:
          (const ChangeProfileContinuationProvider&)continuationProvider
     NS_DESIGNATED_INITIALIZER;

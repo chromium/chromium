@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/authentication/ui_bundled/signin/instant_signin/instant_signin_mediator.h"
 
 #import "base/memory/raw_ptr.h"
+#import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_flow/authentication_flow_delegate.h"
 #import "ios/chrome/browser/authentication/ui_bundled/authentication_ui_util.h"
@@ -17,7 +18,8 @@ using signin_metrics::AccessPoint;
 using signin_metrics::PromoAction;
 
 @interface InstantSigninMediator () <AuthenticationFlowDelegate,
-                                     AuthenticationServiceObserving>
+                                     AuthenticationServiceObserving,
+                                     IdentityManagerObserverBridgeDelegate>
 @end
 
 @implementation InstantSigninMediator {
@@ -29,11 +31,16 @@ using signin_metrics::PromoAction;
   // Observer for auth service status changes.
   std::unique_ptr<AuthenticationServiceObserverBridge>
       _authServiceObserverBridge;
+  // Identity manager to retrieve Chrome identities.
+  raw_ptr<signin::IdentityManager> _identityManager;
+  std::unique_ptr<signin::IdentityManagerObserverBridge>
+      _identityManagerObserver;
 }
 
 - (instancetype)
       initWithAccessPoint:(signin_metrics::AccessPoint)accessPoint
     authenticationService:(AuthenticationService*)authenticationService
+          identityManager:(signin::IdentityManager*)identityManager
      continuationProvider:
          (const ChangeProfileContinuationProvider&)continuationProvider {
   self = [super init];
@@ -41,12 +48,17 @@ using signin_metrics::PromoAction;
     CHECK(continuationProvider);
     CHECK(authenticationService);
     CHECK(authenticationService->SigninEnabled());
+    CHECK(identityManager);
     _continuationProvider = continuationProvider;
     _accessPoint = accessPoint;
     _authenticationService = authenticationService;
     _authServiceObserverBridge =
         std::make_unique<AuthenticationServiceObserverBridge>(
             authenticationService, self);
+    _identityManager = identityManager;
+    _identityManagerObserver =
+        std::make_unique<signin::IdentityManagerObserverBridge>(
+            _identityManager, self);
   }
   return self;
 }
@@ -65,6 +77,9 @@ using signin_metrics::PromoAction;
 - (void)disconnect {
   _authenticationService = nullptr;
   _authServiceObserverBridge.reset();
+  _authenticationService = nil;
+  _identityManagerObserver.reset();
+  _identityManager = nil;
   [_authenticationFlow interrupt];
   _authenticationFlow = nil;
 }
@@ -90,6 +105,21 @@ using signin_metrics::PromoAction;
   if (!_authenticationService->SigninEnabled()) {
     // Signin is now disabled, so the consistency default account must be
     // stopped.
+    [self.delegate instantSigninMediatorSigninIsImpossible:self];
+  }
+}
+
+#pragma mark - IdentityManagerObserverBridgeDelegate
+
+- (void)onPrimaryAccountChanged:
+    (const signin::PrimaryAccountChangeEvent&)event {
+  if (_authenticationFlow) {
+    // Authentication is started. The instant signin will be stopped by the
+    // authentication flow’s callback.
+    return;
+  }
+  if (_identityManager->HasPrimaryAccount(signin::ConsentLevel::kSignin)) {
+    // The user is signed-in, no more sign-in is needed.
     [self.delegate instantSigninMediatorSigninIsImpossible:self];
   }
 }

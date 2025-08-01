@@ -1111,4 +1111,30 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_notNil()];
 }
 
+// Tests that promo and account list disappear if the user get signed-in.
+- (void)testSignInDuringIdentiyList {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+  reading_list_test_utils::OpenReadingList();
+  [[EarlGrey
+      selectElementWithMatcher:grey_allOf(SecondarySignInButton(),
+                                          grey_sufficientlyVisible(), nil)]
+      performAction:grey_tap()];
+  // Checks that the identity list is displayed.
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity.userEmail)]
+      assertWithMatcher:grey_notNil()];
+  // Simulate a sign-in (in real life, it would be done in a managed profile, by
+  // doing an account switch to a personal profile).
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Checks that the identity list and the promo are gone.
+  [[EarlGrey selectElementWithMatcher:IdentityCellMatcherForEmail(
+                                          fakeIdentity.userEmail)]
+      assertWithMatcher:grey_nil()];
+  [SigninEarlGreyUI verifySigninPromoNotVisible];
+  // But the reading list is still open.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(kReadingListViewID)]
+      assertWithMatcher:grey_notNil()];
+}
+
 @end

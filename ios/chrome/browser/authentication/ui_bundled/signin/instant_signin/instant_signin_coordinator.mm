@@ -104,6 +104,7 @@
   _mediator =
       [[InstantSigninMediator alloc] initWithAccessPoint:self.accessPoint
                                    authenticationService:authenticationService
+                                         identityManager:identityManager
                                     continuationProvider:_continuationProvider];
   _mediator.delegate = self;
 
