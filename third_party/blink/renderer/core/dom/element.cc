@@ -3348,15 +3348,9 @@ Element::GetTrustedTypeDataForAttribute(const QualifiedName& q_name,
   } else {
     // Legacy behaviour; no longer spec compliant.
 
-    // TODO(vogelheim): We construct an AtomicString based on legacy_sink_name
-    // so that we can use the same type across all cases. Because this instance
-    // is constructed here, we need to return a `const AtomicString` rather
-    // than a `const AtomicString&`, so that the memory is owned at all times.
-    // In blink_unittests V8ElementTest.SetAttributeOperationCallback, the
-    // number of AtomicString references is tested for, which is sensitive to
-    // this operation.
-    // Once the TrustedTypesHTML flag is removed, this code also gets removed
-    // and it should be easy to change the return type back to a reference.
+    // TODO(vogelheim): Once the TrustedTypesHTML flag is removed, this code
+    // also gets removed and it should be easy to change the return type back
+    // to a reference.
     AtomicString property_name(legacy_sink_name);
     if (!q_name.NamespaceURI().IsNull() &&
         !SVGAnimatedHref::IsKnownAttribute(q_name)) {
@@ -11982,17 +11976,32 @@ void Element::SetAttributeHinted(AtomicString local_name,
 
   auto [index, q_name] =
       LookupAttributeQNameHinted(std::move(local_name), hint);
-  AtomicString trusted_value(TrustedTypesCheckForAttribute(
-      q_name, std::move(value), "setAttribute", exception_state));
-  if (exception_state.HadException()) {
-    return;
-  }
-  // The `TrustedTypesCheckFor` call above may run script, which may modify
-  // the current element, which in turn may invalidate the index. So we'll
-  // check, and re-calculate it if necessary.
-  index = ValidateAttributeIndex(index, q_name);
 
-  SetAttributeInternal(index, q_name, trusted_value,
+  // This method is probably the most common case for `setAttribute`.
+  // For performance reasons, we'll skip the TT check if we can determine it's
+  // unnecessary based on a quick heuristic.
+  if (q_name.LocalName().StartsWith("on") ||
+      !GetCheckedAttributeTypes().empty()) [[unlikely]] {
+    value = TrustedTypesCheckForAttribute(q_name, std::move(value),
+                                          "setAttribute", exception_state);
+    if (exception_state.HadException()) {
+      return;
+    }
+    // The `TrustedTypesCheckFor` call above may run script, which may modify
+    // the current element, which in turn may invalidate the index. So we'll
+    // check, and re-calculate it if necessary.
+    index = ValidateAttributeIndex(index, q_name);
+  } else {
+    // Check whether the "real" TT check would have come to the same result.
+    // Debug-only, since not running the check at all is the whole point of this
+    // branch.
+    DCHECK_EQ(value, TrustedTypesCheckForAttribute(
+                         q_name, value, "setAttribute", exception_state));
+    DCHECK(!exception_state.HadException());
+    DCHECK_EQ(index, ValidateAttributeIndex(index, q_name));
+  }
+
+  SetAttributeInternal(index, q_name, AtomicString(std::move(value)),
                        AttributeModificationReason::kDirectly);
 }
 
