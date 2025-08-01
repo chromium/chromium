@@ -562,6 +562,10 @@ AV1VaapiVideoEncoderDelegate::PrepareEncodeJob(EncodeJob& encode_job) {
     encode_job.ProduceKeyframe();
   }
 
+  if (svc_layers_ && svc_layers_->IsKeyFrame()) {
+    encode_job.ProduceKeyframe();
+  }
+
   const bool is_keyframe = encode_job.IsKeyframeRequested();
   scoped_refptr<AV1Picture> pic = GetAV1Picture(encode_job);
 
