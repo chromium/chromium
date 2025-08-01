@@ -1058,6 +1058,8 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
 
     protected boolean shouldShowContentFilterHelpCenterMenuItem(@Nullable Tab currentTab) {
         return currentTab != null
+                && ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.PROPAGATE_DEVICE_CONTENT_FILTERS_TO_SUPERVISED_USER)
                 && SupervisedUserServiceBridge.isSupervisedLocally(currentTab.getProfile());
     }
 

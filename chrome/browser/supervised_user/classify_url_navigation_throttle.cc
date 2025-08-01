@@ -261,9 +261,10 @@ std::string ClassifyUrlNavigationThrottle::GetInterstitialHTML(
     bool is_main_frame) const {
 #if BUILDFLAG(IS_ANDROID)
   if (supervised_user_service()->IsLocalBrowserFilteringEnabled() &&
-      UseInterstitialForLocalSupervision()) {
-    return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(
-        result.url, g_browser_process->GetApplicationLocale());
+      base::FeatureList::IsEnabled(
+          kSupervisedUserInterstitialWithoutApprovals)) {
+    return SupervisedUserInterstitial::GetHTMLContentsWithoutApprovals(result.url,
+        g_browser_process->GetApplicationLocale());
   }
 #endif
   Profile* profile = Profile::FromBrowserContext(
@@ -376,6 +377,7 @@ void ClassifyUrlNavigationThrottle::CancelDeferredNavigation(
   content::NavigationThrottle::CancelDeferredNavigation(result);
   NextNavigationState(ClassifyUrlThrottleStatus::kCancelDeferredNavigation);
 }
+
 
 const char* ClassifyUrlNavigationThrottle::GetNameForLogging() {
   return "ClassifyUrlNavigationThrottle";
