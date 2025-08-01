@@ -1175,9 +1175,10 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
             auto it = otp_fill_data->find(field_data.global_id());
             const std::u16string& value =
                 it == otp_fill_data->end() ? u"" : it->second;
-            return {value, autofill_field.Type().GetStorableType()};
+            return {value, autofill_field.Type().GetPasswordManagerType()};
           }},
       filling_payload.variant);
+  CHECK_NE(filled_field_type, UNKNOWN_TYPE, base::NotFatalUntil::M143);
   return {value_to_fill, filled_field_type, /*value_is_an_override=*/false};
 }
 
