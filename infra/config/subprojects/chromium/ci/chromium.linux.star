@@ -1133,8 +1133,6 @@ ci.builder(
             "empty_main",
         ],
     ),
-    # Focal is needed for better C++20 support. See crbug.com/1284275.
-    os = os.LINUX_FOCAL,
     console_view_entry = consoles.console_view_entry(
         category = "release",
         short_name = "gcc",
