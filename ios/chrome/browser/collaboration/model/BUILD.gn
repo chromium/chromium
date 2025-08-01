@@ -43,8 +43,11 @@ source_set("model") {
   sources = [
     "collaboration_service_factory.h",
     "collaboration_service_factory.mm",
+    "data_sharing_browser_agent.h",
+    "data_sharing_browser_agent.mm",
     "data_sharing_tab_helper.h",
     "data_sharing_tab_helper.mm",
+    "data_sharing_tab_helper_delegate.h",
   ]
 
   deps = [
@@ -63,6 +66,7 @@ source_set("model") {
     "//ios/chrome/browser/shared/model/profile:profile_keyed_service_factory",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/signin/model",
+    "//ios/chrome/browser/tabs/model:dependency_installer",
     "//ios/web/public",
   ]
   frameworks = [ "Foundation.framework" ]

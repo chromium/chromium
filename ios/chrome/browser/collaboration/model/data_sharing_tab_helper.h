@@ -5,8 +5,11 @@
 #ifndef IOS_CHROME_BROWSER_COLLABORATION_MODEL_DATA_SHARING_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_COLLABORATION_MODEL_DATA_SHARING_TAB_HELPER_H_
 
-#import "ios/web/public/navigation/web_state_policy_decider.h"
-#import "ios/web/public/web_state_user_data.h"
+#include "base/memory/raw_ptr.h"
+#include "ios/web/public/navigation/web_state_policy_decider.h"
+#include "ios/web/public/web_state_user_data.h"
+
+class DataSharingTabHelperDelegate;
 
 // A tab helper that intercepts the navigation if the request's URL is for data
 // sharing.
@@ -15,8 +18,12 @@ class DataSharingTabHelper
       public web::WebStateUserData<DataSharingTabHelper> {
  public:
   ~DataSharingTabHelper() override;
+
   DataSharingTabHelper(const DataSharingTabHelper&) = delete;
   DataSharingTabHelper& operator=(const DataSharingTabHelper&) = delete;
+
+  // Sets the delegate.
+  void SetDelegate(DataSharingTabHelperDelegate* delegate);
 
   // web::WebStatePolicyDecider implementation
   void ShouldAllowRequest(
@@ -27,6 +34,11 @@ class DataSharingTabHelper
  private:
   explicit DataSharingTabHelper(web::WebState* web_state);
   friend class web::WebStateUserData<DataSharingTabHelper>;
+
+  // Returns the request for `url` should be intercepted.
+  bool ShouldInterceptRequestforUrl(const GURL& url) const;
+
+  raw_ptr<DataSharingTabHelperDelegate> delegate_;
 };
 
 #endif  // IOS_CHROME_BROWSER_COLLABORATION_MODEL_DATA_SHARING_TAB_HELPER_H_

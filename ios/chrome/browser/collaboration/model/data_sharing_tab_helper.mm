@@ -8,16 +8,8 @@
 #import "base/functional/bind.h"
 #import "base/functional/callback.h"
 #import "components/collaboration/public/collaboration_flow_entry_point.h"
-#import "components/collaboration/public/collaboration_service.h"
 #import "components/data_sharing/public/data_sharing_utils.h"
-#import "ios/chrome/browser/collaboration/model/collaboration_service_factory.h"
-#import "ios/chrome/browser/collaboration/model/features.h"
-#import "ios/chrome/browser/data_sharing/model/ios_share_url_interception_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list.h"
-#import "ios/chrome/browser/shared/model/browser/browser_list_factory.h"
-#import "ios/chrome/browser/shared/model/profile/profile_ios.h"
-#import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/collaboration/model/data_sharing_tab_helper_delegate.h"
 #import "net/base/apple/url_conversions.h"
 #import "url/gurl.h"
 
@@ -67,62 +59,48 @@ DataSharingTabHelper::DataSharingTabHelper(web::WebState* web_state)
 
 DataSharingTabHelper::~DataSharingTabHelper() = default;
 
+void DataSharingTabHelper::SetDelegate(DataSharingTabHelperDelegate* delegate) {
+  delegate_ = delegate;
+}
+
 void DataSharingTabHelper::ShouldAllowRequest(
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
-  web::WebState* current_web_state = web_state();
-  ProfileIOS* profile =
-      ProfileIOS::FromBrowserState(current_web_state->GetBrowserState());
-  collaboration::CollaborationService* collaboration_service =
-      collaboration::CollaborationServiceFactory::GetForProfile(profile);
-
-  GURL url = net::GURLWithNSURL(request.URL);
-  if (collaboration_service &&
-      IsSharedTabGroupsJoinEnabled(collaboration_service) &&
-      data_sharing::DataSharingUtils::ShouldInterceptNavigationForShareURL(
-          url)) {
-    BrowserList* browser_list = BrowserListFactory::GetForProfile(profile);
-
-    std::set<Browser*> regular_browsers =
-        browser_list->BrowsersOfType(BrowserList::BrowserType::kRegular);
-    Browser* current_browser = nullptr;
-    if (regular_browsers.size() == 1) {
-      current_browser = *regular_browsers.begin();
-    } else {
-      for (Browser* browser : regular_browsers) {
-        if (browser->GetWebStateList()->GetIndexOfWebState(current_web_state) !=
-            WebStateList::kInvalidIndex) {
-          current_browser = browser;
-          break;
-        }
-      }
-    }
-
-    CHECK(current_browser, base::NotFatalUntil::M138);
-
-    if (ShouldHandleShareURLNavigation(request_info)) {
-      auto context =
-          std::make_unique<data_sharing::IOSShareURLInterceptionContext>(
-              current_browser);
-      collaboration_service->HandleShareURLNavigationIntercepted(
-          url, std::move(context),
-          collaboration::GetEntryPointFromPageTransition(
-              request_info.transition_type));
-    }
-
-    // Invoking `callback` may destroy the WebState and thus the current
-    // object. To avoid a crash (see https://crbug.com/434172545 for more
-    // information) create a callback that will try to close the WebState
-    // (if it still exists) and chain it with `callback`.
-    base::BindOnce(std::move(callback), PolicyDecision::Cancel())
-        .Then(CloseWebStateIfEmptyPageClosure(current_web_state))
-        .Run();
-
-    // The current object may have been destroyed, nothing should happen
-    // now (except returning from the current method).
+  const GURL url = net::GURLWithNSURL(request.URL);
+  if (!ShouldInterceptRequestforUrl(url)) {
+    std::move(callback).Run(PolicyDecision::Allow());
     return;
   }
 
-  std::move(callback).Run(PolicyDecision::Allow());
+  // Invoking `callback` may destroy the WebState and thus the current
+  // object. To avoid a crash (see https://crbug.com/434172545 for more
+  // information) create a callback that will try to close the WebState
+  // (if it still exists) and chain it with `callback`.
+  callback =
+      std::move(callback).Then(CloseWebStateIfEmptyPageClosure(web_state()));
+
+  if (ShouldHandleShareURLNavigation(request_info)) {
+    delegate_->HandleShareURLNavigationIntercepted(
+        url, collaboration::GetEntryPointFromPageTransition(
+                 request_info.transition_type));
+  }
+
+  // From this point, the code must not access `this` as it may have been
+  // destroyed. It is okay to use `callback` since it is a local variable.
+  std::move(callback).Run(PolicyDecision::Cancel());
+}
+
+bool DataSharingTabHelper::ShouldInterceptRequestforUrl(const GURL& url) const {
+  // Cannot intercept a request if there is no delegate installed or if
+  // joining shared tab groups is not allowed.
+  if (!delegate_ || !delegate_->IsAllowedToJoinSharedTabGroups()) {
+    return false;
+  }
+
+  // For data_sharing::DataSharingUtils::ShouldInterceptNavigationForShareURL.
+  using data_sharing::DataSharingUtils;
+
+  // Only intercept data sharing urls.
+  return DataSharingUtils::ShouldInterceptNavigationForShareURL(url);
 }
