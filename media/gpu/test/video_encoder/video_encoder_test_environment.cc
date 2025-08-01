@@ -20,7 +20,6 @@
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
-#include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "media/base/bitrate.h"
 #include "media/base/media_switches.h"
 #include "media/gpu/buildflags.h"
