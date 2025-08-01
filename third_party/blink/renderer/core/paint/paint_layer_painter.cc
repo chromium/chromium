@@ -262,7 +262,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
       !paint_layer_.HasSelfPaintingLayerDescendant())
     return kFullyPainted;
 
-  if (((paint_flags & PaintFlag::kPlacedElement) == 0) &&
+  if (((paint_flags & PaintFlag::kPaintingCanvasDrawElement) == 0) &&
       !IsA<HTMLCanvasElement>(object.GetNode()) &&
       IsA<Element>(object.GetNode()) &&
       To<Element>(object.GetNode())->IsInCanvasSubtree()) {

@@ -796,7 +796,7 @@ void CanvasRenderingContext2D::DrawElementInternal(
                                           /*disable_expansion*/ true);
 
   PaintLayerPainter paint_layer_painter = PaintLayerPainter(*layer);
-  PaintFlags paint_flags = PaintFlag::kPlacedElement;
+  PaintFlags paint_flags = PaintFlag::kPaintingCanvasDrawElement;
   if (options && options->allowReadback()) {
     paint_flags |= PaintFlag::kPrivacyPreserving;
   }
