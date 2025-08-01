@@ -541,6 +541,10 @@ void OmniboxViewViews::SetFocus(bool is_user_initiated) {
   model()->ConsumeCtrlKey();
 }
 
+void OmniboxViewViews::RequestViewFocus() {
+  RequestFocus();
+}
+
 int OmniboxViewViews::GetTextWidth() const {
   // Returns the width necessary to display the current text, including any
   // necessary space for the cursor or border/margin.
@@ -1457,6 +1461,14 @@ bool OmniboxViewViews::HandleAccessibleAction(
 void OmniboxViewViews::OnFocus() {
   views::Textfield::OnFocus();
 
+  // If focus is returning from the AIM button, there is no need for any of the
+  // usual bookkeeping, since the omnibox was logically considered to have
+  // retained focus.
+  if (model()->FocusIsReturningFromAimButton()) {
+    model()->SetFocusIsReturningFromAimButton(false);
+    return;
+  }
+
   // TODO(tommycli): This does not seem like it should be necessary.
   // Investigate why it's needed and see if we can remove it.
   model()->ResetDisplayTexts();
@@ -1488,6 +1500,16 @@ void OmniboxViewViews::OnFocus() {
 }
 
 void OmniboxViewViews::OnBlur() {
+  views::Textfield::OnBlur();
+
+  // If focus is going to the AIM button, there is no need for any of the usual
+  // bookkeeping, since the omnibox will logically be considered to have
+  // retained focus.
+  if (model()->FocusIsGoingToAimButton()) {
+    model()->SetFocusIsGoingToAimButton(false);
+    return;
+  }
+
   // Save the user's existing selection to restore it later.
   saved_selection_for_focus_change_ = GetSelectedRange();
 
@@ -1513,7 +1535,6 @@ void OmniboxViewViews::OnBlur() {
     RevertAll();
   }
 
-  views::Textfield::OnBlur();
   model()->OnWillKillFocus();
 
   // If ZeroSuggest is active, and there is evidence that there is a text

@@ -65,7 +65,6 @@
 #include "components/omnibox/common/omnibox_feature_configs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
-#include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engine_type.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_prepopulate_data.h"
@@ -1762,6 +1761,12 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
   popup_selection_ = new_selection;
   popup_view_->OnSelectionChanged(old_selection, popup_selection_);
 
+  // Special case for transferring focus to the AIM button.
+  if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_AIM) {
+    popup_view_->RequestAimButtonFocus();
+    return;
+  }
+
   // This occurs when e.g., pressing escape to select the null match in
   // zero-input mode.
   if (popup_selection_.line == OmniboxPopupSelection::kNoMatch) {
@@ -1826,8 +1831,7 @@ bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
 bool OmniboxEditModel::IsPopupControlPresentOnMatch(
     OmniboxPopupSelection selection) const {
   DCHECK(popup_view_);
-  return selection.IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                           GetPrefService());
+  return selection.IsControlPresentOnMatch(autocomplete_controller()->result());
 }
 
 void OmniboxEditModel::TryDeletingPopupLine(size_t line) {
@@ -1908,7 +1912,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   int additional_message_id = 0;
   std::u16string additional_message;
   // This switch statement should be updated when new selection types are added.
-  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 7);
+  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 8);
   switch (popup_selection_.state) {
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;
@@ -1917,23 +1921,21 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
         additional_message_id = IDS_ACC_OMNIBOX_TOOLBELT_NEXT_SUFFIX;
       }
       if (OmniboxPopupSelection(line, OmniboxPopupSelection::KEYWORD_MODE)
-              .IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                       GetPrefService())) {
+              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
         additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
         available_actions_count++;
       }
+      // TODO(crbug.com/432744091): Add a message for the AIM button here.
       if (OmniboxPopupSelection(line,
                                 OmniboxPopupSelection::FOCUSED_BUTTON_ACTION)
-              .IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                       GetPrefService())) {
+              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
         additional_message =
             match.GetActionAt(0u)->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
       if (OmniboxPopupSelection(line,
                                 OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_UP)
-              .IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                       GetPrefService())) {
+              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
         // No need to set `additional_message_id`. Thumbs up and thumbs down
         // button are always present together; `additional_message_id` is set to
         // `IDS_ACC_MULTIPLE_ACTIONS_SUFFIX` further down.
@@ -1941,8 +1943,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       }
       if (OmniboxPopupSelection(
               line, OmniboxPopupSelection::FOCUSED_BUTTON_THUMBS_DOWN)
-              .IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                       GetPrefService())) {
+              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
         // No need to set `additional_message_id`. Thumbs up and thumbs down
         // button are always present together; `additional_message_id` is set to
         // `IDS_ACC_MULTIPLE_ACTIONS_SUFFIX` further down.
@@ -1950,8 +1951,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       }
       if (OmniboxPopupSelection(
               line, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)
-              .IsControlPresentOnMatch(autocomplete_controller()->result(),
-                                       GetPrefService())) {
+              .IsControlPresentOnMatch(autocomplete_controller()->result())) {
         additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
         available_actions_count++;
       }
@@ -2050,11 +2050,9 @@ OmniboxEditModel::MaybeGetPopupAccessibilityLabelForIPHSuggestion() {
       // Iff the next selection (the next time the user presses tab) is the
       // remove suggestion button for the IPH row, also append its a11y label.
       auto next_selection = popup_selection_.GetNextSelection(
-          autocomplete_controller()->result(), GetPrefService(),
+          autocomplete_controller()->result(),
           controller_->client()->GetTemplateURLService(),
-          OmniboxPopupSelection::kForward, OmniboxPopupSelection::kStateOrLine,
-          OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
-              GetPageClassification()));
+          OmniboxPopupSelection::kForward, OmniboxPopupSelection::kStateOrLine);
       if (next_selection.line == next_line &&
           next_selection.state ==
               OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
@@ -2166,6 +2164,22 @@ void OmniboxEditModel::SetAutocompleteInput(AutocompleteInput input) {
   input_ = std::move(input);
 }
 
+bool OmniboxEditModel::FocusIsGoingToAimButton() const {
+  return focus_is_going_to_aim_button_;
+}
+
+void OmniboxEditModel::SetFocusIsGoingToAimButton(bool value) {
+  focus_is_going_to_aim_button_ = value;
+}
+
+bool OmniboxEditModel::FocusIsReturningFromAimButton() const {
+  return focus_is_returning_from_aim_button_;
+}
+
+void OmniboxEditModel::SetFocusIsReturningFromAimButton(bool value) {
+  focus_is_returning_from_aim_button_ = value;
+}
+
 PrefService* OmniboxEditModel::GetPrefService() {
   return controller_->client()->GetPrefs();
 }
@@ -2219,10 +2233,8 @@ void OmniboxEditModel::StepPopupSelection(
   // wrong suggestion when stepping backwards.
   const OmniboxPopupSelection old_selection = GetPopupSelection();
   OmniboxPopupSelection new_selection = old_selection.GetNextSelection(
-      autocomplete_controller()->result(), GetPrefService(),
-      controller_->client()->GetTemplateURLService(), direction, step,
-      OmniboxFieldTrial::IsHideSuggestionGroupHeadersEnabledInContext(
-          GetPageClassification()));
+      autocomplete_controller()->result(),
+      controller_->client()->GetTemplateURLService(), direction, step);
   if (kIsDesktop) {
     if (old_selection.IsChangeToKeyword(new_selection)) {
       ClearKeyword();

@@ -10,6 +10,7 @@
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/search_engines/template_url_service.h"
 
 constexpr bool kIsDesktop = !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS);
@@ -30,8 +31,7 @@ bool OmniboxPopupSelection::IsAction() const {
 }
 
 bool OmniboxPopupSelection::IsControlPresentOnMatch(
-    const AutocompleteResult& result,
-    const PrefService* pref_service) const {
+    const AutocompleteResult& result) const {
   if (line >= result.size()) {
     return false;
   }
@@ -63,11 +63,9 @@ bool OmniboxPopupSelection::IsControlPresentOnMatch(
 
 OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
     const AutocompleteResult& result,
-    const PrefService* pref_service,
     TemplateURLService* template_url_service,
     Direction direction,
-    Step step,
-    bool force_hide_row_header) const {
+    Step step) const {
   if (result.empty()) {
     return *this;
   }
@@ -82,9 +80,7 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   // in practice it's only something like ~10 elements long, and makes the code
   // easy to reason about.
   std::vector<OmniboxPopupSelection> all_available_selections =
-      GetAllAvailableSelectionsSorted(result, pref_service,
-                                      template_url_service, direction, step,
-                                      force_hide_row_header);
+      GetAllAvailableSelectionsSorted(result, template_url_service, step);
 
   if (all_available_selections.empty()) {
     return *this;
@@ -131,15 +127,11 @@ OmniboxPopupSelection OmniboxPopupSelection::GetNextSelection(
   NOTREACHED();
 }
 
-// static
 std::vector<OmniboxPopupSelection>
 OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     const AutocompleteResult& result,
-    const PrefService* pref_service,
     TemplateURLService* template_url_service,
-    Direction direction,
-    Step step,
-    bool force_hide_row_header) {
+    Step step) const {
   // First enumerate all the accessible states based on `direction` and `step`,
   // as well as enabled feature flags. This doesn't mean each match will have
   // all of these states - just that it's possible to get there, if available.
@@ -152,6 +144,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
     all_states.push_back(NORMAL);
     all_states.push_back(KEYWORD_MODE);
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+    all_states.push_back(FOCUSED_BUTTON_AIM);
     all_states.push_back(FOCUSED_BUTTON_ACTION);
 #endif
     all_states.push_back(FOCUSED_BUTTON_THUMBS_UP);
@@ -162,15 +155,31 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
   DCHECK(std::is_sorted(all_states.begin(), all_states.end()))
       << "This algorithm depends on a sorted list of line states.";
 
-  // Now, for each accessible line, add all the available line states to a list.
   std::vector<OmniboxPopupSelection> available_selections;
+  const bool aim_button_enabled =
+      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
+  // Special case which puts the AIM button as the first selection in the order
+  // only if there's no match selected yet (current line is `kNoMatch`).
+  if (aim_button_enabled && step == kStateOrLine && this->line == kNoMatch) {
+    available_selections.push_back(
+        OmniboxPopupSelection(kNoMatch, FOCUSED_BUTTON_AIM, 0));
+  }
+  // Now, for each accessible line, add all the available line states to a list.
   for (size_t line_number = 0; line_number < result.size(); ++line_number) {
     for (LineState line_state : all_states) {
-      if (line_state == FOCUSED_BUTTON_ACTION) {
+      if (line_state == FOCUSED_BUTTON_AIM) {
+        // Only the first line should include the AIM button in the focus order,
+        // and only if we're not in keyword mode.
+        if (aim_button_enabled && line_number == 0 &&
+            !result.match_at(0).from_keyword) {
+          available_selections.push_back(
+              OmniboxPopupSelection(line_number, line_state));
+        }
+      } else if (line_state == FOCUSED_BUTTON_ACTION) {
         constexpr size_t kMaxActionCount = 8;
         for (size_t i = 0; i < kMaxActionCount; i++) {
           OmniboxPopupSelection selection(line_number, line_state, i);
-          if (selection.IsControlPresentOnMatch(result, pref_service)) {
+          if (selection.IsControlPresentOnMatch(result)) {
             available_selections.push_back(selection);
           } else {
             // Break early when there are no more actions. Note, this
@@ -181,7 +190,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
         }
       } else if (line_state == KEYWORD_MODE && kIsDesktop) {
         OmniboxPopupSelection selection(line_number, line_state);
-        if (selection.IsControlPresentOnMatch(result, pref_service)) {
+        if (selection.IsControlPresentOnMatch(result)) {
           if (result.match_at(line_number)
                   .HasInstantKeyword(template_url_service)) {
             if (available_selections.size() > 0 &&
@@ -199,7 +208,7 @@ OmniboxPopupSelection::GetAllAvailableSelectionsSorted(
         }
       } else {
         OmniboxPopupSelection selection(line_number, line_state);
-        if (selection.IsControlPresentOnMatch(result, pref_service)) {
+        if (selection.IsControlPresentOnMatch(result)) {
           available_selections.push_back(selection);
         }
       }

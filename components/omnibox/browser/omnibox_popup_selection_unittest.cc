@@ -54,53 +54,49 @@ TEST_F(OmniboxPopupSelectionTest, SelectionWithKeywordMode) {
   result.match_at(1u)->associated_keyword->keyword = test_keyword;
 
   OmniboxPopupSelection next = OmniboxPopupSelection(0u).GetNextSelection(
-      result, &pref_service, client.GetTemplateURLService(),
-      Direction::kForward, Step::kWholeLine);
+      result, client.GetTemplateURLService(), Direction::kForward,
+      Step::kWholeLine);
   EXPECT_EQ(next.line, 1u);
   EXPECT_EQ(next.state, LineState::KEYWORD_MODE);
 
   next = OmniboxPopupSelection(0u).GetNextSelection(
-      result, &pref_service, client.GetTemplateURLService(),
-      Direction::kForward, Step::kStateOrLine);
+      result, client.GetTemplateURLService(), Direction::kForward,
+      Step::kStateOrLine);
   EXPECT_EQ(next.line, 1u);
   EXPECT_EQ(next.state, LineState::KEYWORD_MODE);
 
   next = OmniboxPopupSelection(1u, LineState::KEYWORD_MODE)
-             .GetNextSelection(result, &pref_service,
-                               client.GetTemplateURLService(),
+             .GetNextSelection(result, client.GetTemplateURLService(),
                                Direction::kForward, Step::kWholeLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 
   next = OmniboxPopupSelection(1u, LineState::KEYWORD_MODE)
-             .GetNextSelection(result, &pref_service,
-                               client.GetTemplateURLService(),
+             .GetNextSelection(result, client.GetTemplateURLService(),
                                Direction::kForward, Step::kStateOrLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 
   next = OmniboxPopupSelection(2u).GetNextSelection(
-      result, &pref_service, client.GetTemplateURLService(),
-      Direction::kForward, Step::kWholeLine);
+      result, client.GetTemplateURLService(), Direction::kForward,
+      Step::kWholeLine);
   EXPECT_EQ(next.line, 0u);
   EXPECT_EQ(next.state, LineState::NORMAL);
 
   next = OmniboxPopupSelection(2u).GetNextSelection(
-      result, &pref_service, client.GetTemplateURLService(),
-      Direction::kForward, Step::kStateOrLine);
+      result, client.GetTemplateURLService(), Direction::kForward,
+      Step::kStateOrLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::FOCUSED_BUTTON_THUMBS_UP);
 
   next = OmniboxPopupSelection(2u, LineState::FOCUSED_BUTTON_THUMBS_UP)
-             .GetNextSelection(result, &pref_service,
-                               client.GetTemplateURLService(),
+             .GetNextSelection(result, client.GetTemplateURLService(),
                                Direction::kForward, Step::kStateOrLine);
   EXPECT_EQ(next.line, 2u);
   EXPECT_EQ(next.state, LineState::FOCUSED_BUTTON_THUMBS_DOWN);
 
   next = OmniboxPopupSelection(2u, LineState::FOCUSED_BUTTON_THUMBS_DOWN)
-             .GetNextSelection(result, &pref_service,
-                               client.GetTemplateURLService(),
+             .GetNextSelection(result, client.GetTemplateURLService(),
                                Direction::kForward, Step::kStateOrLine);
   EXPECT_EQ(next.line, 0u);
   EXPECT_EQ(next.state, LineState::NORMAL);

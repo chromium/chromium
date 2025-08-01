@@ -149,6 +149,11 @@ class OmniboxView {
   // automatically focused (like for browser startup or NTP load).
   virtual void SetFocus(bool is_user_initiated) = 0;
 
+  // Requests focus for the implementation of the omnibox view only, skipping
+  // all of the bookkeeping done by `SetFocus()`. Used to return focus to the
+  // omnibox from the AI mode button.
+  virtual void RequestViewFocus() = 0;
+
   // Shows or hides the caret based on whether the model's is_caret_visible() is
   // true.
   virtual void ApplyCaretVisibility() = 0;
