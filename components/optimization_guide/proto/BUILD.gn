@@ -94,6 +94,7 @@ if (is_android) {
       "features/common_quality_data.proto",
       "hints.proto",
       "loading_predictor_metadata.proto",
+      "model_execution.proto",
       "models.proto",
       "push_notification.proto",
     ]

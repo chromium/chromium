@@ -7,6 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/test/task_environment.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/public/cpp/test_support/test_response_holder.h"
 #include "services/on_device_model/public/mojom/on_device_model.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -20,6 +21,10 @@ namespace {
 
 using ::testing::ElementsAre;
 
+constexpr optimization_guide::proto::ModelExecutionFeature kFeature =
+    optimization_guide::proto::ModelExecutionFeature::
+        MODEL_EXECUTION_FEATURE_SCAM_DETECTION;
+
 class BackendModelImplAndroidTest : public testing::Test {
  public:
   BackendModelImplAndroidTest() = default;
@@ -29,7 +34,7 @@ class BackendModelImplAndroidTest : public testing::Test {
     env_ = base::android::AttachCurrentThread();
     java_helper_ = Java_OnDeviceModelBridgeNativeUnitTestHelper_create(env_);
 
-    model_ = std::make_unique<BackendModelImplAndroid>();
+    model_ = std::make_unique<BackendModelImplAndroid>(kFeature);
   }
 
   mojom::SessionParamsPtr MakeSessionParams(int top_k, float temperature) {
@@ -72,7 +77,7 @@ TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
   Java_OnDeviceModelBridgeNativeUnitTestHelper_verifySessionParams(
-      env_, java_helper_, /*topK=*/3, /*temperature=*/1.0f);
+      env_, java_helper_, kFeature, /*topK=*/3, /*temperature=*/1.0f);
 
   {
     std::vector<ml::InputPiece> pieces;

@@ -27,8 +27,10 @@
 namespace on_device_model {
 
 BackendSessionImplAndroid::BackendSessionImplAndroid(
+    optimization_guide::proto::ModelExecutionFeature feature,
     on_device_model::mojom::SessionParamsPtr params)
-    : java_session_(OnDeviceModelBridge::CreateSession(std::move(params))) {}
+    : java_session_(
+          OnDeviceModelBridge::CreateSession(feature, std::move(params))) {}
 
 BackendSessionImplAndroid::~BackendSessionImplAndroid() {
   JNIEnv* env = base::android::AttachCurrentThread();

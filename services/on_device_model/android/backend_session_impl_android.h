@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/android/scoped_java_ref.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "services/on_device_model/backend_session.h"
 
@@ -17,7 +18,8 @@ namespace on_device_model {
 // lifetime will be created when this object is created.
 class BackendSessionImplAndroid : public BackendSession {
  public:
-  explicit BackendSessionImplAndroid(
+  BackendSessionImplAndroid(
+      optimization_guide::proto::ModelExecutionFeature feature,
       on_device_model::mojom::SessionParamsPtr params);
   ~BackendSessionImplAndroid() override;
 

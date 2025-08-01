@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import org.jni_zero.CalledByNative;
 
 import org.chromium.base.ServiceLoaderUtil;
+import org.chromium.components.optimization_guide.proto.ModelExecutionProto.ModelExecutionFeature;
 import org.chromium.on_device_model.mojom.InputPiece;
 import org.chromium.on_device_model.mojom.SessionParams;
 import org.chromium.on_device_model.mojom.Token;
@@ -27,9 +28,11 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         private boolean mCompleteAsync;
         private boolean mNativeDestroyed;
         private long mNativeBackendSession;
+        private final ModelExecutionFeature mFeature;
         private final SessionParams mParams;
 
-        public MockAiCoreSession(SessionParams params) {
+        public MockAiCoreSession(ModelExecutionFeature feature, SessionParams params) {
+            mFeature = feature;
             mParams = params;
         }
 
@@ -91,8 +94,8 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
         public MockAiCoreSessionFactory() {}
 
         @Override
-        public AiCoreSession createSession(SessionParams params) {
-            mSession = new MockAiCoreSession(params);
+        public AiCoreSession createSession(ModelExecutionFeature feature, SessionParams params) {
+            mSession = new MockAiCoreSession(feature, params);
             return mSession;
         }
     }
@@ -100,7 +103,9 @@ public class OnDeviceModelBridgeNativeUnitTestHelper {
     private MockAiCoreSessionFactory mMockAiCoreSessionFactory;
 
     @CalledByNative
-    public void verifySessionParams(int topK, float temperature) {
+    public void verifySessionParams(int feature, int topK, float temperature) {
+        ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
+        assertEquals(modelExecutionFeatureId, mMockAiCoreSessionFactory.mSession.mFeature);
         SessionParams params = mMockAiCoreSessionFactory.mSession.mParams;
         assertEquals(topK, params.topK);
         assertEquals(temperature, params.temperature, 0.01f);

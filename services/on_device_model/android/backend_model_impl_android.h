@@ -6,14 +6,17 @@
 #define SERVICES_ON_DEVICE_MODEL_ANDROID_BACKEND_MODEL_IMPL_ANDROID_H_
 
 #include "base/memory/weak_ptr.h"
+#include "components/optimization_guide/proto/model_execution.pb.h"
 #include "services/on_device_model/backend_model.h"
 
 namespace on_device_model {
 
 // Uses the OnDeviceModel APIs that are available on Android to create sessions.
+// Each feature should create its own backend model object.
 class BackendModelImplAndroid : public BackendModel {
  public:
-  BackendModelImplAndroid();
+  explicit BackendModelImplAndroid(
+      optimization_guide::proto::ModelExecutionFeature feature);
   ~BackendModelImplAndroid() override;
 
   // BackendModel:
@@ -23,6 +26,9 @@ class BackendModelImplAndroid : public BackendModel {
   std::unique_ptr<ScopedAdaptation> LoadAdaptation(
       on_device_model::mojom::LoadAdaptationParamsPtr params) override;
   void UnloadAdaptation(uint32_t adaptation_id) override;
+
+ private:
+  optimization_guide::proto::ModelExecutionFeature feature_;
 };
 
 }  // namespace on_device_model

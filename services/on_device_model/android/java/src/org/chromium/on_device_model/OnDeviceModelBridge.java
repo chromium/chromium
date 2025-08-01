@@ -9,6 +9,7 @@ import org.jni_zero.JNINamespace;
 
 import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.build.annotations.NullMarked;
+import org.chromium.components.optimization_guide.proto.ModelExecutionProto.ModelExecutionFeature;
 import org.chromium.on_device_model.mojom.SessionParams;
 
 /**
@@ -23,12 +24,14 @@ class OnDeviceModelBridge {
     /**
      * Creates a new AiCoreSession.
      *
+     * @param feature The feature id requested this session.
      * @param topK The top K value for sampling.
      * @param temperature The temperature value for sampling.
      * @return The AiCoreSession instance.
      */
     @CalledByNative
-    private static AiCoreSession createSession(int topK, float temperature) {
+    private static AiCoreSession createSession(int feature, int topK, float temperature) {
+        ModelExecutionFeature modelExecutionFeatureId = ModelExecutionFeature.forNumber(feature);
         SessionParams params = new SessionParams();
         params.topK = topK;
         params.temperature = temperature;
@@ -36,6 +39,6 @@ class OnDeviceModelBridge {
         if (factory == null) {
             return new AiCoreSessionUpstreamImpl();
         }
-        return factory.createSession(params);
+        return factory.createSession(modelExecutionFeatureId, params);
     }
 }

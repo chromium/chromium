@@ -14,13 +14,17 @@ namespace on_device_model {
 
 // static
 base::android::ScopedJavaLocalRef<jobject> OnDeviceModelBridge::CreateSession(
+    optimization_guide::proto::ModelExecutionFeature feature,
     on_device_model::mojom::SessionParamsPtr params) {
+  CHECK(feature != optimization_guide::proto::ModelExecutionFeature::
+                       MODEL_EXECUTION_FEATURE_UNSPECIFIED)
+      << "Feature is required to create a session.";
   CHECK(params) << "SessionParams is required to create a session.";
   JNIEnv* env = base::android::AttachCurrentThread();
   // There isn't a generic mojo utility for converting c++ mojo struct to java,
   // so disassemble the struct here and reassemble it in java.
   // Only passing the parameters that are supported on Android.
-  return Java_OnDeviceModelBridge_createSession(env, params->top_k,
+  return Java_OnDeviceModelBridge_createSession(env, feature, params->top_k,
                                                 params->temperature);
 }
 

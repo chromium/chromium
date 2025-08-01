@@ -11,14 +11,17 @@
 
 namespace on_device_model {
 
-BackendModelImplAndroid::BackendModelImplAndroid() = default;
+BackendModelImplAndroid::BackendModelImplAndroid(
+    optimization_guide::proto::ModelExecutionFeature feature)
+    : feature_(feature) {}
 
 BackendModelImplAndroid::~BackendModelImplAndroid() = default;
 
 std::unique_ptr<BackendSession> BackendModelImplAndroid::CreateSession(
     const ScopedAdaptation* adaptation,
     on_device_model::mojom::SessionParamsPtr params) {
-  return std::make_unique<BackendSessionImplAndroid>(std::move(params));
+  return std::make_unique<BackendSessionImplAndroid>(feature_,
+                                                     std::move(params));
 }
 
 std::unique_ptr<BackendModel::ScopedAdaptation>
