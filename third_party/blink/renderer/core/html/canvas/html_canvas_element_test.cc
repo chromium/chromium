@@ -258,6 +258,32 @@ TEST_P(HTMLCanvasElementTest, FallbackContentUseCounter) {
       GetDocument().IsUseCounted(WebFeature::kCanvasFallbackElementContent));
 }
 
+TEST_P(HTMLCanvasElementTest, IsCanvasOrInCanvasSubtree) {
+  SetBodyInnerHTML(R"HTML(
+    <div id=div></div>
+    <canvas id=canvas>
+      <div id=nested_div></div>
+      <canvas id=nested_canvas></canvas>
+    </canvas>
+  )HTML");
+  auto* div = GetDocument().getElementById(AtomicString("div"));
+  EXPECT_FALSE(div->IsCanvasOrInCanvasSubtree());
+  auto* canvas = GetDocument().getElementById(AtomicString("canvas"));
+  EXPECT_TRUE(canvas->IsCanvasOrInCanvasSubtree());
+  auto* nested_div = GetDocument().getElementById(AtomicString("nested_div"));
+  EXPECT_TRUE(nested_div->IsCanvasOrInCanvasSubtree());
+  auto* nested_canvas =
+      GetDocument().getElementById(AtomicString("nested_canvas"));
+  EXPECT_TRUE(nested_canvas->IsCanvasOrInCanvasSubtree());
+
+  // Check `IsCanvasOrInCanvasSubtree` after a dynamic change where the nested
+  // elements are moved out of the canvas subtree.
+  div->appendChild(nested_div);
+  EXPECT_FALSE(nested_div->IsCanvasOrInCanvasSubtree());
+  div->appendChild(nested_canvas);
+  EXPECT_TRUE(nested_canvas->IsCanvasOrInCanvasSubtree());
+}
+
 class HTMLCanvasElementWithTracingTest : public RenderingTest {
  public:
   HTMLCanvasElementWithTracingTest()

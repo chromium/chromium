@@ -744,7 +744,7 @@ bool Element::IsFocusableStyle(UpdateBehavior update_behavior) const {
   // If a canvas represents embedded content, its descendants are not rendered.
   // But they are still allowed to be focusable as long as their style allows
   // focus, their canvas is rendered, and its style allows focus.
-  if (IsInCanvasSubtree()) {
+  if (IsCanvasOrInCanvasSubtree()) {
     const ComputedStyle* style = GetComputedStyle();
     if (!style || !style->IsFocusable()) {
       return false;
@@ -3821,8 +3821,8 @@ Node::InsertionNotificationRequest Element::InsertedInto(
     edit_context->SetExecutionContext(context);
   }
 
-  if (parentElement() && parentElement()->IsInCanvasSubtree()) {
-    SetIsInCanvasSubtree(true);
+  if (parentElement() && parentElement()->IsCanvasOrInCanvasSubtree()) {
+    SetIsCanvasOrInCanvasSubtree(true);
   }
 
   if (GetDocument().StatePreservingAtomicMoveInProgress() &&
@@ -3959,7 +3959,7 @@ void Element::RemovedFrom(ContainerNode& insertion_point) {
     document.RemoveFromTopLayerImmediately(this);
   }
 
-  ClearElementFlag(ElementFlags::kIsInCanvasSubtree);
+  ClearElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree);
 
   if (ElementRareDataVector* data = GetElementRareData()) {
     data->ClearFocusgroupFlags();

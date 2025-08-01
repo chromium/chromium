@@ -265,7 +265,7 @@ PaintResult PaintLayerPainter::Paint(GraphicsContext& context,
   if (((paint_flags & PaintFlag::kPaintingCanvasDrawElement) == 0) &&
       !IsA<HTMLCanvasElement>(object.GetNode()) &&
       IsA<Element>(object.GetNode()) &&
-      To<Element>(object.GetNode())->IsInCanvasSubtree()) {
+      To<Element>(object.GetNode())->IsCanvasOrInCanvasSubtree()) {
     // This prevents canvas fallback content from being rendered.
     return kFullyPainted;
   }

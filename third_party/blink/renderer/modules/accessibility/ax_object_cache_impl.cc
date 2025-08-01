@@ -443,8 +443,9 @@ bool IsHiddenTextNodeRelevantForAccessibility(const Text& text_node,
   }
 
   // If unrendered and in <canvas>, consider even whitespace relevant.
-  if (text_node.parentElement()->IsInCanvasSubtree())
+  if (text_node.parentElement()->IsCanvasOrInCanvasSubtree()) {
     return true;
+  }
 
   // Must be unrendered because of CSS. Consider relevant if non-whitespace.
   // Allowing rendered non-whitespace to be considered relevant will allow

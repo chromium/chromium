@@ -173,7 +173,7 @@ enum SpellcheckAttributeState {
 enum class ElementFlags {
   kTabIndexWasSetExplicitly = 1 << 0,
   kStyleAffectedByEmpty = 1 << 1,
-  kIsInCanvasSubtree = 1 << 2,
+  kIsCanvasOrInCanvasSubtree = 1 << 2,
   kContainsFullScreenElement = 1 << 3,
   kIsInTopLayer = 1 << 4,
   kContainsPersistentVideo = 1 << 5,
@@ -990,11 +990,11 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
     SetElementFlag(ElementFlags::kStyleAffectedByEmpty);
   }
 
-  void SetIsInCanvasSubtree(bool value) {
-    SetElementFlag(ElementFlags::kIsInCanvasSubtree, value);
+  void SetIsCanvasOrInCanvasSubtree(bool value) {
+    SetElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree, value);
   }
-  bool IsInCanvasSubtree() const {
-    return HasElementFlag(ElementFlags::kIsInCanvasSubtree);
+  bool IsCanvasOrInCanvasSubtree() const {
+    return HasElementFlag(ElementFlags::kIsCanvasOrInCanvasSubtree);
   }
 
   bool IsDefined() const {

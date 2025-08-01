@@ -701,12 +701,13 @@ void StyleAdjuster::AdjustOverflow(ComputedStyleBuilder& builder,
   }
 }
 
-// g-issues.chromium.org/issues/349835587
-// https://github.com/WICG/canvas-place-element
-static bool IsCanvasDrawElement(const Element* element) {
+// https://github.com/WICG/html-in-canvas
+// The `layoutsubtree` attribute ... causes the direct children of the <canvas>
+// to have a stacking context and become a containing block for all descendants.
+static bool ForceStackingAndContainingBlockForCanvasLayoutSubtree(
+    const Element* element) {
   if (RuntimeEnabledFeatures::CanvasDrawElementEnabled() && element &&
-      element->IsInCanvasSubtree()) {
-    // Placed elements are always immediate children of the canvas.
+      element->IsCanvasOrInCanvasSubtree()) {
     if (const auto* canvas =
             DynamicTo<HTMLCanvasElement>(element->parentElement())) {
       return canvas->layoutSubtree();
@@ -733,10 +734,11 @@ void StyleAdjuster::AdjustStyleForDisplay(
     const ComputedStyle& layout_parent_style,
     const Element* element,
     Document* document) {
-  bool is_canvas_draw_element = IsCanvasDrawElement(element);
+  bool force_canvas_child_layout_subtree_styles =
+      ForceStackingAndContainingBlockForCanvasLayoutSubtree(element);
 
   if ((layout_parent_style.BlockifiesChildren() && !HostIsInputFile(element)) ||
-      is_canvas_draw_element) {
+      force_canvas_child_layout_subtree_styles) {
     builder.SetIsInBlockifyingDisplay();
     if (builder.Display() != EDisplay::kContents) {
       builder.SetDisplay(EquivalentBlockDisplay(builder.Display()));
@@ -746,11 +748,12 @@ void StyleAdjuster::AdjustStyleForDisplay(
     }
     if (layout_parent_style.IsDisplayFlexibleOrGridBox() ||
         layout_parent_style.IsDisplayMasonryBox() ||
-        layout_parent_style.IsDisplayMathType() || is_canvas_draw_element) {
+        layout_parent_style.IsDisplayMathType() ||
+        force_canvas_child_layout_subtree_styles) {
       builder.SetIsInsideDisplayIgnoringFloatingChildren();
     }
 
-    if (is_canvas_draw_element) {
+    if (force_canvas_child_layout_subtree_styles) {
       builder.SetPosition(EPosition::kStatic);
       builder.SetContain(builder.Contain() | kContainsPaint);
     }
