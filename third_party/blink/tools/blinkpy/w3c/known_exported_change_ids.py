@@ -31,6 +31,8 @@ from typing import Optional, Set
 _RAW_KNOWN_EXPORTED_CHANGE_IDS = {
     'I90107ade1e2e9f367afc283515b1899354ef2444',  # crbug.com/430622361
     'I4f1d099a85695eeb5e3cfd46c2f460540391bddd',  # crbug.com/430622361
+    # https://crrev.com/c/6794665/comments/3f93724b_1ba128a7
+    'Ie8bf2a14f5d22d692b45e85a1d3eb2bd0c34725f',
 }
 
 
