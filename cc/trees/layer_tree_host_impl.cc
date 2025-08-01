@@ -2154,12 +2154,13 @@ void LayerTreeHostImpl::NotifyTileStateChanged(const Tile* tile,
 
   layer_impl->NotifyTileStateChanged(tile, update_damage);
 
-  if (settings_.TreesInVizInClientProcess() && !is_pending_tree &&
-      !CommitsToActiveTree()) {
-    // Tiles for the tree currently being committed to (Pending or Active)
-    // are pushed to the display during UpdateDisplayTree. For active tree,
-    // if we're not committing to Active, tiles are pushed immediately via
-    // UpdateDisplayTile.
+  if (settings_.TreesInVizInClientProcess() &&
+      !static_cast<PictureLayerImpl&>(*layer_impl)
+           .should_batch_updated_tiles()) {
+    // In TreesInViz mode, send this tile update directly to Viz only if the
+    // layer is not batching its updates. A layer stops batching updates
+    // (should_batch_updated_tiles() becomes false) after it has been
+    // successfully sent to Viz via UpdateDisplayTree().
     layer_context_->UpdateDisplayTile(
         static_cast<PictureLayerImpl&>(*layer_impl), *tile,
         *resource_provider(), *layer_tree_frame_sink_->context_provider(),

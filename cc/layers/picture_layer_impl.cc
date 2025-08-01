@@ -197,6 +197,11 @@ void PictureLayerImpl::PushPropertiesTo(LayerImpl* base_layer) {
     // updates, so replacement is safe.
     layer_impl->updated_tiles_ = std::move(updated_tiles_);
     updated_tiles_.clear();
+
+    // Since the layer has been activated, all the active tree tile updates
+    // from this point must be batched until all the layer updates has been
+    // serialized and sent to viz via LayerTreeHostImpl::UpdateDisplayTree().
+    layer_impl->should_batch_updated_tiles_ = true;
   }
 
   layer_impl->SanityCheckTilingState();
@@ -948,10 +953,13 @@ void PictureLayerImpl::NotifyTileStateChanged(const Tile* tile,
   }
 
   if (layer_tree_impl()->settings().TreesInVizInClientProcess() &&
-      (!IsActive() || layer_tree_impl()->settings().commit_to_active_tree)) {
-    // Tiles for the tree currently being committed to (Pending or Active)
-    // are pushed to the display during UpdateDisplayTree. Accumulate those
-    // changes. These are pushed to the active tree in PushPropertiesTo().
+      should_batch_updated_tiles_) {
+    // This layer's tile updates are being batched. For a pending layer, this is
+    // always true. For an active layer, this means it was just activated and is
+    // waiting for its state to be sent to Viz via UpdateDisplayTree. The
+    // accumulated updates are pushed to the active tree on activation and
+    // active layer can continue to accumulate the tile updates until
+    // UpdateDisplayTree.
     updated_tiles_[tile->contents_scale_key()].emplace(tile->tiling_i_index(),
                                                        tile->tiling_j_index());
   }
@@ -2181,6 +2189,12 @@ void PictureLayerImpl::InvalidatePaintWorklets(
 PictureLayerImpl::TileUpdateSet PictureLayerImpl::TakeUpdatedTiles() {
   TileUpdateSet updates;
   updates.swap(updated_tiles_);
+
+  // Reset this flag since the tile updates are now being serialized to viz. All
+  // future tile updates can be sent immediately as a part of active tree tile
+  // update via LayerTreeHostImpl::UpdateDisplayTile() rather than batching
+  // them.
+  should_batch_updated_tiles_ = false;
   return updates;
 }
 

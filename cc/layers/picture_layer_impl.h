@@ -205,6 +205,12 @@ class CC_EXPORT PictureLayerImpl
   bool IsDirectlyCompositedImage() const;
   bool nearest_neighbor() const { return nearest_neighbor_; }
 
+  void set_should_batch_updated_tiles() { should_batch_updated_tiles_ = true; }
+
+  bool should_batch_updated_tiles() const {
+    return should_batch_updated_tiles_;
+  }
+
  protected:
   friend class RasterizeAndRecordBenchmarkImpl;
 
@@ -278,6 +284,21 @@ class CC_EXPORT PictureLayerImpl
 
   // Tracks tiles changed since the last call to TakeUpdatedTiles().
   TileUpdateSet updated_tiles_;
+
+  // When true, tile updates for this layer are batched in |updated_tiles_|
+  // instead of being sent to Viz immediately. This is necessary to prevent a
+  // race condition in TreesInViz mode where tile updates could arrive at Viz
+  // before the layer itself, causing the updates to be dropped. This flag is
+  // set during activation and cleared after the layer's properties (and batched
+  // tile updates) are sent to Viz during UpdateDisplayTree.
+  // Note that while we set this flag on active tree at activation and clear
+  // after the layer is sent to viz, for pending tree we always keep this flag
+  // set and never reset it. This is because all the pending tree updates must
+  // be batched.
+  // We also need to set it when there is a commit from PictureLayer
+  // to PictureLayerImpl to cover the commit directly to active tree cases where
+  // this flag will be reset again.
+  bool should_batch_updated_tiles_ = true;
 
   std::unique_ptr<PictureLayerTilingSet> tilings_ =
       CreatePictureLayerTilingSet();
