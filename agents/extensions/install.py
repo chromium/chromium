@@ -22,7 +22,7 @@ import sys
 from pathlib import Path
 
 
-def get_mcp_servers(mcp_dir: Path) -> list[str]:
+def get_mcp_servers_from_dir(mcp_dir: Path) -> list[str]:
     """Returns a list of all MCP servers in the given directory.
 
     Args:
@@ -31,6 +31,8 @@ def get_mcp_servers(mcp_dir: Path) -> list[str]:
     Returns:
         A list of server names.
     """
+    if not mcp_dir.exists():
+        return []
     return [p.parent.name for p in mcp_dir.glob('*/gemini-extension.json')]
 
 
@@ -44,13 +46,35 @@ def get_git_repo_root() -> Path | None:
         return None
 
 
+def get_mcp_dirs() -> list[Path]:
+    """Returns a list of all MCP directories."""
+    mcp_dirs = []
+    # The primary extensions dir is the one containing this script.
+    primary_mcp_dir = Path(__file__).parent.resolve()
+    mcp_dirs.append(primary_mcp_dir)
+
+    # Check for internal extensions.
+    if repo_root := get_git_repo_root():
+        internal_mcp_dir = repo_root / 'internal' / 'agents' / 'extensions'
+        if internal_mcp_dir.exists():
+            mcp_dirs.append(internal_mcp_dir)
+    return mcp_dirs
+
+
+def find_mcp_dir_for_server(server_name: str,
+                            mcp_dirs: list[Path]) -> Path | None:
+    """Finds the MCP directory for a given server."""
+    for mcp_dir in mcp_dirs:
+        if (mcp_dir / server_name).exists():
+            return mcp_dir
+    return None
+
+
 def get_extension_dir(use_global: bool = False) -> Path:
     """Returns the Gemini CLI extension directory."""
     if use_global:
         return Path.home() / '.gemini' / 'extensions'
-
-    repo_root = get_git_repo_root()
-    if repo_root:
+    if repo_root := get_git_repo_root():
         return repo_root / '.gemini' / 'extensions'
     return Path('.gemini/extensions')
 
@@ -135,13 +159,14 @@ def is_up_to_date(server_name: str, mcp_dir: Path,
     return source_hash == dest_hash
 
 
-def list_servers(mcp_dir: Path) -> None:
+def list_servers(mcp_dirs: list[Path]) -> None:
     """Lists all available and installed MCP servers."""
     # Get available, local, and global servers
-    available_servers = {
-        name: get_server_version(mcp_dir / name)
-        for name in get_mcp_servers(mcp_dir)
-    }
+    available_servers = {}
+    for mcp_dir in mcp_dirs:
+        for name in get_mcp_servers_from_dir(mcp_dir):
+            available_servers[name] = get_server_version(mcp_dir / name)
+
     local_servers = {
         name: get_server_version(get_extension_dir(use_global=False) / name)
         for name in get_installed_servers(get_extension_dir(use_global=False))
@@ -230,7 +255,7 @@ def remove_server(server_name: str, extension_dir: Path) -> None:
 
 def main() -> None:
     """Installs and manages MCP server configurations."""
-    mcp_dir = Path(__file__).parent.resolve()
+    mcp_dirs = get_mcp_dirs()
 
     parser = argparse.ArgumentParser(
         description='Install and manage MCP server configurations.')
@@ -294,7 +319,8 @@ def main() -> None:
             servers_to_process = get_installed_servers(extension_dir)
 
         for server in servers_to_process:
-            if not (mcp_dir / server).exists():
+            mcp_dir = find_mcp_dir_for_server(server, mcp_dirs)
+            if not mcp_dir:
                 print(f"Error: Server '{server}' not found. Skipping.",
                       file=sys.stderr)
                 continue
@@ -307,7 +333,7 @@ def main() -> None:
                 remove_server(server, extension_dir)
 
     elif args.command == 'list' or args.command is None:
-        list_servers(mcp_dir)
+        list_servers(mcp_dirs)
 
 
 if __name__ == '__main__':

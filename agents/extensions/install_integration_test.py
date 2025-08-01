@@ -49,24 +49,57 @@ class InstallIntegrationTest(unittest.TestCase):
                   encoding='utf-8') as f:
             f.write('{"name": "sample_server_2", "version": "2.0.0"}')
 
+        self.internal_mcp_dir = Path(
+            self.tmpdir) / 'internal' / 'agents' / 'extensions'
+        self.internal_mcp_dir.mkdir(parents=True)
+        self.server3_dir = self.internal_mcp_dir / 'sample_server_3'
+        self.server3_dir.mkdir()
+        with open(self.server3_dir / 'gemini-extension.json',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('{"name": "sample_server_3", "version": "3.0.0"}')
+
         # Patch the script's dependencies
-        self.mock_mcp_dir = patch('install.Path.resolve',
-                                  return_value=self.mcp_dir)
+        self.mock_mcp_dirs = patch(
+            'install.get_mcp_dirs',
+            return_value=[self.mcp_dir, self.internal_mcp_dir])
         self.mock_git_root = patch('install.get_git_repo_root',
                                    return_value=Path(self.tmpdir))
         self.mock_home = patch('pathlib.Path.home',
                                return_value=Path(self.tmpdir) / 'home')
 
-        self.mock_mcp_dir.start()
+        self.mock_mcp_dirs.start()
         self.mock_git_root.start()
         self.mock_home.start()
 
     def tearDown(self):
         """Tears down the test environment."""
         shutil.rmtree(self.tmpdir)
-        self.mock_mcp_dir.stop()
+        self.mock_mcp_dirs.stop()
         self.mock_git_root.stop()
         self.mock_home.stop()
+
+    def test_list_from_multiple_sources(self):
+        """Tests listing servers from multiple source directories."""
+        with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
+            with patch('sys.argv', ['install.py', 'list']):
+                install.main()
+            output = mock_stdout.getvalue()
+            self.assertIn('sample_server_1', output)
+            self.assertIn('sample_server_2', output)
+            self.assertIn('sample_server_3', output)
+
+    def test_add_from_multiple_sources(self):
+        """Tests adding servers from different source directories."""
+        # Add server from the primary mcp_dir
+        with patch('sys.argv', ['install.py', 'add', 'sample_server_1']):
+            install.main()
+        self.assertTrue((self.extension_dir / 'sample_server_1').exists())
+
+        # Add server from the internal_mcp_dir
+        with patch('sys.argv', ['install.py', 'add', 'sample_server_3']):
+            install.main()
+        self.assertTrue((self.extension_dir / 'sample_server_3').exists())
 
     def test_add_remove_sequence(self):
         """Tests adding and then removing a server."""
@@ -206,7 +239,7 @@ class InstallIntegrationTest(unittest.TestCase):
         """Tests behavior with an empty source directory."""
         empty_mcp_dir = Path(self.tmpdir) / 'empty_mcp'
         empty_mcp_dir.mkdir()
-        with patch('install.Path.resolve', return_value=empty_mcp_dir):
+        with patch('install.get_mcp_dirs', return_value=[empty_mcp_dir]):
             # Test list command
             with patch('sys.stdout', new_callable=io.StringIO) as mock_stdout:
                 with patch('sys.argv', ['install.py', 'list']):

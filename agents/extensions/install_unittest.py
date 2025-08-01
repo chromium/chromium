@@ -47,6 +47,16 @@ class InstallTest(unittest.TestCase):
                   encoding='utf-8') as f:
             f.write('{"name": "sample_server_2", "version": "2.0.0"}')
 
+        self.internal_mcp_dir = Path(
+            self.tmpdir) / 'internal' / 'agents' / 'extensions'
+        self.internal_mcp_dir.mkdir(parents=True)
+        self.server3_dir = self.internal_mcp_dir / 'sample_server_3'
+        self.server3_dir.mkdir()
+        with open(self.server3_dir / 'gemini-extension.json',
+                  'w',
+                  encoding='utf-8') as f:
+            f.write('{"name": "sample_server_3", "version": "3.0.0"}')
+
     def tearDown(self):
         """Tears down the test environment."""
         shutil.rmtree(self.tmpdir)
@@ -62,6 +72,28 @@ class InstallTest(unittest.TestCase):
             f.write('print("world")')
         hash3 = install.get_dir_hash(self.server1_dir)
         self.assertNotEqual(hash1, hash3)
+
+    def test_find_mcp_dir_for_server(self):
+        """Tests the find_mcp_dir_for_server function."""
+        mcp_dirs = [self.mcp_dir, self.internal_mcp_dir]
+        self.assertEqual(
+            install.find_mcp_dir_for_server('sample_server_1', mcp_dirs),
+            self.mcp_dir)
+        self.assertEqual(
+            install.find_mcp_dir_for_server('sample_server_3', mcp_dirs),
+            self.internal_mcp_dir)
+        self.assertIsNone(
+            install.find_mcp_dir_for_server('non_existent_server', mcp_dirs))
+
+    @patch('install.get_git_repo_root')
+    @patch('pathlib.Path.resolve')
+    def test_get_mcp_dirs(self, mock_resolve, mock_get_git_repo_root):
+        """Tests the get_mcp_dirs function."""
+        mock_resolve.return_value = self.mcp_dir
+        mock_get_git_repo_root.return_value = Path(self.tmpdir)
+        mcp_dirs = install.get_mcp_dirs()
+        self.assertIn(self.mcp_dir, mcp_dirs)
+        self.assertIn(self.internal_mcp_dir, mcp_dirs)
 
     @patch('subprocess.check_output', side_effect=FileNotFoundError)
     def test_get_dir_hash_fallback(self, mock_check_output):
@@ -131,38 +163,41 @@ class InstallTest(unittest.TestCase):
 
     @patch('install.get_extension_dir')
     @patch('install.add_server')
-    @patch('pathlib.Path.resolve')
-    def test_main_add_global(self, mock_resolve, mock_add_server,
+    @patch('install.find_mcp_dir_for_server')
+    def test_main_add_global(self, mock_find_mcp, mock_add_server,
                              mock_get_extension_dir):
         """Tests the main function with the add command and --global flag."""
-        mock_resolve.return_value = self.mcp_dir
+        mock_find_mcp.return_value = self.mcp_dir
         mock_get_extension_dir.return_value = self.global_extension_dir
         with patch('sys.argv', ['install.py', 'add', '-g', 'sample_server_1']):
-            install.main()
+            with patch('install.get_mcp_dirs', return_value=[self.mcp_dir]):
+                install.main()
         mock_add_server.assert_called_once_with('sample_server_1',
                                                 self.mcp_dir,
                                                 self.global_extension_dir)
 
     @patch('install.update_server')
     @patch('install.get_installed_servers', return_value=['sample_server_1'])
-    @patch('pathlib.Path.resolve')
-    def test_main_update_all(self, mock_resolve, mock_get_installed,
+    @patch('install.find_mcp_dir_for_server')
+    def test_main_update_all(self, mock_find_mcp, mock_get_installed,
                              mock_update_server):
         """Tests the main function with the update command and no servers."""
-        mock_resolve.return_value = self.mcp_dir
+        mock_find_mcp.return_value = self.mcp_dir
         with patch('sys.argv', ['install.py', 'update']):
-            install.main()
-            mock_update_server.assert_called_once()
+            with patch('install.get_mcp_dirs', return_value=[self.mcp_dir]):
+                install.main()
+        mock_update_server.assert_called_once()
 
     @patch('sys.stderr', new_callable=io.StringIO)
-    @patch('pathlib.Path.resolve')
-    def test_main_invalid_server(self, mock_resolve, mock_stderr):
+    @patch('install.find_mcp_dir_for_server')
+    def test_main_invalid_server(self, mock_find_mcp, mock_stderr):
         """Tests that main handles invalid server names gracefully."""
-        mock_resolve.return_value = self.mcp_dir
+        mock_find_mcp.return_value = None
         with patch('sys.argv', ['install.py', 'add', 'invalid_server']):
-            install.main()
-            self.assertIn("Error: Server 'invalid_server' not found",
-                          mock_stderr.getvalue())
+            with patch('install.get_mcp_dirs', return_value=[self.mcp_dir]):
+                install.main()
+        self.assertIn("Error: Server 'invalid_server' not found",
+                      mock_stderr.getvalue())
 
 
 if __name__ == '__main__':
