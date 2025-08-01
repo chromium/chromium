@@ -13,7 +13,6 @@
 #include <tuple>
 #include <utility>
 
-#include "base/compiler_specific.h"
 #include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
@@ -642,8 +641,8 @@ MediaInternals::CreateAudioLogImpl(
     int render_frame_id) {
   base::AutoLock auto_lock(lock_);
   return std::make_unique<AudioLogImpl>(
-      UNSAFE_TODO(owner_ids_[base::to_underlying(component)]++), component,
-      this, component_id, render_process_id, render_frame_id);
+      owner_ids_[base::to_underlying(component)]++, component, this,
+      component_id, render_process_id, render_frame_id);
 }
 
 void MediaInternals::SendUpdate(const std::u16string& update) {
