@@ -82,6 +82,9 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
 
         // Create blank preference screen.
         PreferenceScreen screen = getPreferenceManager().createPreferenceScreen(getStyledContext());
+        // Suppresses unwanted animations while Preferences are removed from and re-added to the
+        // screen.
+        screen.setShouldUseGeneratedIds(false);
         setPreferenceScreen(screen);
         if (sObserverForTest != null) {
             sObserverForTest.onResult(this);
