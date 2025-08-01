@@ -81,15 +81,8 @@
 
 #pragma mark - Public
 
-- (BOOL)BWGAvailableForWebState {
-  if (!_BWGService) {
-    return NO;
-  }
-  web::WebState* activeWebState = _webStateList->GetActiveWebState();
-  if (!activeWebState) {
-    return NO;
-  }
-  return _BWGService->IsBwgAvailableForWebState(activeWebState);
+- (BOOL)BWGAvailableForProfile {
+  return _BWGService && _BWGService->IsProfileEligibleForBwg();
 }
 
 - (void)disconnect {

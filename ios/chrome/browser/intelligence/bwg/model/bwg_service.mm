@@ -59,6 +59,9 @@ bool BwgService::IsProfileEligibleForBwg() {
 }
 
 bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
+  if (!IsProfileEligibleForBwg()) {
+    return false;
+  }
   // The web state is eligible for HTML and images that use http/https schemes.
   const GURL& url = web_state->GetVisibleURL();
   const std::string mime_type = web_state->GetContentsMimeType();

@@ -32,8 +32,8 @@ class DistilledPagePrefs;
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-// Returns whether BWG is available for the active WebState.
-- (BOOL)BWGAvailableForWebState;
+// Returns whether BWG is available for the profile.
+- (BOOL)BWGAvailableForProfile;
 
 // Disconnects the mediator from the model layer.
 - (void)disconnect;

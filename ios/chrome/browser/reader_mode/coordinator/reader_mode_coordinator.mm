@@ -83,7 +83,7 @@
 #pragma mark - ReaderModeOptionsCommands
 
 - (void)showReaderModeOptions {
-  if ([_mediator BWGAvailableForWebState]) {
+  if ([_mediator BWGAvailableForProfile]) {
     id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), PageActionMenuCommands);
     // The flow when Page Action is available is to show the Page action menu.
@@ -103,7 +103,7 @@
 }
 
 - (void)hideReaderModeOptions {
-  if ([_mediator BWGAvailableForWebState]) {
+  if ([_mediator BWGAvailableForProfile]) {
     id<PageActionMenuCommands> pageActionMenuHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), PageActionMenuCommands);
     [pageActionMenuHandler dismissPageActionMenuWithCompletion:nil];
