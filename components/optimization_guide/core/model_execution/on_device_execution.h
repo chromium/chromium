@@ -223,6 +223,8 @@ class OnDeviceExecution final
   on_device_model::mojom::ResponseConstraintPtr constraint_;
   // Time ExecuteModel() was called.
   base::TimeTicks start_;
+  // Time we receive the first token.
+  base::TimeTicks first_response_time_;
   // Used to log the result of ExecuteModel().
   std::unique_ptr<ResultLogger> histogram_logger_;
   // Used to log execution information for the request.
