@@ -1098,48 +1098,6 @@ namespace autotestPrivate {
     // |callback|: Called when the operation has completed.
     static void loadSmartDimComponent(VoidCallback callback);
 
-    // Enables/disables the Google Assistant.
-    // |callback|: Called when the operation has completed.
-    static void setAssistantEnabled(
-        boolean enabled,
-        long timeout_ms,
-        VoidCallback callback);
-
-    // Bring up the Assistant service, and wait for the ready signal.
-    // |callback|: Called when the operation has completed.
-    static void enableAssistantAndWaitForReady(
-        VoidCallback callback);
-
-    // Sends a text query via Google Assistant.
-    // |callback|: Called when response has been received.
-    static void sendAssistantTextQuery(
-        DOMString query,
-        long timeout_ms,
-        AssistantQueryStatusCallback callback);
-
-    // Invokes |callback| once the current text/voice interaction is completed.
-    // Responds with the the query status if any valid response was caught
-    // before the timeout. This API should be called before sending the query.
-    // To use it for testing a voice query via OKG in Autotest, for example,
-    // you can do:
-    //
-    //    // Enable hotword setting for Assistant.
-    //    assistant_util.enable_hotword();
-    //
-    //    // Call this API with your callback function.
-    //    chrome.autotestPrivate.waitForAssistantQueryStatus(timeout_s,
-    //        function(status) {...});
-    //
-    // then start Assistant via OKG and send voice query before timeout.
-    //
-    // TODO(meilinw@): disable warmer welcome to avoid an unintended early
-    // return of this API when launching Assistant via hotkey.
-    // TODO(meilinw@): update the comment above to use Tast instead after
-    // adding API to enable hotword in Tast.
-    static void waitForAssistantQueryStatus(
-        long timeout_s,
-        AssistantQueryStatusCallback callback);
-
     // Whether the local list of installed ARC packages has been refreshed for
     // the first time after user login.
     static void isArcPackageListInitialRefreshed(
