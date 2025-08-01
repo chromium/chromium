@@ -16,6 +16,8 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/raw_ref.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/ip_protection/common/ip_protection_core.h"
 #include "components/ip_protection/common/ip_protection_data_types.h"
@@ -30,6 +32,7 @@
 #include "net/base/schemeful_site.h"
 #include "net/base/url_util.h"
 #include "net/http/http_request_headers.h"
+#include "net/http/http_response_headers.h"
 #include "net/http/http_util.h"
 #include "net/http/structured_headers.h"
 #include "net/proxy_resolution/proxy_info.h"
@@ -247,7 +250,48 @@ net::Error IpProtectionProxyDelegate::OnTunnelHeadersReceived(
     const net::ProxyChain& proxy_chain,
     size_t chain_index,
     const net::HttpResponseHeaders& response_headers) {
-  return net::OK;
+  if (response_headers.response_code() == 200 ||
+      !proxy_chain.is_for_ip_protection()) {
+    return net::OK;
+  }
+
+  std::optional<std::string> proxy_status_header_value =
+      response_headers.GetNormalizedHeader("Proxy-Status");
+  if (proxy_status_header_value) {
+    std::optional<net::structured_headers::List> proxy_status_list =
+        net::structured_headers::ParseList(*proxy_status_header_value);
+    if (proxy_status_list) {
+      for (const auto& p_member : *proxy_status_list) {
+        if (p_member.member_is_inner_list) {
+          continue;
+        }
+        for (const auto& param : p_member.params) {
+          if (param.first == "error" && param.second.is_token()) {
+            const std::string& error_val = param.second.GetString();
+
+            // These RFC 9209 errors indicate a destination-side problem.
+            // For these, we should NOT fall back.
+            // TODO(crbug.com/435482005): The handling of "dns_error" can
+            // be more granular.
+            if (error_val == "dns_timeout" || error_val == "dns_error" ||
+                error_val == "destination_not_found" ||
+                error_val == "destination_unavailable" ||
+                error_val == "destination_ip_unroutable" ||
+                error_val == "connection_refused" ||
+                error_val == "connection_terminated" ||
+                error_val == "connection_timeout" ||
+                error_val == "proxy_loop_detected") {
+              return net::ERR_TUNNEL_CONNECTION_FAILED;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  // If no specific destination error was found, we assume it's a proxy
+  // failure and should fall back.
+  return net::ERR_PROXY_TUNNEL_REQUEST_FAILED;
 }
 
 void IpProtectionProxyDelegate::SetProxyResolutionService(

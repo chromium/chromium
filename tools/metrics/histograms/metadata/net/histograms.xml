@@ -3657,7 +3657,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Net.IpProtection.CanFalloverToNextProxy.Error.{Chain}"
+<histogram name="Net.IpProtection.CanFalloverToNextProxy2.Error.{Chain}"
     enum="CombinedHttpResponseAndNetErrorCode" expires_after="2025-11-28">
   <owner>rsailer@chromium.org</owner>
   <owner>src/components/ip_protection/OWNERS</owner>

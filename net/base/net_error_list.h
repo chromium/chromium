@@ -444,6 +444,13 @@ NET_ERROR(ECH_NOT_NEGOTIATED, -183)
 // and additionally did not present a certificate valid for the public name.
 NET_ERROR(ECH_FALLBACK_CERTIFICATE_INVALID, -184)
 
+// The proxy failed to create a tunnel for a reason that warrants trying an
+// alternate proxy. This error should cause the proxy to be marked as bad.
+// This is in contrast to ERR_TUNNEL_CONNECTION_FAILED which is used for errors
+// outside of the proxy's control and should not cause the proxy to be marked as
+// bad.
+NET_ERROR(PROXY_TUNNEL_REQUEST_FAILED, -185)
+
 // Certificate error codes
 //
 // The values of certificate error codes must be consecutive.

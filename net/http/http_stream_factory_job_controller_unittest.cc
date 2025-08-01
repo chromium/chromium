@@ -1490,13 +1490,13 @@ TEST_P(JobControllerReconsiderProxyAfterErrorFirstNestedHttpsProxyTest, Test) {
   // Check that the errors were logged.
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0"),
+          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain0"),
       BucketsAre(base::Bucket(recorded_metric.error, recorded_metric.size)));
 
   // Check that no other proxy chains were logged.
   const base::HistogramTester::CountsMap counts =
       histogram_tester.GetTotalCountsForPrefix(
-          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain");
+          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain");
   EXPECT_THAT(counts, SizeIs(1));
 }
 
@@ -1754,19 +1754,19 @@ TEST_P(JobControllerReconsiderProxyAfterErrorSecondNestedHttpsProxyTest, Test) {
   // Check that the errors were logged.
   EXPECT_THAT(
       histogram_tester.GetAllSamples(
-          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0"),
+          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain0"),
       BucketsAre(base::Bucket(recorded_metric.error, recorded_metric.size)));
 
   // Check that no other proxy chains were logged.
   const base::HistogramTester::CountsMap counts =
       histogram_tester.GetTotalCountsForPrefix(
-          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain");
+          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain");
   EXPECT_THAT(counts, SizeIs(1));
 }
 
 // Test proxy fallback logic for an IP Protection request.
 TEST_F(JobControllerReconsiderProxyAfterErrorTest,
-       ReconsiderProxyForIpProtection) {
+       FallbackOnProxyTunnelRequestFailed) {
   GURL dest_url = GURL("https://www.example.com");
 
   CreateSessionDeps();
@@ -1792,7 +1792,7 @@ TEST_F(JobControllerReconsiderProxyAfterErrorTest,
   // Generate errors for the first proxy server.
   std::unique_ptr<StaticSocketDataProvider> socket_data_proxy_main_job;
   std::unique_ptr<SSLSocketDataProvider> ssl_data_proxy_main_job;
-  reads.emplace_back(ASYNC, ERR_TUNNEL_CONNECTION_FAILED);
+  reads.emplace_back(ASYNC, ERR_PROXY_TUNNEL_REQUEST_FAILED);
   socket_data_proxy_main_job =
       std::make_unique<StaticSocketDataProvider>(reads, kTunnelWrites);
   ssl_data_proxy_main_job = std::make_unique<SSLSocketDataProvider>(ASYNC, OK);
@@ -2202,13 +2202,13 @@ TEST_P(JobControllerReconsiderProxyAfterErrorQuicProxyTest, Test) {
 
   // Check that the errors were logged.
   EXPECT_THAT(histogram_tester.GetAllSamples(
-                  "Net.IpProtection.CanFalloverToNextProxy.Error.Chain0"),
+                  "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain0"),
               BucketsAre(base::Bucket(error, 2)));
 
   // Check that no other proxy chains were logged.
   const base::HistogramTester::CountsMap counts =
       histogram_tester.GetTotalCountsForPrefix(
-          "Net.IpProtection.CanFalloverToNextProxy.Error.Chain");
+          "Net.IpProtection.CanFalloverToNextProxy2.Error.Chain");
   EXPECT_THAT(counts, SizeIs(1));
 }
 

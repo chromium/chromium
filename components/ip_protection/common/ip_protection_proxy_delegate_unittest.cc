@@ -22,6 +22,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -54,6 +55,7 @@
 #include "net/base/request_priority.h"
 #include "net/base/schemeful_site.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/proxy_resolution/proxy_retry_info.h"
 #include "net/test/gtest_util.h"
@@ -1529,6 +1531,174 @@ TEST_F(IpProtectionProxyDelegateTest, MergeProxyRules) {
       chain3,
   };
   EXPECT_EQ(result.AllChains(), expected);
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnTunnelHeadersReceivedReturnsOkFor200Status) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsOk());
+}
+
+TEST_F(IpProtectionProxyDelegateTest,
+       OnTunnelHeadersReceivedReturnsOkForNonIppProxy) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto non_ipp_chain = net::ProxyChain(net::ProxyServer::FromSchemeHostAndPort(
+      net::ProxyServer::SCHEME_HTTPS, "proxy.com", 443));
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; "
+          "error=\"dns_error\"\n"));
+
+  // For non-IPP chains, the delegate should return `net::OK` to allow the
+  // default network stack handling to process the response.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(non_ipp_chain,
+                                                /*chain_index=*/0, *headers),
+              IsOk());
+}
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsProxyTunnelRequestFailedWithoutProxyStatusHeader) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      "HTTP/1.1 500 Internal Server Error");
+
+  // An ambiguous error without a Proxy-Status header should be treated as a
+  // proxy failure, warranting fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
+}
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsProxyTunnelRequestFailedForMalformedProxyStatusHeader) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders("HTTP/1.1 502 Bad Gateway\n"
+                                        "Proxy-Status: !@#$\n"));
+
+  // A malformed header is ambiguous, so we assume a proxy failure and fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
+}
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsProxyTunnelRequestFailedForProxyStatusWithNoRelevantError) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\n"
+          "Proxy-Status: PxyA; info=\"healthy\"\n"));
+
+  // A valid Proxy-Status header that does not contain a recognized destination
+  // error is treated as a proxy failure.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
+}
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsProxyTunnelRequestFailedForProxySideError) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\n"
+          "Proxy-Status: proxy; error=\"proxy_internal_error\"\n"));
+
+  // A non-destination error in the Proxy-Status header indicates a proxy
+  // failure, so we should fall back.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_PROXY_TUNNEL_REQUEST_FAILED));
+}
+
+class IpProtectionProxyDelegateOnTunnelHeadersReceivedTest
+    : public IpProtectionProxyDelegateTest,
+      public testing::WithParamInterface<const char*> {};
+
+// This parameterized test verifies that for all specified destination-side
+// errors, we return the error that does NOT cause fallback.
+TEST_P(IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
+       ReturnsTunnelConnectionFailedForDestinationErrors) {
+  const char* error_token = GetParam();
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(base::StringPrintf(
+          "HTTP/1.1 502 Bad Gateway\nProxy-Status: proxy; error=%s\n",
+          error_token)));
+
+  // Destination-side errors should prevent fallback.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
+}
+
+INSTANTIATE_TEST_SUITE_P(All,
+                         IpProtectionProxyDelegateOnTunnelHeadersReceivedTest,
+                         testing::Values("dns_timeout",
+                                         "dns_error",
+                                         "destination_not_found",
+                                         "destination_unavailable",
+                                         "destination_ip_unroutable",
+                                         "connection_refused",
+                                         "connection_terminated",
+                                         "connection_timeout",
+                                         "proxy_loop_detected"));
+
+TEST_F(
+    IpProtectionProxyDelegateTest,
+    OnTunnelHeadersReceivedReturnsTunnelConnectionFailedForMultiEntryHeader) {
+  auto masked_domain_list_manager = CreateMdlManager({});
+  auto ipp_core =
+      std::make_unique<MockIpProtectionCore>(&masked_domain_list_manager);
+  auto delegate = CreateDelegate(ipp_core.get());
+  auto ip_protection_proxy_chain = MakeChain({"proxy.com"});
+  auto headers = base::MakeRefCounted<net::HttpResponseHeaders>(
+      net::HttpUtil::AssembleRawHeaders(
+          "HTTP/1.1 502 Bad Gateway\n"
+          "Proxy-Status: PxyA; info=\"ok\", PxyB; error=dns_error\n"));
+
+  // As long as one of the entries indicates a destination error, we should not
+  // fall back.
+  EXPECT_THAT(delegate->OnTunnelHeadersReceived(ip_protection_proxy_chain,
+                                                /*chain_index=*/0, *headers),
+              IsError(net::ERR_TUNNEL_CONNECTION_FAILED));
 }
 
 }  // namespace ip_protection
