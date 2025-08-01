@@ -238,6 +238,7 @@ template("chrome_extra_paks") {
         "$root_gen_dir/chrome/tab_group_home_resources.pak",
         "$root_gen_dir/chrome/tab_search_resources.pak",
         "$root_gen_dir/chrome/web_app_internals_resources.pak",
+        "$root_gen_dir/chrome/webui_browser_resources.pak",
         "$root_gen_dir/chrome/webui_gallery_resources.pak",
         "$root_gen_dir/chrome/whats_new_resources.pak",
         "$root_gen_dir/content/browser/tracing/tracing_resources.pak",

@@ -36,7 +36,7 @@ BrowserWindow* BrowserWindow::CreateBrowserWindow(
     std::unique_ptr<Browser> browser,
     bool user_gesture,
     bool in_tab_dragging) {
-  if (webui_browser::IsWebUIBrowserEnabled()) {
+  if (webui_browser::IsWebUIBrowserEnabled() && browser->is_type_normal()) {
     return new WebUIBrowserWindow(std::move(browser));
   }
 

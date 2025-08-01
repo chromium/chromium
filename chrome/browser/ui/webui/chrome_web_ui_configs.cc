@@ -69,6 +69,7 @@
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 #include "chrome/browser/ui/tabs/tab_group_home/tab_group_home_ui.h"
+#include "chrome/browser/ui/webui_browser/webui_browser_ui.h"
 #if !BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/webui/app_home/app_home_ui.h"
 #endif  // !BUILDFLAG(IS_CHROMEOS)
@@ -341,6 +342,7 @@ void RegisterChromeWebUIConfigs() {
   map.AddWebUIConfig(std::make_unique<TermsUIConfig>());
   map.AddWebUIConfig(std::make_unique<UserEducationInternalsUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebAppInternalsUIConfig>());
+  map.AddWebUIConfig(std::make_unique<WebUIBrowserUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebuiGalleryUIConfig>());
   map.AddWebUIConfig(std::make_unique<WebUIJsErrorUIConfig>());
 #endif  // BUILDFLAG(IS_ANDROID)

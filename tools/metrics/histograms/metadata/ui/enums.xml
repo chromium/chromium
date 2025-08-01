@@ -625,6 +625,7 @@ chromium-metrics-reviews@google.com.
   <int value="-1716340463" label="chrome://safe-browsing/"/>
   <int value="-1704400468" label="chrome://quit/"/>
   <int value="-1700864659" label="chrome://slow/"/>
+  <int value="-1699890661" label="chrome://webui-browser/"/>
   <int value="-1697612520" label="chrome://print-management/"/>
   <int value="-1697077152" label="chrome://device-log/"/>
   <int value="-1690355375" label="chrome://mobilesetup/"/>

@@ -399,6 +399,8 @@ inline constexpr char kChromeUIUntrustedReadAnythingSidePanelHost[] =
 inline constexpr char kChromeUIUntrustedReadAnythingSidePanelURL[] =
     "chrome-untrusted://read-anything-side-panel.top-chrome/";
 inline constexpr char kChromeUIWebAppInternalsHost[] = "web-app-internals";
+inline constexpr char kChromeUIWebuiBrowserHost[] = "webui-browser";
+inline constexpr char kChromeUIWebuiBrowserURL[] = "chrome://webui-browser/";
 inline constexpr char kChromeUIWebUIJsErrorHost[] = "webuijserror";
 inline constexpr char kChromeUIWebUIJsErrorURL[] = "chrome://webuijserror/";
 inline constexpr char kCookiesSubPagePath[] = "/cookies";

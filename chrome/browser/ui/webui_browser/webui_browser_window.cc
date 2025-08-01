@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/webui_browser/webui_location_bar.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/input/native_web_keyboard_event.h"
 #include "components/sharing_message/sharing_dialog_data.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
@@ -41,7 +42,7 @@ WebUIBrowserWindow::WebUIBrowserWindow(std::unique_ptr<Browser> browser)
   widget_->Init(std::move(params));
   auto web_view = std::make_unique<views::WebView>(browser_->profile());
 
-  web_view->LoadInitialURL(GURL("chrome://dino"));
+  web_view->LoadInitialURL(GURL(chrome::kChromeUIWebuiBrowserURL));
   // Sets the weview as the content view of the default ClientView.
   // TODO(webium): make a subclass of ClientView so that non-client hit testing
   // can be customized.

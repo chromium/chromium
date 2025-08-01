@@ -1,0 +1,4 @@
+team_email: "webui-everywhere@google.com"
+buganizer_public: {
+  component_id: 1681552 # Chromium > UI > Browser > WebUI Browser
+}
