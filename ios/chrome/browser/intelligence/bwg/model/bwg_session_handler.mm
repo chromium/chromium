@@ -45,7 +45,7 @@
 
 - (void)UIDidDisappearWithClientID:(NSString*)clientID
                           serverID:(NSString*)serverID {
-  [_BWGHandler dismissBWGFlowFromSession];
+  [_BWGHandler dismissBWGFlowWithCompletion:nil];
   [self setSessionActive:NO clientID:clientID];
   // Record session duration.
   if (!_sessionStartTime.is_null()) {

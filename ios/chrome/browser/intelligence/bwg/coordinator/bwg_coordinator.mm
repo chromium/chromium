@@ -5,7 +5,10 @@
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_coordinator.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "components/feature_engagement/public/event_constants.h"
+#import "components/feature_engagement/public/tracker.h"
 #import "components/prefs/pref_service.h"
+#import "ios/chrome/browser/feature_engagement/model/tracker_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator.h"
 #import "ios/chrome/browser/intelligence/bwg/coordinator/bwg_mediator_delegate.h"
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
@@ -21,6 +24,7 @@
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/signin/model/authentication_service.h"
 #import "ios/chrome/browser/signin/model/authentication_service_factory.h"
+#import "ios/public/provider/chrome/browser/bwg/bwg_api.h"
 #import "ios/web/public/web_state.h"
 
 namespace {
@@ -54,9 +58,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
 
   // Pref service.
   raw_ptr<PrefService> _prefService;
-
-  // Promo was shown.
-  BOOL _wasPromoShown;
 }
 
 - (instancetype)initWithBaseViewController:(UIViewController*)viewController
@@ -74,6 +75,11 @@ const CGFloat kPromoMaxImpressionCount = 3;
 - (void)start {
   _prefService = self.profile->GetPrefs();
   CHECK(_prefService);
+
+  if (_entryPoint == bwg::EntryPoint::AIHub) {
+    feature_engagement::TrackerFactory::GetForProfile(self.profile)
+        ->NotifyEvent(feature_engagement::events::kIOSPageActionMenuIPHUsed);
+  }
 
   CommandDispatcher* dispatcher = self.browser->GetCommandDispatcher();
   _BWGCommandsHandler = HandlerForProtocol(dispatcher, BWGCommands);
@@ -95,6 +101,12 @@ const CGFloat kPromoMaxImpressionCount = 3;
 #pragma mark - Public
 
 - (void)stopWithCompletion:(ProceduralBlock)completion {
+  BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
+  if (BWGTabHelper) {
+    BWGTabHelper->SetBwgUiShowing(false);
+  }
+  ios::provider::ResetGemini();
+  [self presentPageActionMenuIPH];
   _FREWrapperViewController = nil;
   _BWGCommandsHandler = nil;
   _helpCommandsHandler = nil;
@@ -104,12 +116,6 @@ const CGFloat kPromoMaxImpressionCount = 3;
   [super stop];
 }
 
-- (void)presentPageActionMenuIPH {
-  if (_wasPromoShown && _entryPoint != bwg::EntryPoint::AIHub) {
-    [_helpCommandsHandler
-        presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
-  }
-}
 #pragma mark - BWGMediatorDelegate
 
 - (BOOL)maybePresentBWGFRE {
@@ -143,16 +149,9 @@ const CGFloat kPromoMaxImpressionCount = 3;
   BOOL shouldAnimatePresentation =
       BWGTabHelper ? !BWGTabHelper->GetIsBwgSessionActiveInBackground() : YES;
 
-  __weak __typeof(self) weakSelf = self;
   [self.baseViewController presentViewController:_FREWrapperViewController
                                         animated:shouldAnimatePresentation
-                                      completion:^{
-                                        BWGCoordinator* strongSelf = weakSelf;
-                                        if (strongSelf) {
-                                          strongSelf->_wasPromoShown =
-                                              showPromo;
-                                        }
-                                      }];
+                                      completion:nil];
 
   if (BWGTabHelper) {
     BWGTabHelper->SetBwgUiShowing(true);
@@ -171,17 +170,7 @@ const CGFloat kPromoMaxImpressionCount = 3;
 }
 
 - (void)dismissBWGFlow {
-  __weak __typeof(self) weakSelf = self;
-  [self dismissPresentedViewWithCompletion:^{
-    BWGCoordinator* strongSelf = weakSelf;
-    [strongSelf presentPageActionMenuIPH];
-    [strongSelf->_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
-  }];
-
-  BwgTabHelper* BWGTabHelper = [self activeWebStateBWGTabHelper];
-  if (BWGTabHelper) {
-    BWGTabHelper->SetBwgUiShowing(false);
-  }
+  [_BWGCommandsHandler dismissBWGFlowWithCompletion:nil];
 }
 
 #pragma mark - UISheetPresentationControllerDelegate
@@ -237,6 +226,15 @@ const CGFloat kPromoMaxImpressionCount = 3;
   }
 
   return BwgTabHelper::FromWebState(activeWebState);
+}
+
+// Attemps to present the entry point IPH the user hasn't used the AI Hub entry
+// point yet.
+- (void)presentPageActionMenuIPH {
+  if (_entryPoint != bwg::EntryPoint::AIHub) {
+    [_helpCommandsHandler
+        presentInProductHelpWithType:InProductHelpType::kPageActionMenu];
+  }
 }
 
 @end

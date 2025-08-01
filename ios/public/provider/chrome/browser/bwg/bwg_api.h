@@ -119,6 +119,9 @@ id<BWGGatewayProtocol> CreateBWGGateway();
 void CheckGeminiEligibility(AuthenticationService* auth_service,
                             BWGEligibilityCallback completion);
 
+// Resets the Gemini instance by clearing its state.
+void ResetGemini();
+
 }  // namespace ios::provider
 
 #endif  // IOS_PUBLIC_PROVIDER_CHROME_BROWSER_BWG_BWG_API_H_

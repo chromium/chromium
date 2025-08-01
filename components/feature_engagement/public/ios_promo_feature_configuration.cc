@@ -269,6 +269,12 @@ std::optional<FeatureConfig> GetStandardPromoConfig(
     config.valid = true;
     config.availability = Comparator(ANY, 0);
     config.session_rate = Comparator(ANY, 0);
+
+    // This IPH showing does not affect the session count for other IPHs.
+    config.session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config.blocked_by.type = BlockedBy::Type::NONE;
+    config.blocking.type = Blocking::Type::NONE;
+
     config.trigger =
         EventConfig(feature_engagement::events::kIOSPageActionMenuIPHTrigger,
                     Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,

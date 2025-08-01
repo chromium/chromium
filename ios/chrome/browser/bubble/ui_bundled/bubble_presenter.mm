@@ -1198,10 +1198,6 @@ BOOL CanGestureInProductHelpViewFitInGuide(GestureInProductHelpView* view,
     return YES;
   }
 
-  if (feature.name == feature_engagement::kIPHIOSPageActionMenu.name) {
-    return YES;
-  }
-
   return NO;
 }
 
