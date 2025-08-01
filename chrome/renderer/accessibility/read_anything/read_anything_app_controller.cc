@@ -538,6 +538,26 @@ void ReadAnythingAppController::OnTreeDataChanged(
   }
 }
 
+void ReadAnythingAppController::OnStringAttributeChanged(
+    ui::AXTree* tree,
+    ui::AXNode* node,
+    ax::mojom::StringAttribute attr,
+    const std::string& old_value,
+    const std::string& new_value) {
+  ui::AXNode* rm_node = model_.GetAXNode(node->id());
+  if (!rm_node) {
+    return;
+  }
+  // When the src for an image changes (e.g if an image was lazy loaded and
+  // previously had a placeholder image), request the updated image. The info
+  // will be returned via OnImageDataDownloaded.
+  if (features::IsReadAnythingImagesViaAlgorithmEnabled() &&
+      attr == ax::mojom::StringAttribute::kUrl &&
+      rm_node->GetRole() == ax::mojom::Role::kImage) {
+    RequestImageDataUrl(node->id());
+  }
+}
+
 void ReadAnythingAppController::AccessibilityEventReceived(
     const ui::AXTreeID& tree_id,
     const std::vector<ui::AXTreeUpdate>& updates,

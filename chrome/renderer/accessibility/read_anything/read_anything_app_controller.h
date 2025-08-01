@@ -161,6 +161,12 @@ class ReadAnythingAppController
                          const ui::AXTreeData& old_data,
                          const ui::AXTreeData& new_data) override;
 
+  void OnStringAttributeChanged(ui::AXTree* tree,
+                                ui::AXNode* node,
+                                ax::mojom::StringAttribute attr,
+                                const std::string& old_value,
+                                const std::string& new_value) override;
+
   // gin templates:
   ui::AXNodeID RootId() const;
   ui::AXNodeID StartNodeId() const;

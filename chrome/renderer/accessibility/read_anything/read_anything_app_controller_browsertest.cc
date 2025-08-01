@@ -3827,6 +3827,57 @@ TEST_F(ReadAnythingAppControllerTest,
   EXPECT_FALSE(model.IsAvailable());
 }
 
+TEST_F(ReadAnythingAppControllerTest,
+       OnStringAttributeChanged_ImageSrcChange_RequestsImageData) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kReadAnythingImagesViaAlgorithm);
+
+  // Create an image node with a placeholder "data:" URL, mimicking a
+  // lazy-loaded image.
+  static constexpr ui::AXNodeID kImageNodeId = 2;
+  std::string placeholder_src = "data:image/svg+xml,...";
+  ui::AXNodeData image_node = test::ImageNode(kImageNodeId, placeholder_src);
+  SendUpdateAndDistillNodes({std::move(image_node)});
+
+  // Now update with the actual image url.
+  std::string final_src = "https://example.com/real_image.png";
+  ui::AXNodeData updated_image_node = test::ImageNode(kImageNodeId, final_src);
+  SendUpdateAndDistillNodes({std::move(updated_image_node)});
+
+  EXPECT_CALL(page_handler_, OnImageDataRequested(tree_id_, kImageNodeId))
+      .Times(2);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnStringAttributeChanged_NonImageNode_DoesNothing) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kReadAnythingImagesViaAlgorithm);
+
+  static constexpr ui::AXNodeID kLinkNodeId = 2;
+  std::string placeholder_url = "data:image/svg+xml,...";
+  ui::AXNodeData link_node = test::LinkNode(kLinkNodeId, placeholder_url);
+  SendUpdateAndDistillNodes({std::move(link_node)});
+
+  std::string final_url = "https://example.com/real_image.png";
+  ui::AXNodeData updated_link_node = test::LinkNode(kLinkNodeId, final_url);
+  SendUpdateAndDistillNodes({std::move(updated_link_node)});
+
+  EXPECT_CALL(page_handler_, OnImageDataRequested).Times(0);
+}
+
+TEST_F(ReadAnythingAppControllerTest,
+       OnStringAttributeChanged_ImageFlagDisabled_DoesNothing) {
+  static constexpr ui::AXNodeID kImageNodeId = 2;
+  std::string placeholder_src = "data:image/svg+xml,...";
+  ui::AXNodeData image_node = test::ImageNode(kImageNodeId, placeholder_src);
+  SendUpdateAndDistillNodes({std::move(image_node)});
+  std::string final_src = "https://example.com/real_image.png";
+  ui::AXNodeData updated_image_node = test::ImageNode(kImageNodeId, final_src);
+  SendUpdateAndDistillNodes({std::move(updated_image_node)});
+
+  EXPECT_CALL(page_handler_, OnImageDataRequested).Times(0);
+}
+
 class ReadAnythingAppControllerScreen2xDataCollectionModeTest
     : public ReadAnythingAppControllerTest {
  public:

@@ -59,6 +59,14 @@ ui::AXNodeData ExplicitlyEmptyTextNode(ui::AXNodeID id) {
   return node;
 }
 
+ui::AXNodeData ImageNode(ui::AXNodeID id, const std::string& src) {
+  ui::AXNodeData node;
+  node.id = id;
+  node.role = ax::mojom::Role::kImage;
+  node.AddStringAttribute(ax::mojom::StringAttribute::kUrl, src);
+  return node;
+}
+
 ui::AXNodeData LinkNode(ui::AXNodeID id, const std::string& url) {
   ui::AXNodeData node;
   node.id = id;
