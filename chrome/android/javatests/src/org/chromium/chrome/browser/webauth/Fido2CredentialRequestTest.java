@@ -62,6 +62,9 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
+import org.chromium.blink.mojom.CredentialInfo;
+import org.chromium.blink.mojom.CredentialType;
+import org.chromium.blink.mojom.CredentialTypeFlags;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
@@ -84,6 +87,7 @@ import org.chromium.chrome.test.transit.ChromeTransitTestRules;
 import org.chromium.chrome.test.transit.page.WebPageStation;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.ukm.UkmRecorderJni;
+import org.chromium.components.webauthn.AssertionMediationType;
 import org.chromium.components.webauthn.AuthenticationContextProvider;
 import org.chromium.components.webauthn.AuthenticatorImpl;
 import org.chromium.components.webauthn.CreateConfirmationUiDelegate;
@@ -101,6 +105,7 @@ import org.chromium.components.webauthn.WebauthnBrowserBridge;
 import org.chromium.components.webauthn.WebauthnCredentialDetails;
 import org.chromium.components.webauthn.WebauthnMode;
 import org.chromium.components.webauthn.WebauthnModeProvider;
+import org.chromium.components.webauthn.cred_man.CredManSupportProvider;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content.browser.ClientDataJsonImplJni;
 import org.chromium.content_public.browser.ClientDataRequestType;
@@ -109,6 +114,7 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.mock.MockRenderFrameHost;
 import org.chromium.content_public.browser.test.mock.MockWebContents;
 import org.chromium.content_public.common.ContentSwitches;
+import org.chromium.mojo_base.mojom.String16;
 import org.chromium.net.test.EmbeddedTestServer;
 import org.chromium.ui.test.util.GmsCoreVersionRestriction;
 import org.chromium.url.GURL;
@@ -161,6 +167,10 @@ public class Fido2CredentialRequestTest {
     private static final String FILLER_ERROR_MSG = "Error Error";
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private long mStartTimeMs;
+    private static final String PASSWORD_CRED_USERNAME = "Monkey";
+    private static String16 sPasswordCredUsername16;
+    private static final String PASSWORD_CRED_PASSWORD = "DLuffy2";
+    private static String16 sPasswordCredPassword16;
 
     /**
      * This class constructs the parameters array that is used for testMakeCredential_with_param and
@@ -336,6 +346,13 @@ public class Fido2CredentialRequestTest {
         }
     }
 
+    private static class MockIncognitoWebContents extends MockWebContents {
+        @Override
+        public boolean isIncognito() {
+            return true;
+        }
+    }
+
     private static class TestAuthenticatorImplJni implements InternalAuthenticator.Natives {
         private final Fido2ApiTestHelper.AuthenticatorCallback mCallback;
 
@@ -374,26 +391,32 @@ public class Fido2CredentialRequestTest {
 
     private static class MockBrowserBridge extends WebauthnBrowserBridge {
         public enum CallbackInvocationType {
-            IMMEDIATE_GET_ASSERTION,
+            IMMEDIATE_PASSKEY,
+            IMMEDIATE_PASSWORD,
             IMMEDIATE_HYBRID,
+            IMMEDIATE_REJECT_IMMEDIATE,
             DELAYED
         }
 
         private byte[] mSelectedCredentialId;
         private List<WebauthnCredentialDetails> mExpectedCredentialList;
         private CallbackInvocationType mInvokeCallbackImmediately =
-                CallbackInvocationType.IMMEDIATE_GET_ASSERTION;
-        private Callback<byte[]> mGetAssertionCallback;
+                CallbackInvocationType.IMMEDIATE_PASSKEY;
+        private Callback<byte[]> mPasskeyCallback;
+        private Callback<CredentialInfo> mPasswordCallback;
         private Runnable mHybridCallback;
+        private Callback<Integer> mRejectImmediateCallback;
         private int mCleanupCalled;
 
         @Override
         public void onCredentialsDetailsListReceived(
                 RenderFrameHost frameHost,
                 List<WebauthnCredentialDetails> credentialList,
-                boolean isConditionalRequest,
-                Callback<byte[]> getAssertionCallback,
-                Runnable hybridCallback) {
+                @AssertionMediationType int mediationType,
+                Callback<byte[]> passkeyCallback,
+                @Nullable Callback<CredentialInfo> passwordCallback,
+                @Nullable Runnable hybridCallback,
+                @Nullable Callback<Integer> rejectImmediateCallback) {
             Assert.assertEquals(mExpectedCredentialList.size(), credentialList.size());
             for (int i = 0; i < credentialList.size(); i++) {
                 Assert.assertEquals(
@@ -408,15 +431,25 @@ public class Fido2CredentialRequestTest {
                         mExpectedCredentialList.get(0).mUserId, credentialList.get(0).mUserId);
             }
 
-            mGetAssertionCallback = getAssertionCallback;
+            mPasskeyCallback = passkeyCallback;
+            mPasswordCallback = passwordCallback;
             mHybridCallback = hybridCallback;
+            mRejectImmediateCallback = rejectImmediateCallback;
 
-            if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_GET_ASSERTION) {
-                invokeGetAssertionCallback();
+            if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_PASSKEY) {
+                invokePasskeyCallback();
+            }
+
+            if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_PASSWORD) {
+                invokePasswordCallback();
             }
 
             if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_HYBRID) {
                 invokeHybridCallback();
+            }
+
+            if (mInvokeCallbackImmediately == CallbackInvocationType.IMMEDIATE_REJECT_IMMEDIATE) {
+                invokeRejectImmediateCallback();
             }
         }
 
@@ -438,9 +471,9 @@ public class Fido2CredentialRequestTest {
             mInvokeCallbackImmediately = type;
         }
 
-        public void invokeGetAssertionCallback() {
+        public void invokePasskeyCallback() {
             if (mSelectedCredentialId != null) {
-                mGetAssertionCallback.onResult(mSelectedCredentialId);
+                mPasskeyCallback.onResult(mSelectedCredentialId);
                 return;
             }
 
@@ -450,16 +483,29 @@ public class Fido2CredentialRequestTest {
              * which normally would imply an error response.
              */
             if (mExpectedCredentialList.isEmpty()) {
-                mGetAssertionCallback.onResult(new byte[0]);
+                mPasskeyCallback.onResult(new byte[0]);
                 return;
             }
 
             /* Return the first ID in the list if one has not been explicitly set. */
-            mGetAssertionCallback.onResult(mExpectedCredentialList.get(0).mCredentialId);
+            mPasskeyCallback.onResult(mExpectedCredentialList.get(0).mCredentialId);
+        }
+
+        public void invokePasswordCallback() {
+            CredentialInfo passwordCredential = new CredentialInfo();
+            passwordCredential.type = CredentialType.PASSWORD;
+            passwordCredential.name = sPasswordCredUsername16;
+            passwordCredential.id = sPasswordCredUsername16;
+            passwordCredential.password = sPasswordCredPassword16;
+            mPasswordCallback.onResult(passwordCredential);
         }
 
         public void invokeHybridCallback() {
             mHybridCallback.run();
+        }
+
+        public void invokeRejectImmediateCallback() {
+            mRejectImmediateCallback.onResult(0);
         }
 
         public int getCleanupCalledCount() {
@@ -585,6 +631,15 @@ public class Fido2CredentialRequestTest {
         mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
 
         mStartTimeMs = SystemClock.elapsedRealtime();
+
+        sPasswordCredUsername16 =
+                WebauthnBrowserBridge.stringToMojoString16(PASSWORD_CRED_USERNAME);
+        sPasswordCredPassword16 =
+                WebauthnBrowserBridge.stringToMojoString16(PASSWORD_CRED_PASSWORD);
+
+        CredManSupportProvider.setupForTesting(
+                /* overrideAndroidVersion= */ Build.VERSION_CODES.TIRAMISU,
+                /* overrideForcesGpm= */ false);
     }
 
     @Test
@@ -2293,7 +2348,7 @@ public class Fido2CredentialRequestTest {
 
         // Select credential again, and provide a success response this time.
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
-        mMockBrowserBridge.invokeGetAssertionCallback();
+        mMockBrowserBridge.invokePasskeyCallback();
         mCallback.blockUntilCalled();
         Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
@@ -2357,6 +2412,155 @@ public class Fido2CredentialRequestTest {
                 Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR), mCallback.getStatus());
         Assert.assertNull(mCallback.getGetAssertionResponse());
         Assert.assertEquals(1, mMockBrowserBridge.getCleanupCalledCount());
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_ImmediateWithPasskeysOnly_success() {
+        Fido2ApiTestHelper.mockClientDataJson();
+        mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
+        mMockBrowserBridge.setExpectedCredentialDetailsList(
+                Arrays.asList(
+                        new WebauthnCredentialDetails[] {
+                            Fido2ApiTestHelper.getCredentialDetails()
+                        }));
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
+
+        mRequest.handleGetCredentialRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
+        Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_ImmediateWithNonEmptyAllowList_notAllowedError() {
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
+
+        mRequest.handleGetCredentialRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(
+                Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_ImmediateWithNoPasskeysFound_notAllowedError() {
+        mFido2ApiCallHelper.setReturnedCredentialDetails(new ArrayList<>());
+        mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+
+        mRequest.handleGetCredentialRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(
+                Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_ImmediateWithNoPasskeysButPasswordReturned_success() {
+        mMockBrowserBridge.setInvokeCallbackImmediately(
+                MockBrowserBridge.CallbackInvocationType.IMMEDIATE_PASSWORD);
+        mMockBrowserBridge.setExpectedCredentialDetailsList(new ArrayList<>());
+
+        mFido2ApiCallHelper.setReturnedCredentialDetails(new ArrayList<>());
+
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
+
+        mRequest.handleGetCredentialRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(Integer.valueOf(AuthenticatorStatus.SUCCESS), mCallback.getStatus());
+        Assert.assertEquals(
+                sPasswordCredUsername16, mCallback.getGetAssertionPasswordCredential().name);
+        Assert.assertEquals(
+                sPasswordCredPassword16, mCallback.getGetAssertionPasswordCredential().password);
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_ImmediateInIncognito_notAllowedError() {
+        mWebContents = new MockIncognitoWebContents();
+        mAuthenticationContextProvider =
+                new AuthenticationContextProvider() {
+                    @Override
+                    public Context getContext() {
+                        return mContext;
+                    }
+
+                    @Override
+                    public RenderFrameHost getRenderFrameHost() {
+                        return mFrameHost;
+                    }
+
+                    @Override
+                    public FidoIntentSender getIntentSender() {
+                        return mIntentSender;
+                    }
+
+                    @Override
+                    public WebContents getWebContents() {
+                        return mWebContents;
+                    }
+                };
+        mRequest = new Fido2CredentialRequest(mAuthenticationContextProvider);
+        AuthenticatorImpl.overrideFido2CredentialRequestForTesting(mRequest);
+
+        mRequestOptions.mediation = Mediation.IMMEDIATE;
+        mRequestOptions.requestedCredentialTypeFlags |= CredentialTypeFlags.PASSWORD;
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
+
+        mRequest.handleGetCredentialRequest(
+                mRequestOptions,
+                mOrigin,
+                mOrigin,
+                /* payment= */ null,
+                mCallback::onSignResponse,
+                mCallback::onError,
+                mCallback::onRequestOutcome);
+        mCallback.blockUntilCalled();
+        Assert.assertEquals(
+                Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR), mCallback.getStatus());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 
     @Test

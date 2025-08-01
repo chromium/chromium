@@ -11,9 +11,12 @@ import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
 import org.chromium.base.Callback;
+import org.chromium.blink.mojom.CredentialInfo;
+import org.chromium.blink.mojom.CredentialType;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.mojo_base.mojom.String16;
 
 import java.util.List;
 
@@ -39,28 +42,37 @@ public class WebauthnBrowserBridge {
      * fields. For non-conditional requests, a selection sheet is shown immediately. The callback is
      * invoked when a user selects one of the credentials from the list.
      *
+     * <p>TODO(https://crbug.com/433543129): This interface has gotten a bit overly complicated. It
+     * should be simplified by combining the callbacks into just two: one for credentials being
+     * returned (password or passkey), and another for other actions.
+     *
      * @param frameHost The RenderFrameHost for the frame that generated the request.
      * @param credentialList The list of credentials that can be used as autofill suggestions.
-     * @param isConditionalRequest Boolean indicating whether this is a conditional UI request or
-     *     not.
-     * @param getAssertionCallback The callback to be invoked with the credential ID of a selected
-     *     credential.
+     * @param mediationType Value indicating whether the credentials are for a modal, conditional,
+     *     or immediate request.
+     * @param passkeyCallback The callback to be invoked with the credential ID of a selected
+     *     WebAuthn credential.
+     * @param passwordCallback The callback to be invoked with a selected password credential.
      * @param hybridCallback The callback to be invoked if a user initiates a cross-device hybrid
      *     sign-in.
+     * @param rejectImmediateCallback The callback to be invoked if an immediate request will be
+     *     completed without a credential.
      */
     public void onCredentialsDetailsListReceived(
             @Nullable RenderFrameHost frameHost,
             List<WebauthnCredentialDetails> credentialList,
-            boolean isConditionalRequest,
-            Callback<byte[]> getAssertionCallback,
-            @Nullable Runnable hybridCallback) {
+            @AssertionMediationType int mediationType,
+            Callback<byte[]> passkeyCallback,
+            @Nullable Callback<CredentialInfo> passwordCallback,
+            @Nullable Runnable hybridCallback,
+            @Nullable Callback<Integer> rejectImmediateCallback) {
         assert credentialList != null;
-        assert getAssertionCallback != null;
+        assert passkeyCallback != null;
         log(
                 TAG,
-                "onCredentialsDetailsListReceived, isConditionalRequest: %b, number of credentials:"
+                "onCredentialsDetailsListReceived, mediationType: %d, number of credentials:"
                         + " %d",
-                isConditionalRequest,
+                mediationType,
                 credentialList.size());
         prepareNativeBrowserBridgeIfRequired();
 
@@ -71,9 +83,11 @@ public class WebauthnBrowserBridge {
                         mNativeWebauthnBrowserBridge,
                         credentialArray,
                         frameHost,
-                        isConditionalRequest,
-                        getAssertionCallback,
-                        hybridCallback);
+                        mediationType,
+                        passkeyCallback,
+                        passwordCallback,
+                        hybridCallback,
+                        rejectImmediateCallback);
     }
 
     /**
@@ -160,6 +174,19 @@ public class WebauthnBrowserBridge {
         mNativeWebauthnBrowserBridge = 0;
     }
 
+    public static @Nullable String16 stringToMojoString16(@Nullable String javaString) {
+        if (javaString == null) {
+            return null;
+        }
+        short[] data = new short[javaString.length()];
+        for (int i = 0; i < data.length; i++) {
+            data[i] = (short) javaString.charAt(i);
+        }
+        String16 mojoString = new String16();
+        mojoString.data = data;
+        return mojoString;
+    }
+
     @CalledByNative
     private static @Nullable String getWebauthnCredentialDetailsUserName(
             WebauthnCredentialDetails cred) {
@@ -184,6 +211,17 @@ public class WebauthnBrowserBridge {
         return cred.mCredentialId;
     }
 
+    @CalledByNative
+    private static CredentialInfo createPasswordCredentialInfo(String username, String password) {
+        CredentialInfo passwordCredential = new CredentialInfo();
+        passwordCredential.type = CredentialType.PASSWORD;
+        String16 name = stringToMojoString16(username);
+        passwordCredential.name = name;
+        passwordCredential.id = name;
+        passwordCredential.password = stringToMojoString16(password);
+        return passwordCredential;
+    }
+
     private void prepareNativeBrowserBridgeIfRequired() {
         if (mNativeWebauthnBrowserBridge == 0) {
             log(TAG, "prepareNativeBrowserBridgeIfRequired");
@@ -201,9 +239,11 @@ public class WebauthnBrowserBridge {
                 long nativeWebauthnBrowserBridge,
                 WebauthnCredentialDetails[] credentialList,
                 @Nullable RenderFrameHost frameHost,
-                boolean isConditionalRequest,
+                @AssertionMediationType int mediationType,
                 Callback<byte[]> getAssertionCallback,
-                @Nullable Runnable hybridCallback);
+                @Nullable Callback<CredentialInfo> passwordCallback,
+                @Nullable Runnable hybridCallback,
+                @Nullable Callback<Integer> rejectImmediateCallback);
 
         void onCredManConditionalRequestPending(
                 long nativeWebauthnBrowserBridge,

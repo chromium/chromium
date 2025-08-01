@@ -22,6 +22,21 @@ class DiscoverableCredentialMetadata;
 
 namespace webauthn {
 
+// The type of mediation that is being used for a WebAuthn GetAssertion request.
+// GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.webauthn
+// GENERATED_JAVA_PREFIX_TO_STRIP: k
+enum class AssertionMediationType {
+  kModal = 0,
+  kConditional = 1,
+  kImmediatePasskeysOnly = 3,
+  kImmediateWithPasswords = 4,
+};
+
+enum class ImmediateRequestRejectionReason {
+  kNoCredentials = 0,
+  kUserDismissed = 1,
+};
+
 class WebAuthnClientAndroid {
  public:
   virtual ~WebAuthnClientAndroid();

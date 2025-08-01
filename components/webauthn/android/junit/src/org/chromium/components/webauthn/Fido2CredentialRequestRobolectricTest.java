@@ -321,7 +321,13 @@ public class Fido2CredentialRequestRobolectricTest {
                         /* ignoreGpm= */ eq(true));
         verify(mBrowserBridgeMock)
                 .onCredentialsDetailsListReceived(
-                        eq(mFrameHost), eq(Collections.emptyList()), eq(false), any(), any());
+                        eq(mFrameHost),
+                        eq(Collections.emptyList()),
+                        eq(AssertionMediationType.MODAL),
+                        any(),
+                        any(),
+                        any(),
+                        any());
         assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
@@ -535,7 +541,14 @@ public class Fido2CredentialRequestRobolectricTest {
                         /* barrier= */ any(),
                         /* ignoreGpm= */ eq(true));
         verify(mBrowserBridgeMock, times(1))
-                .onCredentialsDetailsListReceived(any(), any(), eq(true), any(), any());
+                .onCredentialsDetailsListReceived(
+                        any(),
+                        any(),
+                        eq(AssertionMediationType.CONDITIONAL),
+                        any(),
+                        any(),
+                        any(),
+                        any());
         verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
     }
 

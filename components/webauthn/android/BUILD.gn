@@ -20,6 +20,7 @@ java_cpp_enum("java_enums_srcjar") {
   sources = [
     "//content/browser/webauth/authenticator_request_outcome_enums.h",
     "cred_man_support.h",
+    "webauthn_client_android.h",
     "webauthn_mode.h",
   ]
   visibility = [ ":*" ]

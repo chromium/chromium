@@ -35,6 +35,8 @@ import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
+import org.chromium.blink.mojom.CredentialInfo;
+import org.chromium.blink.mojom.CredentialTypeFlags;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.Mediation;
@@ -451,18 +453,14 @@ public class Fido2CredentialRequest
 
         if (options.mediation == Mediation.IMMEDIATE) {
             WebContents webContents = mAuthenticationContextProvider.getWebContents();
-            // TODO(https://crbug.com/393055190): Implement Immediate Mediation for when CredMan is
-            // not available.
-            if (!isChrome(webContents) || getBarrierMode() == Barrier.Mode.ONLY_FIDO_2_API) {
-                returnErrorAndResetCallback(AuthenticatorStatus.NOT_IMPLEMENTED);
-                return;
-            }
             if (options.allowCredentials != null && options.allowCredentials.length != 0) {
+                log(TAG, "Immediate Get called with non-empty allowCredentials");
                 mGetAssertionErrorOutcome = GetAssertionOutcome.SECURITY_ERROR;
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;
             }
             if (webContents != null && webContents.isIncognito()) {
+                log(TAG, "Immediate Get called in Incognito mode");
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                 return;
             }
@@ -587,12 +585,8 @@ public class Fido2CredentialRequest
         }
 
         // Payments should still go through Google Play Services.
-        // TODO(https://crbug.com/393055190): Immediate mediation should work with parallel mode
-        // when it is made to work with Chrome UI.
         final byte[] finalClientDataHash = clientDataHash;
-        if (payment == null
-                && (getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN
-                        || options.mediation == Mediation.IMMEDIATE)) {
+        if (payment == null && getBarrierMode() == Barrier.Mode.ONLY_CRED_MAN) {
             if (options.mediation == Mediation.CONDITIONAL) {
                 mBarrier.resetAndSetWaitStatus(Barrier.Mode.ONLY_CRED_MAN);
                 mCredManHelper.startPrefetchRequest(
@@ -875,6 +869,7 @@ public class Fido2CredentialRequest
                 options.allowCredentials != null && options.allowCredentials.length != 0;
         boolean isConditionalRequest = options.mediation == Mediation.CONDITIONAL;
         assert isConditionalRequest || !hasAllowCredentials;
+        boolean isImmediateRequest = options.mediation == Mediation.IMMEDIATE;
 
         if (mConditionalUiState == ConditionalUiState.CANCEL_PENDING) {
             // The request was completed synchronously when the cancellation was received,
@@ -901,12 +896,13 @@ public class Fido2CredentialRequest
         }
 
         if (!isConditionalRequest
+                && !isImmediateRequest
                 && discoverableCredentials.isEmpty()
                 && getBarrierMode() != Barrier.Mode.BOTH) {
             mConditionalUiState = ConditionalUiState.NONE;
-            // When no passkeys are present for a non-conditional request, pass the request
-            // through to GMSCore. It will show an error message to the user, but can offer the
-            // user alternatives to use external passkeys.
+            // When no passkeys are present for a non-conditional non-immediate request pass the
+            // request through to GMSCore. It will show an error message to the user, but can offer
+            // the user alternatives to use external passkeys.
             // If the barrier mode is BOTH, the no passkeys state is handled by Chrome. Do not pass
             // the request to GMSCore.
             maybeDispatchGetAssertionRequest(options, callerOriginString, clientDataHash, null);
@@ -921,20 +917,57 @@ public class Fido2CredentialRequest
                                     options, callerOriginString, clientDataHash);
         }
 
+        @AssertionMediationType int mediationType = AssertionMediationType.MODAL;
+        Callback<Integer> rejectImmediateCallback = null;
+        Callback<CredentialInfo> passwordCallback = null;
+        if (isConditionalRequest) {
+            mediationType = AssertionMediationType.CONDITIONAL;
+        } else if (isImmediateRequest) {
+            if ((options.requestedCredentialTypeFlags & CredentialTypeFlags.PASSWORD) != 0) {
+                mediationType = AssertionMediationType.IMMEDIATE_WITH_PASSWORDS;
+                passwordCallback =
+                        (passwordCredential) -> {
+                            assumeNonNull(mGetCredentialCallback);
+                            mGetCredentialCallback.onCredentialResponse(
+                                    /* assertionResponse= */ null, passwordCredential);
+                        };
+            } else {
+                if (discoverableCredentials.isEmpty()) {
+                    log(TAG, "Immediate Get request did not display UI: no passkeys found");
+                    // Since passwords were not requested as a part of this immediate request, we
+                    // already know there are no credentials to provide, so the request can be
+                    // rejected now.
+                    returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                    return;
+                }
+                mediationType = AssertionMediationType.IMMEDIATE_PASSKEYS_ONLY;
+            }
+            rejectImmediateCallback =
+                    (rejectReason) -> {
+                        log(TAG, "Immediate Get request did not display UI: Code " + rejectReason);
+                        // TODO(https://crbug.com/433543129): Add metrics for the rejection reason
+                        // in order to distinguish user dismissal from no credentials being
+                        // available.
+                        returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                    };
+        }
+
         mConditionalUiState = ConditionalUiState.WAITING_FOR_SELECTION;
         assumeNonNull(getBridge());
         getBridge()
                 .onCredentialsDetailsListReceived(
                         mAuthenticationContextProvider.getRenderFrameHost(),
                         discoverableCredentials,
-                        isConditionalRequest,
+                        mediationType,
                         (selectedCredentialId) ->
                                 maybeDispatchGetAssertionRequest(
                                         options,
                                         callerOriginString,
                                         clientDataHash,
                                         selectedCredentialId),
-                        hybridCallback);
+                        passwordCallback,
+                        hybridCallback,
+                        rejectImmediateCallback);
     }
 
     /**

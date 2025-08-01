@@ -25,9 +25,12 @@ class WebauthnBrowserBridge {
       JNIEnv* env,
       const base::android::JavaParamRef<jobjectArray>& credentials,
       const base::android::JavaParamRef<jobject>& jframe_host,
-      jboolean is_conditional_request,
-      const base::android::JavaParamRef<jobject>& jgetAssertionCallback,
-      const base::android::JavaParamRef<jobject>& jhybridCallback) const;
+      jint mediation_type,
+      const base::android::JavaParamRef<jobject>& jget_assertion_callback,
+      const base::android::JavaParamRef<jobject>& jpassword_callback,
+      const base::android::JavaParamRef<jobject>& jhybrid_callback,
+      const base::android::JavaParamRef<jobject>& jreject_immediate_callback)
+      const;
 
   void CleanupRequest(
       JNIEnv* env,

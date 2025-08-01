@@ -420,12 +420,12 @@ public class CredManHelper {
                                 CredentialInfo passwordCredential = new CredentialInfo();
                                 passwordCredential.type = CredentialType.PASSWORD;
                                 String16 name =
-                                        stringToMojoString16(
+                                        WebauthnBrowserBridge.stringToMojoString16(
                                                 data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"));
                                 passwordCredential.name = name;
                                 passwordCredential.id = name;
                                 passwordCredential.password =
-                                        stringToMojoString16(
+                                        WebauthnBrowserBridge.stringToMojoString16(
                                                 data.getString(
                                                         CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
                                 assumeNonNull(getCallback);
@@ -653,19 +653,6 @@ public class CredManHelper {
                     + " literals for `Fido2ApiTestHelper.java`. Run against an Android target"
                     + " otherwise decoding may still fail in tests.",
                 e);
-    }
-
-    private static @Nullable String16 stringToMojoString16(@Nullable String javaString) {
-        if (javaString == null) {
-            return null;
-        }
-        short[] data = new short[javaString.length()];
-        for (int i = 0; i < data.length; i++) {
-            data[i] = (short) javaString.charAt(i);
-        }
-        String16 mojoString = new String16();
-        mojoString.data = data;
-        return mojoString;
     }
 
     public static @Nullable MakeCredentialAuthenticatorResponse parseCreateCredentialResponseData(
