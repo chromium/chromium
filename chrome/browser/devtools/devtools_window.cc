@@ -2100,3 +2100,7 @@ void DevToolsWindow::MainWebContentRenderFrameHostChanged(
   bindings_->TransferDelegate(*new_bindings);
   bindings_ = new_bindings;
 }
+
+raw_ptr<content::WebContents> DevToolsWindow::GetDevToolsWebContents() {
+  return main_web_contents_;
+}

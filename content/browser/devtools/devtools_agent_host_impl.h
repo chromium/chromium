@@ -86,6 +86,8 @@ class CONTENT_EXPORT DevToolsAgentHostImpl : public DevToolsAgentHost {
 
   bool Inspect();
 
+  scoped_refptr<DevToolsAgentHost> OpenDevTools();
+
   template <typename Handler>
   std::vector<Handler*> HandlersByName(const std::string& name) {
     std::vector<Handler*> result;

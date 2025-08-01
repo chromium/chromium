@@ -134,6 +134,9 @@ class TargetHandler : public DevToolsDomainHandler,
       std::unique_ptr<protocol::Array<Target::TargetInfo>>* target_infos)
       override;
 
+  Response OpenDevTools(const std::string& target_id,
+                        std::string* out_target_id) override;
+
   void ApplyNetworkContextParamsOverrides(
       BrowserContext* browser_context,
       network::mojom::NetworkContextParams* network_context_params);

@@ -11,6 +11,11 @@ namespace content {
 void DevToolsManagerDelegate::Inspect(DevToolsAgentHost* agent_host) {
 }
 
+scoped_refptr<DevToolsAgentHost> DevToolsManagerDelegate::OpenDevTools(
+    DevToolsAgentHost* agent_host) {
+  return nullptr;
+}
+
 void DevToolsManagerDelegate::Activate(DevToolsAgentHost* agent_host) {}
 
 std::string DevToolsManagerDelegate::GetTargetType(WebContents* wc) {

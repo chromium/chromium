@@ -433,6 +433,14 @@ bool DevToolsAgentHostImpl::Inspect() {
   return false;
 }
 
+scoped_refptr<DevToolsAgentHost> DevToolsAgentHostImpl::OpenDevTools() {
+  DevToolsManager* manager = DevToolsManager::GetInstance();
+  if (manager->delegate()) {
+    return manager->delegate()->OpenDevTools(this);
+  }
+  return nullptr;
+}
+
 void DevToolsAgentHostImpl::ForceDetachAllSessions() {
   std::ignore = ForceDetachAllSessionsImpl();
 }

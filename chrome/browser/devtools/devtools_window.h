@@ -162,10 +162,13 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // If DeveloperToolsAvailability policy disallows developer tools for the
   // current WebContents, no DevTools window created. In case if needed pointer
   // to the created window one should use DevToolsAgentHost and
-  // DevToolsWindow::FindDevToolsWindow(). E.g.:
+  // DevToolsWindow::FindDevToolsWindow().
+  // Note: To resolve DevToolsWindow::FindDevToolsWindow one must provide
+  // a DevToolsAgentHost for the tab target.
+  // Example:
   //
   // scoped_refptr<content::DevToolsAgentHost> agent(
-  //   content::DevToolsAgentHost::GetOrCreateFor(inspected_web_contents));
+  //   content::DevToolsAgentHost::GetOrCreateForTab(inspected_web_contents));
   // DevToolsWindow::ToggleDevToolsWindow(
   //   inspected_web_contents, DevToolsToggleAction::Show());
   // DevToolsWindow* window = DevToolsWindow::FindDevToolsWindow(agent.get());
@@ -294,6 +297,8 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   void MainWebContentRenderFrameHostChanged(
       content::RenderFrameHost* old_frame,
       content::RenderFrameHost* new_frame);
+
+  raw_ptr<content::WebContents> GetDevToolsWebContents();
 
  private:
   friend class DevToolsWindowTesting;

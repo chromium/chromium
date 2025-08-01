@@ -1604,4 +1604,27 @@ void TargetHandler::AddWorkerThrottle(
   }
 }
 
+Response TargetHandler::OpenDevTools(const std::string& target_id,
+                                     std::string* out_target_id) {
+  if (access_mode_ != AccessMode::kBrowser) {
+    return protocol::Response::ServerError(kNotAllowedError);
+  }
+  scoped_refptr<DevToolsAgentHostImpl> agent_host =
+      DevToolsAgentHostImpl::GetForId(target_id);
+
+  if (!agent_host) {
+    return protocol::Response::InvalidParams(kTargetNotFound);
+  }
+
+  scoped_refptr<DevToolsAgentHost> devtools_agent_host =
+      agent_host->OpenDevTools();
+  if (!devtools_agent_host) {
+    return protocol::Response::ServerError("Failed to create DevTools window");
+  }
+
+  *out_target_id = devtools_agent_host->GetId();
+
+  return protocol::Response::Success();
+}
+
 }  // namespace content::protocol
