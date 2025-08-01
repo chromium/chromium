@@ -42,6 +42,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
 #include "components/permissions/prediction_service/permissions_aiv4_handler.h"
 #include "components/permissions/prediction_service/prediction_model_handler.h"
@@ -228,7 +229,7 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
     return InquireServerModel(model_data.features,
                               std::move(model_data.request_metadata));
   }
-  model_data.snapshot = std::make_unique<SkBitmap>(snapshot);
+  model_data.snapshot = std::move(snapshot);
   ExecuteOnDeviceAivXModel(std::move(model_data));
 }
 
@@ -679,16 +680,35 @@ PredictionSource PredictionBasedPermissionUiSelector::GetPredictionTypeToUse(
   return PredictionSource::kNoCpssModel;
 }
 
-void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
-    SkBitmap snapshot) {
-  CHECK_IS_TEST();
-  snapshot_for_testing_ = snapshot;
-}
-
 void PredictionBasedPermissionUiSelector::set_inner_text_for_testing(
     content_extraction::InnerTextResult inner_text_) {
   CHECK_IS_TEST();
   inner_text_for_testing_ = inner_text_;
+}
+
+void PredictionBasedPermissionUiSelector::GetInnerText(
+    content::RenderFrameHost* render_frame_host,
+    ModelExecutionData model_data,
+    ModelExecutionCallback model_execution_callback) {
+  if (inner_text_for_testing_.has_value()) {
+    return OnGetInnerTextForOnDeviceModel(
+        std::move(model_data), std::move(model_execution_callback),
+        std::make_unique<content_extraction::InnerTextResult>(
+            std::move(inner_text_for_testing_.value())));
+  }
+  content_extraction::GetInnerText(
+      *render_frame_host, /*node_id=*/std::nullopt,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
+          weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
+          std::move(model_execution_callback)));
+}
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
+    SkBitmap snapshot) {
+  CHECK_IS_TEST();
+  snapshot_for_testing_ = snapshot;
 }
 
 void PredictionBasedPermissionUiSelector::TakeSnapshot(
@@ -711,24 +731,6 @@ void PredictionBasedPermissionUiSelector::TakeSnapshot(
                        weak_ptr_factory_.GetWeakPtr(),
                        snapshot_inquire_start_time, std::move(model_data)));
   }
-}
-
-void PredictionBasedPermissionUiSelector::GetInnerText(
-    content::RenderFrameHost* render_frame_host,
-    ModelExecutionData model_data,
-    ModelExecutionCallback model_execution_callback) {
-  if (inner_text_for_testing_.has_value()) {
-    return OnGetInnerTextForOnDeviceModel(
-        std::move(model_data), std::move(model_execution_callback),
-        std::make_unique<content_extraction::InnerTextResult>(
-            std::move(inner_text_for_testing_.value())));
-  }
-  content_extraction::GetInnerText(
-      *render_frame_host, /*node_id=*/std::nullopt,
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
-          std::move(model_execution_callback)));
 }
 
 void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
@@ -774,7 +776,8 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                   std::move(model_data.features),
                   std::move(model_data.request_metadata),
                   model_data.model_type),
-              std::move(model_data.snapshot));
+              PermissionsAiv3Handler::ModelInput(
+                  std::move(model_data.snapshot.value())));
         } else {
           VLOG(1) << "[PermissionsAI] No AIv3 handler";
         }
@@ -794,7 +797,12 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                   std::move(model_data.features),
                   std::move(model_data.request_metadata),
                   model_data.model_type),
-              std::move(model_data.snapshot), std::move(model_data.inner_text));
+              PermissionsAiv4Handler::ModelInput(
+                  std::move(model_data.snapshot.value()),
+                  // TODO(chrbug.com/382447738): dummy embedding
+                  passage_embeddings::Embedding(
+                      /*data=*/std::vector<float>(768, 42.f),
+                      /*passage_word_count=*/42)));
         }
         break;
       }
@@ -808,3 +816,4 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
   InquireServerModel(model_data.features,
                      std::move(model_data.request_metadata));
 }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

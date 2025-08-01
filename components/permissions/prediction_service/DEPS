@@ -1,5 +1,6 @@
 include_rules = [
   "+components/optimization_guide",
+  "+components/passage_embeddings",
   "+components/version_info",
   "+google/protobuf",
   "+net",

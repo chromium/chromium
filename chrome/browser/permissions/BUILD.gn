@@ -162,7 +162,10 @@ source_set("permissions") {
     if (!is_android) {
       deps += [ "//third_party/tflite_support" ]
     }
-    deps += [ "//components/segmentation_platform/internal:optimization_guide_segmentation_handler" ]
+    deps += [
+      "//components/passage_embeddings",
+      "//components/segmentation_platform/internal:optimization_guide_segmentation_handler",
+    ]
   }
 
   if (!is_android) {

@@ -54,7 +54,7 @@ class PermissionsAiv3HandlerFake : public permissions::PermissionsAiv3Handler,
       override;
 
   void ExecuteModel(PermissionsAiv3Handler::ExecutionCallback callback,
-                    std::unique_ptr<SkBitmap> snapshot) override;
+                    ModelInput model_input) override;
 
  private:
   base::WeakPtrFactory<PermissionsAiv3HandlerFake> weak_ptr_factory_{this};
@@ -76,8 +76,7 @@ class PermissionsAiv4HandlerFake : public permissions::PermissionsAiv4Handler,
       override;
 
   void ExecuteModel(PermissionsAiv4Handler::ExecutionCallback callback,
-                    std::unique_ptr<SkBitmap> snapshot,
-                    std::string rendered_text) override;
+                    ModelInput model_input) override;
 
  private:
   base::WeakPtrFactory<PermissionsAiv4HandlerFake> weak_ptr_factory_{this};

@@ -59,6 +59,7 @@ source_set("prediction_service") {
     ]
 
     deps += [
+      "//components/passage_embeddings",
       "//skia",
       "//third_party/tflite:tflite_public_headers",
       "//third_party/tflite_support",

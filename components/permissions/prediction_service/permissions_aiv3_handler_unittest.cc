@@ -32,6 +32,7 @@ using ModelCallbackFuture =
     ::base::test::TestFuture<const std::optional<PermissionRequestRelevance>&>;
 using ::optimization_guide::proto::OptimizationTarget;
 using ::testing::SizeIs;
+using ModelInput = PermissionsAiv3Handler::ModelInput;
 
 constexpr OptimizationTarget kOptTargetGeolocation = OptimizationTarget::
     OPTIMIZATION_TARGET_GEOLOCATION_IMAGE_PERMISSION_RELEVANCE;
@@ -281,8 +282,8 @@ TEST_P(RelevanceAiv3HandlerTest,
   ModelCallbackFuture future;
   aiv3_handler->ExecuteModel(
       future.GetCallback(),
-      /*snapshot=*/test::BuildBitmap(kImageInputWidth, kImageInputHeight,
-                                     kDefaultColor));
+      ModelInput{/*snapshot=*/test::BuildBitmap(
+          kImageInputWidth, kImageInputHeight, kDefaultColor)});
   EXPECT_EQ(future.Take(), GetParam().expected_relevance);
 }
 
@@ -312,21 +313,10 @@ TEST_F(Aiv3HandlerTest, BitmapGetsCopiedToTensor) {
 
   ModelCallbackFuture future;
   auto* aiv3_handler = model_handler(kOptTargetGeolocation);
-  aiv3_handler->ExecuteModel(future.GetCallback(), std::move(snapshot));
+  aiv3_handler->ExecuteModel(future.GetCallback(),
+                             ModelInput{std::move(snapshot)});
   EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
   EXPECT_TRUE(flag);
-}
-
-TEST_F(Aiv3HandlerTest, HandlesEmptyInputSnapshot) {
-  PushModelFileToModelExecutor(kOptTargetGeolocation,
-                               test::ModelFilePath(kZeroReturnModel));
-
-  auto snapshot = test::BuildBitmap(/*width=*/0, /*height=*/0, kDefaultColor);
-
-  ModelCallbackFuture future;
-  auto* aiv3_handler = model_handler(kOptTargetGeolocation);
-  aiv3_handler->ExecuteModel(future.GetCallback(), std::move(snapshot));
-  EXPECT_EQ(future.Take(), std::nullopt);
 }
 
 struct ResizeTestCase {
@@ -367,12 +357,12 @@ TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
   geolocation_encoder_mock_->set_preprocess_hook(base::BindOnce(
       [](bool* flag, const std::vector<TfLiteTensor*>& input_tensors) {
         std::vector<float> data;
-        if (tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
-                .ok()) {
-          EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
-          for (int i = 0; i < kImageInputWidth * kImageInputHeight * 3; ++i) {
-            EXPECT_FALSE(std::isnan(data[i]));
-          }
+        ASSERT_TRUE(
+            tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
+                .ok());
+        EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
+        for (int i = 0; i < kImageInputWidth * kImageInputHeight * 3; ++i) {
+          EXPECT_FALSE(std::isnan(data[i]));
         }
         *flag = true;
       },
@@ -380,7 +370,8 @@ TEST_P(ResizeAiv3HandlerTest, ResizesBitmapsForModelInput) {
 
   ModelCallbackFuture future;
   auto* aiv3_handler = model_handler(kOptTargetGeolocation);
-  aiv3_handler->ExecuteModel(future.GetCallback(), std::move(snapshot));
+  aiv3_handler->ExecuteModel(future.GetCallback(),
+                             ModelInput{std::move(snapshot)});
   EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
   EXPECT_TRUE(flag);
 }
@@ -410,7 +401,8 @@ TEST_F(Aiv3HandlerTest, ModelHandlerPreventsConcurrentExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot1 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1));
+  model_handler_mock->ExecuteModel(future1.GetCallback(),
+                                   ModelInput{std::move(snapshot1)});
 
   // Request the second model execution while the first one is still in
   // progress. The second execution should be cancelled with `std::nullopt`
@@ -419,7 +411,8 @@ TEST_F(Aiv3HandlerTest, ModelHandlerPreventsConcurrentExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot2 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future2.GetCallback(), std::move(snapshot2));
+  model_handler_mock->ExecuteModel(future2.GetCallback(),
+                                   ModelInput{std::move(snapshot2)});
   EXPECT_EQ(future2.Take(), std::nullopt);
 
   // Any return value is OK as it should be ignored and replaced with
@@ -459,7 +452,8 @@ TEST_F(Aiv3HandlerTest, ModelHandlerSingleExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot1 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1));
+  model_handler_mock->ExecuteModel(future1.GetCallback(),
+                                   ModelInput{std::move(snapshot1)});
 
   // The manual release without a concurrent request should return the
   // correct relevance.
@@ -499,7 +493,8 @@ TEST_F(Aiv3HandlerTest, ModelHandlerTimeoutExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot1 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1));
+  model_handler_mock->ExecuteModel(future1.GetCallback(),
+                                   ModelInput{std::move(snapshot1)});
 
   task_environment().FastForwardBy(
       base::Seconds(PermissionsAiv3Handler::kModelExecutionTimeout + 1));
@@ -514,7 +509,8 @@ TEST_F(Aiv3HandlerTest, ModelHandlerTimeoutExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot2 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future2.GetCallback(), std::move(snapshot2));
+  model_handler_mock->ExecuteModel(future2.GetCallback(),
+                                   ModelInput{std::move(snapshot2)});
 
   EXPECT_EQ(future2.Take(), std::nullopt);
 
@@ -526,7 +522,8 @@ TEST_F(Aiv3HandlerTest, ModelHandlerTimeoutExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot3 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future3.GetCallback(), std::move(snapshot3));
+  model_handler_mock->ExecuteModel(future3.GetCallback(),
+                                   ModelInput{std::move(snapshot3)});
 
   // Because all flags are reset, the execution will not timeout and the
   // correct relevance will be returned.

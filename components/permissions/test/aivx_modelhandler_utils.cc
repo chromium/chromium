@@ -23,10 +23,10 @@ base::FilePath ModelFilePath(std::string_view file_name) {
       .AppendASCII(file_name);
 }
 
-std::unique_ptr<SkBitmap> BuildBitmap(int width, int height, SkColor color) {
+SkBitmap BuildBitmap(int width, int height, SkColor color) {
   SkBitmap bitmap;
   bitmap.allocN32Pixels(width, height);
   bitmap.eraseColor(color);
-  return std::make_unique<SkBitmap>(std::move(bitmap));
+  return bitmap;
 }
 }  // namespace test

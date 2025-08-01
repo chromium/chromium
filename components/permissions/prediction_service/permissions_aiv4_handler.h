@@ -24,6 +24,8 @@ class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
   // The timeout for the model execution. If the model execution takes longer
   // than this timeout, the callback will be called with a nullopt result.
   static const int kModelExecutionTimeout = 2;
+  using ModelInput = PermissionsAiv4Encoder::ModelInput;
+  using ModelOutput = PermissionsAiv4Encoder::ModelOutput;
 
   PermissionsAiv4Handler(
       optimization_guide::OptimizationGuideModelProvider* model_provider,
@@ -49,9 +51,7 @@ class PermissionsAiv4Handler : public optimization_guide::ModelHandler<
       base::optional_ref<const optimization_guide::ModelInfo> model_info)
       override;
 
-  virtual void ExecuteModel(ExecutionCallback callback,
-                            std::unique_ptr<SkBitmap> snapshot,
-                            std::string rendered_text);
+  virtual void ExecuteModel(ExecutionCallback callback, ModelInput model_input);
 
  private:
   // Called when the model execution is complete. This is a wrapper around the

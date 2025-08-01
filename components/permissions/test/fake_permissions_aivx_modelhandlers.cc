@@ -57,11 +57,11 @@ void PermissionsAiv3HandlerFake::OnModelUpdated(
 }
 void PermissionsAiv3HandlerFake::ExecuteModel(
     PermissionsAiv3Handler::ExecutionCallback callback,
-    std::unique_ptr<SkBitmap> snapshot) {
+    ModelInput model_input) {
   PermissionsAiv3Handler::ExecuteModel(
       base::BindOnce(&PermissionsAivXHandlerFakeBase::ExecuteModelWrapper,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(snapshot));
+      std::move(model_input));
 }
 
 PermissionsAiv4HandlerFake::PermissionsAiv4HandlerFake(
@@ -81,12 +81,11 @@ void PermissionsAiv4HandlerFake::OnModelUpdated(
 
 void PermissionsAiv4HandlerFake::ExecuteModel(
     PermissionsAiv4Handler::ExecutionCallback callback,
-    std::unique_ptr<SkBitmap> snapshot,
-    std::string rendered_string) {
+    ModelInput model_input) {
   PermissionsAiv4Handler::ExecuteModel(
       base::BindOnce(&PermissionsAivXHandlerFakeBase::ExecuteModelWrapper,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback)),
-      std::move(snapshot), std::move(rendered_string));
+      std::move(model_input));
 }
 
 }  // namespace test

@@ -55,7 +55,7 @@ class PredictionBasedPermissionUiSelector
     permissions::PredictionRequestFeatures features;
     PredictionRequestMetadata request_metadata;
     permissions::PredictionModelType model_type;
-    std::unique_ptr<SkBitmap>(snapshot);
+    std::optional<SkBitmap>(snapshot);
     std::string inner_text;
   };
 
@@ -95,7 +95,9 @@ class PredictionBasedPermissionUiSelector
   std::optional<permissions::PermissionRequestRelevance>
   get_permission_request_relevance_for_testing();
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   void set_snapshot_for_testing(SkBitmap snapshot);
+#endif
 
   void set_inner_text_for_testing(
       content_extraction::InnerTextResult inner_text);
@@ -234,7 +236,9 @@ class PredictionBasedPermissionUiSelector
 
   DecisionMadeCallback callback_;
 
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::optional<SkBitmap> snapshot_for_testing_;
+#endif
   std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
 
   // Used to asynchronously call the callback during on device model execution.

@@ -32,8 +32,9 @@ using ModelCallbackFuture =
 using ::optimization_guide::proto::OptimizationTarget;
 using ::testing::SizeIs;
 using ::testing::ValuesIn;
+using ModelInput = PermissionsAiv4Handler::ModelInput;
 
-constexpr OptimizationTarget kOptTargetNotification = OptimizationTarget::
+constexpr OptimizationTarget kOptTargetNotifications = OptimizationTarget::
     OPTIMIZATION_TARGET_PERMISSIONS_AIV4_NOTIFICATIONS_DESKTOP;
 
 constexpr std::string_view kZeroReturnModel = "aiv4_ret_0.tflite";
@@ -42,11 +43,19 @@ constexpr std::string_view kOneReturnModel = "aiv4_ret_1.tflite";
 
 constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
-auto& kImageInputWidth = PermissionsAiv4Encoder::kImageInputWidth;
-auto& kImageInputHeight = PermissionsAiv4Encoder::kImageInputHeight;
+auto kImageInputWidth = PermissionsAiv4Encoder::kImageInputWidth;
+auto kImageInputHeight = PermissionsAiv4Encoder::kImageInputHeight;
+auto kTextInputSize = PermissionsAiv4Encoder::kTextInputSize;
 
 constexpr char kModelExecutionTimeoutHistogram[] =
     "Permissions.AIv4.ModelExecutionTimeout";
+
+passage_embeddings::Embedding GetDummyEmbeddings(
+    int input_size = kTextInputSize) {
+  return passage_embeddings::Embedding(
+      /*data=*/std::vector<float>(input_size, 42.f),
+      /*passage_word_count=*/42);
+}
 
 class PermissionsAiv4EncoderFake : public PermissionsAiv4Encoder {
  public:
@@ -138,7 +147,7 @@ class Aiv4HandlerTestBase : public testing::Test {
     notification_encoder_mock_ = notification_encoder_mock.get();
     notification_model_handler_ = std::make_unique<PermissionsAiv4Handler>(
         model_provider_.get(),
-        /*optimization_target=*/kOptTargetNotification,
+        /*optimization_target=*/kOptTargetNotifications,
         /*request_type=*/RequestType::kNotifications,
         std::move(notification_encoder_mock));
   }
@@ -199,13 +208,13 @@ INSTANTIATE_TEST_SUITE_P(
     ModelResults,
     RelevanceAiv4HandlerTest,
     ValuesIn<RelevanceTestCase>({
-        {kOptTargetNotification, test::ModelFilePath(kZeroReturnModel),
+        {kOptTargetNotifications, test::ModelFilePath(kZeroReturnModel),
          /*expected_model_return_value=*/0.0f,
          PermissionRequestRelevance::kVeryLow},
-        {kOptTargetNotification, test::ModelFilePath(k0_023ReturnModel),
+        {kOptTargetNotifications, test::ModelFilePath(k0_023ReturnModel),
          /*expected_model_return_value=*/0.023f,
          PermissionRequestRelevance::kLow},
-        {kOptTargetNotification, test::ModelFilePath(kOneReturnModel),
+        {kOptTargetNotifications, test::ModelFilePath(kOneReturnModel),
          /*expected_model_return_value=*/1.0f,
          PermissionRequestRelevance::kVeryHigh},
     }),
@@ -237,15 +246,16 @@ TEST_P(RelevanceAiv4HandlerTest,
   ModelCallbackFuture future;
   aiv4_handler->ExecuteModel(
       future.GetCallback(),
-      /*snapshot=*/
-      test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor),
-      /*rendered_text=*/"dummy");
+      /*model_input=*/
+      ModelInput{/*snapshot=*/test::BuildBitmap(
+                     kImageInputWidth, kImageInputHeight, kDefaultColor),
+                 /*rendered_text_embedding=*/GetDummyEmbeddings()});
   EXPECT_EQ(future.Take(), GetParam().expected_relevance);
   EXPECT_TRUE(flag);
 }
 
 TEST_F(Aiv4HandlerTest, BitmapGetsCopiedToTensor) {
-  PushModelFileToModelExecutor(kOptTargetNotification,
+  PushModelFileToModelExecutor(kOptTargetNotifications,
                                test::ModelFilePath(kZeroReturnModel));
 
   auto snapshot =
@@ -255,22 +265,23 @@ TEST_F(Aiv4HandlerTest, BitmapGetsCopiedToTensor) {
   notification_encoder_mock_->set_preprocess_hook(base::BindLambdaForTesting(
       [&flag](const std::vector<TfLiteTensor*>& input_tensors) {
         std::vector<float> data;
-        if (tflite::task::core::PopulateVector<float>(input_tensors[1], &data)
-                .ok()) {
-          EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
-          for (int i = 0; i < kImageInputWidth * kImageInputHeight; i += 3) {
-            EXPECT_FLOAT_EQ(data[i], SkColorGetR(kDefaultColor) / 255.0f);
-            EXPECT_FLOAT_EQ(data[i + 1], SkColorGetG(kDefaultColor) / 255.0f);
-            EXPECT_FLOAT_EQ(data[i + 2], SkColorGetB(kDefaultColor) / 255.0f);
-          }
+        ASSERT_TRUE(
+            tflite::task::core::PopulateVector<float>(input_tensors[1], &data)
+                .ok());
+        EXPECT_THAT(data, SizeIs(kImageInputWidth * kImageInputHeight * 3));
+        for (int i = 0; i < kImageInputWidth * kImageInputHeight; i += 3) {
+          EXPECT_FLOAT_EQ(data[i], SkColorGetR(kDefaultColor) / 255.0f);
+          EXPECT_FLOAT_EQ(data[i + 1], SkColorGetG(kDefaultColor) / 255.0f);
+          EXPECT_FLOAT_EQ(data[i + 2], SkColorGetB(kDefaultColor) / 255.0f);
         }
         flag = true;
       }));
 
   ModelCallbackFuture future;
   auto* aiv4_handler = model_handler();
-  aiv4_handler->ExecuteModel(future.GetCallback(), std::move(snapshot),
-                             "dummy");
+  aiv4_handler->ExecuteModel(
+      future.GetCallback(),
+      ModelInput{std::move(snapshot), GetDummyEmbeddings()});
   EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
   EXPECT_TRUE(flag);
 }
@@ -288,7 +299,7 @@ TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
   std::unique_ptr<PermissionsAiv4HandlerMock> model_handler_mock =
       std::make_unique<PermissionsAiv4HandlerMock>(
           GetModelProvider(),
-          /*optimization_target=*/kOptTargetNotification,
+          /*optimization_target=*/kOptTargetNotifications,
           /*request_type=*/RequestType::kNotifications,
           std::move(geolocation_encoder_mock));
 
@@ -299,7 +310,9 @@ TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot1 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future1.GetCallback(), std::move(snapshot1), "dummy");
+  model_handler_mock->ExecuteModel(
+      future1.GetCallback(),
+      ModelInput{std::move(snapshot1), GetDummyEmbeddings()});
 
   task_environment().FastForwardBy(
       base::Seconds(PermissionsAiv4Handler::kModelExecutionTimeout + 1));
@@ -314,7 +327,9 @@ TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot2 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future2.GetCallback(), std::move(snapshot2), "dummy");
+  model_handler_mock->ExecuteModel(
+      future2.GetCallback(),
+      ModelInput{std::move(snapshot2), GetDummyEmbeddings()});
 
   EXPECT_EQ(future2.Take(), std::nullopt);
 
@@ -326,7 +341,9 @@ TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
   // The image size is arbitrary and does not affect the test.
   auto snapshot3 =
       test::BuildBitmap(/*width=*/32, /*height=*/32, kDefaultColor);
-  model_handler_mock->ExecuteModel(future3.GetCallback(), std::move(snapshot3), "dummy");
+  model_handler_mock->ExecuteModel(
+      future3.GetCallback(),
+      ModelInput{std::move(snapshot3), GetDummyEmbeddings()});
 
   // Because all flags are reset, the execution will not timeout and the
   // correct relevance will be returned.
@@ -335,6 +352,54 @@ TEST_F(Aiv4HandlerTest, ModelHandlerTimeoutExecutions) {
   EXPECT_EQ(future3.Take(), PermissionRequestRelevance::kVeryLow);
 
   histograms.ExpectBucketCount(kModelExecutionTimeoutHistogram, true, 1u);
+}
+
+TEST_F(Aiv4HandlerTest, TextEmbeddingGetsCopiedToTensor) {
+  PushModelFileToModelExecutor(kOptTargetNotifications,
+                               test::ModelFilePath(kZeroReturnModel));
+
+  auto snapshot =
+      test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
+
+  bool flag = false;
+  notification_encoder_mock_->set_preprocess_hook(base::BindLambdaForTesting(
+      [&flag](const std::vector<TfLiteTensor*>& input_tensors) {
+        std::vector<float> data;
+        ASSERT_TRUE(
+            tflite::task::core::PopulateVector<float>(input_tensors[0], &data)
+                .ok());
+        EXPECT_THAT(data, SizeIs(kTextInputSize));
+        for (int i = 0; i < kTextInputSize; i++) {
+          EXPECT_FLOAT_EQ(data[i], 42.f);
+        }
+        flag = true;
+      }));
+
+  ModelCallbackFuture future;
+  auto* aiv4_handler = model_handler();
+  aiv4_handler->ExecuteModel(
+      future.GetCallback(),
+      ModelInput{std::move(snapshot), GetDummyEmbeddings()});
+  EXPECT_EQ(future.Take(), PermissionRequestRelevance::kVeryLow);
+  EXPECT_TRUE(flag);
+}
+
+TEST_F(Aiv4HandlerTest, TextEmbeddingSizeDoesNotMatchAiv4InputSize) {
+  PushModelFileToModelExecutor(kOptTargetNotifications,
+                               test::ModelFilePath(kZeroReturnModel));
+
+  auto snapshot =
+      test::BuildBitmap(kImageInputWidth, kImageInputHeight, kDefaultColor);
+
+  ModelCallbackFuture future;
+  auto* aiv4_handler = model_handler();
+  aiv4_handler->ExecuteModel(
+      future.GetCallback(),
+      ModelInput{std::move(snapshot), GetDummyEmbeddings(/*input_size=*/42)});
+
+  // We do not execute the model and call the callback with nullopt if input
+  // size does not match expectations.
+  EXPECT_EQ(future.Take(), std::nullopt);
 }
 
 }  // namespace

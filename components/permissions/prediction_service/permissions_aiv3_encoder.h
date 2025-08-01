@@ -21,9 +21,11 @@
 namespace permissions {
 
 struct PermissionsAiv3EncoderInput {
+  explicit PermissionsAiv3EncoderInput(SkBitmap snapshot);
   PermissionsAiv3EncoderInput();
   ~PermissionsAiv3EncoderInput();
   PermissionsAiv3EncoderInput(const PermissionsAiv3EncoderInput&);
+  PermissionsAiv3EncoderInput(PermissionsAiv3EncoderInput&&);
   SkBitmap snapshot;
   std::optional<PermissionsAiv3ModelMetadata> metadata;
 };

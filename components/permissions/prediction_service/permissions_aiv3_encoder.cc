@@ -12,10 +12,14 @@
 #include "components/permissions/prediction_service/permissions_aiv3_model_metadata.pb.h"
 
 namespace permissions {
-PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput() = default;
 PermissionsAiv3EncoderInput::~PermissionsAiv3EncoderInput() = default;
+PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput() = default;
 PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput(
     const PermissionsAiv3EncoderInput&) = default;
+PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput(
+    PermissionsAiv3EncoderInput&&) = default;
+PermissionsAiv3EncoderInput::PermissionsAiv3EncoderInput(SkBitmap snapshot)
+    : snapshot(std::move(snapshot)) {}
 
 bool PermissionsAiv3Encoder::Preprocess(
     const std::vector<TfLiteTensor*>& input_tensors,

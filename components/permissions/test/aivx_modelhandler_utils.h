@@ -18,9 +18,9 @@ namespace test {
 // Returns the test data file path for the respective AIvX model file.
 base::FilePath ModelFilePath(std::string_view file_name);
 
-// Returns a skBitmap with the dimensions defined by width and height, filled
+// Returns a SkBitmap with the dimensions defined by width and height, filled
 // with the provided color.
-std::unique_ptr<SkBitmap> BuildBitmap(int width, int height, SkColor color);
+SkBitmap BuildBitmap(int width, int height, SkColor color);
 }  // namespace test
 
 #endif  // COMPONENTS_PERMISSIONS_TEST_AIVX_MODELHANDLER_UTILS_H_

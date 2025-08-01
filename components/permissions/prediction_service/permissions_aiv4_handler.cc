@@ -15,9 +15,6 @@
 namespace permissions {
 
 namespace {
-using ModelInput = PermissionsAiv4Encoder::ModelInput;
-using ModelOutput = PermissionsAiv4Encoder::ModelOutput;
-
 // This is the timeout for the model execution. If the model execution takes
 // longer than this timeout, the callback will be called with a nullopt result.
 constexpr auto kModelExecutionTimeoutSeconds =
@@ -68,56 +65,45 @@ void PermissionsAiv4Handler::OnModelUpdated(
 }
 
 void PermissionsAiv4Handler::ExecuteModel(ExecutionCallback callback,
-                                          std::unique_ptr<SkBitmap> snapshot,
-                                          std::string rendered_text) {
+                                          ModelInput model_input) {
+  DCHECK(!model_input.snapshot.empty());
   VLOG(1) << "[PermissionsAIv4] PermissionsAiv4Handler::ExecuteModel";
-  if (snapshot.get()) {
-    VLOG(1) << "[PermissionsAIv4] ExecuteModel: Snapshot exists";
-    base::UmaHistogramBoolean(
-        "Permissions.AIv4.ModelExecutionAlreadyInProgress",
-        is_execution_in_progress_);
-    // If an execution is already in progress, there is no way to cancel it and
-    // we cannot wait until it is done because this will add extra latency, so
-    // we will return an empty response to the callback.
-    if (is_execution_in_progress_) {
-      VLOG(1) << "[PermissionsAIv4] ExecuteModel: Execution already in "
-                 "progress. Returning empty response.";
-      // The callback is no longer valid because a new execution was requested
-      // while the previous one was still in progress.
-      is_callback_valid_ = false;
-      std::move(callback).Run(std::nullopt);
-      return;
-    } else {
-      VLOG(1) << "[PermissionsAIv4] ExecuteModel: Execution not in "
-                 "progress. Starting execution.";
-    }
-    is_execution_in_progress_ = true;
-    is_callback_valid_ = true;
-
-    ModelInput input;
-    input.snapshot = *snapshot;
-    input.rendered_text = rendered_text;
-
-    // It is OK to save the callback here because there is only one model
-    // execution allowed at a time.
-    current_callback_ = std::move(callback);
-    ExecutionCallback on_complete_callback =
-        base::BindOnce(&PermissionsAiv4Handler::OnModelExecutionComplete,
-                       weak_factory_.GetWeakPtr());
-
-    ExecuteModelWithInput(std::move(on_complete_callback), input);
-
-    // In parallel with the model execution, we will start a timer that will
-    // call `OnModelExecutionTimeout` with a nullopt result if the model
-    // execution takes longer than the timeout.
-    timeout_timer_.Start(
-        FROM_HERE, kModelExecutionTimeoutSeconds,
-        base::BindOnce(&PermissionsAiv4Handler::OnModelExecutionTimeout,
-                       weak_factory_.GetWeakPtr(), std::nullopt));
-  } else {
-    VLOG(1) << "[PermissionsAIv4] ExecuteModel: Snapshot is empty";
+  base::UmaHistogramBoolean("Permissions.AIv4.ModelExecutionAlreadyInProgress",
+                            is_execution_in_progress_);
+  // If an execution is already in progress, there is no way to cancel it and
+  // we cannot wait until it is done because this will add extra latency, so
+  // we will return an empty response to the callback.
+  if (is_execution_in_progress_) {
+    VLOG(1) << "[PermissionsAIv4] ExecuteModel: Execution already in "
+               "progress. Returning empty response.";
+    // The callback is no longer valid because a new execution was requested
+    // while the previous one was still in progress.
+    is_callback_valid_ = false;
     std::move(callback).Run(std::nullopt);
+    return;
+  } else {
+    VLOG(1) << "[PermissionsAIv4] ExecuteModel: Execution not in "
+               "progress. Starting execution.";
   }
+  is_execution_in_progress_ = true;
+  is_callback_valid_ = true;
+
+  // It is OK to save the callback here because there is only one model
+  // execution allowed at a time.
+  current_callback_ = std::move(callback);
+  ExecutionCallback on_complete_callback =
+      base::BindOnce(&PermissionsAiv4Handler::OnModelExecutionComplete,
+                     weak_factory_.GetWeakPtr());
+
+  ExecuteModelWithInput(std::move(on_complete_callback), model_input);
+
+  // In parallel with the model execution, we will start a timer that will
+  // call `OnModelExecutionTimeout` with a nullopt result if the model
+  // execution takes longer than the timeout.
+  timeout_timer_.Start(
+      FROM_HERE, kModelExecutionTimeoutSeconds,
+      base::BindOnce(&PermissionsAiv4Handler::OnModelExecutionTimeout,
+                     weak_factory_.GetWeakPtr(), std::nullopt));
 }
 
 void PermissionsAiv4Handler::OnModelExecutionTimeout(
