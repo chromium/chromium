@@ -68,6 +68,20 @@ std::u16string GetFormattingExpressionOverrides(
            u"${ADDRESS_HOME_FLOOR;, ;º}${ADDRESS_HOME_APT_NUM;, ;ª}";
   }
 
+  // The set of countries without separate address model
+  // with space zip code separator.
+  static constexpr auto kSpaceZipCodeSeparatorCountriesSet =
+      base::MakeFixedFlatSet<std::string_view>(
+          {"CZ", "GB", "GR", "HR", "IE", "LB", "MT", "SE", "SK"});
+
+  if (field_type == ADDRESS_HOME_ZIP &&
+      base::FeatureList::IsEnabled(features::kAutofillSupportSplitZipCode)) {
+    if (base::Contains(kSpaceZipCodeSeparatorCountriesSet,
+                       country_code.value())) {
+      return u"${ADDRESS_HOME_ZIP_PREFIX;;} ${ADDRESS_HOME_ZIP_SUFFIX;;}";
+    }
+  }
+
   return u"";
 }
 

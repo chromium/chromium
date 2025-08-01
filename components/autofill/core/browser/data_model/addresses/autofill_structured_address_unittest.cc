@@ -3078,7 +3078,20 @@ TEST_F(AutofillStructuredAddress, ZipCodeFormatting) {
       {.country_code = "PT",
        .zip = "1000-001",
        .zip_prefix = "1000",
-       .zip_suffix = "001"}};
+       .zip_suffix = "001"},
+      {.country_code = "GB",
+       .zip = "SW1A 1AA",
+       .zip_prefix = "SW1A",
+       .zip_suffix = "1AA"},
+      {.country_code = "IE",
+       .zip = "D02 X285",
+       .zip_prefix = "D02",
+       .zip_suffix = "X285"},
+      {.country_code = "SE",
+       .zip = "114 55",
+       .zip_prefix = "114",
+       .zip_suffix = "55"},
+  };
 
   for (const auto& test_case : test_cases) {
     AddressComponentsStore address =
