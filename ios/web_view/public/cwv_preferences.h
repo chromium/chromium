@@ -59,6 +59,10 @@ CWV_EXPORT
 @property(nonatomic, assign, getter=isAutofillAddressSyncEnabled)
     BOOL autofillAddressSyncEnabled;
 
+// Whether or not address sync is enabled.
+@property(nonatomic, assign, getter=isPasswordAffiliationEnabled)
+    BOOL passwordAffiliationEnabled;
+
 - (instancetype)init NS_UNAVAILABLE;
 
 // Resets all translation settings back to default. In particular, this will

@@ -13,12 +13,15 @@
 #import "base/no_destructor.h"
 #import "base/task/sequenced_task_runner.h"
 #import "base/task/thread_pool.h"
+#import "components/affiliations/core/browser/affiliation_service.h"
 #import "components/keyed_service/core/service_access_type.h"
 #import "components/keyed_service/ios/browser_state_dependency_manager.h"
+#import "components/password_manager/core/browser/affiliation/password_affiliation_source_adapter.h"
 #import "components/password_manager/core/browser/password_store/login_database.h"
 #import "components/password_manager/core/browser/password_store/password_store_built_in_backend.h"
 #import "components/password_manager/core/browser/password_store_factory_util.h"
 #import "components/sync/service/sync_service.h"
+#import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/web_view_browser_state.h"
 
@@ -79,7 +82,23 @@ WebViewProfilePasswordStoreFactory::BuildServiceInstanceFor(
               syncer::WipeModelUponSyncDisabledBehavior::kNever,
               WebViewBrowserState::FromBrowserState(context)->GetPrefs(),
               ApplicationContext::GetInstance()->GetOSCryptAsync()));
-  store->Init(/*prefs=*/nullptr, /*affiliated_match_helper=*/nullptr);
+
+  affiliations::AffiliationService* affiliation_service =
+      WebViewAffiliationServiceFactory::GetForBrowserState(
+          WebViewBrowserState::FromBrowserState(context));
+  std::unique_ptr<password_manager::AffiliatedMatchHelper>
+      affiliated_match_helper =
+          std::make_unique<password_manager::AffiliatedMatchHelper>(
+              affiliation_service);
+
+  std::unique_ptr<password_manager::PasswordAffiliationSourceAdapter>
+      password_affiliation_adapter = std::make_unique<
+          password_manager::PasswordAffiliationSourceAdapter>();
+
+  store->Init(/*prefs=*/nullptr, std::move(affiliated_match_helper));
+
+  password_affiliation_adapter->RegisterPasswordStore(store.get());
+  affiliation_service->RegisterSource(std::move(password_affiliation_adapter));
   return store;
 }
 

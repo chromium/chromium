@@ -15,6 +15,7 @@
 #import "ios/web_view/internal/affiliations/web_view_affiliation_service_factory.h"
 #import "ios/web_view/internal/app/application_context.h"
 #import "ios/web_view/internal/autofill/cwv_autofill_data_manager_internal.h"
+#import "ios/web_view/internal/autofill/cwv_password_affiliation.h"
 #import "ios/web_view/internal/autofill/web_view_personal_data_manager_factory.h"
 #import "ios/web_view/internal/browser_state_keyed_service_factories.h"
 #import "ios/web_view/internal/cwv_global_state_internal.h"
@@ -147,9 +148,18 @@ NSHashTable<CWVWebViewConfiguration*>* gNonPersistentConfigurations = nil;
     scoped_refptr<password_manager::PasswordStoreInterface> passwordStore =
         ios_web_view::WebViewAccountPasswordStoreFactory::GetForBrowserState(
             self.browserState, ServiceAccessType::EXPLICIT_ACCESS);
+    affiliations::AffiliationService* affiliation_service =
+        ios_web_view::WebViewAffiliationServiceFactory::GetForBrowserState(
+            ios_web_view::WebViewBrowserState::FromBrowserState(
+                self.browserState));
+
     _autofillDataManager = [[CWVAutofillDataManager alloc]
-        initWithPersonalDataManager:personalDataManager
-                      passwordStore:passwordStore.get()];
+         initWithPersonalDataManager:personalDataManager
+                       passwordStore:passwordStore.get()
+                 affiliationsService:affiliation_service
+        isPasswordAffiliationEnabled:
+            self.browserState->GetPrefs()->GetBoolean(
+                ios_web_view::kCWVPasswordAffiliationEnabled)];
   }
   return _autofillDataManager;
 }

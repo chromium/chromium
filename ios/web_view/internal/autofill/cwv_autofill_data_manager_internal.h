@@ -21,12 +21,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 // |personalDataManager| The underlying personal data manager being wrapped.
 // |passwordStore| The underlying password store being wrapped.
+// `affiliationsService` The service to fill in password affiliations data.
+// `isPasswordAffiliationEnabled` Only fills in the affiliations if enabled.
 // It should outlive this instance.
-- (instancetype)initWithPersonalDataManager:
-                    (autofill::PersonalDataManager*)personalDataManager
-                              passwordStore:
-                                  (password_manager::PasswordStoreInterface*)
-                                      passwordStore NS_DESIGNATED_INITIALIZER;
+- (instancetype)
+     initWithPersonalDataManager:
+         (autofill::PersonalDataManager*)personalDataManager
+                   passwordStore:
+                       (password_manager::PasswordStoreInterface*)passwordStore
+             affiliationsService:
+                 (affiliations::AffiliationService*)affiliationsService
+    isPasswordAffiliationEnabled:(BOOL)isPasswordAffiliationEnabled
+    NS_DESIGNATED_INITIALIZER;
 
 // This is called by the associated CWVWebViewConfiguration in order to shut
 // down cleanly. See `-[CWVWebViewConfiguration shutDown]` method for more info.
