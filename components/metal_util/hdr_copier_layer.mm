@@ -575,10 +575,10 @@ bool ShouldUseHDRCopier(IOSurfaceRef buffer,
   }
 
   // Rasterized tiles and the primary plane specify a color space of SRGB_HDR
-  // with no extended range metadata.
+  // LINEAR_HDR, or CUSTOM_HDR, with no extended range metadata.
   // TODO(crbug.com/40268540): Use extended range metadata instead of
   // the SDR_HDR color space to indicate this.
-  if (color_space.GetTransferID() == gfx::ColorSpace::TransferID::SRGB_HDR) {
+  if (color_space.IsHDR()) {
     return !is_unorm;
   }
 

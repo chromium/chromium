@@ -92,6 +92,7 @@ test("accelerated_widget_mac_unittests") {
     "//base",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
+    "//components/metal_util",
     "//skia",
     "//testing/gmock",
     "//testing/gtest",

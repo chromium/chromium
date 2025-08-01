@@ -12,6 +12,7 @@
 #include <memory>
 
 #include "base/test/scoped_feature_list.h"
+#include "components/metal_util/hdr_copier_layer.h"
 #include "gpu/GLES2/gl2extchromium.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/gtest_mac.h"
@@ -1147,6 +1148,32 @@ TEST_F(CALayerTreeTest, HDRTrigger) {
 #pragma clang diagnostic ignored "-Wunguarded-availability-new"
   EXPECT_TRUE([content_layer wantsExtendedDynamicRangeContent]);
 #pragma clang diagnostic pop
+}
+
+TEST(HDRCoperLayerTest, Formats) {
+  gfx::HDRMetadata metadata_empty;
+  auto io_surface_8888 =
+      gfx::CreateIOSurface(gfx::Size(256, 256), gfx::BufferFormat::BGRA_8888);
+  auto io_surface_f16 =
+      gfx::CreateIOSurface(gfx::Size(256, 256), gfx::BufferFormat::RGBA_F16);
+  auto cs_extended_linear = gfx::ColorSpace(
+      gfx::ColorSpace::PrimaryID::P3, gfx::ColorSpace::TransferID::LINEAR_HDR);
+  auto cs_g22 = gfx::ColorSpace(gfx::ColorSpace::PrimaryID::BT709,
+                                gfx::ColorSpace::TransferID::GAMMA22);
+  auto cs_g22_hdr = cs_g22.GetAsHDR();
+
+  EXPECT_TRUE(metal::ShouldUseHDRCopier(io_surface_f16.get(), metadata_empty,
+                                        cs_extended_linear));
+  EXPECT_TRUE(metal::ShouldUseHDRCopier(io_surface_f16.get(), metadata_empty,
+                                        cs_g22_hdr));
+  EXPECT_FALSE(
+      metal::ShouldUseHDRCopier(io_surface_f16.get(), metadata_empty, cs_g22));
+  EXPECT_FALSE(metal::ShouldUseHDRCopier(io_surface_8888.get(), metadata_empty,
+                                         cs_extended_linear));
+  EXPECT_FALSE(metal::ShouldUseHDRCopier(io_surface_8888.get(), metadata_empty,
+                                         cs_g22_hdr));
+  EXPECT_FALSE(
+      metal::ShouldUseHDRCopier(io_surface_8888.get(), metadata_empty, cs_g22));
 }
 
 }  // namespace gpu
