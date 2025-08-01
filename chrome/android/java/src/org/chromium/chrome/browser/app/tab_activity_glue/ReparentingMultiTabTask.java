@@ -96,7 +96,7 @@ public class ReparentingMultiTabTask {
 
         Bundle multiTabBundle = new Bundle();
         multiTabBundle.putIntegerArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, tabIdsToReparent);
-        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_IDS, urlsToReparent);
+        multiTabBundle.putStringArrayList(IntentHandler.MULTI_TAB_KEY_TAB_URLS, urlsToReparent);
 
         intent.putExtra(IntentHandler.EXTRA_MULTI_TAB_REPARENTING_METADATA, multiTabBundle);
         IntentUtils.addTrustedIntentExtras(intent);
