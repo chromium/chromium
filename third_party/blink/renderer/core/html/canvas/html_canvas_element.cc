@@ -368,15 +368,6 @@ bool HTMLCanvasElement::PrepareTransferableResource(
     rate_limiter_->Reset();
   }
 
-  // If hibernating but not hidden, we want to wake up from hibernation.
-  if (RenderingContext()->IsHibernating() && !IsPageVisible()) {
-    return false;
-  }
-
-  if (!RenderingContext()->GetOrCreateCanvas2DResourceProvider()) {
-    return false;
-  }
-
   // The beforeprint event listener is sometimes scheduled in the same task
   // as BeginFrame, which means that this code may sometimes be called between
   // the event listener and its associated FinalizeFrame call. So in order to
