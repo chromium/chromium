@@ -49,7 +49,7 @@ class ActorUiTabController : public ActorUiTabControllerInterface {
   void SetActorTaskResume() override;
   void SetOverlayHoverStatus(bool is_hovering) override;
   void SetHandoffButtonHoverStatus(bool is_hovering) override;
-  void SetCallbackForTesting(base::OnceClosure callback);
+  void SetCallbackForTesting(base::OnceClosure callback) override;
 
   // Binds the Mojo receiver to the tab's ActorOverlayViewController.
   // Called by ActorOverlayUI when the chrome://actor-overlay page loads.

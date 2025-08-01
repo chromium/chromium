@@ -27,6 +27,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 
+namespace actor::ui {
 namespace {
 using actor::mojom::ActionResultPtr;
 using base::test::TestFuture;
@@ -135,7 +136,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ControllerExistsForNormalBrowsers) {
 
 // Testing the Actor Overlay Window Controller
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
-  actor::ui::ActorOverlayWindowController* window_controller =
+  ActorOverlayWindowController* window_controller =
       browser()->browser_window_features()->actor_overlay_window_controller();
   ASSERT_NE(window_controller, nullptr);
 
@@ -178,30 +179,28 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, ViewLifecycleAndVisibility) {
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
   Profile* const profile = browser()->profile();
-  actor::ui::ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ActorUiStateManagerInterface* state_manager =
+      ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
-  // actor::PageTarget page_target(gfx::Point(100, 200));
   tabs::TabHandle tab_handle =
       browser()->tab_strip_model()->GetActiveTab()->GetHandle();
   TestFuture<void> future;
-  actor::ui::ActorUiTabController* controller = browser()
-                                                    ->tab_strip_model()
-                                                    ->GetActiveTab()
-                                                    ->GetTabFeatures()
-                                                    ->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveTab()
+                                                  ->GetTabFeatures()
+                                                  ->actor_ui_tab_controller();
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(
-      actor::ui::StartingToActOnTab(tab_handle, actor::TaskId(1)),
-      result.GetCallback());
-  actor::ExpectOkResult(result);
+  state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
+                           result.GetCallback());
+  ExpectOkResult(result);
   // Ensure callback is done.
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(
       base::test::RunUntil([&]() { return IsActorOverlayVisible(browser()); }));
   EXPECT_TRUE(IsActorOverlayChildVisible(browser()));
-  state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_handle));
+  state_manager->OnUiEvent(StoppedActingOnTab(tab_handle));
   ASSERT_TRUE(base::test::RunUntil(
       [&]() { return !IsActorOverlayVisible(browser()); }));
   EXPECT_FALSE(IsActorOverlayChildVisible(browser()));
@@ -209,24 +208,23 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, SendStartEventAndStopEvent) {
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
   Profile* const profile = browser()->profile();
-  actor::ui::ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ActorUiStateManagerInterface* state_manager =
+      ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
   tabs::TabHandle tab_handle =
       browser()->tab_strip_model()->GetActiveTab()->GetHandle();
   // Set up callback logic.
   TestFuture<void> future;
-  actor::ui::ActorUiTabController* controller = browser()
-                                                    ->tab_strip_model()
-                                                    ->GetActiveTab()
-                                                    ->GetTabFeatures()
-                                                    ->actor_ui_tab_controller();
+  ActorUiTabControllerInterface* controller = browser()
+                                                  ->tab_strip_model()
+                                                  ->GetActiveTab()
+                                                  ->GetTabFeatures()
+                                                  ->actor_ui_tab_controller();
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(
-      actor::ui::StartingToActOnTab(tab_handle, actor::TaskId(1)),
-      result.GetCallback());
-  actor::ExpectOkResult(result);
+  state_manager->OnUiEvent(StartingToActOnTab(tab_handle, TaskId(1)),
+                           result.GetCallback());
+  ExpectOkResult(result);
   // Ensure callback is done.
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(
@@ -246,8 +244,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, OverlayHidesOnTabBackgrounding) {
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   Profile* const profile = browser()->profile();
-  actor::ui::ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ActorUiStateManagerInterface* state_manager =
+      ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
   // Initial tab setup: Create 3 tabs in the starting browser window.
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -259,7 +257,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
 
   // Set up callback logic after tab_2 is created.
   TestFuture<void> future;
-  actor::ui::ActorUiTabController* controller =
+  ActorUiTabControllerInterface* controller =
       tab_2->GetTabFeatures()->actor_ui_tab_controller();
   controller->SetCallbackForTesting(future.GetCallback());
 
@@ -284,10 +282,9 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
   // Start actor actuation on tab_2, which is in browser_1.
   // This should make the Actor Overlay visible in browser_1.
   TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(
-      actor::ui::StartingToActOnTab(tab_2->GetHandle(), actor::TaskId(1)),
-      result.GetCallback());
-  actor::ExpectOkResult(result);
+  state_manager->OnUiEvent(StartingToActOnTab(tab_2->GetHandle(), TaskId(1)),
+                           result.GetCallback());
+  ExpectOkResult(result);
   // Ensure callback is done.
   ASSERT_TRUE(future.Wait());
   ASSERT_TRUE(
@@ -319,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
         [&]() { return IsActorOverlayChildVisible(target_browser); }));
   }
   // Stop acting on the tab at the end of the test
-  state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_2->GetHandle()));
+  state_manager->OnUiEvent(StoppedActingOnTab(tab_2->GetHandle()));
   ASSERT_TRUE(base::test::RunUntil([&]() {
     // Overlay should become invisible in the browser that currently holds tab_1
     return !IsActorOverlayVisible(target_browser);
@@ -343,8 +340,8 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
 
 IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   Profile* const profile = browser()->profile();
-  actor::ui::ActorUiStateManagerInterface* state_manager =
-      actor::ActorKeyedService::Get(profile)->GetActorUiStateManager();
+  ActorUiStateManagerInterface* state_manager =
+      ActorKeyedService::Get(profile)->GetActorUiStateManager();
   ASSERT_NE(state_manager, nullptr);
   // Initial tab setup: Start with one tab.
   ASSERT_EQ(browser()->tab_strip_model()->count(), 1);
@@ -352,14 +349,13 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
   ASSERT_NE(tab_1, nullptr);
   // Set up callback logic after tab_1 is created.
   TestFuture<void> future;
-  actor::ui::ActorUiTabController* controller =
+  ActorUiTabControllerInterface* controller =
       tab_1->GetTabFeatures()->actor_ui_tab_controller();
   controller->SetCallbackForTesting(future.GetCallback());
   TestFuture<ActionResultPtr> result;
-  state_manager->OnUiEvent(
-      actor::ui::StartingToActOnTab(tab_1->GetHandle(), actor::TaskId(1)),
-      result.GetCallback());
-  actor::ExpectOkResult(result);
+  state_manager->OnUiEvent(StartingToActOnTab(tab_1->GetHandle(), TaskId(1)),
+                           result.GetCallback());
+  ExpectOkResult(result);
   // Ensure callback is done.
   ASSERT_TRUE(future.Wait());
   Browser* browser_with_actuated_tab;
@@ -396,7 +392,7 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
           ->AsBrowserView()
           ->browser();
   // Stop acting on the tab at the end of the test.
-  state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_1->GetHandle()));
+  state_manager->OnUiEvent(StoppedActingOnTab(tab_1->GetHandle()));
   // Overlay should become invisible in the browser that currently holds the
   // actuated tab.
   ASSERT_TRUE(base::test::RunUntil(
@@ -491,3 +487,4 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayDisabledTest,
 }
 
 }  // namespace
+}  // namespace actor::ui

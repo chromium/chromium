@@ -4,7 +4,7 @@
 
 #include "chrome/browser/actor/ui/actor_overlay_ui.h"
 
-#include "chrome/browser/actor/ui/actor_ui_tab_controller.h"
+#include "chrome/browser/actor/ui/actor_ui_tab_controller_interface.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/webui/webui_embedding_context.h"
@@ -37,7 +37,7 @@ void ActorOverlayUI::BindInterface(
     mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver) {
   content::WebContents* web_contents = web_ui()->GetWebContents();
   tabs::TabInterface* tab_interface = webui::GetTabInterface(web_contents);
-  ActorUiTabController* actor_ui_tab_controller =
+  ActorUiTabControllerInterface* actor_ui_tab_controller =
       tab_interface->GetTabFeatures()->actor_ui_tab_controller();
   CHECK(actor_ui_tab_controller);
   actor_ui_tab_controller->BindActorOverlay(std::move(receiver));

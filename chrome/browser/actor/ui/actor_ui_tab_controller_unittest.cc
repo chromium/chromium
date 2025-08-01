@@ -109,7 +109,7 @@ class ActorUiTabControllerTest : public testing::Test {
     return actor_keyed_service_.get();
   }
 
-  ActorUiTabController* tab_controller() {
+  ActorUiTabControllerInterface* tab_controller() {
     return actor_ui_tab_controller_.get();
   }
 

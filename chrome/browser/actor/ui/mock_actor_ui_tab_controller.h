@@ -50,6 +50,11 @@ class MockActorUiTabController : public ActorUiTabControllerInterface {
               (mojo::PendingReceiver<mojom::ActorOverlayPageHandler> receiver),
               (override));
 
+  MOCK_METHOD(void,
+              SetCallbackForTesting,
+              (base::OnceClosure callback),
+              (override));
+
  private:
   base::WeakPtrFactory<MockActorUiTabController> weak_factory_{this};
 };
