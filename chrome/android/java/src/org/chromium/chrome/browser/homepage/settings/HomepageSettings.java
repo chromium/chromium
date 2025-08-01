@@ -175,7 +175,6 @@ public class HomepageSettings extends ChromeBaseSettingsFragment {
                     homepageIsNtp
                             ? HomepageOption.ENTRY_CHROME_NTP
                             : HomepageOption.ENTRY_CUSTOM_URI;
-            // TODO (crbug.com/400800634): Confirm this behavior
             // Homepage location is enabled if HomepageIsNTP is false, HomepageLocation policy
             // is unmanaged, and homepage is not otherwise disabled.
             boolean enabled = !homepageIsNtp && !isHomepageLocationManaged && isHomepageEnabled;

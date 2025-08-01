@@ -198,20 +198,6 @@ public class ManagedPreferencesUtilsTest {
     }
 
     @Test
-    public void testInitPreference_DoesNotSetIconForDefaultLayout() {
-        // This test verifies when the default layout is used. The icon should NOT be set on the
-        // Preference object itself, as it's handled during view binding.
-        ManagedPreferencesUtils.initPreference(
-                ManagedPreferenceTestDelegates.POLICY_DELEGATE,
-                mPreference,
-                /* allowManagedIcon= */ true,
-                /* hasCustomLayout= */ false);
-        assertNull(
-                "Managed icon should not be set on the preference for the default layout.",
-                mPreference.getIcon());
-    }
-
-    @Test
     public void testInitPreference_DoesNotSetIconWhenDisallowed() {
         ManagedPreferencesUtils.initPreference(
                 ManagedPreferenceTestDelegates.POLICY_DELEGATE,
