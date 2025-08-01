@@ -23,7 +23,9 @@
 -testing/iossim/
 -third_party/
 +third_party/blink/
++third_party/jni_zero/
 +third_party/ipcz/
++third_party/liburlpattern/
 -tools/
 -ui/gl/  # Unsafe generated files.
 -url/third_party/

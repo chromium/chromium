@@ -3,6 +3,11 @@
 // Use of this source code is governed by an MIT-style license that can be
 // found in the LICENSE file or at https://opensource.org/licenses/MIT.
 
+#ifdef UNSAFE_BUFFERS_BUILD
+// TODO(crbug.com/393091624): Remove this and convert code to safer constructs.
+#pragma allow_unsafe_buffers
+#endif
+
 #include "third_party/liburlpattern/pattern.h"
 
 #include <algorithm>
