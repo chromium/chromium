@@ -105,17 +105,21 @@ std::unique_ptr<VideoFramePool> GetVideoFramePoolForFormat(
     GmbVideoFramePoolContextProvider* context_provider) {
   CHECK(format == media::PIXEL_FORMAT_I420 ||
         format == media::PIXEL_FORMAT_NV12 ||
-        format == media::PIXEL_FORMAT_ARGB);
+        format == media::PIXEL_FORMAT_ARGB ||
+        format == media::PIXEL_FORMAT_RGBAF16);
 
   switch (format) {
     case media::PIXEL_FORMAT_I420:
       return std::make_unique<SharedMemoryVideoFramePool>(capacity);
-    case media::PIXEL_FORMAT_ARGB: {
+    case media::PIXEL_FORMAT_ARGB:
+    case media::PIXEL_FORMAT_RGBAF16: {
+      auto color_space = format == media::PIXEL_FORMAT_ARGB
+                             ? gfx::ColorSpace::CreateSRGB()
+                             : gfx::ColorSpace::CreateSRGBLinear();
       switch (buffer_format_preference) {
         case mojom::BufferFormatPreference::kPreferGpuMemoryBuffer:
           return std::make_unique<GpuMemoryBufferVideoFramePool>(
-              capacity, format, gfx::ColorSpace::CreateSRGB(),
-              context_provider);
+              capacity, format, color_space, context_provider);
         case mojom::BufferFormatPreference::kDefault:
           return std::make_unique<SharedMemoryVideoFramePool>(capacity);
         default:
@@ -139,6 +143,8 @@ CopyOutputRequest::ResultFormat VideoPixelFormatToCopyOutputRequestFormat(
       return CopyOutputRequest::ResultFormat::NV12;
     case media::PIXEL_FORMAT_ARGB:
       return CopyOutputRequest::ResultFormat::RGBA;
+    case media::PIXEL_FORMAT_RGBAF16:
+      return CopyOutputRequest::ResultFormat::RGBAF16;
     default:
       NOTREACHED();
   }
@@ -148,8 +154,11 @@ bool IsCompatibleWithFormat(const gfx::Rect& rect,
                             media::VideoPixelFormat format) {
   CHECK(format == media::PIXEL_FORMAT_I420 ||
         format == media::PIXEL_FORMAT_NV12 ||
-        format == media::PIXEL_FORMAT_ARGB);
-  if (format == media::PIXEL_FORMAT_ARGB) {
+        format == media::PIXEL_FORMAT_ARGB ||
+        format == media::PIXEL_FORMAT_RGBAF16);
+
+  if (format == media::PIXEL_FORMAT_ARGB ||
+      format == media::PIXEL_FORMAT_RGBAF16) {
     // No special requirements:
     return true;
   }
@@ -284,9 +293,11 @@ void FrameSinkVideoCapturerImpl::SetFormat(media::VideoPixelFormat format) {
 
   if (format != media::PIXEL_FORMAT_I420 &&
       format != media::PIXEL_FORMAT_ARGB &&
-      format != media::PIXEL_FORMAT_NV12) {
-    LOG(DFATAL) << "Invalid pixel format: Only I420, ARGB & NV12 formats are "
-                   "supported.";
+      format != media::PIXEL_FORMAT_NV12 &&
+      format != media::PIXEL_FORMAT_RGBAF16) {
+    LOG(DFATAL)
+        << "Invalid pixel format: Only I420, ARGB, RGBAF16 & NV12 formats are "
+           "supported.";
   } else {
     // We only support NV12 if we got a context provider for pool creation:
     CHECK(format != media::PIXEL_FORMAT_NV12 ||
@@ -458,8 +469,14 @@ void FrameSinkVideoCapturerImpl::Start(
         buffer_format_preference_ ==
             mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
 
+  // Only support RGBAF16 with kPreferGpuMemoryBuffer
+  CHECK(pixel_format_ != media::PIXEL_FORMAT_RGBAF16 ||
+        buffer_format_preference_ ==
+            mojom::BufferFormatPreference::kPreferGpuMemoryBuffer);
+
   // If we are using ARGB format with GMB, we must have the pool context
-  CHECK(pixel_format_ != media::PIXEL_FORMAT_ARGB ||
+  CHECK((pixel_format_ != media::PIXEL_FORMAT_ARGB &&
+         pixel_format_ != media::PIXEL_FORMAT_RGBAF16) ||
         buffer_format_preference_ !=
             mojom::BufferFormatPreference::kPreferGpuMemoryBuffer ||
         gmb_video_frame_pool_context_provider_);
@@ -570,13 +587,13 @@ gfx::Rect FrameSinkVideoCapturerImpl::GetContentRectangle(
     media::VideoPixelFormat pixel_format) {
   CHECK(pixel_format == media::PIXEL_FORMAT_I420 ||
         pixel_format == media::PIXEL_FORMAT_NV12 ||
-        pixel_format == media::PIXEL_FORMAT_ARGB);
+        pixel_format == media::PIXEL_FORMAT_ARGB ||
+        pixel_format == media::PIXEL_FORMAT_RGBAF16);
 
   if (pixel_format == media::PIXEL_FORMAT_I420 ||
       pixel_format == media::PIXEL_FORMAT_NV12) {
     return media::ComputeLetterboxRegionForI420(visible_rect, source_size);
   } else {
-    CHECK_EQ(media::PIXEL_FORMAT_ARGB, pixel_format);
     const gfx::Rect content_rect =
         media::ComputeLetterboxRegion(visible_rect, source_size);
 
@@ -1022,6 +1039,7 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
                                        frame->stride(VideoFrame::Plane::kV));
           break;
         case media::PIXEL_FORMAT_ARGB:
+        case media::PIXEL_FORMAT_RGBAF16:
           strides = base::StringPrintf("strideARGB:%d",
                                        frame->stride(VideoFrame::Plane::kARGB));
           break;
@@ -1064,9 +1082,12 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
     if (pixel_format_ == media::PIXEL_FORMAT_I420 ||
         pixel_format_ == media::PIXEL_FORMAT_NV12) {
       frame->set_color_space(gfx::ColorSpace::CreateREC709());
-    } else {
-      CHECK_EQ(pixel_format_, media::PIXEL_FORMAT_ARGB);
+    } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
       frame->set_color_space(gfx::ColorSpace::CreateSRGB());
+    } else if (pixel_format_ == media::PIXEL_FORMAT_RGBAF16) {
+      frame->set_color_space(gfx::ColorSpace::CreateSRGBLinear());
+    } else {
+      NOTREACHED() << "Unexpected pixel format: " << pixel_format_;
     }
 
     dirty_rect_ = gfx::Rect();
@@ -1110,7 +1131,8 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
       buffer_format_preference_ ==
           mojom::BufferFormatPreference::kPreferGpuMemoryBuffer &&
       (pixel_format_ == media::PIXEL_FORMAT_NV12 ||
-       pixel_format_ == media::PIXEL_FORMAT_ARGB);
+       pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+       pixel_format_ == media::PIXEL_FORMAT_RGBAF16);
 
   std::optional<BlitRequest> blit_request;
   if (capture_texture_results) {
@@ -1250,6 +1272,11 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
             break;
         }
         break;
+      case CopyOutputResult::Format::RGBAF16:
+        format = "RGBAF16_Texture";
+        strides = base::StringPrintf("strideARGB:%d",
+                                     frame->stride(VideoFrame::Plane::kARGB));
+        break;
     }
     consumer_->OnLog(base::StringPrintf(
         "FrameSinkVideoCapturerImpl: got CopyOutputResult: format=%s size:%s "
@@ -1306,7 +1333,8 @@ void FrameSinkVideoCapturerImpl::DidCopyFrame(
       frame_capture.CaptureFailed(CaptureResult::kI420ReadbackFailed);
     }
     UMA_HISTOGRAM_CAPTURE_SUCCEEDED("I420", success);
-  } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
+  } else if (pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+             pixel_format_ == media::PIXEL_FORMAT_RGBAF16) {
     if (buffer_format_preference_ == mojom::BufferFormatPreference::kDefault) {
       int stride = frame->stride(VideoFrame::Plane::kARGB);
       // Note: ResultFormat::RGBA CopyOutputResult's format currently is
@@ -1533,7 +1561,8 @@ void FrameSinkVideoCapturerImpl::MaybeDeliverFrame(FrameCapture frame_capture) {
 
 gfx::Size FrameSinkVideoCapturerImpl::AdjustSizeForPixelFormat(
     const gfx::Size& raw_size) const {
-  if (pixel_format_ == media::PIXEL_FORMAT_ARGB) {
+  if (pixel_format_ == media::PIXEL_FORMAT_ARGB ||
+      pixel_format_ == media::PIXEL_FORMAT_RGBAF16) {
     gfx::Size result(raw_size);
     if (result.width() <= 0) {
       result.set_width(1);

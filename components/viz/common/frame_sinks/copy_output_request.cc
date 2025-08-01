@@ -31,6 +31,8 @@ const char* ResultFormatToShortString(
       return "I420";
     case viz::CopyOutputRequest::ResultFormat::NV12:
       return "NV12";
+    case viz::CopyOutputRequest::ResultFormat::RGBAF16:
+      return "RGBAF16";
   }
 }
 
@@ -120,7 +122,8 @@ void CopyOutputRequest::set_blit_request(BlitRequest blit_request) {
   DCHECK(!blit_request_);
   DCHECK_EQ(result_destination(), ResultDestination::kSharedImage);
   DCHECK(result_format() == ResultFormat::NV12 ||
-         result_format() == ResultFormat::RGBA);
+         result_format() == ResultFormat::RGBA ||
+         result_format() == ResultFormat::RGBAF16);
   DCHECK(has_result_selection());
 
   if (result_format() == ResultFormat::NV12) {

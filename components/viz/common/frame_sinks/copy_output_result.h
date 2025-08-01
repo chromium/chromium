@@ -51,6 +51,9 @@ class VIZ_COMMON_EXPORT CopyOutputResult {
     // can only be delivered on the same task runner sequence that runs the
     // DirectRenderer implementation.
     NV12,
+    // A RGBAF16 shared texture. Results should be returned in a texture, will
+    // be a SharedImageFormat::kRGBA_F16.
+    RGBAF16,
   };
 
   // Specifies how the results are delivered to the issuer of the request.

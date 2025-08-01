@@ -36,6 +36,8 @@ SharedImageFormat GetSharedImageFormatFor(CopyOutputResult::Format format) {
   switch (format) {
     case CopyOutputResult::Format::RGBA:
       return SinglePlaneFormat::kRGBA_8888;
+    case CopyOutputResult::Format::RGBAF16:
+      return SinglePlaneFormat::kRGBA_F16;
     case CopyOutputResult::Format::I420_PLANES:
       return MultiPlaneFormat::kI420;
     case CopyOutputResult::Format::NV12:
@@ -53,8 +55,8 @@ CopyOutputResult::CopyOutputResult(Format format,
       destination_(destination),
       rect_(rect),
       needs_lock_for_bitmap_(needs_lock_for_bitmap) {
-  DCHECK(format_ == Format::RGBA || format_ == Format::I420_PLANES ||
-         format == Format::NV12);
+  DCHECK(format_ == Format::RGBA || format_ == Format::RGBAF16 ||
+         format_ == Format::I420_PLANES || format == Format::NV12);
   DCHECK(destination_ == Destination::kSystemMemory ||
          destination_ == Destination::kSharedImage);
 }

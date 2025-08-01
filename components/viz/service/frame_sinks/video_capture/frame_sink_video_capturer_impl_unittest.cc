@@ -110,6 +110,8 @@ media::VideoPixelFormat CopyOutputRequestFormatToVideoPixelFormat(
       return media::PIXEL_FORMAT_NV12;
     case CopyOutputRequest::ResultFormat::RGBA:
       return media::PIXEL_FORMAT_ARGB;
+    case CopyOutputRequest::ResultFormat::RGBAF16:
+      return media::PIXEL_FORMAT_RGBAF16;
     default:
       NOTREACHED();
   }
@@ -122,6 +124,8 @@ gfx::ColorSpace GetColorSpaceForPixelFormat(media::VideoPixelFormat format) {
       return gfx::ColorSpace::CreateREC709();
     case media::PIXEL_FORMAT_ARGB:
       return gfx::ColorSpace::CreateSRGB();
+    case media::PIXEL_FORMAT_RGBAF16:
+      return gfx::ColorSpace::CreateSRGBLinear();
     default:
       NOTREACHED();
   }
@@ -133,6 +137,7 @@ gfx::Size GetBufferSizeInPixelsForVideoPixelFormat(
   switch (format) {
     case media::PIXEL_FORMAT_ABGR:
     case media::PIXEL_FORMAT_ARGB:
+    case media::PIXEL_FORMAT_RGBAF16:
       return coded_size;
     case media::PIXEL_FORMAT_NV12:
       return {cc::MathUtil::CheckedRoundUp(coded_size.width(), 2),
@@ -1747,7 +1752,8 @@ TEST_P(FrameSinkVideoCapturerTest, DeliversUpdateRectAndCaptureCounter) {
   expected_frame_update_rect.Offset(
       size_set().ExpectedContentRect(pixel_format_).OffsetFromOrigin());
   // Do not align when we are testing RGBA
-  if (pixel_format_ != media::PIXEL_FORMAT_ARGB) {
+  if (pixel_format_ != media::PIXEL_FORMAT_ARGB &&
+      pixel_format_ != media::PIXEL_FORMAT_RGBAF16) {
     EXPECT_FALSE(
         AlignsWithI420SubsamplingBoundaries(expected_frame_update_rect));
     expected_frame_update_rect =
@@ -2234,6 +2240,8 @@ INSTANTIATE_TEST_SUITE_P(
         std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
                    media::PIXEL_FORMAT_NV12),
         std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
-                   media::PIXEL_FORMAT_ARGB)));
+                   media::PIXEL_FORMAT_ARGB),
+        std::tuple(mojom::BufferFormatPreference::kPreferGpuMemoryBuffer,
+                   media::PIXEL_FORMAT_RGBAF16)));
 
 }  // namespace viz

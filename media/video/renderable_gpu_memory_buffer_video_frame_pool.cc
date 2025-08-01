@@ -158,6 +158,7 @@ gfx::Size GetCodedSizeForVideoPixelFormat(VideoPixelFormat format,
   switch (format) {
     case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_ABGR:
+    case PIXEL_FORMAT_RGBAF16:
       return visible_size;
     case PIXEL_FORMAT_NV12:
       // Align number of rows to 2, because it's required by YUV_420_BIPLANAR
@@ -176,7 +177,7 @@ bool FrameResources::Initialize(VideoPixelFormat format,
                                 const gfx::ColorSpace& color_space) {
   // Currently only support ARGB, ABGR and NV12.
   CHECK(format == PIXEL_FORMAT_ARGB || format == PIXEL_FORMAT_ABGR ||
-        format == PIXEL_FORMAT_NV12)
+        format == PIXEL_FORMAT_NV12 || format == PIXEL_FORMAT_RGBAF16)
       << format;
 
   auto* context = pool_->GetContext();

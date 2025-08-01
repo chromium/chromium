@@ -845,6 +845,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
     SkSurface::RescaleMode rescale_mode,
     bool is_downscale_or_identity_in_both_dimensions,
     std::unique_ptr<CopyOutputRequest> request) {
+  DCHECK_EQ(request->result_format(), CopyOutputRequest::ResultFormat::RGBA);
+
   // If we can't convert |color_space| to a SkColorSpace (e.g. PIECEWISE_HDR),
   // request a sRGB destination color space for the copy result instead.
   gfx::ColorSpace dest_color_space = color_space;
@@ -929,8 +931,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBA(
     SkSurface::RescaleMode rescale_mode,
     bool is_downscale_or_identity_in_both_dimensions,
     std::unique_ptr<CopyOutputRequest> request) {
-  DCHECK_EQ(request->result_format(), CopyOutputRequest::ResultFormat::RGBA);
-
   switch (request->result_destination()) {
     case CopyOutputRequest::ResultDestination::kSystemMemory:
       CopyOutputRGBAInMemory(
@@ -954,6 +954,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     SkSurface::RescaleMode rescale_mode,
     bool is_downscale_or_identity_in_both_dimensions,
     std::unique_ptr<CopyOutputRequest> request) {
+  DCHECK(request->result_format() == CopyOutputRequest::ResultFormat::RGBA ||
+         request->result_format() == CopyOutputRequest::ResultFormat::RGBAF16);
+
   // Check if the request is valid.
   if (!IsValidInTextureCopyOutputRequest(geometry, *request)) {
     return;
@@ -971,8 +974,12 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
     representation = dependency_->GetSharedImageManager()->ProduceSkia(
         mailbox, context_state_->memory_type_tracker(), context_state_);
   } else {
+    auto plane_format =
+        request->result_format() == CopyOutputRequest::ResultFormat::RGBA
+            ? SinglePlaneFormat::kRGBA_8888
+            : SinglePlaneFormat::kRGBA_F16;
     representation = CreateSharedImageRepresentationSkia(
-        SinglePlaneFormat::kRGBA_8888,
+        plane_format,
         gfx::Size(geometry.result_selection.width(),
                   geometry.result_selection.height()),
         color_space, "CopyOutputRGBA");
@@ -1133,7 +1140,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInTexture(
             std::move(representation)));
 
     request->SendResult(std::make_unique<CopyOutputSharedImageResult>(
-        CopyOutputResult::Format::RGBA, geometry.result_selection, mailbox,
+        request->result_format(), geometry.result_selection, mailbox,
         color_space, "CopyOutputRGBAInTexture", std::move(release_callbacks)));
   }
 }
@@ -1789,7 +1796,8 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
                      std::move(request));
       break;
     }
-    case CopyOutputRequest::ResultFormat::RGBA: {
+    case CopyOutputRequest::ResultFormat::RGBA:
+    case CopyOutputRequest::ResultFormat::RGBAF16: {
       CopyOutputRGBA(surface, geometry, color_space, src_rect, rescale_mode,
                      is_downscale_or_identity_in_both_dimensions,
                      std::move(request));

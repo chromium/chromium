@@ -146,6 +146,9 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferFactoryDXGI::CreateNativeGmbHandle(
     case gfx::BufferFormat::BGRX_8888:
       dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
       break;
+    case gfx::BufferFormat::RGBA_F16:
+      dxgi_format = DXGI_FORMAT_R16G16B16A16_FLOAT;
+      break;
     case gfx::BufferFormat::YUV_420_BIPLANAR:
       dxgi_format = DXGI_FORMAT_NV12;
       break;

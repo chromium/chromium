@@ -20,6 +20,9 @@ std::optional<VideoPixelFormat> GfxBufferFormatToVideoPixelFormat(
     case gfx::BufferFormat::RGBA_8888:
       return PIXEL_FORMAT_ABGR;
 
+    case gfx::BufferFormat::RGBA_F16:
+      return PIXEL_FORMAT_RGBAF16;
+
     // There is no PIXEL_FORMAT_XBGR which would have been the right mapping.
     // See ui/ozone drm_util.cc::GetFourCCFormatFromBufferFormat as reference.
     // But here it is only about indicating to not consider the alpha channel.
@@ -80,6 +83,9 @@ std::optional<gfx::BufferFormat> VideoPixelFormatToGfxBufferFormat(
     case PIXEL_FORMAT_XR30:
       return gfx::BufferFormat::RGBA_1010102;
 
+    case PIXEL_FORMAT_RGBAF16:
+      return gfx::BufferFormat::RGBA_F16;
+
     default:
       DLOG(WARNING) << "Unsupported VideoPixelFormat: " << pixel_format;
       return std::nullopt;
@@ -103,6 +109,8 @@ std::optional<VideoPixelFormat> SharedImageFormatToVideoPixelFormat(
     return PIXEL_FORMAT_ABGR;
   } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
     return PIXEL_FORMAT_XR30;
+  } else if (format == viz::SinglePlaneFormat::kRGBA_F16) {
+    return PIXEL_FORMAT_RGBAF16;
   } else if (format == viz::MultiPlaneFormat::kYV12) {
     return PIXEL_FORMAT_YV12;
   } else if (format == viz::MultiPlaneFormat::kNV12) {
@@ -130,6 +138,8 @@ std::optional<viz::SharedImageFormat> VideoPixelFormatToSharedImageFormat(
       return viz::SinglePlaneFormat::kRGBX_8888;
     case PIXEL_FORMAT_XR30:
       return viz::SinglePlaneFormat::kRGBA_1010102;
+    case PIXEL_FORMAT_RGBAF16:
+      return viz::SinglePlaneFormat::kRGBA_F16;
     case PIXEL_FORMAT_YV12:
       return viz::MultiPlaneFormat::kYV12;
     case PIXEL_FORMAT_NV12:
