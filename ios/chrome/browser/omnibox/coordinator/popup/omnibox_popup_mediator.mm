@@ -51,11 +51,6 @@ namespace {
 /// will be reported in the overflow bucket.
 const NSUInteger kMaxSuggestTileTypePosition = 15;
 
-/// The entrypoint id associated with aim being invoked from the omnibox
-/// shortcut. Used for logging purposes.
-/// Do not change without changing IOS_CHROME_OMNIBOX_SEARCH_ENTRY_POINT in
-/// chrome_aim_entry_point.proto
-const std::string kShortcutEntrypointAimID = "62";
 }  // namespace
 
 @interface OmniboxPopupMediator ()
@@ -251,13 +246,26 @@ const std::string kShortcutEntrypointAimID = "62";
         (AutocompleteMatchFormatter*)suggestion;
     const AutocompleteMatch& match =
         autocompleteMatchFormatter.autocompleteMatch;
-    if (suggestion.isSearchWithAim) {
+    if (suggestion.hasAimShortcut) {
+      GURL aimURL;
+      for (const auto& action : match.actions) {
+        const OmniboxActionInSuggest* action_in_suggest =
+            OmniboxActionInSuggest::FromAction(action.get());
+        if (action_in_suggest &&
+            action_in_suggest->Type() ==
+                omnibox::
+                    SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM) {
+          aimURL = GURL(action_in_suggest->template_action.action_uri());
+          break;
+        }
+      }
+      CHECK(aimURL.is_valid());
       AutocompleteMatch aimMatch = match;
-      GURL aimURL =
-          GetUrlForAim(self.templateURLService, kShortcutEntrypointAimID,
-                       /*query_start_time=*/base::Time::Now(), match.contents);
       UMA_HISTOGRAM_COUNTS_100("IOS.Omnibox.AimShortcutTapped",
                                aimMatch.contents.length());
+      OmniboxActionInSuggest::RecordShownAndUsedMetrics(
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+          true /* used */);
       [self.omniboxAutocompleteController
              selectMatchForOpening:aimMatch
           withCustomDestinationURL:aimURL

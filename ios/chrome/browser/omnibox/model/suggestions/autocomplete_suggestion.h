@@ -35,7 +35,7 @@ typedef NS_ENUM(NSUInteger, SuggestTileType) {
 /// Some suggestions are opened in an other tab.
 @property(nonatomic, readonly) BOOL isTabMatch;
 /// Some suggestion can invoke AIM.
-@property(nonatomic, readonly) BOOL isSearchWithAim;
+@property(nonatomic, assign) BOOL hasAimShortcut;
 /// Text of the suggestion.
 @property(nonatomic, readonly) NSAttributedString* text;
 /// Second line of text.

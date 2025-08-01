@@ -10,6 +10,7 @@
 @implementation PedalSuggestionWrapper
 
 @synthesize pedal = _pedal;
+@synthesize hasAimShortcut;
 
 - (instancetype)initWithPedal:(id<OmniboxPedal, OmniboxIcon>)pedal {
   self = [super init];
@@ -38,10 +39,6 @@
 }
 
 - (BOOL)isTabMatch {
-  return NO;
-}
-
-- (BOOL)isSearchWithAim {
   return NO;
 }
 

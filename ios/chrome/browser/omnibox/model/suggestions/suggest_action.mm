@@ -34,6 +34,7 @@
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
       return YES;
     default:
       return NO;

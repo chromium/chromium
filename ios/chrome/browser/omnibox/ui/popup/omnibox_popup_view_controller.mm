@@ -903,7 +903,7 @@ const CGFloat kHeaderTopPadding = 16.0f;
                                                     forIndexPath:indexPath];
         configuration =
             [OmniboxPopupActionsRowContentConfiguration cellConfiguration];
-      } else if (suggestion.isSearchWithAim) {
+      } else if (suggestion.hasAimShortcut) {
         // Use a specific reusable cell to cache the AIM animation progress,
         // preventing it from restarting when the aim suggestion position is
         // shifted.

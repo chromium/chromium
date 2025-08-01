@@ -30,9 +30,6 @@ struct AutocompleteMatch;
 /// From <AutocompleteSuggestion>, redefined as readwrite.
 @property(nonatomic, strong) NSArray<SuggestAction*>* actionsInSuggest;
 
-/// Whether or not Aim is available.
-@property(nonatomic, assign) BOOL aimShortcutAvailable;
-
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;

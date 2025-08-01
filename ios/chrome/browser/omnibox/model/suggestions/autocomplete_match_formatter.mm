@@ -64,6 +64,7 @@ UIColor* DimColorIncognito() {
 }
 @synthesize suggestionSectionId;
 @synthesize actionsInSuggest;
+@synthesize hasAimShortcut;
 
 - (instancetype)initWithMatch:(const AutocompleteMatch&)match {
   self = [super init];
@@ -386,15 +387,6 @@ UIColor* DimColorIncognito() {
 
 - (BOOL)isTabMatch {
   return _match.has_tab_match.value_or(false);
-}
-
-- (BOOL)isSearchWithAim {
-  return self.aimShortcutAvailable && _match.IsVerbatimType() &&
-         !_match.IsVerbatimUrlSuggestion() &&
-         _match.contents.length() >=
-             size_t(
-                 OmniboxFieldTrial::kMinimumTypedCharactersToInvokeAimShortcut
-                     .Get());
 }
 
 - (id<OmniboxPedal>)pedal {

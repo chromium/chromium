@@ -115,9 +115,7 @@ const CGFloat kOmniboxPopupCellMinimumHeight = 58;
     self.trailingIconType = TrailingIconType::kOpenExistingTab;
     trailingButtonActionName =
         l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_SWITCH_TO_OPEN_TAB);
-  } else if (_suggestion.isSearchWithAim &&
-             base::FeatureList::IsEnabled(
-                 omnibox::kOmniboxAimShortcutTypedState)) {
+  } else if (_suggestion.hasAimShortcut) {
     self.trailingIconType = TrailingIconType::kSearchWithAim;
     trailingButtonActionName =
         l10n_util::GetNSString(IDS_IOS_OMNIBOX_POPUP_SEARCH_WITH_AIM);
