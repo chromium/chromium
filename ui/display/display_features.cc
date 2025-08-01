@@ -6,6 +6,7 @@
 
 #include "base/feature_list.h"
 #include "base/features.h"
+#include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 
 namespace display {
@@ -159,12 +160,19 @@ bool IsScreenWinDisplayLookupByHMONITOREnabled() {
 
 // When this feature is enabled, a different notification will be displayed to
 // indicate there is a limit on the number of displays supported by the device.
-BASE_FEATURE(kMaximumDisplaySupportedNotification,
-             "MaximumDisplaySupportedNotification",
+// This feature takes in a param "display_limit", and it has to be an integer
+// value greater than or equal to 0 for this feature to have any effect.
+BASE_FEATURE(kMaxExternalDisplaySupportedNotification,
+             "MaxExternalDisplaySupportedNotification",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+const base::FeatureParam<int> kMaxExternalDisplaySupportedNotificationLimit{
+    &kMaxExternalDisplaySupportedNotification, "display_limit", -1};
+
 bool IsMaximumDisplaySupportedNotificationEnabled() {
-  return base::FeatureList::IsEnabled(kMaximumDisplaySupportedNotification);
+  return base::FeatureList::IsEnabled(
+             kMaxExternalDisplaySupportedNotification) &&
+         kMaxExternalDisplaySupportedNotificationLimit.Get() >= 0;
 }
 
 }  // namespace features

@@ -7,6 +7,7 @@
 
 #include "base/component_export.h"
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace display {
 namespace features {
@@ -83,7 +84,11 @@ COMPONENT_EXPORT(DISPLAY_FEATURES)
 bool IsScreenWinDisplayLookupByHMONITOREnabled();
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
-BASE_DECLARE_FEATURE(kMaximumDisplaySupportedNotification);
+BASE_DECLARE_FEATURE(kMaxExternalDisplaySupportedNotification);
+
+COMPONENT_EXPORT(DISPLAY_FEATURES)
+extern const base::FeatureParam<int>
+    kMaxExternalDisplaySupportedNotificationLimit;
 
 COMPONENT_EXPORT(DISPLAY_FEATURES)
 bool IsMaximumDisplaySupportedNotifacationEnabled();
