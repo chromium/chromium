@@ -21,69 +21,55 @@ scoped_refptr<BookmarkParser> MakeBookmarkParser() {
   return base::MakeRefCounted<ContentBookmarkParser>();
 }
 
-ContentBookmarkParser::ContentBookmarkParser() = default;
-
-ContentBookmarkParser::~ContentBookmarkParser() {
-  if (!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI)) {
-    // The remote must be destroyed on the sequence it was bound on.
-    content::GetUIThreadTaskRunner()->PostTask(
-        FROM_HERE,
-        base::DoNothingWithBoundArgs(std::move(html_parser_remote_)));
-  }
+ContentBookmarkParser::ContentBookmarkParser() {
+  // This class is created on the UI thread, but is used forever after from the
+  // background thread.
+  DETACH_FROM_SEQUENCE(sequence_checker_);
 }
+
+ContentBookmarkParser::~ContentBookmarkParser() = default;
 
 void ContentBookmarkParser::SetServiceForTesting(
     mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser> parser) {
-  html_parser_remote_.Bind(std::move(parser));
+  CHECK(!html_parser_remote_);
+  html_parser_for_testing_ = std::move(parser);
 }
 
 void ContentBookmarkParser::Parse(
     const base::FilePath& file_path,
     BookmarkParser::BookmarkParsingCallback callback) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::string raw_html;
   // ReadFileToString can return false, but still populate something into
   // `raw_html`. In that case, try to recover as much data as possible.
-  // (ParseOnUIThread() will report an error if `raw_html` is empty, i.e. the
+  // (ParseImpl() will report an error if `raw_html` is empty, i.e. the
   // read failed entirely.)
   base::ReadFileToString(file_path, &raw_html);
 
-  auto callback_on_thread = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
-
-  // It's not safe to use a weak pointer here because this call is made to a
-  // different sequence. As such, using a wrap ref counted pointer.
-  content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ContentBookmarkParser::ParseOnUIThread,
-                                base::WrapRefCounted(this), std::move(raw_html),
-                                std::move(callback_on_thread)));
+  ParseImpl(std::move(raw_html), std::move(callback));
 }
 
 void ContentBookmarkParser::Parse(base::File file,
                                   BookmarkParsingCallback callback) {
   CHECK(!content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::string raw_html;
   // ReadStreamToString can return false, but still populate something into
   // `raw_html`. In that case, try to recover as much data as possible.
-  // (ParseOnUIThread() will report an error if `raw_html` is empty, i.e. the
+  // (ParseImpl() will report an error if `raw_html` is empty, i.e. the
   // read failed entirely.)
   base::ReadStreamToString(base::FileToFILE(std::move(file), "rb"), &raw_html);
 
-  auto callback_on_thread = base::BindPostTask(
-      base::SequencedTaskRunner::GetCurrentDefault(), std::move(callback));
-
-  // It's not safe to use a weak pointer here because this call is made to a
-  // different sequence. As such, using a wrap ref counted pointer.
-  content::GetUIThreadTaskRunner()->PostTask(
-      FROM_HERE, base::BindOnce(&ContentBookmarkParser::ParseOnUIThread,
-                                base::WrapRefCounted(this), std::move(raw_html),
-                                std::move(callback_on_thread)));
+  ParseImpl(std::move(raw_html), std::move(callback));
 }
 
-void ContentBookmarkParser::ParseOnUIThread(
+void ContentBookmarkParser::ParseImpl(
     std::string raw_html,
     BookmarkParser::BookmarkParsingCallback callback) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (raw_html.empty()) {
     std::move(callback).Run(base::unexpected(
@@ -92,11 +78,15 @@ void ContentBookmarkParser::ParseOnUIThread(
   }
 
   if (!html_parser_remote_) {
-    html_parser_remote_ = content::ServiceProcessHost::Launch<
-        user_data_importer::mojom::BookmarkHtmlParser>(
-        content::ServiceProcessHost::Options()
-            .WithDisplayName(IDS_CONTENT_BOOKMARK_PARSER_SERVICE_DISPLAY_NAME)
-            .Pass());
+    if (html_parser_for_testing_) {
+      html_parser_remote_.Bind(std::move(html_parser_for_testing_));
+    } else {
+      html_parser_remote_ = content::ServiceProcessHost::Launch<
+          user_data_importer::mojom::BookmarkHtmlParser>(
+          content::ServiceProcessHost::Options()
+              .WithDisplayName(IDS_CONTENT_BOOKMARK_PARSER_SERVICE_DISPLAY_NAME)
+              .Pass());
+    }
     html_parser_remote_.reset_on_disconnect();
   }
 
@@ -109,7 +99,8 @@ void ContentBookmarkParser::ParseOnUIThread(
 void ContentBookmarkParser::OnParseFinished(
     user_data_importer::BookmarkParser::BookmarkParsingCallback callback,
     user_data_importer::BookmarkParser::ParsedBookmarks parsed_bookmarks) {
-  CHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
   std::move(callback).Run(std::move(parsed_bookmarks));
 }
 

@@ -151,11 +151,9 @@ class SafariDataImporterTest : public testing::Test {
 #if BUILDFLAG(IS_IOS)
     auto parser = MakeBookmarkParser();
 #else
-    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
-        html_parser_pending_remote{
-            html_parser_receiver_.BindNewPipeAndPassRemote()};
     auto parser = base::MakeRefCounted<ContentBookmarkParser>();
-    parser->SetServiceForTesting(std::move(html_parser_pending_remote));
+    parser->SetServiceForTesting(
+        html_parser_receiver_.BindNewPipeAndPassRemote());
 #endif  // BUILDFLAG(IS_IOS)
 
     importer_ = std::make_unique<SafariDataImporter>(

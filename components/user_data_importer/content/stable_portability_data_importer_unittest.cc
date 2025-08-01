@@ -124,10 +124,9 @@ class StablePortabilityDataImporterTest : public testing::Test {
  protected:
   void SetUp() override {
     bookmark_model_ = bookmarks::TestBookmarkClient::CreateModel();
-    mojo::PendingRemote<user_data_importer::mojom::BookmarkHtmlParser>
-        pending_remote{receiver_.BindNewPipeAndPassRemote()};
+
     auto parser = base::MakeRefCounted<ContentBookmarkParser>();
-    parser->SetServiceForTesting(std::move(pending_remote));
+    parser->SetServiceForTesting(receiver_.BindNewPipeAndPassRemote());
 
     auto storage = std::make_unique<FakeReadingListModelStorage>();
     auto* storage_raw = storage.get();
