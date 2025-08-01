@@ -7534,9 +7534,7 @@
         {
             "platforms": [
                 "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "linux"
             ],
             "experiments": [
                 {
