@@ -624,6 +624,60 @@ void ApplyRationalizationEngineRules(
                 },
             })
             .Build(),
+        // This rules aim to fix the scenario where both name related fields are
+        // detected as regular names:
+        // |name last||name first|
+        // |name last||name first|->|phonetic family name||phonetic given name|
+        // The rules for first and last name are split to support also the rare
+        // case where the name first field precedes the name last field.
+        RationalizationRuleBuilder()
+            .SetRuleName("Improve phonetic family names field detection in JP")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("JP")})
+                    .SetFeature(&features::kAutofillSupportPhoneticNameForJP)
+                    .Build())
+            .SetTriggerField(FieldCondition{
+                .possible_overall_types =
+                    FieldTypeSet{NAME_LAST, NAME_LAST_CORE, NAME_LAST_SECOND}})
+            .SetFieldsWithConditionsDoNotExist(
+                {FieldCondition{.location = FieldLocation::kAnywhere,
+                                .possible_overall_types =
+                                    FieldTypeSet{ALTERNATIVE_FAMILY_NAME}}})
+            .SetOtherFieldConditions({FieldCondition{
+                .location = FieldLocation::kPredecessor,
+                .possible_overall_types =
+                    FieldTypeSet{NAME_LAST, NAME_LAST_CORE, NAME_LAST_SECOND}}})
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ALTERNATIVE_FAMILY_NAME,
+                },
+            })
+            .Build(),
+        RationalizationRuleBuilder()
+            .SetRuleName("Improve phonetic given names field detection in JP")
+            .SetEnvironmentCondition(
+                EnvironmentConditionBuilder()
+                    .SetCountryList({GeoIpCountryCode("JP")})
+                    .SetFeature(&features::kAutofillSupportPhoneticNameForJP)
+                    .Build())
+            .SetTriggerField(FieldCondition{.possible_overall_types =
+                                                FieldTypeSet{NAME_FIRST}})
+            .SetFieldsWithConditionsDoNotExist(
+                {FieldCondition{.location = FieldLocation::kAnywhere,
+                                .possible_overall_types =
+                                    FieldTypeSet{ALTERNATIVE_GIVEN_NAME}}})
+            .SetOtherFieldConditions({FieldCondition{
+                .location = FieldLocation::kPredecessor,
+                .possible_overall_types = FieldTypeSet{NAME_FIRST}}})
+            .SetActions({
+                SetTypeAction{
+                    .target = FieldLocation::kTriggerField,
+                    .set_overall_type = ALTERNATIVE_GIVEN_NAME,
+                },
+            })
+            .Build(),
     });
   };
   static const base::NoDestructor<decltype(create_rules())>

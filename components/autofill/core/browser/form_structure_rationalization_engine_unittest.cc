@@ -791,5 +791,48 @@ TEST(FormStructureRationalizationEngine,
                     ADDRESS_HOME_CITY));
 }
 
+// Tests that in Japan, if there are name fields duplicated, the second pair is
+// classified as alternative.
+TEST(FormStructureRationalizationEngine, TestJPAlternativeNames) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {kTestFeatureForFormStructureRationalizationEngine,
+       features::kAutofillSupportPhoneticNameForJP},
+      {});
+  GeoIpCountryCode kJP = GeoIpCountryCode("JP");
+  ParsingContext kJPContext(kJP, LanguageCode("en"), GetPatternFile());
+
+  // Most common order of name fields in JP.
+  std::vector<std::unique_ptr<AutofillField>> fields = CreateFields(
+      {{u"Last name", u"lastname", NAME_LAST},
+       {u"First name", u"firstname", NAME_FIRST},
+       {u"Phonetic last name", u"lastname", NAME_LAST},
+       {u"Phonetic given name", u"firstname", NAME_FIRST},
+       {u"Street Address", u"street-address", ADDRESS_HOME_STREET_ADDRESS}});
+
+  ApplyRationalizationEngineRules(kJPContext, fields, nullptr);
+  EXPECT_THAT(GetTypes(fields),
+              FieldTypesAre(NAME_LAST, NAME_FIRST,
+                            /*changed*/ ALTERNATIVE_FAMILY_NAME,
+                            /*changed*/ ALTERNATIVE_GIVEN_NAME,
+                            ADDRESS_HOME_STREET_ADDRESS));
+
+  // Check that the inversed order of name fields is also supported.
+  std::vector<std::unique_ptr<AutofillField>> given_name_first_fields =
+      CreateFields({{u"First name", u"firstname", NAME_FIRST},
+                    {u"Last name", u"lastname", NAME_LAST},
+                    {u"Phonetic given name", u"firstname", NAME_FIRST},
+                    {u"Phonetic last name", u"lastname", NAME_LAST},
+                    {u"Street Address", u"street-address",
+                     ADDRESS_HOME_STREET_ADDRESS}});
+
+  ApplyRationalizationEngineRules(kJPContext, given_name_first_fields, nullptr);
+  EXPECT_THAT(GetTypes(given_name_first_fields),
+              FieldTypesAre(NAME_FIRST, NAME_LAST,
+                            /*changed*/ ALTERNATIVE_GIVEN_NAME,
+                            /*changed*/ ALTERNATIVE_FAMILY_NAME,
+                            ADDRESS_HOME_STREET_ADDRESS));
+}
+
 }  // namespace
 }  // namespace autofill::rationalization
