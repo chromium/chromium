@@ -234,8 +234,11 @@ def main() -> None:
 
     parser = argparse.ArgumentParser(
         description='Install and manage MCP server configurations.')
-    subparsers = parser.add_subparsers(dest='command',
-                                       help='Available commands.')
+    subparsers = parser.add_subparsers(
+        dest='command',
+        help='Available commands.',
+        description='Install and manage MCP server configurations.'
+        ' To get help for a specific command, run "install.py <command> -h".')
 
     # Add command
     add_parser = subparsers.add_parser('add', help='Add new MCP servers.')
