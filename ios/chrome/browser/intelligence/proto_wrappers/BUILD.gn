@@ -16,6 +16,7 @@ source_set("proto_wrappers") {
     "//components/optimization_guide:optimization_guide_buildflags",
     "//components/optimization_guide/core:page_content",
     "//components/optimization_guide/proto:optimization_guide_proto",
+    "//ios/chrome/browser/intelligence/features",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/snapshots/model",
     "//ios/public/provider/chrome/browser/bwg:bwg_api",

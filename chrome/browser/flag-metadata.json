@@ -7721,6 +7721,14 @@
     "expiry_milestone": 150
   },
   {
+    "name": "page-context-anchor-tags",
+    "owners": [
+      "nicolasmacbeth@google.com",
+      "bling-alchemy-eng@google.com"
+    ],
+    "expiry_milestone": 150
+  },
+  {
     "name": "page-image-service-optimization-guide-salient-images",
     "owners": [ "tommycli@chromium.org", "//components/page_image_service/OWNERS" ],
     "expiry_milestone": 140

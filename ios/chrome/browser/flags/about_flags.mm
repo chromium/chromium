@@ -2862,6 +2862,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(
          password_manager::features::kApplyClientsideModelPredictionsForOtps)},
+    {"page-context-anchor-tags", flag_descriptions::kPageContextAnchorTagsName,
+     flag_descriptions::kPageContextAnchorTagsDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kPageContextAnchorTags)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {

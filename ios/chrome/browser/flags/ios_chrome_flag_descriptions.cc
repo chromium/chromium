@@ -1318,6 +1318,10 @@ const char kPageVisibilityPageContentAnnotationsDescription[] =
     "Enables annotating the page visibility model for each page load "
     "on-device.";
 
+const char kPageContextAnchorTagsName[] = "Page Context anchor tags";
+const char kPageContextAnchorTagsDescription[] =
+    "Include the retrieval of anchor tags (links) as part of Page Context.";
+
 const char kPasswordFormClientsideClassifierName[] =
     "Clientside password form classifier.";
 const char kPasswordFormClientsideClassifierDescription[] =

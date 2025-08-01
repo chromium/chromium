@@ -113,3 +113,11 @@ bool IsBWGPreciseLocationEnabled() {
   CHECK(IsPageActionMenuEnabled());
   return base::FeatureList::IsEnabled(kBWGPreciseLocation);
 }
+
+BASE_FEATURE(kPageContextAnchorTags,
+             "PageContextAnchorTags",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool IsPageContextAnchorTagsEnabled() {
+  return base::FeatureList::IsEnabled(kPageContextAnchorTags);
+}

@@ -78,4 +78,11 @@ BASE_DECLARE_FEATURE(kBWGPreciseLocation);
 // Returns true if the precise location setting is enabled.
 bool IsBWGPreciseLocationEnabled();
 
+// Feature flag controlling the inclusion of anchor tags (links) in Page
+// Context.
+BASE_DECLARE_FEATURE(kPageContextAnchorTags);
+
+// Returns true if the anchor tags are enabled in Page Context.
+bool IsPageContextAnchorTagsEnabled();
+
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_FEATURES_FEATURES_H_
