@@ -1703,8 +1703,6 @@ void D3DImageBacking::EndAccessCommon(
 
       // Copy from front buffer to back buffer to ensure that contents are
       // preserved for subsequent reads from the back buffer.
-      // TODO(crbug.com/415968760): Determine whether the D3D11 Present()
-      // implementation takes care of this for us and remove this code if so.
       Microsoft::WRL::ComPtr<ID3D11DeviceContext> device_context;
       texture_d3d11_device_->GetImmediateContext(&device_context);
       device_context->CopyResource(d3d11_texture_.Get(),
