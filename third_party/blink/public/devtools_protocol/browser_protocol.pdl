@@ -10296,8 +10296,7 @@ domain Page
       # Whether or not it was triggered by user gesture.
       boolean userGesture
 
-  # Issued for every compilation cache generated. Is only available
-  # if Page.setGenerateCompilationCache is enabled.
+  # Issued for every compilation cache generated.
   experimental event compilationCacheProduced
     parameters
       string url
