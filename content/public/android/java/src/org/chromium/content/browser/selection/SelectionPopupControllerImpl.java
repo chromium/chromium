@@ -1502,8 +1502,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
     @CalledByNative
     private void renderWidgetHostViewChanged() {
-        if (getMagnifierAnimator() != null) {
-            getMagnifierAnimator().handleDragStopped();
+        if (getMagnifierAnimator(/* createIfNull= */ false) != null) {
+            getMagnifierAnimator(/* createIfNull= */ false).handleDragStopped();
         }
     }
 
@@ -1571,8 +1571,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
 
             case SelectionEventType.SELECTION_HANDLE_DRAG_STOPPED:
                 showContextMenuAtTouchHandle(left, bottom);
-                if (getMagnifierAnimator() != null) {
-                    getMagnifierAnimator().handleDragStopped();
+                if (getMagnifierAnimator(/* createIfNull= */ false) != null) {
+                    getMagnifierAnimator(/* createIfNull= */ false).handleDragStopped();
                 }
                 mIsInHandleDragging = false;
 
@@ -1626,8 +1626,8 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
                     showContextMenuAtTouchHandle(mSelectionRect.left, mSelectionRect.bottom);
                 }
                 mWasPastePopupShowingOnInsertionDragStart = false;
-                if (getMagnifierAnimator() != null) {
-                    getMagnifierAnimator().handleDragStopped();
+                if (getMagnifierAnimator(/* createIfNull= */ false) != null) {
+                    getMagnifierAnimator(/* createIfNull= */ false).handleDragStopped();
                 }
                 mIsInHandleDragging = false;
                 break;
@@ -1693,13 +1693,13 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             return;
         }
 
-        if (getMagnifierAnimator() != null) {
+        if (getMagnifierAnimator(/* createIfNull= */ true) != null) {
             final float deviceScale = getDeviceScaleFactor();
             x *= deviceScale;
             // The selection coordinates are relative to the content viewport, but we need
             // coordinates relative to the containing View, so adding getContentOffsetYPix().
             y = y * deviceScale + mWebContents.getRenderCoordinates().getContentOffsetYPix();
-            getMagnifierAnimator().handleDragStartedOrMoved(x, y);
+            getMagnifierAnimator(/* createIfNull= */ true).handleDragStartedOrMoved(x, y);
         }
     }
 
@@ -1782,8 +1782,9 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         mMagnifierAnimator = magnifierAnimator;
     }
 
-    private @Nullable MagnifierAnimator getMagnifierAnimator() {
+    private @Nullable MagnifierAnimator getMagnifierAnimator(boolean createIfNull) {
         if (mMagnifierAnimator != null) return mMagnifierAnimator;
+        if (!createIfNull) return null;
         if (sDisableMagnifierForTesting || Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
             return null;
         }
