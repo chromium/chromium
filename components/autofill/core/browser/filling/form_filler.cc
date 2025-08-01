@@ -1156,11 +1156,30 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
                 CHECK_DEREF(entity_and_fields_and_types.first);
             const std::vector<AutofillFieldWithAttributeType>& fields =
                 entity_and_fields_and_types.second;
+            AutofillType autofill_type = autofill_field.Type();
+            FieldType field_type =
+                autofill_type.GetAutofillAiType(entity.type());
+            if (field_type == UNKNOWN_TYPE &&
+                !autofill_type.GetTypes().empty()) {
+              // This is currently reachable if a classical prediction is
+              // followed by an Autofill AI prediction, e.g.,
+              // ADDRESS_HOME_COUNTRY followed by PASSPORT_ISSUING_COUNTRY.
+              //
+              // Then AutofillField::Type() only contains the classical
+              // prediction but Autofill AI nonetheless may fill the field
+              // because it obtains the Autofill AI type in
+              // AutofillField::GetAutofillAiServerTypePredictions()
+              //
+              // TODO(crbug.com/432645177): Remove once we've removed
+              // AutofillField::GetAutofillAiServerTypePredictions() (and
+              // instead populate AutofillType with Autofill AI types).
+              field_type = *autofill_type.GetTypes().begin();
+            }
             return {GetFillValueForEntity(
                         entity, fields, autofill_field, action_persistence,
                         manager_->client().GetAppLocale(),
                         manager_->client().GetAddressNormalizer()),
-                    autofill_field.Type().GetStorableType()};
+                    field_type};
           },
           [&](const VerifiedProfile* profile)
               -> std::pair<std::u16string, FieldType> {

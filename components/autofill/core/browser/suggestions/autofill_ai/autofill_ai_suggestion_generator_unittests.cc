@@ -150,8 +150,8 @@ class AutofillAiSuggestionGeneratorTest : public testing::Test {
     if (!attribute) {
       return std::nullopt;
     }
-    return attribute->GetInfo(field.Type().GetStorableType(), kAppLocaleUS,
-                              field.format_string());
+    return attribute->GetInfo(field.Type().GetAutofillAiType(entity.type()),
+                              kAppLocaleUS, field.format_string());
   }
 
   std::vector<Suggestion> CreateAutofillAiFillingSuggestions(

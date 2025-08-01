@@ -713,11 +713,21 @@ void FormStructureRationalizer::RationalizeDateFormatStrings(
         AutofillField::FormatStringSource::kHeuristics);
   };
 
+  auto get_autofill_ai_date_types = [](const AutofillField& field) {
+    FieldTypeSet field_types = field.Type().GetAutofillAiTypes();
+    for (const FieldType field_type : field_types) {
+      if (!IsDateFieldType(field_type)) {
+        field_types.erase(field_type);
+      }
+    }
+    return field_types;
+  };
+
   for (auto it = fields_->begin(); it != fields_->end(); ++it) {
     AutofillField& field = **it;
-    if (std::optional<FieldType> type =
-            field.GetAutofillAiServerTypePredictions();
-        !type || !IsDateFieldType(*type)) {
+    const FieldTypeSet autofill_ai_date_types =
+        get_autofill_ai_date_types(field);
+    if (autofill_ai_date_types.empty()) {
       continue;
     }
     switch (field.format_string_source()) {
@@ -780,8 +790,7 @@ void FormStructureRationalizer::RationalizeDateFormatStrings(
           return nullptr;
         }
         AutofillField& successor = **std::next(it, n);
-        if (successor.GetAutofillAiServerTypePredictions() !=
-            field.GetAutofillAiServerTypePredictions()) {
+        if (get_autofill_ai_date_types(successor) != autofill_ai_date_types) {
           return nullptr;
         }
         if (successor.label() != field.label() && !successor.label().empty()) {

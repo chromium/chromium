@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
+#include "base/containers/to_vector.h"
 #include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -1542,6 +1543,8 @@ TEST_F(FormFillerTest, FillFirstPhoneNumber_MultipleSectionFilledCorrectly) {
 }
 
 TEST_F(FormFillerTest, FillPassportEntity) {
+  base::test::ScopedFeatureList feature_list(
+      features::kAutofillAiWithDataSchema);
   FormData form = test::GetFormData({.fields = {
                                          // Passport number:
                                          {.role = UNKNOWN_TYPE},
@@ -1563,6 +1566,13 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   auto set_server_type = [&](size_t field_index, auto... types) {
     form_structure->fields()[field_index]->set_server_predictions(
         {test::CreateFieldPrediction(types)...});
+    std::vector<FieldType> expected_types = {types...};
+    std::vector<FieldType> actual_types = base::ToVector(
+        form_structure->fields()[field_index]->server_predictions(),
+        [](const auto& p) {
+          return ToSafeFieldType(p.type(), NO_SERVER_DATA);
+        });
+    CHECK(expected_types == actual_types);
   };
   auto set_format_string = [&](size_t field_index,
                                std::string_view format_string) {
@@ -1573,7 +1583,7 @@ TEST_F(FormFillerTest, FillPassportEntity) {
   set_server_type(0, PASSPORT_NUMBER);
   set_server_type(1, NAME_FIRST, PASSPORT_NAME_TAG);
   set_server_type(2, NAME_LAST, PASSPORT_NAME_TAG);
-  set_server_type(3, ADDRESS_HOME_COUNTRY, PASSPORT_ISSUING_COUNTRY);
+  set_server_type(3, PASSPORT_ISSUING_COUNTRY);
   set_server_type(4, PASSPORT_ISSUE_DATE);
   set_format_string(4, "M/YY");
   set_server_type(5, PASSPORT_EXPIRATION_DATE);

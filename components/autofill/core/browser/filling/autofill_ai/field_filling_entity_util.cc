@@ -84,7 +84,8 @@ std::optional<std::u16string> GetValueForDateSelect(
     const AttributeInstance& attribute,
     const AutofillField& field,
     const std::string& app_locale) {
-  FieldType type = field.Type().GetStorableType();
+  FieldType type =
+      field.Type().GetAutofillAiType(attribute.type().entity_type());
   if (!IsDateFieldType(type)) {
     return std::nullopt;
   }
@@ -92,8 +93,7 @@ std::optional<std::u16string> GetValueForDateSelect(
   auto get_part = [&](const std::u16string& format_string, uint32_t min = 0,
                       uint32_t max =
                           std::numeric_limits<uint32_t>::max()) -> uint32_t {
-    std::u16string s = attribute.GetInfo(field.Type().GetStorableType(),
-                                         app_locale, format_string);
+    std::u16string s = attribute.GetInfo(type, app_locale, format_string);
     unsigned int i = 0;
     return base::StringToUint(s, &i) && min <= i && i <= max
                ? i
@@ -118,7 +118,8 @@ std::optional<std::u16string> GetValueForDateSelect(
 std::u16string GetValueForInput(const AttributeInstance& attribute,
                                 const AutofillField& field,
                                 const std::string& app_locale) {
-  FieldType type = field.Type().GetStorableType();
+  FieldType type =
+      field.Type().GetAutofillAiType(attribute.type().entity_type());
   // TODO(crbug.com/389625753): Investigate whether only passing the
   // field type is the right choice here. This would for example
   // fail the fill a PASSPORT_NUMBER field that gets a
@@ -126,7 +127,7 @@ std::u16string GetValueForInput(const AttributeInstance& attribute,
   // prediction logic.
   std::u16string value =
       attribute.GetInfo(type, app_locale, field.format_string());
-  switch (field.Type().GetStorableType()) {
+  switch (type) {
     case DRIVERS_LICENSE_REGION:
     case VEHICLE_PLATE_STATE:
       // TODO(crbug.com/389625753): Support countries other than the US.
@@ -149,7 +150,8 @@ std::u16string GetValueForSelect(const AttributeInstance& attribute,
                                  const AutofillField& field,
                                  const std::string& app_locale,
                                  AddressNormalizer* address_normalizer) {
-  FieldType type = field.Type().GetStorableType();
+  FieldType type =
+      field.Type().GetAutofillAiType(attribute.type().entity_type());
   if (IsDateFieldType(type)) {
     return GetValueForDateSelect(attribute, field, app_locale).value_or(u"");
   }
