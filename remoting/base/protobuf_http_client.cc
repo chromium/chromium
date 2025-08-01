@@ -9,6 +9,7 @@
 #include "google_apis/common/api_key_request_util.h"
 #include "net/base/load_flags.h"
 #include "net/base/net_errors.h"
+#include "net/http/http_request_headers.h"
 #include "remoting/base/http_status.h"
 #include "remoting/base/oauth_token_getter.h"
 #include "remoting/base/protobuf_http_request_base.h"
@@ -19,12 +20,6 @@
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "third_party/protobuf/src/google/protobuf/message_lite.h"
 #include "url/gurl.h"
-
-namespace {
-
-constexpr char kAuthorizationHeaderFormat[] = "Authorization: Bearer %s";
-
-}  // namespace
 
 namespace remoting {
 
@@ -127,8 +122,8 @@ ProtobufHttpClient::CreateSimpleUrlLoader(
   resource_request->method = config.method;
 
   if (!access_token.empty()) {
-    resource_request->headers.AddHeaderFromString(
-        base::StringPrintf(kAuthorizationHeaderFormat, access_token.c_str()));
+    resource_request->headers.SetHeader(net::HttpRequestHeaders::kAuthorization,
+                                        "Bearer " + access_token);
   } else {
     VLOG(1) << "Attempting to execute request without access token";
   }
