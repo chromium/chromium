@@ -24,7 +24,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-/** Tests for BySelectorIndexUi2Locator. */
+/** Tests for {@link BySelectorIndexUi2Locator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
@@ -39,24 +39,22 @@ public final class BySelectorIndexUi2LocatorTest {
 
     @Mock private UiObject2 mResult1;
 
-    private List<UiObject2> mResults;
-
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
 
         // Create a BySelectorLocator so tests can create BySelectorIndexUi2Locator off of it.
         mSelector = By.res("resource");
-        mResults = new ArrayList<>();
-        mResults.add(mResult0);
-        mResults.add(mResult1);
+        List<UiObject2> results = new ArrayList<>();
+        results.add(mResult0);
+        results.add(mResult1);
 
         // Only mResult0 is used here since mSelector should return it when locateOne
-        // is called.  This works because we've also correctly speicifed that it should
+        // is called.  This works because we've also correctly specified that it should
         // return mResults in response to locateAll, which will contain a list of mResult0
         // and mResult1.  BySelectorIndexUi2Locator uses locateAll to be able to locate
         // any child by it's position in the children list.
-        TestUtils.stubMocks(mDevice, mRoot, mSelector, mResult0, mResults);
+        TestUtils.stubMocks(mDevice, mRoot, mSelector, mResult0, results);
     }
 
     @Test
@@ -81,6 +79,6 @@ public final class BySelectorIndexUi2LocatorTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void locateNegativeIndex() {
-        BySelectorIndexUi2Locator locator = new BySelectorIndexUi2Locator(mSelector, -1);
+        new BySelectorIndexUi2Locator(mSelector, -1);
     }
 }
