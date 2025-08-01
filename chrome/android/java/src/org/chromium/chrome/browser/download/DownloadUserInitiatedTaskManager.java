@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.build.annotations.NullMarked;
 import org.chromium.components.background_task_scheduler.BackgroundTask.TaskFinishedCallback;
 
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import java.util.Map;
  * attaching the notification to the job life cycle. Starting and stopping of jobs is
  * handled in AutoResumptionHandler in native. Only active for Android versions >= U.
  */
+@NullMarked
 public class DownloadUserInitiatedTaskManager extends DownloadContinuityManager {
     private static final String TAG = "DownloadUitm";
 

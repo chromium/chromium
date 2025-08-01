@@ -69,7 +69,7 @@ public class OtrProfileId {
      * @throws IllegalStateException when the OTR profile belongs to the OtrProfileId is not
      *     available. The off-the-record profile should exist when OtrProfileId will be used.
      */
-    public static @Nullable OtrProfileId deserialize(String value) {
+    public static @Nullable OtrProfileId deserialize(@Nullable String value) {
         OtrProfileId otrProfileId = deserializeWithoutVerify(value);
 
         // The off-the-record profile should exist for the given OtrProfileId, since OtrProfileId

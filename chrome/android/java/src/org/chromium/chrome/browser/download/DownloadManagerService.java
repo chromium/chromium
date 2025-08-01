@@ -952,7 +952,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      * @param mimeType MIME type of the file.
      * @return Whether the download is openable by the browser.
      */
-    public boolean isDownloadOpenableInBrowser(String mimeType) {
+    public boolean isDownloadOpenableInBrowser(@Nullable String mimeType) {
         // TODO(qinmin): for audio and video, check if the codec is supported by Chrome.
         return isSupportedMimeType(mimeType);
     }
@@ -1323,7 +1323,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
         DownloadInfo downloadInfo = downloadItem.getDownloadInfo();
         boolean canOpen =
                 DownloadUtils.openFile(
-                        downloadInfo.getFilePath(),
+                        assertNonNull(downloadInfo.getFilePath()),
                         downloadInfo.getMimeType(),
                         downloadInfo.getDownloadGuid(),
                         downloadInfo.getOtrProfileId(),

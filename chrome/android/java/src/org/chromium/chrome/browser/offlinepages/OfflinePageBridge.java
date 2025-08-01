@@ -447,7 +447,7 @@ public class OfflinePageBridge {
      * @param webContents Contents of the page to check.
      * @return True if download button is being shown in the error page.
      */
-    public boolean isShowingDownloadButtonInErrorPage(WebContents webContents) {
+    public boolean isShowingDownloadButtonInErrorPage(@Nullable WebContents webContents) {
         return org.chromium.chrome.browser.offlinepages.OfflinePageBridgeJni.get()
                 .isShowingDownloadButtonInErrorPage(mNativeOfflinePageBridge, webContents);
     }
@@ -484,7 +484,7 @@ public class OfflinePageBridge {
      * @param origin Origin of the page.
      */
     public void scheduleDownload(
-            WebContents webContents,
+            @Nullable WebContents webContents,
             String nameSpace,
             String url,
             int uiAction,
@@ -797,11 +797,11 @@ public class OfflinePageBridge {
                 long nativeOfflinePageBridge, @Nullable WebContents webContents);
 
         boolean isShowingDownloadButtonInErrorPage(
-                long nativeOfflinePageBridge, WebContents webContents);
+                long nativeOfflinePageBridge, @Nullable WebContents webContents);
 
         void scheduleDownload(
                 long nativeOfflinePageBridge,
-                WebContents webContents,
+                @Nullable WebContents webContents,
                 @JniType("std::string") String nameSpace,
                 @JniType("std::string") String url,
                 int uiAction,
