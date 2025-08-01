@@ -27,10 +27,6 @@ struct BLINK_COMMON_EXPORT
     return input.sync_token;
   }
 
-  static gfx::ColorSpace color_space(const blink::AcceleratedImageInfo& input) {
-    return input.color_space;
-  }
-
   static SkAlphaType alpha_type(const blink::AcceleratedImageInfo& input) {
     return input.alpha_type;
   }

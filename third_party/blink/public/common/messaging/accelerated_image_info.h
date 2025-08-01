@@ -11,7 +11,6 @@
 #include "gpu/command_buffer/common/sync_token.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/skia/include/core/SkAlphaType.h"
-#include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace blink {
@@ -24,7 +23,6 @@ struct BLINK_COMMON_EXPORT AcceleratedImageInfo {
   gpu::ExportedSharedImage shared_image;
   gpu::SyncToken sync_token;
   SkAlphaType alpha_type;
-  gfx::ColorSpace color_space;
   base::OnceCallback<void(const gpu::SyncToken& sync_token)> release_callback;
 };
 

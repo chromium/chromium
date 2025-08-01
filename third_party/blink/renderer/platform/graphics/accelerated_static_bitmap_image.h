@@ -56,7 +56,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
       scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
@@ -71,7 +70,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       gpu::ExportedSharedImage exported_shared_image,
       const gpu::SyncToken& sync_token,
       SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
       base::OnceCallback<void(const gpu::SyncToken&)> release_callback);
 
   bool IsOpaque() override;
@@ -125,7 +123,9 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   gfx::Size GetSize() const override { return shared_image_->size(); }
   SkAlphaType GetAlphaType() const override { return alpha_type_; }
-  gfx::ColorSpace GetColorSpace() const override { return color_space_; }
+  gfx::ColorSpace GetColorSpace() const override {
+    return shared_image_->color_space();
+  }
   viz::SharedImageFormat GetSharedImageFormat() const override {
     return shared_image_->format();
   }
@@ -144,7 +144,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
       const gpu::SyncToken&,
       GLuint shared_image_texture_id,
       SkAlphaType alpha_type,
-      const gfx::ColorSpace& color_space,
       const ImageOrientation& orientation,
       base::WeakPtr<WebGraphicsContext3DProviderWrapper>,
       base::PlatformThreadRef context_thread_ref,
@@ -156,7 +155,6 @@ class PLATFORM_EXPORT AcceleratedStaticBitmapImage final
 
   scoped_refptr<gpu::ClientSharedImage> shared_image_;
   SkAlphaType alpha_type_;
-  gfx::ColorSpace color_space_;
 
   base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper_;
   scoped_refptr<MailboxRef> mailbox_ref_;

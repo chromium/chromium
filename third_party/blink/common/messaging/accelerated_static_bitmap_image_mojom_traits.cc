@@ -63,7 +63,6 @@ bool StructTraits<blink::mojom::AcceleratedStaticBitmapImage::DataView,
          blink::AcceleratedImageInfo* out) {
   if (!data.ReadSharedImage(&out->shared_image) ||
       !data.ReadSyncToken(&out->sync_token) ||
-      !data.ReadColorSpace(&out->color_space) ||
       !data.ReadAlphaType(&out->alpha_type)) {
     return false;
   }

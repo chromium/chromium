@@ -56,7 +56,7 @@ scoped_refptr<StaticBitmapImage> CreateBitmap(
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasSharedImage(
       std::move(client_si), GenTestSyncToken(100), 0, kPremul_SkAlphaType,
-      gfx::ColorSpace::CreateSRGB(), SharedGpuContext::ContextProviderWrapper(),
+      SharedGpuContext::ContextProviderWrapper(),
       base::PlatformThread::CurrentRef(),
       base::MakeRefCounted<base::NullTaskRunner>(), base::DoNothing());
 }
