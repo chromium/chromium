@@ -1,8 +1,6 @@
 dgn@chromium.org
 droger@chromium.org
 rhalavati@chromium.org
+rsult@google.com
 
 per-file avatar_toolbar_button*=ernn@google.com
-
-per-file avatar_toolbar_button*=rsult@google.com
-per-file batch_upload_dialog_view*=rsult@google.com
