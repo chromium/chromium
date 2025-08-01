@@ -34,13 +34,19 @@ using data_sharing_pb::MemberRole;
 
 namespace {
 
+// URL used to create SavedTabGroupTab.
+constexpr char kTabURL[] = "https://google.com";
+
+// Title for the shared tab.
+constexpr char16_t kSharedTabTitle[] = u"Google";
+
 // Delay to observe when deleting a shared tab group from the server.
 constexpr base::TimeDelta kDeleteGroupDelay = base::Seconds(0.5);
 
 // Creates a saved tab belonging to `group_guid` group.
-tab_groups::SavedTabGroupTab CreateTab(const base::Uuid& group_guid) {
-  tab_groups::SavedTabGroupTab saved_tab(GURL("https://google.com"), u"Google",
-                                         group_guid,
+tab_groups::SavedTabGroupTab CreateTab(const base::Uuid& group_guid,
+                                       const GURL& url) {
+  tab_groups::SavedTabGroupTab saved_tab(url, kSharedTabTitle, group_guid,
                                          /*position=*/0);
   return saved_tab;
 }
@@ -186,11 +192,11 @@ NSString* TestShareKitService::JoinTabGroup(ShareKitJoinConfiguration* config) {
   viewController.flowCompleteBlock = config.completion;
 
   // Set the joined group completion block.
-  auto joined_group_completion_block =
-      ^(NSString* collab_id, ProceduralBlock continuation_block) {
-        CreateSharedTabGroupInFakeServer(/*owner=*/false, collab_id);
-        continuation_block();
-      };
+  auto joined_group_completion_block = ^(NSString* collab_id,
+                                         ProceduralBlock continuation_block) {
+    CreateSharedTabGroupInFakeServer(/*owner=*/false, collab_id, GURL(kTabURL));
+    continuation_block();
+  };
 
   viewController.actionAcceptedBlock = joined_group_completion_block;
 
@@ -383,16 +389,16 @@ void TestShareKitService::ProcessTabGroupSharingResult(
   chrome_test_util::DeleteAllEntitiesForDataType(syncer::SAVED_TAB_GROUP);
 }
 
-void TestShareKitService::CreateSharedTabGroupInFakeServer(
-    bool owner,
-    NSString* collab_id) {
+void TestShareKitService::CreateSharedTabGroupInFakeServer(bool owner,
+                                                           NSString* collab_id,
+                                                           const GURL& url) {
   if (!tab_group_sync_service_) {
     return;
   }
 
   base::Uuid group_guid = base::Uuid::GenerateRandomV4();
   std::vector<tab_groups::SavedTabGroupTab> tabs;
-  tab_groups::SavedTabGroupTab tab = CreateTab(group_guid);
+  tab_groups::SavedTabGroupTab tab = CreateTab(group_guid, url);
   tabs.push_back(tab);
   chrome_test_util::AddTabToFakeServer(tab);
   chrome_test_util::AddGroupToFakeServer(

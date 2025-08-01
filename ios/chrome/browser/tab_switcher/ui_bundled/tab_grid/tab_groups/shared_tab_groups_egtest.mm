@@ -142,9 +142,13 @@ void ShareGroupAtIndex(unsigned int index) {
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:TabGridDoneButton()];
 }
 
-// Adds a shared tab group and sets the user as `owner` or not of the group.
-void AddSharedGroup(BOOL owner) {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
+// Adds a shared tab group with a test URL and sets the user as `owner` or not
+// of the group.
+void AddSharedGroup(BOOL owner,
+                    net::test_server::EmbeddedTestServer* test_server) {
+  NSString* url = base::SysUTF8ToNSString(
+      GetQueryTitleURL(test_server, kSharedTabTitle).spec());
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner url:url];
   // Sleep for 1 second to make sure that the shared group data are correctly
   // fetched.
   base::PlatformThread::Sleep(base::Seconds(1));
@@ -496,7 +500,7 @@ void WaitForFakeJoinFlowView() {
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // deleting the shared group as owner.
 - (void)testShareGroupAndDeleteUsingContextMenus {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
 
   // Long press the group.
   LongPressTabGroupCellAtIndex(0);
@@ -519,7 +523,7 @@ void WaitForFakeJoinFlowView() {
 
 // Checks joining a group. Then leaving the shared group as member.
 - (void)testJoinGroupAndLeaveUsingContextMenus {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Long press the group.
   LongPressTabGroupCellAtIndex(0);
@@ -543,7 +547,7 @@ void WaitForFakeJoinFlowView() {
 // Checks opening the Share flow from the Tab Grid and actually sharing. Then
 // deleting the shared group from the group view as owner.
 - (void)testShareGroupAndDeleteFromGroupViewUsingContextMenus {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -574,7 +578,7 @@ void WaitForFakeJoinFlowView() {
 // Checks joining a group. Then leaving the shared group from the group view as
 // member.
 - (void)testJoinGroupAndLeaveFromGroupViewUsingContextMenus {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -606,7 +610,7 @@ void WaitForFakeJoinFlowView() {
 // the last tab, when "Keep Group" is pressed and delete the group when "Delete
 // Group" is pressed.
 - (void)testLastTabClosedOwnerAlert {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -673,7 +677,7 @@ void WaitForFakeJoinFlowView() {
 //     - Context menu and then 'Close Tab'
 // * Close from the navigating view, long press on the tab grid icon.
 - (void)testLastTabClosedAlerts {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -739,7 +743,7 @@ void WaitForFakeJoinFlowView() {
 // Ensures the last tab close alert as a member is displayed when the group is
 // shared.
 - (void)testLastTabClosedMemberAlert {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -790,7 +794,7 @@ void WaitForFakeJoinFlowView() {
 
 // Ensures the Recent Activity panel is showing the right information.
 - (void)testRecentActivity {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   // Open the group view.
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -819,7 +823,7 @@ void WaitForFakeJoinFlowView() {
     EARL_GREY_TEST_DISABLED(@"Test disabled on iOS 26.");
   }
   // Load regular tab 1 on the first window.
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1 inWindowWithNumber:0];
 
   // Open a second window.
@@ -872,7 +876,7 @@ void WaitForFakeJoinFlowView() {
 
 // Ensures new tab is added when closing the last tab of a shared group.
 - (void)testCloseLastTabInSharedGroup {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   id<GREYMatcher> sharedTabMatcher =
@@ -897,7 +901,7 @@ void WaitForFakeJoinFlowView() {
 // Ensures the last tab close alert works when the closed tab is not the active
 // one and there is no other NTP tab, see crbug.com/419042071.
 - (void)testNotActiveLastTabClosedAlert {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridNewTabButton()]
       performAction:grey_tap()];
@@ -965,7 +969,7 @@ void WaitForFakeJoinFlowView() {
   // Create 2 groups, one shared and one local.
   [ChromeEarlGreyUI openNewTab];
   [ChromeEarlGrey loadURL:GetQueryTitleURL(self.testServer, kTab2Title)];
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
   CreateTabGroupAtIndex(0, kGroup2Name, /*first_group=*/false);
 
   // Open the shared group and move the only tab in it to the other group.
@@ -999,7 +1003,7 @@ void WaitForFakeJoinFlowView() {
 
 // Ensures new tab is added when moving the last tab of a shared group.
 - (void)testLastTabCloseWithClearBrowsingData {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   [[EarlGrey selectElementWithMatcher:TabGridGroupCellAtIndex(0)]
@@ -1040,7 +1044,7 @@ void WaitForFakeJoinFlowView() {
 // group.
 // TODO(crbug.com/435327953): Reenable this test.
 - (void)FLAKY_testAddNewTabFromAnotherAccount {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the group view.
@@ -1139,7 +1143,7 @@ void WaitForFakeJoinFlowView() {
 
 // Tests that the recent activity menu has a link to all activity logs.
 - (void)testRecentActivityMenu {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the group view.
@@ -1188,7 +1192,7 @@ void WaitForFakeJoinFlowView() {
 // Tests that tapping items on Recent Activity takes an action corresponded to
 // the item.
 - (void)testTapRecentActivityItems {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the group view.
@@ -1279,7 +1283,7 @@ void WaitForFakeJoinFlowView() {
 // Tests that the activity summary is displayed when a tab is added from sync to
 // a shared tab group.
 - (void)testActivitySummary {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the group view.
@@ -1315,7 +1319,7 @@ void WaitForFakeJoinFlowView() {
 // Tests that the activity label on a group cell and a grid cell is updated when
 // a shared group is updated.
 - (void)testActivityLabel {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Add a tab to the shared group by a member in the shared group.
@@ -1362,7 +1366,7 @@ void WaitForFakeJoinFlowView() {
 // Tests that the badge on the tab switcher appears when a shared group is
 // updated and disappears when a user visits the updated page.
 - (void)testTabSwitcherBadge {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Add a new tab.
@@ -1427,7 +1431,7 @@ void WaitForFakeJoinFlowView() {
 // Tests that the activity indicators (blue dot and notification dot) on the
 // toolbar are updated when a shared group is updated.
 - (void)testActivityIndicatorsOnToolbar {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the group view.
@@ -1478,7 +1482,7 @@ void WaitForFakeJoinFlowView() {
     EARL_GREY_TEST_SKIPPED(@"No tab strip on this device.");
   }
 
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   // Open the group view.

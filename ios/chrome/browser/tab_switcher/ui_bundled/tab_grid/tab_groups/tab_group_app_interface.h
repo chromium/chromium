@@ -15,10 +15,11 @@
 // Creates and saves `numberOfGroups` synced tab groups.
 + (void)prepareFakeSyncedTabGroups:(NSInteger)numberOfGroups;
 
-// Creates and saves `numberOfGroups` shared tab groups. The user (using foo1
-// account) will be set as `owner` or not of the group.
+// Creates and saves `numberOfGroups` shared tab groups with a tab using `url`.
+// The user (using foo1 account) will be set as `owner` or not of the group.
 + (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups
-                           asOwner:(BOOL)owner;
+                           asOwner:(BOOL)owner
+                               url:(NSString*)url;
 
 // Removes a group at `index`.
 + (void)removeAtIndex:(unsigned int)index;

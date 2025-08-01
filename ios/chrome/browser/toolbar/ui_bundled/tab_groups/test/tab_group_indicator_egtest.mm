@@ -128,9 +128,13 @@ void CreateDefaultTabGroupAndOpenMenu(
       performAction:grey_tap()];
 }
 
-// Creates a shared tab group and opens the tab group indicator menu.
-void CreateSharedGroupAndOpenMenu() {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:NO];
+// Creates a shared tab group with a test URL and opens the tab group
+// indicator menu.
+void CreateSharedGroupAndOpenMenu(
+    net::test_server::EmbeddedTestServer* test_server) {
+  NSString* url =
+      base::SysUTF8ToNSString(GetQueryTitleURL(test_server, kTab1Title).spec());
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:NO url:url];
   [ChromeEarlGreyUI openTabGrid];
   [[EarlGrey selectElementWithMatcher:TabGridCloseButtonForCellAtIndex(0)]
       performAction:grey_tap()];
@@ -515,7 +519,7 @@ void CreateSharedGroupAndOpenMenu() {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");
   }
-  CreateSharedGroupAndOpenMenu();
+  CreateSharedGroupAndOpenMenu(self.testServer);
 
   // Verify that the leave button is not available.
   [[EarlGrey selectElementWithMatcher:LeaveSharedGroupButton()]
@@ -545,7 +549,7 @@ void CreateSharedGroupAndOpenMenu() {
     EARL_GREY_TEST_SKIPPED(@"On iPad, the tab group indicator is not displayed "
                            @"if the tab strip is visible.");
   }
-  CreateSharedGroupAndOpenMenu();
+  CreateSharedGroupAndOpenMenu(self.testServer);
 
   // Verify that the delete button is not available.
   [[EarlGrey selectElementWithMatcher:DeleteGroupButton()]

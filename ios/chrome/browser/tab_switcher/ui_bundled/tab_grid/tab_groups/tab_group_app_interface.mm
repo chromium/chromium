@@ -116,14 +116,16 @@ ACTION_TEMPLATE(InvokeCallbackArgument,
 }
 
 + (void)prepareFakeSharedTabGroups:(NSInteger)numberOfGroups
-                           asOwner:(BOOL)owner {
+                           asOwner:(BOOL)owner
+                               url:(NSString*)url {
+  GURL gurl(base::SysNSStringToUTF8(url));
   for (NSInteger i = 0; i < numberOfGroups; i++) {
     NSString* collaborationID =
         [NSString stringWithFormat:@"CollaborationID%ld", i];
 
     // Create a shared tab group in the fake server.
-    GetShareKitService()->CreateSharedTabGroupInFakeServer(owner,
-                                                           collaborationID);
+    GetShareKitService()->CreateSharedTabGroupInFakeServer(
+        owner, collaborationID, gurl);
   }
 
   chrome_test_util::TriggerSyncCycle(syncer::COLLABORATION_GROUP);

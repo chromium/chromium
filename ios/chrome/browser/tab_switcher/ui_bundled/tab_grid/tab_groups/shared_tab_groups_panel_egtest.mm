@@ -37,9 +37,13 @@ namespace {
 
 NSString* const kGroupTitle = @"shared group";
 
-// Adds a shared tab group and sets the user as `owner` or not of the group.
-void AddSharedGroup(BOOL owner) {
-  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner];
+// Adds a shared tab group with a test URL and sets the user as `owner` or not
+// of the group.
+void AddSharedGroup(BOOL owner,
+                    net::test_server::EmbeddedTestServer* test_server) {
+  NSString* url = base::SysUTF8ToNSString(
+      GetQueryTitleURL(test_server, kGroupTitle).spec());
+  [TabGroupAppInterface prepareFakeSharedTabGroups:1 asOwner:owner url:url];
   // Sleep for 3 seconds to make sure that the shared group data are correctly
   // fetched.
   // This sleep is longer than other `AddSharedGroup:` sleeps because, unlike
@@ -98,7 +102,7 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that deleting a shared tab group from groups panel works.
 - (void)testSharedTabGroupsPanelDeleteSharedGroup {
-  AddSharedGroup(/*owner=*/YES);
+  AddSharedGroup(/*owner=*/YES, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
@@ -136,7 +140,7 @@ void AddSharedGroup(BOOL owner) {
 
 // Tests that leaving a shared tab group from the tab groups panel works.
 - (void)testSharedTabGroupsPanelLeaveSharedGroup {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
       performAction:grey_tap()];
@@ -175,7 +179,7 @@ void AddSharedGroup(BOOL owner) {
 // Checks that being removed from a shared group makes a notification appear at
 // the top of the Tab Groups panel.
 - (void)testNotificationOnSharedGroupRemoved {
-  AddSharedGroup(/*owner=*/NO);
+  AddSharedGroup(/*owner=*/NO, self.testServer);
   [ChromeEarlGrey waitForMainTabCount:1];
 
   [[EarlGrey selectElementWithMatcher:TabGridTabGroupsPanelButton()]
