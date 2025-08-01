@@ -1,0 +1,19 @@
+This is a testharness.js-based test.
+[FAIL] Property text-decoration value 'none'
+  assert_equals: expected "none" but got "rgb(0, 0, 255)"
+[FAIL] Property text-decoration value 'line-through'
+  assert_equals: expected "line-through" but got "line-through rgb(0, 0, 255)"
+[FAIL] Property text-decoration value 'solid'
+  assert_equals: expected "none" but got "rgb(0, 0, 255)"
+[FAIL] Property text-decoration value 'currentcolor'
+  assert_equals: expected "none" but got "rgb(0, 0, 255)"
+[FAIL] Property text-decoration value 'double overline underline'
+  assert_equals: expected "underline overline double" but got "underline overline double rgb(0, 0, 255)"
+[FAIL] Property text-decoration value 'auto'
+  assert_equals: expected "none" but got "rgb(0, 0, 255)"
+[FAIL] Property text-decoration value 'from-font'
+  assert_equals: expected "from-font" but got "from-font rgb(0, 0, 255)"
+[FAIL] Property text-decoration value '10px'
+  assert_equals: expected "10px" but got "10px rgb(0, 0, 255)"
+Harness: the test ran to completion.
+

@@ -1,0 +1,5 @@
+This is a testharness.js-based test.
+[FAIL] getComputedStyle() with fragmented containing block in multicolumn layout
+  assert_equals: expected "25px" but got "-85px"
+Harness: the test ran to completion.
+
