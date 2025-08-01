@@ -352,7 +352,7 @@ class WebUIContentsPreloadManagerHistoryClusterMetricTest
 
 // Tests that history cluster metrics are NOT recorded for a preloaded History
 // Clusters UI that is never shown.
-// TODO(crbug.com/435561866) This test seems flaky.
+// TODO(https://crbug.com/435561866): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
                        DISABLED_PreloadButNeverShow) {
   base::HistogramTester histogram_tester;
@@ -369,8 +369,9 @@ IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
 
 // Tests that history cluster metrics are recorded for a preloaded History
 // Clusters UI that is shown.
+// TODO(https://crbug.com/435561866): Deflake and re-enable.
 IN_PROC_BROWSER_TEST_F(WebUIContentsPreloadManagerHistoryClusterMetricTest,
-                       PreloadAndShow) {
+                       DISABLED_PreloadAndShow) {
   base::HistogramTester histogram_tester;
   test_api().MaybePreloadForBrowserContext(browser()->profile());
   navigation_waiter()->Wait();
