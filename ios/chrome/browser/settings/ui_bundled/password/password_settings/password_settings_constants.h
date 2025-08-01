@@ -18,7 +18,6 @@ typedef NS_ENUM(NSInteger, PasswordSettingsSectionIdentifier) {
   SectionIdentifierGooglePasswordManagerPin,
   SectionIdentifierOnDeviceEncryption,
   SectionIdentifierExportPasswordsButton,
-  SectionIdentifierImportPasswordsButton,
   SectionIdentifierDeleteCredentialsButton,
 };
 

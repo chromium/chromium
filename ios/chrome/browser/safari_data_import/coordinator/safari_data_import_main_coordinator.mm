@@ -38,7 +38,7 @@
 }
 
 - (void)start {
-  CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
+  CHECK(ShouldShowSafariImportWorkflow());
   _viewController = [[SafariDataImportEntryPointViewController alloc] init];
   _viewController.modalInPresentation = YES;
   _viewController.actionHandler = self;

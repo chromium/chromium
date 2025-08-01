@@ -2489,7 +2489,7 @@ using UserFeedbackDataCallback =
     // Currently displaying.
     return;
   }
-  CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
+  CHECK(ShouldShowSafariImportWorkflow());
   SafariDataImportMainCoordinator* safariDataImportCoordinator =
       [[SafariDataImportMainCoordinator alloc]
           initWithBaseViewController:self.activeViewController

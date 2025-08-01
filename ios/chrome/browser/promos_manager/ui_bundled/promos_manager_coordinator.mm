@@ -645,7 +645,7 @@
   }
 
   // Safari Import remind me later handler.
-  if (base::FeatureList::IsEnabled(kImportPasswordsFromSafari)) {
+  if (ShouldShowSafariImportWorkflow()) {
     _displayHandlerPromos[promos_manager::Promo::SafariImportRemindMeLater] =
         [[SafariDataImportReminderPromoDisplayHandler alloc]
             initWithApplicationCommandsHandler:_applicationCommandHandler

@@ -15,7 +15,7 @@
   if (IsBestOfAppGuidedTourEnabled()) {
     [screens addObject:@(kGuidedTour)];
   }
-  if (base::FeatureList::IsEnabled(kImportPasswordsFromSafari)) {
+  if (ShouldShowSafariImportWorkflow()) {
     [screens addObject:@(kSafariImport)];
   }
   [screens addObject:@(kStepsCompleted)];

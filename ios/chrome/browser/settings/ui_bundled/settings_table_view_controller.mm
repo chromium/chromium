@@ -563,7 +563,7 @@ struct EnhancedSafeBrowsingActivePromoData
     [model addItem:[self downloadsSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   }
-  if (base::FeatureList::IsEnabled(kImportPasswordsFromSafari)) {
+  if (ShouldShowSafariImportWorkflow()) {
     [model addItem:[self safariDataImportSettingsDetailItem]
         toSectionWithIdentifier:SettingsSectionIdentifierInfo];
   }
@@ -1378,7 +1378,7 @@ struct EnhancedSafeBrowsingActivePromoData
       [self showTabsSettings];
       break;
     case SettingsItemTypeSafariDataImport: {
-      CHECK(base::FeatureList::IsEnabled(kImportPasswordsFromSafari));
+      CHECK(ShouldShowSafariImportWorkflow());
       base::RecordAction(base::UserMetricsAction("Settings.SafariImport"));
       id<ApplicationCommands> handler = HandlerForProtocol(
           _browser->GetCommandDispatcher(), ApplicationCommands);

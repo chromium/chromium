@@ -13,3 +13,11 @@ BASE_FEATURE(kImportPasswordsFromSafari,
 BASE_FEATURE(kPasswordManagerEnableCrowdsourcingUploads,
              "PasswordManagerEnableCrowdsourcingUploads",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+bool ShouldShowSafariImportWorkflow() {
+  // Safari export is not available on iOS versions earlier than 18.2.
+  if (@available(iOS 18.2, *)) {
+    return base::FeatureList::IsEnabled(kImportPasswordsFromSafari);
+  }
+  return false;
+}

@@ -21,7 +21,6 @@
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/app/tests_hook.h"
 #import "ios/chrome/browser/credential_provider/model/features.h"
-#import "ios/chrome/browser/passwords/model/features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_manager_ui_features.h"
 #import "ios/chrome/browser/settings/ui_bundled/password/password_settings/password_settings_constants.h"
 #import "ios/chrome/browser/shared/coordinator/utils/credential_provider_settings_utils.h"
@@ -68,7 +67,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeOnDeviceEncryptionOptedInLearnMore,
   ItemTypeOnDeviceEncryptionSetUp,
   ItemTypeExportPasswordsButton,
-  ItemTypeImportPasswordsButton,
   ItemTypeDeleteCredentialsButton,
   ItemTypeFooter,
 };
@@ -208,9 +206,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
 
   // The item related to the button for exporting passwords.
   TableViewTextItem* _exportPasswordsItem;
-
-  // The item related to the button for importing passwords.
-  TableViewTextItem* _importPasswordsItem;
 }
 
 - (instancetype)init {
@@ -306,25 +301,17 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   [model addItem:_exportPasswordsItem
       toSectionWithIdentifier:SectionIdentifierExportPasswordsButton];
 
-  // Import passwords button.
-  if (base::FeatureList::IsEnabled(kImportPasswordsFromSafari)) {
-    [model addSectionWithIdentifier:SectionIdentifierImportPasswordsButton];
-    _importPasswordsItem = [self createImportPasswordsItem];
-    [model addItem:_importPasswordsItem
-        toSectionWithIdentifier:SectionIdentifierImportPasswordsButton];
-  }
+  // Delete credentials button.
+  [model addSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
+  _deleteCredentialsItem = [self createDeleteCredentialsItem];
+  _deleteCredentialsFooterItem = [self createCredentialDeletionFooterItem];
+  [self updateDeleteAllCredentialsSection];
+  [model addItem:_deleteCredentialsItem
+      toSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
 
-    // Delete credentials button.
-    [model addSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
-    _deleteCredentialsItem = [self createDeleteCredentialsItem];
-    _deleteCredentialsFooterItem = [self createCredentialDeletionFooterItem];
-    [self updateDeleteAllCredentialsSection];
-    [model addItem:_deleteCredentialsItem
-        toSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
-
-    // Add footer for the delete credential section.
-    [model setFooter:_deleteCredentialsFooterItem
-        forSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
+  // Add footer for the delete credential section.
+  [model setFooter:_deleteCredentialsFooterItem
+      forSectionWithIdentifier:SectionIdentifierDeleteCredentialsButton];
 
   if (_canBulkMoveLocalPasswordsToAccount) {
     [self updateBulkMovePasswordsToAccountSection];
@@ -425,10 +412,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
       if (_canExportPasswords) {
         [self.presentationDelegate startExportFlow];
       }
-      break;
-    }
-    case ItemTypeImportPasswordsButton: {
-      // TODO(crbug.com/407587751): Start import flow.
       break;
     }
     case ItemTypeOnDeviceEncryptionSetUp: {
@@ -670,16 +653,6 @@ BOOL AutomaticPasskeyUpgradeFeatureEnabled() {
   exportPasswordsItem.text = l10n_util::GetNSString(IDS_IOS_EXPORT_PASSWORDS);
   exportPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
   return exportPasswordsItem;
-}
-
-// Creates the "Import Passwords..." button.
-- (TableViewTextItem*)createImportPasswordsItem {
-  TableViewTextItem* importPasswordsItem =
-      [[TableViewTextItem alloc] initWithType:ItemTypeImportPasswordsButton];
-  importPasswordsItem.text = l10n_util::GetNSString(IDS_IOS_IMPORT_PASSWORDS);
-  importPasswordsItem.accessibilityTraits = UIAccessibilityTraitButton;
-  importPasswordsItem.textColor = [UIColor colorNamed:kBlueColor];
-  return importPasswordsItem;
 }
 
 // Creates the "Delete all data" button.
