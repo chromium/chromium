@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(FeatureFirstRunDialogHelperBrowserTest,
   auto* expected_content_view = content_view.get();
 
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-  auto banner =
-      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE);
+  auto banner = bundle.GetThemedLottieImageNamed(
+      IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE);
 
   auto* web_contents = browser()->tab_strip_model()->GetActiveWebContents();
   auto* dialog_widget =

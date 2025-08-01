@@ -275,10 +275,9 @@ int SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
     case EntityTypeName::kDriversLicense:
       return IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE;
     case EntityTypeName::kNationalIdCard:
-      // TODO(crbug.com/429106754): Update illustration.
-      return IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE;
+      return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
     case EntityTypeName::kPassport:
-      return IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE;
+      return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
     case EntityTypeName::kVehicle:
       return IDR_AUTOFILL_SAVE_VEHICLE_LOTTIE;
   }

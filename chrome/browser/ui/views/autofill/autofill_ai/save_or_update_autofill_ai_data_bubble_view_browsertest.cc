@@ -49,7 +49,8 @@ class SaveOrUpdateAutofillAiDataBubbleViewBrowsertest
 
     base::i18n::SetRTLForTesting(IsBrowserLanguageRTL(this->GetParam()));
     ON_CALL(mock_controller(), GetTitleImagesResourceId())
-        .WillByDefault(testing::Return(IDR_AUTOFILL_SAVE_PASSPORT_LOTTIE));
+        .WillByDefault(testing::Return(
+            IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE));
   }
 
   void DismissUi() override { bubble_ = nullptr; }
