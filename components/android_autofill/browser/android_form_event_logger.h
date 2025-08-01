@@ -9,7 +9,7 @@
 
 namespace autofill {
 
-// Logs autofill funnel and key metrics for weblayer.
+// Logs autofill funnel and key metrics.
 class AndroidFormEventLogger {
  public:
   explicit AndroidFormEventLogger(const std::string& form_type_name);
