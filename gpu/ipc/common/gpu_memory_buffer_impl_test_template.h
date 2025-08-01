@@ -7,7 +7,7 @@
 #pragma allow_unsafe_buffers
 #endif
 
-// This file defines tests that implementations of GpuMemoryBufferFactory should
+// This file defines tests that implementations of GpuMemoryBufferImpl should
 // pass in order to be conformant.
 
 #ifndef GPU_IPC_COMMON_GPU_MEMORY_BUFFER_IMPL_TEST_TEMPLATE_H_
