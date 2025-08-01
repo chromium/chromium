@@ -11,6 +11,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/memory/raw_ptr.h"
+#include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "third_party/skia/include/core/SkColor.h"
 
@@ -97,8 +98,16 @@ class InfoBarContainer : public InfoBarManager::Observer {
   // infobar->Show().
   void AddInfoBar(InfoBar* infobar, size_t position, bool animate);
 
+  // Returns the InfoBarManager that this object is observing.
+  InfoBarManager* manager() { return scoped_observation_.GetSource(); }
+  const InfoBarManager* manager() const {
+    return scoped_observation_.GetSource();
+  }
+
+  base::ScopedObservation<InfoBarManager, InfoBarManager::Observer>
+      scoped_observation_{this};
+
   raw_ptr<Delegate> delegate_;
-  raw_ptr<InfoBarManager> infobar_manager_;
   InfoBars infobars_;
 
   // Normally false.  When true, OnInfoBarStateChanged() becomes a no-op.  We
