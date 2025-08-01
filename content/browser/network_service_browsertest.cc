@@ -23,6 +23,7 @@
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -671,7 +672,8 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
   // listening on it if `load_only_from_cache` is true.
   int MakeNetworkContentAndLoadUrl(bool reset_cache,
                                    bool load_only_from_cache,
-                                   const GURL& url) {
+                                   const GURL& url,
+                                   bool expect_cache_reset_failure) {
     auto file_paths = network::mojom::NetworkContextFilePaths::New();
     base::FilePath context_path = GetNetworkContextPath();
     file_paths->data_directory = context_path.Append(FILE_PATH_LITERAL("Data"));
@@ -727,17 +729,20 @@ class NetworkServiceBrowserCacheResetTest : public NetworkServiceBrowserTest {
               loop.Quit();
             }));
     loop.Run();
-    return loader->NetError();
-  }
 
-  void GetCacheFileInfo(base::File::Info& info) {
-    base::FilePath ceontxt_path = GetNetworkContextPath();
-    base::FileEnumerator cache_files(GetNetworkContextCachePath(), true,
-                                     base::FileEnumerator::FILES);
-    // Cache entries created.
-    auto file_path = cache_files.Next();
-    ASSERT_FALSE(file_path.empty());
-    ASSERT_TRUE(base::GetFileInfo(file_path, &info));
+    base::test::TestFuture<bool, int64_t> future;
+    network_context->ComputeHttpCacheSize(base::Time(), base::Time::Max(),
+                                          future.GetCallback());
+    const auto [_, size_or_error] = future.Take();
+
+    if (reset_cache) {
+      EXPECT_EQ(size_or_error,
+                expect_cache_reset_failure ? net::ERR_FAILED : 0);
+    } else {
+      EXPECT_GT(size_or_error, 0);
+    }
+    return loader->NetError();
+    ;
   }
 };
 
@@ -752,7 +757,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
   ASSERT_NO_FATAL_FAILURE(StoreUrl(url));
 
   EXPECT_THAT(MakeNetworkContentAndLoadUrl(
-                  /*reset_cache=*/false, /*load_only_from_cache=*/false, url),
+                  /*reset_cache=*/false, /*load_only_from_cache=*/false, url,
+                  /*expect_cache_reset_failure=*/false),
               net::test::IsOk());
 }
 
@@ -763,9 +769,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest,
   GURL url;
   ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
 
-  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/false,
-                                           /*load_only_from_cache=*/true, url),
-              net::test::IsOk());
+  EXPECT_THAT(
+      MakeNetworkContentAndLoadUrl(/*reset_cache=*/false,
+                                   /*load_only_from_cache=*/true, url,
+                                   /*expect_cache_reset_failure=*/false),
+      net::test::IsOk());
 }
 
 // Using the same network context, reset the cache backend and verify that cache
@@ -774,9 +782,11 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetTest) {
   GURL url;
   ASSERT_NO_FATAL_FAILURE(RetrieveUrl(url));
 
-  EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
-                                           /*load_only_from_cache=*/true, url),
-              net::test::IsError(net::ERR_CACHE_MISS));
+  EXPECT_THAT(
+      MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
+                                   /*load_only_from_cache=*/true, url,
+                                   /*expect_cache_reset_failure=*/false),
+      net::test::IsError(net::ERR_CACHE_MISS));
 }
 
 #if BUILDFLAG(IS_POSIX)
@@ -792,7 +802,8 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceBrowserCacheResetTest, CacheResetFailure) {
   ASSERT_TRUE(base::SetPosixFilePermissions(path, /*mode=*/0));
 
   EXPECT_THAT(MakeNetworkContentAndLoadUrl(/*reset_cache=*/true,
-                                           /*load_only_from_cache=*/true, url),
+                                           /*load_only_from_cache=*/true, url,
+                                           /*expect_cache_reset_failure=*/true),
               net::test::IsError(net::ERR_CACHE_MISS));
 }
 #endif  // BUILDFLAG(IS_POSIX)

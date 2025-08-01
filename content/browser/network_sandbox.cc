@@ -25,6 +25,7 @@
 
 #include "base/win/security_util.h"
 #include "base/win/sid.h"
+#include "content/browser/network_service_instance_impl.h"
 #include "content/common/features.h"
 #include "sandbox/policy/features.h"
 #endif  // BUILDFLAG(IS_WIN)
@@ -234,15 +235,22 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   static constexpr DWORD kInheritance =
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE;
 
+  // For cache dir only, ACL the parent above the "Cache_Data" directory to
+  // ensure that rename/delete operations can take place correctly.
+  base::FilePath directory_to_acl = directory->path();
+
+  if (directory_to_acl.BaseName() == base::FilePath(kCacheDataDirectoryName)) {
+    directory_to_acl = directory_to_acl.DirName();
+  }
   // If LPAC capability already has access to the directory then avoid
   // granting access again. This is a performance optimization.
-  if (HasAccessToPath(directory->path(), ac_sids, kAccessMask, kInheritance)) {
+  if (HasAccessToPath(directory_to_acl, ac_sids, kAccessMask, kInheritance)) {
     return true;
   }
 
   // Grant recursive access to directory. This also means new files in the
   // directory will inherit the ACE.
-  return base::win::GrantAccessToPath(directory->path(), ac_sids, kAccessMask,
+  return base::win::GrantAccessToPath(directory_to_acl, ac_sids, kAccessMask,
                                       kInheritance, /*recursive=*/true);
 #else
   if (directory->IsOpenForTransferRequired()) {
