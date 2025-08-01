@@ -93,7 +93,6 @@ build_webui("build") {
   ts_deps = [
     "//chrome/browser/resources/new_tab_shared:build_ts",
     "//third_party/lit/v3_0:build_ts",
-    "//third_party/polymer/v3_0:library",
     "//ui/webui/resources/cr_components/color_change_listener:build_ts",
     "//ui/webui/resources/cr_components/help_bubble:build_ts",
     "//ui/webui/resources/cr_components/most_visited:build_ts",

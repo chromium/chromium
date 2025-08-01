@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 import './calendar_event.js';
 
+import {assert} from 'chrome://resources/js/assert.js';
 import {CrLitElement} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 import type {PropertyValues} from 'chrome://resources/lit/v3_0/lit.rollup.js';
 
@@ -68,9 +69,11 @@ export class CalendarElement extends CrLitElement {
 
   private computeDoubleBookedIndices_(): number[] {
     const results: number[] = [];
+    const expandedEvent = this.events[this.expandedEventIndex_];
+    assert(expandedEvent);
     for (let i = this.expandedEventIndex_ + 1; i < this.events.length; i++) {
-      if (this.events[i].startTime.internalValue ===
-          this.events[this.expandedEventIndex_].startTime.internalValue) {
+      if (this.events[i]!.startTime.internalValue ===
+          expandedEvent.startTime.internalValue) {
         results.push(i);
       } else {
         break;
@@ -82,7 +85,9 @@ export class CalendarElement extends CrLitElement {
   private compareEventPriority_(
       eventAIndex: number, eventBIndex: number, soon: number): number {
     const eventA = this.events[eventAIndex];
+    assert(eventA);
     const eventB = this.events[eventBIndex];
+    assert(eventB);
     const eventAStartTime = toJsTimestamp(eventA.startTime);
     const eventBStartTime = toJsTimestamp(eventB.startTime);
     const eventAInProgress = eventAStartTime <= soon;
@@ -129,8 +134,9 @@ export class CalendarElement extends CrLitElement {
     // Find the indices of all meetings that are not over.
     let expandableEventIndices: number[] = this.events.map((_, i) => i);
     expandableEventIndices = expandableEventIndices.filter((eventIndex) => {
-      const endTimeMs = toJsTimestamp(this.events[eventIndex].endTime);
-      return endTimeMs > now;
+      const expandableEvent = this.events[eventIndex];
+      assert(expandableEvent);
+      return toJsTimestamp(expandableEvent.endTime) > now;
     });
 
     if (expandableEventIndices.length === 0) {
@@ -141,6 +147,7 @@ export class CalendarElement extends CrLitElement {
     expandableEventIndices.sort(
         (a, b) => this.compareEventPriority_(a, b, in5Minutes));
 
+    assert(expandableEventIndices[0]);
     return expandableEventIndices[0];
   }
 
@@ -165,6 +172,7 @@ export class CalendarElement extends CrLitElement {
   // events.
   protected sortEvents_() {
     const expandedEvent = this.events[this.expandedEventIndex_];
+    assert(expandedEvent);
     const firstDoubleBookedEventIndex =
         this.events.findIndex((calendarEvent: CalendarEvent) => {
           return calendarEvent.startTime.internalValue ===

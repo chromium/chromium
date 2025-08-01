@@ -113,7 +113,7 @@ export class ModulesElement extends CrLitElement {
   private maxColumnCount_: number =
       loadTimeData.getInteger('modulesMaxColumnCount');
   private availableWidth_: number = 0;
-  private containerMaxWidth_: number;
+  private containerMaxWidth_: number = 0;
   private eventTracker_: EventTracker = new EventTracker();
   private setDisabledModulesListenerId_: number|null = null;
   private setModulesLoadableListenerId_: number|null = null;
@@ -126,7 +126,6 @@ export class ModulesElement extends CrLitElement {
   // loading behavior.
   private modulesReloadable_: boolean =
       loadTimeData.getBoolean('modulesReloadable');
-  private modulesLoadInitiated_: boolean = false;
 
   override render() {
     return getHtml.bind(this)();
@@ -137,7 +136,7 @@ export class ModulesElement extends CrLitElement {
 
     const widths: Set<number> = new Set();
     for (let i = 0; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
-      const namedWidth = SUPPORTED_MODULE_WIDTHS[i];
+      const namedWidth = SUPPORTED_MODULE_WIDTHS[i]!;
       for (let u = 1; u <= this.maxColumnCount_ - i; u++) {
         const width = (namedWidth.value * u) + (CONTAINER_GAP_WIDTH * (u - 1));
         if (width <= this.containerMaxWidth_) {
@@ -153,20 +152,20 @@ export class ModulesElement extends CrLitElement {
     const queries: QueryDetails[] = [];
     for (let i = 1; i < thresholds.length - 1; i++) {
       queries.push({
-        maxWidth: (thresholds[i + 1] - 1),
+        maxWidth: (thresholds[i + 1]! - 1),
         query: `(min-width: ${
-            thresholds[i] + 2 * MARGIN_WIDTH}px) and (max-width: ${
-            thresholds[i + 1] - 1 + (2 * MARGIN_WIDTH)}px)`,
+            thresholds[i]! + 2 * MARGIN_WIDTH}px) and (max-width: ${
+            thresholds[i + 1]! - 1 + (2 * MARGIN_WIDTH)}px)`,
       });
     }
     queries.splice(0, 0, {
-      maxWidth: thresholds[0],
-      query: `(max-width: ${thresholds[0] - 1 + (2 * MARGIN_WIDTH)}px)`,
+      maxWidth: thresholds[0]!,
+      query: `(max-width: ${thresholds[0]! - 1 + (2 * MARGIN_WIDTH)}px)`,
     });
     queries.push({
-      maxWidth: thresholds[thresholds.length - 1],
+      maxWidth: thresholds[thresholds.length - 1]!,
       query: `(min-width: ${
-          thresholds[thresholds.length - 1] + (2 * MARGIN_WIDTH)}px)`,
+          thresholds[thresholds.length - 1]! + (2 * MARGIN_WIDTH)}px)`,
     });
 
     // Produce media queries with relevant view thresholds at which module
@@ -219,6 +218,7 @@ export class ModulesElement extends CrLitElement {
   override firstUpdated() {
     this.style.setProperty('--container-gap', `${CONTAINER_GAP_WIDTH}px`);
 
+    assert(SUPPORTED_MODULE_WIDTHS[0]);
     this.containerMaxWidth_ =
         this.maxColumnCount_ * SUPPORTED_MODULE_WIDTHS[0].value +
         (this.maxColumnCount_ - 1) * CONTAINER_GAP_WIDTH;
@@ -257,7 +257,6 @@ export class ModulesElement extends CrLitElement {
    * and is called only when the container is empty.
    */
   private async loadModules_(): Promise<void> {
-    this.modulesLoadInitiated_ = true;
     const modulesIdNames = (await this.pageHandler_.getModulesIdNames()).data;
     const modules =
         await ModuleRegistry.getInstance().initializeModulesHavingIds(
@@ -398,22 +397,24 @@ export class ModulesElement extends CrLitElement {
         1,
         Math.floor(
             (availableWidth + CONTAINER_GAP_WIDTH) /
-            (CONTAINER_GAP_WIDTH + SUPPORTED_MODULE_WIDTHS[0].value)),
+            (CONTAINER_GAP_WIDTH + SUPPORTED_MODULE_WIDTHS[0]!.value)),
         this.maxColumnCount_);
 
     let index = 0;
     while (index < visibleModuleInstances.length) {
       const instances =
           visibleModuleInstances.slice(index, index + rowMaxInstanceCount);
-      let namedWidth = SUPPORTED_MODULE_WIDTHS[0];
+      let namedWidth = SUPPORTED_MODULE_WIDTHS[0]!;
       for (let i = 1; i < SUPPORTED_MODULE_WIDTHS.length; i++) {
+        const moduleWidth = SUPPORTED_MODULE_WIDTHS[i];
+        assert(moduleWidth);
         if (Math.floor(
                 (availableWidth -
                  (CONTAINER_GAP_WIDTH * (instances.length - 1))) /
-                SUPPORTED_MODULE_WIDTHS[i].value) < instances.length) {
+                moduleWidth.value) < instances.length) {
           break;
         }
-        namedWidth = SUPPORTED_MODULE_WIDTHS[i];
+        namedWidth = moduleWidth;
       }
 
       instances.slice(0, instances.length).forEach(instance => {
@@ -428,8 +429,12 @@ export class ModulesElement extends CrLitElement {
   }
 
   protected onDisableModule_(e: DisableModuleEvent) {
-    const id = ((e.target! as HTMLElement).parentNode as ModuleWrapperElement)
-                   .module.descriptor.id;
+    const moduleWrapper =
+        (e.target! as HTMLElement).parentNode as ModuleWrapperElement;
+    assert(moduleWrapper);
+    const module = moduleWrapper.module;
+    assert(module);
+    const id = module.descriptor.id;
     const restoreCallback = e.detail.restoreCallback;
     this.undoData_ = {
       message: e.detail.message,
@@ -460,6 +465,7 @@ export class ModulesElement extends CrLitElement {
         ((e.target! as HTMLElement).parentNode as ModuleWrapperElement);
     const index = Array.from(wrapper.parentNode!.children).indexOf(wrapper);
     const module = this.moduleInstances_[index];
+    assert(module);
     this.moduleInstances_ = this.moduleInstances_.toSpliced(index, 1);
 
     const restoreCallback = e.detail.restoreCallback;

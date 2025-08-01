@@ -751,9 +751,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         moduleWrappers =
             modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
-        assertEquals(
-            fooDescriptor.id,
-            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        const fooModule = (moduleWrappers[0] as ModuleWrapperElement).module;
+        assert(fooModule);
+        assertEquals(fooDescriptor.id, fooModule.descriptor.id);
         assertEquals(
             1, metrics.count('NewTabPage.Modules.ReloadedModulesCount'));
         assertEquals(
@@ -813,9 +813,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         let moduleWrappers =
             modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
-        assertEquals(
-            fooDescriptor.id,
-            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        const fooModule = (moduleWrappers[0] as ModuleWrapperElement).module;
+        assert(fooModule);
+        assertEquals(fooDescriptor.id, fooModule.descriptor.id);
         assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
         assertEquals(
             1, metrics.count('NewTabPage.Modules.LoadedModulesCount', 1));
@@ -843,12 +843,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
         assertEquals(2, moduleWrappers.length);
         // Ensure the 'foo' module loads last, as it was not included in the
         // module order returned by |getModulesOrder()|.
-        assertEquals(
-            barDescriptor.id,
-            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-        assertEquals(
-            fooDescriptor.id,
-            (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+        let wrapperModule = (moduleWrappers[0] as ModuleWrapperElement).module;
+        assert(wrapperModule);
+        assertEquals(barDescriptor.id, wrapperModule.descriptor.id);
+        wrapperModule = (moduleWrappers[1] as ModuleWrapperElement).module;
+        assert(wrapperModule);
+        assertEquals(fooDescriptor.id, wrapperModule.descriptor.id);
         assertEquals(1, metrics.count('NewTabPage.Modules.LoadedModulesCount'));
         assertEquals(
             1, metrics.count('NewTabPage.Modules.ReloadedModulesCount'));
@@ -880,7 +880,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
             assertEquals(1, moduleWrappers.length);
 
             let fooModule = moduleWrappers[0] as ModuleWrapperElement;
-            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertEquals(fooDescriptor.id, fooModule.module!.descriptor.id);
             assertNotStyle(fooModule, 'display', 'none');
             // Disable foo module.
             callbackRouterRemote.setDisabledModules(
@@ -902,7 +902,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 'ntp-module-wrapper');
             assertEquals(1, moduleWrappers.length);
             fooModule = moduleWrappers[0] as ModuleWrapperElement;
-            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertEquals(fooDescriptor.id, fooModule.module!.descriptor.id);
             assertNotStyle(fooModule, 'display', 'none');
           });
 
@@ -918,9 +918,9 @@ suite('NewTabPageModulesModulesV2Test', () => {
         let moduleWrappers =
             modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
-        assertEquals(
-            fooDescriptor.id,
-            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
+        let fooModule = (moduleWrappers[0] as ModuleWrapperElement).module;
+        assert(fooModule);
+        assertEquals(fooDescriptor.id, fooModule.descriptor.id);
         // Prepare to load bar module.
         const barModulePromise = getModulePromise(barDescriptor);
         moduleRegistry.setResultFor('initializeModuleById', barModulePromise);
@@ -941,12 +941,12 @@ suite('NewTabPageModulesModulesV2Test', () => {
         moduleWrappers =
             modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(2, moduleWrappers.length);
-        assertEquals(
-            fooDescriptor.id,
-            (moduleWrappers[0] as ModuleWrapperElement).module.descriptor.id);
-        assertEquals(
-            barDescriptor.id,
-            (moduleWrappers[1] as ModuleWrapperElement).module.descriptor.id);
+        fooModule = (moduleWrappers[0] as ModuleWrapperElement).module;
+        assert(fooModule);
+        assertEquals(fooDescriptor.id, fooModule.descriptor.id);
+        const barModule = (moduleWrappers[1] as ModuleWrapperElement).module;
+        assert(barModule);
+        assertEquals(barDescriptor.id, barModule.descriptor.id);
       });
 
       test(
@@ -983,7 +983,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
                 'ntp-module-wrapper');
             assertEquals(1, moduleWrappers.length);
             const fooModule = moduleWrappers[0] as ModuleWrapperElement;
-            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertEquals(fooDescriptor.id, fooModule.module!.descriptor.id);
           });
     });
 
@@ -1010,7 +1010,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
           } else {
             assertEquals(1, moduleWrappers.length);
             const fooModule = moduleWrappers[0] as ModuleWrapperElement;
-            assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+            assertEquals(fooDescriptor.id, fooModule.module!.descriptor.id);
             assertNotStyle(fooModule, 'display', 'none');
           }
         });
@@ -1040,7 +1040,7 @@ suite('NewTabPageModulesModulesV2Test', () => {
             modulesElement.shadowRoot.querySelectorAll('ntp-module-wrapper');
         assertEquals(1, moduleWrappers.length);
         const fooModule = moduleWrappers[0] as ModuleWrapperElement;
-        assertEquals(fooDescriptor.id, fooModule.module.descriptor.id);
+        assertEquals(fooDescriptor.id, fooModule.module!.descriptor.id);
         assertNotStyle(fooModule, 'display', 'none');
       });
     });

@@ -123,7 +123,7 @@ export class ComposeboxElement extends I18nMixinLit
   protected accessor submitting_: boolean = false;
   protected accessor showErrorScrim_: boolean = false;
   protected accessor errorMessage_: string = '';
-  protected accessor result_: AutocompleteResult|null;
+  protected accessor result_: AutocompleteResult|null = null;
   protected accessor inputPlaceholder_: string =
       loadTimeData.getString('searchboxComposePlaceholder');
   private maxFileCount_: number =
@@ -136,12 +136,9 @@ export class ComposeboxElement extends I18nMixinLit
   private searchboxCallbackRouter_: SearchboxPageCallbackRouter;
   private pageHandler_: PageHandlerRemote;
   private searchboxHandler_: SearchboxPageHandlerRemote;
-  private setFileUploadStatusListenerId_: number|null = null;
   private eventTracker_: EventTracker = new EventTracker();
-  private listenerIds: number[];
-  private searchboxListenerIds: number[];
-
-
+  private listenerIds: number[] = [];
+  private searchboxListenerIds: number[] = [];
   private composeboxCloseByEscape_: boolean =
       loadTimeData.getBoolean('composeboxCloseByEscape');
 

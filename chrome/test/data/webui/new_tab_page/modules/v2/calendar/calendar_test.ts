@@ -115,8 +115,9 @@ suite('NewTabPageModulesCalendarTest', () => {
           element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, 2);
       const expandedEvent = eventElements[0];
-      assertTrue(expandedEvent!.hasAttribute('expanded'));
-      assertEquals(expandedEvent!.event.title, 'Test Event 1');
+      assertTrue(!!expandedEvent);
+      assertTrue(expandedEvent.hasAttribute('expanded'));
+      assertEquals(expandedEvent.event.title, 'Test Event 1');
     });
 
     test('prioritize event with other attendee', async () => {
@@ -140,8 +141,9 @@ suite('NewTabPageModulesCalendarTest', () => {
           element.shadowRoot.querySelectorAll('ntp-calendar-event');
       assertEquals(eventElements.length, 2);
       const expandedEvent = eventElements[0];
-      assertTrue(expandedEvent!.hasAttribute('expanded'));
-      assertEquals(expandedEvent!.event.title, 'Test Event 1');
+      assertTrue(!!expandedEvent);
+      assertTrue(expandedEvent.hasAttribute('expanded'));
+      assertEquals(expandedEvent.event.title, 'Test Event 1');
     });
 
     test('do not expand any meetings if they are all over', async () => {

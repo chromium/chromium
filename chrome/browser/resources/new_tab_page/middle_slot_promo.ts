@@ -45,10 +45,6 @@ export async function renderPromo(promo: Promo):
     Promise<{container: Element, id: string | null}|null> {
   const browserHandler = NewTabPageProxy.getInstance().handler;
   const promoBrowserCommandHandler = BrowserCommandProxy.getInstance().handler;
-  if (!promo) {
-    return null;
-  }
-
   const commandIds: Command[] = [];
 
   function createAnchor(target: Url) {
@@ -61,6 +57,7 @@ export async function renderPromo(promo: Promo):
     if (!commandIdMatch) {
       el.href = target.url;
     } else {
+      assert(commandIdMatch[1]);
       commandId = +commandIdMatch[1];
       // Make sure we don't send unsupported commands to the browser.
       if (!Object.values(Command).includes(commandId)) {
@@ -170,10 +167,9 @@ export class MiddleSlotPromoElement extends CrLitElement {
     };
   }
 
-  protected accessor shownMiddleSlotPromoId_: string;
-  private accessor promo_: Promo;
-
-  private blocklistedMiddleSlotPromoId_: string;
+  protected accessor shownMiddleSlotPromoId_: string = '';
+  private accessor promo_: Promo|null = null;
+  private blocklistedMiddleSlotPromoId_: string = '';
   private eventTracker_: EventTracker = new EventTracker();
   private pageHandler_: PageHandlerRemote;
   private setPromoListenerId_: number|null = null;
@@ -212,23 +208,34 @@ export class MiddleSlotPromoElement extends CrLitElement {
     }
   }
 
+  private hidePromoContainer_() {
+    this.$.promoAndDismissContainer.hidden = true;
+    this.fire('ntp-middle-slot-promo-loaded');
+  }
+
   private onPromoChange_() {
+    if (!this.promo_) {
+      this.hidePromoContainer_();
+      return;
+    }
+
     renderPromo(this.promo_).then(promo => {
       if (!promo) {
-        this.$.promoAndDismissContainer.hidden = true;
-      } else {
-        const promoContainer = this.shadowRoot.getElementById('promoContainer');
-        if (promoContainer) {
-          promoContainer.remove();
-        }
-        if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled')) {
-          this.shownMiddleSlotPromoId_ = promo.id ?? '';
-        }
-        const renderedPromoContainer = promo.container;
-        assert(renderedPromoContainer);
-        this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
-        this.$.promoAndDismissContainer.hidden = false;
+        this.hidePromoContainer_();
+        return;
       }
+
+      const promoContainer = this.shadowRoot.getElementById('promoContainer');
+      if (promoContainer) {
+        promoContainer.remove();
+      }
+      if (loadTimeData.getBoolean('middleSlotPromoDismissalEnabled')) {
+        this.shownMiddleSlotPromoId_ = promo.id ?? '';
+      }
+      const renderedPromoContainer = promo.container;
+      assert(renderedPromoContainer);
+      this.$.promoAndDismissContainer.prepend(renderedPromoContainer);
+      this.$.promoAndDismissContainer.hidden = false;
       this.fire('ntp-middle-slot-promo-loaded');
     });
   }

@@ -145,9 +145,12 @@ export class MicrosoftFilesModuleElement extends
     numOfFiles.set(RecommendationType.kShared, 0);
     numOfFiles.set(RecommendationType.kTrending, 0);
     for (let i = 0; i < files.length; i++) {
-      numOfFiles.set(
-          files[i].recommendationType!,
-          numOfFiles.get(files[i].recommendationType!)! + 1);
+      const file = files[i]!;
+      const recommendationType = file.recommendationType;
+      if (recommendationType !== null) {
+        numOfFiles.set(
+            recommendationType, numOfFiles.get(recommendationType)! + 1);
+      }
     }
     recordSmallCount(
         'NewTabPage.MicrosoftFiles.ShownFiles.Used',

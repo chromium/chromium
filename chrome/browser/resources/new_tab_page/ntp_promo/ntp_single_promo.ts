@@ -83,7 +83,7 @@ export class NtpSinglePromoElement extends CrLitElement {
   // Public for testing purposes only.
   onSetPromos(eligible: Promo[]) {
     if (eligible.length > 0) {
-      const promo: Promo = eligible[0];
+      const promo: Promo = eligible[0]!;
       this.bodyIconName_ = promo.iconName;
       this.bodyText_ = promo.bodyText;
       this.actionButtonText_ = promo.buttonText;
