@@ -17,18 +17,9 @@ per-file *.pyl=*
 
 # LINT.IfChange(chromium_tests)
 
-# For Weblayer skew tests related reviews
-per-file chromium.android.*=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
-
 # For Android related reviews
 per-file chromium.android.*=zhiyuans@google.com
 per-file chromium.android.*=wnwen@chromium.org
-
-# TODO(crbug.com/40191809) Remove the following 3 lines when the conversion is done.
-per-file chromium.fyi.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
-per-file chromium.chromiumos.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
-per-file chromium.memory.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
-per-file chromium.coverage.json=chrome-weblayer-builder@chops-service-accounts.iam.gserviceaccount.com
 
 # For Lacros skylab tests cros image roller related reviews
 per-file chromium.chromiumos.json=skylab-test-cros-roller@chops-service-accounts.iam.gserviceaccount.com

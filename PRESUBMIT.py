@@ -2373,8 +2373,8 @@ _KNOWN_ROBOTS = set() | set('%s@appspot.gserviceaccount.com' % s for s in (
         for s in ('3su6n15k.default', )) | set(
             '%s@chops-service-accounts.iam.gserviceaccount.com' % s
             for s in ('bling-autoroll-builder', 'v8-ci-autoroll-builder',
-                      'wpt-autoroller', 'chrome-weblayer-builder',
-                      'skylab-test-cros-roller', 'infra-try-recipes-tester',
+                      'wpt-autoroller', 'skylab-test-cros-roller',
+                      'infra-try-recipes-tester',
                       'chrome-automated-expectation',
                       'chromium-automated-expectation', 'chrome-branch-day',
                       'chrome-cherry-picker', 'chromium-autosharder')
@@ -4466,10 +4466,6 @@ def _CheckChangeForIpcSecurityOwners(input_api, output_api):
         'third_party/win_build_output/*',
         # Enum-only mojoms used for web metrics, so no security review needed.
         'third_party/blink/public/mojom/use_counter/metrics/*',
-        # These files are just used to communicate between class loaders running
-        # in the same process.
-        'weblayer/browser/java/org/chromium/weblayer_private/interfaces/*',
-        'weblayer/browser/java/org/chromium/weblayer_private/test_interfaces/*',
     ]
 
     def IsMojoServiceManifestFile(input_api, file):
@@ -4996,8 +4992,7 @@ def _CheckAndroidNewMdpiAssetLocation(input_api, output_api):
 
 def _CheckAndroidWebkitImports(input_api, output_api):
     """Checks that code uses org.chromium.base.Callback instead of
-       android.webview.ValueCallback except in the WebView glue layer
-       and WebLayer.
+       android.webview.ValueCallback except in the WebView glue layer.
     """
     valuecallback_import_pattern = input_api.re.compile(
         r'^import android\.webkit\.ValueCallback;$')
@@ -5010,7 +5005,6 @@ def _CheckAndroidWebkitImports(input_api, output_api):
                        DEFAULT_FILES_TO_SKIP + (
                            r'^android_webview/glue/.*',
                            r'^android_webview/support_library/.*',
-                           r'^weblayer/.*',
                        )),
         files_to_check=[r'.*\.java$'])
 

@@ -2,7 +2,7 @@
 # annotation auditor. Please refer to README.md for more details.
 
 # Low-level networking code is deliberately excluded from the analysis.
-all,tools/*,*test*,*fuzzer*,*mock*,*fake*,weblayer/*
+all,tools/*,*test*,*fuzzer*,*mock*,*fake*
 all,net/android/java/src/org/chromium/net/NetworkTrafficAnnotationTag.java
 missing,remoting/host/token_validator_factory_impl.cc
 missing,components/cronet/cronet_url_request.cc
