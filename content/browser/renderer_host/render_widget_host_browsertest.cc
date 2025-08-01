@@ -35,7 +35,6 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
-#include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -1191,7 +1190,6 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostDelegatedInkMetadataTest,
                    .delegated_ink_metadata.has_value());
 }
 
-#if BUILDFLAG(IS_ANDROID)
 namespace {
 
 class LocalSurfaceIdChangedObserver
@@ -1267,21 +1265,37 @@ class RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest
     : public RenderWidgetHostBrowserTest,
       public ::testing::WithParamInterface<bool> {
  public:
-  RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest() = default;
+  RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest() {
+    bool increment_local_surface_id = GetParam();
+    if (increment_local_surface_id) {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {{blink::features::
+                kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+            {}}},
+          /*disabled_features=*/{});
+    } else {
+      scoped_feature_list_.InitWithFeaturesAndParameters(
+          /*enabled_features=*/
+          {},
+          /*disabled_features=*/{
+              blink::features::
+                  kIncrementLocalSurfaceIdForMainframeSameDocNavigation});
+    }
+  }
 
   void SetUpOnMainThread() override {
     host_resolver()->AddRule("*", "127.0.0.1");
     ASSERT_TRUE(embedded_test_server()->Start());
-    auto preferences = web_contents()->GetOrCreateWebPreferences();
-    preferences.increment_local_surface_id_for_mainframe_same_doc_navigation =
-        GetParam();
-    web_contents()->SetWebPreferences(preferences);
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     RenderWidgetHostBrowserTest::SetUpCommandLine(command_line);
     command_line->AppendSwitch(switches::kForcePrefersNoReducedMotion);
   }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 // Assert that with `IncrementLocalSurfaceIdForMainframeSameDocNavigation`
@@ -1289,6 +1303,10 @@ class RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest
 IN_PROC_BROWSER_TEST_P(RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
                        SameDocNavigationUpdatesLocalSurfaceId) {
   bool increment_local_surface_id = GetParam();
+  ASSERT_EQ(increment_local_surface_id,
+            base::FeatureList::IsEnabled(
+                blink::features::
+                    kIncrementLocalSurfaceIdForMainframeSameDocNavigation));
   ASSERT_TRUE(NavigateToURL(shell(), embedded_test_server()->GetURL(
                                          "/session_history/fragment.html")));
   // Changes the background color when navigate to "fragment.html#a".
@@ -1323,8 +1341,6 @@ IN_PROC_BROWSER_TEST_P(RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
 INSTANTIATE_TEST_SUITE_P(All,
                          RenderWidgetHostSameDocNavUpdatesLocalSurfaceIdTest,
                          ::testing::Bool());
-
-#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 

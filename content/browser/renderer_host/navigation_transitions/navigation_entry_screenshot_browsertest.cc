@@ -1806,7 +1806,9 @@ class SameDocNavigationEntryScreenshotBrowserTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     std::vector<base::test::FeatureRefAndParams> enabled_features = {
         {viz::mojom::EnableVizTestApis, {}},
-        {blink::features::kBackForwardTransitions, {}}};
+        {blink::features::kBackForwardTransitions, {}},
+        {blink::features::kIncrementLocalSurfaceIdForMainframeSameDocNavigation,
+         {}}};
 
     scoped_feature_list_.InitWithFeaturesAndParameters(enabled_features, {});
 

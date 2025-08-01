@@ -998,7 +998,9 @@ const char kBackForwardCacheDescription[] =
 const char kBackForwardTransitionsName[] = "Back-forward visual transitions";
 const char kBackForwardTransitionsDescription[] =
     "If enabled, adds animated gesture transitions for back/forward session "
-    "history navigations.";
+    "history navigations. NOTE: enable "
+    "increment-local-surface-id-for-mainframe-same-doc-navigation to enable "
+    "the transition on same-doc navigations.";
 
 const char kBiometricReauthForPasswordFillingName[] =
     "Biometric reauth for password filling";
@@ -2443,6 +2445,12 @@ const char kIgnoreGpuBlocklistName[] = "Override software rendering list";
 const char kIgnoreGpuBlocklistDescription[] =
     "Overrides the built-in software rendering list and enables "
     "GPU-acceleration on unsupported system configurations.";
+
+const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationName[] =
+    "Increments LocalSurfaceId for main-frame same-doc navigations";
+const char kIncrementLocalSurfaceIdForMainframeSameDocNavigationDescription[] =
+    "If enabled, every same-document navigations in the main-frame will also "
+    "increment the LocalSurfaceId.";
 
 const char kIncognitoScreenshotName[] = "Incognito Screenshot";
 const char kIncognitoScreenshotDescription[] =
