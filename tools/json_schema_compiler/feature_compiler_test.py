@@ -90,6 +90,13 @@ class FeatureCompilerTest(unittest.TestCase):
     })
     self._hasError(f, 'Illegal value: "all"')
 
+  def testInvalidChannel(self):
+    f = self._parseFeature({
+        'contexts': ['privileged_extension'],
+        'channel': 'invalid_channel'
+    })
+    self._hasError(f, 'Illegal value: "invalid_channel"')
+
   def testUnknownKeyError(self):
     f = self._parseFeature({
         'contexts': ['privileged_extension'],

@@ -8,6 +8,7 @@
 
 #include <array>
 #include <memory>
+#include <optional>
 #include <string>
 #include <vector>
 
@@ -58,12 +59,15 @@ struct FeatureSessionTypeTestData {
   std::initializer_list<mojom::FeatureSessionType> feature_session_types;
 };
 
-Feature::AvailabilityResult IsAvailableInChannel(Channel channel_for_feature,
-                                                 Channel channel_for_testing) {
+Feature::AvailabilityResult IsAvailableInChannel(
+    std::optional<Channel> channel_for_feature,
+    Channel channel_for_testing) {
   ScopedCurrentChannel current_channel(channel_for_testing);
 
   SimpleFeature feature;
-  feature.set_channel(channel_for_feature);
+  if (channel_for_feature.has_value()) {
+    feature.set_channel(channel_for_feature.value());
+  }
   return feature
       .IsAvailableToManifest(
           HashedExtensionId(std::string(32, 'a')), Manifest::TYPE_UNKNOWN,
@@ -834,6 +838,19 @@ TEST_F(SimpleFeatureTest, SupportedChannel) {
             IsAvailableInChannel(Channel::UNKNOWN, Channel::BETA));
   EXPECT_EQ(Feature::UNSUPPORTED_CHANNEL,
             IsAvailableInChannel(Channel::UNKNOWN, Channel::STABLE));
+
+  // Verify that a feature without a channel specified is available in all
+  // channels.
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            IsAvailableInChannel(std::nullopt, Channel::UNKNOWN));
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            IsAvailableInChannel(std::nullopt, Channel::CANARY));
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            IsAvailableInChannel(std::nullopt, Channel::DEV));
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            IsAvailableInChannel(std::nullopt, Channel::BETA));
+  EXPECT_EQ(Feature::IS_AVAILABLE,
+            IsAvailableInChannel(std::nullopt, Channel::STABLE));
 }
 
 // Tests simple feature availability across channels.
