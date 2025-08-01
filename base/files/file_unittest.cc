@@ -827,13 +827,11 @@ TEST(FileTest, TracedValueSupport) {
             "{is_valid:true,created:true,async:false,error_details:FILE_OK}");
 }
 
-#if BUILDFLAG(IS_WIN)
-// Flakily times out on Windows, see http://crbug.com/846276.
-#define MAYBE_WriteDataToLargeOffset DISABLED_WriteDataToLargeOffset
-#else
-#define MAYBE_WriteDataToLargeOffset WriteDataToLargeOffset
-#endif
-TEST(FileTest, MAYBE_WriteDataToLargeOffset) {
+#if !BUILDFLAG(IS_WIN)
+// This test is too slow on Windows which ends up with Timeout.
+// Writing to a large offset can be slow on some filesystems if they don't
+// efficiently support sparse files.
+TEST(FileTest, ReadWriteDataToLargeOffset) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
   FilePath file_path = temp_dir.GetPath().AppendASCII("file");
@@ -845,14 +843,28 @@ TEST(FileTest, MAYBE_WriteDataToLargeOffset) {
   const int kDataLen = sizeof(kData) - 1;
   const int64_t kLargeFileOffset = (1LL << 31);
 
+  int bytes_written =
+      file.Write(kLargeFileOffset - kDataLen - 1, kData, kDataLen);
+
   // If the file fails to write, it is probably we are running out of disk space
   // and the file system doesn't support sparse file.
-  if (file.Write(kLargeFileOffset - kDataLen - 1, kData, kDataLen) < 0) {
+  if (bytes_written < 0) {
     return;
   }
 
-  ASSERT_EQ(kDataLen, file.Write(kLargeFileOffset + 1, kData, kDataLen));
+  ASSERT_EQ(kDataLen, bytes_written);
+
+  // Now, try reading the content.
+  char data_read[kDataLen];
+  int bytes_read =
+      file.Read(kLargeFileOffset - kDataLen - 1, data_read, kDataLen);
+
+  ASSERT_EQ(kDataLen, bytes_read);
+  for (int i = 0; i < bytes_read; i++) {
+    EXPECT_EQ(kData[i], data_read[i]);
+  }
 }
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST(FileTest, AddFlagsForPassingToUntrustedProcess) {
   {

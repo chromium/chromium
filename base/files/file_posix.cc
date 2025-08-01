@@ -79,6 +79,23 @@ std::atomic<MacFileFlushMechanism> g_mac_file_flush_mechanism{
     MacFileFlushMechanism::kFullFsync};
 #endif  // BUILDFLAG(IS_APPLE)
 
+#if BUILDFLAG(IS_ANDROID)
+#define OffsetType off64_t
+#else
+#define OffsetType off_t
+#endif
+
+static_assert(sizeof(int64_t) == sizeof(OffsetType));
+
+bool IsReadWriteRangeValid(int64_t offset, int size) {
+  if (size < 0 || !CheckAdd(offset, size - 1).IsValid() ||
+      !IsValueInRangeForNumericType<OffsetType>(offset + size - 1)) {
+    return false;
+  }
+
+  return true;
+}
+
 // AIX doesn't provide the following system calls, so either simulate them or
 // wrap them in order to minimize the number of #ifdef's in this file.
 #if !BUILDFLAG(IS_AIX)
@@ -88,8 +105,6 @@ bool IsOpenAppend(PlatformFile file) {
 
 int CallFtruncate(PlatformFile file, int64_t length) {
 #if BUILDFLAG(IS_BSD) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_FUCHSIA)
-  static_assert(sizeof(off_t) >= sizeof(int64_t),
-                "off_t is not a 64-bit integer");
   return HANDLE_EINTR(ftruncate(file, length));
 #else
   return HANDLE_EINTR(ftruncate64(file, length));
@@ -279,11 +294,9 @@ int64_t File::Seek(Whence whence, int64_t offset) {
   SCOPED_FILE_TRACE_WITH_SIZE("Seek", offset);
 
 #if BUILDFLAG(IS_ANDROID)
-  static_assert(sizeof(int64_t) == sizeof(off64_t), "off64_t must be 64 bits");
   return lseek64(file_.get(), static_cast<off64_t>(offset),
                  static_cast<int>(whence));
 #else
-  static_assert(sizeof(int64_t) == sizeof(off_t), "off_t must be 64 bits");
   return lseek(file_.get(), static_cast<off_t>(offset),
                static_cast<int>(whence));
 #endif
@@ -292,8 +305,7 @@ int64_t File::Seek(Whence whence, int64_t offset) {
 int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0 || !CheckAdd(offset, size - 1).IsValid() ||
-      !IsValueInRangeForNumericType<off_t>(offset + size - 1)) {
+  if (!IsReadWriteRangeValid(offset, size)) {
     return -1;
   }
 
@@ -302,9 +314,17 @@ int File::Read(int64_t offset, char* data, int size) {
   int bytes_read = 0;
   long rv;
   do {
+#if BUILDFLAG(IS_ANDROID)
+    // In case __USE_FILE_OFFSET64 is not used, we need to call pread64()
+    // instead of pread().
+    rv = HANDLE_EINTR(pread64(file_.get(), data + bytes_read,
+                              static_cast<size_t>(size - bytes_read),
+                              static_cast<off64_t>(offset + bytes_read)));
+#else
     rv = HANDLE_EINTR(pread(file_.get(), data + bytes_read,
                             static_cast<size_t>(size - bytes_read),
                             static_cast<off_t>(offset + bytes_read)));
+#endif
     if (rv <= 0) {
       break;
     }
@@ -372,7 +392,7 @@ int File::Write(int64_t offset, const char* data, int size) {
   }
 
   DCHECK(IsValid());
-  if (size < 0 || !CheckAdd(offset, size - 1).IsValid()) {
+  if (!IsReadWriteRangeValid(offset, size)) {
     return -1;
   }
 
@@ -384,15 +404,13 @@ int File::Write(int64_t offset, const char* data, int size) {
 #if BUILDFLAG(IS_ANDROID)
     // In case __USE_FILE_OFFSET64 is not used, we need to call pwrite64()
     // instead of pwrite().
-    static_assert(sizeof(int64_t) == sizeof(off64_t),
-                  "off64_t must be 64 bits");
     rv = HANDLE_EINTR(pwrite64(file_.get(), data + bytes_written,
                                static_cast<size_t>(size - bytes_written),
-                               offset + bytes_written));
+                               static_cast<off64_t>(offset + bytes_written)));
 #else
     rv = HANDLE_EINTR(pwrite(file_.get(), data + bytes_written,
                              static_cast<size_t>(size - bytes_written),
-                             offset + bytes_written));
+                             static_cast<off_t>(offset + bytes_written)));
 #endif
     if (rv <= 0) {
       break;
