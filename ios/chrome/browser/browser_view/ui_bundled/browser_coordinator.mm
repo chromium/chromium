@@ -1826,6 +1826,7 @@ enum class ToolbarKind {
   tabLifecycleMediator.overscrollActionsDelegate = self;
   tabLifecycleMediator.appLauncherBrowserPresentationProvider = self;
   tabLifecycleMediator.editMenuBuilder = self;
+  tabLifecycleMediator.browser = self.browser;
 
   self.tabLifecycleMediator = tabLifecycleMediator;
 }
@@ -2817,7 +2818,7 @@ enum class ToolbarKind {
 }
 
 - (void)closeFindInPage {
-  web::WebState* activeWebState = self.activeWebState;
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   if (!activeWebState) {
     return;
   }
@@ -2834,7 +2835,8 @@ enum class ToolbarKind {
 }
 
 - (void)showFindUIIfActive {
-  auto* findHelper = GetConcreteFindTabHelperFromWebState(self.activeWebState);
+  auto* findHelper =
+      GetConcreteFindTabHelperFromWebState([self activeWebStateOrReaderMode]);
   if (!findHelper || !findHelper->IsFindUIActive()) {
     return;
   }
@@ -2849,7 +2851,7 @@ enum class ToolbarKind {
 }
 
 - (void)hideFindUI {
-  web::WebState* activeWebState = self.activeWebState;
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   if (!activeWebState) {
     return;
   }
@@ -2873,7 +2875,7 @@ enum class ToolbarKind {
 }
 
 - (void)searchFindInPage {
-  web::WebState* activeWebState = self.activeWebState;
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   DCHECK(activeWebState);
   auto* helper = GetConcreteFindTabHelperFromWebState(activeWebState);
   helper->StartFinding([self.findBarCoordinator.findBarController searchTerm]);
@@ -2892,7 +2894,7 @@ enum class ToolbarKind {
 }
 
 - (void)findPreviousStringInPage {
-  web::WebState* activeWebState = self.activeWebState;
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   DCHECK(activeWebState);
   // TODO(crbug.com/40465124): Reshow find bar if necessary.
   GetConcreteFindTabHelperFromWebState(activeWebState)
@@ -2902,7 +2904,7 @@ enum class ToolbarKind {
 #pragma mark - FindInPageCommands Helpers
 
 - (void)showSystemFindPanel {
-  web::WebState* activeWebState = self.activeWebState;
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   DCHECK(activeWebState);
   auto* helper = FindTabHelper::FromWebState(activeWebState);
 
@@ -2932,7 +2934,7 @@ enum class ToolbarKind {
 }
 
 - (BOOL)canShowFindBar {
-  web::WebState* activeWebState = self.activeWebState;
+  web::WebState* activeWebState = [self activeWebStateOrReaderMode];
   if (!activeWebState) {
     return NO;
   }
@@ -3320,6 +3322,22 @@ enum class ToolbarKind {
 }
 
 #pragma mark - Private WebState management methods
+
+- (web::WebState*)activeWebStateOrReaderMode {
+  if (!IsReaderModeAvailable()) {
+    return self.activeWebState;
+  }
+
+  if (self.activeWebState) {
+    ReaderModeTabHelper* tabHelper =
+        ReaderModeTabHelper::FromWebState(self.activeWebState);
+    if (tabHelper) {
+      return tabHelper->GetReaderModeWebState() ?: self.activeWebState;
+    }
+  }
+
+  return self.activeWebState;
+}
 
 // Installs delegates for self.browser.
 - (void)installDelegatesForBrowser {

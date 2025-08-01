@@ -9,6 +9,7 @@
 
 @protocol FindInPageResponseDelegate;
 @class FindInPageModel;
+class FullscreenController;
 
 namespace web {
 class WebState;
@@ -29,6 +30,9 @@ class WebState;
 // FindInPageResponseDelegate instance used to pass back responses to find
 // actions.
 @property(nonatomic, weak) id<FindInPageResponseDelegate> responseDelegate;
+
+// Fullscreen controller used to exit find in page.
+@property(nonatomic, assign) FullscreenController* fullscreenController;
 
 #pragma mark - Initialization/deinitialization
 

@@ -60,6 +60,7 @@ class WebStateList;
 // The card swipe delegate.
 @property(nonatomic, weak) id<CardSwipeViewDelegate> cardSwipeViewDelegate;
 
+/// Fullscreen controller used for collapsing the view above the keyboard.
 @property(nonatomic, assign) FullscreenController* fullscreenController;
 
 // Initializer.

@@ -6,6 +6,7 @@
 
 #import "ios/chrome/browser/find_in_page/model/find_in_page_controller.h"
 #import "ios/chrome/browser/find_in_page/model/find_in_page_model.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/web/public/navigation/navigation_context.h"
 
 FindTabHelper::FindTabHelper(web::WebState* web_state) {
@@ -28,6 +29,12 @@ void FindTabHelper::DismissFindNavigator() {
   // Same as `StopFinding()` except the UI is not marked as inactive so it can
   // be set back up if needed later.
   [controller_ disableFindInPage];
+}
+
+void FindTabHelper::SetFullscreenController(
+    FullscreenController* fullscreen_controller) {
+  DCHECK(controller_);
+  controller_.fullscreenController = fullscreen_controller;
 }
 
 void FindTabHelper::CreateFindInPageController(web::WebState* web_state) {

@@ -11,6 +11,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @class FindInPageController;
+class FullscreenController;
 
 // Adds support for the Native Find in Page feature. Instantiates a
 // FindInPageController when the web state is realized which itself attaches and
@@ -25,6 +26,10 @@ class FindTabHelper final : public AbstractFindTabHelper,
   ~FindTabHelper() final;
 
   void DismissFindNavigator();
+
+  // Sets the full screen controller that will passed to the
+  // `FindInPageController`.
+  void SetFullscreenController(FullscreenController* fullscreen_controller);
 
   // AbstractFindTabHelper implementation
   void SetResponseDelegate(

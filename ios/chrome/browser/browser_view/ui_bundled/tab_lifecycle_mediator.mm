@@ -14,7 +14,9 @@
 #import "ios/chrome/browser/download/coordinator/download_manager_coordinator.h"
 #import "ios/chrome/browser/download/model/download_manager_tab_helper.h"
 #import "ios/chrome/browser/download/model/pass_kit_tab_helper.h"
+#import "ios/chrome/browser/find_in_page/model/find_tab_helper.h"
 #import "ios/chrome/browser/follow/model/follow_tab_helper.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_tab_helper.h"
 #import "ios/chrome/browser/itunes_urls/model/itunes_urls_handler_tab_helper.h"
 #import "ios/chrome/browser/lens/model/lens_tab_helper.h"
@@ -232,6 +234,13 @@
         HandlerForProtocol(_commandDispatcher, BWGCommands);
     BWGTabHelper->SetBwgCommandsHandler(BWGCommandsHandler);
   }
+
+  FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
+  if (findTabHelper) {
+    FullscreenController* fullscreenController =
+        FullscreenController::FromBrowser(self.browser);
+    findTabHelper->SetFullscreenController(fullscreenController);
+  }
 }
 
 - (void)webStateRemoved:(web::WebState*)webState {
@@ -334,6 +343,11 @@
   BwgTabHelper* BWGTabHelper = BwgTabHelper::FromWebState(webState);
   if (BWGTabHelper) {
     BWGTabHelper->SetBwgCommandsHandler(nil);
+  }
+
+  FindTabHelper* findTabHelper = FindTabHelper::FromWebState(webState);
+  if (findTabHelper) {
+    findTabHelper->SetFullscreenController(nullptr);
   }
 }
 

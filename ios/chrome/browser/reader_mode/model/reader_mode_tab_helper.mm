@@ -16,12 +16,14 @@
 #import "components/google/core/common/google_util.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
 #import "ios/chrome/browser/dom_distiller/model/offline_page_distiller_viewer.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_content_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_page.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_distiller_viewer.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_java_script_feature.h"
 #import "ios/chrome/browser/reader_mode/model/reader_mode_metrics_helper.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_commands.h"
@@ -282,6 +284,18 @@ void ReaderModeTabHelper::HandleReadabilityHeuristicResult(
     const GURL& url,
     const base::Value* result) {
   HandleReaderModeHeuristicResult(url, GetReaderModeHeuristicResult(result));
+}
+
+void ReaderModeTabHelper::SetFullscreenController(
+    FullscreenController* fullscreen_controller) {
+  if (!reader_mode_web_state_) {
+    return;
+  }
+  ReaderModeContentTabHelper* content_tab_helper =
+      ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get());
+  if (content_tab_helper) {
+    content_tab_helper->SetFullscreenController(fullscreen_controller);
+  }
 }
 
 void ReaderModeTabHelper::HandleReaderModeHeuristicResult(

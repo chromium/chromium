@@ -1491,8 +1491,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
   self.editBookmarkAction.enabled = bookmarkEnabled;
   self.translateAction.enabled =
       [self isTranslateEnabled] && !isReaderModeActive;
-  self.findInPageAction.enabled =
-      [self isFindInPageEnabled] && !isReaderModeActive;
+  self.findInPageAction.enabled = [self isFindInPageEnabled];
   self.textZoomAction.enabled = [self isTextZoomEnabled] && !isReaderModeActive;
   self.requestDesktopAction.enabled =
       [self userAgentType] == web::UserAgentType::MOBILE;

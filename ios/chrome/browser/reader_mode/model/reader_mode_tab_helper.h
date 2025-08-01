@@ -18,6 +18,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 @protocol SnackbarCommands;
+class FullscreenController;
 
 // Observes changes to the web state to perform reader mode operations.
 class ReaderModeTabHelper : public web::WebStateObserver,
@@ -90,6 +91,10 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // the `url` content.
   void HandleReaderModeHeuristicResult(const GURL& url,
                                        ReaderModeHeuristicResult result);
+
+  // Sets the full screen controller that will passed to the
+  // `ReaderModeContentTabHelper`.
+  void SetFullscreenController(FullscreenController* fullscreen_controller);
 
   // web::WebStateObserver overrides:
   void DidStartNavigation(web::WebState* web_state,

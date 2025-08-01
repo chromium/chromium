@@ -7,6 +7,7 @@
 #import "base/task/single_thread_task_runner.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/crash_report/model/crash_keys_helper.h"
+#import "ios/chrome/browser/fullscreen/ui_bundled/fullscreen_controller.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/page_side_swipe_commands.h"
 #import "ios/chrome/browser/shared/public/commands/reader_mode_chip_commands.h"
@@ -132,6 +133,9 @@ void ReaderModeBrowserAgent::WebStateListDestroyed(
 
 void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
     ReaderModeTabHelper* tab_helper) {
+  FullscreenController* fullscreen_controller =
+      FullscreenController::FromBrowser(browser_);
+  tab_helper->SetFullscreenController(fullscreen_controller);
   // If Reader mode becomes active in the active WebState, show the Reader mode
   // UI.
   ShowReaderModeUI(/* animated= */ YES);
@@ -140,6 +144,7 @@ void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
     ReaderModeTabHelper* tab_helper) {
+  tab_helper->SetFullscreenController(nullptr);
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
   HideReaderModeUI(/* animated= */ YES);

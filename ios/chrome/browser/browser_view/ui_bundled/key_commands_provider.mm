@@ -206,8 +206,7 @@ using base::UserMetricsAction;
     bool readerModeActive = IsReaderModeAvailable() && readerModeTabHelper &&
                             readerModeTabHelper->IsActive();
     if (readerModeActive &&
-        (sel_isEqual(action, @selector(keyCommand_find)) ||
-         sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
+        (sel_isEqual(action, @selector(keyCommand_addToBookmarks)) ||
          sel_isEqual(action, @selector(keyCommand_addToReadingList)))) {
       return NO;
     }
