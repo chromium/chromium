@@ -190,12 +190,16 @@ source_set("test_support") {
   sources = [
     "//chrome/browser/permissions/test/enums_to_string.cc",
     "//chrome/browser/permissions/test/enums_to_string.h",
+    "//chrome/browser/permissions/test/mock_passage_embedder.cc",
+    "//chrome/browser/permissions/test/mock_passage_embedder.h",
     "system/mock_platform_handle.cc",
     "system/mock_platform_handle.h",
   ]
 
   deps = [
     ":permissions",
+    "//components/passage_embeddings:test_support",
+    "//components/permissions:test_support",
     "//testing/gmock",
   ]
 }
@@ -279,6 +283,7 @@ if (!is_android) {
 
     deps = [
       ":permissions",
+      ":test_support",
       "//chrome/browser/content_settings:content_settings_factory",
       "//chrome/browser/media/webrtc",
       "//chrome/browser/optimization_guide",
@@ -288,6 +293,7 @@ if (!is_android) {
       "//chrome/test:test_support",
       "//components/back_forward_cache",
       "//components/optimization_guide/core:test_support",
+      "//components/passage_embeddings:test_support",
     ]
 
     if (is_chromeos) {

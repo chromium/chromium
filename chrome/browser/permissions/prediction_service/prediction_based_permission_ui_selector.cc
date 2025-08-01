@@ -41,6 +41,8 @@
 #include "content/public/browser/web_contents.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 
+// TODO(crbug.com/382447738): Fix tflite defines; this might not build for
+// tflite right now.
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/permissions/prediction_service/permissions_aiv3_handler.h"
@@ -49,7 +51,8 @@
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
 namespace {
-
+using ComputePassagesEmbeddingsCallback =
+    ::passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback;
 using ::permissions::PermissionRequest;
 using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv1Handler;
@@ -110,6 +113,22 @@ bool ShouldPredictionTriggerQuietUi(
   return likelihood == VeryUnlikely;
 }
 }  // namespace
+
+inline PredictionBasedPermissionUiSelector::ModelExecutionData::
+    ModelExecutionData() = default;
+inline PredictionBasedPermissionUiSelector::ModelExecutionData::
+    ModelExecutionData(
+        PredictionBasedPermissionUiSelector::ModelExecutionData&&) = default;
+inline PredictionBasedPermissionUiSelector::ModelExecutionData::
+    ~ModelExecutionData() = default;
+
+PredictionBasedPermissionUiSelector::ModelExecutionData::ModelExecutionData(
+    permissions::PredictionRequestFeatures features,
+    PredictionRequestMetadata request_metadata,
+    permissions::PredictionModelType model_type)
+    : features(std::move(features)),
+      request_metadata(std::move(request_metadata)),
+      model_type(model_type) {}
 
 PredictionBasedPermissionUiSelector::PredictionBasedPermissionUiSelector(
     Profile* profile)
@@ -225,7 +244,8 @@ void PredictionBasedPermissionUiSelector::OnSnapshotTakenForOnDeviceModel(
       /*success=*/!snapshot.drawsNothing(), snapshot_inquire_start_time,
       model_data.model_type);
   if (snapshot.drawsNothing()) {
-    VLOG(1) << "[PermissionsAI] The page's snapshot is empty";
+    VLOG(1) << "[PermissionsAI] The page's snapshot is empty; skipping AivX "
+               "on-device model execution.";
     return InquireServerModel(model_data.features,
                               std::move(model_data.request_metadata));
   }
@@ -367,17 +387,29 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
     ModelExecutionData model_data,
     ModelExecutionCallback model_execution_callback,
     std::unique_ptr<content_extraction::InnerTextResult> result) {
+  VLOG(1) << "[PermissionsAI] OnGetInnerTextForOnDeviceModel";
   if (result && result->inner_text.size() > kPageContentMinLength) {
-    model_data.inner_text = std::move(result->inner_text);
-    if (model_data.model_type == PredictionModelType::kOnDeviceAiV1Model &&
-        model_data.inner_text.size() > kPageContentMaxLength) {
-      model_data.inner_text.resize(kPageContentMaxLength);
+    std::string inner_text = std::move(result->inner_text);
+    if (model_data.model_type == PredictionModelType::kOnDeviceAiV1Model) {
+      if (inner_text.size() > kPageContentMaxLength) {
+        inner_text.resize(kPageContentMaxLength);
+      }
+      model_data.inner_text = std::move(inner_text);
+      return std::move(model_execution_callback).Run(std::move(model_data));
     }
+    // Aiv4
+    // TODO(chrbug.com/382447738) Add histogram to track execution time of this
+    return CreatePassageEmbeddingFromRenderedText(
+        std::move(inner_text),
+        base::BindOnce(
+            &PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed,
+            weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
 
-    return std::move(model_execution_callback).Run(std::move(model_data));
+            std::move(model_execution_callback)));
   }
 
-  VLOG(1) << "[PermissionsAI] The page's content is too short or empty";
+  VLOG(1) << "[PermissionsAI] The page's content is too short or empty; "
+             "skipping execution of AivX on-device model";
   InquireServerModel(model_data.features,
                      std::move(model_data.request_metadata));
 }
@@ -385,6 +417,7 @@ void PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel(
 void PredictionBasedPermissionUiSelector::Cancel() {
   request_.reset();
   callback_.Reset();
+  passage_embeddings_task_id_ = std::nullopt;
 }
 
 bool PredictionBasedPermissionUiSelector::IsPermissionRequestSupported(
@@ -500,10 +533,10 @@ void PredictionBasedPermissionUiSelector::LookupResponseReceived(
     bool lookup_successful,
     bool response_from_cache,
     const std::optional<permissions::GeneratePredictionsResponse>& response) {
-  // This function is used as callback for request to the CPSSv1 on-device model
-  // and the CPSSv3 server-side model. As we have multiple prediction sources
-  // that use the server side model in the end, we check for the CPSSv1 here and
-  // set is_on_device depending on this.
+  // This function is used as callback for request to the CPSSv1 on-device
+  // model and the CPSSv3 server-side model. As we have multiple prediction
+  // sources that use the server side model in the end, we check for the
+  // CPSSv1 here and set is_on_device depending on this.
   bool is_on_device_cpss_v1 = request_metadata.prediction_source ==
                               PredictionSource::kOnDeviceCpssV1Model;
   PermissionUmaUtil::RecordPredictionModelInquireTime(
@@ -686,24 +719,6 @@ void PredictionBasedPermissionUiSelector::set_inner_text_for_testing(
   inner_text_for_testing_ = inner_text_;
 }
 
-void PredictionBasedPermissionUiSelector::GetInnerText(
-    content::RenderFrameHost* render_frame_host,
-    ModelExecutionData model_data,
-    ModelExecutionCallback model_execution_callback) {
-  if (inner_text_for_testing_.has_value()) {
-    return OnGetInnerTextForOnDeviceModel(
-        std::move(model_data), std::move(model_execution_callback),
-        std::make_unique<content_extraction::InnerTextResult>(
-            std::move(inner_text_for_testing_.value())));
-  }
-  content_extraction::GetInnerText(
-      *render_frame_host, /*node_id=*/std::nullopt,
-      base::BindOnce(
-          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
-          weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
-          std::move(model_execution_callback)));
-}
-
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 void PredictionBasedPermissionUiSelector::set_snapshot_for_testing(
     SkBitmap snapshot) {
@@ -732,6 +747,26 @@ void PredictionBasedPermissionUiSelector::TakeSnapshot(
                        snapshot_inquire_start_time, std::move(model_data)));
   }
 }
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+void PredictionBasedPermissionUiSelector::GetInnerText(
+    content::RenderFrameHost* render_frame_host,
+    ModelExecutionData model_data,
+    ModelExecutionCallback model_execution_callback) {
+  VLOG(1) << "[PermissionsAI] GetInnerText";
+  if (inner_text_for_testing_.has_value()) {
+    return OnGetInnerTextForOnDeviceModel(
+        std::move(model_data), std::move(model_execution_callback),
+        std::make_unique<content_extraction::InnerTextResult>(
+            std::move(inner_text_for_testing_.value())));
+  }
+  content_extraction::GetInnerText(
+      *render_frame_host, /*node_id=*/std::nullopt,
+      base::BindOnce(
+          &PredictionBasedPermissionUiSelector::OnGetInnerTextForOnDeviceModel,
+          weak_ptr_factory_.GetWeakPtr(), std::move(model_data),
+          std::move(model_execution_callback)));
+}
 
 void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
     ModelExecutionData model_data) {
@@ -751,7 +786,7 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                     ->GetPermissionsAiv1Handler()) {
           VLOG(1) << "[PermissionsAIv1] Inquire model";
           return aiv1_handler->InquireAiOnDeviceModel(
-              std::move(model_data.inner_text), request_type,
+              std::move(model_data.inner_text.value()), request_type,
               base::BindOnce(&PredictionBasedPermissionUiSelector::
                                  OnDeviceAiv1ModelExecutionCallback,
                              weak_ptr_factory_.GetWeakPtr(),
@@ -760,7 +795,9 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
         }
         break;
       }
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
       case PredictionModelType::kOnDeviceAiV3Model: {
+        DCHECK(model_data.snapshot.has_value());
         VLOG(1)
             << "[PermissionsAI] ExecuteOnDeviceAivXModel kOnDeviceAiV3Model";
         if (PermissionsAiv3Handler* aiv3_handler =
@@ -768,7 +805,7 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                     request_type)) {
           VLOG(1) << "[PermissionsAI] Inquire AIv3 model";
           return aiv3_handler->ExecuteModel(
-              base::BindOnce(
+              /*callback=*/base::BindOnce(
                   &PredictionBasedPermissionUiSelector::
                       OnDeviceTfliteAivXModelExecutionCallback,
                   weak_ptr_factory_.GetWeakPtr(),
@@ -776,7 +813,7 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                   std::move(model_data.features),
                   std::move(model_data.request_metadata),
                   model_data.model_type),
-              PermissionsAiv3Handler::ModelInput(
+              /*model_input=*/PermissionsAiv3Handler::ModelInput(
                   std::move(model_data.snapshot.value())));
         } else {
           VLOG(1) << "[PermissionsAI] No AIv3 handler";
@@ -784,12 +821,14 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
         break;
       }
       case PredictionModelType::kOnDeviceAiV4Model: {
+        DCHECK(model_data.snapshot.has_value());
+        DCHECK(model_data.inner_text_embedding.has_value());
         if (PermissionsAiv4Handler* aiv4_handler =
                 prediction_model_handler_provider->GetPermissionsAiv4Handler(
                     request_type)) {
           VLOG(1) << "[PermissionsAIv4] Inquire model";
           return aiv4_handler->ExecuteModel(
-              base::BindOnce(
+              /*callback=*/base::BindOnce(
                   &PredictionBasedPermissionUiSelector::
                       OnDeviceTfliteAivXModelExecutionCallback,
                   weak_ptr_factory_.GetWeakPtr(),
@@ -797,15 +836,13 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
                   std::move(model_data.features),
                   std::move(model_data.request_metadata),
                   model_data.model_type),
-              PermissionsAiv4Handler::ModelInput(
+              /*model_input=*/PermissionsAiv4Handler::ModelInput(
                   std::move(model_data.snapshot.value()),
-                  // TODO(chrbug.com/382447738): dummy embedding
-                  passage_embeddings::Embedding(
-                      /*data=*/std::vector<float>(768, 42.f),
-                      /*passage_word_count=*/42)));
+                  std::move(model_data.inner_text_embedding.value())));
         }
         break;
       }
+#endif
       default:
         NOTREACHED();
     }
@@ -816,4 +853,77 @@ void PredictionBasedPermissionUiSelector::ExecuteOnDeviceAivXModel(
   InquireServerModel(model_data.features,
                      std::move(model_data.request_metadata));
 }
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+void PredictionBasedPermissionUiSelector::
+    CreatePassageEmbeddingFromRenderedText(
+        std::string rendered_text,
+        ComputePassagesEmbeddingsCallback callback) {
+  VLOG(1) << "[PermissionsAI] CreatePassageEmbeddingFromRenderedText";
+  if (rendered_text.size() == 0) {
+    VLOG(1) << "[PermissionsAIv4]: rendered_text size is 0";
+    // TODO(chrbug.com/382447738) Add histogram to track this
+    return std::move(callback).Run(
+        {}, {}, -1,
+        passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
+  }
+
+  if (auto* prediction_model_handler_provider =
+          PredictionModelHandlerProviderFactory::GetForBrowserContext(
+              profile_)) {
+    if (auto* passage_embedder =
+            prediction_model_handler_provider->GetPassageEmbedder()) {
+      if (passage_embeddings_task_id_ != std::nullopt) {
+        VLOG(1) << "[PermissionsAIv4]: The embedding task did not return yet";
+        // TODO(chrbug.com/382447738) Add histogram to track this
+        // Try to cancel the embedding task for the previous query, if any.
+        passage_embedder->TryCancel(*passage_embeddings_task_id_);
+      }
+      passage_embeddings_task_id_ = passage_embedder->ComputePassagesEmbeddings(
+          passage_embeddings::PassagePriority::kUserInitiated,
+          {std::move(rendered_text)}, std::move(callback));
+      return;
+    }
+  }
+  std::move(callback).Run(
+      {}, {}, -1,
+      passage_embeddings::ComputeEmbeddingsStatus::kExecutionFailure);
+}
+
+// TODO(chrbug.com/382447738): Add timing info
+void PredictionBasedPermissionUiSelector::OnPassageEmbeddingsComputed(
+    ModelExecutionData model_data,
+    ModelExecutionCallback model_execution_callback,
+    std::vector<std::string> passages,
+    std::vector<passage_embeddings::Embedding> embeddings,
+    passage_embeddings::Embedder::TaskId task_id,
+    passage_embeddings::ComputeEmbeddingsStatus status) {
+  bool succeeded =
+      status == passage_embeddings::ComputeEmbeddingsStatus::kSuccess;
+  // TODO(chrbug.com/382447738) Add histogram to track the embeddings compute
+  // status
+  VLOG(1) << "[PermissionsAIv4]: TextEmbedding computed with "
+          << (succeeded ? "" : "no") << "success";
+
+  if (!succeeded) {
+    if (passage_embeddings_task_id_ == task_id) {
+      passage_embeddings_task_id_ = std::nullopt;
+    }
+    return InquireServerModel(model_data.features,
+                              std::move(model_data.request_metadata));
+  }
+  DCHECK(passages.size() == 1);
+
+  if (passage_embeddings_task_id_ != task_id) {
+    // TODO(chrbug.com/382447738) Add histogram to track this
+    // If the task id is different, a new permission request has started
+    // in the meantime and the request that started this call is stale.
+    return;
+  } else {
+    passage_embeddings_task_id_ = std::nullopt;
+  }
+
+  model_data.inner_text_embedding = std::move(embeddings[0]);
+  std::move(model_execution_callback).Run(std::move(model_data));
+}
+#endif

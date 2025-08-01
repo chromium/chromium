@@ -10,6 +10,7 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
+#include "chrome/browser/passage_embeddings/chrome_passage_embeddings_service_controller.h"
 #include "chrome/browser/permissions/prediction_service/permissions_aiv1_handler.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/permissions/features.h"
@@ -160,11 +161,28 @@ void PredictionModelHandlerProvider::set_permissions_aiv4_handler_for_testing(
   }
 }
 
+void PredictionModelHandlerProvider::set_passage_embedder_for_testing(
+    passage_embeddings::Embedder* passage_embedder) {
+  passage_embedder_for_testing = passage_embedder;
+}
+
 bool PredictionModelHandlerProvider::IsAiv4ModelAvailable() {
   return base::FeatureList::IsEnabled(permissions::features::kPermissionsAIv4);
-  // TODO(crbug.com/422952428) Add check for language as the text embeddings
+  // TODO(crbug.com/382447738) Add check for language as the text embeddings
   // model required for preparing the text input of AIv4 only works on english
   // text for now.
+}
+passage_embeddings::Embedder*
+PredictionModelHandlerProvider::GetPassageEmbedder() {
+  if (passage_embedder_for_testing.has_value()) {
+    CHECK_IS_TEST();
+    return passage_embedder_for_testing.value();
+  }
+  if (auto* passage_embeddings_service_controller =
+          passage_embeddings::ChromePassageEmbeddingsServiceController::Get()) {
+    return passage_embeddings_service_controller->GetEmbedder();
+  }
+  return nullptr;
 }
 
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)

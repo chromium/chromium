@@ -66,7 +66,7 @@ void PermissionsAiv4Handler::OnModelUpdated(
 
 void PermissionsAiv4Handler::ExecuteModel(ExecutionCallback callback,
                                           ModelInput model_input) {
-  DCHECK(!model_input.snapshot.empty());
+  DCHECK(!model_input.snapshot.drawsNothing());
   VLOG(1) << "[PermissionsAIv4] PermissionsAiv4Handler::ExecuteModel";
   base::UmaHistogramBoolean("Permissions.AIv4.ModelExecutionAlreadyInProgress",
                             is_execution_in_progress_);

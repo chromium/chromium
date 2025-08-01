@@ -23,6 +23,7 @@
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider.h"
 #include "chrome/browser/permissions/prediction_service/prediction_model_handler_provider_factory.h"
 #include "chrome/browser/permissions/prediction_service/prediction_service_factory.h"
+#include "chrome/browser/permissions/test/mock_passage_embedder.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ui/browser.h"
@@ -36,6 +37,7 @@
 #include "components/optimization_guide/core/delivery/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/passage_embeddings/passage_embeddings_test_util.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_uma_util.h"
@@ -45,6 +47,7 @@
 #include "components/permissions/prediction_service/prediction_request_features.h"
 #include "components/permissions/prediction_service/prediction_service_messages.pb.h"
 #include "components/permissions/request_type.h"
+#include "components/permissions/test/aivx_modelhandler_utils.h"
 #include "components/permissions/test/enums_to_string.h"
 #include "components/permissions/test/fake_permissions_aivx_modelhandlers.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
@@ -65,11 +68,14 @@ using ::base::TimeTicks;
 using ::base::test::FeatureRef;
 using ::base::test::FeatureRefAndParams;
 using ::optimization_guide::proto::OptimizationTarget;
+using ::passage_embeddings::ComputeEmbeddingsStatus;
 using ::permissions::GeneratePredictionsResponse;
 using ::permissions::PermissionRequestRelevance;
 using ::permissions::PermissionsAiv3Handler;
 using ::permissions::PredictionRequestFeatures;
 using ::permissions::PredictionService;
+using ::test::BuildBitmap;
+using ::test::PassageEmbedderMock;
 using ::test::PermissionsAiv3HandlerFake;
 using ::test::PermissionsAiv4HandlerFake;
 using ::testing::_;
@@ -104,6 +110,10 @@ constexpr auto kLikelihoodUnspecified =
         PermissionPrediction_Likelihood_DiscretizedLikelihood_DISCRETIZED_LIKELIHOOD_UNSPECIFIED;
 
 constexpr std::string kNoHoldbackChance = "0";
+
+// Just a meaningless color used to create snapshot dummies for the AIv3 and
+// Aiv4 models.
+constexpr SkColor kDefaultColor = SkColorSetRGB(0x1E, 0x1C, 0x0F);
 
 // This is the only server side reply that will trigger quiet UI at the
 // moment.
@@ -259,6 +269,17 @@ PredictionRequestFeatures BuildRequestFeatures(
       .experiment_id = experiment_id,
       .permission_relevance = permission_relevance};
 }
+
+GeneratePredictionsResponse BuildPredictionServiceResponse(
+    PermissionUiSelector::PredictionGrantLikelihood likelihood) {
+  GeneratePredictionsResponse prediction_service_response;
+  prediction_service_response.mutable_prediction()
+      ->Add()
+      ->mutable_grant_likelihood()
+      ->set_discretized_likelihood(likelihood);
+  return prediction_service_response;
+}
+
 }  // namespace
 
 class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
@@ -362,12 +383,8 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
     manager->AddRequest(GetActiveMainFrame(), std::move(req));
     bubble_factory()->WaitForPermissionBubble();
 
-    if (aiv3_model_handler_) {
-      aiv3_model_handler_->WaitForModelExecutionForTesting();
-    }
-    if (aiv4_model_handler_) {
-      aiv4_model_handler_->WaitForModelExecutionForTesting();
-    }
+    WaitForModelExecutionIfNecessary();
+
     EXPECT_EQ(should_expect_quiet_ui,
               manager->ShouldCurrentRequestUseQuietUI());
     EXPECT_EQ(expected_relevance,
@@ -391,6 +408,15 @@ class PredictionServiceBrowserTestBase : public InProcessBrowserTest {
   raw_ptr<PermissionsAiv4HandlerFake> aiv4_model_handler_ = nullptr;
 
  private:
+  virtual void WaitForModelExecutionIfNecessary() {
+    if (aiv3_model_handler_) {
+      aiv3_model_handler_->WaitForModelExecutionForTesting();
+    }
+    if (aiv4_model_handler_) {
+      aiv4_model_handler_->WaitForModelExecutionForTesting();
+    }
+  }
+
   std::unique_ptr<MockPermissionPromptFactory> mock_permission_prompt_factory_;
   base::test::ScopedFeatureList scoped_feature_list_;
   base::HistogramTester histogram_tester_;
@@ -492,11 +518,9 @@ INSTANTIATE_TEST_SUITE_P(
 IN_PROC_BROWSER_TEST_P(PredictionServiceHoldbackBrowserTest,
                        TestServerSideHoldbackWorkflow) {
   ASSERT_TRUE(embedded_test_server()->Start());
-  GeneratePredictionsResponse prediction_service_response;
-  prediction_service_response.mutable_prediction()
-      ->Add()
-      ->mutable_grant_likelihood()
-      ->set_discretized_likelihood(GetParam().prediction_service_likelihood);
+
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(GetParam().prediction_service_likelihood);
 
   std::string test_url = "test.a";
   PredictionRequestFeatures expected_features = BuildRequestFeatures(
@@ -731,18 +755,17 @@ class AivXModelPredictionServiceBrowserTest
 
   // We do not test screenshot handling here; this is so the code does not fail.
   void set_dummy_screenshot_for_testing() {
-    SkBitmap bitmap;
-    bitmap.allocN32Pixels(64, 64);
-    bitmap.eraseColor(SkColorSetRGB(0x1E, 0x1C, 0x0F));
-    prediction_based_permission_ui_selector()->set_snapshot_for_testing(bitmap);
+    prediction_based_permission_ui_selector()->set_snapshot_for_testing(
+        BuildBitmap(64, 64, kDefaultColor));
   }
 
   // We do not test inner text content extraction here; this is so the code does
   // not fail.
-  void set_dummy_inner_text_for_testing() {
+  void set_dummy_inner_text_for_testing(
+      std::string inner_text =
+          "dummy text that is more than min length characters long") {
     prediction_based_permission_ui_selector()->set_inner_text_for_testing(
-        {.inner_text =
-             "dummy text that is more than min length characters long"});
+        {.inner_text = std::move(inner_text)});
   }
 };
 
@@ -893,11 +916,8 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
 
   set_dummy_screenshot_for_testing();
 
-  GeneratePredictionsResponse prediction_service_response;
-  prediction_service_response.mutable_prediction()
-      ->Add()
-      ->mutable_grant_likelihood()
-      ->set_discretized_likelihood(test_case.prediction_service_likelihood);
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(test_case.prediction_service_likelihood);
 
   PredictionRequestFeatures expected_features =
       BuildRequestFeatures(request_type(), ExperimentId::kAiV3ExperimentId,
@@ -950,6 +970,163 @@ IN_PROC_BROWSER_TEST_P(Aiv3ModelPredictionServiceBrowserTest,
 // -----------------------------------------------------------------------------
 // --------------- Prediction Service On Device Permissions AIv4 ---------------
 // -----------------------------------------------------------------------------
+
+class Aiv4ModelPredictionServiceBrowserTestBase
+    : public AivXModelPredictionServiceBrowserTest<PermissionsAiv4HandlerFake> {
+ public:
+  Aiv4ModelPredictionServiceBrowserTestBase()
+      : AivXModelPredictionServiceBrowserTest(/*enabled_features=*/
+                                              {
+                                                  CONFIGURE_NO_HOLDBACK_CHANCE,
+                                                  {permissions::features::
+                                                       kPermissionsAIv1,
+                                                   {}},
+                                                  {permissions::features::
+                                                       kPermissionsAIv3,
+                                                   {}},
+                                                  {permissions::features::
+                                                       kPermissionsAIv4,
+                                                   {}},
+                                              }, /*disabled_features=*/
+                                              {}) {}
+
+  RequestType request_type() const override {
+    return RequestType::kNotifications;
+  }
+
+  OptimizationTarget optimization_target() override {
+    return kAiv4OptTargetNotification;
+  }
+
+  void UpdateAivXHandlerInModelProvider(
+      std::unique_ptr<PermissionsAiv4HandlerFake> handler) override {
+    model_handler_provider()->set_permissions_aiv4_handler_for_testing(
+        request_type(), std::move(handler));
+  }
+
+  PermissionsAiv4HandlerFake* model_handler() override {
+    return aiv4_model_handler_;
+  }
+
+  void set_model_handler(PermissionsAiv4HandlerFake* handler) override {
+    aiv4_model_handler_ = handler;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(Aiv4ModelPredictionServiceBrowserTestBase,
+                       Aiv4ModelHandlerDefined) {
+  // If AIv4 flag is defined, no other AIvX model should get initialized.
+  EXPECT_FALSE(aiv1_model_handler());
+  EXPECT_FALSE(aiv3_model_handler());
+  EXPECT_TRUE(aiv4_model_handler());
+}
+
+struct Aiv4ModelFailureTestCase {
+  std::string test_name;
+  std::string inner_text;
+  SkBitmap snapshot;
+  ComputeEmbeddingsStatus compute_embeddings_status;
+  std::optional<PassageEmbedderMock> passage_embedder;
+};
+
+class Aiv4ModelFailureBrowserTest
+    : public Aiv4ModelPredictionServiceBrowserTestBase,
+      public testing::WithParamInterface<Aiv4ModelFailureTestCase> {
+ public:
+  Aiv4ModelFailureBrowserTest() = default;
+
+  void WaitForModelExecutionIfNecessary() override {
+    // This test will not start any model execution.
+  }
+};
+
+// Each of the testcases targets a different point of failure and we want all
+// of them to get handled gracefully by skipping on-device model execution and
+// just calling CPSSv3 server side model without permission relevance calculated
+// by the on-device model.
+INSTANTIATE_TEST_SUITE_P(
+    Aiv4ModelFailureTest,
+    Aiv4ModelFailureBrowserTest,
+    ValuesIn<Aiv4ModelFailureTestCase>({
+        {
+            /*test_name=*/"NoScreenshotAvailable",
+            /*inner_text=*/"some valid text for aiv4 model",
+            /*snapshot=*/SkBitmap(),
+            /*compute_embeddings_status=*/ComputeEmbeddingsStatus::kSuccess,
+            /*passage_embedder=*/PassageEmbedderMock(),
+        },
+        {
+            /*test_name=*/"EmptyInnerText",
+            /*inner_text=*/"",
+            /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
+            /*compute_embeddings_status=*/ComputeEmbeddingsStatus::kSuccess,
+            /*passage_embedder=*/PassageEmbedderMock(),
+        },
+        {
+            /*test_name=*/"EmbedderModelFails",
+            /*inner_text=*/"some valid text for aiv4 model",
+            /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
+            /*compute_embeddings_status=*/
+            ComputeEmbeddingsStatus::kExecutionFailure,
+            /*passage_embedder=*/PassageEmbedderMock(),
+        },
+        {
+            /*test_name=*/"EmbedderModelDoesNotExist",
+            /*inner_text=*/"some valid text for aiv4 model",
+            /*snapshot=*/BuildBitmap(64, 64, kDefaultColor),
+            /*compute_embeddings_status=*/
+            ComputeEmbeddingsStatus::kSuccess,
+            /*passage_embedder=*/std::nullopt,
+        },
+    }), /*name_generator=*/
+    [](const testing::TestParamInfo<Aiv4ModelFailureBrowserTest::ParamType>&
+           info) { return info.param.test_name; });
+
+IN_PROC_BROWSER_TEST_P(Aiv4ModelFailureBrowserTest,
+                       ShouldCallCPSSv3ModelWithoutRelevance) {
+  ASSERT_TRUE(aiv4_model_handler());
+  ASSERT_TRUE(embedded_test_server()->Start());
+  PushModelFileToModelExecutor(ModelFilePath(kOneReturnAiv4Model));
+
+  // We setup various failure conditions defined by the testcases.
+  prediction_based_permission_ui_selector()->set_snapshot_for_testing(
+      GetParam().snapshot);
+  set_dummy_inner_text_for_testing(GetParam().inner_text);
+  std::unique_ptr<PassageEmbedderMock> passage_embedder;
+  if (GetParam().passage_embedder.has_value()) {
+    passage_embedder = std::make_unique<PassageEmbedderMock>(
+        GetParam().passage_embedder.value());
+    passage_embedder->set_status(GetParam().compute_embeddings_status);
+    model_handler_provider()->set_passage_embedder_for_testing(
+        passage_embedder.get());
+  } else {
+    model_handler_provider()->set_passage_embedder_for_testing(nullptr);
+  }
+
+  // We expect a vanilla CPSSv3 call without input from the
+  // on-device model.
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(kLikelihoodVeryUnlikely);
+  PredictionRequestFeatures expected_features =
+      BuildRequestFeatures(request_type(), ExperimentId::kAiV4ExperimentId,
+                           PermissionRequestRelevance::kUnspecified);
+  EXPECT_CALL(prediction_service(),
+              StartLookup(PredictionRequestFeatureEq(expected_features), _, _))
+      .WillRepeatedly(WithArg<2>(Invoke(
+          [&](PredictionService::LookupResponseCallback response_callback) {
+            std::move(response_callback)
+                .Run(/*lookup_successful=*/true,
+                     /*response_from_cache=*/true, prediction_service_response);
+          })));
+
+  TriggerPromptAndVerifyUi(
+      /*test_url=*/"test.a", PermissionAction::DISMISSED,
+      /*should_expect_quiet_ui=*/true, /*expected_relevance=*/std::nullopt,
+      /*expected_prediction_likelihood=*/kLikelihoodVeryUnlikely);
+
+  // Avoid dangling raw_ptr warning:
+  model_handler_provider()->set_passage_embedder_for_testing(nullptr);
+}
 
 std::vector<PermissionRequestMetadata> aiv4_request_data_testcase = {
     {/*optimization_target=*/kAiv4OptTargetGeolocation,
@@ -1009,24 +1186,10 @@ std::vector<ModelMetadata> aiv4_model_data_testcase = {
 using Aiv4ModelTestCase = std::tuple<ModelMetadata, PermissionRequestMetadata>;
 
 class Aiv4ModelPredictionServiceBrowserTest
-    : public AivXModelPredictionServiceBrowserTest<PermissionsAiv4HandlerFake>,
+    : public Aiv4ModelPredictionServiceBrowserTestBase,
       public testing::WithParamInterface<Aiv4ModelTestCase> {
  public:
-  Aiv4ModelPredictionServiceBrowserTest()
-      : AivXModelPredictionServiceBrowserTest(/*enabled_features=*/
-                                              {
-                                                  CONFIGURE_NO_HOLDBACK_CHANCE,
-                                                  {permissions::features::
-                                                       kPermissionsAIv1,
-                                                   {}},
-                                                  {permissions::features::
-                                                       kPermissionsAIv3,
-                                                   {}},
-                                                  {permissions::features::
-                                                       kPermissionsAIv4,
-                                                   {}},
-                                              }, /*disabled_features=*/
-                                              {}) {}
+  Aiv4ModelPredictionServiceBrowserTest() = default;
 
   RequestType request_type() const override {
     return get<1>(GetParam()).request_type;
@@ -1036,19 +1199,16 @@ class Aiv4ModelPredictionServiceBrowserTest
     return get<1>(GetParam()).optimization_target;
   }
 
-  void UpdateAivXHandlerInModelProvider(
-      std::unique_ptr<PermissionsAiv4HandlerFake> handler) override {
-    model_handler_provider()->set_permissions_aiv4_handler_for_testing(
-        request_type(), std::move(handler));
+  void SetUpOnMainThread() override {
+    Aiv4ModelPredictionServiceBrowserTestBase::SetUpOnMainThread();
+
+    // Required to preprocess the inner_text string as input for AIv4
+    model_handler_provider()->set_passage_embedder_for_testing(
+        &passage_embedder_);
   }
 
-  PermissionsAiv4HandlerFake* model_handler() override {
-    return aiv4_model_handler_;
-  }
-
-  void set_model_handler(PermissionsAiv4HandlerFake* handler) override {
-    aiv4_model_handler_ = handler;
-  }
+ private:
+  PassageEmbedderMock passage_embedder_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
@@ -1064,14 +1224,6 @@ INSTANTIATE_TEST_SUITE_P(
     });
 
 IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
-                       Aiv4ModelHandlerDefined) {
-  // If AIv4 flag is defined, no other AIvX model should get initialized.
-  EXPECT_FALSE(aiv1_model_handler());
-  EXPECT_FALSE(aiv3_model_handler());
-  EXPECT_TRUE(aiv4_model_handler());
-}
-
-IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
                        TestAiv4Workflow) {
   ASSERT_TRUE(aiv4_model_handler());
 
@@ -1083,11 +1235,8 @@ IN_PROC_BROWSER_TEST_P(Aiv4ModelPredictionServiceBrowserTest,
   set_dummy_screenshot_for_testing();
   set_dummy_inner_text_for_testing();
 
-  GeneratePredictionsResponse prediction_service_response;
-  prediction_service_response.mutable_prediction()
-      ->Add()
-      ->mutable_grant_likelihood()
-      ->set_discretized_likelihood(test_case.prediction_service_likelihood);
+  GeneratePredictionsResponse prediction_service_response =
+      BuildPredictionServiceResponse(test_case.prediction_service_likelihood);
 
   PredictionRequestFeatures expected_features =
       BuildRequestFeatures(request_type(), ExperimentId::kAiV4ExperimentId,

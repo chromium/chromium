@@ -18,6 +18,7 @@
 #include "components/optimization_guide/proto/common_types.pb.h"
 #include "components/optimization_guide/proto/features/permissions_ai.pb.h"
 #include "components/optimization_guide/proto/models.pb.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/permissions/permission_actions_history.h"
 #include "components/permissions/permission_request_enums.h"
 #include "components/permissions/prediction_service/permission_ui_selector.h"
@@ -55,8 +56,18 @@ class PredictionBasedPermissionUiSelector
     permissions::PredictionRequestFeatures features;
     PredictionRequestMetadata request_metadata;
     permissions::PredictionModelType model_type;
+    std::optional<std::string> inner_text;
     std::optional<SkBitmap>(snapshot);
-    std::string inner_text;
+    std::optional<passage_embeddings::Embedding> inner_text_embedding;
+
+    ModelExecutionData(permissions::PredictionRequestFeatures features,
+                       PredictionRequestMetadata request_metadata,
+                       permissions::PredictionModelType model_type);
+    ModelExecutionData();
+    ~ModelExecutionData();
+    ModelExecutionData(const ModelExecutionData&) = delete;
+    ModelExecutionData(ModelExecutionData&&);
+    ModelExecutionData& operator=(const ModelExecutionData&) = delete;
   };
 
   using PredictionGrantLikelihood =
@@ -210,8 +221,11 @@ class PredictionBasedPermissionUiSelector
       const permissions::PredictionRequestFeatures& features,
       PredictionRequestMetadata request_metadata);
 
-  // Creates a snapshot asynchronously and calls ExecuteOnDeviceAivXModel. Part
-  // of the AivX model workflow.
+  // Part of the AivX model workflow. Creates a snapshot asynchronously and
+  // calls ExecuteOnDeviceAivXModel if the snapshot is not empty. If snapshot
+  // creation failed, on-device model execution is not attempted and instead it
+  // proceeds with the basic CPSSv3 workflow without the output of the
+  // on-device model.
   void TakeSnapshot(content::RenderWidgetHostView* host_view,
                     ModelExecutionData model_data);
 
@@ -222,6 +236,28 @@ class PredictionBasedPermissionUiSelector
                     ModelExecutionData model_data,
                     ModelExecutionCallback model_execution_callback);
 
+  // Part of Aiv4 workflow; to use the inner text as input to the tflite model,
+  // we need to preprocess it with the passage embeddings model. If
+  // rendered_text is an empty string, on-device model execution is not
+  // attempted and instead it proceeds with the basic CPSSv3 workflow without
+  // the output of the on-device model.
+  void CreatePassageEmbeddingFromRenderedText(
+      std::string rendered_text,
+      passage_embeddings::Embedder::ComputePassagesEmbeddingsCallback callback);
+
+  // Callback for the passage embeddings model. Sets the
+  // |passage_embeddings_task_id_| if the passage_embedder model is available.
+  // Still running embedder tasks will get canceled upon calling this function.
+  // Fills in the inner_text_embeddings field of the model_metadata on success
+  // and calls the model_execution_callback in any case. Failures will get
+  // propagated and should be handled by the model_execution_callback callback.
+  void OnPassageEmbeddingsComputed(
+      ModelExecutionData model_data,
+      ModelExecutionCallback model_execution_callback,
+      std::vector<std::string> passages,
+      std::vector<passage_embeddings::Embedding> embeddings,
+      passage_embeddings::Embedder::TaskId task_id,
+      passage_embeddings::ComputeEmbeddingsStatus status);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
   raw_ptr<Profile> profile_;
@@ -236,10 +272,16 @@ class PredictionBasedPermissionUiSelector
 
   DecisionMadeCallback callback_;
 
+  std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
   std::optional<SkBitmap> snapshot_for_testing_;
+
+  // Used to cancel a still running embedding task for the previous stale query
+  // to the passage embedder model that we use to prepare the text input for
+  // AIv4.
+  std::optional<passage_embeddings::Embedder::TaskId>
+      passage_embeddings_task_id_;
 #endif
-  std::optional<content_extraction::InnerTextResult> inner_text_for_testing_;
 
   // Used to asynchronously call the callback during on device model execution.
   base::WeakPtrFactory<PredictionBasedPermissionUiSelector> weak_ptr_factory_{

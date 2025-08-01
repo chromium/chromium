@@ -10,6 +10,7 @@
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/optimization_guide/core/delivery/optimization_guide_model_provider.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
+#include "components/passage_embeddings/passage_embeddings_types.h"
 #include "components/permissions/request_type.h"
 
 class OptimizationGuideKeyedService;
@@ -39,6 +40,7 @@ class PredictionModelHandlerProvider : public KeyedService {
   PredictionModelHandler* GetPredictionModelHandler(RequestType request_type);
   PermissionsAiv3Handler* GetPermissionsAiv3Handler(RequestType request_type);
   PermissionsAiv4Handler* GetPermissionsAiv4Handler(RequestType request_type);
+  passage_embeddings::Embedder* GetPassageEmbedder();
 
   void set_permissions_aiv3_handler_for_testing(
       RequestType request_type,
@@ -46,7 +48,8 @@ class PredictionModelHandlerProvider : public KeyedService {
   void set_permissions_aiv4_handler_for_testing(
       RequestType request_type,
       std::unique_ptr<PermissionsAiv4Handler> handler);
-
+  void set_passage_embedder_for_testing(
+      passage_embeddings::Embedder* passage_embedder_);
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 
  private:
@@ -59,6 +62,10 @@ class PredictionModelHandlerProvider : public KeyedService {
   std::unique_ptr<PermissionsAiv3Handler> geolocation_aiv3_handler_;
   std::unique_ptr<PermissionsAiv4Handler> notification_aiv4_handler_;
   std::unique_ptr<PermissionsAiv4Handler> geolocation_aiv4_handler_;
+  // This embedder is required to preprocess the inner_text to create the
+  // embeddings we use for the AIv4 tflite model as input.
+  std::optional<raw_ptr<passage_embeddings::Embedder>>
+      passage_embedder_for_testing;
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 };
 }  // namespace permissions
