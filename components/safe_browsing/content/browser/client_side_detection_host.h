@@ -430,6 +430,8 @@ class ClientSideDetectionHost
 
   // Records the start time of when phishing detection started.
   base::TimeTicks phishing_detection_start_time_;
+  // Records the start time of when image embedding started.
+  base::TimeTicks image_embedding_start_time_;
   raw_ptr<const base::TickClock> tick_clock_;
 
   std::unique_ptr<Delegate> delegate_;

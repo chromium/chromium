@@ -1000,16 +1000,30 @@ useful for Chirp alerts (go/crca-alerts). -->
   <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
-<histogram name="SBClientPhishing.PhishingImageEmbeddingResult"
+<histogram name="SBClientPhishing.PhishingImageEmbeddingDuration{RequestType}"
+    units="ms" expires_after="2026-08-01">
+  <owner>andysjlim@chromium.org</owner>
+  <owner>chrome-counter-abuse-alerts@google.com</owner>
+  <summary>
+    Records the duration it takes for image embedding requested by {RequestType}
+    to finish. This occurs for ESB enabled users only after the image embedding
+    request has been made.
+  </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
+</histogram>
+
+<histogram name="SBClientPhishing.PhishingImageEmbeddingResult{RequestType}"
     enum="ClientSidePhishingImageEmbeddingResult" expires_after="2025-12-21">
   <owner>andysjlim@chromium.org</owner>
   <owner>chrome-counter-abuse-alerts@google.com</owner>
   <summary>
-    The result enum received from renderer-side image embedder. This is recorded
-    after every renderer image embedding which is expected to happen when the
-    user is subscribed to ESB, has an image embedding model loaded, and the page
-    is deemed phishy by the phishing classification process.
+    The result enum received from renderer-side image embedder when requested by
+    {RequestType}. This is recorded after every renderer image embedding which
+    is expected to happen when the user is subscribed to ESB, has an image
+    embedding model loaded, and the page is deemed phishy by the phishing
+    classification process.
   </summary>
+  <token key="RequestType" variants="ClientSideDetectionRequestType"/>
 </histogram>
 
 <histogram name="SBClientPhishing.PreClassificationCheckResult{RequestType}"
