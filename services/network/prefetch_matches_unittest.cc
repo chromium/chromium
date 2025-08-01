@@ -67,43 +67,37 @@ TEST(PrefetchMatchesTest, ReferrerPolicy) {
 TEST(PrefetchMatchesTest, HeadersPurposeDiffers) {
   ResourceRequest prefetch;
   ResourceRequest real;
-  prefetch.headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Referer: https://www.example.com/\r\n");
+  prefetch.headers.SetHeader("User-Agent", "Mozilla/1.0");
+  prefetch.headers.SetHeader("Referer", "https://www.example.com/");
   prefetch.headers.SetHeader(blink::kPurposeHeaderName,
                              blink::kSecPurposePrefetchHeaderValue);
-  real.headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Referer: https://www.example.com/\r\n");
+  real.headers.SetHeader("User-Agent", "Mozilla/1.0");
+  real.headers.SetHeader("Referer", "https://www.example.com/");
   EXPECT_TRUE(PrefetchMatches(prefetch, real));
 }
 
 TEST(PrefetchMatchesTest, HeadersOrderDoesntMatter) {
   ResourceRequest prefetch;
   ResourceRequest real;
-  prefetch.headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Referer: https://www.example.com/\r\n");
+  prefetch.headers.SetHeader("User-Agent", "Mozilla/1.0");
+  prefetch.headers.SetHeader("Referer", "https://www.example.com/");
   prefetch.headers.SetHeader(blink::kPurposeHeaderName,
                              blink::kSecPurposePrefetchHeaderValue);
-  real.headers.AddHeadersFromString(
-      "Referer: https://www.example.com/\r\n"
-      "User-Agent: Mozilla/1.0\r\n");
+  real.headers.SetHeader("Referer", "https://www.example.com/");
+  real.headers.SetHeader("User-Agent", "Mozilla/1.0");
   EXPECT_TRUE(PrefetchMatches(prefetch, real));
 }
 
 TEST(PrefetchMatchesTest, HeadersOriginDiffers) {
   ResourceRequest prefetch;
   ResourceRequest real;
-  prefetch.headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Origin: https://www.example.com/\r\n");
+  prefetch.headers.SetHeader("User-Agent", "Mozilla/1.0");
+  prefetch.headers.SetHeader("Origin", "https://www.example.com/");
   prefetch.headers.SetHeader(blink::kPurposeHeaderName,
                              blink::kSecPurposePrefetchHeaderValue);
-  real.headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Referer: https://www.example.com/\r\n"
-      "Origin: https://www2.example/\r\n");
+  real.headers.SetHeader("User-Agent", "Mozilla/1.0");
+  real.headers.SetHeader("Referer", "https://www.example.com/");
+  real.headers.SetHeader("Origin", "https://www2.example/");
   EXPECT_FALSE(PrefetchMatches(prefetch, real));
 }
 
@@ -112,14 +106,12 @@ TEST(PrefetchMatchesTest, CorsExemptHeadersPurposeDiffers) {
   ResourceRequest real;
   // The "Purpose" header is not ignored when it is a field other than
   // "headers".
-  prefetch.cors_exempt_headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Referer: https://www.example.com/\r\n");
+  prefetch.cors_exempt_headers.SetHeader("User-Agent", "Mozilla/1.0");
+  prefetch.cors_exempt_headers.SetHeader("Referer", "https://www.example.com/");
   prefetch.cors_exempt_headers.SetHeader(blink::kPurposeHeaderName,
                                          blink::kSecPurposePrefetchHeaderValue);
-  real.cors_exempt_headers.AddHeadersFromString(
-      "User-Agent: Mozilla/1.0\r\n"
-      "Referer: https://www.example.com/\r\n");
+  real.cors_exempt_headers.SetHeader("User-Agent", "Mozilla/1.0");
+  real.cors_exempt_headers.SetHeader("Referer", "https://www.example.com/");
   EXPECT_FALSE(PrefetchMatches(prefetch, real));
 }
 
