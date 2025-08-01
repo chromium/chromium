@@ -106,7 +106,7 @@ AIWriter::ToProtoOptions(
 base::flat_set<std::string_view> AIWriter::GetSupportedLanguageBaseCodes() {
   // Comma-separated language codes to enable; or "*" enables all supported.
   const base::FeatureParam<std::string> kAIWriterAPILanguagesEnabled{
-      &blink::features::kAIWriterAPI, "langs", /*default_value=*/"en"};
+      &blink::features::kAIWriterAPI, "langs", /*default=*/"en,es,ja"};
   // TODO(crbug.com/394841624): Get supported languages from the model config.
   auto kSupportedBaseLanguages =
       base::MakeFixedFlatSet<std::string_view>({"en", "ja", "es"});
