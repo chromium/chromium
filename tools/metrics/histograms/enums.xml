@@ -15989,6 +15989,7 @@ from previous Chrome versions.
   <int value="686822618" label="DefaultSiteInstanceGroups:enabled"/>
   <int value="686929809" label="BorealisWebUIInstaller:enabled"/>
   <int value="687838135" label="ThirdPartyDoodles:disabled"/>
+  <int value="687883942" label="AndroidWindowPopupResizeAfterSpawn:enabled"/>
   <int value="687967510" label="LacrosNonSyncingProfiles:disabled"/>
   <int value="688254068" label="AppCache:enabled"/>
   <int value="688710636" label="PickerGrid:disabled"/>
@@ -18873,6 +18874,7 @@ from previous Chrome versions.
   <int value="1726474125"
       label="AccessibilityDictationKeyboardImprovements:disabled"/>
   <int value="1726578007" label="EnableFileBackedBlobFactory:disabled"/>
+  <int value="1726621836" label="AndroidWindowPopupResizeAfterSpawn:disabled"/>
   <int value="1727201171" label="EventBasedLogUpload:enabled"/>
   <int value="1728616693" label="WebRtcWgcRequireBorder:disabled"/>
   <int value="1728763346" label="TabStorageSqlitePrototype:disabled"/>

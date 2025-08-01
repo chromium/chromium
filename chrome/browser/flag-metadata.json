@@ -2809,6 +2809,14 @@
     ],
     "expiry_milestone": 142
   },
+    {
+    "name": "enable-android-window-popup-resize-after-spawn",
+    "owners": [
+      "chominskib@google.com",
+      "lt-web-apps-team@google.com"
+    ],
+    "expiry_milestone": 150
+  },
   {
     "name": "enable-annotator-mode",
     "owners": [ "sanjaperisic@chromium.org", "cros-edu-eng@google.com" ],

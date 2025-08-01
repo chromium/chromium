@@ -6128,6 +6128,15 @@ const char kAndroidWindowPopupLargeScreenDescription[] =
     "call and make moving windows with window.{move|resize}{By|To}() "
     "possible.";
 
+const char kAndroidWindowPopupResizeAfterSpawnName[] =
+    "Resize a contextual popup after spawning it to compensate for UI elements "
+    "so that its website viewport dimensions match requested ones.";
+const char kAndroidWindowPopupResizeAfterSpawnDescription[] =
+    "Size of the website viewport of a new contextual popup may be requested "
+    "as a parameter in a window.open() Javascript call. If this flag is "
+    "enabled, then the popup will be resized after its creation to ensure that "
+    "this web API contract is satisfied.";
+
 const char kUseAngleDescriptionAndroid[] =
     "Choose the graphics backend for ANGLE. The Vulkan backend is still "
     "experimental, and may contain bugs that "

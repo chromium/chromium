@@ -3537,6 +3537,9 @@ extern const char kAndroidWindowOcclusionDescription[];
 extern const char kAndroidWindowPopupLargeScreenName[];
 extern const char kAndroidWindowPopupLargeScreenDescription[];
 
+extern const char kAndroidWindowPopupResizeAfterSpawnName[];
+extern const char kAndroidWindowPopupResizeAfterSpawnDescription[];
+
 extern const char kBackgroundCompactMessageName[];
 extern const char kBackgroundCompactDescription[];
 

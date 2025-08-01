@@ -219,6 +219,8 @@ public abstract class ChromeFeatureList {
     public static final String ANDROID_USE_ADMINS_FOR_ENTERPRISE_INFO =
             "AndroidUseAdminsForEnterpriseInfo";
     public static final String ANDROID_WINDOW_POPUP_LARGE_SCREEN = "AndroidWindowPopupLargeScreen";
+    public static final String ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN =
+            "AndroidWindowPopupResizeAfterSpawn";
     public static final String ANIMATED_GIF_REFACTOR = "AnimatedGifRefactor";
     public static final String ANIMATED_IMAGE_DRAG_SHADOW = "AnimatedImageDragShadow";
     public static final String APP_SPECIFIC_HISTORY = "AppSpecificHistory";
@@ -749,6 +751,8 @@ public abstract class ChromeFeatureList {
             newCachedFlag(ANDROID_WEB_APP_LAUNCH_HANDLER, false, true);
     public static final CachedFlag sAndroidWindowPopupLargeScreen =
             newCachedFlag(ANDROID_WINDOW_POPUP_LARGE_SCREEN, false, true);
+    public static final CachedFlag sAndroidWindowPopupResizeAfterSpawn =
+            newCachedFlag(ANDROID_WINDOW_POPUP_RESIZE_AFTER_SPAWN, false);
     public static final CachedFlag sAppSpecificHistory = newCachedFlag(APP_SPECIFIC_HISTORY, true);
     public static final CachedFlag sAppSpecificHistoryViewIntent =
             newCachedFlag(APP_SPECIFIC_HISTORY_VIEW_INTENT, true);
@@ -1075,6 +1079,7 @@ public abstract class ChromeFeatureList {
                     sAndroidUseAdminsForEnterpriseInfo,
                     sAndroidWebAppLaunchHandler,
                     sAndroidWindowPopupLargeScreen,
+                    sAndroidWindowPopupResizeAfterSpawn,
                     sAppSpecificHistory,
                     sAppSpecificHistoryViewIntent,
                     sAsyncNotificationManager,
