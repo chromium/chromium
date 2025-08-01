@@ -6018,26 +6018,56 @@ While in Incognito, sites can't use cookies to see your browsing activity across
       <message name="IDS_IOS_SETTINGS_AUTOFILL_ACCOUNT_ADDRESS_FOOTER_TEXT" desc="Footer text of an account address profile when it is viewed in settings. [iOS only]">
           You can use saved addresses across Google products. This address is saved in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
       </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESSES_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete account addresses. [iOS only]">
+          This deletes addresses saved in your Google Account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+      </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when an account address is deleted. [iOS only]">
           {count, plural,
           =1 {This address will be deleted from your Google Account (<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}
           other {These addresses will be deleted from your Google Account (<ph name="USER_EMAIL">{email}<ex>janedoe@google.com</ex></ph>) and from this device.}}
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_HOME_WORK_ADDRESS_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete account and home or work addresses. [iOS only]">
+          This deletes addresses saved on this device. It also deletes some info from your Google Account but not basic info like your name or Home address.
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESSES_CONFIRMATION_BUTTON" desc="Confirmation button title shown to the user when the address is deleted. [iOS only]">
+          Delete addresses
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON" desc="Confirmation button title shown to the user when the address is deleted. [iOS only]">
           {count, plural,
           =1 {Delete address}
           other {Delete addresses}}
       </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_HOME_WORK_ADDRESS_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete home or work addresses. [iOS only]">
+          This removes selected info from Chrome, but it doesn’t delete this info from your Google Account.
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ACCOUNT_ADDRESS_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete local and account addresses. [iOS only]">
+          This deletes addresses saved on this device. It also deletes addresses saved in your Google Account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>.
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ACCOUNT_HOME_WORK_ADDRESS_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete local, account and home or work addresses. [iOS only]">
+          This deletes addresses saved on this device. It also deletes some info from your Google Account but not basic info like your name or Home address.
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESSES_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete local addresses. [iOS only]">
+          This deletes addresses saved on this device.
+      </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_ADDRESS_CONFIRMATION_TITLE" desc="Title of the confirmation shown to the user when a local address is deleted. [iOS only]">
           {count, plural,
           =1 {This address will be deleted from this device.}
           other {These addresses will be deleted from this device.}}
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_DELETE_LOCAL_HOME_WORK_ADDRESS_CONFIRMATION_TITLE" desc="Title for the sheet shown to the user for confirmation to delete local and home or work addresses. [iOS only]">
+          This deletes addresses saved on this device. It also removes selected info from Chrome, but it doesn’t delete this info from your Google Account.
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_EDIT_HOME_WORK_ADDRESS_CONFIRMATION_BUTTON" desc="Edit button shown as an option in the address deletion confirmation sheet. [iOS only]">
+          Edit in Google Account
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_BUTTON_DESCRIPTION" desc="Button description asking the user to migrate the local address to account. [iOS only]">
           This address is saved only to this device. To use it on your other devices, save it in your Google Account, <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
       </message>
       <message name="IDS_IOS_SETTINGS_AUTOFILL_MIGRATE_ADDRESS_TO_ACCOUNT_CONFIRMATION_TEXT" desc="Text shown to the user after the migration of address from local to account was succesfull [iOS only]">
                 Address moved to your account <ph name="USER_EMAIL">$1<ex>janedoe@google.com</ex></ph>
+      </message>
+      <message name="IDS_IOS_SETTINGS_AUTOFILL_REMOVE_ADDRESS_CONFIRMATION_BUTTON" desc="Confirmation button title shown to the user when the address is removed. [iOS only]">
+          Remove addresses
       </message>
       <message name="IDS_IOS_SETTINGS_DELETE_ALL_CREDENTIALS" desc="Title for the authentication page when the user tries to delete all saved credentials. [iOS only]">
           To delete all passwords manager data

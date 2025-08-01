@@ -158,7 +158,9 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
     config.features_enabled.push_back(
         kAutofillDynamicallyLoadsFieldsForAddressInput);
   }
-  if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)]) {
+  if ([self isRunningTest:@selector(testHomeAndWorkProfileEditPage)] ||
+      [self isRunningTest:@selector(testHomeAndWorkProfileDeleteOnEdit)] ||
+      [self isRunningTest:@selector(testHomeAndWorkProfileRemove)]) {
     config.features_enabled.push_back(
         autofill::features::kAutofillEnableSupportForHomeAndWork);
   }
@@ -219,6 +221,30 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
       grey_accessibilityLabel(l10n_util::GetPluralNSStringF(
           IDS_IOS_SETTINGS_AUTOFILL_DELETE_ADDRESS_CONFIRMATION_BUTTON,
           numberOfAddresses)),
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_userInteractionEnabled(), nil);
+
+  return grey_allOf(baseMatcher, grey_not(grey_descendant(baseMatcher)), nil);
+}
+
+// Returns the matcher for the remove button in the home/work address deletion
+// confirmation sheet.
+- (id<GREYMatcher>)confirmButtonForRemoveAddress {
+  id<GREYMatcher> baseMatcher = grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_AUTOFILL_REMOVE_ADDRESS_CONFIRMATION_BUTTON)),
+      grey_accessibilityTrait(UIAccessibilityTraitButton),
+      grey_userInteractionEnabled(), nil);
+
+  return grey_allOf(baseMatcher, grey_not(grey_descendant(baseMatcher)), nil);
+}
+
+// Returns the matcher for the edit button in the home/work address deletion
+// confirmation sheet.
+- (id<GREYMatcher>)editButtonInAddressDeletionConfirmationSheet {
+  id<GREYMatcher> baseMatcher = grey_allOf(
+      grey_accessibilityLabel(l10n_util::GetNSString(
+          IDS_IOS_SETTINGS_AUTOFILL_EDIT_HOME_WORK_ADDRESS_CONFIRMATION_BUTTON)),
       grey_accessibilityTrait(UIAccessibilityTraitButton),
       grey_userInteractionEnabled(), nil);
 
@@ -938,6 +964,64 @@ id<GREYMatcher> SettingsToolbarDoneButton() {
 
   [[EarlGrey selectElementWithMatcher:accountProfileFooterMatcher]
       assertWithMatcher:grey_sufficientlyVisible()];
+  [SigninEarlGrey signOut];
+}
+
+// Tests that the home/work address delete results in showing a confirmation
+// sheet that contains an option to remove the profile from Chrome.
+- (void)testHomeAndWorkProfileRemove {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
+
+  [self openProfileListInEditMode];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   [AutofillAppInterface exampleProfileName])]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:[self confirmButtonForRemoveAddress]]
+      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      assertWithMatcher:grey_nil()];
+  // If the done button in the nav bar is enabled it is no longer in edit
+  // mode.
+  [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  [SigninEarlGrey signOut];
+}
+
+// Tests that the home/work address delete results in showing a confirmation
+// sheet that contains an option to edit the profile in the Google Account.
+- (void)testHomeAndWorkProfileDeleteOnEdit {
+  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+  [AutofillAppInterface saveExampleHomeAndWorkAccountProfile];
+
+  [self openProfileListInEditMode];
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(
+                                   [AutofillAppInterface exampleProfileName])]
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::
+                                          SettingsBottomToolbarDeleteButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey selectElementWithMatcher:
+                 [self editButtonInAddressDeletionConfirmationSheet]]
+      performAction:grey_tap()];
+  WaitForActivityOverlayToDisappear();
+
+  // Assert that the edit page is no longer displayed.
+  [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
+                                          kAutofillProfileEditTableViewId)]
+      assertWithMatcher:grey_nil()];
+
   [SigninEarlGrey signOut];
 }
 
