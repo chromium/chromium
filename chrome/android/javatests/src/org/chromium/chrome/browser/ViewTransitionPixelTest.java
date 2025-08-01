@@ -281,6 +281,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesVisual() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_VISUAL);
 
@@ -323,6 +324,7 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesContent() throws Throwable {
         doTestVirtualKeyboardResizesContent();
     }
@@ -338,6 +340,7 @@ public class ViewTransitionPixelTest {
     @MinAndroidSdkLevel(VERSION_CODES.R)
     @EnableFeatures(ChromeFeatureList.TAB_STRIP_LAYOUT_OPTIMIZATION)
     @Restriction(DeviceFormFactor.TABLET_OR_DESKTOP)
+    @DisabledTest(message = "crbug.com/435692206")
     public void testVirtualKeyboardResizesContent_TSLOEnabled() throws Throwable {
         // Simulate fullscreen window behavior in an environment that supports Android V custom app
         // header APIs.
