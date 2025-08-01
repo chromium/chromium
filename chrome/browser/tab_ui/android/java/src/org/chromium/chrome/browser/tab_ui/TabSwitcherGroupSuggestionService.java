@@ -209,15 +209,6 @@ public class TabSwitcherGroupSuggestionService {
                 cachedSuggestions.userResponseMetadataCallback;
 
         List<GroupSuggestion> groupSuggestionsList = groupSuggestions.groupSuggestions;
-
-        // Mark all suggestions except the first one as "not shown".
-        for (int i = 1; i < groupSuggestionsList.size(); i++) {
-            GroupSuggestion groupSuggestion = groupSuggestionsList.get(i);
-            userResponseCallback.onResult(
-                    new UserResponseMetadata(groupSuggestion.suggestionId, UserResponse.NOT_SHOWN));
-        }
-
-        if (groupSuggestionsList.isEmpty()) return;
         GroupSuggestion suggestion = groupSuggestionsList.get(0);
 
         TabModel tabModel = filter.getTabModel();
@@ -227,6 +218,8 @@ public class TabSwitcherGroupSuggestionService {
         if (tabsSortedByIndex == null || !canShowSuggestion(tabIdsToIndices, tabsSortedByIndex)) {
             RecordUserAction.record(
                     TabSwitcherGroupSuggestionService.USER_ACTION_PREFIX + ".Invalidated");
+            userResponseCallback.onResult(
+                    new UserResponseMetadata(suggestion.suggestionId, UserResponse.NOT_SHOWN));
             return;
         }
 

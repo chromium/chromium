@@ -17,6 +17,8 @@ import org.chromium.build.annotations.Nullable;
 @NullMarked
 public class CachedSuggestions {
     public final @Nullable GroupSuggestions groupSuggestions;
+
+    // This callback must be called once or destroyed before it goes out of scope.
     public final Callback<UserResponseMetadata> userResponseMetadataCallback;
 
     public CachedSuggestions(
