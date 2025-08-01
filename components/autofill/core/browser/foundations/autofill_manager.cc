@@ -295,12 +295,9 @@ void AutofillManager::OnFormsParsed(const std::vector<FormData>& forms) {
   OnBeforeProcessParsedForms();
 
   std::vector<raw_ptr<const FormStructure, VectorExperimental>> queryable_forms;
-  DenseSet<FormType> form_types;
   for (const FormData& form : forms) {
     const FormStructure& form_structure =
         CHECK_DEREF(FindCachedFormById(form.global_id()));
-
-    form_types.insert_all(form_structure.GetFormTypes());
 
     // Configure the query encoding for this form and add it to the appropriate
     // collection of forms: queryable vs non-queryable.
