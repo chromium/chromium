@@ -59,8 +59,10 @@ IdentityDialogController::IdentityDialogController(
     optimization_guide_decider_ =
         OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
   }
-  optimization_guide_decider_->RegisterOptimizationTypes(
-      {optimization_guide::proto::OptimizationType::FEDCM_CLICKTHROUGH_RATE});
+  if (optimization_guide_decider_) {
+    optimization_guide_decider_->RegisterOptimizationTypes(
+        {optimization_guide::proto::OptimizationType::FEDCM_CLICKTHROUGH_RATE});
+  }
 }
 
 IdentityDialogController::~IdentityDialogController() = default;

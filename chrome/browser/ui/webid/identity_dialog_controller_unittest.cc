@@ -610,3 +610,42 @@ TEST_F(IdentityDialogControllerTest,
   std::move(segmentation_platform_service_callback_).Run();
   run_loop.Run();
 }
+
+class IdentityDialogControllerTestWithOptimizationDisabled
+    : public IdentityDialogControllerTest {
+ public:
+  IdentityDialogControllerTestWithOptimizationDisabled() {
+    list.InitWithFeatures(
+        /*enabled_features=*/{segmentation_platform::features::
+                                  kSegmentationPlatformFedCmUser},
+        /*disabled_features=*/{
+            optimization_guide::features::kOptimizationHints});
+  }
+
+ private:
+  base::test::ScopedFeatureList list;
+};
+
+// Tests that there is no crash if kSegmentationPlatformFedCmUser is enabled but
+// kOptimizationHints is disabled. See crbug.com/435613236.
+TEST_F(IdentityDialogControllerTestWithOptimizationDisabled, NoCrash) {
+  std::unique_ptr<IdentityDialogController> controller =
+      std::make_unique<IdentityDialogController>(web_contents());
+
+  base::MockCallback<base::OnceCallback<void(bool accepted)>> callback;
+  EXPECT_CALL(callback, Run(true)).WillOnce(testing::Return());
+  controller->RequestIdPRegistrationPermision(
+      url::Origin::Create(GURL("https://idp.example")), callback.Get());
+
+  auto* manager =
+      permissions::PermissionRequestManager::FromWebContents(web_contents());
+
+  auto prompt_factory =
+      std::make_unique<permissions::MockPermissionPromptFactory>(manager);
+
+  WaitForBubbleToBeShown(manager);
+
+  EXPECT_TRUE(prompt_factory->is_visible());
+
+  Accept(manager);
+}
