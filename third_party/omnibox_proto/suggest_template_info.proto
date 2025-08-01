@@ -83,6 +83,7 @@ message SuggestTemplateInfo {
       DIRECTIONS = 2;
       CALL = 3;
       REVIEWS = 20;
+      CHROME_AIM = 1000;
     }
 
     // The URI to open when the action is invoked.

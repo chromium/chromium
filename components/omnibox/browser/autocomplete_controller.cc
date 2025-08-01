@@ -1731,7 +1731,12 @@ void AutocompleteController::AttachActions() {
     AttachHistoryClustersActions(provider_client_->GetHistoryClustersService(),
                                  internal_result_);
 #endif
+
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
+    internal_result_.AttachAimAction(template_url_service_);
+#endif
   }
+
   internal_result_.TrimOmniboxActions(input_.IsZeroSuggest());
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   internal_result_.SplitActionsToSuggestions();

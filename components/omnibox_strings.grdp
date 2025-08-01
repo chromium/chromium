@@ -350,6 +350,12 @@
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS" desc="The button hover tooltip text to describe action.">
     Read customer evaluations of products, services, or experiences to help inform your decisions with reviews.
   </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT" desc="Label for Omnibox Action button that opens the AIM webpage" meaning="Length: 12em">
+    AI Mode
+  </message>
+  <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS" desc="The button hover tooltip text to describe action.">
+    Open AI Mode with this suggestion.
+  </message>
   <message name="IDS_OMNIBOX_ACTION_IN_SUGGEST_WEBSITE_HINT" desc="Label for Omnibox Action button that opens the POI website." meaning="Length: 12em">
     Website
   </message>

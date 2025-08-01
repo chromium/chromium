@@ -316,6 +316,7 @@ Keep consistent with active providers. Doesn't need to include every provider in
     suggestion.
   </summary>
   <token key="Type">
+    <variant name="AIM"/>
     <variant name="Call"/>
     <variant name="Directions"/>
     <variant name="Reviews"/>

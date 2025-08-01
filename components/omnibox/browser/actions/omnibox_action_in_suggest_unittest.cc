@@ -42,6 +42,8 @@ const char* ToString(ActionType type) {
       return "Directions";
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return "Reviews";
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+      return "Aim";
     default:
       NOTREACHED();
   }
@@ -91,6 +93,13 @@ TEST_F(OmniboxActionInSuggestTest, CheckLabelsArePresentForKnownTypes) {
           IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
           IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
           IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS,
+      },
+      {
+          omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS,
+          IDS_ACC_OMNIBOX_ACTION_IN_SUGGEST_SUFFIX,
+          IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS,
       }};
 
   for (const auto& test_case : test_cases) {
@@ -124,7 +133,8 @@ TEST_F(OmniboxActionInSuggestTest, ConversionFromAction) {
   const ActionType test_cases[]{
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL,
       omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS,
-      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS};
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
+      omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM};
 
   for (auto test_case : test_cases) {
     TemplateAction template_action;
@@ -199,6 +209,7 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
     kDirections,
     kWebsite,
     kReviews,
+    kAim,
   };
 
   // Correlation between ActionType and UMA-recorded bucket.
@@ -214,6 +225,8 @@ TEST_F(OmniboxActionInSuggestTest, HistogramsRecording) {
        "Omnibox.ActionInSuggest.UsageByType.Directions"},
       {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS,
        UmaTypeForTest::kReviews, "Omnibox.ActionInSuggest.UsageByType.Reviews"},
+      {omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM,
+       UmaTypeForTest::kAim, "Omnibox.ActionInSuggest.UsageByType.AIM"},
   };
 
   for (const auto& test_case : test_cases) {

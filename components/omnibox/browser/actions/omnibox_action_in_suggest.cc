@@ -34,9 +34,10 @@ enum class ActionInSuggestUmaType {
   kDirections,
   kWebsite,
   kReviews,
+  kAim,
 
   // Sentinel value. Must be set to the last valid ActionInSuggestUmaType.
-  kMaxValue = kReviews
+  kMaxValue = kAim
 };
 
 constexpr const char* ToUmaUsageHistogramName(
@@ -48,6 +49,8 @@ constexpr const char* ToUmaUsageHistogramName(
       return "Omnibox.ActionInSuggest.UsageByType.Directions";
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return "Omnibox.ActionInSuggest.UsageByType.Reviews";
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+      return "Omnibox.ActionInSuggest.UsageByType.AIM";
   }
   NOTREACHED() << "Unexpected type of Action: " << (int)type;
 }
@@ -62,6 +65,8 @@ constexpr ActionInSuggestUmaType ToUmaActionType(
       return ActionInSuggestUmaType::kDirections;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return ActionInSuggestUmaType::kReviews;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+      return ActionInSuggestUmaType::kAim;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -75,6 +80,8 @@ constexpr int ToActionHint(
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_HINT;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_HINT;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+      return IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_HINT;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
@@ -88,6 +95,8 @@ constexpr int ToActionContents(
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_DIRECTIONS_CONTENTS;
     case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
       return IDS_OMNIBOX_ACTION_IN_SUGGEST_REVIEWS_CONTENTS;
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CHROME_AIM:
+      return IDS_OMNIBOX_ACTION_IN_SUGGEST_AIM_CONTENTS;
   }
   NOTREACHED() << "Unrecognized action type: " << action_type;
 }
