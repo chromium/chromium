@@ -6027,6 +6027,6 @@
     "args": [
       "--enable-features=ScriptSrcHashesV1"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Nov 1, 2025"
   }
 ]
