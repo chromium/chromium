@@ -2030,6 +2030,21 @@
             ]
         }
     ],
+    "AutofillAndroidDesktopSuppressAccessoryOnEmpty": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "AutofillAndroidDesktopSuppressAccessoryOnEmpty"
+                    ]
+                }
+            ]
+        }
+    ],
     "AutofillBetterLocalHeuristicPlaceholderSupport": [
         {
             "platforms": [
