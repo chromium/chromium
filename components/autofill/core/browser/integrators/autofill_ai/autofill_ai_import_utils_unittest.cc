@@ -28,6 +28,7 @@ namespace autofill {
 namespace {
 
 using ::testing::ElementsAre;
+using ::testing::IsEmpty;
 using ::testing::Optional;
 using ::testing::Property;
 using ::testing::UnorderedElementsAre;
@@ -148,6 +149,16 @@ TEST_F(AutofillAiImportUtilsTest, ImportFromInput) {
                       CreateAttribute(kPassportNumber, "123"),
                       CreateAttribute(kPassportName, "Karlsson on the Roof"),
                       CreateAttribute(kPassportIssueDate, "2025-12-24")))));
+}
+
+// Tests that we do not import any attribute whose value has a value email
+// address format
+TEST_F(AutofillAiImportUtilsTest, NoEmailAddressImport) {
+  std::vector<std::unique_ptr<AutofillField>> fields;
+  fields.push_back(CreateInput(FormControlType::kInputText,
+                               FieldType::PASSPORT_NUMBER, "foo@bar.com"));
+
+  EXPECT_THAT(GetPossibleEntitiesFromSubmittedForm(fields, "en-US"), IsEmpty());
 }
 
 // Tests import that includes a date distributed over three <select> elements.

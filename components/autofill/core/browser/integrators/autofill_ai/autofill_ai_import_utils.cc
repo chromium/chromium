@@ -17,6 +17,7 @@
 #include "components/autofill/core/browser/autofill_field.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_instance.h"
 #include "components/autofill/core/browser/data_model/autofill_ai/entity_type.h"
+#include "components/autofill/core/browser/data_quality/validation.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/filling/autofill_ai/select_date_matching.h"
 #include "components/autofill/core/browser/form_processing/autofill_ai/determine_attribute_types.h"
@@ -103,7 +104,11 @@ std::vector<EntityInstance> GetPossibleEntitiesFromSubmittedForm(
       for (const auto& [field, attribute_type] : fields_with_types) {
         ValueAndFormatString value =
             GetValueAndFormatString(*field, attribute_type);
-        if (value.value.empty()) {
+        // At the moment, AutofillAI attributes can never save an email. At the
+        // same time, in some countries fields that accept either an AutofillAI
+        // type or an email address are common. This avoids mistakenly offering
+        // to save those.
+        if (value.value.empty() || IsValidEmailAddress(value.value)) {
           continue;
         }
         std::map<AttributeType, AttributeInstance>& entity_attributes =
