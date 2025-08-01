@@ -291,6 +291,11 @@ pdf::mojom::SaveRequestType ParseSaveRequestType(
   NOTREACHED();
 }
 
+void ReleaseBuffer(std::vector<uint8_t>& buffer) {
+  std::vector<uint8_t> empty;
+  buffer.swap(empty);
+}
+
 }  // namespace
 
 #if BUILDFLAG(ENABLE_PDF_INK2)
@@ -1861,7 +1866,8 @@ void PdfViewWebPlugin::HandleGetSaveDataBlockMessage(
       static_cast<uint32_t>(message.FindInt("blockSize").value());
 
   client_->PostMessage(CreateSaveDataBlockMessage(
-      token, SaveBlockToBuffer(request_type, offset, block_size)));
+      token, SaveBlockToBufferImpl(save_data_buffer_, request_type, offset,
+                                   block_size)));
 }
 
 void PdfViewWebPlugin::HandleGetSuggestedFileName(
@@ -2204,7 +2210,8 @@ uint32_t PdfViewWebPlugin::VerifyParamsAndGetSaveBlockSize(
   return block_size;
 }
 
-PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBuffer(
+PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBufferImpl(
+    std::vector<uint8_t>& buffer,
     pdf::mojom::SaveRequestType request_type,
     uint32_t offset,
     uint32_t block_size) {
@@ -2226,24 +2233,24 @@ PdfViewWebPlugin::SaveDataBlock PdfViewWebPlugin::SaveBlockToBuffer(
   }
 
   if (offset == 0) {
-    save_data_buffer_ = engine_->GetSaveData();
+    buffer = engine_->GetSaveData();
     // This function does not handle files larger than INT_MAX.
-    if (save_data_buffer_.size() > static_cast<uint32_t>(INT_MAX)) {
-      ReleaseSaveBuffer();
+    if (buffer.size() > static_cast<uint32_t>(INT_MAX)) {
+      ReleaseBuffer(buffer);
     }
   } else {
-    CHECK(save_data_buffer_.size());
+    CHECK(buffer.size());
   }
-  if (save_data_buffer_.size()) {
-    result.total_file_size = static_cast<uint32_t>(save_data_buffer_.size());
+  if (buffer.size()) {
+    result.total_file_size = static_cast<uint32_t>(buffer.size());
     block_size = VerifyParamsAndGetSaveBlockSize(result.total_file_size, offset,
                                                  block_size);
     result.block.resize(block_size);
     base::span(result.block)
-        .copy_from(base::span(save_data_buffer_).subspan(offset, block_size));
+        .copy_from(base::span(buffer).subspan(offset, block_size));
     // Drop the buffer if everything is returned.
     if (offset + block_size == result.total_file_size) {
-      ReleaseSaveBuffer();
+      ReleaseBuffer(buffer);
     }
   }
 
@@ -2257,11 +2264,6 @@ void PdfViewWebPlugin::SaveToFile(const std::string& token) {
       base::Value::Dict().Set("type", "consumeSaveToken").Set("token", token));
 
   pdf_host_->SaveUrlAs(GURL(url_), network::mojom::ReferrerPolicy::kDefault);
-}
-
-void PdfViewWebPlugin::ReleaseSaveBuffer() {
-  std::vector<uint8_t> empty;
-  save_data_buffer_.swap(empty);
 }
 
 void PdfViewWebPlugin::SetPluginCanSave(bool can_save) {
@@ -2833,7 +2835,7 @@ void PdfViewWebPlugin::SendLoadingProgress(double percentage) {
 
 void PdfViewWebPlugin::HandleReleaseSaveInBlockBuffers(
     const base::Value::Dict& /*message*/) {
-  ReleaseSaveBuffer();
+  ReleaseBuffer(save_data_buffer_);
 }
 
 void PdfViewWebPlugin::HandleResetPrintPreviewModeMessage(
