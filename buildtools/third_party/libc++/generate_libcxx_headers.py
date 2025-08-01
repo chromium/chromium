@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 # Copyright 2025 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
@@ -7,6 +7,8 @@
 import os
 import pathlib
 import subprocess
+
+from typing import Optional
 
 _CURRENT_DIR = pathlib.Path(__file__).parent
 _OUT_OF_DATE_ERROR = """Your libcxx_headers.gni is out of date.
@@ -33,7 +35,7 @@ def _get_headers(include_dir: pathlib.Path) -> list[str]:
     return headers
 
 
-def _get_libcxx_revision(path: pathlib.Path) -> str | None:
+def _get_libcxx_revision(path: pathlib.Path) -> Optional[str]:
     # On CoG this command will fail because libcxx is not a git repository.
     ps = subprocess.run(
         ['git', 'rev-parse', 'HEAD'],
@@ -47,7 +49,7 @@ def _get_libcxx_revision(path: pathlib.Path) -> str | None:
 
 
 def _write_headers(path: pathlib.Path, headers: list[str],
-                   libcxx_revision: str | None):
+                   libcxx_revision: Optional[str]):
     lines = [f'  "//third_party/libc++/src/include/{hdr}",' for hdr in headers]
     header_lines = '\n'.join(lines)
     if libcxx_revision is None:
