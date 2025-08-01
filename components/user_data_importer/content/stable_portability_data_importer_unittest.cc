@@ -186,6 +186,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     ImportReadingListFile(path);
   }
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   void ImportHistory(const std::string& json_data) {
     history_callback_called_ = false;
     base::ScopedTempDir dir;
@@ -194,6 +195,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     ASSERT_TRUE(base::WriteFile(path, json_data));
     ImportHistoryFile(path);
   }
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
   void ImportBookmarksFile(const base::FilePath& bookmarks_file) {
     PrepareCallbacks();
@@ -234,12 +236,18 @@ class StablePortabilityDataImporterTest : public testing::Test {
         base::test::RunUntil([&]() { return reading_list_callback_called_; }));
   }
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   void ImportHistoryFile(const base::FilePath& history_file) {
     PrepareCallbacks();
 
+    // Note: Some tests use an invalid (non-existent) file name, so `file` might
+    // be invalid here.
+    base::File file(history_file,
+                    base::File::FLAG_OPEN | base::File::FLAG_READ);
+
     const size_t default_batch_size = 10;
     importer_->ImportHistory(
-        history_file,
+        std::move(file),
         // Use of Unretained below is safe because the RunUntil loop below
         // guarantees this outlives the tasks.
         base::BindOnce(&StablePortabilityDataImporterTest::OnHistoryConsumed,
@@ -249,6 +257,7 @@ class StablePortabilityDataImporterTest : public testing::Test {
     ASSERT_TRUE(
         base::test::RunUntil([&]() { return history_callback_called_; }));
   }
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
   history::QueryResults QueryAllHistory() {
     // Wait for any pending tasks to complete.
@@ -506,6 +515,10 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
                            ))))));
 }
 
+// History parsing is only implemented on Posix systems for now, because the
+// file is passed to the Rust parser in the form of a native "fd" (file
+// descriptor).
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // Tests parsing a simple JSON file with two history entries.
 TEST_F(StablePortabilityDataImporterTest, History_Basic) {
   const char kHistoryJson[] = R"({
@@ -618,6 +631,7 @@ TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
   }
   EXPECT_THAT(results, UnorderedElementsAreArray(matchers));
 }
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Tests importing invalid files that do not exist.
 TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {
@@ -626,6 +640,11 @@ TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {
 
   ImportReadingListFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/reading_list/file")));
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  ImportHistoryFile(
+      base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/history/file")));
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
 }  // namespace user_data_importer

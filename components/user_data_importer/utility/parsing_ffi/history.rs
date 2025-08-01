@@ -3,16 +3,25 @@
 // found in the LICENSE file.
 
 use crate::ffi;
-use crate::json::{self, ZipEntryBufReader, STREAM_BUFFER_SIZE};
-use crate::models::{SafariHistoryJSONEntry, StablePortabilityHistoryJSONEntry};
+use crate::json::{self, ZipEntryBufReader};
+use crate::models::SafariHistoryJSONEntry;
 use crate::{utils::has_extension, ZipFileArchive};
-use anyhow::Result;
 use cxx::{CxxVector, UniquePtr};
-use std::fs;
-use std::io::{BufReader, Read};
+use std::io::Read;
 use std::mem;
 use std::pin::Pin;
 use zip;
+
+#[cfg(target_family = "unix")]
+use crate::json::STREAM_BUFFER_SIZE;
+#[cfg(target_family = "unix")]
+use crate::models::StablePortabilityHistoryJSONEntry;
+#[cfg(target_family = "unix")]
+use anyhow::Result;
+#[cfg(target_family = "unix")]
+use std::fs;
+#[cfg(target_family = "unix")]
+use std::io::BufReader;
 
 // A trait for history callbacks to allow for generic implementation of
 // batching.
@@ -106,15 +115,14 @@ pub fn parse_safari_history(
 
 // Attempts to parse a file in the stable portability history format. Returns
 // whether parsing was successful.
+#[cfg(target_family = "unix")]
 pub fn parse_stable_portability_history(
-    json_filename: &[u8],
+    file: fs::File,
     mut history_callback: UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
     history_size_threshold: usize,
 ) -> bool {
     let mut history = CxxVector::<ffi::StablePortabilityHistoryEntry>::new();
     let result = (|| -> Result<()> {
-        let path_str = std::str::from_utf8(json_filename)?;
-        let file = fs::File::open(path_str)?;
         let stream_reader = BufReader::with_capacity(STREAM_BUFFER_SIZE, file);
         json::deserialize_top_level::<StablePortabilityHistoryJSONEntry, std::fs::File>(
             stream_reader,

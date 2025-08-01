@@ -7,6 +7,7 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/threading/sequence_bound.h"
+#include "build/build_config.h"
 #include "components/user_data_importer/content/content_bookmark_parser.h"
 #include "components/user_data_importer/utility/bookmark_parser.h"
 #include "components/user_data_importer/utility/history_callback_from_rust.h"
@@ -59,12 +60,14 @@ class StablePortabilityDataImporter {
   // number of items successfully imported.
   void ImportReadingList(base::File file, ImportCallback reading_list_callback);
 
-  // Attempts to import the `history_filename`. `history_callback` is called at
-  // the end of the import process to notify the caller with the number of
-  // successful items imported.
-  void ImportHistory(const base::FilePath& history_filename,
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  // Attempts to import history from the given `file`. `history_callback` is
+  // called at the end of the import process to notify the caller about the
+  // number of items successfully imported.
+  void ImportHistory(base::File file,
                      ImportCallback history_callback,
                      const size_t import_batch_size);
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
  private:
   // Object used to allow Rust History import pipeline to communicate results
@@ -111,10 +114,12 @@ class StablePortabilityDataImporter {
         user_data_importer::BookmarkParser::BookmarkParsingCallback
             bookmarks_callback);
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     void ParseHistory(
-        const std::string& history_filename,
+        base::File file,
         std::unique_ptr<RustHistoryCallbackForStablePortabilityFormat> callback,
         size_t import_batch_size);
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
    private:
     scoped_refptr<ContentBookmarkParser> bookmark_parser_;

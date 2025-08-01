@@ -219,11 +219,17 @@ void StablePortabilityDataImporter::TransferHistoryEntries(
   }
 }
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 void StablePortabilityDataImporter::ImportHistory(
-    const base::FilePath& history_filename,
+    base::File file,
     ImportCallback history_callback,
     const size_t import_batch_size) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  if (!file.IsValid()) {
+    PostCallback(std::move(history_callback), 0);
+    return;
+  }
 
   auto transfer_history_entries_callback = base::BindPostTask(
       origin_sequence_task_runner_,
@@ -235,18 +241,11 @@ void StablePortabilityDataImporter::ImportHistory(
           std::move(transfer_history_entries_callback),
           base::BindPostTask(origin_sequence_task_runner_,
                              std::move(history_callback)));
-  if (history_filename.empty()) {
-    callback->Fail();
-    return;
-  }
-
-  // Convert the base::FilePath to a UTF-8 string and then to a Rust slice.
-  std::string history_filename_utf8 = history_filename.AsUTF8Unsafe();
 
   background_worker_.AsyncCall(&BackgroundWorker::ParseHistory)
-      .WithArgs(std::move(history_filename_utf8), std::move(callback),
-                import_batch_size);
+      .WithArgs(std::move(file), std::move(callback), import_batch_size);
 }
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 void StablePortabilityDataImporter::PostCallback(auto callback, auto results) {
   origin_sequence_task_runner_->PostTask(
@@ -265,15 +264,15 @@ void StablePortabilityDataImporter::BackgroundWorker::ParseBookmarks(
   bookmark_parser_->Parse(std::move(file), std::move(bookmarks_callback));
 }
 
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 void StablePortabilityDataImporter::BackgroundWorker::ParseHistory(
-    const std::string& history_filename,
+    base::File file,
     std::unique_ptr<RustHistoryCallbackForStablePortabilityFormat> callback,
     size_t import_batch_size) {
-  rust::Slice<const uint8_t> history_filename_slice(
-      reinterpret_cast<const uint8_t*>(history_filename.data()),
-      history_filename.length());
+  int owned_raw_fd = file.TakePlatformFile();
   user_data_importer::parse_stable_portability_history(
-      history_filename_slice, std::move(callback), import_batch_size);
+      owned_raw_fd, std::move(callback), import_batch_size);
 }
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace user_data_importer

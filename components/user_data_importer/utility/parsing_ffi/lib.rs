@@ -10,6 +10,11 @@ mod zip_archive;
 
 use crate::zip_archive::{ResultOfZipFileArchive, ZipFileArchive};
 
+#[cfg(target_family = "unix")]
+use std::fs;
+#[cfg(target_family = "unix")]
+use std::os::unix::io::FromRawFd;
+
 #[cxx::bridge(namespace = "user_data_importer")]
 mod ffi {
     enum FileType {
@@ -95,26 +100,41 @@ mod ffi {
         ) -> bool;
 
         fn new_archive(zip_filename: &[u8]) -> Box<ResultOfZipFileArchive>;
-        fn parse_stable_portability_history(
-            json_filename: &[u8],
+
+        unsafe fn parse_stable_portability_history(
+            owned_fd: i32,
             history_callback: UniquePtr<StablePortabilityHistoryCallbackFromRust>,
             history_size_threshold: usize,
         ) -> bool;
     }
 }
 
-// Attempts to parse a file in the stable portability data format. Returns true if the file was
-// successfully parsed, false otherwise.
-fn parse_stable_portability_history(
-    json_filename: &[u8],
+/// Attempts to parse a file in the stable portability data format. Returns true
+/// if the file was successfully parsed, false otherwise.
+///
+/// # Safety
+///
+/// Caller needs to guarantee that `owned_fd` is an owned file descriptor.
+/// See <https://doc.rust-lang.org/beta/std/io/index.html#io-safety> for more details.
+#[cfg(target_family = "unix")]
+unsafe fn parse_stable_portability_history(
+    owned_fd: i32,
     history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
     history_size_threshold: usize,
 ) -> bool {
-    history::parse_stable_portability_history(
-        json_filename,
-        history_callback,
-        history_size_threshold,
-    )
+    // SAFETY: Safety requirements are propagated from our caller.
+    let file = unsafe { fs::File::from_raw_fd(owned_fd) };
+    history::parse_stable_portability_history(file, history_callback, history_size_threshold)
+}
+
+#[cfg(not(unix))]
+#[allow(unused)]
+fn parse_stable_portability_history(
+    owned_fd: i32,
+    history_callback: cxx::UniquePtr<ffi::StablePortabilityHistoryCallbackFromRust>,
+    history_size_threshold: usize,
+) -> bool {
+    unreachable!("This function should not be used on non-POSIX")
 }
 
 fn new_archive(zip_filename: &[u8]) -> Box<ResultOfZipFileArchive> {
