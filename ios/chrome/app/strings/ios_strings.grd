@@ -5114,13 +5114,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Open Reading mode options
       </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_DARK" desc="Label of a Reading mode options button which changes the Reading mode dark color scheme.">
-        Dark
+        Black background color
       </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_LIGHT" desc="Label of a Reading mode options button which changes the Reading mode light color scheme.">
-        Light
+        White background color
       </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_ACCESSIBILITY_LABEL_SEPIA" desc="Label of a Reading mode options button which changes the Reading mode sepia color scheme.">
-        Sepia
+        Sepia background color
       </message>
       <message name="IDS_IOS_READER_MODE_OPTIONS_COLOR_THEME_BUTTON_LABEL" desc="Label of a Reading mode options button which changes the Reading mode color scheme." meaning="Label of a Reading mode options button which changes the Reading mode color scheme. This should be one, at most two characters to preview the color scheme e.g. Aa in English.">
         Aa
