@@ -47,7 +47,6 @@ class ChromeSafeBrowsingUIManagerDelegate
   PingManager* GetPingManager(
       content::BrowserContext* browser_context) override;
   bool IsMetricsAndCrashReportingEnabled() override;
-  bool IsSendingOfHitReportsEnabled() override;
 };
 
 }  // namespace safe_browsing

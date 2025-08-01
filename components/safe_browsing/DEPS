@@ -1,7 +1,7 @@
 include_rules = [
   # NOTE: Dependencies on signin and sync are restricted to specific
-  # subdirectories to facilitate reuse of this component on WebLayer, which
-  # doesn't use signin or sync.
+  # subdirectories to facilitate reuse of this component in embedders which
+  # don't use signin or sync.
   "+components/content_settings/core/browser",
   "+components/enterprise/connectors",
   "+components/grit/safe_browsing_resources.h",

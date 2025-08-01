@@ -241,8 +241,7 @@ bool SafeBrowsingUIManager::ShouldSendHitReport(HitReport* hit_report,
                                                 WebContents* web_contents) {
   return web_contents &&
          hit_report->extended_reporting_level != SBER_LEVEL_OFF &&
-         !web_contents->GetBrowserContext()->IsOffTheRecord() &&
-         delegate_->IsSendingOfHitReportsEnabled();
+         !web_contents->GetBrowserContext()->IsOffTheRecord();
 }
 
 bool SafeBrowsingUIManager::ShouldSendClientSafeBrowsingWarningShownReport(

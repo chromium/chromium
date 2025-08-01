@@ -43,10 +43,6 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
-namespace weblayer {
-class WebLayerSafeBrowsingBlockingPageFactory;
-}
-
 namespace safe_browsing {
 
 class SafeBrowsingNavigationObserverManager;
@@ -73,7 +69,6 @@ class SafeBrowsingBlockingPage : public BaseBlockingPage {
 
  protected:
   friend class ChromeSafeBrowsingBlockingPageFactory;
-  friend class weblayer::WebLayerSafeBrowsingBlockingPageFactory;
   friend class SafeBrowsingBlockingPageTestBase;
   friend class SafeBrowsingBlockingPageBrowserTest;
   friend class SafeBrowsingBlockingQuietPageFactoryImpl;
