@@ -116,7 +116,7 @@ function convertFromWebNaming(webRules) {
   return webViewRules;
 }
 
-class ControlledFrameElement extends WebViewElement {
+class HTMLControlledFrameElement extends WebViewElement {
   static get observedAttributes() {
     return WebViewAttributeNames;
   }
@@ -158,27 +158,27 @@ class ControlledFrameElement extends WebViewElement {
   }
 }
 
-// Forward remaining ControlledFrameElement.foo* method calls to
+// Forward remaining HTMLControlledFrameElement.foo* method calls to
 // ChromeWebViewImpl.foo* or WebViewInternal.foo*.
 forwardApiMethods(
-    ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
+    HTMLControlledFrameElement, ControlledFrameImpl, WebViewInternal,
     CONTROLLED_FRAME_API_METHODS, CONTROLLED_FRAME_PROMISE_API_METHODS);
 
 // Since |back| and |forward| are implemented in terms of |go|, we need to
 // keep a reference to the real |go| function, since user code may override
-// ControlledFrameElement.prototype.go|.
-const originalGo = ControlledFrameElement.prototype.go;
+// HTMLControlledFrameElement.prototype.go|.
+const originalGo = HTMLControlledFrameElement.prototype.go;
 
 // Wrap callback methods in promise handlers. Note: This disables the callback
 // forms.
 upgradeMethodsToPromises(
-    ControlledFrameElement, ControlledFrameImpl, WebViewInternal,
+    HTMLControlledFrameElement, ControlledFrameImpl, WebViewInternal,
     CONTROLLED_FRAME_PROMISE_API_METHODS);
 
 // Delete GuestView methods that should not be part of the Controlled Frame API.
 (function() {
 for (const methodName of CONTROLLED_FRAME_DELETED_API_METHODS) {
-  let clazz = ControlledFrameElement.prototype;
+  let clazz = HTMLControlledFrameElement.prototype;
   while ((methodName in clazz) && clazz.constructor.name !== 'HTMLElement') {
     delete clazz[methodName];
     clazz = $Object.getPrototypeOf(clazz);
@@ -186,4 +186,6 @@ for (const methodName of CONTROLLED_FRAME_DELETED_API_METHODS) {
 }
 })();
 
-registerElement('ControlledFrame', ControlledFrameElement);
+registerElement(
+    'ControlledFrame', 'HTMLControlledFrameElement',
+    HTMLControlledFrameElement);

@@ -21,7 +21,7 @@ function makeUnreached() {
 (function taintProperties() {
   var properties = [
     'AppView',
-    'ControlledFrame',
+    'HTMLControlledFrameElement',
     'WebView',
     '__proto__',
     'actionQueue',

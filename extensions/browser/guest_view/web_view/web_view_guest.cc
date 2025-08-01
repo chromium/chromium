@@ -1199,7 +1199,7 @@ WebViewGuest::WebViewGuest(content::RenderFrameHost* owner_rfh)
               switches::kEnableSpatialNavigation)) {
   if (IsOwnedByControlledFrameEmbedder()) {
     page_load_metrics::MetricsWebContentsObserver::RecordFeatureUsage(
-        owner_rfh, blink::mojom::WebFeature::kControlledFrameElement);
+        owner_rfh, blink::mojom::WebFeature::kHTMLControlledFrameElement);
   }
 }
 

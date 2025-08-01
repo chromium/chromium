@@ -5804,7 +5804,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5202" label="GeolocationSucceededWithoutInjectionMitigation"/>
   <int value="5203" label="SharedWorkerScriptUnderServiceWorkerControlIsBlob"/>
   <int value="5204" label="OBSOLETE_DisableThirdPartyStoragePartitioning3"/>
-  <int value="5205" label="ControlledFrameElement"/>
+  <int value="5205" label="OBSOLETE_ControlledFrameElement"/>
   <int value="5206" label="Canvas2DIsPointInPath"/>
   <int value="5207" label="Canvas2DIsPointInStroke"/>
   <int value="5208" label="Canvas2DGetImageData"/>
@@ -6255,6 +6255,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="5621" label="WebAppManifestShortNameLocalized"/>
   <int value="5622" label="WebAppManifestDescriptionLocalized"/>
   <int value="5623" label="WebAppManifestIconsLocalized"/>
+  <int value="5624" label="HTMLControlledFrameElement"/>
 </enum>
 
 <!-- LINT.ThenChange(//third_party/blink/public/mojom/use_counter/metrics/web_feature.mojom:WebFeature) -->

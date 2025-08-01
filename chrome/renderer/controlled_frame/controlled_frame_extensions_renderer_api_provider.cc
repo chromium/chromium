@@ -35,7 +35,7 @@ void ControlledFrameExtensionsRendererAPIProvider::PopulateSourceMap(
   };
 
   static constexpr RegisterSourceData kSources[] = {
-      {"controlledFrame", IDR_CONTROLLED_FRAME_JS},
+      {"htmlControlledFrameElement", IDR_HTML_CONTROLLED_FRAME_ELEMENT_JS},
       {"controlledFrameApiMethods", IDR_CONTROLLED_FRAME_API_METHODS_JS},
       {"controlledFrameEvents", IDR_CONTROLLED_FRAME_EVENTS_JS},
       {"controlledFrameImpl", IDR_CONTROLLED_FRAME_IMPL_JS},
@@ -72,7 +72,7 @@ void ControlledFrameExtensionsRendererAPIProvider::RequireWebViewModules(
     // to be enabled in the same instance. This check confirms that is held.
     CHECK(!context->GetAvailability("chromeWebViewTag").is_available());
 
-    context->module_system()->Require("controlledFrame");
+    context->module_system()->Require("htmlControlledFrameElement");
   }
 }
 

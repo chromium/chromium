@@ -19,9 +19,9 @@ function reload(controlledFrame) {
     controlledFrame.addEventListener('loadabort', onAbort);
     controlledFrame.addEventListener('loadcommit', onCommit);
 
-    // ControlledFrameElement.reload() doesn't actually trigger the loadcommit
-    // or loadabort events. Appending a new query parameter to the URL will
-    // force a new navigation.
+    // HTMLControlledFrameElement.reload() doesn't actually trigger the
+    // loadcommit or loadabort events. Appending a new query parameter to the
+    // URL will force a new navigation.
     controlledFrame.src += '&reload';
   });
 }

@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsGetSetAttributes) {
         }
       }
 
-      const frame = new ControlledFrame();
+      const frame = new HTMLControlledFrameElement();
       const url = 'data:text/html,<body>Guest</body>';
       frame.src = url;
       assertEq(url, frame.src);
@@ -588,7 +588,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, MangledJsBackForward) {
 
   ASSERT_THAT(EvalJs(app_frame, R"(
     new Promise((resolve, reject) => {
-      const frame = new ControlledFrame();
+      const frame = new HTMLControlledFrameElement();
       // The back and forward methods are implemented in terms of go. Make sure
       // they don't call an overwritten version.
       frame.go = makeUnreached();
@@ -708,7 +708,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
       guest_view::GuestViewHistogramValue::kControlledFrame, 0);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kControlledFrameElement, 0);
+      blink::mojom::WebFeature::kHTMLControlledFrameElement, 0);
 
   ASSERT_TRUE(CreateControlledFrame(
       app_frame, embedded_https_test_server().GetURL("/index.html")));
@@ -720,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(ControlledFrameApiTest, Histograms) {
       guest_view::GuestViewHistogramValue::kControlledFrame, 1);
   histogram_tester.ExpectBucketCount(
       "Blink.UseCounter.Features",
-      blink::mojom::WebFeature::kControlledFrameElement, 1);
+      blink::mojom::WebFeature::kHTMLControlledFrameElement, 1);
 }
 
 class ControlledFrameWebSocketApiTest : public ControlledFrameApiTest {

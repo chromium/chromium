@@ -4508,7 +4508,7 @@ enum WebFeature {
   kGeolocationSucceededWithoutInjectionMitigation = 5202,
   kSharedWorkerScriptUnderServiceWorkerControlIsBlob = 5203,
   kOBSOLETE_DisableThirdPartyStoragePartitioning3 = 5204,
-  kControlledFrameElement = 5205,
+  kOBSOLETE_ControlledFrameElement = 5205,
   kCanvas2DIsPointInPath = 5206,
   kCanvas2DIsPointInStroke = 5207,
   kCanvas2DGetImageData = 5208,
@@ -4932,6 +4932,7 @@ enum WebFeature {
   kWebAppManifestShortNameLocalized = 5621,
   kWebAppManifestDescriptionLocalized = 5622,
   kWebAppManifestIconsLocalized = 5623,
+  kHTMLControlledFrameElement = 5624,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots. Also don't add extra

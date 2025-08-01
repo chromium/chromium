@@ -37,4 +37,4 @@ forwardApiMethods(
 // |ChromeWebViewElement.prototype.go|.
 const originalGo = ChromeWebViewElement.prototype.go;
 
-registerElement('WebView', ChromeWebViewElement);
+registerElement('WebView', 'WebView', ChromeWebViewElement);
