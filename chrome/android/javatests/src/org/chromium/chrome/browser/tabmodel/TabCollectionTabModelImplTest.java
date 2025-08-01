@@ -69,6 +69,10 @@ public class TabCollectionTabModelImplTest {
 
     @Before
     public void setUp() throws Exception {
+        // Methods that would normally be triggered by snackbar lifecycle are manually invoked in
+        // this test.
+        mActivityTestRule.getActivity().getSnackbarManager().disableForTesting();
+
         mTestUrl = mActivityTestRule.getTestServer().getURL("/chrome/test/data/android/ok.txt");
         mPage = mActivityTestRule.startOnBlankPage();
         mTabModelSelector = mActivityTestRule.getActivity().getTabModelSelector();
@@ -1416,6 +1420,7 @@ public class TabCollectionTabModelImplTest {
                             TabGroupColorId.GREY,
                             mCollectionModel.getTabGroupColorWithFallback(tabGroupId));
                     assertFalse(mCollectionModel.getTabGroupCollapsed(tabGroupId));
+                    mCollectionModel.removeTabGroupObserver(deleteAllObserver);
                 });
         deleteAllTitleHelper.waitForOnly("deleteTabGroupTitle failed");
         deleteAllColorHelper.waitForOnly("deleteTabGroupColor failed");
@@ -1934,6 +1939,201 @@ public class TabCollectionTabModelImplTest {
                             List.of(tab2, tab3, tab4), tab2, false, /* indexInGroup= */ 2, null);
 
                     assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3, tab4, tab5));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupOperation_MergeGroupIntoGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        Tab tab3 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+        AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
+        CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group 1 with tab0, tab1.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab0, /* notify= */ false);
+                    Token groupId1 = tab0.getTabGroupId();
+                    assertNotNull(groupId1);
+
+                    // Create group 2 with tab2, tab3.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab2, tab3), tab2, /* notify= */ false);
+                    Token groupId2 = tab2.getTabGroupId();
+                    assertNotNull(groupId2);
+
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void showUndoGroupSnackbar(
+                                        UndoGroupMetadata undoGroupMetadata) {
+                                    undoGroupMetadataRef.set(undoGroupMetadata);
+                                    showUndoSnackbarHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+
+                    // Merge group 1 into group 2.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0, tab1), tab2, /* notify= */ true);
+
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertEquals(groupId2, tab0.getTabGroupId());
+                    assertEquals(groupId2, tab1.getTabGroupId());
+                    assertEquals(4, mCollectionModel.getTabsInGroup(groupId2).size());
+                    assertTrue(mCollectionModel.detachedTabGroupExistsForTesting(groupId1));
+                    // The group is detached, but not closed yet. The tabGroupExists check is based
+                    // on number of tabs so it will be false.
+                    assertFalse(mCollectionModel.tabGroupExists(groupId1));
+                    assertTabsInOrderAre(List.of(tab2, tab3, tab0, tab1));
+                });
+
+        showUndoSnackbarHelper.waitForOnly();
+        assertNotNull(undoGroupMetadataRef.get());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.performUndoGroupOperation(undoGroupMetadataRef.get());
+
+                    // State should be restored.
+                    Token groupId1 = tab0.getTabGroupId();
+                    Token groupId2 = tab2.getTabGroupId();
+                    assertNotNull(groupId1);
+                    assertNotNull(groupId2);
+                    assertNotEquals(groupId1, groupId2);
+                    assertEquals(groupId1, tab1.getTabGroupId());
+                    assertEquals(groupId2, tab3.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId1).size());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId2).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2, tab3));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupOperation_SingleTabIntoGroup() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
+        CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group with tab1, tab2.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab1, tab2), tab1, /* notify= */ false);
+                    Token groupId = tab1.getTabGroupId();
+                    assertNotNull(groupId);
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void showUndoGroupSnackbar(
+                                        UndoGroupMetadata undoGroupMetadata) {
+                                    undoGroupMetadataRef.set(undoGroupMetadata);
+                                    showUndoSnackbarHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+
+                    // Merge tab0 into the group.
+                    mCollectionModel.mergeListOfTabsToGroup(
+                            List.of(tab0), tab1, /* notify= */ true);
+
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    assertEquals(groupId, tab0.getTabGroupId());
+                    assertEquals(3, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab1, tab2, tab0));
+                });
+
+        showUndoSnackbarHelper.waitForOnly();
+        assertNotNull(undoGroupMetadataRef.get());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    mCollectionModel.performUndoGroupOperation(undoGroupMetadataRef.get());
+
+                    // State should be restored.
+                    Token groupId = tab1.getTabGroupId();
+                    assertNull(tab0.getTabGroupId());
+                    assertNotNull(groupId);
+                    assertEquals(groupId, tab2.getTabGroupId());
+                    assertEquals(2, mCollectionModel.getTabsInGroup(groupId).size());
+                    assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+                });
+    }
+
+    @Test
+    @MediumTest
+    public void testUndoGroupOperationExpired() throws Exception {
+        Tab tab0 = getTabAt(0);
+        Tab tab1 = createTab();
+        Tab tab2 = createTab();
+        assertTabsInOrderAre(List.of(tab0, tab1, tab2));
+
+        AtomicReference<UndoGroupMetadata> undoGroupMetadataRef = new AtomicReference<>();
+        AtomicReference<Token> groupId1Ref = new AtomicReference<>();
+        CallbackHelper showUndoSnackbarHelper = new CallbackHelper();
+        final String group1Title = "Group 1 Title";
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    // Create group 1 with tab0.
+                    mCollectionModel.createSingleTabGroup(tab0);
+                    Token groupId1 = tab0.getTabGroupId();
+                    groupId1Ref.set(groupId1);
+                    assertNotNull(groupId1);
+                    mCollectionModel.setTabGroupTitle(groupId1, group1Title);
+
+                    // Create group 2 with tab1.
+                    mCollectionModel.createSingleTabGroup(tab1);
+                    Token groupId2 = tab1.getTabGroupId();
+                    assertNotNull(groupId2);
+
+                    TabGroupModelFilterObserver observer =
+                            new TabGroupModelFilterObserver() {
+                                @Override
+                                public void showUndoGroupSnackbar(
+                                        UndoGroupMetadata undoGroupMetadata) {
+                                    undoGroupMetadataRef.set(undoGroupMetadata);
+                                    showUndoSnackbarHelper.notifyCalled();
+                                }
+                            };
+                    mCollectionModel.addTabGroupObserver(observer);
+
+                    // Merge group 1 into group 2.
+                    mCollectionModel.mergeListOfTabsToGroup(List.of(tab0), tab1, true);
+                    mCollectionModel.removeTabGroupObserver(observer);
+
+                    // Group 1 is now detached. Its title should still be available.
+                    assertEquals(group1Title, mCollectionModel.getTabGroupTitle(groupId1));
+                });
+
+        showUndoSnackbarHelper.waitForOnly();
+        assertNotNull(undoGroupMetadataRef.get());
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    assertTrue(
+                            mCollectionModel.detachedTabGroupExistsForTesting(groupId1Ref.get()));
+
+                    mCollectionModel.undoGroupOperationExpired(undoGroupMetadataRef.get());
+                    assertFalse(
+                            mCollectionModel.detachedTabGroupExistsForTesting(groupId1Ref.get()));
                 });
     }
 

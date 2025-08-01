@@ -105,6 +105,9 @@ class TabCollectionTabModelImpl {
   jint GetTabGroupColor(JNIEnv* env, const base::Token& tab_group_id);
   bool GetTabGroupCollapsed(JNIEnv* env, const base::Token& tab_group_id);
 
+  // Checks if a detached tab group exists.
+  bool DetachedTabGroupExists(JNIEnv* env, const base::Token& tab_group_id);
+
   // Closes a detached tab group.
   void CloseDetachedTabGroup(JNIEnv* env, const base::Token& tab_group_id);
 
