@@ -343,9 +343,7 @@ VideoEncoderTestEnvironment::VideoEncoderTestEnvironment(
       content_type_(content_type),
       save_output_bitstream_(save_output_bitstream),
       reverse_(reverse),
-      frame_output_config_(frame_output_config),
-      gpu_memory_buffer_factory_(
-          gpu::GpuMemoryBufferFactory::CreateNativeType(nullptr)) {}
+      frame_output_config_(frame_output_config) {}
 
 VideoEncoderTestEnvironment::~VideoEncoderTestEnvironment() = default;
 
@@ -428,9 +426,5 @@ const FrameOutputConfig& VideoEncoderTestEnvironment::ImageOutputConfig()
   return frame_output_config_;
 }
 
-gpu::GpuMemoryBufferFactory*
-VideoEncoderTestEnvironment::GetGpuMemoryBufferFactory() const {
-  return gpu_memory_buffer_factory_.get();
-}
 }  // namespace test
 }  // namespace media
