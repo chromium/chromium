@@ -7,8 +7,6 @@ import("//third_party/jni_zero/jni_zero.gni")
 
 source_set("android") {
   sources = [
-    "backend_impl_android.cc",
-    "backend_impl_android.h",
     "backend_model_impl_android.cc",
     "backend_model_impl_android.h",
     "backend_session_impl_android.cc",
@@ -29,7 +27,7 @@ source_set("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "backend_impl_android_unittest.cc" ]
+  sources = [ "backend_model_impl_android_unittest.cc" ]
   deps = [
     ":android",
     ":native_j_unittests_jni_headers",

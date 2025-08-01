@@ -26,10 +26,6 @@
 #include "services/on_device_model/public/cpp/features.h"
 #include "services/on_device_model/public/cpp/service_client.h"
 
-#if BUILDFLAG(IS_ANDROID)
-#include "services/on_device_model/android/backend_impl_android.h"
-#endif
-
 namespace on_device_model {
 namespace {
 
@@ -475,9 +471,6 @@ void SessionWrapper::AsrStreamInternal(
 }
 
 std::unique_ptr<Backend> DefaultImpl() {
-#if BUILDFLAG(IS_ANDROID)
-  return std::make_unique<BackendImplAndroid>();
-#else
   if (base::FeatureList::IsEnabled(features::kUseFakeChromeML)) {
     return std::make_unique<ml::BackendImpl>(fake_ml::GetFakeChromeML());
   }
@@ -486,7 +479,6 @@ std::unique_ptr<Backend> DefaultImpl() {
 #else
   return std::make_unique<ml::BackendImpl>(fake_ml::GetFakeChromeML());
 #endif  // defined(ENABLE_ML_INTERNAL)
-#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

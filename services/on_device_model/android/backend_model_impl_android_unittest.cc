@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "services/on_device_model/android/backend_impl_android.h"
+#include "services/on_device_model/android/backend_model_impl_android.h"
 
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
@@ -20,19 +20,16 @@ namespace {
 
 using ::testing::ElementsAre;
 
-class BackendImplAndroidTest : public testing::Test {
+class BackendModelImplAndroidTest : public testing::Test {
  public:
-  BackendImplAndroidTest() = default;
-  ~BackendImplAndroidTest() override = default;
+  BackendModelImplAndroidTest() = default;
+  ~BackendModelImplAndroidTest() override = default;
 
   void SetUp() override {
     env_ = base::android::AttachCurrentThread();
     java_helper_ = Java_OnDeviceModelBridgeNativeUnitTestHelper_create(env_);
 
-    auto model_result = BackendImplAndroid().CreateWithResult(
-        /*params=*/nullptr, /*on_complete=*/base::DoNothing());
-    ASSERT_TRUE(model_result.has_value());
-    model_ = std::move(model_result.value());
+    model_ = std::make_unique<BackendModelImplAndroid>();
   }
 
   mojom::SessionParamsPtr MakeSessionParams(int top_k, float temperature) {
@@ -52,11 +49,10 @@ class BackendImplAndroidTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   raw_ptr<JNIEnv> env_;
   base::android::ScopedJavaGlobalRef<jobject> java_helper_;
-  BackendImplAndroid backend_;
   std::unique_ptr<BackendModel> model_;
 };
 
-TEST_F(BackendImplAndroidTest, GenerateWithDefaultFactory) {
+TEST_F(BackendModelImplAndroidTest, GenerateWithDefaultFactory) {
   std::unique_ptr<BackendSession> session = model_->CreateSession(
       /*adaptation=*/nullptr,
       MakeSessionParams(/*top_k=*/3, /*temperature=*/1.0f));
@@ -68,7 +64,7 @@ TEST_F(BackendImplAndroidTest, GenerateWithDefaultFactory) {
   EXPECT_THAT(response_holder.responses(), ElementsAre("AiCore response"));
 }
 
-TEST_F(BackendImplAndroidTest, AppendAndGenerate) {
+TEST_F(BackendModelImplAndroidTest, AppendAndGenerate) {
   Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
       env_, java_helper_);
 
@@ -111,7 +107,7 @@ TEST_F(BackendImplAndroidTest, AppendAndGenerate) {
           "<system>mock system input<end><user>mock user input<end><model>"));
 }
 
-TEST_F(BackendImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
+TEST_F(BackendModelImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
   Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
       env_, java_helper_);
 
@@ -145,7 +141,7 @@ TEST_F(BackendImplAndroidTest, ContextIsNotClearedOnNewGenerate) {
   }
 }
 
-TEST_F(BackendImplAndroidTest, NativeSessionDeletionIsSafe) {
+TEST_F(BackendModelImplAndroidTest, NativeSessionDeletionIsSafe) {
   Java_OnDeviceModelBridgeNativeUnitTestHelper_setMockAiCoreSessionFactory(
       env_, java_helper_);
 
