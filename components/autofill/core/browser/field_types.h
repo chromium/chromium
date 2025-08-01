@@ -529,6 +529,9 @@ enum FieldType {
   KNOWN_TRAVELER_NUMBER = 194,
   KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE = 203,
 
+  // Types corresponding to the "Redress number" entity from
+  // components/autofill/core/browser/data_model/autofill_ai/entity_schema.json.
+  REDRESS_NUMBER = 195,
   // Types 195 to 200 are not used on the client yet, but will likely be added
   // in the future.
 
@@ -657,7 +660,7 @@ constexpr FieldType ToSafeFieldType(std::underlying_type_t<FieldType> raw_value,
            (187 <= t && t <= 188) ||
            // Types for date of birth, gender, and flight reservation are not
            // used yet, but will likely be added in the future.
-           (195 <= t && t <= 200);
+           (196 <= t && t <= 200);
   };
   return is_invalid(raw_value) ? fallback_value
                                : static_cast<FieldType>(raw_value);  // nocheck
@@ -820,6 +823,7 @@ constexpr FieldTypeGroup GroupTypeOfFieldType(FieldType field_type) {
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
     case KNOWN_TRAVELER_NUMBER:
     case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return FieldTypeGroup::kAutofillAi;

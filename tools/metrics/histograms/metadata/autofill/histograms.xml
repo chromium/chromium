@@ -539,6 +539,7 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <variant name="PHONE_HOME_WHOLE_NUMBER"/>
   <variant name="PRICE"/>
   <variant name="PROBABLY_NEW_PASSWORD"/>
+  <variant name="REDRESS_NUMBER"/>
   <variant name="SEARCH_TERM"/>
   <variant name="SINGLE_USERNAME"/>
   <variant name="SINGLE_USERNAME_FORGOT_PASSWORD"/>

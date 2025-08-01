@@ -176,6 +176,7 @@ static constexpr auto kTypeNameToFieldType =
          {"KNOWN_TRAVELER_NUMBER", KNOWN_TRAVELER_NUMBER},
          {"KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE",
           KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE},
+         {"REDRESS_NUMBER", REDRESS_NUMBER},
          {"EMAIL_OR_LOYALTY_MEMBERSHIP_ID", EMAIL_OR_LOYALTY_MEMBERSHIP_ID}});
 
 bool IsFillableFieldType(FieldType field_type) {
@@ -304,6 +305,7 @@ bool IsFillableFieldType(FieldType field_type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
     case KNOWN_TRAVELER_NUMBER:
     case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return true;
@@ -403,6 +405,7 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case REDRESS_NUMBER:
     case KNOWN_TRAVELER_NUMBER:
     case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return "";

@@ -906,6 +906,9 @@ Called by update_autofill_enums.py.-->
   <int value="12416"
       label="KNOWN_TRAVELER_NUMBER: Not autofilled or autofilled value edited"/>
   <int value="12417" label="KNOWN_TRAVELER_NUMBER: Autofilled value accepted"/>
+  <int value="12480"
+      label="REDRESS_NUMBER: Not autofilled or autofilled value edited"/>
+  <int value="12481" label="REDRESS_NUMBER: Autofilled value accepted"/>
   <int value="12864"
       label="ADDRESS_HOME_ZIP_PREFIX: Not autofilled or autofilled value
              edited"/>
@@ -1240,6 +1243,8 @@ Called by update_autofill_enums.py.-->
   <int value="3089" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: accepted"/>
   <int value="3104" label="KNOWN_TRAVELER_NUMBER: edited"/>
   <int value="3105" label="KNOWN_TRAVELER_NUMBER: accepted"/>
+  <int value="3120" label="REDRESS_NUMBER: edited"/>
+  <int value="3121" label="REDRESS_NUMBER: accepted"/>
   <int value="3216" label="ADDRESS_HOME_ZIP_PREFIX: edited"/>
   <int value="3217" label="ADDRESS_HOME_ZIP_PREFIX: accepted"/>
   <int value="3232" label="ADDRESS_HOME_ZIP_SUFFIX: edited"/>
@@ -2109,6 +2114,7 @@ Called by update_autofill_enums.py.-->
   <int value="192" label="NATIONAL_ID_CARD_ISSUE_DATE"/>
   <int value="193" label="NATIONAL_ID_CARD_ISSUING_COUNTRY"/>
   <int value="194" label="KNOWN_TRAVELER_NUMBER"/>
+  <int value="195" label="REDRESS_NUMBER"/>
   <int value="201" label="ADDRESS_HOME_ZIP_PREFIX"/>
   <int value="202" label="ADDRESS_HOME_ZIP_SUFFIX"/>
   <int value="203" label="KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE"/>
@@ -3777,6 +3783,8 @@ Called by update_autofill_enums.py.-->
   <int value="773" label="NATIONAL_ID_CARD_ISSUING_COUNTRY: Accepted"/>
   <int value="776" label="KNOWN_TRAVELER_NUMBER: Ignored"/>
   <int value="777" label="KNOWN_TRAVELER_NUMBER: Accepted"/>
+  <int value="780" label="REDRESS_NUMBER: Ignored"/>
+  <int value="781" label="REDRESS_NUMBER: Accepted"/>
   <int value="804" label="ADDRESS_HOME_ZIP_PREFIX: Ignored"/>
   <int value="805" label="ADDRESS_HOME_ZIP_PREFIX: Accepted"/>
   <int value="808" label="ADDRESS_HOME_ZIP_SUFFIX: Ignored"/>

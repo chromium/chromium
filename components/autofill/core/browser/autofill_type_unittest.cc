@@ -345,7 +345,8 @@ TEST(AutofillTypeTest, GetAutofillAiType) {
   // Some types do not have an entity yet, this is an intermediate state
   // between a type being added and the entity schema being updated.
   constexpr FieldTypeSet kTemporaryTypesWithoutEntity = {
-      KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE};
+      KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
+      REDRESS_NUMBER};
   for (FieldType field_type : kTemporaryTypesWithoutEntity) {
     for (EntityType entity : DenseSet<EntityType>::all()) {
       AutofillType autofill_type = AutofillType(field_type);
@@ -538,7 +539,8 @@ TEST(AutofillTypeTest, AlmostAllFieldTypesAreCovered) {
   // Some types do not have an entity yet, this is an intermediate state
   // between a type being added and the entity schema being updated.
   constexpr FieldTypeSet kTemporaryTypesWithoutEntity = {
-      KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE};
+      KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE,
+      REDRESS_NUMBER};
   for (FieldType field_type : kTemporaryTypesWithoutEntity) {
     for (EntityType entity : DenseSet<EntityType>::all()) {
       AutofillType autofill_type = AutofillType(field_type);
