@@ -347,7 +347,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
     const std::u16string& value = field->value_for_import();
     const bool is_valid_cvc =
         IsValidCreditCardSecurityCode(value, upload_request_.card.network());
-    if (field->Type().GetStorableType() == CREDIT_CARD_VERIFICATION_CODE) {
+    if (field->Type().GetCreditCardType() == CREDIT_CARD_VERIFICATION_CODE) {
       found_cvc_field_ = true;
       if (!value.empty()) {
         found_value_in_cvc_field_ = true;

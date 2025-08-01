@@ -213,11 +213,14 @@ bool ShouldSkipFieldBecauseOfMeaningfulInitialValue(const AutofillField& field,
 bool AllowPaymentSwapping(const AutofillField& trigger_field,
                           const AutofillField& field,
                           bool is_refill) {
-  return GroupTypeOfFieldType(trigger_field.Type().GetStorableType()) ==
-             FieldTypeGroup::kCreditCard &&
-         GroupTypeOfFieldType(field.Type().GetStorableType()) ==
-             FieldTypeGroup::kCreditCard &&
-         !is_refill && IsPaymentsFieldSwappingEnabled();
+  auto has_relevant_cc_field_type = [](const AutofillField& field) {
+    const FieldType field_type = field.Type().GetCreditCardType();
+    return field_type != UNKNOWN_TYPE &&
+           field_type != CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
+  };
+  return has_relevant_cc_field_type(trigger_field) &&
+         has_relevant_cc_field_type(field) && !is_refill &&
+         IsPaymentsFieldSwappingEnabled();
 }
 
 // Returns whether a filling action for `filling_product` should be included in
@@ -1144,7 +1147,7 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
                 GetFillingValueForCreditCard(
                     CHECK_DEREF(credit_card), manager_->client().GetAppLocale(),
                     action_persistence, autofill_field, failure_to_fill),
-                autofill_field.Type().GetStorableType()};
+                autofill_field.Type().GetCreditCardType()};
           },
           [&](const AugmentedFillingPayload::EntityPayload&
                   entity_and_fields_and_types)

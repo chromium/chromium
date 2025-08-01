@@ -333,23 +333,23 @@ std::u16string GetExpirationDateForInput(const CreditCard& credit_card,
   std::u16string yy = credit_card.Expiration2DigitYearAsString();
   std::u16string yyyy = credit_card.Expiration4DigitYearAsString();
 
-  FieldType field_type = field.Type().GetStorableType();
   // At this point the field type is determined, so we pass it even as
   // `forced_field_type`.
   CreditCardFieldParser::ExpirationDateFormat format;
   if (base::FeatureList::IsEnabled(
           features::kAutofillEnableExpirationDateImprovements)) {
+    const FieldType field_type = field.Type().GetCreditCardType();
     format = CreditCardFieldParser::DetermineExpirationDateFormat(
         field, /*fallback_type=*/field_type,
         /*server_hint=*/field_type, /*forced_field_type=*/field_type);
   } else {
     // Before the experiment, the type was not fully determined yet. That
     // happened at field filling time like in this else-branch.
-    FieldType server_hint = field.server_type();
-    FieldType forced_field_type = field.server_type_prediction_is_override()
-                                      ? server_hint
-                                      : NO_SERVER_DATA;
-    FieldType fallback_type = field.Type().GetStorableType();
+    const FieldType server_hint = field.server_type();
+    const FieldType forced_field_type =
+        field.server_type_prediction_is_override() ? server_hint
+                                                   : NO_SERVER_DATA;
+    const FieldType fallback_type = field.Type().GetCreditCardType();
     format = CreditCardFieldParser::DetermineExpirationDateFormat(
         field, fallback_type, server_hint, forced_field_type);
   }
@@ -376,8 +376,9 @@ std::u16string GetFillingValueForCreditCardForInput(
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
+  const FieldType field_type = field.Type().GetCreditCardType();
   // Do not fill expired CC expiration dates.
-  if (data_util::IsCreditCardExpirationType(field.Type().GetStorableType()) &&
+  if (data_util::IsCreditCardExpirationType(field_type) &&
       credit_card.IsExpired(base::Time::Now())) {
     if (failure_to_fill) {
       *failure_to_fill += "Autofill doesn't fill expired CC expiration dates. ";
@@ -387,7 +388,7 @@ std::u16string GetFillingValueForCreditCardForInput(
   if (field.form_control_type() == FormControlType::kInputMonth) {
     return GetExpirationForMonthControl(credit_card);
   }
-  switch (FieldType storable_type = field.Type().GetStorableType()) {
+  switch (field_type) {
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       return GetCreditCardVerificationCodeForInput(credit_card,
@@ -401,11 +402,11 @@ std::u16string GetFillingValueForCreditCardForInput(
       return GetExpirationDateForInput(credit_card, field, failure_to_fill);
     case CREDIT_CARD_EXP_2_DIGIT_YEAR:
     case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-      return GetExpirationYearForInput(credit_card, storable_type,
+      return GetExpirationYearForInput(credit_card, field_type,
                                        field.max_length());
     default:
       // All other cases handled here.
-      return credit_card.GetInfo(storable_type, app_locale);
+      return credit_card.GetInfo(field_type, app_locale);
   }
 }
 
@@ -427,7 +428,7 @@ std::u16string GetValueForVirtualCardInputPreview(
     const AutofillField& field,
     std::string* failure_to_fill) {
   CHECK_EQ(virtual_card.record_type(), CreditCard::RecordType::kVirtualCard);
-  switch (FieldType storable_type = field.Type().GetStorableType()) {
+  switch (const FieldType field_type = field.Type().GetCreditCardType()) {
     case CREDIT_CARD_VERIFICATION_CODE:
     case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
       // For preview virtual card CVC, return three dots unless for American
@@ -449,7 +450,7 @@ std::u16string GetValueForVirtualCardInputPreview(
           failure_to_fill));
     default:
       // All other cases handled here.
-      return virtual_card.GetInfo(storable_type, app_locale);
+      return virtual_card.GetInfo(field_type, app_locale);
   }
 }
 
@@ -458,7 +459,7 @@ std::u16string GetFillingValueForCreditCardSelectControl(
     const std::string& app_locale,
     const AutofillField& field,
     std::string* failure_to_fill) {
-  switch (field.Type().GetStorableType()) {
+  switch (field.Type().GetCreditCardType()) {
     case CREDIT_CARD_EXP_MONTH:
       return GetExpirationMonthSelectControlValue(
           value, app_locale, field.options(), failure_to_fill);
@@ -517,7 +518,7 @@ bool WillFillCreditCardNumberOrCvc(
     fillable_field_types.insert(CREDIT_CARD_STANDALONE_VERIFICATION_CODE);
   }
   if (fillable_field_types.contains(
-          trigger_autofill_field.Type().GetStorableType())) {
+          trigger_autofill_field.Type().GetCreditCardType())) {
     return true;
   }
 
@@ -550,7 +551,7 @@ bool WillFillCreditCardNumberOrCvc(
       [&trigger_autofill_field, &fillable_field_types,
        &IsFillableField](const std::unique_ptr<AutofillField>& autofill_field) {
         return fillable_field_types.contains(
-                   autofill_field->Type().GetStorableType()) &&
+                   autofill_field->Type().GetCreditCardType()) &&
                autofill_field->section() == trigger_autofill_field.section() &&
                IsFillableField(*autofill_field);
       };

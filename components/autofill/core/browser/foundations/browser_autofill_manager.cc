@@ -407,7 +407,7 @@ bool ShouldFetchCreditCard(const FormData& form,
   // the cvc, which is different every time the virtual credit card is being
   // used.
   return credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
-         autofill_field.Type().GetStorableType() ==
+         autofill_field.Type().GetCreditCardType() ==
              CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
 }
 
@@ -483,8 +483,8 @@ bool ShouldOfferSingleFieldFill(const AutofillField* autofill_field,
   // re-authenticate the use of a credit card the website has on file) will be
   // handled separately because those have the field type
   // CREDIT_CARD_STANDALONE_VERIFICATION_CODE.
-  FieldType type =
-      autofill_field ? autofill_field->Type().GetStorableType() : UNKNOWN_TYPE;
+  FieldType type = autofill_field ? autofill_field->Type().GetCreditCardType()
+                                  : UNKNOWN_TYPE;
   if (data_util::IsCreditCardExpirationType(type) ||
       type == CREDIT_CARD_VERIFICATION_CODE || type == CREDIT_CARD_NUMBER) {
     return false;
@@ -619,7 +619,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
   fields_for_autocomplete.reserve(form_structure.fields().size());
   for (const auto& autofill_field : form_structure) {
     fields_for_autocomplete.push_back(*autofill_field);
-    if (autofill_field->Type().GetStorableType() ==
+    if (autofill_field->Type().GetCreditCardType() ==
         CREDIT_CARD_VERIFICATION_CODE) {
       // However, if Autofill has recognized a field as CVC, that shouldn't be
       // saved.
@@ -786,7 +786,7 @@ bool BrowserAutofillManager::ShouldShowScanCreditCard(
   }
 
   bool is_card_number_field =
-      autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER &&
+      autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER &&
       base::ContainsOnlyChars(StripCardNumberSeparators(field.value()),
                               u"0123456789");
 
@@ -1670,7 +1670,7 @@ void BrowserAutofillManager::OnGenerateSuggestionsComplete(
         GetAmountExtractionManager().GetEligibleFeatures(
             context,
             ShouldSuppressSuggestions(context.suppress_reason, log_manager()),
-            !suggestions.empty(), autofill_field->Type().GetStorableType());
+            !suggestions.empty(), autofill_field->Type().GetCreditCardType());
 
     if (!eligible_features.empty()) {
       for (AmountExtractionManager::EligibleFeature eligible_feature :
@@ -2924,7 +2924,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
     if (const AutofillField* autofill_field =
             form_structure.GetFieldById(field.global_id());
         autofill_field &&
-        autofill_field->Type().GetStorableType() == CREDIT_CARD_NUMBER) {
+        autofill_field->Type().GetCreditCardType() == CREDIT_CARD_NUMBER) {
       card_number_field_value += SanitizeCreditCardFieldValue(field.value());
       is_card_number_autofilled |= field.is_autofilled();
     }
@@ -2938,7 +2938,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
   };
 
   if (data_util::IsCreditCardExpirationType(
-          autofill_trigger_field.Type().GetStorableType()) &&
+          autofill_trigger_field.Type().GetCreditCardType()) &&
       !ShouldOfferSuggestionsForExpirationTypeField()) {
     return {};
   }
@@ -2949,8 +2949,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetCreditCardSuggestions(
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
-      client(), trigger_field, autofill_trigger_field.Type().GetStorableType(),
-      summary,
+      client(), trigger_field,
+      autofill_trigger_field.Type().GetCreditCardType(), summary,
       form_structure.IsCompleteCreditCardForm(
           FormStructure::CreditCardFormCompleteness::
               kCompleteCreditCardFormIncludingCvcAndName),
@@ -3009,7 +3009,7 @@ void BrowserAutofillManager::OnFormProcessed(
   // card saved on file of a merchant webpage.
   auto contains_standalone_cvc_field =
       std::ranges::any_of(form_structure.fields(), [](const auto& field) {
-        return field->Type().GetStorableType() ==
+        return field->Type().GetCreditCardType() ==
                CREDIT_CARD_STANDALONE_VERIFICATION_CODE;
       });
   if (contains_standalone_cvc_field) {

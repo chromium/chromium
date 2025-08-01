@@ -1206,7 +1206,7 @@ FieldTypeSet CreditCard::GetSupportedTypes() const {
 
 std::u16string CreditCard::GetInfo(const AutofillType& autofill_type,
                                    const std::string& app_locale) const {
-  FieldType type = autofill_type.GetStorableType();
+  const FieldType type = autofill_type.GetCreditCardType();
   if (type == CREDIT_CARD_NUMBER) {
     // Web pages should never actually be filled by a masked server card,
     // but this function is used at the preview stage.
@@ -1222,7 +1222,7 @@ bool CreditCard::SetInfoWithVerificationStatus(const AutofillType& type,
                                                const std::u16string& value,
                                                const std::string& app_locale,
                                                VerificationStatus status) {
-  FieldType storable_type = type.GetStorableType();
+  const FieldType storable_type = type.GetCreditCardType();
   if (storable_type == CREDIT_CARD_EXP_MONTH) {
     return SetExpirationMonthFromString(value, app_locale);
   }

@@ -406,7 +406,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   // found. See comments inline below.
   for (auto it = fields_->begin(); it != fields_->end(); ++it) {
     auto& field = *it;
-    FieldType current_field_type = field->ComputedType().GetStorableType();
+    FieldType current_field_type = field->ComputedType().GetCreditCardType();
     switch (current_field_type) {
       case CREDIT_CARD_NAME_FIRST:
         if (!keep_cc_fields) {
@@ -467,7 +467,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
                              AutofillPredictionSource::kRationalization);
           } else {
             FieldType next_field_type =
-                (*it2)->ComputedType().GetStorableType();
+                (*it2)->ComputedType().GetCreditCardType();
             if (next_field_type != CREDIT_CARD_EXP_2_DIGIT_YEAR &&
                 next_field_type != CREDIT_CARD_EXP_4_DIGIT_YEAR) {
               LOG_AF(log_manager)
@@ -530,7 +530,7 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
           features::kAutofillEnableExpirationDateImprovements)) {
     for (const auto& field : *fields_) {
       // Here we look at the type after rationalization.
-      FieldType current_field_type = field->Type().GetStorableType();
+      FieldType current_field_type = field->Type().GetCreditCardType();
       if (current_field_type == CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR ||
           current_field_type == CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR) {
         FieldType server_hint = field->server_type();
@@ -566,7 +566,7 @@ void FormStructureRationalizer::RationalizeMultiOriginCreditCardFields(
   };
   auto rationalize = [&](FieldType relevant_type) {
     auto is_relevant = [relevant_type](const AutofillField& field) {
-      return field.ComputedType().GetStorableType() == relevant_type;
+      return field.ComputedType().GetCreditCardType() == relevant_type;
     };
     auto is_relevant_in_subframe = [&](const auto& field) {
       return is_relevant(*field) && is_in_subframe(*field);
@@ -619,10 +619,10 @@ void FormStructureRationalizer::RationalizeCreditCardNumberOffsets(
     DCHECK_GE(group.size(), 1u);
     DCHECK(
         std::ranges::all_of(group.first(group.size() - 1), [](const auto& f) {
-          return f->ComputedType().GetStorableType() == CREDIT_CARD_NUMBER;
+          return f->ComputedType().GetCreditCardType() == CREDIT_CARD_NUMBER;
         }));
     return group.front()->max_length() <= kMaxGroupElementLength &&
-           group.back()->ComputedType().GetStorableType() ==
+           group.back()->ComputedType().GetCreditCardType() ==
                CREDIT_CARD_NUMBER &&
            group.front()->renderer_form_id() ==
                group.back()->renderer_form_id() &&

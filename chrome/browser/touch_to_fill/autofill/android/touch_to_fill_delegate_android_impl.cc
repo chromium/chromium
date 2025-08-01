@@ -71,7 +71,7 @@ bool IsFillingPerfect(const FormStructure& form) {
 bool IsFormPrefilled(const FormStructure& form) {
   return std::ranges::any_of(form.fields(),
                              [](const std::unique_ptr<AutofillField>& field) {
-                               return field->Type().GetStorableType() ==
+                               return field->Type().GetCreditCardType() ==
                                           FieldType::CREDIT_CARD_NUMBER &&
                                       !SanitizedFieldIsEmpty(field->value());
                              });
@@ -188,7 +188,7 @@ TouchToFillDelegateAndroidImpl::DryRunForCreditCard(const AutofillField& field,
   // TODO(crbug.com/40227496): `*field` must contain the updated field
   // information.
   std::vector<CreditCard> cards_to_suggest = GetTouchToFillCardsToSuggest(
-      manager_->client(), field, field.Type().GetStorableType());
+      manager_->client(), field, field.Type().GetCreditCardType());
   return cards_to_suggest.empty()
              ? DryRunResult(TriggerOutcome::kNoValidPaymentMethods, {})
              : DryRunResult(TriggerOutcome::kShown,

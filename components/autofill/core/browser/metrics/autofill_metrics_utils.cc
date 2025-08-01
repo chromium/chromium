@@ -34,7 +34,7 @@ bool IsCvcOnlyForm(const FormStructure& form) {
   // here just for completion.
   static constexpr FieldTypeSet kCvcTypes = {
       CREDIT_CARD_VERIFICATION_CODE, CREDIT_CARD_STANDALONE_VERIFICATION_CODE};
-  return kCvcTypes.contains(form.fields()[0]->Type().GetStorableType());
+  return kCvcTypes.contains(form.fields()[0]->Type().GetCreditCardType());
 }
 
 bool IsEmailOnlyForm(const FormStructure& form) {

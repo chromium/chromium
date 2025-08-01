@@ -69,6 +69,17 @@ constexpr FieldTypeSet kCreditCardFieldTypes =
 // FedCM currently only supports full names (NAME_FULL) and given names
 // (NAME_FIRST), no other name parts:
 // https://w3c-fedid.github.io/FedCM/#dictdef-identityprovideraccount
+//
+// TODO(crbug.com/432645177): We probably need to remove this set and the
+// `FieldType GetIdentityCredentialType()` getter if and when we start
+// populating AutofillType with _all_ FieldTypes received from the server, which
+// will be needed when we migrate the PWM to AutofillType. The reason is that
+// the server does and should predict classical Autofill FieldTypes and PWM
+// FieldTypes simultaneously (e.g., a field may receive the predictions
+// NAME_FULL and PASSWORD), and this set disallows them. This will become even
+// more acute if the set below grows further (e.g., to include USERNAME) and the
+// overlap with PWM types grows (the Autofill server may predict
+// EMAIL_ADDRESS and USERNAME for the same field).
 constexpr FieldTypeSet kIdentityCredentialFieldTypes = {
     NAME_FIRST, NAME_FULL, EMAIL_ADDRESS, PHONE_HOME_WHOLE_NUMBER, PASSWORD};
 

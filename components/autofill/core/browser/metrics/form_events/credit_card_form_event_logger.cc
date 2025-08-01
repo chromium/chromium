@@ -443,7 +443,7 @@ void CreditCardFormEventLogger::OnDidFillFormFillingSuggestion(
     }
   }
 
-  FieldType field_type = field.Type().GetStorableType();
+  const FieldType field_type = field.Type().GetCreditCardType();
   field_types_with_shown_suggestions_.erase(field_type);
   field_types_with_accepted_suggestions_.insert(field_type);
 

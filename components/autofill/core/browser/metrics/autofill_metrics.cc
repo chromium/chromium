@@ -1021,7 +1021,7 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
       if (only_visible_fields && !field->is_visible()) {
         continue;
       }
-      autofilled_types.insert(field->Type().GetStorableType());
+      autofilled_types.insert(field->Type().GetCreditCardType());
     }
     return CreditCardSeamlessness(autofilled_types);
   };

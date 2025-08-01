@@ -1035,7 +1035,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
   auto extract_if_credit_card_field = [&result,
                                        app_locale](const AutofillField& field) {
     std::u16string value = [&field] {
-      if (field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER) {
+      if (field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER) {
         // Credit card numbers are sometimes obfuscated on form submission.
         // Therefore, we give preference to the user input over the field value.
         std::u16string user_input = field.user_input();
@@ -1057,7 +1057,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     if (field.form_control_type() == FormControlType::kInputMonth) {
       // If |field| is an HTML5 month input, handle it as a special case.
       DCHECK_EQ(CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
-                field.Type().GetStorableType());
+                field.Type().GetCreditCardType());
       result.card.SetInfoForMonthInputType(value);
     } else {
       // If the credit card number offset is within the range of the old value,
@@ -1090,7 +1090,7 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
     // Skip duplicate field check if the field is a split credit card
     // number field.
     bool skip_duplication_check =
-        field.Type().GetStorableType() == FieldType::CREDIT_CARD_NUMBER &&
+        field.Type().GetCreditCardType() == FieldType::CREDIT_CARD_NUMBER &&
         field.credit_card_number_offset() > 0 &&
         base::FeatureList::IsEnabled(
             features::kAutofillFixSplitCreditCardImport);

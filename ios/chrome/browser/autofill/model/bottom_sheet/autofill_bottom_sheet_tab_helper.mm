@@ -571,7 +571,7 @@ void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
         fields_by_frame;
     for (const auto& field : form_structure->fields()) {
       if (IsPaymentsBottomSheetTriggeringField(
-              field->Type().GetStorableType())) {
+              field->Type().GetCreditCardType())) {
         autofill::FieldGlobalId field_id = field->global_id();
         fields_by_frame[field_id.frame_token].push_back(field_id.renderer_id);
       }
@@ -587,7 +587,7 @@ void AutofillBottomSheetTabHelper::AttachListenersForPaymentsForm(
     std::vector<autofill::FieldRendererId> renderer_ids;
     for (const auto& field : form_structure->fields()) {
       if (IsPaymentsBottomSheetTriggeringField(
-              field->Type().GetStorableType())) {
+              field->Type().GetCreditCardType())) {
         renderer_ids.push_back(field->renderer_id());
       }
     }
