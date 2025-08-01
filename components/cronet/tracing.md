@@ -226,6 +226,16 @@ buffers {
 }
 ```
 
+*** note
+If you find that your trace is mysteriously missing all ATrace events (e.g. you
+don't see any user-facing Cronet API calls), it could be that your device may
+not recognize some of the `atrace_categories`. This is especially likely if you
+are running a trace on a device running an old Android version. If an ATrace
+category is not recognized by the device, Perfetto will disable *all* of ATrace.
+Try to remove the `aidl` and `network` ATrace categories, and watch out for
+Perfetto `unknown tracing category` error messages in logcat.
+***
+
 ## Gathering unredacted NetLogs
 
 [NetLogs](/net/docs/net-log.md) are included in the trace by default. However,
