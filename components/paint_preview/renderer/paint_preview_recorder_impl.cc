@@ -265,13 +265,13 @@ void PaintPreviewRecorderImpl::CapturePaintPreviewInternal(
 
   auto offset = frame->GetScrollOffset();
   auto document_size = frame->DocumentSize();
-  // If the special values of -1 are used for the initial position center about
-  // the scroll offset.
-  if (bounds.x() == -1) {
+  // If the special values of `paint_preview::mojom::kCenterOnScrollOffset` are
+  // used for the initial position center about the scroll offset.
+  if (bounds.x() == paint_preview::mojom::kCenterOnScrollOffset) {
     bounds.set_x(
         GetBoundOrigin(document_size.width(), bounds.width(), offset.x()));
   }
-  if (bounds.y() == -1) {
+  if (bounds.y() == paint_preview::mojom::kCenterOnScrollOffset) {
     bounds.set_y(
         GetBoundOrigin(document_size.height(), bounds.height(), offset.y()));
   }

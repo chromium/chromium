@@ -247,8 +247,10 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
   content::RenderFrame* frame = GetMainRenderFrame();
-  base::FilePath skp_path =
-      RunCapture(frame, &out_response, true, gfx::Rect(-1, -1, 500, 500));
+  base::FilePath skp_path = RunCapture(
+      frame, &out_response, true,
+      gfx::Rect(paint_preview::mojom::kCenterOnScrollOffset,
+                paint_preview::mojom::kCenterOnScrollOffset, 500, 500));
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
   EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
@@ -298,8 +300,10 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
 
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
   content::RenderFrame* frame = GetMainRenderFrame();
-  base::FilePath skp_path =
-      RunCapture(frame, &out_response, true, gfx::Rect(-1, -1, 500, 2000));
+  base::FilePath skp_path = RunCapture(
+      frame, &out_response, true,
+      gfx::Rect(paint_preview::mojom::kCenterOnScrollOffset,
+                paint_preview::mojom::kCenterOnScrollOffset, 500, 2000));
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
   EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),
@@ -353,7 +357,9 @@ TEST_P(PaintPreviewRecorderRenderViewTest,
   auto out_response = mojom::PaintPreviewCaptureResponse::New();
   content::RenderFrame* frame = GetMainRenderFrame();
   base::FilePath skp_path =
-      RunCapture(frame, &out_response, true, gfx::Rect(-1, -1, 0, 0));
+      RunCapture(frame, &out_response, true,
+                 gfx::Rect(paint_preview::mojom::kCenterOnScrollOffset,
+                           paint_preview::mojom::kCenterOnScrollOffset, 0, 0));
 
   EXPECT_TRUE(out_response->embedding_token.has_value());
   EXPECT_EQ(frame->GetWebFrame()->GetEmbeddingToken(),

@@ -18,6 +18,7 @@
 #include "chrome/browser/paint_preview/services/paint_preview_tab_service_file_mixin.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "components/paint_preview/browser/warm_compositor.h"
+#include "components/paint_preview/common/mojom/paint_preview_recorder.mojom.h"
 #include "content/public/browser/render_process_host.h"
 #include "ui/accessibility/ax_mode.h"
 #include "ui/gfx/geometry/rect.h"
@@ -316,7 +317,9 @@ void PaintPreviewTabService::CaptureTabInternal(
   capture_params.root_dir = &file_path.value();
   capture_params.persistence = RecordingPersistence::kFileSystem;
   capture_params.clip_rect =
-      gfx::Rect(-1, -1, kMaxCaptureSizePixels, kMaxCaptureSizePixels);
+      gfx::Rect(paint_preview::mojom::kCenterOnScrollOffset,
+                paint_preview::mojom::kCenterOnScrollOffset,
+                kMaxCaptureSizePixels, kMaxCaptureSizePixels);
   capture_params.capture_links = true;
   capture_params.max_per_capture_size = kMaxPerCaptureSizeBytes;
   capture_params.max_decoded_image_size_bytes = kMaxDecodedImageSizeBytes;
