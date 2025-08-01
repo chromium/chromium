@@ -499,6 +499,48 @@
       <message name="IDS_PDF_TOOLTIP_SAVE_TO_DRIVE" desc="Button tooltip for saving a PDF document to Google Drive">
         Save to Google Drive
       </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_CANCEL_UPLOAD_BUTTON_LABEL" desc="Label for the button that will cancel the upload.">
+        Cancel upload
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_CONNECTION_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to a connection error.">
+        Check your internet connection
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_ERROR_TITLE" desc="Title of the dialog that appears when a file fails to upload to Google Drive due to a connection error.">
+        Upload unsuccessful
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_MANAGE_STORAGE_BUTTON_LABEL" desc="Label for the manage storage button in the Save to Drive dialog.">
+        Manage storage
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_OPEN_IN_DRIVE_BUTTON_LABEL" desc="Label for the open in Drive button in the Save to Drive dialog.">
+        Open in Drive
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_RETRY_BUTTON_LABEL" desc="Label for the retry button in the Save to Drive dialog.">
+        Retry
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_SESSION_TIMEOUT_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to their Google Drive session timing out.">
+        Session timed out
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_STORAGE_FULL_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to their Google Drive storage being full.">
+        Your Google Drive storage is full
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_SUCCESS_MESSAGE" desc="A message telling the user can find their newly uploaded file in the bolded folder name in Google Drive. 'Save from Chrome' is a folder name example.">
+        Saved to your <ph name="FOLDER_NAME">&lt;b&gt;$1<ex>Save from Chrome</ex>&lt;/b&gt;</ph> folder
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_SUCCESS_TITLE" desc="Title of the dialog that appears when a file is successfully uploaded to Google Drive.">
+        Upload successful
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UNKNOWN_ERROR_MESSAGE" desc="A message telling the user that the upload failed due to an unknown error.">
+        Something unexpected happened. <ph name="BEGIN_LINK">&lt;a href="$1"&gt;</ph>Learn more about Drive uploads<ph name="END_LINK">&lt;/a&gt; <ex>&lt;/a&gt;</ex> </ph>
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOAD_STATUS_DONE" desc="When a download is finished, let the user know.">
+        Done
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOAD_STATUS_WITH_SEPARATOR" desc="The upload status and message are separated by a symbol, in this case bullet •, with a white space before it and a white space after it. If the bullet • resembles another symbol in the language, please translate the bullet • as a symbol (A) that is not easily mistaken for a number or letter in the language and (B) that is typically used to separate elements.">
+        <ph name="STATUS">$1<ex>100/120 MB</ex></ph> • <ph name="MESSAGE">$2<ex>4 seconds left</ex></ph>
+      </message>
+      <message name="IDS_SAVE_TO_DRIVE_DIALOG_UPLOADING_TITLE" desc="Title of the dialog that appears when a file is being uploaded to Google Drive.">
+        Uploading to Google Drive...
+      </message>
     </if>
   </if>
   <if expr="enable_screen_ai_service">
