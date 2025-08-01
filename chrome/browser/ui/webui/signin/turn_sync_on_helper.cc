@@ -357,6 +357,13 @@ void TurnSyncOnHelper::OnEnterpriseAccountConfirmation(
 void TurnSyncOnHelper::TurnSyncOnWithProfileMode(ProfileMode profile_mode) {
   switch (profile_mode) {
     case ProfileMode::CURRENT_PROFILE: {
+      if (base::FeatureList::IsEnabled(
+              switches::kEnforceManagementDisclaimer) &&
+          account_info_.CanApplyAccountLevelEnterprisePolicies() ==
+              signin::Tribool::kFalse) {
+        SigninAndShowSyncConfirmationUI();
+        return;
+      }
       // If this is a new signin (no account authenticated yet) try loading
       // policy for this user now, before any signed in services are
       // initialized.
