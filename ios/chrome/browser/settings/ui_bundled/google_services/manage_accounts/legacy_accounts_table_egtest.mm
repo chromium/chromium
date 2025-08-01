@@ -402,15 +402,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
 
 // Tests that users data is not cleared when the signed in account disappear and
 // it is a managed account.
-// TODO(crbug.com/355243751): This test is flaky on simulator.
-#if TARGET_OS_SIMULATOR
-#define MAYBE_testManagedAccountRemovedFromAnotherGoogleApp \
-  FLAKY_testManagedAccountRemovedFromAnotherGoogleApp
-#else
-#define MAYBE_testManagedAccountRemovedFromAnotherGoogleApp \
-  testManagedAccountRemovedFromAnotherGoogleApp
-#endif
-- (void)MAYBE_testManagedAccountRemovedFromAnotherGoogleApp {
+- (void)testManagedAccountRemovedFromAnotherGoogleApp {
   // Sign In `fakeManagedIdentity`.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeManagedIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
