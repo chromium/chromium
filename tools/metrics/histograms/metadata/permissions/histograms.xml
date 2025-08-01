@@ -67,6 +67,11 @@ chromium-metrics-reviews@google.com.
   <variant name="FromUser"/>
 </variants>
 
+<variants name="CpssSupportedTypes">
+  <variant name="Geolocation"/>
+  <variant name="Notifications"/>
+</variants>
+
 <!-- LINT.IfChange(OsScreen) -->
 
 <variants name="OsScreen">
@@ -228,11 +233,6 @@ chromium-metrics-reviews@google.com.
   <variant name="MiniInfobar"/>
   <variant name="ModalDialog"/>
   <variant name="NoneVisible"/>
-</variants>
-
-<variants name="Top2PermissionTypes">
-  <variant name="Geolocation"/>
-  <variant name="Notifications"/>
 </variants>
 
 <histogram name="BrowserDialogs.ExternalProtocol.BlockState"
@@ -929,17 +929,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Permissions.PredictionService.PredictionSource"
-    enum="PermissionPredictionSource" expires_after="2026-01-18">
-  <owner>ravjit@chromium.org</owner>
-  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
-  <summary>
-    Recorded whenever a permission is sent to the prediction service. Records
-    whether the request was sent to the local on-device prediction service or
-    the server side prediction service.
-  </summary>
-</histogram>
-
 <histogram name="Permissions.PredictionService.SignatureModel.Mismatch"
     enum="Boolean" expires_after="2026-04-28">
   <owner>ravjit@chromium.org</owner>
@@ -962,6 +951,18 @@ chromium-metrics-reviews@google.com.
     Recorded whenever a permission is sent to the prediction service. Records
     whether the TFLite library is enabled.
   </summary>
+</histogram>
+
+<histogram name="Permissions.PredictionServiceSource.{PermissionType}"
+    enum="PermissionPredictionSource" expires_after="2025-12-07">
+  <owner>elklm@chromium.org</owner>
+  <owner>hempjudith@google.com</owner>
+  <owner>src/components/permissions/PERMISSIONS_OWNERS</owner>
+  <summary>
+    Recorded whenever a permission is sent to the prediction service. Records
+    which prediction service was used to generate the prediction.
+  </summary>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
 </histogram>
 
 <histogram
@@ -1849,7 +1850,7 @@ chromium-metrics-reviews@google.com.
     permission request. Records whether its response was ignored or not.
   </summary>
   <token key="PredictionModel" variants="PredictionModels"/>
-  <token key="PermissionType" variants="Top2PermissionTypes"/>
+  <token key="PermissionType" variants="CpssSupportedTypes"/>
 </histogram>
 
 <histogram name="Permissions.{PredictionModel}.SnapshotTaken"

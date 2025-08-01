@@ -21,6 +21,7 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/features.h"
 #include "components/permissions/permission_request_data.h"
+#include "components/permissions/permission_request_enums.h"
 #include "components/permissions/permission_uma_util.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/prediction_service/prediction_common.h"
@@ -35,7 +36,8 @@
 
 namespace {
 using Decision = PredictionBasedPermissionUiSelector::Decision;
-using PredictionSource = PredictionBasedPermissionUiSelector::PredictionSource;
+using PredictionSource =
+    permissions::PermissionPredictionSource;
 using base::test::FeatureRef;
 
 constexpr char kOnDevPredServiceResponseNotificationsHistogram[] =

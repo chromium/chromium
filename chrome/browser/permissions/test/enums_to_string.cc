@@ -5,14 +5,13 @@
 #include "chrome/browser/permissions/test/enums_to_string.h"
 
 #include "base/containers/fixed_flat_map.h"
-#include "chrome/browser/permissions/prediction_service/prediction_based_permission_ui_selector.h"
 
 namespace test {
 
 std::string_view ToString(
-    PredictionBasedPermissionUiSelector::PredictionSource prediction_source) {
+    permissions::PermissionPredictionSource prediction_source) {
   using PredictionSource =
-      PredictionBasedPermissionUiSelector::PredictionSource;
+      permissions::PermissionPredictionSource;
 
   static constexpr auto map =
       base::MakeFixedFlatMap<PredictionSource, std::string_view>(

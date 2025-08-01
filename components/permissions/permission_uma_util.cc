@@ -1452,9 +1452,13 @@ void PermissionUmaUtil::RecordDSEEffectiveSetting(
 
 // static
 void PermissionUmaUtil::RecordPermissionPredictionSource(
-    PermissionPredictionSource prediction_source) {
+    PermissionPredictionSource prediction_source,
+    RequestType request_type) {
+  std::string permission_string = GetPermissionRequestString(
+      PermissionUtil::GetUmaValueForRequestType(request_type));
   base::UmaHistogramEnumeration(
-      "Permissions.PredictionService.PredictionSource", prediction_source);
+      "Permissions.PredictionServiceSource." + permission_string,
+      prediction_source);
 }
 
 // static

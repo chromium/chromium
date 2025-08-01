@@ -162,9 +162,12 @@ chromium-metrics-reviews@google.com.
 <!-- LINT.IfChange(PermissionPredictionSource) -->
 
 <enum name="PermissionPredictionSource">
-  <int value="0" label="ON_DEVICE_TFLITE"/>
-  <int value="1" label="SERVER_SIDE"/>
-  <int value="2" label="ONDEVICE_AI_AND_SERVER_SIDE"/>
+  <int value="0" label="No CPSS model"/>
+  <int value="1" label="CPSSv1 model"/>
+  <int value="2" label="CPSSv3 model"/>
+  <int value="3" label="AIv1 model"/>
+  <int value="4" label="AIv3 model"/>
+  <int value="5" label="AIv4 model"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/permissions/permission_request_enums.h:PermissionPredictionSource) -->

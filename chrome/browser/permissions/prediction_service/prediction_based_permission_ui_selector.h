@@ -41,20 +41,11 @@ class GeneratePredictionsResponse;
 class PredictionBasedPermissionUiSelector
     : public permissions::PermissionUiSelector {
  public:
-  enum class PredictionSource {
-    kNoCpssModel,
-    kServerSideCpssV3Model,
-    kOnDeviceCpssV1Model,
-    kOnDeviceAiv1AndServerSideModel,
-    kOnDeviceAiv3AndServerSideModel,
-    kOnDeviceAiv4AndServerSideModel,
-  };
-
   // Contains information that are not important as features for the
   // prediction service, but contain details about the workflow and the origin
   // of feature data.
   struct PredictionRequestMetadata {
-    PredictionSource prediction_source;
+    permissions::PermissionPredictionSource prediction_source;
     permissions::RequestType request_type;
   };
 
@@ -130,14 +121,14 @@ class PredictionBasedPermissionUiSelector
 
   permissions::PredictionRequestFeatures BuildPredictionRequestFeatures(
       permissions::PermissionRequest* request,
-      PredictionSource prediction_source);
+      permissions::PermissionPredictionSource prediction_source);
   void LookupResponseReceived(
       base::TimeTicks model_inquire_start_time,
       PredictionRequestMetadata request_metadata,
       bool lookup_successful,
       bool response_from_cache,
       const std::optional<permissions::GeneratePredictionsResponse>& response);
-  PredictionSource GetPredictionTypeToUse(
+  permissions::PermissionPredictionSource GetPredictionTypeToUse(
       permissions::RequestType request_type);
 
   void set_likelihood_override(PredictionGrantLikelihood mock_likelihood) {
@@ -160,8 +151,7 @@ class PredictionBasedPermissionUiSelector
 
   void InquireServerModel(
       const permissions::PredictionRequestFeatures& features,
-      PredictionRequestMetadata request_metadata,
-      bool record_source);
+      PredictionRequestMetadata request_metadata);
 
   // As the first part of the AIv1 model execution chain, this function triggers
   // AIv1 input collection and model execution, with its output being input of

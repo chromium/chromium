@@ -34,6 +34,22 @@ enum class PermissionRequestRelevance {
 };
 // LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionRequestRelevance)
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// LINT.IfChange(PermissionPredictionSource)
+enum class PermissionPredictionSource {
+  kNoCpssModel = 0,
+  kOnDeviceCpssV1Model = 1,
+  kServerSideCpssV3Model = 2,
+  kOnDeviceAiv1AndServerSideModel = 3,
+  kOnDeviceAiv3AndServerSideModel = 4,
+  kOnDeviceAiv4AndServerSideModel = 5,
+
+  // Always keep at the end.
+  kMaxValue = kOnDeviceAiv4AndServerSideModel,
+};
+// LINT.ThenChange(//tools/metrics/histograms/metadata/permissions/enums.xml:PermissionPredictionSource)
+
 }  // namespace permissions
 
 #endif  // COMPONENTS_PERMISSIONS_PERMISSION_REQUEST_ENUMS_H_
