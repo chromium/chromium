@@ -9,7 +9,6 @@ import static org.robolectric.Shadows.shadowOf;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.text.Spannable;
 
@@ -81,7 +80,6 @@ public class AnswerSuggestionProcessorUnitTest {
     private @Mock SuggestionHost mSuggestionHost;
     private @Mock UrlBarEditingTextStateProvider mUrlStateProvider;
     private @Mock OmniboxImageSupplier mImageSupplier;
-    private @Mock Bitmap mBitmap;
     private @Mock AutocompleteInput mInput;
 
     private AnswerSuggestionProcessor mProcessor;
