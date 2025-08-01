@@ -1122,6 +1122,8 @@
     {
       name: "CrashReportingStorageAPI",
       status: "experimental",
+      base_feature_status: "enabled",
+      copied_from_base_feature_if: "overridden",
     },
     {
       // Allow WebAuthn relying parties to report information about existing
