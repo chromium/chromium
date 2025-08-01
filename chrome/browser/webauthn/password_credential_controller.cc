@@ -13,7 +13,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "chrome/browser/ui/passwords/passwords_model_delegate.h"
-#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "content/public/browser/render_frame_host.h"
@@ -45,6 +44,7 @@ password_manager::PasswordManagerClient* GetPasswordManagerClient(
   return ChromePasswordManagerClient::FromWebContents(web_contents);
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 std::u16string GetAuthenticationMessage(std::string_view rp_id) {
 #if BUILDFLAG(IS_LINUX)
   return u"";
@@ -53,15 +53,22 @@ std::u16string GetAuthenticationMessage(std::string_view rp_id) {
                                     base::UTF8ToUTF16(rp_id));
 #endif  // BUILDFLAG(IS_LINUX)
 }
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
+#if BUILDFLAG(IS_ANDROID)
+PasswordCredentialController::PasswordCredentialController(
+    GlobalRenderFrameHostId render_frame_host_id)
+    : render_frame_host_id_(render_frame_host_id) {}
+#else
 PasswordCredentialController::PasswordCredentialController(
     GlobalRenderFrameHostId render_frame_host_id,
     AuthenticatorRequestDialogModel* model)
     : render_frame_host_id_(render_frame_host_id), model_(model) {
   model_observer_.Observe(model_);
 }
+#endif  // BUILDFLAG(IS_ANDROID)
 
 PasswordCredentialController::~PasswordCredentialController() = default;
 
@@ -72,51 +79,6 @@ void PasswordCredentialController::FetchPasswords(
   form_fetcher_ = GetFormFetcher(url);
   form_fetcher_->Fetch();
   form_fetcher_->AddConsumer(this);
-}
-
-bool PasswordCredentialController::IsAuthRequired() {
-  // TODO(crbug.com/392549444): For the prototype, require screen lock only if
-  // it's enabled (e.g. via PWM settings). This may change.
-  auto* pwm_client = GetPasswordManagerClient(*GetRenderFrameHost());
-  return pwm_client && pwm_client->GetPasswordFeatureManager()
-                           ->IsBiometricAuthenticationBeforeFillingEnabled();
-}
-
-void PasswordCredentialController::SetPasswordSelectedCallback(
-    content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
-        callback) {
-  password_selected_callback_ = callback;
-}
-
-void PasswordCredentialController::OnPasswordCredentialSelected(
-    PasswordCredentialPair password) {
-  if (!IsAuthRequired() || model_->local_auth_token.has_value()) {
-    password_selected_callback_.Run(password_manager::CredentialInfo(
-        password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
-        password.first, password.first, GURL(), password.second,
-        url::SchemeHostPort()));
-    return;
-  }
-  filling_password_ = std::move(password);
-  model_->SetStep(AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
-}
-
-void PasswordCredentialController::OnStepTransition() {
-  if (model_->step() ==
-      AuthenticatorRequestDialogModel::Step::kPasswordOsAuth) {
-    CHECK(filling_password_.has_value());
-    auto manage_passwords_ui_controller = PasswordsModelDelegateFromWebContents(
-        WebContents::FromRenderFrameHost(GetRenderFrameHost()));
-    if (!manage_passwords_ui_controller) {
-      return;
-    }
-    manage_passwords_ui_controller->AuthenticateUserWithMessage(
-        GetAuthenticationMessage(model_->relying_party_id),
-        base::BindOnce(&PasswordCredentialController::OnAuthenticationCompleted,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       std::move(filling_password_.value())));
-    return;
-  }
 }
 
 void PasswordCredentialController::OnFetchCompleted() {
@@ -147,6 +109,57 @@ RenderFrameHost* PasswordCredentialController::GetRenderFrameHost() const {
   return ret;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
+
+bool PasswordCredentialController::IsAuthRequired() {
+  // TODO(crbug.com/392549444): For the prototype, require screen lock only if
+  // it's enabled (e.g. via PWM settings). This may change.
+  auto* pwm_client = GetPasswordManagerClient(*GetRenderFrameHost());
+  return pwm_client && pwm_client->GetPasswordFeatureManager()
+                           ->IsBiometricAuthenticationBeforeFillingEnabled();
+}
+
+void PasswordCredentialController::SetPasswordSelectedCallback(
+    content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+        callback) {
+  password_selected_callback_ = callback;
+}
+
+void PasswordCredentialController::OnPasswordCredentialSelected(
+    PasswordCredentialPair password) {
+  if (!IsAuthRequired() || model_->local_auth_token.has_value()) {
+    password_selected_callback_.Run(password_manager::CredentialInfo(
+        password_manager::CredentialType::CREDENTIAL_TYPE_PASSWORD,
+        password.first, password.first, GURL(), password.second,
+        url::SchemeHostPort()));
+    return;
+  }
+  filling_password_ = std::move(password);
+  model_->SetStep(AuthenticatorRequestDialogModel::Step::kPasswordOsAuth);
+}
+
+void PasswordCredentialController::OnStepTransition() {
+  if (!model_) {
+    return;
+  }
+
+  if (model_->step() ==
+      AuthenticatorRequestDialogModel::Step::kPasswordOsAuth) {
+    CHECK(filling_password_.has_value());
+    auto manage_passwords_ui_controller = PasswordsModelDelegateFromWebContents(
+        WebContents::FromRenderFrameHost(GetRenderFrameHost()));
+    if (!manage_passwords_ui_controller) {
+      return;
+    }
+    manage_passwords_ui_controller->AuthenticateUserWithMessage(
+        GetAuthenticationMessage(model_->relying_party_id),
+        base::BindOnce(&PasswordCredentialController::OnAuthenticationCompleted,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(filling_password_.value())));
+    return;
+  }
+}
+
 void PasswordCredentialController::OnAuthenticationCompleted(
     PasswordCredentialPair password,
     bool success) {
@@ -159,3 +172,5 @@ void PasswordCredentialController::OnAuthenticationCompleted(
       password.first, password.first, GURL(), password.second,
       url::SchemeHostPort()));
 }
+
+#endif  // !BUILDFLAG(IS_ANDROID)

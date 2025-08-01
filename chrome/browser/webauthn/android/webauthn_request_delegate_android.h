@@ -10,8 +10,14 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/supports_user_data.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_webauthn_delegate.h"
+#include "chrome/browser/webauthn/shared_types.h"
+#include "components/password_manager/core/browser/passkey_credential.h"
+#include "components/password_manager/core/browser/password_form.h"
+#include "components/webauthn/android/webauthn_client_android.h"
+#include "content/public/browser/global_routing_id.h"
 
 namespace content {
 class RenderFrameHost;
@@ -26,6 +32,7 @@ namespace password_manager {
 class KeyboardReplacingSurfaceVisibilityController;
 }
 
+class PasswordCredentialController;
 class TouchToFillController;
 
 // Helper class for connecting the autofill implementation to the WebAuthn
@@ -45,17 +52,21 @@ class WebAuthnRequestDelegateAndroid
 
   ~WebAuthnRequestDelegateAndroid() override;
 
-  // Called when a Web Authentication Conditional UI request is received. This
+  // Called when a Web Authentication GetAssertion request is received. This
   // provides a callback that will complete the request if and when a user
-  // selects a credential from a form autofill dialog, and also a closure that
+  // selects a credential from a touch to fill sheet, and also a closure that
   // is invoked if the user starts a hybrid authentication.
   void OnWebAuthnRequestPending(
       content::RenderFrameHost* frame_host,
-      const std::vector<device::DiscoverableCredentialMetadata>& credentials,
-      bool is_conditional_request,
+      std::vector<device::DiscoverableCredentialMetadata> credentials,
+      webauthn::AssertionMediationType mediation_type,
       base::RepeatingCallback<void(const std::vector<uint8_t>& id)>
-          get_assertion_callback,
-      base::RepeatingClosure hybrid_callback);
+          passkey_or_dismiss_callback,
+      base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
+          password_callback,
+      base::RepeatingCallback<void()> hybrid_callback,
+      base::RepeatingCallback<void(webauthn::ImmediateRequestRejectionReason)>
+          reject_immediate_callback);
 
   // Called when an outstanding request is ended, either because it was aborted
   // by the RP, or because it completed successfully. Its main purpose is to
@@ -64,6 +75,9 @@ class WebAuthnRequestDelegateAndroid
 
   // TouchToFillControllerWebAuthnDelegate::CredentialReceiver:
   void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id) override;
+  void OnPasswordCredentialSelected(
+      const PasswordCredentialPair& password_credential) override;
+  void OnCredentialSelectionDeclined() override;
   void OnHybridSignInSelected() override;
   content::WebContents* web_contents() override;
 
@@ -75,9 +89,22 @@ class WebAuthnRequestDelegateAndroid
       content::WebContents* web_contents);
 
  private:
+  // This takes the RenderFrameHost's GlobalID rather than a pointer, so that
+  // it can be called asynchronously without having to worry about lifetimes.
+  void MaybeShowTouchToFillSheet(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      bool isImmediate,
+      std::vector<password_manager::PasskeyCredential> passkey_credentials,
+      std::vector<std::unique_ptr<password_manager::PasswordForm>>
+          password_credentials);
+
   base::RepeatingCallback<void(const std::vector<uint8_t>& user_id)>
-      get_assertion_callback_;
+      passkey_or_dismiss_callback_;
+  base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
+      password_callback_;
   base::RepeatingClosure hybrid_callback_;
+  base::RepeatingCallback<void(webauthn::ImmediateRequestRejectionReason)>
+      reject_immediate_callback_;
 
   // Controller for using the Touch To Fill bottom sheet for non-conditional
   // requests.
@@ -91,6 +118,10 @@ class WebAuthnRequestDelegateAndroid
   raw_ptr<content::WebContents> web_contents_;
 
   bool conditional_request_in_progress_ = false;
+
+  std::unique_ptr<PasswordCredentialController> password_controller_;
+
+  base::WeakPtrFactory<WebAuthnRequestDelegateAndroid> weak_ptr_factory_{this};
 };
 
 #endif  // CHROME_BROWSER_WEBAUTHN_ANDROID_WEBAUTHN_REQUEST_DELEGATE_ANDROID_H_

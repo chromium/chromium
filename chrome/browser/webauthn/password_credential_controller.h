@@ -13,36 +13,54 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
-#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "build/buildflag.h"
+#include "chrome/browser/webauthn/shared_types.h"
 #include "components/password_manager/core/browser/form_fetcher.h"
 #include "components/password_manager/core/browser/form_fetcher_impl.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_digest.h"
 #include "components/password_manager/core/browser/password_manager_client.h"
-#include "content/public/browser/authenticator_request_client_delegate.h"
-#include "content/public/browser/document_user_data.h"
 #include "content/public/browser/global_routing_id.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/scoped_observation.h"
+#include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "content/public/browser/authenticator_request_client_delegate.h"
+#endif
+
+namespace content {
+class RenderFrameHost;
+}
 
 // This class is responsible for fetching `PasswordCredentials` for the given
 // `render_frame_host` and responding with the found credentials for a `url`.
 class PasswordCredentialController
+#if BUILDFLAG(IS_ANDROID)
+    : public password_manager::FormFetcher::Consumer {
+#else
     : public password_manager::FormFetcher::Consumer,
       public AuthenticatorRequestDialogModel::Observer {
+#endif
  public:
   using PasswordCredentials =
       std::vector<std::unique_ptr<password_manager::PasswordForm>>;
   using PasswordCredentialsReceivedCallback =
       base::OnceCallback<void(PasswordCredentials)>;
 
+#if BUILDFLAG(IS_ANDROID)
+  explicit PasswordCredentialController(
+      content::GlobalRenderFrameHostId render_frame_host_id);
+#else
   PasswordCredentialController(
       content::GlobalRenderFrameHostId render_frame_host_id,
       AuthenticatorRequestDialogModel* model);
+#endif
   ~PasswordCredentialController() override;
 
   virtual void FetchPasswords(const GURL& url,
                               PasswordCredentialsReceivedCallback callback);
 
+#if !BUILDFLAG(IS_ANDROID)
   // Returns `true` if the user is required to pass screen lock before using a
   // credential.
   virtual bool IsAuthRequired();
@@ -54,6 +72,7 @@ class PasswordCredentialController
   // AuthenticatorRequestDialogModel::Observer
   void OnPasswordCredentialSelected(PasswordCredentialPair password) override;
   void OnStepTransition() override;
+#endif
 
  private:
   // FormFetcher::Consumer:
@@ -64,18 +83,23 @@ class PasswordCredentialController
 
   content::RenderFrameHost* GetRenderFrameHost() const;
 
+#if !BUILDFLAG(IS_ANDROID)
   void OnAuthenticationCompleted(PasswordCredentialPair password, bool success);
+#endif
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
-  raw_ptr<AuthenticatorRequestDialogModel> model_;
 
-  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
-  PasswordCredentialsReceivedCallback callback_;
-  content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
-      password_selected_callback_;
+#if !BUILDFLAG(IS_ANDROID)
+  raw_ptr<AuthenticatorRequestDialogModel> model_;
   base::ScopedObservation<AuthenticatorRequestDialogModel,
                           AuthenticatorRequestDialogModel::Observer>
       model_observer_{this};
+  content::AuthenticatorRequestClientDelegate::PasswordSelectedCallback
+      password_selected_callback_;
+#endif
+
+  std::unique_ptr<password_manager::FormFetcher> form_fetcher_;
+  PasswordCredentialsReceivedCallback callback_;
 
   std::optional<PasswordCredentialPair> filling_password_;
 

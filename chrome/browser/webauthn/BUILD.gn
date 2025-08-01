@@ -4,6 +4,7 @@
 
 source_set("webauthn") {
   sources = [
+    "shared_types.h",
     "webauthn_metrics_util.h",
     "webauthn_switches.h",
   ]

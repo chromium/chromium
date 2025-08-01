@@ -20,9 +20,11 @@
 
 TouchToFillControllerWebAuthnDelegate::TouchToFillControllerWebAuthnDelegate(
     CredentialReceiver* receiver,
-    bool should_show_hybrid_option)
+    bool should_show_hybrid_option,
+    bool is_immediate)
     : credential_receiver_(receiver),
-      should_show_hybrid_option_(should_show_hybrid_option) {}
+      should_show_hybrid_option_(should_show_hybrid_option),
+      is_immediate_(is_immediate) {}
 
 TouchToFillControllerWebAuthnDelegate::
     ~TouchToFillControllerWebAuthnDelegate() = default;
@@ -34,7 +36,10 @@ void TouchToFillControllerWebAuthnDelegate::OnShow(
 void TouchToFillControllerWebAuthnDelegate::OnCredentialSelected(
     const password_manager::UiCredential& credential,
     base::OnceClosure action_complete) {
-  NOTIMPLEMENTED();
+  CHECK(is_immediate_);
+  credential_receiver_->OnPasswordCredentialSelected(
+      {credential.username(), credential.password()});
+  std::move(action_complete).Run();
 }
 
 void TouchToFillControllerWebAuthnDelegate::OnPasskeyCredentialSelected(
@@ -62,7 +67,11 @@ void TouchToFillControllerWebAuthnDelegate::OnHybridSignInSelected(
 
 void TouchToFillControllerWebAuthnDelegate::OnDismiss(
     base::OnceClosure action_complete) {
-  credential_receiver_->OnWebAuthnAccountSelected(std::vector<uint8_t>());
+  if (is_immediate_) {
+    credential_receiver_->OnCredentialSelectionDeclined();
+  } else {
+    credential_receiver_->OnWebAuthnAccountSelected(std::vector<uint8_t>());
+  }
   std::move(action_complete).Run();
 }
 

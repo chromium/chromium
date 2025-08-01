@@ -1699,6 +1699,8 @@ static_library("browser") {
     "webapps/web_app_offline.h",
     "webauthn/chrome_web_authentication_delegate_base.cc",
     "webauthn/chrome_web_authentication_delegate_base.h",
+    "webauthn/password_credential_controller.cc",
+    "webauthn/password_credential_controller.h",
     "webauthn/webauthn_metrics_util.cc",
     "webauthn/webauthn_pref_names.cc",
     "webauthn/webauthn_pref_names.h",
@@ -4330,8 +4332,6 @@ static_library("browser") {
       "webauthn/observable_authenticator_list.cc",
       "webauthn/observable_authenticator_list.h",
       "webauthn/passkey_model_factory.cc",
-      "webauthn/password_credential_controller.cc",
-      "webauthn/password_credential_controller.h",
       "webauthn/unexportable_key_utils.cc",
       "webauthn/unexportable_key_utils.h",
     ]

@@ -160,6 +160,14 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
           &OnWebauthnCredentialSelected,
           ScopedJavaGlobalRef<jobject>(env, jget_assertion_callback));
 
+  base::RepeatingCallback<void(std::u16string_view, std::u16string_view)>
+      password_callback;
+  if (!jpassword_callback.is_null()) {
+    password_callback = base::BindRepeating(
+        &OnPasswordCredentialSelected,
+        ScopedJavaGlobalRef<jobject>(env, jpassword_callback));
+  }
+
   base::RepeatingCallback<void()> hybrid_callback;
   if (!jhybrid_callback.is_null()) {
     hybrid_callback = base::BindRepeating(
@@ -167,11 +175,19 @@ void WebauthnBrowserBridge::OnCredentialsDetailsListReceived(
         ScopedJavaGlobalRef<jobject>(env, jhybrid_callback));
   }
 
+  base::RepeatingCallback<void(ImmediateRequestRejectionReason)>
+      reject_immediate_callback;
+  if (!jreject_immediate_callback.is_null()) {
+    reject_immediate_callback = base::BindRepeating(
+        &OnRejectImmediate,
+        ScopedJavaGlobalRef<jobject>(env, jreject_immediate_callback));
+  }
+
   client->OnWebAuthnRequestPending(
       render_frame_host, std::move(credentials_metadata),
-      AssertionMediationType(mediation_type) ==
-          AssertionMediationType::kConditional,
-      std::move(passkey_callback), std::move(hybrid_callback));
+      AssertionMediationType(mediation_type), std::move(passkey_callback),
+      std::move(password_callback), std::move(hybrid_callback),
+      std::move(reject_immediate_callback));
 }
 
 void TriggerFullRequest(

@@ -11,6 +11,7 @@
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/touch_to_fill/password_manager/touch_to_fill_controller_delegate.h"
+#include "chrome/browser/webauthn/shared_types.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace content {
@@ -37,6 +38,14 @@ class TouchToFillControllerWebAuthnDelegate
     // for the selected credential.
     virtual void OnWebAuthnAccountSelected(const std::vector<uint8_t>& id) = 0;
 
+    // Provides a password credential that the user has selected.
+    virtual void OnPasswordCredentialSelected(
+        const PasswordCredentialPair& password_credential) = 0;
+
+    // Called when the user dismisses the sheet in immediate mode without
+    // having selected a credential.
+    virtual void OnCredentialSelectionDeclined() = 0;
+
     // Tells the WebAuthn Java implementation the the user has selected the
     // option for hybrid sign-in, which should be handled by the platform.
     virtual void OnHybridSignInSelected() = 0;
@@ -46,7 +55,8 @@ class TouchToFillControllerWebAuthnDelegate
   };
 
   TouchToFillControllerWebAuthnDelegate(CredentialReceiver* receiver,
-                                        bool should_show_hybrid_option);
+                                        bool should_show_hybrid_option,
+                                        bool is_immediate);
 
   TouchToFillControllerWebAuthnDelegate(
       const TouchToFillControllerWebAuthnDelegate&) = delete;
@@ -82,6 +92,7 @@ class TouchToFillControllerWebAuthnDelegate
   raw_ptr<CredentialReceiver> credential_receiver_ = nullptr;
 
   bool should_show_hybrid_option_;
+  bool is_immediate_;
 };
 
 #endif  // CHROME_BROWSER_TOUCH_TO_FILL_PASSWORD_MANAGER_TOUCH_TO_FILL_CONTROLLER_WEBAUTHN_DELEGATE_H_
