@@ -186,7 +186,6 @@ import java.util.concurrent.TimeoutException;
 })
 // TODO(crbug.com/344672098): Failing when batched, batch this again.
 public class SiteSettingsTest {
-    public static final String SITE_SETTINGS_BATCH_NAME = "site_settings";
 
     @ClassRule public static PermissionTestRule mPermissionRule = new PermissionTestRule(true);
 
