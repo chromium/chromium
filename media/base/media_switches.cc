@@ -1640,6 +1640,12 @@ BASE_FEATURE(kUseFakeDeviceForMediaStream,
              "use-fake-device-for-media-stream",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Enables accurate dropped frame count for MediaStreamVideoSource.
+// TODO(crbug.com/432367602): Remove after M143.
+BASE_FEATURE(kMediaStreamAccurateDroppedFrameCount,
+             "MediaStreamAccurateDroppedFrameCount",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_FUCHSIA)
 // Enables effects for camera and mic streams.
 BASE_FEATURE(kCameraMicEffects,

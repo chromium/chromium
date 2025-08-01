@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "base/feature_list.h"
 #include "base/hash/hash.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -473,7 +474,16 @@ void WebMediaPlayerMSCompositor::EnqueueFrame(
     // same as |current_frame_|. Function SetCurrentFrame() handles whether
     // to increase |dropped_frame_count_| for that frame, so here we should
     // increase |dropped_frame_count_| by the count of all other frames.
-    dropped_frame_count_ += rendering_frame_buffer_->frames_queued() - 1;
+    //
+    // Use std::max to prevent |dropped_frame_count_| from integer underflow
+    // when frames_queued() is 0.
+    if (base::FeatureList::IsEnabled(
+            media::kMediaStreamAccurateDroppedFrameCount)) {
+      dropped_frame_count_ +=
+          std::max<size_t>(rendering_frame_buffer_->frames_queued(), 1u) - 1;
+    } else {
+      dropped_frame_count_ += rendering_frame_buffer_->frames_queued() - 1;
+    }
     rendering_frame_buffer_->Reset();
     pending_frames_info_.clear();
     RenderWithoutAlgorithm(frame, is_copy);
@@ -774,8 +784,18 @@ void WebMediaPlayerMSCompositor::SetCurrentFrame(
                        TRACE_EVENT_SCOPE_THREAD, "Timestamp",
                        frame->timestamp().InMicroseconds());
 
-  if (!current_frame_rendered_)
-    ++dropped_frame_count_;
+  if (base::FeatureList::IsEnabled(
+          media::kMediaStreamAccurateDroppedFrameCount)) {
+    // Check if there was a previous frame that wasn't rendered
+    if (current_frame_ && !current_frame_rendered_) {
+      ++dropped_frame_count_;
+    }
+  } else {
+    if (!current_frame_rendered_) {
+      ++dropped_frame_count_;
+    }
+  }
+
   current_frame_rendered_ = false;
 
   // Compare current frame with |frame|. Initialize values as if there is no
