@@ -1460,10 +1460,6 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
     rule_outset = style.RowRuleOutset();
   }
 
-  rule_colors.ExpandValues();
-  rule_styles.ExpandValues();
-  rule_widths.ExpandValues();
-
   // Determines if the `end_index` should advance when determining pairs for gap
   // decorations. For `kSpanningItem` rule break, decorations break only at "T"
   // intersections, so we simply check that the intersection isn't blocked
@@ -1558,6 +1554,13 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
                                       : gap_geometry.GetBlockGapSize();
 
   const auto gaps = gap_geometry.GetGapIntersections(track_direction);
+  auto width_iterator =
+      GapDataListIterator<int>(rule_widths.GetGapDataList(), gaps.size());
+  auto style_iterator = GapDataListIterator<EBorderStyle>(
+      rule_styles.GetGapDataList(), gaps.size());
+  auto color_iterator = GapDataListIterator<StyleColor>(
+      rule_colors.GetGapDataList(), gaps.size());
+
   for (wtf_size_t gap_index = 0; gap_index < gaps.size(); ++gap_index) {
     LayoutUnit inline_start;
     LayoutUnit inline_size;
@@ -1568,6 +1571,13 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
     const auto gap = gaps[gap_index];
     CHECK(!gap.empty());
     const auto num_intersections = gap.size();
+
+    StyleColor rule_color = color_iterator.Next();
+    Color resolved_rule_color = style.VisitedDependentGapColor(
+        rule_color, style, /*is_column_rule=*/track_direction == kForColumns);
+    EBorderStyle rule_style =
+        ComputedStyle::CollapsedBorderStyle(style_iterator.Next());
+    LayoutUnit rule_thickness = LayoutUnit(width_iterator.Next());
 
     // Gap decorations are painted relative to (start, end) pairs of gap
     // intersection points in the center of the corresponding gap and parallel
@@ -1608,14 +1618,6 @@ void BoxFragmentPainter::PaintGaps(GridTrackSizingDirection track_direction,
       LayoutUnit decoration_end_offset =
           LayoutUnit(end_width / 2.0f) - end_outset;
 
-      StyleColor rule_color =
-          rule_colors.GetGapDecorationForGapIndex(gap_index, gaps.size());
-      Color resolved_rule_color = style.VisitedDependentGapColor(
-          rule_color, style, /*is_column_rule=*/track_direction == kForColumns);
-      EBorderStyle rule_style = ComputedStyle::CollapsedBorderStyle(
-          rule_styles.GetGapDecorationForGapIndex(gap_index, gaps.size()));
-      LayoutUnit rule_thickness = LayoutUnit(
-          rule_widths.GetGapDecorationForGapIndex(gap_index, gaps.size()));
       if (track_direction == kForColumns) {
         // For columns, paint a vertical strip at the center of the gap.
         const LayoutUnit center = gap[start].inline_offset;
