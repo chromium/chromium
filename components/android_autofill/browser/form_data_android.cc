@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "components/android_autofill/browser/android_autofill_bridge_factory.h"
+#include "components/android_autofill/browser/autofill_type_util.h"
 #include "components/android_autofill/browser/form_data_android_bridge.h"
 #include "components/android_autofill/browser/form_field_data_android.h"
 #include "components/autofill/core/browser/autofill_field.h"
@@ -113,11 +114,18 @@ void FormDataAndroid::UpdateFieldTypes(const FormStructure& form_structure) {
         server_predictions.emplace_back(
             ToSafeFieldType(prediction.type(), NO_SERVER_DATA));
       }
+      std::string_view computed_type = [&] {
+        AutofillType autofill_type = autofill_field->ComputedType();
+        HtmlFieldType html_field_type = autofill_type.html_type();
+        if (html_field_type != HtmlFieldType::kUnspecified) {
+          return FieldTypeToStringView(html_field_type);
+        }
+        return FieldTypeToStringView(GetMostRelevantFieldType(autofill_type));
+      }();
       form_field_data_android->UpdateFieldTypes(
           FormFieldDataAndroid::FieldTypes(
               autofill_field->heuristic_type(), autofill_field->server_type(),
-              autofill_field->ComputedType().ToString(),
-              std::move(server_predictions)));
+              computed_type, std::move(server_predictions)));
     }
   }
 }

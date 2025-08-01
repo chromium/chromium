@@ -138,6 +138,8 @@ static_library("browser") {
     "android_form_event_logger.h",
     "autofill_provider.cc",
     "autofill_provider.h",
+    "autofill_type_util.cc",
+    "autofill_type_util.h",
   ]
   public_deps = [ "//components/autofill/core/browser" ]
   deps = [
