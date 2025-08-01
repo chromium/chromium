@@ -523,8 +523,7 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId A string containing the node ID.
      */
     public void longPressNodeWithoutWaiting(String nodeId) throws TimeoutException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        DOMUtils.longPressNode(tab.getWebContents(), nodeId);
+        DOMUtils.longPressNode(mActivityTestRule.getWebContents(), nodeId);
     }
 
     /**
@@ -593,8 +592,7 @@ public class ContextualSearchInstrumentationBase {
      */
     public long longPressNodeWithoutUp(String nodeId) throws TimeoutException {
         long downTime = SystemClock.uptimeMillis();
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        DOMUtils.longPressNodeWithoutUp(tab.getWebContents(), nodeId, downTime);
+        DOMUtils.longPressNodeWithoutUp(mActivityTestRule.getWebContents(), nodeId, downTime);
         waitForSelectActionBarVisible();
         waitForPanelToPeek();
         return downTime;
@@ -616,9 +614,9 @@ public class ContextualSearchInstrumentationBase {
 
         // Drag to the specified position by a DOM node id.
         int stepCount = 100;
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        DOMUtils.dragNodeTo(tab.getWebContents(), startNodeId, endNodeId, stepCount, downTime);
-        DOMUtils.dragNodeEnd(tab.getWebContents(), endNodeId, downTime);
+        WebContents webContents = mActivityTestRule.getWebContents();
+        DOMUtils.dragNodeTo(webContents, startNodeId, endNodeId, stepCount, downTime);
+        DOMUtils.dragNodeEnd(webContents, endNodeId, downTime);
 
         // Make sure the selection controller knows we did a drag.
         // TODO(donnd): figure out how to reliably simulate a drag on all platforms.
@@ -636,8 +634,7 @@ public class ContextualSearchInstrumentationBase {
      * @param nodeId A string containing the node ID.
      */
     public void clickNode(String nodeId) throws TimeoutException {
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
-        DOMUtils.clickNode(tab.getWebContents(), nodeId);
+        DOMUtils.clickNode(mActivityTestRule.getWebContents(), nodeId);
     }
 
     /**

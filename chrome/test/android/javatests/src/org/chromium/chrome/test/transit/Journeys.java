@@ -7,8 +7,10 @@ package org.chromium.chrome.test.transit;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.Triggers.noopTo;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import org.chromium.base.Log;
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.TravelException;
@@ -171,8 +173,10 @@ public class Journeys {
             boolean captureThumbnails) {
         assert urlsForRegularTabs.size() >= 1;
         TabModelSelector tabModelSelector = startingStation.getTabModelSelector();
-        int currentTabCount = tabModelSelector.getModel(/* incognito= */ false).getCount();
-        int currentIncognitoTabCount = tabModelSelector.getModel(/* incognito= */ true).getCount();
+        int currentTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ false));
+        int currentIncognitoTabCount =
+                getTabCountOnUiThread(tabModelSelector.getModel(/* incognito= */ true));
         assert currentTabCount == 1;
         assert currentIncognitoTabCount == 0;
         T station =
@@ -337,7 +341,7 @@ public class Journeys {
         List<Token> tabGroupIdsOfGroupedTabs = new ArrayList<>();
         for (Tab tab : tabs) {
             int id = tab.getId();
-            Tab tabById = currentModel.getTabById(id);
+            Tab tabById = ThreadUtils.runOnUiThreadBlocking(() -> currentModel.getTabById(id));
             if (tabById != null) {
                 Token tabGroupId = tabById.getTabGroupId();
                 tabGroupIdsOfGroupedTabs.add(tabGroupId);

@@ -54,6 +54,10 @@ public class BaseCtaTransitTestRule {
         return mActivityTestRule.getTestServer();
     }
 
+    public Tab getActivityTab() {
+        return mActivityTestRule.getActivityTab();
+    }
+
     // TODO(crbug.com/406324209): Create WebPageStation#getWebContents() and replace these calls.
     public WebContents getWebContents() {
         return mActivityTestRule.getWebContents();

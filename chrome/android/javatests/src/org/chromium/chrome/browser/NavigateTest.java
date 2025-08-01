@@ -104,7 +104,7 @@ public class NavigateTest {
     }
 
     private void navigateAndObserve(final String url) throws Exception {
-        new TabLoadObserver(mActivityTestRule.getActivity().getActivityTab()).fullyLoadUrl(url);
+        new TabLoadObserver(mActivityTestRule.getActivityTab()).fullyLoadUrl(url);
 
         // Note: Omnibox does not present the scheme.
         mOmnibox.checkText(equalTo(expectedLocation(url)), null);
@@ -137,8 +137,7 @@ public class NavigateTest {
 
         // Loads the url.
         TabLoadObserver observer =
-                new TabLoadObserver(
-                        mActivityTestRule.getActivity().getActivityTab(), expectedTitle, null);
+                new TabLoadObserver(mActivityTestRule.getActivityTab(), expectedTitle, null);
         mOmnibox.sendKey(KeyEvent.KEYCODE_ENTER);
         observer.assertLoaded();
 
@@ -237,15 +236,12 @@ public class NavigateTest {
         navigateAndObserve(url1);
         mActivityTestRule.assertWaitForPageScaleFactorMatch(0.5f);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         Assert.assertEquals(
-                "Desired Link not open",
-                url2,
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab()));
+                "Desired Link not open", url2, ChromeTabUtils.getUrlStringOnUiThread(tab));
     }
 
     /** Test 'Request Desktop Site' option properly affects UA client hints */
@@ -324,7 +320,7 @@ public class NavigateTest {
             throws Exception {
         String url1 = mTestServer.getURL(setHeaderString);
         String url2 = mTestServer.getURL(echoHeaderString);
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
 
         navigateAndObserve(url1);
         ChromeTabUtils.waitForTabPageLoaded(tab, url1);
@@ -352,7 +348,7 @@ public class NavigateTest {
         // TODO(crbug.com/40153192): Move EchoCriticalHeader request handler here when
         // implemented
         String url = mTestServer.getURL("/echocriticalheader");
-        final Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        final Tab tab = mActivityTestRule.getActivityTab();
         navigateAndObserve(url);
         ThreadUtils.runOnUiThreadBlocking(
                 () ->
@@ -390,15 +386,14 @@ public class NavigateTest {
                         Assert.assertEquals(url2, newUrl.getSpec());
                     }
                 };
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "aboutLink");
         ChromeTabUtils.waitForTabPageLoaded(tab, url2);
         Assert.assertEquals(
                 "Desired Link not open",
                 url2,
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab()));
+                ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab()));
     }
 
     /** Test re-direct functionality for a web-page. */
@@ -416,7 +411,7 @@ public class NavigateTest {
                 () -> {
                     Criteria.checkThat(
                             ChromeTabUtils.getUrlStringOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                                    mActivityTestRule.getActivityTab()),
                             Matchers.is(redirectedUrl));
                 });
     }
@@ -453,8 +448,7 @@ public class NavigateTest {
 
         // We should start on the homepage, which is something other than our test page.
         String originalUrl =
-                ChromeTabUtils.getUrlStringOnUiThread(
-                        mActivityTestRule.getActivity().getActivityTab());
+                ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab());
         Criteria.checkThat(originalUrl, Matchers.not(targetUrl));
 
         typeInOmniboxAndNavigate(initialUrl, null);
@@ -464,7 +458,7 @@ public class NavigateTest {
                 () -> {
                     Criteria.checkThat(
                             ChromeTabUtils.getUrlStringOnUiThread(
-                                    mActivityTestRule.getActivity().getActivityTab()),
+                                    mActivityTestRule.getActivityTab()),
                             Matchers.is(targetUrl));
                 });
 
@@ -475,7 +469,6 @@ public class NavigateTest {
         // TODO(changwan): figure out why we cannot go back on this test.
         int index =
                 mActivityTestRule
-                        .getActivity()
                         .getActivityTab()
                         .getWebContents()
                         .getNavigationController()
@@ -483,7 +476,6 @@ public class NavigateTest {
         Assert.assertEquals(1, index);
         String previousNavigationUrl =
                 mActivityTestRule
-                        .getActivity()
                         .getActivityTab()
                         .getWebContents()
                         .getNavigationController()
@@ -568,8 +560,7 @@ public class NavigateTest {
                                     + "%d.",
                             i),
                     urls[1],
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab()));
+                    ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab()));
 
             TouchCommon.singleClickView(
                     mActivityTestRule.getActivity().findViewById(R.id.back_button));
@@ -581,8 +572,7 @@ public class NavigateTest {
                                     + "%d.",
                             i),
                     urls[0],
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab()));
+                    ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab()));
 
             TouchCommon.singleClickView(
                     mActivityTestRule.getActivity().findViewById(R.id.forward_button));
@@ -594,8 +584,7 @@ public class NavigateTest {
                                     + "%d.",
                             i),
                     urls[1],
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab()));
+                    ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab()));
 
             TouchCommon.singleClickView(
                     mActivityTestRule.getActivity().findViewById(R.id.forward_button));
@@ -607,8 +596,7 @@ public class NavigateTest {
                                     + "%d.",
                             i),
                     urls[2],
-                    ChromeTabUtils.getUrlStringOnUiThread(
-                            mActivityTestRule.getActivity().getActivityTab()));
+                    ChromeTabUtils.getUrlStringOnUiThread(mActivityTestRule.getActivityTab()));
         }
 
         for (int i = 0; i < repeats; i++) {
@@ -639,7 +627,7 @@ public class NavigateTest {
         };
         navigateAndObserve(urls[0]);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         // Record FORWARD if the first gesture triggered by gesture and second gesture is FORWARD.
         navigateAndObserve(urls[1]);
         ThreadUtils.runOnUiThreadBlocking(tab::goBack);
@@ -683,7 +671,7 @@ public class NavigateTest {
         };
         navigateAndObserve(urls[0]);
 
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         // Record FORWARD if the first gesture triggered by gesture and second gesture is FORWARD.
         navigateAndObserve(urls[1]);
         ThreadUtils.runOnUiThreadBlocking(tab::goBack);
@@ -749,7 +737,7 @@ public class NavigateTest {
             mTestServer.getURL("/chrome/test/data/android/navigate/two.html"),
         };
         navigateAndObserve(urls[0]);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Not record when the first navigation is not triggered by gesture.
         HistogramWatcher watcher =
@@ -903,7 +891,7 @@ public class NavigateTest {
                         }
                     }
                 };
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(() -> tab.addObserver(onPageLoadStartedObserver));
         DOMUtils.clickNode(tab.getWebContents(), "rendererInitiated");
         ChromeTabUtils.waitForTabPageLoaded(tab, finalUrl);

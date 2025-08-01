@@ -287,7 +287,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
     public LoadUrlResult loadUrl(String url, long secondsToWait) throws IllegalArgumentException {
-        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> getActivity().getActivityTab());
+        Tab tab = getActivityTab();
         return loadUrlInTab(
                 url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab, secondsToWait);
     }
@@ -300,7 +300,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * @return {@link LoadUrlResult} from Tab#loadUrl.
      */
     public LoadUrlResult loadUrl(String url) throws IllegalArgumentException {
-        Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> getActivity().getActivityTab());
+        Tab tab = getActivityTab();
         return loadUrlInTab(url, PageTransition.TYPED | PageTransition.FROM_ADDRESS_BAR, tab);
     }
 
@@ -431,7 +431,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                 new Callable<>() {
                     @Override
                     public List<InfoBar> call() {
-                        Tab currentTab = getActivity().getActivityTab();
+                        Tab currentTab = getActivityTab();
                         assertNotNull(currentTab);
                         assertNotNull(InfoBarContainer.get(currentTab));
                         return InfoBarContainer.get(currentTab).getInfoBarsForTesting();
@@ -444,8 +444,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      * its execution in JSON format.
      */
     public String runJavaScriptCodeInCurrentTab(String code) throws TimeoutException {
-        return JavaScriptUtils.executeJavaScriptAndWaitForResult(
-                getActivity().getCurrentWebContents(), code);
+        WebContents webContents = getWebContents();
+        return JavaScriptUtils.executeJavaScriptAndWaitForResult(webContents, code);
     }
 
     /**
@@ -454,8 +454,8 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public String runJavaScriptCodeWithUserGestureInCurrentTab(String code)
             throws TimeoutException {
-        return JavaScriptUtils.executeJavaScriptWithUserGestureAndWaitForResult(
-                getActivity().getCurrentWebContents(), code);
+        WebContents webContents = getWebContents();
+        return JavaScriptUtils.executeJavaScriptWithUserGestureAndWaitForResult(webContents, code);
     }
 
     /**
@@ -472,10 +472,7 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
      */
     public InfoBarContainer getInfoBarContainer() {
         return ThreadUtils.runOnUiThreadBlocking(
-                () ->
-                        getActivity().getActivityTab() != null
-                                ? InfoBarContainer.get(getActivity().getActivityTab())
-                                : null);
+                () -> getActivityTab() != null ? InfoBarContainer.get(getActivityTab()) : null);
     }
 
     /** Gets the ChromeActivityTestRule's EmbeddedTestServer instance if it has one. */
@@ -486,6 +483,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
     /** Gets the underlying EmbeddedTestServerRule for getTestServer(). */
     public EmbeddedTestServerRule getEmbeddedTestServerRule() {
         return mTestServerRule;
+    }
+
+    /** Returns the active {@link Tab} of the activity. */
+    public Tab getActivityTab() {
+        return ThreadUtils.runOnUiThreadBlocking(() -> getActivity().getActivityTab());
     }
 
     /** Returns the {@link WebContents} of the active tab of the activity. */

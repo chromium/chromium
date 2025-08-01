@@ -171,7 +171,7 @@ public class ChromeTabbedActivityTestRule extends ChromeActivityTestRule<ChromeT
         }
         ThreadUtils.runOnUiThreadBlocking(() -> incognitoTabModel.removeObserver(observer));
 
-        Tab tab = getActivity().getActivityTab();
+        Tab tab = getActivityTab();
 
         ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
         NewTabPageTestUtils.waitForNtpLoaded(tab);

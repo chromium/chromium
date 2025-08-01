@@ -15,6 +15,7 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.onViewWaiting;
 
 import android.os.SystemClock;
@@ -154,8 +155,8 @@ public class CloseAllTabsDialogTest {
     }
 
     private void navigateToCloseAllTabsDialog(TabModelSelector selector) {
-
-        assertThat(selector.getModel(mIsIncognito).getCount(), greaterThanOrEqualTo(1));
+        int tabCount = getTabCountOnUiThread(selector.getModel(mIsIncognito));
+        assertThat(tabCount, greaterThanOrEqualTo(1));
 
         // Open the AppMenu in the Tab Switcher and ensure it shows.
         TabUiTestHelper.enterTabSwitcher(mActivityTestRule.getActivity());

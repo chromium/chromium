@@ -130,6 +130,14 @@ public class ChromeTabUtils {
                 && !tab.getWebContents().shouldShowLoadingUI();
     }
 
+    public static Tab getActivityTab(ChromeActivity activity) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
+    }
+
+    public static int getIndexOnUiThread(TabModel tabModel) {
+        return ThreadUtils.runOnUiThreadBlocking(() -> tabModel.index());
+    }
+
     public static int getTabCountOnUiThread(TabModel tabModel) {
         return ThreadUtils.runOnUiThreadBlocking(() -> tabModel.getCount());
     }
@@ -536,7 +544,7 @@ public class ChromeTabUtils {
         }
         ThreadUtils.runOnUiThreadBlocking(() -> tabModel.removeObserver(observer));
 
-        Tab tab = activity.getActivityTab();
+        Tab tab = getActivityTab(activity);
         waitForTabPageLoaded(tab, (String) null);
         if (waitForNtpLoad) NewTabPageTestUtils.waitForNtpLoaded(tab);
         instrumentation.waitForIdleSync();
@@ -569,7 +577,7 @@ public class ChromeTabUtils {
             final boolean incognito) {
         newTabFromMenu(instrumentation, activity, incognito, false);
 
-        final Tab tab = activity.getActivityTab();
+        final Tab tab = getActivityTab(activity);
         waitForTabPageLoaded(
                 tab,
                 url,

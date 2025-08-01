@@ -4,12 +4,14 @@
 
 package org.chromium.chrome.test.transit.tabmodel;
 
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
+
 import org.chromium.base.test.transit.ConditionStatus;
-import org.chromium.base.test.transit.InstrumentationThreadCondition;
+import org.chromium.base.test.transit.UiThreadCondition;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 
 /** Condition fulfilled when N number of tabs are opened/closed. */
-public class TabCountChangedCondition extends InstrumentationThreadCondition {
+public class TabCountChangedCondition extends UiThreadCondition {
     private final TabModel mTabModel;
     private int mStartingTabs = -1;
     private final int mExpectedChange;
@@ -41,7 +43,7 @@ public class TabCountChangedCondition extends InstrumentationThreadCondition {
     @Override
     public void onStartMonitoring() {
         super.onStartMonitoring();
-        mStartingTabs = mTabModel.getCount();
+        mStartingTabs = getTabCountOnUiThread(mTabModel);
     }
 
     @Override

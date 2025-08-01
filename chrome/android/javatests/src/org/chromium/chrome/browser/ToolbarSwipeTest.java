@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser;
 
 import static org.chromium.base.test.util.Restriction.RESTRICTION_TYPE_NON_LOW_END_DEVICE;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getIndexOnUiThread;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 import static org.chromium.ui.test.util.ViewUtils.createMotionEvent;
 
 import android.content.pm.ActivityInfo;
@@ -144,7 +146,8 @@ public class ToolbarSwipeTest {
 
         final TabModel tabModel =
                 mActivityTestRule.getActivity().getTabModelSelector().getModel(false);
-        Assert.assertEquals("Incorrect tab index after first swipe.", 1, tabModel.index());
+        Assert.assertEquals(
+                "Incorrect tab index after first swipe.", 1, getIndexOnUiThread(tabModel));
 
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0, true);
     }
@@ -160,7 +163,8 @@ public class ToolbarSwipeTest {
 
         final TabModel tabModel =
                 mActivityTestRule.getActivity().getTabModelSelector().getModel(true);
-        Assert.assertEquals("Incorrect tab index after first swipe.", 1, tabModel.index());
+        Assert.assertEquals(
+                "Incorrect tab index after first swipe.", 1, getIndexOnUiThread(tabModel));
 
         runToolbarSideSwipeTestOnCurrentModel(ScrollDirection.RIGHT, 0, true);
     }
@@ -177,7 +181,8 @@ public class ToolbarSwipeTest {
         if (incognito) {
             // If incognito, there is no default tab, so open a new one and switch to it.
             mActivityTestRule.loadUrlInNewTab(generateSolidColorUrl("#00ff00"), true);
-            mActivityTestRule.getActivity().getTabModelSelector().selectModel(true);
+            ThreadUtils.runOnUiThreadBlocking(
+                    () -> mActivityTestRule.getActivity().getTabModelSelector().selectModel(true));
         } else {
             // If not incognito, use the tab the test started on.
             mActivityTestRule.loadUrl(generateSolidColorUrl("#00ff00"));
@@ -198,8 +203,9 @@ public class ToolbarSwipeTest {
                 "Incorrect model selected.",
                 incognito,
                 tabModelSelector.getCurrentModel().isIncognito());
-        Assert.assertEquals("Incorrect starting index.", selectedTab, tabModel.index());
-        Assert.assertEquals("Incorrect tab count.", useTwoTabs ? 2 : 1, tabModel.getCount());
+        Assert.assertEquals("Incorrect starting index.", selectedTab, getIndexOnUiThread(tabModel));
+        Assert.assertEquals(
+                "Incorrect tab count.", useTwoTabs ? 2 : 1, getTabCountOnUiThread(tabModel));
     }
 
     private void runToolbarSideSwipeTestOnCurrentModel(
@@ -207,7 +213,9 @@ public class ToolbarSwipeTest {
             throws TimeoutException {
         final CallbackHelper selectCallback = new CallbackHelper();
         final ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        final int id = activity.getCurrentTabModel().getTabAt(finalIndex).getId();
+        final int id =
+                ThreadUtils.runOnUiThreadBlocking(
+                        () -> activity.getCurrentTabModel().getTabAt(finalIndex).getId());
         final TabModelSelectorTabModelObserver observer =
                 ThreadUtils.runOnUiThreadBlocking(
                         () -> {
@@ -250,7 +258,7 @@ public class ToolbarSwipeTest {
         Assert.assertEquals(
                 "Index after toolbar side swipe is incorrect",
                 finalIndex,
-                activity.getCurrentTabModel().index());
+                getIndexOnUiThread(activity.getCurrentTabModel()));
     }
 
     private void performToolbarSideSwipe(@ScrollDirection int direction) {

@@ -68,8 +68,7 @@ public final class ViewportTestUtils {
         // animation has completed is flaky.
         waitForBrowserControlsState(/* shown= */ true);
 
-        FullscreenManagerTestUtils.waitForPageToBeScrollable(
-                mActivityTestRule.getActivity().getActivityTab());
+        FullscreenManagerTestUtils.waitForPageToBeScrollable(mActivityTestRule.getActivityTab());
         waitForFramePresented();
         int initialPageHeight = getPageInnerHeightPx();
         int initialBottomMargin = getBottomMargins();
@@ -182,6 +181,6 @@ public final class ViewportTestUtils {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getActivityTab().getWebContents();
+        return mActivityTestRule.getWebContents();
     }
 }
