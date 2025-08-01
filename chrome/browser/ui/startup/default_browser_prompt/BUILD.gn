@@ -117,6 +117,7 @@ if (!is_android && !is_chromeos_device) {
       "//chrome/browser:shell_integration",
       "//chrome/browser/profiles:profile",
       "//chrome/browser/ui:browser_element_identifiers",
+      "//chrome/browser/ui/startup",
       "//chrome/browser/ui/toolbar",
       "//chrome/browser/ui/views/infobars",
       "//chrome/common",

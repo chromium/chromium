@@ -85,11 +85,8 @@ static_library("ui") {
     "simple_message_box_internal.cc",
     "simple_message_box_internal.h",
     "startup/bad_flags_prompt.cc",
-    "startup/bad_flags_prompt.h",
     "startup/bidding_and_auction_consented_debugging_infobar_delegate.cc",
-    "startup/bidding_and_auction_consented_debugging_infobar_delegate.h",
     "startup/test_third_party_cookie_phaseout_infobar_delegate.cc",
-    "startup/test_third_party_cookie_phaseout_infobar_delegate.h",
     "status_bubble.h",
     "storage_pressure_bubble.h",
     "tab_dialogs.cc",
@@ -381,6 +378,7 @@ static_library("ui") {
     "//chrome/browser/ui/search_engines",
     "//chrome/browser/ui/serial",
     "//chrome/browser/ui/serial:impl",
+    "//chrome/browser/ui/startup",
     "//chrome/browser/ui/startup/default_browser_prompt",
     "//chrome/browser/ui/startup/default_browser_prompt:impl",
     "//chrome/browser/ui/sync",
@@ -1089,22 +1087,13 @@ static_library("ui") {
       "singleton_tabs.cc",
       "singleton_tabs.h",
       "startup/automation_infobar_delegate.cc",
-      "startup/automation_infobar_delegate.h",
       "startup/google_api_keys_infobar_delegate.cc",
-      "startup/google_api_keys_infobar_delegate.h",
       "startup/infobar_utils.cc",
-      "startup/infobar_utils.h",
       "startup/launch_mode_recorder.cc",
-      "startup/launch_mode_recorder.h",
       "startup/obsolete_system_infobar_delegate.cc",
-      "startup/obsolete_system_infobar_delegate.h",
       "startup/startup_browser_creator.cc",
-      "startup/startup_browser_creator.h",
       "startup/startup_browser_creator_impl.cc",
-      "startup/startup_browser_creator_impl.h",
       "startup/startup_tab_provider.cc",
-      "startup/startup_tab_provider.h",
-      "startup/startup_types.h",
       "tab_modal_confirm_dialog_delegate.cc",
       "tab_modal_confirm_dialog_delegate.h",
       "tabs/glic_actor_task_icon_controller.cc",
@@ -1489,10 +1478,7 @@ static_library("ui") {
     }
 
     if (is_chrome_for_testing) {
-      sources += [
-        "startup/chrome_for_testing_infobar_delegate.cc",
-        "startup/chrome_for_testing_infobar_delegate.h",
-      ]
+      sources += [ "startup/chrome_for_testing_infobar_delegate.cc" ]
     }
 
     # Non-android deps for "ui" target.
@@ -2894,7 +2880,6 @@ static_library("ui") {
       "passwords/password_cross_domain_confirmation_popup_controller_impl.h",
       "passwords/password_cross_domain_confirmation_popup_controller_interface.h",
       "startup/web_app_startup_utils.cc",
-      "startup/web_app_startup_utils.h",
       "views/autofill/payments/webauthn_dialog_view.cc",
       "views/autofill/payments/webauthn_dialog_view.h",
       "views/close_bubble_on_tab_activation_helper.cc",
@@ -2942,9 +2927,7 @@ static_library("ui") {
   if (is_win || is_mac || is_linux) {
     sources += [
       "startup/first_run_service.cc",
-      "startup/first_run_service.h",
       "startup/web_app_info_recorder_utils.cc",
-      "startup/web_app_info_recorder_utils.h",
       "views/media_preview/active_devices_media_coordinator.cc",
       "views/media_preview/active_devices_media_coordinator.h",
       "views/media_preview/camera_preview/camera_coordinator.cc",
@@ -3317,9 +3300,7 @@ static_library("ui") {
       "network_profile_bubble.cc",
       "network_profile_bubble.h",
       "startup/credential_provider_signin_dialog_win.cc",
-      "startup/credential_provider_signin_dialog_win.h",
       "startup/credential_provider_signin_info_fetcher_win.cc",
-      "startup/credential_provider_signin_info_fetcher_win.h",
       "views/apps/app_window_desktop_native_widget_aura_win.cc",
       "views/apps/app_window_desktop_native_widget_aura_win.h",
       "views/apps/app_window_desktop_window_tree_host_win.cc",

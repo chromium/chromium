@@ -94,7 +94,10 @@ source_set("impl") {
       "profile_customization_util.cc",
       "profile_picker.cc",
     ]
-    deps += [ "//chrome/browser/ui:ui_features" ]
+    deps += [
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/startup",
+    ]
 
     if (enable_dice_support) {
       sources += [
@@ -165,7 +168,10 @@ source_set("unit_tests") {
       "profile_customization_util_unittest.cc",
       "profile_picker_unittest.cc",
     ]
-    deps += [ "//chrome/browser/ui:ui_features" ]
+    deps += [
+      "//chrome/browser/ui:ui_features",
+      "//chrome/browser/ui/startup",
+    ]
   }
 }
 

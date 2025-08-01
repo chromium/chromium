@@ -331,6 +331,7 @@ static_library("devtools") {
       "//chrome/browser/first_party_sets",
       "//chrome/browser/ui/browser_window",
       "//chrome/browser/ui/media_router",
+      "//chrome/browser/ui/startup",
       "//components/custom_handlers",
       "//components/media_router/browser",
       "//components/media_router/common/mojom:media_router",

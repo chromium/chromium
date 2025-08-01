@@ -156,6 +156,7 @@ source_set("impl") {
       "//chrome/browser/search_engines",
       "//chrome/browser/ui/location_bar",
       "//chrome/browser/ui/profiles",
+      "//chrome/browser/ui/startup",
       "//chrome/browser/web_applications",
       "//components/prefs",
       "//components/security_state/content",

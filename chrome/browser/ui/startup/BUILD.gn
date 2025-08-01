@@ -4,6 +4,7 @@
 
 import("//build/buildflag_header.gni")
 import("//build/config/chrome_build.gni")
+import("//build/config/ui.gni")
 
 # Allow browser tests that startup with --gcpw-signin flag only on
 # non-Google Chrome builds.
@@ -22,4 +23,74 @@ source_set("startup_tab") {
   ]
 
   public_deps = [ "//url" ]
+}
+
+source_set("startup") {
+  sources = [
+    "bad_flags_prompt.h",
+    "bidding_and_auction_consented_debugging_infobar_delegate.h",
+    "test_third_party_cookie_phaseout_infobar_delegate.h",
+  ]
+  public_deps = [
+    "//components/infobars/core",
+    "//url",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "automation_infobar_delegate.h",
+      "google_api_keys_infobar_delegate.h",
+      "infobar_utils.h",
+      "launch_mode_recorder.h",
+      "obsolete_system_infobar_delegate.h",
+      "startup_browser_creator.h",
+      "startup_browser_creator_impl.h",
+      "startup_tab_provider.h",
+      "startup_types.h",
+    ]
+    public_deps += [
+      ":startup_tab",
+      "//base",
+      "//chrome/browser/prefs:util",
+      "//chrome/browser/sessions",
+      "//components/infobars/content",
+      "//components/signin/public/base:signin_buildflags",
+    ]
+  }
+
+  if (is_chrome_for_testing) {
+    sources += [ "chrome_for_testing_infobar_delegate.h" ]
+  }
+
+  if (is_win || is_mac || is_linux || is_chromeos) {
+    sources += [ "web_app_startup_utils.h" ]
+    public_deps += [ "//components/services/app_service/public/cpp:app_types" ]
+  }
+
+  if (is_win || is_mac || is_linux) {
+    sources += [
+      "first_run_service.h",
+      "web_app_info_recorder_utils.h",
+    ]
+
+    public_deps += [
+      "//chrome/browser/profiles:profile",
+      "//chrome/browser/ui/profiles",
+      "//components/keyed_service/core",
+    ]
+  }
+
+  if (is_win) {
+    assert(toolkit_views)
+    assert(use_aura)
+
+    sources += [
+      "credential_provider_signin_dialog_win.h",
+      "credential_provider_signin_info_fetcher_win.h",
+    ]
+    public_deps += [
+      ":buildflags",
+      "//google_apis",
+    ]
+  }
 }
