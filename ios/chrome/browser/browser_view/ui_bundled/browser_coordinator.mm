@@ -737,7 +737,7 @@ enum class ToolbarKind {
     return;
   }
   _readerModeCoordinator = [[ReaderModeCoordinator alloc]
-      initWithBaseViewController:self.viewController
+      initWithBaseViewController:self.browserContainerCoordinator.viewController
                          browser:self.browser];
   [_readerModeCoordinator startAnimated:animated];
 }
