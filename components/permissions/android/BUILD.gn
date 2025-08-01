@@ -187,6 +187,7 @@ android_library("java") {
     "//base:service_loader_java",
     "//build/android:build_java",
     "//components/browser_ui/modaldialog/android:java",
+    "//components/browser_ui/styles/android:java",
     "//components/browser_ui/util/android:java",
     "//components/browser_ui/widget/android:java",
     "//components/cached_flags:java",
