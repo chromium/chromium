@@ -1311,8 +1311,14 @@ CanvasResourceProvider::CreateSharedImageProvider(
 
 #if BUILDFLAG(IS_WIN)
   if (base::FeatureList::IsEnabled(kUseCRPSIForLowLatencyOnWindows)) {
+    // On Windows, SCANOUT usage is additionally supported in the special case
+    // of the swapchain being used on the service side to implement concurrent
+    // read/write.
     is_overlay_supported =
-        is_overlay_supported || shared_image_caps.shared_image_swap_chain;
+        is_overlay_supported ||
+        (shared_image_usage_flags.Has(
+             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE) &&
+         shared_image_caps.shared_image_swap_chain);
   }
 #endif
 
