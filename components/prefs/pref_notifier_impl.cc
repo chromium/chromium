@@ -21,51 +21,17 @@ PrefNotifierImpl::PrefNotifierImpl(PrefService* service)
 PrefNotifierImpl::~PrefNotifierImpl() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Verify that there are no pref observers when we shut down.
-  for (const auto& observer_list : pref_observers_) {
-    if (observer_list.second.begin() != observer_list.second.end()) {
-      // Generally, there should not be any subscribers left when the profile
-      // is destroyed because a) those may indicate that the subscriber class
-      // maintains an active pointer to the profile that might be used for
-      // accessing a destroyed profile and b) those subscribers will try to
-      // unsubscribe from a PrefService that has been destroyed with the
-      // profile.
-      // There is one exception that is safe: Static objects that are leaked
-      // on process termination, if these objects just subscribe to preferences
-      // and never access the profile after destruction. As these objects are
-      // leaked on termination, it is guaranteed that they don't attempt to
-      // unsubscribe.
-      const auto& pref_name = observer_list.first;
-      std::string message = base::StrCat(
-          {"Pref observer for ", pref_name, " found at shutdown."});
-      LOG(WARNING) << message;
-      DEBUG_ALIAS_FOR_CSTR(aliased_message, message.c_str(), 128);
-
-      // TODO(crbug.com/942491, 946668, 945772) The following code collects
-      // stacktraces that show how the profile is destroyed that owns
-      // preferences which are known to have subscriptions outliving the
-      // profile.
-      if (
-          // For DbusAppmenu, crbug.com/946668
-          pref_name == "bookmark_bar.show_on_all_tabs" ||
-          // For BrowserWindowPropertyManager, crbug.com/942491
-          pref_name == "profile.icon_version") {
-        base::debug::DumpWithoutCrashing();
-      }
-    }
-  }
-
-  // Same for initialization observers.
+  // Verify that there are no initialization observers.
   if (!init_observers_.empty())
     LOG(WARNING) << "Init observer found at shutdown.";
 
-  pref_observers_.clear();
   init_observers_.clear();
 }
 
 void PrefNotifierImpl::AddPrefObserver(std::string_view path,
                                        PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
 
   // Add the pref observer. ObserverList hits a DCHECK if it already is
   // in the list.
@@ -75,31 +41,39 @@ void PrefNotifierImpl::AddPrefObserver(std::string_view path,
 void PrefNotifierImpl::RemovePrefObserver(std::string_view path,
                                           PrefObserver* obs) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
 
-  auto observer_iterator = pref_observers_.find(path);
-  if (observer_iterator == pref_observers_.end()) {
+  auto iterator = pref_observers_.find(path);
+  if (iterator == pref_observers_.end()) {
     return;
   }
 
-  PrefObserverList& observer_list = observer_iterator->second;
-  observer_list.RemoveObserver(obs);
+  iterator->second.RemoveObserver(obs);
 }
 
 void PrefNotifierImpl::AddPrefObserverAllPrefs(PrefObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
+
   all_prefs_pref_observers_.AddObserver(observer);
 }
 
 void PrefNotifierImpl::RemovePrefObserverAllPrefs(PrefObserver* observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
+
   all_prefs_pref_observers_.RemoveObserver(observer);
 }
 
 void PrefNotifierImpl::AddInitObserver(base::OnceCallback<void(bool)> obs) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   init_observers_.push_back(std::move(obs));
 }
 
 void PrefNotifierImpl::OnPreferenceChanged(std::string_view path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
+
   FireObservers(path);
 }
 
@@ -118,26 +92,47 @@ void PrefNotifierImpl::OnInitializationCompleted(bool succeeded) {
 
 void PrefNotifierImpl::FireObservers(std::string_view path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
 
   // Only send notifications for registered preferences.
   if (!pref_service_->FindPreference(path))
     return;
 
   // Fire observers for any preference change.
-  for (PrefObserver& observer : all_prefs_pref_observers_) {
-    observer.OnPreferenceChanged(pref_service_, path);
+  for (PrefObserver& pref_observer : all_prefs_pref_observers_) {
+    pref_observer.OnPreferenceChanged(pref_service_, path);
   }
 
-  auto observer_iterator = pref_observers_.find(path);
-  if (observer_iterator == pref_observers_.end())
-    return;
-
-  for (PrefObserver& observer : observer_iterator->second) {
-    observer.OnPreferenceChanged(pref_service_, path);
+  auto iterator = pref_observers_.find(path);
+  if (iterator != pref_observers_.end()) {
+    for (PrefObserver& observer : iterator->second) {
+      observer.OnPreferenceChanged(pref_service_, path);
+    }
   }
 }
 
 void PrefNotifierImpl::SetPrefService(PrefService* pref_service) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pref_service_ == nullptr);
   pref_service_ = pref_service;
+}
+
+void PrefNotifierImpl::OnServiceDestroyed() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(pref_service_);
+
+  for (PrefObserver& pref_observer : all_prefs_pref_observers_) {
+    pref_observer.OnServiceDestroyed(pref_service_);
+  }
+  DCHECK(all_prefs_pref_observers_.empty());
+
+  for (auto& [_, observer_list] : pref_observers_) {
+    for (PrefObserver& pref_observer : observer_list) {
+      pref_observer.OnServiceDestroyed(pref_service_);
+    }
+    DCHECK(observer_list.empty());
+  }
+
+  pref_observers_.clear();
+  pref_service_ = nullptr;
 }

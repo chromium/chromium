@@ -76,6 +76,7 @@ class MockPrefNotifier : public PrefNotifierImpl {
 
 class PrefObserverMock : public PrefObserver {
  public:
+  MOCK_METHOD(void, OnServiceDestroyed, (PrefService*), (override));
   MOCK_METHOD(void,
               OnPreferenceChanged,
               (PrefService*, std::string_view),

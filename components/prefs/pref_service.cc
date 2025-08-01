@@ -82,19 +82,9 @@ PrefService::~PrefService() {
   // before the prefs are fully loaded.
   user_pref_store_->RemoveObserver(pref_store_observer_.get());
 
-  // TODO(crbug.com/942491, 946668, 945772) The following code collects
-  // augments stack dumps created by ~PrefNotifierImpl() with information
-  // whether the profile owning the PrefService is an incognito profile.
-  // Delete this, once the bugs are closed.
-  const bool is_incognito_profile = user_pref_store_->IsInMemoryPrefStore();
-  base::debug::Alias(&is_incognito_profile);
-  // Export value of is_incognito_profile to a string so that `grep`
-  // is a sufficient tool to analyze crashdumps.
-  char is_incognito_profile_string[32];
-  strncpy(is_incognito_profile_string,
-          is_incognito_profile ? "is_incognito: yes" : "is_incognito: no",
-          sizeof(is_incognito_profile_string));
-  base::debug::Alias(&is_incognito_profile_string);
+  // Gives an opportunity for the PrefObserver to unregister themselves from
+  // the PrefNotifierImpl.
+  pref_notifier_->OnServiceDestroyed();
 }
 
 void PrefService::InitFromStorage(bool async) {

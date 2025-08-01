@@ -14,6 +14,7 @@
 #include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/prefs_export.h"
+#include "components/prefs/transparent_unordered_string_map.h"
 
 class PrefService;
 
@@ -25,13 +26,15 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   // You can register this type of callback if you need to know the
   // path of the preference that is changing.
   using NamedChangeCallback = base::RepeatingCallback<void(const std::string&)>;
+  using NamedChangeAsViewCallback =
+      base::RepeatingCallback<void(std::string_view)>;
 
   PrefChangeRegistrar();
 
   PrefChangeRegistrar(const PrefChangeRegistrar&) = delete;
   PrefChangeRegistrar& operator=(const PrefChangeRegistrar&) = delete;
 
-  ~PrefChangeRegistrar();
+  ~PrefChangeRegistrar() final;
 
   // Must be called before adding or removing observers. Can be called more
   // than once as long as the value of |service| doesn't change.
@@ -49,8 +52,9 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
   // the preference that is changing as its parameter.
   //
   // Only one observer may be registered per path.
-  void Add(std::string_view path, const base::RepeatingClosure& obs);
-  void Add(std::string_view path, const NamedChangeCallback& obs);
+  void Add(std::string_view path, base::RepeatingClosure obs);
+  void Add(std::string_view path, NamedChangeCallback obs);
+  void Add(std::string_view path, NamedChangeAsViewCallback obs);
 
   // Removes the pref observer registered for |path|.
   void Remove(std::string_view path);
@@ -70,13 +74,11 @@ class COMPONENTS_PREFS_EXPORT PrefChangeRegistrar final : public PrefObserver {
 
  private:
   // PrefObserver:
+  void OnServiceDestroyed(PrefService* service) final;
   void OnPreferenceChanged(PrefService* service,
-                           std::string_view pref_name) override;
+                           std::string_view pref_name) final;
 
-  static void InvokeUnnamedCallback(const base::RepeatingClosure& callback,
-                                    const std::string& pref_name);
-
-  using ObserverMap = std::map<std::string, NamedChangeCallback, std::less<>>;
+  using ObserverMap = TransparentUnorderedStringMap<NamedChangeAsViewCallback>;
 
   ObserverMap observers_;
   raw_ptr<PrefService, AcrossTasksDanglingUntriaged> service_;

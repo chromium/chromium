@@ -52,6 +52,7 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   void AddInitObserver(base::OnceCallback<void(bool)> observer);
 
   void SetPrefService(PrefService* pref_service);
+  void OnServiceDestroyed();
 
   // PrefNotifier overrides.
   void OnPreferenceChanged(std::string_view pref_name) override;
@@ -63,7 +64,7 @@ class COMPONENTS_PREFS_EXPORT PrefNotifierImpl : public PrefNotifier {
   // A map from pref names to a list of observers. Observers get fired in the
   // order they are added. These should only be accessed externally for unit
   // testing.
-  using PrefObserverList = base::ObserverList<PrefObserver>::Unchecked;
+  using PrefObserverList = base::ObserverList<PrefObserver, true>;
   using PrefObserverMap = TransparentUnorderedStringMap<PrefObserverList>;
   using PrefInitObserverList = std::list<base::OnceCallback<void(bool)>>;
 
