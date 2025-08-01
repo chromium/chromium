@@ -959,6 +959,11 @@
     "expiry_milestone": 130
   },
   {
+    "name": "autofill-show-bubbles-based-on-priorities",
+    "owners": ["vidhanj@google.com", "autofill-squad-muc@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "autofill-show-manual-fill-for-virtual-cards",
     "owners": [ "siyua@chromium.org", "payments-autofill-team@google.com"],
     "expiry_milestone": 135

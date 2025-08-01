@@ -926,6 +926,12 @@ const char kAutofillPaymentsFieldSwappingDescription[] =
     "When enabled, swapping autofilled payment suggestions would result"
     "in overriding all of the payments fields with the swapped profile data";
 
+const char kAutofillShowBubblesBasedOnPrioritiesName[] =
+    "Show bubbles based on priorities";
+const char kAutofillShowBubblesBasedOnPrioritiesDescription[] =
+    "When enabled, the autofill and the password manager bubbles would be"
+    "shown based on their respective priorities compared to each other";
+
 const char kAutofillRequireCvcForPossibleCardUpdateName[] =
     "Require CVC for possible card update on upload save";
 const char kAutofillRequireCvcForPossibleCardUpdateDescription[] =

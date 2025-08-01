@@ -5036,6 +5036,12 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kAutofillPaymentsFieldSwappingName,
      flag_descriptions::kAutofillPaymentsFieldSwappingDescription, kOsAll,
      FEATURE_VALUE_TYPE(autofill::features::kAutofillPaymentsFieldSwapping)},
+    {"autofill-show-bubbles-based-on-priorities",
+     flag_descriptions::kAutofillShowBubblesBasedOnPrioritiesName,
+     flag_descriptions::kAutofillShowBubblesBasedOnPrioritiesDescription,
+     kOsAll,
+     FEATURE_VALUE_TYPE(
+         autofill::features::kAutofillShowBubblesBasedOnPriorities)},
     {"backdrop-filter-mirror-edge",
      flag_descriptions::kBackdropFilterMirrorEdgeName,
      flag_descriptions::kBackdropFilterMirrorEdgeDescription, kOsAll,

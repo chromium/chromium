@@ -577,6 +577,9 @@ extern const char kAutofillSyncEwalletAccountsDescription[];
 extern const char kAutofillPaymentsFieldSwappingName[];
 extern const char kAutofillPaymentsFieldSwappingDescription[];
 
+extern const char kAutofillShowBubblesBasedOnPrioritiesName[];
+extern const char kAutofillShowBubblesBasedOnPrioritiesDescription[];
+
 extern const char kAutofillUnmaskCardRequestTimeoutName[];
 extern const char kAutofillUnmaskCardRequestTimeoutDescription[];
 
