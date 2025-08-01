@@ -427,6 +427,13 @@ BASE_FEATURE(kAutofillPaymentsFieldSwapping,
              "AutofillPaymentsFieldSwapping",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// When enabled, password manager and autofill bubbles will be shown based on
+// the priorities of the bubbles.
+// TODO(crbug.com/432429605): Remove when launched.
+BASE_FEATURE(kAutofillShowBubblesBasedOnPriorities,
+             "AutofillShowBubblesBasedOnPriorities",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // When enabled, chrome will support home and work addresses from account.
 // TODO: crbug.com/354706653 - Clean up when launched.
 BASE_FEATURE(kAutofillEnableSupportForHomeAndWork,

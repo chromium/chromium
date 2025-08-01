@@ -146,6 +146,8 @@ BASE_DECLARE_FEATURE(kAutofillFixSplitCreditCardImport);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillPaymentsFieldSwapping);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillShowBubblesBasedOnPriorities);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillImprovedLabels);
 COMPONENT_EXPORT(AUTOFILL)
 extern const base::FeatureParam<bool>
