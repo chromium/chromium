@@ -370,7 +370,7 @@ ci.builder(
         per_test_modifications = {
             "base_unittests": targets.mixin(
                 args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_tot.base_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_10.tot.base_unittests.filter",
                 ],
             ),
         },

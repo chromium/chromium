@@ -1190,7 +1190,7 @@ ci.builder(
             "gin_unittests": targets.mixin(
                 args = [
                     # https://crbug.com/1404782
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.pie_arm64.gin_unittests.filter",
+                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.device_10.proguard_rel.gin_unittests.filter",
                 ],
             ),
             "gl_tests_validating": targets.mixin(
@@ -1258,9 +1258,6 @@ ci.builder(
         ],
         per_test_modifications = {
             "bf_cache_content_browsertests": targets.mixin(
-                args = [
-                    "--test-launcher-filter-file=../../testing/buildbot/filters/android.emulator_p.content_browsertests.filter",
-                ],
                 swarming = targets.swarming(
                     shards = 30,
                 ),
