@@ -17,7 +17,6 @@
 #include "components/tab_groups/tab_group_id.h"
 
 class BrowserWindowInterface;
-class BrowserView;
 
 namespace tab_groups {
 
@@ -26,7 +25,7 @@ namespace tab_groups {
 class SharedTabGroupFeedbackController : public TabStripModelObserver,
                                          public TabGroupSyncService::Observer {
  public:
-  explicit SharedTabGroupFeedbackController(BrowserView* browser_view);
+  explicit SharedTabGroupFeedbackController(BrowserWindowInterface* browser);
   SharedTabGroupFeedbackController(const SharedTabGroupFeedbackController&) =
       delete;
   SharedTabGroupFeedbackController operator=(
@@ -37,7 +36,7 @@ class SharedTabGroupFeedbackController : public TabStripModelObserver,
   // available.
   void Init();
 
-  // Remove observers before `browser_view_` is destroyed.
+  // Remove observers before `browser_` is destroyed.
   void TearDown();
 
  private:
@@ -59,7 +58,7 @@ class SharedTabGroupFeedbackController : public TabStripModelObserver,
   // Only show the IPH when a shared tab becomes the active tab.
   void MaybeShowIPH(BrowserWindowInterface* browser_window_interface);
 
-  raw_ptr<BrowserView> browser_view_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
   const raw_ptr<TabGroupSyncService> tab_group_sync_service_;
 
   std::vector<base::CallbackListSubscription> active_tab_change_subscriptions_;

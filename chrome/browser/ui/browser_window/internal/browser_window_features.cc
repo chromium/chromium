@@ -404,7 +404,7 @@ void BrowserWindowFeatures::InitPostWindowConstruction(Browser* browser) {
       if (browser_view) {
         shared_tab_group_feedback_controller_ =
             std::make_unique<tab_groups::SharedTabGroupFeedbackController>(
-                browser_view);
+                browser_view->browser());
         shared_tab_group_feedback_controller_->Init();
       }
     }
