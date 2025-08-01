@@ -1406,6 +1406,46 @@ TEST_F(UnifiedSystemTrayAccessibilityTest, NameWithBatterySaverDisabled) {
   }
 }
 
+// This tests the logic in `PowerStatus::GetAccessibleNameString` where
+// `features::IsBatteryChargeLimitAvailable()` and `IsBatteryChargeLimited()`
+// are both true.
+TEST_F(UnifiedSystemTrayAccessibilityTest, NameWithBatteryChargeLimitEnabled) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(ash::features::kBatteryChargeLimit);
+
+  std::vector<std::u16string> status;
+  CreateDefaultStatusForTesting(&status);
+
+  power_manager::PowerSupplyProperties prop;
+  prop.set_battery_state(
+      power_manager::PowerSupplyProperties_BatteryState_FULL);
+  prop.set_charge_limited(true);
+
+  FakePowerStatus* fake_power_status = GetFakePowerStatus();
+  fake_power_status->SetProtoForTesting(prop);
+  fake_power_status->SetBatteryPercent(80.0);
+
+  // `OnPowerStatusChanged` is called in an asynchronous method, but for the
+  // purpose of this test, it is called explicitly.
+  GetPrimaryUnifiedSystemTray()->OnPowerStatusChanged();
+
+  // The new logic should return just the percentage accessible string, not a
+  // full description with time, etc.
+  UpdatePartOfStatus(
+      &status,
+      FormatPowerPercentageString(
+          IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE,
+          fake_power_status),
+      StatusType::kBattery);
+
+  ui::AXNodeData data;
+  GetPrimaryUnifiedSystemTray()->GetViewAccessibility().GetAccessibleNodeData(
+      &data);
+  EXPECT_EQ(data.GetString16Attribute(ax::mojom::StringAttribute::kName),
+            l10n_util::GetStringFUTF16(
+                IDS_ASH_STATUS_TRAY_ACCESSIBLE_DESCRIPTION, status, nullptr));
+}
+
 TEST_F(UnifiedSystemTrayAccessibilityTest, ChannelIndicatorUpdatesName) {
   ASSERT_TRUE(GetPrimaryUnifiedSystemTray()->ShouldChannelIndicatorBeShown());
   ASSERT_TRUE(channel_indicator_view());

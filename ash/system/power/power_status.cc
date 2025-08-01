@@ -391,30 +391,32 @@ std::u16string PowerStatus::GetAccessibleNameString(
   }
 
   int percentage_accessibility_token = -1;
-  if (features::IsBatterySaverAvailable()) {
-    if (IsBatteryCharging()) {
-      percentage_accessibility_token =
-          IsBatterySaverActive()
-              ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE
-              : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE;
-    } else {
-      percentage_accessibility_token =
-          IsBatterySaverActive()
-              ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE
-              : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE;
-    }
-  } else {  // Backwards compatibility with battery saver feature flag disabled.
+  if (ash::features::IsBatteryChargeLimitAvailable() &&
+      IsBatteryChargeLimited()) {
     percentage_accessibility_token =
-        IsBatteryCharging()
-            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE
+        IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ON_HOLD_ACCESSIBLE;
+  } else if (IsBatteryCharging()) {
+    percentage_accessibility_token =
+        IsBatterySaverActive()
+            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_BSM_ON_ACCESSIBLE
+            : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_CHARGING_ACCESSIBLE;
+  } else {
+    percentage_accessibility_token =
+        IsBatterySaverActive()
+            ? IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_BSM_ON_ACCESSIBLE
             : IDS_ASH_STATUS_TRAY_BATTERY_PERCENT_ACCESSIBLE;
   }
 
   std::u16string battery_percentage_accessible = l10n_util::GetStringFUTF16(
       percentage_accessibility_token,
       base::NumberToString16(GetRoundedBatteryPercent()));
-  if (!full_description)
+  // When Charge limit is enabled, the full description is simply the battery
+  // percentage and that charging is on hold. We don't show calculating,
+  // unreliable, or time to empty/full.
+  if (!full_description || (ash::features::IsBatteryChargeLimitAvailable() &&
+                            IsBatteryChargeLimited())) {
     return battery_percentage_accessible;
+  }
 
   std::u16string battery_time_accessible = std::u16string();
   const std::optional<base::TimeDelta> time =
