@@ -216,7 +216,7 @@ std::string VariationsFieldTrialCreator::GetLatestCountry() const {
           switches::kVariationsOverrideCountry));
   return !override_country.empty()
              ? override_country
-             : std::string(seed_store_->GetLatestCountry());
+             : seed_store_->GetLatestCountry();
 }
 
 bool VariationsFieldTrialCreator::SetUpFieldTrials(
