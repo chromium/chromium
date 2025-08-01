@@ -95,6 +95,7 @@ struct RenderProcessPriority {
                         bool intersects_viewport,
                         bool boost_for_pending_views,
                         bool boost_for_loading,
+                        bool boost_for_discard,
                         bool is_spare_renderer
 #if BUILDFLAG(IS_ANDROID)
                         ,
@@ -166,6 +167,10 @@ struct RenderProcessPriority {
   // |boost_for_loading| is true if this process is responsible for committing
   // navigation and initial loading.
   bool boost_for_loading;
+
+  // |boost_for_discard| is true if this process is responsible for executing
+  // discard logic.
+  bool boost_for_discard;
 
   // |is_spare_renderer| is true if this process should be treated as a spare
   // renderer. The process will be given a moderate priority even it is not

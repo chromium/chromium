@@ -1314,6 +1314,9 @@ class CONTENT_EXPORT RenderProcessHostImpl
   // processes of same visibility. It indicates process has frames that
   // intersect with the viewport.
   bool intersects_viewport_ = false;
+  // |is_discarding_| is whether the renderer process is executing discard
+  // logic. This is effective only when WebContentsDiscard feature is enabled.
+  bool is_discarding_ = false;
 #if BUILDFLAG(IS_ANDROID)
   // Highest importance of all clients that contribute priority.
   ChildProcessImportance effective_importance_ = ChildProcessImportance::NORMAL;

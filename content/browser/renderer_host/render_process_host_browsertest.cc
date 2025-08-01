@@ -23,6 +23,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "base/test/mock_callback.h"
+#include "base/test/run_until.h"
 #include "base/test/test_future.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/hang_watcher.h"
@@ -1300,6 +1301,78 @@ IN_PROC_BROWSER_TEST_P(RenderProcessHostTest, ConstructedButNotInitializedYet) {
 
   // Cleanup the resources acquired by the test.
   process->Cleanup();
+}
+
+class DiscardFrameBrowserTest : public RenderProcessHostTestBase,
+                                public WebContentsObserver {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(features::kWebContentsDiscard);
+    RenderProcessHostTestBase::SetUp();
+  }
+
+  void SetUpOnMainThread() override {
+    WebContentsObserver::Observe(shell()->web_contents());
+    RenderProcessHostTestBase::SetUpOnMainThread();
+  }
+
+  WebContents& web_contents() { return *shell()->web_contents(); }
+
+  // WebContentsObserver implementation
+  void AboutToBeDiscarded(WebContents* web_contents) override {
+    RenderProcessHost* process =
+        web_contents->GetPrimaryMainFrame()->GetProcess();
+    priority_at_about_to_be_discarded_ = process->GetPriority();
+  }
+
+  void WasDiscarded() override {
+    RenderProcessHost* process =
+        web_contents().GetPrimaryMainFrame()->GetProcess();
+    priority_at_was_discarded_ = process->GetPriority();
+  }
+
+ protected:
+  std::optional<base::Process::Priority> priority_at_about_to_be_discarded_;
+  std::optional<base::Process::Priority> priority_at_was_discarded_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DiscardFrameBrowserTest,
+                       VerifyRenderProcessPriorityBoostedOnDiscard) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL test_url(embedded_test_server()->GetURL("a.com", "/simple_page.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), test_url));
+
+  // Put the tab in the background.
+  web_contents().WasHidden();
+  RenderProcessHost* process =
+      web_contents().GetPrimaryMainFrame()->GetProcess();
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+
+  // Keep the renderer process alive after discard.
+  EXPECT_TRUE(process->IsInitializedAndNotDead());
+  process->IncrementWorkerRefCount();
+
+  // Discard the page.
+  web_contents().Discard(base::NullCallback());
+
+  ASSERT_TRUE(priority_at_about_to_be_discarded_.has_value());
+  EXPECT_EQ(*priority_at_about_to_be_discarded_,
+            base::Process::Priority::kBestEffort);
+
+  ASSERT_TRUE(priority_at_was_discarded_.has_value());
+  EXPECT_EQ(*priority_at_was_discarded_,
+            base::Process::Priority::kUserBlocking);
+
+  // Now, wait for the discard to complete in the renderer and priority to drop.
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return process->GetPriority() == base::Process::Priority::kBestEffort;
+  }));
+  EXPECT_EQ(process->GetPriority(), base::Process::Priority::kBestEffort);
+
+  process->DecrementWorkerRefCount();
 }
 
 // This test verifies that a fast shutdown is possible for a starting process.

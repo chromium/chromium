@@ -1522,6 +1522,7 @@ RenderProcessHostImpl::RenderProcessHostImpl(
                 false /* intersects_viewport */,
                 true /* boost_for_pending_views */,
                 false /*boost_for_loading*/,
+                false /* boost_for_discard */,
                 false /*is_spare_renderer*/
 #if BUILDFLAG(IS_ANDROID)
                 ,
@@ -5376,6 +5377,7 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
   int32_t new_visible_widgets_count = 0;
   unsigned int new_frame_depth = kMaxFrameDepthForPriority;
   bool new_intersects_viewport = false;
+  bool new_is_discarding = false;
 #if BUILDFLAG(IS_ANDROID)
   ChildProcessImportance new_effective_importance =
       ChildProcessImportance::NORMAL;
@@ -5402,6 +5404,7 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
       }
       new_visible_widgets_count++;
     }
+    new_is_discarding = new_is_discarding || priority.is_discarding;
 
 #if BUILDFLAG(IS_ANDROID)
     new_effective_importance =
@@ -5411,10 +5414,12 @@ void RenderProcessHostImpl::UpdateProcessPriorityInputs() {
 
   bool inputs_changed = new_visible_widgets_count != visible_clients_ ||
                         frame_depth_ != new_frame_depth ||
-                        intersects_viewport_ != new_intersects_viewport;
+                        intersects_viewport_ != new_intersects_viewport ||
+                        new_is_discarding != is_discarding_;
   visible_clients_ = new_visible_widgets_count;
   frame_depth_ = new_frame_depth;
   intersects_viewport_ = new_intersects_viewport;
+  is_discarding_ = new_is_discarding;
 #if BUILDFLAG(IS_ANDROID)
   inputs_changed =
       inputs_changed || new_effective_importance != effective_importance_;
@@ -5440,7 +5445,7 @@ void RenderProcessHostImpl::UpdateProcessPriority() {
       media_stream_count_ > 0, has_immersive_xr_session_,
       foreground_service_worker_count_ > 0, frame_depth_, intersects_viewport_,
       pending_views_ > 0, /* boost_for_pending_views */
-      boost_for_loading_count_ > 0, has_spare_renderer_priority_
+      boost_for_loading_count_ > 0, is_discarding_, has_spare_renderer_priority_
 #if BUILDFLAG(IS_ANDROID)
       ,
       GetEffectiveImportance()

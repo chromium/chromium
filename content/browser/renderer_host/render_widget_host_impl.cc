@@ -2109,9 +2109,7 @@ void RenderWidgetHostImpl::InsertVisualStateCallback(
 
 RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
   RenderProcessHostPriorityClient::Priority priority = {
-      is_hidden_,
-      frame_depth_,
-      intersects_viewport_,
+      is_hidden_,  frame_depth_, intersects_viewport_, is_discarding_,
 #if BUILDFLAG(IS_ANDROID)
       importance_,
 #endif
@@ -2136,6 +2134,7 @@ RenderProcessHostPriorityClient::Priority RenderWidgetHostImpl::GetPriority() {
   if (!should_contribute) {
     priority.is_hidden = true;
     priority.frame_depth = RenderProcessHostImpl::kMaxFrameDepthForPriority;
+    priority.is_discarding = false;
 #if BUILDFLAG(IS_ANDROID)
     priority.importance = ChildProcessImportance::NORMAL;
 #endif
@@ -4029,6 +4028,14 @@ void RenderWidgetHostImpl::ForceRedrawForTesting() {
   CHECK(blink_widget_);
 
   blink_widget_->ForceRedraw(base::DoNothing());
+}
+
+void RenderWidgetHostImpl::SetIsDiscarding(bool is_discarding) {
+  if (is_discarding_ == is_discarding) {
+    return;
+  }
+  is_discarding_ = is_discarding;
+  UpdatePriority();
 }
 
 RenderWidgetHostImpl::CompositorMetricRecorder::CompositorMetricRecorder(
