@@ -152,13 +152,6 @@ component("variations") {
       "//components/variations/android:variations_seed_jni",
     ]
   }
-
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/ash/components/dbus/featured",
-      "//chromeos/ash/components/dbus/featured:proto",
-    ]
-  }
 }
 
 if (is_android) {
@@ -297,13 +290,6 @@ source_set("unit_tests") {
     "//url",
   ]
 
-  if (is_chromeos) {
-    deps += [
-      "//chromeos/ash/components/dbus/featured",
-      "//chromeos/ash/components/dbus/featured:proto",
-    ]
-  }
-
   # TODO(crbug.com/40031409): Fix code that adds exit-time destructors and
   # enable the diagnostic by removing this line.
   configs += [ "//build/config/compiler:no_exit_time_destructors" ]
@@ -355,7 +341,7 @@ if (use_fuzzing_engine_with_lpm) {
       ":variations",
       "proto",
       "//base/test:test_support",
-      "//components/variations/service:service",
+      "//components/variations/service",
       "//third_party/libprotobuf-mutator",
     ]
     seed_corpus = "fuzzers/testcases/create_trials_from_seed/"

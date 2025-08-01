@@ -24,10 +24,6 @@
 #include "components/variations/seed_response.h"
 #include "components/variations/variations_safe_seed_store.h"
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 class PrefService;
 class PrefRegistrySimple;
 
@@ -413,28 +409,6 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsSeedStore {
 
   // Handles reads and writes to seed files.
   std::unique_ptr<SeedReaderWriter> seed_reader_writer_;
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // Gets the combined server and client state used for early boot variations
-  // platform disaster recovery.
-  featured::SeedDetails GetSafeSeedStateForPlatform(
-      const ValidatedSeed& seed,
-      const int seed_milestone,
-      const ClientFilterableState& client_state,
-      const base::Time seed_fetch_time);
-
-  // Retries sending the safe seed to platform. Does not retry after two failed
-  // attempts.
-  void MaybeRetrySendSafeSeed(const featured::SeedDetails& safe_seed,
-                              bool success);
-
-  // Sends the safe seed to the platform.
-  void SendSafeSeedToPlatform(const featured::SeedDetails& safe_seed);
-
-  // A counter that keeps track of how many times the current safe seed is sent
-  // to platform.
-  size_t send_seed_to_platform_attempts_ = 0;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Note: This should remain the last member so it'll be destroyed and
   // invalidate its weak pointers before any other members are destroyed.

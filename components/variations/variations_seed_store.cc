@@ -38,12 +38,6 @@
 #include "components/variations/metrics.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
-#if BUILDFLAG(IS_CHROMEOS)
-#include "base/functional/callback.h"
-#include "chromeos/ash/components/dbus/featured/featured.pb.h"
-#include "chromeos/ash/components/dbus/featured/featured_client.h"
-#endif  // BUILDFLAG(IS_CHROMEOS)
-
 #if BUILDFLAG(IS_IOS)
 #include "components/variations/metrics.h"
 #endif  // BUILDFLAG(IS_IOS)
@@ -64,12 +58,6 @@ const uint8_t kPublicKey[] = {
     0xc5, 0xef, 0x20, 0xc6, 0xa3, 0x10, 0xbf,
 };
 
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Number of attempts to send the safe seed from Chrome to CrOS platforms before
-// giving up.
-constexpr int kSendPlatformSafeSeedMaxAttempts = 2;
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // LINT.IfChange
 // The name of the seed file that stores the latest seed data.
@@ -769,16 +757,6 @@ void VariationsSeedStore::StoreValidatedSafeSeed(
     // match the latest seed's.
     safe_seed_store_->SetFetchTime(latest_seed.client_fetch_time);
   }
-
-#if BUILDFLAG(IS_CHROMEOS)
-  // `SendSafeSeedToPlatform` will send the safe seed at most twice and should
-  // only be called if the seed is successfully validated.
-  // This is a best effort attempt and it is possible that the safe seed for
-  // platform and Chrome are different if sending the safe seed fails twice.
-  send_seed_to_platform_attempts_ = 0;
-  SendSafeSeedToPlatform(GetSafeSeedStateForPlatform(
-      seed, seed_milestone, client_state, seed_fetch_time));
-#endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
 // static
@@ -915,50 +893,5 @@ bool VariationsSeedStore::ApplyDeltaPatch(const std::string& existing_data,
   }
   return true;
 }
-
-#if BUILDFLAG(IS_CHROMEOS)
-featured::SeedDetails VariationsSeedStore::GetSafeSeedStateForPlatform(
-    const ValidatedSeed& seed,
-    const int seed_milestone,
-    const ClientFilterableState& client_state,
-    const base::Time seed_fetch_time) {
-  featured::SeedDetails safe_seed;
-  safe_seed.set_b64_compressed_data(seed.base64_seed_data);
-  safe_seed.set_locale(client_state.locale);
-  safe_seed.set_milestone(seed_milestone);
-  safe_seed.set_permanent_consistency_country(
-      client_state.permanent_consistency_country);
-  safe_seed.set_session_consistency_country(
-      client_state.session_consistency_country);
-  safe_seed.set_signature(seed.base64_seed_signature);
-  safe_seed.set_date(
-      client_state.reference_date.ToDeltaSinceWindowsEpoch().InMilliseconds());
-  safe_seed.set_fetch_time(
-      seed_fetch_time.ToDeltaSinceWindowsEpoch().InMilliseconds());
-
-  return safe_seed;
-}
-
-void VariationsSeedStore::MaybeRetrySendSafeSeed(
-    const featured::SeedDetails& safe_seed,
-    bool success) {
-  // Do not retry after two failed attempts.
-  if (!success &&
-      send_seed_to_platform_attempts_ < kSendPlatformSafeSeedMaxAttempts) {
-    SendSafeSeedToPlatform(safe_seed);
-  }
-}
-
-void VariationsSeedStore::SendSafeSeedToPlatform(
-    const featured::SeedDetails& safe_seed) {
-  send_seed_to_platform_attempts_++;
-  ash::featured::FeaturedClient* client = ash::featured::FeaturedClient::Get();
-  if (client) {
-    client->HandleSeedFetched(
-        safe_seed, base::BindOnce(&VariationsSeedStore::MaybeRetrySendSafeSeed,
-                                  weak_ptr_factory_.GetWeakPtr(), safe_seed));
-  }
-}
-#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace variations
