@@ -6,7 +6,6 @@
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_H_
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -19,6 +18,7 @@
 #include "components/ip_protection/common/ip_protection_data_types.h"
 #include "components/ip_protection/common/ip_protection_probabilistic_reveal_token_manager.h"
 #include "net/base/network_change_notifier.h"
+#include "third_party/abseil-cpp/absl/container/flat_hash_map.h"
 
 namespace net {
 
@@ -42,12 +42,15 @@ class IpProtectionCoreImpl
     : public IpProtectionCore,
       public net::NetworkChangeNotifier::NetworkChangeObserver {
  public:
+  using ProxyTokenManagerMap =
+      absl::flat_hash_map<ProxyLayer,
+                          std::unique_ptr<IpProtectionTokenManager>>;
+
   IpProtectionCoreImpl(
       MaskedDomainListManager* masked_domain_list_manager,
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
-      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-          ip_protection_token_managers,
+      ProxyTokenManagerMap ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
           ipp_prt_manager,
@@ -94,8 +97,7 @@ class IpProtectionCoreImpl
   void set_ip_protection_enabled(bool enabled);
   bool is_ip_protection_enabled() { return is_ip_protection_enabled_; }
 
-  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>&
-  ip_protection_token_managers() {
+  ProxyTokenManagerMap& ip_protection_token_managers() {
     return ipp_token_managers_;
   }
 
@@ -107,8 +109,7 @@ class IpProtectionCoreImpl
   std::unique_ptr<IpProtectionProxyConfigManager> ipp_proxy_config_manager_;
 
   // Proxy layer managers for cache of blind-signed auth tokens.
-  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-      ipp_token_managers_;
+  ProxyTokenManagerMap ipp_token_managers_;
 
   // The PRT registry, owned by the NetworkService.
   raw_ptr<ProbabilisticRevealTokenRegistry>

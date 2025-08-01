@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_MOJO_H_
 #define COMPONENTS_IP_PROTECTION_COMMON_IP_PROTECTION_CORE_IMPL_MOJO_H_
 
-#include <map>
 #include <memory>
 #include <optional>
 
@@ -23,7 +22,6 @@ namespace ip_protection {
 
 class IpProtectionCoreHostRemote;
 class IpProtectionProxyConfigManager;
-class IpProtectionTokenManager;
 class ProbabilisticRevealTokenRegistry;
 
 // The Mojo implementation of IpProtectionCore, providing methods for CoreHost
@@ -48,8 +46,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       MaskedDomainListManager* masked_domain_list_manager,
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
-      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-          ip_protection_token_managers,
+      IpProtectionCoreImpl::ProxyTokenManagerMap ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
           ipp_prt_manager,
@@ -71,8 +68,7 @@ class IpProtectionCoreImplMojo : public IpProtectionCoreImpl,
       MaskedDomainListManager* masked_domain_list_manager,
       std::unique_ptr<IpProtectionProxyConfigManager>
           ip_protection_proxy_config_manager,
-      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-          ip_protection_token_managers,
+      IpProtectionCoreImpl::ProxyTokenManagerMap ip_protection_token_managers,
       ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
       std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
           ipp_prt_manager,

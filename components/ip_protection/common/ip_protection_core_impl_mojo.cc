@@ -4,7 +4,6 @@
 
 #include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -41,11 +40,10 @@ namespace ip_protection {
 namespace {
 
 // Make a map-by-layer of token managers. This is a utility for the constructor.
-std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-MakeTokenManagerMap(
+IpProtectionCoreImpl::ProxyTokenManagerMap MakeTokenManagerMap(
     IpProtectionCore* ip_protection_core,
     scoped_refptr<IpProtectionCoreHostRemote> core_host_remote) {
-  std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>> managers;
+  IpProtectionCoreImpl::ProxyTokenManagerMap managers;
   for (ProxyLayer proxy_layer : {ProxyLayer::kProxyA, ProxyLayer::kProxyB}) {
     managers.insert(
         {proxy_layer,
@@ -75,10 +73,8 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
                     std::make_unique<IpProtectionProxyConfigMojoFetcher>(
                         core_host_remote))
               : nullptr,
-          core_host_remote
-              ? MakeTokenManagerMap(this, core_host_remote)
-              : std::map<ProxyLayer,
-                         std::unique_ptr<IpProtectionTokenManager>>(),
+          core_host_remote ? MakeTokenManagerMap(this, core_host_remote)
+                           : IpProtectionCoreImpl::ProxyTokenManagerMap(),
           probabilistic_reveal_token_registry,
           (core_host_remote &&
            base::FeatureList::IsEnabled(
@@ -97,8 +93,7 @@ IpProtectionCoreImplMojo::IpProtectionCoreImplMojo(
     MaskedDomainListManager* masked_domain_list_manager,
     std::unique_ptr<IpProtectionProxyConfigManager>
         ip_protection_proxy_config_manager,
-    std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-        ip_protection_token_managers,
+    IpProtectionCoreImpl::ProxyTokenManagerMap ip_protection_token_managers,
     ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
         ipp_prt_manager,
@@ -120,8 +115,7 @@ IpProtectionCoreImplMojo IpProtectionCoreImplMojo::CreateForTesting(
     MaskedDomainListManager* masked_domain_list_manager,
     std::unique_ptr<IpProtectionProxyConfigManager>
         ip_protection_proxy_config_manager,
-    std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-        ip_protection_token_managers,
+    IpProtectionCoreImpl::ProxyTokenManagerMap ip_protection_token_managers,
     ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
         ipp_prt_manager,

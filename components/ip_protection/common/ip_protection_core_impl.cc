@@ -5,7 +5,6 @@
 #include "components/ip_protection/common/ip_protection_core_impl.h"
 
 #include <cstddef>
-#include <map>
 #include <memory>
 #include <optional>
 #include <string>
@@ -83,8 +82,7 @@ IpProtectionCoreImpl::IpProtectionCoreImpl(
     MaskedDomainListManager* masked_domain_list_manager,
     std::unique_ptr<IpProtectionProxyConfigManager>
         ip_protection_proxy_config_manager,
-    std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>
-        ip_protection_token_managers,
+    ProxyTokenManagerMap ip_protection_token_managers,
     ProbabilisticRevealTokenRegistry* probabilistic_reveal_token_registry,
     std::unique_ptr<IpProtectionProbabilisticRevealTokenManager>
         ipp_prt_manager,

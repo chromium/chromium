@@ -4,7 +4,6 @@
 
 #include "components/ip_protection/common/ip_protection_core_impl_mojo.h"
 
-#include <map>
 #include <memory>
 #include <string>
 #include <utility>
@@ -84,7 +83,7 @@ TEST_F(IpProtectionCoreImplMojoTest,
   auto ip_protection_core = IpProtectionCoreImplMojo::CreateForTesting(
       /*masked_domain_list_manager=*/nullptr,
       std::move(ipp_proxy_config_manager),
-      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      IpProtectionCoreImpl::ProxyTokenManagerMap(),
       /*probabilistic_reveal_token_registry=*/nullptr,
       /*ipp_prt_manager=*/nullptr,
       /*is_ip_protection_enabled=*/true, /*ip_protection_incognito=*/true);
@@ -98,7 +97,7 @@ TEST_F(IpProtectionCoreImplMojoTest, ChangeEnabledStatus) {
   auto ip_protection_core = IpProtectionCoreImplMojo::CreateForTesting(
       /*masked_domain_list_manager=*/nullptr,
       /*ip_protection_proxy_config_manager=*/nullptr,
-      std::map<ProxyLayer, std::unique_ptr<IpProtectionTokenManager>>(),
+      IpProtectionCoreImpl::ProxyTokenManagerMap(),
       /*probabilistic_reveal_token_registry=*/nullptr,
       /*ipp_prt_manager=*/nullptr,
       /*is_ip_protection_enabled=*/false, /*ip_protection_incognito=*/true);
