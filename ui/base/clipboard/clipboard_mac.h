@@ -113,9 +113,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardMac
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
 
-  void WriteUploadCloudClipboard();
-  void WriteConfidentialDataForPassword();
-
   void WriteBitmapInternal(const SkBitmap& bitmap, NSPasteboard* pasteboard);
   void ReadPngInternal(ClipboardBuffer buffer,
                        NSPasteboard* pasteboard,

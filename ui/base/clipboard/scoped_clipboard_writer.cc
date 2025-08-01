@@ -186,6 +186,8 @@ void ScopedClipboardWriter::WriteImage(const SkBitmap& bitmap) {
 
 void ScopedClipboardWriter::MarkAsConfidential() {
   privacy_types_ |= Clipboard::PrivacyTypes::kNoDisplay;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoLocalClipboardHistory;
+  privacy_types_ |= Clipboard::PrivacyTypes::kNoCloudClipboard;
 }
 
 void ScopedClipboardWriter::MarkAsOffTheRecord() {
