@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.multiwindow;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.action.ViewActions.replaceText;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.contrib.RecyclerViewActions.actionOnItemAtPosition;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
@@ -26,7 +27,9 @@ import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.not;
+import static org.junit.Assert.assertEquals;
 
+import android.util.Pair;
 import android.view.View;
 
 import androidx.recyclerview.widget.RecyclerView;
@@ -132,6 +135,7 @@ public class InstanceSwitcherCoordinatorTest {
                             openCallback,
                             null,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -156,6 +160,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mModalDialogManager,
                             mIconBridge,
                             openCallback,
+                            null,
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
@@ -208,6 +213,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mModalDialogManager,
                             mIconBridge,
                             openCallback,
+                            null,
                             null,
                             null,
                             MAX_INSTANCE_COUNT,
@@ -264,6 +270,7 @@ public class InstanceSwitcherCoordinatorTest {
                             openCallback,
                             closeCallback,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -318,6 +325,7 @@ public class InstanceSwitcherCoordinatorTest {
                             openCallback,
                             closeCallback,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -366,6 +374,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
+                            null,
                             null,
                             null,
                             null,
@@ -419,6 +428,7 @@ public class InstanceSwitcherCoordinatorTest {
                             openCallback,
                             null,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -468,6 +478,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mIconBridge,
                             null,
                             null,
+                            null,
                             itemClickCallbackHelper::notifyCalled,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
@@ -494,6 +505,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mIconBridge,
                             null,
                             closeCallback,
+                            null,
                             null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
@@ -533,6 +545,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
+                            null,
                             null,
                             null,
                             null,
@@ -578,6 +591,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mIconBridge,
                             null,
                             closeCallback,
+                            null,
                             newWindowCallbackHelper::notifyCalled,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
@@ -640,6 +654,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mIconBridge,
                             null,
                             closeCallback,
+                            null,
                             newWindowCallbackHelper::notifyCalled,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
@@ -730,6 +745,7 @@ public class InstanceSwitcherCoordinatorTest {
                             openCallback,
                             null,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -790,6 +806,7 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             closeCallback,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -815,6 +832,7 @@ public class InstanceSwitcherCoordinatorTest {
                             mActivityTestRule.getActivity(),
                             mModalDialogManager,
                             mIconBridge,
+                            null,
                             null,
                             null,
                             null,
@@ -861,6 +879,7 @@ public class InstanceSwitcherCoordinatorTest {
                             null,
                             null,
                             null,
+                            null,
                             MAX_INSTANCE_COUNT,
                             Arrays.asList(instances));
                 });
@@ -890,6 +909,177 @@ public class InstanceSwitcherCoordinatorTest {
                                                         withId(R.id.last_accessed),
                                                         withText(expectedOtherString),
                                                         isDisplayed())))));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testRenameWindow() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+        final CallbackHelper renameCallbackHelper = new CallbackHelper();
+        final int renameCallbackCount = renameCallbackHelper.getCallCount();
+        Callback<Pair<Integer, String>> renameCallback =
+                (result) -> {
+                    renameCallbackHelper.notifyCalled();
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null, // openCallback
+                            null, // closeCallback
+                            renameCallback,
+                            null, // newWindowAction
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Click on the 'more' button for the second instance.
+        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+
+        // Check that "Name" is an option and click it.
+        onView(withText(R.string.instance_switcher_name_window))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Check that the "Name this window" dialog is shown.
+        Thread.sleep(5000);
+        onView(withText(R.string.instance_switcher_name_window_confirm_header))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        // Enter a new name and save.
+        final String newName = "test name";
+        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(newName));
+        onView(withText(R.string.save))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        Thread.sleep(5000);
+
+        // Check that the instance title is updated in the list.
+        onView(withId(R.id.active_instance_list))
+                .inRoot(isDialog())
+                .check(matches(atPosition(1, hasDescendant(withText(newName)))));
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testRenameWindowWithEmptyName() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+        final CallbackHelper renameCallbackHelper = new CallbackHelper();
+        Callback<Pair<Integer, String>> renameCallback =
+                (result) -> {
+                    renameCallbackHelper.notifyCalled();
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null, // openCallback
+                            null, // closeCallback
+                            renameCallback,
+                            null, // newWindowAction
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Click on the 'more' button for the second instance.
+        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+
+        // Check that "Name" is an option and click it.
+        onView(withText(R.string.instance_switcher_name_window))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Check that the "Name this window" dialog is shown.
+        onView(withText(R.string.instance_switcher_name_window_confirm_header))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        // Enter an empty name and save.
+        onView(withId(R.id.title_input_text)).inRoot(isDialog()).perform(replaceText(""));
+        onView(withText(R.string.save)).inRoot(isDialog()).perform(click());
+
+        // Check that the error message is shown.
+        CriteriaHelper.pollInstrumentationThread(
+                () -> {
+                    try {
+                        onView(withText(R.string.instance_switcher_name_window_missing_title))
+                                .inRoot(isDialog())
+                                .check(matches(isDisplayed()));
+                        return true;
+                    } catch (AssertionError e) {
+                        return false;
+                    }
+                });
+
+        // Check that the rename callback was not called.
+        assertEquals(0, renameCallbackHelper.getCallCount());
+    }
+
+    @Test
+    @SmallTest
+    @EnableFeatures(ChromeFeatureList.INSTANCE_SWITCHER_V2)
+    public void testCancelRenameWindow() throws Exception {
+        InstanceInfo[] instances =
+                createPersistedInstances(
+                        /* numActiveInstances= */ 3, /* numInactiveInstances= */ 0);
+        final CallbackHelper renameCallbackHelper = new CallbackHelper();
+        Callback<Pair<Integer, String>> renameCallback =
+                (result) -> {
+                    renameCallbackHelper.notifyCalled();
+                };
+
+        ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    InstanceSwitcherCoordinator.showDialog(
+                            mActivityTestRule.getActivity(),
+                            mModalDialogManager,
+                            mIconBridge,
+                            null, // openCallback
+                            null, // closeCallback
+                            renameCallback,
+                            null, // newWindowAction
+                            MAX_INSTANCE_COUNT,
+                            Arrays.asList(instances));
+                });
+
+        // Click on the 'more' button for the second instance.
+        clickMoreButtonAtPosition(1, R.id.active_instance_list);
+
+        // Check that "Name" is an option and click it.
+        onView(withText(R.string.instance_switcher_name_window))
+                .inRoot(withDecorView(withClassName(containsString("Popup"))))
+                .check(matches(isDisplayed()))
+                .perform(click());
+
+        // Check that the "Name this window" dialog is shown.
+        Thread.sleep(500);
+        onView(withText(R.string.instance_switcher_name_window_confirm_header))
+                .inRoot(isDialog())
+                .check(matches(isDisplayed()));
+
+        // Click the cancel button.
+        onView(withText(R.string.cancel)).inRoot(isDialog()).perform(click());
+        Thread.sleep(500);
+
+        // Check that the rename callback was not called.
+        assertEquals(0, renameCallbackHelper.getCallCount());
     }
 
     private InstanceInfo[] createPersistedInstances(
@@ -975,7 +1165,7 @@ public class InstanceSwitcherCoordinatorTest {
                                         v.performClick();
                                     }
                                 }));
-        onView(withText(R.string.instance_switcher_close_window))
+        onView(withText(R.string.close))
                 .inRoot(withDecorView(withClassName(containsString("Popup"))))
                 .perform(click());
         onView(withText(R.string.instance_switcher_close_confirm_header))
@@ -1003,5 +1193,29 @@ public class InstanceSwitcherCoordinatorTest {
                 return itemMatcher.matches(viewHolder.itemView);
             }
         };
+    }
+
+    private void clickMoreButtonAtPosition(int instanceIndex, int instanceListId) {
+        onView(withId(instanceListId))
+                .inRoot(isDialog())
+                .perform(
+                        actionOnItemAtPosition(
+                                instanceIndex,
+                                new ViewAction() {
+                                    @Override
+                                    public Matcher<View> getConstraints() {
+                                        return isDisplayed();
+                                    }
+
+                                    @Override
+                                    public String getDescription() {
+                                        return "Click on the more button.";
+                                    }
+
+                                    @Override
+                                    public void perform(UiController uiController, View view) {
+                                        view.findViewById(R.id.more).performClick();
+                                    }
+                                }));
     }
 }

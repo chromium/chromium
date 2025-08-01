@@ -12,9 +12,13 @@ import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.res.Resources;
+import android.text.TextUtils;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.CheckBox;
 import android.widget.FrameLayout;
 import android.widget.LinearLayout;
@@ -31,6 +35,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.android.material.tabs.TabLayout.OnTabSelectedListener;
 import com.google.android.material.tabs.TabLayout.Tab;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import org.chromium.base.Callback;
 import org.chromium.base.metrics.RecordUserAction;
@@ -61,6 +67,7 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * Coordinator to construct the instance switcher dialog. TODO: Resolve various inconsistencies that
@@ -84,6 +91,7 @@ public class InstanceSwitcherCoordinator {
     private final Context mContext;
     private final Callback<InstanceInfo> mOpenCallback;
     private final Callback<InstanceInfo> mCloseCallback;
+    private final Callback<Pair<Integer, String>> mRenameWindowCallback;
     private final Runnable mNewWindowAction;
     private final ModalDialogManager mModalDialogManager;
     private final int mMaxInstanceCount;
@@ -116,6 +124,7 @@ public class InstanceSwitcherCoordinator {
      * @param iconBridge An object that fetches favicons from local DB.
      * @param openCallback Callback to invoke to open a chosen instance.
      * @param closeCallback Callback to invoke to close a chosen instance.
+     * @param renameWindowCallback Callback to invoke to rename a chosen instance.
      * @param newWindowAction Runnable to invoke to open a new window.
      * @param maxInstanceCount The maximum number of instances whose state can be persisted.
      * @param instanceInfo List of {@link InstanceInfo} for available Chrome instances.
@@ -126,6 +135,7 @@ public class InstanceSwitcherCoordinator {
             LargeIconBridge iconBridge,
             Callback<InstanceInfo> openCallback,
             Callback<InstanceInfo> closeCallback,
+            Callback<Pair<Integer, String>> renameWindowCallback,
             Runnable newWindowAction,
             int maxInstanceCount,
             List<InstanceInfo> instanceInfo) {
@@ -135,6 +145,7 @@ public class InstanceSwitcherCoordinator {
                         iconBridge,
                         openCallback,
                         closeCallback,
+                        renameWindowCallback,
                         newWindowAction,
                         maxInstanceCount)
                 .show(instanceInfo);
@@ -146,12 +157,14 @@ public class InstanceSwitcherCoordinator {
             LargeIconBridge iconBridge,
             Callback<InstanceInfo> openCallback,
             Callback<InstanceInfo> closeCallback,
+            Callback<Pair<Integer, String>> renameWindowCallback,
             Runnable newWindowAction,
             int maxInstanceCount) {
         mContext = context;
         mModalDialogManager = modalDialogManager;
         mOpenCallback = openCallback;
         mCloseCallback = closeCallback;
+        mRenameWindowCallback = renameWindowCallback;
         mUiUtils = new UiUtils(mContext, iconBridge);
         mNewWindowAction = newWindowAction;
         mMaxInstanceCount = maxInstanceCount;
@@ -454,12 +467,22 @@ public class InstanceSwitcherCoordinator {
 
     private void buildMoreMenu(PropertyModel.Builder builder, InstanceInfo item) {
         ModelList moreMenu = new ModelList();
-        moreMenu.add(buildSimpleMenuItem(R.string.instance_switcher_close_window));
+        if (UiUtils.isInstanceSwitcherV2Enabled()) {
+            moreMenu.add(buildSimpleMenuItem(R.string.instance_switcher_name_window));
+            moreMenu.add(buildSimpleMenuItem(R.string.close));
+        } else {
+            moreMenu.add(buildSimpleMenuItem(R.string.instance_switcher_close_window));
+        }
+
         ListMenu.Delegate moreMenuDelegate =
                 (model) -> {
                     int textId = model.get(ListMenuItemProperties.TITLE_ID);
-                    if (textId == R.string.instance_switcher_close_window) {
+                    if (textId == R.string.instance_switcher_close_window
+                            || textId == R.string.close) {
                         closeWindow(item);
+                    }
+                    if (textId == R.string.instance_switcher_name_window) {
+                        showNameWindowDialog(item);
                     }
                 };
         BasicListMenu listMenu =
@@ -683,6 +706,58 @@ public class InstanceSwitcherCoordinator {
                 v -> {
                     dialog.dismiss();
                 });
+        dialog.show();
+    }
+
+    private void showNameWindowDialog(InstanceInfo item) {
+        int style = R.style.Theme_Chromium_Multiwindow_RenameWindowDialog;
+        Dialog dialog = new Dialog(mContext, style);
+        dialog.setCanceledOnTouchOutside(true);
+        dialog.setContentView(R.layout.rename_window_dialog);
+
+        Resources res = mContext.getResources();
+        ((TextView) dialog.findViewById(R.id.title))
+                .setText(res.getString(R.string.instance_switcher_name_window_confirm_header));
+
+        TextInputLayout textInputLayout = dialog.findViewById(R.id.new_window_title);
+        TextInputEditText editText = dialog.findViewById(R.id.title_input_text);
+        editText.setText(mUiUtils.getItemTitle(item));
+        editText.requestFocus();
+        Window window = assumeNonNull(dialog.getWindow());
+        window.setSoftInputMode(
+                WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN
+                        | WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+
+        TextView positiveButton = dialog.findViewById(R.id.positive_button);
+        positiveButton.setOnClickListener(
+                v -> {
+                    String newTitle = Objects.toString(editText.getText(), "").trim();
+                    if (!TextUtils.isEmpty(newTitle)) {
+                        mRenameWindowCallback.onResult(new Pair<>(item.instanceId, newTitle));
+                        ModelList list =
+                                mIsInactiveListShowing ? mInactiveModelList : mActiveModelList;
+                        for (ListItem listItem : list) {
+                            if (listItem.model.get(InstanceSwitcherItemProperties.INSTANCE_ID)
+                                    == item.instanceId) {
+                                listItem.model.set(InstanceSwitcherItemProperties.TITLE, newTitle);
+                                break;
+                            }
+                        }
+                        dialog.dismiss();
+                    } else {
+                        textInputLayout.setError(
+                                mContext.getString(
+                                        R.string.instance_switcher_name_window_missing_title));
+                        textInputLayout.requestFocus();
+                    }
+                });
+
+        TextView negativeButton = dialog.findViewById(R.id.negative_button);
+        negativeButton.setOnClickListener(
+                v -> {
+                    dialog.dismiss();
+                });
+
         dialog.show();
     }
 

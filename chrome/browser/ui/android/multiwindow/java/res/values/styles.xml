@@ -26,4 +26,15 @@ found in the LICENSE file.
     <style name="TextAppearance.TextLarge.Secondary.InstanceSwitcherItem" parent="TextAppearance.TextLarge.Secondary">
         <item name="android:textColor">@color/instance_switcher_item_secondary_text_color_list</item>
     </style>
+
+    <style name="Theme.Chromium.Multiwindow.RenameWindowDialog" parent="ThemeOverlay.Material3.Dialog">
+        <item name="android:windowFrame">@null</item>
+        <item name="android:backgroundDimAmount">0.65</item>
+        <item name="android:windowSoftInputMode">adjustResize|stateHidden</item>
+        <item name="buttonBarPositiveButtonStyle">@style/FilledButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/TextButton</item>
+        <item name="dualControlLayoutVerticalPadding">@dimen/modal_dialog_control_vertical_padding_filled</item>
+        <item name="dualControlLayoutHorizontalPadding">@dimen/modal_dialog_control_horizontal_padding_filled</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
 </resources>

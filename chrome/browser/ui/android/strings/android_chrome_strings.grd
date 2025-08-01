@@ -5627,6 +5627,15 @@ To change this setting, <ph name="BEGIN_LINK">BEGIN_LINK</ph>delete the Chrome d
           =1 {1 tab}
           other {# tabs}}
       </message>
+      <message name="IDS_INSTANCE_SWITCHER_NAME_WINDOW" desc="The menu item for the 3-dot more button to name the window.">
+        Name
+      </message>
+       <message name="IDS_INSTANCE_SWITCHER_NAME_WINDOW_CONFIRM_HEADER" desc="The header of multi-instance switcher dialog confirming to name the selected window.">
+        Name this window
+      </message>
+       <message name="IDS_INSTANCE_SWITCHER_NAME_WINDOW_MISSING_TITLE" desc="Error message appearing when a user tries to rename a window without a title. s[CHAR_LIMIT=32]">
+        Title required
+      </message>
       <message name="IDS_INSTANCE_SWITCHER_CLOSE_WINDOW" desc="The menu item for the 3-dot more button to close the instance.">
         Close window
       </message>
