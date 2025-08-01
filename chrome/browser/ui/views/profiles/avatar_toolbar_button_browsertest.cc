@@ -324,7 +324,10 @@ class AvatarToolbarButtonBaseBrowserTest {
       // Simulate setting enough time passing for the cookie change.
       GetBrowser()->GetProfile()->GetPrefs()->SetDouble(
           prefs::kGaiaCookieChangedTime,
-          (base::Time::Now() - base::Days(8)).InSecondsFSinceUnixEpoch());
+          (base::Time::Now() -
+           (switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam() +
+            base::Minutes(1)))
+              .InSecondsFSinceUnixEpoch());
     }
 
     return account_info;

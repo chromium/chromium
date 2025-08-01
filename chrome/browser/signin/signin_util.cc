@@ -433,13 +433,12 @@ bool ShouldShowAvatarSyncPromo(Profile* profile) {
 
   // For non-dice users, do not show the promo for users that have been signed
   // for a short period of time.
-  // TODO(crbug.com/435113265): Confirm minimum cookie age value.
-  constexpr base::TimeDelta kMinimumCookieAge = base::Days(7);
   if (pref_service->GetBoolean(prefs::kExplicitBrowserSignin)) {
     const base::Time last_changed = base::Time::FromSecondsSinceUnixEpoch(
         pref_service->GetDouble(prefs::kGaiaCookieChangedTime));
     if (last_changed.is_null() ||
-        (base::Time::Now() - last_changed < kMinimumCookieAge)) {
+        (base::Time::Now() - last_changed <
+         switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam())) {
       return false;
     }
   }

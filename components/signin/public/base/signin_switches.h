@@ -269,12 +269,17 @@ BASE_DECLARE_FEATURE(kEnforceManagementDisclaimer);
 #if BUILDFLAG(IS_WIN)
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAvatarButtonSyncPromo);
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+BASE_DECLARE_FEATURE_PARAM(base::TimeDelta,
+                           kAvatarButtonSyncPromoMinimumCookieAgeParam);
 #endif
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 BASE_DECLARE_FEATURE(kAvatarButtonSyncPromoForTesting);
 
 COMPONENT_EXPORT(SIGNIN_SWITCHES)
 bool IsAvatarSyncPromoFeatureEnabled();
+COMPONENT_EXPORT(SIGNIN_SWITCHES)
+base::TimeDelta GetAvatarSyncPromoFeatureMinimumCookeAgeParam();
 
 }  // namespace switches
 

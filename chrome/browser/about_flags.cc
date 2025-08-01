@@ -4664,6 +4664,17 @@ const FeatureEntry::FeatureVariation kHistorySyncOptinExpansionPillVariations[] 
      nullptr}};
 #endif  // BUILDFLAG(ENABLE_DICE_SUPPORT)
 
+#if BUILDFLAG(IS_WIN)
+const FeatureEntry::FeatureParam kAvatarButtonSyncPromoMinimumCookeAge[] = {
+    // 30 seconds to simplify testing.
+    {"minimum-cookie-age", "30s"}};
+
+const FeatureEntry::FeatureVariation kAvatarButtonSyncPromoVariations[] = {
+    {"with short minimum cookie age (for testing)",
+     kAvatarButtonSyncPromoMinimumCookeAge,
+     std::size(kAvatarButtonSyncPromoMinimumCookeAge), nullptr}};
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
 
 const FeatureEntry::FeatureParam kTouchToSearchCalloutIphParams[] = {
@@ -10741,7 +10752,9 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(IS_WIN)
     {"avatar-button-sync-promo", flag_descriptions::kAvatarButtonSyncPromoName,
      flag_descriptions::kAvatarButtonSyncPromoDescription, kOsWin,
-     FEATURE_VALUE_TYPE(switches::kAvatarButtonSyncPromo)},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(switches::kAvatarButtonSyncPromo,
+                                    kAvatarButtonSyncPromoVariations,
+                                    "AvatarButtonSyncPromo")},
 #endif
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT) && BUILDFLAG(ENABLE_EXTENSIONS)

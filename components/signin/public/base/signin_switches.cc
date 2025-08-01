@@ -370,8 +370,14 @@ BASE_FEATURE(kEnforceManagementDisclaimer,
 BASE_FEATURE(kAvatarButtonSyncPromo,
              "AvatarButtonSyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE_PARAM(base::TimeDelta,
+                   kAvatarButtonSyncPromoMinimumCookieAgeParam,
+                   &kAvatarButtonSyncPromo,
+                   "minimum-cookie-age",
+                   base::Days(14));
 #endif
 // Convenient testing flag for `kAvatarButtonSyncPromo` on all platforms.
+// Also reduces the minimum cookie age to 30 seconds.
 BASE_FEATURE(kAvatarButtonSyncPromoForTesting,
              "AvatarButtonSyncPromoForTesting",
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -386,6 +392,20 @@ bool IsAvatarSyncPromoFeatureEnabled() {
          base::FeatureList::IsEnabled(switches::kAvatarButtonSyncPromo);
 #else
   return false;
+#endif
+}
+
+base::TimeDelta GetAvatarSyncPromoFeatureMinimumCookeAgeParam() {
+  CHECK(IsAvatarSyncPromoFeatureEnabled());
+
+  if (base::FeatureList::IsEnabled(
+          switches::kAvatarButtonSyncPromoForTesting)) {
+    return base::Seconds(30);
+  }
+#if BUILDFLAG(IS_WIN)
+  return kAvatarButtonSyncPromoMinimumCookieAgeParam.Get();
+#else
+  NOTREACHED();
 #endif
 }
 

@@ -413,7 +413,10 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
     // Simulate setting enough time passing for the cookie change.
     profile()->GetPrefs()->SetDouble(
         prefs::kGaiaCookieChangedTime,
-        (base::Time::Now() - base::Days(8)).InSecondsFSinceUnixEpoch());
+        (base::Time::Now() -
+         (switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam() +
+          base::Minutes(1)))
+            .InSecondsFSinceUnixEpoch());
 
     // The rest of the setup should be aligned with the default profile
     // initialization/signin.
@@ -562,13 +565,19 @@ TEST_F(SigninUtilHistorySyncOptinTest,
   // Promo should not show if the gaia cookie age is too short.
   profile()->GetPrefs()->SetDouble(
       prefs::kGaiaCookieChangedTime,
-      (base::Time::Now() - base::Days(5)).InSecondsFSinceUnixEpoch());
+      (base::Time::Now() -
+       (switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam() -
+        base::Minutes(1)))
+          .InSecondsFSinceUnixEpoch());
   EXPECT_FALSE(signin_util::ShouldShowAvatarSyncPromo(profile()));
 
   // Promo can show if the gaia cookie age is long enough.
   profile()->GetPrefs()->SetDouble(
       prefs::kGaiaCookieChangedTime,
-      (base::Time::Now() - base::Days(10)).InSecondsFSinceUnixEpoch());
+      (base::Time::Now() -
+       (switches::GetAvatarSyncPromoFeatureMinimumCookeAgeParam() +
+        base::Minutes(1)))
+          .InSecondsFSinceUnixEpoch());
   EXPECT_TRUE(signin_util::ShouldShowAvatarSyncPromo(profile()));
 }
 
