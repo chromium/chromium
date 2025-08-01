@@ -64,32 +64,35 @@ public final class ProcessGlobalConfigConstants {
     public static final String UI_THREAD_STARTUP_MODE = "UI_THREAD_STARTUP_MODE";
 
     /**
-     * The default mode for the UI thread startup.
-     *
-     * <p>The UI thread may or may not be blocked during browser startup, depending on WebView's
+     * WebView's UI thread initialization may or may not block the UI thread, depending on the
      * internal implementation.
      */
-    public static final int DEFAULT_UI_THREAD_STARTUP = -1;
-
-    /** The UI thread is blocked completely during browser startup. */
-    public static final int SYNC_UI_THREAD_STARTUP = 0;
+    public static final int UI_THREAD_STARTUP_MODE_DEFAULT = -1;
 
     /**
-     * The UI thread is not blocked completely during browser startup. However, we still have
-     * long-running tasks that might trigger ANRs.
+     * WebView's UI thread initialization will run in a single, continuous block. This can
+     * negatively impact responsiveness and may lead to ANRs.
      */
-    public static final int LONG_TASKS_ASYNC_UI_THREAD_STARTUP = 1;
+    public static final int UI_THREAD_STARTUP_MODE_SYNC = 0;
 
     /**
-     * The UI thread is not blocked completely during browser startup. However, we still have
-     * long-running tasks that might trigger ANRs. The difference between this and {@link
-     * ASYNC_UI_STARTUP_MODE_ONE} is that the long-running tasks are shorter.
+     * WebView's UI thread initialization will run in multiple blocks to improve responsiveness.
+     * However, some of these blocks may still be long enough to cause ANRs
      */
-    public static final int SHORTER_TASKS_ASYNC_UI_THREAD_STARTUP = 2;
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_LONG_TASKS = 1;
 
     /**
-     * The UI thread is not blocked completely during browser startup. There are no long-running
-     * tasks that might trigger ANRs.
+     * WebView's UI thread initialization will run in multiple short blocks to improve
+     * responsiveness, reducing the risk of ANRs compared to {@link
+     * #UI_THREAD_STARTUP_MODE_ASYNC_LONG_TASKS}.
      */
-    public static final int SHORT_TASKS_ASYNC_UI_THREAD_STARTUP = 3;
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_SHORT_TASKS = 2;
+
+    /**
+     * WebView's UI thread initialization will run in multiple very short blocks to improve app
+     * responsiveness and make ANRs unlikely compared to {@link
+     * #UI_THREAD_STARTUP_MODE_ASYNC_LONG_TASKS} or {@link
+     * #UI_THREAD_STARTUP_MODE_ASYNC_SHORT_TASKS}
+     */
+    public static final int UI_THREAD_STARTUP_MODE_ASYNC_VERY_SHORT_TASKS = 3;
 }

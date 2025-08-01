@@ -623,31 +623,31 @@ public class WebViewChromiumFactoryProvider implements WebViewFactoryProvider {
 
     private void setupStartupTaskExperiments(AndroidXProcessGlobalConfig androidXConfig) {
         switch (androidXConfig.getUiThreadStartupMode()) {
-            case ProcessGlobalConfigConstants.DEFAULT_UI_THREAD_STARTUP:
+            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT:
                 setStartupTaskExperimentValues(
                         shouldEnableStartupTasksExperiment(),
                         shouldEnableStartupTasksExperimentP2(),
                         shouldEnableStartupTasksYieldToNativeExperiment());
                 return;
-            case ProcessGlobalConfigConstants.SYNC_UI_THREAD_STARTUP:
+            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_SYNC:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ false,
                         /* enableYieldToNative= */ false);
                 return;
-            case ProcessGlobalConfigConstants.LONG_TASKS_ASYNC_UI_THREAD_STARTUP:
+            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_LONG_TASKS:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ true,
                         /* enablePhase2= */ false,
                         /* enableYieldToNative= */ false);
                 return;
-            case ProcessGlobalConfigConstants.SHORTER_TASKS_ASYNC_UI_THREAD_STARTUP:
+            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_SHORT_TASKS:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ true,
                         /* enableYieldToNative= */ false);
                 return;
-            case ProcessGlobalConfigConstants.SHORT_TASKS_ASYNC_UI_THREAD_STARTUP:
+            case ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_ASYNC_VERY_SHORT_TASKS:
                 setStartupTaskExperimentValues(
                         /* enablePhase1= */ false,
                         /* enablePhase2= */ false,

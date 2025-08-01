@@ -31,7 +31,7 @@ public final class AndroidXProcessGlobalConfig {
     private String mDataDirectoryBasePath;
     private String mCacheDirectoryBasePath;
     private Boolean mPartitionedCookiesEnabled;
-    private Integer mUiThreadStartupMode = ProcessGlobalConfigConstants.DEFAULT_UI_THREAD_STARTUP;
+    private int mUiThreadStartupMode = ProcessGlobalConfigConstants.UI_THREAD_STARTUP_MODE_DEFAULT;
     private static AndroidXProcessGlobalConfig sGlobalConfig;
 
     private AndroidXProcessGlobalConfig(@NonNull Map<String, Object> configMap) {
@@ -81,7 +81,7 @@ public final class AndroidXProcessGlobalConfig {
                                         + entry.getKey());
                     }
 
-                    mUiThreadStartupMode = (Integer) configValue;
+                    mUiThreadStartupMode = (int) configValue;
                     break;
                 default:
                     throw new RuntimeException(
@@ -141,7 +141,7 @@ public final class AndroidXProcessGlobalConfig {
         return mPartitionedCookiesEnabled;
     }
 
-    public Integer getUiThreadStartupMode() {
+    public int getUiThreadStartupMode() {
         return mUiThreadStartupMode;
     }
 }
