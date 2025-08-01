@@ -802,8 +802,13 @@ scoped_refptr<StaticBitmapImage>
 BaseRenderingContext2D::PaintRenderingResultsToSnapshot(
     SourceDrawingBuffer source_buffer,
     FlushReason reason) {
+  if (!IsCanvas2DResourceProviderValid()) {
+    return nullptr;
+  }
+
   CanvasResourceProvider* provider = GetResourceProviderForCanvas2D();
-  return provider ? provider->Snapshot(reason) : nullptr;
+  provider->FlushCanvas(reason);
+  return provider->Snapshot(reason);
 }
 
 void BaseRenderingContext2D::WillUseCurrentFont() const {
