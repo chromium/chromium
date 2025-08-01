@@ -75,12 +75,14 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // FontCache::GetFontForCharacter which would use sandbox support to query the
   // underlying system for the font family.
   if (font_manager_) {
-    AtomicString family_name = GetFamilyNameForCharacter(
-        font_manager_.get(), c, font_description, nullptr, fallback_priority);
-    if (family_name.empty())
+    const FontPlatformData* font_platform_data =
+        CreateFontPlatformDataForCharacter(font_manager_.get(), c,
+                                           font_description, nullptr,
+                                           fallback_priority);
+    if (!font_platform_data) {
       return GetLastResortFallbackFont(font_description);
-    return FontDataFromFontPlatformData(GetFontPlatformData(
-        font_description, FontFaceCreationParams(family_name)));
+    }
+    return FontDataFromFontPlatformData(font_platform_data);
   }
 
   if (IsEmojiPresentationEmoji(fallback_priority)) {

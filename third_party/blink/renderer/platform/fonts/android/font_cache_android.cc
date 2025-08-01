@@ -149,16 +149,15 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
     fallback_priority_with_emoji_text = FontFallbackPriority::kEmojiText;
   }
 
-  AtomicString family_name = GetFamilyNameForCharacter(
-      fm.get(), c, font_description, generic_family_name,
-      fallback_priority_with_emoji_text);
+  const FontPlatformData* font_platform_data =
+      CreateFontPlatformDataForCharacter(fm.get(), c, font_description,
+                                         generic_family_name,
+                                         fallback_priority_with_emoji_text);
 
-  auto skia_fallback_is_color = [&]() {
-    const FontPlatformData* skia_fallback_result = GetFontPlatformData(
-        font_description, FontFaceCreationParams(family_name));
-    if (skia_fallback_result && skia_fallback_result->Typeface()) {
+  auto is_color = [](const FontPlatformData* fpd) {
+    if (fpd && fpd->Typeface()) {
       return ColorTableLookup::TypefaceHasAnySupportedColorTable(
-          skia_fallback_result->Typeface());
+          fpd->Typeface());
     }
     return false;
   };
@@ -176,10 +175,10 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // or "Zsye", see https://unicode.org/reports/tr51/#Emoji_Script.
   if (RuntimeEnabledFeatures::SystemFallbackEmojiVSSupportEnabled() &&
       IsTextPresentationEmoji(fallback_priority_with_emoji_text) &&
-      skia_fallback_is_color()) {
-    family_name = GetFamilyNameForCharacter(fm.get(), c, font_description,
-                                            generic_family_name,
-                                            FontFallbackPriority::kText);
+      is_color(font_platform_data)) {
+    font_platform_data = CreateFontPlatformDataForCharacter(
+        fm.get(), c, font_description, generic_family_name,
+        FontFallbackPriority::kText);
   }
 
   // Return the GMS Core emoji font if FontFallbackPriority is kEmojiEmoji or
@@ -195,23 +194,19 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
 
   if (IsEmojiPresentationEmoji(fallback_priority) &&
       base::FeatureList::IsEnabled(features::kGMSCoreEmoji)) {
-    auto skia_fallback_is_noto_color_emoji = [&]() {
-      const FontPlatformData* skia_fallback_result = GetFontPlatformData(
-          font_description, FontFaceCreationParams(family_name));
-
+    auto is_noto_color_emoji = [](const FontPlatformData* fpd) {
       // Determining the PostScript name is required as Skia on Android gives
       // synthetic family names such as "91##fallback" to fallback fonts
       // determined (Compare Skia's SkFontMgr_Android::addFamily). In order to
       // identify if really the Emoji font was returned, compare by PostScript
       // name rather than by family.
-      SkString fallback_postscript_name;
-      if (skia_fallback_result && skia_fallback_result->Typeface()) {
-        skia_fallback_result->Typeface()->getPostScriptName(
-            &fallback_postscript_name);
+      SkString postscript_name;
+      if (fpd && fpd->Typeface()) {
+        fpd->Typeface()->getPostScriptName(&postscript_name);
       }
-      return fallback_postscript_name.equals(kNotoColorEmoji);
+      return postscript_name.equals(kNotoColorEmoji);
     };
-    if (family_name.empty() || skia_fallback_is_noto_color_emoji()) {
+    if (!font_platform_data || is_noto_color_emoji(font_platform_data)) {
       const FontPlatformData* emoji_gms_core_font = GetFontPlatformData(
           font_description,
           FontFaceCreationParams(AtomicString(kNotoColorEmojiCompat)));
@@ -228,11 +223,11 @@ const SimpleFontData* FontCache::PlatformFallbackFontForCharacter(
   // Remaining case, if fallback priority is not emoij or the GMS core emoji
   // font was not found or an OEM emoji font was not to be overridden.
 
-  if (family_name.empty())
+  if (!font_platform_data) {
     return GetLastResortFallbackFont(font_description);
+  }
 
-  return FontDataFromFontPlatformData(GetFontPlatformData(
-      font_description, FontFaceCreationParams(family_name)));
+  return FontDataFromFontPlatformData(font_platform_data);
 }
 
 // static
