@@ -73,6 +73,13 @@ source_set("browser") {
     "//content/test/fuzzer:media_stream_dispatcher_host_mojolpm_fuzzer",
   ]
 
+  if (use_fuzzing_engine && is_android) {
+    visibility += [
+      ":*",
+      "//content/test/fuzzer:*",
+    ]
+  }
+
   configs += [
     "//build/config:precompiled_headers",
     "//content:content_implementation",
