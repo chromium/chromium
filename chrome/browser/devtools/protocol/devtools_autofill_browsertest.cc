@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -547,12 +548,16 @@ IN_PROC_BROWSER_TEST_F(DevToolsAutofillTest, AddressFormFilled) {
     const FormFieldData& ffd = filled_fields_by_autofill[i];
     const AutofillField* af = fs.GetFieldById(ffd.global_id());
 
+    std::vector<std::string_view> field_type_strings =
+        base::ToVector(af->Type().GetTypes(),
+                       &autofill::FieldTypeToDeveloperRepresentationString);
+    std::erase(field_type_strings, "");
+
     EXPECT_THAT(ff,
                 FilledFieldHasAttributeWithValue16("id", af->id_attribute()));
-    EXPECT_THAT(ff, FilledFieldHasAttributeWithValue(
-                        "autofillType",
-                        std::string(FieldTypeToDeveloperRepresentationString(
-                            af->Type().GetStorableType()))));
+    EXPECT_THAT(
+        ff, FilledFieldHasAttributeWithValue(
+                "autofillType", base::JoinString(field_type_strings, ", ")));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16("value", af->value()));
     EXPECT_THAT(ff, FilledFieldHasAttributeWithValue16(
                         "frameId",

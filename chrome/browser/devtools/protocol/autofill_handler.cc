@@ -8,6 +8,7 @@
 #include <variant>
 
 #include "base/check_deref.h"
+#include "base/containers/to_vector.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/devtools/protocol/autofill.h"
@@ -252,6 +253,7 @@ void AutofillHandler::OnFillOrPreviewForm(
     if (!filled_form_ids.contains(field->renderer_form_id())) {
       continue;
     }
+    autofill::FieldTypeSet field_types = field->Type().GetTypes();
     // Whether the field was classified from the autocomplete attribute or
     // predictions. If no autocomplete attribute exists OR the actual ServerType
     // differs from what it would have been with only autocomplete, autofill
@@ -259,8 +261,13 @@ void AutofillHandler::OnFillOrPreviewForm(
     bool autofill_inferred =
         field->html_type() == autofill::HtmlFieldType::kUnspecified ||
         field->html_type() == autofill::HtmlFieldType::kUnrecognized ||
-        autofill::HtmlFieldTypeToBestCorrespondingFieldType(
-            field->html_type()) != field->Type().GetStorableType();
+        !field_types.contains(
+            autofill::HtmlFieldTypeToBestCorrespondingFieldType(
+                field->html_type()));
+
+    std::vector<std::string_view> field_type_strings = base::ToVector(
+        field_types, &autofill::FieldTypeToDeveloperRepresentationString);
+    std::erase(field_type_strings, "");
 
     filled_fields_to_be_sent_to_devtools->push_back(
         protocol::Autofill::FilledField::Create()
@@ -271,9 +278,7 @@ void AutofillHandler::OnFillOrPreviewForm(
                                                               : u""))
             .SetHtmlType(std::string(
                 autofill::FormControlTypeToString(field->form_control_type())))
-            .SetAutofillType(
-                std::string(FieldTypeToDeveloperRepresentationString(
-                    field->Type().GetStorableType())))
+            .SetAutofillType(base::JoinString(field_type_strings, ", "))
             .SetFillingStrategy(
                 autofill_inferred
                     ? protocol::Autofill::FillingStrategyEnum::AutofillInferred
