@@ -398,18 +398,6 @@ void TestClipboard::WriteData(const ClipboardFormatType& format,
   ClipboardMonitor::GetInstance()->NotifyClipboardDataChanged();
 }
 
-void TestClipboard::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void TestClipboard::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void TestClipboard::WriteConfidentialDataForPassword() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 TestClipboard::DataStore::DataStore() = default;
 
 TestClipboard::DataStore::DataStore(const DataStore& other) {

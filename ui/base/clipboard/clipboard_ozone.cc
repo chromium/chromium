@@ -744,18 +744,6 @@ void ClipboardOzone::WriteData(const ClipboardFormatType& format,
   async_clipboard_ozone_->InsertData(std::move(owned_data), {format.GetName()});
 }
 
-void ClipboardOzone::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardOzone::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardOzone::WriteConfidentialDataForPassword() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 void ClipboardOzone::AddSourceToClipboard(
     const ClipboardBuffer buffer,
     std::unique_ptr<DataTransferEndpoint> data_src) {

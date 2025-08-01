@@ -814,14 +814,6 @@ void ClipboardAndroid::WriteData(const ClipboardFormatType& format,
       std::string(reinterpret_cast<const char*>(data.data()), data.size()));
 }
 
-void ClipboardAndroid::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
-void ClipboardAndroid::WriteUploadCloudClipboard() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 void ClipboardAndroid::WriteConfidentialDataForPassword() {
   // Set the password data that is marked as IS_SENSITIVE.
   GetClipboardMap().MarkPasswordData();

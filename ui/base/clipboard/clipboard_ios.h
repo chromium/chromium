@@ -96,9 +96,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) ClipboardIOS : public Clipboard {
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
-  void WriteClipboardHistory() override;
-  void WriteUploadCloudClipboard() override;
-  void WriteConfidentialDataForPassword() override;
 
   std::vector<uint8_t> ReadPngInternal(ClipboardBuffer buffer,
                                        UIPasteboard* pasteboard) const;

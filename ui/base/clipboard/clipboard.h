@@ -457,11 +457,6 @@ class COMPONENT_EXPORT(UI_BASE_CLIPBOARD) Clipboard
   virtual void WriteData(const ClipboardFormatType& format,
                          base::span<const uint8_t> data) = 0;
 
-  // Prevent data from being written to the clipboard history and cloud.
-  virtual void WriteClipboardHistory() = 0;
-  virtual void WriteUploadCloudClipboard() = 0;
-  virtual void WriteConfidentialDataForPassword() = 0;
-
   void DispatchPortableRepresentation(const ObjectMapParams& params);
   void DispatchPortableRepresentation(const RawData& data);
 

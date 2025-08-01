@@ -99,9 +99,6 @@ class ClipboardOzone : public Clipboard {
   void WriteBitmap(const SkBitmap& bitmap) override;
   void WriteData(const ClipboardFormatType& format,
                  base::span<const uint8_t> data) override;
-  void WriteClipboardHistory() override;
-  void WriteUploadCloudClipboard() override;
-  void WriteConfidentialDataForPassword() override;
 
   // Used to put a source URL in the clipboard on other Ozone platforms.
   void AddSourceToClipboard(const ClipboardBuffer buffer,

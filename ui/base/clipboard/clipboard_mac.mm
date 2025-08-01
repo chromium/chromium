@@ -568,10 +568,6 @@ void ClipboardMac::WriteData(const ClipboardFormatType& format,
                    forType:format.ToNSString()];
 }
 
-void ClipboardMac::WriteClipboardHistory() {
-  // TODO(crbug.com/40945200): Add support for this.
-}
-
 void ClipboardMac::WriteUploadCloudClipboard() {
   // Make the pasteboard content current host only.
   [GetPasteboard()
