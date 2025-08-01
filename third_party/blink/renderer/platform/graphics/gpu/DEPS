@@ -15,3 +15,12 @@ include_rules = [
     "+ui/gl/buildflags.h",
     "+ui/gl/gpu_preference.h",
 ]
+
+specific_include_rules = {
+  "drawing_buffer.h": [
+    "+base/containers/flat_set.h",
+  ],
+  "xr_webgl_drawing_buffer.h": [
+    "+base/containers/flat_set.h",
+  ],
+}

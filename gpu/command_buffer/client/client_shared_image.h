@@ -19,7 +19,7 @@
 #include "gpu/command_buffer/common/shared_image_trace_utils.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#include "gpu/ipc/common/exported_shared_image.mojom-shared.h"
+#include "gpu/ipc/common/exported_shared_image.mojom-forward.h"
 #include "gpu/ipc/common/gpu_memory_buffer_handle_info.h"
 #include "gpu/ipc/common/gpu_memory_buffer_impl.h"
 #include "third_party/skia/include/core/SkImageInfo.h"

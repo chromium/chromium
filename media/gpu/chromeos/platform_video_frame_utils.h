@@ -6,6 +6,7 @@
 #define MEDIA_GPU_CHROMEOS_PLATFORM_VIDEO_FRAME_UTILS_H_
 
 #include <optional>
+#include <set>
 
 #include "base/memory/scoped_refptr.h"
 #include "base/unguessable_token.h"
