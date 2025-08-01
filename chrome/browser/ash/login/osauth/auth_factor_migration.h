@@ -16,7 +16,8 @@ class AuthFactorMigration {
  public:
   enum class MigrationName {
     kRecoveryFactorHsmPubkeyMigration,
-    kKnowledgeFactorHashInfoMigration
+    kKnowledgeFactorHashInfoMigration,
+    kRecoveryIdMigration,
   };
   AuthFactorMigration() = default;
   virtual ~AuthFactorMigration() = default;

@@ -109,6 +109,8 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
       chromeos::DBusMethodCallback<::user_data_auth::ListAuthFactorsReply>;
   using GetAuthFactorExtendedInfoCallback = chromeos::DBusMethodCallback<
       ::user_data_auth::GetAuthFactorExtendedInfoReply>;
+  using GenerateFreshRecoveryIdCallback = chromeos::DBusMethodCallback<
+      ::user_data_auth::GenerateFreshRecoveryIdReply>;
 
   // Asynchronous (biometric) AuthFactors API.
   using PrepareAuthFactorCallback =
@@ -338,6 +340,12 @@ class COMPONENT_EXPORT(USERDATAAUTH_CLIENT) UserDataAuthClient {
   virtual void GetAuthFactorExtendedInfo(
       const ::user_data_auth::GetAuthFactorExtendedInfoRequest& request,
       GetAuthFactorExtendedInfoCallback callback) = 0;
+
+  // This is called to rotate the recovery ID after a user authenticates with a
+  // recovery factor. It should only be used once the user directory is mounted.
+  virtual void GenerateFreshRecoveryId(
+      const ::user_data_auth::GenerateFreshRecoveryIdRequest& request,
+      GenerateFreshRecoveryIdCallback callback) = 0;
 
   // This is called when a user wants to get an AuthSession status.
   virtual void GetAuthSessionStatus(
