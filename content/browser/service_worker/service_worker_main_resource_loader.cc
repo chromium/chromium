@@ -97,7 +97,7 @@ bool IsStaticRouterRaceRequestFixEnabled() {
 }
 
 constexpr char kHistogramSyntheticResponseEligibility[] =
-    "ServiceWorker.SyntheticResponse.Eligibilty";
+    "ServiceWorker.SyntheticResponse.Eligibility";
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
