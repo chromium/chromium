@@ -221,9 +221,6 @@ class CORE_EXPORT AdTracker : public GarbageCollected<AdTracker> {
 
   void DidExecuteScript();
   bool IsKnownAdScript(ExecutionContext*, const String& url);
-  bool IsKnownAdScriptForCheckedContext(
-      ExecutionContext&,
-      std::optional<AdScriptIdentifier>* out_ad_script);
 
   // Adds the given `url` and its associated `ad_provenance` to the set of known
   // ad scripts associated with the provided `execution_context`.

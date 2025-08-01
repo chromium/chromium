@@ -384,11 +384,38 @@ bool AdTracker::IsAdScriptInStackHelper(
   if (stack_type == StackType::kBottomOnly)
     return false;
 
+  // If we're not aware of any ad scripts at all, or any scripts in this
+  // context, don't bother looking at the stack.
+  if (ad_script_ids_.empty()) {
+    return false;
+  }
+  auto it = context_known_ad_scripts_.find(execution_context);
+  if (it == context_known_ad_scripts_.end() || it->value.empty()) {
+    return false;
+  }
+
   // The stack scanned by the AdTracker contains entry points into the stack
   // (e.g., when v8 is executed) but not the entire stack. For a small cost we
   // can also check the top of the stack (this is much cheaper than getting the
   // full stack from v8).
-  return IsKnownAdScriptForCheckedContext(*execution_context, out_ad_script);
+  int top_script_id = ScriptAtTopOfStack();
+  if (top_script_id <= 0) {
+    return false;
+  }
+
+  bool is_ad_script = ad_script_ids_.Contains(top_script_id);
+  if (is_ad_script && out_ad_script) {
+    v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
+
+    // We don't know the script name/url here, but that's okay. `GetAncestry()`
+    // will look up the ancestry node by script_id and use the
+    // AdScriptIdentifier from that.
+    *out_ad_script = AdScriptIdentifier(
+        GetDebuggerIdForContext(isolate->GetCurrentContext()), top_script_id,
+        "");
+  }
+
+  return is_ad_script;
 }
 
 bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
@@ -408,39 +435,6 @@ bool AdTracker::IsKnownAdScript(ExecutionContext* execution_context,
     return false;
   }
   return it->value.Contains(url);
-}
-
-bool AdTracker::IsKnownAdScriptForCheckedContext(
-    ExecutionContext& execution_context,
-    std::optional<AdScriptIdentifier>* out_ad_script) {
-  DCHECK(!IsKnownAdExecutionContext(&execution_context));
-  auto it = context_known_ad_scripts_.find(&execution_context);
-  if (it == context_known_ad_scripts_.end()) {
-    return false;
-  }
-
-  if (it->value.empty()) {
-    return false;
-  }
-
-  int top_script_id = ScriptAtTopOfStack();
-  if (top_script_id <= 0) {
-    return false;
-  }
-
-  bool is_ad_script = ad_script_ids_.Contains(top_script_id);
-  if (is_ad_script && out_ad_script) {
-    v8::Isolate* isolate = v8::Isolate::TryGetCurrent();
-
-    // We don't know the script name/url here, but that's okay. `GetAncestry()`
-    // will look up the ancestry node by script_id and use the
-    // AdScriptIdentifier from that.
-    *out_ad_script = AdScriptIdentifier(
-        GetDebuggerIdForContext(isolate->GetCurrentContext()), top_script_id,
-        "");
-  }
-
-  return is_ad_script;
 }
 
 // This is a separate function for testing purposes.
