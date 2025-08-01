@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/home_customization/model/home_background_customization_service.h"
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_consumer.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_color_palette_util.h"
@@ -21,18 +22,18 @@ struct SeedColor {
   ui::ColorProviderKey::SchemeVariant variant;
 };
 
-// Array of seed colors (in RGB integer format) and variants used to generate
+// Array of seed colors (in ARGB integer format) and variants used to generate
 // background color palette configurations in the color picker.
 const SeedColor kSeedColors[] = {
-    {0x8cabe4, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Blue
-    {0x26a69a, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Aqua
-    {0x00ff00, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Green
-    {0x87ba81, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Viridian
-    {0xfadf73, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Citron
-    {0xff8000, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Orange
-    {0xf3b2be, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Rose
-    {0xff00ff, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Fuchsia
-    {0xe5d5fc, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Violet
+    {0xff8cabe4, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Blue
+    {0xff26a69a, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Aqua
+    {0xff00ff00, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Green
+    {0xff87ba81, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Viridian
+    {0xfffadf73, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Citron
+    {0xffff8000, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Orange
+    {0xfff3b2be, ui::ColorProviderKey::SchemeVariant::kNeutral},    // Rose
+    {0xffff00ff, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Fuchsia
+    {0xffe5d5fc, ui::ColorProviderKey::SchemeVariant::kTonalSpot},  // Violet
 };
 
 // Returns a dynamic UIColor using two named color assets for light and dark
@@ -47,10 +48,25 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
 
 }  // namespace
 
-@implementation HomeCustomizationBackgroundColorPickerMediator
+@implementation HomeCustomizationBackgroundColorPickerMediator {
+  // Used to get and observe the background state.
+  raw_ptr<HomeBackgroundCustomizationService> _backgroundCustomizationService;
+}
 
+- (instancetype)initWithBackgroundCustomizationService:
+    (HomeBackgroundCustomizationService*)backgroundCustomizationService {
+  self = [super init];
+  if (self) {
+    _backgroundCustomizationService = backgroundCustomizationService;
+  }
+
+  return self;
+}
 - (void)configureColorPalettes {
   NSMutableArray* colorPalettes = [NSMutableArray array];
+  std::optional<sync_pb::UserColorTheme> colorTheme =
+      _backgroundCustomizationService->GetCurrentColorTheme();
+  NSNumber* selectedColorIndex = nil;
 
   NewTabPageColorPalette* defaultColorPalette =
       [[NewTabPageColorPalette alloc] init];
@@ -70,11 +86,26 @@ UIColor* DynamicNamedColor(NSString* lightName, NSString* darkName) {
     [colorPalettes
         addObject:CreateColorPaletteFromSeedColor(
                       UIColorFromRGB(seedColor.color), seedColor.variant)];
+
+    if (colorTheme && colorTheme->color() &&
+        seedColor.color == colorTheme->color()) {
+      selectedColorIndex = @(colorPalettes.count - 1);
+    }
   }
 
-  // TODO(crbug.com/408243803): Pass the current selection ID if the background
-  // is a color; pass 0 if the background is set to "no background".
-  [_consumer setColorPalettes:colorPalettes selectedColorIndex:@(0)];
+  // If no color is currently selected, set selectedColorIndex to nil
+  // when a background image is active, or to 0 when there is no background.
+  if (!selectedColorIndex) {
+    selectedColorIndex =
+        _backgroundCustomizationService->GetCurrentCustomBackground() ||
+                _backgroundCustomizationService
+                    ->GetCurrentUserUploadedBackground()
+            ? nil
+            : @(0);
+  }
+
+  [_consumer setColorPalettes:colorPalettes
+           selectedColorIndex:selectedColorIndex];
 }
 
 @end

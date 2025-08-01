@@ -92,11 +92,14 @@ CGFloat const kSheetCornerRadius = 30;
       initWithHomeBackgroundCustomizationService:
           homeBackgroundCustomizationService];
   _backgroundColorPickerMediator =
-      [[HomeCustomizationBackgroundColorPickerMediator alloc] init];
+      [[HomeCustomizationBackgroundColorPickerMediator alloc]
+          initWithBackgroundCustomizationService:
+              homeBackgroundCustomizationService];
   _backgroundPresetGalleryPickerMediator =
       [[HomeCustomizationBackgroundPresetGalleryPickerMediator alloc]
-          initWithImageFetcherService:imageFetcherService
-           homeBackgroundImageService:homeBackgroundImageService];
+             initWithImageFetcherService:imageFetcherService
+              homeBackgroundImageService:homeBackgroundImageService
+          backgroundCustomizationService:homeBackgroundCustomizationService];
 
   [self
       addItemWithTitle:

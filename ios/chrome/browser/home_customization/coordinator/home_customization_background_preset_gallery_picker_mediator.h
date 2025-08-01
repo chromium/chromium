@@ -15,6 +15,7 @@ class ImageFetcherService;
 
 @protocol HomeCustomizationBackgroundPresetGalleryPickerConsumer;
 class HomeBackgroundImageService;
+class HomeBackgroundCustomizationService;
 
 // A mediator that generates and configures background presets for the Home
 // customization screen, and communicates them to a consumer.
@@ -27,7 +28,9 @@ class HomeBackgroundImageService;
                     (image_fetcher::ImageFetcherService*)imageFetcherService
                  homeBackgroundImageService:
                      (HomeBackgroundImageService*)homeBackgroundImageService
-    NS_DESIGNATED_INITIALIZER;
+             backgroundCustomizationService:
+                 (HomeBackgroundCustomizationService*)
+                     backgroundCustomizationService NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;
 

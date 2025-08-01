@@ -9,6 +9,7 @@
 
 #import "ios/chrome/browser/home_customization/ui/home_customization_background_color_picker_mutator.h"
 @protocol HomeCustomizationBackgroundColorPickerConsumer;
+class HomeBackgroundCustomizationService;
 
 // A mediator that generates and configures background color palettes
 // for the Home customization screen, and communicates them to a consumer.
@@ -18,6 +19,9 @@
 // The consumer that receives the generated color palette configurations.
 @property(nonatomic, weak) id<HomeCustomizationBackgroundColorPickerConsumer>
     consumer;
+
+- (instancetype)initWithBackgroundCustomizationService:
+    (HomeBackgroundCustomizationService*)backgroundCustomizationService;
 
 // Generates a predefined set of color palettes and provides them to the
 // consumer.
