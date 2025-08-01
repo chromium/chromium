@@ -944,6 +944,13 @@ void HistorySyncBridge::MaybeCommit(const VisitRow& visit_row) {
     return;
   }
 
+  // If this visit is actor-initiated, ignore it.
+  history::VisitSource visit_source = VisitSource::SOURCE_BROWSED;
+  if (history_backend_->GetVisitSource(visit_row.visit_id, &visit_source) &&
+      visit_source == VisitSource::SOURCE_ACTOR) {
+    return;
+  }
+
   // If this visit is not the end of a redirect chain, ignore it. Note that
   // visits that are not part of a redirect chain are considered to be both
   // start and end of a chain, so these are *not* ignored here.

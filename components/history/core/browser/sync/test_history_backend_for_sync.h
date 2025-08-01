@@ -31,6 +31,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   void AddOrReplaceContentAnnotation(
       VisitID visit_id,
       const VisitContentAnnotations& content_annotation);
+  void AddOrReplaceVisitSource(VisitID visit_id, VisitSource visit_source);
 
   void RemoveURLAndVisits(URLID url_id);
   void Clear();
@@ -45,6 +46,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
   bool IsExpiredVisitTime(const base::Time& time) const override;
   bool GetURLByID(URLID url_id, URLRow* url_row) override;
   bool GetVisitByID(VisitID visit_id, VisitRow* visit_row) override;
+  bool GetVisitSource(const VisitID visit_id, VisitSource* source) override;
   bool GetMostRecentVisitForURL(URLID id, VisitRow* visit_row) override;
   bool GetLastVisitByTime(base::Time visit_time, VisitRow* visit_row) override;
   VisitVector GetRedirectChain(VisitRow visit) override;
@@ -109,6 +111,7 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
 
   std::map<VisitID, VisitContextAnnotations> context_annotations_;
   std::map<VisitID, VisitContentAnnotations> content_annotations_;
+  std::map<VisitID, VisitSource> visit_sources_;
 
   int get_foreign_visit_call_count_ = 0;
   int delete_all_foreign_visits_call_count_ = 0;

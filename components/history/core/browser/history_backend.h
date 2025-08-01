@@ -728,7 +728,7 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
   bool GetVisitsSource(const VisitVector& visits, VisitSourceMap* sources);
 
   // Like `GetVisitsSource`, but for a single visit.
-  bool GetVisitSource(const VisitID visit_id, VisitSource* source);
+  bool GetVisitSource(const VisitID visit_id, VisitSource* source) override;
 
   bool GetURL(const GURL& url, URLRow* url_row);
 
