@@ -173,6 +173,9 @@ static constexpr auto kTypeNameToFieldType =
          {"NATIONAL_ID_CARD_EXPIRATION_DATE", NATIONAL_ID_CARD_EXPIRATION_DATE},
          {"NATIONAL_ID_CARD_ISSUE_DATE", NATIONAL_ID_CARD_ISSUE_DATE},
          {"NATIONAL_ID_CARD_ISSUING_COUNTRY", NATIONAL_ID_CARD_ISSUING_COUNTRY},
+         {"KNOWN_TRAVELER_NUMBER", KNOWN_TRAVELER_NUMBER},
+         {"KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE",
+          KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE},
          {"EMAIL_OR_LOYALTY_MEMBERSHIP_ID", EMAIL_OR_LOYALTY_MEMBERSHIP_ID}});
 
 bool IsFillableFieldType(FieldType field_type) {
@@ -301,6 +304,8 @@ bool IsFillableFieldType(FieldType field_type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return true;
 
     // Not fillable credential fields.
@@ -398,6 +403,8 @@ std::string_view FieldTypeToDeveloperRepresentationString(FieldType type) {
     case NATIONAL_ID_CARD_EXPIRATION_DATE:
     case NATIONAL_ID_CARD_ISSUE_DATE:
     case NATIONAL_ID_CARD_ISSUING_COUNTRY:
+    case KNOWN_TRAVELER_NUMBER:
+    case KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE:
       return "";
     case NUMERIC_QUANTITY:
       return "Numeric quantity";

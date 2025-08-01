@@ -342,12 +342,26 @@ TEST(AutofillTypeTest, GetAutofillAiType) {
         ElementsAre(PASSPORT_NAME_TAG));
   }
 
+  // Some types do not have an entity yet, this is an intermediate state
+  // between a type being added and the entity schema being updated.
+  constexpr FieldTypeSet kTemporaryTypesWithoutEntity = {
+      KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE};
+  for (FieldType field_type : kTemporaryTypesWithoutEntity) {
+    for (EntityType entity : DenseSet<EntityType>::all()) {
+      AutofillType autofill_type = AutofillType(field_type);
+      ASSERT_EQ(autofill_type.GetAutofillAiType(entity), UNKNOWN_TYPE);
+    }
+  }
+
   {
     // Test that GetAutofillAiTypes() is the union of GetAutofillAiType().
     FieldTypeSet hit1;
     FieldTypeSet hit2;
     for (EntityType entity : DenseSet<EntityType>::all()) {
       for (FieldType field_type : kAllFieldTypes) {
+        if (kTemporaryTypesWithoutEntity.contains(field_type)) {
+          continue;
+        }
         AutofillType type = AutofillType(field_type);
         if (type.GetAutofillAiType(entity) != UNKNOWN_TYPE) {
           hit1.insert(field_type);
@@ -366,6 +380,9 @@ TEST(AutofillTypeTest, GetAutofillAiType) {
     FieldTypeSet hit2;
     for (EntityType entity : DenseSet<EntityType>::all()) {
       for (FieldType field_type : kAllFieldTypes) {
+        if (kTemporaryTypesWithoutEntity.contains(field_type)) {
+          continue;
+        }
         AutofillType type = AutofillType(field_type);
         if (type.GetAutofillAiType(entity) != UNKNOWN_TYPE) {
           hit1.insert(field_type);
@@ -518,6 +535,18 @@ TEST(AutofillTypeTest, AlmostAllFieldTypesAreCovered) {
         {DRIVERS_LICENSE_NAME_TAG, PASSPORT_NAME_TAG, VEHICLE_OWNER_TAG});
   }
 
+  // Some types do not have an entity yet, this is an intermediate state
+  // between a type being added and the entity schema being updated.
+  constexpr FieldTypeSet kTemporaryTypesWithoutEntity = {
+      KNOWN_TRAVELER_NUMBER, KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE};
+  for (FieldType field_type : kTemporaryTypesWithoutEntity) {
+    for (EntityType entity : DenseSet<EntityType>::all()) {
+      AutofillType autofill_type = AutofillType(field_type);
+      ASSERT_EQ(autofill_type.GetAutofillAiType(entity), UNKNOWN_TYPE);
+    }
+  }
+
+  kNotCovered.insert_all(kTemporaryTypesWithoutEntity);
   for (FieldType field_type : kAllFieldTypes) {
     SCOPED_TRACE(testing::Message()
                  << "field_type=" << FieldTypeToStringView(field_type));
