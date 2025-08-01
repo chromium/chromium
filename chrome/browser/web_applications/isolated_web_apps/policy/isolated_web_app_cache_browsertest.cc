@@ -700,7 +700,7 @@ class IwaCacheBaseTest : public ash::LoginManagerTest {
 
   void OverrideCacheDir() {
     ProfileManager* profile_manager = g_browser_process->profile_manager();
-    EXPECT_TRUE(profile_manager);
+    ASSERT_TRUE(profile_manager);
     cache_root_dir_ = profile_manager->user_data_dir();
     cache_root_dir_override_ = std::make_unique<base::ScopedPathOverride>(
         ash::DIR_DEVICE_LOCAL_ACCOUNT_IWA_CACHE, cache_root_dir_);
