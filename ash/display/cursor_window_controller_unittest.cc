@@ -460,7 +460,7 @@ TEST_F(CursorWindowControllerTest, LargeCursorColoringSpotCheck) {
       {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(172, 0, 0),
        CursorType::kNoDrop},
       // Similarly, the copy cursor has green in it.
-      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(25, 140, 22),
+      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(57, 149, 88),
        CursorType::kCopy},
   };
 

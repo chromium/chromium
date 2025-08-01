@@ -199,7 +199,7 @@ TEST(CursorUtil, GetCursorDataWithColor) {
       {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(173, 8, 8),
        CursorType::kNoDrop},
       // Similarly, the copy cursor has green in it.
-      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(19, 137, 16),
+      {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(57, 149, 88),
        CursorType::kCopy},
   };
 
