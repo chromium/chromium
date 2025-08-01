@@ -1919,14 +1919,16 @@ public class SelectableTabListEditorTest {
 
     /** Retrieves all tabs from the current tab model */
     private List<Tab> getTabsInCurrentTabModel() {
-        List<Tab> tabs = new ArrayList<>();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabs = new ArrayList<>();
 
-        TabModel currentTabModel = mTabModelSelector.getCurrentModel();
-        for (int i = 0; i < currentTabModel.getCount(); i++) {
-            tabs.add(currentTabModel.getTabAt(i));
-        }
-
-        return tabs;
+                    TabModel currentTabModel = mTabModelSelector.getCurrentModel();
+                    for (int i = 0; i < currentTabModel.getCount(); i++) {
+                        tabs.add(currentTabModel.getTabAt(i));
+                    }
+                    return tabs;
+                });
     }
 
     /**
@@ -1934,15 +1936,20 @@ public class SelectableTabListEditorTest {
      * tab model
      */
     private List<Tab> getTabsInCurrentTabGroupModelFilter() {
-        List<Tab> tabs = new ArrayList<>();
+        return ThreadUtils.runOnUiThreadBlocking(
+                () -> {
+                    List<Tab> tabs = new ArrayList<>();
 
-        TabGroupModelFilter filter =
-                mTabModelSelector.getTabGroupModelFilterProvider().getCurrentTabGroupModelFilter();
-        for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
-            tabs.add(filter.getRepresentativeTabAt(i));
-        }
+                    TabGroupModelFilter filter =
+                            mTabModelSelector
+                                    .getTabGroupModelFilterProvider()
+                                    .getCurrentTabGroupModelFilter();
+                    for (int i = 0; i < filter.getIndividualTabAndGroupCount(); i++) {
+                        tabs.add(filter.getRepresentativeTabAt(i));
+                    }
 
-        return tabs;
+                    return tabs;
+                });
     }
 
     private void showSelectionEditor(List<Tab> tabs, @Nullable List<TabListEditorAction> actions) {

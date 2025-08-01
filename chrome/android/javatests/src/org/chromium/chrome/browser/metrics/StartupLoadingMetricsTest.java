@@ -499,9 +499,9 @@ public class StartupLoadingMetricsTest {
                     // Wait for a tab to be loaded.
                     mTabbedActivityTestRule.waitForActivityNativeInitializationComplete();
                     CriteriaHelper.pollUiThread(
-                            () -> mTabbedActivityTestRule.getActivity().getActivityTab() != null,
+                            () -> mTabbedActivityTestRule.getActivityTab() != null,
                             "Tab never selected/initialized.");
-                    Tab tab = mTabbedActivityTestRule.getActivity().getActivityTab();
+                    Tab tab = mTabbedActivityTestRule.getActivityTab();
                     ChromeTabUtils.waitForTabPageLoaded(tab, (String) null);
                 });
         assertMainIntentLaunchColdStartHistogramRecorded(0);
@@ -594,7 +594,7 @@ public class StartupLoadingMetricsTest {
         HistogramWatcher ntpColdStartWatcher = createNtpColdStartHistogramWatcher(0);
         runAndWaitForPageLoadMetricsRecorded(
                 () -> mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent));
-        Tab tab = mCustomTabActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mCustomTabActivityTestRule.getActivityTab();
 
         // Verify the URL and check that startup metrics are *not* recorded.
         Assert.assertEquals(getTestPage(), ChromeTabUtils.getUrlStringOnUiThread(tab));

@@ -329,7 +329,7 @@ public class PageInfoViewTest {
 
     private void openPageInfo(@ContentSettingsType.EnumType int highlightedPermission) {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(

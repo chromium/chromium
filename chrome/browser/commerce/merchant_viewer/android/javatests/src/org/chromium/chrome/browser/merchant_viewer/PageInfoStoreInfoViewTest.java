@@ -100,7 +100,7 @@ public class PageInfoStoreInfoViewTest {
     // used it can cause flakiness issues for apis >= 30.
     private void openPageInfoFromStoreIcon(boolean fromStoreIcon, boolean dialogCheck) {
         ChromeActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(

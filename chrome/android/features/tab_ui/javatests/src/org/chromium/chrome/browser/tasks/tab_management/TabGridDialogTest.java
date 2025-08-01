@@ -297,7 +297,10 @@ public class TabGridDialogTest {
 
         if (cta.getLayoutManager().isLayoutVisible(LayoutType.TAB_SWITCHER)
                 && !cta.getLayoutManager().isLayoutStartingToHide(LayoutType.TAB_SWITCHER)) {
-            if (cta.getTabModelSelectorSupplier().get().getTotalTabCount() == 0) {
+            int tabCount =
+                    ThreadUtils.runOnUiThreadBlocking(
+                            () -> cta.getTabModelSelectorSupplier().get().getTotalTabCount());
+            if (tabCount == 0) {
                 addBlankTabs(cta, false, 1);
                 LayoutTestUtils.waitForLayout(cta.getLayoutManager(), LayoutType.BROWSING);
             } else {

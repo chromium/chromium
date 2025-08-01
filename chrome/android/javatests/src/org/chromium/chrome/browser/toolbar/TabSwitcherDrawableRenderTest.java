@@ -111,7 +111,7 @@ public class TabSwitcherDrawableRenderTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ false);
-        NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
@@ -128,7 +128,7 @@ public class TabSwitcherDrawableRenderTest {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, /* incognito= */ true);
-        NewTabPageTestUtils.waitForNtpLoaded(activity.getActivityTab());
+        NewTabPageTestUtils.waitForNtpLoaded(mActivityTestRule.getActivityTab());
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

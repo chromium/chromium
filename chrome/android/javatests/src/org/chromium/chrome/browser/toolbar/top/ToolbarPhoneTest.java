@@ -539,7 +539,7 @@ public class ToolbarPhoneTest {
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInNtp());
         assertEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
@@ -569,7 +569,7 @@ public class ToolbarPhoneTest {
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInNtp());
         ThreadUtils.runOnUiThreadBlocking(
@@ -611,7 +611,7 @@ public class ToolbarPhoneTest {
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
         assertEquals(homeSurfaceToolbarBackgroundColor, toolbarBackgroundDrawable.getColor());
@@ -645,7 +645,7 @@ public class ToolbarPhoneTest {
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         ViewGroup fakeSearchBox = mActivityTestRule.getActivity().findViewById(R.id.search_box);
         assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
@@ -678,7 +678,7 @@ public class ToolbarPhoneTest {
 
         // Load the new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         ViewGroup fakeSearchBox = mActivityTestRule.getActivity().findViewById(R.id.search_box);
         assertEquals(true, mToolbar.isLocationBarShownInGeneralNtp());
@@ -695,7 +695,7 @@ public class ToolbarPhoneTest {
     public void testFocusAnimation_optionalButtonRestored() {
         mToolbar.setOptionalButtonCoordinatorForTesting(mOptionalButtonCoordinator);
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInNtp());
 
@@ -736,7 +736,7 @@ public class ToolbarPhoneTest {
                 });
 
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         assertEquals(true, mToolbar.isLocationBarShownInNtp());
 
@@ -813,7 +813,7 @@ public class ToolbarPhoneTest {
     public void testNtpAnimation_onGTSExit() {
         // Load NTP
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
-        Tab tab = mActivityTestRule.getActivity().getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         NewTabPageTestUtils.waitForNtpLoaded(tab);
         // Location bar alpha is 0 when NTP is shown.
         assertEquals(0f, mToolbar.getLocationBar().getContainerView().getAlpha(), EPSILON);

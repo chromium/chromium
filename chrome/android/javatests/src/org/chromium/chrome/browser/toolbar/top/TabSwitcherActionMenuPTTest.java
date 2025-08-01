@@ -9,6 +9,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import static org.chromium.base.test.transit.TransitAsserts.assertFinalDestination;
+import static org.chromium.chrome.test.util.ChromeTabUtils.getTabCountOnUiThread;
 
 import androidx.test.filters.LargeTest;
 
@@ -59,7 +60,7 @@ public class TabSwitcherActionMenuPTTest {
         RegularNewTabPageStation ntp = actionMenu.selectNewTab();
 
         assertFalse(getTabModelSelector().isIncognitoSelected());
-        assertEquals(2, getCurrentTabModel().getCount());
+        assertEquals(2, getTabCountOnUiThread(getCurrentTabModel()));
         assertFinalDestination(ntp);
     }
 
@@ -73,7 +74,7 @@ public class TabSwitcherActionMenuPTTest {
         IncognitoNewTabPageStation incognitoNtp = actionMenu.selectNewIncognitoTab();
 
         assertTrue(getTabModelSelector().isIncognitoSelected());
-        assertEquals(1, getCurrentTabModel().getCount());
+        assertEquals(1, getTabCountOnUiThread(getCurrentTabModel()));
         assertFinalDestination(incognitoNtp);
     }
 
@@ -86,7 +87,7 @@ public class TabSwitcherActionMenuPTTest {
         TabSwitcherActionMenuFacility actionMenu = page.openTabSwitcherActionMenu();
         RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
-        assertEquals(0, getCurrentTabModel().getCount());
+        assertEquals(0, getTabCountOnUiThread(getCurrentTabModel()));
         assertFinalDestination(tabSwitcher);
     }
 
@@ -101,8 +102,8 @@ public class TabSwitcherActionMenuPTTest {
 
         TabModel regularTabModel = getTabModelSelector().getModel(/* incognito= */ false);
         TabModel incognitoTabModel = getTabModelSelector().getModel(/* incognito= */ true);
-        assertEquals(2, regularTabModel.getCount());
-        assertEquals(1, incognitoTabModel.getCount());
+        assertEquals(2, getTabCountOnUiThread(regularTabModel));
+        assertEquals(1, getTabCountOnUiThread(incognitoTabModel));
 
         // Close second regular tab opened.
         TabSwitcherActionMenuFacility actionMenu = ntp.openTabSwitcherActionMenu();
@@ -113,8 +114,8 @@ public class TabSwitcherActionMenuPTTest {
         RegularTabSwitcherStation tabSwitcher = actionMenu.selectCloseTabAndDisplayTabSwitcher();
 
         // Only the incognito tab should still remain.
-        assertEquals(0, regularTabModel.getCount());
-        assertEquals(1, incognitoTabModel.getCount());
+        assertEquals(0, getTabCountOnUiThread(regularTabModel));
+        assertEquals(1, getTabCountOnUiThread(incognitoTabModel));
         assertFinalDestination(tabSwitcher);
     }
 

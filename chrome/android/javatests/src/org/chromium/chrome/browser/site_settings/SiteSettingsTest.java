@@ -268,7 +268,6 @@ public class SiteSettingsTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mPermissionRule
-                                .getActivity()
                                 .getActivityTab()
                                 .removeObserver(mPermissionUpdateWaiter);
                     });
@@ -310,12 +309,11 @@ public class SiteSettingsTest {
             ThreadUtils.runOnUiThreadBlocking(
                     () -> {
                         mPermissionRule
-                                .getActivity()
                                 .getActivityTab()
                                 .removeObserver(mPermissionUpdateWaiter);
                     });
         }
-        Tab tab = mPermissionRule.getActivity().getActivityTab();
+        Tab tab = mPermissionRule.getActivityTab();
 
         mPermissionUpdateWaiter =
                 new PermissionUpdateWaiter(

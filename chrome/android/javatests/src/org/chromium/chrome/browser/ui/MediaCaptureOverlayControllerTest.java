@@ -65,7 +65,7 @@ public class MediaCaptureOverlayControllerTest {
     public Tab openNewTab() {
         // Launch a new tab in the foreground.
         ChromeTabUtils.newTabFromMenu(InstrumentationRegistry.getInstrumentation(), mActivity);
-        return mActivity.getActivityTab();
+        return mActivityTestRule.getActivityTab();
     }
 
     public void waitForOverlayVisibility(boolean visible) {
@@ -82,7 +82,7 @@ public class MediaCaptureOverlayControllerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testSimpleCapture() {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Before capture starts the overlay should not be visible.
         waitForOverlayVisibility(false);
@@ -100,7 +100,7 @@ public class MediaCaptureOverlayControllerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testShowHideWithOverview() throws TimeoutException {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(tab));
@@ -120,7 +120,7 @@ public class MediaCaptureOverlayControllerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testCloseTabStopsOverlay() {
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(tab));
@@ -135,7 +135,7 @@ public class MediaCaptureOverlayControllerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testSwitchToNonCapturedTab() throws TimeoutException {
-        Tab firstTab = mActivity.getActivityTab();
+        Tab firstTab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(firstTab));
@@ -150,7 +150,7 @@ public class MediaCaptureOverlayControllerTest {
     @SmallTest
     @Restriction(DeviceFormFactor.PHONE)
     public void testStopOtherCapturedTab() throws TimeoutException {
-        Tab firstTab = mActivity.getActivityTab();
+        Tab firstTab = mActivityTestRule.getActivityTab();
 
         // Start capturing the tab and assert that the overlay is visible.
         ThreadUtils.runOnUiThreadBlocking(() -> mController.startCapture(firstTab));

@@ -252,7 +252,7 @@ public class ToolbarTest {
                         ApplicationProvider.getApplicationContext());
         String testUrl = testServer.getURL(TEST_PAGE);
 
-        Tab tab = mActivity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
 
         // Load new tab page.
         mActivityTestRule.loadUrl(UrlConstants.NTP_URL);
@@ -443,7 +443,7 @@ public class ToolbarTest {
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
-        final View incognitoNtpView = mActivity.getActivityTab().getView();
+        final View incognitoNtpView = mActivityTestRule.getActivityTab().getView();
 
         setControlsPosition(ControlsPosition.TOP);
         verifyTopControlsAccessibilityOrder(toolbarPhone, incognitoNtpView);
@@ -459,7 +459,7 @@ public class ToolbarTest {
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
-        final View incognitoNtpView = mActivity.getActivityTab().getView();
+        final View incognitoNtpView = mActivityTestRule.getActivityTab().getView();
 
         setControlsPosition(ControlsPosition.BOTTOM);
         verifyBottomControlsAccessibilityOrder(toolbarPhone, incognitoNtpView);
@@ -475,7 +475,7 @@ public class ToolbarTest {
 
         final ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
-        final View regularNtpView = mActivity.getActivityTab().getView();
+        final View regularNtpView = mActivityTestRule.getActivityTab().getView();
 
         setControlsPosition(ControlsPosition.BOTTOM);
         verifyAccessibilityOrderIsReset(toolbarPhone, regularNtpView);
@@ -489,7 +489,7 @@ public class ToolbarTest {
 
         mActivityTestRule.loadUrlInNewTab(UrlConstants.NTP_URL, true);
 
-        final Tab incognitoNtpTab = mActivity.getActivityTab();
+        final Tab incognitoNtpTab = mActivityTestRule.getActivityTab();
         ToolbarPhone toolbarPhone =
                 (ToolbarPhone) mActivity.getToolbarManager().getToolbarLayoutForTesting();
 
@@ -503,7 +503,8 @@ public class ToolbarTest {
         ThreadUtils.runOnUiThreadBlocking(mActivity::onBackPressed);
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(mActivity.getActivityTab(), Matchers.is(incognitoNtpTab));
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivityTab(), Matchers.is(incognitoNtpTab));
                 });
 
         NewTabPageTestUtils.waitForNtpLoaded(incognitoNtpTab);
@@ -532,7 +533,8 @@ public class ToolbarTest {
                 });
         CriteriaHelper.pollUiThread(
                 () -> {
-                    Criteria.checkThat(mActivity.getActivityTab(), Matchers.is(incognitoNtpTab));
+                    Criteria.checkThat(
+                            mActivityTestRule.getActivityTab(), Matchers.is(incognitoNtpTab));
                 });
         NewTabPageTestUtils.waitForNtpLoaded(incognitoNtpTab);
 

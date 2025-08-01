@@ -259,7 +259,7 @@ public class FullscreenManagerTest {
 
         // Put the tab foreground and assert the fullscreen was entered.
         ChromeTabUtils.switchTabInCurrentTabModel(activity, tab.getId());
-        Assert.assertEquals(tab, activity.getActivityTab());
+        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
         Assert.assertTrue(getPersistentFullscreenMode());
     }
 
@@ -288,7 +288,7 @@ public class FullscreenManagerTest {
 
         // Put the tab foreground and assert the fullscreen was entered.
         ChromeTabUtils.switchTabInCurrentTabModel(activity, tab.getId());
-        Assert.assertEquals(tab, activity.getActivityTab());
+        Assert.assertEquals(tab, mActivityTestRule.getActivityTab());
         Assert.assertTrue(getPersistentFullscreenMode());
     }
 

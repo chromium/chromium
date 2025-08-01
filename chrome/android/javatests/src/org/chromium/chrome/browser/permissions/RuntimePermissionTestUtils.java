@@ -173,7 +173,7 @@ public class RuntimePermissionTestUtils {
         final ChromeActivity activity = permissionTestRule.getActivity();
         activity.getWindowAndroid().setAndroidPermissionDelegate(testAndroidPermissionDelegate);
 
-        final Tab tab = activity.getActivityTab();
+        final Tab tab = ThreadUtils.runOnUiThreadBlocking(() -> activity.getActivityTab());
         final PermissionUpdateWaiter permissionUpdateWaiter =
                 new PermissionUpdateWaiter(
                         expectPermissionAllowed ? "Granted" : "Denied", activity);

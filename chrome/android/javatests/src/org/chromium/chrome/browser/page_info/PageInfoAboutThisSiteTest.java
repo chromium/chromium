@@ -141,7 +141,7 @@ public class PageInfoAboutThisSiteTest {
 
     private void openPageInfo() {
         ChromeTabbedActivity activity = mActivityTestRule.getActivity();
-        Tab tab = activity.getActivityTab();
+        Tab tab = mActivityTestRule.getActivityTab();
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     new ChromePageInfo(
