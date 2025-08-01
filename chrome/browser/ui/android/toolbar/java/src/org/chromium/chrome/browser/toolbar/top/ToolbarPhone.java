@@ -585,7 +585,7 @@ public class ToolbarPhone extends ToolbarLayout
             // setTabSwitcherMode()/onTabSwitcherTransitionFinished() ->
             // updateVisualsForLocationBarState()
             if (!isInTabSwitcherMode()) {
-                invokeTransition(false);
+                invokeTransition();
             }
             if (!changed) return;
         } else {
@@ -866,7 +866,7 @@ public class ToolbarPhone extends ToolbarLayout
             updateLocationBarForNtp(mVisualState, urlHasFocus());
         }
         updateUrlExpansionFraction();
-        invokeTransition(false);
+        invokeTransition();
     }
 
     /**
@@ -977,7 +977,7 @@ public class ToolbarPhone extends ToolbarLayout
     private void setUrlFocusChangeFraction(float fraction) {
         mUrlFocusChangeFraction = fraction;
         updateUrlExpansionFraction();
-        invokeTransition(false);
+        invokeTransition();
     }
 
     private void updateUrlExpansionFraction() {
@@ -2228,7 +2228,7 @@ public class ToolbarPhone extends ToolbarLayout
         boolean wasShowingNtp = ntpDelegate.wasShowingNtp();
         float previousNtpScrollFraction = mNtpSearchBoxScrollFraction;
 
-        invokeTransition(true);
+        invokeTransition(/* resetNtpTransition= */ true, /* skipUrlExpansion= */ false);
         ntpDelegate.setSearchBoxScrollListener(this::onNtpScrollChanged);
         if (ntpDelegate.isLocationBarShown()) {
             updateToNtpBackground();
@@ -2452,7 +2452,10 @@ public class ToolbarPhone extends ToolbarLayout
             mLayoutUpdater.run();
         }
         updateShadowVisibility();
-        invokeTransition(false);
+        invokeTransition(
+                /* resetNtpTransition= */ false,
+                /* skipUrlExpansion= */ ChromeFeatureList.sToolbarPhoneAnimationRefactor
+                        .isEnabled());
 
         // This exception is to prevent early change of theme color when exiting the tab switcher
         // since currently visual state does not map correctly to tab switcher state. See
@@ -2810,13 +2813,20 @@ public class ToolbarPhone extends ToolbarLayout
         mNtpSearchBoxScrollFraction = ntpSearchBoxScrollFraction;
     }
 
+    private void invokeTransition() {
+        invokeTransition(/* resetNtpTransition= */ false, /* skipUrlExpansion= */ false);
+    }
+
     /**
      * Triggers NTP transition animation (if toolbar is shown on NTP) and URL expansion animation.
      *
      * @param resetNtpTransition if the transition is to reset NTP animation.
+     * @param skipUrlExpansion if the URL expansion animation should be skipped.
      */
-    private void invokeTransition(boolean resetNtpTransition) {
+    private void invokeTransition(boolean resetNtpTransition, boolean skipUrlExpansion) {
         if (resetNtpTransition) {
+            // skipUrlExpansion should not be set when resetNtpTransition is true.
+            assert !skipUrlExpansion;
             resetNtpAnimationValues();
             return;
         }
@@ -2835,7 +2845,10 @@ public class ToolbarPhone extends ToolbarLayout
         } else {
             resetNtpAnimationValues();
         }
-        updateUrlExpansionAnimation();
+
+        if (!skipUrlExpansion) {
+            updateUrlExpansionAnimation();
+        }
     }
 
     private boolean inOrEnteringTabSwitcher() {
