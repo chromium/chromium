@@ -416,13 +416,7 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "Bookmarks imported: %d", count);
-                        synchronized (mPendingImportsLock) {
-                            ImportResults importResults = mPendingImports.get(sessionId);
-                            assert (importResults != null);
-                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
-                            // failure) back here, so it can be properly reported.
-                            importResults.successItemCount++;
-                        }
+                        updateImportResults(sessionId, count);
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
@@ -441,13 +435,7 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "ReadingList imported: %d", count);
-                        synchronized (mPendingImportsLock) {
-                            ImportResults importResults = mPendingImports.get(sessionId);
-                            assert (importResults != null);
-                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
-                            // failure) back here, so it can be properly reported.
-                            importResults.successItemCount++;
-                        }
+                        updateImportResults(sessionId, count);
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
@@ -466,13 +454,7 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
                     ownedFd,
                     (count) -> {
                         Log.i(TAG, "History imported: %d", count);
-                        synchronized (mPendingImportsLock) {
-                            ImportResults importResults = mPendingImports.get(sessionId);
-                            assert (importResults != null);
-                            // TODO(crbug.com/435386347): Plumb the actual import result (success or
-                            // failure) back here, so it can be properly reported.
-                            importResults.successItemCount++;
-                        }
+                        updateImportResults(sessionId, count);
                         responseObserver.onNext(ImportItemResponse.newBuilder().build());
                         responseObserver.onCompleted();
                     });
@@ -484,6 +466,18 @@ public class DataImporterServiceImpl extends DataImporterService.Impl {
             if (mBridge != null) {
                 mBridge.destroy();
                 mBridge = null;
+            }
+        }
+
+        private void updateImportResults(ByteString sessionId, int count) {
+            synchronized (mPendingImportsLock) {
+                ImportResults importResults = mPendingImports.get(sessionId);
+                assert (importResults != null);
+                if (count >= 0) {
+                    importResults.successItemCount++;
+                } else {
+                    importResults.failedItemCount++;
+                }
             }
         }
     }
