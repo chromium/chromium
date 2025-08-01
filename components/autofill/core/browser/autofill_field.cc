@@ -77,7 +77,10 @@ static constexpr auto kAutofillHeuristicsVsHtmlOverrides =
          {ADDRESS_HOME_STREET_NAME, HtmlFieldType::kStreetAddress},
          {NAME_LAST_PREFIX, HtmlFieldType::kAdditionalName},
          {NAME_LAST_PREFIX, HtmlFieldType::kAdditionalNameInitial},
-         {NAME_LAST_CORE, HtmlFieldType::kFamilyName}});
+         {NAME_LAST_CORE, HtmlFieldType::kFamilyName},
+         {ALTERNATIVE_FAMILY_NAME, HtmlFieldType::kFamilyName},
+         {ALTERNATIVE_GIVEN_NAME, HtmlFieldType::kGivenName},
+         {ALTERNATIVE_FULL_NAME, HtmlFieldType::kName}});
 
 // This list includes pairs (heuristic_type, server_type) that express which
 // heuristics predictions should be prioritized over server predictions. The

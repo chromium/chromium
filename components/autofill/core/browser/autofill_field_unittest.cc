@@ -585,8 +585,25 @@ INSTANTIATE_TEST_SUITE_P(
             .server_type = PASSPORT_NAME_TAG,
             .heuristic_type = UNKNOWN_TYPE,
             .expected_result = PASSPORT_NAME_TAG,
-            .expected_source =
-                AutofillPredictionSource::kServerCrowdsourcing}));
+            .expected_source = AutofillPredictionSource::kServerCrowdsourcing},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kName,
+            .server_type = NO_SERVER_DATA,
+            .heuristic_type = ALTERNATIVE_FULL_NAME,
+            .expected_result = ALTERNATIVE_FULL_NAME,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kGivenName,
+            .server_type = NO_SERVER_DATA,
+            .heuristic_type = ALTERNATIVE_GIVEN_NAME,
+            .expected_result = ALTERNATIVE_GIVEN_NAME,
+            .expected_source = AutofillPredictionSource::kHeuristics},
+        AutofillLocalHeuristicsOverridesParams{
+            .html_field_type = HtmlFieldType::kFamilyName,
+            .server_type = NO_SERVER_DATA,
+            .heuristic_type = ALTERNATIVE_FAMILY_NAME,
+            .expected_result = ALTERNATIVE_FAMILY_NAME,
+            .expected_source = AutofillPredictionSource::kHeuristics}));
 
 // Tests that consecutive identical events are not added twice to the event log.
 TEST(AutofillFieldLogEventTypeTest, AppendLogEventIfNotRepeated) {
