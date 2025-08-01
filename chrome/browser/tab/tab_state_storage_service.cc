@@ -11,6 +11,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/token_android.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/token.h"
 #include "chrome/browser/tab/jni_headers/TabStateStorageService_jni.h"
 
@@ -23,17 +24,21 @@ void RunJavaCallbackLoadAllTabs(
     const base::android::JavaRef<jobject>& j_callback,
     std::vector<tabs_pb::TabState> tab_states) {
   std::vector<base::android::ScopedJavaLocalRef<jobject>> j_tab_state_vector;
-  for (const tabs_pb::TabState& tab_state : tab_states) {
-    // TODO(skym): Creating copying it into a new string just to pass across
-    // JNI.
-    std::string web_contents_state_bytes = tab_state.web_contents_state_bytes();
-    std::string* heap_web_contents_state_bytes =
-        new std::string(web_contents_state_bytes);
-    auto j_web_contents_state_buffer =
-        base::android::ScopedJavaLocalRef<jobject>::Adopt(
-            env, env->NewDirectByteBuffer(
-                     static_cast<void*>(heap_web_contents_state_bytes->data()),
-                     heap_web_contents_state_bytes->size()));
+  for (tabs_pb::TabState& tab_state : tab_states) {
+    base::android::ScopedJavaLocalRef<jobject> j_web_contents_state_buffer;
+    if (tab_state.has_web_contents_state_bytes()) {
+      // TODO(https://crbug.com/427255040): This is probably leaking memory and
+      // should be fixed. No path back from Java when the owning object is
+      // destroyed/cleaned/gc'd, and Java currently has no way to tell the
+      // backing implementation of the owning object.
+      raw_ptr<std::string> web_contents_state_bytes_ptr =
+          tab_state.release_web_contents_state_bytes();
+      j_web_contents_state_buffer =
+          base::android::ScopedJavaLocalRef<jobject>::Adopt(
+              env, env->NewDirectByteBuffer(
+                       static_cast<void*>(web_contents_state_bytes_ptr->data()),
+                       web_contents_state_bytes_ptr->size()));
+    }
 
     base::Token tab_group_token(tab_state.tab_group_id_high(),
                                 tab_state.tab_group_id_low());

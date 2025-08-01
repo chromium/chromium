@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.tab;
 
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.nio.ByteBuffer;
 
@@ -34,7 +33,7 @@ public class WebContentsState {
     private static @Nullable WebContentsState sEmptyWebContentsState;
 
     public WebContentsState(ByteBuffer buffer) {
-        assert buffer.isDirect() || ChromeFeatureList.sTabStorageSqlitePrototype.isEnabled();
+        assert buffer.isDirect();
         mBuffer = buffer;
         sEmptyWebContentsState = null;
     }
