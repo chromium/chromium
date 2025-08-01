@@ -107,6 +107,7 @@ void BootTimesRecorder::LoginDone(bool is_user_new) {
   LoginEventRecorder::Get()->ScheduleWriteLoginTimes(
       kLoginTimes, (is_user_new ? kUmaLoginNewUser : kUmaLogin),
       kUmaLoginPrefix);
+  render_widget_host_observations_.RemoveAllObservations();
 }
 
 void BootTimesRecorder::WriteLogoutTimes() {
@@ -242,8 +243,10 @@ void BootTimesRecorder::RenderFrameHostChanged(
   RenderWidgetHost* old_rwh = old_host->GetRenderWidgetHost();
   if (render_widget_host_observations_.IsObservingSource(old_rwh)) {
     render_widget_host_observations_.RemoveObservation(old_rwh);
-    render_widget_host_observations_.AddObservation(
-        new_host->GetRenderWidgetHost());
+    RenderWidgetHost* new_rwh = new_host->GetRenderWidgetHost();
+    if (!render_widget_host_observations_.IsObservingSource(new_rwh)) {
+      render_widget_host_observations_.AddObservation(new_rwh);
+    }
   }
 }
 
