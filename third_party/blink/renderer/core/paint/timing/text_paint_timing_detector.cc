@@ -103,6 +103,13 @@ void TextPaintTimingDetector::LayoutObjectWillBeDestroyed(
   texts_queued_for_paint_time_.erase(&object);
 }
 
+void TextPaintTimingDetector::ResetPaintTrackingOnInteraction(
+    const LayoutObject& object) {
+  if (auto iter = recorded_set_.find(&object); iter != recorded_set_.end()) {
+    iter->value = TextPaintStatus::kAllowRepaint;
+  }
+}
+
 bool TextPaintTimingDetector::ShouldWalkObject(
     const LayoutBoxModelObject& aggregator) {
   Node* node = aggregator.GetNode();
@@ -110,8 +117,10 @@ bool TextPaintTimingDetector::ShouldWalkObject(
     return false;
 
   // Do not walk the object if it has already been recorded, unless it has
-  // specifically been marked for "re-walking".
-  if (recorded_set_.Contains(&aggregator)) {
+  // specifically been marked for "re-walking" or allowing repaint.
+  if (auto iter = recorded_set_.find(&aggregator);
+      iter != recorded_set_.end() &&
+      iter->value != TextPaintStatus::kAllowRepaint) {
     // TODO(crbug.com/40220033): rewalkable_set_ should be empty most of the
     // time, until we ship the feature for custom fonts.
     // HashSet::Contains() appears to hash key even when container is empty.
@@ -148,7 +157,7 @@ bool TextPaintTimingDetector::ShouldWalkObject(
   // correct (i.e. late application of elementtiming or an Interaction which
   // toggles content within the node, i.e. adding textContent for the first time
   // to a previously empty node.)
-  recorded_set_.insert(&aggregator);
+  recorded_set_.insert(&aggregator, TextPaintStatus::kPainted);
   return false;
 }
 
@@ -206,10 +215,10 @@ void TextPaintTimingDetector::RecordAggregatedText(
     }
   }
 
-  recorded_set_.insert(&aggregator);
+  auto result = recorded_set_.Set(&aggregator, TextPaintStatus::kPainted);
   TextRecord* record = MaybeRecordTextRecord(
       aggregator, aggregated_size, property_tree_state, aggregated_visual_rect,
-      mapped_visual_rect, context);
+      mapped_visual_rect, context, /*is_repaint=*/!result.is_new_entry);
   if (context && record) {
     context->AddPaintedArea(record);
   }
@@ -325,12 +334,14 @@ TextRecord* TextPaintTimingDetector::MaybeRecordTextRecord(
     const PropertyTreeStateOrAlias& property_tree_state,
     const gfx::Rect& frame_visual_rect,
     const gfx::RectF& root_visual_rect,
-    SoftNavigationContext* context) {
+    SoftNavigationContext* context,
+    bool is_repaint) {
   Node* node = object.GetNode();
   DCHECK(node);
 
   bool is_needed_for_lcp = IsRecordingLargestTextPaint() && visual_size > 0u;
-  bool is_needed_for_element_timing = TextElementTiming::NeededForTiming(*node);
+  bool is_needed_for_element_timing =
+      !is_repaint && TextElementTiming::NeededForTiming(*node);
   bool is_needed_for_soft_navs = context != nullptr;
 
   // If the node is not required by LCP and not required by ElementTiming,

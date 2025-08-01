@@ -109,6 +109,12 @@ class CORE_EXPORT TextPaintTimingDetector final
     callback_manager_ = manager;
   }
 
+  // Mark that the `LayoutObject` should be considered for paint timing, even if
+  // it's already been painted, because it was modified as part of an
+  // interaction (after hard LCP has stopped). This will not cause new element
+  // timing entries to be emitted.
+  void ResetPaintTrackingOnInteraction(const LayoutObject&);
+
   inline bool IsRecordingLargestTextPaint() const {
     return recording_largest_text_paint_;
   }
@@ -121,6 +127,9 @@ class CORE_EXPORT TextPaintTimingDetector final
  private:
   friend class LargestContentfulPaintCalculatorTest;
 
+  // The state of `LayoutObject`s being tracked in the `recorded_set_`.
+  enum class TextPaintStatus { kPainted, kAllowRepaint };
+
   void AssignPaintTimeToQueuedRecords(uint32_t frame_index,
                                       const base::TimeTicks&,
                                       const DOMPaintTimingInfo&);
@@ -130,7 +139,8 @@ class CORE_EXPORT TextPaintTimingDetector final
       const PropertyTreeStateOrAlias& property_tree_state,
       const gfx::Rect& frame_visual_rect,
       const gfx::RectF& root_visual_rect,
-      SoftNavigationContext* context);
+      SoftNavigationContext* context,
+      bool is_repaint);
   inline void QueueToMeasurePaintTime(const LayoutObject& object,
                                       TextRecord* record) {
     texts_queued_for_paint_time_.insert(&object, record);
@@ -138,7 +148,7 @@ class CORE_EXPORT TextPaintTimingDetector final
   }
 
   // LayoutObjects for which text has been aggregated.
-  HeapHashSet<Member<const LayoutObject>> recorded_set_;
+  HeapHashMap<Member<const LayoutObject>, TextPaintStatus> recorded_set_;
   HeapHashSet<Member<const LayoutObject>> rewalkable_set_;
 
   // Text records queued for paint time. Indexed by LayoutObject to make removal

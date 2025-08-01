@@ -229,8 +229,10 @@ SoftNavigationHeuristics::SoftNavigationHeuristics(LocalDOMWindow* window)
   LocalFrame* frame = window->GetFrame();
   CHECK(frame && frame->View());
   if (IsPrePaintBasedAttributionEnabled()) {
+    TextPaintTimingDetector* detector =
+        &frame->View()->GetPaintTimingDetector().GetTextPaintTimingDetector();
     paint_attribution_tracker_ =
-        MakeGarbageCollected<SoftNavigationPaintAttributionTracker>();
+        MakeGarbageCollected<SoftNavigationPaintAttributionTracker>(detector);
   }
 }
 

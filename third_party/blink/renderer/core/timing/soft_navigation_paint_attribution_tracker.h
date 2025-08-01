@@ -15,6 +15,7 @@ namespace blink {
 class LayoutObject;
 class Node;
 class SoftNavigationContext;
+class TextPaintTimingDetector;
 
 // `SoftNavigationPaintAttributionTracker` helps attribute contentful paints to
 // DOM nodes that were modified as part of an interaction, working together with
@@ -70,7 +71,7 @@ class SoftNavigationContext;
 class CORE_EXPORT SoftNavigationPaintAttributionTracker
     : public GarbageCollected<SoftNavigationPaintAttributionTracker> {
  public:
-  SoftNavigationPaintAttributionTracker();
+  explicit SoftNavigationPaintAttributionTracker(TextPaintTimingDetector*);
 
   // Initializes paint tracking for the given node, such that contentful paints
   // to it or its descendants will be associated with the given context.
@@ -151,6 +152,11 @@ class CORE_EXPORT SoftNavigationPaintAttributionTracker
   // "contenful nodes" (images and text aggregation nodes).
   void MarkNodeForPaintTrackingIfNeeded(Node* node, NodeState* inherited_state);
 
+  // Inform the relevant paint timing detector that we need paint tracking for
+  // the object -- regardless of whether its been previously painted -- because
+  // its `SoftNavigationContext` changed.
+  void NotifyPaintTimingDetectorOnContextChanged(const LayoutObject&);
+
   // IDs used for determining the modification order of `NodeState` objects.  We
   // use a "modification generation" scheme, incrementing the
   // `current_modification_generation_id_` when `MarkNodeAsDirectlyModified()`
@@ -172,6 +178,8 @@ class CORE_EXPORT SoftNavigationPaintAttributionTracker
   // eligible for GC earlier, but need to figure out how attribution should be
   // handled if there are ancestors with an older context.
   HeapHashMap<WeakMember<Node>, Member<NodeState>> marked_nodes_;
+
+  Member<TextPaintTimingDetector> text_paint_timing_detector_;
 };
 
 }  // namespace blink
