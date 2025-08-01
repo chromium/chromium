@@ -18,6 +18,7 @@ class PaymentsDataManager;
 namespace bookmarks {
 class BookmarkModel;
 }
+class FaviconLoader;
 namespace history {
 class HistoryService;
 }
@@ -55,6 +56,7 @@ class ReadingListModel;
                       bookmarkModel:(bookmarks::BookmarkModel*)bookmarkModel
                    readingListModel:(ReadingListModel*)readingListModel
                         syncService:(syncer::SyncService*)syncService
+                      faviconLoader:(FaviconLoader*)faviconLoader
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 

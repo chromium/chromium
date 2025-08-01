@@ -7,7 +7,10 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/ios/block_types.h"
+
 @class FaviconAttributes;
+@protocol PasswordImportItemFaviconDataSource;
 
 /// Matches password_manager::ImportEntry::Status.
 /// Needs to be kept in sync with PasswordManagerImportEntryStatus in
@@ -46,9 +49,6 @@ enum class PasswordImportStatus {
 /// The website URL.
 @property(nonatomic, readonly, strong) NSString* url;
 
-/// Favicon attributes for the URL.
-@property(nonatomic, readonly, strong) FaviconAttributes* faviconAttributes;
-
 /// The username for the password.
 @property(nonatomic, readonly, strong) NSString* username;
 
@@ -58,7 +58,17 @@ enum class PasswordImportStatus {
 /// Import status.
 @property(nonatomic, readonly, assign) PasswordImportStatus status;
 
-/// Initialization
+/// Data source for favicon loading. Should be set before
+/// `-loadFaviconWithCompletionHandler` is invoked.
+@property(nonatomic, weak) id<PasswordImportItemFaviconDataSource>
+    faviconDataSource;
+
+/// Favicon attributes for the URL. If current value is `nil`, call
+/// `-loadFaviconWithCompletionHandler` and retrieve the value in the completion
+/// handler.
+@property(nonatomic, strong) FaviconAttributes* faviconAttributes;
+
+/// Initialization.
 - (instancetype)initWithURL:(NSString*)url
                    username:(NSString*)username
                    password:(NSString*)password
@@ -66,9 +76,9 @@ enum class PasswordImportStatus {
     NS_DESIGNATED_INITIALIZER;
 - (instancetype)init NS_UNAVAILABLE;
 
-/// Load the favicon with completion handler. Does nothing if a load of the
-/// favicon is already in progress.
-- (void)loadFaviconWithCompletionHandler:(UIAction*)handler;
+/// Loads the favicon with completion handler on the first call to this method.
+/// Does nothing on subsequent calls.
+- (void)loadFaviconWithCompletionHandler:(ProceduralBlock)handler;
 
 @end
 

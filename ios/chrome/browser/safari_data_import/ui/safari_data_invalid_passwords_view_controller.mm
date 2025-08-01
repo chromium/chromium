@@ -160,11 +160,9 @@ NSString* GetErrorMessageForPasswordImportStatus(PasswordImportStatus status) {
     [cell.faviconView configureWithAttributes:item.faviconAttributes];
   } else {
     __weak __typeof(self) weakSelf = self;
-    UIAction* completionHandler =
-        [UIAction actionWithHandler:^(UIAction* action) {
-          [weakSelf updateItemWithIdentifier:identifier];
-        }];
-    [item loadFaviconWithCompletionHandler:completionHandler];
+    [item loadFaviconWithCompletionHandler:^{
+      [weakSelf updateItemWithIdentifier:identifier];
+    }];
   }
   [cell configureUILayout];
   return cell;

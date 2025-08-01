@@ -68,6 +68,7 @@ source_set("import_coordinator") {
     "//ios/chrome/browser/affiliations/model",
     "//ios/chrome/browser/autofill/model",
     "//ios/chrome/browser/bookmarks/model",
+    "//ios/chrome/browser/favicon/model",
     "//ios/chrome/browser/first_run/ui_bundled:constants",
     "//ios/chrome/browser/history/model",
     "//ios/chrome/browser/passwords/model:store_factory",

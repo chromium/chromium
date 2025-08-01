@@ -183,11 +183,9 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
     [cell.faviconView configureWithAttributes:item.faviconAttributes];
   } else {
     __weak __typeof(self) weakSelf = self;
-    UIAction* completionHandler =
-        [UIAction actionWithHandler:^(UIAction* action) {
-          [weakSelf updateItemWithIdentifier:identifier];
-        }];
-    [item loadFaviconWithCompletionHandler:completionHandler];
+    [item loadFaviconWithCompletionHandler:^{
+      [weakSelf updateItemWithIdentifier:identifier];
+    }];
   }
   BOOL shouldUnmaskPassword =
       _shouldUnmaskPasswordAtIndex[identifier.intValue].boolValue;
@@ -254,11 +252,11 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   [self updateSelectionButton];
 }
 
-/// Sets `_dataSource` and fill the table with data from `_passwordConflicts`.
+/// Sets `_dataSource` and fills the table with data from `_passwordConflicts`.
 - (void)initializeDataSourceAndTable {
   /// Set up data source.
   __weak __typeof(self) weakSelf = self;
-  UITableViewDiffableDataSourceCellProvider cellProvier = ^UITableViewCell*(
+  UITableViewDiffableDataSourceCellProvider cellProvider = ^UITableViewCell*(
       UITableView* tableView, NSIndexPath* indexPath,
       NSNumber* itemIdentifier) {
     CHECK_EQ(tableView, weakSelf.tableView);
@@ -266,7 +264,7 @@ NSString* const kSafariDataImportPasswordConflictResolutionSection =
   };
   _dataSource =
       [[UITableViewDiffableDataSource alloc] initWithTableView:self.tableView
-                                                  cellProvider:cellProvier];
+                                                  cellProvider:cellProvider];
   /// Initialize table.
   NSDiffableDataSourceSnapshot* snapshot =
       [[NSDiffableDataSourceSnapshot alloc] init];

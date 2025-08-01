@@ -19,6 +19,7 @@
 #import "ios/chrome/browser/affiliations/model/ios_chrome_affiliation_service_factory.h"
 #import "ios/chrome/browser/autofill/model/personal_data_manager_factory.h"
 #import "ios/chrome/browser/bookmarks/model/bookmark_model_factory.h"
+#import "ios/chrome/browser/favicon/model/ios_chrome_favicon_loader_factory.h"
 #import "ios/chrome/browser/history/model/history_service_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_account_password_store_factory.h"
 #import "ios/chrome/browser/passwords/model/ios_chrome_profile_password_store_factory.h"
@@ -133,6 +134,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
         ReadingListModelFactory::GetForProfile(profile);
     syncer::SyncService* syncService =
         SyncServiceFactory::GetForProfile(profile);
+    FaviconLoader* faviconLoader =
+        IOSChromeFaviconLoaderFactory::GetForProfile(profile);
     /// Initialize mediator.
     _mediator = [[SafariDataImportImportMediator alloc]
         initWithSavedPasswordsPresenter:std::move(savedPasswordsPresenter)
@@ -141,7 +144,8 @@ const char kDisplayAlertHistogram[] = "IOS.SafariImport.DisplayAlert";
                          historyService:historyService
                           bookmarkModel:bookmarkModel
                        readingListModel:readingListModel
-                            syncService:syncService];
+                            syncService:syncService
+                          faviconLoader:faviconLoader];
     _mediator.importStageTransitionHandler = self;
     _mediator.itemConsumer = _tableView;
   }
