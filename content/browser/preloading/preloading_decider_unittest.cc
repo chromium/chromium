@@ -6,6 +6,7 @@
 
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/to_string.h"
 #include "base/test/scoped_feature_list.h"
@@ -31,6 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
@@ -227,6 +229,9 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
       PreloadingDecider::GetOrCreateForCurrentDocument(&GetPrimaryMainFrame());
   ASSERT_TRUE(preloading_decider != nullptr);
 
+  const bool use_eager_heurisctics =
+      base::FeatureList::IsEnabled(blink::features::kPreloadingEagerHeuristics);
+
   // Create list of SpeculationCandidatePtrs.
   std::vector<std::tuple<bool, GURL, blink::mojom::SpeculationAction,
                          blink::mojom::SpeculationEagerness>>
@@ -236,7 +241,10 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
                  {true, GetCrossOriginUrl("/candidate2.html"),
                   blink::mojom::SpeculationAction::kPrefetch,
                   blink::mojom::SpeculationEagerness::kModerate},
-                 {false, GetCrossOriginUrl("/candidate3.html"),
+                 {use_eager_heurisctics, GetCrossOriginUrl("/candidate3.html"),
+                  blink::mojom::SpeculationAction::kPrefetch,
+                  blink::mojom::SpeculationEagerness::kEager},
+                 {false, GetCrossOriginUrl("/candidate4.html"),
                   blink::mojom::SpeculationAction::kPrefetch,
                   blink::mojom::SpeculationEagerness::kImmediate},
                  {true, GetCrossOriginUrl("/candidate1.html"),
@@ -245,7 +253,10 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
                  {true, GetCrossOriginUrl("/candidate2.html"),
                   blink::mojom::SpeculationAction::kPrerender,
                   blink::mojom::SpeculationEagerness::kModerate},
-                 {false, GetCrossOriginUrl("/candidate3.html"),
+                 {use_eager_heurisctics, GetCrossOriginUrl("/candidate3.html"),
+                  blink::mojom::SpeculationAction::kPrerender,
+                  blink::mojom::SpeculationEagerness::kEager},
+                 {false, GetCrossOriginUrl("/candidate4.html"),
                   blink::mojom::SpeculationAction::kPrerender,
                   blink::mojom::SpeculationEagerness::kImmediate}};
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -266,7 +277,22 @@ TEST_F(PreloadingDeciderTest, DefaultEagernessCandidatesStartOnStandby) {
 class PreloadingDeciderPointerEventHeuristicsTest
     : public PreloadingDeciderTest,
       public ::testing::WithParamInterface<
-          std::tuple<EventType, blink::mojom::SpeculationEagerness>> {};
+          std::tuple<EventType, blink::mojom::SpeculationEagerness>> {
+ public:
+  void SetUp() override {
+    feature_list_.InitAndEnableFeature(
+        blink::features::kPreloadingEagerHeuristics);
+    PreloadingDeciderTest::SetUp();
+  }
+
+  void TearDown() override {
+    PreloadingDeciderTest::TearDown();
+    feature_list_.Reset();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
 
 TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
        PrefetchOnPointerEventHeuristics) {
@@ -291,7 +317,8 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
         break;
       case EventType::kPointerHover:
         preloading_decider->OnPointerHover(
-            url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
+            url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
+            eagerness);
         break;
     }
   };
@@ -399,7 +426,8 @@ TEST_P(PreloadingDeciderPointerEventHeuristicsTest,
         break;
       case EventType::kPointerHover:
         preloading_decider->OnPointerHover(
-            url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0));
+            url, blink::mojom::AnchorElementPointerData::New(false, 0.0, 0.0),
+            eagerness);
         break;
     }
   };
@@ -498,7 +526,8 @@ INSTANTIATE_TEST_SUITE_P(
     PreloadingDeciderPointerEventHeuristicsTest,
     testing::Combine(
         testing::Values(EventType::kPointerDown, EventType::kPointerHover),
-        testing::Values(blink::mojom::SpeculationEagerness::kModerate,
+        testing::Values(blink::mojom::SpeculationEagerness::kEager,
+                        blink::mojom::SpeculationEagerness::kModerate,
                         blink::mojom::SpeculationEagerness::kConservative)));
 
 TEST_F(PreloadingDeciderTest, UmaRecallStats) {
@@ -588,15 +617,17 @@ TEST_F(PreloadingDeciderTest,
   candidates.push_back(candidate_1.Clone());
   candidates.push_back(candidate_2.Clone());
 
-  // Add conservative and moderate  preload candidate and preload on
+  // Add conservative and moderate preload candidate and preload on
   // pointer-hover.
   preloading_decider->UpdateSpeculationCandidates(candidates);
   const auto& prefetches = GetPrefetchService()->prefetches_;
   preloading_decider->OnPointerHover(
-      url, blink::mojom::AnchorElementPointerData::New(
-               /*is_mouse_pointer=*/true,
-               /*mouse_velocity=*/75.0,
-               /*mouse_acceleration=*/0.0));
+      url,
+      blink::mojom::AnchorElementPointerData::New(
+          /*is_mouse_pointer=*/true,
+          /*mouse_velocity=*/75.0,
+          /*mouse_acceleration=*/0.0),
+      blink::mojom::SpeculationEagerness::kModerate);
 
   EXPECT_TRUE(prefetches[0]->HasSpeculationRulesTags());
   EXPECT_EQ(prefetches[0]->GetSpeculationRulesTagsHeaderString().value(),
@@ -957,17 +988,21 @@ TEST_F(PreloadingDeciderTest,
 
   GURL url1{"https://www.example.com"};
   preloading_decider->OnPointerHover(
-      url1, blink::mojom::AnchorElementPointerData::New(
-                /*is_mouse_pointer=*/true,
-                /*mouse_velocity=*/50.0,
-                /*mouse_acceleration=*/0.0));
+      url1,
+      blink::mojom::AnchorElementPointerData::New(
+          /*is_mouse_pointer=*/true,
+          /*mouse_velocity=*/50.0,
+          /*mouse_acceleration=*/0.0),
+      /*is_eager=*/blink::mojom::SpeculationEagerness::kModerate);
 
   GURL url2{"https://www.google.com"};
   preloading_decider->OnPointerHover(
-      url2, blink::mojom::AnchorElementPointerData::New(
-                /*is_mouse_pointer=*/true,
-                /*mouse_velocity=*/75.0,
-                /*mouse_acceleration=*/0.0));
+      url2,
+      blink::mojom::AnchorElementPointerData::New(
+          /*is_mouse_pointer=*/true,
+          /*mouse_velocity=*/75.0,
+          /*mouse_acceleration=*/0.0),
+      /*is_eager=*/blink::mojom::SpeculationEagerness::kModerate);
 
   // Navigate to `url2`.
   NavigationSimulator::NavigateAndCommitFromBrowser(web_contents(), url2);
@@ -1162,7 +1197,8 @@ TEST_P(PreloadingDeciderMLModelTest, UseHoverHeuristicWhenNoMLModelPresent) {
   // The page has never received a prediction from the ML model, so we fallback
   // to the decisions of the hover heuristic.
   preloading_decider->OnPointerHover(
-      url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
+      url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
+      blink::mojom::SpeculationEagerness::kModerate);
   EXPECT_EQ(1u, prefetches.size());
 }
 
@@ -1320,7 +1356,8 @@ TEST_F(PreloadingDeciderMLModelActiveTest, ModelSupersedesHoverHeuristic) {
   // The model has indicated that the candidate is not worth prefetching, so we
   // should not prefetch based on the hover heuristic either.
   preloading_decider->OnPointerHover(
-      url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
+      url, blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
+      blink::mojom::SpeculationEagerness::kModerate);
   EXPECT_TRUE(prefetches.empty());
   // But once we have a stronger signal like pointer down, we should prefetch.
   preloading_decider->OnPointerDown(url);

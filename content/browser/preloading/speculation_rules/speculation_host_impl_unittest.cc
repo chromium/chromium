@@ -112,7 +112,9 @@ class ScopedPreloadingDeciderObserver
     }
   }
   void OnPointerDown(const GURL& url) override {}
-  void OnPointerHover(const GURL& url) override {}
+  void OnPointerHover(
+      const GURL& url,
+      blink::mojom::SpeculationEagerness target_eagerness) override {}
 
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates_;
 

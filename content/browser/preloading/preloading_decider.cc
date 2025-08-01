@@ -9,6 +9,7 @@
 #include <string_view>
 #include <vector>
 
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "base/containers/enum_set.h"
 #include "base/feature_list.h"
@@ -33,6 +34,8 @@
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/preloading/anchor_element_interaction_host.mojom.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-data-view.h"
+#include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-forward.h"
 
 namespace content {
 
@@ -102,6 +105,14 @@ class PreloadingDecider::BehaviorConfig {
 
     pointer_hover_eagerness_ =
         EagernessSet{blink::mojom::SpeculationEagerness::kModerate};
+
+    if (base::FeatureList::IsEnabled(
+            blink::features::kPreloadingEagerHeuristics)) {
+      pointer_down_eagerness_.Put(blink::mojom::SpeculationEagerness::kEager);
+      pointer_hover_eagerness_.Put(blink::mojom::SpeculationEagerness::kEager);
+    }
+
+    CHECK(pointer_down_eagerness_.HasAll(pointer_hover_eagerness_));
 
     static const base::FeatureParam<std::string> kViewportHeuristicEagerness{
         &blink::features::kPreloadingViewportHeuristics,
@@ -294,9 +305,17 @@ void PreloadingDecider::OnPreloadingHeuristicsModelDone(const GURL& url,
 
 void PreloadingDecider::OnPointerHover(
     const GURL& url,
-    blink::mojom::AnchorElementPointerDataPtr mouse_data) {
+    blink::mojom::AnchorElementPointerDataPtr mouse_data,
+    blink::mojom::SpeculationEagerness target_eagerness) {
+  // In non-test code, target eagerness must be either "moderate" or "eager".
+  if (target_eagerness != blink::mojom::SpeculationEagerness::kModerate &&
+      target_eagerness != blink::mojom::SpeculationEagerness::kEager) {
+    CHECK_IS_TEST();
+    return;
+  }
+
   if (observer_for_testing_) {
-    observer_for_testing_->OnPointerHover(url);
+    observer_for_testing_->OnPointerHover(url, target_eagerness);
   }
 
   WebContents* web_contents =
@@ -314,9 +333,16 @@ void PreloadingDecider::OnPointerHover(
   // Preconnecting on hover events should not be done if the link is not safe
   // to prefetch or prerender.
   constexpr bool fallback_to_preconnect = false;
+  // Filter `kModerate` for the "eager" mouse hover to prevent false preloading.
+  EagernessSet eagerness_to_exclude;
+  if (base::FeatureList::IsEnabled(
+          blink::features::kPreloadingEagerHeuristics)) {
+    eagerness_to_exclude = EagernessSet::All();
+    eagerness_to_exclude.Remove(target_eagerness);
+  }
   MaybeEnactCandidate(url, preloading_predictor::kUrlPointerHoverOnAnchor,
                       PreloadingConfidence{100}, fallback_to_preconnect,
-                      /*eagerness_to_exclude=*/{});
+                      eagerness_to_exclude);
 }
 
 void PreloadingDecider::OnViewportHeuristicTriggered(const GURL& url) {
