@@ -1235,24 +1235,9 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   }
 
   // Grab a snapshot.
-  scoped_refptr<StaticBitmapImage> snapshot;
-
-  // For canvas 2D, get the snapshot from the context if there is a valid
-  // resource provider to ensure that the recording is properly flushed (note
-  // that the fact that the canvas has a valid resource provider means that it
-  // is not possible for the canvas to be in hibernation at this point as the
-  // canvas' resource provider is dropped when going into hibernation and
-  // hibernation is ended if the canvas' resource provider is recreated). For
-  // all contexts other than canvas 2D, get a snapshot directly from the
-  // context.
-  if (IsRenderingContext2D()) {
-    if (RenderingContext()->IsCanvas2DResourceProviderValid()) {
-      snapshot = context_->GetImage(FlushReason::kPaint);
-    }
-  } else {
-    snapshot = context_->PaintRenderingResultsToSnapshot(kFrontBuffer,
-                                                         FlushReason::kPaint);
-  }
+  scoped_refptr<StaticBitmapImage> snapshot =
+      context_->PaintRenderingResultsToSnapshot(kFrontBuffer,
+                                                FlushReason::kPaint);
 
   if (snapshot) {
     SkBlendMode composite_operator =
