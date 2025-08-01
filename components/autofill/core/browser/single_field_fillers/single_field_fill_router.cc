@@ -39,11 +39,11 @@ void SingleFieldFillRouter::OnWillSubmitForm(
     // them to autocomplete functionality by default.
     bool skip_because_promo_code =
         merchant_promo_code_manager_ && form_structure &&
-        form_structure->field(i)->Type().GetStorableType() ==
-            MERCHANT_PROMO_CODE;
+        form_structure->field(i)->Type().GetTypes().contains(
+            MERCHANT_PROMO_CODE);
     bool skip_because_iban =
         iban_manager_ && form_structure &&
-        form_structure->field(i)->Type().GetStorableType() == IBAN_VALUE;
+        form_structure->field(i)->Type().GetTypes().contains(IBAN_VALUE);
     if (!skip_because_iban && !skip_because_promo_code) {
       autocomplete_fields.push_back(form.fields()[i]);
     }

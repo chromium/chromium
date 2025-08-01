@@ -1109,7 +1109,8 @@ void AutofillMetrics::LogCreditCardSeamlessnessAtFillTime(
     const url::Origin& triggered_origin = p.field.origin();
     return field.origin() != triggered_origin &&
            (field.origin() != main_origin ||
-            IsSensitiveFieldType(field.Type().GetStorableType())) &&
+            std::ranges::any_of(field.Type().GetTypes(),
+                                IsSensitiveFieldType)) &&
            triggered_origin == main_origin;
   };
 

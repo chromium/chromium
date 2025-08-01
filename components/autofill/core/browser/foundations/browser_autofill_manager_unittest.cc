@@ -4471,7 +4471,8 @@ TEST_F(BrowserAutofillManagerWithLogEventsTest,
                                ADDRESS_HOME_CITY, ADDRESS_HOME_STATE,
                                ADDRESS_HOME_ZIP};
   for (size_t i = 0; i < types.size(); ++i) {
-    EXPECT_EQ(types[i], form_structure->field(i)->Type().GetStorableType());
+    EXPECT_THAT(form_structure->field(i)->Type().GetTypes(),
+                ElementsAre(types[i]));
   }
 
   // Simulate form submission.
@@ -4948,18 +4949,20 @@ TEST_F(BrowserAutofillManagerTest, OnLoadedServerPredictionsFromApi) {
 
   // We expect the server suggestions to have been applied to the first field of
   // the first form.
-  EXPECT_EQ(ADDRESS_HOME_CITY,
-            form_structure->field(0)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_STATE,
-            form_structure->field(1)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            form_structure->field(2)->Type().GetStorableType());
+  EXPECT_THAT(form_structure->field(0)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_CITY));
+  EXPECT_THAT(form_structure->field(1)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_STATE));
+  EXPECT_THAT(form_structure->field(2)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_ZIP));
   // We expect the server suggestions to have been applied to the second form as
   // well.
-  EXPECT_EQ(NAME_LAST, form_structure2->field(0)->Type().GetStorableType());
-  EXPECT_EQ(NAME_MIDDLE, form_structure2->field(1)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            form_structure2->field(2)->Type().GetStorableType());
+  EXPECT_THAT(form_structure2->field(0)->Type().GetTypes(),
+              ElementsAre(NAME_LAST));
+  EXPECT_THAT(form_structure2->field(1)->Type().GetTypes(),
+              ElementsAre(NAME_MIDDLE));
+  EXPECT_THAT(form_structure2->field(2)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_ZIP));
 }
 
 // Test that OnLoadedServerPredictions does not call ParseQueryResponse if the
@@ -5064,10 +5067,10 @@ TEST_F(BrowserAutofillManagerTest, DetermineHeuristicsWithOverallPrediction) {
             form_structure->field(4)->heuristic_type());
 
   // We expect to see the server type as the overall type.
-  EXPECT_EQ(CREDIT_CARD_NAME_FIRST,
-            form_structure->field(0)->Type().GetStorableType());
-  EXPECT_EQ(CREDIT_CARD_NAME_LAST,
-            form_structure->field(1)->Type().GetStorableType());
+  EXPECT_THAT(form_structure->field(0)->Type().GetTypes(),
+              ElementsAre(CREDIT_CARD_NAME_FIRST));
+  EXPECT_THAT(form_structure->field(1)->Type().GetTypes(),
+              ElementsAre(CREDIT_CARD_NAME_LAST));
   EXPECT_EQ(CREDIT_CARD_NUMBER, form_structure->field(2)->heuristic_type());
   EXPECT_EQ(CREDIT_CARD_EXP_MONTH, form_structure->field(3)->heuristic_type());
   EXPECT_EQ(CREDIT_CARD_EXP_4_DIGIT_YEAR,

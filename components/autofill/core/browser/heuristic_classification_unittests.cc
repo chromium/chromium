@@ -248,28 +248,29 @@ void ResultAnalyzer::AnalyzeClassification(const FormStructure& form_structure,
     }
 
     // Determine the type assigned to the field by the heuristic classification.
-    std::string heuristic_type =
-        FieldTypeToString(form_structure.field(i)->Type().GetStorableType());
+    for (FieldType field_type : form_structure.field(i)->Type().GetTypes()) {
+      std::string heuristic_type = FieldTypeToString(field_type);
 
-    // Record metrics on the divergence between tester and heuristics.
-    if (fields_in_scope_.contains(tester_type)) {
-      if (TesterAndHeuristicTypeMatch(tester_type, heuristic_type)) {
-        ++matches_;
-        ++match_by_type_count_[tester_type];
-        json_fields[i].GetDict().Set("last_correctness", "correct");
+      // Record metrics on the divergence between tester and heuristics.
+      if (fields_in_scope_.contains(tester_type)) {
+        if (TesterAndHeuristicTypeMatch(tester_type, heuristic_type)) {
+          ++matches_;
+          ++match_by_type_count_[tester_type];
+          json_fields[i].GetDict().Set("last_correctness", "correct");
+        } else {
+          ++mismatches_;
+          ++mismatch_by_type_count_[tester_type];
+          json_fields[i].GetDict().Set(
+              "last_correctness", "not_recognized: " + tester_type +
+                                      ", chosen_instead: " + heuristic_type);
+        }
       } else {
-        ++mismatches_;
-        ++mismatch_by_type_count_[tester_type];
+        ++ignored_by_type_count_[tester_type];
         json_fields[i].GetDict().Set("last_correctness",
-                                     "not_recognized: " + tester_type +
-                                         ", chosen_instead: " + heuristic_type);
+                                     "ignored: " + tester_type);
       }
-    } else {
-      ++ignored_by_type_count_[tester_type];
-      json_fields[i].GetDict().Set("last_correctness",
-                                   "ignored: " + tester_type);
+      json_fields[i].GetDict().Set("last_classification", heuristic_type);
     }
-    json_fields[i].GetDict().Set("last_classification", heuristic_type);
   }
 }
 

@@ -224,7 +224,7 @@ void LogFillingMetrics(const FormStructure& form,
     }
     if (FieldHasMeaningfulPossibleFieldTypes(*field) &&
         field->is_autofilled()) {
-      autofilled_field_types.insert(field->Type().GetStorableType());
+      autofilled_field_types.insert_all(field->Type().GetTypes());
     }
   }
   if (base::Contains(form.GetFormTypes(), FormType::kCreditCardForm)) {

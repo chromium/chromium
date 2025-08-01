@@ -146,13 +146,17 @@ std::unique_ptr<FormStructure> BuildFormStructure(
   return form_structure;
 }
 
-std::vector<FieldType> GetTypes(const FormStructure& form_structure) {
-  std::vector<FieldType> types;
+std::vector<FieldTypeSet> GetTypes(const FormStructure& form_structure) {
+  std::vector<FieldTypeSet> types;
   types.reserve(form_structure.field_count());
   for (size_t i = 0; i < form_structure.field_count(); ++i) {
-    types.push_back(form_structure.field(i)->Type().GetStorableType());
+    types.push_back(form_structure.field(i)->Type().GetTypes());
   }
   return types;
+}
+
+auto FieldTypesAre(auto... types) {
+  return ElementsAre(FieldTypeSet{types}...);
 }
 
 std::vector<std::optional<std::string>> GetFormatStrings(
@@ -172,8 +176,8 @@ std::vector<std::optional<std::string>> GetFormatStrings(
 
 Matcher<AutofillField> HasType(FieldType type) {
   return Property("AutofillField::Type", &AutofillField::Type,
-                  Property("AutofillType::GetStorableType",
-                           &AutofillType::GetStorableType, type));
+                  Property("AutofillType::GetTypes", &AutofillType::GetTypes,
+                           ElementsAre(type)));
 }
 
 Matcher<AutofillField> HasOffset(size_t offset) {
@@ -212,9 +216,9 @@ TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeLoneField) {
        {"height", "height", CREDIT_CARD_EXP_MONTH},  // Uh-oh!
        {"email", "email", EMAIL_ADDRESS}},
       /*run_heuristics=*/false);
-  EXPECT_THAT(
-      GetTypes(*form_structure),
-      ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, UNKNOWN_TYPE, EMAIL_ADDRESS));
+  EXPECT_THAT(GetTypes(*form_structure),
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_LINE1, UNKNOWN_TYPE,
+                            EMAIL_ADDRESS));
 }
 
 TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeCCName) {
@@ -224,7 +228,7 @@ TEST_F(FormStructureRationalizerTest, ParseQueryResponse_RationalizeCCName) {
                           {"email", "email", EMAIL_ADDRESS}},
                          /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FIRST, NAME_LAST, EMAIL_ADDRESS));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, EMAIL_ADDRESS));
 }
 TEST_F(FormStructureRationalizerTest,
        ParseQueryResponse_RationalizeMultiMonth_1) {
@@ -238,9 +242,9 @@ TEST_F(FormStructureRationalizerTest,
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                          CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
-                          UNKNOWN_TYPE));
+              FieldTypesAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                            CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                            UNKNOWN_TYPE));
 }
 
 TEST_F(FormStructureRationalizerTest,
@@ -254,8 +258,8 @@ TEST_F(FormStructureRationalizerTest,
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                          CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, UNKNOWN_TYPE));
+              FieldTypesAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                            CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR, UNKNOWN_TYPE));
 }
 
 TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
@@ -267,7 +271,7 @@ TEST_F(FormStructureRationalizerTest, RationalizeStreetAddressAndAddressLine) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2));
 }
 
 // Tests that phone number trunk types are rationalized correctly.
@@ -314,9 +318,13 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneNumberTrunkTypes) {
       BuildFormStructure(fields, /*run_heuristics=*/false);
 
   // Expect `kCorrectTypes` twice.
-  std::vector<FieldType> expected_types = kCorrectTypes;
-  expected_types.insert(expected_types.end(), kCorrectTypes.begin(),
-                        kCorrectTypes.end());
+  std::vector<FieldTypeSet> expected_types;
+  for (const FieldType field_type : kCorrectTypes) {
+    expected_types.push_back(FieldTypeSet{field_type});
+  }
+  for (const FieldType field_type : kCorrectTypes) {
+    expected_types.push_back(FieldTypeSet{field_type});
+  }
   EXPECT_THAT(GetTypes(*form_structure), ElementsAreArray(expected_types));
 }
 
@@ -333,7 +341,7 @@ TEST_F(FormStructureRationalizerTest,
       /*run_heuristics=*/false);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
+      FieldTypesAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
 }
 
 // Tests that a form that has two address predicted as
@@ -350,8 +358,8 @@ TEST_F(FormStructureRationalizerTest,
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
-                          ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+                            ADDRESS_HOME_CITY));
 }
 
 // Tests that a form that has three address lines predicted as
@@ -369,8 +377,8 @@ TEST_F(FormStructureRationalizerTest,
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
-                          ADDRESS_HOME_LINE3, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2,
+                            ADDRESS_HOME_LINE3, ADDRESS_HOME_CITY));
 }
 
 // Tests that a form that has four address lines predicted as
@@ -391,9 +399,9 @@ TEST_F(FormStructureRationalizerTest,
       /*run_heuristics=*/false);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                  ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_ADDRESS,
-                  ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
+      FieldTypesAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                    ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_STREET_ADDRESS,
+                    ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY));
 }
 
 // Tests that a form that has only one address in each section predicted as
@@ -413,7 +421,7 @@ TEST_F(FormStructureRationalizerTest,
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
+              FieldTypesAre(
                   // Billing:
                   NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
                   // Shipping:
@@ -451,7 +459,7 @@ TEST_F(
       /*run_heuristics=*/false);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(
+      FieldTypesAre(
           // Shipping.
           NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY,
           // Billing.
@@ -482,7 +490,7 @@ TEST_F(
       },
       /*run_heuristics=*/true);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(
+              FieldTypesAre(
                   // Billing.
                   NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_CITY,
                   // Shipping.
@@ -512,7 +520,7 @@ TEST_F(
       /*run_heuristics=*/true);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(
+      FieldTypesAre(
           // Shipping.
           NAME_FULL, ADDRESS_HOME_LINE1, ADDRESS_HOME_LINE2, ADDRESS_HOME_CITY,
           // Billing.
@@ -528,8 +536,9 @@ TEST_F(FormStructureRationalizerTest, RationalizeStandaloneCVCField) {
 
   // As there are no other credit card fields or an email address field, we
   // rationalize the CVC field to a standalone CVC field.
-  EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
+  EXPECT_THAT(
+      GetTypes(*form_structure),
+      FieldTypesAre(NAME_FULL, CREDIT_CARD_STANDALONE_VERIFICATION_CODE));
 }
 
 TEST_F(FormStructureRationalizerTest,
@@ -545,9 +554,9 @@ TEST_F(FormStructureRationalizerTest,
   // As there are other credit card fields, we won't map the CVC field to a
   // standalone CVC field.
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
-                          CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
-                          CREDIT_CARD_VERIFICATION_CODE));
+              FieldTypesAre(CREDIT_CARD_NAME_FULL, CREDIT_CARD_NUMBER,
+                            CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
+                            CREDIT_CARD_VERIFICATION_CODE));
 }
 
 TEST_F(FormStructureRationalizerTest,
@@ -560,7 +569,7 @@ TEST_F(FormStructureRationalizerTest,
   // As there is an email address field we won't map the CVC field to a
   // standalone CVC field.
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(EMAIL_ADDRESS, UNKNOWN_TYPE));
+              FieldTypesAre(EMAIL_ADDRESS, UNKNOWN_TYPE));
 }
 
 // Tests that contenteditables types are overridden with UNKNOWN_TYPE.
@@ -572,7 +581,7 @@ TEST_F(FormStructureRationalizerTest, RationalizeContentEditables) {
         .form_control_type = FormControlType::kInputText}},
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(UNKNOWN_TYPE, CREDIT_CARD_NUMBER));
+              FieldTypesAre(UNKNOWN_TYPE, CREDIT_CARD_NUMBER));
 }
 
 // Tests the rationalization that ignores certain types on the main origin. The
@@ -895,7 +904,7 @@ TEST_F(FormStructureRationalizerTest, RationalizeAddressBetweenStreets) {
 
 struct RationalizeAutocompleteTestParam {
   std::vector<FieldTemplate> fields;
-  std::vector<FieldType> final_types;
+  std::vector<FieldTypeSet> final_types;
 };
 
 class RationalizeAutocompleteTest
@@ -917,21 +926,21 @@ INSTANTIATE_TEST_SUITE_P(
                             AutocompleteParsingResult{
                                 .field_type = HtmlFieldType::kAdditionalName},
                         .max_length = 1}},
-            .final_types = {NAME_MIDDLE_INITIAL}},
+            .final_types = {{NAME_MIDDLE_INITIAL}}},
         // <input autocomplete="cc-exp" max-length=5> becomes a MM/YY field.
         RationalizeAutocompleteTestParam{
             .fields = {{.parsed_autocomplete =
                             AutocompleteParsingResult{
                                 .field_type = HtmlFieldType::kCreditCardExp},
                         .max_length = 5}},
-            .final_types = {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}},
         // <input autocomplete="cc-exp" max-length=7> becomes a MM/YYYY field.
         RationalizeAutocompleteTestParam{
             .fields = {{.parsed_autocomplete =
                             AutocompleteParsingResult{
                                 .field_type = HtmlFieldType::kCreditCardExp},
                         .max_length = 7}},
-            .final_types = {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}},
         // <input autocomplete="cc-exp" max-length=7> becomes a MM/YY field
         // if there is a MM / YY label.
         RationalizeAutocompleteTestParam{
@@ -940,7 +949,7 @@ INSTANTIATE_TEST_SUITE_P(
                             AutocompleteParsingResult{
                                 .field_type = HtmlFieldType::kCreditCardExp},
                         .max_length = 7}},
-            .final_types = {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}},
         // <input autocomplete="cc-exp" max-length=20> becomes a MM/YYYY field
         // by default (see test above), but if later a server classification is
         // available, the type is re-rationalized to a 2 digit expiration field.
@@ -956,14 +965,14 @@ INSTANTIATE_TEST_SUITE_P(
                           .field_type =
                               HtmlFieldType::kCreditCardExpDate4DigitYear},
                   .max_length = 7}},
-            .final_types = {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}},
         // The pattern "MM / YY" trumps a server verdict.
         RationalizeAutocompleteTestParam{
             .fields = {{.label = "MM / YY",
                         .field_type = CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR,
                         .max_length = 7,
                         .heuristic_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
-            .final_types = {CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}}},
         // The pattern "MM / YY" does NOT trump a server override.
         RationalizeAutocompleteTestParam{
             .fields = {{.label = "MM / YY",
@@ -971,7 +980,7 @@ INSTANTIATE_TEST_SUITE_P(
                         .max_length = 7,
                         .field_type_is_override = true,
                         .heuristic_type = CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR}},
-            .final_types = {CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR}}},
         // <input autocomplete="cc-exp-year" max-length=4> becomes a YYYY field.
         RationalizeAutocompleteTestParam{
             .fields =
@@ -982,8 +991,8 @@ INSTANTIATE_TEST_SUITE_P(
                       AutocompleteParsingResult{
                           .field_type = HtmlFieldType::kCreditCardExpYear},
                   .max_length = 4}},
-            .final_types = {CREDIT_CARD_EXP_MONTH,
-                            CREDIT_CARD_EXP_4_DIGIT_YEAR}},
+            .final_types = {{CREDIT_CARD_EXP_MONTH},
+                            {CREDIT_CARD_EXP_4_DIGIT_YEAR}}},
         // <input autocomplete="cc-exp-year" max-length=2> becomes a YY field.
         RationalizeAutocompleteTestParam{
             .fields =
@@ -994,8 +1003,8 @@ INSTANTIATE_TEST_SUITE_P(
                       AutocompleteParsingResult{
                           .field_type = HtmlFieldType::kCreditCardExpYear},
                   .max_length = 2}},
-            .final_types = {CREDIT_CARD_EXP_MONTH,
-                            CREDIT_CARD_EXP_2_DIGIT_YEAR}}));
+            .final_types = {{CREDIT_CARD_EXP_MONTH},
+                            {CREDIT_CARD_EXP_2_DIGIT_YEAR}}}));
 
 TEST_P(RationalizeAutocompleteTest, RationalizeAutocompleteAttribute) {
   std::unique_ptr<FormStructure> form_structure =
@@ -1016,7 +1025,7 @@ TEST_F(FormStructureRationalizerTest,
       /*run_heuristics=*/true);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE));
+      FieldTypesAre(NAME_FIRST, NAME_LAST, ADDRESS_HOME_LINE1, UNKNOWN_TYPE));
 }
 
 // Tests that PHONE_HOME_COUNTRY_CODE fields are not rationalized to
@@ -1030,8 +1039,8 @@ TEST_F(FormStructureRationalizerTest, RationalizePhoneCountryCode_PhoneFields) {
                            PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX}},
                          /*run_heuristics=*/true);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FIRST, NAME_LAST, PHONE_HOME_COUNTRY_CODE,
-                          PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
+              FieldTypesAre(NAME_FIRST, NAME_LAST, PHONE_HOME_COUNTRY_CODE,
+                            PHONE_HOME_CITY_AND_NUMBER_WITHOUT_TRUNK_PREFIX));
 }
 
 class RationalizePhoneNumbersForFillingTest
@@ -1392,8 +1401,8 @@ TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZip) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
-                          ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS,
+                            ADDRESS_HOME_ZIP_PREFIX, ADDRESS_HOME_ZIP_SUFFIX));
 }
 
 // Tests that two consecutive ADDRESS_HOME_ZIP fields are not rationalized
@@ -1415,8 +1424,8 @@ TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZipBigMaxLength) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY));
 }
 
 // Tests that two consecutive ADDRESS_HOME_ZIP fields are not rationalized
@@ -1432,8 +1441,8 @@ TEST_F(RationalizeRepeatedZipTest, TwoConsecutiveZipMaxLengthNotSet) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY));
 }
 
 // Tests that 3 consecutive ADDRESS_HOME_ZIP fields are not affected
@@ -1461,8 +1470,8 @@ TEST_F(RationalizeRepeatedZipTest, ThreeConsecutiveZip) {
       /*run_heuristics=*/false);
   EXPECT_THAT(
       GetTypes(*form_structure),
-      ElementsAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP,
-                  ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP));
+      FieldTypesAre(NAME_FULL, ADDRESS_HOME_STREET_ADDRESS, ADDRESS_HOME_ZIP,
+                    ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP));
 }
 
 // Tests that a form that has two non-consecutive ADDRESS_HOME_ZIP fields
@@ -1485,8 +1494,8 @@ TEST_F(RationalizeRepeatedZipTest, TwoNonConsecutiveZip) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
-                          NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY,
+                            NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Tests that ADDRESS_HOME_ZIP_SUFFIX without previous ADDRESS_HOME_ZIP is
@@ -1502,7 +1511,7 @@ TEST_F(RationalizeRepeatedZipTest, LonelyZipSuffixField) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_CITY));
 }
 
 // Tests that (ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP_SUFFIX) is rationalized to
@@ -1519,8 +1528,8 @@ TEST_F(RationalizeRepeatedZipTest, ZipAndZipSuffix) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
-                          ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
+                            ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
 }
 
 // Tests that (ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_ZIP_SUFFIX) is rationalized
@@ -1539,8 +1548,8 @@ TEST_F(RationalizeRepeatedZipTest, TwoZipSuffix) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
-                          ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP_PREFIX,
+                            ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_CITY));
 }
 
 // Tests that (ADDRESS_HOME_ZIP_SUFFIX, ADDRESS_HOME_ZIP) is rationalized
@@ -1557,8 +1566,8 @@ TEST_F(RationalizeRepeatedZipTest, ZipSuffixAndZip) {
       },
       /*run_heuristics=*/false);
   EXPECT_THAT(GetTypes(*form_structure),
-              ElementsAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
-                          ADDRESS_HOME_CITY));
+              FieldTypesAre(NAME_FULL, ADDRESS_HOME_ZIP, ADDRESS_HOME_ZIP,
+                            ADDRESS_HOME_CITY));
 }
 
 }  // namespace

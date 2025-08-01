@@ -47,7 +47,7 @@ std::vector<std::unique_ptr<AutofillField>> CreateFields(
     f->set_form_control_type(t.form_control_type);
     f->SetTypeTo(AutofillType(t.field_type),
                  AutofillPredictionSource::kHeuristics);
-    DCHECK_EQ(f->Type().GetStorableType(), t.field_type);
+    DCHECK_EQ(f->Type().GetTypes(), FieldTypeSet{t.field_type});
     if (!t.autocomplete_section.empty() ||
         t.autocomplete_mode != HtmlFieldMode::kNone) {
       f->set_parsed_autocomplete(AutocompleteParsingResult{

@@ -193,8 +193,11 @@ std::vector<std::string> AllFieldValues(content::WebContents* web_contents,
 auto IsWithinAutofillLimits() {
   auto frequencies = [](const FormStructure& form) {
     std::map<FieldType, size_t> counts;
-    for (const auto& field : form)
-      ++counts[field->Type().GetStorableType()];
+    for (const auto& field : form) {
+      for (FieldType field_type : field->Type().GetTypes()) {
+        ++counts[field_type];
+      }
+    }
     return counts;
   };
   return ResultOf(frequencies,

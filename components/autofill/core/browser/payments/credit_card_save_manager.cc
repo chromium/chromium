@@ -357,7 +357,7 @@ void CreditCardSaveManager::AttemptToOfferCardUploadSave(
         break;
       }
     } else if (is_valid_cvc &&
-               field->Type().GetStorableType() == UNKNOWN_TYPE) {
+               field->Type().GetTypes().contains(UNKNOWN_TYPE)) {
       found_cvc_value_in_non_cvc_field_ = true;
     }
   }

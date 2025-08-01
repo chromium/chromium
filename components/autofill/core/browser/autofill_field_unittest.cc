@@ -51,13 +51,13 @@ TEST_F(AutofillFieldTest, Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
 
   field.set_server_predictions(
       {CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(PHONE_HOME_CITY_AND_NUMBER));
   EXPECT_EQ(field.PredictionSource(),
             AutofillPredictionSource::kServerCrowdsourcing);
 
   // Overrides to another number format.
   field.set_server_predictions({CreateFieldPrediction(PHONE_HOME_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_NUMBER, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(PHONE_HOME_NUMBER));
   EXPECT_EQ(field.PredictionSource(),
             AutofillPredictionSource::kServerCrowdsourcing);
 
@@ -65,7 +65,7 @@ TEST_F(AutofillFieldTest, Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
   field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
   field.set_server_predictions(
       {CreateFieldPrediction(PHONE_HOME_WHOLE_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_WHOLE_NUMBER, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(PHONE_HOME_WHOLE_NUMBER));
   EXPECT_EQ(field.PredictionSource(),
             AutofillPredictionSource::kServerCrowdsourcing);
 
@@ -74,21 +74,21 @@ TEST_F(AutofillFieldTest, Type_ServerPredictionOfCityAndNumber_OverrideHtml) {
   field.SetHtmlType(HtmlFieldType::kTelNational, HtmlFieldMode::kNone);
   field.set_server_predictions(
       {CreateFieldPrediction(CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR)});
-  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(PHONE_HOME_CITY_AND_NUMBER));
   EXPECT_EQ(field.PredictionSource(), AutofillPredictionSource::kAutocomplete);
 
   // If html type not specified, we still use server prediction.
   field.SetHtmlType(HtmlFieldType::kUnspecified, HtmlFieldMode::kNone);
   field.set_server_predictions(
       {CreateFieldPrediction(PHONE_HOME_CITY_AND_NUMBER)});
-  EXPECT_EQ(PHONE_HOME_CITY_AND_NUMBER, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(PHONE_HOME_CITY_AND_NUMBER));
   EXPECT_EQ(field.PredictionSource(),
             AutofillPredictionSource::kServerCrowdsourcing);
 }
 
 TEST_F(AutofillFieldTest, IsFieldFillable) {
   AutofillField field;
-  ASSERT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());
+  ASSERT_THAT(field.Type().GetTypes(), ElementsAre(UNKNOWN_TYPE));
 
   // Type is unknown.
   EXPECT_FALSE(field.IsFieldFillable());
@@ -119,18 +119,18 @@ TEST_F(AutofillFieldTest, LoyaltyCardPredictionsIgnoredIfFlagIsDisabled) {
       features::kAutofillEnableEmailOrLoyaltyCardsFilling);
 
   AutofillField field;
-  EXPECT_EQ(UNKNOWN_TYPE, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(UNKNOWN_TYPE));
 
   // Both types set.
   field.set_heuristic_type(GetActiveHeuristicSource(), NAME_FIRST);
   field.set_server_predictions({CreateFieldPrediction(LOYALTY_MEMBERSHIP_ID)});
 
-  EXPECT_EQ(NAME_FIRST, field.Type().GetStorableType());
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(NAME_FIRST));
 }
 
 TEST_F(AutofillFieldTest, NoPredictions) {
   AutofillField field;
-  EXPECT_EQ(field.Type().GetStorableType(), UNKNOWN_TYPE);
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(UNKNOWN_TYPE));
   EXPECT_EQ(field.PredictionSource(), std::nullopt);
 }
 
@@ -257,7 +257,8 @@ TEST_P(PrecedenceOverAutocompleteTest, PrecedenceOverAutocompleteParams) {
   field.set_server_predictions({CreateFieldPrediction(test_case.server_type)});
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            test_case.heuristic_type);
-  EXPECT_EQ(field.ComputedType().GetStorableType(), test_case.expected_result);
+  EXPECT_THAT(field.ComputedType().GetTypes(),
+              ElementsAre(test_case.expected_result));
   EXPECT_EQ(field.PredictionSource(), test_case.expected_source);
 }
 
@@ -314,7 +315,7 @@ TEST_P(AutocompleteUnrecognizedTypeTest, TypePredictions) {
   field.SetHtmlType(HtmlFieldType::kUnrecognized, HtmlFieldMode::kNone);
 
   // Expect that the predicted type wins over ac=unrecognized.
-  EXPECT_EQ(field.Type().GetStorableType(), test.predicted_type);
+  EXPECT_THAT(field.Type().GetTypes(), ElementsAre(test.predicted_type));
   EXPECT_EQ(field.ShouldSuppressSuggestionsAndFillingByDefault(),
             test.expect_should_suppress_suggestions_and_filling);
   EXPECT_EQ(field.PredictionSource(), test.expected_source);
@@ -375,7 +376,8 @@ TEST_P(AutofillLocalHeuristicsOverridesTest,
   field.set_server_predictions({CreateFieldPrediction(test_case.server_type)});
   field.set_heuristic_type(GetActiveHeuristicSource(),
                            test_case.heuristic_type);
-  EXPECT_EQ(field.ComputedType().GetStorableType(), test_case.expected_result)
+  EXPECT_THAT(field.ComputedType().GetTypes(),
+              ElementsAre(test_case.expected_result))
       << "html_field_type: " << test_case.html_field_type
       << ", server_type: " << test_case.server_type
       << ", heuristic_type: " << test_case.heuristic_type
@@ -711,7 +713,8 @@ TEST_P(AutofillFieldTestWithPasswordManagerMlPredictions,
                            test_case.autofill_heuristic_type);
   field.set_heuristic_type(HeuristicSource::kPasswordManagerMachineLearning,
                            test_case.password_manager_predicted_type);
-  EXPECT_EQ(field.ComputedType().GetStorableType(), test_case.expected_result);
+  EXPECT_THAT(field.ComputedType().GetTypes(),
+              ElementsAre(test_case.expected_result));
   EXPECT_EQ(field.PredictionSource(), test_case.expected_source);
 }
 

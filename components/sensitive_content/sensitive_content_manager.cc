@@ -84,8 +84,8 @@ void SensitiveContentManager::OnFieldTypesDetermined(AutofillManager& manager,
   if (const autofill::FormStructure* form =
           manager.FindCachedFormById(form_id)) {
     for (const std::unique_ptr<AutofillField>& field : form->fields()) {
-      const bool field_is_sensitive =
-          IsSensitiveAutofillType(field->Type().GetStorableType());
+      const bool field_is_sensitive = std::ranges::any_of(
+          field->Type().GetTypes(), &IsSensitiveAutofillType);
       // The feature param check is done first because reparsing by password
       // manager (calling `ClassifyAsPasswordForm`) can take long. Moreover,
       // this feature param exists only to check whether reparsing has a
@@ -168,7 +168,8 @@ void SensitiveContentManager::OnAutofillManagerStateChanged(
       const std::vector<std::unique_ptr<AutofillField>>& fields =
           form_structure->fields();
       for (const std::unique_ptr<AutofillField>& field : fields) {
-        if (IsSensitiveAutofillType(field->Type().GetStorableType())) {
+        if (std::ranges::any_of(field->Type().GetTypes(),
+                                &IsSensitiveAutofillType)) {
           sensitive_fields_.insert(field->global_id());
         }
       }

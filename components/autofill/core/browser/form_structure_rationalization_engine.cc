@@ -161,8 +161,8 @@ bool IsFieldConditionFulfilledIgnoringLocation(ParsingContext& context,
                                                const FieldCondition& condition,
                                                const AutofillField& field) {
   if (condition.possible_overall_types.has_value() &&
-      !condition.possible_overall_types->contains(
-          field.Type().GetStorableType())) {
+      !condition.possible_overall_types->contains_any(
+          field.Type().GetTypes())) {
     return false;
   }
 
@@ -192,7 +192,7 @@ std::optional<size_t> FindFieldMeetingCondition(
                                                     candidate_field)) {
         return static_cast<size_t>(i);
       }
-      if (candidate_field.Type().GetStorableType() != UNKNOWN_TYPE &&
+      if (!candidate_field.Type().GetTypes().contains(UNKNOWN_TYPE) &&
           ((direction > 0 &&
             condition.location == FieldLocation::kNextClassifiedSuccessor) ||
            (direction < 0 &&
@@ -286,7 +286,7 @@ void ApplyRuleIfApplicable(
       CHECK(found_fields.find(action.target) != found_fields.end());
       AutofillField& field = *fields[found_fields[action.target]];
       buffer << ", changing field " << found_fields[action.target] << " from "
-             << FieldTypeToStringView(field.Type().GetStorableType()) << " to "
+             << FieldTypeSetToString(field.Type().GetTypes()) << " to "
              << FieldTypeToStringView(action.set_overall_type);
       field.SetTypeTo(AutofillType(action.set_overall_type),
                       AutofillPredictionSource::kRationalization);

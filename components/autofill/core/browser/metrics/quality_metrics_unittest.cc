@@ -34,6 +34,7 @@ using ::autofill::test::CreateTestFormField;
 using ::base::Bucket;
 using ::base::BucketsAre;
 using ::base::BucketsInclude;
+using ::testing::ElementsAre;
 
 using ExpectedUkmMetricsRecord = std::vector<ExpectedUkmMetricsPair>;
 using ExpectedUkmMetrics = std::vector<ExpectedUkmMetricsRecord>;
@@ -871,11 +872,12 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
                      Bucket(AutofillMetrics::QUERY_RESPONSE_PARSED, 1)));
 
   // Autocomplete-derived types are eventually what's inferred.
-  EXPECT_EQ(NAME_LAST, form_structure_ptr->field(0)->Type().GetStorableType());
-  EXPECT_EQ(NAME_MIDDLE,
-            form_structure_ptr->field(1)->Type().GetStorableType());
-  EXPECT_EQ(ADDRESS_HOME_ZIP,
-            form_structure_ptr->field(2)->Type().GetStorableType());
+  EXPECT_THAT(form_structure_ptr->field(0)->Type().GetTypes(),
+              ElementsAre(NAME_LAST));
+  EXPECT_THAT(form_structure_ptr->field(1)->Type().GetTypes(),
+              ElementsAre(NAME_MIDDLE));
+  EXPECT_THAT(form_structure_ptr->field(2)->Type().GetTypes(),
+              ElementsAre(ADDRESS_HOME_ZIP));
 
   for (const std::string source : {"Heuristic", "Server"}) {
     std::string aggregate_histogram =

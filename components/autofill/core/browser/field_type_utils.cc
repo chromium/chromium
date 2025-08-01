@@ -27,7 +27,7 @@ bool FieldHasMeaningfulPossibleFieldTypes(const AutofillField& field) {
 }
 
 bool TypeOfFieldIsPossibleType(const AutofillField& field) {
-  return field.possible_types().contains(field.Type().GetStorableType());
+  return field.possible_types().contains_any(field.Type().GetTypes());
 }
 
 size_t AddressLineIndex(FieldType type) {

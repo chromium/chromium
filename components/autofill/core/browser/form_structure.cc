@@ -274,12 +274,14 @@ void FormStructure::RationalizeAndAssignSections(LogManager* log_manager,
       size_t next_section_id = section_id_map.size() + 1;
       section_id_map[field->section()] = next_section_id;
     }
-    field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
-        .field_type = field->Type().GetStorableType(),
-        .section_id = section_id_map[field->section()],
-        .type_changed = field->Type().GetStorableType() !=
-                        field->ComputedType().GetStorableType(),
-    });
+    for (FieldType field_type : field->Type().GetTypes()) {
+      field->AppendLogEventIfNotRepeated(RationalizationFieldLogEvent{
+          .field_type = field_type,
+          .section_id = section_id_map[field->section()],
+          .type_changed = field->Type().GetTypes().contains(field_type) !=
+                          field->ComputedType().GetTypes().contains(field_type),
+      });
+    }
   }
 }
 

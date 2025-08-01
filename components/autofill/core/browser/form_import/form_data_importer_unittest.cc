@@ -85,8 +85,15 @@ using base::UTF8ToUTF16;
 using test::CreateTestFormField;
 using test::CreateTestIbanFormData;
 using ::testing::_;
+using ::testing::Contains;
+using ::testing::ElementsAre;
+using ::testing::Eq;
 using ::testing::NiceMock;
+using ::testing::Pair;
+using ::testing::Pointee;
 using ::testing::Return;
+using ::testing::Truly;
+using ::testing::UnorderedElementsAre;
 
 constexpr char kLocale[] = "en_US";
 
@@ -468,7 +475,7 @@ FormData ConstructSplitDefaultFormData(int part) {
 // Takes `expected` by value to avoid a dangling reference.
 template <typename T>
 auto ComparesEqual(T expected) {
-  return ::testing::Truly([expected = std::move(expected)](const T& actual) {
+  return Truly([expected = std::move(expected)](const T& actual) {
     return actual.Compare(expected) == 0;
   });
 }
@@ -479,17 +486,16 @@ auto ComparesEqual(T expected) {
 
 template <typename T>
 auto UnorderedElementsCompareEqualArray(const std::vector<T>& expected_values) {
-  std::vector<::testing::Matcher<const T*>> matchers;
+  std::vector<testing::Matcher<const T*>> matchers;
   for (const T& expected : expected_values) {
-    matchers.push_back(::testing::Pointee(ComparesEqual(expected)));
+    matchers.push_back(Pointee(ComparesEqual(expected)));
   }
-  return ::testing::UnorderedElementsAreArray(matchers);
+  return UnorderedElementsAreArray(matchers);
 }
 
 template <typename... Matchers>
 auto UnorderedElementsCompareEqual(Matchers... matchers) {
-  return ::testing::UnorderedElementsAre(
-      ::testing::Pointee(ComparesEqual(std::move(matchers)))...);
+  return UnorderedElementsAre(Pointee(ComparesEqual(std::move(matchers)))...);
 }
 
 // TODO(crbug.com/40270301): Move MockCreditCardSaveManager to new header and cc
@@ -1337,7 +1343,8 @@ TEST_F(FormDataImporterTest, ImportAddressProfiles_BadEmail) {
       ConstructDefaultProfileFormStructure();
 
   // Change the value of the email field.
-  ASSERT_EQ(form_structure->field(2)->Type().GetStorableType(), EMAIL_ADDRESS);
+  ASSERT_THAT(form_structure->field(2)->Type().GetTypes(),
+              Contains(EMAIL_ADDRESS));
   form_structure->field(2)->set_value(u"bogus");
 
   // Verify that there was no import.
@@ -3938,7 +3945,7 @@ class SkipSaveCardInFormDataImporterTest
 
 INSTANTIATE_TEST_SUITE_P(All,
                          SkipSaveCardInFormDataImporterTest,
-                         ::testing::Bool());
+                         testing::Bool());
 
 // Test that save card functionality is skipped for tab modal popup only when
 // kAutofillSkipSaveCardForTabModalPopup is enabled; otherwise, the card saving
@@ -4271,9 +4278,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
       test_api(form_data_importer()).HasInvalidFieldTypes(section_fields));
   EXPECT_THAT(
       test_api(form_data_importer()).GetObservedFieldValues(section_fields),
-      ::testing::ElementsAre(
-          ::testing::Pair(::testing::Eq(ADDRESS_HOME_COUNTRY),
-                          ::testing::Eq(u"United States"))));
+      ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
 }
 
 // Tests that duplicate fields with identical field values are valid for the
@@ -4298,9 +4303,7 @@ TEST_F(FormDataImporterTest_RelaxAddressImport,
       test_api(form_data_importer()).HasInvalidFieldTypes(section_fields));
   EXPECT_THAT(
       test_api(form_data_importer()).GetObservedFieldValues(section_fields),
-      ::testing::ElementsAre(
-          ::testing::Pair(::testing::Eq(ADDRESS_HOME_COUNTRY),
-                          ::testing::Eq(u"United States"))));
+      ElementsAre(Pair(Eq(ADDRESS_HOME_COUNTRY), Eq(u"United States"))));
 }
 
 }  // namespace

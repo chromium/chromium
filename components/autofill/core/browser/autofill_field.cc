@@ -531,7 +531,7 @@ void AutofillField::SetHtmlType(HtmlFieldType type, HtmlFieldMode mode) {
 
 void AutofillField::SetTypeTo(const AutofillType& type,
                               std::optional<AutofillPredictionSource> source) {
-  DCHECK(type.GetStorableType() != NO_SERVER_DATA);
+  DCHECK(!type.GetTypes().empty());
   overall_type_ = {type, source};
 }
 
@@ -716,16 +716,15 @@ std::string AutofillField::FieldSignatureAsStr() const {
 }
 
 bool AutofillField::IsFieldFillable() const {
-  FieldType field_type = Type().GetStorableType();
-  return IsFillableFieldType(field_type);
+  return std::ranges::any_of(Type().GetTypes(), IsFillableFieldType);
 }
 
 bool AutofillField::HasExpirationDateType() const {
-  static constexpr DenseSet kExpirationDateTypes = {
+  static constexpr FieldTypeSet kExpirationDateTypes = {
       CREDIT_CARD_EXP_MONTH, CREDIT_CARD_EXP_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_4_DIGIT_YEAR, CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR,
       CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR};
-  return kExpirationDateTypes.contains(Type().GetStorableType());
+  return Type().GetTypes().contains_any(kExpirationDateTypes);
 }
 
 bool AutofillField::ShouldSuppressSuggestionsAndFillingByDefault() const {
@@ -778,7 +777,7 @@ void AutofillField::AppendLogEventIfNotRepeated(
 bool AutofillField::WasAutofilledWithFallback() const {
   return autofilled_type_ &&
          (!overall_type_ ||
-          autofilled_type_ != overall_type_->type.GetStorableType());
+          !overall_type_->type.GetTypes().contains(*autofilled_type_));
 }
 
 }  // namespace autofill

@@ -85,7 +85,7 @@ class FormFiller {
     static RefillOptions Refill(DenseSet<FieldTypeGroup> originally_filled);
 
     bool is_refill() const;
-    bool may_refill(FieldType field_type) const;
+    bool may_refill(const FieldTypeSet& field_type) const;
 
    private:
     RefillOptions();
@@ -218,9 +218,10 @@ class FormFiller {
 
   // Fills `field_data` and modifies `autofill_field` given all other states.
   // Returns the FieldType of the value that was filled, or std::nullopt if no
-  // value was filled. The return value is independent of whether the field was
-  // filled or autofilled before. When `allow_suggestion_swapping` is true, the
-  // method still returns the FieldType if the `autofill_field` is emptied.
+  // value was filled. If the FieldType is not known, returns UNKNOWN_TYPE. The
+  // return value is independent of whether the field was filled or autofilled
+  // before. When `allow_suggestion_swapping` is true, the method still returns
+  // the FieldType if the `autofill_field` is emptied.
   // TODO(crbug.com/40227071): Cleanup API and logic.
   std::optional<FieldType> FillField(
       AutofillField& autofill_field,

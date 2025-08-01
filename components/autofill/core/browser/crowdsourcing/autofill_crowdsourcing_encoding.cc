@@ -460,8 +460,8 @@ void EncodeFormFieldsForUpload(
     // TODO(crbug.com/40286837): Understand and document why the type is
     // relevant.
     if (!field->initial_value().empty() &&
-        ((field->Type().GetStorableType() != NO_SERVER_DATA &&
-          field->Type().GetStorableType() != UNKNOWN_TYPE) ||
+        (!field->Type().GetTypes().contains_any(
+             {NO_SERVER_DATA, UNKNOWN_TYPE}) ||
          !field->possible_types().empty())) {
       added_field->set_initial_value_changed(field->initial_value() !=
                                              field->value());
@@ -776,7 +776,7 @@ base::flat_set<FormSignature> GetFormsForWhichToRunAiModel(
 void MaybeMergeServerPredictions(
     std::vector<FieldPrediction>& server_predictions) {
   const auto server_types =
-      DenseSet<FieldType>(server_predictions, [](const FieldPrediction& pred) {
+      FieldTypeSet(server_predictions, [](const FieldPrediction& pred) {
         return ToSafeFieldType(pred.type(), UNKNOWN_TYPE);
       });
 
@@ -1027,7 +1027,7 @@ void ProcessServerPredictionsQueryResponse(
           field_suggestion->predictions().end()};
       MaybeMergeServerPredictions(server_predictions);
       field->set_server_predictions(std::move(server_predictions));
-      if (heuristic_type != field->Type().GetStorableType()) {
+      if (!field->Type().GetTypes().contains(heuristic_type)) {
         query_response_overrode_heuristics = true;
       }
       if (field_suggestion->has_password_requirements()) {

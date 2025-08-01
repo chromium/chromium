@@ -55,13 +55,14 @@ namespace autofill {
 namespace {
 
 using ::testing::AtLeast;
+using ::testing::Contains;
 using ::testing::DoAll;
 using ::testing::Each;
 using ::testing::Eq;
-using ::testing::Field;
 using ::testing::NiceMock;
 using ::testing::Not;
 using ::testing::Optional;
+using ::testing::Property;
 using ::testing::Return;
 using ::testing::SaveArg;
 
@@ -114,13 +115,17 @@ class MockAutofillDriver : public TestAutofillDriver {
               (override));
 };
 
-MATCHER_P(HasValue, value, "") {
-  return arg.value() == value;
+auto HasValue(std::u16string value) {
+  return Property("FormFieldData::value", &FormFieldData::value,
+                  std::move(value));
 }
 
 // Takes a FormFieldData argument.
-MATCHER_P(AutofilledWith, value, "") {
-  return arg.is_autofilled() && arg.value() == value;
+auto AutofilledWith(std::u16string value) {
+  return AllOf(Property("FormFieldData::is_autofilled",
+                        &FormFieldData::is_autofilled, true),
+               Property("FormFieldData::value", &FormFieldData::value,
+                        std::move(value)));
 }
 
 // Takes an AutofillField argument.
@@ -816,7 +821,8 @@ TEST_F(FormFillerTest, FillAddressForm_AutocompleteOffFillingBehavior) {
   FormStructure* form_structure = GetFormStructure(form);
   form_structure->field(1)->set_heuristic_type(GetActiveHeuristicSource(),
                                                NAME_MIDDLE);
-  ASSERT_EQ(form_structure->field(1)->Type().GetStorableType(), NAME_MIDDLE);
+  ASSERT_THAT(form_structure->field(1)->Type().GetTypes(),
+              Contains(NAME_MIDDLE));
 
   AutofillProfile profile = test::GetFullProfile();
   std::vector<FormFieldData> filled_fields =

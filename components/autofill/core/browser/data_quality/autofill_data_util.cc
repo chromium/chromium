@@ -287,8 +287,9 @@ bool ContainsPhone(uint32_t groups) {
 uint32_t DetermineGroups(const FormStructure& form) {
   uint32_t group_bitmask = 0;
   for (const auto& field : form) {
-    FieldType type = field->Type().GetStorableType();
-    AddGroupToBitmask(&group_bitmask, type);
+    for (FieldType type : field->Type().GetTypes()) {
+      AddGroupToBitmask(&group_bitmask, type);
+    }
   }
   return group_bitmask;
 }

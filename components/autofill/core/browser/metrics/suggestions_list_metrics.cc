@@ -126,11 +126,12 @@ void LogAddressAutofillOnTypingSuggestionAccepted(
   base::UmaHistogramEnumeration(
       "Autofill.AddressSuggestionOnTyping.AddressFieldTypeUsed",
       field_type_used, FieldType::MAX_VALID_FIELD_TYPE);
+  FieldTypeSet field_types = autofill_trigger_field->Type().GetTypes();
   base::UmaHistogramBoolean(
       "Autofill.AddressSuggestionOnTypingAcceptance.FieldClassication",
       autofill_trigger_field &&
-          autofill_trigger_field->Type().GetStorableType() >
-              FieldType::EMPTY_TYPE);
+          !FieldTypeSet{NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE}.contains_all(
+              field_types));
   if (autofill_trigger_field) {
     base::UmaHistogramCounts100(
         "Autofill.AddressSuggestionOnTypingAcceptance.NumberOfCharactersTyped",

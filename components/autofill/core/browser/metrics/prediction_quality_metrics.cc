@@ -839,7 +839,7 @@ void LogEmailFieldPredictionMetrics(const AutofillField& field) {
   }
 
   bool is_valid_email = IsValidEmailAddress(value);
-  bool is_email_prediction = field.Type().GetStorableType() == EMAIL_ADDRESS;
+  bool is_email_prediction = field.Type().GetTypes().contains(EMAIL_ADDRESS);
 
   if (is_email_prediction) {
     EmailPredictionConfusionMatrix prediction_precision =

@@ -64,7 +64,7 @@ void MerchantPromoCodeSuggestionGenerator::FetchSuggestionData(
         callback) {
   // The field is eligible only if it's focused on a merchant promo code.
   if (!form || !field ||
-      field->Type().GetStorableType() != MERCHANT_PROMO_CODE) {
+      !field->Type().GetTypes().contains(MERCHANT_PROMO_CODE)) {
     callback({FillingProduct::kMerchantPromoCode, {}});
     return;
   }

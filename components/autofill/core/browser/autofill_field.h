@@ -216,13 +216,13 @@ class AutofillField : public FormFieldData {
     only_fill_when_focused_ = fill_when_focused;
   }
 
-  // Set the type of the field. This sets the value returned by |Type|.
+  // Set the type of the field. This sets the value returned by Type().
   // This function can be used to override the value that would be returned by
-  // |ComputedType|.
-  // As the |type| is expected to depend on |ComputedType|, the value will be
-  // reset to |ComputedType| if some internal value change (e.g. on call to
-  // (|set_heuristic_type|).
-  // |SetTypeTo| cannot be called with type.GetStorableType() == NO_SERVER_DATA.
+  // ComputedType().
+  // As the `type` is expected to depend on ComputedType(), the value will be
+  // reset to ComputedType() if some internal value change (e.g. on call to
+  // (set_heuristic_type()).
+  // SetTypeTo() must not be called with `type.GetTypes().empty()`.
   void SetTypeTo(const AutofillType& type,
                  std::optional<AutofillPredictionSource> source);
 

@@ -456,9 +456,11 @@ bool FormFiller::RefillOptions::is_refill() const {
   return originally_filled_.has_value();
 }
 
-bool FormFiller::RefillOptions::may_refill(FieldType field_type) const {
+bool FormFiller::RefillOptions::may_refill(
+    const FieldTypeSet& field_types) const {
   CHECK(is_refill());
-  return originally_filled_->contains(GroupTypeOfFieldType(field_type));
+  return originally_filled_->contains_all(
+      DenseSet<FieldTypeGroup>(field_types, &GroupTypeOfFieldType));
 }
 
 DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
@@ -526,26 +528,29 @@ DenseSet<FieldFillingSkipReason> FormFiller::GetFillingSkipReasonsForField(
                                    refill_options.is_refill()),
          FieldFillingSkipReason::kAlreadyAutofilled);
 
-  FieldType field_type = autofill_field.Type().GetStorableType();
+  AutofillType autofill_type = autofill_field.Type();
+  FieldTypeSet field_types = autofill_type.GetTypes();
   std::optional<FieldType> autofill_ai_type =
       autofill_field.GetAutofillAiServerTypePredictions();
 
   // On a refill, only fill fields from type groups that were present during
   // the initial fill.
-  add_if(refill_options.is_refill() && !refill_options.may_refill(field_type),
+  add_if(refill_options.is_refill() && !refill_options.may_refill(field_types),
          FieldFillingSkipReason::kRefillNotInInitialFill);
 
   // A field with a specific type is only allowed to be filled a limited
   // number of times given by |TypeValueFormFillingLimit(field_type)|.
-  add_if(++type_count[field_type] > TypeValueFormFillingLimit(field_type),
-         FieldFillingSkipReason::kFillingLimitReachedType);
+  for (FieldType field_type : field_types) {
+    add_if(++type_count[field_type] > TypeValueFormFillingLimit(field_type),
+           FieldFillingSkipReason::kFillingLimitReachedType);
+  }
 
   std::optional<FieldTypeSet> supported_types =
       GetFieldTypesToFillFromFillingProduct(filling_product);
   // This ensures that a filling product only operates on fields of supported
   // types.
   add_if(
-      supported_types && !supported_types->contains(field_type) &&
+      supported_types && !supported_types->contains_any(field_types) &&
           (!autofill_ai_type || !supported_types->contains(*autofill_ai_type)),
       FieldFillingSkipReason::kFieldTypeUnrelated);
 

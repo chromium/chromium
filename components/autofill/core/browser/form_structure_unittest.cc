@@ -912,7 +912,7 @@ TEST_F(FormStructureTestImpl,
   EXPECT_FALSE(FormShouldRunHeuristics(form));
   EXPECT_TRUE(FormShouldBeQueried(form));
 
-  // As a side effect of parsing small forms (if any of the heuristics, query,
+  // As a side effect of parsing small forms, if any of the heuristics, query,
   // or upload minimums are disabled, we'll autofill fields with an
   // autocomplete attribute, even if its the only field in the form.
   {
@@ -924,7 +924,8 @@ TEST_F(FormStructureTestImpl,
     ASSERT_EQ(1U, AutofillCount(form_structure));
     EXPECT_EQ(UNKNOWN_TYPE, form_structure.field(0)->heuristic_type());
     EXPECT_EQ(NO_SERVER_DATA, form_structure.field(0)->server_type());
-    EXPECT_EQ(NAME_FIRST, form_structure.field(0)->Type().GetStorableType());
+    EXPECT_THAT(form_structure.field(0)->Type().GetTypes(),
+                ElementsAre(NAME_FIRST));
     EXPECT_TRUE(form_structure.IsAutofillable());
   }
 }

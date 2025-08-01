@@ -127,7 +127,7 @@ void LogDataUtilization(const FormStructure& form) {
         AutofillMetrics::AutocompleteStateForSubmittedField(*field) ==
         AutofillMetrics::AutocompleteState::kGarbage;
 
-    FieldTypeSet field_types = {field->Type().GetStorableType()};
+    FieldTypeSet field_types = field->Type().GetTypes();
     field_types.erase_all({NO_SERVER_DATA, UNKNOWN_TYPE, EMPTY_TYPE});
 
     for (std::string_view histogram_base :

@@ -69,7 +69,7 @@ void IbanSuggestionGenerator::FetchSuggestionData(
                        std::vector<SuggestionGenerator::SuggestionData>>)>
         callback) {
   // The field is eligible only if it's focused on an IBAN field.
-  if (!field || field->Type().GetStorableType() != IBAN_VALUE) {
+  if (!field || !field->Type().GetTypes().contains(IBAN_VALUE)) {
     callback({FillingProduct::kIban, {}});
     return;
   }

@@ -1061,7 +1061,7 @@ SuggestionsContext BrowserAutofillManager::BuildSuggestionsContext(
     // achieves that.
     if (!std::ranges::all_of(*form_structure, [](const auto& field) {
           return field->ShouldSuppressSuggestionsAndFillingByDefault() ||
-                 field->Type().GetStorableType() == UNKNOWN_TYPE;
+                 field->Type().GetTypes().contains(UNKNOWN_TYPE);
         })) {
       context.suppress_reason = SuppressReason::kAutocompleteUnrecognized;
     }
@@ -1504,8 +1504,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   const bool should_offer_plus_addresses =
       context.field_is_relevant_for_plus_addresses && autofill_field &&
       (autofill_field->Type().group() == FieldTypeGroup::kEmail ||
-       autofill_field->Type().GetStorableType() == FieldType::USERNAME ||
-       autofill_field->Type().GetStorableType() == FieldType::SINGLE_USERNAME);
+       autofill_field->Type().GetTypes().contains(FieldType::USERNAME) ||
+       autofill_field->Type().GetTypes().contains(FieldType::SINGLE_USERNAME));
 
   // Early return to avoid running password form classifications.
   if (!should_offer_plus_addresses && !should_offer_single_field_form_fill) {
@@ -2744,10 +2744,11 @@ void BrowserAutofillManager::MaybeShowPlusAddressEmailOverrideNotification(
   }
 
   const AutofillField* email_autofill_field = nullptr;
-  if (auto it = std::ranges::find(safe_filled_fields, EMAIL_ADDRESS,
-                                  [](const AutofillField* field) {
-                                    return field->Type().GetStorableType();
-                                  });
+  if (auto it = std::ranges::find_if(safe_filled_fields,
+                                     [](const AutofillField* field) {
+                                       return field->Type().GetTypes().contains(
+                                           EMAIL_ADDRESS);
+                                     });
       it != safe_filled_fields.end()) {
     email_autofill_field = *it;
   } else {
@@ -2792,7 +2793,7 @@ void BrowserAutofillManager::OnEmailOverrideUndone(
     return;
   }
 
-  if (autofill_field->Type().GetStorableType() != EMAIL_ADDRESS) {
+  if (!autofill_field->Type().GetTypes().contains(EMAIL_ADDRESS)) {
     return;
   }
 

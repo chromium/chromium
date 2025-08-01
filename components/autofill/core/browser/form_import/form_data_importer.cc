@@ -1145,8 +1145,7 @@ Iban FormDataImporter::ExtractIbanFromForm(const FormStructure& form) {
     if (!field->IsFieldFillable() || value.empty()) {
       continue;
     }
-    FieldType field_type = field->Type().GetStorableType();
-    if (field_type == IBAN_VALUE && Iban::IsValid(value)) {
+    if (field->Type().GetTypes().contains(IBAN_VALUE) && Iban::IsValid(value)) {
       candidate_iban.set_value(value);
       break;
     }
