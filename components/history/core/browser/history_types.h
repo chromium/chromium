@@ -264,6 +264,9 @@ class QueryResults {
  public:
   using URLResultVector = std::vector<URLResult>;
 
+  // Mimic STL containers.
+  using value_type = URLResult;
+
   QueryResults();
 
   QueryResults(const QueryResults&) = delete;

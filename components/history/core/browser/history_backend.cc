@@ -2704,6 +2704,9 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
   bool has_more_results = db_->GetVisibleVisitsInRange(options, &visits);
   DCHECK_LE(static_cast<int>(visits.size()), options.EffectiveMaxCount());
 
+  VisitSourceMap sources;
+  GetVisitsSource(visits, &sources);
+
   // Now add them and the URL rows to the results.
   std::vector<URLResult> matching_results;
   URLResult url_result;
@@ -2727,6 +2730,11 @@ void HistoryBackend::QueryHistoryBasic(const QueryOptions& options,
     VisitContentAnnotations content_annotations;
     db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
     url_result.set_content_annotations(content_annotations);
+
+    const auto visit_source = sources.count(visit.visit_id) == 0
+                                  ? VisitSource::SOURCE_BROWSED
+                                  : sources[visit.visit_id];
+    url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
 
     // Set whether the visit was blocked for a managed user by looking at the
     // transition type.
@@ -2755,10 +2763,14 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
                                 query_parser::MatchingAlgorithm::DEFAULT));
 
   std::vector<URLResult> matching_visits;
-  VisitVector visits;  // Declare outside loop to prevent re-construction.
   for (const auto& text_match : text_matches) {
     // Get all visits for given URL match.
+    VisitVector visits;
     db_->GetVisibleVisitsForURL(text_match.id(), options, &visits);
+
+    VisitSourceMap sources;
+    GetVisitsSource(visits, &sources);
+
     for (const auto& visit : visits) {
       URLResult url_result(text_match);
       url_result.set_visit_time(visit.visit_time);
@@ -2767,6 +2779,11 @@ void HistoryBackend::QueryHistoryText(const std::u16string& text_query,
       VisitContentAnnotations content_annotations;
       db_->GetContentAnnotationsForVisit(visit.visit_id, &content_annotations);
       url_result.set_content_annotations(content_annotations);
+
+      const auto visit_source = sources.count(visit.visit_id) == 0
+                                    ? VisitSource::SOURCE_BROWSED
+                                    : sources[visit.visit_id];
+      url_result.set_actor_source(visit_source == VisitSource::SOURCE_ACTOR);
 
       matching_visits.push_back(url_result);
     }

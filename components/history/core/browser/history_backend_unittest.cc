@@ -83,7 +83,9 @@ using favicon::FaviconBitmapType;
 using favicon::IconMapping;
 using favicon_base::IconType;
 using favicon_base::IconTypeSet;
+using ::testing::_;
 using ::testing::ElementsAre;
+using ::testing::Pair;
 using ::testing::UnorderedElementsAre;
 using ::testing::UnorderedElementsAreArray;
 
@@ -1622,6 +1624,11 @@ TEST_F(HistoryBackendTest, AddPageVisitSource) {
                          /*external_referrer_url=*/GURL(),
                          ui::PAGE_TRANSITION_TYPED, false, SOURCE_SYNCED, true,
                          false, true);
+  // Assume this url is actor-caused.
+  backend_->AddPageVisit(url, base::Time::Now(), /*referring_visit=*/0,
+                         /*external_referrer_url=*/GURL(),
+                         ui::PAGE_TRANSITION_TYPED, false, SOURCE_ACTOR, true,
+                         false, true);
 
   // Fetch the row information about the url from history db.
   VisitVector visits;
@@ -1629,27 +1636,15 @@ TEST_F(HistoryBackendTest, AddPageVisitSource) {
   backend_->db_->GetVisitsForURL(row_id, &visits);
 
   // Check if all the visits to the url are stored in database.
-  ASSERT_EQ(3U, visits.size());
+  ASSERT_EQ(4U, visits.size());
   VisitSourceMap visit_sources;
   ASSERT_TRUE(backend_->GetVisitsSource(visits, &visit_sources));
-  ASSERT_EQ(3U, visit_sources.size());
-  int sources = 0;
-  for (int i = 0; i < 3; i++) {
-    switch (visit_sources[visits[i].visit_id]) {
-      case SOURCE_EXTENSION:
-        sources |= 0x1;
-        break;
-      case SOURCE_FIREFOX_IMPORTED:
-        sources |= 0x2;
-        break;
-      case SOURCE_SYNCED:
-        sources |= 0x4;
-        break;
-      default:
-        break;
-    }
-  }
-  EXPECT_EQ(0x7, sources);
+  ASSERT_EQ(4U, visit_sources.size());
+
+  EXPECT_THAT(visit_sources,
+              UnorderedElementsAre(
+                  Pair(_, SOURCE_EXTENSION), Pair(_, SOURCE_FIREFOX_IMPORTED),
+                  Pair(_, SOURCE_SYNCED), Pair(_, SOURCE_ACTOR)));
 }
 
 TEST_F(HistoryBackendTest, AddPageVisitNotLastVisit) {
@@ -2234,6 +2229,86 @@ TEST_F(HistoryBackendTest, AddPageMetadata) {
   backend_->DeleteURL(url);
   ASSERT_FALSE(backend_->db()->GetContentAnnotationsForVisit(
       visit_id, &got_content_annotations));
+}
+
+TEST_F(HistoryBackendTest, QueryHistoryWithEmptyQueryIncludesActorSource) {
+  ASSERT_TRUE(backend_.get());
+
+  // Add a SOURCE_BROWSED visit.
+  GURL url1("http://pagewithvisit1.com");
+  ContextID context_id1 = 1;
+  int nav_entry_id1 = 1;
+
+  HistoryAddPageArgs request1(
+      url1, base::Time::Now(), context_id1, nav_entry_id1,
+      /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
+  backend_->AddPage(request1);
+
+  // Add a SOURCE_ACTOR visit.
+  GURL url2("http://pagewithvisit2.com");
+  ContextID context_id2 = 2;
+  int nav_entry_id2 = 2;
+
+  HistoryAddPageArgs request2(
+      url2, base::Time::Now() + base::Minutes(1), context_id2, nav_entry_id2,
+      /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_ACTOR, false, true);
+  backend_->AddPage(request2);
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  QueryResults results = backend_->QueryHistory(/*text_query=*/{}, options);
+
+  // Both BROWSED and ACTOR visit should be returned.
+  EXPECT_THAT(results,
+              testing::UnorderedElementsAre(
+                  testing::AllOf(
+                      testing::Property(&URLResult::url, url1),
+                      testing::Property(&URLResult::has_actor_source, false)),
+                  testing::AllOf(
+                      testing::Property(&URLResult::url, url2),
+                      testing::Property(&URLResult::has_actor_source, true))));
+}
+
+TEST_F(HistoryBackendTest, QueryHistoryWithTextQueryIncludesActorSource) {
+  ASSERT_TRUE(backend_.get());
+
+  // Add a SOURCE_BROWSED visit.
+  GURL url1("http://pagewithvisit1.com");
+  ContextID context_id1 = 1;
+  int nav_entry_id1 = 1;
+
+  HistoryAddPageArgs request1(
+      url1, base::Time::Now(), context_id1, nav_entry_id1,
+      /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_BROWSED, false, true);
+  backend_->AddPage(request1);
+
+  // Add a SOURCE_ACTOR visit.
+  GURL url2("http://pagewithvisit2.com");
+  ContextID context_id2 = 2;
+  int nav_entry_id2 = 2;
+
+  HistoryAddPageArgs request2(
+      url2, base::Time::Now() + base::Minutes(1), context_id2, nav_entry_id2,
+      /*local_navigation_id=*/std::nullopt, GURL(), RedirectList(),
+      ui::PAGE_TRANSITION_TYPED, false, SOURCE_ACTOR, false, true);
+  backend_->AddPage(request2);
+
+  QueryOptions options;
+  options.duplicate_policy = QueryOptions::KEEP_ALL_DUPLICATES;
+  QueryResults results = backend_->QueryHistory(/*text_query=*/u"com", options);
+
+  // Both BROWSED and ACTOR visit should be returned.
+  EXPECT_THAT(results,
+              testing::UnorderedElementsAre(
+                  testing::AllOf(
+                      testing::Property(&URLResult::url, url1),
+                      testing::Property(&URLResult::has_actor_source, false)),
+                  testing::AllOf(
+                      testing::Property(&URLResult::url, url2),
+                      testing::Property(&URLResult::has_actor_source, true))));
 }
 
 TEST_F(HistoryBackendTest, SetHasUrlKeyedImage) {
