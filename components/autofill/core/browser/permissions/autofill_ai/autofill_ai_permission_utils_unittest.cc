@@ -300,6 +300,26 @@ TEST_P(AutofillAiMayPerformActionTest, CapabilityCheckOverrideOptedOut) {
   EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS)  // Signing out does not work on ChromeOS.
+// Tests that enabling `kAutofillAiIgnoreSignInState` skips the check whether a
+// client is signed in.
+TEST_P(AutofillAiMayPerformActionTest, IgnoreSignInStatus) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiIgnoreSignInState};
+
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
+  client().identity_test_environment().ClearPrimaryAccount();
+  ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
+
+  EXPECT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  const bool is_allowed = GetParam() != AutofillAiAction::kIphForOptIn;
+  EXPECT_EQ(MayPerformAutofillAiAction(client(), GetParam()), is_allowed);
+}
+#endif  // !BUILDFLAG(IS_CHROMEOS)
+
 // Tests that only filling and cache use are allowed off-the-record.
 TEST_P(AutofillAiMayPerformActionTest, OffTheRecord) {
   client().set_is_off_the_record(true);
@@ -458,7 +478,6 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatus) {
   // The initially signed in account is opted in.
   EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 
-  // Signed out clients are never opted in.
   client().identity_test_environment().ClearPrimaryAccount();
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
 
@@ -483,6 +502,25 @@ TEST_F(AutofillAiPermissionUtilsTest, OptInStatus) {
   EXPECT_TRUE(
       SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut));
   EXPECT_FALSE(GetAutofillAiOptInStatus(client()));
+}
+
+// Tests that signing in an opted-in user retains the opt-in status.
+TEST_F(AutofillAiPermissionUtilsTest, SignInAfterOptIn) {
+  base::test::ScopedFeatureList feature_list{
+      features::kAutofillAiIgnoreSignInState};
+
+  SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedOut);
+  client().identity_test_environment().ClearPrimaryAccount();
+  ASSERT_FALSE(GetAutofillAiOptInStatus(client()));
+
+  EXPECT_TRUE(
+      SetAutofillAiOptInStatus(client(), AutofillAiOptInStatus::kOptedIn));
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
+
+  // The opt-in status is retained after sign-in.
+  client().identity_test_environment().MakePrimaryAccountAvailable(
+      "foo@gmail.com", signin::ConsentLevel::kSignin);
+  EXPECT_TRUE(GetAutofillAiOptInStatus(client()));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 

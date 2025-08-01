@@ -43,6 +43,8 @@ extern const base::FeatureParam<std::string> kAutofillAiIgnoreGeoIpBlocklist;
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillAiIgnoreLocale);
 COMPONENT_EXPORT(AUTOFILL)
+BASE_DECLARE_FEATURE(kAutofillAiIgnoreSignInState);
+COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(
     kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph);
 COMPONENT_EXPORT(AUTOFILL)

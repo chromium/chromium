@@ -124,6 +124,13 @@ BASE_FEATURE(kAutofillAiIgnoreLocale,
              "AutofillAiIgnoreLocale",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// If enabled, no sign-in requirement is imposed for Autofill. Note that if this
+// feature is enabled, the value of `kAutofillAiIgnoreCapabilityCheck` is
+// irrelevant.
+BASE_FEATURE(kAutofillAiIgnoreSignInState,
+             "AutofillAiIgnoreSignInState",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // If enabled, the existence of address or payments data is not required to show
 // the Iph bubble for AutofillAi.
 BASE_FEATURE(kAutofillAiIgnoreWhetherUserHasAddressOrPaymentsDataForIph,
