@@ -343,6 +343,22 @@ TEST(FileTest, ReadWrite) {
   }
 }
 
+TEST(FileTest, ReadWriteOverflow) {
+  ScopedTempDir temp_dir;
+  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
+  FilePath file_path = temp_dir.GetPath().AppendASCII("read_write_overflow");
+  File file(file_path, File::FLAG_CREATE | File::FLAG_READ | File::FLAG_WRITE);
+  ASSERT_TRUE(file.IsValid());
+
+  constexpr int64_t kOffset = std::numeric_limits<int64_t>::max() - 1;
+  constexpr int kSize = 10;
+  char data[kSize];
+
+  // Check that it returns -1 correctly when offset + size - 1 overflows.
+  EXPECT_EQ(-1, file.Read(kOffset, data, kSize));
+  EXPECT_EQ(-1, file.Write(kOffset, data, kSize));
+}
+
 TEST(FileTest, ReadWriteSpans) {
   ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());

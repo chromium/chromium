@@ -292,7 +292,8 @@ int64_t File::Seek(Whence whence, int64_t offset) {
 int File::Read(int64_t offset, char* data, int size) {
   ScopedBlockingCall scoped_blocking_call(FROM_HERE, BlockingType::MAY_BLOCK);
   DCHECK(IsValid());
-  if (size < 0 || !IsValueInRangeForNumericType<off_t>(offset + size - 1)) {
+  if (size < 0 || !CheckAdd(offset, size - 1).IsValid() ||
+      !IsValueInRangeForNumericType<off_t>(offset + size - 1)) {
     return -1;
   }
 
@@ -371,7 +372,7 @@ int File::Write(int64_t offset, const char* data, int size) {
   }
 
   DCHECK(IsValid());
-  if (size < 0) {
+  if (size < 0 || !CheckAdd(offset, size - 1).IsValid()) {
     return -1;
   }
 
