@@ -10,6 +10,7 @@
 #import "components/policy/policy_constants.h"
 #import "components/signin/internal/identity_manager/account_capabilities_constants.h"
 #import "components/signin/public/base/signin_metrics.h"
+#import "components/signin/public/base/signin_pref_names.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/sync/base/user_selectable_type.h"
@@ -722,6 +723,60 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
       assertWithMatcher:grey_sufficientlyVisible()];
+}
+
+// Tests that when sign-in is disabled the sign-in sheet disappear.
+- (void)testSigninSheetDisappearIfTheSignInIsDisabled {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Select the identity disc particle.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+
+  // Ensure the sign-in sheet is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Simulate disabling sign-in using another profile on an iPad.
+  [ChromeEarlGrey setBoolValue:NO
+             forLocalStatePref:prefs::kSigninAllowedOnDevice];
+  // Ensure the sign-in sheet is removed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
+      assertWithMatcher:grey_nil()];
+}
+
+// Tests that when the user is signed-in, the sign-in sheet disappear.
+// This can occur if, in a different scene, with a managed profile, the user
+// switch to a personnal account.
+- (void)testSigninSheetDisappearIfTheUserIsSignedIn {
+  FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
+  [SigninEarlGrey addFakeIdentity:fakeIdentity];
+
+  // Select the identity disc particle.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
+      performAction:grey_tap()];
+
+  // Ensure the sign-in sheet is displayed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
+
+  // Simulate signing-in from another scene with a managed profile into a
+  // personal account.
+  [SigninEarlGrey signinWithFakeIdentity:fakeIdentity];
+  // Ensure the sign-in sheet is removed.
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_IDENTITY_DISC_SIGN_IN_PROMO_LABEL))]
+      assertWithMatcher:grey_nil()];
 }
 
 // Tests that when signing-in using the NTP avatar disc, the user is not signed
