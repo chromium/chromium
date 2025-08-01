@@ -56,6 +56,7 @@ class MockDelegate : public GlicMetrics::Delegate {
   ActiveTabSharingState GetActiveTabSharingState() override {
     return tab_sharing_state_;
   }
+  int32_t GetNumPinnedTabs() const override { return num_pinned_tabs_; }
 
   void SetWebContents(content::WebContents* contents) { contents_ = contents; }
   raw_ptr<content::WebContents> contents_;
@@ -64,6 +65,7 @@ class MockDelegate : public GlicMetrics::Delegate {
   bool attached_ = false;
   ActiveTabSharingState tab_sharing_state_ =
       ActiveTabSharingState::kActiveTabIsShared;
+  int32_t num_pinned_tabs_ = 0;
 };
 
 class MockStatusIcon : public StatusIcon {

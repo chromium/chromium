@@ -848,6 +848,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Glic.Response.TabsPinnedForSharingCount" units="tabs"
+    expires_after="2026-03-15">
+  <owner>wry@chromium.org</owner>
+  <owner>carlosk@chromium.org</owner>
+  <owner>mcrouse@chromium.org</owner>
+  <summary>
+    Recorded after a turn. Records the number of tabs pinned for sharing at that
+    time.
+  </summary>
+</histogram>
+
 <histogram name="Glic.Response.TurnDuration.{Mode}" units="ms"
     expires_after="2026-01-15">
   <owner>dtapuska@chromium.org</owner>

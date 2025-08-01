@@ -208,6 +208,7 @@ class GlicMetrics {
     virtual bool IsWindowAttached() const = 0;
     virtual content::WebContents* GetContents() = 0;
     virtual ActiveTabSharingState GetActiveTabSharingState() = 0;
+    virtual int32_t GetNumPinnedTabs() const = 0;
   };
 
   GlicMetrics(Profile* profile, GlicEnabling* enabling);

@@ -72,6 +72,9 @@ class DelegateImpl : public GlicMetrics::Delegate {
     }
     return ActiveTabSharingState::kNoTabCanBeShared;
   }
+  int32_t GetNumPinnedTabs() const override {
+    return sharing_manager_->GetNumPinnedTabs();
+  }
 
  private:
   raw_ptr<GlicWindowController> window_controller_;
@@ -323,6 +326,9 @@ void GlicMetrics::OnResponseStarted() {
   base::UmaHistogramEnumeration(
       "Glic.Response.Segmentation",
       GetResponseSegmentation(attached, input_mode_, invocation_source_));
+
+  base::UmaHistogramCounts100("Glic.Response.TabsPinnedForSharingCount",
+                              delegate_->GetNumPinnedTabs());
 
   ukm::builders::Glic_Response(source_id_)
       .SetAttached(attached)
