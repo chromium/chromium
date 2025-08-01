@@ -50,7 +50,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #endif
 
-
 namespace {
 
 using content::NavigationEntry;
@@ -276,11 +275,8 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
 
   context_annotations.response_code = http_response_code;
 
-  ChromeNavigationUIData* chrome_ui_data =
-      navigation_handle->GetNavigationUIData() == nullptr
-          ? nullptr
-          : static_cast<ChromeNavigationUIData*>(
-                navigation_handle->GetNavigationUIData());
+  ChromeNavigationUIData* chrome_ui_data = static_cast<ChromeNavigationUIData*>(
+      navigation_handle->GetNavigationUIData());
 
   // (crbug.com/365922169) When generating the HistoryAddPageArgs below,
   // we must calculate the value for its member `is_ephemeral`. This
@@ -400,6 +396,9 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
     }
   }
 
+  // TODO(crbug.com/434976953): Move TaskId to be accessible by
+  // HistoryAddPageArgs, so we can pass actor_task_id() directly without getting
+  // int32 value.
   history::HistoryAddPageArgs add_page_args(
       navigation_handle->GetURL(), timestamp,
       history::ContextIDForWebContents(web_contents()), nav_entry_id,
@@ -409,7 +408,10 @@ history::HistoryAddPageArgs HistoryTabHelper::CreateHistoryAddPageArgs(
       should_consider_for_ntp_most_visited, is_ephemeral, title, top_level_url,
       frame_url, opener,
       chrome_ui_data == nullptr ? std::nullopt : chrome_ui_data->bookmark_id(),
-      app_id_, std::move(context_annotations));
+      app_id_, std::move(context_annotations),
+      (chrome_ui_data && chrome_ui_data->actor_task_id())
+          ? std::make_optional(chrome_ui_data->actor_task_id().value())
+          : std::nullopt);
 
   if (ui::PageTransitionIsMainFrame(page_transition) &&
       virtual_url != navigation_handle->GetURL()) {

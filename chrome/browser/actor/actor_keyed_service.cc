@@ -53,6 +53,22 @@ void ActorKeyedService::SetActorUiStateManagerForTesting(
   actor_ui_state_manager_ = std::move(ausm);
 }
 
+const ActorTask* ActorKeyedService::GetActingActorTaskForWebContents(
+    content::WebContents* web_contents) {
+  if (auto* tab_interface = tabs::TabModel::GetFromContents(web_contents)) {
+    // There should only be one active task per tab.
+    for (const auto& [task_id, actor_task] : GetActiveTasks()) {
+      if (actor_task->IsActingOnTab(tab_interface->GetHandle()) &&
+          (actor_task->GetState() == ActorTask::State::kActing ||
+           actor_task->GetState() == ActorTask::State::kReflecting)) {
+        return actor_task;
+      }
+    }
+  }
+
+  return nullptr;
+}
+
 TaskId ActorKeyedService::AddActiveTask(std::unique_ptr<ActorTask> task) {
   TaskId task_id = next_task_id_.GenerateNextId();
   last_created_task_id_ = task_id;

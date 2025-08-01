@@ -124,6 +124,11 @@ class ActorKeyedService : public KeyedService {
 
   void NotifyTaskStateChanged(const ActorTask& task);
 
+  // Returns the acting task for web_contents. Returns nullptr if acting task
+  // does not exist.
+  const ActorTask* GetActingActorTaskForWebContents(
+      content::WebContents* web_contents);
+
  private:
   // Called when the actor coordinator has finished an action which required
   // task creation.

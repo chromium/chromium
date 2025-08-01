@@ -13,15 +13,23 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/actor/actor_keyed_service.h"
+#include "chrome/browser/actor/actor_task.h"
+#include "chrome/browser/actor/actor_test_util.h"
+#include "chrome/browser/actor/execution_engine.h"
+#include "chrome/browser/actor/ui/event_dispatcher.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/history/history_tab_helper.h"
 #include "chrome/browser/history/history_test_utils.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/renderer_host/chrome_navigation_ui_data.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
+#include "chrome/common/actor.mojom.h"
+#include "chrome/common/actor/action_result.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -73,6 +81,30 @@ class MockHistoryServiceObserver : public history::HistoryServiceObserver {
                const history::VisitRow&,
                std::optional<int64_t>),
               (override));
+};
+
+// Custom WebContentsObserver that saves ChromeNavigationUIData.
+class TestNavigationUIDataObserver : public content::WebContentsObserver {
+ public:
+  explicit TestNavigationUIDataObserver(content::WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  TestNavigationUIDataObserver(const TestNavigationUIDataObserver&) = delete;
+  TestNavigationUIDataObserver& operator=(const TestNavigationUIDataObserver&) =
+      delete;
+
+  content::NavigationUIData* last_navigation_ui_data() const {
+    return static_cast<content::NavigationUIData*>(
+        last_navigation_ui_data_.get());
+  }
+
+ private:
+  void DidFinishNavigation(
+      content::NavigationHandle* navigation_handle) override {
+    last_navigation_ui_data_ =
+        navigation_handle->GetNavigationUIData()->Clone();
+  }
+
+  std::unique_ptr<content::NavigationUIData> last_navigation_ui_data_;
 };
 
 // This helper class obtains, at ready-to-commit time,  the `visited_link_state`
@@ -1024,6 +1056,123 @@ IN_PROC_BROWSER_TEST_F(HistoryBrowserTest,
   EXPECT_EQ(url_row2.url(), url2);
 
   history_service->RemoveObserver(&observer);
+}
+
+class HistoryTaskTagBrowserTest : public HistoryBrowserTest {
+ protected:
+  actor::TaskId LatestTaskIdFromNavigationData(
+      const TestNavigationUIDataObserver& observer) {
+    return static_cast<ChromeNavigationUIData*>(
+               observer.last_navigation_ui_data())
+        ->actor_task_id();
+  }
+  Profile* profile() { return browser()->profile(); }
+
+  actor::TaskId CreateActingTask(content::WebContents* web_contents) {
+    auto* actor_service = actor::ActorKeyedService::Get(profile());
+    actor::TaskId id = actor_service->CreateTask();
+    std::unique_ptr<actor::ToolRequest> action = actor::MakeClickRequest(
+        *tabs::TabInterface::GetFromContents(web_contents), gfx::Point(0, 0));
+
+    // Ensure the actor is in an acting state on the current tab.
+    base::test::TestFuture<actor::mojom::ActionResultPtr, std::optional<size_t>>
+        result;
+    actor_service->GetTask(id)->Act(ToRequestList(action),
+                                    result.GetCallback());
+    actor::ExpectOkResult(result);
+
+    return id;
+  }
+};
+
+// Test that history entry is correctly tagged when actor is active.
+IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, ActingTask) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver observer(web_contents);
+
+  actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  ASSERT_TRUE(LatestTaskIdFromNavigationData(observer));
+  EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
+}
+
+// Test that history entry is correctly tagged when actor is active, but not
+// acting/reflecting.
+IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseTask) {
+  auto* actor_service = actor::ActorKeyedService::Get(profile());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver observer(web_contents);
+
+  actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
+  actor_service->GetTask(test_actor_task_id)->Pause();
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  // Since the actor was paused when the navigation happened, it should *not* be
+  // tagged with the task id.
+  EXPECT_FALSE(LatestTaskIdFromNavigationData(observer));
+}
+
+// Test that history entry is correctly tagged when actor is inactive.
+IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, NoActiveTask) {
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver observer(web_contents);
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+
+  EXPECT_FALSE(LatestTaskIdFromNavigationData(observer));
+}
+
+// Test that history entry is correctly tagged when actor goes through multiple
+// states.
+IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, PauseThenResumeTask) {
+  auto* actor_service = actor::ActorKeyedService::Get(profile());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver observer(web_contents);
+
+  actor::TaskId test_actor_task_id = CreateActingTask(web_contents);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
+
+  actor_service->GetTask(test_actor_task_id)->Pause();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  EXPECT_FALSE(LatestTaskIdFromNavigationData(observer));
+
+  actor_service->GetTask(test_actor_task_id)->Resume();
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer));
+}
+
+// Test that history entry is correctly tagged only on active tab.
+IN_PROC_BROWSER_TEST_F(HistoryTaskTagBrowserTest, TwoTabs) {
+  content::WebContents* web_contents_tab1 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver observer_tab1(web_contents_tab1);
+
+  // Navigate on first tab.
+  actor::TaskId test_actor_task_id = CreateActingTask(web_contents_tab1);
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  EXPECT_EQ(test_actor_task_id, LatestTaskIdFromNavigationData(observer_tab1));
+
+  // Open a new tab and navigate on it so it becomes active.
+  ASSERT_TRUE(ui_test_utils::NavigateToURLWithDisposition(
+      browser(), GetTestUrl(), WindowOpenDisposition::NEW_FOREGROUND_TAB,
+      ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP));
+
+  // Set up the test observer for this new tab.
+  content::WebContents* web_contents_tab2 =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  TestNavigationUIDataObserver observer_tab2(web_contents_tab2);
+
+  // Navigate and check bit.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GetTestUrl()));
+  EXPECT_FALSE(LatestTaskIdFromNavigationData(observer_tab2));
 }
 
 // MPArch means Multiple Page Architecture, each WebContents may have additional

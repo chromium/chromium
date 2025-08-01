@@ -1277,7 +1277,8 @@ struct HistoryAddPageArgs {
                      std::optional<int64_t> bookmark_id = std::nullopt,
                      std::optional<std::string> app_id = std::nullopt,
                      std::optional<VisitContextAnnotations::OnVisitFields>
-                         context_annotations = std::nullopt);
+                         context_annotations = std::nullopt,
+                     std::optional<int32_t> actor_task_id = std::nullopt);
   HistoryAddPageArgs(const HistoryAddPageArgs& other);
   ~HistoryAddPageArgs();
 
@@ -1310,6 +1311,9 @@ struct HistoryAddPageArgs {
   std::optional<int64_t> bookmark_id;
   std::optional<std::string> app_id;
   std::optional<VisitContextAnnotations::OnVisitFields> context_annotations;
+  // `actor_task_id` represents the id of the acting actor task, if it exists.
+  // Id value generated at time of actor task creation.
+  std::optional<int32_t> actor_task_id;
 };
 
 }  // namespace history
