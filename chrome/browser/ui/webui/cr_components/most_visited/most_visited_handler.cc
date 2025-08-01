@@ -205,8 +205,7 @@ void MostVisitedHandler::OnMostVisitedTileNavigation(
 }
 
 void MostVisitedHandler::PrerenderMostVisitedTile(
-    most_visited::mojom::MostVisitedTilePtr tile,
-    bool is_hover_trigger) {
+    most_visited::mojom::MostVisitedTilePtr tile) {
   if (!base::FeatureList::IsEnabled(
           features::kNewTabPageTriggerForPrerender2)) {
     page_handler_.ReportBadMessage(
@@ -215,16 +214,7 @@ void MostVisitedHandler::PrerenderMostVisitedTile(
     return;
   }
 
-  if (is_hover_trigger &&
-      !features::kPrerenderNewTabPageOnMouseHoverTrigger.Get()) {
-    page_handler_.ReportBadMessage(
-        "PrerenderMostVisitedTile by hovering is only expected to be called "
-        "when kPrerenderNewTabPageOnMouseHoverTrigger is true.");
-    return;
-  }
-
-  if (!is_hover_trigger &&
-      !features::kPrerenderNewTabPageOnMousePressedTrigger.Get()) {
+  if (!features::kPrerenderNewTabPageOnMousePressedTrigger.Get()) {
     page_handler_.ReportBadMessage(
         "PrerenderMostVisitedTile by pressing is only expected to be called "
         "when kPrerenderNewTabPageOnMousePressedTrigger is true.");

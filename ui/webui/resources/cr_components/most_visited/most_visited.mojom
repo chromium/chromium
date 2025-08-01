@@ -65,7 +65,7 @@ interface MostVisitedPageHandler {
                         url.mojom.Url new_url,
                         string new_title) => (bool success);
   // Prerenders |tile|.
-  PrerenderMostVisitedTile(MostVisitedTile tile, bool is_hover_trigger);
+  PrerenderMostVisitedTile(MostVisitedTile tile);
   // Preconnects |tile|. Preresolve/preconnects the origin; a socket created
   // by this call will be reused, if possible, for a subsequent attempt to
   // prerender or navigate to this url.

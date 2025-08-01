@@ -838,18 +838,9 @@ export class MostVisitedElement extends MostVisitedElementBase {
     const item = this.tiles_[this.getCurrentTargetIndex_(e)];
     assert(item);
 
-    if (loadTimeData.getBoolean('prerenderOnHoverEnabled') &&
-        loadTimeData.getInteger('prerenderStartTimeThreshold') >= 0) {
-      this.prerenderTimer_ = setTimeout(() => {
-        this.pageHandler_.prerenderMostVisitedTile(item, true);
-      }, loadTimeData.getInteger('prerenderStartTimeThreshold'));
-    }
-
     // Preconnect is intended to be run on mouse hover when prerender is
-    // enabled, so it is allowed regardless of prerenderOnHoverEnabled or
-    // prerenderOnPressEnabled.
-    if ((loadTimeData.getBoolean('prerenderOnHoverEnabled') ||
-         loadTimeData.getBoolean('prerenderOnPressEnabled')) &&
+    // enabled.
+    if (loadTimeData.getBoolean('prerenderOnPressEnabled') &&
         loadTimeData.getInteger('preconnectStartTimeThreshold') >= 0) {
       this.preconnectTimer_ = setTimeout(() => {
         this.pageHandler_.preconnectMostVisitedTile(item);
@@ -865,7 +856,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
     if (loadTimeData.getBoolean('prerenderOnPressEnabled')) {
       const item = this.tiles_[this.getCurrentTargetIndex_(e)];
       assert(item);
-      this.pageHandler_.prerenderMostVisitedTile(item, false);
+      this.pageHandler_.prerenderMostVisitedTile(item);
     }
   }
 
@@ -883,8 +874,7 @@ export class MostVisitedElement extends MostVisitedElementBase {
       clearTimeout(this.preconnectTimer_);
     }
 
-    if (loadTimeData.getBoolean('prerenderOnHoverEnabled') ||
-        loadTimeData.getBoolean('prerenderOnPressEnabled')) {
+    if (loadTimeData.getBoolean('prerenderOnPressEnabled')) {
       this.pageHandler_.cancelPrerender();
     }
   }
