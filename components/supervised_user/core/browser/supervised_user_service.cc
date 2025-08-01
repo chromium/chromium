@@ -75,7 +75,8 @@ std::optional<Custodian> GetCustodianFromPrefs(
 
 // Sentinel that guards against accidental pref changes.
 void PrefChangeNotAllowed(const std::string& pref_name) {
-  NOTREACHED() << "Preference change (" << pref_name << ") not allowed.";
+  NOTREACHED(base::NotFatalUntil::M150)
+      << "Preference change (" << pref_name << ") not allowed.";
 }
 }  // namespace
 
