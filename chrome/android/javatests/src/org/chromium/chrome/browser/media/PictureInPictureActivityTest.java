@@ -108,7 +108,7 @@ public class PictureInPictureActivityTest {
     @Before
     public void setUp() {
         mActivityTestRule.startOnBlankPage();
-        mTab = mActivityTestRule.getActivity().getActivityTab();
+        mTab = mActivityTestRule.getActivityTab();
         PictureInPictureActivityJni.setInstanceForTesting(mNativeMock);
         mOriginalHelper = PictureInPictureActivity.setLaunchIntoPipHelper(mLaunchIntoPipHelper);
         when(mNativeMock.onActivityStart(eq(mNativeWindowToken), any(), any()))
@@ -387,7 +387,7 @@ public class PictureInPictureActivityTest {
     }
 
     private WebContents getWebContents() {
-        return mActivityTestRule.getActivity().getCurrentWebContents();
+        return mActivityTestRule.getWebContents();
     }
 
     private void testExitOn(Activity activity, Runnable runnable) throws Throwable {

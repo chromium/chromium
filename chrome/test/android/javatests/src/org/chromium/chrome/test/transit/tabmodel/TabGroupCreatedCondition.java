@@ -6,6 +6,7 @@ package org.chromium.chrome.test.transit.tabmodel;
 
 import static org.junit.Assert.assertEquals;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.Token;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.transit.ConditionStatusWithResult;
@@ -29,7 +30,8 @@ public class TabGroupCreatedCondition extends ConditionWithResult<Token> {
     public void onStartMonitoring() {
         super.onStartMonitoring();
         TabGroupModelFilter tabGroupModelFilter = mTabGroupModelFilterSupplier.get();
-        mOriginalTabGroupIds = tabGroupModelFilter.getAllTabGroupIds();
+        mOriginalTabGroupIds =
+                ThreadUtils.runOnUiThreadBlocking(() -> tabGroupModelFilter.getAllTabGroupIds());
     }
 
     @Override

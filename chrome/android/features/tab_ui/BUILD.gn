@@ -236,5 +236,6 @@ android_library("test_support_javalib") {
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit",
     "//ui/android:ui_no_recycler_view_java",
+    "//url:url_java",
   ]
 }
