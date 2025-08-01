@@ -26,6 +26,10 @@
 #include "services/device/public/mojom/geolocation_internals.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+#include "base/scoped_observation.h"
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+
 namespace base {
 template <typename Type>
 struct DefaultSingletonTraits;
@@ -151,6 +155,7 @@ class GeolocationProviderImpl
   // GeolocationSystemPermissionManager::PermissionObserver implementation.
   void OnSystemPermissionUpdated(
       LocationSystemPermissionStatus new_status) override;
+  void OnPermissionManagerShuttingDown() override;
 #endif
 
   static constexpr char kSystemPermissionDeniedErrorMessage[] =
@@ -265,12 +270,10 @@ class GeolocationProviderImpl
   LocationSystemPermissionStatus system_permission_status_ =
       LocationSystemPermissionStatus::kNotDetermined;
 
-  // On CrOS, GeolocationSystemPermissionManager may be destroyed before
-  // GeolocationProviderImpl. Retaining `observers_` allows
-  // GeolocationProviderImpl to safely unregister itself during its own
-  // destruction.
-  scoped_refptr<GeolocationSystemPermissionManager::PermissionObserverList>
-      observers_;
+  base::ScopedObservation<
+      GeolocationSystemPermissionManager,
+      GeolocationSystemPermissionManager::PermissionObserver>
+      geolocation_permission_observation_{this};
 #endif
 };
 

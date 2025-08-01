@@ -554,6 +554,9 @@ void ChromeBrowserMainExtraPartsAsh::PostMainMessageLoopRun() {
 
   // Initialized in PreProfileInit (which may not get called in some tests).
   login_readahead_performer_.reset();
+  if (device::GeolocationSystemPermissionManager::GetInstance()) {
+    device::GeolocationSystemPermissionManager::GetInstance()->Shutdown();
+  }
   device::GeolocationSystemPermissionManager::SetInstance(nullptr);
   system_tray_client_.reset();
   session_controller_client_.reset();

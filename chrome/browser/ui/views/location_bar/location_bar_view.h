@@ -242,6 +242,7 @@ class LocationBarView
   // GeolocationSystemPermissionManager::PermissionObserver:
   void OnSystemPermissionUpdated(
       device::LocationSystemPermissionStatus new_status) override;
+  void OnPermissionManagerShuttingDown() override;
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
   static bool IsVirtualKeyboardVisible(views::Widget* widget);

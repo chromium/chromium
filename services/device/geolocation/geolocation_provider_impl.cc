@@ -176,8 +176,8 @@ GeolocationProviderImpl::GeolocationProviderImpl()
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   if (features::IsOsLevelGeolocationPermissionSupportEnabled() &&
       g_geolocation_system_permission_manager) {
-    observers_ = g_geolocation_system_permission_manager->GetObserverList();
-    observers_->AddObserver(this);
+    geolocation_permission_observation_.Observe(
+        g_geolocation_system_permission_manager);
     system_permission_status_ =
         g_geolocation_system_permission_manager->GetSystemPermission();
   } else {
@@ -191,11 +191,6 @@ GeolocationProviderImpl::GeolocationProviderImpl()
 }
 
 GeolocationProviderImpl::~GeolocationProviderImpl() {
-#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
-  if (features::IsOsLevelGeolocationPermissionSupportEnabled() && observers_) {
-    observers_->RemoveObserver(this);
-  }
-#endif
   Stop();
   DCHECK(!location_provider_manager_);
 }
@@ -492,6 +487,10 @@ void GeolocationProviderImpl::OnSystemPermissionUpdated(
   system_permission_status_ = new_status;
 }
 
+void GeolocationProviderImpl::OnPermissionManagerShuttingDown() {
+  geolocation_permission_observation_.Reset();
+}
+
 void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {
   CHECK(main_task_runner_->BelongsToCurrentThread());
   auto error_result =
@@ -501,7 +500,8 @@ void GeolocationProviderImpl::NotifyClientsSystemPermissionDenied() {
           kSystemPermissionDeniedErrorTechnical));
   NotifyClients(std::move(error_result));
 }
-#endif
+
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 void GeolocationProviderImpl::DoStartProvidersOnGeolocationThread() {
   CHECK(main_task_runner_->BelongsToCurrentThread());

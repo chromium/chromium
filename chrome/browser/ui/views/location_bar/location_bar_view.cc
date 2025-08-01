@@ -1107,6 +1107,10 @@ void LocationBarView::OnSystemPermissionUpdated(
     device::LocationSystemPermissionStatus new_status) {
   UpdateContentSettingsIcons();
 }
+
+void LocationBarView::OnPermissionManagerShuttingDown() {
+  geolocation_permission_observation_.Reset();
+}
 #endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 
 WebContents* LocationBarView::GetWebContentsForPageActionIconView() {

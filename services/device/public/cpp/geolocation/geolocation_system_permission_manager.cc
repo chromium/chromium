@@ -50,8 +50,7 @@ void GeolocationSystemPermissionManager::SetInstance(
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 GeolocationSystemPermissionManager::GeolocationSystemPermissionManager(
     std::unique_ptr<SystemGeolocationSource> system_geolocation_source)
-    : system_geolocation_source_(std::move(system_geolocation_source)),
-      observers_(base::MakeRefCounted<PermissionObserverList>()) {
+    : system_geolocation_source_(std::move(system_geolocation_source)) {
   DCHECK(system_geolocation_source_);
   system_geolocation_source_->RegisterPermissionUpdateCallback(
       base::BindRepeating(
@@ -64,12 +63,12 @@ GeolocationSystemPermissionManager::~GeolocationSystemPermissionManager() =
 
 void GeolocationSystemPermissionManager::AddObserver(
     PermissionObserver* observer) {
-  observers_->AddObserver(observer);
+  observers_.AddObserver(observer);
 }
 
 void GeolocationSystemPermissionManager::RemoveObserver(
     PermissionObserver* observer) {
-  observers_->RemoveObserver(observer);
+  observers_.RemoveObserver(observer);
 }
 
 void GeolocationSystemPermissionManager::UpdateSystemPermission(
@@ -79,13 +78,9 @@ void GeolocationSystemPermissionManager::UpdateSystemPermission(
 }
 
 void GeolocationSystemPermissionManager::NotifyPermissionObservers() {
-  observers_->Notify(FROM_HERE, &PermissionObserver::OnSystemPermissionUpdated,
-                     GetSystemPermission());
-}
-
-scoped_refptr<GeolocationSystemPermissionManager::PermissionObserverList>
-GeolocationSystemPermissionManager::GetObserverList() const {
-  return observers_;
+  for (auto& observer : observers_) {
+    observer.OnSystemPermissionUpdated(GetSystemPermission());
+  }
 }
 
 SystemGeolocationSource&
@@ -111,6 +106,14 @@ void GeolocationSystemPermissionManager::OpenSystemPermissionSetting() {
 #if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
   system_geolocation_source_->OpenSystemPermissionSetting();
 #endif
+}
+
+void GeolocationSystemPermissionManager::Shutdown() {
+#if BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
+  for (auto& observer : observers_) {
+    observer.OnPermissionManagerShuttingDown();
+  }
+#endif  // BUILDFLAG(OS_LEVEL_GEOLOCATION_PERMISSION_SUPPORTED)
 }
 
 }  // namespace device
