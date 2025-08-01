@@ -182,8 +182,7 @@ IN_PROC_BROWSER_TEST_P(PreloadingDeciderNonImmediateBrowserTest,
   } else if (predictor() == preloading_predictor::kUrlPointerHoverOnAnchor) {
     preloading_decider->OnPointerHover(
         next_page_url,
-        blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0),
-        blink::mojom::SpeculationEagerness::kModerate);
+        blink::mojom::AnchorElementPointerData::New(true, 0.0, 0.0));
   } else if (predictor() ==
              preloading_predictor::kPreloadingHeuristicsMLModel) {
     preloading_decider->OnPreloadingHeuristicsModelDone(next_page_url,

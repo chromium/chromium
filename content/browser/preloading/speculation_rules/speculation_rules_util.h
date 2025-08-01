@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_UTIL_H_
 #define CONTENT_BROWSER_PRELOADING_SPECULATION_RULES_SPECULATION_RULES_UTIL_H_
 
-#include "base/feature_list.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/speculation_rules/speculation_rules.mojom-shared.h"
 
 namespace content {
@@ -22,10 +20,8 @@ inline constexpr bool IsImmediateSpeculationEagerness(
     // `kEager` trigger strategies.
     // TODO(crbug.com/40287486): Update this according to the latest situation.
     case blink::mojom::SpeculationEagerness::kImmediate:
-      return true;
     case blink::mojom::SpeculationEagerness::kEager:
-      return !base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics);
+      return true;
     case blink::mojom::SpeculationEagerness::kModerate:
     case blink::mojom::SpeculationEagerness::kConservative:
       return false;

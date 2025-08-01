@@ -27,9 +27,7 @@ class PreloadingDeciderObserverForTesting {
   virtual void UpdateSpeculationCandidates(
       const std::vector<blink::mojom::SpeculationCandidatePtr>& candidates) = 0;
   virtual void OnPointerDown(const GURL& url) = 0;
-  virtual void OnPointerHover(
-      const GURL& url,
-      blink::mojom::SpeculationEagerness target_eagerness) = 0;
+  virtual void OnPointerHover(const GURL& url) = 0;
 };
 
 // Processes user interaction events and developer provided speculation-rules
@@ -53,8 +51,7 @@ class CONTENT_EXPORT PreloadingDecider
 
   // Receives and processes on pointer hover event for 'url' target link.
   void OnPointerHover(const GURL& url,
-                      blink::mojom::AnchorElementPointerDataPtr mouse_data,
-                      blink::mojom::SpeculationEagerness target_eagerness);
+                      blink::mojom::AnchorElementPointerDataPtr mouse_data);
 
   //  Receives and processes ML model score for 'url' target link.
   void OnPreloadingHeuristicsModelDone(const GURL& url, float score);

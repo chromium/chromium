@@ -11,7 +11,6 @@
 #include "base/command_line.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/functional/callback_forward.h"
@@ -36,7 +35,6 @@
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/test/test_timeouts.h"
 #include "base/thread_annotations.h"
-#include "base/time/time.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
@@ -887,9 +885,7 @@ class PrerenderBrowserTest : public ContentBrowserTest,
 #endif  // !BUILDFLAG(IS_ANDROID)
   }
 
-  void PointerHoverToAnchor(
-      const GURL& url,
-      const std::optional<base::TimeDelta>& hover_time = std::nullopt) {
+  void PointerHoverToAnchor(const GURL& url) {
     ResetPointerPosition();
 
 #if !BUILDFLAG(IS_ANDROID)
@@ -900,13 +896,6 @@ class PrerenderBrowserTest : public ContentBrowserTest,
     SimulateMouseEvent(web_contents(), blink::WebMouseEvent::Type::kMouseMove,
                        blink::WebMouseEvent::Button::kNoButton, point);
     waiter.Wait();
-    if (hover_time) {
-      base::RunLoop run_loop;
-      base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
-          FROM_HERE, run_loop.QuitClosure(), *hover_time);
-      run_loop.Run();
-      ResetPointerPosition();
-    }
 #else
     // TODO(crbug.com/40269669): Simulate |WebGestureEvent| to make this
     // function work for Android.
@@ -10630,9 +10619,6 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
  public:
   void SetUp() override {
 #if !BUILDFLAG(IS_ANDROID)
-    sub_feature_list_.InitAndEnableFeatureWithParameters(
-        blink::features::kPreloadingEagerHeuristics,
-        {{"hover_dwell_time", "50ms"}});
     PrerenderBrowserTest::SetUp();
 #else
     // TODO(crbug.com/40269669): Add the implementation of pointer interaction
@@ -10640,14 +10626,6 @@ class PrerenderEagernessBrowserTest : public PrerenderBrowserTest {
     GTEST_SKIP();
 #endif  // BUILDFLAG(IS_ANDROID)
   }
-
-  void TearDown() override {
-    PrerenderBrowserTest::TearDown();
-    sub_feature_list_.Reset();
-  }
-
- private:
-  base::test::ScopedFeatureList sub_feature_list_;
 };
 
 namespace {
@@ -10675,9 +10653,7 @@ class PreloadingDeciderObserverForPrerenderTesting
     OnEventCalled(Events::kUpdateSpeculationCandidates);
   }
 
-  void OnPointerHover(
-      const GURL& url,
-      blink::mojom::SpeculationEagerness target_eagerness) override {
+  void OnPointerHover(const GURL& url) override {
     OnEventCalled(Events::kOnPointerHover);
   }
 
@@ -10765,9 +10741,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kImmediate) {
 }
 
 // Tests speculation rules prerendering where the eagerness is "eager".
-// Unless `kPreloadingEagerHeuristics` is enabled, its behavior is the same as
-// that of "immediate"; otherwise, there are dedicated rules to activate
-// speculative loads.
+// Currently, its behavior is the same as that of "immediate".
+// TODO(crbug.com/40287486): Update this test after the behavior changes.
 IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
   const GURL initial_url = GetUrl("/empty.html");
   const GURL prerendering_url = GetUrl("/empty.html?prerender");
@@ -10776,63 +10751,20 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kEager) {
   ASSERT_TRUE(NavigateToURL(shell(), initial_url));
   InsertAnchor(prerendering_url);
 
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics)) {
-    const base::TimeDelta moderate_hover_time = base::Milliseconds(200);
-    const base::TimeDelta eager_hover_time =
-        blink::features::kPreloadingEagerHeuristicsHoverDwellTime.Get();
-    ASSERT_LE(eager_hover_time, moderate_hover_time);
-    // Use `eager_hover_time` + eps. The median time can cause flakiness.
-    const base::TimeDelta mid_hover_time =
-        eager_hover_time + (moderate_hover_time - eager_hover_time) / 10;
+  RenderFrameHostImpl* rfh = current_frame_host();
+  auto* preloading_decider =
+      PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
 
-    RenderFrameHostImpl* rfh = current_frame_host();
-    PreloadingDeciderObserverForPrerenderTesting preloading_decider_observer(
-        rfh);
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
-    // Add speculation rules with the "eager" eagerness.
-    // When the eagerness is not "immediate", speculation candidates will be
-    // kept in the |on_standby_candidates_| on |PreloadingDecider|.
-    // |PrerenderHost| will not be created at this time, waiting for user
-    // interaction(pointer hovering for the "eager").
-    AddPrerenderWithEagernessAsync(prerendering_url,
-                                   blink::mojom::SpeculationEagerness::kEager);
-    preloading_decider_observer.WaitUpdateSpeculationCandidates();
-    EXPECT_FALSE(HasHostForUrl(prerendering_url));
-    EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
-        prerendering_url, blink::mojom::SpeculationAction::kPrerender));
-    // Hover the anchor of the prerendering page. When eagerness is "eager" with
-    // `kPreloadingEagerHeuristics` enabled, this interaction invokes the
-    // creation of |PrerenderHost|.
-    ASSERT_GT(eager_hover_time, base::Milliseconds(0));
-    // Hover very briefly so that prerender is not triggered.
-    PointerHoverToAnchor(prerendering_url, eager_hover_time / 2);
-    EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
-        prerendering_url, blink::mojom::SpeculationAction::kPrerender));
-    // Hover enough time so that prerender is triggered for "eager".
-    PointerHoverToAnchor(prerendering_url, mid_hover_time);
-    preloading_decider_observer.WaitOnPointerHover();
-    WaitForPrerenderLoadCompletion(prerendering_url);
-    EXPECT_TRUE(HasHostForUrl(prerendering_url));
-    EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
-        prerendering_url, blink::mojom::SpeculationAction::kPrerender));
-  } else {
-    RenderFrameHostImpl* rfh = current_frame_host();
-    auto* preloading_decider =
-        PreloadingDecider::GetOrCreateForCurrentDocument(rfh);
-    // Add speculation rules with the "eager" eagerness.
-    // With `kPreloadingEagerHeuristics` disabled, the eagerness is the same as
-    // "immediate", speculation candidates will never be kept in the
-    // |on_standby_candidates_| on |PreloadingDecider|, and |PrerenderHost| will
-    // be created immediately.
-    AddPrerenderWithEagernessAsync(prerendering_url,
-                                   blink::mojom::SpeculationEagerness::kEager);
-    WaitForPrerenderLoadCompletion(prerendering_url);
-    EXPECT_TRUE(HasHostForUrl(prerendering_url));
-    EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
-        prerendering_url, blink::mojom::SpeculationAction::kPrerender));
-  }
+  // Add speculation rules with the eagerness.
+  // When the eagerness is "immediate", speculation candidates will never be
+  // kept in the |on_standby_candidates_| on |PreloadingDecider|, and
+  // |PrerenderHost| will be created immediately.
+  AddPrerenderWithEagernessAsync(prerendering_url,
+                                 blink::mojom::SpeculationEagerness::kEager);
+  WaitForPrerenderLoadCompletion(prerendering_url);
+  EXPECT_TRUE(HasHostForUrl(prerendering_url));
+  EXPECT_FALSE(preloading_decider->IsOnStandByForTesting(
+      prerendering_url, blink::mojom::SpeculationAction::kPrerender));
 
   // Activate the prerendered page by clicking the anchor.
   FrameTreeNodeId host_id = GetHostForUrl(prerendering_url);
@@ -10870,27 +10802,8 @@ IN_PROC_BROWSER_TEST_F(PrerenderEagernessBrowserTest, kModerate) {
   EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
       prerendering_url, blink::mojom::SpeculationAction::kPrerender));
 
-  // Hover the anchor of the prerendering page so briefly that only the hover
-  // event for "eager" is triggered but not triggered for "moderate".
-  if (base::FeatureList::IsEnabled(
-          blink::features::kPreloadingEagerHeuristics)) {
-    const base::TimeDelta moderate_hover_time = base::Milliseconds(200);
-    const base::TimeDelta eager_hover_time =
-        blink::features::kPreloadingEagerHeuristicsHoverDwellTime.Get();
-    // Use `eager_hover_time` + eps. The median time can cause flakiness.
-    const base::TimeDelta mid_hover_time =
-        eager_hover_time + (moderate_hover_time - eager_hover_time) / 10;
-    ASSERT_LT(mid_hover_time, moderate_hover_time);
-    PointerHoverToAnchor(prerendering_url, mid_hover_time);
-    preloading_decider_observer.WaitOnPointerHover();
-    EXPECT_FALSE(HasHostForUrl(prerendering_url));
-    EXPECT_TRUE(preloading_decider->IsOnStandByForTesting(
-        prerendering_url, blink::mojom::SpeculationAction::kPrerender));
-  }
-
-  // Hover the anchor of the prerendering page for a long enough time. When
-  // eagerness is "moderate", this interaction invokes the creation of
-  // |PrerenderHost|.
+  // Hover the anchor of the prerendering page. When eagerness is "moderate",
+  // this interaction invokes the creation of |PrerenderHost|.
   PointerHoverToAnchor(prerendering_url);
   preloading_decider_observer.WaitOnPointerHover();
   WaitForPrerenderLoadCompletion(prerendering_url);
@@ -11406,11 +11319,12 @@ INSTANTIATE_TEST_SUITE_P(
 // Test whether speculation rules prerendering is processed again on pages
 // restored from BFCache via forward navigation.
 // When the eagerness is kImmediate(default), speculation rules prerendering
-// will no longer be processed after restoration. For non-immediate cases,
-// candidates are stored between restoration unless they were triggered by user
-// action (This test scenario reproduces only this case). However, once after
-// processed by user action, then they will not be processed again until they
-// are retriggered (crbug.com/1449163 for more information).
+// will no longer be processed after restoration. For non-immediate cases
+// (kModerate, kConservative), candidates are stored between restoration unless
+// they were triggered by user action (This test scenario reproduces only this
+// case). However, once after processed by user action, then they will not be
+// processed again until they are retriggered (crbug.com/1449163 for more
+// information).
 IN_PROC_BROWSER_TEST_P(PrerenderBackForwardCacheRestorationBrowserTest,
                        RestoredViaForwardNavigation) {
   const GURL initial_url = GetUrl("/empty.html");
