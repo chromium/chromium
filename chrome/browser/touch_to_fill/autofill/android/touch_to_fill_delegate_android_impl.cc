@@ -147,8 +147,8 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
   } else if (field->Type().group() == FieldTypeGroup::kCreditCard) {
     return DryRunForCreditCard(*field, *form);
   } else if (field->Type().group() == FieldTypeGroup::kLoyaltyCard ||
-             (field->Type().GetStorableType() ==
-              EMAIL_OR_LOYALTY_MEMBERSHIP_ID)) {
+             field->Type().GetLoyaltyCardType() ==
+                 EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
     return DryRunForLoyaltyCard();
   }
 

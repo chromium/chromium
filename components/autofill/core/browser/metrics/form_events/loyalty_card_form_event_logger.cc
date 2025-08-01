@@ -84,7 +84,7 @@ void LoyaltyCardFormEventLogger::OnDidFillSuggestion(
     has_logged_form_filling_suggestion_filled_ = true;
     Log(FORM_EVENT_LOCAL_SUGGESTION_FILLED_ONCE, form);
   }
-  FieldType field_type = field.Type().GetStorableType();
+  FieldType field_type = field.Type().GetLoyaltyCardType();
   field_types_with_shown_suggestions_.erase(field_type);
   field_types_with_accepted_suggestions_.insert(field_type);
   ++form_interaction_counts_.autofill_fills;

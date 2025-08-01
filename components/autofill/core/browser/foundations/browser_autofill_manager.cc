@@ -626,7 +626,7 @@ void MaybeImportFromSubmittedForm(AutofillClient& client,
       fields_for_autocomplete.back().set_should_autocomplete(false);
     }
 
-    if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID &&
+    if (autofill_field->Type().GetLoyaltyCardType() == LOYALTY_MEMBERSHIP_ID &&
         autofill_field->is_autofilled()) {
       // Only store loyalty cards values in Autocomplete if they were filled
       // manually.
@@ -1445,8 +1445,8 @@ void BrowserAutofillManager::GenerateSuggestionsAndMaybeShowUIPhase3(
   // EMAIL_OR_LOYALTY_MEMBERSHIP_ID fields.
   const bool has_address_suggestions_on_email_or_loyalty_card_field =
       autofill_field &&
-      (autofill_field->Type().GetStorableType() ==
-       EMAIL_OR_LOYALTY_MEMBERSHIP_ID) &&
+      autofill_field->Type().GetLoyaltyCardType() ==
+          EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
       std::ranges::any_of(suggestions, [](const Suggestion& suggestion) {
         return GetFillingProductFromSuggestionType(suggestion.type) ==
                FillingProduct::kAddress;
@@ -1804,7 +1804,7 @@ void BrowserAutofillManager::FillOrPreviewField(
   if (type == SuggestionType::kAddressFieldByFieldFilling) {
     metrics_->address_form_event_logger.OnFilledByFieldByFieldFilling(type);
   }
-  if (autofill_field && autofill_field->Type().GetStorableType() ==
+  if (autofill_field && autofill_field->Type().GetLoyaltyCardType() ==
                             EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
     if (field_type_used == LOYALTY_MEMBERSHIP_ID) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
@@ -2704,7 +2704,7 @@ void BrowserAutofillManager::LogAndRecordProfileFill(
   if (!is_refill) {
     client().GetPersonalDataManager().address_data_manager().RecordUseOf(
         filled_profile);
-    if (trigger_field.Type().GetStorableType() ==
+    if (trigger_field.Type().GetLoyaltyCardType() ==
             EMAIL_OR_LOYALTY_MEMBERSHIP_ID &&
         !client().GetValuablesDataManager()->GetLoyaltyCards().empty()) {
       LogEmailOrLoyaltyCardSuggestionAccepted(
@@ -3194,7 +3194,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
                                 std::move(plus_address_email_override));
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableEmailOrLoyaltyCardsFilling) &&
-          autofill_field->Type().GetStorableType() ==
+          autofill_field->Type().GetLoyaltyCardType() ==
               EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
         if (ValuablesDataManager* valuables_manager =
                 client().GetValuablesDataManager()) {
@@ -3218,7 +3218,8 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
       if (base::FeatureList::IsEnabled(
               features::kAutofillEnableLoyaltyCardsFilling)) {
         // Only loyalty card numbers filling is supported.
-        if (autofill_field->Type().GetStorableType() == LOYALTY_MEMBERSHIP_ID) {
+        if (autofill_field->Type().GetLoyaltyCardType() ==
+            LOYALTY_MEMBERSHIP_ID) {
           suggestions = GetLoyaltyCardSuggestions(
               client().GetLastCommittedPrimaryMainFrameURL(), field);
         }
