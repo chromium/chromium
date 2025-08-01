@@ -11,23 +11,60 @@ package private_metrics;
 
 import "dwa/deidentified_web_analytics.proto";
 
+// A header included with each uploaded encrypted report in “associated data”,
+// documenting how the report is encrypted and how the report may be used.
+// Next tag: 3
+message PrivateMetricReportHeader {
+  // The COSE "kid" property (RFC 9052) of the asymmetric key used to encrypt
+  // the report. This is used to determine which decryption key is needed to
+  // decrypt the report.
+  optional bytes key_id = 1;
+
+  // The epoch the report is associated with. Reports may only be processed with
+  // other reports from the same epoch.
+  optional fixed64 epoch_id = 2;
+}
+
 // A report containing encrypted private metrics data. Private metrics leverage
 // Trusted Execution Environments (TEEs) to enable secure and private collection
 // of essential metrics, facilitating safer releases and a better understanding
 // of user experience without compromising privacy. This proto will be stored
 // in Sawmill post upload to the UMA frontend, and will be subsequently
 // processed up by the k-anonymity pipeline in a trusted execution environment.
-// Next tag: 2
+// Next tag: 5
 message EncryptedPrivateMetricReport {
   // HPKE-encrypted and proto-serialized report, with associated data.
   // Associated data is the unencrypted non-sensitive header portion in
   // HPKE encryption. For `encrypted_report`, the associated data includes
   // information how the report was encrypted, the ID of the key used to encrypt
   // the report, and the ID of the epoch for which the report was generated.
-  // TODO(b/425689566): We will perform server-side validation to check that the
-  // associated_data is of type `BlobHeader`, and that all fields contained are
-  // included in the `BlobHeader` protocol buffer.
   optional bytes encrypted_report = 1;
+
+  // The PrivateMetricReportHeader protocol buffer `report_header` in a
+  // serialized form. This string is cryptographically bound to the
+  // `encrypted_report` field as its associated data and must be provided as a
+  // parameter as-is for the `encrypted_report` to be decrypted. This field must
+  // be provided in addition to `report_header` field due to protocol buffer
+  // serialization not being deterministic. See:
+  // go/proto-serialization-not-canonical
+  optional string serialized_report_header = 2;
+
+  // The PrivateMetricReportHeader protocol buffer provided as a non-serialized
+  // form. This field is provided to be prevent `serialized_report_header` from
+  // including arbitrary data. Server-side validation is performed to ensure
+  // that the fields and values provided in `serialized_report_header` are
+  // equivalent to those included in the `report_header` field.
+  optional PrivateMetricReportHeader report_header = 3;
+
+  // The type of report. This is used to determine the Sawmill location to store
+  // the report post upload.
+  // Next tag: 2
+  enum ReportType {
+    REPORT_TYPE_INVALID = 0;
+    DWA = 1;
+  }
+
+  optional ReportType report_type = 4;
 }
 
 // A report containing unencrypted private metrics data. The unencrypted report

@@ -222,6 +222,10 @@ message OmniboxEventProto {
     // Low End devices.
     JUMP_START = 30;
 
+    // The new tab page in which this omnibox interaction started with the user
+    // having focus in the composebox.
+    NTP_COMPOSEBOX = 31;
+
     // When adding new classifications, please update the `OmniboxPageContext`
     // variants listed in chromium's
     // tools/metrics/histograms/metadata/omnibox/histograms.xml and also
