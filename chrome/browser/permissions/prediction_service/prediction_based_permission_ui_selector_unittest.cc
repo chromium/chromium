@@ -38,12 +38,6 @@ using Decision = PredictionBasedPermissionUiSelector::Decision;
 using PredictionSource = PredictionBasedPermissionUiSelector::PredictionSource;
 using base::test::FeatureRef;
 
-#define BASIC_CPSS_FEATURES                                              \
-  permissions::features::kPermissionPredictionsV2,                       \
-      permissions::features::kPermissionOnDeviceNotificationPredictions, \
-      permissions::features::kPermissionOnDeviceGeolocationPredictions,  \
-      features::kQuietNotificationPrompts
-
 constexpr char kOnDevPredServiceResponseNotificationsHistogram[] =
     "Permissions.OnDevicePredictionService.Response.Notifications";
 constexpr char kOnDevPredServiceResponseGeolocationHistogram[] =
@@ -255,8 +249,7 @@ TEST_F(PredictionBasedPermissionUiSelectorTest, GetPredictionTypeToUseCpssV1) {
 
   feature_list_->Reset();
   feature_list_->InitWithFeatures(
-      /*enabled_features=*/{BASIC_CPSS_FEATURES,
-                            permissions::features::kPermissionsAIv1},
+      /*enabled_features=*/{permissions::features::kPermissionsAIv1},
       /*disabled_features=*/{});
 
   PredictionBasedPermissionUiSelector prediction_selector(profile());
@@ -300,45 +293,44 @@ INSTANTIATE_TEST_SUITE_P(
     testing::ValuesIn<PredictionSourceTestCase>({
 #if BUILDFLAG(IS_ANDROID)
         {/*test_name=*/"UseCpssV1OnAndroid",
-         /*enabled_features=*/{BASIC_CPSS_FEATURES},
+         /*enabled_features=*/{},
          /*disabled_features=*/
          {permissions::features::kPermissionDedicatedCpssSettingAndroid},
          /*expected_prediction_source=*/PredictionSource::kOnDeviceCpssV1Model},
         {/*test_name=*/"UseServerSideOnAndroid",
          /*enabled_features=*/
-         {BASIC_CPSS_FEATURES,
-          permissions::features::kPermissionDedicatedCpssSettingAndroid},
+         {permissions::features::kPermissionDedicatedCpssSettingAndroid},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kServerSideCpssV3Model},
 #else
         {/*test_name=*/"UseServerSideOnDesktop",
-         /*enabled_features=*/{BASIC_CPSS_FEATURES},
+         /*enabled_features=*/{},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kServerSideCpssV3Model},
         {/*test_name=*/"UsePermissionsAiv1OnDesktop",
          /*enabled_features=*/
-         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv1},
+         {permissions::features::kPermissionsAIv1},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv1AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv3OnDesktop",
          /*enabled_features=*/
-         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv3},
+         {permissions::features::kPermissionsAIv3},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv3AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv3OverAiv1OnDesktop",
          /*enabled_features=*/
-         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv1,
+         {permissions::features::kPermissionsAIv1,
           permissions::features::kPermissionsAIv3},
          /*disabled_features=*/{},
          /*expected_prediction_source=*/
          PredictionSource::kOnDeviceAiv3AndServerSideModel},
         {/*test_name=*/"UsePermissionsAiv4OverAivXOnDesktop",
          /*enabled_features=*/
-         {BASIC_CPSS_FEATURES, permissions::features::kPermissionsAIv1,
+         {permissions::features::kPermissionsAIv1,
           permissions::features::kPermissionsAIv3,
           permissions::features::kPermissionsAIv4},
          /*disabled_features=*/{},
