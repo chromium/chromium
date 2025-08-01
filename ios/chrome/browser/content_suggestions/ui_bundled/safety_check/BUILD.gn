@@ -37,7 +37,7 @@ source_set("safety_check") {
     "//ios/chrome/browser/content_suggestions/ui_bundled/cells",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:magic_stack_module_content_view_delegate",
     "//ios/chrome/browser/content_suggestions/ui_bundled/magic_stack:public",
-    "//ios/chrome/browser/ntp/ui_bundled:color",
+    "//ios/chrome/browser/ntp/ui_bundled:theme",
     "//ios/chrome/browser/passwords/model:password_checkup_utils",
     "//ios/chrome/browser/push_notification/model:push_notification_client_id",
     "//ios/chrome/browser/push_notification/model:push_notification_settings_util_header",

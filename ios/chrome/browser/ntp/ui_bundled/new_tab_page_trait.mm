@@ -20,12 +20,12 @@
 @implementation CustomUITraitAccessor (NewTabPageTrait)
 
 - (void)setObjectForNewTabPageTrait:(NewTabPageColorPalette*)object {
-  [self.mutableTraits setObject:object forTrait:[NewTabPageTrait class]];
+  [self.mutableTraits setObject:object forTrait:NewTabPageTrait.class];
 }
 
 - (NewTabPageColorPalette*)objectForNewTabPageTrait {
   return base::apple::ObjCCastStrict<NewTabPageColorPalette>(
-      [self.mutableTraits objectForTrait:[NewTabPageTrait class]]);
+      [self.mutableTraits objectForTrait:NewTabPageTrait.class]);
 }
 
 @end

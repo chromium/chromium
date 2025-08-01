@@ -51,6 +51,7 @@
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_feature.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_header_consumer.h"
+#import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_image_background_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_trait.h"
 #import "ios/chrome/browser/ntp/ui_bundled/new_tab_page_view_controller.h"
 #import "ios/chrome/browser/ntp/ui_bundled/theme_utils.h"
@@ -396,6 +397,9 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
   std::optional<sync_pb::UserColorTheme> colorTheme =
       _backgroundCustomizationService->GetCurrentColorTheme();
 
+  CustomUITraitAccessor* traitAccessor = [[CustomUITraitAccessor alloc]
+      initWithMutableTraits:self.consumer.traitOverrides];
+
   if (colorTheme && colorTheme->color()) {
     // Sets the New Tab Page trait to a color palette generated from the current
     // theme.
@@ -403,19 +407,20 @@ void LogLensButtonNewBadgeShownHistogram(IOSNTPNewBadgeShownResult result) {
         skia::UIColorFromSkColor(colorTheme->color()),
         ProtoEnumToSchemeVariant(colorTheme->browser_color_variant()));
 
-    [[[CustomUITraitAccessor alloc]
-        initWithMutableTraits:self.consumer.traitOverrides]
-        setObjectForNewTabPageTrait:colorPalette];
+    [traitAccessor setObjectForNewTabPageTrait:colorPalette];
     [self.consumer setBackgroundImage:nil];
     [self.headerConsumer updateLogoColor:colorPalette.tintColor];
+    [traitAccessor setBoolForNewTabPageImageBackgroundTrait:NO];
     return;
   }
 
   // Clears the color palette associated with the New Tab Page trait,
   // reverting to the default colors defined by the trait.
-  [[[CustomUITraitAccessor alloc]
-      initWithMutableTraits:self.consumer.traitOverrides]
-      setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+  [traitAccessor setObjectForNewTabPageTrait:[NewTabPageTrait defaultValue]];
+
+  [traitAccessor
+      setBoolForNewTabPageImageBackgroundTrait:background.has_value()];
+
   if (!background) {
     [self.consumer setBackgroundImage:nil];
     [self.headerConsumer updateLogoColor:nil];

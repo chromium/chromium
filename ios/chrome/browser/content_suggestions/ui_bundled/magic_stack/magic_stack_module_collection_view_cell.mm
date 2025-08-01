@@ -8,12 +8,14 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/content_suggestions_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_context_menu_interaction_handler.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_background_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
+
 namespace {
 
 // The corner radius of this container.
@@ -28,21 +30,26 @@ const float kCornerRadius = 24;
 @end
 
 @implementation MagicStackModuleCollectionViewCell {
+  // Container that holds the module contents.
   MagicStackModuleContainer* _moduleContainer;
+  // Context menu interaction for cell interactions.
   UIContextMenuInteraction* _contextMenuInteraction;
+  // Background view to show the proper colored vs blur effect background.
+  MagicStackModuleBackgroundView* _moduleBackgroundView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
   self = [super initWithFrame:frame];
   if (self) {
-    self.contentView.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    _moduleBackgroundView = [[MagicStackModuleBackgroundView alloc] init];
+    self.backgroundView = _moduleBackgroundView;
     self.layer.cornerRadius = kCornerRadius;
     self.clipsToBounds = YES;
 
     _moduleContainer =
         [[MagicStackModuleContainer alloc] initWithFrame:CGRectZero];
     _moduleContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    [self addSubview:_moduleContainer];
+    [self.contentView addSubview:_moduleContainer];
     AddSameConstraints(_moduleContainer, self);
   }
   return self;

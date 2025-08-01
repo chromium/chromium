@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_constants.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_context_menu_interaction_handler.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module.h"
+#import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_background_view.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_container_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_content_view_delegate.h"
 #import "ios/chrome/browser/content_suggestions/ui_bundled/magic_stack/magic_stack_module_contents_factory.h"
@@ -83,6 +84,7 @@ const CGFloat kSeparatorHeight = 0.5;
   ContentSuggestionsModuleType _type;
   BOOL _reducedBottomMargin;
   MagicStackContextMenuInteractionHandler* _contextMenuInteractionHandler;
+  MagicStackModuleBackgroundView* _backgroundView;
 }
 
 - (instancetype)initWithFrame:(CGRect)frame {
@@ -209,12 +211,6 @@ const CGFloat kSeparatorHeight = 0.5;
           @[ UITraitPreferredContentSizeCategory.class ]);
       [self registerForTraitChanges:traits
                          withAction:@selector(updateCardSizing)];
-
-      if (IsNTPBackgroundCustomizationEnabled()) {
-        [self registerForTraitChanges:@[ NewTabPageTrait.class ]
-                           withAction:@selector(applyBackgroundColors)];
-        [self applyBackgroundColors];
-      }
     }
   }
   return self;
@@ -277,8 +273,13 @@ const CGFloat kSeparatorHeight = 0.5;
   // intrinsic size as possible, the constraint is configured to be less than
   // or equal to.
   if (config.type == ContentSuggestionsModuleType::kMostVisited) {
-    if (!IsNTPBackgroundCustomizationEnabled()) {
-      self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
+    // Only create and add the background view if it isn't already in the view
+    // heirarchy.
+    if (!_backgroundView.superview) {
+      _backgroundView = [[MagicStackModuleBackgroundView alloc] init];
+      _backgroundView.translatesAutoresizingMaskIntoConstraints = NO;
+      [self insertSubview:_backgroundView atIndex:0];
+      AddSameConstraints(self, _backgroundView);
     }
     self.layer.cornerRadius = kCornerRadius;
     self.clipsToBounds = YES;
@@ -361,11 +362,13 @@ const CGFloat kSeparatorHeight = 0.5;
 }
 
 - (void)resetView {
-    [_placeholderImage removeFromSuperview];
-    _placeholderImage = nil;
-    [_contentView removeFromSuperview];
-    _contentView = nil;
-    _contextMenuInteractionHandler = nil;
+  [_placeholderImage removeFromSuperview];
+  _placeholderImage = nil;
+  [_contentView removeFromSuperview];
+  _contentView = nil;
+  _contextMenuInteractionHandler = nil;
+  [_backgroundView removeFromSuperview];
+  _backgroundView = nil;
 }
 
 - (MagicStackContextMenuInteractionHandler*)contextMenuInteractionHandler {
@@ -599,21 +602,6 @@ const CGFloat kSeparatorHeight = 0.5;
     _contentStackViewBottomMarginAnchor.constant =
         isContentOversized(_stackView) ? -kOversizedReducedContentBottomInset
                                        : -kReducedContentBottomInset;
-  }
-}
-
-#pragma mark - Private
-
-// Sets the background using the current color palette, or defaults if none is
-// set.
-- (void)applyBackgroundColors {
-  NewTabPageColorPalette* colorPalette =
-      [self.traitCollection objectForNewTabPageTrait];
-
-  if (colorPalette) {
-    self.backgroundColor = colorPalette.secondaryCellColor;
-  } else {
-    self.backgroundColor = [UIColor colorNamed:kBackgroundColor];
   }
 }
 
