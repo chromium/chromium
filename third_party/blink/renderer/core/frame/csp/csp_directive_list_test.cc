@@ -443,6 +443,82 @@ TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithHash) {
   }
 }
 
+TEST_F(CSPDirectiveListTest, AllowScriptFromSourceWithUrlHash) {
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeatures(
+      {network::features::kReporting,
+       network::features::kCSPScriptSrcHashesInV1},
+      {});
+
+  struct TestCase {
+    const char* list;
+    const char* document_url;
+    const char* script_url;
+    bool expected;
+  } cases[] = {
+      {"'url-sha256-yay'", "", "https://a.com/file", false},
+      // IyodCgwKGmOP0Vm8YUQbOET0U+HGD3THhrHT5RqRzbA= is the hash of the string
+      // "https://a.com/file".
+      {"'url-sha256-IyodCgwKGmOP0Vm8YUQbOET0U+HGD3THhrHT5RqRzbA='", "",
+       "https://a.com/file", true},
+
+      // username:password and #fragment should be stripped before hashing.
+      {"'url-sha256-IyodCgwKGmOP0Vm8YUQbOET0U+HGD3THhrHT5RqRzbA='", "",
+       "https://username:password@a.com/file#fragment", true},
+
+      // Relative URLs:
+      // wKJEu59OW9WCQbnklY7Pu9cxYw9DQeVzZF6r6c3Ieq0= is the hash of the
+      // string "abc.js".
+      {"'url-sha256-wKJEu59OW9WCQbnklY7Pu9cxYw9DQeVzZF6r6c3Ieq0='",
+       "https://a.com/page.html", "https://a.com/abc.js", true},
+
+      // username:password and #fragment should be stripped before hashing a
+      // relative URL.
+      {"'url-sha256-wKJEu59OW9WCQbnklY7Pu9cxYw9DQeVzZF6r6c3Ieq0='",
+       "https://a.com/page.html", "https://username:password@a.com/abc.js",
+       true},
+
+      // Shouldn't match across origins.
+      {"'url-sha256-wKJEu59OW9WCQbnklY7Pu9cxYw9DQeVzZF6r6c3Ieq0='",
+       "https://b.com/page.html", "https://a.com/abc.js", false},
+  };
+
+  ContentSecurityPolicy* context =
+      MakeGarbageCollected<ContentSecurityPolicy>();
+  TestCSPDelegate* test_delegate = MakeGarbageCollected<TestCSPDelegate>();
+  context->BindToDelegate(*test_delegate);
+
+  for (const auto& test : cases) {
+    SCOPED_TRACE(testing::Message()
+                 << "List: `" << test.list << "`, Document URL: `"
+                 << test.document_url << "`, Script URL: `" << test.script_url
+                 << "`");
+    const KURL document(test.document_url);
+    const KURL resource(test.script_url);
+
+    IntegrityMetadataSet integrity_metadata;
+    // Report-only 'script-src'
+    network::mojom::blink::ContentSecurityPolicyPtr directive_list = CreateList(
+        String("script-src ") + test.list, ContentSecurityPolicyType::kReport);
+    EXPECT_TRUE(CSPDirectiveListAllowFromSource(
+        *directive_list, context, CSPDirectiveName::ScriptSrcElem, document,
+        resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+        ReportingDisposition::kSuppressReporting, String(), integrity_metadata,
+        kParserInserted));
+
+    // Enforce 'script-src'
+    directive_list = CreateList(String("script-src ") + test.list,
+                                ContentSecurityPolicyType::kEnforce);
+    EXPECT_EQ(
+        CSPCheckResult(test.expected),
+        CSPDirectiveListAllowFromSource(
+            *directive_list, context, CSPDirectiveName::ScriptSrcElem, document,
+            resource, resource, ResourceRequest::RedirectStatus::kNoRedirect,
+            ReportingDisposition::kSuppressReporting, String(),
+            integrity_metadata, kParserInserted));
+  }
+}
+
 TEST_F(CSPDirectiveListTest, RelativeURL) {
   struct TestCase {
     KURL document_url;
@@ -502,9 +578,10 @@ TEST_F(CSPDirectiveListTest, RelativeURL) {
           "def.js",
       },
       {
+          // Should strip fragment:
           KURL("https://foo.com/abc.html"),
-          KURL("https://foo.com/def.js?key=val#hash"),
-          "def.js?key=val#hash",
+          KURL("https://foo.com/def.js?key=val#fragment"),
+          "def.js?key=val",
       },
       {
           // Slash at the end of URL:
@@ -644,6 +721,32 @@ TEST_F(CSPDirectiveListTest, RelativeURL) {
           KURL("https://foo.com/abc/def/aaaaa/jkl/qpr.html"),
           KURL("https://foo.com/abc/def/bbbbb/jkl/mno.js"),
           "../../bbbbb/jkl/mno.js",
+      },
+      // Should strip username, password and fragment:
+      {
+          KURL("https://user:pass@foo.com/"),
+          KURL("https://foo.com/abc.js#fragment"),
+          "abc.js",
+      },
+      {
+          KURL("https://user:pass@foo.com/#fragment"),
+          KURL("https://foo.com/abc.js"),
+          "abc.js",
+      },
+      {
+          KURL("https://user:pass@foo.com/#fragment1"),
+          KURL("https://foo.com/abc.js/#fragment2"),
+          "abc.js",
+      },
+      {
+          KURL("https://foo.com/"),
+          KURL("https://user:pass@foo.com/abc.js#fragment"),
+          "abc.js",
+      },
+      {
+          KURL("https://user1:pass1@foo.com/"),
+          KURL("https://user2:pass2@foo.com/abc.js#fragment"),
+          "abc.js",
       },
   };
 

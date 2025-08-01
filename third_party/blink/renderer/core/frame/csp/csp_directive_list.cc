@@ -951,12 +951,12 @@ String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url) {
   // For the document URL, use its base string as the starting point. This
   // strips any filename from the path, so that https://example.com/abc/def.html
   // becomes https://example.com/abc/. For the script URL, use everything
-  // after the origin.
+  // after the origin except for the fragment, which is stripped due to privacy
+  // reasons (see https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports).
   KURL document_base(document_url.BaseAsString().ToString());
   String document_path = document_base.GetPath().ToString();
   String script_path = script_url.GetPath().ToString() +
-                       script_url.QueryWithLeadingQuestionMark() +
-                       script_url.FragmentIdentifierWithLeadingNumberSign();
+                       script_url.QueryWithLeadingQuestionMark();
 
   Vector<String> document_path_tokens;
   Vector<String> script_path_tokens;
@@ -1009,8 +1009,8 @@ bool CheckURLHash(const KURL& document_url,
     hash_algorithms_used.insert(hash.algorithm);
   }
   // First check the full URL, then the relative URL.
-  if (URLHashMatchesSourceList(url.GetString(), hash_algorithms_used,
-                               source_list)) {
+  if (URLHashMatchesSourceList(CSPStripURL(url).GetString(),
+                               hash_algorithms_used, source_list)) {
     return true;
   }
   String relative_url = GetRelativeScriptUrl(document_url, url);
@@ -1280,6 +1280,18 @@ void FillInCSPHashValues(
       }
     }
   }
+}
+
+KURL CSPStripURL(const KURL& url) {
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 2. Set url’s fragment to the empty string.
+  // > 3. Set url’s username to the empty string.
+  // > 4. Set url’s password to the empty string.
+  KURL stripped_url = url;
+  stripped_url.RemoveFragmentIdentifier();
+  stripped_url.SetUser(String());
+  stripped_url.SetPass(String());
+  return stripped_url;
 }
 
 }  // namespace blink

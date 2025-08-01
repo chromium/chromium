@@ -218,17 +218,8 @@ String ContentSecurityPolicy::StripURLForUseInReport(
   }
 
   // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
-  // > 2. Set url’s fragment to the empty string.
-  // > 3. Set url’s username to the empty string.
-  // > 4. Set url’s password to the empty string.
-  KURL stripped_url = url;
-  stripped_url.RemoveFragmentIdentifier();
-  stripped_url.SetUser(String());
-  stripped_url.SetPass(String());
-
-  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
   // > 5. Return the result of executing the URL serializer on url.
-  return stripped_url.GetString();
+  return CSPStripURL(url).GetString();
 }
 
 bool ContentSecurityPolicy::IsNonceableElement(const Element* element) {

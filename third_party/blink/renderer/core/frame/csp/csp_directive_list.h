@@ -188,6 +188,11 @@ void FillInCSPHashValues(
 CORE_EXPORT
 String GetRelativeScriptUrl(const KURL& document_url, const KURL& script_url);
 
+// Strips a URL for use in hash calculations by removing username, password
+// and fragment values.
+CORE_EXPORT
+KURL CSPStripURL(const KURL& url);
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_FRAME_CSP_CSP_DIRECTIVE_LIST_H_
