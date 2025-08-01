@@ -17,7 +17,6 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Drop
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.FOCUSED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
@@ -25,6 +24,8 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
@@ -32,6 +33,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VALIDATE_ON_SHOW;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
+import android.view.View;
 import android.widget.TextView;
 
 import org.chromium.build.annotations.NullMarked;
@@ -60,8 +62,6 @@ public class EditorDialogViewBinder {
             view.setEditorTitle(model.get(EDITOR_TITLE));
         } else if (propertyKey == CUSTOM_DONE_BUTTON_TEXT) {
             view.setCustomDoneButtonText(model.get(CUSTOM_DONE_BUTTON_TEXT));
-        } else if (propertyKey == FOOTER_MESSAGE) {
-            view.setFooterMessage(model.get(FOOTER_MESSAGE));
         } else if (propertyKey == DELETE_CONFIRMATION_TITLE) {
             view.setDeleteConfirmationTitle(model.get(DELETE_CONFIRMATION_TITLE));
         } else if (propertyKey == DELETE_CONFIRMATION_TEXT) {
@@ -147,6 +147,19 @@ public class EditorDialogViewBinder {
     static void bindNonEditableTextView(PropertyModel model, TextView view, PropertyKey key) {
         if (key == TEXT) {
             view.setText(model.get(TEXT));
+        } else {
+            assert false : "Unhandled update to property:" + key;
+        }
+    }
+
+    static void bindNoticeTextView(PropertyModel model, TextView view, PropertyKey key) {
+        if (key == NOTICE_TEXT) {
+            view.setText(model.get(NOTICE_TEXT));
+        } else if (key == IMPORTANT_FOR_ACCESSIBILITY) {
+            view.setImportantForAccessibility(
+                    model.get(IMPORTANT_FOR_ACCESSIBILITY)
+                            ? View.IMPORTANT_FOR_ACCESSIBILITY_YES
+                            : View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         } else {
             assert false : "Unhandled update to property:" + key;
         }

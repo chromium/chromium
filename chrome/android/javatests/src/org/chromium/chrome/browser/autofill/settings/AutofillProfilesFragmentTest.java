@@ -4,6 +4,11 @@
 
 package org.chromium.chrome.browser.autofill.settings;
 
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.withEffectiveVisibility;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -14,13 +19,13 @@ import static org.mockito.Mockito.when;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.view.KeyEvent;
-import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.test.espresso.intent.Intents;
+import androidx.test.espresso.matcher.ViewMatchers.Visibility;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -504,10 +509,6 @@ public class AutofillProfilesFragmentTest {
                     "edit@profile.com"
                 });
 
-        // Verify the absence of the profile source notice.
-        TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
-        assertEquals(View.GONE, footerMessage.getVisibility());
-
         rule.clickInEditorAndWait(
                 R.id.editor_dialog_done_button, /* waitForPreferenceUpdate= */ true);
 
@@ -556,14 +557,13 @@ public class AutofillProfilesFragmentTest {
         rule.setEditorDialogAndWait(editorDialog);
 
         // Verify the profile source notice.
-        TextView footerMessage = editorDialog.findViewById(R.id.footer_message);
-        assertEquals(View.VISIBLE, footerMessage.getVisibility());
         String expectedMessage =
                 context.getString(
                                 R.string
                                         .autofill_address_already_saved_in_account_record_type_notice)
                         .replace("$1", email);
-        assertEquals(expectedMessage, footerMessage.getText());
+        onView(withText(expectedMessage))
+                .check(matches(withEffectiveVisibility(Visibility.VISIBLE)));
 
         // Invalid input.
         rule.setTextInEditorAndWait(

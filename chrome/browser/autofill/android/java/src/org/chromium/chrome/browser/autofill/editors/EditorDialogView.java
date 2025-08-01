@@ -7,6 +7,7 @@ package org.chromium.chrome.browser.autofill.editors;
 import static org.chromium.build.NullUtil.assumeNonNull;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
 
@@ -99,7 +100,7 @@ public class EditorDialogView extends AlwaysDismissedDialog
 
     private final View mContainerView;
     private final ViewGroup mContentView;
-    private final View mFooter;
+    private final View mButtonBar;
     private Button mDoneButton;
 
     private @Nullable Animator mDialogInOutAnimator;
@@ -153,11 +154,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
         prepareToolbar();
 
         mContentView = mContainerView.findViewById(R.id.contents);
-        mFooter =
-                LayoutInflater.from(mActivity)
-                        .inflate(R.layout.editable_option_editor_footer, null, false);
-        mFooter.findViewById(R.id.button_primary).setId(R.id.editor_dialog_done_button);
-        mFooter.findViewById(R.id.button_secondary).setId(R.id.payments_edit_cancel_button);
+
+        mButtonBar = mContainerView.findViewById(R.id.button_bar);
+        mButtonBar.findViewById(R.id.button_primary).setId(R.id.editor_dialog_done_button);
+        mButtonBar.findViewById(R.id.button_secondary).setId(R.id.payments_edit_cancel_button);
 
         prepareButtons();
     }
@@ -176,34 +176,12 @@ public class EditorDialogView extends AlwaysDismissedDialog
         }
     }
 
-    public void setFooterMessage(@Nullable String footerMessage) {
-        TextView footerText = mFooter.findViewById(R.id.footer_message);
-        if (footerMessage != null) {
-            footerText.setText(footerMessage);
-            footerText.setVisibility(View.VISIBLE);
-        } else {
-            footerText.setVisibility(View.GONE);
-        }
-    }
-
     public void setDeleteConfirmationTitle(@Nullable String deleteConfirmationTitle) {
         mDeleteConfirmationTitle = deleteConfirmationTitle;
     }
 
     public void setDeleteConfirmationText(@Nullable String deleteConfirmationText) {
         mDeleteConfirmationText = deleteConfirmationText;
-    }
-
-    public void maybeShowRequiredFieldNotice() {
-        TextView requiredFieldsNotice = mFooter.findViewById(R.id.required_fields_notice);
-        int requiredFieldsNoticeVisibility = View.GONE;
-        for (int i = 0; i < mFieldViews.size(); i++) {
-            if (mFieldViews.get(i).isRequired()) {
-                requiredFieldsNoticeVisibility = View.VISIBLE;
-                break;
-            }
-        }
-        requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
     }
 
     public void setAllowDelete(boolean allowDelete) {
@@ -245,11 +223,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
     }
 
     public void setShowButtons(boolean showButtons) {
-        View buttonBar = mFooter.findViewById(R.id.button_bar);
         if (showButtons) {
-            buttonBar.setVisibility(View.VISIBLE);
+            mButtonBar.setVisibility(View.VISIBLE);
         } else {
-            buttonBar.setVisibility(View.GONE);
+            mButtonBar.setVisibility(View.GONE);
         }
     }
 
@@ -376,10 +353,10 @@ public class EditorDialogView extends AlwaysDismissedDialog
     }
 
     private void prepareButtons() {
-        mDoneButton = mFooter.findViewById(R.id.editor_dialog_done_button);
+        mDoneButton = mButtonBar.findViewById(R.id.editor_dialog_done_button);
         mDoneButton.setOnClickListener(this);
 
-        Button cancelButton = mFooter.findViewById(R.id.payments_edit_cancel_button);
+        Button cancelButton = mButtonBar.findViewById(R.id.payments_edit_cancel_button);
         cancelButton.setOnClickListener(this);
     }
 
@@ -451,11 +428,6 @@ public class EditorDialogView extends AlwaysDismissedDialog
             }
         }
         setDoneRunnableToFields(assumeNonNull(mDoneRunnable));
-
-        // Add the footer.
-        mContentView.addView(mFooter);
-
-        maybeShowRequiredFieldNotice();
     }
 
     /**
@@ -530,6 +502,18 @@ public class EditorDialogView extends AlwaysDismissedDialog
                             textView,
                             EditorDialogViewBinder::bindNonEditableTextView);
                     childView = textLayout;
+                    break;
+                }
+            case NOTICE:
+                {
+                    View noticeLayout =
+                            LayoutInflater.from(mActivity)
+                                    .inflate(R.layout.autofill_editor_dialog_notice, null);
+                    TextView textView = noticeLayout.findViewById(R.id.notice);
+                    PropertyModelChangeProcessor.create(
+                            editorItem.model, textView, EditorDialogViewBinder::bindNoticeTextView);
+                    childView = noticeLayout;
+                    break;
                 }
         }
         assumeNonNull(childView);

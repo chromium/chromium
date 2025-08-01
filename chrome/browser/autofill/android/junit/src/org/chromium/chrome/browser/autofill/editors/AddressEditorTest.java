@@ -11,7 +11,9 @@ import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -29,14 +31,15 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELE
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DELETE_CONFIRMATION_TITLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DONE_RUNNABLE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.ERROR_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.setDropdownKey;
@@ -276,16 +279,42 @@ public class AddressEditorTest {
         assertEquals(isRequired, field.get(IS_REQUIRED));
     }
 
+    private void validateRequiredNotice(PropertyModel editorModel) {
+        ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
+        for (EditorItem item : editorFields) {
+            if (item.model.containsKey(IS_REQUIRED) && item.model.get(IS_REQUIRED)) {
+                assertTrue(
+                        noticeExists(
+                                editorFields,
+                                mActivity.getString(R.string.payments_required_field_message)));
+                return;
+            }
+        }
+        assertFalse(
+                noticeExists(
+                        editorFields,
+                        mActivity.getString(R.string.payments_required_field_message)));
+    }
+
+    private void validateRecordTypeNotice(PropertyModel editorModel, String recordTypeNotice) {
+        assertTrue(noticeExists(editorModel.get(EDITOR_FIELDS), recordTypeNotice));
+    }
+
+    private boolean noticeExists(ListModel<EditorItem> editorFields, String expectedNoticeText) {
+        for (EditorItem item : editorFields) {
+            if (item.type == NOTICE && expectedNoticeText.equals(item.model.get(NOTICE_TEXT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private static void checkModelHasExpectedValues(
-            PropertyModel editorModel,
-            String expectedDeleteTitle,
-            String expectedDeleteText,
-            @Nullable String expectedRecordTypeNotice) {
+            PropertyModel editorModel, String expectedDeleteTitle, String expectedDeleteText) {
         assertNotNull(editorModel);
 
         assertEquals(expectedDeleteTitle, editorModel.get(DELETE_CONFIRMATION_TITLE));
         assertEquals(expectedDeleteText, editorModel.get(DELETE_CONFIRMATION_TEXT));
-        assertEquals(expectedRecordTypeNotice, editorModel.get(FOOTER_MESSAGE));
     }
 
     private void validateShownFields(
@@ -315,7 +344,9 @@ public class AddressEditorTest {
         // editorFields[8] - street address field.
         // editorFields[9] - phone number field.
         // editorFields[10] - email field.
-        assertEquals(11, editorFields.size());
+        // editorFields[11] - required notice.
+        // editorFields[12] - save in account notice.
+        assertEquals(shouldMarkFieldsRequired ? 13 : 11, editorFields.size());
 
         // Fields obtained from backend must be placed after the country dropdown.
         validateTextField(
@@ -387,7 +418,7 @@ public class AddressEditorTest {
     private void validateErrorMessages(PropertyModel editorModel, boolean errorsPresent) {
         assertNotNull(editorModel);
         ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
-        assertEquals(11, editorFields.size());
+        assertEquals(13, editorFields.size());
 
         Matcher<String> requiredFieldMatcher =
                 errorsPresent ? not(isEmptyString()) : anyOf(nullValue(), isEmptyString());
@@ -440,13 +471,9 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
-        final String recordTypeNotice = null;
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -466,18 +493,9 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String recordTypeNotice =
-                mActivity
-                        .getString(
-                                R.string
-                                        .autofill_address_will_be_saved_in_account_record_type_notice)
-                        .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -499,13 +517,9 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
-        final String recordTypeNotice = null;
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -530,13 +544,9 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_sync_address_record_type_notice);
-        final String recordTypeNotice = null;
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -558,13 +568,9 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_local_address_record_type_notice);
-        final String recordTypeNotice = null;
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -589,13 +595,9 @@ public class AddressEditorTest {
                 mActivity.getString(R.string.autofill_delete_address_confirmation_dialog_title);
         final String deleteText =
                 mActivity.getString(R.string.autofill_delete_sync_address_record_type_notice);
-        final String recordTypeNotice = null;
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -620,18 +622,9 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String recordTypeNotice =
-                mActivity
-                        .getString(
-                                R.string
-                                        .autofill_address_will_be_saved_in_account_record_type_notice)
-                        .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -658,18 +651,9 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String recordTypeNotice =
-                mActivity
-                        .getString(
-                                R.string
-                                        .autofill_address_will_be_saved_in_account_record_type_notice)
-                        .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -693,18 +677,9 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String recordTypeNotice =
-                mActivity
-                        .getString(
-                                R.string
-                                        .autofill_address_will_be_saved_in_account_record_type_notice)
-                        .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -728,18 +703,9 @@ public class AddressEditorTest {
                 mActivity
                         .getString(R.string.autofill_delete_account_address_record_type_notice)
                         .replace("$1", USER_EMAIL);
-        final String recordTypeNotice =
-                mActivity
-                        .getString(
-                                R.string
-                                        .autofill_address_already_saved_in_account_record_type_notice)
-                        .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
     }
 
     @Test
@@ -770,7 +736,7 @@ public class AddressEditorTest {
 
     @Test
     @SmallTest
-    public void validateShownFields_NewAddressProfile() {
+    public void validateShownItems_NewAddressProfile() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -782,11 +748,12 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(),
                 AutofillProfile.builder().build(),
                 /* shouldMarkFieldsRequired= */ false);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
     }
 
     @Test
     @SmallTest
-    public void validateShownFields_NewAddressProfile_EligibleForAddressAccountStorage() {
+    public void validateShownItems_NewAddressProfile_EligibleForAddressAccountStorage() {
         when(mPersonalDataManager.isEligibleForAddressAccountStorage()).thenReturn(true);
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
@@ -800,11 +767,19 @@ public class AddressEditorTest {
                 AutofillProfile.builder().build(),
                 /* shouldMarkFieldsRequired= */ true,
                 /* shouldMarkFieldsRequiredWhenAddressFieldEmpty= */ true);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
+        final String recordTypeNotice =
+                mActivity
+                        .getString(
+                                R.string
+                                        .autofill_address_will_be_saved_in_account_record_type_notice)
+                        .replace("$1", USER_EMAIL);
+        validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
     }
 
     @Test
     @SmallTest
-    public void validateShownFields_LocalOrSyncAddressProfile_SaveLocally() {
+    public void validateShownItems_LocalOrSyncAddressProfile_SaveLocally() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -821,11 +796,12 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(),
                 sLocalProfile,
                 /* shouldMarkFieldsRequired= */ false);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
     }
 
     @Test
     @SmallTest
-    public void validateShownFields_LocalOrSyncAddressProfile_UpdateLocally() {
+    public void validateShownItems_LocalOrSyncAddressProfile_UpdateLocally() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -842,11 +818,12 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(),
                 sLocalProfile,
                 /* shouldMarkFieldsRequired= */ false);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
     }
 
     @Test
     @SmallTest
-    public void validateShownFields_LocalOrSyncAddressProfile_MigrationToAccount() {
+    public void validateShownItems_LocalOrSyncAddressProfile_MigrationToAccount() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -863,11 +840,19 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(),
                 sLocalProfile,
                 /* shouldMarkFieldsRequired= */ true);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
+        final String recordTypeNotice =
+                mActivity
+                        .getString(
+                                R.string
+                                        .autofill_address_will_be_saved_in_account_record_type_notice)
+                        .replace("$1", USER_EMAIL);
+        validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
     }
 
     @Test
     @SmallTest
-    public void validateShownFields_AccountProfile_SaveInAccountFlow() {
+    public void validateShownItems_AccountProfile_SaveInAccountFlow() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -884,11 +869,19 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(),
                 sAccountProfile,
                 /* shouldMarkFieldsRequired= */ true);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
+        final String recordTypeNotice =
+                mActivity
+                        .getString(
+                                R.string
+                                        .autofill_address_will_be_saved_in_account_record_type_notice)
+                        .replace("$1", USER_EMAIL);
+        validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
     }
 
     @Test
     @SmallTest
-    public void validateShownFields_AccountProfile_UpdateAlreadySaved() {
+    public void validateShownItems_AccountProfile_UpdateAlreadySaved() {
         setUpAddressUiComponents(SUPPORTED_ADDRESS_FIELDS);
         mAddressEditor =
                 new AddressEditorCoordinator(
@@ -905,6 +898,14 @@ public class AddressEditorTest {
                 mAddressEditor.getEditorModelForTesting(),
                 sAccountProfile,
                 /* shouldMarkFieldsRequired= */ true);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
+        final String recordTypeNotice =
+                mActivity
+                        .getString(
+                                R.string
+                                        .autofill_address_already_saved_in_account_record_type_notice)
+                        .replace("$1", USER_EMAIL);
+        validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
     }
 
     @Test
@@ -996,7 +997,7 @@ public class AddressEditorTest {
         PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
         ListModel<EditorItem> editorFields = editorModel.get(EDITOR_FIELDS);
-        assertEquals(11, editorFields.size());
+        assertEquals(13, editorFields.size());
 
         // Set values of the required fields.
         editorFields.get(1).model.set(VALUE, "New Name");
@@ -1232,9 +1233,9 @@ public class AddressEditorTest {
         assertNotNull(editorModel);
 
         ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
-        assertEquals(11, model.size());
+        assertEquals(13, model.size());
         for (EditorItem item : model) {
-            if (item.model.get(IS_REQUIRED)) {
+            if (EditorProperties.isEditable(item) && item.model.get(IS_REQUIRED)) {
                 item.model.set(VALUE, "");
             }
         }
@@ -1264,7 +1265,7 @@ public class AddressEditorTest {
         assertEquals(false, editorModel.get(SHOW_BUTTONS));
 
         ListModel<EditorItem> model = editorModel.get(EDITOR_FIELDS);
-        assertEquals(1, model.size());
+        assertEquals(2, model.size());
 
         EditorItem editorItem = model.get(0);
         assertEquals(NON_EDITABLE_TEXT, editorItem.type);
@@ -1284,9 +1285,8 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mAddressEditor.getEditorModelForTesting(),
-                deleteTitle,
-                deleteText,
-                recordTypeNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText);
+        validateRequiredNotice(mAddressEditor.getEditorModelForTesting());
+        validateRecordTypeNotice(mAddressEditor.getEditorModelForTesting(), recordTypeNotice);
     }
 }

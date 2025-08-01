@@ -35,12 +35,21 @@ found in the LICENSE file.
         android:layout_alignParentEnd="true" >
 
         <LinearLayout
-            android:id="@+id/contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="vertical"
             android:layout_marginStart="@dimen/pref_autofill_content_spacing"
-            android:layout_marginEnd="@dimen/pref_autofill_content_spacing"
-            android:orientation="vertical" />
+            android:layout_marginEnd="@dimen/pref_autofill_content_spacing">
+
+            <LinearLayout
+                android:id="@+id/contents"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" />
+
+            <include layout="@layout/autofill_editor_base_buttons" />
+
+        </LinearLayout>
 
     </org.chromium.components.browser_ui.widget.FadingEdgeScrollView>
 

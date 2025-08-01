@@ -14,7 +14,11 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
@@ -303,6 +307,19 @@ public class ContactEditor extends EditorBase<AutofillContact> {
         if (mEmailField.isPresent()) {
             editorFields.add(new EditorItem(TEXT_INPUT, mEmailField.get(), /* isFullLine= */ true));
         }
+        editorFields.add(
+                new EditorItem(
+                        NOTICE,
+                        new PropertyModel.Builder(NOTICE_ALL_KEYS)
+                                .with(
+                                        NOTICE_TEXT,
+                                        mContext.getString(
+                                                R.string.payments_required_field_message))
+                                // Required fields are indicated by an asterisk (*) and announced
+                                // separately by screen readers. Don't announce the message itself.
+                                .with(IMPORTANT_FOR_ACCESSIBILITY, false)
+                                .build(),
+                        /* isFullLine= */ true));
 
         mEditorModel =
                 new PropertyModel.Builder(ALL_KEYS)

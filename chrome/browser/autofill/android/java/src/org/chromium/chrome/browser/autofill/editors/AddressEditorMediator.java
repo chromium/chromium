@@ -22,16 +22,19 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Drop
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.DropdownFieldProperties.DROPDOWN_KEY_VALUE_LIST;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_FIELDS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.EDITOR_TITLE;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FOOTER_MESSAGE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_REQUIRED;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALIDATOR;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NON_EDITABLE_TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.NOTICE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.NON_EDITABLE_TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NonEditableTextProperties.TEXT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.IMPORTANT_FOR_ACCESSIBILITY;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_ALL_KEYS;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.NoticeProperties.NOTICE_TEXT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.SHOW_BUTTONS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_ALL_KEYS;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FIELD_TYPE;
@@ -205,7 +208,6 @@ class AddressEditorMediator {
                 new PropertyModel.Builder(ALL_KEYS)
                         .with(EDITOR_TITLE, getEditorTitle())
                         .with(CUSTOM_DONE_BUTTON_TEXT, mCustomDoneButtonText)
-                        .with(FOOTER_MESSAGE, getRecordTypeNoticeText())
                         .with(DELETE_CONFIRMATION_TITLE, getDeleteConfirmationTitle())
                         .with(DELETE_CONFIRMATION_TEXT, getDeleteConfirmationText())
                         .with(
@@ -316,6 +318,26 @@ class AddressEditorMediator {
         if (mEmailField != null) {
             editorFields.add(new EditorItem(TEXT_INPUT, mEmailField, /* isFullLine= */ true));
         }
+        for (EditorItem item : editorFields) {
+            if (item.model.get(IS_REQUIRED)) {
+                editorFields.add(
+                        new EditorItem(
+                                NOTICE,
+                                new PropertyModel.Builder(NOTICE_ALL_KEYS)
+                                        .with(
+                                                NOTICE_TEXT,
+                                                mContext.getString(
+                                                        R.string.payments_required_field_message))
+                                        // Required fields are indicated by an asterisk (*) and
+                                        // announced separately by screen readers. Don't announce
+                                        // the message itself.
+                                        .with(IMPORTANT_FOR_ACCESSIBILITY, false)
+                                        .build(),
+                                /* isFullLine= */ true));
+                break;
+            }
+        }
+        maybeAddRecordTypeNotice(editorFields);
 
         return editorFields;
     }
@@ -331,7 +353,23 @@ class AddressEditorMediator {
                                         mProfileToEdit.getGUID()))
                         .build();
         editorFields.add(new EditorItem(NON_EDITABLE_TEXT, model, /* isFullLine= */ true));
+
+        maybeAddRecordTypeNotice(editorFields);
         return editorFields;
+    }
+
+    private void maybeAddRecordTypeNotice(ListModel<EditorItem> editorFields) {
+        @Nullable String recordTypeNoticeText = getRecordTypeNoticeText();
+        if (recordTypeNoticeText != null) {
+            editorFields.add(
+                    new EditorItem(
+                            NOTICE,
+                            new PropertyModel.Builder(NOTICE_ALL_KEYS)
+                                    .with(NOTICE_TEXT, recordTypeNoticeText)
+                                    .with(IMPORTANT_FOR_ACCESSIBILITY, true)
+                                    .build(),
+                            /* isFullLine= */ true));
+        }
     }
 
     private void onCommitChanges() {
