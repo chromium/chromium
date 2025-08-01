@@ -530,6 +530,9 @@ general rules of thumb can be helpful in navigating how to structure changes:
   (Google internal). If you need an exception or help, please contact
   chromium-code-health-rotation@google.com.
 
+- **When using AI coding assistants, follow the [Chromium AI Coding
+  Policy](../agents/ai_policy.md).**
+
 ## Tips
 
 ### Review etiquette
