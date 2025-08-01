@@ -1645,7 +1645,6 @@ TEST_F(ExtensionContextMenuModelTest,
 
     // Set the extension to run "on click". Since we are revoking b.com
     // permissions, we need to automatically accept the reload page bubble.
-    menu.ExecuteCommand(kOnClick, 0);
     ExtensionActionRunner::GetForWebContents(web_contents)
         ->accept_bubble_for_testing(true);
     PermissionsManagerWaiter waiter(permissions_manager);
