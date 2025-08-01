@@ -95,7 +95,8 @@ void ReaderModePanelItemConfiguration::ReaderModeWebStateDidLoadContent(
 }
 
 void ReaderModePanelItemConfiguration::ReaderModeWebStateWillBecomeUnavailable(
-    ReaderModeTabHelper* tab_helper) {}
+    ReaderModeTabHelper* tab_helper,
+    ReaderModeDeactivationReason reason) {}
 
 void ReaderModePanelItemConfiguration::ReaderModeDistillationFailed(
     ReaderModeTabHelper* tab_helper) {

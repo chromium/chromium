@@ -162,3 +162,26 @@ TEST_F(ReaderModeBrowserAgentTest, ChangingReaderModeStatus) {
   DisableReaderMode(GetActiveWebState());
   EXPECT_OCMOCK_VERIFY(delegate_);
 }
+
+// Tests that the Reader mode UI is hidden when a navigation occurs in the
+// active WebState.
+TEST_F(ReaderModeBrowserAgentTest, NavigationInActiveWebState) {
+  // Show reader mode.
+  OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
+                          showContentAnimated:NO]);
+  OCMExpect([fake_reader_mode_chip_handler_ showReaderModeChip]);
+  GetWebStateList()->ActivateWebStateAt(1);
+  EXPECT_OCMOCK_VERIFY(delegate_);
+  EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+
+  // Expect reader mode to be hidden without animation.
+  OCMExpect([delegate_ readerModeBrowserAgent:GetReaderModeBrowserAgent()
+                          hideContentAnimated:NO]);
+  OCMExpect([fake_reader_mode_chip_handler_ hideReaderModeChip]);
+
+  // Navigate to a new page.
+  LoadWebpage(static_cast<web::FakeWebState*>(GetActiveWebState()), GURL());
+
+  EXPECT_OCMOCK_VERIFY(delegate_);
+  EXPECT_OCMOCK_VERIFY(fake_reader_mode_chip_handler_);
+}

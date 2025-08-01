@@ -29,7 +29,8 @@ class ReaderModePanelItemConfiguration
   void ReaderModeWebStateDidLoadContent(
       ReaderModeTabHelper* tab_helper) override;
   void ReaderModeWebStateWillBecomeUnavailable(
-      ReaderModeTabHelper* tab_helper) override;
+      ReaderModeTabHelper* tab_helper,
+      ReaderModeDeactivationReason reason) override;
   void ReaderModeDistillationFailed(ReaderModeTabHelper* tab_helper) override;
 
   // web::WebStateObserver

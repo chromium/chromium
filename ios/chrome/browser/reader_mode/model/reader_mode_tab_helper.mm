@@ -82,7 +82,8 @@ ReaderModeTabHelper::ReaderModeTabHelper(web::WebState* web_state,
 }
 
 ReaderModeTabHelper::~ReaderModeTabHelper() {
-  DeactivateReader();
+  DeactivateReader(
+      ReaderModeDeactivationReason::kHostTabDestructionDeactivated);
   for (auto& observer : observers_) {
     observer.ReaderModeTabHelperDestroyed(this);
   }
@@ -115,14 +116,15 @@ void ReaderModeTabHelper::ActivateReader(ReaderModeAccessPoint access_point) {
   CreateReaderModeContent();
 }
 
-void ReaderModeTabHelper::DeactivateReader() {
+void ReaderModeTabHelper::DeactivateReader(
+    ReaderModeDeactivationReason reason) {
   if (!active_) {
     return;
   }
   active_ = false;
   // If Reader mode is being deactivated, keep the secondary WebState but make
   // the content unavailable and ensure the Reader mode UI is dismissed.
-  DestroyReaderModeContent();
+  DestroyReaderModeContent(reason);
 }
 
 web::WebState* ReaderModeTabHelper::GetReaderModeWebState() {
@@ -220,7 +222,7 @@ void ReaderModeTabHelper::DidFinishNavigation(
     web::NavigationContext* navigation_context) {
   if (!navigation_context->IsSameDocument() ||
       navigation_context->HasUserGesture()) {
-    DeactivateReader();
+    DeactivateReader(ReaderModeDeactivationReason::kNavigationDeactivated);
   }
 
   SetLastCommittedUrl(web_state->GetLastCommittedURL());
@@ -228,7 +230,8 @@ void ReaderModeTabHelper::DidFinishNavigation(
 
 void ReaderModeTabHelper::WebStateDestroyed(web::WebState* web_state) {
   CHECK_EQ(web_state_, web_state);
-  DeactivateReader();
+  DeactivateReader(
+      ReaderModeDeactivationReason::kHostTabDestructionDeactivated);
   web_state_observation_.Reset();
   web_state_ = nullptr;
 }
@@ -406,7 +409,8 @@ void ReaderModeTabHelper::PageDistillationCompleted(
     } else {
       RecordDistillationFailure();
       // If the page could not be distilled, deactivate Reader mode in this tab.
-      DeactivateReader();
+      DeactivateReader(
+          ReaderModeDeactivationReason::kDistillationFailureDeactivated);
     }
   }
 }
@@ -438,7 +442,8 @@ void ReaderModeTabHelper::CreateReaderModeContent() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
-void ReaderModeTabHelper::DestroyReaderModeContent() {
+void ReaderModeTabHelper::DestroyReaderModeContent(
+    ReaderModeDeactivationReason reason) {
   metrics_helper_.Flush();
 
   WebViewProxyTabHelper* tab_helper =
@@ -447,7 +452,7 @@ void ReaderModeTabHelper::DestroyReaderModeContent() {
     tab_helper->SetOverridingWebViewProxy(nil);
   }
   for (auto& observer : observers_) {
-    observer.ReaderModeWebStateWillBecomeUnavailable(this);
+    observer.ReaderModeWebStateWillBecomeUnavailable(this, reason);
   }
   reader_mode_web_state_content_loaded_ = false;
 
@@ -484,5 +489,6 @@ void ReaderModeTabHelper::CallLastCommittedUrlEligibilityCallbacks(
 void ReaderModeTabHelper::CancelDistillation() {
   metrics_helper_.RecordReaderDistillerTimedOut();
   RecordDistillationFailure();
-  DeactivateReader();
+  DeactivateReader(
+      ReaderModeDeactivationReason::kDistillationFailureDeactivated);
 }

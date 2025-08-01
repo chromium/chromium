@@ -103,6 +103,18 @@ enum class ReaderModeAccessPoint {
 };
 // LINT.ThenChange(/tools/metrics/histograms/metadata/ios/enums.xml:ReaderModeAccessPoint)
 
+// Reasons for which Reader mode can be deactivated.
+enum class ReaderModeDeactivationReason {
+  // User deactivated Reader mode using the UI.
+  kUserDeactivated,
+  // Reader mode was deactivated because a navigation occurred.
+  kNavigationDeactivated,
+  // Reader mode was deactivated because distillation failed.
+  kDistillationFailureDeactivated,
+  // Reader mode was deactivated because the host tab was destroyed.
+  kHostTabDestructionDeactivated,
+};
+
 // Default delay in seconds for triggering Reader Mode distiller heuristic.
 // This allows the page to react to the DOM loading and ensures minimal
 // interference with the JavaScript execution.

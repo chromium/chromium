@@ -56,7 +56,8 @@ class ReaderModeBrowserAgent : public BrowserUserData<ReaderModeBrowserAgent>,
   void ReaderModeWebStateDidLoadContent(
       ReaderModeTabHelper* tab_helper) override;
   void ReaderModeWebStateWillBecomeUnavailable(
-      ReaderModeTabHelper* tab_helper) override;
+      ReaderModeTabHelper* tab_helper,
+      ReaderModeDeactivationReason reason) override;
   void ReaderModeDistillationFailed(ReaderModeTabHelper* tab_helper) override;
   void ReaderModeTabHelperDestroyed(ReaderModeTabHelper* tab_helper) override;
 

@@ -143,11 +143,14 @@ void ReaderModeBrowserAgent::ReaderModeWebStateDidLoadContent(
 }
 
 void ReaderModeBrowserAgent::ReaderModeWebStateWillBecomeUnavailable(
-    ReaderModeTabHelper* tab_helper) {
+    ReaderModeTabHelper* tab_helper,
+    ReaderModeDeactivationReason reason) {
   tab_helper->SetFullscreenController(nullptr);
   // If Reader mode becomes inactive in the active WebState, hide the Reader
   // mode UI.
-  HideReaderModeUI(/* animated= */ YES);
+  const bool animated =
+      reason == ReaderModeDeactivationReason::kUserDeactivated;
+  HideReaderModeUI(animated);
   crash_keys::SetCurrentlyInReaderMode(false);
 }
 

@@ -32,7 +32,8 @@ class ReaderModeTabHelper : public web::WebStateObserver,
         ReaderModeTabHelper* tab_helper) = 0;
     // Called when Reader mode content will become unavailable in this tab.
     virtual void ReaderModeWebStateWillBecomeUnavailable(
-        ReaderModeTabHelper* tab_helper) = 0;
+        ReaderModeTabHelper* tab_helper,
+        ReaderModeDeactivationReason reason) = 0;
 
     // Called when distillation fails.
     virtual void ReaderModeDistillationFailed(
@@ -62,9 +63,11 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   // Returns whether Reader mode is active in the current tab. If so, the Reader
   // mode UI should be presented. GetReaderModeWebState() may still return null.
   bool IsActive() const;
-  // Activates/deactivates Reader mode in the current tab.
+  // Activates Reader mode in the current tab.
   void ActivateReader(ReaderModeAccessPoint access_point);
-  void DeactivateReader();
+  // Deactivates Reader mode in the current tab.
+  void DeactivateReader(ReaderModeDeactivationReason reason =
+                            ReaderModeDeactivationReason::kUserDeactivated);
 
   // Returns the Reader mode content WebState if it is available. This can be
   // null if Reader mode is active, or non-null while Reader mode is inactive.
@@ -149,7 +152,7 @@ class ReaderModeTabHelper : public web::WebStateObserver,
   void CreateReaderModeContent();
   // Destroys the content tab helper in `reader_mode_web_state_` and stops any
   // ongoing distillation.
-  void DestroyReaderModeContent();
+  void DestroyReaderModeContent(ReaderModeDeactivationReason reason);
 
   // Sets the last committed URL. If `url` is the equal to the previous value
   // ignoring ref, then this is a no-op.

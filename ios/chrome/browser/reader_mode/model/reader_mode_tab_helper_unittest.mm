@@ -42,7 +42,8 @@ class MockReaderModeTabHelperObserver : public ReaderModeTabHelper::Observer {
               (override));
   MOCK_METHOD(void,
               ReaderModeWebStateWillBecomeUnavailable,
-              (ReaderModeTabHelper * tab_helper),
+              (ReaderModeTabHelper * tab_helper,
+               ReaderModeDeactivationReason reason),
               (override));
   MOCK_METHOD(void,
               ReaderModeDistillationFailed,
@@ -354,9 +355,12 @@ TEST_F(ReaderModeTabHelperTest, NotifiesObserversOfAvailability) {
 
   // When DeactivateReader() is called,
   // ReaderModeWebStateWillBecomeUnavailable should be called.
-  EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(
-                                 reader_mode_tab_helper()));
-  reader_mode_tab_helper()->DeactivateReader();
+  EXPECT_CALL(mock_observer,
+              ReaderModeWebStateWillBecomeUnavailable(
+                  reader_mode_tab_helper(),
+                  ReaderModeDeactivationReason::kUserDeactivated));
+  reader_mode_tab_helper()->DeactivateReader(
+      ReaderModeDeactivationReason::kUserDeactivated);
   testing::Mock::VerifyAndClearExpectations(&mock_observer);
 }
 
@@ -440,9 +444,12 @@ TEST_F(ReaderModeTabHelperTest, WebViewProxyUpdated) {
       reader_mode_tab_helper()->GetReaderModeWebState()->GetWebViewProxy();
   EXPECT_EQ(reader_mode_proxy, web_view_proxy_tab_helper->GetWebViewProxy());
 
-  EXPECT_CALL(mock_observer, ReaderModeWebStateWillBecomeUnavailable(
-                                 reader_mode_tab_helper()));
-  reader_mode_tab_helper()->DeactivateReader();
+  EXPECT_CALL(mock_observer,
+              ReaderModeWebStateWillBecomeUnavailable(
+                  reader_mode_tab_helper(),
+                  ReaderModeDeactivationReason::kUserDeactivated));
+  reader_mode_tab_helper()->DeactivateReader(
+      ReaderModeDeactivationReason::kUserDeactivated);
   EXPECT_EQ(original_proxy, web_view_proxy_tab_helper->GetWebViewProxy());
 }
 
