@@ -139,7 +139,9 @@ enum class PermissionSourceUI {
 
   // Permission settings from Android.
   // Currently this value is only used when revoking notification permission in
-  // Android O+ system channel settings.
+  // Android O+ system channel settings activity, and only when that activity
+  // is launched directly from the Chrome site settings, which is not a common
+  // user journey (see usages of `REQUEST_CODE_NOTIFICATION_CHANNEL_SETTINGS`).
   ANDROID_SETTINGS = 4,
 
   // Permission settings as part of the event's UI.
@@ -155,7 +157,9 @@ enum class PermissionSourceUI {
   SAFETY_HUB_AUTO_REVOCATION = 7,
 
   // The permission status changed, but we're unsure from what source.
-  // This is likely ANDROID_SETTINGS above though.
+  // This is recorded instead of ANDROID_SETTINGS above when the Android system
+  // settings UI interaction happens while Chrome is not running, and thus
+  // Chrome only observes the permission change on next start-up.
   UNIDENTIFIED = 8,
 
   // Always keep this at the end.
