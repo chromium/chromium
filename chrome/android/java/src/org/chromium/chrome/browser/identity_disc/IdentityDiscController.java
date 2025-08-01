@@ -20,8 +20,6 @@ import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
-import org.chromium.chrome.browser.lifecycle.NativeInitObserver;
 import org.chromium.chrome.browser.ntp.NewTabPage;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -64,14 +62,12 @@ import org.chromium.components.user_prefs.UserPrefs;
  * whether NTP is shown)
  */
 public class IdentityDiscController
-        implements NativeInitObserver,
-                ProfileDataCache.Observer,
+        implements ProfileDataCache.Observer,
                 IdentityManager.Observer,
                 SyncService.SyncStateChangedListener,
                 ButtonDataProvider {
     // Context is used for fetching resources and launching preferences page.
     private final Context mContext;
-    private ActivityLifecycleDispatcher mActivityLifecycleDispatcher;
     private final ObservableSupplier<Profile> mProfileSupplier;
     private final Callback<Profile> mProfileSupplierObserver = this::setProfile;
     private Profile mProfile;
@@ -87,7 +83,6 @@ public class IdentityDiscController
 
     private final ButtonDataImpl mButtonData;
     private final ObserverList<ButtonDataObserver> mObservers = new ObserverList<>();
-    private boolean mNativeIsInitialized;
 
     private boolean mIsTabNtp;
 
@@ -95,17 +90,11 @@ public class IdentityDiscController
 
     /**
      * @param context The Context for retrieving resources, launching preference activity, etc.
-     * @param activityLifecycleDispatcher Dispatcher for activity lifecycle events, e.g. native
-     *     initialization completing.
      */
-    public IdentityDiscController(
-            Context context,
-            ActivityLifecycleDispatcher activityLifecycleDispatcher,
-            ObservableSupplier<Profile> profileSupplier) {
+    public IdentityDiscController(Context context, ObservableSupplier<Profile> profileSupplier) {
         mContext = context;
-        mActivityLifecycleDispatcher = activityLifecycleDispatcher;
         mProfileSupplier = profileSupplier;
-        mActivityLifecycleDispatcher.register(this);
+        mProfileSupplier.addObserver(mProfileSupplierObserver);
 
         mButtonData =
                 new ButtonDataImpl(
@@ -122,16 +111,6 @@ public class IdentityDiscController
                         /* isEnabled= */ true,
                         AdaptiveToolbarButtonVariant.UNKNOWN,
                         /* tooltipTextResId= */ Resources.ID_NULL);
-    }
-
-    /** Registers itself to observe sign-in and sync status events. */
-    @Override
-    public void onFinishNativeInitialization() {
-        mActivityLifecycleDispatcher.unregister(this);
-        mActivityLifecycleDispatcher = null;
-        mNativeIsInitialized = true;
-
-        mProfileSupplier.addObserver(mProfileSupplierObserver);
     }
 
     @Override
@@ -157,13 +136,13 @@ public class IdentityDiscController
     }
 
     private void calculateButtonData() {
-        if (!mNativeIsInitialized) {
+        if (!isProfileInitialized()) {
             assert !mButtonData.canShow();
             return;
         }
 
         String email = CoreAccountInfo.getEmailFrom(getSignedInAccountInfo());
-        ensureProfileDataCache();
+        ensureProfileDataCache(mProfile);
 
         mButtonData.setButtonSpec(
                 buttonSpecWithDrawableAndDescription(mButtonData.getButtonSpec(), email));
@@ -198,11 +177,14 @@ public class IdentityDiscController
      * Creates and initializes ProfileDataCache if it wasn't created previously. Subscribes
      * IdentityDiscController for profile data updates.
      */
-    private void ensureProfileDataCache() {
+    private void ensureProfileDataCache(Profile profile) {
         if (mProfileDataCache != null) return;
 
         mProfileDataCache =
-                ProfileDataCache.createWithoutBadge(mContext, R.dimen.toolbar_identity_disc_size);
+                ProfileDataCache.createWithoutBadge(
+                        mContext,
+                        IdentityServicesProvider.get().getIdentityManager(profile),
+                        R.dimen.toolbar_identity_disc_size);
         mProfileDataCache.addObserver(this);
     }
 
@@ -270,10 +252,6 @@ public class IdentityDiscController
     /** Call to tear down dependencies. */
     @Override
     public void destroy() {
-        if (mActivityLifecycleDispatcher != null) {
-            mActivityLifecycleDispatcher.unregister(this);
-            mActivityLifecycleDispatcher = null;
-        }
 
         if (mProfileDataCache != null) {
             mProfileDataCache.removeObserver(this);
@@ -290,10 +268,8 @@ public class IdentityDiscController
             mSyncService = null;
         }
 
-        if (mNativeIsInitialized) {
-            mProfileSupplier.removeObserver(mProfileSupplierObserver);
-            mProfile = null;
-        }
+        mProfileSupplier.removeObserver(mProfileSupplierObserver);
+        mProfile = null;
     }
 
     /** {@link SyncService.SyncStateChangedListener} implementation. */
@@ -322,7 +298,7 @@ public class IdentityDiscController
 
         CoreAccountInfo coreAccountInfo = getSignedInAccountInfo();
         if (coreAccountInfo != null) {
-            ensureProfileDataCache();
+            ensureProfileDataCache(mProfile);
             mProfileDataCache.setBadge(
                     coreAccountInfo.getEmail(),
                     mIdentityError == SyncError.NO_ERROR
@@ -378,6 +354,7 @@ public class IdentityDiscController
         } else {
             mIdentityManager = IdentityServicesProvider.get().getIdentityManager(profile);
             mIdentityManager.addObserver(this);
+            calculateButtonData();
 
             mSyncService = SyncServiceFactory.getForProfile(profile);
             if (mSyncService != null) {

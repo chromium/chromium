@@ -126,7 +126,11 @@ public class ProfileDataCacheRenderTest {
                     sActivity.setContentView(mContentView);
 
                     mProfileDataCache =
-                            new ProfileDataCache(sActivity, mImageSize, /* badgeConfig= */ null);
+                            new ProfileDataCache(
+                                    sActivity,
+                                    mIdentityManager,
+                                    mImageSize,
+                                    /* badgeConfig= */ null);
                 });
     }
 
@@ -159,7 +163,11 @@ public class ProfileDataCacheRenderTest {
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {
                     mProfileDataCache =
-                            new ProfileDataCache(sActivity, mImageSize, /* badgeConfig= */ null);
+                            new ProfileDataCache(
+                                    sActivity,
+                                    mIdentityManager,
+                                    mImageSize,
+                                    /* badgeConfig= */ null);
                 });
 
         CriteriaHelper.pollUiThread(

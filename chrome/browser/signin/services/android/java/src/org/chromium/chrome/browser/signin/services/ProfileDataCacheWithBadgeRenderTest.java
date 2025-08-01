@@ -153,7 +153,7 @@ public class ProfileDataCacheWithBadgeRenderTest {
                                     ? ProfileDataCache.createWithDefaultImageSize(
                                             sActivity, mIdentityManager, badgeResId)
                                     : ProfileDataCache.createWithoutBadge(
-                                            sActivity, R.dimen.user_picture_size);
+                                            sActivity, mIdentityManager, R.dimen.user_picture_size);
                 });
         CriteriaHelper.pollUiThread(
                 () -> {

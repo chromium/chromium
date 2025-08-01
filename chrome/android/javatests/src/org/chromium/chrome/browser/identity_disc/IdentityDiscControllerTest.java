@@ -57,7 +57,6 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.lifecycle.ActivityLifecycleDispatcher;
 import org.chromium.chrome.browser.night_mode.ChromeNightModeTestUtils;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -134,7 +133,6 @@ public class IdentityDiscControllerTest {
     @Mock private ObservableSupplier<Profile> mProfileSupplier;
     @Mock private ButtonDataProvider.ButtonDataObserver mButtonDataObserver;
     @Mock private Tracker mTracker;
-    @Mock private ActivityLifecycleDispatcher mDispatcher;
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
@@ -420,12 +418,11 @@ public class IdentityDiscControllerTest {
                             new ObservableSupplierImpl<>();
                     IdentityDiscController identityDiscController =
                             new IdentityDiscController(
-                                    mActivityTestRule.getActivity(), mDispatcher, profileSupplier);
+                                    mActivityTestRule.getActivity(), profileSupplier);
 
                     Assert.assertEquals(
                             SyncError.NO_ERROR, identityDiscController.getIdentityError());
 
-                    identityDiscController.onFinishNativeInitialization();
                     profileSupplier.set(ProfileManager.getLastUsedRegularProfile());
 
                     Assert.assertEquals(
@@ -449,24 +446,10 @@ public class IdentityDiscControllerTest {
 
     @Test
     @MediumTest
-    public void onClick_profileSupplierNotYetInitialized_doesNothing() {
-        TrackerFactory.setTrackerForTests(mTracker);
-        IdentityDiscController identityDiscController =
-                new IdentityDiscController(
-                        mActivityTestRule.getActivity(), mDispatcher, /* profileSupplier= */ null);
-
-        // If the button is tapped before the profile is set, the click shouldn't be recorded.
-        identityDiscController.onClick();
-        verifyNoMoreInteractions(mTracker);
-    }
-
-    @Test
-    @MediumTest
     public void onClick_profileNotYetInitialized_doesNothing() {
         TrackerFactory.setTrackerForTests(mTracker);
         IdentityDiscController identityDiscController =
-                new IdentityDiscController(
-                        mActivityTestRule.getActivity(), mDispatcher, mProfileSupplier);
+                new IdentityDiscController(mActivityTestRule.getActivity(), mProfileSupplier);
 
         // If the button is tapped before the profile is set, the click shouldn't be recorded.
         identityDiscController.onClick();
@@ -601,8 +584,7 @@ public class IdentityDiscControllerTest {
     private IdentityDiscController buildControllerWithObserver(
             ButtonDataProvider.ButtonDataObserver observer) {
         IdentityDiscController controller =
-                new IdentityDiscController(
-                        mActivityTestRule.getActivity(), mDispatcher, mProfileSupplier);
+                new IdentityDiscController(mActivityTestRule.getActivity(), mProfileSupplier);
         controller.addObserver(observer);
 
         return controller;

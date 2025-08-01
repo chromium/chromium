@@ -217,9 +217,10 @@ public class ProfileDataCache implements AccountInfoService.Observer {
      * @return A {@link ProfileDataCache} object with the given image size and no badge.
      */
     public static ProfileDataCache createWithoutBadge(
-            Context context, @DimenRes int imageSizeRedId) {
+            Context context, IdentityManager identityManager, @DimenRes int imageSizeRedId) {
         return new ProfileDataCache(
                 context,
+                identityManager,
                 context.getResources().getDimensionPixelSize(imageSizeRedId),
                 /* badgeConfig= */ null);
     }
