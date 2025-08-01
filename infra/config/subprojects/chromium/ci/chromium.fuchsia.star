@@ -130,7 +130,7 @@ ci.builder(
         mixins = [
             "arm64",
             "docker",
-            "linux-jammy-or-focal",
+            "linux-jammy",
         ],
         per_test_modifications = {
             "context_lost_validating_tests": targets.remove(

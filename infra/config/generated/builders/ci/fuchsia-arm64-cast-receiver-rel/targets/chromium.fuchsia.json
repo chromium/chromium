@@ -18,7 +18,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -38,7 +38,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -58,7 +58,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -78,7 +78,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -98,7 +98,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -118,7 +118,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -138,7 +138,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -166,7 +166,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -186,7 +186,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -206,7 +206,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -226,7 +226,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -246,7 +246,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -266,7 +266,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -286,7 +286,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -306,7 +306,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -326,7 +326,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -346,7 +346,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -371,7 +371,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -391,7 +391,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 4
@@ -412,7 +412,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -437,7 +437,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 14
@@ -458,7 +458,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -478,7 +478,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -498,7 +498,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -518,7 +518,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -538,7 +538,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -558,7 +558,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -578,7 +578,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -598,7 +598,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -618,7 +618,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -638,7 +638,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -658,7 +658,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -678,7 +678,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -698,7 +698,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -718,7 +718,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -738,7 +738,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -758,7 +758,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -778,7 +778,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -798,7 +798,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -818,7 +818,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -838,7 +838,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -858,7 +858,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -878,7 +878,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -898,7 +898,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -921,7 +921,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -944,7 +944,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -964,7 +964,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -984,7 +984,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1004,7 +1004,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1027,7 +1027,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1047,7 +1047,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1067,7 +1067,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1087,7 +1087,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1107,7 +1107,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1127,7 +1127,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1150,7 +1150,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1170,7 +1170,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1190,7 +1190,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1210,7 +1210,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1233,7 +1233,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1256,7 +1256,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1279,7 +1279,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1299,7 +1299,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1319,7 +1319,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1339,7 +1339,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1359,7 +1359,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1379,7 +1379,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1399,7 +1399,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1421,7 +1421,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
@@ -1444,7 +1444,7 @@
           "dimensions": {
             "cpu": "arm64",
             "inside_docker": "1",
-            "os": "Ubuntu-22.04|Ubuntu-20.04"
+            "os": "Ubuntu-22.04"
           },
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
