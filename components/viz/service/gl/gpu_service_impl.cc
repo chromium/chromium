@@ -130,6 +130,7 @@
 
 #if BUILDFLAG(IS_OZONE)
 #include "ui/ozone/public/ozone_platform.h"
+#include "ui/ozone/public/surface_factory_ozone.h"
 #endif  // BUILDFLAG(IS_OZONE)
 
 namespace viz {
@@ -1268,17 +1269,31 @@ bool GpuServiceImpl::OnBeginFrameDerivedImpl(const BeginFrameArgs& args) {
 #if BUILDFLAG(IS_LINUX)
 bool GpuServiceImpl::IsGMBNV12Supported() {
   CHECK(main_runner_->BelongsToCurrentThread());
+
+  // Determine whether it's possible to create an NV12 NativePixmap with
+  // GPU_READ_CPU_READ_WRITE usage (the relevant usage for the clients of this
+  // method).
   auto buffer_format = gfx::BufferFormat::YUV_420_BIPLANAR;
   auto buffer_usage = gfx::BufferUsage::GPU_READ_CPU_READ_WRITE;
 
   if (!IsNativeBufferSupported(buffer_format, buffer_usage)) {
     return false;
   }
-  auto size = gfx::Size(2, 2);
 
-  return !gpu_memory_buffer_factory_
-              ->CreateNativeGmbHandle(size, buffer_format, buffer_usage)
-              .is_null();
+  auto size = gfx::Size(2, 2);
+  scoped_refptr<gfx::NativePixmap> pixmap =
+      ui::OzonePlatform::GetInstance()
+          ->GetSurfaceFactoryOzone()
+          ->CreateNativePixmap(gpu::kNullSurfaceHandle,
+                               vulkan_context_provider()
+                                   ? vulkan_context_provider()->GetDeviceQueue()
+                                   : nullptr,
+                               size, buffer_format, buffer_usage, size);
+  if (!pixmap.get() || pixmap->ExportHandle().planes.empty()) {
+    return false;
+  }
+
+  return true;
 }
 #endif
 
