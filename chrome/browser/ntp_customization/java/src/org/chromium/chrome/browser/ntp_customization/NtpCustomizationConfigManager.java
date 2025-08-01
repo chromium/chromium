@@ -29,6 +29,7 @@ public class NtpCustomizationConfigManager {
     private static final Executor EXECUTOR =
             (Runnable r) -> PostTask.postTask(TaskTraits.USER_BLOCKING_MAY_BLOCK, r);
     private boolean mIsInitialized;
+    private @NtpBackgroundImageType int mBackgroundImageType;
     private @Nullable BitmapDrawable mBackgroundImageDrawable;
     private boolean mIsMvtToggleOn;
 
@@ -68,8 +69,8 @@ public class NtpCustomizationConfigManager {
         if (mIsInitialized) return;
 
         mIsInitialized = true;
-        @NtpBackgroundImageType int imageType = NtpCustomizationUtils.getNtpBackgroundImageType();
-        if (imageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
+        mBackgroundImageType = NtpCustomizationUtils.getNtpBackgroundImageType();
+        if (mBackgroundImageType == NtpBackgroundImageType.IMAGE_FROM_DISK) {
             NtpCustomizationUtils.readNtpBackgroundImage(
                     (bitmap) -> notifyBackgroundImageChanged(bitmap), EXECUTOR);
         }
@@ -115,10 +116,11 @@ public class NtpCustomizationConfigManager {
      * @param bitmap : The NTP's background image.
      */
     public void onBackgroundChanged(@Nullable Bitmap bitmap) {
-        NtpCustomizationUtils.setNtpBackgroundImageType(
+        mBackgroundImageType =
                 bitmap == null
                         ? NtpBackgroundImageType.DEFAULT
-                        : NtpBackgroundImageType.IMAGE_FROM_DISK);
+                        : NtpBackgroundImageType.IMAGE_FROM_DISK;
+        NtpCustomizationUtils.setNtpBackgroundImageType(mBackgroundImageType);
 
         notifyBackgroundImageChanged(bitmap);
 
@@ -168,6 +170,11 @@ public class NtpCustomizationConfigManager {
         for (HomepageStateListener listener : mHomepageStateListeners) {
             listener.onMvtToggleChanged();
         }
+    }
+
+    /** Gets the NTP's background image type. */
+    public @NtpBackgroundImageType int getBackgroundImageType() {
+        return mBackgroundImageType;
     }
 
     public void setBackgroundImageDrawableForTesting(@Nullable BitmapDrawable bitmapDrawable) {

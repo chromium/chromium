@@ -101,11 +101,17 @@ public class NtpCustomizationConfigManagerUnitTest {
         mNtpCustomizationConfigManager.onBackgroundChanged(bitmap);
         verify(mListener).onBackgroundChanged(mBitmapDrawableCaptor.capture());
         assertEquals(bitmap, mBitmapDrawableCaptor.getValue().getBitmap());
+        assertEquals(
+                NtpCustomizationUtils.NtpBackgroundImageType.IMAGE_FROM_DISK,
+                mNtpCustomizationConfigManager.getBackgroundImageType());
 
         clearInvocations(mListener);
         mNtpCustomizationConfigManager.removeListener(mListener);
         mNtpCustomizationConfigManager.onBackgroundChanged(null);
         verify(mListener, never()).onBackgroundChanged(any());
+        assertEquals(
+                NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT,
+                mNtpCustomizationConfigManager.getBackgroundImageType());
     }
 
     @Test

@@ -71,6 +71,7 @@ import org.chromium.chrome.browser.magic_stack.HomeModulesMetricsUtils;
 import org.chromium.chrome.browser.magic_stack.ModuleDelegateHost;
 import org.chromium.chrome.browser.magic_stack.ModuleRegistry;
 import org.chromium.chrome.browser.metrics.StartupMetricsTracker;
+import org.chromium.chrome.browser.ntp_customization.NtpCustomizationConfigManager;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationCoordinator;
 import org.chromium.chrome.browser.ntp_customization.NtpCustomizationUtils;
 import org.chromium.chrome.browser.ntp_customization.edge_to_edge.TopInsetCoordinator;
@@ -791,9 +792,7 @@ public class NewTabPage
     }
 
     private void initTopInsetCoordinatorObserver() {
-        mTopInsetChangeObserver =
-                (systemTopInset, consumeTopInset) ->
-                        mNewTabPageLayout.onTopInsetChange(systemTopInset);
+        mTopInsetChangeObserver = this::onToEdgeChange;
         if (mTopInsetCoordinatorSupplier.hasValue()) {
             mTopInsetCoordinatorSupplier.get().addObserver(mTopInsetChangeObserver);
             return;
@@ -808,6 +807,20 @@ public class NewTabPage
                     }
                 };
         mTopInsetCoordinatorSupplier.addObserver(mTopInsetCoordinatorCallback);
+    }
+
+    /**
+     * Called when the layout changes between edge-to-edge and standard.
+     *
+     * @param systemTopInset The system's top inset, i.e., the height of the Status bar. While
+     *     usually greater than zero, it can be zero in split-screen mode.
+     * @param consumeTopInset Whether the parent layout will consume the top inset.
+     */
+    void onToEdgeChange(int systemTopInset, boolean consumeTopInset) {
+        // When consumeTopInset is false, it is possible: 1) the next Tab isn't NTP and 2) the next
+        // Tab is NTP while NTP should show regular toolbar. NewTabPageLayout should only be
+        // adjusted based on supportsEdgeToEdgeOnTop(), not the parent view's decision.
+        mNewTabPageLayout.onToEdgeChange(systemTopInset, supportsEdgeToEdgeOnTop());
     }
 
     /**
@@ -1152,8 +1165,11 @@ public class NewTabPage
 
     @Override
     public boolean supportsEdgeToEdgeOnTop() {
-        // TODO(https://crbug.com/432527690): Implement here.
-        return false;
+        return mCanSupportEdgeToEdgeForCustomizedTheme
+                && !mIsTablet
+                && isInSingleUrlBarMode()
+                && NtpCustomizationConfigManager.getInstance().getBackgroundImageType()
+                        != NtpCustomizationUtils.NtpBackgroundImageType.DEFAULT;
     }
 
     @Override

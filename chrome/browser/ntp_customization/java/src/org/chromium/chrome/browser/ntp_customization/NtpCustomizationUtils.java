@@ -305,6 +305,24 @@ public class NtpCustomizationUtils {
         return assumeNonNull(tab.getNativePage()).supportsEdgeToEdgeOnTop();
     }
 
+    /**
+     * Returns whether to skip a layout change from the given systemTopInset and consumeTopInset
+     * status.
+     *
+     * @param appliedTopPadding The value of currently applied top padding.
+     * @param systemTopInset The system's top inset, i.e., the height of Status bar.
+     * @param consumeTopInset Whether should consume the system's top inset.
+     */
+    public static boolean shouldSkipTopInsetsChange(
+            int appliedTopPadding, int systemTopInset, boolean consumeTopInset) {
+        // We skip a layout change if the top padding doesn't need adjusting. This occurs in two
+        // scenarios:
+        // 1) Top padding was already added and should remain.
+        // 2) No top padding was added and none is needed now.
+        return ((appliedTopPadding == systemTopInset) && consumeTopInset)
+                || ((appliedTopPadding == 0) && !consumeTopInset);
+    }
+
     public static void resetSharedPreferenceForTesting() {
         SharedPreferencesManager prefsManager = ChromeSharedPreferences.getInstance();
         prefsManager.removeKey(ChromePreferenceKeys.NTP_CUSTOMIZATION_BACKGROUND_IMAGE_TYPE);

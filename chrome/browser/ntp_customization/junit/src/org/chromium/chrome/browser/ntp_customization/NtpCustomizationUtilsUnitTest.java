@@ -138,4 +138,32 @@ public class NtpCustomizationUtilsUnitTest {
         when(nativePage.supportsEdgeToEdgeOnTop()).thenReturn(true);
         assertTrue(NtpCustomizationUtils.supportsEnableEdgeToEdgeOnTop(mTab));
     }
+
+    @Test
+    public void testShouldSkipTopInsetChange() {
+        assertTrue(
+                NtpCustomizationUtils.shouldSkipTopInsetsChange(
+                        /* appliedTopPadding= */ 50,
+                        /* systemTopInset= */ 50,
+                        /* consumeTopInset= */ true));
+        assertTrue(
+                NtpCustomizationUtils.shouldSkipTopInsetsChange(
+                        /* appliedTopPadding= */ 0,
+                        /* systemTopInset= */ 50,
+                        /* consumeTopInset= */ false));
+        // Verifies do NOT skip if NTP should consume top inset while its current layout doesn't
+        // have a top padding.
+        assertFalse(
+                NtpCustomizationUtils.shouldSkipTopInsetsChange(
+                        /* appliedTopPadding= */ 0,
+                        /* systemTopInset= */ 50,
+                        /* consumeTopInset= */ true));
+        // Verifies do NOT skip if NTP shouldn't consume top inset while its current layout has a
+        // top padding.
+        assertFalse(
+                NtpCustomizationUtils.shouldSkipTopInsetsChange(
+                        /* appliedTopPadding= */ 50,
+                        /* systemTopInset= */ 50,
+                        /* consumeTopInset= */ false));
+    }
 }
