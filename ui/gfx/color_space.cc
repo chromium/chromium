@@ -111,9 +111,15 @@ ColorSpace::ColorSpace(const SkColorSpace& sk_color_space, bool is_hdr)
     SetCustomTransferFunction(fn, is_hdr);
   } else if (skcms_TransferFunction_isHLGish(&fn)) {
     transfer_ = TransferID::HLG;
+    transfer_params_[0] = 203.f;
+    transfer_params_[1] = 1000.f;
+    transfer_params_[2] = 1.2f;
   } else if (skcms_TransferFunction_isPQish(&fn)) {
     transfer_ = TransferID::PQ;
     transfer_params_[0] = GetSDRWhiteLevelFromPQSkTransferFunction(fn);
+    if (transfer_params_[0] == 10000.f) {
+      transfer_params_[0] = 203.f;
+    }
   } else if (skcms_TransferFunction_isHLG(&fn)) {
     transfer_ = TransferID::HLG;
     transfer_params_[0] = fn.a;

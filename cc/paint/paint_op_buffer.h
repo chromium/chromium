@@ -88,7 +88,7 @@ struct CC_PAINT_EXPORT PlaybackParams {
   bool is_analyzing = false;
 
   // The HDR headroom to tone map to.
-  float destination_hdr_headroom = 1.f;
+  float destination_hdr_headroom = 0.f;
 };
 
 class CC_PAINT_EXPORT SharedImageProvider {

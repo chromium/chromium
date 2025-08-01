@@ -2258,7 +2258,9 @@ TEST_F(SoftwareImageDecodeCacheTest, HdrDecodeToSdr) {
       PaintImage::kDefaultFrameIndex, TargetColorParams(raster_color_space));
 
   DecodedDrawImage decoded_image = cache_.GetDecodedImageForDraw(draw_image);
-  EXPECT_NE(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  EXPECT_EQ(decoded_image.image()->colorType(), kRGBA_F16_SkColorType);
+  EXPECT_TRUE(SkColorSpace::Equals(decoded_image.image()->colorSpace(),
+                                   image_color_space.ToSkColorSpace().get()));
   cache_.DrawWithImageFinished(draw_image, decoded_image);
 }
 

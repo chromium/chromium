@@ -1271,7 +1271,7 @@ void DrawDRRectOp::RasterWithFlags(const DrawDRRectOp* op,
 static float ComputeEffectiveHdrHeadroom(const PaintFlags* flags,
                                          const PlaybackParams& params) {
   if (!flags) {
-    return 1.f;
+    return params.destination_hdr_headroom;
   }
   return flags->getDynamicRangeLimit().ComputeEffectiveHdrHeadroom(
       params.destination_hdr_headroom);
