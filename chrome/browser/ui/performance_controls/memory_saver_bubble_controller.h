@@ -16,7 +16,6 @@ namespace views {
 class BubbleDialogModelHost;
 }
 
-class Browser;
 class BrowserWindowInterface;
 
 namespace memory_saver {
@@ -32,7 +31,7 @@ class MemorySaverBubbleController : MemorySaverBubbleObserver {
 
   // Called by the ActionItem framework when the action is invoked, to show
   // the Memory Saver bubble.
-  void InvokeAction(Browser* browser, actions::ActionItem* item);
+  void InvokeAction(BrowserWindowInterface* bwi, actions::ActionItem* item);
 
   // MemorySaverBubbleObserver:
   void OnBubbleShown() override;

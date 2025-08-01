@@ -9,6 +9,7 @@
 #include "base/check_op.h"
 #include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/browser_actions.h"
+#include "chrome/browser/ui/browser_window/public/browser_window_interface.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/performance_controls/memory_saver_bubble_view.h"
@@ -29,16 +30,18 @@ MemorySaverBubbleController::MemorySaverBubbleController(
 
 MemorySaverBubbleController::~MemorySaverBubbleController() = default;
 
-void MemorySaverBubbleController::InvokeAction(Browser* browser,
+void MemorySaverBubbleController::InvokeAction(BrowserWindowInterface* bwi,
                                                actions::ActionItem* item) {
   CHECK(item == action_item_.get());
 
   // Open the dialog bubble.
-  BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
+  BrowserView* browser_view =
+      BrowserView::GetBrowserViewForBrowser(bwi->GetBrowserForMigrationOnly());
   CHECK_NE(browser_view, nullptr);
   views::View* anchor_view =
       browser_view->toolbar_button_provider()->GetAnchorView(std::nullopt);
-  bubble_ = MemorySaverBubbleView::ShowBubble(browser, anchor_view, this);
+  bubble_ = MemorySaverBubbleView::ShowBubble(bwi->GetBrowserForMigrationOnly(),
+                                              anchor_view, this);
 }
 
 void MemorySaverBubbleController::OnBubbleShown() {

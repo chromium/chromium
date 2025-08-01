@@ -11,6 +11,7 @@
 
 class BrowserActionPrefsListener;
 class BrowserWindowInterface;
+class Profile;
 
 namespace actions {
 class ActionItem;
@@ -39,6 +40,7 @@ class BrowserActions {
   raw_ptr<actions::ActionItem> root_action_item_ = nullptr;
   std::unique_ptr<BrowserActionPrefsListener> browser_action_prefs_listener_;
   const raw_ref<BrowserWindowInterface> bwi_;
+  const raw_ref<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_BROWSER_ACTIONS_H_

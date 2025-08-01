@@ -144,15 +144,15 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
     int tooltip_id,
     const gfx::VectorIcon& icon,
     actions::ActionId action_id,
-    Browser* browser,
+    BrowserWindowInterface* bwi,
     bool is_pinnable) {
   auto pinnable_state =
       is_pinnable ? std::underlying_type_t<actions::ActionPinnableState>(
                         actions::ActionPinnableState::kPinnable)
                   : std::underlying_type_t<actions::ActionPinnableState>(
                         actions::ActionPinnableState::kNotPinnable);
-  return actions::ActionItem::Builder(CreateToggleSidePanelActionCallback(
-                                          SidePanelEntryKey(id), browser))
+  return actions::ActionItem::Builder(
+             CreateToggleSidePanelActionCallback(SidePanelEntryKey(id), bwi))
       .SetActionId(action_id)
       .SetText(l10n_util::GetStringUTF16(title_id))
       .SetTooltipText(l10n_util::GetStringUTF16(tooltip_id))
@@ -162,7 +162,7 @@ actions::ActionItem::ActionItemBuilder SidePanelAction(
 }  // namespace
 
 BrowserActions::BrowserActions(BrowserWindowInterface* bwi)
-    : bwi_(CHECK_DEREF(bwi)) {}
+    : bwi_(CHECK_DEREF(bwi)), profile_(CHECK_DEREF(bwi->GetProfile())) {}
 
 BrowserActions::~BrowserActions() {
   browser_action_prefs_listener_.reset();
@@ -177,24 +177,25 @@ BrowserActions::~BrowserActions() {
 // static
 std::u16string BrowserActions::GetCleanTitleAndTooltipText(
     std::u16string string) {
-  const std::u16string ellipsis_unicode = u"\u2026";
-  const std::u16string ellipsis_text = u"...";
+  static constexpr std::u16string_view kEllipsisUnicode{u"\u2026"};
+  static constexpr std::u16string_view kEllipsisText{u"..."};
 
-  auto remove_ellipsis = [&string](const std::u16string ellipsis) {
-    size_t ellipsis_pos = string.find(ellipsis);
+  const auto remove_ellipsis = [&string](const std::u16string_view ellipsis) {
+    const size_t ellipsis_pos = string.find(ellipsis);
     if (ellipsis_pos != std::u16string::npos) {
       string.erase(ellipsis_pos);
     }
   };
-  remove_ellipsis(ellipsis_unicode);
-  remove_ellipsis(ellipsis_text);
+  remove_ellipsis(kEllipsisUnicode);
+  remove_ellipsis(kEllipsisText);
   return gfx::RemoveAccelerator(string);
 }
 
 void BrowserActions::InitializeBrowserActions() {
-  Profile* profile = bwi_->GetProfile();
-  Browser* browser = bwi_->GetBrowserForMigrationOnly();
-  const bool is_guest_session = profile->IsGuestSession();
+  Profile* const profile = base::to_address(profile_);
+  Browser* const browser = bwi_->GetBrowserForMigrationOnly();
+  BrowserWindowInterface* const bwi = base::to_address(bwi_);
+  const bool is_guest_session = profile_->IsGuestSession();
 
   actions::ActionManager::Get().AddAction(
       actions::ActionItem::Builder()
@@ -203,36 +204,31 @@ void BrowserActions::InitializeBrowserActions() {
               SidePanelAction(
                   SidePanelEntryId::kBookmarks, IDS_BOOKMARK_MANAGER_TITLE,
                   IDS_BOOKMARK_MANAGER_TITLE, kBookmarksSidePanelRefreshIcon,
-                  kActionSidePanelShowBookmarks, browser, true),
+                  kActionSidePanelShowBookmarks, bwi, true),
               SidePanelAction(SidePanelEntryId::kReadingList,
                               IDS_READ_LATER_TITLE, IDS_READ_LATER_TITLE,
                               kReadingListIcon, kActionSidePanelShowReadingList,
-                              browser, true),
+                              bwi, true),
               SidePanelAction(SidePanelEntryId::kAboutThisSite,
                               IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                               IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE,
                               PageInfoViewFactory::GetAboutThisSiteVectorIcon(),
-                              kActionSidePanelShowAboutThisSite, browser,
-                              false),
+                              kActionSidePanelShowAboutThisSite, bwi, false),
               SidePanelAction(SidePanelEntryId::kCustomizeChrome,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               IDS_SIDE_PANEL_CUSTOMIZE_CHROME_TITLE,
                               vector_icons::kEditChromeRefreshIcon,
-                              kActionSidePanelShowCustomizeChrome, browser,
-                              false),
+                              kActionSidePanelShowCustomizeChrome, bwi, false),
               SidePanelAction(SidePanelEntryId::kShoppingInsights,
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               IDS_SHOPPING_INSIGHTS_SIDE_PANEL_TITLE,
                               vector_icons::kShoppingBagIcon,
-                              kActionSidePanelShowShoppingInsights, browser,
-                              false),
+                              kActionSidePanelShowShoppingInsights, bwi, false),
               SidePanelAction(SidePanelEntryId::kMerchantTrust,
                               IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
                               IDS_MERCHANT_TRUST_SIDE_PANEL_TITLE,
                               vector_icons::kStorefrontIcon,
-                              kActionSidePanelShowMerchantTrust, browser,
-                              false))
-
+                              kActionSidePanelShowMerchantTrust, bwi, false))
           .Build());
 
   if (side_panel::history_clusters::
@@ -242,7 +238,7 @@ void BrowserActions::InitializeBrowserActions() {
         SidePanelAction(SidePanelEntryId::kHistoryClusters, IDS_HISTORY_TITLE,
                         IDS_HISTORY_CLUSTERS_SHOW_SIDE_PANEL,
                         vector_icons::kHistoryChromeRefreshIcon,
-                        kActionSidePanelShowHistoryCluster, browser, true)
+                        kActionSidePanelShowHistoryCluster, bwi, true)
             .Build());
   }
 
@@ -251,27 +247,27 @@ void BrowserActions::InitializeBrowserActions() {
         SidePanelAction(SidePanelEntryId::kHistory, IDS_HISTORY_TITLE,
                         IDS_HISTORY_SHOW_SIDE_PANEL,
                         vector_icons::kHistoryChromeRefreshIcon,
-                        kActionSidePanelShowHistory, browser, true)
+                        kActionSidePanelShowHistory, bwi, true)
             .Build());
   }
 
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kReadAnything, IDS_READING_MODE_TITLE,
                       IDS_READING_MODE_TITLE, kMenuBookChromeRefreshIcon,
-                      kActionSidePanelShowReadAnything, browser, true)
+                      kActionSidePanelShowReadAnything, bwi, true)
           .Build());
 
   if (lens::features::IsLensOverlayEnabled()) {
     actions::ActionItem::InvokeActionCallback callback = base::BindRepeating(
-        [](base::WeakPtr<Browser> browser, actions::ActionItem* item,
+        [](base::WeakPtr<BrowserWindowInterface> bwi, actions::ActionItem* item,
            actions::ActionInvocationContext context) {
-          if (!browser) {
+          if (!bwi) {
             return;
           }
           lens::LensOverlayEntryPointController::InvokeAction(
-              browser->GetActiveTabInterface(), context);
+              bwi->GetActiveTabInterface(), context);
         },
-        browser->AsWeakPtr());
+        bwi->GetWeakPtr());
     const gfx::VectorIcon& icon =
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
         vector_icons::kGoogleLensMonochromeLogoIcon;
@@ -298,11 +294,11 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                chrome::ShowOffersAndRewardsForPage(browser);
+                chrome::ShowOffersAndRewardsForPage(bwi);
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionOffersAndRewardsForPage)
           .SetText(l10n_util::GetStringUTF16(
               IDS_AUTOFILL_OFFERS_REMINDER_ICON_TOOLTIP_TEXT))
@@ -318,20 +314,21 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       SidePanelAction(SidePanelEntryId::kLens, IDS_LENS_DEFAULT_TITLE,
                       IDS_LENS_DEFAULT_TITLE, vector_icons::kImageSearchIcon,
-                      kActionSidePanelShowLens, browser, false)
+                      kActionSidePanelShowLens, bwi, false)
           .Build());
 
+  // TODO(crbug.com/435220196): Ideally this action would have
+  // MemorySaverBubbleController passed in as a dependency directly.
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* bubble_controller =
-                    browser->browser_window_features()
-                        ->memory_saver_bubble_controller();
-                bubble_controller->InvokeAction(browser, item);
+                    bwi->GetFeatures().memory_saver_bubble_controller();
+                bubble_controller->InvokeAction(bwi, item);
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionShowMemorySaverChip)
           .SetText(l10n_util::GetStringUTF16(IDS_MEMORY_SAVER_CHIP_LABEL))
           .SetTooltipText(
@@ -345,16 +342,16 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                browser->GetActiveTabInterface()
+                bwi->GetActiveTabInterface()
                     ->GetTabFeatures()
                     ->zoom_view_controller()
                     ->UpdateBubbleVisibility(
                         /*prefer_to_show_bubble=*/true,
                         /*from_user_gesture=*/true);
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionZoomNormal)
           .SetText(l10n_util::GetStringUTF16(IDS_ZOOM_NORMAL))
           .SetTooltipText(l10n_util::GetStringUTF16(IDS_TOOLTIP_ZOOM))
@@ -364,16 +361,16 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
-                auto* tab_helper = browser->GetActiveTabInterface()
+                auto* tab_helper = bwi->GetActiveTabInterface()
                                        ->GetTabFeatures()
                                        ->commerce_ui_tab_helper();
                 CHECK(tab_helper);
 
                 tab_helper->OnPriceInsightsIconClicked();
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionCommercePriceInsights)
           // The tooltip text is used as a default text. The
           // PriceInsightsPageActionViewController will override it based on its
@@ -389,10 +386,10 @@ void BrowserActions::InitializeBrowserActions() {
   root_action_item_->AddChild(
       actions::ActionItem::Builder(
           base::BindRepeating(
-              [](Browser* browser, actions::ActionItem* item,
+              [](BrowserWindowInterface* bwi, actions::ActionItem* item,
                  actions::ActionInvocationContext context) {
                 auto* tab_features =
-                    browser->GetActiveTabInterface()->GetTabFeatures();
+                    bwi->GetActiveTabInterface()->GetTabFeatures();
                 CHECK(tab_features);
 
                 tab_features->commerce_discounts_page_action_view_controller()
@@ -408,7 +405,7 @@ void BrowserActions::InitializeBrowserActions() {
                             PageActionIconType::kDiscounts),
                         commerce_ui_tab_helper->GetDiscounts());
               },
-              base::Unretained(browser)))
+              bwi))
           .SetActionId(kActionCommerceDiscounts)
           .SetText(l10n_util::GetStringUTF16(IDS_DISCOUNT_ICON_EXPANDED_TEXT))
           .SetTooltipText(
@@ -928,7 +925,7 @@ void BrowserActions::InitializeBrowserActions() {
                         IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
                         IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE,
                         vector_icons::kChatIcon, kActionSidePanelShowComments,
-                        browser, false)
+                        bwi, false)
             .Build());
   }
 
@@ -936,8 +933,6 @@ void BrowserActions::InitializeBrowserActions() {
 }
 
 void BrowserActions::AddListeners() {
-  // TODO(crbug.com/431668581): Refactor this to take only its dependencies
-  // (BrowserActions and Profile) instead of the entire Browser.
   browser_action_prefs_listener_ = std::make_unique<BrowserActionPrefsListener>(
-      *bwi_->GetBrowserForMigrationOnly());
+      base::to_address(profile_), this);
 }

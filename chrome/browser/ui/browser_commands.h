@@ -23,6 +23,7 @@
 #include "ui/base/window_open_disposition.h"
 
 class Browser;
+class BrowserWindowInterface;
 class CommandObserver;
 class GURL;
 class Profile;
@@ -212,7 +213,7 @@ void MoveTabsToReadLater(Browser* browser,
                          std::vector<content::WebContents*> web_contentses);
 bool MarkCurrentTabAsReadInReadLater(Browser* browser);
 bool IsCurrentTabUnreadInReadLater(Browser* browser);
-void ShowOffersAndRewardsForPage(Browser* browser);
+void ShowOffersAndRewardsForPage(BrowserWindowInterface* bwi);
 void SaveCreditCard(Browser* browser);
 void SaveIban(Browser* browser);
 void ShowMandatoryReauthOptInPrompt(Browser* browser);
