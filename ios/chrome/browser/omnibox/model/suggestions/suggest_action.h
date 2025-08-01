@@ -29,6 +29,9 @@ class GURL;
 // Returns an image icon for the given action.
 + (UIImage*)imageIconForAction:(SuggestAction*)action size:(CGFloat)size;
 
+// Whether the given OmniboxActionInSuggest is supported by this class.
++ (BOOL)isActionSupported:(OmniboxActionInSuggest*)action;
+
 // Returns the accessibility identifier for an action based on its type and
 // highlighting state.
 + (NSString*)accessibilityIdentifierWithType:

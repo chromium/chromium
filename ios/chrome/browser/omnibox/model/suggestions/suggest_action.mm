@@ -13,15 +13,31 @@
 
 + (instancetype)actionWithOmniboxActionInSuggest:
     (OmniboxActionInSuggest*)cppAction {
-  return [[self alloc] initWithAction:cppAction];
+  DCHECK(cppAction && [self.class isActionSupported:cppAction]);
+  if (cppAction && [self.class isActionSupported:cppAction]) {
+    return [[self alloc] initWithAction:cppAction];
+  }
+  return nil;
 }
 
 + (instancetype)actionWithOmniboxAction:(OmniboxAction*)action {
   auto* actionInSuggest = OmniboxActionInSuggest::FromAction(action);
-  if (actionInSuggest) {
+  if (actionInSuggest && [self.class isActionSupported:actionInSuggest]) {
     return [self actionWithOmniboxActionInSuggest:actionInSuggest];
   }
   return nil;
+}
+
++ (BOOL)isActionSupported:(OmniboxActionInSuggest*)action {
+  CHECK(action);
+  switch (action->Type()) {
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_CALL:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_DIRECTIONS:
+    case omnibox::SuggestTemplateInfo_TemplateAction_ActionType_REVIEWS:
+      return YES;
+    default:
+      return NO;
+  }
 }
 
 + (UIImage*)imageIconForAction:(SuggestAction*)suggestAction
@@ -58,7 +74,8 @@
 }
 
 - (instancetype)initWithAction:(OmniboxActionInSuggest*)action {
-  DCHECK(action);
+  CHECK(action);
+  CHECK([SuggestAction.class isActionSupported:action]);
   self = [super init];
   if (self) {
     _type = action->Type();
