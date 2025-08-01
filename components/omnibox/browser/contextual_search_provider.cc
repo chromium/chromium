@@ -145,11 +145,13 @@ struct EligibleMatchesAndActions {
         (toolbelt_config.always_include_lens_action ||
          LensEntrypointEligible(input, client));
 
+    // - Restricted to when `kAiModeOmniboxEntryPoint` is disabled
     // - Restricted to DSE google
     // - Restricted to locale EN
     // - Restricted to when `kAIModeSettings` policy is enabled
     toolbelt_ai_mode =
         toolbelt &&
+        !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint) &&
         search::DefaultSearchProviderIsGoogle(
             client->GetTemplateURLService()) &&
         l10n_util::GetLanguage(client->GetApplicationLocale()) == "en" &&

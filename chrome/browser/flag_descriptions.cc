@@ -18,6 +18,10 @@ const char kAccelerated2dCanvasDescription[] =
     "Enables the use of the GPU to perform 2d canvas rendering instead of "
     "using software rendering.";
 
+const char kAiModeOmniboxEntryPointName[] = "AI Mode Omnibox entrypoint";
+const char kAiModeOmniboxEntryPointDescription[] =
+    "Enables icon button for AI Mode entrypoint in the Omnibox.";
+
 const char kAiSettingsPageEnterpriseDisabledName[] =
     "AI settings page enterprise disabled UI";
 const char kAiSettingsPageEnterpriseDisabledDescription[] =

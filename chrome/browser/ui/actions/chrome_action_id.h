@@ -333,6 +333,7 @@
     IDC_CONTENT_CONTEXT_RESTART_PACKAGED_APP) \
   E(kActionContentContextLensRegionSearch, \
     IDC_CONTENT_CONTEXT_LENS_REGION_SEARCH) \
+  E(kActionAiMode) \
   E(kActionContentContextWebRegionSearch, \
     IDC_CONTENT_CONTEXT_WEB_REGION_SEARCH) \
   E(kActionContentContextGeneratePassword, \

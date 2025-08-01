@@ -383,6 +383,7 @@ chromium-metrics-reviews@google.com.
     visible on a given page, and &quot;Clicked&quot; is logged once per click.
   </summary>
   <token key="PageActionType">
+    <variant name="AiMode"/>
     <variant name="BookmarksStar"/>
     <variant name="ClickToCall"/>
     <variant name="CookieControls"/>

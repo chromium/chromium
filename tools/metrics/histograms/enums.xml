@@ -10386,6 +10386,7 @@ from previous Chrome versions.
   <int value="-1382709842"
       label="AutofillEnableDownstreamCardAwarenessIph:enabled"/>
   <int value="-1382671832" label="OmniboxUIExperimentVerticalMargin:enabled"/>
+  <int value="-1382307317" label="AiModeOmniboxEntryPoint:disabled"/>
   <int value="-1381231225" label="OmniboxNumWebZpsMostVisitedUrls:enabled"/>
   <int value="-1379844383" label="MacLoopbackAudioForCast:enabled"/>
   <int value="-1378071979" label="CroshSWA:enabled"/>
@@ -14200,6 +14201,7 @@ from previous Chrome versions.
   <int value="28182289" label="CastStreamingVp8:disabled"/>
   <int value="29212695" label="OfflineIndicator:enabled"/>
   <int value="29769995" label="DataSharingNonProductionEnvironment:enabled"/>
+  <int value="29924596" label="AiModeOmniboxEntryPoint:enabled"/>
   <int value="31258497"
       label="AutofillEnableSyncingOfPixBankAccounts:disabled"/>
   <int value="31439497" label="ZeroSuggestInMemoryCaching:disabled"/>

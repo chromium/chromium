@@ -31,6 +31,7 @@
 #include "chrome/browser/ui/views/commerce/price_tracking_icon_view.h"
 #include "chrome/browser/ui/views/commerce/product_specifications_icon_view.h"
 #include "chrome/browser/ui/views/file_system_access/file_system_access_icon_view.h"
+#include "chrome/browser/ui/views/location_bar/ai_mode_page_action_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/cookie_controls/cookie_controls_icon_view.h"
 #include "chrome/browser/ui/views/location_bar/find_bar_icon.h"
 #include "chrome/browser/ui/views/location_bar/intent_picker_view.h"
@@ -275,6 +276,12 @@ void PageActionIconController::Init(const PageActionIconParams& params,
             type, std::make_unique<LensOverlayPageActionIconView>(
                       params.browser, params.icon_label_bubble_delegate,
                       params.page_action_icon_delegate));
+        break;
+      case PageActionIconType::kAiMode:
+        add_page_action_icon(
+            type, std::make_unique<AiModePageActionIconView>(
+                      params.icon_label_bubble_delegate,
+                      params.page_action_icon_delegate, params.browser));
         break;
       case PageActionIconType::kLensOverlayHomework:
         add_page_action_icon(

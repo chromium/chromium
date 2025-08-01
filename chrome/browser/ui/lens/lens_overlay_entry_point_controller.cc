@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/system/sys_info.h"
 #include "chrome/browser/command_updater.h"
@@ -32,6 +33,7 @@
 #include "components/lens/lens_features.h"
 #include "components/lens/lens_overlay_permission_utils.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
+#include "components/omnibox/common/omnibox_features.h"
 #include "components/tabs/public/tab_interface.h"
 #include "content/public/browser/navigation_entry.h"
 
@@ -157,7 +159,8 @@ bool LensOverlayEntryPointController::IsEnabled() const {
 }
 
 bool LensOverlayEntryPointController::AreVisible() const {
-  return IsEnabled() && !IsOverlayActive();
+  return IsEnabled() && !IsOverlayActive() &&
+         !base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint);
 }
 
 void LensOverlayEntryPointController::UpdateEntryPointsState(

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "chrome/browser/command_updater.h"
+#include "chrome/browser/ui/actions/chrome_action_id.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/omnibox/omnibox_theme.h"
 #include "chrome/browser/ui/views/location_bar/icon_label_bubble_view.h"
@@ -256,9 +257,13 @@ bool PageActionIconView::GetActive() const {
 }
 
 void PageActionIconView::Update() {
-  // Currently no page action icon should be visible during user input.
-  // A future subclass may need a hook here if that changes.
-  if (delegate_->ShouldHidePageActionIcons()) {
+  // In general, no page action icon should be visible during user input.
+  // However, the AIM page action is an exception to this rule since it has
+  // special visibility criteria.
+  // TODO(crbug.com/432744091): Roll the AIM button edge-case logic into the
+  // implementation of `ShouldHidePageActionIcons()`.
+  if (delegate_->ShouldHidePageActionIcons() &&
+      this->action_id_ != kActionAiMode) {
     ResetSlideAnimation(/*show=*/false);
     SetVisible(false);
   } else {

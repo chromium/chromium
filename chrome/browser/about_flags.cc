@@ -6945,6 +6945,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kLensOverlayOmniboxEntryPointDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(lens::features::kLensOverlayOmniboxEntryPoint)},
 
+    {"ai-mode-omnibox-entry-point",
+     flag_descriptions::kAiModeOmniboxEntryPointName,
+     flag_descriptions::kAiModeOmniboxEntryPointDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(omnibox::kAiModeOmniboxEntryPoint)},
+
     {"omnibox-toolbelt", flag_descriptions::kOmniboxToolbeltName,
      flag_descriptions::kOmniboxToolbeltDescription, kOsDesktop,
      FEATURE_WITH_PARAMS_VALUE_TYPE(

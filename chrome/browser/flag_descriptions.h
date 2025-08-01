@@ -55,6 +55,9 @@ extern const char kAcceleratedVideoDecodeDescription[];
 extern const char kAcceleratedVideoEncodeName[];
 extern const char kAcceleratedVideoEncodeDescription[];
 
+extern const char kAiModeOmniboxEntryPointName[];
+extern const char kAiModeOmniboxEntryPointDescription[];
+
 extern const char kAiSettingsPageEnterpriseDisabledName[];
 extern const char kAiSettingsPageEnterpriseDisabledDescription[];
 

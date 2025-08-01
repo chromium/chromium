@@ -48,6 +48,7 @@
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/lens/lens_overlay_entry_point_controller.h"
 #include "chrome/browser/ui/omnibox/chrome_omnibox_client.h"
+#include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/passwords/manage_passwords_ui_controller.h"
 #include "chrome/browser/ui/tabs/public/tab_features.h"
 #include "chrome/browser/ui/tabs/saved_tab_groups/saved_tab_group_utils.h"
@@ -71,6 +72,7 @@
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_controller.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_params.h"
+#include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/ui/views/page_action/page_action_properties_provider.h"
 #include "chrome/browser/ui/views/page_action/page_action_view_params.h"
 #include "chrome/browser/ui/views/page_info/page_info_bubble_specification.h"
@@ -95,9 +97,12 @@
 #include "components/favicon/content/content_favicon_driver.h"
 #include "components/lens/lens_features.h"
 #include "components/omnibox/browser/location_bar_model.h"
+#include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_view.h"
+#include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/browser/omnibox_text_util.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/omnibox/common/omnibox_feature_configs.h"
@@ -109,6 +114,7 @@
 #include "components/permissions/permission_request_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/common/features.h"
+#include "components/search/search.h"
 #include "components/search_engines/template_url.h"
 #include "components/search_engines/template_url_service.h"
 #include "components/security_state/content/security_state_tab_helper.h"
@@ -444,6 +450,19 @@ void LocationBarView::Init() {
     // at the same time due to different focus behavior.
     params.types_enabled.insert(params.types_enabled.begin(),
                                 PageActionIconType::kLensOverlayHomework);
+  }
+
+  // - Restricted to DSE Google.
+  // - Restricted to locale EN.
+  // - Restricted to when `kAIModeSettings` policy is enabled.
+  OmniboxClient* client = omnibox_view_->controller()->client();
+  if (browser_ &&
+      base::FeatureList::IsEnabled(omnibox::kAiModeOmniboxEntryPoint) &&
+      search::DefaultSearchProviderIsGoogle(client->GetTemplateURLService()) &&
+      l10n_util::GetLanguage(g_browser_process->GetApplicationLocale()) ==
+          "en" &&
+      omnibox::IsAimAllowedByPolicy(client->GetPrefs())) {
+    params.types_enabled.push_back(PageActionIconType::kAiMode);
   }
 
   if (browser_ && tab_groups::SavedTabGroupUtils::SupportsSharedTabGroups()) {
@@ -1129,7 +1148,7 @@ bool LocationBarView::ShouldHidePageActionIcon(
       browser_view->toolbar()->pinned_toolbar_actions_container();
   return pinned_toolbar_actions_container &&
          pinned_toolbar_actions_container->IsActionPinnedOrPoppedOut(
-             icon_view->action_id().value());
+             icon_view->action_id().value_or(-1));
 }
 
 // static
@@ -1280,6 +1299,14 @@ bool LocationBarView::RefreshContentSettingViews() {
     }
   }
   return visibility_changed;
+}
+
+void LocationBarView::RefreshAimPageActionIcon() {
+  PageActionIconView* aim_page_action_icon_view =
+      page_action_icon_controller_->GetIconView(PageActionIconType::kAiMode);
+  if (aim_page_action_icon_view) {
+    aim_page_action_icon_view->Update();
+  }
 }
 
 void LocationBarView::RefreshPageActionIconViews() {
@@ -1557,6 +1584,9 @@ void LocationBarView::OnOmniboxFocused() {
   // the omnibox is intentional, snapping is better than transitioning here.
   hover_animation_.Reset();
   RefreshBackground();
+
+  // Ensure AIM page action button reacts to changes in Omnibox focus state.
+  RefreshAimPageActionIcon();
 }
 
 void LocationBarView::OnOmniboxBlurred() {
@@ -1564,6 +1594,9 @@ void LocationBarView::OnOmniboxBlurred() {
     views::FocusRing::Get(this)->SchedulePaint();
   }
   RefreshBackground();
+
+  // Ensure AIM page action button reacts to changes in Omnibox focus state.
+  RefreshAimPageActionIcon();
 }
 
 void LocationBarView::OnOmniboxHovered(bool is_hovering) {

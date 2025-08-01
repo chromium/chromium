@@ -81,6 +81,15 @@
     "expiry_milestone": 133
   },
   {
+    "name": "ai-mode-omnibox-entry-point",
+    "owners": [
+      "khalidpeer@chromium.org",
+      "jdonnelly@chromium.org",
+      "orinj@chromium.org",
+      "chrome-desktop-search@google.com"],
+    "expiry_milestone": 145
+  },
+  {
     "name": "ai-settings-enterprise-disabled-ui",
     "owners": [
       "dullweber@chromium.org",

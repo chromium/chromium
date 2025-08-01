@@ -1956,6 +1956,11 @@ Chromium is unable to recover your settings.
           Search this video with Image Search
         </message>
 
+        <message name="IDS_AI_MODE_ENTRYPOINT_LABEL"
+          desc="The label of the AI mode entrypoint in the omnibox">
+          AI Mode
+        </message>
+
         <!-- Lens Side Panel Error Page -->
         <message name="IDS_SIDE_PANEL_LENS_OVERLAY_GENERIC_ERROR_PAGE_FIRST_LINE"
             desc="Text shown on the side panel for the Lens feature when there is a network or other server error. The texts informs the user that an error has occured.">

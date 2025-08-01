@@ -18,6 +18,7 @@
 // These should gradually replace values in view_ids.h.
 // Please keep this list alphabetized.
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAddCurrentTabToReadingListElementId);
+DECLARE_ELEMENT_IDENTIFIER_VALUE(kAiModePageActionIconElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(
     kAnonymizedUrlCollectionPersonalizationSettingId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kAppUninstallDialogOkButtonId);
