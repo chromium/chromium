@@ -95,6 +95,8 @@
   if (IsDiamondPrototypeEnabled()) {
     self.view.toolsMenuButton.alpha = alphaValue;
     self.view.diamondPrototypeButton.alpha = alphaValue;
+    self.view.backButton.alpha = alphaValue;
+    self.view.forwardButton.alpha = alphaValue;
   }
 
   self.view.locationBarTopConstraint.constant =

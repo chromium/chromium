@@ -60,15 +60,21 @@ const CGFloat kDiamondCornerRadius = 13;
 
 - (ToolbarButton*)backButton {
   auto loadImageBlock = ^UIImage* {
-    UIImage* backImage =
-        DefaultSymbolWithPointSize(kBackSymbol, kSymbolToolbarPointSize);
+    UIImage* backImage = DefaultSymbolWithPointSize(
+        kBackSymbol, IsDiamondPrototypeEnabled() ? kDiamondSymbolSize
+                                                 : kSymbolToolbarPointSize);
     return [backImage imageFlippedForRightToLeftLayoutDirection];
   };
 
   ToolbarButton* backButton =
       [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
-  [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
+  if (IsDiamondPrototypeEnabled()) {
+    [self configureButton:backButton width:kDiamondButtonSize];
+    backButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  } else {
+    [self configureButton:backButton width:kAdaptiveToolbarButtonWidth];
+  }
   backButton.accessibilityLabel = l10n_util::GetNSString(IDS_ACCNAME_BACK);
   backButton.accessibilityHint =
       l10n_util::GetNSString(IDS_IOS_TOOLBAR_ACCESSIBILITY_HINT_BACK);
@@ -82,15 +88,21 @@ const CGFloat kDiamondCornerRadius = 13;
 // Returns a forward button without visibility mask configured.
 - (ToolbarButton*)forwardButton {
   auto loadImageBlock = ^UIImage* {
-    UIImage* forwardImage =
-        DefaultSymbolWithPointSize(kForwardSymbol, kSymbolToolbarPointSize);
+    UIImage* forwardImage = DefaultSymbolWithPointSize(
+        kForwardSymbol, IsDiamondPrototypeEnabled() ? kDiamondSymbolSize
+                                                    : kSymbolToolbarPointSize);
     return [forwardImage imageFlippedForRightToLeftLayoutDirection];
   };
 
   ToolbarButton* forwardButton =
       [[ToolbarButton alloc] initWithImageLoader:loadImageBlock];
 
-  [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
+  if (IsDiamondPrototypeEnabled()) {
+    [self configureButton:forwardButton width:kDiamondButtonSize];
+    forwardButton.tintColor = [UIColor colorNamed:kGrey700Color];
+  } else {
+    [self configureButton:forwardButton width:kAdaptiveToolbarButtonWidth];
+  }
   forwardButton.visibilityMask =
       self.visibilityConfiguration.forwardButtonVisibility;
   forwardButton.accessibilityLabel =
@@ -157,6 +169,9 @@ const CGFloat kDiamondCornerRadius = 13;
     [self configureButton:toolsMenuButton width:kDiamondButtonSize];
     [toolsMenuButton.heightAnchor constraintEqualToConstant:kDiamondButtonSize]
         .active = YES;
+    toolsMenuButton.tintColor =
+        [[UIColor colorNamed:kSolidBlackColor] colorWithAlphaComponent:0.9];
+
   } else {
     [self configureButton:toolsMenuButton width:kAdaptiveToolbarButtonWidth];
     [toolsMenuButton.heightAnchor
@@ -333,6 +348,9 @@ const CGFloat kDiamondCornerRadius = 13;
   [diamondPrototypeButton.heightAnchor
       constraintEqualToConstant:kDiamondButtonSize]
       .active = YES;
+
+  diamondPrototypeButton.tintColor =
+      [[UIColor colorNamed:kSolidBlackColor] colorWithAlphaComponent:0.9];
 
   diamondPrototypeButton.visibilityMask = ToolbarComponentVisibilityAlways;
   return diamondPrototypeButton;
