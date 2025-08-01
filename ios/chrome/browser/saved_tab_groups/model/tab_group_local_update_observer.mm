@@ -192,20 +192,6 @@ void TabGroupLocalUpdateObserver::WebStateListDestroyed(
 
 #pragma mark - WebStateObserver
 
-void TabGroupLocalUpdateObserver::TitleWasSet(web::WebState* web_state) {
-  if (sync_update_paused_) {
-    return;
-  }
-
-  // Updates before the first navigation should be ignored.
-  web::WebStateID identifier = web_state->GetUniqueIdentifier();
-  if (ignored_web_state_identifiers_.contains(identifier)) {
-    return;
-  }
-
-  UpdateLocalWebStateInSyncedGroup(web_state);
-}
-
 void TabGroupLocalUpdateObserver::DidFinishNavigation(
     web::WebState* web_state,
     web::NavigationContext* navigation_context) {
