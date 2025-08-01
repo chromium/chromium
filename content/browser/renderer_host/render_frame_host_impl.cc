@@ -16100,9 +16100,11 @@ void RenderFrameHostImpl::MaybeGenerateCrashReport(
                                                                    : "hidden");
   }
 
+  base::Value::Dict crash_report_api_body;
   for (const auto& pair : crash_storage_map_) {
-    body.Set(pair.first, pair.second);
+    crash_report_api_body.Set(pair.first, pair.second);
   }
+  body.Set("crash_report_api", std::move(crash_report_api_body));
 
   if (!reason.empty()) {
     body.Set("reason", reason);

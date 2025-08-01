@@ -775,8 +775,12 @@ IN_PROC_BROWSER_TEST_P(ReportingBrowserTestCrashReportingStorage,
   const std::string* url = report.FindString("url");
   const base::Value::Dict* body = report.FindDict("body");
   const std::string* reason = body->FindString("reason");
-  const std::string* self_origin = body->FindString("self.origin");
-  const std::string* custom_key = body->FindString("custom_key");
+  const base::Value::Dict* crash_report_api_body =
+      body->FindDict("crash_report_api");
+  const std::string* self_origin =
+      crash_report_api_body->FindString("self.origin");
+  const std::string* custom_key =
+      crash_report_api_body->FindString("custom_key");
 
   EXPECT_EQ("crash", *type);
   EXPECT_EQ(main_url, *url);
