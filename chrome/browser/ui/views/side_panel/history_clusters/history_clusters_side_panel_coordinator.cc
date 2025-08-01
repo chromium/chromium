@@ -77,7 +77,7 @@ void HistoryClustersSidePanelCoordinator::CreateAndRegisterEntry(
           &HistoryClustersSidePanelCoordinator::GetOpenInNewTabURL,
           base::Unretained(this)),
       /*more_info_callback=*/base::NullCallback(),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View>

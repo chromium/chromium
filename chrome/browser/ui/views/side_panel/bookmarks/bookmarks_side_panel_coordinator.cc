@@ -40,7 +40,7 @@ void BookmarksSidePanelCoordinator::CreateAndRegisterEntry(
       base::BindRepeating(
           &BookmarksSidePanelCoordinator::CreateBookmarksWebView,
           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View>

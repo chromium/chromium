@@ -86,7 +86,7 @@ void MerchantTrustSidePanelCoordinator::RegisterEntry(
             &MerchantTrustSidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)),
         /*more_info_callback=*/base::NullCallback(),
-        SidePanelEntry::kSidePanelDefaultContentWidth);
+        /*default_content_width_callback=*/base::NullCallback());
     registry->Register(std::move(entry));
   }
 }

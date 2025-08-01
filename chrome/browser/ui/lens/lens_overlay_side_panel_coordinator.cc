@@ -970,9 +970,9 @@ void LensOverlaySidePanelCoordinator::RegisterEntry() {
             &LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl,
             base::Unretained(this)),
         GetMoreInfoCallback(),
-        lens::features::IsLensSearchSidePanelDefaultWidthChangeEnabled()
-            ? lens::features::GetLensSearchSidePanelDefaultWidth()
-            : SidePanelEntry::kSidePanelDefaultContentWidth);
+        base::BindRepeating(
+            &LensOverlaySidePanelCoordinator::GetPreferredDefaultWidth,
+            base::Unretained(this)));
     entry->SetProperty(kShouldShowTitleInSidePanelHeaderKey, false);
     registry->Register(std::move(entry));
 
@@ -1020,6 +1020,12 @@ GURL LensOverlaySidePanelCoordinator::GetOpenInNewTabUrl() {
   } else {
     return GURL();
   }
+}
+
+int LensOverlaySidePanelCoordinator::GetPreferredDefaultWidth() {
+  return lens::features::IsLensSearchSidePanelDefaultWidthChangeEnabled()
+             ? lens::features::GetLensSearchSidePanelDefaultWidth()
+             : SidePanelEntry::kSidePanelDefaultContentWidth;
 }
 
 base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>

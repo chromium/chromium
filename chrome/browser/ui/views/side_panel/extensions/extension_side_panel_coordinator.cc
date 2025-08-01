@@ -211,7 +211,7 @@ void ExtensionSidePanelCoordinator::CreateAndRegisterEntry() {
       GetEntryKey(),
       base::BindRepeating(&ExtensionSidePanelCoordinator::CreateView,
                           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View> ExtensionSidePanelCoordinator::CreateView(

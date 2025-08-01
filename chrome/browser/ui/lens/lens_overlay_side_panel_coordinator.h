@@ -327,6 +327,9 @@ class LensOverlaySidePanelCoordinator
   // Called to get the URL for the "open in new tab" button.
   GURL GetOpenInNewTabUrl();
 
+  // Called to get the lens side panel's preferred default width.
+  int GetPreferredDefaultWidth();
+
   std::unique_ptr<views::View> CreateLensOverlayResultsView(
       SidePanelEntryScope& scope);
 

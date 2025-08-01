@@ -146,7 +146,7 @@ void SidePanelControllerViews::CreateAndRegisterEntry() {
       base::BindRepeating(
           &SidePanelControllerViews::CreateCustomizeChromeWebView,
           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth);
+      /*default_content_width_callback=*/base::NullCallback());
   entry->AddObserver(this);
   registry->Register(std::move(entry));
 }

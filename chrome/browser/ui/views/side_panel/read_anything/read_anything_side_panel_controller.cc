@@ -29,6 +29,7 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/common/locale_util.h"
 #include "components/user_education/common/feature_promo/feature_promo_controller.h"
+#include "read_anything_side_panel_controller.h"
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_types.h"
@@ -58,10 +59,9 @@ ReadAnythingSidePanelController::ReadAnythingSidePanelController(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadAnything),
       base::BindRepeating(&ReadAnythingSidePanelController::CreateContainerView,
                           base::Unretained(this)),
-      // Use the max width allowed.
-      // BrowserViewLayout::CalculateContentsContainerLayout will clamp the
-      // value to the max allowed.
-      SHRT_MAX);
+      base::BindRepeating(
+          &ReadAnythingSidePanelController::GetPreferredDefaultWidth,
+          base::Unretained(this)));
   side_panel_entry->AddObserver(this);
   side_panel_registry_->Register(std::move(side_panel_entry));
 
@@ -164,6 +164,13 @@ ReadAnythingSidePanelController::CreateContainerView(
       web_view->contents_wrapper()->web_contents(), this);
   web_view_ = web_view->GetWeakPtr();
   return std::move(web_view);
+}
+
+int ReadAnythingSidePanelController::GetPreferredDefaultWidth() {
+  // Use the max width allowed.
+  // BrowserViewLayout::CalculateContentsContainerLayout will clamp the
+  // value to the max allowed.
+  return SHRT_MAX;
 }
 
 bool ReadAnythingSidePanelController::IsActivePageDistillable() const {

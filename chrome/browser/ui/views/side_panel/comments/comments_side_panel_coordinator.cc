@@ -193,7 +193,7 @@ void CommentsSidePanelCoordinator::CreateAndRegisterEntry(
       SidePanelEntry::Key(SidePanelEntry::Id::kComments),
       base::BindRepeating(&CommentsSidePanelCoordinator::CreateCommentsWebView,
                           base::Unretained(this)),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
 
 std::unique_ptr<views::View>

@@ -19,28 +19,24 @@ SidePanelEntry::SidePanelEntry(
     base::RepeatingCallback<GURL()> open_in_new_tab_url_callback,
     base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
         more_info_callback,
-    int default_content_width)
+    base::RepeatingCallback<int()> default_content_width_callback)
     : key_(key),
       create_content_callback_(std::move(create_content_callback)),
       open_in_new_tab_url_callback_(std::move(open_in_new_tab_url_callback)),
       more_info_callback_(std::move(more_info_callback)),
-      default_content_width_(default_content_width) {
+      default_content_width_callback_(default_content_width_callback) {
   DCHECK(create_content_callback_);
-  CHECK(!default_content_width ||
-        default_content_width >= kSidePanelDefaultContentWidth)
-      << "The default width must be greater than or equal to the default side "
-         "panel width: "
-      << kSidePanelDefaultContentWidth;
 }
 
-SidePanelEntry::SidePanelEntry(Key key,
-                               CreateContentCallback create_content_callback,
-                               int default_content_width)
+SidePanelEntry::SidePanelEntry(
+    Key key,
+    CreateContentCallback create_content_callback,
+    base::RepeatingCallback<int()> default_content_width_callback)
     : SidePanelEntry(key,
                      std::move(create_content_callback),
                      base::NullCallback(),
                      base::NullCallback(),
-                     default_content_width) {}
+                     default_content_width_callback) {}
 
 SidePanelEntry::~SidePanelEntry() = default;
 
@@ -118,5 +114,14 @@ void SidePanelEntry::ResetLoadTimestamp() {
 }
 
 int SidePanelEntry::GetDefaultContentWidth() const {
-  return default_content_width_;
+  if (default_content_width_callback_.is_null()) {
+    return default_content_width_;
+  }
+
+  int preferred_default_width = default_content_width_callback_.Run();
+  // The default width must be greater than or equal to the default side panel
+  // width.
+  return preferred_default_width >= kSidePanelDefaultContentWidth
+             ? preferred_default_width
+             : default_content_width_;
 }

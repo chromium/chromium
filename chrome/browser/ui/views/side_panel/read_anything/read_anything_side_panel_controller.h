@@ -95,6 +95,9 @@ class ReadAnythingSidePanelController : public SidePanelEntryObserver,
   // Creates the container view and all its child views for side panel entry.
   std::unique_ptr<views::View> CreateContainerView(SidePanelEntryScope& scope);
 
+  // Returns the preferred default width for the side panel.
+  int GetPreferredDefaultWidth();
+
   // Decides whether the active page is distillable.
   bool IsActivePageDistillable() const;
 

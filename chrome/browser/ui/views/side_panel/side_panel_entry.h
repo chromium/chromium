@@ -46,7 +46,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
                  base::RepeatingCallback<GURL()> open_in_new_tab_url_callback,
                  base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()>
                      more_info_callback,
-                 int default_content_width);
+                 base::RepeatingCallback<int()> default_content_width_callback);
 
   // This constructor is primarily used for extensions.Extensions don't have
   // `Open in New Tab` functionality. Other side panels can use this if nothing
@@ -54,7 +54,7 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // base::NullCallback()).
   SidePanelEntry(Key key,
                  CreateContentCallback create_content_callback,
-                 int default_content_width);
+                 base::RepeatingCallback<int()> default_content_width_callback);
   SidePanelEntry(const SidePanelEntry&) = delete;
   SidePanelEntry& operator=(const SidePanelEntry&) = delete;
   ~SidePanelEntry() override;
@@ -127,6 +127,12 @@ class SidePanelEntry final : public ui::PropertyHandler {
   // If this returns null, the more info button is hidden.
   base::RepeatingCallback<std::unique_ptr<ui::MenuModel>()> more_info_callback_;
 
+  // When specified sets the default starting width for this entry. However, if
+  // the user manually changes the size of the side panel that preference is
+  // used instead (prefs::kSidePanelIdToWidth). If nothing is specified, then
+  // the default minimum content width of the side panel is used.
+  base::RepeatingCallback<int()> default_content_width_callback_;
+
   // Timestamp of when the side panel was triggered to be shown.
   base::TimeTicks entry_show_triggered_timestamp_;
 
@@ -134,10 +140,10 @@ class SidePanelEntry final : public ui::PropertyHandler {
 
   base::ObserverList<SidePanelEntryObserver> observers_;
 
-  // When specified sets the default starting width for this entry. However, if
-  // the user manually changes the size of the side panel that preference is
-  // used instead (prefs::kSidePanelIdToWidth). If nothing is specified, then
-  // the default minimum content width of the side panel is used.
+  // The default minimum content width for the side panel that can be overridden
+  // for testing. This is used if the default_content_width_callback_ is not
+  // set. However, if the user manually changes the size of the side panel that
+  // preference is used instead (prefs::kSidePanelIdToWidth).
   int default_content_width_ = kSidePanelDefaultContentWidth;
 
   base::WeakPtrFactory<SidePanelEntry> weak_factory_{this};

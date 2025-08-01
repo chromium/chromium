@@ -82,7 +82,7 @@ std::unique_ptr<SidePanelEntry> CreateEntry(const SidePanelEntry::Key& key) {
       key, base::BindRepeating([](SidePanelEntryScope&) {
         return std::make_unique<views::View>();
       }),
-      SidePanelEntry::kSidePanelDefaultContentWidth);
+      /*default_content_width_callback=*/base::NullCallback());
 }
 
 }  // namespace
@@ -107,7 +107,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth));
+        /*default_content_width_callback=*/base::NullCallback()));
     contextual_registries_.push_back(registry);
 
     // Add some entries to the second tab.
@@ -121,7 +121,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth));
+        /*default_content_width_callback=*/base::NullCallback()));
     contextual_registries_.push_back(browser()
                                          ->GetActiveTabInterface()
                                          ->GetTabFeatures()
@@ -139,13 +139,13 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
           return std::unique_ptr<ui::MenuModel>(
               new ui::SimpleMenuModel(nullptr));
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth));
+        /*default_content_width_callback=*/base::NullCallback()));
     registry->Register(std::make_unique<SidePanelEntry>(
         SidePanelEntry::Key(SidePanelEntry::Id::kShoppingInsights),
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth));
+        /*default_content_width_callback=*/base::NullCallback()));
 
     coordinator()->SetNoDelaysForTesting(true);
   }
@@ -159,7 +159,7 @@ class SidePanelCoordinatorTest : public InProcessBrowserTest {
         base::BindRepeating([](SidePanelEntryScope&) {
           return std::make_unique<views::View>();
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth));
+        /*default_content_width_callback=*/base::NullCallback()));
     contextual_registries_.push_back(registry);
   }
 
@@ -1620,7 +1620,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
       base::BindRepeating(
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
-      SidePanelEntry::kSidePanelDefaultContentWidth);
+      /*default_content_width_callback=*/base::NullCallback());
   entry->AddObserver(observer.get());
   contextual_registries_[0]->Register(std::move(entry));
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -1651,7 +1651,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
       SidePanelEntry::Key(SidePanelEntry::Id::kAboutThisSite),
       base::BindRepeating(
           [](SidePanelEntryScope&) { return std::make_unique<views::View>(); }),
-      SidePanelEntry::kSidePanelDefaultContentWidth);
+      /*default_content_width_callback=*/base::NullCallback());
   entry->AddObserver(observer.get());
   contextual_registries_[0]->Register(std::move(entry));
   coordinator()->Show(SidePanelEntry::Id::kAboutThisSite);
@@ -1684,7 +1684,7 @@ IN_PROC_BROWSER_TEST_F(SidePanelCoordinatorTest,
             return std::make_unique<views::View>();
           },
           &count),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
   coordinator()->Show(SidePanelEntry::Id::kLens);
   ASSERT_EQ(1, count);
   coordinator()->Show(SidePanelEntry::Id::kLens);
@@ -2056,7 +2056,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
               ->SetAvailable(false);
           return view;
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth);
+        /*default_content_width_callback=*/base::NullCallback());
     loading_content_entry1_ = entry1.get();
     EXPECT_TRUE(global_registry()->Register(std::move(entry1)));
 
@@ -2070,7 +2070,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
               ->SetAvailable(false);
           return view;
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth);
+        /*default_content_width_callback=*/base::NullCallback());
     loading_content_entry2_ = entry2.get();
     EXPECT_TRUE(global_registry()->Register(std::move(entry2)));
 
@@ -2083,7 +2083,7 @@ class SidePanelCoordinatorLoadingContentTest : public SidePanelCoordinatorTest {
               ->SetAvailable(true);
           return view;
         }),
-        SidePanelEntry::kSidePanelDefaultContentWidth);
+        /*default_content_width_callback=*/base::NullCallback());
     loaded_content_entry1_ = entry3.get();
     EXPECT_TRUE(global_registry()->Register(std::move(entry3)));
   }

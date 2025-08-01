@@ -38,5 +38,5 @@ void ReadingListSidePanelCoordinator::CreateAndRegisterEntry(
       SidePanelEntry::Key(SidePanelEntry::Id::kReadingList),
       base::BindRepeating(&CreateReadingListWebView, &profile_.get(),
                           &tab_strip_model_.get()),
-      SidePanelEntry::kSidePanelDefaultContentWidth));
+      /*default_content_width_callback=*/base::NullCallback()));
 }
