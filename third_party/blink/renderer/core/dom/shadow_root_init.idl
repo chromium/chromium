@@ -11,7 +11,7 @@ dictionary ShadowRootInit {
   required ShadowRootMode mode;
   boolean delegatesFocus;
   SlotAssignmentMode slotAssignment;
-  [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry registry;
+  [RuntimeEnabled=ScopedCustomElementRegistry] CustomElementRegistry? customElementRegistry;
   boolean serializable;
   boolean clonable;
   [RuntimeEnabled=ShadowRootReferenceTarget] DOMString referenceTarget;

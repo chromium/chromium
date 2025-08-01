@@ -180,8 +180,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
     return has_focusgroup_attribute_on_descendant_;
   }
 
-  void SetRegistry(CustomElementRegistry*);
-
   bool ContainsShadowRoots() const { return child_shadow_root_count_; }
 
   void Trace(Visitor*) const override;
@@ -202,7 +200,6 @@ class CORE_EXPORT ShadowRoot final : public DocumentFragment,
   void ReferenceTargetChanged();
 
   Member<SlotAssignment> slot_assignment_;
-  Member<CustomElementRegistry> registry_;
   Member<ReferenceTargetIdObserver> reference_target_id_observer_;
   unsigned child_shadow_root_count_ : 16;
   unsigned mode_ : 2;

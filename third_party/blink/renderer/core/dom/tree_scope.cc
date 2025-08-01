@@ -295,6 +295,18 @@ CustomElementRegistry* TreeScope::customElementRegistry() const {
   return nullptr;
 }
 
+// Custom element registry of a tree scope can only be set once.
+// Setting registry on a tree scope with existing registry will fail.
+bool TreeScope::SetCustomElementRegistry(CustomElementRegistry* registry) {
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled() &&
+      !custom_element_registry_ && registry) {
+    custom_element_registry_ = registry;
+    registry->AssociatedWith(GetDocument());
+    return true;
+  }
+  return false;
+}
+
 static bool ShouldAcceptNonElementNode(const Node& node) {
   Node* parent = node.parentNode();
   if (!parent)

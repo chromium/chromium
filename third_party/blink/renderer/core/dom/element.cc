@@ -6639,9 +6639,18 @@ ShadowRoot* Element::attachShadow(const ShadowRootInit* shadow_root_init_dict,
       shadow_root_init_dict->hasReferenceTarget()
           ? AtomicString(shadow_root_init_dict->referenceTarget())
           : g_null_atom;
-  CustomElementRegistry* registry = shadow_root_init_dict->hasRegistry()
-                                        ? shadow_root_init_dict->registry()
-                                        : nullptr;
+
+  CustomElementRegistry* registry = nullptr;
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    // 1. Let registry be this's custom element registry
+    registry = customElementRegistry();
+    // 2. If init["customElementRegistry"] is not null, then set registry to it
+    if (shadow_root_init_dict->hasCustomElementRegistry() &&
+        shadow_root_init_dict->customElementRegistry()) {
+      registry = shadow_root_init_dict->customElementRegistry();
+    }
+  }
+
   ShadowRootMode mode;
   if (const char* error_message = ErrorMessageForAttachShadow(
           mode_string, /*for_declarative*/ false, mode)) {
@@ -6766,7 +6775,10 @@ ShadowRoot& Element::AttachShadowRootInternal(
   // 9. Set shadow’s declarative to false.
   shadow_root.SetIsDeclarativeShadowRoot(false);
 
-  shadow_root.SetRegistry(registry);
+  // 12. Set shadow's custom element registry to registry
+  if (RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled()) {
+    shadow_root.SetCustomElementRegistry(registry);
+  }
   // 11. Set shadow’s serializable to serializable.
   shadow_root.setSerializable(serializable);
   // 10. Set shadow’s clonable to clonable.

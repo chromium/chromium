@@ -181,6 +181,9 @@ class CORE_EXPORT TreeScope : public GarbageCollectedMixin {
 
 
   CustomElementRegistry* customElementRegistry() const;
+  // Return true when custom element registry was set successfully, return false
+  // otherwise.
+  bool SetCustomElementRegistry(CustomElementRegistry*);
 
   // Given a `node` targeteted by an event, returns the element that this event
   // should be dispatched to.

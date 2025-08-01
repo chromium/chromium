@@ -79,7 +79,7 @@ class ReferenceTargetIdObserver : public IdTargetObserver {
 struct SameSizeAsShadowRoot : public DocumentFragment,
                               public TreeScope,
                               public ElementRareDataField {
-  Member<void*> member[3];
+  Member<void*> member[2];
   unsigned flags[1];
 };
 
@@ -340,16 +340,6 @@ void ShadowRoot::ChildrenChanged(const ChildrenChange& change) {
   }
 }
 
-void ShadowRoot::SetRegistry(CustomElementRegistry* registry) {
-  DCHECK(!registry_);
-  DCHECK(!registry ||
-         RuntimeEnabledFeatures::ScopedCustomElementRegistryEnabled());
-  registry_ = registry;
-  if (registry) {
-    registry->AssociatedWith(GetDocument());
-  }
-}
-
 void ShadowRoot::setReferenceTarget(const AtomicString& reference_target) {
   if (!RuntimeEnabledFeatures::ShadowRootReferenceTargetEnabled(
           GetDocument().GetExecutionContext())) {
@@ -407,7 +397,6 @@ void ShadowRoot::ReferenceTargetChanged() {
 
 void ShadowRoot::Trace(Visitor* visitor) const {
   visitor->Trace(slot_assignment_);
-  visitor->Trace(registry_);
   visitor->Trace(reference_target_id_observer_);
   ElementRareDataField::Trace(visitor);
   TreeScope::Trace(visitor);
