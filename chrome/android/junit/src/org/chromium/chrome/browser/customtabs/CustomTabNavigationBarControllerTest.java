@@ -114,9 +114,7 @@ public class CustomTabNavigationBarControllerTest {
         when(mColorProvider.getNavigationBarColor()).thenReturn(Color.WHITE);
         CustomTabNavigationBarController.update(
                 mWindow, mCustomTabIntentDataProvider, mContext, /* isEdgeToEdge= */ false);
-        verify(mWindow)
-                .setNavigationBarDividerColor(
-                        mContext.getColor(org.chromium.chrome.R.color.black_alpha_12));
+        verify(mWindow).setNavigationBarDividerColor(mContext.getColor(R.color.black_alpha_12));
     }
 
     @Test

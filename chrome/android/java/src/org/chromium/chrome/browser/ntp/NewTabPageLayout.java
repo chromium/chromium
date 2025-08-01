@@ -176,14 +176,11 @@ public class NewTabPageLayout extends LinearLayout
         super(context, attrs);
         mContext = context;
         Resources resources = getResources();
-        mTileViewWidth =
-                resources.getDimensionPixelOffset(org.chromium.chrome.R.dimen.tile_view_width);
+        mTileViewWidth = resources.getDimensionPixelOffset(R.dimen.tile_view_width);
         mTileViewIntervalPaddingTablet =
-                resources.getDimensionPixelOffset(
-                        org.chromium.chrome.R.dimen.tile_view_padding_interval_tablet);
+                resources.getDimensionPixelOffset(R.dimen.tile_view_padding_interval_tablet);
         mTileViewEdgePaddingTablet =
-                resources.getDimensionPixelOffset(
-                        org.chromium.chrome.R.dimen.tile_view_padding_edge_tablet);
+                resources.getDimensionPixelOffset(R.dimen.tile_view_padding_edge_tablet);
 
         mNtpSearchBoxTopMarginWithoutLogo =
                 resources.getDimensionPixelSize(R.dimen.mvt_container_top_margin);

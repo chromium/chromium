@@ -17,6 +17,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.Initializer;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.app.tabwindow.TabWindowManagerSingleton;
 import org.chromium.chrome.browser.crypto.CipherFactory;
@@ -143,8 +144,7 @@ public class TabbedModeTabModelOrchestrator extends TabModelOrchestrator {
             markTabModelsInitialized();
             Toast.makeText(
                             activity,
-                            activity.getString(
-                                    org.chromium.chrome.R.string.unsupported_number_of_windows),
+                            activity.getString(R.string.unsupported_number_of_windows),
                             Toast.LENGTH_LONG)
                     .show();
             return false;

@@ -96,6 +96,7 @@ android_library("incognito_java_tests") {
     ":java_resources",
     "//base:base_java",
     "//base:base_java_test_support",
+    "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
     "//chrome/android/features/tab_ui:test_support_javalib",
     "//chrome/browser/android/lifecycle:java",

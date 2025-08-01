@@ -411,7 +411,7 @@ public class HistorySyncTest {
                             TestAccounts.AADC_UNRESOLVED_ACCOUNT.getId());
                 });
 
-        onViewWaiting(withId(org.chromium.chrome.R.id.button_secondary));
+        onViewWaiting(withId(R.id.button_secondary));
 
         ThreadUtils.runOnUiThreadBlocking(
                 () -> {

@@ -204,7 +204,7 @@ public class AnswerSuggestionProcessorUnitTest {
     public void setUp() {
         mDefaultLocale = Locale.getDefault();
         mContext = Robolectric.buildActivity(Activity.class).setup().get();
-        mContext.setTheme(org.chromium.chrome.R.style.Theme_BrowserUI_DayNight);
+        mContext.setTheme(R.style.Theme_BrowserUI_DayNight);
         mProcessor =
                 new AnswerSuggestionProcessor(
                         mContext, mSuggestionHost, mUrlStateProvider, Optional.of(mImageSupplier));

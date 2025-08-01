@@ -30,6 +30,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingMultiTabTask;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingTask;
@@ -329,7 +330,7 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        if (id == org.chromium.chrome.R.id.move_to_other_window_menu_id) {
+        if (id == R.id.move_to_other_window_menu_id) {
             TabModelOrchestrator tabModelOrchestrator = mTabModelOrchestratorSupplier.get();
             if (tabModelOrchestrator == null) return true;
             TabModelSelector tabModelSelector = tabModelOrchestrator.getTabModelSelector();
@@ -338,10 +339,10 @@ public class MultiInstanceManagerImpl extends MultiInstanceManager
             Tab currentTab = tabModelSelector.getCurrentTab();
             if (currentTab != null) moveTabsToOtherWindow(Collections.singletonList(currentTab));
             return true;
-        } else if (id == org.chromium.chrome.R.id.new_window_menu_id) {
+        } else if (id == R.id.new_window_menu_id) {
             openNewWindow("MobileMenuNewWindow", /* incognito= */ false);
             return true;
-        } else if (id == org.chromium.chrome.R.id.new_incognito_window_menu_id) {
+        } else if (id == R.id.new_incognito_window_menu_id) {
             // TODO(crbug.com/429518328): Hook up with incognito window.
             openNewWindow("MobileMenuNewIncognitoWindow", /* incognito= */ true);
             return true;

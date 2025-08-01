@@ -30,6 +30,7 @@ import org.chromium.base.IntentUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.browserservices.SessionDataHolder;
 import org.chromium.chrome.browser.browserservices.intents.SessionHolder;
 import org.chromium.chrome.browser.browserservices.ui.splashscreen.trustedwebactivity.TwaSplashController;
@@ -550,7 +551,7 @@ public class LaunchIntentDispatcher {
             if (isContentScheme) {
                 Toast.makeText(
                                 mActivity,
-                                org.chromium.chrome.R.string.external_app_restricted_access_error,
+                                R.string.external_app_restricted_access_error,
                                 Toast.LENGTH_LONG)
                         .show();
             } else {

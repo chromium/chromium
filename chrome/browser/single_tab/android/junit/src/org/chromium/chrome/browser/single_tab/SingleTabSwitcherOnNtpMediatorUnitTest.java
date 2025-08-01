@@ -397,8 +397,7 @@ public class SingleTabSwitcherOnNtpMediatorUnitTest {
                 ContextUtils.getApplicationContext()
                         .getResources()
                         .getDimensionPixelSize(
-                                org.chromium.chrome.R.dimen
-                                        .ntp_search_box_lateral_margin_narrow_window_tablet);
+                                R.dimen.ntp_search_box_lateral_margin_narrow_window_tablet);
         UiConfig.DisplayStyle displayStyleRegular =
                 new DisplayStyle(HorizontalDisplayStyle.REGULAR, VerticalDisplayStyle.REGULAR);
         when(mUiConfig.getCurrentDisplayStyle()).thenReturn(displayStyleRegular);

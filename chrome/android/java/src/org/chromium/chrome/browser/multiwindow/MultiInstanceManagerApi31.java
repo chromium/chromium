@@ -40,6 +40,7 @@ import org.chromium.base.supplier.Supplier;
 import org.chromium.build.BuildConfig;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.app.tab_activity_glue.ReparentingMultiTabTask;
@@ -165,7 +166,7 @@ class MultiInstanceManagerApi31 extends MultiInstanceManagerImpl implements Acti
 
     @Override
     public boolean handleMenuOrKeyboardAction(int id, boolean fromMenu) {
-        if (id == org.chromium.chrome.R.id.manage_all_windows_menu_id) {
+        if (id == R.id.manage_all_windows_menu_id) {
             showInstanceSwitcherDialog();
 
             if (AppHeaderUtils.isAppInDesktopWindow(mDesktopWindowStateManagerSupplier.get())) {

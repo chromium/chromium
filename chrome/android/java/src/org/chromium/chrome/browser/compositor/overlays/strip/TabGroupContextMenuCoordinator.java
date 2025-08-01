@@ -191,10 +191,10 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
 
             if (tabId == Tab.INVALID_TAB_ID) return;
 
-            if (menuId == org.chromium.chrome.R.id.ungroup_tab) {
+            if (menuId == R.id.ungroup_tab) {
                 TabUiUtils.ungroupTabGroup(tabGroupModelFilter, tabGroupId);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.Ungroup");
-            } else if (menuId == org.chromium.chrome.R.id.close_tab_group) {
+            } else if (menuId == R.id.close_tab_group) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
@@ -204,7 +204,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* hideTabGroups= */ true,
                         /* didCloseCallback= */ null);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.CloseGroup");
-            } else if (menuId == org.chromium.chrome.R.id.delete_tab_group) {
+            } else if (menuId == R.id.delete_tab_group) {
                 boolean allowUndo = TabClosureParamsUtils.shouldAllowUndo(listViewTouchTracker);
                 TabUiUtils.closeTabGroup(
                         tabGroupModelFilter,
@@ -214,7 +214,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                         /* hideTabGroups= */ false,
                         /* didCloseCallback= */ null);
                 RecordUserAction.record("MobileToolbarTabGroupMenu.DeleteGroup");
-            } else if (menuId == org.chromium.chrome.R.id.open_new_tab_in_group) {
+            } else if (menuId == R.id.open_new_tab_in_group) {
                 TabGroupUtils.openUrlInGroup(
                         tabGroupModelFilter,
                         UrlConstants.NTP_URL,
@@ -238,7 +238,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
                 if (tabGroupMetadata != null) {
                     multiInstanceManager.moveTabGroupToOtherWindow(tabGroupMetadata);
                 }
-            } else if (menuId == org.chromium.chrome.R.id.share_group) {
+            } else if (menuId == R.id.share_group) {
                 // Create the group share flow and display the share bottom sheet.
                 dataSharingTabManager.createOrManageFlow(
                         eitherId,
@@ -520,8 +520,7 @@ public class TabGroupContextMenuCoordinator extends TabGroupOverflowMenuCoordina
         if (isIncognito) {
             mGroupTitleEditText.setBackgroundTintList(
                     AppCompatResources.getColorStateList(
-                            context,
-                            org.chromium.chrome.R.color.menu_edit_text_bg_tint_list_baseline));
+                            context, R.color.menu_edit_text_bg_tint_list_baseline));
             mGroupTitleEditText.setTextAppearance(
                     R.style.TextAppearance_TextLarge_Primary_Baseline_Light);
         }

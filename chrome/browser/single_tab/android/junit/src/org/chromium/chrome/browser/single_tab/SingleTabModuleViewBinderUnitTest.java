@@ -105,16 +105,16 @@ public class SingleTabModuleViewBinderUnitTest {
     @SmallTest
     public void testVisibility() {
         mPropertyModel.set(IS_VISIBLE, true);
-        assertTrue(isViewVisible(org.chromium.chrome.R.id.single_tab_view));
+        assertTrue(isViewVisible(R.id.single_tab_view));
 
         mPropertyModel.set(IS_VISIBLE, false);
-        assertFalse(isViewVisible(org.chromium.chrome.R.id.single_tab_view));
+        assertFalse(isViewVisible(R.id.single_tab_view));
     }
 
     @Test
     @SmallTest
     public void testSetTitle() {
-        TextView title = mSingleTabModuleView.findViewById(org.chromium.chrome.R.id.tab_title_view);
+        TextView title = mSingleTabModuleView.findViewById(R.id.tab_title_view);
         assertEquals("", title.getText());
 
         mPropertyModel.set(TITLE, TEST_TITLE);
@@ -124,7 +124,7 @@ public class SingleTabModuleViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetUrl() {
-        TextView url = mSingleTabModuleView.findViewById(org.chromium.chrome.R.id.tab_url_view);
+        TextView url = mSingleTabModuleView.findViewById(R.id.tab_url_view);
         assertEquals("", url.getText());
 
         mPropertyModel.set(URL, TEST_URL);
@@ -134,8 +134,7 @@ public class SingleTabModuleViewBinderUnitTest {
     @Test
     @SmallTest
     public void testSetFavicon() {
-        ImageView favicon =
-                mSingleTabModuleView.findViewById(org.chromium.chrome.R.id.tab_favicon_view);
+        ImageView favicon = mSingleTabModuleView.findViewById(R.id.tab_favicon_view);
         assertNull(favicon.getDrawable());
 
         mPropertyModel.set(FAVICON, new BitmapDrawable());

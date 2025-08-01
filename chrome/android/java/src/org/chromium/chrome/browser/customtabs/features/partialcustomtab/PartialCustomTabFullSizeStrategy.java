@@ -137,7 +137,7 @@ public class PartialCustomTabFullSizeStrategy extends PartialCustomTabBaseStrate
     @Override
     protected void setTopMargins(int shadowOffset, int handleOffset) {
         // No offset as we will not have handle view in full-screen
-        View handleView = mActivity.findViewById(org.chromium.chrome.R.id.custom_tabs_handle_view);
+        View handleView = mActivity.findViewById(R.id.custom_tabs_handle_view);
         ViewGroup.MarginLayoutParams lp =
                 (ViewGroup.MarginLayoutParams) handleView.getLayoutParams();
         lp.setMargins(0, 0, 0, 0);

@@ -1138,7 +1138,7 @@ public class ContextualSearchPanel extends OverlayPanel {
         ViewGroup result = mContainerView;
         assumeNonNull(mContainerView);
         // Use the coordinator inside of the container if we can get it. See crbug.com/1258902.
-        ViewGroup coordinator = mContainerView.findViewById(org.chromium.chrome.R.id.coordinator);
+        ViewGroup coordinator = mContainerView.findViewById(R.id.coordinator);
         // Returns null in tests. TODO(donnd): figure out why - tests should have the same views.
         if (coordinator != null) result = coordinator;
         return result;

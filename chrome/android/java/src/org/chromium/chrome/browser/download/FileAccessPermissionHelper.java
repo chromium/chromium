@@ -13,6 +13,7 @@ import android.util.Pair;
 import org.chromium.base.Callback;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
+import org.chromium.chrome.R;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -108,9 +109,7 @@ public class FileAccessPermissionHelper {
         if (windowAndroid.getModalDialogManager() != null) {
             AndroidPermissionRequester.showMissingPermissionDialog(
                     windowAndroid,
-                    context.getString(
-                            org.chromium.chrome.R.string
-                                    .missing_storage_permission_download_education_text),
+                    context.getString(R.string.missing_storage_permission_download_education_text),
                     requestPermissions,
                     callback.bind(Pair.create(false, null)));
         } else {
