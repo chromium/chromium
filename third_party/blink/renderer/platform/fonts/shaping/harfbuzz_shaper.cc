@@ -1084,6 +1084,8 @@ void HarfBuzzShaper::ShapeSegment(
     hb_buffer_reset(range_data->buffer.Get());
   }
 
+  han_kerning.DidShapeSegment(*result);
+
   // Set variation selector mode to the default state.
   HarfBuzzFace::SetVariationSelectorMode(kUseSpecifiedVariationSelector);
 

@@ -4942,6 +4942,12 @@
       name: "TextSpacingTrimFallback",
       status: "stable",
     },
+    {
+      // crbug.com/431660829
+      name: "TextSpacingTrimFallback2",
+      depends_on: ["TextSpacingTrimFallback"],
+      status: "stable",
+    },
     // This feature is used to inform the renderer of a user bypass from the
     // browser process to disable third-party storage partitioning.
     {

@@ -18,6 +18,7 @@
 namespace blink {
 
 class LayoutLocale;
+class ShapeResult;
 class SimpleFontData;
 
 //
@@ -81,6 +82,8 @@ class PLATFORM_EXPORT HanKerning {
 
   void PrepareFallback(const String& text);
 
+  void DidShapeSegment(ShapeResult& result);
+
   using CharType = HanKerningCharType;
 
   // Data retrieved from fonts for `HanKerning`.
@@ -130,6 +133,8 @@ class PLATFORM_EXPORT HanKerning {
   static bool ShouldKern(CharType type, CharType last_type);
   static bool ShouldKernLast(CharType type, CharType last_type);
 
+  void ApplyKerning(ShapeResult& result);
+
   bool may_apply_;
   bool is_start_prev_used_ = false;
   bool is_end_next_used_ = false;
@@ -140,12 +145,19 @@ class PLATFORM_EXPORT HanKerning {
   const FontData* last_font_data_ = nullptr;
   Vector<CharType> char_types_;
   Vector<unsigned, 32> unsafe_to_break_before_;
+  Vector<wtf_size_t> changed_indexes_;
 };
 
 inline bool HanKerning::MayApply(StringView text) {
   return !text.Is8Bit() && !text.IsAllSpecialCharacters<[](UChar ch) {
     return !Character::MaybeHanKerningOpenOrCloseFast(ch);
   }>();
+}
+
+inline void HanKerning::DidShapeSegment(ShapeResult& result) {
+  if (!changed_indexes_.empty()) [[unlikely]] {
+    ApplyKerning(result);
+  }
 }
 
 }  // namespace blink

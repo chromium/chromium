@@ -125,4 +125,8 @@ void ShapeResultCursor::AddSpaceToLeft(TextRunLayoutUnit advance) {
   result_->width_ += advance_float;
 }
 
+void ShapeResultCursor::SetUnsafeToBreakBefore() {
+  GlyphData().SetSafeToBreakBefore(SafeToBreak::kUnsafe);
+}
+
 }  // namespace blink

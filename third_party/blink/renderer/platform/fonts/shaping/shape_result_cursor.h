@@ -56,6 +56,9 @@ class PLATFORM_EXPORT ShapeResultCursor {
   void AddSpaceToLeft(TextRunLayoutUnit advance);
   void AddSpaceToRight(TextRunLayoutUnit advance);
 
+  // Set the current glyph unsafe-to-break.
+  void SetUnsafeToBreakBefore();
+
  private:
   FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Ltr);
   FRIEND_TEST_ALL_PREFIXES(ShapeResultCursorTest, Rtl);
