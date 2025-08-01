@@ -1,0 +1,17 @@
+{
+    "name": "Kiosk Input API Test Extension",
+    "description": "Companion Extension for KioskEnterpriseInputApiBrowserTest",
+    "version": "1.3",
+    "manifest_version": 3,
+    "permissions": [
+        "enterprise.kioskInput"
+    ],
+    "background": {
+        "service_worker": "service_worker.js"
+    },
+    "externally_connectable": {
+        "matches": [
+            "<all_urls>"
+        ]
+    }
+}
