@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.compositor;
 
+import static org.chromium.build.NullUtil.assumeNonNull;
+
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -27,6 +29,9 @@ import org.jni_zero.NativeMethods;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.build.annotations.Initializer;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.compositor.layouts.Layout;
 import org.chromium.chrome.browser.compositor.layouts.LayoutProvider;
 import org.chromium.chrome.browser.compositor.layouts.LayoutRenderHost;
@@ -50,6 +55,7 @@ import org.chromium.ui.resources.ResourceManager;
 /**
  * The is the {@link View} displaying the ui compositor results; including webpages and tabswitcher.
  */
+@NullMarked
 @JNINamespace("android")
 public class CompositorView extends FrameLayout
         implements CompositorSurfaceManager.SurfaceManagerCallbackTarget,
@@ -77,9 +83,9 @@ public class CompositorView extends FrameLayout
     private WindowAndroid mWindowAndroid;
     private TabContentManager mTabContentManager;
 
-    private View mRootView;
+    private @Nullable View mRootView;
     private boolean mPreloadedResources;
-    private Runnable mDrawingFinishedCallback;
+    private @Nullable Runnable mDrawingFinishedCallback;
 
     // True while in a WebXR "immersive-ar" session with DOM Overlay enabled. This disables
     // SurfaceControl while active.
@@ -92,7 +98,7 @@ public class CompositorView extends FrameLayout
 
     private boolean mHaveSwappedFramesSinceSurfaceCreated;
 
-    private Integer mSurfaceId;
+    private @Nullable Integer mSurfaceId;
 
     // On P and above, toggling the screen off gets us in a state where the Surface is destroyed but
     // it is never recreated when it is turned on again. This is the only workaround that seems to
@@ -113,7 +119,7 @@ public class CompositorView extends FrameLayout
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (intent.getAction().equals(Intent.ACTION_SCREEN_OFF)
+            if (Intent.ACTION_SCREEN_OFF.equals(intent.getAction())
                     && mCompositorSurfaceManager != null
                     && !mIsInXr
                     && mNativeCompositorView != 0) {
@@ -272,7 +278,7 @@ public class CompositorView extends FrameLayout
     /**
      * @return The active {@link SurfaceView} of this compositor.
      */
-    public View getActiveSurfaceView() {
+    public @Nullable View getActiveSurfaceView() {
         return mCompositorSurfaceManager.getActiveSurfaceView();
     }
 
@@ -291,10 +297,12 @@ public class CompositorView extends FrameLayout
 
     /**
      * Initializes the {@link CompositorView}'s native parts (e.g. the rendering parts).
-     * @param lowMemDevice         If this is a low memory device.
-     * @param windowAndroid        A {@link WindowAndroid} instance.
-     * @param tabContentManager    A {@link TabContentManager} instance.
+     *
+     * @param lowMemDevice If this is a low memory device.
+     * @param windowAndroid A {@link WindowAndroid} instance.
+     * @param tabContentManager A {@link TabContentManager} instance.
      */
+    @Initializer
     public void initNativeCompositor(
             boolean lowMemDevice,
             WindowAndroid windowAndroid,
@@ -466,6 +474,7 @@ public class CompositorView extends FrameLayout
             Window window = mWindowAndroid.getWindow();
             if (window != null) {
                 AttachedSurfaceControl rootSurfaceControl = window.getRootSurfaceControl();
+                assumeNonNull(rootSurfaceControl);
                 browserInputToken = rootSurfaceControl.getInputTransferToken();
             }
         }
@@ -803,7 +812,7 @@ public class CompositorView extends FrameLayout
                 int height,
                 boolean backedBySurfaceTexture,
                 Surface surface,
-                InputTransferToken browserInputToken);
+                @Nullable InputTransferToken browserInputToken);
 
         void onPhysicalBackingSizeChanged(
                 long nativeCompositorView, WebContents webContents, int width, int height);

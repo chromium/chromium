@@ -74,6 +74,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.chrome.browser.tab.TabSelectionType;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
+import org.chromium.chrome.browser.theme.TopUiThemeColorProvider;
 import org.chromium.chrome.browser.toolbar.top.ToolbarControlContainer;
 import org.chromium.chrome.test.util.browser.tabmodel.MockTabModelSelector;
 import org.chromium.components.browser_ui.widget.TouchEventObserver;
@@ -183,6 +184,7 @@ public class CompositorViewHolderUnitTest {
     @Mock private InputHintChecker.Natives mInputHintCheckerJni;
     @Mock private MultiWindowModeStateDispatcher mMultiWindowModeStateDispatcher;
     @Mock private InsetObserver mInsetObserver;
+    @Mock private TopUiThemeColorProvider mTopUiThemeColorProvider;
 
     @Captor private ArgumentCaptor<TabObserver> mTabObserverCaptor;
 
@@ -261,6 +263,7 @@ public class CompositorViewHolderUnitTest {
 
         mCompositorViewHolder = spy(new CompositorViewHolder(mContext, null));
 
+        mCompositorViewHolder.setTopUiThemeColorProvider(mTopUiThemeColorProvider);
         mCompositorViewHolder.setLayoutManager(mLayoutManager);
         mCompositorViewHolder.setControlContainer(mControlContainer);
         mCompositorViewHolder.setCompositorViewForTesting(mCompositorView);
