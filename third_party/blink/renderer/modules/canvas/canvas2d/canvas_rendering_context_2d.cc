@@ -687,21 +687,15 @@ bool CanvasRenderingContext2D::CanCreateCanvas2dResourceProvider() {
 
 scoped_refptr<StaticBitmapImage> blink::CanvasRenderingContext2D::GetImage(
     FlushReason reason) {
-  // We can get an image if either (a) there is a ResourceProvider or (b) the
-  // canvas is hibernating (in which case there will be no resource provider
-  // but we can get a snapshot from the hibernation handler).
-  if (!IsPaintable() && !IsHibernating()) {
-    return nullptr;
-  }
-
   if (IsHibernating()) {
     return UnacceleratedStaticBitmapImage::Create(
         GetHibernationHandler()->GetImage());
   }
 
-  if (!resource_provider_->IsValid()) {
+  if (!IsCanvas2DResourceProviderValid()) {
     return nullptr;
   }
+
   resource_provider_->FlushCanvas(reason);
   return resource_provider_->Snapshot(reason);
 }
