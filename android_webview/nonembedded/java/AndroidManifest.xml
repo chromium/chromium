@@ -65,6 +65,9 @@ by a child template that "extends" this file.
             <meta-data
                   android:name="STARTUP_FEATURE_SET_UI_THREAD_STARTUP_MODE"
                   android:value="true"/>
+            <meta-data
+                  android:name="STARTUP_FEATURE_SET_PROFILES_TO_LOAD"
+                  android:value="true"/>
             </service>
             <!-- WebView Developer UI Activities. If you change these Activities, please update
                  android_webview/test/shell/AndroidManifest.xml as well. -->
