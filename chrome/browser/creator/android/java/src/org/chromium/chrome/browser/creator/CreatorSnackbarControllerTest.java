@@ -15,12 +15,14 @@ import android.app.Activity;
 import android.content.Context;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -34,6 +36,7 @@ import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 @RunWith(BaseRobolectricTestRunner.class)
 public class CreatorSnackbarControllerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private WebFeedBridge.Natives mWebFeedBridgeJniMock;
     @Mock private SnackbarManager mSnackbarManager;
 
@@ -45,7 +48,6 @@ public class CreatorSnackbarControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);
         mContext = Robolectric.setupActivity(Activity.class);
         mTitle = "Example Title";

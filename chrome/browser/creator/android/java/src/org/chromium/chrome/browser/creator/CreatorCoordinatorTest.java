@@ -26,7 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -78,6 +79,8 @@ public class CreatorCoordinatorTest {
     @Mock private SignInInterstitialInitiator mSignInInterstitialInitiator;
     @Mock private FeedActionDelegate mFeedActionDelegate;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -92,7 +95,6 @@ public class CreatorCoordinatorTest {
 
     @Before
     public void setUpTest() {
-        MockitoAnnotations.initMocks(this);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         FeedSurfaceRendererBridgeJni.setInstanceForTesting(mFeedSurfaceRendererBridgeJniMock);
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);

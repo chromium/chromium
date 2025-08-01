@@ -43,10 +43,12 @@ import android.os.PersistableBundle;
 import androidx.test.core.app.ApplicationProvider;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.Callback;
@@ -70,6 +72,7 @@ public class CredentialEditControllerTest {
     private static final String TEST_PASSWORD = "TestPassword";
     private static final String NEW_TEST_PASSWORD = "TestNewPassword";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private PasswordAccessReauthenticationHelper mReauthenticationHelper;
 
     @Mock private ConfirmationDialogHelper mDeleteDialogHelper;
@@ -88,7 +91,6 @@ public class CredentialEditControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         Clipboard.resetForTesting();
         mMediator =
                 new CredentialEditMediator(

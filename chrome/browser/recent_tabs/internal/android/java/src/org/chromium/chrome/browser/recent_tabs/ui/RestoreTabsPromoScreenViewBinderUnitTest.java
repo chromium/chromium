@@ -26,10 +26,12 @@ import android.widget.TextView;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
 
@@ -54,6 +56,7 @@ import java.util.Date;
 @Config(manifest = Config.NONE)
 public class RestoreTabsPromoScreenViewBinderUnitTest {
     private static final long JAN_1_1970 = new Date(70, Calendar.JANUARY, 1).getTime();
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private RestoreTabsPromoScreenCoordinator.Delegate mMockDelegate;
 
     private Activity mActivity;
@@ -63,7 +66,6 @@ public class RestoreTabsPromoScreenViewBinderUnitTest {
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         mActivity = Robolectric.buildActivity(Activity.class).setup().get();
         mRestoreTabsPromoView =
                 LayoutInflater.from(mActivity)

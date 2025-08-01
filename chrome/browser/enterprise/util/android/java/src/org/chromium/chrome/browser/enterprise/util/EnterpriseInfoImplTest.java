@@ -12,11 +12,13 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 import org.robolectric.annotation.LooperMode;
 
@@ -35,6 +37,7 @@ import java.util.concurrent.RejectedExecutionException;
         shadows = {ShadowPostTask.class})
 @LooperMode(LooperMode.Mode.LEGACY)
 public class EnterpriseInfoImplTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock public EnterpriseInfo.Natives mNatives;
 
     @Before
@@ -43,7 +46,6 @@ public class EnterpriseInfoImplTest {
         // Skip the AsyncTask, we don't actually want to query the device, just enqueue callbacks.
         getEnterpriseInfoImpl().setSkipAsyncCheckForTesting(true);
 
-        MockitoAnnotations.initMocks(this);
         EnterpriseInfoJni.setInstanceForTesting(mNatives);
     }
 

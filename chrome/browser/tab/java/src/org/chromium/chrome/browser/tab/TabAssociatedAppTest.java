@@ -11,12 +11,14 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.UserDataHost;
@@ -31,6 +33,7 @@ import org.chromium.ui.base.PageTransition;
 public class TabAssociatedAppTest {
     private static final String APP_ID = "magicApp";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTab;
 
     @Captor ArgumentCaptor<TabObserver> mTabObserverCaptor;
@@ -40,7 +43,6 @@ public class TabAssociatedAppTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         when(mTab.getUserDataHost()).thenReturn(mUserDataHost);
         doNothing().when(mTab).addObserver(mTabObserverCaptor.capture());
     }

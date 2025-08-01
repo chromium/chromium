@@ -17,7 +17,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.Batch;
@@ -38,6 +39,8 @@ import java.util.concurrent.ExecutionException;
 @Batch(Batch.PER_CLASS)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public final class AutoTranslateSnackbarControllerJavaTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public FreshCtaTransitTestRule mActivityTestRule =
             ChromeTransitTestRules.freshChromeTabbedActivityRule();
@@ -52,8 +55,6 @@ public final class AutoTranslateSnackbarControllerJavaTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mPage = mActivityTestRule.startOnBlankPage();
         mSnackbarManager = mPage.getActivity().getSnackbarManager();
         WeakReference<Activity> weakReference = new WeakReference<>(mPage.getActivity());

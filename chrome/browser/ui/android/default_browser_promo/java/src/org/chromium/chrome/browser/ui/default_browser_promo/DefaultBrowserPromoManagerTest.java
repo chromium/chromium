@@ -16,11 +16,13 @@ import android.content.Context;
 import android.content.Intent;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Batch;
@@ -34,6 +36,7 @@ import org.chromium.ui.base.WindowAndroid.IntentCallback;
 @Batch(Batch.UNIT_TESTS)
 public class DefaultBrowserPromoManagerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock WindowAndroid mWindowAndroid;
     @Mock Activity mActivity;
     @Mock RoleManager mRoleManager;
@@ -43,7 +46,6 @@ public class DefaultBrowserPromoManagerTest {
 
     @Before
     public void setup() {
-        MockitoAnnotations.initMocks(this);
         doReturn(mRoleManager).when(mActivity).getSystemService(Context.ROLE_SERVICE);
         doReturn(mIntent).when(mRoleManager).createRequestRoleIntent(RoleManager.ROLE_BROWSER);
     }

@@ -10,11 +10,13 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -27,6 +29,7 @@ import java.lang.ref.WeakReference;
 @RunWith(BaseRobolectricTestRunner.class)
 public final class AutoTranslateSnackbarControllerTest {
     private static final int NATIVE_SNACKBAR_VIEW = 1001;
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock AutoTranslateSnackbarController.Natives mMockJni;
 
     @Mock private WebContents mWebContents;
@@ -34,7 +37,6 @@ public final class AutoTranslateSnackbarControllerTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         AutoTranslateSnackbarControllerJni.setInstanceForTesting(mMockJni);
     }
 

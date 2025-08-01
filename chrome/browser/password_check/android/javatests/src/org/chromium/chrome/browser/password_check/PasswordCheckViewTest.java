@@ -77,7 +77,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.Criteria;
@@ -178,13 +179,14 @@ public class PasswordCheckViewTest {
     @Mock private Runnable mMockLaunchCheckupInAccount;
     @Mock private Runnable mMockStartButtonCallback;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<PasswordCheckFragmentView> mTestRule =
             new SettingsActivityTestRule<>(PasswordCheckFragmentView.class);
 
     @Before
     public void setUp() throws InterruptedException {
-        MockitoAnnotations.initMocks(this);
         PasswordCheckComponentUiFactory.setCreationStrategy(
                 (fragmentView, customTabIntentHelper, trustedIntentHelper, profile) -> {
                     mPasswordCheckView = (PasswordCheckFragmentView) fragmentView;

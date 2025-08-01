@@ -19,12 +19,14 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.FeatureOverrides;
@@ -65,6 +67,7 @@ import java.util.List;
 @Features.DisableFeatures(ChromeFeatureList.SEARCH_RESUMPTION_MODULE_ANDROID)
 public class SearchResumptionModuleMediatorUnitTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Tab mTabToTrack;
     @Mock private Tab mTab;
     @Mock private ViewStub mParent;
@@ -94,7 +97,6 @@ public class SearchResumptionModuleMediatorUnitTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         mUserDataHost = new UserDataHost();
         AutocompleteControllerJni.setInstanceForTesting(mControllerJniMock);
         doReturn(mAutocompleteController).when(mControllerJniMock).getForProfile(any());

@@ -26,7 +26,8 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -58,6 +59,8 @@ public class ImageDescriptionsSettingsTest {
     private static final String ONLY_ON_WIFI = "onlyOnWifi radio button ";
     private static final String USE_MOBILE_DATA = "useMobileData radio button ";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public SettingsActivityTestRule<ImageDescriptionsSettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(ImageDescriptionsSettings.class);
@@ -70,7 +73,6 @@ public class ImageDescriptionsSettingsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         ImageDescriptionsController.getInstance().setDelegateForTesting(mDelegate);
     }
 

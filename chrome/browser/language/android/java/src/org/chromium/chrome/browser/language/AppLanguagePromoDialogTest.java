@@ -9,10 +9,12 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.LocaleUtils;
@@ -33,6 +35,7 @@ import java.util.LinkedHashSet;
 @Config(manifest = Config.NONE)
 public class AppLanguagePromoDialogTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Profile mProfile;
 
     LanguageItem mFollowSystem;
@@ -50,7 +53,6 @@ public class AppLanguagePromoDialogTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         LanguageTestUtils.initializeResourceBundleForTesting();
         mFollowSystem = LanguageItem.makeFollowSystemLanguageItem();
         mLangAf = new LanguageItem("af", "Afrikaans", "Afrikaans", true);

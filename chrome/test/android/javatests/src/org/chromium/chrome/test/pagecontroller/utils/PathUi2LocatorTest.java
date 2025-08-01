@@ -13,11 +13,13 @@ import androidx.test.uiautomator.UiObject2;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -57,6 +59,7 @@ public class PathUi2LocatorTest {
 
     @Mock private UiObject2 mResult411;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private UiDevice mDevice;
 
     private List<UiObject2> mLocator0Results;
@@ -68,8 +71,6 @@ public class PathUi2LocatorTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         mLocator0Results = Collections.singletonList(mLocator0Result);
         mLocator1Results = Collections.singletonList(mLocator1Result);
 

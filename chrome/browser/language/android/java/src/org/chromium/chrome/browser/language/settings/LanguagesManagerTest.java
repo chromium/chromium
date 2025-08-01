@@ -11,11 +11,13 @@ import androidx.test.filters.SmallTest;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -38,12 +40,12 @@ import java.util.stream.Collectors;
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class LanguagesManagerTest {
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private FakeTranslateBridgeJni mFakeTranslateBridge;
     @Mock private Profile mProfile;
 
     @Before
     public void setUp() throws Exception {
-        MockitoAnnotations.initMocks(this);
         Mockito.when(mProfile.getOriginalProfile()).thenReturn(mProfile);
         ProfileManager.setLastUsedProfileForTesting(mProfile);
         LanguageTestUtils.initializeResourceBundleForTesting();

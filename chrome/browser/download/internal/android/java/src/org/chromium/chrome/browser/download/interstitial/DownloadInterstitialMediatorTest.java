@@ -28,10 +28,12 @@ import androidx.test.core.app.ApplicationProvider;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
@@ -65,6 +67,7 @@ public class DownloadInterstitialMediatorTest {
     private static final String OPEN_BUTTON_TEXT = "Open";
     private static final String DELETE_BUTTON_TEXT = "Delete";
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private SnackbarManager mSnackbarManager;
 
     private final TestOfflineContentProvider mProvider = new TestOfflineContentProvider();
@@ -78,7 +81,6 @@ public class DownloadInterstitialMediatorTest {
 
     @Before
     public void before() {
-        MockitoAnnotations.initMocks(this);
         mSnackbarShown = false;
         doAnswer((invocation) -> mSnackbarShown = true)
                 .when(mSnackbarManager)

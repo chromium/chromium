@@ -23,7 +23,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
@@ -70,6 +71,8 @@ public class CreatorMediatorTest {
     @Captor private ArgumentCaptor<Callback<FollowResults>> mFollowResultsCallbackCaptor;
     @Captor private ArgumentCaptor<Callback<UnfollowResults>> mUnfollowResultsCallbackCaptor;
 
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
+
     @Rule
     public ActivityScenarioRule<TestActivity> mActivityScenarioRule =
             new ActivityScenarioRule<>(TestActivity.class);
@@ -83,7 +86,6 @@ public class CreatorMediatorTest {
 
     @Before
     public void setUpTest() {
-        MockitoAnnotations.initMocks(this);
         FeedSurfaceRendererBridgeJni.setInstanceForTesting(mFeedSurfaceRendererBridgeJniMock);
         FeedServiceBridgeJni.setInstanceForTesting(mFeedServiceBridgeJniMock);
         WebFeedBridgeJni.setInstanceForTesting(mWebFeedBridgeJniMock);

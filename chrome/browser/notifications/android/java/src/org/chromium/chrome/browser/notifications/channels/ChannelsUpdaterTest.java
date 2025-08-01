@@ -18,9 +18,11 @@ import android.os.Looper;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.Shadows;
 
@@ -38,6 +40,7 @@ import java.util.List;
 /** Tests that ChannelsUpdater correctly initializes channels on the notification manager. */
 @RunWith(BaseRobolectricTestRunner.class)
 public class ChannelsUpdaterTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     private BaseNotificationManagerProxy mNotificationManagerProxy;
     private SharedPreferencesManager mSharedPreferences;
     private ChannelsInitializer mChannelsInitializer;
@@ -45,8 +48,6 @@ public class ChannelsUpdaterTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         Context context = RuntimeEnvironment.getApplication();
         mNotificationManagerProxy = BaseNotificationManagerProxyFactory.create();
 

@@ -10,10 +10,12 @@ import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.HistogramWatcher;
@@ -23,13 +25,13 @@ import java.util.concurrent.TimeUnit;
 /** Test relating to {@link PriceDropMetricsLogger} */
 @RunWith(BaseRobolectricTestRunner.class)
 public class PriceDropMetricsLoggerTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private ShoppingPersistedTabData mShoppingPersistedTabData;
 
     private PriceDropMetricsLogger mPriceDropMetricsLogger;
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
         doReturn("offer-id").when(mShoppingPersistedTabData).getMainOfferId();
         doReturn(true).when(mShoppingPersistedTabData).hasPriceMicros();
         doReturn(true).when(mShoppingPersistedTabData).hasPreviousPriceMicros();

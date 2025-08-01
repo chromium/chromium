@@ -23,10 +23,12 @@ import android.os.PowerManager;
 
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.MockitoJUnit;
+import org.mockito.junit.MockitoRule;
 import org.robolectric.annotation.Config;
 
 import org.chromium.base.ContextUtils;
@@ -38,6 +40,7 @@ import org.chromium.net.NetworkChangeNotifier;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config
 public class DeviceConditionsTest {
+    @Rule public final MockitoRule mMockitoRule = MockitoJUnit.rule();
     @Mock private Context mContext;
     @Mock private ConnectivityManager mConnectivityManager;
     @Mock private PowerManager mPowerManager;
@@ -49,8 +52,6 @@ public class DeviceConditionsTest {
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
-
         // Set up the battery to be at 50% by default.
         mBatteryStatus = new Intent();
         mBatteryStatus.putExtra(BatteryManager.EXTRA_SCALE, 100);
