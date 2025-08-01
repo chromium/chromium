@@ -343,7 +343,7 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      *
      * @param intent Intent that contains the download action.
      */
-    private DownloadSharedPreferenceEntry getDownloadEntryFromIntent(Intent intent) {
+    private @Nullable DownloadSharedPreferenceEntry getDownloadEntryFromIntent(Intent intent) {
         return mDownloadSharedPreferenceHelper.getDownloadSharedPreferenceEntry(
                 getContentIdFromIntent(intent));
     }
@@ -386,7 +386,10 @@ public class DownloadBroadcastManagerImpl extends DownloadBroadcastManager.Impl 
      * @param contentId Content ID of the download.
      */
     private void openDownload(
-            Context context, Intent intent, OtrProfileId otrProfileId, ContentId contentId) {
+            Context context,
+            Intent intent,
+            @Nullable OtrProfileId otrProfileId,
+            ContentId contentId) {
         String downloadFilePath =
                 IntentUtils.safeGetStringExtra(
                         intent, DownloadNotificationService.EXTRA_DOWNLOAD_FILE_PATH);

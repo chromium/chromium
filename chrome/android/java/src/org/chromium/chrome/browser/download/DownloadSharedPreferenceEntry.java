@@ -9,6 +9,8 @@ import android.text.TextUtils;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
+import org.chromium.build.annotations.NullMarked;
+import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.browser.profiles.OtrProfileId;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.LegacyHelpers;
@@ -19,6 +21,7 @@ import java.util.UUID;
  * Class representing the download information stored in SharedPreferences to construct a
  * download notification.
  */
+@NullMarked
 public class DownloadSharedPreferenceEntry {
     private static final String TAG = "DownloadEntry";
     private static final String NO_OTR_PROFILE_ID = "";
@@ -28,7 +31,7 @@ public class DownloadSharedPreferenceEntry {
     @VisibleForTesting static final int VERSION = 7;
 
     public final int notificationId;
-    public final OtrProfileId otrProfileId; // The OtrProfileId of download.
+    public final @Nullable OtrProfileId otrProfileId; // The OtrProfileId of download.
     public final boolean canDownloadWhileMetered;
     public final String fileName;
     // This can only be false for paused downloads. For downloads that are pending or in progress,
@@ -43,7 +46,7 @@ public class DownloadSharedPreferenceEntry {
     DownloadSharedPreferenceEntry(
             ContentId id,
             int notificationId,
-            OtrProfileId otrProfileId,
+            @Nullable OtrProfileId otrProfileId,
             boolean canDownloadWhileMetered,
             String fileName,
             boolean isAutoResumable,

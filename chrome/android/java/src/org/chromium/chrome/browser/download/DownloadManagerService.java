@@ -874,7 +874,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     // Deprecated after new download backend.
     @Override
-    public void cancelDownload(ContentId id, OtrProfileId otrProfileId) {
+    public void cancelDownload(ContentId id, @Nullable OtrProfileId otrProfileId) {
         DownloadManagerServiceJni.get()
                 .cancelDownload(
                         getNativeDownloadManagerService(),
@@ -900,7 +900,7 @@ public class DownloadManagerService implements DownloadServiceDelegate, ProfileM
      */
     // Deprecated after new download backend.
     @Override
-    public void pauseDownload(ContentId id, OtrProfileId otrProfileId) {
+    public void pauseDownload(ContentId id, @Nullable OtrProfileId otrProfileId) {
         DownloadManagerServiceJni.get()
                 .pauseDownload(
                         getNativeDownloadManagerService(),
