@@ -3665,6 +3665,22 @@
       "features": [
         "webgl_or_caps_max_texture_size_limit_8192"
       ]
+    },
+    {
+      "id": 457,
+      "cr_bugs": [40275246],
+      "description": "D3D12 AVC hardware encoding produces corrupted bitstream on NVidia GPUs with old drivers",
+      "os": {
+        "type": "win"
+      },
+      "vendor_id": "0x10de",
+      "driver_version": {
+          "op": "<",
+          "value": "32.0.15.7602"
+      },
+      "features": [
+        "disable_d3d12_h264_encoding"
+      ]
     }
   ]
 }

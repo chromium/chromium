@@ -295,7 +295,9 @@ D3D12VideoEncodeAccelerator::D3D12VideoEncodeAccelerator(
   // We will check and log error later in the Initialize().
   device_.As(&video_device_);
 
-  codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_H264);
+  if (!gpu_workarounds.disable_d3d12_h264_encoding) {
+    codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_H264);
+  }
 #if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
   if (!gpu_workarounds.disable_d3d12_hevc_encoding) {
     codecs_.push_back(D3D12_VIDEO_ENCODER_CODEC_HEVC);
