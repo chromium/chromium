@@ -721,6 +721,9 @@ BASE_FEATURE(kGlicPanelResetOnSessionTimeout,
 const base::FeatureParam<double> kGlicPanelResetOnSessionTimeoutDelayH{
     &kGlicPanelResetOnSessionTimeout,
     "glic-panel-reset-session-timeout-delay-h", 0};
+BASE_FEATURE(kGlicPanelResetSizeAndLocationOnOpen,
+             "GlicPanelResetSizeAndLocationOnOpen",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kGlicRecordActorJournal,
              "GlicRecordActorJournal",

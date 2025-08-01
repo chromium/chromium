@@ -1351,6 +1351,10 @@ const char kGlicPanelResetOnSessionTimeoutName[] =
     "Glic Panel Reset On Session Timeout";
 const char kGlicPanelResetOnSessionTimeoutDescription[] =
     "Enables resetting the panel position after a session timeout.";
+const char kGlicPanelResetSizeAndLocationName[] =
+    "Glic Panel Reset Size and Location";
+const char kGlicPanelResetSizeAndLocationDescription[] =
+    "Enables resetting the panel size and position on every open.";
 const char kGlicWarmingName[] = "Glic Pre-Warming";
 const char kGlicWarmingDescription[] =
     "Enables the pre-warming of the Glic panel's web client.";

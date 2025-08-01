@@ -29,6 +29,9 @@ class GlicWindowConfig {
   // timeout.
   bool ShouldResetOnNewSession() const;
 
+  // True if the panel size should reset when opening
+  bool ShouldResetSizeAndLocationOnShow() const;
+
   void SetLastOpenTime();
   void SetLastCloseTime();
 

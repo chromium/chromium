@@ -1648,6 +1648,8 @@ export declare interface SuggestionContent {
 export enum HostCapability {
   /** Glic host supports scrollTo() on PDF documents. */
   SCROLL_TO_PDF = 0,
+  /** Glic host will reset panel size and location on open. */
+  RESET_SIZE_AND_LOCATION_ON_OPEN = 1,
 }
 
 //

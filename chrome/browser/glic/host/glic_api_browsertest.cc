@@ -1852,7 +1852,8 @@ class GlicGetHostCapabilityApiTest
     const bool enable_features = GetParam();
     if (enable_features) {
       std::vector<base::test::FeatureRefAndParams> enabled_features = {
-          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}}};
+          {features::kGlicScrollTo, {{"glic-scroll-to-pdf", "true"}}},
+          {features::kGlicPanelResetSizeAndLocationOnOpen, {}}};
       scoped_feature_list_.InitWithFeaturesAndParameters(
           enabled_features,
           /*disabled_features=*/{});

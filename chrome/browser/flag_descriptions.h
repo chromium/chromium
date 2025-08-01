@@ -724,6 +724,8 @@ extern const char kGlicPanelSetPositionOnDragName[];
 extern const char kGlicPanelSetPositionOnDragDescription[];
 extern const char kGlicPanelResetOnSessionTimeoutName[];
 extern const char kGlicPanelResetOnSessionTimeoutDescription[];
+extern const char kGlicPanelResetSizeAndLocationName[];
+extern const char kGlicPanelResetSizeAndLocationDescription[];
 extern const char kGlicWarmingName[];
 extern const char kGlicWarmingDescription[];
 extern const char kGlicFreWarmingName[];

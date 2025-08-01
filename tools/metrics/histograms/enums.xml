@@ -17073,6 +17073,7 @@ from previous Chrome versions.
   <int value="1089014363" label="ArcAttestation:disabled"/>
   <int value="1089106835" label="ContextMenuPopupStyle:enabled"/>
   <int value="1089913432" label="VirtualDesksGestures:disabled"/>
+  <int value="1090167437" label="GlicPanelResetSizeAndLocationOnOpen:enabled"/>
   <int value="1090324500" label="EcheLauncher:enabled"/>
   <int value="1090377940" label="enable-quic-https"/>
   <int value="1090442943" label="SemanticColorDebugOverride:enabled"/>
@@ -17643,6 +17644,7 @@ from previous Chrome versions.
   <int value="1287947083" label="WebAssemblyCodeProtectionPku:enabled"/>
   <int value="1288155322" label="SendTabToSelfIOSPushNotifications:disabled"/>
   <int value="1288612648" label="PluginVmFullscreen:enabled"/>
+  <int value="1289314736" label="GlicPanelResetSizeAndLocationOnOpen:disabled"/>
   <int value="1289433604" label="RecoverFromNeverSaveAndroid:enabled"/>
   <int value="1289495171" label="AssistantBetterOnboarding:disabled"/>
   <int value="1289647989" label="PasswordChangeAccountStoreUsers:enabled"/>

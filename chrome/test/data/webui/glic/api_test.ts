@@ -1345,6 +1345,8 @@ class ApiTests extends ApiTestFixtureBase {
     switch (capability) {
       case HostCapability.SCROLL_TO_PDF:
         return 'SCROLL_TO_PDF';
+      case HostCapability.RESET_SIZE_AND_LOCATION_ON_OPEN:
+        return 'RESET_SIZE_AND_LOCATION_ON_OPEN';
       default:
         return 'NEW_ENUM_NOT_IMPLEMENTED';
     }

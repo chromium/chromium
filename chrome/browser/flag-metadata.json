@@ -5495,6 +5495,14 @@
     "expiry_milestone": 144
   },
   {
+    "name":"glic-panel-reset-size-and-location-on-open" ,
+    "owners": [
+      "perrier@chromium.org",
+      "//chrome/browser/glic/OWNERS"
+    ],
+    "expiry_milestone": 144
+  },
+  {
     "name":"glic-panel-reset-top-chrome-button" ,
     "owners": [
       "perrier@chromium.org",

@@ -1072,6 +1072,8 @@ struct OpenSettingsOptions {
 enum HostCapability {
   // Glic host supports ScrollTo() with PDF documents.
   kScrollToPdf = 0,
+  // Glic host will reset panel size and location on open.
+  kResetSizeAndLocationOnOpen = 1,
 };
 
 // A request to change the glic web client to a view suitable for tracking the

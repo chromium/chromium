@@ -31,6 +31,11 @@ bool GlicWindowConfig::ShouldResetOnNewSession() const {
   return (base::TimeTicks::Now() - last_close_time_) > GetSessionTimeoutDelay();
 }
 
+bool GlicWindowConfig::ShouldResetSizeAndLocationOnShow() const {
+  return base::FeatureList::IsEnabled(
+      features::kGlicPanelResetSizeAndLocationOnOpen);
+}
+
 void GlicWindowConfig::SetLastOpenTime() {
   last_open_time_ = base::TimeTicks::Now();
 }
