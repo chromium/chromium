@@ -411,11 +411,29 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
           ->GetActorOverlayView()
           ->GetVisible();
     }));
-    // Verify tab counts after each move.
-    ASSERT_EQ(source_browser->tab_strip_model()->count(),
-              1);  // The browser tab_2 moved FROM
-    ASSERT_EQ(target_browser->tab_strip_model()->count(),
-              2);  // The browser tab_2 moved TO
+    // Verify the overlay's child WebView was correctly detached from the source
+    // browser window.
+    EXPECT_EQ(source_browser->GetBrowserView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
+                  ->children()
+                  .size(),
+              0u);
+    // Verify the WebView was correctly re-attached to the target browser window
+    // and is visible.
+    ASSERT_EQ(target_browser->GetBrowserView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
+                  ->children()
+                  .size(),
+              1u);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return target_browser->GetBrowserView()
+          .GetActiveContentsContainerView()
+          ->GetActorOverlayView()
+          ->children()[0]
+          ->GetVisible();
+    }));
   }
   // Stop acting on the tab at the end of the test
   state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_2->GetHandle()));
@@ -424,6 +442,21 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveTabBetweenWindows) {
     return !target_browser->GetBrowserView()
                 .GetActiveContentsContainerView()
                 ->GetActorOverlayView()
+                ->GetVisible();
+  }));
+  // Verify that stopping actuation only hides the child WebView, but does not
+  // destroy it or remove it from the view hierarchy.
+  ASSERT_EQ(target_browser->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !target_browser->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()[0]
                 ->GetVisible();
   }));
 }
@@ -467,6 +500,20 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
           ->GetActorOverlayView()
           ->GetVisible();
     }));
+    // Also verify that the overlay's child WebView exists and is visible.
+    ASSERT_EQ(browser_with_actuated_tab->GetBrowserView()
+                  .GetActiveContentsContainerView()
+                  ->GetActorOverlayView()
+                  ->children()
+                  .size(),
+              1u);
+    EXPECT_TRUE(base::test::RunUntil([&]() {
+      return browser_with_actuated_tab->GetBrowserView()
+          .GetActiveContentsContainerView()
+          ->GetActorOverlayView()
+          ->children()[0]
+          ->GetVisible();
+    }));
     // Add a new tab to ensure the source window always has at least two tabs
     // before moving one to a new window (simulates user behavior).
     tabs::TabInterface* new_tab = tabs::TabInterface::GetFromContents(
@@ -476,6 +523,11 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
     // Move the actuated tab (at index 0) to a new browser window.
     chrome::MoveTabsToNewWindow(browser_with_actuated_tab, {0});
   }
+  // After the final move in the loop, update the browser pointer.
+  browser_with_actuated_tab =
+      BrowserWindow::FindBrowserWindowWithWebContents(tab_1->GetContents())
+          ->AsBrowserView()
+          ->browser();
   // Stop acting on the tab at the end of the test.
   state_manager->OnUiEvent(actor::ui::StoppedActingOnTab(tab_1->GetHandle()));
   // Overlay should become invisible in the browser that currently holds the
@@ -484,6 +536,21 @@ IN_PROC_BROWSER_TEST_F(ActorOverlayTest, RepeatedlyMoveActuatedTabToNewWindow) {
     return !browser_with_actuated_tab->GetBrowserView()
                 .GetActiveContentsContainerView()
                 ->GetActorOverlayView()
+                ->GetVisible();
+  }));
+  // Verify that stopping actuation only hides the child WebView, but does not
+  // destroy it or remove it from the view hierarchy.
+  ASSERT_EQ(browser_with_actuated_tab->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()
+                .size(),
+            1u);
+  EXPECT_TRUE(base::test::RunUntil([&]() {
+    return !browser_with_actuated_tab->GetBrowserView()
+                .GetActiveContentsContainerView()
+                ->GetActorOverlayView()
+                ->children()[0]
                 ->GetVisible();
   }));
 }
