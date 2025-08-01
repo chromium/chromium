@@ -196,7 +196,7 @@ TEST(CursorUtil, GetCursorDataWithColor) {
       // The no drop cursor has red in it, check it's still there:
       // Most of the cursor should be colored, but the red part shouldn't be
       // re-colored.
-      {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(173, 8, 8),
+      {SK_ColorBLUE, SK_ColorGREEN, SkColorSetRGB(181, 70, 72),
        CursorType::kNoDrop},
       // Similarly, the copy cursor has green in it.
       {SK_ColorBLUE, SK_ColorRED, SkColorSetRGB(57, 149, 88),
