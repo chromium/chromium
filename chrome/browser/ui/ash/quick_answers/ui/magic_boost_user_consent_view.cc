@@ -65,6 +65,7 @@ constexpr auto kSparkIconInsets = gfx::Insets::TLBR(0, 0, 0, 4);
 constexpr int kButtonBorderThickness = 1;
 constexpr int kButtonCornerRadius = 8;
 constexpr int kSettingsButtonSizeDip = 16;
+constexpr int kSettingsButtonBorderDip = 3;
 
 // Icon.
 constexpr gfx::Insets kIntentIconInsets = gfx::Insets(0);
@@ -119,14 +120,14 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
           .SetMainAxisAlignment(views::LayoutAlignment::kStart)
           .SetProperty(views::kMarginsKey, kHeaderInsets)
           .AddChild(
-              views::Builder<views::FlexLayoutView>()
+              views::Builder<views::BoxLayoutView>()
                   .SetOrientation(views::LayoutOrientation::kHorizontal)
                   .SetMainAxisAlignment(views::LayoutAlignment::kStart)
                   .SetCrossAxisAlignment(views::LayoutAlignment::kCenter)
                   .SetProperty(views::kFlexBehaviorKey,
                                views::FlexSpecification(
                                    views::LayoutOrientation::kHorizontal,
-                                   views::MinimumFlexSizeRule::kPreferred,
+                                   views::MinimumFlexSizeRule::kScaleToZero,
                                    views::MaximumFlexSizeRule::kUnbounded))
                   .AddChild(
                       views::Builder<views::ImageView>()
@@ -144,7 +145,9 @@ MagicBoostUserConsentView::MagicBoostUserConsentView(
                       views::Button::ButtonState::STATE_NORMAL,
                       ui::ImageModel::FromVectorIcon(
                           vector_icons::kSettingsOutlineIcon,
-                          ui::kColorSysSecondary, kSettingsButtonSizeDip)))
+                          ui::kColorSysSecondary, kSettingsButtonSizeDip))
+                  .SetProperty(views::kMarginsKey,
+                               gfx::Insets(kSettingsButtonBorderDip)))
           .Build());
 
   // Adds the chip row
