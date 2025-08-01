@@ -29,8 +29,8 @@ import java.util.Map;
 import java.util.Set;
 
 /**
- * ComponentLoader that is used in embedded WebViews/WebLayers. It implements a ServiceConnection to
- * connect to the provider service to fetch components files.
+ * ComponentLoader that is used in embedded WebViews. It implements a ServiceConnection to connect
+ * to the provider service to fetch components files.
  */
 @NullMarked
 public class EmbeddedComponentLoader implements ServiceConnection {
