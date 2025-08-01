@@ -5983,7 +5983,7 @@ TEST_F(ExtensionServiceTest, WillNotLoadFromCommandLineForESBUsers) {
 // Tests --load-extension works for non-ESB users.
 // --load-extension was disabled in https://crbug.com/401529219
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LoadsFromCommandLineForNonESBUsers DISABLE_LoadsFromCommandLineForNonESBUsers
+#define MAYBE_LoadsFromCommandLineForNonESBUsers DISABLED_LoadsFromCommandLineForNonESBUsers
 #else
 #define MAYBE_LoadsFromCommandLineForNonESBUsers LoadsFromCommandLineForNonESBUsers
 #endif
@@ -6037,7 +6037,7 @@ TEST_F(ExtensionServiceTest,
 // value)
 // --load-extension was disabled in https://crbug.com/401529219
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING) && !BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_LoadsFromCommandLineForUsersWithoutPolicy DISABLE_LoadsFromCommandLineForUsersWithoutPolicy
+#define MAYBE_LoadsFromCommandLineForUsersWithoutPolicy DISABLED_LoadsFromCommandLineForUsersWithoutPolicy
 #else
 #define MAYBE_LoadsFromCommandLineForUsersWithoutPolicy LoadsFromCommandLineForUsersWithoutPolicy
 #endif
