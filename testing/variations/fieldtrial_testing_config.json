@@ -2132,12 +2132,12 @@
     "AutofillEnableCardBenefitsForBmo": [
         {
             "platforms": [
+                "android",
                 "chromeos",
                 "chromeos_lacros",
                 "linux",
                 "mac",
-                "windows",
-                "android"
+                "windows"
             ],
             "experiments": [
                 {
