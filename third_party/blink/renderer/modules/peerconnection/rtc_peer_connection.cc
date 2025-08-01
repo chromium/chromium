@@ -2113,12 +2113,16 @@ HeapVector<Member<RTCRtpReceiver>>::iterator RTCPeerConnection::FindReceiver(
 }
 
 HeapVector<Member<RTCRtpTransceiver>>::iterator
+RTCPeerConnection::FindTransceiverById(uintptr_t id) {
+  return std::ranges::find_if(transceivers_, [&](const auto& transceiver) {
+    return transceiver->platform_transceiver()->Id() == id;
+  });
+}
+
+HeapVector<Member<RTCRtpTransceiver>>::iterator
 RTCPeerConnection::FindTransceiver(
     const RTCRtpTransceiverPlatform& platform_transceiver) {
-  return std::ranges::find_if(transceivers_, [&](const auto& transceiver) {
-    return transceiver->platform_transceiver()->Id() ==
-           platform_transceiver.Id();
-  });
+  return FindTransceiverById(platform_transceiver.Id());
 }
 
 RTCRtpSender* RTCPeerConnection::CreateOrUpdateSender(
@@ -2432,20 +2436,17 @@ void RTCPeerConnection::DidModifyTransceivers(
   // Remove transceivers and update their states to reflect that they are
   // necessarily stopped.
   for (auto id : removed_transceiver_ids) {
-    for (auto it = transceivers_.begin(); it != transceivers_.end();
-         UNSAFE_TODO(++it)) {
-      if ((*it)->platform_transceiver()->Id() == id) {
-        // All streams are removed on stop, update `remove_list` if necessary.
-        auto* track = (*it)->receiver()->track();
-        for (const auto& stream : (*it)->receiver()->streams()) {
-          if (stream->getTracks().Contains(track)) {
-            remove_list.push_back(std::make_pair(stream, track));
-          }
+    auto it = FindTransceiverById(id);
+    if (it != transceivers_.end()) {
+      // All streams are removed on stop, update `remove_list` if necessary.
+      auto* track = (*it)->receiver()->track();
+      for (const auto& stream : (*it)->receiver()->streams()) {
+        if (stream->getTracks().Contains(track)) {
+          remove_list.push_back(std::make_pair(stream, track));
         }
-        (*it)->OnTransceiverStopped();
-        transceivers_.erase(it);
-        break;
       }
+      (*it)->OnTransceiverStopped();
+      transceivers_.erase(it);
     }
   }
   for (auto& platform_transceiver : platform_transceivers) {
@@ -2925,10 +2926,9 @@ void RTCPeerConnection::DispatchScheduledEvents() {
   HeapVector<Member<EventWrapper>> events;
   events.swap(scheduled_events_);
 
-  HeapVector<Member<EventWrapper>>::iterator it = events.begin();
-  for (; it != events.end(); UNSAFE_TODO(++it)) {
-    if ((*it)->Setup()) {
-      DispatchEvent(*(*it)->event_.Release());
+  for (auto& event : events) {
+    if (event->Setup()) {
+      DispatchEvent(*event->event_.Release());
     }
   }
 

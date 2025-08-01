@@ -14,13 +14,12 @@ wtf_size_t ByteBufferQueue::ReadInto(base::span<uint8_t> buffer_out) {
     base::span<const uint8_t> front_buffer =
         base::span(deque_of_buffers_.front()).subspan(front_buffer_offset_);
     DCHECK_GT(front_buffer.size(), 0u);
-    wtf_size_t buffer_read_amount =
+    const wtf_size_t buffer_read_amount =
         std::min(static_cast<wtf_size_t>(buffer_out.size()),
                  static_cast<wtf_size_t>(front_buffer.size()));
-    UNSAFE_TODO(
-        memcpy(buffer_out.data(), front_buffer.data(), buffer_read_amount));
+    buffer_out.take_first(buffer_read_amount)
+        .copy_from(front_buffer.first(buffer_read_amount));
     read_amount += buffer_read_amount;
-    buffer_out = buffer_out.subspan(buffer_read_amount);
     if (buffer_read_amount < front_buffer.size()) {
       front_buffer_offset_ += buffer_read_amount;
     } else {

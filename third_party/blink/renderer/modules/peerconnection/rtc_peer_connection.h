@@ -366,6 +366,8 @@ class MODULES_EXPORT RTCPeerConnection final
       const RTCRtpSenderPlatform& web_sender);
   HeapVector<Member<RTCRtpReceiver>>::iterator FindReceiver(
       const RTCRtpReceiverPlatform& platform_receiver);
+  HeapVector<Member<RTCRtpTransceiver>>::iterator FindTransceiverById(
+      uintptr_t id);
   HeapVector<Member<RTCRtpTransceiver>>::iterator FindTransceiver(
       const RTCRtpTransceiverPlatform& platform_transceiver);
 

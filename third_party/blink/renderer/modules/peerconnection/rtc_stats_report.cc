@@ -539,67 +539,84 @@ RTCCertificateStats* ToV8Stat(ScriptState* script_state,
 RTCStats* RTCStatsToIDL(ScriptState* script_state,
                         const webrtc::RTCStats& stat,
                         bool expose_hardware_caps) {
+  auto v8_stats_type = V8RTCStatsType::Create(String::FromUTF8(stat.type()));
+  CHECK(v8_stats_type.has_value());
+
   RTCStats* v8_stats = nullptr;
-  if (UNSAFE_TODO(strcmp(stat.type(), "codec")) == 0) {
-    v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "inbound-rtp")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
-                 expose_hardware_caps);
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "outbound-rtp")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
-                        expose_hardware_caps);
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-inbound-rtp")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-outbound-rtp")) == 0) {
-    v8_stats = ToV8Stat(
-        script_state, stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "media-source")) == 0) {
-    // Type media-source indicates a parent type. The actual stats are based on
-    // the kind.
-    const auto& media_source =
-        static_cast<const webrtc::RTCMediaSourceStats&>(stat);
-    DCHECK(media_source.kind.has_value());
-    std::string kind = media_source.kind.value_or("");
-    if (kind == "audio") {
+  switch (v8_stats_type->AsEnum()) {
+    case V8RTCStatsType::Enum::kCodec:
+      v8_stats = ToV8Stat(script_state, stat.cast_to<webrtc::RTCCodecStats>());
+      break;
+    case V8RTCStatsType::Enum::kInboundRtp:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCInboundRtpStreamStats>(),
+                          expose_hardware_caps);
+      break;
+    case V8RTCStatsType::Enum::kOutboundRtp:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCOutboundRtpStreamStats>(),
+                          expose_hardware_caps);
+      break;
+    case V8RTCStatsType::Enum::kRemoteInboundRtp:
+      v8_stats = ToV8Stat(
+          script_state, stat.cast_to<webrtc::RTCRemoteInboundRtpStreamStats>());
+      break;
+    case V8RTCStatsType::Enum::kRemoteOutboundRtp:
       v8_stats =
-          ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioSourceStats>());
-    } else if (kind == "video") {
-      v8_stats =
-          ToV8Stat(script_state, stat.cast_to<webrtc::RTCVideoSourceStats>());
-    } else {
-      NOTIMPLEMENTED() << "Unhandled media source stat type: " << kind;
-      return nullptr;
+          ToV8Stat(script_state,
+                   stat.cast_to<webrtc::RTCRemoteOutboundRtpStreamStats>());
+      break;
+    case V8RTCStatsType::Enum::kMediaSource: {
+      // Type media-source indicates a parent type. The actual stats are based
+      // on the kind.
+      const auto& media_source =
+          static_cast<const webrtc::RTCMediaSourceStats&>(stat);
+      DCHECK(media_source.kind.has_value());
+      std::string kind = media_source.kind.value_or("");
+      if (kind == "audio") {
+        v8_stats =
+            ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioSourceStats>());
+      } else if (kind == "video") {
+        v8_stats =
+            ToV8Stat(script_state, stat.cast_to<webrtc::RTCVideoSourceStats>());
+      } else {
+        NOTIMPLEMENTED() << "Unhandled media source stat type: " << kind;
+        return nullptr;
+      }
+      break;
     }
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "media-playout")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioPlayoutStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "peer-connection")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCPeerConnectionStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "data-channel")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCDataChannelStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "transport")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCTransportStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "candidate-pair")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCIceCandidatePairStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "local-candidate")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCLocalIceCandidateStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "remote-candidate")) == 0) {
-    v8_stats = ToV8Stat(script_state,
-                        stat.cast_to<webrtc::RTCRemoteIceCandidateStats>());
-  } else if (UNSAFE_TODO(strcmp(stat.type(), "certificate")) == 0) {
-    v8_stats =
-        ToV8Stat(script_state, stat.cast_to<webrtc::RTCCertificateStats>());
-  } else {
-    DVLOG(2) << "Unhandled stat-type " << stat.type();
-    return nullptr;
+    case V8RTCStatsType::Enum::kMediaPlayout:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCAudioPlayoutStats>());
+      break;
+    case V8RTCStatsType::Enum::kPeerConnection:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCPeerConnectionStats>());
+      break;
+    case V8RTCStatsType::Enum::kDataChannel:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCDataChannelStats>());
+      break;
+    case V8RTCStatsType::Enum::kTransport:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCTransportStats>());
+      break;
+    case V8RTCStatsType::Enum::kCandidatePair:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCIceCandidatePairStats>());
+      break;
+    case V8RTCStatsType::Enum::kLocalCandidate:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCLocalIceCandidateStats>());
+      break;
+    case V8RTCStatsType::Enum::kRemoteCandidate:
+      v8_stats = ToV8Stat(script_state,
+                          stat.cast_to<webrtc::RTCRemoteIceCandidateStats>());
+      break;
+    case V8RTCStatsType::Enum::kCertificate:
+      v8_stats =
+          ToV8Stat(script_state, stat.cast_to<webrtc::RTCCertificateStats>());
+      break;
   }
 
   v8_stats->setId(String::FromUTF8(stat.id()));
@@ -613,7 +630,7 @@ RTCStats* RTCStatsToIDL(ScriptState* script_state,
                                    ConvertToBaseTimeTicks(stat.timestamp()))
                                .InMillisecondsF());
   }
-  v8_stats->setType(String::FromUTF8(stat.type()));
+  v8_stats->setType(*v8_stats_type);
   return v8_stats;
 }
 
