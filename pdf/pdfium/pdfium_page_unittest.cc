@@ -425,30 +425,26 @@ TEST_P(PDFiumPageLinkTest, AnnotLinkGeneration) {
   const std::vector<PDFiumPage::Link>& links = GetLinks(*engine, 0);
   ASSERT_EQ(kExpectedLinkCount, links.size());
 
-  UNSAFE_TODO({
-    for (size_t i = 0; i < kExpectedLinkCount; ++i) {
-      const PDFiumPage::Link& actual_current_link = links[i];
-      const ExpectedLink& expected_current_link = expected_links[i];
-      EXPECT_EQ(expected_current_link.start_char_index,
-                actual_current_link.start_char_index);
-      EXPECT_EQ(expected_current_link.char_count,
-                actual_current_link.char_count);
-      size_t bounds_size = actual_current_link.bounding_rects.size();
-      ASSERT_EQ(expected_current_link.bounding_rects.size(), bounds_size);
-      for (size_t bounds_index = 0; bounds_index < bounds_size;
-           ++bounds_index) {
-        EXPECT_EQ(expected_current_link.bounding_rects[bounds_index],
-                  actual_current_link.bounding_rects[bounds_index]);
-      }
-      EXPECT_EQ(expected_current_link.url, actual_current_link.target.url);
-      if (actual_current_link.target.url.empty()) {
-        EXPECT_EQ(expected_current_link.page, actual_current_link.target.page);
-        ASSERT_TRUE(actual_current_link.target.y_in_pixels.has_value());
-        EXPECT_FLOAT_EQ(expected_current_link.y_in_pixels,
-                        actual_current_link.target.y_in_pixels.value());
-      }
+  for (size_t i = 0; i < kExpectedLinkCount; ++i) {
+    const PDFiumPage::Link& actual_current_link = links[i];
+    const ExpectedLink& expected_current_link = expected_links[i];
+    EXPECT_EQ(expected_current_link.start_char_index,
+              actual_current_link.start_char_index);
+    EXPECT_EQ(expected_current_link.char_count, actual_current_link.char_count);
+    size_t bounds_size = actual_current_link.bounding_rects.size();
+    ASSERT_EQ(expected_current_link.bounding_rects.size(), bounds_size);
+    for (size_t bounds_index = 0; bounds_index < bounds_size; ++bounds_index) {
+      EXPECT_EQ(expected_current_link.bounding_rects[bounds_index],
+                actual_current_link.bounding_rects[bounds_index]);
     }
-  });
+    EXPECT_EQ(expected_current_link.url, actual_current_link.target.url);
+    if (actual_current_link.target.url.empty()) {
+      EXPECT_EQ(expected_current_link.page, actual_current_link.target.page);
+      ASSERT_TRUE(actual_current_link.target.y_in_pixels.has_value());
+      EXPECT_FLOAT_EQ(expected_current_link.y_in_pixels,
+                      actual_current_link.target.y_in_pixels.value());
+    }
+  }
 }
 
 TEST_P(PDFiumPageLinkTest, GetLinkTarget) {
@@ -912,17 +908,15 @@ TEST_P(PDFiumPageHighlightTest, PopulateHighlights) {
   page.PopulateAnnotations();
   ASSERT_EQ(std::size(kExpectedHighlights), page.highlights_.size());
 
-  UNSAFE_TODO({
-    for (size_t i = 0; i < page.highlights_.size(); ++i) {
-      ASSERT_EQ(kExpectedHighlights[i].start_char_index,
-                page.highlights_[i].start_char_index);
-      ASSERT_EQ(kExpectedHighlights[i].char_count,
-                page.highlights_[i].char_count);
-      EXPECT_EQ(kExpectedHighlights[i].bounding_rect,
-                page.highlights_[i].bounding_rect);
-      ASSERT_EQ(kExpectedHighlights[i].color, page.highlights_[i].color);
-    }
-  });
+  for (size_t i = 0; i < page.highlights_.size(); ++i) {
+    ASSERT_EQ(kExpectedHighlights[i].start_char_index,
+              page.highlights_[i].start_char_index);
+    ASSERT_EQ(kExpectedHighlights[i].char_count,
+              page.highlights_[i].char_count);
+    EXPECT_EQ(kExpectedHighlights[i].bounding_rect,
+              page.highlights_[i].bounding_rect);
+    ASSERT_EQ(kExpectedHighlights[i].color, page.highlights_[i].color);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageHighlightTest, testing::Bool());
@@ -955,15 +949,13 @@ TEST_P(PDFiumPageTextFieldTest, PopulateTextFields) {
   size_t text_fields_count = page.text_fields_.size();
   ASSERT_EQ(std::size(kExpectedTextFields), text_fields_count);
 
-  UNSAFE_TODO({
-    for (size_t i = 0; i < text_fields_count; ++i) {
-      EXPECT_EQ(kExpectedTextFields[i].name, page.text_fields_[i].name);
-      EXPECT_EQ(kExpectedTextFields[i].value, page.text_fields_[i].value);
-      EXPECT_EQ(kExpectedTextFields[i].bounding_rect,
-                page.text_fields_[i].bounding_rect);
-      EXPECT_EQ(kExpectedTextFields[i].flags, page.text_fields_[i].flags);
-    }
-  });
+  for (size_t i = 0; i < text_fields_count; ++i) {
+    EXPECT_EQ(kExpectedTextFields[i].name, page.text_fields_[i].name);
+    EXPECT_EQ(kExpectedTextFields[i].value, page.text_fields_[i].value);
+    EXPECT_EQ(kExpectedTextFields[i].bounding_rect,
+              page.text_fields_[i].bounding_rect);
+    EXPECT_EQ(kExpectedTextFields[i].flags, page.text_fields_[i].flags);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageTextFieldTest, testing::Bool());
@@ -1039,23 +1031,21 @@ TEST_P(PDFiumPageChoiceFieldTest, PopulateChoiceFields) {
   size_t choice_fields_count = page.choice_fields_.size();
   ASSERT_EQ(std::size(kExpectedChoiceFields), choice_fields_count);
 
-  UNSAFE_TODO({
-    for (size_t i = 0; i < choice_fields_count; ++i) {
-      EXPECT_EQ(kExpectedChoiceFields[i].name, page.choice_fields_[i].name);
-      size_t choice_field_options_count = page.choice_fields_[i].options.size();
-      ASSERT_EQ(std::size(kExpectedChoiceFields[i].options),
-                choice_field_options_count);
-      for (size_t j = 0; j < choice_field_options_count; ++j) {
-        EXPECT_EQ(kExpectedChoiceFields[i].options[j].name,
-                  page.choice_fields_[i].options[j].name);
-        EXPECT_EQ(kExpectedChoiceFields[i].options[j].is_selected,
-                  page.choice_fields_[i].options[j].is_selected);
-      }
-      EXPECT_EQ(kExpectedChoiceFields[i].bounding_rect,
-                page.choice_fields_[i].bounding_rect);
-      EXPECT_EQ(kExpectedChoiceFields[i].flags, page.choice_fields_[i].flags);
+  for (size_t i = 0; i < choice_fields_count; ++i) {
+    EXPECT_EQ(kExpectedChoiceFields[i].name, page.choice_fields_[i].name);
+    size_t choice_field_options_count = page.choice_fields_[i].options.size();
+    ASSERT_EQ(std::size(kExpectedChoiceFields[i].options),
+              choice_field_options_count);
+    for (size_t j = 0; j < choice_field_options_count; ++j) {
+      EXPECT_EQ(kExpectedChoiceFields[i].options[j].name,
+                page.choice_fields_[i].options[j].name);
+      EXPECT_EQ(kExpectedChoiceFields[i].options[j].is_selected,
+                page.choice_fields_[i].options[j].is_selected);
     }
-  });
+    EXPECT_EQ(kExpectedChoiceFields[i].bounding_rect,
+              page.choice_fields_[i].bounding_rect);
+    EXPECT_EQ(kExpectedChoiceFields[i].flags, page.choice_fields_[i].flags);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageChoiceFieldTest, testing::Bool());
@@ -1128,21 +1118,19 @@ TEST_P(PDFiumPageButtonTest, PopulateButtons) {
   size_t buttons_count = page.buttons_.size();
   ASSERT_EQ(std::size(kExpectedButtons), buttons_count);
 
-  UNSAFE_TODO({
-    for (size_t i = 0; i < buttons_count; ++i) {
-      EXPECT_EQ(kExpectedButtons[i].name, page.buttons_[i].name);
-      EXPECT_EQ(kExpectedButtons[i].value, page.buttons_[i].value);
-      EXPECT_EQ(kExpectedButtons[i].type, page.buttons_[i].type);
-      EXPECT_EQ(kExpectedButtons[i].flags, page.buttons_[i].flags);
-      EXPECT_EQ(kExpectedButtons[i].is_checked, page.buttons_[i].is_checked);
-      EXPECT_EQ(kExpectedButtons[i].control_count,
-                page.buttons_[i].control_count);
-      EXPECT_EQ(kExpectedButtons[i].control_index,
-                page.buttons_[i].control_index);
-      EXPECT_EQ(kExpectedButtons[i].bounding_rect,
-                page.buttons_[i].bounding_rect);
-    }
-  });
+  for (size_t i = 0; i < buttons_count; ++i) {
+    EXPECT_EQ(kExpectedButtons[i].name, page.buttons_[i].name);
+    EXPECT_EQ(kExpectedButtons[i].value, page.buttons_[i].value);
+    EXPECT_EQ(kExpectedButtons[i].type, page.buttons_[i].type);
+    EXPECT_EQ(kExpectedButtons[i].flags, page.buttons_[i].flags);
+    EXPECT_EQ(kExpectedButtons[i].is_checked, page.buttons_[i].is_checked);
+    EXPECT_EQ(kExpectedButtons[i].control_count,
+              page.buttons_[i].control_count);
+    EXPECT_EQ(kExpectedButtons[i].control_index,
+              page.buttons_[i].control_index);
+    EXPECT_EQ(kExpectedButtons[i].bounding_rect,
+              page.buttons_[i].bounding_rect);
+  }
 }
 
 INSTANTIATE_TEST_SUITE_P(All, PDFiumPageButtonTest, testing::Bool());
