@@ -387,8 +387,7 @@ void ReaderModeTabHelper::PageDistillationCompleted(
 void ReaderModeTabHelper::CreateReaderModeContent() {
   if (!reader_mode_web_state_) {
     web::WebState::CreateParams create_params = web::WebState::CreateParams(
-        ProfileIOS::FromBrowserState(web_state_->GetBrowserState())
-            ->GetOffTheRecordProfile());
+        ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
     reader_mode_web_state_ = web::WebState::Create(create_params);
     reader_mode_web_state_->SetWebUsageEnabled(true);
   }
