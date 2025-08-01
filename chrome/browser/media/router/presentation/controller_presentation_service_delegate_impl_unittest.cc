@@ -142,8 +142,6 @@ std::unique_ptr<KeyedService> BuildMockLocalPresentationManager(
   return std::make_unique<NiceMock<MockLocalPresentationManager>>();
 }
 
-// TODO(crbug.com/40753746): move c_p_s_d_impl_unittest.cc to the same directory
-// as controller_presentation_service_delegate_impl.* files.
 class ControllerPresentationServiceDelegateImplTest
     : public ChromeRenderViewHostTestHarness {
  public:
