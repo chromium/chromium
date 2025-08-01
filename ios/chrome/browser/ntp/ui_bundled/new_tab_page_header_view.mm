@@ -962,6 +962,7 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
     _voiceAndLensDivider.backgroundColor = colorPalette.omniboxIconDividerColor;
     _miaAndVoiceDivider.backgroundColor = colorPalette.omniboxIconDividerColor;
+    _miaAnimationView.alpha = 0;
   } else {
     [_fakeLocationBar setStartColor:FakeboxTopColor()
                            endColor:FakeboxBottomColor()];
@@ -983,6 +984,8 @@ CGFloat MIAAnimationOpacityForScrollProgress(CGFloat percent) {
 
     _voiceAndLensDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
     _miaAndVoiceDivider.backgroundColor = [UIColor colorNamed:kGrey600Color];
+    _miaAnimationView.alpha =
+        MIAAnimationOpacityForScrollProgress(_lastAnimationPercent);
   }
 }
 
