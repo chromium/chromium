@@ -87,7 +87,6 @@ class BrowserChildProcessHostImpl
       override;
   void SetName(const std::u16string& name) override;
   void SetMetricsName(const std::string& metrics_name) override;
-  void SetProcess(base::Process process) override;
 
   // ChildProcessHostDelegate implementation:
   void OnChannelInitialized(IPC::Channel* channel) override;

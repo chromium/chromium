@@ -135,8 +135,7 @@ AgentSchedulingGroup::AgentSchedulingGroup(
   // TODO(crbug.com/40142495): Add necessary filters.
   // Currently, the renderer process has these filters:
   // 1. `UnfreezableMessageFilter` - in the process of being removed,
-  // 2. `PnaclTranslationResourceHost` - NaCl is going away, and
-  // 3. `AutomationMessageFilter` - needs to be handled somehow.
+  // 2. `AutomationMessageFilter` - needs to be handled somehow.
 
   channel_->Init(
       ChannelMojo::CreateClientFactory(

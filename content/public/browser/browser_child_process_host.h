@@ -80,12 +80,6 @@ class CONTENT_EXPORT BrowserChildProcessHost {
   // Sets the name of the process used for metrics reporting.
   virtual void SetMetricsName(const std::string& metrics_name) = 0;
 
-  // Set the process. BrowserChildProcessHost will do this when the Launch
-  // method is used to start the process. However if the owner of this object
-  // doesn't call Launch and starts the process in another way, they need to
-  // call this method so that the process is associated with this object.
-  virtual void SetProcess(base::Process process) = 0;
-
 #if BUILDFLAG(IS_APPLE) && !BUILDFLAG(IS_IOS_TVOS)
   // Returns a PortProvider used to get the task port for child processes.
   static base::PortProvider* GetPortProvider();
