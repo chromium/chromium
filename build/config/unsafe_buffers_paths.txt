@@ -8,7 +8,6 @@
 .buffers,libc
 
 # Directories to exempt from checks
--base/allocator/
 -base/third_party/
 -codelabs/  # Examples, keep simple.
 -chrome/browser/platform_experience/win/
