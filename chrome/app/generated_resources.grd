@@ -5175,7 +5175,7 @@ are declared in tools/grit/grit_args.gni.
         <ph name="EXTENSION_NAME">$1<ex>Adblock</ex></ph> is disabled
       </message>
 
-      <if expr="enable_extensions">
+      <if expr="enable_extensions_core">
         <!-- Extension blocked action bubble -->
         <message name="IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING" desc="Heading of the bubble to tell users that in order to run or not run an extension, they'll need to refresh the page. Deliberately similar to IDS_PAGE_INFO_INFOBAR_TEXT, but used for an different permission setting so they are not combined. If updating the one, please update the other or consult the extensions and privacy teams.">
           Reload this page to apply your updated settings on this site

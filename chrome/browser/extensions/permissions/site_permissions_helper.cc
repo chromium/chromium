@@ -32,16 +32,6 @@ constexpr const char kPrefShowAccessRequestsInToolbar[] =
 constexpr int kRefreshRequiredActionsMask =
     BLOCKED_ACTION_WEB_REQUEST | BLOCKED_ACTION_SCRIPT_AT_START;
 
-std::vector<ExtensionId> GetExtensionIds(
-    const std::vector<const Extension*>& extensions) {
-  std::vector<ExtensionId> extension_ids;
-  extension_ids.reserve(extensions.size());
-  for (const auto* extension : extensions) {
-    extension_ids.push_back(extension->id());
-  }
-  return extension_ids;
-}
-
 }  // namespace
 
 SitePermissionsHelper::SitePermissionsHelper(Profile* profile)
@@ -201,8 +191,7 @@ void SitePermissionsHelper::UpdateSiteAccess(
   if (action_runner && reload_required) {
     // Show the reload bubble for all extensions, since it could be confusing to
     // the user why only some of them appear on the dialog.
-    std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
-    action_runner->ShowReloadPageBubble(extension_ids);
+    action_runner->ShowReloadPageBubble(extensions);
   }
 }
 

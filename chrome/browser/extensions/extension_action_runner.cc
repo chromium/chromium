@@ -25,6 +25,7 @@
 #include "chrome/browser/extensions/permissions/site_permissions_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "chrome/browser/ui/toolbar/toolbar_actions_model.h"
 #include "components/crx_file/id_util.h"
 #include "components/sessions/content/session_tab_helper.h"
@@ -54,20 +55,6 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/extensions/extensions_dialogs.h"
 #endif
-
-namespace {
-
-std::vector<extensions::ExtensionId> GetExtensionIds(
-    std::vector<const extensions::Extension*> extensions) {
-  std::vector<extensions::ExtensionId> extension_ids;
-  extension_ids.reserve(extensions.size());
-  for (auto* extension : extensions) {
-    extension_ids.push_back(extension->id());
-  }
-  return extension_ids;
-}
-
-}  // namespace
 
 namespace extensions {
 
@@ -195,8 +182,7 @@ void ExtensionActionRunner::GrantTabPermissions(
                PermissionsManager::UserSiteAccess::kOnClick;
       }));
 
-  std::vector<ExtensionId> extension_ids = GetExtensionIds(extensions);
-  ShowReloadPageBubble(extension_ids);
+  ShowReloadPageBubble(extensions);
 }
 
 void ExtensionActionRunner::OnActiveTabPermissionGranted(
@@ -407,7 +393,7 @@ void ExtensionActionRunner::LogUMA() const {
 }
 
 void ExtensionActionRunner::ShowReloadPageBubble(
-    const std::vector<ExtensionId>& extension_ids) {
+    const std::vector<const Extension*>& extensions) {
   // For testing, simulate the bubble being accepted by directly invoking the
   // callback, or rejected by skipping the callback.
   if (accept_bubble_for_testing_.has_value()) {
@@ -420,31 +406,12 @@ void ExtensionActionRunner::ShowReloadPageBubble(
     return;
   }
 
-#if BUILDFLAG(ENABLE_EXTENSIONS)
-  // TODO(emiliapaz): Consider showing the dialog as a modal if container
-  // doesn't exist. Currently we get the extension's icon via the action
-  // controller from the container, so the container must exist.
-  Browser* browser = chrome::FindBrowserWithTab(web_contents());
-  ExtensionsContainer* const extensions_container =
-      browser ? browser->window()->GetExtensionsContainer() : nullptr;
-  if (!extensions_container) {
-    return;
-  }
-
-  ShowReloadPageDialog(
-      browser, extension_ids,
+  gfx::NativeWindow parent = web_contents()->GetTopLevelNativeWindow();
+  reload_page_dialog_controller_ = std::make_unique<ReloadPageDialogController>(
+      parent, browser_context_,
       base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
                      weak_factory_.GetWeakPtr()));
-#else
-  // TODO(crbug.com/371432155): Add the above code to desktop Android when we
-  // have a tab interface that works on Android. For now, just accept the
-  // dialog.
-  NOTIMPLEMENTED() << "Accepting reload page bubble";
-  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&ExtensionActionRunner::OnReloadPageBubbleAccepted,
-                     weak_factory_.GetWeakPtr()));
-#endif  // BUILDFLAG(ENABLE_EXTENSIONS)
+  reload_page_dialog_controller_->TriggerShow(extensions);
 }
 
 void ExtensionActionRunner::OnReloadPageBubbleAccepted() {

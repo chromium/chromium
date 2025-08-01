@@ -45,8 +45,6 @@ DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogManageButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogParagraphElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2DisabledDialogRemoveButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kMv2KeepDialogOkButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogCancelButtonElementId);
-DECLARE_ELEMENT_IDENTIFIER_VALUE(kReloadPageDialogOkButtonElementId);
 DECLARE_ELEMENT_IDENTIFIER_VALUE(kParentBlockedDialogMessage);
 
 void ShowConstrainedDeviceChooserDialog(
@@ -105,14 +103,6 @@ void ShowMv2DeprecationReEnableDialog(
     const ExtensionId& extension_id,
     const std::string& extension_name,
     base::OnceCallback<void(bool)> done_callback);
-
-// Shows a dialog when extensions require a refresh for their action
-// to be run or blocked. When the dialog is accepted, `callback` is
-// invoked.
-void ShowReloadPageDialog(
-    Browser* browser,
-    const std::vector<extensions::ExtensionId>& extension_ids,
-    base::OnceClosure callback);
 
 // Shows a dialog with a warning to the user that their settings have been
 // overridden by an extension.

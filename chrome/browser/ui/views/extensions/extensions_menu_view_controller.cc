@@ -443,7 +443,7 @@ void ExtensionsMenuViewController::OnExtensionToggleSelected(
   auto* action_runner =
       extensions::ExtensionActionRunner::GetForWebContents(web_contents);
   if (action_runner) {
-    action_runner->ShowReloadPageBubble({extension_id});
+    action_runner->ShowReloadPageBubble({GetExtension(browser_, extension_id)});
   }
 }
 

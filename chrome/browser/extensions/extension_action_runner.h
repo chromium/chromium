@@ -17,6 +17,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/reload_page_dialog_controller.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "extensions/browser/blocked_action_type.h"
 #include "extensions/browser/extension_action.h"
@@ -81,12 +82,9 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // well.
   void GrantTabPermissions(const std::vector<const Extension*>& extensions);
 
-  // TODO(crbug.com/40883928): Move the reload bubble outside of
-  // `ExtensionActionRunner` as it is no longer tied to running an action. See
-  // if it can be merged with extensions dialogs utils `ShowReloadPageDialog`.
-  // Shows the bubble to prompt the user to refresh the page to run or not the
-  // action for the given `extension_ids`.
-  void ShowReloadPageBubble(const std::vector<ExtensionId>& extension_ids);
+  // TODO(crbug.com/424012380): Move to ReloadPageDialogController, as well as
+  // the on accepted callback.
+  void ShowReloadPageBubble(const std::vector<const Extension*>& extensions);
 
   // Notifies the ExtensionActionRunner that an extension has been granted
   // active tab permissions. This will run any pending injections for that
@@ -234,7 +232,11 @@ class ExtensionActionRunner : public content::WebContentsObserver,
   // actions.
   bool ignore_active_tab_granted_ = false;
 
-  // If true, immediately accept the blocked action dialog by running the
+  // TODO(crbug.com/424012380): reload page dialog ownership should be moved to
+  // each caller.
+  std::unique_ptr<ReloadPageDialogController> reload_page_dialog_controller_;
+
+  // If true, immediately accept the reload page dialog by running the
   // callback.
   std::optional<bool> accept_bubble_for_testing_;
 
