@@ -184,11 +184,10 @@ void CryptohomeRecoveryScreen::OnAuthenticateWithRecovery(
   }
 
   // The user just authenticated with recovery factor and therefore we want to
-  // rotate the recovery id after the user directory is mounted.
-  user_context->SetGenerateFreshRecoveryId(true);
+  // rotate the recovery id.
   auth_factor_editor_.RotateRecoveryFactor(
       std::move(user_context),
-      /*ensure_fresh_recovery_id=*/false,
+      /*ensure_fresh_recovery_id=*/true,
       base::BindOnce(&CryptohomeRecoveryScreen::OnRotateRecoveryFactor,
                      weak_ptr_factory_.GetWeakPtr()));
 }
