@@ -37,6 +37,7 @@ import org.chromium.chrome.browser.autofill.AutofillUiUtils;
 import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.CreditCard;
 import org.chromium.chrome.browser.autofill.PersonalDataManagerFactory;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.ChromeBaseSettingsFragment;
 import org.chromium.components.autofill.ImageSize;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -123,7 +124,13 @@ public class AutofillCardBenefitsFragment extends ChromeBaseSettingsFragment
     private void createCardBenefitSwitch() {
         ChromeSwitchPreference cardBenefitSwitch = new ChromeSwitchPreference(getStyledContext());
         cardBenefitSwitch.setTitle(R.string.autofill_settings_page_card_benefits_label);
-        cardBenefitSwitch.setSummary(R.string.autofill_settings_page_card_benefits_toggle_summary);
+        int summaryText =
+                ChromeFeatureList.isEnabled(
+                                ChromeFeatureList.AUTOFILL_ENABLE_NEW_CARD_BENEFITS_TOGGLE_TEXT)
+                        ? R.string
+                                .autofill_settings_page_card_benefits_toggle_summary_with_issuer_terms_apply_text
+                        : R.string.autofill_settings_page_card_benefits_toggle_summary;
+        cardBenefitSwitch.setSummary(summaryText);
         cardBenefitSwitch.setKey(PREF_KEY_ENABLE_CARD_BENEFIT);
         cardBenefitSwitch.setChecked(mPersonalDataManager.isCardBenefitEnabled());
         cardBenefitSwitch.setOnPreferenceChangeListener(this);
