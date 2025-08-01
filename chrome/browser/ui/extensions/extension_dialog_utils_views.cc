@@ -35,10 +35,16 @@ views::View* GetDialogAnchorView(
 void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
+  ShowDialog(parent, std::vector({extension_id}), std::move(dialog_model));
+}
+
+void ShowDialog(gfx::NativeWindow parent,
+                const std::vector<extensions::ExtensionId>& extension_ids,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
   ExtensionsToolbarContainer* const container =
       parent ? GetExtensionsToolbarContainer(parent) : nullptr;
   if (container && container->GetVisible()) {
-    ShowDialog(container, {extension_id}, std::move(dialog_model));
+    ShowDialog(container, extension_ids, std::move(dialog_model));
   } else {
     constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
   }

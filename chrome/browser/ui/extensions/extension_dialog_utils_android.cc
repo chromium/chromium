@@ -12,7 +12,14 @@
 void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
                 std::unique_ptr<ui::DialogModel> dialog_model) {
-  // We ignore `extension_id` as dialogs are never anchored to the extension
+  ShowDialog(parent, std::vector<extensions::ExtensionId>{extension_id},
+             std::move(dialog_model));
+}
+
+void ShowDialog(gfx::NativeWindow parent,
+                const std::vector<extensions::ExtensionId>& /* extension_ids */,
+                std::unique_ptr<ui::DialogModel> dialog_model) {
+  // We ignore `extension_ids` as dialogs are never anchored to the extension
   // action button on Android for UX reasons.
   ui::ModalDialogWrapper::ShowTabModal(std::move(dialog_model), parent);
 }

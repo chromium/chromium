@@ -21,11 +21,20 @@ class Browser;
 class ExtensionsToolbarContainer;
 
 // Shows the dialog constructed from `dialog_model` anchored to the view
-// corresponding to `extension_id` in the extensions container. If parent does
-// not have an extensions container, it will display a browser-modal dialog
-// instead.
+// corresponding to `extension_id` in the extensions container. This is similar
+// to the overload taking a `std::vector<extensions::ExtensionId>`, but for a
+// single extension. If `parent` does not have an extensions container, it will
+// display a browser-modal dialog instead.
 void ShowDialog(gfx::NativeWindow parent,
                 const extensions::ExtensionId& extension_id,
+                std::unique_ptr<ui::DialogModel> dialog_model);
+
+// Shows the dialog constructed from `dialog_model` anchored to the view
+// corresponding to `extension_ids` in the extensions container. If `parent`
+// does not have an extensions container, it will display a browser-modal dialog
+// instead.
+void ShowDialog(gfx::NativeWindow parent,
+                const std::vector<extensions::ExtensionId>& extension_ids,
                 std::unique_ptr<ui::DialogModel> dialog_model);
 
 #if defined(TOOLKIT_VIEWS)

@@ -4796,6 +4796,7 @@ if (!is_android) {
         "../browser/extensions/api/automation/automation_apitest.cc",
         "../browser/extensions/api/image_writer_private/image_writer_private_apitest.cc",
         "../browser/ui/extensions/extension_install_blocked_dialog_browsertest.cc",
+        "../browser/ui/extensions/extension_multiple_uninstall_dialog_browsertest.cc",
         "../browser/ui/extensions/extension_uninstall_dialog_impl_browsertest.cc",
       ]
 
@@ -4988,7 +4989,6 @@ if (!is_android) {
         "../browser/ui/views/commerce/product_specifications_icon_view_browsertest.cc",
         "../browser/ui/views/desktop_capture/desktop_media_picker_views_browsertest.cc",
         "../browser/ui/views/extensions/device_chooser_extension_browsertest.cc",
-        "../browser/ui/views/extensions/dialogs/extension_multiple_uninstall_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/mv2_deprecation_reenable_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/reload_page_dialog_browsertest.cc",
         "../browser/ui/views/extensions/dialogs/settings_overridden_dialog_browsertest.cc",

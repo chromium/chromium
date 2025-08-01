@@ -8,8 +8,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/extensions/extension_dialog_utils.h"
-#include "chrome/browser/ui/views/extensions/extension_view_utils.h"
-#include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
@@ -55,13 +53,7 @@ void ShowExtensionMultipleUninstallDialog(
   }
   std::unique_ptr<ui::DialogModel> dialog_model = dialog_builder.Build();
 
-  ExtensionsToolbarContainer* const container =
-      parent ? GetExtensionsToolbarContainer(parent) : nullptr;
-  if (container && container->GetVisible()) {
-    ShowDialog(container, extension_ids, std::move(dialog_model));
-  } else {
-    constrained_window::ShowBrowserModal(std::move(dialog_model), parent);
-  }
+  ShowDialog(parent, extension_ids, std::move(dialog_model));
 }
 
 }  // namespace extensions
