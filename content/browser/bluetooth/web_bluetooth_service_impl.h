@@ -568,6 +568,11 @@ class CONTENT_EXPORT WebBluetoothServiceImpl
                           BluetoothDelegate::FramePermissionObserver>
       observer_{this};
 
+  // A set contains device ids that have GATT connection attempt ongoing.
+  std::unordered_set<blink::WebBluetoothDeviceId,
+                     blink::WebBluetoothDeviceIdHash>
+      pending_connection_device_ids_;
+
   base::WeakPtrFactory<WebBluetoothServiceImpl> weak_ptr_factory_{this};
 };
 
