@@ -52,19 +52,6 @@ class MockObjectProxy : public ObjectProxy {
                     ResponseOrErrorCallback* callback));
 
   // This method is not mockable because it takes a move-only argument. To work
-  // around this, CallMethodWithErrorCallback() implementation here calls
-  // DoCallMethodWithErrorCallback() which is mockable.
-  void CallMethodWithErrorCallback(MethodCall* method_call,
-                                   int timeout_ms,
-                                   ResponseCallback callback,
-                                   ErrorCallback error_callback) override;
-  MOCK_METHOD4(DoCallMethodWithErrorCallback,
-               void(MethodCall* method_call,
-                    int timeout_ms,
-                    ResponseCallback* callback,
-                    ErrorCallback* error_callback));
-
-  // This method is not mockable because it takes a move-only argument. To work
   // around this, WaitForServiceToBeAvailable() implementation here calls
   // DoWaitForServiceToBeAvailable() which is mockable.
   void WaitForServiceToBeAvailable(

@@ -27,15 +27,6 @@ void MockObjectProxy::CallMethodWithErrorResponse(
   DoCallMethodWithErrorResponse(method_call, timeout_ms, &callback);
 }
 
-void MockObjectProxy::CallMethodWithErrorCallback(
-    MethodCall* method_call,
-    int timeout_ms,
-    ResponseCallback callback,
-    ErrorCallback error_callback) {
-  DoCallMethodWithErrorCallback(method_call, timeout_ms, &callback,
-                                &error_callback);
-}
-
 void MockObjectProxy::WaitForServiceToBeAvailable(
     WaitForServiceToBeAvailableCallback callback) {
   DoWaitForServiceToBeAvailable(&callback);

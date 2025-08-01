@@ -150,26 +150,6 @@ class CHROME_DBUS_EXPORT ObjectProxy
                                            int timeout_ms,
                                            ResponseOrErrorCallback callback);
 
-  // DEPRECATED. Please use CallMethodWithErrorResponse() instead.
-  // TODO(hidehiko): Remove this when migration is done.
-  // Requests to call the method of the remote object.
-  //
-  // |callback| and |error_callback| will be called in the origin thread, once
-  // the method call is complete. As it's called in the origin thread,
-  // |callback| can safely reference objects in the origin thread (i.e.
-  // UI thread in most cases).
-  //
-  // If the method call is successful, |callback| will be invoked with a
-  // Response object. If unsuccessful, |error_callback| will be invoked with an
-  // ErrorResponse object (if the remote object returned an error) or nullptr
-  // (if a response was not received at all).
-  //
-  // Must be called in the origin thread.
-  virtual void CallMethodWithErrorCallback(MethodCall* method_call,
-                                           int timeout_ms,
-                                           ResponseCallback callback,
-                                           ErrorCallback error_callback);
-
   // Requests to connect to the signal from the remote object.
   //
   // |signal_callback| will be called in the origin thread, when the
