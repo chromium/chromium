@@ -260,6 +260,30 @@ class AudioContextTest : public PageTestBase {
     audio_context->SetContextState(state);
   }
 
+  void ExpectContextRunning(AudioContext* audio_context) {
+    EXPECT_EQ(audio_context->ContextState(),
+              V8AudioContextState::Enum::kRunning);
+    EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
+                    ->GetOwnHandler()
+                    .get_platform_destination_is_playing_for_testing());
+  }
+
+  void ExpectContextSuspended(AudioContext* audio_context) {
+    EXPECT_EQ(audio_context->ContextState(),
+              V8AudioContextState::Enum::kSuspended);
+    EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
+                     ->GetOwnHandler()
+                     .get_platform_destination_is_playing_for_testing());
+  }
+
+  void ExpectContextInterrupted(AudioContext* audio_context) {
+    EXPECT_EQ(audio_context->ContextState(),
+              V8AudioContextState::Enum::kInterrupted);
+    EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
+                     ->GetOwnHandler()
+                     .get_platform_destination_is_playing_for_testing());
+  }
+
   AudioContextTestPlatform* platform() {
     return platform_.GetTestingPlatformSupport();
   }
@@ -1067,68 +1091,23 @@ TEST_F(AudioContextTest, AecSetSinkIdAfterConstructor) {
   EXPECT_EQ(GetAecDevice(execution_context), kFakeAudioOutput2);
 }
 
-class AudioContextInterruptedStateTest
-    : public testing::WithParamInterface<bool>,
-      public AudioContextTest {
- public:
-  AudioContextInterruptedStateTest() {
-    if (GetParam()) {
-      blink::WebRuntimeFeatures::EnableFeatureFromString(
-          "AudioContextInterruptedState", true);
-    } else {
-      blink::WebRuntimeFeatures::EnableFeatureFromString(
-          "AudioContextInterruptedState", false);
-    }
-  }
-
-  bool IsParamFeatureEnabled() { return GetParam(); }
-
-  void ExpectAudioContextRunning(AudioContext* audio_context) {
-    EXPECT_EQ(audio_context->ContextState(),
-              V8AudioContextState::Enum::kRunning);
-    EXPECT_TRUE(audio_context->GetRealtimeAudioDestinationNode()
-                    ->GetOwnHandler()
-                    .get_platform_destination_is_playing_for_testing());
-  }
-
-  void ExpectAudioContextSuspended(AudioContext* audio_context) {
-    EXPECT_EQ(audio_context->ContextState(),
-              V8AudioContextState::Enum::kSuspended);
-    EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                     ->GetOwnHandler()
-                     .get_platform_destination_is_playing_for_testing());
-  }
-
-  void ExpectAudioContextInterrupted(AudioContext* audio_context) {
-    EXPECT_EQ(audio_context->ContextState(),
-              V8AudioContextState::Enum::kInterrupted);
-    EXPECT_FALSE(audio_context->GetRealtimeAudioDestinationNode()
-                     ->GetOwnHandler()
-                     .get_platform_destination_is_playing_for_testing());
-  }
-};
-
-TEST_P(AudioContextInterruptedStateTest, InterruptionWhileRunning) {
+TEST_F(AudioContextTest, InterruptionWhileRunning) {
   // If an interruption occurs while the AudioContext is running, the context
   // should be put into the interrupted state and the platform destination
   // should stop playing.
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(
       GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 
   audio_context->StartContextInterruption();
-  if (IsParamFeatureEnabled()) {
-    ExpectAudioContextInterrupted(audio_context);
-  } else {
-    ExpectAudioContextRunning(audio_context);
-  }
+  ExpectContextInterrupted(audio_context);
 
   audio_context->EndContextInterruption();
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 }
 
-TEST_P(AudioContextInterruptedStateTest, InterruptionWhileSuspended) {
+TEST_F(AudioContextTest, InterruptionWhileSuspended) {
   // If an interruption occurs while the AudioContext is suspended, the context
   // should remain in the suspended state and the platform destination should
   // not start playing.
@@ -1138,22 +1117,21 @@ TEST_P(AudioContextInterruptedStateTest, InterruptionWhileSuspended) {
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(
       GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 
   audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 
   // Starting and ending an interruption while the context is "suspended" should
   // not change the user-facing state.
   audio_context->StartContextInterruption();
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 
   audio_context->EndContextInterruption();
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 }
 
-TEST_P(AudioContextInterruptedStateTest,
-       ResumingSuspendedContextWhileInterrupted) {
+TEST_F(AudioContextTest, ResumingSuspendedContextWhileInterrupted) {
   // If an interruption occurs while the AudioContext is suspended, the context
   // should remain in the suspended state and the platform destination should
   // not start playing.
@@ -1163,36 +1141,26 @@ TEST_P(AudioContextInterruptedStateTest,
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(
       GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 
   audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 
   audio_context->StartContextInterruption();
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 
   // Resuming a "suspended" context while there is an ongoing interruption
   // should change the state to "interrupted" and no audio should be played.
   audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
-  if (IsParamFeatureEnabled()) {
-    ExpectAudioContextInterrupted(audio_context);
-  } else {
-    ContextRenderer* renderer =
-        MakeGarbageCollected<ContextRenderer>(audio_context);
-    renderer->Init();
-    renderer->Render(128, base::Milliseconds(0), {});
-    platform()->RunUntilIdle();
-    ExpectAudioContextRunning(audio_context);
-  }
+  ExpectContextInterrupted(audio_context);
 
   // Ending the interruption should bring the context back to the running
   // state.
   audio_context->EndContextInterruption();
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 }
 
-TEST_P(AudioContextInterruptedStateTest,
-       SuspendingRunningContextWhileInterrupted) {
+TEST_F(AudioContextTest, SuspendingRunningContextWhileInterrupted) {
   // If an interruption happens while the AudioContext is running, the context
   // should be put in the interrupted state. If the context is then suspended,
   // the context should be put in the suspended state immediately.
@@ -1202,20 +1170,16 @@ TEST_P(AudioContextInterruptedStateTest,
   AudioContextOptions* options = AudioContextOptions::Create();
   AudioContext* audio_context = AudioContext::Create(
       GetFrame().DomWindow(), options, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 
   audio_context->StartContextInterruption();
-  if (IsParamFeatureEnabled()) {
-    ExpectAudioContextInterrupted(audio_context);
-  } else {
-    ExpectAudioContextRunning(audio_context);
-  }
+  ExpectContextInterrupted(audio_context);
 
   audio_context->suspendContext(script_state, ASSERT_NO_EXCEPTION);
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 
   audio_context->EndContextInterruption();
-  ExpectAudioContextSuspended(audio_context);
+  ExpectContextSuspended(audio_context);
 
   audio_context->resumeContext(script_state, ASSERT_NO_EXCEPTION);
   FlushMediaDevicesDispatcherHost();
@@ -1224,11 +1188,7 @@ TEST_P(AudioContextInterruptedStateTest,
   renderer->Init();
   renderer->Render(128, base::Milliseconds(0), {});
   platform()->RunUntilIdle();
-  ExpectAudioContextRunning(audio_context);
+  ExpectContextRunning(audio_context);
 }
-
-INSTANTIATE_TEST_SUITE_P(AudioContextInterruptedStateTests,
-                         AudioContextInterruptedStateTest,
-                         testing::Bool());
 
 }  // namespace blink

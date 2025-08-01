@@ -648,11 +648,6 @@ void BaseAudioContext::SetContextState(V8AudioContextState::Enum new_state) {
     return;
   }
 
-  if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
-      new_state == V8AudioContextState::Enum::kInterrupted) {
-    return;
-  }
-
   // If there's no change in the current state, there's nothing that needs to be
   // done.
   if (new_state == control_thread_state_) {

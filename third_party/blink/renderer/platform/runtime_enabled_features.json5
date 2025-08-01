@@ -559,10 +559,6 @@
       public: true,
     },
     {
-      name: "AudioContextInterruptedState",
-      status: "stable",
-    },
-    {
       name: "AudioContextOnError",
       status: "stable",
     },

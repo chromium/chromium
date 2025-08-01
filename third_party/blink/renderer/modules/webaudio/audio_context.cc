@@ -288,9 +288,7 @@ AudioContext::AudioContext(LocalDOMWindow& window,
           MakeGarbageCollected<V8UnionAudioSinkInfoOrString>(g_empty_string)),
       media_device_service_(&window),
       media_device_service_receiver_(this, &window),
-      should_interrupt_when_frame_is_hidden_(
-          RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled() &&
-          !CanPlayWhileHidden()),
+      should_interrupt_when_frame_is_hidden_(!CanPlayWhileHidden()),
       player_id_(GetNextMediaPlayerId()),
       media_player_host_(&window),
       media_player_receiver_(this, &window),
@@ -1441,10 +1439,6 @@ void AudioContext::StartContextInterruption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
                "state", static_cast<int>(ContextState()));
-  if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled()) {
-    return;
-  }
-
   SendLogMessage(__func__, "");
   V8AudioContextState::Enum context_state = ContextState();
   if (context_state == V8AudioContextState::Enum::kClosed ||
@@ -1469,10 +1463,6 @@ void AudioContext::EndContextInterruption() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_sequence_checker_);
   TRACE_EVENT2("webaudio", __func__, "UUID", Uuid(),
                "state", static_cast<int>(ContextState()));
-  if (!RuntimeEnabledFeatures::AudioContextInterruptedStateEnabled()) {
-    return;
-  }
-
   SendLogMessage(__func__, "");
   is_interrupted_while_suspended_ = false;
   if (ContextState() == V8AudioContextState::Enum::kClosed) {
