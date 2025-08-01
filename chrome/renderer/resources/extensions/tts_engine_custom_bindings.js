@@ -6,14 +6,14 @@
 
 bindingUtil.registerEventArgumentMassager(
     'ttsEngine.onSpeak', function(args, dispatch) {
-      var text = args[0];
-      var options = args[1];
-      var requestId = args[2];
+      const text = args[0];
+      const options = args[1];
+      const requestId = args[2];
       if (args.length !== 3) {
         throw new Error('Unexpected number of args: ' + args.length);
       }
 
-      var sendTtsEvent = function(event) {
+      const sendTtsEvent = function(event) {
         chrome.ttsEngine.sendTtsEvent(requestId, event);
       };
       dispatch([text, options, sendTtsEvent]);
@@ -22,10 +22,10 @@ bindingUtil.registerEventArgumentMassager(
 let currentRequestId;
 bindingUtil.registerEventArgumentMassager(
     'ttsEngine.onSpeakWithAudioStream', function(args, dispatch) {
-      let text = args[0];
-      let options = args[1];
-      let requestId = args[2];
-      let audioStreamOptions = args[3];
+      const text = args[0];
+      const options = args[1];
+      const requestId = args[2];
+      const audioStreamOptions = args[3];
       if (args.length !== 4) {
         throw new Error('Unexpected number of args: ' + args.length);
       }

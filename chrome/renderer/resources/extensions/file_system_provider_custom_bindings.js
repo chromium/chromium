@@ -4,14 +4,14 @@
 
 // Custom binding for the fileSystemProvider API.
 
-var fileSystemProviderInternal = getInternalApi('fileSystemProviderInternal');
+const fileSystemProviderInternal = getInternalApi('fileSystemProviderInternal');
 
 /**
  * Maximum size of the thumbnail in bytes.
  * @type {number}
  * @const
  */
-var METADATA_THUMBNAIL_SIZE_LIMIT = 32 * 1024 * 1024;
+const METADATA_THUMBNAIL_SIZE_LIMIT = 32 * 1024 * 1024;
 
 /**
  * Regular expression to validate if the thumbnail URI is a valid data URI,
@@ -19,7 +19,8 @@ var METADATA_THUMBNAIL_SIZE_LIMIT = 32 * 1024 * 1024;
  * @type {RegExp}
  * @const
  */
-var METADATA_THUMBNAIL_FORMAT = new RegExp('^data:image/(png|jpeg|webp);', 'i');
+const METADATA_THUMBNAIL_FORMAT =
+    new RegExp('^data:image/(png|jpeg|webp);', 'i');
 
 /**
  * Annotates a date with its serialized value.
@@ -28,7 +29,7 @@ var METADATA_THUMBNAIL_FORMAT = new RegExp('^data:image/(png|jpeg|webp);', 'i');
  */
 function annotateDate(date) {
   // Copy in case the input date is frozen.
-  var result = new Date(date.getTime());
+  const result = new Date(date.getTime());
   result.value = result.toString();
   return result;
 }
@@ -141,7 +142,7 @@ function verifyErrorForFailure(error) {
  *     back to the C++ layer.
  */
 function annotateMetadata(metadata) {
-  var result = {};
+  const result = {};
   if (metadata.isDirectory !== undefined) {
     result.isDirectory = metadata.isDirectory;
   }
@@ -176,13 +177,13 @@ function annotateMetadata(metadata) {
  *     arguments.
  */
 function massageArgumentsDefault(args, dispatch) {
-  var executionStart = Date.now();
-  var options = args[0];
-  var onSuccessCallback = function(hasNext) {
+  const executionStart = Date.now();
+  const options = args[0];
+  const onSuccessCallback = function(hasNext) {
     fileSystemProviderInternal.operationRequestedSuccess(
         options.fileSystemId, options.requestId, Date.now() - executionStart);
   };
-  var onErrorCallback = function(error) {
+  const onErrorCallback = function(error) {
     if (!verifyErrorForFailure(error)) {
       return;
     }
@@ -198,9 +199,9 @@ bindingUtil.registerEventArgumentMassager(
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onGetMetadataRequested', function(args, dispatch) {
-      var executionStart = Date.now();
-      var options = args[0];
-      var onSuccessCallback = function(metadata) {
+      const executionStart = Date.now();
+      const options = args[0];
+      const onSuccessCallback = function(metadata) {
         if (!verifyMetadata(options, metadata)) {
           fileSystemProviderInternal.operationRequestedError(
               options.fileSystemId, options.requestId, 'FAILED',
@@ -213,7 +214,7 @@ bindingUtil.registerEventArgumentMassager(
             Date.now() - executionStart);
       };
 
-      var onErrorCallback = function(error) {
+      const onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error)) {
           return;
         }
@@ -226,15 +227,15 @@ bindingUtil.registerEventArgumentMassager(
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onGetActionsRequested', function(args, dispatch) {
-      var executionStart = Date.now();
-      var options = args[0];
-      var onSuccessCallback = function(actions) {
+      const executionStart = Date.now();
+      const options = args[0];
+      const onSuccessCallback = function(actions) {
         fileSystemProviderInternal.getActionsRequestedSuccess(
             options.fileSystemId, options.requestId, actions,
             Date.now() - executionStart);
       };
 
-      var onErrorCallback = function(error) {
+      const onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error)) {
           return;
         }
@@ -247,11 +248,11 @@ bindingUtil.registerEventArgumentMassager(
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onReadDirectoryRequested', function(args, dispatch) {
-      var executionStart = Date.now();
-      var options = args[0];
-      var onSuccessCallback = function(entries, hasNext) {
-        var error = false;
-        for (var i = 0; i < entries.length; i++) {
+      const executionStart = Date.now();
+      const options = args[0];
+      const onSuccessCallback = function(entries, hasNext) {
+        let error = false;
+        for (let i = 0; i < entries.length; i++) {
           if (!verifyMetadata(options, entries[i])) {
             error = true;
             break;
@@ -265,13 +266,13 @@ bindingUtil.registerEventArgumentMassager(
           return;
         }
 
-        var annotatedEntries = entries.map(annotateMetadata);
+        const annotatedEntries = entries.map(annotateMetadata);
         fileSystemProviderInternal.readDirectoryRequestedSuccess(
             options.fileSystemId, options.requestId, annotatedEntries, hasNext,
             Date.now() - executionStart);
       };
 
-      var onErrorCallback = function(error) {
+      const onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error)) {
           return;
         }
@@ -284,14 +285,14 @@ bindingUtil.registerEventArgumentMassager(
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onOpenFileRequested', function(args, dispatch) {
-      var executionStart = Date.now();
-      var options = args[0];
-      var onSuccessCallback = function(metadata) {
+      const executionStart = Date.now();
+      const options = args[0];
+      const onSuccessCallback = function(metadata) {
         fileSystemProviderInternal.openFileRequestedSuccess(
             options.fileSystemId, options.requestId,
             Date.now() - executionStart, metadata);
       };
-      var onErrorCallback = function(error) {
+      const onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error)) {
           return;
         }
@@ -307,14 +308,14 @@ bindingUtil.registerEventArgumentMassager(
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onReadFileRequested', function(args, dispatch) {
-      var executionStart = Date.now();
-      var options = args[0];
-      var onSuccessCallback = function(data, hasNext) {
+      const executionStart = Date.now();
+      const options = args[0];
+      const onSuccessCallback = function(data, hasNext) {
         fileSystemProviderInternal.readFileRequestedSuccess(
             options.fileSystemId, options.requestId, data, hasNext,
             Date.now() - executionStart);
       };
-      var onErrorCallback = function(error) {
+      const onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error)) {
           return;
         }
@@ -369,13 +370,13 @@ bindingUtil.registerEventArgumentMassager(
 
 bindingUtil.registerEventArgumentMassager(
     'fileSystemProvider.onMountRequested', function(args, dispatch) {
-      var executionStart = Date.now();
-      var requestId = args[0];
-      var onSuccessCallback = function() {
+      const executionStart = Date.now();
+      const requestId = args[0];
+      const onSuccessCallback = function() {
         fileSystemProviderInternal.respondToMountRequest(
             requestId, 'OK', Date.now() - executionStart);
       };
-      var onErrorCallback = function(error) {
+      const onErrorCallback = function(error) {
         if (!verifyErrorForFailure(error)) {
           return;
         }

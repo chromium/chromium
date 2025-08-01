@@ -4,16 +4,16 @@
 
 // Custom binding for the tts API.
 
-var idGenerator = requireNative('id_generator');
-var lazyBG = requireNative('lazy_background_page');
+const idGenerator = requireNative('id_generator');
+const lazyBG = requireNative('lazy_background_page');
 
 apiBridge.registerCustomHook(function(api) {
-  var apiFunctions = api.apiFunctions;
-  var tts = api.compiledApi;
-  var handlers = {};
+  const apiFunctions = api.apiFunctions;
+  const tts = api.compiledApi;
+  const handlers = {};
 
   function ttsEventListener(event) {
-    var eventHandler = handlers[event.srcId];
+    const eventHandler = handlers[event.srcId];
     if (eventHandler) {
       eventHandler({
         type: event.type,
@@ -41,7 +41,7 @@ apiBridge.registerCustomHook(function(api) {
   apiFunctions.setHandleRequest(
       'speak', function(utterance, options, callback) {
         if (options && options.onEvent) {
-          var id = idGenerator.GetNextId();
+          const id = idGenerator.GetNextId();
           options.srcId = id;
           handlers[id] = options.onEvent;
           // Keep the page alive until the event finishes.

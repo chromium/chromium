@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
-var intersect = require('platformKeys.utils').intersect;
-var keyModule = require('platformKeys.Key');
-var Key = keyModule.Key;
-var KeyType = keyModule.KeyType;
-var KeyUsage = keyModule.KeyUsage;
+const utils = require('utils');
+const intersect = require('platformKeys.utils').intersect;
+const keyModule = require('platformKeys.Key');
+const Key = keyModule.Key;
+const KeyType = keyModule.KeyType;
+const KeyUsage = keyModule.KeyUsage;
 
 /**
  * Implementation of WebCrypto.CryptoKeyPair used in enterprise.platformKeys.

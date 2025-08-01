@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var internalAPI = getInternalApi('platformKeysInternal');
+const internalAPI = getInternalApi('platformKeysInternal');
 
-var normalizeAlgorithm =
+const normalizeAlgorithm =
     requireNative('platform_keys_natives').NormalizeAlgorithm;
 
 // Returns the normalized parameters of |importParams|, which can be used to
@@ -18,12 +18,12 @@ function normalizeImportParams(importParams) {
     throw $Error.self('Only P-256 named curve is supported.');
   }
 
-  var filteredParams = {
+  const filteredParams = {
     name: importParams.name,
     namedCurve: importParams.namedCurve,
   };
 
-  var hashIsNone = false;
+  let hashIsNone = false;
   if (importParams.hash) {
     if (importParams.hash.name.toLowerCase() === 'none') {
       hashIsNone = true;
@@ -36,7 +36,7 @@ function normalizeImportParams(importParams) {
   }
 
   // Apply WebCrypto's algorithm normalization.
-  var resultParams = normalizeAlgorithm(filteredParams, 'ImportKey');
+  const resultParams = normalizeAlgorithm(filteredParams, 'ImportKey');
   if (!resultParams) {
     throw $Error.self('A required parameter was missing or out-of-range');
   }
@@ -69,7 +69,7 @@ function getPublicKey(cert, importParams, callback) {
           callback();
           return;
         }
-        var combinedAlgorithm = combineAlgorithms(algorithm, importParams);
+        const combinedAlgorithm = combineAlgorithms(algorithm, importParams);
         callback(publicKey, combinedAlgorithm);
       });
 }
@@ -86,7 +86,7 @@ function getPublicKeyBySpki(publicKeySpkiDer, importParams, callback) {
           callback();
           return;
         }
-        var combinedAlgorithm =
+        const combinedAlgorithm =
             combineAlgorithms(foundKeyAlgorithm, importParams);
         callback(foundKeySpki, combinedAlgorithm);
       });

@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var certificateProviderInternal = getInternalApi('certificateProviderInternal');
+const certificateProviderInternal =
+    getInternalApi('certificateProviderInternal');
 
-var certificateProviderSchema =
+const certificateProviderSchema =
     requireNative('schema_registry').GetSchema('certificateProvider');
-var utils = require('utils');
+const utils = require('utils');
 
 // Custom bindings for chrome.certificateProvider API.
 // The bindings are used to implement callbacks for the API events. Internally
@@ -29,33 +30,33 @@ var utils = require('utils');
 //     reply to an event. The first argument of the function must be the request
 //     id that was received with the event.
 function handleEvent(eventName, internalReportFunc) {
-  var eventSchema =
+  const eventSchema =
       utils.lookup(certificateProviderSchema.events, 'name', eventName);
-  var callbackSchema =
+  const callbackSchema =
       utils.lookup(eventSchema.parameters, 'type', 'function').parameters;
-  var fullEventName = 'certificateProvider.' + eventName;
+  const fullEventName = 'certificateProvider.' + eventName;
 
   bindingUtil.addCustomSignature(fullEventName, callbackSchema);
 
   bindingUtil.registerEventArgumentMassager(
       fullEventName, function(args, dispatch) {
-        var responded = false;
+        let responded = false;
 
         // Function provided to the extension as the event callback argument.
         // The extension calls this to report results in reply to the event.
         // It throws an exception if called more than once and if the provided
         // results don't match the callback schema.
-        var reportFunc = function(reportArg1, reportArg2) {
+        const reportFunc = function(reportArg1, reportArg2) {
           if (responded) {
             throw new Error(
                 'Event callback must not be called more than once.');
           }
 
-          var reportArgs = [reportArg1];
+          const reportArgs = [reportArg1];
           if (reportArg2 !== undefined) {
             reportArgs.push(reportArg2);
           }
-          var finalArgs = [];
+          let finalArgs = [];
           try {
             // Validates that the results reported by the extension matche the
             // callback schema of the event. Throws an exception in case of an

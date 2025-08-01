@@ -27,7 +27,7 @@ apiBridge.registerCustomHook(function(bindingsAPI, extensionId) {
           'navigator.mediaDevices.getUserMedia', 'tabCapture.capture');
     };
 
-    let constraints = {};
+    const constraints = {};
     if (response.audioConstraints) {
       constraints.audio = response.audioConstraints;
     }

@@ -21,24 +21,24 @@ function assertFalse(condition) {
 }
 
 function testImageDataSetter() {
-  var c = {};
-  var k = 'key';
-  var callback = imageDataSetter(c, k);
+  const c = {};
+  const k = 'key';
+  const callback = imageDataSetter(c, k);
   callback('val');
   assertTrue(c[k] === 'val');
 }
 
 function testGetUrlSpecs() {
-  var imageSizes = {
+  const imageSizes = {
     scaleFactor: 1.0,
     icon: {width: 10, height: 10},
     image: {width: 24, height: 32},
     buttonIcon: {width: 2, height: 2},
   };
 
-  var notificationDetails = {};
+  const notificationDetails = {};
 
-  var emptySpecs = getUrlSpecs(imageSizes, notificationDetails);
+  const emptySpecs = getUrlSpecs(imageSizes, notificationDetails);
   assertTrue(emptySpecs.length === 0);
 
   notificationDetails.iconUrl = 'iconUrl';
@@ -46,7 +46,7 @@ function testGetUrlSpecs() {
   notificationDetails.buttons =
       [{iconUrl: 'buttonOneIconUrl'}, {iconUrl: 'buttonTwoIconUrl'}];
 
-  var allSpecs = getUrlSpecs(imageSizes, notificationDetails);
+  const allSpecs = getUrlSpecs(imageSizes, notificationDetails);
   assertTrue(allSpecs.length === 4);
 
   assertFalse(notificationDetails.iconBitmap === 'test');
@@ -54,10 +54,10 @@ function testGetUrlSpecs() {
   assertFalse(notificationDetails.buttons[0].iconBitmap === 'test');
   assertFalse(notificationDetails.buttons[1].iconBitmap === 'test');
 
-  for (var i = 0; i < allSpecs.length; i++) {
-    var expectedKeys = ['path', 'width', 'height', 'callback'];
-    var spec = allSpecs[i];
-    for (var j in expectedKeys) {
+  for (let i = 0; i < allSpecs.length; i++) {
+    const expectedKeys = ['path', 'width', 'height', 'callback'];
+    const spec = allSpecs[i];
+    for (const j in expectedKeys) {
       assertTrue(spec.hasOwnProperty(expectedKeys[j]));
     }
     spec.callback(spec.path + '|' + spec.width + '|' + spec.height);
@@ -72,21 +72,21 @@ function testGetUrlSpecs() {
 }
 
 function testGetUrlSpecsScaled() {
-  var imageSizes = {
+  const imageSizes = {
     scaleFactor: 2.0,
     icon: {width: 10, height: 10},
     image: {width: 24, height: 32},
     buttonIcon: {width: 2, height: 2},
   };
-  var notificationDetails = {
+  const notificationDetails = {
     iconUrl: 'iconUrl',
     imageUrl: 'imageUrl',
     buttons: [{iconUrl: 'buttonOneIconUrl'}, {iconUrl: 'buttonTwoIconUrl'}],
   };
 
-  var allSpecs = getUrlSpecs(imageSizes, notificationDetails);
-  for (var i = 0; i < allSpecs.length; i++) {
-    var spec = allSpecs[i];
+  const allSpecs = getUrlSpecs(imageSizes, notificationDetails);
+  for (let i = 0; i < allSpecs.length; i++) {
+    const spec = allSpecs[i];
     spec.callback(spec.path + '|' + spec.width + '|' + spec.height);
   }
 

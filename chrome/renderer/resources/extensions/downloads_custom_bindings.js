@@ -4,14 +4,14 @@
 
 // Custom bindings for the downloads API.
 
-var downloadsInternal = getInternalApi('downloadsInternal');
+const downloadsInternal = getInternalApi('downloadsInternal');
 
 bindingUtil.registerEventArgumentMassager(
     'downloads.onDeterminingFilename', function(args, dispatch) {
-      var downloadItem = args[0];
+      const downloadItem = args[0];
       // Copy the id so that extensions can't change it.
-      var downloadId = downloadItem.id;
-      var suggestable = true;
+      const downloadId = downloadItem.id;
+      let suggestable = true;
       function isValidResult(result) {
         if (result === undefined) {
           return false;
@@ -56,8 +56,8 @@ bindingUtil.registerEventArgumentMassager(
         }
       }
       try {
-        var results = dispatch([downloadItem, suggestCallback]);
-        var async =
+        const results = dispatch([downloadItem, suggestCallback]);
+        const async =
             (results && results.results && (results.results.length !== 0) &&
              (results.results[0] === true));
         if (suggestable && !async) {

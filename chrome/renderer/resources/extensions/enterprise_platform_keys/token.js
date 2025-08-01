@@ -2,8 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var utils = require('utils');
-var SubtleCrypto = require('enterprise.platformKeys.SubtleCrypto').SubtleCrypto;
+const utils = require('utils');
+const SubtleCrypto =
+    require('enterprise.platformKeys.SubtleCrypto').SubtleCrypto;
 
 /**
  * Implementation of enterprise.platformKeys.Token.

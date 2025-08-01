@@ -5,7 +5,7 @@
 // Custom binding for the Identity API.
 
 apiBridge.registerCustomHook(function(binding, id, contextType) {
-  var apiFunctions = binding.apiFunctions;
+  const apiFunctions = binding.apiFunctions;
 
   apiFunctions.setHandleRequest('getRedirectURL', function(path) {
     if (path === null || path === undefined) {

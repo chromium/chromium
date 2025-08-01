@@ -4,17 +4,17 @@
 
 // Custom binding for the syncFileSystem API.
 
-var fileSystemNatives = requireNative('file_system_natives');
-var syncFileSystemNatives = requireNative('sync_file_system');
+const fileSystemNatives = requireNative('file_system_natives');
+const syncFileSystemNatives = requireNative('sync_file_system');
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
   // Functions which take in an [instanceOf=FileEntry].
   function bindFileEntryFunction(functionName) {
     apiFunctions.setUpdateArgumentsPostValidate(
         functionName, function(entry, callback) {
-          var fileSystemUrl = entry.toURL();
+          const fileSystemUrl = entry.toURL();
           return [fileSystemUrl, callback];
         });
   }
@@ -24,8 +24,8 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   function bindFileEntryArrayFunction(functionName) {
     apiFunctions.setUpdateArgumentsPostValidate(
         functionName, function(entries, callback) {
-          var fileSystemUrlArray = [];
-          for (var i = 0; i < entries.length; i++) {
+          const fileSystemUrlArray = [];
+          for (let i = 0; i < entries.length; i++) {
             $Array.push(fileSystemUrlArray, entries[i].toURL());
           }
           return [fileSystemUrlArray, callback];
@@ -37,7 +37,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   function bindFileSystemFunction(functionName) {
     apiFunctions.setUpdateArgumentsPostValidate(
         functionName, function(filesystem, callback) {
-          var fileSystemUrl = filesystem.root.toURL();
+          const fileSystemUrl = filesystem.root.toURL();
           return [fileSystemUrl, callback];
         });
   }
@@ -46,7 +46,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   // Functions which return an [instanceOf=DOMFileSystem].
   apiFunctions.setCustomCallback(
       'requestFileSystem', function(callback, response) {
-        var result = null;
+        let result = null;
         if (response) {
           result = syncFileSystemNatives.GetSyncFileSystemObject(
               response.name, response.root);
@@ -60,11 +60,11 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   // which has [instanceOf=FileEntry].
   apiFunctions.setCustomCallback(
       'getFileStatuses', function(callback, response) {
-        var results = [];
+        const results = [];
         if (response) {
-          for (var i = 0; i < response.length; i++) {
-            var result = {};
-            var entry = response[i].entry;
+          for (let i = 0; i < response.length; i++) {
+            const result = {};
+            const entry = response[i].entry;
             result.fileEntry = fileSystemNatives.GetFileEntry(
                 entry.fileSystemType, entry.fileSystemName, entry.rootUrl,
                 entry.filePath, entry.isDirectory);
@@ -82,12 +82,12 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 bindingUtil.registerEventArgumentMassager(
     'syncFileSystem.onFileStatusChanged', function(args, dispatch) {
       // Make FileEntry object using all the base string fields.
-      var fileEntry = fileSystemNatives.GetFileEntry(
+      const fileEntry = fileSystemNatives.GetFileEntry(
           args[0].fileSystemType, args[0].fileSystemName, args[0].rootUrl,
           args[0].filePath, args[0].isDirectory);
 
       // Combine into a single dictionary.
-      var fileInfo = new Object();
+      const fileInfo = new Object();
       fileInfo.fileEntry = fileEntry;
       fileInfo.status = args[1];
       if (fileInfo.status === 'synced') {

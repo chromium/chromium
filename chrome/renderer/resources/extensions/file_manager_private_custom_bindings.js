@@ -5,12 +5,12 @@
 // Custom binding for the fileManagerPrivate API.
 
 // Natives
-var blobNatives = requireNative('blob_natives');
-var fileManagerPrivateNatives = requireNative('file_manager_private');
-var logging = requireNative('logging');
+const blobNatives = requireNative('blob_natives');
+const fileManagerPrivateNatives = requireNative('file_manager_private');
+const logging = requireNative('logging');
 
 // Internals
-var fileManagerPrivateInternal = getInternalApi('fileManagerPrivateInternal');
+const fileManagerPrivateInternal = getInternalApi('fileManagerPrivateInternal');
 
 // Wrapper that ensures only that a single parameter is passed to the function
 // so it can be used with Array.map.
@@ -24,7 +24,7 @@ function callbackAdaptor(successCallback, failureCallback, resultHandler) {
   return function(...results) {
     // No callback should take more than one result.
     logging.CHECK(results.length <= 1);
-    let lastErrorMessage = bindingUtil.getLastErrorMessage();
+    const lastErrorMessage = bindingUtil.getLastErrorMessage();
     if (lastErrorMessage) {
       // We re-emit |lastError| through the |failureCallback| here to ensure it
       // gets correctly propagated to the top level caller either as a rejected
@@ -41,7 +41,7 @@ function callbackAdaptor(successCallback, failureCallback, resultHandler) {
     if (resultHandler) {
       // If a function has a result handler, it must have a result.
       logging.CHECK(results.length === 1);
-      let finalResult = resultHandler(results[0]);
+      const finalResult = resultHandler(results[0]);
       successCallback(finalResult);
     } else if (results.length === 1) {
       successCallback(results[0]);
@@ -62,7 +62,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
     return fileManagerPrivateNatives.GetEntryURL(entry);
   }
 
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
   apiFunctions.setCustomCallback('searchDrive', function(callback, response) {
     if (response && !response.error && response.entries) {
@@ -82,7 +82,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setCustomCallback(
       'searchDriveMetadata', function(callback, response) {
         if (response && !response.error) {
-          for (var i = 0; i < response.length; i++) {
+          for (let i = 0; i < response.length; i++) {
             response[i].entry = getExternalFileEntry(response[i].entry);
           }
         }
@@ -100,8 +100,8 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'resolveIsolatedEntries',
       function(entries, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
-        let resultHandler = function(entryDescriptions) {
+        const urls = entries.map(getEntryURL);
+        const resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(getExternalFileEntry);
         };
         fileManagerPrivateInternal.resolveIsolatedEntries(
@@ -111,7 +111,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'getVolumeRoot', function(options, successCallback, failureCallback) {
-        let resultHandler = function(entry) {
+        const resultHandler = function(entry) {
           return entry ? getExternalFileEntry(entry) : undefined;
         };
         fileManagerPrivateInternal.getVolumeRoot(
@@ -122,28 +122,28 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getEntryProperties',
       function(entries, names, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getEntryProperties(
             urls, names, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'addFileWatch', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.addFileWatch(
             url, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'removeFileWatch', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.removeFileWatch(
             url, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'getCustomActions', function(entries, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getCustomActions(
             urls, callbackAdaptor(successCallback, failureCallback));
       });
@@ -151,7 +151,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'executeCustomAction',
       function(entries, actionId, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.executeCustomAction(
             urls, actionId, callbackAdaptor(successCallback, failureCallback));
       });
@@ -169,7 +169,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
         if (params.rootDir) {
           newParams.rootUrl = getEntryURL(params.rootDir);
         }
-        let resultHandler = function(entryList) {
+        const resultHandler = function(entryList) {
           return (entryList || []).map(getExternalFileEntry);
         };
         fileManagerPrivateInternal.searchFiles(
@@ -182,14 +182,14 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       function(fileEntry, successCallback, failureCallback) {
         fileEntry.file(
             blob => {
-              var blobUUID = blobNatives.GetBlobUuid(blob);
+              const blobUUID = blobNatives.GetBlobUuid(blob);
 
               if (!blob || !blob.size) {
                 successCallback(undefined);
                 return;
               }
 
-              var resultHandler =
+              const resultHandler =
                   function(blob, mimeType) {
                 return mimeType;
               }.bind(this,
@@ -212,14 +212,14 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
           failureCallback) {
         fileEntry.file(
             blob => {
-              var blobUUID = blobNatives.GetBlobUuid(blob);
+              const blobUUID = blobNatives.GetBlobUuid(blob);
 
               if (!blob || !blob.size) {
                 successCallback(undefined);
                 return;
               }
 
-              var resultHandler =
+              const resultHandler =
                   function(blob, metadata) {
                 return metadata;
               }.bind(this,
@@ -237,7 +237,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'pinDriveFile', function(entry, pin, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.pinDriveFile(
             url, pin, callbackAdaptor(successCallback, failureCallback));
       });
@@ -245,7 +245,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'executeTask',
       function(descriptor, entries, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.executeTask(
             descriptor, urls,
             callbackAdaptor(successCallback, failureCallback));
@@ -255,7 +255,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'setDefaultTask',
       function(
           descriptor, entries, mimeTypes, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.setDefaultTask(
             descriptor, urls, mimeTypes,
             callbackAdaptor(successCallback, failureCallback));
@@ -264,7 +264,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getFileTasks',
       function(entries, dlpSourceUrls, successCallback, failureCallback) {
-        var urls = entries.map(getEntryURL);
+        const urls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getFileTasks(
             urls, dlpSourceUrls,
             callbackAdaptor(successCallback, failureCallback));
@@ -272,7 +272,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'getDownloadUrl', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.getDownloadUrl(
             url, callbackAdaptor(successCallback, failureCallback));
       });
@@ -281,8 +281,8 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'getDisallowedTransfers',
       function(
           entries, destinationEntry, isMove, successCallback, failureCallback) {
-        var sourceUrls = entries.map(getEntryURL);
-        var destinationUrl = getEntryURL(destinationEntry);
+        const sourceUrls = entries.map(getEntryURL);
+        const destinationUrl = getEntryURL(destinationEntry);
         fileManagerPrivateInternal.getDisallowedTransfers(
             sourceUrls, destinationUrl, isMove,
             callbackAdaptor(successCallback, failureCallback));
@@ -290,7 +290,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'getDlpMetadata', function(entries, successCallback, failureCallback) {
-        var sourceUrls = entries.map(getEntryURL);
+        const sourceUrls = entries.map(getEntryURL);
         fileManagerPrivateInternal.getDlpMetadata(
             sourceUrls, callbackAdaptor(successCallback, failureCallback));
       });
@@ -298,7 +298,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'getDriveQuotaMetadata',
       function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.getDriveQuotaMetadata(
             url, callbackAdaptor(successCallback, failureCallback));
       });
@@ -315,14 +315,14 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
   apiFunctions.setHandleRequest(
       'validatePathNameLength',
       function(entry, name, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.validatePathNameLength(
             url, name, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'getDirectorySize', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.getDirectorySize(
             url, callbackAdaptor(successCallback, failureCallback));
       });
@@ -332,7 +332,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       function(
           restriction, query, cutoffDays, file_type, invalidate_cache,
           successCallback, failureCallback) {
-        let resultHandler = function(entryDescriptions) {
+        const resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(getExternalFileEntry);
         };
         // Due to C++integer limits we bind the JavaScript value to 0 .. 65535.
@@ -378,14 +378,14 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
 
   apiFunctions.setHandleRequest(
       'getLinuxPackageInfo', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.getLinuxPackageInfo(
             url, callbackAdaptor(successCallback, failureCallback));
       });
 
   apiFunctions.setHandleRequest(
       'installLinuxPackage', function(entry, successCallback, failureCallback) {
-        var url = getEntryURL(entry);
+        const url = getEntryURL(entry);
         fileManagerPrivateInternal.installLinuxPackage(
             url, callbackAdaptor(successCallback, failureCallback));
       });
@@ -422,7 +422,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'startIOTask',
       function(type, entries, params, successCallback, failureCallback) {
         const urls = entries.map(getEntryURL);
-        let newParams = {};
+        const newParams = {};
         if (params.destinationFolder) {
           newParams.destinationFolderUrl =
               getEntryURL(params.destinationFolder);
@@ -442,7 +442,7 @@ apiBridge.registerCustomHook(function(bindingsAPI) {
       'parseTrashInfoFiles',
       function(entries, successCallback, failureCallback) {
         const urls = entries.map(getEntryURL);
-        let resultHandler = function(entryDescriptions) {
+        const resultHandler = function(entryDescriptions) {
           return entryDescriptions.map(description => {
             description.restoreEntry =
                 getExternalFileEntry(description.restoreEntry);

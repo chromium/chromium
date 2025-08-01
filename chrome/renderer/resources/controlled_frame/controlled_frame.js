@@ -4,24 +4,25 @@
 
 // This module implements chrome-specific <controlledframe> Element.
 
-var ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
-var forwardApiMethods = require('guestViewContainerElement').forwardApiMethods;
-var upgradeMethodsToPromises =
+const ControlledFrameImpl = require('controlledFrameImpl').ControlledFrameImpl;
+const forwardApiMethods =
+    require('guestViewContainerElement').forwardApiMethods;
+const upgradeMethodsToPromises =
     require('guestViewContainerElement').upgradeMethodsToPromises;
-var ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
-var CONTROLLED_FRAME_API_METHODS =
+const ChromeWebViewImpl = require('chromeWebView').ChromeWebViewImpl;
+const CONTROLLED_FRAME_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_API_METHODS;
-var CONTROLLED_FRAME_DELETED_API_METHODS =
+const CONTROLLED_FRAME_DELETED_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_DELETED_API_METHODS;
-var CONTROLLED_FRAME_PROMISE_API_METHODS =
+const CONTROLLED_FRAME_PROMISE_API_METHODS =
     require('controlledFrameApiMethods').CONTROLLED_FRAME_PROMISE_API_METHODS;
-var convertURLPatternsToMatchPatterns =
+const convertURLPatternsToMatchPatterns =
     require('controlledFrameURLPatternsHelper')
         .convertURLPatternsToMatchPatterns;
-var registerElement = require('guestViewContainerElement').registerElement;
-var WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
-var WebViewElement = require('webViewElement').WebViewElement;
-var WebViewInternal = getInternalApi('webViewInternal');
+const registerElement = require('guestViewContainerElement').registerElement;
+const WebViewAttributeNames = require('webViewConstants').WebViewAttributeNames;
+const WebViewElement = require('webViewElement').WebViewElement;
+const WebViewInternal = getInternalApi('webViewInternal');
 
 // The Web naming conventions for enums are kebab-case while the WebView naming
 // conventions which are snake case. Convert from the kebab case convention to
@@ -80,8 +81,8 @@ function convertContentScriptDetailsKeys(webViewRule, keyMappings) {
 // WebView naming conventions are snake case. Convert from the camel case
 // convention to the snake case convention.
 function convertFromWebNaming(webRules) {
-  let webViewRules = [];
-  for (let webRule of webRules) {
+  const webViewRules = [];
+  for (const webRule of webRules) {
     // Convert the "runAt" key if present in each |webRule|.
     if ('runAt' in webRule) {
       webRule.runAt = convertRunAt(webRule.runAt);
@@ -130,20 +131,20 @@ class ControlledFrameElement extends WebViewElement {
   // so they can be used with Promises. The upgradeMethodsToPromises call
   // below will replace these with Promise-based versions.
   addContentScripts(rules, callback) {
-    var internal = privates(this).internal;
+    const internal = privates(this).internal;
     // Controlled Frame uses a slightly different API convention in its |rules|
     // that follow https://w3ctag.github.io/design-principles/#casing-rules.
     // Adjust incoming calls to translate from the web-preferred model to the
     // previous convention that WebView uses.
     // Note: any incoming rules that continue to use the WebView API will
     // trigger a synchronous failure in calls to this API.
-    let webViewRules = convertFromWebNaming(rules);
+    const webViewRules = convertFromWebNaming(rules);
     return WebViewInternal.addContentScripts(
         internal.viewInstanceId, webViewRules, callback);
   }
 
   removeContentScripts(names, callback) {
-    var internal = privates(this).internal;
+    const internal = privates(this).internal;
     return WebViewInternal.removeContentScripts(
         internal.viewInstanceId, names, callback);
   }
@@ -166,7 +167,7 @@ forwardApiMethods(
 // Since |back| and |forward| are implemented in terms of |go|, we need to
 // keep a reference to the real |go| function, since user code may override
 // ControlledFrameElement.prototype.go|.
-var originalGo = ControlledFrameElement.prototype.go;
+const originalGo = ControlledFrameElement.prototype.go;
 
 // Wrap callback methods in promise handlers. Note: This disables the callback
 // forms.

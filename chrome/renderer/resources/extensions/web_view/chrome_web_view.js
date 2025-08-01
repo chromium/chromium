@@ -5,14 +5,14 @@
 // This module implements chrome-specific <webview> API.
 // See web_view_api_methods.js for details.
 
-var ChromeWebView = getInternalApi('chromeWebViewInternal');
-var ChromeWebViewSchema =
+const ChromeWebView = getInternalApi('chromeWebViewInternal');
+const ChromeWebViewSchema =
     requireNative('schema_registry').GetSchema('chromeWebViewInternal');
-var CreateEvent = require('guestViewEvents').CreateEvent;
-var GuestViewInternalNatives = requireNative('guest_view_internal');
-var idGeneratorNatives = requireNative('id_generator');
-var utils = require('utils');
-var WebViewImpl = require('webView').WebViewImpl;
+const CreateEvent = require('guestViewEvents').CreateEvent;
+const GuestViewInternalNatives = requireNative('guest_view_internal');
+const idGeneratorNatives = requireNative('id_generator');
+const utils = require('utils');
+const WebViewImpl = require('webView').WebViewImpl;
 
 // This is the only "webViewInternal.onClicked" named event for this renderer.
 //
@@ -22,9 +22,9 @@ var WebViewImpl = require('webView').WebViewImpl;
 // |viewInstanceId|. Any time a ContextMenusEvent is dispatched, we re-dispatch
 // it to the subEvent's listeners. This way
 // <webview>.contextMenus.onClicked behave as a regular chrome Event type.
-var ContextMenusEvent = CreateEvent('chromeWebViewInternal.onClicked');
+const ContextMenusEvent = CreateEvent('chromeWebViewInternal.onClicked');
 // See comment above.
-var ContextMenusHandlerEvent =
+const ContextMenusHandlerEvent =
     CreateEvent('chromeWebViewInternal.onContextMenuShow');
 
 function GetUniqueSubEventName(eventName) {
@@ -34,10 +34,10 @@ function GetUniqueSubEventName(eventName) {
 // This event is exposed as <webview>.contextMenus.onClicked.
 function createContextMenusOnClickedEvent(
     webViewInstanceId, opt_eventName, opt_argSchemas, opt_eventOptions) {
-  var subEventName = GetUniqueSubEventName(opt_eventName);
-  var newEvent = bindingUtil.createCustomEvent(subEventName, false, false);
+  const subEventName = GetUniqueSubEventName(opt_eventName);
+  const newEvent = bindingUtil.createCustomEvent(subEventName, false, false);
 
-  var view = GuestViewInternalNatives.GetViewFromID(webViewInstanceId);
+  const view = GuestViewInternalNatives.GetViewFromID(webViewInstanceId);
   if (view) {
     view.events.addScopedListener(ContextMenusEvent, $Function.bind(function() {
       // Re-dispatch to subEvent's listeners.
@@ -50,15 +50,15 @@ function createContextMenusOnClickedEvent(
 // This event is exposed as <webview>.contextMenus.onShow.
 function createContextMenusOnContextMenuEvent(
     webViewInstanceId, opt_eventName, opt_argSchemas, opt_eventOptions) {
-  var subEventName = GetUniqueSubEventName(opt_eventName);
-  var newEvent = bindingUtil.createCustomEvent(subEventName, false, false);
+  const subEventName = GetUniqueSubEventName(opt_eventName);
+  const newEvent = bindingUtil.createCustomEvent(subEventName, false, false);
 
-  var view = GuestViewInternalNatives.GetViewFromID(webViewInstanceId);
+  const view = GuestViewInternalNatives.GetViewFromID(webViewInstanceId);
   if (view) {
     view.events.addScopedListener(
         ContextMenusHandlerEvent, $Function.bind(function(e) {
-          var defaultPrevented = false;
-          var event = {
+          let defaultPrevented = false;
+          const event = {
             preventDefault: function() {
               defaultPrevented = true;
             },
@@ -71,8 +71,8 @@ function createContextMenusOnContextMenuEvent(
             // TODO(lazyboy): Remove |items| parameter completely from
             // ChromeWebView.showContextMenu as we don't do anything useful with
             // it currently.
-            var items = [];
-            var guestInstanceId =
+            const items = [];
+            const guestInstanceId =
                 GuestViewInternalNatives.GetViewFromID(webViewInstanceId)
                     .guest.getId();
             ChromeWebView.showContextMenu(guestInstanceId, e.requestId, items);
@@ -94,38 +94,38 @@ function WebViewContextMenusImpl(webView, viewInstanceId) {
 $Object.setPrototypeOf(WebViewContextMenusImpl.prototype, null);
 
 WebViewContextMenusImpl.prototype.create = function() {
-  var args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(ChromeWebView.contextMenusCreate, null, args);
 };
 
 WebViewContextMenusImpl.prototype.remove = function() {
-  var args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(ChromeWebView.contextMenusRemove, null, args);
 };
 
 WebViewContextMenusImpl.prototype.removeAll = function() {
-  var args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(ChromeWebView.contextMenusRemoveAll, null, args);
 };
 
 WebViewContextMenusImpl.prototype.update = function() {
-  var args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(ChromeWebView.contextMenusUpdate, null, args);
 };
 
 WebViewContextMenusImpl.prototype.setupEvents = function(webView) {
   // Define 'onClicked' event property on |contextMenus|.
-  var getOnClickedEvent = $Function.bind(function() {
+  const getOnClickedEvent = $Function.bind(function() {
     return webView.weakWrapper(function() {
       if (!webView.contextMenusOnClickedEvent_) {
-        var eventName = 'chromeWebViewInternal.onClicked';
-        var eventSchema =
+        const eventName = 'chromeWebViewInternal.onClicked';
+        const eventSchema =
             utils.lookup(ChromeWebViewSchema.events, 'name', 'onClicked');
-        var eventOptions = {
+        const eventOptions = {
           supportsListeners: true,
           supportsLazyListeners: false,
         };
-        var onClickedEvent = createContextMenusOnClickedEvent(
+        const onClickedEvent = createContextMenusOnClickedEvent(
             webView.viewInstanceId, eventName, eventSchema, eventOptions);
         webView.contextMenusOnClickedEvent_ = onClickedEvent;
         return onClickedEvent;
@@ -174,17 +174,20 @@ ChromeWebViewImpl.prototype.createWebViewContextMenus = function() {
 
 ChromeWebViewImpl.prototype.setupContextMenus = function() {
   if (!this.contextMenusOnContextMenuEvent_) {
-    var eventName = 'chromeWebViewInternal.onContextMenuShow';
-    var eventSchema =
+    const eventName = 'chromeWebViewInternal.onContextMenuShow';
+    const eventSchema =
         utils.lookup(ChromeWebViewSchema.events, 'name', 'onShow');
-    var eventOptions = {supportsListeners: true, supportsLazyListeners: false};
+    const eventOptions = {
+      supportsListeners: true,
+      supportsLazyListeners: false
+    };
     // TODO(crbug.com/429599984): Move this member to the context menus
     // instance.
     this.contextMenusOnContextMenuEvent_ = createContextMenusOnContextMenuEvent(
         this.viewInstanceId, eventName, eventSchema, eventOptions);
   }
 
-  var createContextMenus = $Function.bind(function() {
+  const createContextMenus = $Function.bind(function() {
     return this.weakWrapper(function() {
       if (this.contextMenus_) {
         return this.contextMenus_;

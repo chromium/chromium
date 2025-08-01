@@ -82,7 +82,7 @@ function getCallbackIndex(name) {
 
 ControlledFrameContextMenusImpl.prototype.convertMethodToPromiseBased =
     function(handler, name) {
-  let callbackIndex = getCallbackIndex(name);
+  const callbackIndex = getCallbackIndex(name);
   // TODO(crbug.com/378956568): Verify these methods don't require an instance
   // ID check.
   function verifyEnvironment(reject) {
@@ -106,7 +106,7 @@ ControlledFrameContextMenusImpl.prototype.createImpl = function() {
 // Controlled Frame has its own internal definition of Context Menus
 // update().
 ControlledFrameContextMenusImpl.prototype.updateImpl = function() {
-  let args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
+  const args = $Array.concat([this.viewInstanceId_], $Array.slice(arguments));
   return $Function.apply(
       ControlledFrameInternal.contextMenusUpdate, null, args);
 };

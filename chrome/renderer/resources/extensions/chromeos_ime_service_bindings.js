@@ -19,14 +19,14 @@ loadScript('ash.ime.mojom.input_method_host.mojom');
  * @type {Promise}
  * @const
  */
-var IME_CHANNEL_EMPTY_RESULT = Promise.resolve({result: ''});
+const IME_CHANNEL_EMPTY_RESULT = Promise.resolve({result: ''});
 
 /**
  * Empty message to keep Mojo pipe from disconnection.
  * @type {Uint8Array}
  * @const
  */
-var IME_CHANNEL_EMPTY_EXTRA = new Uint8Array(0);
+const IME_CHANNEL_EMPTY_EXTRA = new Uint8Array(0);
 
 /*
  * Represents the js-side of the InputChannel.
@@ -281,7 +281,7 @@ class ImeService {
 }
 
 (function() {
-let ptr = new ash.ime.mojom.InputEngineManagerPtr();
+const ptr = new ash.ime.mojom.InputEngineManagerPtr();
 Mojo.bindInterface(
     ash.ime.mojom.InputEngineManager.name, mojo.makeRequest(ptr).handle);
 exports.$set('returnValue', new ImeService(ptr));

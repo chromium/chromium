@@ -14,11 +14,11 @@
 // wrapper.
 // The Token object holds the token id and the SubtleCrypto member.
 
-var Token = require('enterprise.platformKeys.Token').Token;
-var internalAPI = getInternalApi('enterprise.platformKeysInternal');
+const Token = require('enterprise.platformKeys.Token').Token;
+const internalAPI = getInternalApi('enterprise.platformKeysInternal');
 
 apiBridge.registerCustomHook(function(api) {
-  var apiFunctions = api.apiFunctions;
+  const apiFunctions = api.apiFunctions;
 
   apiFunctions.setHandleRequest('getTokens', function(callback) {
     internalAPI.getTokens(function(tokenIds) {

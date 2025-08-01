@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-var contextMenusHandlers = require('contextMenusHandlers');
+const contextMenusHandlers = require('contextMenusHandlers');
 
 apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+  const apiFunctions = bindingsAPI.apiFunctions;
 
-  var handlers = contextMenusHandlers.create(
+  const handlers = contextMenusHandlers.create(
       /*webViewNamespace=*/ 'controlledFrameInternal');
 
   apiFunctions.setHandleRequest(
