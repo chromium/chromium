@@ -101,15 +101,14 @@ NSArray<NSAttributedString*>* CWVLegalMessagesFromLegalMessageLines(
 
   _saveCompletionHandler = completionHandler;
   DCHECK(_saveCardCallback);
+  autofill::payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = base::SysNSStringToUTF16(cardHolderFullName);
+  details.expiration_date_month = base::SysNSStringToUTF16(expirationMonth);
+  details.expiration_date_year = base::SysNSStringToUTF16(expirationYear);
   std::move(_saveCardCallback)
       .Run(autofill::payments::PaymentsAutofillClient::
                SaveCardOfferUserDecision::kAccepted,
-           {
-               .cardholder_name = base::SysNSStringToUTF16(cardHolderFullName),
-               .expiration_date_month =
-                   base::SysNSStringToUTF16(expirationMonth),
-               .expiration_date_year = base::SysNSStringToUTF16(expirationYear),
-           });
+           details);
   _decisionMade = YES;
 }
 

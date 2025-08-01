@@ -1993,8 +1993,9 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NoNameAvailable) {
 
   // Set a cardholder name, to be used as an user provided name for cardholder
   // name fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -2212,8 +2213,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set a cardholder name. Represents an user provided name for cardholder name
   // fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -2582,8 +2584,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set a cardholder name, to be used as an user provided name for cardholder
   // name fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -2647,8 +2650,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set a cardholder name, to be used as an user provided name for cardholder
   // name fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -2720,8 +2724,9 @@ TEST_F(CreditCardSaveManagerTest, UploadCreditCard_NamesCanMismatch) {
 
   // Set a cardholder name, to be used as an user provided name for cardholder
   // name fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -2829,8 +2834,9 @@ TEST_F(
 
   // Set a cardholder name. Represents user provided name during cardholder name
   // fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -2887,8 +2893,9 @@ TEST_F(
 
   // Set a cardholder name. Represents user provided name during cardholder name
   // fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3172,8 +3179,8 @@ TEST_F(
 
   // Set a cardholder name. Represents user provided name for cardholder name
   // fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
 
   SetCardDetailsForFixFlow(user_provided_details);
 
@@ -3246,8 +3253,9 @@ TEST_F(
 
   // Set a cardholder name, to be used as an user provided name in the save card
   // dialog after form is submitted.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3306,9 +3314,9 @@ TEST_F(
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a valid expiry date. Represents user provided expiry date for fix flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3434,9 +3442,9 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a valid expiry date. Represents user provided expiry date for fix flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3527,10 +3535,10 @@ TEST_F(CreditCardSaveManagerTest,
   // Set a valid cardholder name and expiry date. Represents user provided
   // cardholder name and expiry date in the save card dialog after form is
   // submitted.
-  UserProvidedCardDetails user_provided_details = {
-      .cardholder_name = u"Chrome User",
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3636,9 +3644,9 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a valid expiry date. Represents user provided expiry date for fix flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3704,9 +3712,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set a valid expiry month. Represents user provided expiry date for fix
   // flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(FiveYearsFromNow())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(FiveYearsFromNow());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3772,9 +3780,10 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a valid expiry year. Represents user provided expiry year for fix flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(FiveMonthsFromNow()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month =
+      ASCIIToUTF16(FiveMonthsFromNow());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3838,9 +3847,9 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a valid expiry date. Represents user provided expiry date for fix flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -3909,9 +3918,9 @@ TEST_F(
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a valid expiry date. Represents user provided expiry date for fix flow.
-  UserProvidedCardDetails user_provided_details = {
-      .expiration_date_month = ASCIIToUTF16(test::NextMonth()),
-      .expiration_date_year = ASCIIToUTF16(test::NextYear())};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.expiration_date_month = ASCIIToUTF16(test::NextMonth());
+  user_provided_details.expiration_date_year = ASCIIToUTF16(test::NextYear());
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -4908,8 +4917,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set a cardholder name, to be used as an user provided name for cardholder
   // name fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -4977,8 +4987,9 @@ TEST_F(CreditCardSaveManagerTest,
 
   // Set a cardholder name. Represents an user provided name for cardholder name
   // fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
 
   FormSubmitted(credit_card_form);
@@ -5155,8 +5166,9 @@ TEST_F(CreditCardSaveManagerTest,
   EXPECT_CALL(payments_client(), ShowSaveCreditCardLocally).Times(0);
 
   // Set a cardholder name. Represents an user provided name for fix flow.
-  UserProvidedCardDetails user_provided_details = {.cardholder_name =
-                                                       u"Chrome User"};
+  UserProvidedCardDetails user_provided_details;
+  user_provided_details.cardholder_name = u"Chrome User";
+
   SetCardDetailsForFixFlow(user_provided_details);
   FormSubmitted(credit_card_form);
 

@@ -1347,16 +1347,18 @@ void CreditCardSaveManager::OnUserDidAcceptAccountNameFixFlow(
     const std::u16string& cardholder_name) {
   DCHECK(should_request_name_from_user_);
 
-  OnUserDidAcceptUploadHelper({cardholder_name,
-                               /*expiration_date_month=*/std::u16string(),
-                               /*expiration_date_year=*/std::u16string()});
+  payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.cardholder_name = cardholder_name;
+  OnUserDidAcceptUploadHelper(details);
 }
 
 void CreditCardSaveManager::OnUserDidAcceptExpirationDateFixFlow(
     const std::u16string& month,
     const std::u16string& year) {
-  OnUserDidAcceptUploadHelper(
-      {/*cardholder_name=*/std::u16string(), month, year});
+  payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+  details.expiration_date_month = month;
+  details.expiration_date_year = year;
+  OnUserDidAcceptUploadHelper(details);
 }
 #endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 

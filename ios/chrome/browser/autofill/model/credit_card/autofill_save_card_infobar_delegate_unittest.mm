@@ -145,7 +145,8 @@ TEST_F(AutofillSaveCardInfoBarDelegateTest, UpdateAndAccept_Upload) {
       *last_user_provided_card_details_,
       ::testing::FieldsAre(/*cardholder_name=*/cardholder_name,
                            /*expiration_date_month=*/expiration_date_month,
-                           /*expiration_date_year=*/expiration_date_year));
+                           /*expiration_date_year=*/expiration_date_year,
+                           /*cvc=*/u""));
 }
 
 // Tests that CreditCardUploadCompleted() runs

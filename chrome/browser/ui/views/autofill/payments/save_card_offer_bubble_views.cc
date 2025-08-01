@@ -104,18 +104,21 @@ bool SaveCardOfferBubbleViews::Accept() {
   }
 
   if (controller()) {
-    controller()->OnSaveButton(
-        {cardholder_name_textfield_
-             ? std::u16string(cardholder_name_textfield_->GetText())
-             : std::u16string(),
-         month_input_dropdown_
-             ? month_input_dropdown_->GetModel()->GetItemAt(
-                   month_input_dropdown_->GetSelectedIndex().value())
-             : std::u16string(),
-         year_input_dropdown_
-             ? year_input_dropdown_->GetModel()->GetItemAt(
-                   year_input_dropdown_->GetSelectedIndex().value())
-             : std::u16string()});
+    payments::PaymentsAutofillClient::UserProvidedCardDetails details;
+    if (cardholder_name_textfield_) {
+      details.cardholder_name = cardholder_name_textfield_->GetText();
+    }
+    if (month_input_dropdown_) {
+      details.expiration_date_month =
+          month_input_dropdown_->GetModel()->GetItemAt(
+              month_input_dropdown_->GetSelectedIndex().value());
+    }
+    if (year_input_dropdown_) {
+      details.expiration_date_year =
+          year_input_dropdown_->GetModel()->GetItemAt(
+              year_input_dropdown_->GetSelectedIndex().value());
+    }
+    controller()->OnSaveButton(details);
   }
 
   // If a throbber is shown, don't automatically close the bubble view upon

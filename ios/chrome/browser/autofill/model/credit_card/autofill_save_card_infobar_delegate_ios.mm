@@ -74,6 +74,7 @@ bool AutofillSaveCardInfoBarDelegateIOS::UpdateAndAccept(
   user_provided_details.cardholder_name = cardholder_name;
   user_provided_details.expiration_date_month = expiration_date_month;
   user_provided_details.expiration_date_year = expiration_date_year;
+  user_provided_details.cvc = u"";
   delegate()->OnUiUpdatedAndAccepted(user_provided_details);
   return true;
 }
