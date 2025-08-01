@@ -1,7 +1,0 @@
-This is a testharness.js-based test.
-[FAIL] Origin interface: operation fromURL(USVString)
-  assert_own_property: interface object missing static operation expected property "fromURL" missing
-[FAIL] Origin interface: calling fromURL(USVString) on new Origin() with too few arguments must throw TypeError
-  assert_own_property: interface object must have static operation as own property expected property "fromURL" missing
-Harness: the test ran to completion.
-

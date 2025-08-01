@@ -12,6 +12,7 @@
   [RaisesException] constructor(USVString serializedOrigin);
 
   static Origin? parse(USVString serializedOrigin);
+  static Origin? fromURL(USVString serializedURL);
 
   stringifier USVString toJSON();
 

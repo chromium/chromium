@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/core/url/dom_origin.h"
 
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -29,6 +30,15 @@ DOMOrigin* DOMOrigin::parse(const String& value) {
     return nullptr;
   }
   return MakeGarbageCollected<DOMOrigin>(std::move(security_origin));
+}
+
+// static
+DOMOrigin* DOMOrigin::fromURL(const String& serialized_url) {
+  KURL url(serialized_url);
+  if (!url.IsValid()) {
+    return nullptr;
+  }
+  return MakeGarbageCollected<DOMOrigin>(SecurityOrigin::Create(url));
 }
 
 DOMOrigin* DOMOrigin::Create(const String& value,

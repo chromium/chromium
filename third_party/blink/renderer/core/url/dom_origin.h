@@ -31,6 +31,9 @@ class CORE_EXPORT DOMOrigin final : public ScriptWrappable {
   // Parses |value|, returning `null` if it isn't a validly serialized origin:
   static DOMOrigin* parse(const String& value);
 
+  // Parses |value|, returning `null` if it isn't a validly serialized URL:
+  static DOMOrigin* fromURL(const String& value);
+
   String toJSON() const;
 
   bool opaque() const;

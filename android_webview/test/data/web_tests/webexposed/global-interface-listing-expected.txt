@@ -6830,6 +6830,7 @@ interface OrientationSensor : Sensor
     method constructor
     method populateMatrix
 interface Origin
+    static method fromURL
     static method parse
     attribute @@toStringTag
     getter opaque

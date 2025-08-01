@@ -129,6 +129,7 @@ TEST_F(DOMOriginTest, InvalidOrigins) {
       "https://trailing.slash/",
       "https://user:pass@site.example",
       "https://very.long.port:123456789",
+      "https://ümlauted.example",
   };
 
   for (auto* test : test_cases) {
@@ -145,9 +146,66 @@ TEST_F(DOMOriginTest, InvalidOrigins) {
   for (auto* test : test_cases) {
     SCOPED_TRACE(testing::Message() << "Parsing(" << test << ")");
 
-    DummyExceptionStateForTesting exception_state;
     DOMOrigin* origin = DOMOrigin::parse(test);
     EXPECT_EQ(origin, nullptr);
+  }
+}
+
+//
+// Parsing serialized URLs, not Origins.
+//
+TEST_F(DOMOriginTest, ParsingInvalidURLs) {
+  const char* test_cases[] = {
+      "",
+      "invalid",
+      "https://very.long.port:123456789",
+  };
+
+  for (auto* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "fromURL(" << test << ")");
+
+    DOMOrigin* origin = DOMOrigin::fromURL(test);
+    EXPECT_EQ(origin, nullptr);
+  }
+}
+
+TEST_F(DOMOriginTest, ParsingOpaqueURLs) {
+  const char* test_cases[] = {
+      "about:blank",
+  };
+
+  for (auto* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "fromURL(" << test << ")");
+
+    DOMOrigin* origin = DOMOrigin::fromURL(test);
+    ASSERT_TRUE(origin);
+    EXPECT_TRUE(origin->opaque());
+  }
+}
+
+TEST_F(DOMOriginTest, ParsingValidURLs) {
+  const char* test_cases[] = {
+      "https://trailing.slash/",
+      "https://user:pass@site.example",
+      "https://has.a.port:1234/and/path",
+      "https://ümlauted.example",
+      "file:///path/to/a/file.txt",
+      "blob:https://example.com/some-guid",
+      "data:text/plain,hello",
+      "ftp://example.com/",
+      "https://example.com/path?query#fragment",
+      "https://127.0.0.1/",
+      "https://[::1]/",
+      "https://xn--ls8h.example/",
+  };
+
+  for (auto* test : test_cases) {
+    SCOPED_TRACE(testing::Message() << "fromURL(" << test << ")");
+
+    DOMOrigin* origin = DOMOrigin::fromURL(test);
+    ASSERT_TRUE(origin);
+    EXPECT_EQ(SecurityOrigin::CreateFromString(test)->ToString(),
+              origin->toJSON());
   }
 }
 
