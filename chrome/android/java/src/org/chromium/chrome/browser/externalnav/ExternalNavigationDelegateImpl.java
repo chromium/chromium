@@ -231,13 +231,6 @@ public class ExternalNavigationDelegateImpl implements ExternalNavigationDelegat
     }
 
     @Override
-    public boolean shouldEmbedderInitiatedNavigationsStayInBrowser() {
-        // The initial navigation off of things like typed navigations or bookmarks should stay in
-        // the browser.
-        return true;
-    }
-
-    @Override
     public String getSelfScheme() {
         return IntentHandler.GOOGLECHROME_SCHEME;
     }

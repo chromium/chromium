@@ -248,30 +248,6 @@ public class RedirectHandlerTest {
     @Test
     @SmallTest
     @Feature({"IntentHandling"})
-    public void testNavigationFromUserTyping() {
-        RedirectHandler handler = RedirectHandler.create();
-        handler.updateIntent(sYtIntent, false, false, false, false);
-        Assert.assertFalse(handler.isOnNavigation());
-
-        handler.updateNewUrlLoading(PageTransition.TYPED, false, false, 0, false, false);
-        Assert.assertTrue(handler.isNavigationFromUserTyping());
-        handler.updateNewUrlLoading(PageTransition.LINK, false, false, 1, false, true);
-        Assert.assertTrue(handler.isNavigationFromUserTyping());
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(0, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-
-        SystemClock.sleep(1);
-        handler.updateNewUrlLoading(PageTransition.LINK, false, true, 2, false, true);
-        Assert.assertFalse(handler.isNavigationFromUserTyping());
-
-        Assert.assertTrue(handler.isOnNavigation());
-        Assert.assertEquals(2, handler.getLastCommittedEntryIndexBeforeStartingNavigation());
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"IntentHandling"})
     public void testRedirectFromCurrentNavigationShouldNotOverrideUrlLoading() {
         /////////////////////////////////////////////////////
         // 1. 3XX redirection should not override URL loading.

@@ -2824,27 +2824,6 @@ public class ExternalNavigationHandlerTest {
 
     @Test
     @SmallTest
-    public void testEmbedderInitiatedNavigationsLeaveBrowser() {
-        mDelegate.add(new IntentActivity(YOUTUBE_URL, YOUTUBE_PACKAGE_NAME));
-        RedirectHandler redirectHandler = RedirectHandler.create();
-        redirectHandler.updateNewUrlLoading(
-                PageTransition.AUTO_BOOKMARK, false, false, 0, false, false);
-
-        checkUrl(YOUTUBE_URL, redirectHandler)
-                .withIsRendererInitiated(false)
-                .expecting(OverrideUrlLoadingResultType.NO_OVERRIDE, IGNORE);
-
-        mDelegate.setShouldEmbedderInitiatedNavigationsStayInBrowser(false);
-
-        checkUrl(YOUTUBE_URL, redirectHandler)
-                .withIsRendererInitiated(false)
-                .expecting(
-                        OverrideUrlLoadingResultType.OVERRIDE_WITH_EXTERNAL_INTENT,
-                        START_OTHER_ACTIVITY);
-    }
-
-    @Test
-    @SmallTest
     public void testExpiredNavigationChain() {
         mDelegate.add(new IntentActivity(YOUTUBE_MOBILE_URL, YOUTUBE_PACKAGE_NAME));
 
@@ -3435,11 +3414,6 @@ public class ExternalNavigationHandlerTest {
         }
 
         @Override
-        public boolean shouldEmbedderInitiatedNavigationsStayInBrowser() {
-            return mShouldEmbedderInitiatedNavigationsStayInBrowser;
-        }
-
-        @Override
         public String getSelfScheme() {
             return SELF_SCHEME;
         }
@@ -3537,10 +3511,6 @@ public class ExternalNavigationHandlerTest {
             mWillResolveToDisambiguationDialog = value;
         }
 
-        public void setShouldEmbedderInitiatedNavigationsStayInBrowser(boolean value) {
-            mShouldEmbedderInitiatedNavigationsStayInBrowser = value;
-        }
-
         public void setResolvesToOtherBrowser(boolean value) {
             mResolvesToOtherBrowser = value;
         }
@@ -3580,7 +3550,6 @@ public class ExternalNavigationHandlerTest {
         private boolean mShouldAvoidDisambiguationDialog;
         private boolean mWillResolveToDisambiguationDialog;
         private Context mContext;
-        private boolean mShouldEmbedderInitiatedNavigationsStayInBrowser = true;
         private boolean mResolvesToOtherBrowser;
         private boolean mShouldDisableAllExternalIntents;
         private boolean mShouldReturnAsActivityResult;

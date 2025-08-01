@@ -1018,16 +1018,7 @@ public class ExternalNavigationHandler {
             return NavigationChainResult.REQUIRES_PROMPT;
         }
 
-        // TODO(crbug.com/40232652): We only need to check isFromTyping because WebLayer's
-        // implementation of disabling intent processing is broken and doesn't actually disable
-        // intent processing, but to align with current weblayer behavior the first navigation has
-        // to be blocked even if the weblayer delegate tells us not to block embedder initiated
-        // navigations. See
-        // https://source.chromium.org/chromium/chromium/src/+/main:weblayer/browser/navigation_controller_impl.cc;drc=88d7b2e74349cbf8b3e15b61cc0663d65f9d1873;l=220
-        if (!initialState.isRendererInitiated
-                && !initialState.isFromIntent
-                && (mDelegate.shouldEmbedderInitiatedNavigationsStayInBrowser()
-                        || initialState.isFromTyping)) {
+        if (!initialState.isRendererInitiated && !initialState.isFromIntent) {
             if (debug()) Log.i(TAG, "Browser initiated navigation chain.");
             return NavigationChainResult.REQUIRES_PROMPT;
         }
