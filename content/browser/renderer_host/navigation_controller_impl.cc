@@ -2758,8 +2758,10 @@ bool NavigationControllerImpl::ValidateDataURLAsString(
   if (!data_url_as_string)
     return false;
 
-  if (data_url_as_string->size() > kMaxLengthOfDataURLString)
+  if (data_url_as_string->size() >
+      kMaxLengthOfDataURLString.InBytesUnsigned()) {
     return false;
+  }
 
   // The number of characters that is enough for validating a data: URI.
   // From the GURL's POV, the only important part here is scheme, it doesn't
