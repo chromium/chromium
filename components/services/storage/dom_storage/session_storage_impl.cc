@@ -791,7 +791,7 @@ void SessionStorageImpl::OnDatabaseOpened(DbStatus status) {
   }
 
   database_->RunDatabaseTask(
-      base::BindOnce([](const DomStorageDatabase& db) {
+      base::BindOnce([](DomStorageDatabase& db) {
         ValueAndStatus version;
         version.status =
             db.Get(base::span(SessionStorageMetadata::kDatabaseVersionBytes),

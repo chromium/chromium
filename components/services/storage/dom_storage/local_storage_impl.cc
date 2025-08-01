@@ -173,15 +173,15 @@ void DeleteStorageKeys(AsyncDomStorageDatabase* database,
   database->RunDatabaseTask(
       base::BindOnce(
           [](std::vector<blink::StorageKey> storage_keys,
-             const DomStorageDatabase& db) {
+             DomStorageDatabase& db) {
             std::unique_ptr<DomStorageBatchOperation> batch =
                 db.CreateBatchOperation();
             for (const auto& storage_key : storage_keys) {
-              db.DeletePrefixed(MakeStorageKeyPrefix(storage_key), *batch);
+              batch->DeletePrefixed(MakeStorageKeyPrefix(storage_key));
               batch->Delete(CreateAccessMetaDataKey(storage_key));
               batch->Delete(CreateWriteMetaDataKey(storage_key));
             }
-            return db.Commit(*batch);
+            return batch->Commit();
           },
           storage_keys),
       std::move(callback));
@@ -244,8 +244,7 @@ class LocalStorageImpl::StorageAreaHolder final
     }
     context_->database_->RunDatabaseTask(
         base::BindOnce(
-            [](const blink::StorageKey& storage_key,
-               const DomStorageDatabase& db) {
+            [](const blink::StorageKey& storage_key, DomStorageDatabase& db) {
               std::unique_ptr<DomStorageBatchOperation> batch =
                   db.CreateBatchOperation();
               storage::LocalStorageAreaAccessMetaData data;
@@ -254,7 +253,7 @@ class LocalStorageImpl::StorageAreaHolder final
               batch->Put(CreateAccessMetaDataKey(storage_key),
                          DomStorageDatabase::Value(serialized_data.begin(),
                                                    serialized_data.end()));
-              return db.Commit(*batch);
+              return batch->Commit();
             },
             storage_key_),
         base::BindOnce([](DbStatus status) {
@@ -680,7 +679,7 @@ void LocalStorageImpl::OnDatabaseOpened(DbStatus status) {
   if (database_) {
     database_->RunDatabaseTask(
         base::BindOnce(
-            [](const std::vector<uint8_t>& key, const DomStorageDatabase& db) {
+            [](const std::vector<uint8_t>& key, DomStorageDatabase& db) {
               DomStorageDatabase::Value value;
               DbStatus status = db.Get(key, &value);
               return std::make_tuple(status, std::move(value));
@@ -824,7 +823,7 @@ void LocalStorageImpl::RetrieveStorageUsage(GetUsageCallback callback) {
     std::move(callback).Run(std::move(result));
   } else {
     database_->RunDatabaseTask(
-        base::BindOnce([](const DomStorageDatabase& db) {
+        base::BindOnce([](DomStorageDatabase& db) {
           std::vector<DomStorageDatabase::KeyValuePair> data;
           db.GetPrefixed(base::span(kWriteMetaPrefix), &data);
           return data;
@@ -980,7 +979,7 @@ void LocalStorageImpl::DeleteStaleStorageAreas() {
     return;
   }
   database_->RunDatabaseTask(
-      base::BindOnce([](const DomStorageDatabase& db) {
+      base::BindOnce([](DomStorageDatabase& db) {
         std::vector<DomStorageDatabase::KeyValuePair> data;
         db.GetPrefixed(base::span(kMetaPrefix), &data);
         return data;

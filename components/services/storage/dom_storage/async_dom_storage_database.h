@@ -102,8 +102,7 @@ class AsyncDomStorageDatabase {
   void RewriteDB(StatusCallback callback);
 
   template <typename ResultType>
-  using DatabaseTask =
-      base::OnceCallback<ResultType(const DomStorageDatabase&)>;
+  using DatabaseTask = base::OnceCallback<ResultType(DomStorageDatabase&)>;
 
   template <typename ResultType>
   using TaskTraits = internal::DatabaseTaskTraits<ResultType>;
@@ -115,10 +114,10 @@ class AsyncDomStorageDatabase {
         [](DatabaseTask<ResultType> task,
            typename TaskTraits<ResultType>::CallbackType callback,
            scoped_refptr<base::SequencedTaskRunner> callback_task_runner,
-           const DomStorageDatabase& db) {
+           DomStorageDatabase* db) {
           callback_task_runner->PostTask(
               FROM_HERE, TaskTraits<ResultType>::RunTaskAndBindCallbackToResult(
-                             db, std::move(task), std::move(callback)));
+                             *db, std::move(task), std::move(callback)));
         },
         std::move(task), std::move(callback),
         base::SequencedTaskRunner::GetCurrentDefault());
@@ -155,7 +154,7 @@ class AsyncDomStorageDatabase {
 
   base::SequenceBound<DomStorageDatabase> database_;
 
-  using BoundDatabaseTask = base::OnceCallback<void(const DomStorageDatabase&)>;
+  using BoundDatabaseTask = base::OnceCallback<void(DomStorageDatabase*)>;
   std::vector<BoundDatabaseTask> tasks_to_run_on_open_;
   std::set<raw_ptr<Committer>> committers_;
 
@@ -168,7 +167,7 @@ template <typename ResultType>
 struct DatabaseTaskTraits {
   using CallbackType = base::OnceCallback<void(ResultType)>;
   static base::OnceClosure RunTaskAndBindCallbackToResult(
-      const DomStorageDatabase& db,
+      DomStorageDatabase& db,
       AsyncDomStorageDatabase::DatabaseTask<ResultType> task,
       CallbackType callback) {
     return base::BindOnce(std::move(callback), std::move(task).Run(db));
@@ -184,7 +183,7 @@ struct DatabaseTaskTraits<std::tuple<Args...>> {
   using CallbackType = base::OnceCallback<void(Args...)>;
 
   static base::OnceClosure RunTaskAndBindCallbackToResult(
-      const DomStorageDatabase& db,
+      DomStorageDatabase& db,
       AsyncDomStorageDatabase::DatabaseTask<ResultType> task,
       CallbackType callback) {
     return BindTupleAsArgs(

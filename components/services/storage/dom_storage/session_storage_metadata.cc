@@ -364,7 +364,7 @@ void SessionStorageMetadata::DeleteNamespace(
       [](std::vector<DomStorageDatabase::Key> prefixes_to_delete,
          DomStorageBatchOperation& batch, const DomStorageDatabase& db) {
         for (const auto& prefix : prefixes_to_delete)
-          db.DeletePrefixed(prefix, batch);
+          batch.DeletePrefixed(prefix);
       },
       std::move(prefixes_to_delete)));
 }
@@ -398,7 +398,7 @@ void SessionStorageMetadata::DeleteArea(
          DomStorageBatchOperation& batch, const DomStorageDatabase& db) {
         batch.Delete(area_key);
         for (const auto& prefix : prefixes_to_delete)
-          db.DeletePrefixed(prefix, batch);
+          batch.DeletePrefixed(prefix);
       },
       area_key, std::move(prefixes_to_delete)));
 }

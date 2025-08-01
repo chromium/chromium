@@ -70,7 +70,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
   RunDatabaseTask(base::BindOnce(
                       [](RunBatchTasksContext context,
                          std::vector<BatchDatabaseTask> tasks,
-                         const DomStorageDatabase& db) -> DbStatus {
+                         DomStorageDatabase& db) -> DbStatus {
                         std::unique_ptr<DomStorageBatchOperation> batch =
                             db.CreateBatchOperation();
                         // TODO(crbug.com/40245293): Remove this after debugging
@@ -109,7 +109,7 @@ void AsyncDomStorageDatabase::RunBatchDatabaseTasks(
                           current_batch_size =
                               batch->ApproximateSizeForMetrics();
                         }
-                        return db.Commit(*batch);
+                        return batch->Commit();
                       },
                       context, std::move(tasks)),
                   std::move(callback));
@@ -154,7 +154,7 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
 
   RunDatabaseTask(
       base::BindOnce(
-          [](std::vector<Commit> commits, const DomStorageDatabase& db) {
+          [](std::vector<Commit> commits, DomStorageDatabase& db) {
             std::unique_ptr<DomStorageBatchOperation> batch =
                 db.CreateBatchOperation();
             for (const Commit& commit : commits) {
@@ -165,7 +165,7 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
               }
 
               if (commit.clear_all_first) {
-                db.DeletePrefixed(commit.prefix, *batch);
+                batch->DeletePrefixed(commit.prefix);
               }
               for (const auto& entry : commit.entries_to_add) {
                 batch->Put(entry.key, entry.value);
@@ -174,11 +174,11 @@ void AsyncDomStorageDatabase::InitiateCommit(Committer* source) {
                 batch->Delete(key);
               }
               if (commit.copy_to_prefix) {
-                db.CopyPrefixed(commit.prefix, commit.copy_to_prefix.value(),
-                                *batch);
+                batch->CopyPrefixed(commit.prefix,
+                                    commit.copy_to_prefix.value());
               }
             }
-            return db.Commit(*batch);
+            return batch->Commit();
           },
           std::move(commits)),
       std::move(run_all));

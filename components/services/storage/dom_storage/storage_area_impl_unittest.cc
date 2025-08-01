@@ -217,11 +217,11 @@ class StorageAreaImplTest : public testing::Test,
   void ClearDatabase() {
     base::RunLoop loop;
     db_->database().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
           std::unique_ptr<DomStorageBatchOperation> batch =
-              db.CreateBatchOperation();
-          ASSERT_TRUE(db.DeletePrefixed({}, *batch).ok());
-          ASSERT_TRUE(db.Commit(*batch).ok());
+              db->CreateBatchOperation();
+          ASSERT_TRUE(batch->DeletePrefixed({}).ok());
+          ASSERT_TRUE(batch->Commit().ok());
           loop.Quit();
         }));
     loop.Run();

@@ -12,9 +12,9 @@
 #include <string>
 #include <vector>
 
-#include "base/containers/span.h"
 #include "base/functional/callback.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/threading/sequence_bound.h"
@@ -24,7 +24,6 @@
 #include "components/services/storage/dom_storage/dom_storage_database.h"
 #include "storage/common/database/db_status.h"
 #include "third_party/leveldatabase/env_chromium.h"
-#include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 namespace base {
 class FilePath;
@@ -37,24 +36,7 @@ class Env;
 
 namespace storage {
 
-// A DomStorageBatchOperation implementation that uses LevelDB's WriteBatch.
-class DomStorageBatchOperationLevelDB : public DomStorageBatchOperation {
- public:
-  DomStorageBatchOperationLevelDB();
-  ~DomStorageBatchOperationLevelDB() override;
-
-  // DomStorageBatchOperation implementation.
-  void Put(KeyView key, ValueView value) override;
-  void Delete(KeyView key) override;
-  size_t ApproximateSizeForMetrics() const override;
-
-  // Access to the underlying LevelDB WriteBatch
-  leveldb::WriteBatch* write_batch() { return &write_batch_; }
-  const leveldb::WriteBatch* write_batch() const { return &write_batch_; }
-
- private:
-  leveldb::WriteBatch write_batch_;
-};
+class DomStorageBatchOperationLevelDB;
 
 // A DomStorageDatabase implementation that uses LevelDB to store data. This
 // object is not thread-safe. Additionally, it must be instantiated on a
@@ -68,29 +50,6 @@ class DomStorageDatabaseLevelDB
  public:
   // Callback used for basic async operations on this class.
   using StatusCallback = base::OnceCallback<void(DbStatus)>;
-
-  DomStorageDatabaseLevelDB(const DomStorageDatabaseLevelDB&) = delete;
-  DomStorageDatabaseLevelDB& operator=(const DomStorageDatabaseLevelDB&) =
-      delete;
-
-  ~DomStorageDatabaseLevelDB() override;
-
-  // DomStorageDatabase implementation:
-  DbStatus Get(KeyView key, Value* out_value) const override;
-  DbStatus Put(KeyView key, ValueView value) const override;
-  DbStatus GetPrefixed(KeyView prefix,
-                       std::vector<KeyValuePair>* entries) const override;
-  DbStatus DeletePrefixed(KeyView prefix,
-                          DomStorageBatchOperation& batch) const override;
-  DbStatus CopyPrefixed(KeyView prefix,
-                        KeyView new_prefix,
-                        DomStorageBatchOperation& batch) const override;
-  DbStatus Commit(DomStorageBatchOperation& batch) const override;
-  DbStatus RewriteDB() override;
-  std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation()
-      const override;
-  void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
-  void MakeAllCommitsFailForTesting() override;
 
   // Use the static factory functions in DomStorageDatabase to construct this
   // class. These constructors are only public for the sake of
@@ -108,6 +67,25 @@ class DomStorageDatabaseLevelDB
       const std::optional<base::trace_event::MemoryAllocatorDumpGuid>&
           memory_dump_id,
       StatusCallback callback);
+  DomStorageDatabaseLevelDB(const DomStorageDatabaseLevelDB&) = delete;
+  DomStorageDatabaseLevelDB& operator=(const DomStorageDatabaseLevelDB&) =
+      delete;
+  ~DomStorageDatabaseLevelDB() override;
+
+  // DomStorageDatabase implementation:
+  DbStatus Get(KeyView key, Value* out_value) const override;
+  DbStatus Put(KeyView key, ValueView value) const override;
+  DbStatus GetPrefixed(KeyView prefix,
+                       std::vector<KeyValuePair>* entries) const override;
+  DbStatus RewriteDB() override;
+  std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation() override;
+  bool ShouldFailAllCommits() const override;
+  void SetDestructionCallbackForTesting(base::OnceClosure callback) override;
+  void MakeAllCommitsFailForTesting() override;
+
+  // This can only be called from `DomStorageBatchOperationLevelDB`.
+  leveldb::DB* GetLevelDBDatabase(
+      base::PassKey<DomStorageBatchOperationLevelDB> key) const;
 
  private:
   friend class DomStorageDatabaseFactory;
@@ -156,14 +134,16 @@ class DomStorageDatabaseLevelDB
       memory_dump_id_;
   std::unique_ptr<leveldb::DB> db_;
 
-  // Causes all calls to |Commit()| to fail with an IOError for simulated
-  // disk failures in testing.
-  bool fail_commits_for_testing_ = false;
+  // If true, all calls to `Commit()` fail with an IOError. This should only be
+  // set in tests to simulate disk failures.
+  bool fail_all_commits_ = false;
 
   // Callback to run on destruction in tests.
   base::OnceClosure destruction_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<DomStorageDatabaseLevelDB> weak_factory_{this};
 };
 
 }  // namespace storage

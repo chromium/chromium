@@ -974,11 +974,11 @@ TEST_F(SessionStorageImplTest, PurgeInactiveWrappers) {
   // Clear all the data from the backing database.
   base::RunLoop loop;
   session_storage_impl()->DatabaseForTesting()->RunDatabaseTask(
-      base::BindOnce([](const DomStorageDatabase& db) {
+      base::BindOnce([](DomStorageDatabase& db) {
         std::unique_ptr<DomStorageBatchOperation> batch =
             db.CreateBatchOperation();
-        db.DeletePrefixed(StringViewToUint8Vector("map"), *batch);
-        EXPECT_TRUE(db.Commit(*batch).ok());
+        batch->DeletePrefixed(StringViewToUint8Vector("map"));
+        EXPECT_TRUE(batch->Commit().ok());
         return 0;
       }),
       base::IgnoreArgs<int>(loop.QuitClosure()));

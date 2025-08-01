@@ -479,6 +479,14 @@ class BatchCollector : public DomStorageBatchOperation {
     deleted_keys_.emplace_back(key.begin(), key.end());
   }
 
+  DbStatus DeletePrefixed(KeyView prefix) override { return DbStatus::OK(); }
+
+  DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix) override {
+    return DbStatus::OK();
+  }
+
+  DbStatus Commit() override { return DbStatus::OK(); }
+
   std::vector<std::string> GetDeletedKeys() const { return deleted_keys_; }
 
   std::map<std::string, std::string> GetNewEntries() const {
@@ -551,8 +559,8 @@ TEST_F(SessionStorageMetadataMigrationTest, MigrateV0ToV1) {
   std::vector<std::string> deleted_keys;
   base::RunLoop loop2;
   database->RunDatabaseTask(
-      base::OnceCallback<bool(const DomStorageDatabase&)>(
-          base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+      base::OnceCallback<bool(DomStorageDatabase&)>(
+          base::BindLambdaForTesting([&](DomStorageDatabase& db) {
             auto collector = std::make_unique<BatchCollector>();
             for (auto& task : migration_tasks) {
               std::move(task).Run(*collector, db);

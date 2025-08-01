@@ -182,13 +182,11 @@ class LocalStorageImplTest : public testing::Test {
     WaitForDatabaseOpen();
     base::RunLoop loop;
     context()->GetDatabaseForTesting().PostTaskWithThisObject(
-        base::BindLambdaForTesting([&](const DomStorageDatabase& db) {
+        base::BindLambdaForTesting([&](DomStorageDatabase* db) {
           std::unique_ptr<DomStorageBatchOperation> batch =
-              db.CreateBatchOperation();
-          DbStatus status = db.DeletePrefixed({}, *batch);
-          ASSERT_TRUE(status.ok());
-          status = db.Commit(*batch);
-          ASSERT_TRUE(status.ok());
+              db->CreateBatchOperation();
+          ASSERT_TRUE(batch->DeletePrefixed({}).ok());
+          ASSERT_TRUE(batch->Commit().ok());
           loop.Quit();
         }));
     loop.Run();

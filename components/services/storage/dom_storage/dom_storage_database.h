@@ -75,23 +75,6 @@ class DomStorageDatabase {
   virtual DbStatus GetPrefixed(KeyView prefix,
                                std::vector<KeyValuePair>* entries) const = 0;
 
-  // TODO(crbug.com/377242771): Instead of passing a DomStorageBatchOperation,
-  // consider moving these methods to the DomStorageBatchOperation.
-  // Adds operations to |batch| which will delete all database entries whose key
-  // starts with |prefix| when committed.
-  virtual DbStatus DeletePrefixed(KeyView prefix,
-                                  DomStorageBatchOperation& batch) const = 0;
-
-  // Adds operations to |batch| which when committed will copy all database
-  // entries whose key starts with |prefix| over to new entries with |prefix|
-  // replaced by |new_prefix| in each new key.
-  virtual DbStatus CopyPrefixed(KeyView prefix,
-                                KeyView new_prefix,
-                                DomStorageBatchOperation& batch) const = 0;
-
-  // Commits operations in |batch| to the database.
-  virtual DbStatus Commit(DomStorageBatchOperation& batch) const = 0;
-
   // Rewrites the database on disk to clean up traces of deleted entries.
   //
   // NOTE: If |RewriteDB()| fails, this DomStorageDatabase may no longer
@@ -100,10 +83,12 @@ class DomStorageDatabase {
   virtual DbStatus RewriteDB() = 0;
 
   // Returns a database implementation appropriate batch operation for
-  // atomically applying multiple database updates. The returned object must not
-  // outlive the DomStorageDatabase instance it was created from.
-  virtual std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation()
-      const = 0;
+  // atomically applying multiple database updates. The returned object is not
+  // thread safe. It should be accessed from the same sequence it was created
+  // on. The returned object must not outlive the DomStorageDatabase instance
+  // it was created from.
+  virtual std::unique_ptr<DomStorageBatchOperation> CreateBatchOperation() = 0;
+  virtual bool ShouldFailAllCommits() const = 0;
 
   // Test only methods.
   virtual void MakeAllCommitsFailForTesting() = 0;
@@ -175,6 +160,18 @@ class DomStorageBatchOperation {
 
   // Delete the entry for "key" if it exists.
   virtual void Delete(KeyView key) = 0;
+
+  // Adds operations to |batch| which will delete all database entries whose key
+  // starts with |prefix| when committed.
+  virtual DbStatus DeletePrefixed(KeyView prefix) = 0;
+
+  // Adds operations to |batch| which when committed will copy all database
+  // entries whose key starts with |prefix| over to new entries with |prefix|
+  // replaced by |new_prefix| in each new key.
+  virtual DbStatus CopyPrefixed(KeyView prefix, KeyView new_prefix) = 0;
+
+  // Commits operations in |batch| to the database.
+  virtual DbStatus Commit() = 0;
 
   // The size of the database changes caused by this batch operation. This
   // number is tied to implementation details and should only be used for
