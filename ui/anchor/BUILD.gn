@@ -1,0 +1,35 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("anchor") {
+  sources = [ "anchor.h" ]
+  public_deps = [
+    "//base",
+    "//ui/gfx/geometry",
+  ]
+}
+
+config("impl_config") {
+  defines = [ "IS_UI_ANCHOR_IMPL" ]
+}
+
+source_set("impl") {
+  sources = [ "anchor.cc" ]
+  deps = [ ":anchor" ]
+  public_configs = [ ":impl_config" ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "anchor_unittest.cc" ]
+
+  deps = [
+    ":anchor",
+    ":impl",
+    "//base",
+    "//testing/gtest",
+    "//ui/gfx/geometry",
+  ]
+}
