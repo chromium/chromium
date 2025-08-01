@@ -15,6 +15,7 @@ import static org.mockito.Mockito.when;
 import android.app.Activity;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build.VERSION_CODES;
 import android.view.KeyEvent;
 import android.view.MotionEvent;
 import android.view.View;
@@ -219,6 +220,9 @@ public class AppMenuTest {
 
     @Test
     @MediumTest
+    @DisableIf.Build(
+            sdk_is_greater_than = VERSION_CODES.VANILLA_ICE_CREAM,
+            message = "crbug.com/435724248")
     public void testShowAppMenu_AnchorTop() throws TimeoutException {
         AppMenuCoordinatorImpl.setHasPermanentMenuKeyForTesting(false);
         showMenuAndAssert(mAppMenuHandler);
