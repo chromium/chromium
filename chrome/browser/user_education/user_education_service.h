@@ -32,9 +32,9 @@
 // Kill switch for recent session tracking. Enabled by default.
 BASE_DECLARE_FEATURE(kAllowRecentSessionTracking);
 
-class AppMenuButton;
 class BrowserHelpBubble;
 class BrowserUserEducationInterfaceImpl;
+class ToolbarButtonMenuHighlighter;
 class UserEducationInternalsPageHandlerImpl;
 
 namespace web_app {
@@ -95,9 +95,9 @@ class UserEducationService : public KeyedService {
   // Only a limited number of non-test classes are allowed direct access to the
   // feature promo controller.
   template <typename T>
-    requires std::same_as<T, AppMenuButton> ||
-             std::same_as<T, BrowserHelpBubble> ||
+    requires std::same_as<T, BrowserHelpBubble> ||
              std::same_as<T, BrowserUserEducationInterfaceImpl> ||
+             std::same_as<T, ToolbarButtonMenuHighlighter> ||
              std::same_as<T, UserEducationInternalsPageHandlerImpl> ||
              std::same_as<T, web_app::WebAppUiManagerImpl>
   const user_education::FeaturePromoController* GetFeaturePromoController(

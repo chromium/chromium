@@ -14,6 +14,7 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/safety_hub/safety_hub_constants.h"
 #include "components/prefs/pref_change_registrar.h"
+#include "components/user_education/common/menu/highlighting_simple_menu_model_delegate.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/models/button_menu_item_model.h"
@@ -165,7 +166,7 @@ class ExtensionsMenuModel : public ui::SimpleMenuModel {
 
 // A menu model that builds the contents of the app menu.
 class AppMenuModel : public ui::SimpleMenuModel,
-                     public ui::SimpleMenuModel::Delegate,
+                     public user_education::HighlightingSimpleMenuModelDelegate,
                      public ui::ButtonMenuItemModel::Delegate {
  public:
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kProfileMenuItem);
@@ -220,9 +221,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Runs Build() and registers observers.
   void Init();
 
-  void SetHighlightedIdentifier(
-      ui::ElementIdentifier highlighted_menu_identifier);
-
   // Overridden for ButtonMenuItemModel::Delegate:
   bool DoesCommandIdDismissMenu(int command_id) const override;
 
@@ -231,7 +229,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   bool IsCommandIdChecked(int command_id) const override;
   bool IsCommandIdEnabled(int command_id) const override;
   bool IsCommandIdAlerted(int command_id) const override;
-  bool IsElementIdAlerted(ui::ElementIdentifier element_id) const override;
   bool GetAcceleratorForCommandId(int command_id,
                                   ui::Accelerator* accelerator) const override;
 
@@ -317,8 +314,6 @@ class AppMenuModel : public ui::SimpleMenuModel,
   PrefChangeRegistrar local_state_pref_change_registrar_;
 
   const AlertMenuItem alert_item_;
-
-  ui::ElementIdentifier highlighted_menu_identifier_;
 };
 
 #endif  // CHROME_BROWSER_UI_TOOLBAR_APP_MENU_MODEL_H_

@@ -145,6 +145,12 @@ class InteractiveFeaturePromoTestApi
       const base::Feature& iph_feature,
       bool requested = true);
 
+  // Same as `CheckPromoRequested()` but ignores queued promos. Usually prefer
+  // to use `CheckPromoRequested()`. Note that "active" includes both "bubble
+  // visible" and "bubble closed but promo continued".
+  [[nodiscard]] StepBuilder CheckPromoActive(const base::Feature& iph_feature,
+                                             bool requested = true);
+
   // Ends the specified promo via the API, with reason `kAborted`.
   [[nodiscard]] MultiStep AbortPromo(const base::Feature& iph_feature,
                                      bool expected_result = true);

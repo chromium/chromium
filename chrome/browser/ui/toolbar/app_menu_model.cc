@@ -1037,11 +1037,6 @@ AppMenuModel::AppMenuModel(ui::AcceleratorProvider* provider,
 
 AppMenuModel::~AppMenuModel() = default;
 
-void AppMenuModel::SetHighlightedIdentifier(
-    ui::ElementIdentifier highlighted_menu_identifier) {
-  highlighted_menu_identifier_ = highlighted_menu_identifier;
-}
-
 void AppMenuModel::Init() {
   Build();
 
@@ -1769,10 +1764,6 @@ bool AppMenuModel::IsCommandIdAlerted(int command_id) const {
   }
 
   return false;
-}
-
-bool AppMenuModel::IsElementIdAlerted(ui::ElementIdentifier element_id) const {
-  return highlighted_menu_identifier_ == element_id;
 }
 
 bool AppMenuModel::GetAcceleratorForCommandId(

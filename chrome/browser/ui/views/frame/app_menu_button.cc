@@ -11,13 +11,10 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
-#include "chrome/browser/ui/user_education/browser_user_education_interface.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/app_menu_button_observer.h"
 #include "chrome/browser/ui/views/toolbar/app_menu.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_ink_drop_util.h"
-#include "chrome/browser/user_education/user_education_service.h"
-#include "chrome/browser/user_education/user_education_service_factory.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/controls/button/menu_button_controller.h"
 #include "ui/views/view_class_properties.h"
@@ -57,7 +54,6 @@ void AppMenuButton::CloseMenu() {
 }
 
 void AppMenuButton::OnMenuClosed() {
-  promo_handle_.Release();
   observer_list_.Notify(&AppMenuButtonObserver::AppMenuClosed);
 }
 
@@ -72,7 +68,7 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
   // in the class declaration.
   menu_.reset();
   menu_model_ = std::move(menu_model);
-  MaybeCloseIphAndHighlight(browser);
+  highlighter_.MaybeHighlight(browser, this, menu_model_.get());
   menu_model_->Init();
 
   menu_ = std::make_unique<AppMenu>(browser, menu_model_.get(), run_flags);
@@ -83,32 +79,6 @@ void AppMenuButton::RunMenu(std::unique_ptr<AppMenuModel> menu_model,
 
 void AppMenuButton::SetMenuTimerForTesting(base::ElapsedTimer timer) {
   menu_->SetTimerForTesting(std::move(timer));  // IN-TEST
-}
-
-void AppMenuButton::MaybeCloseIphAndHighlight(Browser* browser) {
-  // TODO(https://crbug.com/434898223): Make this a utility available to all
-  // menu buttons and revisit/unify behavior.
-  if (auto* const service = UserEducationServiceFactory::GetForBrowserContext(
-          browser->GetProfile())) {
-    if (auto* controller = service->GetFeaturePromoController(
-            base::PassKey<AppMenuButton>())) {
-      if (auto* const promo_specification =
-              controller->GetCurrentPromoSpecificationForAnchor(
-                  GetProperty(views::kElementIdentifierKey))) {
-        if (auto* const user_education =
-                BrowserUserEducationInterface::From(browser)) {
-          if (auto highlighted_identifier =
-                  promo_specification->highlighted_menu_identifier()) {
-            promo_handle_ = user_education->CloseFeaturePromoAndContinue(
-                *controller->GetCurrentPromoFeature());
-            if (promo_handle_.is_valid()) {
-              menu_model_->SetHighlightedIdentifier(highlighted_identifier);
-            }
-          }
-        }
-      }
-    }
-  }
 }
 
 BEGIN_METADATA(AppMenuButton)

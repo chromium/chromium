@@ -246,6 +246,13 @@ InteractiveFeaturePromoTestApi::CheckPromoRequested(
 }
 
 InteractiveFeaturePromoTestApi::StepBuilder
+InteractiveFeaturePromoTestApi::CheckPromoActive(
+    const base::Feature& iph_feature,
+    bool active) {
+  return CheckPromoImpl(iph_feature, active, false);
+}
+
+InteractiveFeaturePromoTestApi::StepBuilder
 InteractiveFeaturePromoTestApi::CheckPromoImpl(const base::Feature& iph_feature,
                                                bool requested,
                                                bool include_queued) {

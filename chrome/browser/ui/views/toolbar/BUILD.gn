@@ -54,6 +54,8 @@ source_set("toolbar") {
     "toolbar_actions_bar_bubble_views.h",
     "toolbar_button.cc",
     "toolbar_button.h",
+    "toolbar_button_menu_highlighter.cc",
+    "toolbar_button_menu_highlighter.h",
     "toolbar_chip_button.cc",
     "toolbar_chip_button.h",
     "toolbar_controller.cc",
