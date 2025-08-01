@@ -1314,5 +1314,10 @@ BASE_FEATURE(kIOSDefaultBrowserOffCyclePromo,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 bool IsDefaultBrowserOffCyclePromoEnabled() {
-  return base::FeatureList::IsEnabled(kIOSDefaultBrowserOffCyclePromo);
+#if defined(__IPHONE_18_3) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_18_3
+  if (@available(iOS 18.3, *)) {
+    return base::FeatureList::IsEnabled(kIOSDefaultBrowserOffCyclePromo);
+  }
+#endif
+  return false;
 }

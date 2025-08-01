@@ -126,11 +126,12 @@ enum class DefaultBrowserSettingsPageUsage {
 - (void)addDefaultBrowserVideoInstructionsView {
   _instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:NO
-               hasRemindMeLater:NO
-                       hasSteps:YES
-                  actionHandler:self
-                      titleText:nil];
+              initWithDismissButton:NO
+                   hasRemindMeLater:NO
+          useDefaultAppsDestination:NO
+                           hasSteps:YES
+                      actionHandler:self
+                          titleText:nil];
   [self addChildViewController:_instructionsViewController];
 
   self.tableView.backgroundView = [[UIView alloc] init];

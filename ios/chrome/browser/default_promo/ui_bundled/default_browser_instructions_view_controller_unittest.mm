@@ -74,11 +74,12 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
        CreateViewWithSubtitleTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:NO
-               hasRemindMeLater:NO
-                       hasSteps:NO
-                  actionHandler:nil
-                      titleText:nil];
+              initWithDismissButton:NO
+                   hasRemindMeLater:NO
+          useDefaultAppsDestination:NO
+                           hasSteps:NO
+                      actionHandler:nil
+                          titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
   EXPECT_TRUE(HasTitle(view));
@@ -93,11 +94,12 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
 TEST_F(DefaultBrowserInstructionsViewControllerTest, CreateViewWithStepsTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:NO
-               hasRemindMeLater:NO
-                       hasSteps:YES
-                  actionHandler:nil
-                      titleText:nil];
+              initWithDismissButton:NO
+                   hasRemindMeLater:NO
+          useDefaultAppsDestination:NO
+                           hasSteps:YES
+                      actionHandler:nil
+                          titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
   EXPECT_TRUE(HasTitle(view));
@@ -113,11 +115,12 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
        CreateViewWithSecondaryButtonTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:YES
-               hasRemindMeLater:NO
-                       hasSteps:NO
-                  actionHandler:nil
-                      titleText:nil];
+              initWithDismissButton:YES
+                   hasRemindMeLater:NO
+          useDefaultAppsDestination:NO
+                           hasSteps:NO
+                      actionHandler:nil
+                          titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
   EXPECT_TRUE(HasTitle(view));
@@ -133,11 +136,12 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
        CreateViewWithTertiaryButtonTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:NO
-               hasRemindMeLater:YES
-                       hasSteps:NO
-                  actionHandler:nil
-                      titleText:nil];
+              initWithDismissButton:NO
+                   hasRemindMeLater:YES
+          useDefaultAppsDestination:NO
+                           hasSteps:NO
+                      actionHandler:nil
+                          titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
   EXPECT_TRUE(HasTitle(view));
@@ -152,11 +156,12 @@ TEST_F(DefaultBrowserInstructionsViewControllerTest,
 TEST_F(DefaultBrowserInstructionsViewControllerTest, AnimationViewTest) {
   DefaultBrowserInstructionsViewController* instructionsViewController =
       [[DefaultBrowserInstructionsViewController alloc]
-          initWithDismissButton:YES
-               hasRemindMeLater:NO
-                       hasSteps:NO
-                  actionHandler:nil
-                      titleText:nil];
+              initWithDismissButton:YES
+                   hasRemindMeLater:NO
+          useDefaultAppsDestination:NO
+                           hasSteps:NO
+                      actionHandler:nil
+                          titleText:nil];
   UIView* view = instructionsViewController.view;
   ASSERT_NE(instructionsViewController, nil);
 

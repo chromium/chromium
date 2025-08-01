@@ -130,6 +130,8 @@
 - (void)updateOffCyclePromoRegistration {
   if (IsDefaultBrowserOffCyclePromoEnabled() &&
       !IsChromeLikelyDefaultBrowser()) {
+    // The off-cycle promo replaces the generic one.
+    self.promosManager->DeregisterPromo(promos_manager::Promo::DefaultBrowser);
     self.promosManager->RegisterPromoForSingleDisplay(
         promos_manager::Promo::DefaultBrowserOffCycle);
   } else {
@@ -300,7 +302,6 @@
     return;
   }
 
-  [self updateOffCyclePromoRegistration];
   [self updatePostRestorePromoRegistration];
   [self updatePostDefaultAbandonmentPromoRegistration];
   [self updateAllTabsPromoRegistration];
@@ -311,6 +312,9 @@
   } else {
     [self updateGenericPromoRegistration];
   }
+  // The off-cycle promo registration must be checked after the generic promo
+  // because the off-cycle promo can deregister the generic one.
+  [self updateOffCyclePromoRegistration];
 
   [self notifyFETSigninStatus];
   [self maybeSetTriggerCriteriaExperimentStartTimestamp];

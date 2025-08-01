@@ -25,6 +25,14 @@ NSString* const kDefaultBrowserAnimationDarkmode =
     @"default_browser_animation_darkmode";
 NSString* const kDefaultBrowserAnimationRtlDarkmode =
     @"default_browser_animation_rtl_darkmode";
+NSString* const kDefaultBrowserDefaultAppsAnimation =
+    @"default_browser_default_apps_animation";
+NSString* const kDefaultBrowserDefaultAppsAnimationRtl =
+    @"default_browser_default_apps_animation_rtl";
+NSString* const kDefaultBrowserDefaultAppsAnimationDarkmode =
+    @"default_browser_default_apps_animation_darkmode";
+NSString* const kDefaultBrowserDefaultAppsAnimationRtlDarkmode =
+    @"default_browser_default_apps_animation_rtl_darkmode";
 
 // Keys in the lottie assets.
 NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
@@ -60,12 +68,13 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
+            useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
                         actionHandler:
                             (id<ConfirmationAlertActionHandler>)actionHandler
                             titleText:(NSString*)titleText {
   if ((self = [super init])) {
-    [self addVideoSection];
+    [self addVideoSection:useDefaultAppsDestination];
     [self addInformationSectionWithDismissButton:hasDismissButton
                                 hasRemindMeLater:hasRemindMeLater
                                         hasSteps:hasSteps
@@ -99,18 +108,27 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 #pragma mark - Private
 
 // Adds the top part of the view which contains the video animation.
-- (void)addVideoSection {
+- (void)addVideoSection:(BOOL)useDefaultAppsDestination {
   NSString* animationAssetName;
   NSString* animationAssetNameDarkMode;
 
-  // TODO(crbug.com/40948842): Handle the case when the promo is displayed and
-  // the user switches between LTR and RLT.
-  if (base::i18n::IsRTL()) {
-    animationAssetName = kDefaultBrowserAnimationRtl;
-    animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+  if (useDefaultAppsDestination) {
+    if (base::i18n::IsRTL()) {
+      animationAssetName = kDefaultBrowserDefaultAppsAnimationRtl;
+      animationAssetNameDarkMode =
+          kDefaultBrowserDefaultAppsAnimationRtlDarkmode;
+    } else {
+      animationAssetName = kDefaultBrowserDefaultAppsAnimation;
+      animationAssetNameDarkMode = kDefaultBrowserDefaultAppsAnimationDarkmode;
+    }
   } else {
-    animationAssetName = kDefaultBrowserAnimation;
-    animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+    if (base::i18n::IsRTL()) {
+      animationAssetName = kDefaultBrowserAnimationRtl;
+      animationAssetNameDarkMode = kDefaultBrowserAnimationRtlDarkmode;
+    } else {
+      animationAssetName = kDefaultBrowserAnimation;
+      animationAssetNameDarkMode = kDefaultBrowserAnimationDarkmode;
+    }
   }
 
   self.animationViewWrapper = [self createAnimation:animationAssetName];

@@ -62,6 +62,11 @@ using base::UserMetricsAction;
         feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature);
   }
 
+  if (_promoWasFromOffCycleTrigger && _tracker) {
+    _tracker->Dismissed(
+        feature_engagement::kIPHiOSDefaultBrowserOffCyclePromoFeature);
+  }
+
   [self.promosUIHandler promoWasDismissed];
   self.promosUIHandler = nil;
 
@@ -76,7 +81,8 @@ using base::UserMetricsAction;
 #pragma mark - ConfirmationAlertActionHandler
 
 - (void)confirmationAlertPrimaryAction {
-  [_mediator didTapPrimaryActionButton];
+  [_mediator didTapPrimaryActionButton:
+                 /*useDefaultAppsDestination=*/_promoWasFromOffCycleTrigger];
   RecordDefaultBrowserPromoLastAction(
       IOSDefaultBrowserPromoAction::kActionButton);
   base::UmaHistogramEnumeration(
@@ -158,11 +164,12 @@ using base::UserMetricsAction;
           feature_engagement::kIPHiOSPromoDefaultBrowserReminderFeature) &&
       !_promoWasFromRemindMeLater;
   _viewController = [[DefaultBrowserInstructionsViewController alloc]
-      initWithDismissButton:YES
-           hasRemindMeLater:hasRemindMeLater
-                   hasSteps:NO
-              actionHandler:self
-                  titleText:nil];
+          initWithDismissButton:YES
+               hasRemindMeLater:hasRemindMeLater
+      useDefaultAppsDestination:_promoWasFromOffCycleTrigger
+                       hasSteps:NO
+                  actionHandler:self
+                      titleText:nil];
 
   CHECK(_viewController);
   RecordAction(

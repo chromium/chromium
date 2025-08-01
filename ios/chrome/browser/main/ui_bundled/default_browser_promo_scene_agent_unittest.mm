@@ -552,7 +552,14 @@ TEST_F(DefaultBrowserPromoSceneAgentTest,
        TestDefaultBrowserOffCyclePromoRegistration) {
   scoped_feature_list_.InitWithFeatures({kIOSDefaultBrowserOffCyclePromo},
                                         {kEnableReaderModeDefaultBrowserPromo});
-  VerifyPromoRegistration({promos_manager::Promo::DefaultBrowserOffCycle});
+  if (@available(iOS 18.3, *)) {
+    VerifyPromoRegistration({promos_manager::Promo::DefaultBrowserOffCycle});
+    EXPECT_CALL(*promos_manager_.get(),
+                DeregisterPromo(promos_manager::Promo::DefaultBrowser))
+        .Times(1);
+  } else {
+    VerifyPromoDeregistration({promos_manager::Promo::DefaultBrowserOffCycle});
+  }
 
   scene_state_.activationLevel = SceneActivationLevelForegroundActive;
   Mock::VerifyAndClearExpectations(promos_manager_.get());

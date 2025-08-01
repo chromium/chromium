@@ -25,6 +25,7 @@ extern NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId;
 // If `titleText` is nil, default title will be used.
 - (instancetype)initWithDismissButton:(BOOL)hasDismissButton
                      hasRemindMeLater:(BOOL)hasRemindMeLater
+            useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                              hasSteps:(BOOL)hasSteps
                         actionHandler:
                             (id<ConfirmationAlertActionHandler>)actionHandler
