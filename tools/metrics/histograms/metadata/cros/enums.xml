@@ -425,7 +425,7 @@ chromium-metrics-reviews@google.com.
     MINIJAIL_ERR_SIG_BASE (128) + SIGTERM (15) from libminijail
   </int>
   <int value="253" label="Seccomp violation">
-    MINIJAIL_ERR_JAIL from libminijail
+    MINIJAIL_ERR_SECCOMP_VIOLATION from libminijail
   </int>
 </enum>
 
@@ -470,7 +470,7 @@ chromium-metrics-reviews@google.com.
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
-    MINIJAIL_ERR_JAIL from libminijail
+    MINIJAIL_ERR_SECCOMP_VIOLATION from libminijail
   </int>
 </enum>
 
@@ -537,7 +537,7 @@ chromium-metrics-reviews@google.com.
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
-    MINIJAIL_ERR_JAIL from libminijail
+    MINIJAIL_ERR_SECCOMP_VIOLATION from libminijail
   </int>
 </enum>
 
@@ -572,7 +572,7 @@ chromium-metrics-reviews@google.com.
     MINIJAIL_ERR_MOUNT from libminijail
   </int>
   <int value="253" label="Seccomp violation">
-    MINIJAIL_ERR_JAIL from libminijail
+    MINIJAIL_ERR_SECCOMP_VIOLATION from libminijail
   </int>
 </enum>
 
