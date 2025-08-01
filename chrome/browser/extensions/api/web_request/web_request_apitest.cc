@@ -7878,7 +7878,6 @@ IN_PROC_BROWSER_TEST_F(ManifestV3WebRequestApiTest, RecordUkmOnNavigation) {
   }
 }
 
-#if !BUILDFLAG(IS_ANDROID)
 // Allows test to wait for the failure of a worker registration.
 class WorkerRegistrationFailureObserver
     : public ServiceWorkerTaskQueue::TestObserver {
@@ -8069,7 +8068,5 @@ INSTANTIATE_TEST_SUITE_P(
     All,
     ManifestV3WebRequestApiTestWithSkipResetServiceWorkerURLLoaderFactories,
     testing::Bool());
-
-#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace extensions
