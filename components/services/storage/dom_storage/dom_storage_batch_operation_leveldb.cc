@@ -4,12 +4,11 @@
 
 #include "components/services/storage/dom_storage/dom_storage_batch_operation_leveldb.h"
 
-#include <algorithm>
 #include <cstddef>
+#include <cstdint>
 #include <utility>
 
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -68,12 +67,12 @@ DbStatus DomStorageBatchOperationLevelDB::CopyPrefixed(KeyView prefix,
   DbStatus status = ForEachWithPrefix(
       db, prefix, [&](const leveldb::Slice& key, const leveldb::Slice& value) {
         DCHECK_GE(key.size(), prefix.size());  // By definition.
-        size_t suffix_length = key.size() - prefix.size();
-        new_key.resize(new_prefix.size() + suffix_length);
-        // TODO(crbug.com/434215965): Fix unsafe buffer usage.
-        std::copy(UNSAFE_TODO(key.data() + prefix.size()),
-                  UNSAFE_TODO(key.data() + key.size()),
-                  new_key.begin() + new_prefix.size());
+        KeyView key_view = base::as_byte_span(key);
+        KeyView suffix_view = key_view.subspan(prefix.size());
+        new_key.resize(new_prefix.size() + suffix_view.size());
+        base::span<uint8_t> dest_span =
+            base::span(new_key).subspan(new_prefix.size());
+        dest_span.copy_from_nonoverlapping(suffix_view);
         write_batch_.Put(MakeSlice(new_key), value);
       });
   return status;
