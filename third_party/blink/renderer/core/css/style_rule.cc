@@ -325,7 +325,6 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleNamespace>(this)->Copy();
     case kCharset:
     case kKeyframe:
-    case kFunction:
     case kMixin:
     case kApplyMixin:
     case kCustomMedia:
@@ -340,6 +339,8 @@ StyleRuleBase* StyleRuleBase::Copy() const {
       return To<StyleRuleViewTransition>(this)->Copy();
     case kPositionTry:
       return To<StyleRulePositionTry>(this)->Copy();
+    case kFunction:
+      return To<StyleRuleFunction>(this)->Copy();
   }
   NOTREACHED();
 }
