@@ -10965,9 +10965,6 @@
             "experiments": [
                 {
                     "name": "Enabled",
-                    "params": {
-                        "glic-scroll-to-enforce-document-id": "true"
-                    },
                     "enable_features": [
                         "GlicScrollTo"
                     ]

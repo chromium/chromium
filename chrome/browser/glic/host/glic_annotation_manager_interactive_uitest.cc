@@ -138,9 +138,7 @@ class FakeAnnotationAgentContainer
 class GlicAnnotationManagerUiTest : public InteractiveGlicTest {
  public:
   GlicAnnotationManagerUiTest() {
-    scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        features::kGlicScrollTo,
-        {{"glic-scroll-to-enforce-document-id", "true"}});
+    scoped_feature_list_.InitAndEnableFeature(features::kGlicScrollTo);
   }
   ~GlicAnnotationManagerUiTest() override = default;
 
@@ -1312,8 +1310,7 @@ class GlicAnnotationManagerTestForPDF
         {features::kGlicScrollTo,
          {{"glic-scroll-to-pdf", base::ToString(enable_scroll_to_pdf)},
           {"glic-scroll-to-enforce-url-for-pdf",
-           base::ToString(enforce_url_for_pdf)},
-          {"glic-scroll-to-enforce-document-id", "true"}}}};
+           base::ToString(enforce_url_for_pdf)}}}};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (UseOopif()) {
       enabled_features.push_back({chrome_pdf::features::kPdfOopif, {}});
