@@ -52,12 +52,14 @@ class OptimizationGuideOnDeviceModelInstallerPolicy
       state_manager_;
 };
 
+// Register the on-device model component, initiating download if needed.
 void RegisterOptimizationGuideOnDeviceModelComponent(
     ComponentUpdateService* cus,
     base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
         state_manager,
     bool is_already_installing);
 
+// Requests uninstallation of the on-device model component.
 void UninstallOptimizationGuideOnDeviceModelComponent(
     base::WeakPtr<optimization_guide::OnDeviceModelComponentStateManager>
         state_manager);

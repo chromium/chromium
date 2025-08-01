@@ -247,6 +247,11 @@ class OnDeviceModelComponentStateManager final {
     return GetDebugState();
   }
 
+  PerformanceClassifier& performance_classifier() {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return *performance_classifier_;
+  }
+
   base::WeakPtr<OnDeviceModelComponentStateManager> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
