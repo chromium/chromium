@@ -8,6 +8,7 @@ import static android.view.ViewGroup.LayoutParams.MATCH_PARENT;
 
 import static org.chromium.chrome.browser.base.SplitCompatApplication.CHROME_SPLIT_NAME;
 
+import android.app.Activity;
 import android.app.ActivityManager.TaskDescription;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -57,17 +58,20 @@ import org.chromium.chrome.browser.metrics.UmaSessionStats;
 import org.chromium.chrome.browser.night_mode.GlobalNightModeStateProviderHolder;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.night_mode.NightModeUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeController;
+import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeControllerCreator;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeFieldTrialImpl;
 import org.chromium.chrome.browser.ui.edge_to_edge.EdgeToEdgeUtils;
+import org.chromium.chrome.browser.ui.edge_to_edge.SimpleEdgeToEdgeController;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeManager;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeStateProvider;
 import org.chromium.components.browser_ui.edge_to_edge.EdgeToEdgeSystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.SystemBarColorHelper;
 import org.chromium.components.browser_ui.edge_to_edge.layout.EdgeToEdgeLayoutCoordinator;
-import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.util.AutomotiveUtils;
 import org.chromium.ui.base.ImmutableWeakReference;
+import org.chromium.ui.base.UiAndroidFeatureList;
 import org.chromium.ui.display.DisplaySwitches;
 import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.insets.InsetObserver;
@@ -78,6 +82,7 @@ import org.chromium.ui.util.XrUtils;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
+import java.lang.ref.WeakReference;
 import java.util.LinkedHashSet;
 
 /**
@@ -120,6 +125,9 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
             new ObservableSupplierImpl<>();
     protected final OneshotSupplierImpl<SystemBarColorHelper> mSystemBarColorHelperSupplier =
             new OneshotSupplierImpl<>();
+    // TODO(crbug.com/435269657): Update this and the ChromeActivity equivalent to OneShotSupplier
+    protected final ObservableSupplierImpl<EdgeToEdgeController> mEdgeToEdgeControllerSupplier =
+            new ObservableSupplierImpl<>();
 
     private NightModeStateProvider mNightModeStateProvider;
     private final LinkedHashSet<Integer> mThemeResIds = new LinkedHashSet<>();
@@ -130,6 +138,7 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
     // Created in #onCreate
     private @Nullable EdgeToEdgeManager mEdgeToEdgeManager;
     private @Nullable EdgeToEdgeLayoutCoordinator mEdgeToEdgeLayoutCoordinator;
+    private @Nullable EdgeToEdgeControllerCreator mEdgeToEdgeControllerCreator;
 
     @Override
     protected void attachBaseContext(Context newBase) {
@@ -236,6 +245,32 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         return mSystemBarColorHelperSupplier;
     }
 
+    /**
+     * Returns an observable supplier providing an {@link EdgeToEdgeController} for observing the
+     * bottom system bar inset and drawing edge-to-edge. This also creates an EdgeToEdgeController
+     * instance for that supplier, or creates a controller creator that will create and supply an
+     * EdgeToEdgeController when all conditions are met for the device to draw edge-to-edge.
+     */
+    protected ObservableSupplier<EdgeToEdgeController> getEdgeToEdgeSupplier() {
+        if (ChromeFeatureList.sEdgeToEdgeMonitorConfigurations.isEnabled()) {
+            if (mEdgeToEdgeControllerCreator == null) {
+                mEdgeToEdgeControllerCreator =
+                        new EdgeToEdgeControllerCreator(
+                                new WeakReference<Activity>(this),
+                                getInsetObserver(),
+                                this::ensureEdgeToEdgeController);
+            }
+        } else {
+            ensureEdgeToEdgeController();
+        }
+        return mEdgeToEdgeControllerSupplier;
+    }
+
+    private void ensureEdgeToEdgeController() {
+        if (mEdgeToEdgeControllerSupplier.get() != null) return;
+        mEdgeToEdgeControllerSupplier.set(new SimpleEdgeToEdgeController(this, getInsetObserver()));
+    }
+
     /** Set the default colors of the system bars for this activity. */
     protected void initializeSystemBarColors(
             EdgeToEdgeSystemBarColorHelper edgeToEdgeSystemBarColorHelper) {
@@ -270,6 +305,13 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
         }
         if (mEdgeToEdgeManager != null) {
             mEdgeToEdgeManager.destroy();
+        }
+        if (mEdgeToEdgeControllerSupplier.get() != null) {
+            mEdgeToEdgeControllerSupplier.get().destroy();
+        }
+        if (mEdgeToEdgeControllerCreator != null) {
+            mEdgeToEdgeControllerCreator.destroy();
+            mEdgeToEdgeControllerCreator = null;
         }
         super.onDestroy();
     }
