@@ -1702,7 +1702,24 @@
     "bases": [
       "external/wpt/IndexedDB",
       "storage/indexeddb",
-      "wpt_internal/IndexedDB"
+      "wpt_internal/IndexedDB",
+      "crypto/subtle/rsa-indexeddb.html",
+      "external/wpt/clear-site-data/storage.https.html",
+      "external/wpt/fs/FileSystemBaseHandle-IndexedDB.https.any.html",
+      "external/wpt/html/anonymous-iframe/indexeddb.tentative.https.window.html",
+      "external/wpt/html/infrastructure/common-dom-interfaces/collections/domstringlist.html",
+      "external/wpt/presentation-api/receiving-ua/PresentationReceiver_create-manual.https.html",
+      "external/wpt/service-workers/service-worker/indexeddb.https.html",
+      "external/wpt/storage-access-api/storage-access-beyond-cookies.indexedDB.sub.https.window.html",
+      "external/wpt/storage/buckets/bucket-quota-indexeddb.tentative.https.any.html",
+      "external/wpt/storage/estimate-indexeddb.https.any.html",
+      "external/wpt/storage/estimate-usage-details-indexeddb.https.tentative.any.html",
+      "external/wpt/storage/partitioned-estimate-usage-details-indexeddb.tentative.https.sub.html",
+      "external/wpt/wasm/webapi/historical.any.html",
+      "external/wpt/webcodecs/video-frame-serialization.any.html",
+      "external/wpt/workers/data-url-shared.html",
+      "external/wpt/workers/data-url.html",
+      "fast/dom/domstringlist.html"
     ],
     "args": [
       "--enable-features=IdbSqliteBackingStore"
