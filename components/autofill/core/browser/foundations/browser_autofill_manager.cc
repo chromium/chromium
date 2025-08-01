@@ -3281,7 +3281,11 @@ BrowserAutofillManager::GetEventFormLogger(const AutofillField& field) {
     // Ignore ac=unrecognized fields in key metrics.
     return nullptr;
   }
-  switch (FieldTypeGroupToFormType(field.Type().group())) {
+  // TODO(crbug.com/432645177): When migrating Loyalty Cards to AutofillType, we
+  // need to pick the right logger(s) here.
+  const DenseSet<FormType> form_types = field.Type().GetFormTypes();
+  switch (!form_types.empty() ? *form_types.begin()
+                              : FormType::kUnknownFormType) {
     case FormType::kAddressForm:
       return &metrics_->address_form_event_logger;
     case FormType::kCreditCardForm:

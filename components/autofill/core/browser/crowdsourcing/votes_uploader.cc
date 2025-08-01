@@ -361,7 +361,7 @@ void VotesUploader::UploadVote(
     return std::ranges::count_if(
         submitted_form->fields(),
         [=](const std::unique_ptr<AutofillField>& field) {
-          return FieldTypeGroupToFormType(field->Type().group()) == type;
+          return field->Type().GetFormTypes().contains(type);
         });
   };
 

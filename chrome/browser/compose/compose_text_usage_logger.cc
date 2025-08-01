@@ -82,7 +82,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     autofill::FormGlobalId form,
     autofill::FieldGlobalId field,
     const std::u16string& text_value) {
-  autofill::FormType form_type = autofill::FormType::kUnknownFormType;
+  autofill::DenseSet<autofill::FormType> form_types;
   int64_t form_control_type = -1;
   autofill::FieldSignature field_signature;
   autofill::FormSignature form_signature;
@@ -93,7 +93,7 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
     const autofill::AutofillField* field_data =
         form_structure->GetFieldById(field);
     if (field_data) {
-      form_type = FieldTypeGroupToFormType(field_data->Type().group());
+      form_types = field_data->Type().GetFormTypes();
       form_control_type = static_cast<int64_t>(field_data->form_control_type());
 
       switch (field_data->form_control_type()) {
@@ -137,19 +137,21 @@ void ComposeTextUsageLogger::OnAfterTextFieldValueChanged(
   }
   metrics.last_update_time = base::TimeTicks::Now();
 
-  switch (form_type) {
-    case autofill::FormType::kUnknownFormType:
-      break;
-    case autofill::FormType::kAddressForm:
-    case autofill::FormType::kLoyaltyCardForm:
-      metrics.is_autofill_field_type = true;
-      break;
-    case autofill::FormType::kStandaloneCvcForm:
-    case autofill::FormType::kCreditCardForm:
-    case autofill::FormType::kPasswordForm:
-      metrics.sensitive_field = true;
-      metrics.is_autofill_field_type = true;
-      break;
+  for (autofill::FormType form_type : form_types) {
+    switch (form_type) {
+      case autofill::FormType::kUnknownFormType:
+        break;
+      case autofill::FormType::kAddressForm:
+      case autofill::FormType::kLoyaltyCardForm:
+        metrics.is_autofill_field_type = true;
+        break;
+      case autofill::FormType::kStandaloneCvcForm:
+      case autofill::FormType::kCreditCardForm:
+      case autofill::FormType::kPasswordForm:
+        metrics.sensitive_field = true;
+        metrics.is_autofill_field_type = true;
+        break;
+    }
   }
 
   // Note that field_data->value doesn't have the current value, so we use

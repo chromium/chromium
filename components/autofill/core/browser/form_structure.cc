@@ -888,7 +888,13 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
       // the form types.
       form_types.insert(FormType::kUnknownFormType);
     } else {
-      form_types.insert(FieldTypeGroupToFormType(field->Type().group()));
+      form_types.insert_all([&field] {
+        DenseSet<FormType> ts = field->Type().GetFormTypes();
+        if (ts.empty()) {
+          ts = {FormType::kUnknownFormType};
+        }
+        return ts;
+      }());
     }
   }
   return form_types;

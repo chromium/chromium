@@ -199,10 +199,11 @@ FieldFillingStatus GetFieldFillingStatus(const AutofillField& field) {
 FormGroupFillingStats GetFormFillingStatsForFormType(
     FormType form_type,
     const FormStructure& form_structure) {
+  DCHECK_NE(form_type, FormType::kUnknownFormType);
   FormGroupFillingStats filling_stats_for_form_type;
 
   for (auto& field : form_structure) {
-    if (FieldTypeGroupToFormType(field->Type().group()) != form_type) {
+    if (!field->Type().GetFormTypes().contains(form_type)) {
       continue;
     }
     filling_stats_for_form_type.AddFieldFillingStatus(
@@ -224,12 +225,11 @@ void LogFieldFillingStatsAndScore(const FormStructure& form) {
     // collect the type-unspecific field filling statistics.
     // Those are only emitted when autofill was used on at least one field of
     // the form.
-    const FormType form_type_of_field =
-        FieldTypeGroupToFormType(field->Type().group());
+    const DenseSet<FormType> form_type_of_field = field->Type().GetFormTypes();
     const bool is_address_form_field =
-        form_type_of_field == FormType::kAddressForm;
+        form_type_of_field.contains(FormType::kAddressForm);
     const bool is_credit_card_form_field =
-        form_type_of_field == FormType::kCreditCardForm;
+        form_type_of_field.contains(FormType::kCreditCardForm);
     if (!is_address_form_field && !is_credit_card_form_field) {
       FieldFillingStatus field_stats = GetFieldFillingStatus(*field);
       unclassified_fields_field_stats.AddFieldFillingStatus(field_stats);

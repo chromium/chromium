@@ -78,7 +78,8 @@ struct FormGroupFillingStats {
 FieldFillingStatus GetFieldFillingStatus(const AutofillField& field);
 
 // Returns the `FormGroupFillingStats` corresponding to the fields in
-// `form_structure` that match `form_type`. This method does not log to UMA but
+// `form_structure` that match `form_type`. `form_type` must not be
+// `kUnknownFormType`. This function does not log to UMA but
 // only returns the statistics of a submitted form. `FormGroupFillingStats` is
 // UMA logged in `LogQualityMetrics()`.
 FormGroupFillingStats GetFormFillingStatsForFormType(
