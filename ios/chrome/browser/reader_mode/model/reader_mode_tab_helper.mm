@@ -413,11 +413,11 @@ void ReaderModeTabHelper::CreateReaderModeContent() {
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);
-  distiller_viewer_.reset(new ReaderModeDistillerViewer(
+  distiller_viewer_ = std::make_unique<ReaderModeDistillerViewer>(
       reader_mode_web_state_.get(), distiller_service_,
       std::move(distiller_page), web_state_->GetLastCommittedURL(),
       base::BindRepeating(&ReaderModeTabHelper::PageDistillationCompleted,
-                          weak_ptr_factory_.GetWeakPtr())));
+                          weak_ptr_factory_.GetWeakPtr()));
 
   reader_mode_distillation_timer_.Start(
       FROM_HERE, ReaderModeDistillationTimeout(),
