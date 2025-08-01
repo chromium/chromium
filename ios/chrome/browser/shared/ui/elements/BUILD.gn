@@ -11,8 +11,6 @@ source_set("elements") {
     "fade_truncating_label+Testing.h",
     "fade_truncating_label.h",
     "fade_truncating_label.mm",
-    "gray_highlight_button.h",
-    "gray_highlight_button.mm",
     "home_waiting_view.h",
     "home_waiting_view.mm",
     "new_feature_badge_view.h",

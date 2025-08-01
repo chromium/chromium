@@ -12,7 +12,6 @@
 #import "base/notreached.h"
 #import "ios/chrome/browser/alert_view/ui_bundled/alert_action.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
-#import "ios/chrome/browser/shared/ui/elements/gray_highlight_button.h"
 #import "ios/chrome/browser/shared/ui/elements/text_field_configuration.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
