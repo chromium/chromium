@@ -266,6 +266,9 @@ void ReaderModeTabHelper::ReaderModeContentDidCancelRequest(
     ReaderModeContentTabHelper* reader_mode_content_tab_helper,
     NSURLRequest* request,
     web::WebStatePolicyDecider::RequestInfo request_info) {
+  if (!active_ || !web_state_->IsVisible() || !request_info.is_user_initiated) {
+    return;
+  }
   // When the Reader mode content cancels a request to navigate, load the
   // requested URL in the host WebState instead.
   web::NavigationManager::WebLoadParams params(net::GURLWithNSURL(request.URL));
@@ -404,12 +407,12 @@ void ReaderModeTabHelper::CreateReaderModeContent() {
         ProfileIOS::FromBrowserState(web_state_->GetBrowserState()));
     reader_mode_web_state_ = web::WebState::Create(create_params);
     reader_mode_web_state_->SetWebUsageEnabled(true);
+    ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
+    ReaderModeContentTabHelper* content_tab_helper =
+        ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get());
+    content_tab_helper->SetDelegate(this);
+    content_tab_helper->AttachSupportedTabHelpers(web_state_.get());
   }
-  ReaderModeContentTabHelper::CreateForWebState(reader_mode_web_state_.get());
-  ReaderModeContentTabHelper* content_tab_helper =
-      ReaderModeContentTabHelper::FromWebState(reader_mode_web_state_.get());
-  content_tab_helper->SetDelegate(this);
-  content_tab_helper->AttachSupportedTabHelpers(web_state_.get());
 
   std::unique_ptr<ReaderModeDistillerPage> distiller_page =
       std::make_unique<ReaderModeDistillerPage>(web_state_);
@@ -437,7 +440,7 @@ void ReaderModeTabHelper::DestroyReaderModeContent() {
     observer.ReaderModeWebStateWillBecomeUnavailable(this);
   }
   reader_mode_web_state_content_loaded_ = false;
-  ReaderModeContentTabHelper::RemoveFromWebState(reader_mode_web_state_.get());
+
   // Cancel any ongoing distillation task.
   distiller_viewer_.reset();
   // Update the snapshot with the original web page.
