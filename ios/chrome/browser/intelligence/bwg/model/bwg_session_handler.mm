@@ -62,15 +62,7 @@
 }
 
 - (void)didTapBWGSettingsButton {
-  __weak BWGSessionHandler* weakSelf = self;
-  [_BWGHandler dismissBWGFlowWithCompletion:^{
-    BWGSessionHandler* strongSelf = weakSelf;
-    if (!strongSelf) {
-      return;
-    }
-
-    [strongSelf.settingsHandler showBWGSettings];
-  }];
+  [self.settingsHandler showBWGSettings];
 }
 
 - (void)didSendQueryWithInputType:(BWGInputType)inputType

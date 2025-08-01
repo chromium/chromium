@@ -2928,10 +2928,13 @@ using UserFeedbackDataCallback =
       BWGControllerForBrowser:self.mainInterface.browser
                      delegate:self];
 
-  UIViewController* baseViewController = self.currentInterface.viewController;
-  [baseViewController presentViewController:self.settingsNavigationController
-                                   animated:YES
-                                 completion:nil];
+  UIViewController* presenter = self.currentInterface.viewController;
+  while (presenter.presentedViewController) {
+    presenter = presenter.presentedViewController;
+  }
+  [presenter presentViewController:self.settingsNavigationController
+                          animated:YES
+                        completion:nil];
 }
 
 #pragma mark - SettingsNavigationControllerDelegate
