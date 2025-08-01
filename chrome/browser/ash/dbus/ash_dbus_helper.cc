@@ -41,6 +41,7 @@
 #include "chromeos/ash/components/dbus/device_management/install_attributes_client.h"
 #include "chromeos/ash/components/dbus/dlcservice/dlcservice_client.h"
 #include "chromeos/ash/components/dbus/easy_unlock/easy_unlock_client.h"
+#include "chromeos/ash/components/dbus/featured/featured_client.h"
 #include "chromeos/ash/components/dbus/gnubby/gnubby_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_clients.h"
 #include "chromeos/ash/components/dbus/human_presence/human_presence_dbus_client.h"
@@ -262,6 +263,10 @@ void InitializeFeatureListDependentDBus() {
       features::IsQuickDimEnabled()) {
     InitializeDBusClient<HumanPresenceDBusClient>(bus);
   }
+
+  // FeaturedClient is not a feature and instead uses the FieldTrialList (which
+  // is initialized with the FeatureList) to record early-boot trials in UMA.
+  InitializeDBusClient<featured::FeaturedClient>(bus);
 }
 
 void ShutdownDBus() {
@@ -332,6 +337,7 @@ void ShutdownDBus() {
   ImageBurnerClient::Shutdown();
   hermes_clients::Shutdown();
   GnubbyClient::Shutdown();
+  featured::FeaturedClient::Shutdown();
   EasyUnlockClient::Shutdown();
   DlcserviceClient::Shutdown();
   chromeos::DlpClient::Shutdown();
