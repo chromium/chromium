@@ -235,7 +235,6 @@ class OverflowMenuOrdererTest : public PlatformTest {
 
   ActionRanking SampleActions() {
     return {
-        overflow_menu::ActionType::Follow,
         overflow_menu::ActionType::Bookmark,
         overflow_menu::ActionType::ReadingList,
         overflow_menu::ActionType::ClearBrowsingData,
@@ -859,9 +858,9 @@ TEST_F(OverflowMenuOrdererTest, AddsNewActionsToRanking) {
       base::Value::Dict()
           .Set("shown", base::Value::List()
                             .Append(overflow_menu::StringNameForActionType(
-                                overflow_menu::ActionType::Follow))
+                                overflow_menu::ActionType::Bookmark))
                             .Append(overflow_menu::StringNameForActionType(
-                                overflow_menu::ActionType::Bookmark)))
+                                overflow_menu::ActionType::TextZoom)))
           .Set("hidden",
                base::Value::List()
                    .Append(overflow_menu::StringNameForActionType(
@@ -883,21 +882,19 @@ TEST_F(OverflowMenuOrdererTest, AddsNewActionsToRanking) {
 
   [overflow_menu_orderer_ updatePageActions];
 
-  ASSERT_EQ(group.actions.count, 6u);
+  ASSERT_EQ(group.actions.count, 5u);
   // The action order should first be shown actions, and then any new actions in
   // order.
   EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[0].actionType),
-            overflow_menu::ActionType::Follow);
-  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[1].actionType),
             overflow_menu::ActionType::Bookmark);
+  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[1].actionType),
+            overflow_menu::ActionType::TextZoom);
   EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[2].actionType),
             overflow_menu::ActionType::Translate);
   EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[3].actionType),
             overflow_menu::ActionType::DesktopSite);
   EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[4].actionType),
             overflow_menu::ActionType::FindInPage);
-  EXPECT_EQ(static_cast<overflow_menu::ActionType>(group.actions[5].actionType),
-            overflow_menu::ActionType::TextZoom);
 }
 
 // Tests that when there is a badged item, the overflow menu orderer doesn't
@@ -2070,8 +2067,8 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
   ActionCustomizationModel* actionModel =
       overflow_menu_orderer_.actionCustomizationModel;
 
-  OverflowMenuAction* action4 = actionModel.shownActions[4];
-  OverflowMenuAction* action5 = actionModel.shownActions[5];
+  OverflowMenuAction* action4 = actionModel.shownActions[3];
+  OverflowMenuAction* action5 = actionModel.shownActions[4];
   action4.shown = NO;
   action5.shown = NO;
 
@@ -2086,13 +2083,11 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
                            1);
 
   tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 4, 1);
+      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 5, 1);
   tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 5, 1);
+      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 6, 1);
   tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 6, 1);
-  tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 7, 1);
+      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 7, 1);
 
   std::vector<base::Bucket> buckets =
       tester.GetAllSamples("IOS.OverflowMenu.Customization.ActionsCustomized");
@@ -2101,7 +2096,7 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
   EXPECT_FALSE(buckets[0].min & 1 << 1);
   EXPECT_FALSE(buckets[0].min & 1 << 2);
 
-  // Now turn action 4 (the first hidden action) back on.
+  // Now turn action 3 (the first hidden action) back on.
   actionModel = overflow_menu_orderer_.actionCustomizationModel;
   actionModel.hiddenActions[0].shown = YES;
 
@@ -2111,13 +2106,11 @@ TEST_F(OverflowMenuOrdererTest, ActionCustomizationRecordsMetrics) {
   tester.ExpectBucketCount("IOS.OverflowMenu.Customization.ActionAdded", 8, 1);
 
   tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 4, 2);
+      "IOS.OverflowMenu.Customization.ActionsReordered.FirstPosition", 5, 2);
   tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 5, 2);
+      "IOS.OverflowMenu.Customization.ActionsReordered.SecondPosition", 6, 2);
   tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 6, 2);
-  tester.ExpectBucketCount(
-      "IOS.OverflowMenu.Customization.ActionsReordered.FourthPosition", 7, 2);
+      "IOS.OverflowMenu.Customization.ActionsReordered.ThirdPosition", 7, 2);
 
   buckets =
       tester.GetAllSamples("IOS.OverflowMenu.Customization.ActionsCustomized");
@@ -2170,7 +2163,6 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithDuplicates) {
   CreatePrefs();
 
   // Define actions with duplicates.
-  overflow_menu::ActionType followAction = overflow_menu::ActionType::Follow;
   overflow_menu::ActionType bookmarkAction =
       overflow_menu::ActionType::Bookmark;
   overflow_menu::ActionType readingListAction =
@@ -2179,13 +2171,15 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithDuplicates) {
       overflow_menu::ActionType::ClearBrowsingData;
   overflow_menu::ActionType translateAction =
       overflow_menu::ActionType::Translate;
+  overflow_menu::ActionType textZoomAction =
+      overflow_menu::ActionType::TextZoom;
 
   base::Value::List shown_actions_list =
       base::Value::List()
-          .Append(overflow_menu::StringNameForActionType(followAction))
           .Append(overflow_menu::StringNameForActionType(bookmarkAction))
+          .Append(overflow_menu::StringNameForActionType(textZoomAction))
           // Duplicate shown action.
-          .Append(overflow_menu::StringNameForActionType(followAction));
+          .Append(overflow_menu::StringNameForActionType(bookmarkAction));
 
   base::Value::List hidden_actions_list =
       base::Value::List()
@@ -2194,7 +2188,7 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithDuplicates) {
           // Duplicate hidden action.
           .Append(overflow_menu::StringNameForActionType(readingListAction))
           // Action also in shown list (should be ignored here).
-          .Append(overflow_menu::StringNameForActionType(bookmarkAction))
+          .Append(overflow_menu::StringNameForActionType(textZoomAction))
           // Unique hidden action.
           .Append(overflow_menu::StringNameForActionType(translateAction));
 
@@ -2213,10 +2207,10 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithDuplicates) {
   ASSERT_EQ(model.shownActions.count, 2u);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[0].actionType),
-      followAction);
+      bookmarkAction);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[1].actionType),
-      bookmarkAction);
+      textZoomAction);
 
   ASSERT_EQ(model.hiddenActions.count, 3u);
   EXPECT_EQ(
@@ -2236,7 +2230,8 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
   CreatePrefs();
 
   // Define some valid actions.
-  overflow_menu::ActionType followAction = overflow_menu::ActionType::Follow;
+  overflow_menu::ActionType textZoomAction =
+      overflow_menu::ActionType::TextZoom;
   overflow_menu::ActionType bookmarkAction =
       overflow_menu::ActionType::Bookmark;
   overflow_menu::ActionType readingListAction =
@@ -2247,7 +2242,7 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
   base::Value::List shown_actions_list =
       base::Value::List()
           .Append("InvalidActionString1")  // Invalid string.
-          .Append(overflow_menu::StringNameForActionType(followAction))
+          .Append(overflow_menu::StringNameForActionType(textZoomAction))
           .Append("AnotherInvalidString")  // Another invalid string.
           .Append(overflow_menu::StringNameForActionType(bookmarkAction));
 
@@ -2273,7 +2268,7 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
   ASSERT_EQ(model.shownActions.count, 2u);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[0].actionType),
-      followAction);
+      textZoomAction);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[1].actionType),
       bookmarkAction);
@@ -2329,24 +2324,26 @@ TEST_F(OverflowMenuOrdererTest,
        UpdatePageActionsWithUnsortedBaseActionsPreservesOrderAndAppendsNew) {
   CreatePrefs();
 
-  // Define actions. Values are: Follow(4), Bookmark(5), ReadingList(6),
-  // Translate(8), FindInPage(10).
-  overflow_menu::ActionType followAction = overflow_menu::ActionType::Follow;
+  // Define actions. Values are: Bookmark(5), ReadingList(6),
+  // ClearBrowsingData(7) Translate(8), FindInPage(10).
   overflow_menu::ActionType bookmarkAction =
       overflow_menu::ActionType::Bookmark;
   overflow_menu::ActionType readingListAction =
       overflow_menu::ActionType::ReadingList;
+  overflow_menu::ActionType clearBrowsingData =
+      overflow_menu::ActionType::ClearBrowsingData;
   overflow_menu::ActionType translateAction =
       overflow_menu::ActionType::Translate;
   overflow_menu::ActionType findInPageAction =
       overflow_menu::ActionType::FindInPage;
 
-  // Set initial prefs: Shown [Bookmark, Follow], Hidden [Translate]
-  // Note: Bookmark (5) comes before Follow (4) in shown list.
+  // Set initial prefs: Shown [Clear Browsing Data, Bookmark], Hidden
+  // [Translate] Note: Clear Browsing Data (7) comes before Bookmark (5) in
+  // shown list.
   base::Value::List initial_shown_actions =
       base::Value::List()
-          .Append(overflow_menu::StringNameForActionType(bookmarkAction))
-          .Append(overflow_menu::StringNameForActionType(followAction));
+          .Append(overflow_menu::StringNameForActionType(clearBrowsingData))
+          .Append(overflow_menu::StringNameForActionType(bookmarkAction));
   base::Value::List initial_hidden_actions = base::Value::List().Append(
       overflow_menu::StringNameForActionType(translateAction));
 
@@ -2358,26 +2355,26 @@ TEST_F(OverflowMenuOrdererTest,
 
   InitializeOverflowMenuOrderer(NO);
 
-  // Set basePageActions from provider: [ReadingList, Bookmark, FindInPage,
-  // Follow, Translate] This list is not sorted by integral value (6, 5, 10, 4,
-  // 8). New actions here are ReadingList and FindInPage.
-  action_provider_.basePageActions = {readingListAction, bookmarkAction,
-                                      findInPageAction, followAction,
+  // Set basePageActions from provider: [ReadingList, Clear Browsing Data,
+  // FindInPage, Bookmark, Translate] This list is not sorted by integral value
+  // (6, 7, 10, 5, 8). New actions here are ReadingList and FindInPage.
+  action_provider_.basePageActions = {readingListAction, clearBrowsingData,
+                                      findInPageAction, bookmarkAction,
                                       translateAction};
 
   // Accessing the model triggers an update of page actions.
   ActionCustomizationModel* model =
       overflow_menu_orderer_.actionCustomizationModel;
 
-  // Expected shown: [Bookmark, Follow (from prefs), ReadingList, FindInPage
-  // (new, in order from basePageActions)]
+  // Expected shown: [Clear Browsing Data, Bookmark (from prefs), ReadingList,
+  // FindInPage (new, in order from basePageActions)]
   ASSERT_EQ(model.shownActions.count, 4u);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[0].actionType),
-      bookmarkAction);
+      clearBrowsingData);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[1].actionType),
-      followAction);
+      bookmarkAction);
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.shownActions[2].actionType),
       readingListAction);

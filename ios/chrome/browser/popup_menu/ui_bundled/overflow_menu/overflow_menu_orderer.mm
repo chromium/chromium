@@ -608,6 +608,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
         // not add it to `actionsSet`.
         continue;
       }
+      if (*actionType == overflow_menu::ActionType::Follow) {
+        // Follow has been deprecated. Do not add it to `actionSet`.
+        // TODO(crbug.com/435685705): Clean up the enum.
+        continue;
+      }
 
       actionsSet.insert(*actionType);
       actionOrderData.shownActions.push_back(*actionType);
@@ -633,6 +638,11 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
           !IsReaderModeAvailable()) {
         // Reader mode may have been disabled since the last update, if so do
         // not add it to `actionsSet`.
+        continue;
+      }
+      if (*actionType == overflow_menu::ActionType::Follow) {
+        // Follow has been deprecated. Do not add it to `actionSet`.
+        // TODO(crbug.com/435685705): Clean up the enum.
         continue;
       }
 
