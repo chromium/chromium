@@ -17,8 +17,6 @@
 
 namespace content {
 
-const char kUrnUuidPrefix[] = "urn:uuid:";
-
 GURL GenerateUrnUuid() {
   return GURL(kUrnUuidPrefix +
               base::Uuid::GenerateRandomV4().AsLowercaseString());

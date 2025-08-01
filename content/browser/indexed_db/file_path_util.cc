@@ -37,13 +37,6 @@ constexpr base::FilePath::CharType kBlobExtension[] =
 constexpr char kSqliteEmptyDatabaseNameFileName[] = "0";
 }  // namespace
 
-const base::FilePath::CharType kLevelDBExtension[] =
-    FILE_PATH_LITERAL(".leveldb");
-const base::FilePath::CharType kIndexedDBExtension[] =
-    FILE_PATH_LITERAL(".indexeddb");
-const base::FilePath::CharType kIndexedDBFile[] =
-    FILE_PATH_LITERAL("indexeddb");
-
 bool ShouldUseLegacyFilePath(const storage::BucketLocator& bucket_locator) {
   return bucket_locator.storage_key.IsFirstPartyContext() &&
          bucket_locator.is_default;

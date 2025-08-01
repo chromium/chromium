@@ -31,13 +31,14 @@ class AuctionV8Helper;
 
 // The official Javascript, JSON, and WASM MIME types. For JS and JSON there are
 // also other supported MIME types.
-extern const char kJavascriptMimeType[];
-extern const char kJsonMimeType[];
-extern const char kWasmMimeType[];
-extern const char kAdAuctionTrustedSignalsMimeType[];
+inline constexpr char kJavascriptMimeType[] = "application/javascript";
+inline constexpr char kJsonMimeType[] = "application/json";
+inline constexpr char kWasmMimeType[] = "application/wasm";
+inline constexpr char kAdAuctionTrustedSignalsMimeType[] =
+    "message/ad-auction-trusted-signals-response";
 
 // "X-Allow-Fledge: true" header.
-extern const char kAllowFledgeHeader[];
+inline constexpr char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
 
 // Enqueues a response to `url_loader_factory` using the specified values.
 //

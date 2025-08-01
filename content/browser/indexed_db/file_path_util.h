@@ -19,9 +19,12 @@ struct BucketLocator;
 
 namespace content::indexed_db {
 
-extern CONTENT_EXPORT const base::FilePath::CharType kIndexedDBExtension[];
-extern const base::FilePath::CharType kIndexedDBFile[];
-extern CONTENT_EXPORT const base::FilePath::CharType kLevelDBExtension[];
+inline constexpr base::FilePath::CharType kLevelDBExtension[] =
+    FILE_PATH_LITERAL(".leveldb");
+inline constexpr base::FilePath::CharType kIndexedDBExtension[] =
+    FILE_PATH_LITERAL(".indexeddb");
+inline constexpr base::FilePath::CharType kIndexedDBFile[] =
+    FILE_PATH_LITERAL("indexeddb");
 
 // Returns whether the legacy (first-party/default-bucket) path should be used
 // for storing IDB files for the given bucket.

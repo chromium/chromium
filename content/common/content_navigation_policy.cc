@@ -84,8 +84,6 @@ bool CanCrossSiteNavigationsProactivelySwapBrowsingInstances() {
   return IsBackForwardCacheEnabled();
 }
 
-const char kRenderDocumentLevelParameterName[] = "level";
-
 constexpr base::FeatureParam<RenderDocumentLevel>::Option
     render_document_levels[] = {
         {RenderDocumentLevel::kCrashedFrame, "crashed-frame"},

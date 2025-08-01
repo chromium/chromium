@@ -28,14 +28,6 @@
 
 namespace auction_worklet {
 
-const char kJavascriptMimeType[] = "application/javascript";
-const char kJsonMimeType[] = "application/json";
-const char kWasmMimeType[] = "application/wasm";
-const char kAdAuctionTrustedSignalsMimeType[] =
-    "message/ad-auction-trusted-signals-response";
-
-const char kAllowFledgeHeader[] = "Ad-Auction-Allowed: true";
-
 void AddResponse(network::TestURLLoaderFactory* url_loader_factory,
                  const GURL& url,
                  std::optional<std::string> mime_type,

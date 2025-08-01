@@ -46,13 +46,11 @@ static_library("web_test_common") {
   sources = [
     "common/tracked_dictionary.cc",
     "common/tracked_dictionary.h",
-    "common/web_test_constants.cc",
     "common/web_test_constants.h",
     "common/web_test_runtime_flags.cc",
     "common/web_test_runtime_flags.h",
     "common/web_test_string_util.cc",
     "common/web_test_string_util.h",
-    "common/web_test_switches.cc",
     "common/web_test_switches.h",
   ]
   public_deps = [

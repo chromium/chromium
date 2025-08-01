@@ -21,12 +21,10 @@
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "url/gurl.h"
 
-namespace blink {
-namespace mojom {
+namespace blink::mojom {
 enum class PushRegistrationStatus;
 enum class PushUnregistrationStatus;
-}  // namespace mojom
-}  // namespace blink
+}  // namespace blink::mojom
 
 namespace url {
 class Origin;
@@ -38,9 +36,13 @@ class PushMessagingService;
 class RenderProcessHost;
 class ServiceWorkerContextWrapper;
 
-// Documented at definition.
-extern const char kPushSenderIdServiceWorkerKey[];
-extern const char kPushRegistrationIdServiceWorkerKey[];
+// Service Worker database keys. If a registration ID is stored, the stored
+// sender ID must be the one used to register. Unfortunately, this isn't always
+// true of pre-InstanceID registrations previously stored in the database, but
+// fortunately it's less important for their sender ID to be accurate.
+inline constexpr char kPushSenderIdServiceWorkerKey[] = "push_sender_id";
+inline constexpr char kPushRegistrationIdServiceWorkerKey[] =
+    "push_registration_id";
 
 // Owned by RenderFrameHostImpl (if `this` handles requests from a document) or
 // RenderProcessHostImpl (if `this` handles requests from a service worker).

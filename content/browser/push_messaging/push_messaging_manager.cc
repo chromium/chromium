@@ -41,13 +41,6 @@
 
 namespace content {
 
-// Service Worker database keys. If a registration ID is stored, the stored
-// sender ID must be the one used to register. Unfortunately, this isn't always
-// true of pre-InstanceID registrations previously stored in the database, but
-// fortunately it's less important for their sender ID to be accurate.
-const char kPushSenderIdServiceWorkerKey[] = "push_sender_id";
-const char kPushRegistrationIdServiceWorkerKey[] = "push_registration_id";
-
 namespace {
 
 // Chrome currently does not support the Push API in incognito.

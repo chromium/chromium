@@ -21,18 +21,16 @@ namespace {
 
 constexpr std::string_view kWebTestsPattern = "/web_tests/";
 constexpr std::string_view kFileURLPattern = "file://";
-const char* kFileTestPrefix = "(file test):";
-const char* kPolicyDownload = "download";
-const char* kPolicyCurrentTab = "current tab";
-const char* kPolicyNewBackgroundTab = "new background tab";
-const char* kPolicyNewForegroundTab = "new foreground tab";
-const char* kPolicyNewWindow = "new window";
-const char* kPolicyNewPopup = "new popup";
-const char* kPolicyPictureInPicture = "picture in picture";
+constexpr char kFileTestPrefix[] = "(file test):";
+constexpr char kPolicyDownload[] = "download";
+constexpr char kPolicyCurrentTab[] = "current tab";
+constexpr char kPolicyNewBackgroundTab[] = "new background tab";
+constexpr char kPolicyNewForegroundTab[] = "new foreground tab";
+constexpr char kPolicyNewWindow[] = "new window";
+constexpr char kPolicyNewPopup[] = "new popup";
+constexpr char kPolicyPictureInPicture[] = "picture in picture";
 
 }  // namespace
-
-const char* kIllegalString = "illegal value";
 
 std::string NormalizeWebTestURLForTextOutput(const std::string& url) {
   std::string result = url;

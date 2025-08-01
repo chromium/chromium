@@ -362,8 +362,6 @@ IndexedDBKey DecodeSortableKeyNonArray(char value_type,
 
 }  // namespace
 
-const unsigned char kMinimumIndexId = 30;
-
 std::string MaxIDBKey() {
   std::string ret;
   EncodeByte(kIndexedDBKeyNullTypeByte, &ret);

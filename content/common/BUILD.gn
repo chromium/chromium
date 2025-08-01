@@ -72,7 +72,6 @@ source_set("common") {
     "common_param_traits.cc",
     "common_param_traits.h",
     "common_param_traits_macros.h",
-    "content_constants_internal.cc",
     "content_constants_internal.h",
     "content_export.h",
     "content_navigation_policy.cc",

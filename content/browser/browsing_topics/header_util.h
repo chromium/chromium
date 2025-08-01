@@ -12,7 +12,7 @@
 
 namespace content {
 
-extern const char kBrowsingTopicsRequestHeaderKey[];
+inline constexpr char kBrowsingTopicsRequestHeaderKey[] = "Sec-Browsing-Topics";
 
 // Derive the header value for `Sec-Browsing-Topics` given `topics` and
 // `num_versions_in_epochs`.

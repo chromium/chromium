@@ -87,7 +87,7 @@ namespace content {
 
 class FencedFrameURLMapping;
 
-extern const char kUrnUuidPrefix[];
+inline constexpr char kUrnUuidPrefix[] = "urn:uuid:";
 GURL CONTENT_EXPORT GenerateUrnUuid();
 
 // Used by the fenced frame properties getter. It specifies the node source

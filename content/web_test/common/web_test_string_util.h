@@ -16,7 +16,7 @@ class GURL;
 
 namespace web_test_string_util {
 
-extern const char* kIllegalString;
+inline constexpr char kIllegalString[] = "illegal value";
 
 // Converts a web test url into a string that is invariant with the testing
 // environment (e.g. the absolute file path of the chrome repository), called

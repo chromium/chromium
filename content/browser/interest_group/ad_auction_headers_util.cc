@@ -40,13 +40,6 @@
 
 namespace content {
 
-const char kAdAuctionRequestHeaderKey[] = "Sec-Ad-Auction-Fetch";
-const char kAdAuctionResultResponseHeaderKey[] = "Ad-Auction-Result";
-const char kAdAuctionResultNonceResponseHeaderKey[] = "Ad-Auction-Result-Nonce";
-const char kAdAuctionSignalsResponseHeaderKey[] = "Ad-Auction-Signals";
-const char kAdAuctionAdditionalBidResponseHeaderKey[] =
-    "Ad-Auction-Additional-Bid";
-
 namespace {
 
 // These values are persisted to logs. Entries should not be renumbered and
