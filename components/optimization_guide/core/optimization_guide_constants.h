@@ -70,6 +70,10 @@ extern const base::FilePath::CharType kWeightsFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kExperimentalCacheFile[];
 COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kEncoderCacheFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
+extern const base::FilePath::CharType kAdapterCacheFile[];
+COMPONENT_EXPORT(OPTIMIZATION_GUIDE_FEATURES)
 extern const base::FilePath::CharType kOnDeviceModelExecutionConfigFile[];
 
 // Files expected to be in the text safety model bundle.

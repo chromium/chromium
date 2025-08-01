@@ -30,15 +30,16 @@ class FakeBaseModelAsset {
   struct Content {
     uint32_t weight = 0;
     proto::OnDeviceModelExecutionConfig config;
-    std::string version = "0.0.1";
     uint32_t cache_weight = 0;
+    uint32_t encoder_cache_weight = 0;
+    uint32_t adapter_cache_weight = 0;
     proto::OnDeviceModelPerformanceHint supported_performance_hint =
         proto::ON_DEVICE_MODEL_PERFORMANCE_HINT_HIGHEST_QUALITY;
   };
   FakeBaseModelAsset();
   explicit FakeBaseModelAsset(Content&& content);
   explicit FakeBaseModelAsset(
-      std::vector<proto::OnDeviceModelPerformanceHint> hints);
+      const std::vector<proto::OnDeviceModelPerformanceHint>& hints);
   explicit FakeBaseModelAsset(
       proto::OnDeviceModelValidationConfig&& validation_config);
   ~FakeBaseModelAsset();
@@ -48,6 +49,7 @@ class FakeBaseModelAsset {
 
   const base::FilePath& path() const { return temp_dir_.GetPath(); }
 
+  void set_version(const std::string& version) { version_ = version; }
   const std::string& version() const { return version_; }
 
   // Returns a fake manifest content for this asset.
@@ -57,7 +59,7 @@ class FakeBaseModelAsset {
   void SetReadyIn(OnDeviceModelComponentStateManager& manager) const;
 
  private:
-  std::string version_;
+  std::string version_ = "0.0.1";
   base::Value::List supported_performance_hints_;
   base::ScopedTempDir temp_dir_;
 };

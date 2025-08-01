@@ -27,6 +27,9 @@ namespace on_device_model {
 namespace {
 
 std::string ReadFile(base::File& file) {
+  if (file.GetLength() == 0) {
+    return "";
+  }
   // Using MemoryMappedFile to handle async file.
   base::MemoryMappedFile map;
   CHECK(map.Initialize(std::move(file)));
@@ -219,6 +222,18 @@ void FakeOnDeviceSession::GenerateImpl(
   if (!model_->data().cache_weight.empty()) {
     auto chunk = mojom::ResponseChunk::New();
     chunk->text = "Cache weight: " + model_->data().cache_weight;
+    remote->OnResponse(std::move(chunk));
+  }
+  if (!model_->data().encoder_cache_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text =
+        "Encoder cache weight: " + model_->data().encoder_cache_weight;
+    remote->OnResponse(std::move(chunk));
+  }
+  if (!model_->data().adapter_cache_weight.empty()) {
+    auto chunk = mojom::ResponseChunk::New();
+    chunk->text =
+        "Adapter cache weight: " + model_->data().adapter_cache_weight;
     remote->OnResponse(std::move(chunk));
   }
 
@@ -435,8 +450,14 @@ void FakeOnDeviceModelService::LoadModel(
     LoadModelCallback callback) {
   FakeOnDeviceModel::Data data;
   data.base_weight = ReadFile(params->assets.weights.file());
-  if (params->assets.cache.IsValid() && params->assets.cache.GetLength() > 0) {
+  if (params->assets.cache.IsValid()) {
     data.cache_weight = ReadFile(params->assets.cache);
+  }
+  if (params->assets.encoder_cache.IsValid()) {
+    data.encoder_cache_weight = ReadFile(params->assets.encoder_cache);
+  }
+  if (params->assets.adapter_cache.IsValid()) {
+    data.adapter_cache_weight = ReadFile(params->assets.adapter_cache);
   }
   data.adaptation_ranks = params->adaptation_ranks;
   auto test_model = std::make_unique<FakeOnDeviceModel>(

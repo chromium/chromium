@@ -432,6 +432,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
 
   FakeBaseModelAsset base_model_with_cache({
       .cache_weight = 1015,
+      .encoder_cache_weight = 1016,
+      .adapter_cache_weight = 1017,
   });
 
   Initialize(InitializeParams{
@@ -446,7 +448,8 @@ TEST_F(OnDeviceModelServiceControllerTest, CacheWeightExecutionSuccess) {
                         response_.GetStreamingCallback());
   ASSERT_TRUE(response_.GetFinalStatus());
   EXPECT_EQ(*response_.value(),
-            "CPU backendCache weight: 1015execute:foo max:1024");
+            "CPU backendCache weight: 1015Encoder cache weight: 1016"
+            "Adapter cache weight: 1017execute:foo max:1024");
 
   // If we destroy all sessions and wait long enough, everything should idle out
   // and the service should get terminated.
@@ -2957,8 +2960,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   FakeBaseModelAsset next_model({
       .weight = 2,
       .config = ExecutionConfigWithValidation(WillFailValidationConfig()),
-      .version = "0.0.2",
   });
+  next_model.set_version("0.0.2");
   {
     base::HistogramTester histogram_tester;
     next_model.SetReadyIn(component_state_manager());
@@ -3018,8 +3021,8 @@ TEST_F(OnDeviceModelServiceControllerTest,
   // Send a new model update with no validation config.
   FakeBaseModelAsset next_model({
       .weight = 2,
-      .version = "0.0.2",
   });
+  next_model.set_version("0.0.2");
   next_model.SetReadyIn(component_state_manager());
   task_environment_.RunUntilIdle();
 

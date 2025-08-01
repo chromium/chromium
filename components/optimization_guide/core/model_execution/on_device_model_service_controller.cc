@@ -570,6 +570,10 @@ OnDeviceModelServiceController::BaseModelController::PopulateModelPaths() {
     model_paths.cache =
         model_metadata_->model_path().Append(kExperimentalCacheFile);
   }
+  model_paths.encoder_cache =
+      model_metadata_->model_path().Append(kEncoderCacheFile);
+  model_paths.adapter_cache =
+      model_metadata_->model_path().Append(kAdapterCacheFile);
 
   return model_paths;
 }

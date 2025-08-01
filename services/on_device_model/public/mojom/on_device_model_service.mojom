@@ -30,10 +30,12 @@ struct ModelAssets {
   // Currently the only usage of sp model will be passed by file path.
   mojo_base.mojom.FilePath? sp_model_path;
 
-  // File which may be used to store a backend-specific cache of the model
-  // weights or to load previously-cached model weights from. This file must be
-  // writable to allow the backend to write out its custom data.
+  // Files which may be used to store a backend-specific cache of the model
+  // weights or to load previously-cached model weights from. These files must
+  // be writable to allow the backend to write out its custom data.
   mojo_base.mojom.File? cache;
+  mojo_base.mojom.File? encoder_cache;
+  mojo_base.mojom.File? adapter_cache;
 };
 
 // Type of the backend to run the model.

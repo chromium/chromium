@@ -699,6 +699,12 @@ LoadModelResult OnDeviceModelExecutor::Init(
                             assets.cache.IsValid()
                         ? assets.cache.TakePlatformFile()
                         : base::kInvalidPlatformFile;
+  if (assets.encoder_cache.IsValid()) {
+    data.encoder_cache_file = assets.encoder_cache.TakePlatformFile();
+  }
+  if (assets.adapter_cache.IsValid()) {
+    data.adapter_cache_file = assets.adapter_cache.TakePlatformFile();
+  }
   ChromeMLModelDescriptor descriptor = {
       .backend_type = params->backend_type,
       .model_data = &data,

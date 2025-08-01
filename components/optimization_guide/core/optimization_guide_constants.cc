@@ -48,6 +48,12 @@ const base::FilePath::CharType kWeightsFile[] =
 const base::FilePath::CharType kExperimentalCacheFile[] =
     FILE_PATH_LITERAL("cache.bin");
 
+const base::FilePath::CharType kEncoderCacheFile[] =
+    FILE_PATH_LITERAL("encoder_cache.bin");
+
+const base::FilePath::CharType kAdapterCacheFile[] =
+    FILE_PATH_LITERAL("adapter_cache.bin");
+
 const base::FilePath::CharType kTsDataFile[] = FILE_PATH_LITERAL("ts.bin");
 
 const base::FilePath::CharType kTsSpModelFile[] =
