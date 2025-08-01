@@ -433,6 +433,10 @@ void AudioParamHandler::CalculateTimelineValues(base::span<float> values) {
                                GetDeferredTaskHandler().RenderQuantumFrames()));
 }
 
+double AudioParamHandler::ClampedToCurrentTime(double time) {
+  return std::max(time, DestinationHandler().CurrentTime());
+}
+
 String AudioParamHandler::EventToString(const ParamEvent& event) const {
   // The default arguments for most automation methods is the value and the
   // time.
@@ -724,6 +728,8 @@ void AudioParamHandler::SetValueAtTime(float value,
     return;
   }
 
+  start_time = ClampedToCurrentTime(start_time);
+
   base::AutoLock locker(events_lock_);
   InsertEvent(ParamEvent::CreateSetValueEvent(value, start_time),
               exception_state);
@@ -740,6 +746,8 @@ void AudioParamHandler::LinearRampToValueAtTime(
   if (!IsNonNegativeAudioParamTime(end_time, exception_state)) {
     return;
   }
+
+  end_time = ClampedToCurrentTime(end_time);
 
   base::AutoLock locker(events_lock_);
   InsertEvent(ParamEvent::CreateLinearRampEvent(value, end_time, initial_value,
@@ -768,6 +776,8 @@ void AudioParamHandler::ExponentialRampToValueAtTime(
     return;
   }
 
+  end_time = ClampedToCurrentTime(end_time);
+
   base::AutoLock locker(events_lock_);
   InsertEvent(ParamEvent::CreateExponentialRampEvent(value, end_time,
                                                      initial_value, call_time),
@@ -785,6 +795,8 @@ void AudioParamHandler::SetTargetAtTime(float target,
                                    "Time constant")) {
     return;
   }
+
+  start_time = ClampedToCurrentTime(start_time);
 
   base::AutoLock locker(events_lock_);
 
@@ -818,6 +830,8 @@ void AudioParamHandler::SetValueCurveAtTime(const Vector<float>& curve,
                                                     curve.size(), 2u));
     return;
   }
+
+  start_time = ClampedToCurrentTime(start_time);
 
   base::AutoLock locker(events_lock_);
   bool result = InsertEvent(
@@ -859,16 +873,14 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
        event->GetType() == ParamEvent::Type::kExponentialRampToValue)) {
     // There are no events preceding these ramps.  Insert a new
     // setValueAtTime event to set the starting point for these
-    // events.  Use a time of 0 to make sure it precedes all other
-    // events.  This will get fixed when when handle new events.
-    events_.insert(0, AudioParamHandler::ParamEvent::CreateSetValueEvent(
-                          event->InitialValue(), 0));
-    new_events_.insert(events_[0].get());
+    // events.
+    events_.insert(
+        0, AudioParamHandler::ParamEvent::CreateSetValueEvent(
+               event->InitialValue(), DestinationHandler().CurrentTime()));
   }
 
   if (events_.empty()) {
     events_.insert(0, std::move(event));
-    new_events_.insert(events_[0].get());
     return true;
   }
 
@@ -974,7 +986,6 @@ bool AudioParamHandler::InsertEvent(std::unique_ptr<ParamEvent> event,
   }
 
   events_.insert(insertion_idx, std::move(event));
-  new_events_.insert(events_[insertion_idx].get());
   return true;
 }
 
@@ -1070,6 +1081,8 @@ void AudioParamHandler::CancelScheduledValues(double cancel_time,
     return;
   }
 
+  cancel_time = ClampedToCurrentTime(cancel_time);
+
   base::AutoLock locker(events_lock_);
 
   // Remove all events starting at startTime.
@@ -1102,6 +1115,8 @@ void AudioParamHandler::CancelAndHoldAtTime(double cancel_time,
   if (!IsNonNegativeAudioParamTime(cancel_time, exception_state)) {
     return;
   }
+
+  cancel_time = ClampedToCurrentTime(cancel_time);
 
   base::AutoLock locker(events_lock_);
 
@@ -1294,17 +1309,6 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
 
   int number_of_events = events_.size();
 
-  // MUST clamp event before `events_` is possibly mutated because
-  // `new_events_` has raw pointers to objects in `events_`.  Clamping
-  // will clear out all of these pointers before `events_` is
-  // potentially modified.
-  //
-  // TODO(rtoy): Consider making `events_` be scoped_refptr instead of
-  // unique_ptr.
-  if (new_events_.size() > 0) {
-    ClampNewEventsToCurrentTime(start_frame / sample_rate);
-  }
-
   if (number_of_events > 0) {
     double current_time = start_frame / sample_rate;
 
@@ -1458,9 +1462,6 @@ float AudioParamHandler::ValuesForFrameRangeImpl(
   // running with the m_events lock so we can safely modify the m_events
   // array.)
   if (last_skipped_event_index > 0) {
-    // `new_events_` should be empty here so we don't have to
-    // do any updates due to this mutation of `events_`.
-    DCHECK_EQ(new_events_.size(), 0u);
     RemoveOldEvents(last_skipped_event_index - 1);
   }
 
@@ -1544,25 +1545,6 @@ bool AudioParamHandler::IsEventCurrent(const ParamEvent* event,
   return true;
 }
 
-void AudioParamHandler::ClampNewEventsToCurrentTime(double current_time) {
-  bool clamped_some_event_time = false;
-
-  for (auto* event : new_events_) {
-    if (event->Time() < current_time) {
-      event->SetTime(current_time);
-      clamped_some_event_time = true;
-    }
-  }
-
-  if (clamped_some_event_time) {
-    // If we clamped some event time to current time, we need to sort
-    // the event list in time order again, but it must be stable!
-    std::stable_sort(events_.begin(), events_.end(), ParamEvent::EventPrecedes);
-  }
-
-  new_events_.clear();
-}
-
 bool AudioParamHandler::HandleAllEventsInThePast(
     double current_time,
     double sample_rate,
@@ -1596,9 +1578,6 @@ bool AudioParamHandler::HandleAllEventsInThePast(
       }
     }
 
-    // `events_` is being mutated.  `new_events_` better be empty because there
-    // are raw pointers there.
-    DCHECK_EQ(new_events_.size(), 0U);
     // The event has finished, so just copy the default value out.
     // Since all events are now also in the past, we can just remove all
     // timeline events too because `default_value` has the expected
@@ -2282,15 +2261,7 @@ std::tuple<size_t, float, unsigned> AudioParamHandler::ProcessCancelValues(
 
 void AudioParamHandler::RemoveCancelledEvents(
     wtf_size_t first_event_to_remove) {
-  // For all the events that are being removed, also remove that event
-  // from `new_events_`.
-  if (new_events_.size() > 0) {
-    for (wtf_size_t k = first_event_to_remove; k < events_.size(); ++k) {
-      new_events_.erase(events_[k].get());
-    }
-  }
-
-  // Now we can remove the cancelled events from the list.
+  // Remove the cancelled events from the list.
   events_.EraseAt(first_event_to_remove,
                   events_.size() - first_event_to_remove);
 }
