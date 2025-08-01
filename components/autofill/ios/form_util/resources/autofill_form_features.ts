@@ -52,7 +52,7 @@ let autofillCorrectUserEditedBitInParsedField: boolean = false;
 Allows detecting form submissions that are `defaultPrevented` by the page
 content.
 */
-let autofillAllowDefaultPreventedSubmission: boolean = false;
+let autofillAllowDefaultPreventedSubmission: boolean = true;
 // LINT.ThenChange(//components/autofill/ios/common/features.mm:autofill_allow_default_prevented_submission)
 
 // LINT.IfChange(autofill_dedupe_form_submission)

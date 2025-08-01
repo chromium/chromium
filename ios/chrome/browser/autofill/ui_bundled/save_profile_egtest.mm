@@ -235,32 +235,12 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
     config.features_enabled.push_back(kAutofillFixXhrForXframe);
   }
 
-  if ([self isRunningTest:@selector
-            (testSubmissionDetection_defaultPrevented_whenAllowed)]) {
-    config.features_enabled.push_back(kAutofillAllowDefaultPreventedSubmission);
-  }
-
-  if ([self isRunningTest:@selector
-            (testSubmissionDetection_defaultPrevented_whenNotAllowed)]) {
-    config.features_disabled.push_back(
-        kAutofillAllowDefaultPreventedSubmission);
-    // The testing setup for this feature needs capture mode disabled.
-    config.features_disabled.push_back(
-        kAutofillFormSubmissionEventsInCaptureMode);
-  }
-
   if ([self isRunningTest:@selector(testSubmissionDetectionWithDeduping)]) {
     config.features_enabled.push_back(kAutofillDedupeFormSubmission);
-    // Default must be prevented to allow triggering multiple submissions from
-    // the same form.
-    config.features_enabled.push_back(kAutofillAllowDefaultPreventedSubmission);
   }
 
   if ([self isRunningTest:@selector(testSubmissionDetectionWithoutDeduping)]) {
     config.features_disabled.push_back(kAutofillDedupeFormSubmission);
-    // Default must be prevented to allow triggering multiple submissions from
-    // the same form.
-    config.features_enabled.push_back(kAutofillAllowDefaultPreventedSubmission);
   }
 
   if ([self isRunningTest:@selector(testSubmissionDetection_inCaptureMode)]) {
@@ -924,22 +904,8 @@ void TypeTextInXframeField(NSString* fieldID, NSString* text) {
   [SigninEarlGrey signOut];
 }
 
-// Tests that submission isn't detected hence the infobar isn't displayed when
-// the "form" event behind the submission is `defaultPrevented` while the
-// corresponding feature doesn't allows it.
-- (void)testSubmissionDetection_defaultPrevented_whenNotAllowed {
-  // Sign-in so the profile would be saved into the account.
-  [SigninEarlGrey signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
 
-  // Submit the form with `defaultPrevented` considered.
-  FullAddressFormPageParams params{.default_prevented = true, .redirect = true};
-  [self loadAndSubmitFullAddressFormWithParams:params];
 
-  // Make sure the infobar isn't displayed.
-  [InfobarEarlGreyUI waitUntilInfobarBannerVisibleOrTimeout:NO];
-
-  [SigninEarlGrey signOut];
-}
 
 // Tests that multiple submissions on the same form are not deduped when
 // deduping is disabled where all submissions are sent over to the browser.

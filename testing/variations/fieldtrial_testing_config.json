@@ -12155,21 +12155,6 @@
             ]
         }
     ],
-    "IOSAutofillAllowDefaultPreventedSubmission": [
-        {
-            "platforms": [
-                "ios"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AutofillAllowDefaultPreventedSubmission"
-                    ]
-                }
-            ]
-        }
-    ],
     "IOSAutofillFormSubmissionEventsInCaptureMode": [
         {
             "platforms": [
