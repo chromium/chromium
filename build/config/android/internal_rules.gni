@@ -2519,7 +2519,7 @@ if (enable_java_templates) {
       if (!defined(deps)) {
         deps = []
       }
-      deps += [ "//build/android/unused_resources:unused_resources" ]
+      deps += [ "//build/android/unused_resources" ]
       _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
       args = [
         "--script",
