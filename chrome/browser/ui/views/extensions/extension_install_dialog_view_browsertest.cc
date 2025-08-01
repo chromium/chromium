@@ -1118,8 +1118,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogPictureInPictureInputProtectorTest,
   // Verify that the Ok button can be interacted with after input protection.
   ui::KeyEvent press_enter_delayed(
       ui::EventType::kKeyPressed, ui::VKEY_RETURN, ui::EF_NONE,
-      ui::EventTimeForNow() +
-          base::Milliseconds(views::GetDoubleClickInterval()));
+      ui::EventTimeForNow() + views::GetDoubleClickInterval());
   views::test::ButtonTestApi(delegate_view->GetOkButton())
       .NotifyClick(press_enter_delayed);
   EXPECT_TRUE(delegate_view->GetWidget()->IsClosed());

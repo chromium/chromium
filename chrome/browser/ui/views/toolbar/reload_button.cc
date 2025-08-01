@@ -45,8 +45,7 @@ ReloadButton::ReloadButton(CommandUpdater* command_updater)
       reload_touch_icon_(kReloadTouchIcon),
       stop_icon_(kNavigateStopChromeRefreshIcon),
       stop_touch_icon_(kNavigateStopTouchIcon),
-      double_click_timer_delay_(
-          base::Milliseconds(views::GetDoubleClickInterval())),
+      double_click_timer_delay_(views::GetDoubleClickInterval()),
       mode_switch_timer_delay_(base::Milliseconds(1350)) {
   SetVisibleMode(Mode::kReload);
   SetTriggerableEventFlags(ui::EF_LEFT_MOUSE_BUTTON |

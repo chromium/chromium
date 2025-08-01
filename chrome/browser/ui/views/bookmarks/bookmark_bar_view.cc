@@ -1920,7 +1920,7 @@ void BookmarkBarView::StartShowFolderDropMenuTimer(
       FROM_HERE,
       base::BindOnce(&BookmarkBarView::ShowDropFolderForNode,
                      show_folder_method_factory_.GetWeakPtr(), folder),
-      base::Milliseconds(views::GetMenuShowDelay()));
+      views::GetMenuShowDelay());
 }
 
 void BookmarkBarView::CalculateDropLocation(
