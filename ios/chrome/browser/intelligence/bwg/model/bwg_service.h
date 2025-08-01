@@ -7,6 +7,7 @@
 
 #import "base/memory/raw_ptr.h"
 #import "components/keyed_service/core/keyed_service.h"
+#import "components/signin/public/identity_manager/identity_manager.h"
 
 class AuthenticationService;
 namespace signin {
@@ -19,19 +20,27 @@ class WebState;
 }
 
 // A browser-context keyed service for BWG.
-class BwgService : public KeyedService {
+class BwgService : public KeyedService,
+                   public signin::IdentityManager::Observer {
  public:
   BwgService(ProfileIOS* profile,
              AuthenticationService* auth_service,
              signin::IdentityManager* identity_manager,
              PrefService* pref_service);
   ~BwgService() override;
+  void Shutdown() override;
 
   // Returns whether the current profile is eligible for BWG.
   bool IsProfileEligibleForBwg();
 
   // Whether BWG is available for a given web state.
   bool IsBwgAvailableForWebState(web::WebState* web_state);
+
+  // signin::IdentityManager::Observer:
+  void OnPrimaryAccountChanged(
+      const signin::PrimaryAccountChangeEvent& event) override;
+  void OnIdentityManagerShutdown(
+      signin::IdentityManager* identity_manager) override;
 
  private:
   // The associated profile.
@@ -49,6 +58,10 @@ class BwgService : public KeyedService {
   // Whether the user is ineligible by the Gemini Enterprise policy (not Chrome
   // Enterprise).
   bool is_disabled_by_gemini_policy_ = false;
+
+  // Checks if the account is eligible for Gemini Enterprise and populates
+  // `is_disabled_by_gemini_policy_`.
+  void CheckGeminiEnterpriseEligibility();
 };
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_MODEL_BWG_SERVICE_H_

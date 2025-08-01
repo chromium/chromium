@@ -43,9 +43,18 @@ class BwgServiceTest : public PlatformTest {
     pref_service_->registry()->RegisterIntegerPref(
         prefs::kGeminiEnabledByPolicy, 0);
 
-    identity_manager_ = identity_test_env_.identity_manager();
     bwg_service_ = std::make_unique<BwgService>(
-        profile_.get(), auth_service_, identity_manager_, pref_service_.get());
+        profile_.get(), auth_service_, identity_test_env_.identity_manager(),
+        pref_service_.get());
+  }
+
+  void TearDown() override {
+    // Shutdown the service to ensure it unregisters itself as an observer
+    // from IdentityManager before IdentityManager is destroyed.
+    if (bwg_service_) {
+      bwg_service_->Shutdown();
+    }
+    PlatformTest::TearDown();
   }
 
   // Signs in a user and sets their model execution capability.
@@ -70,7 +79,6 @@ class BwgServiceTest : public PlatformTest {
   std::unique_ptr<TestProfileIOS> profile_;
   std::unique_ptr<BwgService> bwg_service_;
   std::unique_ptr<TestingPrefServiceSimple> pref_service_;
-  raw_ptr<signin::IdentityManager> identity_manager_;
   raw_ptr<AuthenticationService> auth_service_;
 
   base::HistogramTester histogram_tester_;
@@ -115,8 +123,8 @@ TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleByPolicy) {
 // account.
 TEST_F(BwgServiceTest, IsProfileEligibleForBWG_IneligibleWhenSignedOut) {
   // The default state is signed out.
-  EXPECT_FALSE(
-      identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_FALSE(identity_test_env_.identity_manager()->HasPrimaryAccount(
+      signin::ConsentLevel::kSignin));
 
   EXPECT_FALSE(bwg_service_->IsProfileEligibleForBwg());
   histogram_tester_.ExpectUniqueSample(kEligibilityHistogram,

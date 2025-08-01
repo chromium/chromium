@@ -22,14 +22,19 @@ BwgService::BwgService(ProfileIOS* profile,
   profile_ = profile;
   auth_service_ = auth_service;
   identity_manager_ = identity_manager;
+  identity_manager_->AddObserver(this);
   pref_service_ = pref_service;
 
-  ios::provider::CheckGeminiEligibility(auth_service_, ^(BOOL eligible) {
-    is_disabled_by_gemini_policy_ = !eligible;
-  });
+  CheckGeminiEnterpriseEligibility();
 }
 
 BwgService::~BwgService() = default;
+
+void BwgService::Shutdown() {
+  identity_manager_->RemoveObserver(this);
+}
+
+#pragma mark - Public
 
 bool BwgService::IsProfileEligibleForBwg() {
   AccountInfo account_info = identity_manager_->FindExtendedAccountInfo(
@@ -70,4 +75,26 @@ bool BwgService::IsBwgAvailableForWebState(web::WebState* web_state) {
       (web::IsContentTypeHtml(mime_type) || web::IsContentTypeImage(mime_type));
 
   return is_web_state_eligible;
+}
+
+#pragma mark - signin::IdentityManager::Observer
+
+void BwgService::OnPrimaryAccountChanged(
+    const signin::PrimaryAccountChangeEvent& event) {
+  CheckGeminiEnterpriseEligibility();
+}
+
+void BwgService::OnIdentityManagerShutdown(
+    signin::IdentityManager* identity_manager) {
+  if (identity_manager_) {
+    identity_manager_->RemoveObserver(this);
+  }
+}
+
+#pragma mark - Private
+
+void BwgService::CheckGeminiEnterpriseEligibility() {
+  ios::provider::CheckGeminiEligibility(auth_service_, ^(BOOL eligible) {
+    is_disabled_by_gemini_policy_ = !eligible;
+  });
 }
