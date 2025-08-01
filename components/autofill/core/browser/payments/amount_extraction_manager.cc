@@ -112,8 +112,6 @@ AmountExtractionManager::GetEligibleFeatures(const SuggestionsContext& context,
 
   // Run after all other feature eligibilities are checked to only check feature
   // flag for eligible users.
-  // TODO(crbug.com/414648193): Rename amount extraction feature flag to
-  // remove the platform restriction.
   if (!eligible_features.empty() &&
       base::FeatureList::IsEnabled(
           ::autofill::features::kAutofillEnableAmountExtractionDesktop)) {

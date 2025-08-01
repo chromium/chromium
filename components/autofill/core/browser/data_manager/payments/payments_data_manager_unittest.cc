@@ -2556,7 +2556,7 @@ TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_NonUsdPriceRangeRejected) {
 }
 
 // Tests that `action_required` is not set for BNPL issuers if flag
-// `AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna` is disabled.
+// `AutofillEnableBuyNowPayLaterForExternallyLinked` is disabled.
 TEST_F(PaymentsDataManagerTest,
        GetLinkedBnplIssuers_IssuerLinkedExternally_FlagDisabled) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -2564,7 +2564,7 @@ TEST_F(PaymentsDataManagerTest,
       /*enabled_features=*/{features::kAutofillEnableBuyNowPayLaterSyncing,
                             features::kAutofillEnableBuyNowPayLaterForKlarna},
       /*disabled_features=*/{
-          features::kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna});
+          features::kAutofillEnableBuyNowPayLaterForExternallyLinked});
   sync_pb::PaymentInstrument payment_instrument =
       test::CreatePaymentInstrumentWithLinkedBnplIssuer(
           /*instrument_id=*/1234L, std::string(kBnplKlarnaIssuerId), "USD",
@@ -2592,14 +2592,14 @@ TEST_F(PaymentsDataManagerTest,
 }
 
 // Tests that `action_required` is set for BNPL issuers if flag
-// `AutofillEnableBuyNowPayLaterForExternallyLinkedKlarna` is enabled.
+// `AutofillEnableBuyNowPayLaterForExternallyLinked` is enabled.
 TEST_F(PaymentsDataManagerTest, GetLinkedBnplIssuers_IssuerLinkedExternally) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures(
       /*enabled_features=*/
       {features::kAutofillEnableBuyNowPayLaterSyncing,
        features::kAutofillEnableBuyNowPayLaterForKlarna,
-       features::kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna},
+       features::kAutofillEnableBuyNowPayLaterForExternallyLinked},
       /*disabled_features=*/{});
   sync_pb::PaymentInstrument payment_instrument =
       test::CreatePaymentInstrumentWithLinkedBnplIssuer(

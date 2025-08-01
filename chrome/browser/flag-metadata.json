@@ -738,7 +738,7 @@
     "expiry_milestone": 145
   },
  {
-    "name": "autofill-enable-buy-now-pay-later-for-externally-linked-klarna",
+    "name": "autofill-enable-buy-now-pay-later-for-externally-linked",
     "owners": ["wilsonlow@google.com", "payments-autofill-team@google.com"],
     "expiry_milestone": 150
   },

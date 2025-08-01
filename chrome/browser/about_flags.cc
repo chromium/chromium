@@ -13018,15 +13018,13 @@ const FeatureEntry kFeatureEntries[] = {
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
     BUILDFLAG(IS_CHROMEOS)
-    {"autofill-enable-buy-now-pay-later-for-externally-linked-klarna",
+    {"autofill-enable-buy-now-pay-later-for-externally-linked",
+     flag_descriptions::kAutofillEnableBuyNowPayLaterForExternallyLinkedName,
      flag_descriptions::
-         kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaName,
-     flag_descriptions::
-         kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarnaDescription,
+         kAutofillEnableBuyNowPayLaterForExternallyLinkedDescription,
      kOsDesktop,
      FEATURE_VALUE_TYPE(
-         autofill::features::
-             kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna)},
+         autofill::features::kAutofillEnableBuyNowPayLaterForExternallyLinked)},
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 #if BUILDFLAG(IS_ANDROID)

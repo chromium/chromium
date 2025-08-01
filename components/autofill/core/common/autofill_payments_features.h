@@ -28,7 +28,7 @@ BASE_DECLARE_FEATURE(kAutofillEnableAmountExtractionTesting);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLater);
 COMPONENT_EXPORT(AUTOFILL)
-BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLaterForExternallyLinkedKlarna);
+BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLaterForExternallyLinked);
 COMPONENT_EXPORT(AUTOFILL)
 BASE_DECLARE_FEATURE(kAutofillEnableBuyNowPayLaterForKlarna);
 COMPONENT_EXPORT(AUTOFILL)
