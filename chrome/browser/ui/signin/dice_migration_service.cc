@@ -52,6 +52,9 @@ constexpr char kDialogDaysSinceLastShownHistogram[] =
 constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
 constexpr char kAccountManagedStatusHistogram[] =
     "Signin.DiceMigrationDialog.AccountManagedStatus";
+constexpr char kUserMigratedHistogram[] = "Signin.DiceMigrationDialog.Migrated";
+constexpr char kToastTriggeredHistogram[] =
+    "Signin.DiceMigrationDialog.ToastTriggered";
 
 void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
   base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
@@ -120,13 +123,14 @@ bool MaybeMigrateUser(Profile* profile) {
   return true;
 }
 
-void MaybeShowToast(Browser* browser) {
+bool MaybeShowToast(Browser* browser) {
   ToastController* const toast_controller =
       browser->browser_window_features()->toast_controller();
   if (!toast_controller) {
-    return;
+    return false;
   }
   toast_controller->MaybeShowToast(ToastParams(ToastId::kDiceUserMigrated));
+  return true;
 }
 
 }  // namespace
@@ -348,12 +352,15 @@ void DiceMigrationService::OnWidgetDestroying(views::Widget* widget) {
       LogDialogCloseReason(
           dialog_close_reason_.value_or(DialogCloseReason::kUnspecified));
       return;
-    case views::Widget::ClosedReason::kAcceptButtonClicked:
+    case views::Widget::ClosedReason::kAcceptButtonClicked: {
       LogDialogCloseReason(DialogCloseReason::kAccepted);
-      if (MaybeMigrateUser(profile_) && browser) {
-        MaybeShowToast(browser);
+      const bool migrated = MaybeMigrateUser(profile_);
+      base::UmaHistogramBoolean(kUserMigratedHistogram, migrated);
+      if (migrated) {
+        const bool toast_triggered = browser && MaybeShowToast(browser);
+        base::UmaHistogramBoolean(kToastTriggeredHistogram, toast_triggered);
       }
-      break;
+    } break;
     case views::Widget::ClosedReason::kCancelButtonClicked:
       // Cancel button is only available in the non-"final" variant.
       CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount - 1);

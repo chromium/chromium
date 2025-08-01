@@ -1354,6 +1354,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigrationDialog.Migrated" enum="Boolean"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the user was successfully migrated to explicitly signed-in
+    state. This is recorded when an eligible user clicks on the accept button on
+    the migration dialog.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigrationDialog.PreviouslyShownCount" units="count"
     expires_after="2026-07-30">
   <owner>ankushkush@google.com</owner>
@@ -1385,6 +1396,17 @@ prefs when the profile is loaded.  -->
   <summary>
     Records whether the timer was started to show the DICe migration dialog.
     This is recorded once per profile load for all users.
+  </summary>
+</histogram>
+
+<histogram name="Signin.DiceMigrationDialog.ToastTriggered" enum="Boolean"
+    expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records whether the migration confirmation toast was successfully triggered.
+    This is recorded upon a successful migration of eligible users to explicitly
+    signed-in state when they accept the migration dialog.
   </summary>
 </histogram>
 

@@ -47,6 +47,7 @@ constexpr char kDialogDaysSinceLastShownHistogram[] =
 constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
 constexpr char kAccountManagedStatusHistogram[] =
     "Signin.DiceMigrationDialog.AccountManagedStatus";
+constexpr char kUserMigratedHistogram[] = "Signin.DiceMigrationDialog.Migrated";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
@@ -262,6 +263,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
   EXPECT_TRUE(GetSyncService()->GetUserSettings()->GetSelectedTypes().HasAll(
       new_selected_types))
       << GetSyncService()->GetUserSettings()->GetSelectedTypes();
+
+  histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, true, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -296,6 +299,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   // eligible.
   EXPECT_EQ(GetProfile()->GetPrefs()->GetBoolean(prefs::kExplicitBrowserSignin),
             false);
+
+  histogram_tester_.ExpectUniqueSample(kUserMigratedHistogram, false, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
