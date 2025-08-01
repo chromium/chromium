@@ -86,10 +86,13 @@ class ActorUiStateManagerTest : public testing::Test {
 
   std::unique_ptr<KeyedService> BuildActorKeyedService(
       content::BrowserContext* context) {
-    auto actor_keyed_service =
-        std::make_unique<ActorKeyedServiceFake>(static_cast<Profile*>(context));
-    std::unique_ptr<ActorUiStateManagerInterface> actor_ui_state_manager_fake =
+    Profile* profile = Profile::FromBrowserContext(context);
+    auto actor_keyed_service = std::make_unique<ActorKeyedServiceFake>(profile);
+    actor_keyed_service_fake_ = actor_keyed_service.get();
+
+    auto actor_ui_state_manager_fake =
         std::make_unique<ActorUiStateManagerFake>(*actor_keyed_service);
+    actor_ui_state_manager_fake_ = actor_ui_state_manager_fake.get();
     actor_keyed_service->SetActorUiStateManagerForTesting(
         std::move(actor_ui_state_manager_fake));
     return std::move(actor_keyed_service);
@@ -106,13 +109,11 @@ class ActorUiStateManagerTest : public testing::Test {
   }
 
   ActorUiStateManagerFake* actor_ui_state_manager() {
-    return static_cast<ActorUiStateManagerFake*>(
-        ActorKeyedService::Get(profile())->GetActorUiStateManager());
+    return actor_ui_state_manager_fake_;
   }
 
   ActorKeyedServiceFake* actor_keyed_service() {
-    return static_cast<ActorKeyedServiceFake*>(
-        ActorKeyedService::Get(profile()));
+    return actor_keyed_service_fake_;
   }
 
   content::BrowserTaskEnvironment& task_environment() {
@@ -151,6 +152,8 @@ class ActorUiStateManagerTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
+  raw_ptr<ActorKeyedServiceFake> actor_keyed_service_fake_;
+  raw_ptr<ActorUiStateManagerFake> actor_ui_state_manager_fake_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MockBrowserWindowInterface> browser_window_interface_;
 };
