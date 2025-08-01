@@ -85,7 +85,7 @@ std::vector<const CreditCard*> GetCreditCardsToSuggest(
 // avoid showing suggestions that is unrelated to the cards that have already
 // been autofilled in the form. Can be empty if no filtering should happen.
 std::vector<Suggestion> GetSuggestionsForCreditCards(
-    const AutofillClient& client,
+    AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,

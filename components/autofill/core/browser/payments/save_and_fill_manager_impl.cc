@@ -15,6 +15,7 @@
 #include "components/autofill/core/browser/payments/payments_requests/payments_request.h"
 #include "components/autofill/core/browser/payments/payments_util.h"
 #include "components/autofill/core/browser/payments/save_and_fill_manager.h"
+#include "components/autofill/core/browser/strike_databases/payments/save_and_fill_strike_database.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 
 namespace autofill::payments {
@@ -48,6 +49,13 @@ void SaveAndFillManagerImpl::OnDidAcceptCreditCardSaveAndFillSuggestion(
   } else {
     OfferLocalSaveAndFill();
   }
+}
+
+bool SaveAndFillManagerImpl::IsMaxStrikesLimitReached() {
+  if (auto* strike_database = GetSaveAndFillStrikeDatabase()) {
+    return strike_database->ShouldBlockFeature();
+  }
+  return false;
 }
 
 void SaveAndFillManagerImpl::OnUserDidDecideOnLocalSave(
@@ -243,6 +251,19 @@ void SaveAndFillManagerImpl::OnDidCreateCard(
     const std::string& instrument_id) {
   // TODO(crbug.com/378164165): Implement logic to handle CreateCard response
   // and the instrument id.
+}
+
+SaveAndFillStrikeDatabase*
+SaveAndFillManagerImpl::GetSaveAndFillStrikeDatabase() {
+  if (!autofill_client_->GetStrikeDatabase()) {
+    return nullptr;
+  }
+  if (!save_and_fill_strike_database_) {
+    save_and_fill_strike_database_ =
+        std::make_unique<SaveAndFillStrikeDatabase>(
+            autofill_client_->GetStrikeDatabase());
+  }
+  return save_and_fill_strike_database_.get();
 }
 
 }  // namespace autofill::payments

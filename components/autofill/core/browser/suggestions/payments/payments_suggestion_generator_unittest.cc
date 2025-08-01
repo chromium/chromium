@@ -2101,6 +2101,14 @@ TEST_F(PaymentsSuggestionGeneratorTest,
       features::kAutofillEnableSaveAndFill);
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/false);
 
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+      .WillOnce(testing::Return(false));
+
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
       *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
@@ -2130,6 +2138,14 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
+
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+      .WillOnce(testing::Return(false));
 
   CreditCardSuggestionSummary summary;
   std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
@@ -2242,16 +2258,50 @@ TEST_F(PaymentsSuggestionGeneratorTest,
   EXPECT_TRUE(suggestions.empty());
 }
 
+TEST_F(PaymentsSuggestionGeneratorTest,
+       SaveAndFillSuggestion_NoOfferedWhenSaveAndFillFeatureIsBlocked) {
+  base::test::ScopedFeatureList scoped_feature_list(
+      features::kAutofillEnableSaveAndFill);
+  SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
+
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+      .WillOnce(testing::Return(true));
+
+  ASSERT_FALSE(autofill_client()->IsOffTheRecord());
+  CreditCardSuggestionSummary summary;
+  std::vector<Suggestion> suggestions = GetSuggestionsForCreditCards(
+      *autofill_client(), FormFieldData(), CREDIT_CARD_NUMBER, summary,
+      /*is_complete_form=*/true,
+      /*should_show_scan_credit_card=*/false,
+      /*four_digit_combinations_in_dom=*/{},
+      /*autofilled_last_four_digits_in_form_for_filtering=*/u"");
+
+  EXPECT_TRUE(suggestions.empty());
+}
+
 // Verify "Save and Fill" suggestion is offered when the user is not in
 // incognito mode, has no saved credit cards, the credit card form is complete
 // (has CVC, cardholder name, card number, and expiration date fields), and a
 // field within the form group is focused with no more than 3 characters
-// entered.
+// entered, and the strike database limit is not exceeded.
 TEST_F(PaymentsSuggestionGeneratorTest,
        SaveAndFillSuggestion_OfferedWhenCriteriaMet) {
   base::test::ScopedFeatureList scoped_feature_list(
       features::kAutofillEnableSaveAndFill);
   SetCreditCardUploadEnabledForTest(/*credit_card_upload_enabled=*/true);
+
+  MockSaveAndFillManager& mock_save_and_fill_manager =
+      static_cast<MockSaveAndFillManager&>(*autofill_client()
+                                                ->GetPaymentsAutofillClient()
+                                                ->GetSaveAndFillManager());
+
+  EXPECT_CALL(mock_save_and_fill_manager, IsMaxStrikesLimitReached())
+      .WillOnce(testing::Return(false));
 
   // Verify user is not in incognito mode.
   ASSERT_FALSE(autofill_client()->IsOffTheRecord());

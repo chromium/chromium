@@ -25,6 +25,8 @@ class SaveAndFillManager {
   // suggestion.
   virtual void OnDidAcceptCreditCardSaveAndFillSuggestion(
       FillCardCallback fill_card_callback) = 0;
+  // Returns true if the maximum number of strikes has been reached.
+  virtual bool IsMaxStrikesLimitReached() = 0;
 };
 
 }  // namespace autofill::payments

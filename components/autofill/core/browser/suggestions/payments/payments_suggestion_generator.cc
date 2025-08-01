@@ -44,6 +44,7 @@
 #include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/payments/constants.h"
 #include "components/autofill/core/browser/payments/payments_autofill_client.h"
+#include "components/autofill/core/browser/payments/save_and_fill_manager.h"
 #include "components/autofill/core/browser/studies/autofill_experiments.h"
 #include "components/autofill/core/browser/suggestions/suggestion.h"
 #include "components/autofill/core/browser/suggestions/suggestion_type.h"
@@ -998,21 +999,39 @@ Suggestion CreateBnplSuggestion(const std::vector<BnplIssuer>& bnpl_issuers,
 
 // Determines whether the "Save and Fill" suggestion should be shown in the
 // credit card autofill dropdown. The suggestion is shown if all of the
-// following conditions are met:
-// 1. The user has no credit cards saved.
-// 2. The credit card form is complete for the purposes of "Save and Fill".
-// 3. The user is not in incognito mode.
-// 4. A field within the credit card form is clicked and has no more than 3
-// characters entered.
-bool ShouldShowCreditCardSaveAndFill(const AutofillClient& client,
+// conditions are met.
+bool ShouldShowCreditCardSaveAndFill(AutofillClient& client,
                                      bool is_complete_form,
                                      const FormFieldData& trigger_field) {
-  return client.GetPersonalDataManager()
-             .payments_data_manager()
-             .GetCreditCards()
-             .empty() &&
-         is_complete_form && !client.IsOffTheRecord() &&
-         trigger_field.value().length() <= 3;
+  // Check if the strike database limit has been reached.
+  if (client.GetPaymentsAutofillClient()
+          ->GetSaveAndFillManager()
+          ->IsMaxStrikesLimitReached()) {
+    return false;
+  }
+  // Verify the user is not in incognito mode.
+  if (client.IsOffTheRecord()) {
+    return false;
+  }
+  // Verify the user has no credit cards saved.
+  if (!client.GetPersonalDataManager()
+           .payments_data_manager()
+           .GetCreditCards()
+           .empty()) {
+    return false;
+  }
+  // Verify the credit card form is complete for the purposes of "Save and
+  // Fill".
+  if (!is_complete_form) {
+    return false;
+  }
+  // Verify a field within the credit card form is clicked and has no more than
+  // 3 characters entered.
+  if (trigger_field.value().length() > 3) {
+    return false;
+  }
+
+  return true;
 }
 
 // Used to manually enable credit card upload in tests.
@@ -1062,7 +1081,7 @@ std::vector<const CreditCard*> GetCreditCardsToSuggest(
 }
 
 std::vector<Suggestion> GetSuggestionsForCreditCards(
-    const AutofillClient& client,
+    AutofillClient& client,
     const FormFieldData& trigger_field,
     FieldType trigger_field_type,
     CreditCardSuggestionSummary& summary,

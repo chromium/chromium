@@ -20,6 +20,7 @@ class MockSaveAndFillManager : public payments::SaveAndFillManager {
               OnDidAcceptCreditCardSaveAndFillSuggestion,
               (FillCardCallback fill_card_callback),
               (override));
+  MOCK_METHOD(bool, IsMaxStrikesLimitReached, (), (override));
 };
 
 }  // namespace autofill
