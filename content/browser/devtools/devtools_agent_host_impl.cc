@@ -425,18 +425,16 @@ DevToolsSession::Mode DevToolsAgentHostImpl::GetSessionMode() {
 }
 
 bool DevToolsAgentHostImpl::Inspect() {
-  DevToolsManager* manager = DevToolsManager::GetInstance();
-  if (manager->delegate()) {
-    manager->delegate()->Inspect(this);
+  if (auto* delegate = DevToolsManager::GetInstance()->delegate()) {
+    delegate->Inspect(this);
     return true;
   }
   return false;
 }
 
 scoped_refptr<DevToolsAgentHost> DevToolsAgentHostImpl::OpenDevTools() {
-  DevToolsManager* manager = DevToolsManager::GetInstance();
-  if (manager->delegate()) {
-    return manager->delegate()->OpenDevTools(this);
+  if (auto* delegate = DevToolsManager::GetInstance()->delegate()) {
+    return delegate->OpenDevTools(this);
   }
   return nullptr;
 }
