@@ -1164,9 +1164,11 @@ FormFiller::FieldFillingData FormFiller::GetFieldFillingData(
           },
           [&](const VerifiedProfile* profile)
               -> std::pair<std::u16string, FieldType> {
-            auto it = profile->find(autofill_field.Type().GetStorableType());
+            const FieldType field_type =
+                autofill_field.Type().GetIdentityCredentialType();
+            auto it = profile->find(field_type);
             std::u16string value = it == profile->end() ? u"" : it->second;
-            return {value, autofill_field.Type().GetStorableType()};
+            return {value, field_type};
           },
           [&](const OtpFillData* otp_fill_data)
               -> std::pair<std::u16string, FieldType> {

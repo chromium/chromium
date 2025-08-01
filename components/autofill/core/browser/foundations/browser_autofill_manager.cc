@@ -3247,7 +3247,7 @@ std::vector<Suggestion> BrowserAutofillManager::GetAvailableSuggestions(
         autocomplete && autocomplete->webidentity) {
       std::vector<Suggestion> verified_suggestions =
           identity_credential_delegate->GetVerifiedAutofillSuggestions(
-              autofill_field->Type().GetStorableType());
+              autofill_field->Type().GetIdentityCredentialType());
       // Insert verified suggestions above unverified ones.
       // TODO(crbug.com/380367784): figure out what to do when both verified
       // and unverified suggestions point to the same email address.
