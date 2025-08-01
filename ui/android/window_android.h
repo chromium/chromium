@@ -154,6 +154,8 @@ class UI_ANDROID_EXPORT WindowAndroid : public ViewAndroid {
 
   void ReleasePointerLock(ViewAndroid& view_android);
 
+  bool SetHasKeyboardCapture(bool keyboard_capture);
+
   class TestHooks {
    public:
     virtual ~TestHooks() = default;

@@ -297,6 +297,16 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
     }
 
     @Override
+    public void requestKeyboardLock(boolean escKeyLocked) {
+        mDelegate.requestKeyboardLock(escKeyLocked);
+    }
+
+    @Override
+    public void cancelKeyboardLockRequest() {
+        mDelegate.cancelKeyboardLockRequest();
+    }
+
+    @Override
     public void navigationStateChanged(int flags) {
         RewindableIterator<TabObserver> observers = mTab.getTabObservers();
         while (observers.hasNext()) observers.next().onNavigationStateChanged();

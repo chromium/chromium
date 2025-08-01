@@ -431,6 +431,26 @@ void WebContentsDelegateAndroid::RequestPointerLock(
       blink::mojom::PointerLockResult::kSuccess);
 }
 
+void WebContentsDelegateAndroid::RequestKeyboardLock(WebContents* web_contents,
+                                                     bool esc_key_locked) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsDelegateAndroid_requestKeyboardLock(env, obj, esc_key_locked);
+}
+
+void WebContentsDelegateAndroid::CancelKeyboardLockRequest(
+    WebContents* web_contents) {
+  JNIEnv* env = AttachCurrentThread();
+  ScopedJavaLocalRef<jobject> obj = GetJavaDelegate(env);
+  if (obj.is_null()) {
+    return;
+  }
+  Java_WebContentsDelegateAndroid_cancelKeyboardLockRequest(env, obj);
+}
+
 bool WebContentsDelegateAndroid::IsFullscreenForTabOrPending(
     const WebContents* web_contents) {
   JNIEnv* env = AttachCurrentThread();

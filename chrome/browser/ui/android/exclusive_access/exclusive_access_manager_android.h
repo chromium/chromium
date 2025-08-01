@@ -42,6 +42,14 @@ class ExclusiveAccessManagerAndroid {
 
   bool PreHandleKeyboardEvent(JNIEnv* env, jlong nativeKeyEvent);
 
+  void RequestKeyboardLock(JNIEnv* env,
+                           const jni_zero::JavaRef<jobject>& jweb_contents,
+                           bool escKeyLocked);
+
+  void CancelKeyboardLockRequest(
+      JNIEnv* env,
+      const jni_zero::JavaRef<jobject>& jweb_contents);
+
  private:
   // Our global reference to the Java ExclusiveAccessManagerAndroid.
   base::android::ScopedJavaGlobalRef<jobject> j_eam_;

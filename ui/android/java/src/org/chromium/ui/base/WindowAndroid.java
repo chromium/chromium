@@ -38,6 +38,7 @@ import org.jni_zero.CalledByNativeForTesting;
 import org.jni_zero.JNINamespace;
 import org.jni_zero.NativeMethods;
 
+import org.chromium.base.AconfigFlaggedApiDelegate;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
@@ -45,6 +46,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ServiceLoaderUtil;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.UnownedUserDataHost;
 import org.chromium.base.lifetime.Destroyable;
@@ -209,6 +211,8 @@ public class WindowAndroid
 
     private boolean mIsTopResumedActivity;
     private final boolean mActivityTopResumedSupported;
+
+    private @Nullable AconfigFlaggedApiDelegate mAconfigFlaggedApiDelegate;
 
     /**
      * @param context The application {@link Context}.
@@ -1348,6 +1352,18 @@ public class WindowAndroid
         mPointerLockingView = null;
         mPointerLockingViewFocusChangeListener = null;
         mPointerLockingViewPrvFocusChangeListener = null;
+    }
+
+    @CalledByNative
+    private boolean setHasKeyboardCapture(boolean hasCapture) {
+        Window window = getWindow();
+        if (window == null) return false;
+        if (mAconfigFlaggedApiDelegate == null) {
+            mAconfigFlaggedApiDelegate =
+                    ServiceLoaderUtil.maybeCreate(AconfigFlaggedApiDelegate.class);
+            if (mAconfigFlaggedApiDelegate == null) return false;
+        }
+        return mAconfigFlaggedApiDelegate.setKeyboardCaptureEnabled(window, hasCapture);
     }
 
     @NativeMethods

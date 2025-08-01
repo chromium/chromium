@@ -49,10 +49,11 @@ enum class LockState {
   kMaxValue = kKeyboardAndPointerLocked,
 };
 
-// Check whether `event` is a kRawKeyDown type and doesn't have non-stateful
-// modifiers (i.e. shift, ctrl etc.).
+// Check whether `event` is a kKeyDown or kRawKeyDown type and doesn't have
+// non-stateful modifiers (i.e. shift, ctrl etc.).
 bool IsUnmodifiedEscKeyDownEvent(const input::NativeWebKeyboardEvent& event) {
-  if (event.GetType() != input::NativeWebKeyboardEvent::Type::kRawKeyDown) {
+  if (event.GetType() != input::NativeWebKeyboardEvent::Type::kRawKeyDown &&
+      event.GetType() != input::NativeWebKeyboardEvent::Type::kKeyDown) {
     return false;
   }
   if (event.GetModifiers() & blink::WebInputEvent::kKeyModifiers) {

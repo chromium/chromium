@@ -139,8 +139,15 @@ public class WebContentsDelegateAndroid {
         return false;
     }
 
+    @CalledByNative
+    public void requestKeyboardLock(boolean escKeyLocked) {}
+
+    @CalledByNative
+    public void cancelKeyboardLockRequest() {}
+
     /**
      * Called when BrowserMediaPlayerManager wants to load a media resource.
+     *
      * @param url the URL of media resource to load.
      * @return true to prevent the resource from being loaded.
      */

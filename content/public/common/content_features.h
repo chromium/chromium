@@ -361,6 +361,10 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kSonomaAccessibilityActivationRefinements);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebauthnDisabledOnAuto);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kKeyboardLockApiOnAndroid);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Number of days to "store" IPH guardrails for navigation captured app launches
 // till they are cleared.
 CONTENT_EXPORT extern const base::FeatureParam<int>

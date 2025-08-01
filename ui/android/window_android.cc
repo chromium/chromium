@@ -361,6 +361,12 @@ void WindowAndroid::OnWindowPointerLockRelease(JNIEnv* env) {
   pointer_locking_view_ = nullptr;
 }
 
+bool WindowAndroid::SetHasKeyboardCapture(bool keyboard_capture) {
+  JNIEnv* env = AttachCurrentThread();
+  return Java_WindowAndroid_setHasKeyboardCapture(env, GetJavaObject(),
+                                                  keyboard_capture);
+}
+
 void WindowAndroid::SetTestHooks(TestHooks* hooks) {
   test_hooks_ = hooks;
   if (!test_hooks_)

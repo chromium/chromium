@@ -203,6 +203,38 @@ public class ActivityTabWebContentsDelegateAndroid extends TabWebContentsDelegat
     }
 
     @Override
+    public void requestKeyboardLock(boolean escKeyLocked) {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            return;
+        }
+        // It may happen that the tab does not have valid WebContents object. In Android
+        // the New Tab Page is not the actual web but the native views.
+        if (mTab.getWebContents() == null) {
+            return;
+        }
+        if (mExclusiveAccessManager == null) {
+            return;
+        }
+        mExclusiveAccessManager.requestKeyboardLock(mTab.getWebContents(), escKeyLocked);
+    }
+
+    @Override
+    public void cancelKeyboardLockRequest() {
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.ENABLE_EXCLUSIVE_ACCESS_MANAGER)) {
+            return;
+        }
+        // It may happen that the tab does not have valid WebContents object. In Android
+        // the New Tab Page is not the actual web but the native views.
+        if (mTab.getWebContents() == null) {
+            return;
+        }
+        if (mExclusiveAccessManager == null) {
+            return;
+        }
+        mExclusiveAccessManager.cancelKeyboardLockRequest(mTab.getWebContents());
+    }
+
+    @Override
     protected boolean shouldResumeRequestsForCreatedWindow() {
         return true;
     }

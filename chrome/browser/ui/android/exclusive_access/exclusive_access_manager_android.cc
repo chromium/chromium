@@ -65,6 +65,25 @@ bool ExclusiveAccessManagerAndroid::PreHandleKeyboardEvent(
       *reinterpret_cast<input::NativeWebKeyboardEvent*>(nativeKeyEvent));
 }
 
+void ExclusiveAccessManagerAndroid::RequestKeyboardLock(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& jweb_contents,
+    bool escKeyLocked) {
+  content::WebContents* wc =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK_NE(wc, nullptr);
+  eam_.keyboard_lock_controller()->RequestKeyboardLock(wc, escKeyLocked);
+}
+
+void ExclusiveAccessManagerAndroid::CancelKeyboardLockRequest(
+    JNIEnv* env,
+    const jni_zero::JavaRef<jobject>& jweb_contents) {
+  content::WebContents* wc =
+      content::WebContents::FromJavaWebContents(jweb_contents);
+  DCHECK_NE(wc, nullptr);
+  eam_.keyboard_lock_controller()->CancelKeyboardLockRequest(wc);
+}
+
 void ExclusiveAccessManagerAndroid::Destroy(JNIEnv* env) {
   delete this;
 }

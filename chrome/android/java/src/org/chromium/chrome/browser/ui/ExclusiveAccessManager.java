@@ -83,6 +83,29 @@ public class ExclusiveAccessManager implements Destroyable {
                         mExclusiveAccessManagerAndroidNativePointer, nativeKeyEvent);
     }
 
+    /**
+     * EAM frontend for WebContentsDelegate to request keyboard lock
+     *
+     * @param webContents the WebContents that requested keyboard load
+     * @param escKeyLocked whether the escape key is to be locked.
+     */
+    public void requestKeyboardLock(WebContents webContents, boolean escKeyLocked) {
+        ExclusiveAccessManagerJni.get()
+                .requestKeyboardLock(
+                        mExclusiveAccessManagerAndroidNativePointer, webContents, escKeyLocked);
+    }
+
+    /**
+     * EAM frontend for WebContentsDelegate to cancel keyboard lock
+     *
+     * @param webContents the WebContents cancelling keyboard lock
+     */
+    public void cancelKeyboardLockRequest(WebContents webContents) {
+        ExclusiveAccessManagerJni.get()
+                .cancelKeyboardLockRequest(
+                        mExclusiveAccessManagerAndroidNativePointer, webContents);
+    }
+
     /** Cleanup function which should be called when owning object is destroyed. */
     @Override
     public void destroy() {
@@ -113,6 +136,14 @@ public class ExclusiveAccessManager implements Destroyable {
 
         boolean preHandleKeyboardEvent(
                 long nativeExclusiveAccessManagerAndroid, long nativeKeyEvent);
+
+        void requestKeyboardLock(
+                long nativeExclusiveAccessManagerAndroid,
+                WebContents webContents,
+                boolean escKeyLocked);
+
+        void cancelKeyboardLockRequest(
+                long nativeExclusiveAccessManagerAndroid, WebContents webContents);
 
         void destroy(long nativeExclusiveAccessManagerAndroid);
     }

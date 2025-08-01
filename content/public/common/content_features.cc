@@ -1585,6 +1585,12 @@ BASE_FEATURE(kWebauthnDisabledOnAuto,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(IS_ANDROID)
+BASE_FEATURE(kKeyboardLockApiOnAndroid,
+             "KeyboardLockApiOnAndroid",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // Default amount of days after which the global navigation capturing IPH
 // guardrails are cleared from storage.
 const base::FeatureParam<int> kNavigationCapturingIPHGuardrailStorageDuration{
