@@ -1246,7 +1246,7 @@ void HTMLCanvasElement::PaintInternal(GraphicsContext& context,
   // all contexts other than canvas 2D, get a snapshot directly from the
   // context.
   if (IsRenderingContext2D()) {
-    if (RenderingContext()->GetResourceProviderForCanvas2D()) {
+    if (RenderingContext()->IsCanvas2DResourceProviderValid()) {
       snapshot = context_->GetImage(FlushReason::kPaint);
     }
   } else {
