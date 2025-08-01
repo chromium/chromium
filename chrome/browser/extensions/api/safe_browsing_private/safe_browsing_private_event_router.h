@@ -23,10 +23,6 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_observer_manager.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-#include "components/enterprise/data_controls/core/browser/verdict.h"
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-
 namespace content {
 class BrowserContext;
 }
@@ -140,25 +136,6 @@ class SafeBrowsingPrivateEventRouter : public KeyedService {
       const enterprise_connectors::ContentAnalysisResponse::Result& result,
       const int64_t content_size,
       std::optional<std::u16string> user_justification);
-
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  // Helper function to report sensitive data event that were caused by
-  // triggering a Data Controls rule. This is similar to
-  // `OnSensitiveDataEvent()` with a signature more suited to Data Controls as
-  // opposed to scanning related events.
-  void OnDataControlsSensitiveDataEvent(
-      const GURL& url,
-      const GURL& tab_url,
-      const std::string& source,
-      const std::string& destination,
-      const std::string& mime_type,
-      const std::string& trigger,
-      const std::string& source_active_user_email,
-      const std::string& content_area_account_email,
-      const data_controls::Verdict::TriggeredRules& triggered_rules,
-      enterprise_connectors::EventResult event_result,
-      int64_t content_size);
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
  private:
   // Returns filename with full path if full path is required;

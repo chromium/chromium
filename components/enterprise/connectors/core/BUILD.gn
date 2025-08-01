@@ -82,6 +82,10 @@ source_set("core") {
   if (enterprise_client_certificates) {
     deps += [ "//components/enterprise/client_certificates/core" ]
   }
+
+  if (enterprise_data_controls) {
+    deps += [ "//components/enterprise/data_controls/core/browser" ]
+  }
 }
 
 source_set("constants") {

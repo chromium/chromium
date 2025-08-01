@@ -7,11 +7,16 @@
 
 #include "base/memory/raw_ptr.h"
 #include "components/download/public/common/download_danger_type.h"
+#include "components/enterprise/buildflags/buildflags.h"
 #include "components/enterprise/connectors/core/realtime_reporting_client_base.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/safe_browsing/core/common/proto/realtimeapi.pb.h"
 #include "url/gurl.h"
 #include "url/scheme_host_port.h"
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+#include "components/enterprise/data_controls/core/browser/verdict.h"
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 namespace enterprise_connectors {
 
@@ -163,6 +168,25 @@ class ReportingEventRouter : public KeyedService {
                                  const int64_t content_size,
                                  const ReferrerChain& referrer_chain,
                                  EventResult event_result);
+
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
+  // Helper function to report sensitive data event that were caused by
+  // triggering a Data Controls rule. This is similar to
+  // `OnSensitiveDataEvent()` with a signature more suited to Data Controls as
+  // opposed to scanning related events.
+  void OnDataControlsSensitiveDataEvent(
+      const GURL& url,
+      const GURL& tab_url,
+      const std::string& source,
+      const std::string& destination,
+      const std::string& mime_type,
+      const std::string& trigger,
+      const std::string& source_active_user_email,
+      const std::string& content_area_account_email,
+      const data_controls::Verdict::TriggeredRules& triggered_rules,
+      EventResult event_result,
+      int64_t content_size);
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
  private:
   // Returns filename with full path if full path is required;

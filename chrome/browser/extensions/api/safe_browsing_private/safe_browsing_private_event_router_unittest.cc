@@ -90,11 +90,6 @@ constexpr char kConnectorsPrefValue[] = R"([
   }
 ])";
 
-constexpr char kUrl[] = "https://evil.com/sensitive_data.txt";
-constexpr char kTabUrl[] = "https://evil.site.com/";
-constexpr char kSource[] = "exampleSource";
-constexpr char kDestination[] = "exampleDestination";
-
 }  // namespace
 
 class SafeBrowsingEventObserver : public TestEventRouter::EventObserver {
@@ -203,19 +198,6 @@ class SafeBrowsingPrivateEventRouterTestBase : public testing::Test {
         ->OnSecurityInterstitialProceeded(GURL("https://phishing.com/"),
                                           "PHISHING", -201, referrer_chain);
   }
-
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-  void TriggerOnDataControlsSensitiveDataEvent(
-      const data_controls::Verdict::TriggeredRules& triggered_rules) {
-    SafeBrowsingPrivateEventRouterFactory::GetForProfile(profile_)
-        ->OnDataControlsSensitiveDataEvent(
-            GURL(kUrl), GURL(kTabUrl), kSource, kDestination, "text/plain",
-            enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
-            "source_active_user@gmail.com", "active_user@gmail.com",
-            triggered_rules, enterprise_connectors::EventResult::BLOCKED,
-            12345);
-  }
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
   void SetReportingPolicy(
       bool enabled,
@@ -849,75 +831,6 @@ TEST_F(SafeBrowsingPrivateEventRouterTest, TestInterstitialEnabled) {
   // times.
   Mock::VerifyAndClearExpectations(client_.get());
 }
-
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-TEST_F(SafeBrowsingPrivateEventRouterTest, TestDataControlsSensitiveDataEvent) {
-  SetUpRouters();
-
-  base::Value::Dict report;
-  base::RunLoop run_loop;
-  EXPECT_CALL(*client_, UploadSecurityEventReport)
-      .WillOnce(
-          testing::DoAll(CaptureArg(&report),
-                         base::test::RunOnceClosure(run_loop.QuitClosure())));
-
-  TriggerOnDataControlsSensitiveDataEvent({
-      {0, {"1", "rule_name_1"}},
-      {1, {"2", "rule_name_2"}},
-  });
-  run_loop.Run();
-
-  Mock::VerifyAndClearExpectations(client_.get());
-  const base::Value::List* event_list =
-      report.FindList(policy::RealtimeReportingJobConfiguration::kEventListKey);
-  ASSERT_NE(event_list, nullptr);
-  ASSERT_EQ(event_list->size(), 1u);
-  const base::Value::Dict& wrapper = (*event_list)[0].GetDict();
-  const base::Value::Dict* event =
-      wrapper.FindDict(enterprise_connectors::kKeySensitiveDataEvent);
-  ASSERT_NE(event, nullptr);
-
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyUrl), kUrl);
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyTabUrl),
-            kTabUrl);
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeySource),
-            kSource);
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyDestination),
-            kDestination);
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyContentSize),
-            "12345");
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyContentType),
-            "text/plain");
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyTrigger),
-            enterprise_connectors::kWebContentUploadDataTransferEventTrigger);
-  EXPECT_EQ(*event->FindString(SafeBrowsingPrivateEventRouter::kKeyEventResult),
-            enterprise_connectors::EventResultToString(
-                enterprise_connectors::EventResult::BLOCKED));
-  EXPECT_EQ(*event->FindString(
-                enterprise_connectors::kKeySourceWebAppSignedInAccount),
-            "source_active_user@gmail.com");
-  EXPECT_EQ(
-      *event->FindString(enterprise_connectors::kKeyWebAppSignedInAccount),
-      "active_user@gmail.com");
-
-  const base::Value::List* triggered_rule_info =
-      event->FindList(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo);
-  ASSERT_NE(triggered_rule_info, nullptr);
-  ASSERT_EQ(triggered_rule_info->size(), 2u);
-  const base::Value::Dict& rule_1 = (*triggered_rule_info)[0].GetDict();
-  EXPECT_EQ(
-      *rule_1.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName),
-      "rule_name_1");
-  EXPECT_EQ(
-      *rule_1.FindInt(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId), 1);
-  const base::Value::Dict& rule_2 = (*triggered_rule_info)[1].GetDict();
-  EXPECT_EQ(
-      *rule_2.FindString(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName),
-      "rule_name_2");
-  EXPECT_EQ(
-      *rule_2.FindInt(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId), 2);
-}
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 // Tests to make sure the feature flag and policy control real-time reporting
 // as expected.  The parameter for these tests is a tuple of bools:

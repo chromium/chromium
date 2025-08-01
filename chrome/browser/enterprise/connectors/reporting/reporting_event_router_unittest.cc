@@ -1214,6 +1214,53 @@ TEST_P(ReportingEventRouterTest,
 }
 #endif  // BUILDFLAG(ENTERPRISE_CONTENT_ANALYSIS)
 
+#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+TEST_P(ReportingEventRouterTest, TestOnDataControlsSensitiveDataEvent) {
+  if (use_proto_format()) {
+    return;
+  }
+
+  test::SetOnSecurityEventReporting(
+      profile_->GetPrefs(), /*enabled=*/true,
+      /*enabled_event_names=*/{kKeySensitiveDataEvent},
+      /*enabled_opt_in_events=*/{});
+
+  data_controls::Verdict::TriggeredRules triggered_rules = {
+      {0, {"1", "rule_1_name"}}};
+  test::EventReportValidator validator(client_.get());
+  base::RunLoop run_loop;
+  validator.SetDoneClosure(run_loop.QuitClosure());
+
+  validator.ExpectDataControlsSensitiveDataEvent(
+      /*expected_url*/
+      "https://example.com/",
+      /*expected_tab_url*/ "https://example.com/",
+      /*expected_source*/ "exampleSource",
+      /*expected_destination*/ "exampleDestination",
+      /*expected_mimetypes=*/
+      []() {
+        static std::set<std::string> set = {"text/html"};
+        return &set;
+      }(),
+      /*expected_trigger=*/"WEB_CONTENT_UPLOAD",
+      /*triggered_rules=*/triggered_rules,
+      /*expected_result*/ "EVENT_RESULT_ALLOWED",
+      /*expected_profile_username*/ profile_->GetProfileUserName(),
+      /*expected_profile_identifier*/ GetProfileIdentifier(),
+      /*expected_content_size=*/1234);
+  validator.ExpectActiveUser("content_area_user@gmail.com");
+  validator.ExpectSourceActiveUser("active_user@gmail.com");
+
+  reporting_event_router_->OnDataControlsSensitiveDataEvent(
+      GURL("https://example.com/"), GURL("https://example.com/"),
+      "exampleSource", "exampleDestination", "text/html",
+      enterprise_connectors::kWebContentUploadDataTransferEventTrigger,
+      "active_user@gmail.com", "content_area_user@gmail.com", triggered_rules,
+      enterprise_connectors::EventResult::ALLOWED, 1234);
+  run_loop.Run();
+}
+#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS) && !BUILDFLAG(IS_ANDROID)
+
 INSTANTIATE_TEST_SUITE_P(, ReportingEventRouterTest, ::testing::Bool());
 
 }  // namespace enterprise_connectors

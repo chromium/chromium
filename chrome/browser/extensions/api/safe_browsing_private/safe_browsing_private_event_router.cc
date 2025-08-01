@@ -48,10 +48,6 @@
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
 #endif
 
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-#include "base/containers/contains.h"
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-
 namespace extensions {
 
 namespace {
@@ -407,72 +403,5 @@ void SafeBrowsingPrivateEventRouter::OnAnalysisConnectorWarningBypassed(
       std::move(settings.value()), std::move(event));
 #endif  // BUILDFLAG(ENTERPRISE_CLOUD_CONTENT_ANALYSIS)
 }
-
-#if BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
-void SafeBrowsingPrivateEventRouter::OnDataControlsSensitiveDataEvent(
-    const GURL& url,
-    const GURL& tab_url,
-    const std::string& source,
-    const std::string& destination,
-    const std::string& mime_type,
-    const std::string& trigger,
-    const std::string& source_active_user_email,
-    const std::string& content_area_account_email,
-    const data_controls::Verdict::TriggeredRules& triggered_rules,
-    enterprise_connectors::EventResult event_result,
-    int64_t content_size) {
-  std::optional<enterprise_connectors::ReportingSettings> settings =
-      reporting_client_->GetReportingSettings();
-  if (!settings.has_value() ||
-      !base::Contains(settings->enabled_event_names,
-                      enterprise_connectors::kKeySensitiveDataEvent)) {
-    return;
-  }
-
-  base::Value::Dict event;
-  event.Set(kKeyUrl, url.spec());
-  event.Set(kKeyTabUrl, tab_url.spec());
-  event.Set(kKeySource, source);
-  event.Set(kKeyDestination, destination);
-  event.Set(kKeyContentType, mime_type);
-  // |content_size| can be set to -1 to indicate an unknown size, in
-  // which case the field is not set.
-  if (content_size >= 0) {
-    event.Set(kKeyContentSize, base::Int64ToValue(content_size));
-  }
-  event.Set(kKeyTrigger, trigger);
-  if (!content_area_account_email.empty()) {
-    event.Set(enterprise_connectors::kKeyWebAppSignedInAccount,
-              content_area_account_email);
-  }
-  if (!source_active_user_email.empty()) {
-    event.Set(enterprise_connectors::kKeySourceWebAppSignedInAccount,
-              source_active_user_email);
-  }
-  event.Set(kKeyEventResult,
-            enterprise_connectors::EventResultToString(event_result));
-
-  base::Value::List triggered_rule_info;
-  triggered_rule_info.reserve(triggered_rules.size());
-  for (const auto& [index, rule] : triggered_rules) {
-    base::Value::Dict triggered_rule;
-    int rule_id_int = 0;
-    if (base::StringToInt(rule.rule_id, &rule_id_int)) {
-      triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleId,
-                         rule_id_int);
-    }
-    triggered_rule.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleName,
-                       rule.rule_name);
-
-    triggered_rule_info.Append(std::move(triggered_rule));
-  }
-  event.Set(SafeBrowsingPrivateEventRouter::kKeyTriggeredRuleInfo,
-            std::move(triggered_rule_info));
-
-  reporting_client_->ReportRealtimeEvent(
-      enterprise_connectors::kKeySensitiveDataEvent,
-      std::move(settings.value()), std::move(event));
-}
-#endif  // BUILDFLAG(ENTERPRISE_DATA_CONTROLS)
 
 }  // namespace extensions

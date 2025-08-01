@@ -5,11 +5,11 @@
 #include "chrome/browser/enterprise/data_controls/reporting_service.h"
 
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_info.h"
+#include "chrome/browser/enterprise/connectors/reporting/reporting_event_router_factory.h"
 #include "chrome/browser/enterprise/data_protection/content_area_user_provider.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
-#include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/enterprise/connectors/core/reporting_constants.h"
+#include "components/enterprise/connectors/core/reporting_event_router.h"
 #include "components/enterprise/data_controls/core/browser/prefs.h"
 #include "components/enterprise/data_controls/core/browser/verdict.h"
 #include "components/policy/core/common/policy_types.h"
@@ -229,7 +229,7 @@ void ReportingService::ReportCopyOrPaste(
     const std::string& trigger,
     enterprise_connectors::EventResult event_result) {
   auto* router =
-      extensions::SafeBrowsingPrivateEventRouterFactory::GetForProfile(
+      enterprise_connectors::ReportingEventRouterFactory::GetForBrowserContext(
           &profile_.get());
 
   if (!router || verdict.triggered_rules().empty()) {
@@ -303,7 +303,7 @@ ReportingServiceFactory::ReportingServiceFactory()
               .WithSystem(ProfileSelection::kNone)
               .WithAshInternals(ProfileSelection::kNone)
               .Build()) {
-  DependsOn(extensions::SafeBrowsingPrivateEventRouterFactory::GetInstance());
+  DependsOn(enterprise_connectors::ReportingEventRouterFactory::GetInstance());
 }
 
 ReportingServiceFactory::~ReportingServiceFactory() = default;
