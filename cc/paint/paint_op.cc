@@ -1284,48 +1284,7 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
   DCHECK(!op->image.IsPaintWorklet());
   SkPaint paint = flags ? flags->ToSkPaint() : SkPaint();
 
-  if (!params.image_provider) {
-    const bool needs_scale = !IsScaleAdjustmentIdentity(op->scale_adjustment);
-    SkAutoCanvasRestore save_restore(canvas, needs_scale);
-    if (needs_scale) {
-      canvas->scale(1.f / op->scale_adjustment.width(),
-                    1.f / op->scale_adjustment.height());
-    }
-    sk_sp<SkImage> sk_image;
-    if (op->image.IsTextureBacked()) {
-      sk_image = op->image.GetAcceleratedSkImage();
-      DCHECK(sk_image || !canvas->recordingContext());
-    }
-    if (!sk_image)
-      sk_image = op->image.GetSwSkImage();
-    if (!sk_image) {
-      return;
-    }
-
-    // If this uses a gainmap shader, then replace DrawImage with a shader.
-    if (ToneMapUtil::UseGainmapShader(op->image)) {
-      skia::DrawGainmapImage(
-          canvas, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
-          op->image.gainmap_info_.value(),
-          std::exp2(ComputeEffectiveHdrHeadroom(flags, params)), op->left,
-          op->top, op->sampling, paint);
-      return;
-    }
-
-    // Add a tone mapping filter to `paint` if needed.
-    if (ToneMapUtil::UseGlobalToneMapFilter(op->image.cached_sk_image_.get(),
-                                            canvas->imageInfo().colorSpace())) {
-      ToneMapUtil::AddGlobalToneMapFilterToPaint(
-          paint, op->image.cached_sk_image_.get(), op->image.hdr_metadata_,
-          ComputeEffectiveHdrHeadroom(flags, params));
-    }
-
-    SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
-                                 op->sampling, &paint);
-    return;
-  }
-
-  if (op->image.IsDeferredPaintRecord()) {
+  if (params.image_provider && op->image.IsDeferredPaintRecord()) {
     ImageProvider::ScopedResult result =
         params.image_provider->GetRasterContent(DrawImage(op->image));
 
@@ -1348,36 +1307,77 @@ void DrawImageOp::RasterWithFlags(const DrawImageOp* op,
     return;
   }
 
-  // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(op->image, false,
-                       SkIRect::MakeWH(op->image.width(), op->image.height()),
-                       op->GetImageQuality(), canvas->getLocalToDevice());
-  auto scoped_result = params.image_provider->GetRasterContent(draw_image);
-  if (!scoped_result)
-    return;
+  // Retrieve the SkImages and sampling.
+  sk_sp<SkImage> sk_image;
+  sk_sp<SkImage> gainmap_sk_image;
+  SkSamplingOptions sampling = op->sampling;
+  // If the SkImages are from an ImageProvider, keep them in scope.
+  ImageProvider::ScopedResult scoped_result;
+  // If scaling is performed, then this will be set to restore after the draw.
+  std::optional<SkAutoCanvasRestore> save_restore;
+  if (params.image_provider) {
+    DrawImage draw_image(op->image, false,
+                         SkIRect::MakeWH(op->image.width(), op->image.height()),
+                         op->GetImageQuality(), canvas->getLocalToDevice());
+    scoped_result = params.image_provider->GetRasterContent(draw_image);
+    if (!scoped_result) {
+      return;
+    }
+    const auto& decoded_image = scoped_result.decoded_image();
+    DCHECK(decoded_image.image());
+    DCHECK_EQ(0, static_cast<int>(decoded_image.src_rect_offset().width()));
+    DCHECK_EQ(0, static_cast<int>(decoded_image.src_rect_offset().height()));
 
-  const auto& decoded_image = scoped_result.decoded_image();
-  DCHECK(decoded_image.image());
-
-  DCHECK_EQ(0, static_cast<int>(decoded_image.src_rect_offset().width()));
-  DCHECK_EQ(0, static_cast<int>(decoded_image.src_rect_offset().height()));
-  SkSize scale_adjustment = SkSize::Make(
-      op->scale_adjustment.width() * decoded_image.scale_adjustment().width(),
-      op->scale_adjustment.height() *
-          decoded_image.scale_adjustment().height());
-  const bool needs_scale = !IsScaleAdjustmentIdentity(scale_adjustment);
-  SkAutoCanvasRestore save_restore(canvas, needs_scale);
-  if (needs_scale) {
-    canvas->scale(1.f / scale_adjustment.width(),
-                  1.f / scale_adjustment.height());
+    sk_image = decoded_image.image();
+    SkSize scale_adjustment = SkSize::Make(
+        op->scale_adjustment.width() * decoded_image.scale_adjustment().width(),
+        op->scale_adjustment.height() *
+            decoded_image.scale_adjustment().height());
+    if (!IsScaleAdjustmentIdentity(scale_adjustment)) {
+      save_restore.emplace(canvas, /*doSave=*/true);
+      canvas->scale(1.f / scale_adjustment.width(),
+                    1.f / scale_adjustment.height());
+    }
+    sampling = PaintFlags::FilterQualityToSkSamplingOptions(
+        decoded_image.filter_quality(),
+        MatrixToScalingOperation(canvas->getLocalToDeviceAs3x3()));
+  } else {
+    if (op->image.IsTextureBacked()) {
+      sk_image = op->image.GetAcceleratedSkImage();
+      DCHECK(sk_image || !canvas->recordingContext());
+    }
+    if (!sk_image) {
+      sk_image = op->image.GetSwSkImage();
+    }
+    gainmap_sk_image = op->image.gainmap_sk_image_;
+    if (!IsScaleAdjustmentIdentity(op->scale_adjustment)) {
+      save_restore.emplace(canvas, /*doSave=*/true);
+      canvas->scale(1.f / op->scale_adjustment.width(),
+                    1.f / op->scale_adjustment.height());
+    }
   }
-  PaintFlags::ScalingOperation scale =
-      MatrixToScalingOperation(canvas->getLocalToDeviceAs3x3());
-  SkTiledImageUtils::DrawImage(canvas, decoded_image.image().get(), op->left,
-                               op->top,
-                               PaintFlags::FilterQualityToSkSamplingOptions(
-                                   decoded_image.filter_quality(), scale),
-                               &paint);
+  if (!sk_image) {
+    return;
+  }
+
+  // If this uses a gainmap shader, then replace DrawImage with a shader.
+  if (ToneMapUtil::UseGainmapShader(op->image) && gainmap_sk_image) {
+    skia::DrawGainmapImage(
+        canvas, sk_image, gainmap_sk_image, op->image.gainmap_info_.value(),
+        std::exp2(ComputeEffectiveHdrHeadroom(flags, params)), op->left,
+        op->top, sampling, paint);
+    return;
+  }
+
+  // Add a tone mapping filter to `paint` if needed.
+  if (ToneMapUtil::UseGlobalToneMapFilter(sk_image.get(),
+                                          canvas->imageInfo().colorSpace())) {
+    ToneMapUtil::AddGlobalToneMapFilterToPaint(
+        paint, sk_image.get(), op->image.hdr_metadata_,
+        ComputeEffectiveHdrHeadroom(flags, params));
+  }
+  SkTiledImageUtils::DrawImage(canvas, sk_image.get(), op->left, op->top,
+                               sampling, &paint);
 }
 
 void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
@@ -1421,91 +1421,93 @@ void DrawImageRectOp::RasterWithFlags(const DrawImageRectOp* op,
     return;
   }
 
-  if (!params.image_provider) {
-    SkRect adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
+  // Retrieve the SkImages, adjusted source rect, and sampling.
+  sk_sp<SkImage> sk_image;
+  sk_sp<SkImage> gainmap_sk_image;
+  SkRect adjusted_src;
+  SkSamplingOptions sampling;
+  // If the SkImages are from an ImageProvider, keep them in scope.
+  ImageProvider::ScopedResult scoped_result;
+  if (params.image_provider) {
+    SkM44 matrix = canvas->getLocalToDevice() *
+                   SkM44(SkMatrix::RectToRect(op->src, op->dst));
+
+    SkIRect int_src_rect;
+    op->src.roundOut(&int_src_rect);
+
+    // Dark mode is applied only for OOP raster during serialization.
+    DrawImage draw_image(op->image, false, int_src_rect, op->GetImageQuality(),
+                         matrix);
+    scoped_result = params.image_provider->GetRasterContent(draw_image);
+    if (!scoped_result) {
+      return;
+    }
+
+    const auto& decoded_image = scoped_result.decoded_image();
+    DCHECK(decoded_image.image());
+
+    SkSize scale_adjustment = SkSize::Make(
+        op->scale_adjustment.width() * decoded_image.scale_adjustment().width(),
+        op->scale_adjustment.height() *
+            decoded_image.scale_adjustment().height());
+    adjusted_src = op->src.makeOffset(decoded_image.src_rect_offset().width(),
+                                      decoded_image.src_rect_offset().height());
+    adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
+    PaintFlags::ScalingOperation scale =
+        MatrixToScalingOperation(matrix.asM33());
+    sampling = PaintFlags::FilterQualityToSkSamplingOptions(
+        decoded_image.filter_quality(), scale);
+    sk_image = decoded_image.image();
+  } else {
+    adjusted_src = AdjustSrcRectForScale(op->src, op->scale_adjustment);
     SkM44 matrix = canvas->getLocalToDevice() *
                    SkM44(SkMatrix::RectToRect(adjusted_src, op->dst));
     PaintFlags::ScalingOperation scale =
         MatrixToScalingOperation(matrix.asM33());
     PaintFlags::FilterQuality quality = sampling_to_quality(op->sampling);
-    SkSamplingOptions sampling =
-        PaintFlags::FilterQualityToSkSamplingOptions(quality, scale);
-    flags->DrawToSk(canvas, [op, adjusted_src, sampling, flags, params](
-                                SkCanvas* c, const SkPaint& p) {
-      sk_sp<SkImage> sk_image;
-      if (op->image.IsTextureBacked()) {
-        sk_image = op->image.GetAcceleratedSkImage();
-        DCHECK(sk_image || !c->recordingContext());
-      }
-      if (!sk_image)
-        sk_image = op->image.GetSwSkImage();
-      if (!sk_image) {
-        return;
-      }
+    sampling = PaintFlags::FilterQualityToSkSamplingOptions(quality, scale);
 
-      // If the PaintImage uses a gainmap shader, then replace DrawImage with a
-      // shader.
-      if (ToneMapUtil::UseGainmapShader(op->image)) {
-        skia::DrawGainmapImageRect(
-            c, op->image.cached_sk_image_, op->image.gainmap_sk_image_,
-            op->image.gainmap_info_.value(),
-            std::exp2(ComputeEffectiveHdrHeadroom(flags, params)), adjusted_src,
-            op->dst, sampling, p);
-        return;
-      }
-
-      // If this uses a global tone map filter, then incorporate that filter
-      // into the paint.
-      if (ToneMapUtil::UseGlobalToneMapFilter(op->image.cached_sk_image_.get(),
-                                              c->imageInfo().colorSpace())) {
-        SkPaint tonemap_paint = p;
-        ToneMapUtil::AddGlobalToneMapFilterToPaint(
-            tonemap_paint, op->image.cached_sk_image_.get(),
-            op->image.hdr_metadata_,
-            ComputeEffectiveHdrHeadroom(flags, params));
-        DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
-                      &tonemap_paint, op->constraint);
-        return;
-      }
-
-      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling, &p,
-                    op->constraint);
-    });
+    if (op->image.IsTextureBacked()) {
+      sk_image = op->image.GetAcceleratedSkImage();
+    }
+    if (!sk_image) {
+      sk_image = op->image.GetSwSkImage();
+    }
+    gainmap_sk_image = op->image.gainmap_sk_image_;
+  }
+  if (!sk_image) {
     return;
   }
 
-  SkM44 matrix = canvas->getLocalToDevice() *
-                 SkM44(SkMatrix::RectToRect(op->src, op->dst));
+  auto draw_proc = [op, adjusted_src, sampling, sk_image, gainmap_sk_image,
+                    flags, params](SkCanvas* c, const SkPaint& p) {
+    // If the PaintImage uses a gainmap shader, then replace DrawImage with
+    // a shader.
+    if (ToneMapUtil::UseGainmapShader(op->image) && gainmap_sk_image) {
+      skia::DrawGainmapImageRect(
+          c, sk_image, gainmap_sk_image, op->image.gainmap_info_.value(),
+          std::exp2(ComputeEffectiveHdrHeadroom(flags, params)), adjusted_src,
+          op->dst, sampling, p);
+      return;
+    }
 
-  SkIRect int_src_rect;
-  op->src.roundOut(&int_src_rect);
+    // If this uses a global tone map filter, then incorporate that filter
+    // into the paint.
+    if (ToneMapUtil::UseGlobalToneMapFilter(sk_image.get(),
+                                            c->imageInfo().colorSpace())) {
+      SkPaint tonemap_paint = p;
+      ToneMapUtil::AddGlobalToneMapFilterToPaint(
+          tonemap_paint, sk_image.get(), op->image.hdr_metadata_,
+          ComputeEffectiveHdrHeadroom(flags, params));
+      DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling,
+                    &tonemap_paint, op->constraint);
+      return;
+    }
 
-  // Dark mode is applied only for OOP raster during serialization.
-  DrawImage draw_image(op->image, false, int_src_rect, op->GetImageQuality(),
-                       matrix);
-  auto scoped_result = params.image_provider->GetRasterContent(draw_image);
-  if (!scoped_result)
-    return;
-
-  const auto& decoded_image = scoped_result.decoded_image();
-  DCHECK(decoded_image.image());
-
-  SkSize scale_adjustment = SkSize::Make(
-      op->scale_adjustment.width() * decoded_image.scale_adjustment().width(),
-      op->scale_adjustment.height() *
-          decoded_image.scale_adjustment().height());
-  SkRect adjusted_src =
-      op->src.makeOffset(decoded_image.src_rect_offset().width(),
-                         decoded_image.src_rect_offset().height());
-  adjusted_src = AdjustSrcRectForScale(adjusted_src, scale_adjustment);
-  PaintFlags::ScalingOperation scale = MatrixToScalingOperation(matrix.asM33());
-  SkSamplingOptions sampling = PaintFlags::FilterQualityToSkSamplingOptions(
-      decoded_image.filter_quality(), scale);
-  flags->DrawToSk(canvas, [op, &decoded_image, adjusted_src, sampling](
-                              SkCanvas* c, const SkPaint& p) {
-    DrawImageRect(c, decoded_image.image().get(), adjusted_src, op->dst,
-                  sampling, &p, op->constraint);
-  });
+    DrawImageRect(c, sk_image.get(), adjusted_src, op->dst, sampling, &p,
+                  op->constraint);
+  };
+  flags->DrawToSk(canvas, draw_proc);
 }
 
 void DrawIRectOp::RasterWithFlags(const DrawIRectOp* op,
