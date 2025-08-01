@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/intelligence/bwg/metrics/bwg_metrics.h"
 
 #import "base/metrics/histogram_functions.h"
+#import "base/time/time.h"
 
 const char kEligibilityHistogram[] = "IOS.Gemini.Eligibility";
 
@@ -20,10 +21,16 @@ const char kStartupTimeWithFREHistogram[] = "IOS.Gemini.StartupTime.FirstRun";
 
 const char kStartupTimeNoFREHistogram[] = "IOS.Gemini.StartupTime.NotFirstRun";
 
+const char kBWGSessionTimeHistogram[] = "IOS.Gemini.Session.Time";
+
 void RecordFREPromoAction(IOSGeminiFREAction action) {
   base::UmaHistogramEnumeration(kPromoActionHistogram, action);
 }
 
 void RecordFREConsentAction(IOSGeminiFREAction action) {
   base::UmaHistogramEnumeration(kPromoActionHistogram, action);
+}
+
+void RecordBWGSessionTime(base::TimeDelta session_duration) {
+  base::UmaHistogramTimes(kBWGSessionTimeHistogram, session_duration);
 }

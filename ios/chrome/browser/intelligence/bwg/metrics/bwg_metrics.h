@@ -5,6 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
 #define IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
 
+namespace base {
+class TimeDelta;
+}  // namespace base
+
 // UMA histogram key for IOS.Gemini.Eligibility.
 extern const char kEligibilityHistogram[];
 
@@ -41,5 +45,11 @@ extern const char kStartupTimeWithFREHistogram[];
 
 // UMA histogram key for IOS.Gemini.StartupTime.NotFirstRun.
 extern const char kStartupTimeNoFREHistogram[];
+
+// UMA histogram key for IOS.Gemini.Session.Time.
+extern const char kBWGSessionTimeHistogram[];
+
+// Records the duration of a Gemini session.
+void RecordBWGSessionTime(base::TimeDelta session_duration);
 
 #endif  // IOS_CHROME_BROWSER_INTELLIGENCE_BWG_METRICS_BWG_METRICS_H_
