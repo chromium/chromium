@@ -529,15 +529,13 @@ std::optional<FeatureConfig> GetCustomConfig(const base::Feature* feature) {
     config->session_rate = Comparator(ANY, 0);
     config->groups.push_back(kiOSDefaultBrowserPromosGroup.name);
     config->storage_type = StorageType::DEVICE;
+    config->used = EventConfig("default_browser_off_cycle_promo_used",
+                               Comparator(ANY, 0), 365, 365);
 
-    config->trigger =
-        EventConfig("default_browser_off_cycle_promo_trigger",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
-    config->used =
-        EventConfig("default_browser_off_cycle_promo_used",
-                    Comparator(EQUAL, 0), feature_engagement::kMaxStoragePeriod,
-                    feature_engagement::kMaxStoragePeriod);
+    config->trigger = EventConfig(
+        "default_browser_off_cycle_promo_trigger", Comparator(EQUAL, 0),
+        feature_engagement::kIPHiOSDefaultBrowserOffCyclePromoCooldown.Get(),
+        feature_engagement::kMaxStoragePeriod);
     return config;
   }
 

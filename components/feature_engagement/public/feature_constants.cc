@@ -759,6 +759,10 @@ BASE_FEATURE(kIPHiOSDefaultBrowserBannerPromoFeature,
 BASE_FEATURE(kIPHiOSDefaultBrowserOffCyclePromoFeature,
              "IPH_iOSDefaultBrowserOffCyclePromo",
              base::FEATURE_ENABLED_BY_DEFAULT);
+constexpr base::FeatureParam<int> kIPHiOSDefaultBrowserOffCyclePromoCooldown{
+    &kIPHiOSDefaultBrowserOffCyclePromoFeature,
+    /*name=*/"cooldown-days",
+    /*default_value=*/10 * 365};
 BASE_FEATURE(kIPHiOSReminderNotificationsOverflowMenuBubbleFeature,
              "IPH_iOSReminderNotificationsOverflowMenuBubbleFeature",
              base::FEATURE_ENABLED_BY_DEFAULT);
