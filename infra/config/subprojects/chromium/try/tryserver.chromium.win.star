@@ -559,6 +559,7 @@ gpu.try_.optional_tests_builder(
             cq.location_filter(path_regexp = "media/mojo/.+"),
             cq.location_filter(path_regexp = "media/renderers/.+"),
             cq.location_filter(path_regexp = "media/video/.+"),
+            cq.location_filter(path_regexp = "services/on_device_model/.+"),
             cq.location_filter(path_regexp = "services/webnn/.+"),
             cq.location_filter(path_regexp = "testing/buildbot/tryserver.chromium.win.json"),
             cq.location_filter(path_regexp = "testing/trigger_scripts/.+"),
