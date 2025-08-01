@@ -55,10 +55,16 @@ const CGFloat kMenuCornerRadius = 20;
   web::WebState* activeWebState =
       self.browser->GetWebStateList()->GetActiveWebState();
   BOOL readerModeActive = NO;
+  BOOL readerModeAvailable = NO;
   ReaderModeTabHelper* readerModeTabHelper =
       ReaderModeTabHelper::FromWebState(activeWebState);
   if (readerModeTabHelper) {
     readerModeActive = readerModeTabHelper->IsActive();
+    readerModeAvailable =
+        base::FeatureList::IsEnabled(
+            kEnableReaderModePageEligibilityForToolsMenu)
+            ? readerModeTabHelper->CurrentPageIsDistillable()
+            : readerModeTabHelper->CurrentPageIsEligibleForReaderMode();
 
     DistillerService* distillerService =
         DistillerServiceFactory::GetForProfile(self.profile);
@@ -66,16 +72,15 @@ const CGFloat kMenuCornerRadius = 20;
         initWithDistilledPagePrefs:distillerService->GetDistilledPagePrefs()
                       webStateList:self.browser->GetWebStateList()];
   }
-  if (readerModeTabHelper &&
-      (readerModeTabHelper->CurrentPageSupportsReaderMode() ||
-       readerModeTabHelper->IsActive())) {
-    _viewController.readerModeHandler = HandlerForProtocol(
-        self.browser->GetCommandDispatcher(), ReaderModeCommands);
-  }
+
   _viewController = [[PageActionMenuViewController alloc]
       initWithReaderModeActive:readerModeActive];
   _viewController.delegate = self;
   _mediator = [[PageActionMenuMediator alloc] init];
+  if (readerModeAvailable) {
+    _viewController.readerModeHandler = HandlerForProtocol(
+        self.browser->GetCommandDispatcher(), ReaderModeCommands);
+  }
 
   _viewController.pageActionMenuHandler = HandlerForProtocol(
       self.browser->GetCommandDispatcher(), PageActionMenuCommands);

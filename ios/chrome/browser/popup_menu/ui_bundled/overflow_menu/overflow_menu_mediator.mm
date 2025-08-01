@@ -1629,17 +1629,19 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 
   ReaderModeTabHelper* helper =
       ReaderModeTabHelper::FromWebState(self.webState);
-
-  // Reader Mode is enabled for any eligible pages in the Overflow menu if the
-  // triggering heuristic is disabled.
-  if (!base::FeatureList::IsEnabled(
-          kEnableReaderModePageEligibilityForToolsMenu)) {
-    return helper && helper->CurrentPageIsEligibleForReaderMode() &&
-           !helper->CurrentPageDistillationAlreadyFailed();
+  if (!helper || helper->CurrentPageDistillationAlreadyFailed()) {
+    return NO;
   }
 
-  return helper && helper->CurrentPageSupportsReaderMode() &&
-         !helper->CurrentPageDistillationAlreadyFailed();
+  // If `kEnableReaderModePageEligibilityForToolsMenu` is enabled then not only
+  // the page needs to support Reader mode, but it needs to be probably
+  // distillable according to the heuristic.
+  if (base::FeatureList::IsEnabled(
+          kEnableReaderModePageEligibilityForToolsMenu)) {
+    return helper->CurrentPageIsDistillable();
+  } else {
+    return helper->CurrentPageIsEligibleForReaderMode();
+  }
 }
 
 // Whether or not text zoom is enabled for this page.

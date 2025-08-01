@@ -75,20 +75,19 @@ class ReaderModeTabHelper : public web::WebStateObserver,
 
   // Returns whether the current page should be considered for Reader Mode.
   bool CurrentPageIsEligibleForReaderMode() const;
-  // Returns whether the current page supports Reading mode.
-  bool CurrentPageSupportsReaderMode() const;
-
+  // Returns whether the current page is distillable.
+  bool CurrentPageIsDistillable() const;
   // Returns whether the distillation failed already in the current page
   bool CurrentPageDistillationAlreadyFailed() const;
 
   // - If the eligibility of the last committed URL is already known, calls
   // `callback` immediately with a boolean value as argument indicating whether
-  // the last committed URL is eligible.
-  // - If the eligibility of the last committed URL is not known, waits until
+  // the last committed URL is probably distillable.
+  // - If the distillability of the last committed URL is not known, waits until
   // the result is available and then calls `callback`.
   // - If the WebState navigates to a different URL (ignoring ref) before the
   // result is available, calls `callback` with nullopt.
-  void FetchLastCommittedUrlEligibilityResult(
+  void FetchLastCommittedUrlDistillabilityResult(
       base::OnceCallback<void(std::optional<bool>)> callback);
 
   // Sets the snackbar handler.

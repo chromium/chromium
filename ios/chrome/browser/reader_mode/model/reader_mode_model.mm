@@ -12,7 +12,7 @@ namespace {
 
 // Calls `callback` with the appropriate ContextualPanelItemConfiguration object
 // depend on the value of `current_page_supports_reader_mode`.
-void HandleCurrentPageSupportsReaderModeResult(
+void HandleCurrentPageIsDistillableResult(
     base::WeakPtr<web::WebState> web_state,
     ReaderModeModel::FetchConfigurationForWebStateCallback callback,
     std::optional<bool> current_page_supports_reader_mode) {
@@ -42,7 +42,7 @@ void ReaderModeModel::FetchConfigurationForWebState(
         FROM_HERE, base::BindOnce(std::move(callback), std::move(nullptr)));
     return;
   }
-  reader_mode_tab_helper->FetchLastCommittedUrlEligibilityResult(
-      base::BindOnce(&HandleCurrentPageSupportsReaderModeResult,
+  reader_mode_tab_helper->FetchLastCommittedUrlDistillabilityResult(
+      base::BindOnce(&HandleCurrentPageIsDistillableResult,
                      web_state->GetWeakPtr(), std::move(callback)));
 }

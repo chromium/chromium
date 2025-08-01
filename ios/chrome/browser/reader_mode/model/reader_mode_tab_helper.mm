@@ -150,7 +150,7 @@ bool ReaderModeTabHelper::CurrentPageIsEligibleForReaderMode() const {
          !kGoogleWorkspaceBlocklist.contains(current_url.host_piece());
 }
 
-bool ReaderModeTabHelper::CurrentPageSupportsReaderMode() const {
+bool ReaderModeTabHelper::CurrentPageIsDistillable() const {
   return CurrentPageIsEligibleForReaderMode() &&
          last_committed_url_eligibility_ready_ &&
          last_committed_url_without_ref_.is_valid() &&
@@ -169,10 +169,10 @@ void ReaderModeTabHelper::RecordDistillationFailure() {
   }
 }
 
-void ReaderModeTabHelper::FetchLastCommittedUrlEligibilityResult(
+void ReaderModeTabHelper::FetchLastCommittedUrlDistillabilityResult(
     base::OnceCallback<void(std::optional<bool>)> callback) {
   if (last_committed_url_eligibility_ready_) {
-    std::move(callback).Run(CurrentPageSupportsReaderMode());
+    std::move(callback).Run(CurrentPageIsDistillable());
     return;
   }
   last_committed_url_eligibility_callbacks_.push_back(std::move(callback));
@@ -331,7 +331,7 @@ void ReaderModeTabHelper::HandleReaderModeHeuristicResult(
       result == ReaderModeHeuristicResult::kReaderModeEligible ? url : GURL();
   if (last_committed_url_without_ref_.EqualsIgnoringRef(url)) {
     last_committed_url_eligibility_ready_ = true;
-    CallLastCommittedUrlEligibilityCallbacks(CurrentPageSupportsReaderMode());
+    CallLastCommittedUrlEligibilityCallbacks(CurrentPageIsDistillable());
   }
 }
 

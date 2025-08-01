@@ -251,7 +251,7 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNtp) {
   LoadWebpage(web_state(), ntp_url);
   WaitForPageLoadDelayAndRunUntilIdle();
 
-  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
 }
 
 // Tests that reader mode is eligible on a regular page.
@@ -280,7 +280,7 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeNotEligibleOnNonHTML) {
   web_state()->SetContentIsHTML(false);
   WaitForPageLoadDelayAndRunUntilIdle();
 
-  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+  ASSERT_FALSE(reader_mode_tab_helper()->CurrentPageIsDistillable());
 }
 
 // Tests that reader mode page eligibility supports same-page navigations.
@@ -302,13 +302,13 @@ TEST_F(ReaderModeTabHelperTest, ReaderModeEligibleForSamePageNavigation) {
                                     @"<html><body>Content</body></html>");
   web_state()->OnNavigationFinished(&navigation_context);
 
-  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+  ASSERT_TRUE(reader_mode_tab_helper()->CurrentPageIsDistillable());
 }
 
 // Tests that
-// ReaderModeTabHelper::FetchLastCommittedUrlEligibilityResult calls
+// ReaderModeTabHelper::FetchLastCommittedUrlDistillabilityResult calls
 // its completion once the page Reader mode eligibility has been determined.
-TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlEligibilityResult) {
+TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlDistillabilityResult) {
   GURL test_url("https://test.url/ref");
   SetReaderModeState(web_state(), test_url,
                      ReaderModeHeuristicResult::kReaderModeEligible, "");
@@ -316,7 +316,7 @@ TEST_F(ReaderModeTabHelperTest, FetchLastCommittedUrlEligibilityResult) {
   LoadWebpage(web_state(), test_url);
   __block std::optional<bool>
       current_page_supports_reader_mode_completion_result;
-  reader_mode_tab_helper()->FetchLastCommittedUrlEligibilityResult(
+  reader_mode_tab_helper()->FetchLastCommittedUrlDistillabilityResult(
       base::BindOnce(^(std::optional<bool> current_page_supports_reader_mode) {
         current_page_supports_reader_mode_completion_result =
             std::move(current_page_supports_reader_mode);
@@ -597,7 +597,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest, TriggerHeuristicOnPageLoad) {
   WaitForPageLoadDelayAndRunUntilIdle();
 
   ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
-            reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+            reader_mode_tab_helper()->CurrentPageIsDistillable());
 
   // The metrics for the navigation are recorded.
   FlushMetrics();
@@ -640,7 +640,7 @@ TEST_P(ReaderModeTabHelperWithEligibilityTest,
   WaitForPageLoadDelayAndRunUntilIdle();
 
   ASSERT_EQ(eligibility == ReaderModeHeuristicResult::kReaderModeEligible,
-            reader_mode_tab_helper()->CurrentPageSupportsReaderMode());
+            reader_mode_tab_helper()->CurrentPageIsDistillable());
 
   FlushMetrics();
   EXPECT_THAT(histogram_tester_.GetAllSamples(kReaderModeStateHistogram),
