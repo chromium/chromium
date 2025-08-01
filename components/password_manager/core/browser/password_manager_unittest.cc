@@ -6221,10 +6221,13 @@ TEST_P(PasswordManagerTest,
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
   ASSERT_TRUE(manager()->form_managers().empty());
 
-  FormData form_data = MakeSingleUsernameFormData();
-  const FieldGlobalId username_field = form_data.fields()[0].global_id();
+  FormData form_data = MakeFormDataWithOnlyNewPasswordField();
+  test_api(form_data).field(0).set_form_control_type(
+      autofill::FormControlType::kInputText);
+  const FieldGlobalId password_field = form_data.fields()[0].global_id();
   manager()->ProcessClassificationModelPredictions(
-      &driver_, form_data, {{username_field, FieldType::USERNAME}});
+      &driver_, form_data,
+      {{password_field, FieldType::ACCOUNT_CREATION_PASSWORD}});
 
   // Check that a form manager is created.
   ASSERT_EQ(manager()->form_managers().size(), 1u);
@@ -6232,12 +6235,12 @@ TEST_P(PasswordManagerTest,
   // Check that the form is parsed according to the model predictions.
   ASSERT_TRUE(base::test::RunUntil([&]() {
     return manager()->GetParsedObservedForm(
-               &driver_, username_field.renderer_id) != nullptr;
+               &driver_, password_field.renderer_id) != nullptr;
   }));
   const PasswordForm* parsed_form =
-      manager()->GetParsedObservedForm(&driver_, username_field.renderer_id);
-  EXPECT_EQ(parsed_form->username_element_renderer_id,
-            username_field.renderer_id);
+      manager()->GetParsedObservedForm(&driver_, password_field.renderer_id);
+  EXPECT_EQ(parsed_form->new_password_element_renderer_id,
+            password_field.renderer_id);
 }
 
 // Checks that a form manager is not created for the form if the model
@@ -6250,6 +6253,21 @@ TEST_P(PasswordManagerTest, ProcessingModelPredictions_IrrelevantForm) {
   const FieldGlobalId username_field = form_data.fields()[0].global_id();
   manager()->ProcessClassificationModelPredictions(
       &driver_, form_data, {{username_field, FieldType::UNKNOWN_TYPE}});
+
+  // Check that a form manager was not created.
+  ASSERT_TRUE(manager()->form_managers().empty());
+}
+
+// Checks that a form manager is not created for a single username form
+// based on the model predictions only.
+TEST_P(PasswordManagerTest, ProcessingModelPredictions_SingleUsernameForm) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  ASSERT_TRUE(manager()->form_managers().empty());
+
+  FormData form_data = MakeSingleUsernameFormData();
+  const FieldGlobalId username_field = form_data.fields()[0].global_id();
+  manager()->ProcessClassificationModelPredictions(
+      &driver_, form_data, {{username_field, FieldType::USERNAME}});
 
   // Check that a form manager was not created.
   ASSERT_TRUE(manager()->form_managers().empty());
