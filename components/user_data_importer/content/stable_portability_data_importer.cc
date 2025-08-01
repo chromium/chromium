@@ -49,7 +49,7 @@ void StablePortabilityDataImporter::
 void StablePortabilityDataImporter::
     RustHistoryCallbackForStablePortabilityFormat::Fail() {
   if (done_callback_) {
-    std::move(done_callback_).Run(0);
+    std::move(done_callback_).Run(-1);
   }
 }
 
@@ -77,7 +77,7 @@ void StablePortabilityDataImporter::ImportBookmarks(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!file.IsValid()) {
-    PostCallback(std::move(bookmarks_callback), 0);
+    PostCallback(std::move(bookmarks_callback), -1);
     return;
   }
 
@@ -104,14 +104,14 @@ void StablePortabilityDataImporter::OnBookmarksParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!bookmark_model_) {
-    PostCallback(std::move(bookmarks_callback), 0);
+    PostCallback(std::move(bookmarks_callback), -1);
     return;
   }
 
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
                    [this, &bookmarks_callback](auto) {
                      // TODO(crbug.com/414604427): Log error to UMA.
-                     PostCallback(std::move(bookmarks_callback), 0);
+                     PostCallback(std::move(bookmarks_callback), -1);
                    });
 
   // Add the parsed bookmarks to the user's storage.
@@ -128,7 +128,7 @@ void StablePortabilityDataImporter::ImportReadingList(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!file.IsValid()) {
-    PostCallback(std::move(reading_list_callback), 0);
+    PostCallback(std::move(reading_list_callback), -1);
     return;
   }
 
@@ -155,14 +155,14 @@ void StablePortabilityDataImporter::OnReadingListParsed(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (!reading_list_model_) {
-    PostCallback(std::move(reading_list_callback), 0);
+    PostCallback(std::move(reading_list_callback), -1);
     return;
   }
 
   ASSIGN_OR_RETURN(BookmarkParser::ParsedBookmarks value, std::move(result),
                    [this, &reading_list_callback](auto) {
                      // TODO(crbug.com/414604427): Log error to UMA.
-                     PostCallback(std::move(reading_list_callback), 0);
+                     PostCallback(std::move(reading_list_callback), -1);
                    });
 
   // Add the parsed reading list entries to the user's storage.
@@ -227,7 +227,7 @@ void StablePortabilityDataImporter::ImportHistory(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   if (!file.IsValid()) {
-    PostCallback(std::move(history_callback), 0);
+    PostCallback(std::move(history_callback), -1);
     return;
   }
 

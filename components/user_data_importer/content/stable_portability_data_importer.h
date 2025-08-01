@@ -37,7 +37,8 @@ struct StablePortabilityHistoryEntry;
 class StablePortabilityDataImporter {
  public:
   // A callback used by the caller to obtain the number of successfully imported
-  // bookmarks, reading list items, or urls (for history import).
+  // bookmarks, reading list items, or history entries. In case of an error, the
+  // reported count will be -1.
   using ImportCallback = base::OnceCallback<void(int)>;
 
   // `history_service`, `bookmark_model`, and `reading_list_model` may be null,

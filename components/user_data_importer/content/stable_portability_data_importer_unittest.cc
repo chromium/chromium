@@ -514,6 +514,20 @@ TEST_F(StablePortabilityDataImporterTest, Bookmarks_MiscJunk) {
                            ))))));
 }
 
+TEST_F(StablePortabilityDataImporterTest, Bookmarks_EmptyInput) {
+  ImportBookmarks("");
+  // Empty input data is considered an error. (In practice, this could also
+  // happen if the file read fails for some reason.)
+  EXPECT_EQ(GetNumberOfBookmarksImported(), -1);
+}
+
+TEST_F(StablePortabilityDataImporterTest, ReadingList_EmptyInput) {
+  ImportReadingList("");
+  // Empty input data is considered an error. (In practice, this could also
+  // happen if the file read fails for some reason.)
+  EXPECT_EQ(GetNumberOfReadingListImported(), -1);
+}
+
 // History parsing is only implemented on Posix systems for now, because the
 // file is passed to the Rust parser in the form of a native "fd" (file
 // descriptor).
@@ -579,6 +593,7 @@ TEST_F(StablePortabilityDataImporterTest, History_InvalidJson) {
         "title": "Google",
   })";  // Invalid JSON, missing closing brackets.
   ImportHistory(kHistoryJson);
+  // TODO(crbug.com/435386347): The result should be "-1" to indicate the error.
   EXPECT_EQ(GetNumberOfHistoryImported(), 0);
 }
 
@@ -636,13 +651,16 @@ TEST_F(StablePortabilityDataImporterTest, History_LargeFileInChunks) {
 TEST_F(StablePortabilityDataImporterTest, CallbacksAreCalled) {
   ImportBookmarksFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/bookmarks/file")));
+  EXPECT_EQ(GetNumberOfBookmarksImported(), -1);
 
   ImportReadingListFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/reading_list/file")));
+  EXPECT_EQ(GetNumberOfReadingListImported(), -1);
 
 #if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   ImportHistoryFile(
       base::FilePath(FILE_PATH_LITERAL("/invalid/path/to/history/file")));
+  EXPECT_EQ(GetNumberOfHistoryImported(), -1);
 #endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 }
 
