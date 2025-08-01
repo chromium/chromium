@@ -35,31 +35,27 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_action_handler_registry.h"
-#include "ui/accessibility/ax_enum_util.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_node_data.h"
-#include "ui/accessibility/ax_node_id_forward.h"
 #include "ui/accessibility/ax_node_position.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/ax_tree_id.h"
 #include "ui/accessibility/ax_tree_manager.h"
 #include "ui/accessibility/ax_tree_serializer.h"
 #include "ui/accessibility/ax_updates_and_events.h"
-#include "ui/accessibility/platform/inspect/ax_inspect.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/display/screen.h"
-#include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/native_window_tracker/native_window_tracker.h"
 #include "ui/strings/grit/auto_image_annotation_strings.h"
 
 #if defined(USE_AURA)
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_event.h"
 #include "ui/aura/env.h"
-#include "ui/aura/window.h"
 #endif  // defined(USE_AURA)
 
 namespace ash {
@@ -89,6 +85,7 @@ AXMediaAppUntrustedService::AXMediaAppUntrustedService(
     mojo::PendingRemote<media_app_ui::mojom::OcrUntrustedPage> page)
     : browser_context_(context),
       native_window_(native_window),
+      native_window_tracker_(ui::NativeWindowTracker::Create(native_window)),
       media_app_page_(std::move(page)) {
   // Unretained is safe because `this` owns the subscription.
   accessibility_status_subscription_ =
@@ -1479,7 +1476,7 @@ std::unique_ptr<gfx::Transform>
 AXMediaAppUntrustedService::MakeTransformFromOffsetAndScale() const {
   auto transform = std::make_unique<gfx::Transform>();
   float device_pixel_ratio = 1.0f;
-  if (native_window_ && !native_window_->is_destroying()) {
+  if (native_window_ && !native_window_tracker_->WasNativeWindowDestroyed()) {
     const auto maybe_device_pixel_ratio =
         display::Screen::GetScreen()->GetPreferredScaleFactorForWindow(
             native_window_);
