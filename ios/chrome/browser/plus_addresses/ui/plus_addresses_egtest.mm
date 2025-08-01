@@ -27,6 +27,7 @@
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_ui.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
 #import "ios/chrome/test/earl_grey/web_http_server_chrome_test_case.h"
+#import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
 #import "ios/testing/earl_grey/earl_grey_test.h"
 #import "ios/testing/earl_grey/matchers.h"
@@ -292,6 +293,13 @@ id<GREYMatcher> GetMatcherForPlusAddressLabel(NSString* labelText) {
 // A test to check the plus address create suggestion IPH feature.
 - (void)testCreatePlusAddressIPH {
   [PlusAddressAppInterface setShouldOfferPlusAddressCreation:YES];
+
+#if TARGET_OS_SIMULATOR
+  // Synchronization off because the tap on element 'kEmailFieldId' completes
+  // only after the IPH has already disappeared. This leads to a subsequent
+  // error when trying to verify that the IPH appeared.
+  ScopedSynchronizationDisabler disabler;
+#endif
 
   // Tap an element that is eligible for plus_address autofilling.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
