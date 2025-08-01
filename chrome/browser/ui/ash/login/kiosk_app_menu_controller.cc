@@ -7,12 +7,14 @@
 #include <string>
 #include <vector>
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/kiosk_app_menu.h"
 #include "ash/public/cpp/login_screen.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/app_mode/arcvm_app/kiosk_arcvm_app_manager.h"
+#include "chrome/browser/ash/app_mode/isolated_web_app/kiosk_iwa_manager.h"
 #include "chrome/browser/ash/app_mode/kiosk_app.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_launch_error.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
@@ -100,8 +102,10 @@ std::vector<KioskAppMenuEntry> BuildKioskAppMenuEntries() {
 KioskAppMenuController::KioskAppMenuController() {
   kiosk_observations_.AddObservation(KioskChromeAppManager::Get());
   kiosk_observations_.AddObservation(KioskWebAppManager::Get());
-  kiosk_observations_.AddObservation(KioskArcvmAppManager::Get());
-  // TODO(crbug.com/372847595): Add IWA manager
+  kiosk_observations_.AddObservation(KioskIwaManager::Get());
+  if (ash::features::IsHeliumArcvmKioskEnabled()) {
+    kiosk_observations_.AddObservation(KioskArcvmAppManager::Get());
+  }
 }
 
 KioskAppMenuController::~KioskAppMenuController() = default;
