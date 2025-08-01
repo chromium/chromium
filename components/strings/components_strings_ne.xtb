@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">लोकेसन हेर्न रोक लगाइएको छ</translation>
 <translation id="2041788246978549610">उपलब्ध माइक्रोफोन (<ph name="MICS_COUNT" /> वटा) प्रयोग गर्न</translation>
 <translation id="2042213636306070719">ट्रे ७</translation>
-<translation id="2043896419861982462">किस्ताबन्दीमा भुक्तानी गर्ने विकल्पहरू लुकाउन <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> मा जानुहोस्</translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">पुस्तकका खुद्रा बिक्रेताहरू</translation>
 <translation id="2048261947532620704">पेज अनुवाद गरिँदै छ</translation>
@@ -1371,7 +1370,6 @@
 <translation id="33073482541490531">तपाईंले भर्खरै प्रयोग गर्नुभएको पासवर्ड चोरी भएको डेटाको सङ्ग्रहमा भेटिएको छ। पासवर्ड म्यानेजर अहिले नै यो पासवर्ड बदल्न सिफारिस गर्छ।</translation>
 <translation id="3307649904964670439">Chrome कस्टमाइज गर्ने बटन, आफ्नो ब्राउजरको स्वरूप कस्टमाइज गर्न यो बटन थिच्नुहोस्</translation>
 <translation id="3308006649705061278">सङ्गठनात्मक एकाइ (OU)</translation>
-<translation id="3317077846337994567">किस्तामा भुक्तानी गर्ने सुविधा अहिले उपलब्ध छैन। पछि फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="3318016344440038475">हास्य टिभी कार्यक्रमहरू</translation>
 <translation id="3324687287337751929">४ x ६ इन्च</translation>
 <translation id="3324983252691184275">गाढा रातो</translation>
@@ -1548,7 +1546,6 @@
 <translation id="3600106876108433070">तुलनात्मक जानकारी भएका तालिकाका बारेमा जान्नुहोस्</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Google का गोपनीयतासम्बन्धी सेटिङ मिलाउने बटन, आफ्नो Google खाताका गोपनीयतासम्बन्धी सेटिङ हेर्न यो बटन थिच्नुहोस्</translation>
-<translation id="3602695245205338770">किस्ताबन्दीमा भुक्तानी गर्न प्रयोग गरिने सेवा प्रदायक छनौट गर्नुहोस्</translation>
 <translation id="3603507503523709">तपाईंका प्रशासकले रोक लगाउनुभएको एप</translation>
 <translation id="3605899229568538311">५ x ५ इन्च</translation>
 <translation id="3606917451836803637">टिभी सो तथा कार्यक्रमहरू</translation>
@@ -3178,7 +3175,6 @@
 <translation id="6327065120806001832">स्थानीय नेटवर्कको एक्सेस</translation>
 <translation id="6328639280570009161">सञ्जाल भविष्यवाणि असक्षम गर्नुहोस्</translation>
 <translation id="6329815962353376655">&lt;प्रश्न टाइप गर्नुहोस्&gt;</translation>
-<translation id="6334834493885103305">तपाईं अब Affirm, Zip वा Klarna प्रयोग गरी किस्तामा भुक्तानी गर्न सक्नुहुन्छ</translation>
 <translation id="6335029926534404762">एथलेटिक जुत्ता</translation>
 <translation id="6336948221660696475">VR प्रयोग गर्ने अनुमति दिइएको छैन</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> भन्दा कम ठाउँ खाली गर्दछ। तपाईं अर्कोपटक आउँदा केही साइटहरू अझ ढिलोगरी लोड हुनसक्छन्।</translation>
@@ -3580,6 +3576,7 @@
 <translation id="6989763994942163495">उन्नत सेटिङ देखाउनुहोस्...</translation>
 <translation id="6991376411634620997">पासकी • Windows Hello</translation>
 <translation id="6997288673234694149">बेसबल तथा सफ्टबल उपकरण</translation>
+<translation id="6998512609912910179">फारामहरू अझ छिटो भर्नुहोस्</translation>
 <translation id="6999480632062519056">फिटनेससम्बन्धी निर्देशन तथा व्यक्तिगत प्रशिक्षण</translation>
 <translation id="7003278537452757231">रग तथा कार्पेटहरू</translation>
 <translation id="7003322000677139268">गाडीका पाटपुर्जा तथा सहायक उपकरणहरू</translation>
@@ -4747,7 +4744,6 @@
 <translation id="9005998258318286617">PDF कागजात लोड गर्न सकिएन।</translation>
 <translation id="9008201768610948239">बेवास्ता गर्नुहोस्</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{कुनै पनि होइन}=1{एउटा साइटबाट}other{# वटा साइटबाट}}</translation>
-<translation id="9012194306129927220">तपाईं अब Affirm वा Zip प्रयोग गरी समयसँगै भुक्तानी गर्न सक्नुहुन्छ</translation>
 <translation id="9014705027639070815">तपाईंले खोल्ने साइटहरूले आफ्ना विज्ञापनहरूको पर्फर्मेन्स मापन गर्न Chrome सँग जानकारी माग्न सक्छन्। Chrome ले साइटहरूलाई तपाईंले कुनै साइट खोलेपछि सामग्री खरिद गर्नुभयो कि गर्नुभएन भन्नेलगायतका सीमित प्रकारका जानकारी सङ्कलन गर्ने अनुमति दिन्छ।</translation>
 <translation id="9018120810758822233">आफ्नो <ph name="CREDIT_CARD" /> को सुरक्षा कोड हाल्नुहोस्</translation>
 <translation id="901834265349196618">इमेल</translation>

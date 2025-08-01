@@ -1361,6 +1361,7 @@ Lejet që u ke dhënë tashmë sajteve të uebit dhe aplikacioneve mund të zbat
 <translation id="1931152874660185993">Nuk ka asnjë përbërës të instaluar.</translation>
 <translation id="1931410639376954712">Po instalon <ph name="DEVICE_OS" /></translation>
 <translation id="1932098463447129402">Jo më parë</translation>
+<translation id="1933070475689690969">Aktiviteti i aplikacioneve Gemini</translation>
 <translation id="1933489278505808700">Lejohet të lexojë dhe të ndryshojë</translation>
 <translation id="1935303383381416800">Lejohen të shikojnë vendndodhjen tënde</translation>
 <translation id="193565226207940518">Vegla e mbështetjes</translation>
@@ -3495,6 +3496,7 @@ Për ndihmë lidhur me zgjidhjen e problemeve të transmetimit, drejtohu te <ph 
 <translation id="3435738964857648380">Siguria</translation>
 <translation id="343578350365773421">Nuk ka letër</translation>
 <translation id="3435896845095436175">Aktivizo</translation>
+<translation id="3437072258256045988">Menaxho aktivitetin e aplikacioneve Gemini</translation>
 <translation id="3437397693214267762">Shiko "Kalendarin e Outlook" dhe skedarët e SharePoint dhe OneDrive</translation>
 <translation id="3438633801274389918">Ninxha</translation>
 <translation id="3439153939049640737">Lejo gjithmonë që <ph name="HOST" /> të qaset te mikrofoni yt</translation>
@@ -6057,7 +6059,6 @@ Përdor Ctrl + Alt + "Ul ndriçimin" për ta zvogëluar.</translation>
 <translation id="5235050375939235066">Të çinstalohet aplikacioni?</translation>
 <translation id="523505283826916779">Cilësimet e qasjes</translation>
 <translation id="5235750401727657667">Zëvendëso faqen që shikon kur hap një skedë të re</translation>
-<translation id="5236054983756407518">Të hiqet adresa jote e shtëpisë nga Chrome?</translation>
 <translation id="5237124927415201087">Konfiguro me lehtësi pajisjen tënde <ph name="DEVICE_TYPE" /> me telefonin tënd. Mund të shtosh rrjetin Wi-Fi dhe "Llogarinë tënde të Google" pa futur fjalëkalimet e tua në mënyrë manuale.
     <ph name="BR" />
     <ph name="BR" />
@@ -7187,7 +7188,6 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="606449270532897041">Menaxho të dhënat e sajtit</translation>
 <translation id="6064764629679333574">Përmirëso cilësinë e tingullit të mikrofonit me Bluetooth duke e përmirësuar audion me rezolucion të ulët në audio me rezolucion të lartë.</translation>
 <translation id="6065289257230303064">Atributet e direktorisë së subjektit të certifikatës</translation>
-<translation id="6065690209261668796">Të hiqet adresa jote e punës nga Chrome?</translation>
 <translation id="6066794465984119824">Hash-i i imazhit nuk është caktuar</translation>
 <translation id="6069464830445383022">Identifikohu në pajisjen Chromebook me "Llogarinë tënde të Google"</translation>
 <translation id="6071181508177083058">konfirmo fjalëkalimin</translation>
@@ -7511,6 +7511,7 @@ Mund të caktosh shumë çelësa për këtë veprim.</translation>
 <translation id="628726841779494414">Menaxho printerët e tu te cilësimet e printerëve</translation>
 <translation id="6287288864483377583">Importimi mbështetet vetëm për një certifikatë të vetme</translation>
 <translation id="6287828400772161253">Telefon me Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Pyet "Modalitetin e IA-së së Google"</translation>
 <translation id="6290613030083731160">Asnjë pajisje e disponueshme nuk po ndan në afërsi. <ph name="LINK_BEGIN" />Mëso më shumë<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Nuk mund të restaurohet për shkak të mungesës së hapësirës ruajtëse.</translation>
 <translation id="6291741848715722067">Kodi i konfirmimit</translation>

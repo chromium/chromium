@@ -294,6 +294,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4724676981607797757">Не вдалося встановити через помилку непідтримуваного протоколу.</translation>
 <translation id="4746050847053251315">Усе одно вийти з Chromium?</translation>
 <translation id="4748217263233248895">Щойно було застосовано спеціальне оновлення для захисту Chromium. Перезапустіть веб-переглядач, і ваші вкладки буде відновлено.</translation>
+<translation id="4771701986670315895">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Chromium не може перевірити паролі. Повторіть спробу через 24 години або <ph name="BEGIN_LINK" />перевірте паролі в обліковому записі Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Використовується та сама технологія перевірки правопису, що й у Пошуку Google. Текст, який ви вводите у веб-переглядачі, надсилається в Google. Це завжди можна змінити в налаштуваннях.</translation>
 <translation id="4814736265800133385">Використовувати Chromium, не входячи в обліковий запис</translation>
@@ -306,6 +307,7 @@ Chromium потрібен доступ до Bluetooth. <ph name="IDS_SERIAL_DEVI
 <translation id="4987820182225656817">Гості можуть анонімно користуватися Chromium.</translation>
 <translation id="4994636714258228724">Додати себе в Chromium</translation>
 <translation id="5123973130450702873">Вебпереглядачу Chromium потрібен дозвіл на відстеження ваших рук</translation>
+<translation id="5141988424377517949">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і "<ph name="PERMISSION_3" />".</translation>
 <translation id="5174969993834422967">Зазвичай ви блокуєте сповіщення. Щоб дозволити сайту показувати сповіщення, натисніть значок сповіщення в правому куті панелі місцезнаходження.</translation>
 <translation id="5187123684706427865">Потрібно пройти повторну автентифікацію в обліковому записі Chromium</translation>
 <translation id="5224391634244552924">Немає збережених паролів. Chromium зможе перевірити ваші паролі, коли ви їх збережете.</translation>
@@ -491,6 +493,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="734373864078049451">Тут містяться ваші веб-сторінки, закладки та інші дані Chromium.</translation>
 <translation id="7349591376906416160">Ваш системний адміністратор налаштував Chromium відкривати сторінку <ph name="TARGET_URL_HOSTNAME" /> в <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7352651011704765696">Виникли проблеми</translation>
+<translation id="7376384068949534168">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував такі дозволи: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />".</translation>
 <translation id="7384121030444253939">Це розширення більше не підтримується. Chromium радить вилучити його.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Версія Chromium для розробників</translation>
 <translation id="7450541714075000668">Текст скопійовано</translation>
@@ -555,6 +558,7 @@ Chromium не може відновити ваші налаштування.</tr
 <translation id="8248265253516264921">Якщо зображення не має корисного опису, Chromium спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="8254601181414348851">Увійти в Chromium у новий профіль?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium попереджає<ph name="END_LINK" /> про небезпечні сайти й завантаження</translation>
+<translation id="8295827201165805317">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chromium скасував дозвіл "<ph name="PERMISSION" />".</translation>
 <translation id="8313851650939857356">Помилка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша організація закриває веб-переглядач Chromium, якщо він не використовується протягом <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Зберегти як зображення</translation>

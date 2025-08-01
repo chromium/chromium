@@ -6062,7 +6062,6 @@ Oddálení provedete stisknutím kláves Ctrl + Alt + Snížit jas.</translation
 <translation id="5235050375939235066">Odinstalovat aplikaci?</translation>
 <translation id="523505283826916779">Nastavení usnadnění přístupu</translation>
 <translation id="5235750401727657667">Nahradit stránku, která se zobrazí po otevření nové karty</translation>
-<translation id="5236054983756407518">Odebrat z Chromu adresu domů?</translation>
 <translation id="5237124927415201087"><ph name="DEVICE_TYPE" /> můžete snadno nastavit pomocí telefonu. Svou síť Wi-Fi a účet Google můžete přidat bez ručního zadávání hesel.
     <ph name="BR" />
     <ph name="BR" />
@@ -7189,7 +7188,6 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="606449270532897041">Spravovat data webů</translation>
 <translation id="6064764629679333574">Zlepšit kvalitu zvuku mikrofonu připojeného přes Bluetooth převzorkováním zvuku s nízkým rozlišením na zvuk s vysokým rozlišením.</translation>
 <translation id="6065289257230303064">Atributy adresáře subjektu certifikátu</translation>
-<translation id="6065690209261668796">Odebrat z Chromu adresu do práce?</translation>
 <translation id="6066794465984119824">Není nastaven hash obrazu</translation>
 <translation id="6069464830445383022">K přihlašování do Chromebooku slouží účet Google</translation>
 <translation id="6071181508177083058">potvrzení hesla</translation>
@@ -7513,6 +7511,7 @@ K této akci lze přiřadit několik přepínačů.</translation>
 <translation id="628726841779494414">Spravujte své tiskárny v nastavení tiskáren</translation>
 <translation id="6287288864483377583">Import je podporován pouze pro jeden certifikát</translation>
 <translation id="6287828400772161253">Telefon s Androidem (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Zeptat se Googlu v režimu AI</translation>
 <translation id="6290613030083731160">V okolí nejsou dostupná žádná zařízení sdílející obsah. <ph name="LINK_BEGIN" />Další informace<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Obnovení se kvůli nedostatku úložného prostoru nezdařilo.</translation>
 <translation id="6291741848715722067">Potvrzovací kód</translation>
@@ -9181,6 +9180,7 @@ Máte # dalších prolomených hesel. Správce hesel Google doporučuje ihned ta
 <translation id="7481312909269577407">Vpřed</translation>
 <translation id="7481358317100446445">Připraveno</translation>
 <translation id="748138892655239008">Základní omezení certifikátu</translation>
+<translation id="7482823403440483089">Vylepšené automatické vyplňování</translation>
 <translation id="7483732342458943943">Tento odkaz nefunguje</translation>
 <translation id="7484645889979462775">Nikdy v případě těchto stránek</translation>
 <translation id="7484943269191249363">Na tomto zařízení můžete používat všechny své přístupové klíče uložené ve Správci hesel Google. Tuto akci stačí provést jednou.</translation>

@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">இனிவரும் Google Chrome புதுப்பிப்புகளைப் பெற Windows 10 அல்லது அதற்குப் பிந்தைய பதிப்பு தேவை. இந்தக் கம்ப்யூட்டர் Windows 8 பதிப்பைப் பயன்படுத்துகிறது.</translation>
 <translation id="2094648590148273905">ChromeOS Flex விதிமுறைகள்</translation>
 <translation id="2094919256425865063">Chrome இலிருந்து வெளியேறவா?</translation>
+<translation id="2096213354152647998">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION" /> அனுமதியை Chrome அகற்றிவிட்டது.</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromeOS Flex உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="2108778574543343055">ஆப்ஸிற்காக Chrome பின்புலத்தில் இயங்குவதை முடக்கு</translation>
 <translation id="2120620239521071941">வெளியேறினால், இந்தச் சாதனத்திலிருந்து <ph name="ITEMS_COUNT" /> உருப்படிகள் நீக்கப்படும். பின்னர் தரவை மீட்டமைக்க, Chrome இல் <ph name="USER_EMAIL" /> எனும் முகவரியின் மூலம் உள்நுழையவும்.</translation>
@@ -455,6 +456,7 @@
 <translation id="6696915334902295848">இந்தத் தளத்தை அணுக, Chromeமிற்கு மைக்ரோஃபோன் அணுகல் தேவை</translation>
 <translation id="6712881677154121168">பதிவிறக்கப் பிழை: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chromeமை விரைவாக்குகிறது</translation>
+<translation id="6734827584173583205">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, மேலும் <ph name="COUNT" /> அனுமதிகளை Chrome அகற்றிவிட்டது.</translation>
 <translation id="6735387454586646204">ChromeOS Flex சிஸ்டம்</translation>
 <translation id="6750954913813541382">எழுத்துப்பிழைகளைச் சரிசெய்ய உலாவியில் உள்ளிடும் உரையை Chrome ஆப்ஸ் Googleளுக்கு அனுப்பும்</translation>
 <translation id="6760235774835597023">Chromeமின் V8 என்ஜின் மூலம் தளங்கள் செயல்படும் வேகம் அதிகரிக்கும், ஆனால் தாக்குதல்களை Chrome எதிர்க்கும் திறன் சற்று குறைந்து காணப்படும். இந்த அமைப்பு ஆன் செய்யப்பட்டுள்ளது.</translation>
@@ -480,6 +482,7 @@
 <translation id="7024536598735240744">தொகுக்கப்படாத பிழை: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">நிறுவல் நிறுத்தப்பட்டது.</translation>
 <translation id="7025800014283535195">இங்கே Chrome சுயவிவரங்களுக்கு இடையே மாறலாம்</translation>
+<translation id="7051685429025310665">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ஆகிய அனுமதிகளை Chrome அகற்றிவிட்டது.</translation>
 <translation id="7059914902409643750">Chromeமைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="7060643578009939353">இந்த வீடியோவை Google Lens மூலம் தேடுங்கள்</translation>
 <translation id="7071827361006050863">உலாவிய தரவை Chrome விரைவில் நீக்கும்</translation>
@@ -541,6 +544,7 @@
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> பிரவுசருக்கு சிஸ்டம் டிரேஸிங் சேவைகளை வழங்கும். இந்தச் சேவை முடக்கப்பட்டால், பிரவுசர் உருவாக்கும் செயல்பாட்டு டிரேஸ்களில் கண்டக்ஸ்ட் சுவிட்ச், ரெடி த்ரட் நிகழ்வுகளைப் போன்ற, சிஸ்டம் முழுமைக்குமான நிகழ்வுகள் சேர்க்கப்படாது.</translation>
 <translation id="7736869414036750079">Chromeமில் உள்நுழையும்படி உங்கள் நிறுவனம் வலியுறுத்துகிறது</translation>
 <translation id="7747138024166251722">தற்காலிக டைரக்டரியை நிறுவியால் உருவாக்க முடியவில்லை. வட்டு இடம் காலியாக உள்ளதா, மென்பொருளை நிறுவுவதற்கு தகுந்த அனுமதி உள்ளதா என்பதை சரிபார்க்கவும்.</translation>
+<translation id="7748969056734910029">இந்தத் தளத்தை நீங்கள் சமீபத்தில் பார்க்கவில்லை. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ஆகிய அனுமதிகளை Chrome அகற்றிவிட்டது.</translation>
 <translation id="7761834446675418963">Chrome ஐத் திறந்து, உலாவலைத் தொடங்க உங்கள் பெயரைக் கிளிக் செய்யவும்.</translation>
 <translation id="7777080907402804672">ஒரு படத்திற்குப் பயனுள்ள விளக்கம் இல்லாதபட்சத்தில் Chrome உங்களுக்காக அதை வழங்க முயலும். விளக்கங்களை உருவாக்குவதற்காக படங்கள் Googleளுக்கு அனுப்பப்படும். அமைப்புகளுக்குச் சென்று எப்போது வேண்டுமானாலும் இதை முடக்கலாம்.</translation>
 <translation id="778331955594035129">இந்தத் தளத்தை அணுக, Chromeமிற்கு இருப்பிட அணுகல் தேவை</translation>

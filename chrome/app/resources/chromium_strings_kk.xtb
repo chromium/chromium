@@ -295,6 +295,7 @@
 <translation id="4724676981607797757">Орнатылмады, себебі қолдау көрсетілмейтін протокол қатесі пайда болды.</translation>
 <translation id="4746050847053251315">Chromium браузерінен бәрібір шығасыз ба?</translation>
 <translation id="4748217263233248895">Chromium браузеріне қазір ғана қауіпсіздік бойынша арнайы жаңартылған нұсқа қолданылды. Оны қазір қайта ашсаңыз, қойындылар қалпына келтіріледі.</translation>
+<translation id="4771701986670315895">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсаттарын және тағы <ph name="COUNT" /> рұқсатты өшірді.</translation>
 <translation id="4788777615168560705">Chromium сіздің құпия сөздеріңізді тексере алмай жатыр. 24 сағаттан кейін қайталап көріңіз немесе <ph name="BEGIN_LINK" />құпия сөздерді Google аккаунтынан тексеріңіз<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Google Search қызметіндегі емле тексеру құралы пайдаланылады. Браузерде терілген мәтін Google-ға жіберіледі. Мұны параметрлерде өзгертуіңізге болады.</translation>
 <translation id="4814736265800133385">Chromium-ді аккаунтсыз қолдану</translation>
@@ -307,6 +308,7 @@
 <translation id="4987820182225656817">Қонақтар Chromium қолданбасын ешқандай дерек қалдырмай пайдалана алады.</translation>
 <translation id="4994636714258228724">Chromium жүйесіне өзіңізді қосу</translation>
 <translation id="5123973130450702873">Chromium қолыңызды бақылауға рұқсат сұрайды.</translation>
+<translation id="5141988424377517949">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> рұқсаттарын өшірді.</translation>
 <translation id="5174969993834422967">Әдетте хабарландыруларға тыйым саласыз. Бұл сайт сізге хабарландыру жіберсін десеңіз, локация жолағының оң жақ бұрышындағы хабарландыру белгішесін басыңыз.</translation>
 <translation id="5187123684706427865">Chromium аккаунтын қайта аутентификациялау қажет.</translation>
 <translation id="5224391634244552924">Ешқандай құпия сөз сақталмаған. Құпия сөздер сақталған кезде, Chromium оларды тексере алады.</translation>
@@ -492,6 +494,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="734373864078049451">Мұнда веб-беттер, бетбелгілер және басқа Chromium материалдары тұрады.</translation>
 <translation id="7349591376906416160">Жүйе әкімшісі Chromium браузерін <ph name="TARGET_URL_HOSTNAME" /> бетіне кіргенде <ph name="ALTERNATIVE_BROWSER_NAME" /> браузері ашылатын етіп конфигурациялады.</translation>
 <translation id="7352651011704765696">Бірнәрсе дұрыс емес</translation>
+<translation id="7376384068949534168">Жақында кірмедіңіз. Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> рұқсаттарын өшірді.</translation>
 <translation id="7384121030444253939">Бұл кеңейтімге енді қолдау көрсетілмейді. Chromium оны өшіруге кеңес береді.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium әзірлеуші нұсқасы</translation>
 <translation id="7450541714075000668">Мәтін көшірмесі жасалды</translation>
@@ -556,6 +559,7 @@ Chromium параметрлеріңізді қалпына келтіре алм
 <translation id="8248265253516264921">Егер суреттің пайдалы сипаттамасы болмаса, Chromium оны өзі ұсынып көреді. Сипаттамалар жасау үшін суреттер Google-ға жіберіледі. Бұл функцияны кез келген уақытта параметрлерден өшіріп қоюға болады.</translation>
 <translation id="8254601181414348851">Chromium-ге жаңа профильмен кіру қажет пе?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium сізге<ph name="END_LINK" /> қауіпті сайттар мен жүктеп алу әрекеттері туралы ескертеді</translation>
+<translation id="8295827201165805317">Жақында кірмедіңіз. Chromium <ph name="PERMISSION" /> рұқсатын өшірді.</translation>
 <translation id="8313851650939857356">Іске қосу қатесі: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ұйымыңыз Chromium-ді <ph name="TIMEOUT_DURATION" /> бойы пайдаланбаған кезде жабады.</translation>
 <translation id="8321888067342493336">Сурет түрінде сақтау</translation>

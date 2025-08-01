@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">סנכרון אחרון: היום</translation>
 <translation id="1523567067736644845">צריך לבטל את הנעילה כדי להציג את הסיסמה</translation>
 <translation id="1524563461097350801">לא, תודה</translation>
+<translation id="1528290585275339320">הפעלה של שיתוף תוכן הדף</translation>
 <translation id="1531038290222364269">הצגת כרטיסיות</translation>
 <translation id="1536390784834419204">תרגום הדף</translation>
 <translation id="1540800554400757039">כתובת, שורה 1</translation>
@@ -194,6 +195,7 @@
 <translation id="1741219894094057085">שעון חכם</translation>
 <translation id="1743244221910283364">מחיקת השינויים</translation>
 <translation id="1748975028205587434">בחירת הקובץ הרצוי</translation>
+<translation id="1749733017156547309">נדרשת סיסמה</translation>
 <translation id="174998178145075354">{count,plural, =1{אפשרות אחת ({count}) לכתובת זמינה מעל המקלדת.}one{‫{count} אפשרויות לכתובת זמינות מעל המקלדת.}two{‫{count} אפשרויות לכתובת זמינות מעל המקלדת.}other{‫{count} אפשרויות לכתובת זמינות מעל המקלדת.}}</translation>
 <translation id="1750238553597293878">‏המשך השימוש בסיסמאות בחשבון Google שלך</translation>
 <translation id="17513872634828108">כרטיסיות פתוחות</translation>
@@ -510,6 +512,7 @@
 <translation id="2952278131021475699">‏חיפוש באמצעות המצלמה ב-Lens</translation>
 <translation id="2962516096219646456">הצגת כל נתוני המילוי האוטומטי</translation>
 <translation id="2969979262385602596">לא ניתן היה להיכנס לחשבון. יש לנסות שוב מאוחר יותר.</translation>
+<translation id="2975761176769946178">‏נדרשת כתובת URL</translation>
 <translation id="297667759942911166">שיתוף פעולה בקבוצות של כרטיסיות</translation>
 <translation id="2987670534697681860">כדי לגשת לכל הסיסמאות במכשיר הזה, צריך לאמת את הזהות שלך.</translation>
 <translation id="2989523299700148168">מנועי חיפוש שהשתמשת בהם לאחרונה</translation>
@@ -573,6 +576,7 @@
 <translation id="3224075676564434205">הכרטיסיות יישארו פתוחות במכשיר הזה, אבל הקבוצה תימחק מכל המכשירים שמחוברים לחשבון <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">כדי שניתן יהיה לייצא את הסיסמאות, יש להגדיר קוד גישה במכשיר.</translation>
 <translation id="3227137524299004712">מיקרופון</translation>
+<translation id="3234251228180563751">שם המשתמש מכיל יותר מ-1,000 תווים</translation>
 <translation id="3235063766008841141">הפרטים הוזנו לאתר מטעה ונחשפו בעקבות פרצה באבטחת מידע.</translation>
 <translation id="3235242129752692527">עורכים את פרטי האירוע ולוחצים על 'שמירה'.</translation>
 <translation id="323863549127671026">הכרטיסיות והקבוצות של הכרטיסיות שפתוחות כרגע</translation>
@@ -1031,6 +1035,7 @@
 <translation id="5079950360618752063">שימוש בסיסמה המוצעת</translation>
 <translation id="5083464117946352670">גודל הקובץ אינו ידוע.</translation>
 <translation id="5085558938118581974">חיפוש בכרטיסיות בכל המכשירים המסונכרנים</translation>
+<translation id="508645147179720015">ההערה מכילה יותר מ-1,000 תווים</translation>
 <translation id="5087098519049306025">מעקב מחירים</translation>
 <translation id="5090832849094901128">מחיקת הסיסמה הזו לא תגרום למחיקת החשבון שלך באתר <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">הוספת חשבון…</translation>
@@ -1922,6 +1927,7 @@
 <translation id="8434837876193928924">פרטי קבוצת הכרטיסיות</translation>
 <translation id="8438566539970814960">שיפור החיפושים והגלישה</translation>
 <translation id="8439758443371991593">הסתרה של 'הוספה לרשימת הקריאה'</translation>
+<translation id="8443986842926457191">‏כתובת ה-URL מכילה יותר מ-2048 תווים</translation>
 <translation id="8449869326050867919">הסיסמה שותפה</translation>
 <translation id="8473863474539038330">כתובות ועוד</translation>
 <translation id="8474378002946546633">אפשר התראות</translation>
@@ -1972,6 +1978,7 @@
 <translation id="8637431369725868556">הגנה מפני אתרים מסוכנים.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{אין סיסמאות שנחשפו}=1{יש סיסמה אחת ({COUNT}) שנחשפה}one{יש {COUNT} סיסמאות שנחשפו}two{יש {COUNT} סיסמאות שנחשפו}other{יש {COUNT} סיסמאות שנחשפו}}</translation>
 <translation id="8643403533759285912">מחיקת הקבוצה</translation>
+<translation id="8645245178269185266">‏שיתוף של תוכן הדף עם Gemini כדי לקבל תשובות רלוונטיות יותר</translation>
 <translation id="8647280737650867362">לא ניתן לבטל את המעקב אחר המחירים.</translation>
 <translation id="8654802032646794042">ביטול</translation>
 <translation id="8660600697590740984">‏תמונה שהועתקה מ-Lens</translation>
@@ -1986,6 +1993,7 @@
 <translation id="8680786875305615692">עזרה בשיפור האבטחה באינטרנט לכולם</translation>
 <translation id="8680787084697685621">פרטי הכניסה לחשבון אינם מעודכנים.</translation>
 <translation id="8690752723634292147">אישור של המחיקה</translation>
+<translation id="8692107307702113268">הסיסמה מכילה יותר מ-1,000 תווים</translation>
 <translation id="8692689525339542358">הגנה מפני אתרים, הורדות ותוספים מסוכנים.</translation>
 <translation id="8692897097252418799">בוחרים את הנתונים שרוצים לייצא</translation>
 <translation id="8694281486652655615">הפריט הזה יוצג</translation>
@@ -2068,6 +2076,7 @@
 <translation id="895541991026785598">דיווח על בעיה</translation>
 <translation id="8960979149015305">סגירת סרגל ההורדה</translation>
 <translation id="8961092256396236619">ההגנה המשופרת מושבתת</translation>
+<translation id="8962863356073277855">‏כתובת ה-URL צריכה להיות בפורמט https://www.example.com</translation>
 <translation id="8968766641738584599">שמירת הכרטיס</translation>
 <translation id="8974714402877957201">‏1. פותחים את הגדרות ה-iPad</translation>
 <translation id="8975015774710126284">נתוני הגלישה נמחקו</translation>

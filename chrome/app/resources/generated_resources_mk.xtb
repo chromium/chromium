@@ -6078,7 +6078,6 @@
 <translation id="5235050375939235066">Дали да се деинсталира апликацијата?</translation>
 <translation id="523505283826916779">Поставки за пристапност</translation>
 <translation id="5235750401727657667">Заменете ја страницата што ја гледате при отворање нова картичка</translation>
-<translation id="5236054983756407518">Да се отстрани вашата домашна адреса од Chrome?</translation>
 <translation id="5237124927415201087">Лесно поставете го вашиот <ph name="DEVICE_TYPE" /> со телефонот. Може да ги додадете вашата Wi-Fi и сметка на Google без рачно внесување на лозинките.
     <ph name="BR" />
     <ph name="BR" />
@@ -7209,7 +7208,6 @@
 <translation id="606449270532897041">Управувајте со податоците од сајт</translation>
 <translation id="6064764629679333574">Подобрете го звукот на микрофонот преку надградување на квалитетот на аудиото од низок на висок.</translation>
 <translation id="6065289257230303064">Одлики на директориум за субјект на сертификат</translation>
-<translation id="6065690209261668796">Да се отстрани вашата адреса на работа од Chrome?</translation>
 <translation id="6066794465984119824">Хашот за сликата не е поставен</translation>
 <translation id="6069464830445383022">На Chromebook ќе се најавувате со сметката на Google</translation>
 <translation id="6071181508177083058">потврди ја лозинката</translation>
@@ -7533,6 +7531,7 @@
 <translation id="628726841779494414">Управувајте со печатачите во поставките за печатачи</translation>
 <translation id="6287288864483377583">Увозот е поддржан само за еден сертификат</translation>
 <translation id="6287828400772161253">Телефон со Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Прашајте го „AI-режимот“ на Google</translation>
 <translation id="6290613030083731160">Нема достапни уреди што споделуваат во близина. <ph name="LINK_BEGIN" />Дознајте повеќе<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Не може да се врати поради недостиг на простор за складирање.</translation>
 <translation id="6291741848715722067">Код за потврда</translation>

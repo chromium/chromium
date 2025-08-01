@@ -6080,7 +6080,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5235050375939235066">Pašalinti programą?</translation>
 <translation id="523505283826916779">Pasiekiamumo nustatymai</translation>
 <translation id="5235750401727657667">Pakeisti puslapį, kuris rodomas atidarant naują skirtuką</translation>
-<translation id="5236054983756407518">Pašalinti namų adresą iš „Chrome“?</translation>
 <translation id="5237124927415201087">Lengvai nustatykite „<ph name="DEVICE_TYPE" />“ telefonu. Galite pridėti „Wi-Fi“ ir „Google“ paskyrą neautomatiškai neįvesdami slaptažodžių.
     <ph name="BR" />
     <ph name="BR" />
@@ -7212,7 +7211,6 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="606449270532897041">Tvarkyti svetainių duomenis</translation>
 <translation id="6064764629679333574">Pagerinkite „Bluetooth“ mikrofono garso kokybę padidindami mažos skyros garsą į didelę.</translation>
 <translation id="6065289257230303064">Sertifikato subjekto katalogo atributai</translation>
-<translation id="6065690209261668796">Pašalinti darbo adresą iš „Chrome“?</translation>
 <translation id="6066794465984119824">Vaizdo maiša nenustatyta</translation>
 <translation id="6069464830445383022">Prisijunkite prie „Chromebook“ naudodami „Google“ paskyrą</translation>
 <translation id="6071181508177083058">patvirtinkite slaptažodį</translation>
@@ -7536,6 +7534,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="628726841779494414">Tvarkykite spausdintuvus spausdintuvų nustatymuose</translation>
 <translation id="6287288864483377583">Palaikomas tik vieno sertifikato importavimas</translation>
 <translation id="6287828400772161253">„Android“ telefonas („<ph name="HOST_DEVICE_NAME" />“)</translation>
+<translation id="6288559570252410796">Klausti „Google“ DI režimu</translation>
 <translation id="6290613030083731160">Nėra jokių pasiekiamų įrenginių, bendrinančių netoliese. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Negalima atkurti, nes pritrūko saugyklos vietos.</translation>
 <translation id="6291741848715722067">Patvirtinimo kodas</translation>

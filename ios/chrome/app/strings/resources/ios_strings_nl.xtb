@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Niet opslaan</translation>
 <translation id="1748975028205587434">Je bestand selecteren</translation>
+<translation id="1749733017156547309">Er is een wachtwoord vereist</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} optie voor adres beschikbaar boven je toetsenbord.}other{{count} opties voor adressen beschikbaar boven je toetsenbord.}}</translation>
 <translation id="1750238553597293878">Blijf de wachtwoorden in je Google-account gebruiken</translation>
 <translation id="17513872634828108">Geopende tabbladen</translation>
@@ -509,6 +510,7 @@ Je zoekmachine is <ph name="DSE_NAME" />. Bekijk de instructies van de zoekmachi
 <translation id="2952278131021475699">Zoeken met Lens-camera</translation>
 <translation id="2962516096219646456">Alle gegevens voor automatisch invullen bekijken</translation>
 <translation id="2969979262385602596">Kan niet inloggen. Probeer het later opnieuw.</translation>
+<translation id="2975761176769946178">Er is een URL vereist</translation>
 <translation id="297667759942911166">Samenwerken in tabbladgroepen</translation>
 <translation id="2987670534697681860">Laat verifiëren dat jij het bent om toegang tot al je wachtwoorden te krijgen op dit apparaat.</translation>
 <translation id="2989523299700148168">Onlangs bezocht</translation>
@@ -572,6 +574,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="3224075676564434205">De tabbladen blijven geopend op dit apparaat, maar de groep wordt verwijderd van alle apparaten die zijn ingelogd bij <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Als je wachtwoorden wilt exporteren, moet je eerst een toegangscode instellen op je apparaat.</translation>
 <translation id="3227137524299004712">Microfoon</translation>
+<translation id="3234251228180563751">De gebruikersnaam is langer dan 1000 tekens</translation>
 <translation id="3235063766008841141">Inloggegevens ingevoerd op een misleidende site en gevonden bij een gegevenslek</translation>
 <translation id="3235242129752692527">Bewerk de afspraakgegevens en tik op Opslaan.</translation>
 <translation id="323863549127671026">Op dit moment geopende tabbladen en tabbladgroepen</translation>
@@ -1030,6 +1033,7 @@ Bekijk de instructies van je zoekmachine voor het verwijderen van je zoekgeschie
 <translation id="5079950360618752063">Voorgesteld wachtwoord gebruiken</translation>
 <translation id="5083464117946352670">Kan bestandsgrootte niet bepalen.</translation>
 <translation id="5085558938118581974">Tabbladen doorzoeken op gesynchroniseerde apparaten</translation>
+<translation id="508645147179720015">Opmerking bestaat uit meer dan 1000 tekens</translation>
 <translation id="5087098519049306025">Prijzen volgen</translation>
 <translation id="5090832849094901128">Als je dit wachtwoord verwijdert, wordt je account op <ph name="WEBSITE" /> niet verwijderd.</translation>
 <translation id="5118462200606189584">Account toevoegen…</translation>
@@ -1919,6 +1923,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8434837876193928924">Tabbladgroepgegevens</translation>
 <translation id="8438566539970814960">Zoekopdrachten en browsefunctionaliteit verbeteren</translation>
 <translation id="8439758443371991593">Toevoegen aan leeslijst verbergen</translation>
+<translation id="8443986842926457191">De URL is langer dan 2048 tekens</translation>
 <translation id="8449869326050867919">Wachtwoord gedeeld</translation>
 <translation id="8473863474539038330">Adressen en meer</translation>
 <translation id="8474378002946546633">Meldingen toestaan</translation>
@@ -1983,6 +1988,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="8680786875305615692">Helpen om het internet voor iedereen veiliger te maken</translation>
 <translation id="8680787084697685621">De inloggegevens voor het account zijn verouderd.</translation>
 <translation id="8690752723634292147">Verwijdering bevestigen</translation>
+<translation id="8692107307702113268">Het wachtwoord is langer dan 1000 tekens</translation>
 <translation id="8692689525339542358">Krijg bescherming tegen gevaarlijke sites, downloads en extensies.</translation>
 <translation id="8692897097252418799">Kies welke gegevens je wilt exporteren</translation>
 <translation id="8694281486652655615">Hiermee wordt dit item getoond</translation>
@@ -2065,6 +2071,7 @@ Sites mogen cookies gebruiken om je browse-activiteit op verschillende sites te 
 <translation id="895541991026785598">Een probleem melden</translation>
 <translation id="8960979149015305">Download sluiten</translation>
 <translation id="8961092256396236619">Geoptimaliseerde beveiliging staat uit</translation>
+<translation id="8962863356073277855">URL-indeling moet https://www.example.com zijn.</translation>
 <translation id="8968766641738584599">Pas opslaan</translation>
 <translation id="8974714402877957201">1. Open de iPad-instellingen</translation>
 <translation id="8975015774710126284">Browsegegevens zijn verwijderd</translation>

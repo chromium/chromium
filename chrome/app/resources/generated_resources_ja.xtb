@@ -6050,7 +6050,6 @@
 <translation id="5235050375939235066">アプリをアンインストールしますか？</translation>
 <translation id="523505283826916779">ユーザー補助機能の設定</translation>
 <translation id="5235750401727657667">新しいタブを開いたときの表示ページを変更する</translation>
-<translation id="5236054983756407518">Chrome から自宅の住所を削除しますか？</translation>
 <translation id="5237124927415201087">スマートフォンで <ph name="DEVICE_TYPE" /> を簡単に設定できます。パスワードを手動で入力しなくても、Wi-Fi や Google アカウントを追加できます。
     <ph name="BR" />
     <ph name="BR" />
@@ -7179,7 +7178,6 @@
 <translation id="606449270532897041">サイトデータを管理</translation>
 <translation id="6064764629679333574">低解像度音声を高解像度にアップスケーリングすることで、Bluetooth マイクの音質を向上させます。</translation>
 <translation id="6065289257230303064">証明書のサブジェクトのディレクトリ属性</translation>
-<translation id="6065690209261668796">Chrome から職場の住所を削除しますか？</translation>
 <translation id="6066794465984119824">画像ハッシュが設定されていません</translation>
 <translation id="6069464830445383022">Google アカウントを使用して Chromebook にログイン</translation>
 <translation id="6071181508177083058">パスワードの確認入力</translation>
@@ -7503,6 +7501,7 @@
 <translation id="628726841779494414">プリンタ設定でプリンタを管理</translation>
 <translation id="6287288864483377583">インポートは 1 つの証明書のみ可能です</translation>
 <translation id="6287828400772161253">Android スマートフォン（<ph name="HOST_DEVICE_NAME" />）</translation>
+<translation id="6288559570252410796">Google AI モードに質問する</translation>
 <translation id="6290613030083731160">近くに共有可能なデバイスはありません。<ph name="LINK_BEGIN" />詳細<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ストレージの空き容量が不足しているため復元できません。</translation>
 <translation id="6291741848715722067">確認コード</translation>

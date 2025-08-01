@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smartklocka</translation>
 <translation id="1743244221910283364">Ignorera ändringar</translation>
 <translation id="1748975028205587434">Markera filen</translation>
+<translation id="1749733017156547309">Ett lösenord krävs</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} alternativ för adress visas ovanför tangentbordet.}other{{count} alternativ för adress visas ovanför tangentbordet.}}</translation>
 <translation id="1750238553597293878">Fortsätt använda lösenorden i Google-kontot</translation>
 <translation id="17513872634828108">Öppna flikar</translation>
@@ -509,6 +510,7 @@ Du använder <ph name="DSE_NAME" /> som sökmotor. Läs anvisningarna för att r
 <translation id="2952278131021475699">Kamerasökning med Lens</translation>
 <translation id="2962516096219646456">Se all data för Autofyll</translation>
 <translation id="2969979262385602596">Det gick inte att logga in. Försök igen senare.</translation>
+<translation id="2975761176769946178">En webbadress krävs</translation>
 <translation id="297667759942911166">Samarbeta i flikgrupper</translation>
 <translation id="2987670534697681860">Verifiera din identitet för att få åtkomst till alla dina lösenord på den här enheten.</translation>
 <translation id="2989523299700148168">Nyligen besökta</translation>
@@ -572,6 +574,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3224075676564434205">Flikarna förblir öppna på den här enheten men gruppen raderas från alla enheter där du är inloggad på <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Du måste ställa in ett lösenord på enheten om du vill kunna exportera lösenord.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3234251228180563751">Användarnamnet är längre än 1 000 tecken</translation>
 <translation id="3235063766008841141">Har angetts på en bedräglig webbplats och upptäckts i ett dataintrång</translation>
 <translation id="3235242129752692527">Redigera informationen om händelsen och tryck på Spara.</translation>
 <translation id="323863549127671026">För närvarande öppna flikar och flikgrupper</translation>
@@ -1030,6 +1033,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="5079950360618752063">Använd det föreslagna lösenordet</translation>
 <translation id="5083464117946352670">Det gick inte att bestämma filstorleken.</translation>
 <translation id="5085558938118581974">Sök bland flikar på synkroniserade enheter</translation>
+<translation id="508645147179720015">Anteckningen är längre än 1 000 tecken</translation>
 <translation id="5087098519049306025">Prisbevakning</translation>
 <translation id="5090832849094901128">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="WEBSITE" /> raderas.</translation>
 <translation id="5118462200606189584">Lägg till konto …</translation>
@@ -1919,6 +1923,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8434837876193928924">Information om flikgruppen</translation>
 <translation id="8438566539970814960">Förbättra sökningar och surfandet</translation>
 <translation id="8439758443371991593">Dölj Lägg till i läslistan</translation>
+<translation id="8443986842926457191">Webbadressen är längre än 2 048 tecken</translation>
 <translation id="8449869326050867919">Lösenordet har delats</translation>
 <translation id="8473863474539038330">Adresser och annat</translation>
 <translation id="8474378002946546633">Tillåt meddelanden</translation>
@@ -1983,6 +1988,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="8680786875305615692">Hjälp till att förbättra säkerheten på webben för alla</translation>
 <translation id="8680787084697685621">Inloggningsuppgifterna för kontot är inte aktuella.</translation>
 <translation id="8690752723634292147">Bekräfta borttagning</translation>
+<translation id="8692107307702113268">Lösenordet är längre än 1 000 tecken</translation>
 <translation id="8692689525339542358">Få skydd mot farliga webbplatser, nedladdningar och tillägg.</translation>
 <translation id="8692897097252418799">Välj vilken data du vill exportera</translation>
 <translation id="8694281486652655615">Visar det här objektet</translation>
@@ -2065,6 +2071,7 @@ Webbplatser får se din webbaktivitet på olika webbplatser med hjälp av cookie
 <translation id="895541991026785598">Rapportera ett problem</translation>
 <translation id="8960979149015305">Stäng nedladdning</translation>
 <translation id="8961092256396236619">Utökat skydd är inaktiverat</translation>
+<translation id="8962863356073277855">Webbadressen ska ha formatet https://www.example.com</translation>
 <translation id="8968766641738584599">Spara kortet</translation>
 <translation id="8974714402877957201">1. Öppna iPad-inställningarna</translation>
 <translation id="8975015774710126284">Webbinformationen rensades.</translation>

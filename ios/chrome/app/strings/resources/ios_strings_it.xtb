@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Attivo oggi</translation>
 <translation id="1523567067736644845">Sblocca per mostrare la password</translation>
 <translation id="1524563461097350801">No, grazie</translation>
+<translation id="1528290585275339320">Attiva la condivisione dei contenuti della pagina</translation>
 <translation id="1531038290222364269">Mostra schede</translation>
 <translation id="1536390784834419204">Traduci pagina</translation>
 <translation id="1540800554400757039">Indirizzo 1</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">Navigazione sicura è attualmente disattivata. Ricevi protezione da estensioni, download e siti pericolosi.</translation>
 <translation id="1620510694547887537">Videocamera</translation>
 <translation id="1622717322707146952">Seleziona l'opzione "Aggiungi a Google Calendar" o "Aggiungi a Calendario Apple".</translation>
+<translation id="1625502944725673937">Impossibile importare il file</translation>
 <translation id="1629162218487290695">Verifica la tua identità…</translation>
 <translation id="1636234353664774105">Usa la funzionalità di navigazione per ricevere indicazioni stradali passo passo per raggiungere la tua destinazione</translation>
 <translation id="1641113438599504367">Navigazione sicura</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Ignora modifiche</translation>
 <translation id="1748975028205587434">Seleziona il file</translation>
+<translation id="1749733017156547309">È necessaria una password.</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opzione per l'indirizzo disponibile sopra la tastiera.}other{{count} opzioni per l'indirizzo disponibili sopra la tastiera.}}</translation>
 <translation id="1750238553597293878">Continua a usare le password nel tuo Account Google</translation>
 <translation id="17513872634828108">Schede aperte</translation>
@@ -509,6 +512,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2962516096219646456">Visualizza tutti i dati di compilazione automatica</translation>
 <translation id="2969979262385602596">Impossibile accedere. Riprova più tardi.</translation>
+<translation id="2975761176769946178">È necessario specificare un URL</translation>
 <translation id="297667759942911166">Collabora a gruppi di schede</translation>
 <translation id="2987670534697681860">Verifica la tua identità per accedere a tutte le tue password su questo dispositivo.</translation>
 <translation id="2989523299700148168">Visitati di recente</translation>
@@ -572,6 +576,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="3224075676564434205">Le schede rimarranno aperte su questo dispositivo, ma il gruppo verrà eliminato da tutti i dispositivi su cui è stato eseguito l'accesso a <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Per esportare le password devi innanzitutto impostare un passcode sul dispositivo.</translation>
 <translation id="3227137524299004712">Microfono</translation>
+<translation id="3234251228180563751">Il nome utente contiene più di 1000 caratteri</translation>
 <translation id="3235063766008841141">Inserita in un sito ingannevole e presente in una violazione dei dati</translation>
 <translation id="3235242129752692527">Modifica i dettagli dell'evento e tocca "Salva".</translation>
 <translation id="323863549127671026">Schede e gruppi di schede attualmente aperti</translation>
@@ -1030,6 +1035,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5079950360618752063">Utilizza la password suggerita</translation>
 <translation id="5083464117946352670">Impossibile stabilire le dimensioni del file.</translation>
 <translation id="5085558938118581974">Cerca tra le schede sui dispositivi sincronizzati</translation>
+<translation id="508645147179720015">La nota contiene più di 1000 caratteri</translation>
 <translation id="5087098519049306025">Monitoraggio del prezzo</translation>
 <translation id="5090832849094901128">L'eliminazione di questa password non comporta l'eliminazione del tuo account su <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Aggiungi account…</translation>
@@ -1041,6 +1047,7 @@ Consulta le istruzioni del tuo motore di ricerca per eliminare la tua cronologia
 <translation id="5128788795241319992">Esplora il nuovo menu</translation>
 <translation id="5132942445612118989">Sincronizza le tue password, la tua cronologia e altro su tutti i tuoi dispositivi</translation>
 <translation id="5141363746588976328">Nascondi scheda Cali di prezzo nelle tue schede</translation>
+<translation id="514154868070499296">Carattere: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Chiudi Selettore di schede</translation>
 <translation id="5148717509369231739">Importazione da Safari</translation>
 <translation id="5157638238828697074">Si è verificato un problema. Impossibile aprire l'applicazione.</translation>
@@ -1558,6 +1565,7 @@ Quando navighi in incognito, i siti non possono utilizzare i cookie per conoscer
 <translation id="7015418667643980944">Visualizzazione divisa</translation>
 <translation id="7016070607649558507">Hai 1 password inefficace. Sistemala subito per rimanere al sicuro.</translation>
 <translation id="7016958933495968912">Opzioni per Feed personalizzato</translation>
+<translation id="7017863468226238797">Questo file è vuoto o contiene dati in un formato errato</translation>
 <translation id="7029809446516969842">Password</translation>
 <translation id="7035825883570480307">Attivare le notifiche?</translation>
 <translation id="7039345315346323556">Recenti</translation>
@@ -1919,6 +1927,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8434837876193928924">Dettagli gruppo di schede</translation>
 <translation id="8438566539970814960">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8439758443371991593">Nascondi Aggiungi all'elenco di lettura</translation>
+<translation id="8443986842926457191">L'URL contiene più di 2048 caratteri</translation>
 <translation id="8449869326050867919">Password condivisa</translation>
 <translation id="8473863474539038330">Indirizzi e altro</translation>
 <translation id="8474378002946546633">Consenti notifiche</translation>
@@ -1969,6 +1978,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8637431369725868556">Ricevi protezione da siti pericolosi.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nessuna password compromessa}=1{{COUNT} password compromessa}other{{COUNT} password compromesse}}</translation>
 <translation id="8643403533759285912">Elimina gruppo</translation>
+<translation id="8645245178269185266">Condividi i contenuti della pagina con Gemini per ricevere risposte più pertinenti</translation>
 <translation id="8647280737650867362">Impossibile interrompere il monitoraggio del prezzo.</translation>
 <translation id="8654802032646794042">Annulla</translation>
 <translation id="8660600697590740984">Immagine copiata da Lens</translation>
@@ -1983,6 +1993,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8680786875305615692">Contribuisci a migliorare la sicurezza sul web per tutti</translation>
 <translation id="8680787084697685621">I dati di accesso dell'account sono obsoleti.</translation>
 <translation id="8690752723634292147">Conferma eliminazione</translation>
+<translation id="8692107307702113268">La password contiene più di 1000 caratteri</translation>
 <translation id="8692689525339542358">Ricevi protezione da estensioni, download e siti pericolosi.</translation>
 <translation id="8692897097252418799">Scegli i dati da esportare</translation>
 <translation id="8694281486652655615">Mostra questo elemento</translation>
@@ -2065,6 +2076,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="895541991026785598">Segnala un problema</translation>
 <translation id="8960979149015305">Chiudi download</translation>
 <translation id="8961092256396236619">La Protezione avanzata non è attiva</translation>
+<translation id="8962863356073277855">Il formato dell'URL deve essere https://www.example.com</translation>
 <translation id="8968766641738584599">Salva carta</translation>
 <translation id="8974714402877957201">1. Apri le Impostazioni dell'iPad</translation>
 <translation id="8975015774710126284">I dati di navigazione sono stati eliminati</translation>

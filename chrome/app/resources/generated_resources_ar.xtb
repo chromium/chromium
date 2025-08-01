@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">‏الوصول إلى الحساب تلقائيًا من هاتف Android</translation>
 <translation id="1069814191880976658">اختيار شاشة مختلفة</translation>
 <translation id="107022587824771715">لا تتوفّر اقتراحات لمجموعة علامات التبويب حاليًا. يمكنك <ph name="BEGIN_LINK" />إعادة التحميل الآن<ph name="END_LINK" /> أو إعادة المحاولة لاحقًا</translation>
+<translation id="1070357312245925724">اختصار التنقّل</translation>
 <translation id="1070377999570795893">‏أضاف برنامج آخر بجهاز الكمبيوتر إضافة قد تؤدي إلى تغيير طريقة عمل Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@
 <translation id="1122913801042512795">تفاصيل تسجيل الدخول إلى حسابك قديمة. يُرجى تسجيل الخروج ثم تسجيل الدخول مرة أخرى.</translation>
 <translation id="1122960773616686544">اسم الإشارة</translation>
 <translation id="1124772482545689468">المستخدم</translation>
+<translation id="1125371304736839151">‏عرض Gemini في أعلى المتصفّح</translation>
 <translation id="1125550662859510761">‏تبدو كـ <ph name="WIDTH" /> x <ph name="HEIGHT" /> (أصلية)</translation>
 <translation id="1125921926864945797">الخلفية والتصميم</translation>
 <translation id="1128090040635299943">‏يجري الآن إعداد نظام التشغيل Linux. ستستغرق عملية الإعداد بضع دقائق.</translation>
@@ -216,6 +218,7 @@
 <translation id="1142713751288681188">نوع الورق</translation>
 <translation id="1143142264369994168">الموقّع على الشهادات</translation>
 <translation id="1145593918056169051">توقفت الطابعة</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{الإضافات}=1{الإضافات ({SELECTED_ITEMS})}two{الإضافات ({SELECTED_ITEMS})}few{الإضافات ({SELECTED_ITEMS})}many{الإضافات ({SELECTED_ITEMS})}other{الإضافات ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">مؤشر الرأس</translation>
 <translation id="114721135501989771">‏الحصول على ميزات Google الذكية في Chrome</translation>
 <translation id="1147322039136785890">يستطيع <ph name="SUPERVISED_USER_NAME" /> الآن استخدام الجهاز</translation>
@@ -736,6 +739,7 @@
 <translation id="150411034776756821">إزالة <ph name="SITE" /></translation>
 <translation id="1504551620756424144">‏تتوفّر المجلّدات المشترَكة في Windows على <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">تصدير كلمات المرور</translation>
+<translation id="1505654899813338756">يمكنك تجميع علامات التبويب للاحتفاظ بالصفحات ذات الصلة معًا وحفظها على جميع أجهزتك</translation>
 <translation id="1506061864768559482">محرك البحث</translation>
 <translation id="1506187449813838456">زيادة درجة الصوت</translation>
 <translation id="1507170440449692343">تم حظر دخول هذه الصفحة إلى الكاميرا التابعة لك.</translation>
@@ -990,6 +994,7 @@
 <translation id="1660763353352708040">مشكلة في محوّل الطاقة</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{حلّ مشكلة علامة التبويب التي تبطئ المتصفّح}zero{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}two{حلّ مشكلة علامتَي التبويب اللتين تبطئان المتصفّح}few{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}many{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}other{حلّ مشكلة علامات التبويب التي تبطئ المتصفّح}}</translation>
 <translation id="16620462294541761">عذرًا، ولكن تعذر التحقق من كلمة المرور. يُرجى المحاولة مرة أخرى.</translation>
+<translation id="1662572015199460525">‏يمكنك إجراء محادثات صوتية أو نصية مع Gemini للحصول على ردود وأفكار رئيسية والمزيد أثناء التصفّح</translation>
 <translation id="166278006618318542">خوارزمية المفتاح العام لصاحب الشهادة</translation>
 <translation id="1662801900924515589">تم تثبيت <ph name="APP" />.</translation>
 <translation id="1663698992894057019">‏عليك الترقية إلى جهاز Chromebook جديد للحصول على أحدث البرامج وميزات الأمان</translation>
@@ -1092,6 +1097,7 @@
 <translation id="174123615272205933">مخصَّص</translation>
 <translation id="1741314857973421784">متابعة</translation>
 <translation id="1744108098763830590">صفحة الخلفية</translation>
+<translation id="174516937379651657">‏عند مشاركة صفحة مع Gemini، يتم إرسال محتواها بالكامل وعنوان URL الخاص بها إلى Google.</translation>
 <translation id="1745732479023874451">إدارة جهات الاتصال</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}zero{هل تريد فتح # ملف وتعديله في تطبيق الويب هذا؟}two{هل تريد فتح ملفَين وتعديلهما في تطبيق الويب هذا؟}few{هل تريد فتح # ملفات وتعديلها في تطبيق الويب هذا؟}many{هل تريد فتح # ملفًا وتعديلها في تطبيق الويب هذا؟}other{هل تريد فتح # ملف وتعديلها في تطبيق الويب هذا؟}}</translation>
 <translation id="1748329107062243374">استخدام مفتاح مرور من جهاز <ph name="DEVICE_NAME" /> لتسجيل الدخول إلى <ph name="WEBSITE" /></translation>
@@ -1404,6 +1410,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{تمت مراجعة إضافة واحدة}zero{تمت مراجعة {NUM_EXTENSIONS} إضافة}two{تمت مراجعة إضافتَين ({NUM_EXTENSIONS})}few{تمت مراجعة {NUM_EXTENSIONS} إضافات}many{تمت مراجعة {NUM_EXTENSIONS} إضافة}other{تمت مراجعة {NUM_EXTENSIONS} إضافة}}</translation>
 <translation id="1959421829481337178">يُرجى إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="1960211333621141174">منحدر</translation>
+<translation id="1962356719152496092">يمكنك تخصيص اختصار لوحة المفاتيح من هنا</translation>
 <translation id="1963976881984600709">الحماية العادية</translation>
 <translation id="1964009877615282740">عرض المزيد</translation>
 <translation id="1965578266762387357">‏عند الحصول على مساعدة في الكتابة، يتم إرسال عنوان URL للصفحة ومحتواها والنص الذي كتبته إلى Google. ولذلك، يُرجى عدم إدخال أي معلومات شخصية (مثل التفاصيل الطبية أو المالية)</translation>
@@ -1572,6 +1579,7 @@
 <translation id="2079053412993822885">إذا حذفت إحدى شهاداتك، فلن تستطيع استخدامها لتعريف هويتك.</translation>
 <translation id="2079495302726689071">فتح الرابط في علامة تبويب جديدة في <ph name="APP" /></translation>
 <translation id="2079545284768500474">تراجع</translation>
+<translation id="2079553700504470326">‏يمكنك استخدام موقعك الجغرافي الدقيق للحصول على نتائج أكثر دقة من Gemini، بدلاً من استخدام موقع جغرافي مقدَّر استنادًا إلى عنوان IP لجهازك.</translation>
 <translation id="2080070583977670716">إعدادات إضافية</translation>
 <translation id="2081816110395725788">وضع الخمول أثناء التشغيل على البطارية</translation>
 <translation id="2082187087049518845">إضافة علامة التبويب إلى مجموعة جديدة</translation>
@@ -2200,6 +2208,7 @@
 <translation id="2496180316473517155">سجلّ التصفّح</translation>
 <translation id="2496616243169085015">صورة فوتوغرافية</translation>
 <translation id="2497229222757901769">سرعة الماوس</translation>
+<translation id="24977856422126200">‏‫<ph name="WINDOW_TITLE" />: تتم مشاركة علامة التبويب هذه مع Gemini طوال مدة هذه المحادثة</translation>
 <translation id="2497852260688568942">تم إيقاف المزامنة من قِبل المشرف</translation>
 <translation id="2498539833203011245">تصغير</translation>
 <translation id="2498765460639677199">ضخم</translation>
@@ -2524,6 +2533,7 @@
 <translation id="2729661575355442512">‏<ph name="BEGIN_PARAGRAPH1" />عند تفعيل الإعداد "دقة الموقع الجغرافي"، يتم جمع المعلومات عن الإشارات اللاسلكية، مثل إشارات نقاط وصول Wi-Fi وشبكة الجوّال وأبراج الاتصالات وبيانات أدوات الاستشعار في الجهاز، مثل مقياس التسارع والجيروسكوب، واستخدامها لتقدير الموقع الجغرافي للجهاز بشكل أكثر دقة والذي تستخدمه تطبيقات وخدمات Android لتوفير الميزات المستنِدة إلى الموقع الجغرافي. ولإجراء ذلك، تجمع Google بشكل دوري المعلومات عن أدوات الاستشعار في جهازك والإشارات اللاسلكية التي يتم رصدها بالقرب من هذا الجهاز لجمع بيانات المواقع الجغرافية للإشارات اللاسلكية.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />تستخدم Google هذه المعلومات التي يتم جمعها من هذا الجهاز لتحسين دقة تحديد المواقع الجغرافية والخدمات المستندة إليها، وتحسين خدمات Google وتقديمها وصيانتها بشكل عام. ونعالج هذه المعلومات استنادًا إلى المصالح المشروعة للجهات الخارجية وGoogle من أجل تلبية احتياجات المستخدمين. ولا يتم استخدامها لتحديد هوية أي مستخدم.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />يمكنك إيقاف الإعداد "دقة الموقع الجغرافي" في أي وقت ضمن إعدادات الموقع الجغرافي في هذا الجهاز، وذلك من خلال الانتقال إلى "الإعدادات" &gt; "الخصوصية والأمان" &gt; "عناصر التحكّم في الخصوصية" &gt; "الوصول إلى الموقع الجغرافي" &gt; "الإعدادات المتقدمة للموقع الجغرافي". وفي حال إيقافه، لن يتم جمع أي بيانات تخص دقة الموقع الجغرافي. في تطبيقات وخدمات Android، يتم استخدام عنوان IP فقط، في حال توفُّره، لتحديد الموقع الجغرافي لهذا الجهاز، ما قد يؤثّر في توفُّر المواقع الجغرافية ودقتها التي تستخدمها تطبيقات وخدمات Android، مثل "خرائط Google".<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">‏يتيح هذا الرابط عرض نشاطك على تطبيقات Gemini وإدارته</translation>
 <translation id="2730029791981212295">‏الاحتفاظ بنسخة احتياطية من تطبيقات نظام التشغيل Linux وملفاته</translation>
 <translation id="2730550884708194161">لمحة عن ملفات العمل</translation>
 <translation id="2730596696987224099">الاختيار الذاتي</translation>
@@ -3394,6 +3404,7 @@
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرًا واحدًا (<ph name="ATTACHMENTS" />) معك.}zero{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}two{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا عنصرَين (<ph name="ATTACHMENTS" />) معك.}few{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عناصر معك.}many{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصرًا معك.}other{يشارك جهاز <ph name="DEVICE_NAME" /> حاليًا <ph name="ATTACHMENTS" /> عنصر معك.}}</translation>
 <translation id="3361954577771524115">من التطبيق</translation>
+<translation id="3362651095484543782">‏للخروج من Gemini أو العودة إليه، بإمكانك استخدام اختصار لوحة المفاتيح.</translation>
 <translation id="3362915550009543917">لوحة زيتية هادئة تعرض مرجًا أصفر اللون، توحي بالهدوء والتأمّل الفكري</translation>
 <translation id="3363202073972776113">ستتم إدارة هذا الملف الشخصي الجديد بواسطة مؤسستك. <ph name="BEGIN_LINK" />مزيد من المعلومات<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">‏‫Alt + التمرير بالماوس</translation>
@@ -3617,6 +3628,7 @@
 <translation id="3511358375261756531">توسيع "<ph name="HEADER" />"</translation>
 <translation id="351152300840026870">خط ثابت العرض</translation>
 <translation id="3511528412952710609">قصير</translation>
+<translation id="3512465804715993309">تمييز النص بشكل تكيّفي</translation>
 <translation id="3513019849832307207">الانضمام والفتح</translation>
 <translation id="3513563267917474897">شريط تمرير تدرُّج الألوان من <ph name="MIN_VALUE" /> إلى <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">التحكُّم في الألعاب</translation>
@@ -4960,6 +4972,7 @@
 <translation id="443031431654216610">أدخِل أرقامًا فقط.</translation>
 <translation id="4430369329743628066">تمت إضافة إشارة</translation>
 <translation id="4430422687972614133">تفعيل البطاقة الافتراضية</translation>
+<translation id="443196770280837407">‏لفتح Gemini، يمكنك استخدام اختصار لوحة مفاتيح.</translation>
 <translation id="4432621511648257259">كلمة المرور غير صحيحة.</translation>
 <translation id="4434611816075088065">ما مِن اقتراحات أخرى تستدعي انتباهك الآن</translation>
 <translation id="443475966875174318">تحديث التطبيقات غير المتوافقة أو إزالتها</translation>
@@ -4975,6 +4988,7 @@
 <translation id="4442863809158514979">عرض أذونات الويب</translation>
 <translation id="4442937638623063085">لم يتم العثور على أي ملفات شخصية. يُرجى إدخال رمز التفعيل المُقدَّم من مشغِّل شبكة الجوّال.</translation>
 <translation id="4443536555189480885">&amp;تعليمات</translation>
+<translation id="4444191890945732856">‏تتم مشاركة هذه الصفحة مع Gemini</translation>
 <translation id="4444304522807523469">‏الدخول إلى الماسحات الضوئية للمستند الملحق عبر جهاز USB أو على الشبكة المحلية</translation>
 <translation id="4444512841222467874">إذا لم تتوفر مساحة، فقد تتم إزالة المستخدمين والبيانات تلقائيًا.</translation>
 <translation id="4445446646109808714">اتفاقية ترخيص المستخدِم النهائي: <ph name="EULA_LINK" /></translation>
@@ -5297,6 +5311,7 @@
 <translation id="4681930562518940301">فتح الصورة الأصلية في علامة تبويب جديدة</translation>
 <translation id="4682481611456523884">لا يمكن للمحتوى المضمَّن في هذا الموقع الإلكتروني استخدام المعلومات التي تم حفظها عنك.</translation>
 <translation id="4682807230647698604">‏عند استخدام هذه الميزات، يتم إرسال البيانات ذات الصلة إلى Google لإنشاء تجارب الذكاء الاصطناعي</translation>
+<translation id="4683143253481759090">‏تم تحديث Chrome</translation>
 <translation id="4683629100208651599">تحويل الأحرف إلى أحرف صغيرة</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (تلقائي)</translation>
 <translation id="4684427112815847243">مزامنة جميع البيانات</translation>
@@ -5306,6 +5321,7 @@
 <translation id="4687718960473379118">الإعلانات المقترَحة من المواقع الإلكترونية</translation>
 <translation id="4688036121858134881">رقم تعريف السِجلّ المحلي: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761">يعيد <ph name="MANAGER" /> هذا الجهاز إلى إصدار سابق من نظام التشغيل (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4688870304423708920">‏يُرجى التأكّد من الاتصال بالإنترنت، ثم إعادة محاولة استخدام Gemini</translation>
 <translation id="4689235506267737042">اختيار إعدادات العرض التوضيحي المفضَّلة</translation>
 <translation id="4689421377817139245">‏مزامنة هذه الإشارة المرجعة على جهاز iPhone</translation>
 <translation id="4690091457710545971">‏&lt;تم إنشاء أربعة ملفات من خلال برامج Intel Wi-Fi الثابتة وهي كما يلي: csr.lst وfh_regs.lst وradio_reg.lst وmonitor.lst.sysmon. والملفات الثلاثة الأولى هي ملفات ثنائية تحتوي على عمليات تفريغ للسجلّات وهي لا تحتوي على أي معلومات شخصية أو معلومات تحديد هوية الجهاز، حسب تقييم Intel.وأما الملف الأخير فهو عبارة عن تتبُّع تنفيذ من البرامج الثابتة Intel، وتم تنقيحه للتأكّد من خلوه من أي معلومات شخصية أو معلومات تحديد هوية الجهاز، ولكنه لم يُعرض هنا لكبر حجمه. وتم إنشاء هذه الملفات استجابةً لمشاكل Wi-Fi الأخيرة في جهازك، وستتم مشاركتها مع Intel للمساعدة في تحرّي هذه المشاكل وإصلاحها.&gt;</translation>
@@ -5591,6 +5607,7 @@
 <translation id="4884937942297374058">"الحماية المحسَّنة" غير مفعَّلة</translation>
 <translation id="4884987973312178454">6 أضعاف</translation>
 <translation id="4885692421645694729">لا تمتلك هذه الإضافة أذونات إضافية للوصول إلى المواقع الإلكترونية.</translation>
+<translation id="4887391901725877182">الترجمة والشرح</translation>
 <translation id="4887424188275796356">فتح باستخدام عارض النظام</translation>
 <translation id="488785315393301722">عرض التفاصيل</translation>
 <translation id="488862352499217187">إنشاء مجلد جديد</translation>
@@ -5741,6 +5758,7 @@
 <translation id="5001526427543320409">ملفات تعريف الارتباط الخارجية</translation>
 <translation id="5003070249435823986">استخدِم الإيماءة للدخول إلى وضع الانتقال، ثم حرِّك رأسك في الاتجاه الذي تريد الانتقال إليه. استخدِم الإيماءة مرة أخرى للخروج من وضع الانتقال.</translation>
 <translation id="5003993274120026347">الجملة التالية</translation>
+<translation id="5005113238422129109">‏يتيح لك هذا الإعداد استخدام الميكروفون للتحدّث إلى Gemini، مع العلم أنّه سيتم تخزين الصوت في سجلّ نشاطك على تطبيقات Gemini (إذا كان مفعّلاً)</translation>
 <translation id="5005311809885666699">‏الصور والفيديوهات المحفوظة من Chrome</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5006218871145547804">‏أداة ADB في تطبيق Android لنظام التشغيل Crostini</translation>
@@ -6067,7 +6085,6 @@
 <translation id="5235050375939235066">هل تريد إلغاء تثبيت التطبيق؟</translation>
 <translation id="523505283826916779">إعدادات إمكانية الدخول</translation>
 <translation id="5235750401727657667">استبدال الصفحة التي تشاهدها عند فتح علامة تبويب جديدة</translation>
-<translation id="5236054983756407518">‏هل أردت إزالة عنوان منزلك من Chrome؟</translation>
 <translation id="5237124927415201087">‏يمكنك ضبط إعدادات <ph name="DEVICE_TYPE" /> بسهولة باستخدام هاتفك. ويمكن إضافة شبكة Wi-Fi وحساب Google بدون إدخال كلمات المرور يدويًا.
     <ph name="BR" />
     <ph name="BR" />
@@ -6712,6 +6729,7 @@
 <translation id="5705005699929844214">عرض خيارات إمكانية الوصول دائمًا</translation>
 <translation id="5705882733397021510">رجوع</translation>
 <translation id="5707185214361380026">فشل تحميل الإضافة من:</translation>
+<translation id="5707674184620508665">لن تتمكّن المؤسسة (<ph name="ACCOUNT_MANAGER" />) من الاطّلاع على بياناتك الحالية أو إدارتها، وستظل محفوظة في الملف الشخصي الحالي.</translation>
 <translation id="5708171344853220004">‏الاسم الأساسي في Microsoft</translation>
 <translation id="5711010025974903573">سجلات الخدمة</translation>
 <translation id="5711983031544731014">يتعذر فتح القفل. أدخل كلمة المرور.</translation>
@@ -7198,7 +7216,6 @@
 <translation id="606449270532897041">إدارة بيانات الموقع الإلكتروني</translation>
 <translation id="6064764629679333574">يمكنك تحسين جودة الصوت في ميكروفون البلوتوث من خلال الارتقاء بمستوى الصوت من منخفض الدقة إلى عالي الدقة.</translation>
 <translation id="6065289257230303064">سمات دليل صاحب الشهادة</translation>
-<translation id="6065690209261668796">‏هل أردت إزالة عنوان عملك من Chrome؟</translation>
 <translation id="6066794465984119824">لم يتم إعداد تجزئة الصورة.</translation>
 <translation id="6069464830445383022">‏تسجيل الدخول إلى Chromebook من خلال حسابك على Google</translation>
 <translation id="6071181508177083058">تأكيد كلمة المرور</translation>
@@ -7423,6 +7440,7 @@
 <translation id="622484624075952240">Down</translation>
 <translation id="622537739776246443">سيتم حذف الملف الشخصي</translation>
 <translation id="6225475702458870625">اتصال البيانات متاح من جهاز <ph name="PHONE_NAME" /> التابع لك</translation>
+<translation id="622568138962270592">‏نشاطك على تطبيقات Gemini</translation>
 <translation id="6226777517901268232">ملف مفتاح خاص (اختياري)</translation>
 <translation id="6227280783235722609">إضافة</translation>
 <translation id="622902691730729894">إزالة تثبيت المجموعة من شريط الإشارات</translation>
@@ -7522,6 +7540,7 @@
 <translation id="628726841779494414">إدارة الطابعات في إعدادات الطابعة</translation>
 <translation id="6287288864483377583">لا يُسمح باستيراد أكثر من شهادة واحدة</translation>
 <translation id="6287828400772161253">‏هاتف Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">‏يمكنك طرح سؤال في "وضع البحث بالذكاء الاصطناعي" من Google</translation>
 <translation id="6290613030083731160">ما مِن أجهزة متوفِّرة بالقرب منك للمشاركة معها. <ph name="LINK_BEGIN" />مزيد من المعلومات<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">‏تعذَّرت استعادة حاوية Linux لعدم توفُّر مساحة تخزين.</translation>
 <translation id="6291741848715722067">رمز تأكيد البيانات</translation>
@@ -7725,6 +7744,7 @@
 <translation id="6451861213630784801">لقد سجّلت الخروج من حسابك</translation>
 <translation id="6452181791372256707">رفض</translation>
 <translation id="6452251728599530347">اكتمل <ph name="PERCENT" /></translation>
+<translation id="6452268285438583507">تثبيت الإضافات</translation>
 <translation id="6452961788130242735">مشكلة في الشبكة أو نطاق غير صالح</translation>
 <translation id="6453191633103419909">جودة عرض علامة التبويب/الشاشة</translation>
 <translation id="6453921811609336127">‏للتبديل إلى أسلوب الإدخال التالي، يمكنك الضغط على <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />مفتاح المسافة<ph name="END_SPACE" /><ph name="END_SHORTCUT" />.</translation>
@@ -8159,6 +8179,7 @@
 <translation id="6759193508432371551">إعادة الضبط على الإعدادات الأصلية</translation>
 <translation id="6760354150216532978">تحذير: يمكن لهذا الموقع الإلكتروني الاطّلاع على التعديلات التي تُجريها.</translation>
 <translation id="6761209758867628753">الأداة: مساعدة في الكتابة</translation>
+<translation id="6761459308170527362">‏يمكنك إجراء محادثة صوتية أو نصية لطرح سؤال على Gemini عن محتوى الصفحة التي تتم مشاركتها</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">غير مسموح بحفظ بيانات الموقع الإلكتروني على الجهاز فقط</translation>
 <translation id="6762833852331690540">مفعّل</translation>
@@ -8819,6 +8840,7 @@
 <translation id="7223952304612664117">يسمح هذا الإجراء لخدمات النظام باستخدام ميزة "دقة الموقع الجغرافي" لتحديد موقعك الجغرافي. وتستخدم ميزة "دقة الموقع الجغرافي" معلومات عن الإشارات اللاسلكية وأدوات الاستشعار لتقدير الموقع الجغرافي للجهاز.</translation>
 <translation id="7225082563376899794">‏استخدام برنامج Windows Hello عند ملء كلمات المرور</translation>
 <translation id="7225179976675429563">نوع الشبكة مفقود</translation>
+<translation id="7226163413959353072">مزايا كثيرة بانتظارك من مساعدك المستند إلى الذكاء الاصطناعي، كاستخلاص الأفكار الرئيسية وتوضيح المفاهيم وإيجاد إجابات لأسئلتك وغير ذلك</translation>
 <translation id="7227235818314667565">إدارة المشاركة</translation>
 <translation id="7227458944009118910">يمكن للتطبيقات المدرَجة أدناه التعامل مع روابط البروتوكولات أيضًا. وستطلب التطبيقات الأخرى الحصول على الإذن.</translation>
 <translation id="7228056665272655255">لضبط إعدادات بصمة الإصبع، اطلب من طفلك لمس أداة استشعار بصمة الإصبع في أعلى يمين لوحة المفاتيح. يتم تخزين بيانات بصمة إصبع طفلك بشكل آمن وتظلّ محفوظة على جهاز <ph name="DEVICE_TYPE" /> هذا فقط.</translation>
@@ -8888,6 +8910,7 @@
 <translation id="727595954130325265">التسوّق الآن</translation>
 <translation id="727952162645687754">خطأ في التنزيل</translation>
 <translation id="7280649757394340890">إعدادات الصوت في ميزة تحويل النص إلى كلام</translation>
+<translation id="7280683802406059877">تخصيص اختصارات لوحة المفاتيح</translation>
 <translation id="7280877790564589615">تمّ طلب إذن</translation>
 <translation id="7281166215790160128">الوضع</translation>
 <translation id="7282056103720203738">قراءة معلومات الأجهزة المتصلة وبياناتها</translation>
@@ -8946,6 +8969,7 @@
 <translation id="7320213904474460808">الاتصال بالشبكة تلقائيًا</translation>
 <translation id="7321545336522791733">خادم يتعذر الوصول إليه</translation>
 <translation id="7322515217754205362">أذونات الوصول إلى المواقع الإلكترونية</translation>
+<translation id="7322919329844967709">ستكون الردود أكثر صلة بمحتوى الصفحة التي تتم مشاركتها</translation>
 <translation id="7323315405936922211">حجم منطقة المؤشر</translation>
 <translation id="7324020307732396723">فتح إعدادات اللغة</translation>
 <translation id="7324297612904500502">منتدى الإصدار التجريبي</translation>
@@ -9944,6 +9968,7 @@
 <translation id="7991296728590311172">إعدادات الوصول عبر مفتاح تحكّم</translation>
 <translation id="7992080146463834191">تساعدك هذه الميزة في تلخيص المحتوى أو تبسيط المصطلحات المعقدة أو طرح أسئلة.</translation>
 <translation id="7992203134935383159">تركيب الكلام</translation>
+<translation id="7993332993977106257">‏يتيح لك هذا الزر الوصول بسهولة إلى Gemini واستخدامه على جهازك، حتى إذا كان Chrome مصغّرًا.</translation>
 <translation id="7997826902155442747">أولوية المعالجة</translation>
 <translation id="7997828719430450286">تم بنجاح.</translation>
 <translation id="7998701048266085837">‏عناوين URL</translation>
@@ -9997,6 +10022,7 @@
 <translation id="8028060951694135607">‏استرداد مفتاح Microsoft</translation>
 <translation id="8028803902702117856">جارٍ تنزيل <ph name="SIZE" />، <ph name="FILE_NAME" /></translation>
 <translation id="8028993641010258682">الحجم</translation>
+<translation id="8029349782735515147">‏يتيح هذا الإعداد عرض الترجمة والشرح عند استخدام Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{قائمة القراءة}=1{قائمة القراءة (عنصر واحد "{SELECTED_ITEMS}")}two{قائمة القراءة (عنصران "{SELECTED_ITEMS}")}few{قائمة القراءة ({SELECTED_ITEMS} عناصر)}many{قائمة القراءة ({SELECTED_ITEMS} عنصرًا)}other{قائمة القراءة ({SELECTED_ITEMS} عنصر)}}</translation>
 <translation id="8029492516535178472">‏<ph name="WINDOW_TITLE" /> - تم طلب الإذن، اضغط على ⌘ + Option + السهم المتجه للأعلى للاستجابة للطلب</translation>
 <translation id="8030169304546394654">غير متصل</translation>
@@ -10115,6 +10141,7 @@
 <translation id="8102139037507939978">‏إزالة معلومات تحديد الهوية الشخصية من system_logs.txt</translation>
 <translation id="810362914482827094">البحث في مفاتيح المرور</translation>
 <translation id="8104088837833760645">‏تنزيل الملف الشخصي لشريحة eSIM</translation>
+<translation id="8105050970626643057">‏يمكنك فتح Gemini بسرعة متى احتجت إليه</translation>
 <translation id="8105273883928376822">يُرجى تسجيل الدخول للمتابعة.</translation>
 <translation id="8106114112474206597">‏للضغط على زر الماوس، يجب استخدام مفتاح "i"</translation>
 <translation id="8107015733319732394">‏تثبيت متجر Google Play على <ph name="DEVICE_TYPE" />. قد يستغرق ذلك بضع دقائق.</translation>
@@ -10272,6 +10299,7 @@
 <translation id="8222112516148944758">يتم حفظ مجموعات علامات التبويب وتعديلها تلقائيًا على جميع أجهزتك</translation>
 <translation id="8222674561049363989">الملف ليس مستندًا صالحًا</translation>
 <translation id="822347941086490485">‏جارٍ البحث عن أجهزة HID...</translation>
+<translation id="8224209912580158729">‏يمكنك مشاركة محتوى الصفحة مع Gemini للحصول على ردود أكثر صلة بطلبك.</translation>
 <translation id="8224427620313426549">لن يتم حذف حسابك على <ph name="DOMAIN_LINK" />.</translation>
 <translation id="8225046344534779393">يُرجى التحقق من الاتصال بالإنترنت.</translation>
 <translation id="8225265270453771718">مشاركة نافذة التطبيق</translation>
@@ -10415,6 +10443,7 @@
 <translation id="8314835274931377415">هل تريد بدء عملية إعداد ميزة "الوصول عبر مفتاح تحكّم"؟</translation>
 <translation id="8315018673856831477">خيارات ميزة "توفير الذاكرة"</translation>
 <translation id="8315514906653279104">جارٍ تفعيل نقطة الاتصال…</translation>
+<translation id="8316480109537174997">‏عرض Gemini في لوحة النظام وتفعيل اختصار لوحة المفاتيح</translation>
 <translation id="8317671367883557781">إضافة اتصال شبكة</translation>
 <translation id="8317965619823678157">نسخ كلمات المرور</translation>
 <translation id="8318266828739827371">‏يمكنك استخدام طريقة عرض تقسيم الشاشة لرؤية المنطقة المكبَّرة من الشاشة. اضغط على مفتاح البحث ‏+ Ctrl ‏+ D لتفعيل ميزة "مكبِّر جزء من الشاشة" أو إيقافها.</translation>
@@ -10815,6 +10844,7 @@
 <translation id="8607661817136110841">مجموعات علامات التبويب</translation>
 <translation id="8607828412110648570">‏يُرجى التأكّد من أنّ جهازك الذي يتضمّن بلوتوث في وضع الإقران وأنّه في مكان مجاور. ولا تقرِنه إلا بأجهزة تثق بها. تظهر الأجهزة المقترنة لجميع الحسابات على جهاز Chromebook هذا. <ph name="BEGIN_LINK_LEARN_MORE" />مزيد من المعلومات<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">‏إضافة تذكرة Kerberos</translation>
+<translation id="860907040896565281">تخصيص اختصار لوحة المفاتيح…</translation>
 <translation id="8609465669617005112">الانتقال إلى الأعلى</translation>
 <translation id="8611922158252451755">بإمكان أي مستخدم لديه الرابط تعديل جميع علامات التبويب، لذا يُرجى توخّي الحذر عند مشاركته. ويُرجى العِلم بأنّ صلاحية الرابط تنتهي بعد 48 ساعة.</translation>
 <translation id="8612252270453580753">الب&amp;حث في إطار الفيديو باستخدام "<ph name="VISUAL_SEARCH_PROVIDER" />"</translation>
@@ -11219,6 +11249,7 @@
 <translation id="8868838761037459823">تفاصيل شبكة الجوّال</translation>
 <translation id="8870413625673593573">العناصر المغلقة مؤخرًا</translation>
 <translation id="8871043459130124414">عدم تشغيل الإضافة إلّا بعد النقر عليها</translation>
+<translation id="8871126140396172266">‏‫<ph name="WINDOW_TITLE" />: تتم مشاركة هذه الصفحة مع Gemini</translation>
 <translation id="8871551568777368300">تم التثبيت من قبل المشرف</translation>
 <translation id="8871696467337989339">إنك تستخدم علامة لا يستخدمها سطر الأوامر: <ph name="BAD_FLAG" />. سيؤثر ذلك بالسلب على الاستقرار والأمان.</translation>
 <translation id="8871974300055371298">إعدادات المحتوى</translation>
@@ -11431,6 +11462,7 @@
 <translation id="9011163749350026987">إظهار الرمز دائمًا</translation>
 <translation id="9011262023858991985">بث محتوى علامة التبويب هذه</translation>
 <translation id="9011393886518328654">ملاحظات الإصدار</translation>
+<translation id="9012013036616593083">‏‫Gemini غير متوفر في الوقت الحالي. يُرجى إعادة المحاولة لاحقًا.</translation>
 <translation id="9012122671773859802">تحريك الشاشة باستمرار حسب حركة مؤشر الماوس</translation>
 <translation id="9012585441087414258">‏يوفر لك هذا الوضع حماية من المواقع الإلكترونية وعمليات التنزيل والإضافات التي تبيّن أنها ضارة. فإذا تم رصد نشاط مريب في إحدى الصفحات، يتم إرسال عناوين URL وأجزاء من محتوى الصفحة إلى ميزة "التصفّح الآمن من Google".</translation>
 <translation id="9013037634206938463">‏يجب توفير <ph name="INSTALL_SIZE" /> على الأقل من المساحة الخالية لتثبيت نظام التشغيل Linux. ولزيادة المساحة الخالية، يجب حذف ملفات من جهازك.</translation>
@@ -11456,6 +11488,7 @@
 <translation id="9024127637873500333">&amp;فتح في علامة تبويب جديدة</translation>
 <translation id="9024158959543687197">‏حدث خطأ في تحميل المشاركة. يُرجى التحقُّق من عنوان URL لخادم مشاركة الملفات وإعادة المحاولة.</translation>
 <translation id="9024692527554990034">يمكنك استخدام الاختصارات المتوفّرة في شريط العناوين للبحث بسرعة في موقع إلكتروني معيَّن أو لاستخدام محرك بحث مختلف.</translation>
+<translation id="9024975946059881308">‏عرض Gemini في شريط قوائم Mac وتفعيل اختصار لوحة المفاتيح</translation>
 <translation id="9025222334598338152">يمكنك استخدام جداول المقارنة لتتبُّع عملية تضييق نطاق خياراتك</translation>
 <translation id="902638246363752736">إعدادات لوحة المفاتيح</translation>
 <translation id="9026393603776578602">إملاء</translation>

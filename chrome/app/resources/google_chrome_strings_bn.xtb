@@ -84,6 +84,7 @@
 <translation id="2091012649849228750">ভবিষ্যতে Google Chrome আপডেট পেতে হলে, আপনার কম্পিউটারে Windows 10 বা এর পরবর্তী যেকোনও ভার্সন থাকতে হবে। এই কম্পিউটারে Windows 8 ভার্সন ব্যবহার করা হচ্ছে।</translation>
 <translation id="2094648590148273905">ChromeOS Flex-এর শর্তাবলী</translation>
 <translation id="2094919256425865063">তা স্বত্তেও Chrome বন্ধ করবেন?</translation>
+<translation id="2096213354152647998">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="2106831557840787829"><ph name="BEGIN_LINK_LINUX_OSS" />Linux ডেভেলপমেন্ট এনভায়রনমেন্ট<ph name="END_LINK_LINUX_OSS" />-এর ক্ষেত্রে যেমন করা হয়েছে, তেমনভাবে অতিরিক্ত <ph name="BEGIN_LINK_CROS_OSS" />ওপেন সোর্স সফ্টওয়্যার<ph name="END_LINK_CROS_OSS" />-এর মাধ্যমে ChromeOS Flex তৈরি করা সম্ভব হয়েছে।</translation>
 <translation id="2108778574543343055">অ্যাপের জন্য ব্যাকগ্রাউন্ডে চলা Chrome বন্ধ করুন</translation>
 <translation id="2120620239521071941">এটি এই ডিভাইস থেকে <ph name="ITEMS_COUNT" />টি আইটেম মুছে দেবে। আপনার ডেটা পরে পুনরুদ্ধার করার জন্য, Chrome-এ <ph name="USER_EMAIL" /> হিসেবে সাইন-ইন করুন।</translation>
@@ -459,6 +460,7 @@
 <translation id="6696915334902295848">এই সাইটের জন্য Chrome-এর মাইক্রোফোন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>
 <translation id="6712881677154121168">ডাউনলোড করার সমস্যা হয়েছে: <ph name="DOWNLOAD_ERROR" />।</translation>
 <translation id="6718739135284199302">Chrome ব্যবহারের স্পিড বাড়ান</translation>
+<translation id="6734827584173583205">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> এবং আরও <ph name="COUNT" />টি অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="6735387454586646204">ChromeOS Flex সিস্টেম</translation>
 <translation id="6750954913813541382">বানান ভুল ঠিক করতে, আপনি ব্রাউজারে যে টেক্সট লেখেন Chrome সেটি Google-এ পাঠায়</translation>
 <translation id="6760235774835597023">Chrome-এর ভি৮ ইঞ্জিন সাইটের স্পিড বাড়িয়ে দেয় কিন্তু Chrome-এর অ্যাটাক আটকানোর ক্ষমতা সামান্য কমে যায়। এই সেটিংসটি চালু করা আছে।</translation>
@@ -484,6 +486,7 @@
 <translation id="7024536598735240744">আনপ্যাক করার সময় সমস্যা হয়েছে: <ph name="UNPACK_ERROR" />।</translation>
 <translation id="7025789849649390912">ইনস্টলেশন বন্ধ হয়ে গেছে।</translation>
 <translation id="7025800014283535195">আপনি এখানে একটি Chrome প্রোফাইল থেকে আরেকটিতে পাল্টাতে পারেন</translation>
+<translation id="7051685429025310665">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="7059914902409643750">Chrome-এ সাইন-ইন করুন</translation>
 <translation id="7060643578009939353">Google Lens ব্যবহার করে এই ভিডিওটি সার্চ করুন</translation>
 <translation id="7071827361006050863">Chrome শীঘ্রই ব্রাউজ করা ডেটা মুছে ফেলবে</translation>
@@ -545,6 +548,7 @@
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />-এর জন্য সিস্টেম ট্রেসিং পরিষেবা প্রদান করে। এই পরিষেবা বন্ধ করা থাকলে, ব্রাউজারের তৈরি করা পারফর্ম্যান্স ট্রেসে প্রসঙ্গ পরিবর্তন করা ও রেডি থ্রেড ইভেন্টের মতো সিস্টেম-ওয়াইড ইভেন্ট অন্তর্ভুক্ত করা হবে না।</translation>
 <translation id="7736869414036750079">আপনার সংস্থার প্রয়োজন অনুযায়ী আপনাকে Chrome-এ সাইন-ইন করতে হবে</translation>
 <translation id="7747138024166251722">ইনস্টলারটি অস্থায়ী ডাইরেক্টরি তৈরি করতে পারে নি৷ অনুগ্রহ করে খালি ডিস্ক স্পেশ এবং সফটওয়্যারটি ইনস্টল করার অনুমতি যাচাই করে নিন৷</translation>
+<translation id="7748969056734910029">আপনি সম্প্রতি ভিজিট করেননি। Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> সম্পর্কিত অনুমতি সরিয়ে দিয়েছে।</translation>
 <translation id="7761834446675418963">Chrome খোলার জন্য আপনার নামের উপরে ক্লিক করুন এবং ব্রাউজ করা শুরু করুন৷</translation>
 <translation id="7777080907402804672">যদি ছবিতে প্রয়োজনীয় বিবরণ দেওয়া না থাকে, তাহলে Chrome আপনাকে একটি বিবরণ দেওয়ার চেষ্টা করবে। বিবরণ তৈরির জন্য, Google-এ ছবি পাঠানো হয়। সেটিংসে গিয়ে আপনি যেকোনও সময়ে এটি বন্ধ করতে পারেন।</translation>
 <translation id="778331955594035129">এই সাইটের জন্য Chrome-এর লোকেশন অ্যাক্সেসের অনুমতি প্রয়োজন</translation>

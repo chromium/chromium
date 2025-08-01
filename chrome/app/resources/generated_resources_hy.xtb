@@ -6062,7 +6062,6 @@
 <translation id="5235050375939235066">Ապատեղադրե՞լ հավելվածը</translation>
 <translation id="523505283826916779">Հատուկ գործառույթների կարգավորումներ</translation>
 <translation id="5235750401727657667">Փոխել նոր ներդիր բացելիս ցուցադրվող էջը</translation>
-<translation id="5236054983756407518">Հեռացնե՞լ ձեր տան հասցեն Chrome-ից</translation>
 <translation id="5237124927415201087">Հեշտությամբ կարգավորեք <ph name="DEVICE_TYPE" /> սարքը ձեր հեռախոսով։ Դուք կարող եք ավելացնել ձեր Wi-Fi-ն ու Google հաշիվը՝ առանց ձեր գաղտնաբառերը մուտքագրելու։
     <ph name="BR" />
     <ph name="BR" />
@@ -7189,7 +7188,6 @@
 <translation id="606449270532897041">Կառավարել կայքերի տվյալները</translation>
 <translation id="6064764629679333574">Բարելավեք Bluetooth խոսափողի ձայնի որակը՝ աուդիոյի լուծաչափը ցածրից դարձնելով բարձր։</translation>
 <translation id="6065289257230303064">Վկայագրի սուբյեկտի գրացուցակի հատկանիշներ</translation>
-<translation id="6065690209261668796">Հեռացնե՞լ ձեր աշխատավայրի հասցեն Chrome-ից</translation>
 <translation id="6066794465984119824">Պատկերի հեշը կարգավորված չէ</translation>
 <translation id="6069464830445383022">Մուտք գործեք Google հաշվով</translation>
 <translation id="6071181508177083058">հաստատեք գաղտնաբառը</translation>
@@ -7513,6 +7511,7 @@
 <translation id="628726841779494414">Կառավարեք տպիչները կարգավորումներում</translation>
 <translation id="6287288864483377583">Ներմուծումը աջակցվում է միայն մեկ վկայականի համար</translation>
 <translation id="6287828400772161253">Android հեռախոս (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Հարցնել Google-ի ԱԲ ռեժիմին</translation>
 <translation id="6290613030083731160">Մոտակայքում չկան սարքեր, որոնց հետ հնարավոր է տվյալներ փոխանակել։ <ph name="LINK_BEGIN" />Իմանալ ավելին<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Վերականգնումը ձախողվեց, քանի որ տարածքը բավարար չէ։</translation>
 <translation id="6291741848715722067">Հաստատման կոդ</translation>
@@ -9179,6 +9178,7 @@
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Պատրաստ է</translation>
 <translation id="748138892655239008">Վկայագրի հիմնական սահմանափակումներ</translation>
+<translation id="7482823403440483089">Ընդլայնված ինքնալրացում</translation>
 <translation id="7483732342458943943">Այս հղումը չի աշխատում</translation>
 <translation id="7484645889979462775">Երբեք չպահել այս կայքի համար</translation>
 <translation id="7484943269191249363">Դուք կարող եք այս սարքում օգտագործել մուտքի բոլոր բանալիները, որոնք պահված են Google գաղտնաբառերի կառավարչում։ Ինքնությունն անհրաժեշտ է հաստատել միայն մեկ անգամ։</translation>

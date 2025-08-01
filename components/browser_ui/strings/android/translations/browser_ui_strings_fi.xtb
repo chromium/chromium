@@ -278,6 +278,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="4031179711345676612">Mikrofoni sallittu</translation>
 <translation id="4046123991198612571">Seuraava kappale</translation>
 <translation id="4077310749977440510">Sivustot lukevat yleensä leikepöydän sisältöä säilyttääkseen kopioimasi tekstin muotoilun ja muita vastaavia ominaisuuksia varten</translation>
+<translation id="4082080074595021446">Poikkeukset tietyille sivustoille ovat kiellettyjä, koska Android-laitteella ei ole tarpeeksi RAM-muistia.</translation>
 <translation id="4149890623864272035">Haluatko varmasti poistaa kaiken paikallisen datan, myös evästeet, ja nollata kaikki tämän verkkosivuston luvat?</translation>
 <translation id="4149994727733219643">Yksinkertaisempi sivunäkymä</translation>
 <translation id="4151930093518524179">Zoomauksen oletusarvo</translation>
@@ -448,6 +449,7 @@ Lisäsuojaus ohjaa näitä Chromen asetuksia:
 <translation id="6064125863973209585">Valmiit lataukset</translation>
 <translation id="6071501408666570960">Sinut voidaan kirjata ulos tältä sivustolta</translation>
 <translation id="6085954183010297841">Poistetaanko tiedoston muokkauslupa? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Kun asetus on päällä, sivustot voivat siirtyä automaattisesti pikkuruututilaan. Kun asetus on pois päältä, sivustot eivät voi siirtyä automaattisesti pikkuruututilaan.</translation>
 <translation id="6120483543004435978">Kun tämä on päällä, sivustot voivat pyytää lupaa nähdä, milloin käytät laitetta aktiivisesti. Kun tämä on pois päältä, sivustot eivät saa tietää, milloin käytät laitetta aktiivisesti.</translation>
 <translation id="615886654739818377">Älä salli sivustojen hallinnoida ikkunoita kaikilla näytöillä</translation>
 <translation id="6165508094623778733">Lisätietoja</translation>

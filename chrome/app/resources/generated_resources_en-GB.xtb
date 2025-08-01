@@ -6077,7 +6077,6 @@ Use Ctrl + Alt + Brightness down to zoom out.</translation>
 <translation id="5235050375939235066">Uninstall app?</translation>
 <translation id="523505283826916779">Accessibility settings</translation>
 <translation id="5235750401727657667">Replace the page that you see when opening a new tab</translation>
-<translation id="5236054983756407518">Remove your home address from Chrome?</translation>
 <translation id="5237124927415201087">Easily set up your <ph name="DEVICE_TYPE" /> with your phone. You can add your Wi-Fi and Google Account without manually entering your passwords.
     <ph name="BR" />
     <ph name="BR" />
@@ -7208,7 +7207,6 @@ You can assign multiple switches to this action.</translation>
 <translation id="606449270532897041">Manage site data</translation>
 <translation id="6064764629679333574">Improve the quality of Bluetooth mic sound by upscaling low-res audio to high-res.</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
-<translation id="6065690209261668796">Remove your work address from Chrome?</translation>
 <translation id="6066794465984119824">Image hash is not set</translation>
 <translation id="6069464830445383022">Your Google Account is your Chromebook sign-in</translation>
 <translation id="6071181508177083058">confirm password</translation>
@@ -7532,6 +7530,7 @@ You can assign multiple switches to this action.</translation>
 <translation id="628726841779494414">Manage your printers in printer settings</translation>
 <translation id="6287288864483377583">Import is only supported for a single certificate</translation>
 <translation id="6287828400772161253">Android phone (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Ask Google AI Mode</translation>
 <translation id="6290613030083731160">No available devices sharing nearby. <ph name="LINK_BEGIN" />Learn more<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Cannot restore due to lack of storage space.</translation>
 <translation id="6291741848715722067">Confirmation code</translation>

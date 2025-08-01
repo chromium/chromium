@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">Чтобы обновлять Google Chrome, нужна Windows 10 или более поздней версии. У вас установлена Windows 8.</translation>
 <translation id="2094648590148273905">Условия использования Chrome OS Flex</translation>
 <translation id="2094919256425865063">Завершить работу Chrome?</translation>
+<translation id="2096213354152647998">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешение "<ph name="PERMISSION" />".</translation>
 <translation id="2106831557840787829">Chrome OS Flex, как и <ph name="BEGIN_LINK_LINUX_OSS" />среда разработки Linux<ph name="END_LINK_LINUX_OSS" />, работает благодаря дополнительному <ph name="BEGIN_LINK_CROS_OSS" />программному обеспечению с открытым исходным кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">Отключить фоновый режим для приложений в Chrome</translation>
 <translation id="2120620239521071941">С устройства будут удалены объекты (<ph name="ITEMS_COUNT" />). Чтобы восстановить данные позже, войдите в Chrome как <ph name="USER_EMAIL" />.</translation>
@@ -454,6 +455,7 @@
 <translation id="6696915334902295848">Браузер Chrome запрашивает доступ к микрофону для этого сайта.</translation>
 <translation id="6712881677154121168">Ошибка при скачивании: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome может работать ещё быстрее</translation>
+<translation id="6734827584173583205">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и другие (ещё <ph name="COUNT" />).</translation>
 <translation id="6735387454586646204">Система Chrome OS Flex</translation>
 <translation id="6750954913813541382">Для проверки правописания Chrome отправляет в Google текст, который вы вводите в браузере</translation>
 <translation id="6760235774835597023">Ускоряет работу сайтов с помощью движка Chrome V8, но делает Chrome чуть менее устойчивым к атакам. Параметр включен.</translation>
@@ -479,6 +481,7 @@
 <translation id="7024536598735240744">Ошибка при распаковке: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Установка отменена.</translation>
 <translation id="7025800014283535195">Здесь можно переключиться на другой профиль Chrome</translation>
+<translation id="7051685429025310665">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешения "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" и "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Войдите в Chrome</translation>
 <translation id="7060643578009939353">Найти это видео через Google Объектив</translation>
 <translation id="7071827361006050863">Данные о работе в Chrome скоро будут удалены</translation>
@@ -540,6 +543,7 @@
 <translation id="77283119132245232">Предоставляет браузеру <ph name="BROWSER_NAME" /> сервисы трассировки системы. Если этот сервис отключен, трассировки производительности, созданные браузером, не будут включать системные события, такие как переключение контекста и готовность потока.</translation>
 <translation id="7736869414036750079">По правилам вашей организации, нужно войти в Chrome</translation>
 <translation id="7747138024166251722">Программе установки не удалось создать временный каталог. Возможно, у вас нет прав на установку приложений или недостаточно места на диске.</translation>
+<translation id="7748969056734910029">Вы давно не посещали этот сайт. Браузер Chrome отозвал разрешения "<ph name="PERMISSION_1" />" и "<ph name="PERMISSION_2" />".</translation>
 <translation id="7761834446675418963">Нажмите на свое имя, чтобы войти в Chrome.</translation>
 <translation id="7777080907402804672">Если у изображения нет понятного описания, Chrome попытается его найти. Для создания описаний изображения отправляются в Google. Эту функцию можно отключить в настройках в любое время.</translation>
 <translation id="778331955594035129">Браузер Chrome запрашивает доступ к данным о местоположении для этого сайта.</translation>

@@ -6070,7 +6070,6 @@
 <translation id="5235050375939235066">要解除安裝應用程式嗎？</translation>
 <translation id="523505283826916779">協助工具設定</translation>
 <translation id="5235750401727657667">取代新分頁開啟時顯示的網頁</translation>
-<translation id="5236054983756407518">要從 Chrome 移除你的住宅地址嗎？</translation>
 <translation id="5237124927415201087">使用手機輕鬆設定 <ph name="DEVICE_TYPE" />。你可新增 Wi-Fi 和 Google 帳戶，無需手動輸入密碼。
     <ph name="BR" />
     <ph name="BR" />
@@ -7197,7 +7196,6 @@
 <translation id="606449270532897041">管理網站資料</translation>
 <translation id="6064764629679333574">將低清晰度音訊提升至高清晰度，改善藍牙麥克風音質。</translation>
 <translation id="6065289257230303064">憑證主體目錄屬性</translation>
-<translation id="6065690209261668796">要從 Chrome 移除你的公司地址嗎？</translation>
 <translation id="6066794465984119824">未設定圖片雜湊</translation>
 <translation id="6069464830445383022">您的 Google 帳戶就是用來登入 Chromebook 的帳戶</translation>
 <translation id="6071181508177083058">確認密碼</translation>
@@ -7521,6 +7519,7 @@
 <translation id="628726841779494414">在打印機設定中管理你的打印機</translation>
 <translation id="6287288864483377583">匯入功能只支援單一憑證</translation>
 <translation id="6287828400772161253">Android 手機 (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">問 Google AI 模式</translation>
 <translation id="6290613030083731160">附近沒有可分享內容的裝置。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">儲存空間不足，因此無法還原。</translation>
 <translation id="6291741848715722067">確認碼</translation>

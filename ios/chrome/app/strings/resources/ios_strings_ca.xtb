@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Rellotge intel·ligent</translation>
 <translation id="1743244221910283364">Descarta els canvis</translation>
 <translation id="1748975028205587434">Selecciona el fitxer</translation>
+<translation id="1749733017156547309">Has d'introduir una contrasenya</translation>
 <translation id="174998178145075354">{count,plural, =1{Hi ha {count} opció d'adreça disponible a sobre del teclat.}other{Hi ha {count} opcions d'adreça disponibles a sobre del teclat.}}</translation>
 <translation id="1750238553597293878">Continua utilitzant les contrasenyes al teu Compte de Google</translation>
 <translation id="17513872634828108">Pestanyes obertes</translation>
@@ -509,6 +510,7 @@ El teu motor de cerca és <ph name="DSE_NAME" />. Consulta'n les instruccions pe
 <translation id="2952278131021475699">Cerca amb la càmera de Lens</translation>
 <translation id="2962516096219646456">Mostra totes les dades d'Emplenament automàtic</translation>
 <translation id="2969979262385602596">No s'ha pogut iniciar la sessió. Torneu-ho a provar més tard.</translation>
+<translation id="2975761176769946178">Has d'introduir un URL</translation>
 <translation id="297667759942911166">Col·labora en grups de pestanyes</translation>
 <translation id="2987670534697681860">Verifica la teva identitat per accedir a totes les teves contrasenyes en aquest dispositiu.</translation>
 <translation id="2989523299700148168">Visitats últimament</translation>
@@ -572,6 +574,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="3224075676564434205">Les pestanyes continuaran obertes en aquest dispositiu, però el grup se suprimirà de tots els dispositius en què s'hagi iniciat la sessió amb <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Per exportar les contrasenyes, primer has d'establir una contrasenya al dispositiu.</translation>
 <translation id="3227137524299004712">Micròfon</translation>
+<translation id="3234251228180563751">El nom d'usuari té més de 1.000 caràcters</translation>
 <translation id="3235063766008841141">S'ha introduït en un lloc web enganyós i s'ha trobat en una violació de dades</translation>
 <translation id="3235242129752692527">Edita els detalls de l'esdeveniment i toca Desa.</translation>
 <translation id="323863549127671026">Pestanyes i grups de pestanyes oberts en aquests moments</translation>
@@ -1030,6 +1033,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="5079950360618752063">Utilitza la contrasenya suggerida</translation>
 <translation id="5083464117946352670">No es determina mida fitxer.</translation>
 <translation id="5085558938118581974">Cerca pestanyes als dispositius sincronitzats</translation>
+<translation id="508645147179720015">La nota té més de 1.000 caràcters</translation>
 <translation id="5087098519049306025">Seguiment de preus</translation>
 <translation id="5090832849094901128">Encara que suprimeixis aquesta contrasenya, no se suprimirà el teu compte a <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Afegeix un compte…</translation>
@@ -1919,6 +1923,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8434837876193928924">Detalls del grup de pestanyes</translation>
 <translation id="8438566539970814960">Millora les cerques i la navegació</translation>
 <translation id="8439758443371991593">Amaga l'opció Afegeix a la llista de lectura</translation>
+<translation id="8443986842926457191">L'URL conté més de 2.048 caràcters</translation>
 <translation id="8449869326050867919">S'ha compartit la contrasenya</translation>
 <translation id="8473863474539038330">Adreces i més</translation>
 <translation id="8474378002946546633">Permet les notificacions</translation>
@@ -1983,6 +1988,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="8680786875305615692">Ajuda a millorar la seguretat al web per a tothom</translation>
 <translation id="8680787084697685621">Les dades d'inici de sessió del compte no estan actualitzades.</translation>
 <translation id="8690752723634292147">Confirma la supressió</translation>
+<translation id="8692107307702113268">La contrasenya té més de 1.000 caràcters</translation>
 <translation id="8692689525339542358">Obtén protecció contra baixades, extensions i llocs web perillosos.</translation>
 <translation id="8692897097252418799">Tria les dades que vulguis exportar</translation>
 <translation id="8694281486652655615">Mostra aquest element</translation>
@@ -2065,6 +2071,7 @@ Els llocs web poden fer servir galetes per veure la teva activitat de navegació
 <translation id="895541991026785598">Informa d'un problema</translation>
 <translation id="8960979149015305">Tanca la baixada</translation>
 <translation id="8961092256396236619">La protecció millorada està desactivada</translation>
+<translation id="8962863356073277855">El format de l'URL ha de ser https://www.example.com</translation>
 <translation id="8968766641738584599">Desa la targeta</translation>
 <translation id="8974714402877957201">1. Obre la configuració de l'iPad.</translation>
 <translation id="8975015774710126284">Les dades de navegació s'han suprimit</translation>

@@ -216,6 +216,7 @@
 <translation id="1142713751288681188">纸张类型</translation>
 <translation id="1143142264369994168">证书签名人</translation>
 <translation id="1145593918056169051">打印机已停止运行</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{扩展程序}=1{扩展程序 ({SELECTED_ITEMS})}other{扩展程序 ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">头部指针</translation>
 <translation id="114721135501989771">在 Chrome 中畅享 Google 的智能技术</translation>
 <translation id="1147322039136785890">现在轮到<ph name="SUPERVISED_USER_NAME" />使用了</translation>
@@ -731,6 +732,7 @@
 <translation id="150411034776756821">移除 <ph name="SITE" /></translation>
 <translation id="1504551620756424144">在 Windows 中，共享文件夹是位于 <ph name="BASE_DIR" /> 下。</translation>
 <translation id="1505494256539862015">导出密码</translation>
+<translation id="1505654899813338756">您可以为标签页分组，将彼此相关的网页保存在一起，并在所有设备上同步保存</translation>
 <translation id="1506061864768559482">搜索引擎</translation>
 <translation id="1506187449813838456">调高音调</translation>
 <translation id="1507170440449692343">已阻止此网页使用您的摄像头。</translation>
@@ -5283,6 +5285,7 @@
 <translation id="4681930562518940301">在新标签页中打开原始图片(&amp;I)</translation>
 <translation id="4682481611456523884">此网站上的嵌入式内容无法使用它们保存的与您相关的信息</translation>
 <translation id="4682807230647698604">当您使用这些功能时，系统会将相关数据发送给 Google，以便打造 AI 体验</translation>
+<translation id="4683143253481759090">Chrome 已更新</translation>
 <translation id="4683629100208651599">转换为小写</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />%（默认）</translation>
 <translation id="4684427112815847243">同步所有数据</translation>
@@ -6052,7 +6055,6 @@
 <translation id="5235050375939235066">要卸载该应用吗？</translation>
 <translation id="523505283826916779">无障碍设置</translation>
 <translation id="5235750401727657667">替换您在打开新标签页时看到的页面</translation>
-<translation id="5236054983756407518">要从 Chrome 中移除住址吗？</translation>
 <translation id="5237124927415201087">使用手机轻松设置 <ph name="DEVICE_TYPE" />。您无需手动输入密码便能添加 Wi-Fi 和 Google 账号。
     <ph name="BR" />
     <ph name="BR" />
@@ -7179,7 +7181,6 @@
 <translation id="606449270532897041">管理网站数据</translation>
 <translation id="6064764629679333574">通过将低分辨率音频提升为高分辨率，改善蓝牙麦克风的音质。</translation>
 <translation id="6065289257230303064">证书主题背景目录属性</translation>
-<translation id="6065690209261668796">要从 Chrome 中移除工作地址吗？</translation>
 <translation id="6066794465984119824">图片哈希未设置</translation>
 <translation id="6069464830445383022">您将使用 Google 账号登录 Chromebook</translation>
 <translation id="6071181508177083058">确认密码</translation>
@@ -7503,6 +7504,7 @@
 <translation id="628726841779494414">在打印机设置中管理您的打印机</translation>
 <translation id="6287288864483377583">仅支持导入单个证书</translation>
 <translation id="6287828400772161253">Android 手机（“<ph name="HOST_DEVICE_NAME" />”）</translation>
+<translation id="6288559570252410796">询问 Google AI 模式</translation>
 <translation id="6290613030083731160">附近没有正在分享内容的设备。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">存储空间不足，因此无法恢复。</translation>
 <translation id="6291741848715722067">确认码</translation>

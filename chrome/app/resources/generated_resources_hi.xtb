@@ -216,6 +216,7 @@
 <translation id="1142713751288681188">पेपर टाइप</translation>
 <translation id="1143142264369994168">प्रमाणपत्र हस्ताक्षरकर्ता</translation>
 <translation id="1145593918056169051">प्रिंटर बंद हो गया है</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{एक्सटेंशन}=1{एक्सटेंशन ({SELECTED_ITEMS})}one{एक्सटेंशन ({SELECTED_ITEMS})}other{एक्सटेंशन ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">हेड पॉइंटर</translation>
 <translation id="114721135501989771">Chrome में Google स्मार्ट पाएं</translation>
 <translation id="1147322039136785890">अब <ph name="SUPERVISED_USER_NAME" /> इस डिवाइस का इस्तेमाल कर सकते हैं</translation>
@@ -735,6 +736,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> को निकालें</translation>
 <translation id="1504551620756424144">शेयर किए गए फ़ोल्डर, Windows में <ph name="BASE_DIR" /> पर उपलब्ध हैं.</translation>
 <translation id="1505494256539862015">पासवर्ड एक्सपोर्ट करना</translation>
+<translation id="1505654899813338756">मिलते-जुलते विषय से जुड़े पेजों को एक साथ रखने के लिए, टैब ग्रुप बनाए जा सकते हैं. ये ग्रुप, आपके सभी डिवाइसों में सेव हो जाते हैं</translation>
 <translation id="1506061864768559482">सर्च इंजन</translation>
 <translation id="1506187449813838456">पिच बढ़ाएं</translation>
 <translation id="1507170440449692343">इस पेज को आपका कैमरा ऐक्सेस करने से अवरोधित कर दिया गया है.</translation>
@@ -5307,6 +5309,7 @@
 <translation id="4681930562518940301">मूल &amp;चित्र को नए टैब में खोलें</translation>
 <translation id="4682481611456523884">इस साइट पर एम्बेड किया गया कॉन्टेंट, आपके बारे में सेव की गई जानकारी का इस्तेमाल नहीं कर सकता</translation>
 <translation id="4682807230647698604">इन सुविधाओं का इस्तेमाल करने पर, एआई से जुड़े अनुभव देने के लिए, Google को इनसे जुड़ा डेटा भेजा जाता है</translation>
+<translation id="4683143253481759090">Chrome को अपडेट किया गया</translation>
 <translation id="4683629100208651599">छोटे अक्षरों में बदलें</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (डिफ़ॉल्ट)</translation>
 <translation id="4684427112815847243">सब कुछ सिंक करें</translation>
@@ -6076,7 +6079,6 @@
 <translation id="5235050375939235066">ऐप्लिकेशन अनइंस्टॉल करें?</translation>
 <translation id="523505283826916779">सुलभता सेटिंग</translation>
 <translation id="5235750401727657667">नया टैब खोलते समय दिखाई देने वाला पेज बदलें</translation>
-<translation id="5236054983756407518">क्या आपको Chrome से अपने घर का पता हटाना है?</translation>
 <translation id="5237124927415201087">अपने फ़ोन की मदद से, <ph name="DEVICE_TYPE" /> को आसानी से सेट अप करें. पासवर्ड डाले बिना, मैन्युअल तरीके से आपका वाई-फ़ाई और Google खाता जोड़ा जा सकता है.
     <ph name="BR" />
     <ph name="BR" />
@@ -7206,7 +7208,6 @@
 <translation id="606449270532897041">साइट डेटा मैनेज करें</translation>
 <translation id="6064764629679333574">ब्लूटूथ वाले माइक की साउंड क्वालिटी को बेहतर बनाएं. इसके लिए, कम क्वालिटी वाले ऑडियो को अच्छी क्वालिटी वाले ऑडियो में बदलने की सुविधा चालू करें.</translation>
 <translation id="6065289257230303064">प्रमाणपत्र विषय निर्देशिका विशेषताएं</translation>
-<translation id="6065690209261668796">क्या आपको Chrome से अपने ऑफ़िस का पता हटाना है?</translation>
 <translation id="6066794465984119824">इमेज हैश सेट नहीं किया गया है</translation>
 <translation id="6069464830445383022">आपको Chromebook में Google खाते से साइन इन करना होगा</translation>
 <translation id="6071181508177083058">पासवर्ड की पुष्‍टि करें</translation>
@@ -7530,6 +7531,7 @@
 <translation id="628726841779494414">प्रिंटर की सेटिंग में जाकर, अपने प्रिंटर मैनेज करें</translation>
 <translation id="6287288864483377583">सिर्फ़ एक सर्टिफ़िकेट के लिए, इंपोर्ट करने की सुविधा उपलब्ध है</translation>
 <translation id="6287828400772161253">Android फ़ोन (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google के एआई मोड में सवाल पूछें</translation>
 <translation id="6290613030083731160">आस-पास शेयर करने वाला कोई भी डिवाइस उपलब्ध नहीं है. <ph name="LINK_BEGIN" />ज़्यादा जानें<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">स्टोरेज के लिए कम जगह बची है, इसलिए कंटेनर का डेटा वापस नहीं लाया जा सकता.</translation>
 <translation id="6291741848715722067">पुष्टि करने वाला कोड</translation>
@@ -9196,6 +9198,7 @@
 <translation id="7481312909269577407">आगे जाएं</translation>
 <translation id="7481358317100446445">तैयार</translation>
 <translation id="748138892655239008">प्रमाणपत्र मूल बाध्यताएं</translation>
+<translation id="7482823403440483089">ऑटोमैटिक तरीके से भरने की बेहतर सुविधा</translation>
 <translation id="7483732342458943943">यह लिंक काम नहीं करता</translation>
 <translation id="7484645889979462775">इस साइट के लिए कभी नहीं</translation>
 <translation id="7484943269191249363">इस डिवाइस पर, Google Password Manager में सेव की गई सभी पासकी इस्तेमाल की जा सकती हैं. आपको ऐसा सिर्फ़ एक बार ऐसा करना होगा.</translation>

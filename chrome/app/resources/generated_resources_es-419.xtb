@@ -6061,7 +6061,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="5235050375939235066">¿Desinstalar la app?</translation>
 <translation id="523505283826916779">Configuración de accesibilidad</translation>
 <translation id="5235750401727657667">Reemplazar la página que ves cuando abres una pestaña nueva</translation>
-<translation id="5236054983756407518">¿Quieres quitar tu dirección de casa de Chrome?</translation>
 <translation id="5237124927415201087">Configura fácilmente tu <ph name="DEVICE_TYPE" /> con tu teléfono. Puedes agregar tu red Wi-Fi y tu Cuenta de Google sin tener que ingresar las contraseñas manualmente.
     <ph name="BR" />
     <ph name="BR" />
@@ -7192,7 +7191,6 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="606449270532897041">Administrar los datos de sitios</translation>
 <translation id="6064764629679333574">Aumenta el audio de baja resolución a alta resolución para mejorar la calidad de sonido del micrófono Bluetooth.</translation>
 <translation id="6065289257230303064">Atributos de directorio del sujeto del certificado</translation>
-<translation id="6065690209261668796">¿Quieres quitar tu dirección de trabajo de Chrome?</translation>
 <translation id="6066794465984119824">No se estableció un hash de imagen</translation>
 <translation id="6069464830445383022">Accede a la Chromebook con tu Cuenta de Google</translation>
 <translation id="6071181508177083058">confirmar contraseña</translation>
@@ -7516,6 +7514,7 @@ Puedes asignar varios interruptores a esta acción.</translation>
 <translation id="628726841779494414">Administra tus impresoras en la configuración de impresoras</translation>
 <translation id="6287288864483377583">Se puede importar solo un certificado</translation>
 <translation id="6287828400772161253">Teléfono Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Preguntar al Modo IA de Google</translation>
 <translation id="6290613030083731160">No hay dispositivos disponibles cerca que compartan contenido. <ph name="LINK_BEGIN" />Más información<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">No se puede restablecer porque el espacio de almacenamiento es insuficiente.</translation>
 <translation id="6291741848715722067">Código de confirmación</translation>
@@ -9181,6 +9180,7 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7481312909269577407">Adelante</translation>
 <translation id="7481358317100446445">Listo</translation>
 <translation id="748138892655239008">Restricciones básicas del certificado</translation>
+<translation id="7482823403440483089">Autocompletado mejorado</translation>
 <translation id="7483732342458943943">Este vínculo no funciona</translation>
 <translation id="7484645889979462775">Jamás para este sitio</translation>
 <translation id="7484943269191249363">Puedes usar todas las llaves de acceso guardadas en el Administrador de contraseñas de Google en este dispositivo. Solo tendrás que hacerlo una vez.</translation>

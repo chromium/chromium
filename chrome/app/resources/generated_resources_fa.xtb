@@ -6074,7 +6074,6 @@
 <translation id="5235050375939235066">برنامه حذف نصب شود؟</translation>
 <translation id="523505283826916779">تنظیمات دسترس‌پذیری</translation>
 <translation id="5235750401727657667">جایگزین کردن صفحه‌ای که هنگام باز کردن برگه جدید می‌بینید</translation>
-<translation id="5236054983756407518">‏نشانی خانه‌تان از Chrome برداشته شود؟</translation>
 <translation id="5237124927415201087">‏به‌راحتی <ph name="DEVICE_TYPE" /> را با تلفنتان راه‌اندازی کنید. می‌توانید Wi-Fi و «حساب Google» را بدون وارد کردن دستی گذرواژه‌ها اضافه کنید.
     <ph name="BR" />
     <ph name="BR" />
@@ -7205,7 +7204,6 @@
 <translation id="606449270532897041">مدیریت داده‌های سایت</translation>
 <translation id="6064764629679333574">بهبود کیفیت صدای میکروفون بلوتوث با ارتقای صدای با وضوح پایین به صدای با وضوح بالا.</translation>
 <translation id="6065289257230303064">ویژگی‌های دایرکتوری موضوع گواهی</translation>
-<translation id="6065690209261668796">‏نشانی محل کارتان از Chrome برداشته شود؟</translation>
 <translation id="6066794465984119824">درهم‌سازی تصویر تنظیم نشده است</translation>
 <translation id="6069464830445383022">‏ورود به سیستم در Chromebook با «حساب Google» انجام می‌شود</translation>
 <translation id="6071181508177083058">تأیید گذرواژه</translation>
@@ -7529,6 +7527,7 @@
 <translation id="628726841779494414">چاپگرهایتان را در تنظیمات چاپگر مدیریت کنید</translation>
 <translation id="6287288864483377583">وارد کردن فقط برای یک گواهینامه پشتیبانی می‌شود</translation>
 <translation id="6287828400772161253">‏تلفن Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">‏درخواست از «حالت هوش مصنوعی Google»</translation>
 <translation id="6290613030083731160">دستگاهی که درحال هم‌رسانی با اطراف باشد وجود ندارد. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">به‌دلیل فضای ذخیره‌سازی ناکافی بازیابی نشد.</translation>
 <translation id="6291741848715722067">کد تأیید</translation>

@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">スマートウォッチ</translation>
 <translation id="1743244221910283364">変更を破棄</translation>
 <translation id="1748975028205587434">ファイルを選択</translation>
+<translation id="1749733017156547309">パスワードを入力してください</translation>
 <translation id="174998178145075354">{count,plural, =1{キーボードの上部に利用可能な住所の候補が {count} 件表示されています。}other{キーボードの上部に利用可能な住所の候補が {count} 件表示されています。}}</translation>
 <translation id="1750238553597293878">Google アカウントのパスワードを引き続き使用してください</translation>
 <translation id="17513872634828108">開いているタブ</translation>
@@ -509,6 +510,7 @@
 <translation id="2952278131021475699">レンズでカメラ検索</translation>
 <translation id="2962516096219646456">自動入力データをすべて表示</translation>
 <translation id="2969979262385602596">ログインできません。後でもう一度お試しください。</translation>
+<translation id="2975761176769946178">URL を入力してください</translation>
 <translation id="297667759942911166">タブグループでの共同作業</translation>
 <translation id="2987670534697681860">このデバイスですべてのパスワードにアクセスできるようにするには、本人確認を行ってください。</translation>
 <translation id="2989523299700148168">最近のアクセス</translation>
@@ -572,6 +574,7 @@
 <translation id="3224075676564434205">タブはこのデバイスで引き続き表示されますが、グループは <ph name="USER_EMAIL" /> にログインしているすべてのデバイスから削除されます。</translation>
 <translation id="3224641773458703735">パスワードをエクスポートするには、まずデバイスでパスコードを設定する必要があります。</translation>
 <translation id="3227137524299004712">マイク</translation>
+<translation id="3234251228180563751">ユーザー名が 1,000 文字を超えています</translation>
 <translation id="3235063766008841141">不正なサイトで入力され、データ侵害により漏洩しました</translation>
 <translation id="3235242129752692527">予定の詳細を編集し、[保存] をタップします。</translation>
 <translation id="323863549127671026">現在開いているタブとタブグループ</translation>
@@ -1030,6 +1033,7 @@
 <translation id="5079950360618752063">提案されたパスワードを使用</translation>
 <translation id="5083464117946352670">ファイルサイズが不明です。</translation>
 <translation id="5085558938118581974">同期しているデバイスのタブを検索する</translation>
+<translation id="508645147179720015">メモが 1,000 文字を超えています</translation>
 <translation id="5087098519049306025">価格の追跡</translation>
 <translation id="5090832849094901128">このパスワードを削除しても、<ph name="WEBSITE" /> のアカウントは削除されません。</translation>
 <translation id="5118462200606189584">アカウントを追加…</translation>
@@ -1919,6 +1923,7 @@
 <translation id="8434837876193928924">タブグループの詳細</translation>
 <translation id="8438566539970814960">検索とブラウジングを改善する</translation>
 <translation id="8439758443371991593">[リーディング リストに追加] を非表示</translation>
+<translation id="8443986842926457191">URL が 2048 文字を超えています</translation>
 <translation id="8449869326050867919">パスワードを共有しました</translation>
 <translation id="8473863474539038330">住所やその他の情報</translation>
 <translation id="8474378002946546633">通知を許可する</translation>
@@ -1983,6 +1988,7 @@
 <translation id="8680786875305615692">すべてのユーザーのウェブ上のセキュリティ強化に協力する</translation>
 <translation id="8680787084697685621">アカウントのログイン情報が古くなっています。</translation>
 <translation id="8690752723634292147">削除の確認</translation>
+<translation id="8692107307702113268">パスワードが 1,000 文字を超えています</translation>
 <translation id="8692689525339542358">危険性のあるサイト、ダウンロード、拡張機能から保護してください。</translation>
 <translation id="8692897097252418799">書き出すデータを選択します</translation>
 <translation id="8694281486652655615">このアイテムを表示</translation>
@@ -2065,6 +2071,7 @@
 <translation id="895541991026785598">問題の報告</translation>
 <translation id="8960979149015305">ダウンロードを閉じる</translation>
 <translation id="8961092256396236619">保護強化機能がオフになっています</translation>
+<translation id="8962863356073277855">URL は https://www.example.com の形式で入力してください</translation>
 <translation id="8968766641738584599">カードを保存</translation>
 <translation id="8974714402877957201">1. iPad の [設定] を開く</translation>
 <translation id="8975015774710126284">閲覧データを削除しました</translation>

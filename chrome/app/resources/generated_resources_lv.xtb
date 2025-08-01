@@ -6064,7 +6064,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="5235050375939235066">Vai atinstalēt lietotni?</translation>
 <translation id="523505283826916779">Pieejamības iestatījumi</translation>
 <translation id="5235750401727657667">Aizstāt lapu, kas tiek parādīta jaunā cilnē</translation>
-<translation id="5236054983756407518">Vai noņemt jūsu mājas adresi no pārlūka Chrome?</translation>
 <translation id="5237124927415201087">Ērti iestatiet savu ierīci (<ph name="DEVICE_TYPE" />), izmantojot tālruni. Varat pievienot Wi-Fi tīklu un Google kontu, manuāli neievadot paroles.
     <ph name="BR" />
     <ph name="BR" />
@@ -7191,7 +7190,6 @@ Lai tālinātu, nospiediet Ctrl + Alt + spilgtuma samazināšanas taustiņu.
 <translation id="606449270532897041">Pārvaldīt vietņu datus</translation>
 <translation id="6064764629679333574">Uzlabojiet Bluetooth mikrofona skaņas kvalitāti, zemas izšķirtspējas audio iestatot augstu izšķirtspēju.</translation>
 <translation id="6065289257230303064">Sertifikāta subjekta kataloga atribūti</translation>
-<translation id="6065690209261668796">Vai noņemt jūsu darbavietas adresi no pārlūka Chrome?</translation>
 <translation id="6066794465984119824">Nav iestatīta attēla jaucējvērtība</translation>
 <translation id="6069464830445383022">Jūsu Google konts — pierakstīšanās informācija Chromebook datoram</translation>
 <translation id="6071181508177083058">apstipriniet paroli</translation>
@@ -7515,6 +7513,7 @@ Saskaņā ar domēna <ph name="DOMAIN" /> prasībām viedkartei ir jābūt ievie
 <translation id="628726841779494414">Savus printerus varat pārvaldīt printera iestatījumos.</translation>
 <translation id="6287288864483377583">Tiek atbalstīta tikai viena sertifikāta importēšana</translation>
 <translation id="6287828400772161253">Android tālrunis (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Uzdot jautājumu Google MI režīmā</translation>
 <translation id="6290613030083731160">Tuvumā nav pieejamu ierīču, kas kopīgotu saturu. <ph name="LINK_BEGIN" />Uzziniet vairāk<ph name="LINK_END" />.</translation>
 <translation id="6291580570300353047">Nevar veikt atjaunošanu, jo krātuvē nepietiek vietas.</translation>
 <translation id="6291741848715722067">Apstiprinājuma kods</translation>

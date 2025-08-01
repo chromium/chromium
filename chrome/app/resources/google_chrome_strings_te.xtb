@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">భవిష్యత్తు Google Chrome అప్‌డేట్‌లను పొందడానికి, మీకు Windows 10 లేదా ఆ తర్వాత వచ్చిన ఏదైనా వెర్షన్ అవసరం అవుతుంది. ఈ కంప్యూటర్ Windows 8ను ఉపయోగిస్తోంది.</translation>
 <translation id="2094648590148273905">ChromeOS Flex నియమాలు</translation>
 <translation id="2094919256425865063">ఏదేమైనా Chromeని మూసివేయాలా?</translation>
+<translation id="2096213354152647998">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION" />‌ను తీసివేసింది.</translation>
 <translation id="2106831557840787829">ChromeOS Flex అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="2108778574543343055">యాప్‌లకు సంబంధించి బ్యాక్‌గ్రౌండ్‌లో రన్ అవుతున్న Chromeను డిజేబుల్ చేయండి</translation>
 <translation id="2120620239521071941">ఇది ఈ పరికరం నుండి <ph name="ITEMS_COUNT" /> అంశాలను తొలగిస్తుంది. మీ డేటాను తర్వాత తిరిగి పొందడానికి, Chromeకు <ph name="USER_EMAIL" /> లాగా సైన్ ఇన్ చేయండి.</translation>
@@ -455,6 +456,7 @@
 <translation id="6696915334902295848">ఈ సైట్ కోసం Chromeకు మైక్రోఫోన్ అనుమతి అవసరం</translation>
 <translation id="6712881677154121168">డౌన్‌లోడ్ చేయడంలో ఎర్రర్ ఏర్పడింది: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chromeను వేగవంతం చేయండి</translation>
+<translation id="6734827584173583205">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, అలాగే మరో <ph name="COUNT" />‌ను తీసివేసింది.</translation>
 <translation id="6735387454586646204">ChromeOS Flex సిస్టమ్</translation>
 <translation id="6750954913813541382">స్పెల్లింగ్ తప్పులను సరిదిద్దడానికి, మీరు బ్రౌజర్‌లో టైప్ చేసే పదాలను Googleకు Chrome పంపుతుంది</translation>
 <translation id="6760235774835597023">Chrome V8 ఇంజిన్‌తో సైట్‌లను వేగవంతం చేస్తుంది కానీ అటాక్‌లకు Chromeను కొద్దిగా తక్కువ నిరోధకతను కలిగిస్తుంది. ఈ సెట్టింగ్ ఆన్ చేయబడింది.</translation>
@@ -480,6 +482,7 @@
 <translation id="7024536598735240744">డెవలపర్ మోడ్‌లో ఉన్న ఎర్రర్: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ఇన్‌స్టాలేషన్ ఆగిపోయింది.</translation>
 <translation id="7025800014283535195">మీరు ఇక్కడ Chrome ప్రొఫైళ్ల మధ్య స్విచ్ అవ్వవచ్చు</translation>
+<translation id="7051685429025310665">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />‌, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />ను తీసివేసింది.</translation>
 <translation id="7059914902409643750">Chromeను మీకు నచ్చిన విధంగా తయారు చేసుకోండి</translation>
 <translation id="7060643578009939353">Google Lensతో ఈ వీడియోను సెర్చ్ చేయండి</translation>
 <translation id="7071827361006050863">Chrome త్వరలోనే బ్రౌజింగ్ డేటాను తొలగిస్తుంది</translation>
@@ -541,6 +544,7 @@
 <translation id="77283119132245232"><ph name="BROWSER_NAME" />‌కు సిస్టమ్‌ను ట్రేస్ చేసే సర్వీస్‌లను అందిస్తోంది. ఈ సర్వీస్ డిజేబుల్ అయితే, బ్రౌజర్ ద్వారా క్రియేట్ అయిన పనితీరు ట్రేస్‌లలో కాంటెక్స్ట్ స్విచ్, సిద్ధంగా ఉన్న థ్రెడ్ ఈవెంట్‌ల వంటి సిస్టమ్ అంతటికీ సంబంధించిన ఈవెంట్‌లు ఉండవు.</translation>
 <translation id="7736869414036750079">మీ సంస్థ పాలసీ ప్రకారం మీరు Chromeకు సైన్ ఇన్ చేయాలి</translation>
 <translation id="7747138024166251722">ఇన్‌స్టాలర్ ఒక తాత్కాలిక డైరక్టరీని సృష్టించలేకపోయింది. సాఫ్ట్‌వేర్‌ను ఇన్‌స్టాల్ చేయడానికి దయచేసి ఖాళీ డిస్క్ స్థలం, అనుమతిని చెక్ చేయండి.</translation>
+<translation id="7748969056734910029">మీరు ఇటీవల వెళ్లలేదు. Chrome <ph name="PERMISSION_1" />,‌ <ph name="PERMISSION_2" />ను తీసివేసింది.</translation>
 <translation id="7761834446675418963">Chromeను తెరిచి, బ్రౌజింగ్‌ను ప్రారంభించడానికి మీ పేరును క్లిక్ చేయండి.</translation>
 <translation id="7777080907402804672">చిత్రంలో ఉపయోగకరమైన వివరణ లేకుంటే, మీ కోసం ఒక వివరణను అందించడానికి Chrome ప్రయత్నిస్తుంది. వివరణలను క్రియేట్ చేయడానికి, చిత్రాలు Googleకు పంపబడతాయి. మీరు దీన్ని ఎప్పుడైనా సెట్టింగ్‌లలో ఆఫ్ చేయవచ్చు.</translation>
 <translation id="778331955594035129">ఈ సైట్ కోసం Chromeకు లొకేషన్ అనుమతి అవసరం</translation>

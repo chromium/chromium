@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">اگر این مشکل باز هم اتفاق افتاد، می‌توانید روش‌های دیگر را برای ادامه دادن در <ph name="SITE_ETLD_PLUS_ONE" /> امتحان کنید.</translation>
 <translation id="4384468725000734951">‏استفاده از Sogou برای جستجو</translation>
 <translation id="4387647248986092471">ایجاد قفل نمایه خودرو</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{زبانه‌ها و گروه‌هایی که ۱ روز یا بیشتر استفاده نشده‌اند}one{زبانه‌ها و گروه‌هایی که # روز یا بیشتر استفاده نشده‌اند}other{زبانه‌ها و گروه‌هایی که # روز یا بیشتر استفاده نشده‌اند}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - درحال بارگیری…</translation>
 <translation id="4404568932422911380">هیچ نشانکی موجود نیست</translation>
 <translation id="4405224443901389797">انتقال به…</translation>

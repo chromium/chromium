@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">ဤပြဿနာဆက်ဖြစ်နေပါက <ph name="SITE_ETLD_PLUS_ONE" /> တွင် အခြားနည်းလမ်းများကို စမ်းကြည့်နိုင်သည်။</translation>
 <translation id="4384468725000734951">ရှာဖွေမှုအတွက် Sogou ကို အသုံးပြုသည်</translation>
 <translation id="4387647248986092471">ကားပရိုဖိုင်လော့ခ် ပြုလုပ်ရန်</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{၁ ရက်နှင့်အထက် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}other{# ရက်နှင့်အထက် အသုံးမပြုသော တဘ်နှင့် တဘ်အုပ်စုများ}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - ဒေါင်းလုဒ်လုပ်နေသည်…</translation>
 <translation id="4404568932422911380">မည်သည့်လိပ်စာမျှ မရှိပါ</translation>
 <translation id="4405224443901389797">ဤနေရာသို့ ရွှေ့ရန်…</translation>

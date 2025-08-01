@@ -216,6 +216,7 @@
 <translation id="1142713751288681188">စာရွက်အမျိုးအစား</translation>
 <translation id="1143142264369994168">အသိမှတ်ပြုလက်မှတ် ဆိုင်းထိုးသူ</translation>
 <translation id="1145593918056169051">ပရင်တာ ရပ်သွားပါပြီ</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{နောက်ဆက်တွဲများ}=1{နောက်ဆက်တွဲများ ({SELECTED_ITEMS})}other{နောက်ဆက်တွဲများ ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">ဦးခေါင်း ညွှန်မြား</translation>
 <translation id="114721135501989771">Chrome တွင် Google ကို ပို၍အဆင့်မြင့်လာအောင် ပြုလုပ်ခြင်း</translation>
 <translation id="1147322039136785890">ယခု <ph name="SUPERVISED_USER_NAME" /> ၏ အလှည့်ပါ</translation>
@@ -733,6 +734,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> ကို ဖယ်ရှားပါ</translation>
 <translation id="1504551620756424144">မျှဝေထားသော ဖိုင်တွဲများကို Windows ရှိ <ph name="BASE_DIR" /> တွင် ရရှိနိုင်ပါသည်။</translation>
 <translation id="1505494256539862015">စကားဝှက်များ ထုတ်ယူရန်</translation>
+<translation id="1505654899813338756">ဆက်စပ်သည့် စာမျက်နှာများကို အတူသိမ်းရန်နှင့် သင့်စက်များတွင် သိမ်းရန် တဘ်များကို အုပ်စုဖွဲ့နိုင်သည်</translation>
 <translation id="1506061864768559482">ရှာဖွေရေး အင်ဂျင်</translation>
 <translation id="1506187449813838456">အသံကို မြှင့်ပေးရန်</translation>
 <translation id="1507170440449692343">ဒီစာမျက်နှာကို သင်၏ ကင်မရာကို ရယူသုံးမရအောင် ပိတ်ဆို့ထားသည်။</translation>
@@ -5305,6 +5307,7 @@
 <translation id="4681930562518940301">မူရင်းနှင့် ရုပ်ပုံကို တဲဘ်အသစ်တွင် ဖွင့်ရန်</translation>
 <translation id="4682481611456523884">ဤဝဘ်ဆိုက်ပေါ်ရှိ မြှုပ်သွင်းထားသော အကြောင်းအရာသည် ၎င်းတို့သိမ်းထားသော သင့်အချက်အလက်ကို သုံး၍မရပါ</translation>
 <translation id="4682807230647698604">ဤဝန်ဆောင်မှုများကို သုံးသောအခါ AI အသုံးပြုမှုများ ပြုလုပ်ရန်အတွက် သက်ဆိုင်ရာဒေတာများကို Google သို့ ပို့သည်</translation>
+<translation id="4683143253481759090">Chrome ကို အပ်ဒိတ်လုပ်ထားသည်</translation>
 <translation id="4683629100208651599">အက္ခရာအသေး ပြောင်းခြင်း</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (မူလ)</translation>
 <translation id="4684427112815847243">အားလုံး စင့်ခ်ရန်</translation>
@@ -6075,7 +6078,6 @@
 <translation id="5235050375939235066">အက်ပ်ကို ဖယ်ရှားလိုပါသလား။</translation>
 <translation id="523505283826916779">ရယူသုံးနိုင်မှု ဆက်တင်များ</translation>
 <translation id="5235750401727657667">တဘ်အသစ်ကို ဖွင့်သည့်အခါ သင်တွေ့မြင်ရမည့် စာမျက်နှာကို အစားထိုးပါမည်</translation>
-<translation id="5236054983756407518">သင်၏ အိမ်လိပ်စာကို Chrome မှ ဖယ်ရှားမလား။</translation>
 <translation id="5237124927415201087">သင့် <ph name="DEVICE_TYPE" /> ကို ဖုန်းဖြင့် အလွယ်တကူ စနစ်ထည့်သွင်းပါ။ စကားဝှက်များ ကိုယ်တိုင်ထည့်ရန်မလိုဘဲ သင့် Wi-Fi နှင့် Google Account ကိုထည့်နိုင်သည်။
     <ph name="BR" />
     <ph name="BR" />
@@ -7205,7 +7207,6 @@
 <translation id="606449270532897041">ဝဘ်ဆိုက် ဒေတာကို စီမံရန်</translation>
 <translation id="6064764629679333574">အရည်အသွေးနိမ့်အသံကို အရည်အသွေးမြင့်အသံသို့ မြှင့်တင်ခြင်းဖြင့် ဘလူးတုသ်မိုက်၏ အသံအရည်အသွေး ပိုကောင်းအောင်လုပ်နိုင်သည်။</translation>
 <translation id="6065289257230303064">လက်မှတ် အကြောင်းအရာ ဒါရိုက်ထရီ အချင်းလက္ခဏာများ</translation>
-<translation id="6065690209261668796">သင်၏ အလုပ်လိပ်စာကို Chrome မှ ဖယ်ရှားမလား။</translation>
 <translation id="6066794465984119824">ပုံဟက်ရှ်ကုဒ်ကို သတ်မှတ်မထားပါ</translation>
 <translation id="6069464830445383022">သင့် Google Account သည် သင်၏ Chromebook သို့ လက်မှတ်ထိုးဝင်ရမည့်အကောင့်ဖြစ်သည်</translation>
 <translation id="6071181508177083058">စကားဝှက် အတည်ပြုပါ</translation>
@@ -7530,6 +7531,7 @@
 <translation id="628726841779494414">ပရင်တာဆက်တင်များတွင် သင့်ပရင်တာများကို စီမံနိုင်သည်</translation>
 <translation id="6287288864483377583">ထည့်သွင်းခြင်းကို တစ်ခုတည်းသော အသိအမှတ်ပြုလက်မှတ်အတွက်သာ ပံ့ပိုးထားသည်</translation>
 <translation id="6287828400772161253">Android ဖုန်း (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">‘Google AI မုဒ်’ အသုံးပြုရန်</translation>
 <translation id="6290613030083731160">အနီးတွင် မျှဝေနေသော စက်များမရှိပါ။ <ph name="LINK_BEGIN" />ပိုမိုလေ့လာရန်<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">သိုလှောင်ခန်းနေရာ မလောက်သည့်အတွက် ပြန်ယူ၍မရပါ။</translation>
 <translation id="6291741848715722067">မှန်ကြောင်းအတည်ပြုကုဒ်</translation>

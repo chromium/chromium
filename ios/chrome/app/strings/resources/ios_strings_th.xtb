@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">ใช้งานวันนี้</translation>
 <translation id="1523567067736644845">ปลดล็อกเพื่อแสดงรหัสผ่าน</translation>
 <translation id="1524563461097350801">ไม่เป็นไร ขอบคุณ</translation>
+<translation id="1528290585275339320">เปิดการแชร์เนื้อหาของหน้าเว็บ</translation>
 <translation id="1531038290222364269">แสดงแท็บ</translation>
 <translation id="1536390784834419204">แปลหน้าเว็บ</translation>
 <translation id="1540800554400757039">ที่อยู่ 1</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">Google Safe Browsing ปิดอยู่ รับการปกป้องให้พ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>
 <translation id="1620510694547887537">กล้องถ่ายรูป</translation>
 <translation id="1622717322707146952">เลือก "เพิ่มใน Google ปฏิทิน" หรือ "เพิ่มใน Apple Calendar"</translation>
+<translation id="1625502944725673937">ไม่สามารถนำเข้าไฟล์ได้</translation>
 <translation id="1629162218487290695">ยืนยันว่าเป็นคุณ…</translation>
 <translation id="1636234353664774105">ขอเส้นทางไปยังจุดหมายของคุณพร้อมคำแนะนำแบบเลี้ยวต่อเลี้ยวโดยใช้ฟีเจอร์การนำทาง</translation>
 <translation id="1641113438599504367">Google Safe Browsing</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">สมาร์ทวอทช์</translation>
 <translation id="1743244221910283364">ทิ้งการเปลี่ยนแปลง</translation>
 <translation id="1748975028205587434">เลือกไฟล์</translation>
+<translation id="1749733017156547309">ต้องระบุรหัสผ่าน</translation>
 <translation id="174998178145075354">{count,plural, =1{ตัวเลือกที่อยู่ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}other{ตัวเลือกที่อยู่ {count} รายการพร้อมให้ใช้งานอยู่เหนือแป้นพิมพ์}}</translation>
 <translation id="1750238553597293878">ใช้รหัสผ่านในบัญชี Google ต่อไป</translation>
 <translation id="17513872634828108">แท็บที่เปิดอยู่</translation>
@@ -509,6 +512,7 @@
 <translation id="2952278131021475699">การค้นหาด้วยกล้องโดยใช้ Lens</translation>
 <translation id="2962516096219646456">ดูข้อมูลการป้อนข้อความอัตโนมัติทั้งหมด</translation>
 <translation id="2969979262385602596">ไม่สามารถลงชื่อเข้าใช้ได้ โปรดลองอีกครั้งในภายหลัง</translation>
+<translation id="2975761176769946178">ต้องระบุ URL</translation>
 <translation id="297667759942911166">ทำงานร่วมกันในกลุ่มแท็บ</translation>
 <translation id="2987670534697681860">โปรดยืนยันว่าเป็นคุณเพื่อเข้าถึงรหัสผ่านทั้งหมดในอุปกรณ์นี้</translation>
 <translation id="2989523299700148168">เข้าชมล่าสุด</translation>
@@ -572,6 +576,7 @@
 <translation id="3224075676564434205">แท็บจะยังคงเปิดอยู่ในอุปกรณ์นี้ แต่ระบบจะลบกลุ่มออกจากอุปกรณ์ทั้งหมดที่ลงชื่อเข้าใช้ <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">หากต้องการส่งออกรหัสผ่าน คุณต้องตั้งรหัสผ่านในอุปกรณ์ก่อน</translation>
 <translation id="3227137524299004712">ไมโครโฟน</translation>
+<translation id="3234251228180563751">ชื่อผู้ใช้มีอักขระเกิน 1,000 ตัว</translation>
 <translation id="3235063766008841141">มีการป้อนลงในเว็บไซต์หลอกลวงและพบในการละเมิดข้อมูล</translation>
 <translation id="3235242129752692527">แก้ไขรายละเอียดกิจกรรม แล้วแตะ "บันทึก"</translation>
 <translation id="323863549127671026">แท็บและกลุ่มแท็บที่เปิดอยู่</translation>
@@ -1030,6 +1035,7 @@
 <translation id="5079950360618752063">ใช้รหัสผ่านที่แนะนำ</translation>
 <translation id="5083464117946352670">ไม่สามารถระบุขนาดไฟล์ได้</translation>
 <translation id="5085558938118581974">ค้นหาแท็บในอุปกรณ์ทุกเครื่องที่ซิงค์</translation>
+<translation id="508645147179720015">หมายเหตุมีอักขระเกิน 1,000 ตัว</translation>
 <translation id="5087098519049306025">การติดตามราคา</translation>
 <translation id="5090832849094901128">การลบรหัสผ่านนี้จะไม่ลบบัญชีของคุณใน <ph name="WEBSITE" /></translation>
 <translation id="5118462200606189584">เพิ่มบัญชี…</translation>
@@ -1041,6 +1047,7 @@
 <translation id="5128788795241319992">สํารวจเมนูใหม่</translation>
 <translation id="5132942445612118989">ซิงค์รหัสผ่าน ประวัติการเข้าชม และอื่นๆ ในอุปกรณ์ทุกเครื่อง</translation>
 <translation id="5141363746588976328">ซ่อนการ์ด "ดูราคาที่ต่ำลงได้ในแท็บ"</translation>
+<translation id="514154868070499296">แบบอักษร: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ออกจากตัวสลับแท็บ</translation>
 <translation id="5148717509369231739">การนำเข้าจาก Safari</translation>
 <translation id="5157638238828697074">เกิดข้อผิดพลาด เปิดแอปพลิเคชันไม่ได้</translation>
@@ -1558,6 +1565,7 @@
 <translation id="7015418667643980944">มุมมองแบบแยก</translation>
 <translation id="7016070607649558507">คุณมีรหัสผ่านที่ไม่รัดกุม 1 รายการ แก้ไขเลยเพื่อความปลอดภัย</translation>
 <translation id="7016958933495968912">ตัวเลือกสำหรับฟีเจอร์สำรวจ</translation>
+<translation id="7017863468226238797">ไฟล์นี้ว่างเปล่าหรือมีข้อมูลในรูปแบบที่ไม่ถูกต้อง</translation>
 <translation id="7029809446516969842">รหัสผ่าน</translation>
 <translation id="7035825883570480307">เปิดการแจ้งเตือนไหม</translation>
 <translation id="7039345315346323556">ล่าสุด</translation>
@@ -1919,6 +1927,7 @@
 <translation id="8434837876193928924">รายละเอียดกลุ่มแท็บ</translation>
 <translation id="8438566539970814960">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8439758443371991593">ซ่อน "เพิ่มไปยังเรื่องรออ่าน"</translation>
+<translation id="8443986842926457191">URL มีจำนวนอักขระมากกว่า 2,048 ตัว</translation>
 <translation id="8449869326050867919">แชร์รหัสผ่านแล้ว</translation>
 <translation id="8473863474539038330">ที่อยู่และอื่นๆ</translation>
 <translation id="8474378002946546633">อนุญาตการแจ้งเตือน</translation>
@@ -1969,6 +1978,7 @@
 <translation id="8637431369725868556">รับการปกป้องให้พ้นจากเว็บไซต์ที่เป็นอันตราย</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ไม่มีรหัสผ่านที่ถูกละเมิด}=1{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}other{มีรหัสผ่านที่ถูกละเมิด {COUNT} รายการ}}</translation>
 <translation id="8643403533759285912">ลบกลุ่ม</translation>
+<translation id="8645245178269185266">แชร์เนื้อหาของหน้าเว็บกับ Gemini เพื่อรับคำตอบที่เกี่ยวข้องมากขึ้น</translation>
 <translation id="8647280737650867362">ยกเลิกการติดตามราคาไม่ได้</translation>
 <translation id="8654802032646794042">ยกเลิก</translation>
 <translation id="8660600697590740984">รูปภาพที่คัดลอกด้วย Lens</translation>
@@ -1983,6 +1993,7 @@
 <translation id="8680786875305615692">ช่วยปรับปรุงความปลอดภัยในอินเทอร์เน็ตให้กับทุกคน</translation>
 <translation id="8680787084697685621">รายละเอียดการลงชื่อเข้าใช้บัญชีเก่าเกินไป</translation>
 <translation id="8690752723634292147">ยืนยันการลบ</translation>
+<translation id="8692107307702113268">รหัสผ่านมีอักขระเกิน 1,000 ตัว</translation>
 <translation id="8692689525339542358">รับการปกป้องให้พ้นจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย</translation>
 <translation id="8692897097252418799">เลือกข้อมูลที่ต้องการส่งออก</translation>
 <translation id="8694281486652655615">แสดงรายการนี้</translation>
@@ -2065,6 +2076,7 @@
 <translation id="895541991026785598">รายงานปัญหา</translation>
 <translation id="8960979149015305">ปิดการดาวน์โหลด</translation>
 <translation id="8961092256396236619">การปกป้องที่ดียิ่งขึ้นปิดอยู่</translation>
+<translation id="8962863356073277855">รูปแบบ URL ควรเป็น https://www.example.com</translation>
 <translation id="8968766641738584599">บันทึกบัตร</translation>
 <translation id="8974714402877957201">1. เปิดการตั้งค่า iPad</translation>
 <translation id="8975015774710126284">ลบข้อมูลการท่องเว็บแล้ว</translation>

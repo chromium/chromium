@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smart-ur</translation>
 <translation id="1743244221910283364">Kassér ændringer</translation>
 <translation id="1748975028205587434">Vælg din fil</translation>
+<translation id="1749733017156547309">En adgangskode er påkrævet</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} mulig adresse er tilgængelig over dit tastatur.}one{{count} mulig adresse er tilgængelig over dit tastatur.}other{{count} mulige adresser er tilgængelige over dit tastatur.}}</translation>
 <translation id="1750238553597293878">Fortsæt med at bruge adgangskoderne på din Google-konto</translation>
 <translation id="17513872634828108">Åbne faner</translation>
@@ -509,6 +510,7 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2952278131021475699">Lens-kamerasøgning</translation>
 <translation id="2962516096219646456">Se alle Autofyld-data</translation>
 <translation id="2969979262385602596">Login mislykkedes. Prøv igen senere.</translation>
+<translation id="2975761176769946178">En webadresse er påkrævet</translation>
 <translation id="297667759942911166">Samarbejd i fanegrupper</translation>
 <translation id="2987670534697681860">Verificer din identitet for at få adgang til alle dine adgangskoder på denne enhed.</translation>
 <translation id="2989523299700148168">Besøgt for nylig</translation>
@@ -572,6 +574,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="3224075676564434205">Fanerne forbliver åbne på denne enhed, men gruppen slettes fra alle enheder, der er logget ind på <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Angiv en adgangskode på din enhed, før du kan eksportere adgangskoder.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3234251228180563751">Brugernavnet er på mere end 1.000 tegn</translation>
 <translation id="3235063766008841141">Angivet på et vildledende website og fundet i forbindelse med et brud på datasikkerheden</translation>
 <translation id="3235242129752692527">Rediger begivenhedsoplysningerne, og tryk på "Gem".</translation>
 <translation id="323863549127671026">Åbne faner og fanegrupper</translation>
@@ -1030,6 +1033,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="5079950360618752063">Brug den foreslåede adgangskode</translation>
 <translation id="5083464117946352670">Kan ikke fastslå filstørrelse.</translation>
 <translation id="5085558938118581974">Søg efter faner på synkroniserede enheder</translation>
+<translation id="508645147179720015">Noten indeholder mere end 1.000 tegn</translation>
 <translation id="5087098519049306025">Prissporing</translation>
 <translation id="5090832849094901128">Fjernelse af denne adgangskode sletter ikke din konto på <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Tilføj konto…</translation>
@@ -1919,6 +1923,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8434837876193928924">Oplysninger om fanegruppen</translation>
 <translation id="8438566539970814960">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8439758443371991593">Skjul Føj til læseliste</translation>
+<translation id="8443986842926457191">Webadressen indeholder mere end 2.048 tegn</translation>
 <translation id="8449869326050867919">Adgangskoden er delt</translation>
 <translation id="8473863474539038330">Adresser m.m.</translation>
 <translation id="8474378002946546633">Tillad notifikationer</translation>
@@ -1983,6 +1988,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8680786875305615692">Vær med til at forbedre sikkerheden på nettet for alle</translation>
 <translation id="8680787084697685621">Oplysningerne om kontologin er forældede.</translation>
 <translation id="8690752723634292147">Bekræft sletning</translation>
+<translation id="8692107307702113268">Adgangskoden er på mere end 1.000 tegn</translation>
 <translation id="8692689525339542358">Bliv beskyttet mod farlige websites, downloads og udvidelser.</translation>
 <translation id="8692897097252418799">Vælg de data, du vil eksportere</translation>
 <translation id="8694281486652655615">Viser dette element</translation>
@@ -2007,6 +2013,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8741995161408053644">Din Google-konto kan have andre former for browserhistorik på <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Opret link</translation>
 <translation id="8746155870861185046">Del fremhævet</translation>
+<translation id="8748678031495824833">Åbn AI-værktøjer på siden</translation>
 <translation id="8750037785291841318">Her finder du dine faner</translation>
 <translation id="8756969031206844760">Vil du opdatere adgangskoden?</translation>
 <translation id="8764015330924122850">Følg ikke <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="895541991026785598">Rapportér et problem</translation>
 <translation id="8960979149015305">Luk download</translation>
 <translation id="8961092256396236619">Forbedret beskyttelse er deaktiveret</translation>
+<translation id="8962863356073277855">Webadresseformatet skal være https://www.eksempel.com</translation>
 <translation id="8968766641738584599">Gem kort</translation>
 <translation id="8974714402877957201">1. Åbn iPad-indstillingerne</translation>
 <translation id="8975015774710126284">Browserdataene er blevet slettet</translation>

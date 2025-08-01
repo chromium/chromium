@@ -619,7 +619,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2040894699575719559">Stedet er blokeret</translation>
 <translation id="2041788246978549610">Bruge tilgængelige mikrofoner (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bakke 7</translation>
-<translation id="2043896419861982462">Gå til <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> for at skjule valgmuligheder for afbetaling</translation>
 <translation id="2045871135676061132">Konvolut Personlig</translation>
 <translation id="2046951263634619614">Boghandlere</translation>
 <translation id="2048261947532620704">Oversætter siden</translation>
@@ -1374,7 +1373,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="33073482541490531">Den adgangskode, du lige har brugt, er blevet lækket i forbindelse med et brud på datasikkerheden. Adgangs­kode­admin­istrator anbefaler, at du ændrer denne adgangskode nu.</translation>
 <translation id="3307649904964670439">Knappen Tilpas Chrome, aktivér for at tilpasse din browsers udseende</translation>
 <translation id="3308006649705061278">Organisationsenhed (OU)</translation>
-<translation id="3317077846337994567">Afbetaling er ikke tilgængelig lige nu. Prøv igen senere.</translation>
 <translation id="3318016344440038475">Tv-komedier</translation>
 <translation id="3324687287337751929">4 x 6 tommer</translation>
 <translation id="3324983252691184275">Højrød</translation>
@@ -1551,7 +1549,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3600106876108433070">Få flere oplysninger om sammenligningstabeller</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knappen Administrer Google-privatlivsindstillinger, aktivér for at gå til privatlivsindstillingerne på din Google-konto</translation>
-<translation id="3602695245205338770">Vælg en afbetalingsudbyder</translation>
 <translation id="3603507503523709">Appen er blokeret af din administrator</translation>
 <translation id="3605899229568538311">5 x 5 tommer</translation>
 <translation id="3606917451836803637">Tv-serier og -programmer</translation>
@@ -3180,7 +3177,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6327065120806001832">lokal netværksadgang</translation>
 <translation id="6328639280570009161">Prøv at deaktivere netværksforslag</translation>
 <translation id="6329815962353376655">&lt;Skriv et spørgsmål&gt;</translation>
-<translation id="6334834493885103305">Nu kan du betale på afbetaling med Affirm, Zip eller Klarna</translation>
 <translation id="6335029926534404762">Sportssko</translation>
 <translation id="6336948221660696475">VR er ikke tilladt</translation>
 <translation id="6337133576188860026">Frigiver mindre end <ph name="SIZE" />. Nogle websites indlæses muligvis langsommere under dit næste besøg.</translation>
@@ -3332,7 +3328,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6549443526281184652">Kostumer</translation>
 <translation id="6550245281449521513">Lås af musen er ikke tilladt</translation>
 <translation id="6554732001434021288">Senest besøgt for <ph name="NUM_DAYS" /> dage siden</translation>
-<translation id="6556866813142980365">Gør det igen</translation>
+<translation id="6556866813142980365">Annuller fortryd</translation>
 <translation id="6557715786897013164">14 x 17 tommer</translation>
 <translation id="6560786330438719938">Apps, der er installeret eller afinstalleret, og hvor ofte de bruges</translation>
 <translation id="6567832540451970450">Din administrator tillader <ph name="PERMISSION" /> for dette website</translation>
@@ -3582,6 +3578,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6989763994942163495">Vis avancerede indstillinger...</translation>
 <translation id="6991376411634620997">Adgangsnøgle • Windows Hello</translation>
 <translation id="6997288673234694149">Baseball- og softballudstyr</translation>
+<translation id="6998512609912910179">Udfyld formularer hurtigere</translation>
 <translation id="6999480632062519056">Fitnesstræning og personlig træning</translation>
 <translation id="7003278537452757231">Tæpper</translation>
 <translation id="7003322000677139268">Dele og tilbehør til køretøjer</translation>
@@ -4751,7 +4748,6 @@ Yderligere oplysninger:
 <translation id="9005998258318286617">PDF-dokumentet kunne ikke indlæses.</translation>
 <translation id="9008201768610948239">Ignorer</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Ingen}=1{Fra 1 website}one{Fra # website}other{Fra # websites}}</translation>
-<translation id="9012194306129927220">Nu kan du betale på afbetaling med Affirm eller Zip</translation>
 <translation id="9014705027639070815">De websites, du besøger, kan anmode Chrome om oplysninger for at hjælpe dem med at måle effektiviteten af deres annoncer. Chrome giver websites mulighed for at indsamle begrænsede typer data, f.eks. om du har foretaget et køb, når du har besøgt et website.</translation>
 <translation id="9018120810758822233">Angiv din sikkerhedskode til <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">mail</translation>

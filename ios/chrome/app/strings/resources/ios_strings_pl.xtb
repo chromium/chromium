@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Odrzuć zmiany</translation>
 <translation id="1748975028205587434">Wybierz plik</translation>
+<translation id="1749733017156547309">Hasło jest wymagane</translation>
 <translation id="174998178145075354">{count,plural, =1{Nad klawiaturą dostępna jest {count} opcja adresu.}few{Nad klawiaturą dostępne są {count} opcje adresu.}many{Nad klawiaturą dostępnych jest {count} opcji adresu.}other{Nad klawiaturą dostępne jest {count} opcji adresu.}}</translation>
 <translation id="1750238553597293878">Nadal używaj haseł na swoim koncie Google</translation>
 <translation id="17513872634828108">Otwarte karty</translation>
@@ -509,6 +510,7 @@ Twoja wyszukiwarka to <ph name="DSE_NAME" />. Zapoznaj się z jej instrukcjami,
 <translation id="2952278131021475699">Wyszukiwanie za pomocą aparatu i Obiektywu</translation>
 <translation id="2962516096219646456">Zobacz wszystkie dane autouzupełniania</translation>
 <translation id="2969979262385602596">Nie udało się zalogować. Spróbuj ponownie później.</translation>
+<translation id="2975761176769946178">Podanie URL-a jest wymagane</translation>
 <translation id="297667759942911166">Współpraca w grupach kart</translation>
 <translation id="2987670534697681860">Aby mieć dostęp do wszystkich haseł na tym urządzeniu, potwierdź swoją tożsamość.</translation>
 <translation id="2989523299700148168">Ostatnio odwiedzone</translation>
@@ -572,6 +574,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="3224075676564434205">Karty pozostaną otwarte na tym urządzeniu, ale grupa zostanie usunięta ze wszystkich urządzeń zalogowanych na konto <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Aby wyeksportować hasła, musisz najpierw ustawić kod dostępu na urządzeniu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3234251228180563751">Nazwa użytkownika ma ponad 1000 znaków</translation>
 <translation id="3235063766008841141">Wpisane na stronie wprowadzającej w błąd i przejęte wskutek naruszenia bezpieczeństwa danych</translation>
 <translation id="3235242129752692527">Zmień szczegóły wydarzenia i kliknij „Zapisz”.</translation>
 <translation id="323863549127671026">Otwarte karty i grupy kart</translation>
@@ -1030,6 +1033,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="5079950360618752063">Użyj sugerowanego hasła</translation>
 <translation id="5083464117946352670">Nie można ustalić rozmiaru pliku.</translation>
 <translation id="5085558938118581974">Wyszukiwanie kart na zsynchronizowanych urządzeniach</translation>
+<translation id="508645147179720015">Notatka ma ponad 1000 znaków</translation>
 <translation id="5087098519049306025">Śledzenie cen</translation>
 <translation id="5090832849094901128">Usunięcie tego hasła nie spowoduje usunięcia Twojego konta w serwisie <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Dodaj konto…</translation>
@@ -1919,6 +1923,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8434837876193928924">Szczegóły grupy kart</translation>
 <translation id="8438566539970814960">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8439758443371991593">Ukryj opcję Dodaj do listy Do przeczytania</translation>
+<translation id="8443986842926457191">URL zawiera więcej niż 2048 znaków</translation>
 <translation id="8449869326050867919">Hasło udostępnione</translation>
 <translation id="8473863474539038330">Adresy i ustawienia</translation>
 <translation id="8474378002946546633">Zezwalaj na powiadomienia.</translation>
@@ -1983,6 +1988,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8680786875305615692">Pomóż poprawić bezpieczeństwo wszystkich użytkowników internetu</translation>
 <translation id="8680787084697685621">Dane logowania na konto są nieaktualne.</translation>
 <translation id="8690752723634292147">Potwierdź usunięcie</translation>
+<translation id="8692107307702113268">Hasło ma ponad 1000 znaków</translation>
 <translation id="8692689525339542358">Uzyskaj ochronę przed niebezpiecznymi stronami, pobieranymi plikami i rozszerzeniami.</translation>
 <translation id="8692897097252418799">Wybierz dane, które chcesz wyeksportować</translation>
 <translation id="8694281486652655615">Wyświetla ten element</translation>
@@ -2065,6 +2071,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="895541991026785598">Zgłaszanie problemu</translation>
 <translation id="8960979149015305">Zamknij pobieranie</translation>
 <translation id="8961092256396236619">Silniejsza ochrona jest wyłączona</translation>
+<translation id="8962863356073277855">URL powinien być w formacie https://www.example.com</translation>
 <translation id="8968766641738584599">Zapisz kartę</translation>
 <translation id="8974714402877957201">1. Otwórz Ustawienia na iPadzie.</translation>
 <translation id="8975015774710126284">Dane przeglądania zostały usunięte</translation>

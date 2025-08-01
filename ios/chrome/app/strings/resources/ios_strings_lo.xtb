@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">ເປີດນຳໃຊ້ມື້ນີ້</translation>
 <translation id="1523567067736644845">ປົດລັອກເພື່ອສະແດງລະຫັດຜ່ານ</translation>
 <translation id="1524563461097350801">ບໍ່, ຂອບໃຈ</translation>
+<translation id="1528290585275339320">ເປີດໃຊ້ການແບ່ງປັນເນື້ອຫາຂອງໜ້າເວັບ</translation>
 <translation id="1531038290222364269">ສະແດງແຖບ</translation>
 <translation id="1536390784834419204">ແປໜ້າ</translation>
 <translation id="1540800554400757039">ທີ່ຢູ່ 1</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">ໃນຂະນະນີ້ Safe Browsing ຂອງທ່ານປິດຢູ່. ຮັບການປົກປ້ອງຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="1620510694547887537">ກ້ອງ​ຖ່າຍ​ຮູບ</translation>
 <translation id="1622717322707146952">ເລືອກ “ເພີ່ມໃສ່ Google ປະຕິທິນ“ ຫຼື “ເພີ່ມໃສ່ Apple Calendar.“</translation>
+<translation id="1625502944725673937">ບໍ່ສາມາດນຳເຂົ້າໄຟລ໌ໄດ້</translation>
 <translation id="1629162218487290695">ຢັ້ງຢືນວ່າແມ່ນທ່ານ…</translation>
 <translation id="1636234353664774105">ຂໍເສັ້ນທາງໄປຫາປາຍທາງຂອງທ່ານພ້ອມທັງຄຳແນະນຳແບບເທື່ອລະຂັ້ນຕອນໂດຍໃຊ້ຄຸນສົມບັດການນໍາທາງ</translation>
 <translation id="1641113438599504367">Safe Browsing</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">ສະມາດວອດ</translation>
 <translation id="1743244221910283364">ຍົກເລີກການປ່ຽນແປງ</translation>
 <translation id="1748975028205587434">ເລືອກໄຟລ໌ຂອງທ່ານ</translation>
+<translation id="1749733017156547309">ຕ້ອງໃສ່ລະຫັດຜ່ານ</translation>
 <translation id="174998178145075354">{count,plural, =1{ຕົວເລືອກສຳລັບທີ່ຢູ່ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}other{ຕົວເລືອກສຳລັບທີ່ຢູ່ {count} ລາຍການພ້ອມໃຫ້ນຳໃຊ້ຢູ່ເທິງແປ້ນພິມຂອງທ່ານ.}}</translation>
 <translation id="1750238553597293878">ໃຊ້ລະຫັດຜ່ານໃນບັນຊີ Google ຂອງທ່ານຕໍ່ໄປ</translation>
 <translation id="17513872634828108">ແຖບ​ເປີດ</translation>
@@ -509,6 +512,7 @@
 <translation id="2952278131021475699">ຊອກຫາດ້ວຍກ້ອງໂດຍໃຊ້ Lens</translation>
 <translation id="2962516096219646456">ເບິ່ງຂໍ້ມູນການຕື່ມຂໍ້ມູນອັດຕະໂນມັດທັງໝົດ</translation>
 <translation id="2969979262385602596">ເຂົ້າ​ສູ່​ລະ​ບົບບໍ່ໄດ້, ກະລຸນາລອງໃໝ່ພາຍຫຼັງ.</translation>
+<translation id="2975761176769946178">ຕ້ອງລະບຸ URL</translation>
 <translation id="297667759942911166">ຮ່ວມມືໃນກຸ່ມແຖບ</translation>
 <translation id="2987670534697681860">ກະລຸນາຢັ້ງຢືນວ່າແມ່ນທ່ານເພື່ອເຂົ້າເຖິງລະຫັດຜ່ານທັງໝົດຂອງທ່ານຢູ່ອຸປະກອນເຄື່ອງນີ້.</translation>
 <translation id="2989523299700148168">ເຂົ້າເບິ່ງເມື່ອບໍ່ດົນມານີ້</translation>
@@ -572,6 +576,7 @@
 <translation id="3224075676564434205">ແຖບຈະຍັງເປີດຢູ່ໃນອຸປະກອນນີ້ ແຕ່ລະບົບຈະລຶບກຸ່ມອອກຈາກທຸກອຸປະກອນທີ່ເຂົ້າສູ່ລະບົບ <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">ເພື່ອສົ່ງອອກລະຫັດຜ່ານ, ທ່ານຕ້ອງຕັ້ງລະຫັດຜ່ານໃນອຸປະກອນຂອງທ່ານກ່ອນ.</translation>
 <translation id="3227137524299004712">ໄມໂຄຣໂຟນ</translation>
+<translation id="3234251228180563751">ຊື່ຜູ້ໃຊ້ມີຫຼາຍກວ່າ 1000 ຕົວອັກສອນ</translation>
 <translation id="3235063766008841141">ປ້ອນໃນເວັບໄຊຫຼອກລວງແລະ ພົບເຫັນໃນການລະເມີດຂໍ້ມູນ</translation>
 <translation id="3235242129752692527">ແກ້ໄຂລາຍລະອຽດນັດໝາຍແລ້ວແຕະໃສ່ “ບັນທຶກ.“</translation>
 <translation id="323863549127671026">ແຖບ ແລະ ກຸ່ມແຖບທີ່ເປີດຢູ່ໃນປັດຈຸບັນ</translation>
@@ -1030,6 +1035,7 @@
 <translation id="5079950360618752063">ໃຊ້ລະຫັດຜ່ານທີ່ແນະນຳ</translation>
 <translation id="5083464117946352670">ບໍ່​ສາ​ມາດ​ກຳ​ນົດ​ຂະ​ໜາດ​ໄຟ​ລ໌​ໄດ້.</translation>
 <translation id="5085558938118581974">ຊອກຫາແຖບໃນອຸປະກອນທຸກເຄື່ອງທີ່ຊິ້ງ</translation>
+<translation id="508645147179720015">ໝາຍເຫດມີຫຼາຍກວ່າ 1000 ຕົວອັກສອນ</translation>
 <translation id="5087098519049306025">ການຕິດຕາມລາຄາ</translation>
 <translation id="5090832849094901128">ການລຶບລະຫັດຜ່ານນີ້ຈະບໍ່ລຶບບັນຊີຂອງທ່ານໃນ <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">ເພີ່ມບັນຊີ…</translation>
@@ -1041,6 +1047,7 @@
 <translation id="5128788795241319992">ສຳຫຼວດເມນູໃໝ່</translation>
 <translation id="5132942445612118989">ຊິ້ງຂໍ້ມູນລະຫັດຜ່ານ, ປະຫວັດຂອງທ່ານ ແລະ ອື່ນໆອີກຢູ່ໃນທຸກອຸປະກອນ</translation>
 <translation id="5141363746588976328">ເຊື່ອງບັດເບິ່ງລາຄາຫຼຸດລົງໃນແຖບຂອງທ່ານ</translation>
+<translation id="514154868070499296">ຟອນ: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ອອກຈາກຕົວປ່ຽນແຖບ</translation>
 <translation id="5148717509369231739">ການນຳເຂົ້າຈາກ Safari</translation>
 <translation id="5157638238828697074">ມີບາງຢ່າງຜິດພາດເກີດຂຶ້ນ. ເປີດແອັບພລິເຄຊັນບໍ່ໄດ້.</translation>
@@ -1558,6 +1565,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="7015418667643980944">ມຸມມອງແບບແຍກ</translation>
 <translation id="7016070607649558507">ທ່ານມີລະຫັດຜ່ານງ່າຍ 1 ລາຍການ. ແກ້ໄຂດຽວນີ້ເພື່ອຄວາມປອດໄພ.</translation>
 <translation id="7016958933495968912">ຕົວເລືອກສຳລັບ Discover</translation>
+<translation id="7017863468226238797">ໄຟລ໌ນີ້ຫວ່າງເປົ່າ ຫຼື ມີຂໍ້ມູນໃນຮູບແບບທີ່ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="7029809446516969842">ລະ​ຫັດ​ຜ່ານ</translation>
 <translation id="7035825883570480307">ເປີດການແຈ້ງເຕືອນບໍ?</translation>
 <translation id="7039345315346323556">ຫຼ້າສຸດ</translation>
@@ -1919,6 +1927,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8434837876193928924">ລາຍລະອຽດກຸ່ມແຖບ</translation>
 <translation id="8438566539970814960">ເຮັດໃຫ້ການຊອກຫາ ແລະ ການທ່ອງເວັບດີຂຶ້ນ</translation>
 <translation id="8439758443371991593">ເຊື່ອງ ເພີ່ມໃສ່ລາຍຊື່ການອ່ານ</translation>
+<translation id="8443986842926457191">URL ແມ່ນຫຼາຍກວ່າ 2048 ຕົວອັກສອນ.</translation>
 <translation id="8449869326050867919">ແບ່ງປັນລະຫັດຜ່ານແລ້ວ</translation>
 <translation id="8473863474539038330">ທີ່ຢູ່ ແລະ ອື່ນໆອີກ</translation>
 <translation id="8474378002946546633">ອະນຸຍາດການແຈ້ງເຕືອນ</translation>
@@ -1969,6 +1978,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8637431369725868556">ຮັບການປົກປ້ອງຈາກເວັບໄຊທີ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ບໍ່ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ}=1{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}other{ມີລະຫັດຜ່ານທີ່ຖືກລະເມີດ {COUNT} ລາຍການ}}</translation>
 <translation id="8643403533759285912">ລຶບກຸ່ມ</translation>
+<translation id="8645245178269185266">ແບ່ງປັນເນື້ອຫາຂອງໜ້າເວັບກັບ Gemini ເພື່ອຮັບຄຳຕອບທີ່ກ່ຽວຂ້ອງຫຼາຍຂຶ້ນ</translation>
 <translation id="8647280737650867362">ບໍ່ສາມາດຍົກເລີກການຕິດຕາມລາຄາໄດ້.</translation>
 <translation id="8654802032646794042">ຍົກເລີກ</translation>
 <translation id="8660600697590740984">ຮູບທີ່ສຳເນົາດ້ວຍ Lens</translation>
@@ -1983,6 +1993,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="8680786875305615692">ຊ່ວຍປັບປຸງຄວາມປອດໄພໃນອິນເຕີເນັດສຳລັບທຸກຄົນ</translation>
 <translation id="8680787084697685621">ລາຍ​ລະ​ອຽດ​ການລົງຊື່ເຂົ້າໃຊ້ບັນຊີລ້າສະໄໝແລ້ວ.</translation>
 <translation id="8690752723634292147">ຢືນຢັນການລຶບ</translation>
+<translation id="8692107307702113268">ລະຫັດຜ່ານມີຫຼາຍກວ່າ 1000 ຕົວອັກສອນ</translation>
 <translation id="8692689525339542358">ຮັບການປົກປ້ອງຈາກເວັບໄຊ, ການດາວໂຫຼດ ແລະ ສ່ວນຂະຫຍາຍທີ່ເປັນອັນຕະລາຍ.</translation>
 <translation id="8692897097252418799">ເລືອກຂໍ້ມູນທີ່ທ່ານຕ້ອງການສົ່ງອອກ</translation>
 <translation id="8694281486652655615">ສະແດງລາຍການນີ້</translation>
@@ -2065,6 +2076,7 @@ Handoff ຍັງ​ຕ້ອງ​ໄດ້​ເປີດ​ໃຊ້​ງາ
 <translation id="895541991026785598">ລາຍ​ງານ​ບັນ​ຫາ</translation>
 <translation id="8960979149015305">ປິດດາວໂຫຼດ</translation>
 <translation id="8961092256396236619">ການປົກປ້ອງທີ່ປັບປຸງດີຂຶ້ນປິດຢູ່</translation>
+<translation id="8962863356073277855">ຮູບແບບ URL ຄວນເປັນ https://www.example.com</translation>
 <translation id="8968766641738584599">ບັນທຶກບັດໄວ້</translation>
 <translation id="8974714402877957201">1. ເປີດການຕັ້ງຄ່າ iPad</translation>
 <translation id="8975015774710126284">ຂໍ້ມູນການທ່ອງເວັບຖືກລຶບອອກແລ້ວ</translation>

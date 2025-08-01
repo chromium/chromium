@@ -623,7 +623,6 @@
 <translation id="2040894699575719559">Տեղորոշումն արգելափակված է</translation>
 <translation id="2041788246978549610">Օգտագործել հասանելի խոսափողները (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Դարակ 7</translation>
-<translation id="2043896419861982462">Տարաժամկետ տարբերակները թաքցնելու համար անցեք <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Գրախանութներ</translation>
 <translation id="2048261947532620704">Էջը թարգմանվում է</translation>
@@ -662,6 +661,7 @@
 <translation id="2102495993840063010">Android հավելվածներ</translation>
 <translation id="2102519472192754194">Վեբ դիտարկիչներ</translation>
 <translation id="2103210856015238101">Մշտական հաճախորդի քարտերի ցուցակը, որոնց տվյալները կարող են լրացվել մեկ կոճակի սեղմումով, ցուցադրված է ամբողջ էկրանով։</translation>
+<translation id="2104739941682874393">Ընդլայնված ինքնալրացման գործառույթն ավելի լավ է ճանաչում ձևերը և ավելի արագ ավտոմատ լրացնում դրանք</translation>
 <translation id="2105838220373099643">Դերախաղեր</translation>
 <translation id="2107021941795971877">Տպման աջակցում</translation>
 <translation id="2108755909498034140">Վերագործարկեք համակարգիչը</translation>
@@ -1380,7 +1380,6 @@
 <translation id="33073482541490531">Գաղտնաբառը, որ հենց նոր օգտագործեցիք, կոտրվել է տվյալների արտահոսքի պատճառով։ Գաղտնաբառերի կառավարիչը խորհուրդ է տալիս անհապաղ փոխել այն։</translation>
 <translation id="3307649904964670439">«Անհատականացնել Chrome-ը» կոճակ․ ակտիվացրեք՝ դիտարկիչի տեսքն անհատականացնելու համար</translation>
 <translation id="3308006649705061278">Ստորաբաժանում (OU)</translation>
-<translation id="3317077846337994567">Տարաժամկետ վճարումն այս պահին հասանելի չէ։ Փորձեք ավելի ուշ։</translation>
 <translation id="3318016344440038475">Հեռուստատեսային կատակերգություններ</translation>
 <translation id="3324687287337751929">4 x 6 դյույմ</translation>
 <translation id="3324983252691184275">Բոսորագույն</translation>
@@ -1557,7 +1556,6 @@
 <translation id="3600106876108433070">Իմանալ ավելին համեմատության աղյուսակների մասին</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">«Կառավարել Google-ի գաղտնիության կարգավորումները» կոճակ․ ակտիվացրեք՝ ձեր Google հաշվի գաղտնիության կարգավորումները բացելու համար</translation>
-<translation id="3602695245205338770">Ընտրեք տարաժամկետ վճարման ծառայություն</translation>
 <translation id="3603507503523709">Ձեր ադմինիստրատորն արգելափակել է հավելվածը</translation>
 <translation id="3605899229568538311">5 x 5 դյույմ</translation>
 <translation id="3606917451836803637">Հեռուստահաղորդումներ և ծրագրեր</translation>
@@ -2436,6 +2434,7 @@
 <translation id="5052517576853118371">Ակտիվ թեմաներ</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Այս ֆայլը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}one{Այս ֆայլը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}other{Այս ֆայլերը «Փոխանակում մոտակա սարքերի հետ» գործառույթի միջոցով ուղարկելու համար ձեր սարքում տարածք ազատեք (<ph name="DISK_SPACE_SIZE" />)}}</translation>
 <translation id="505757197798929356">Նշեք բացման պատճառը (պարտադիր է)</translation>
+<translation id="5058282932481719070">իմանալ ավելին ընդլայնված ինքնալրացման մասին կարգավորումներում</translation>
 <translation id="5060419232449737386">Ենթագրերի կարգավորումներ</translation>
 <translation id="5060483733937416656">Դուք ընտրել եք, որ կայքերում, որոնք օգտագործում են <ph name="PROVIDER_ORIGIN" /> աղբյուրը, հաստատումը կատարվի Windows Hello-ի միջոցով։ Հնարավոր է՝ այս մատակարարը տեղեկություններ է պահել ձեր վճարման եղանակի մասին։ Դուք կարող եք այդ տեղեկությունների <ph name="LINK_TEXT" />։</translation>
 <translation id="5061227663725596739">Արդյո՞ք նկատի ունեիք «<ph name="LOOKALIKE_DOMAIN" />»</translation>
@@ -3039,6 +3038,7 @@
 <translation id="6062937464449575061">Այլևս չհետագծել գինը</translation>
 <translation id="6063415549109819824">Հիփոթեքային վարկեր</translation>
 <translation id="6070432475334343308">Ֆայլերից մեկը կամ մի քանիսը չեն վերբեռնվել <ph name="CLOUD_PROVIDER" />-ի <ph name="FOLDER_NAME" /> պանակ</translation>
+<translation id="6071503852498277813">Բովանդակության էջանշման վերլուծիչի ծառայություն</translation>
 <translation id="6078069862923723141">Երկնագույն 2</translation>
 <translation id="6085149458302186532">Պիտակներ (գունավոր)</translation>
 <translation id="6087312102907839798">Նմանատիպ որոնումներ</translation>
@@ -3189,7 +3189,6 @@
 <translation id="6327065120806001832">լոկալ ցանցի հասանելիություն</translation>
 <translation id="6328639280570009161">Անջատեք ցանցի գործողությունների կանխատեսումը</translation>
 <translation id="6329815962353376655">&lt;Մուտքագրեք հարց&gt;</translation>
-<translation id="6334834493885103305">Այժմ Affirm-ի, Zip-ի կամ Klarna-ի օգնությամբ կարող եք տարաժամկետ վճարումներ կատարել</translation>
 <translation id="6335029926534404762">Սպորտային կոշիկներ</translation>
 <translation id="6336948221660696475">VR-ի օգտագործման թույլտվությունը մերժվել է</translation>
 <translation id="6337133576188860026">Կազատվի մինչև <ph name="SIZE" /> տարածք։ Դրանից հետո որոշ կայքեր հնարավոր է՝ ավելի դանդաղ բեռնվեն։</translation>
@@ -3563,6 +3562,7 @@
 <translation id="695140971690006676">Զրոյացնել բոլորը</translation>
 <translation id="6954049078461159956">Հոկեյ</translation>
 <translation id="695582302419398462">Ստվարաթուղթ (երկշերտ)</translation>
+<translation id="6957153644870901611">Միացրեք ընդլայնված ինքնալրացման գործառույթը՝ ավելի շատ դաշտեր ինքնալրացնելու համար</translation>
 <translation id="6957887021205513506">Սերվերի վկայագիրը կեղծ է:</translation>
 <translation id="6958564499836457428">Կառավարել Google-ի գաղտնիության կարգավորումները Google հաշվում</translation>
 <translation id="6961844873822989059">Կարող է հայցել սարքի տառատեսակներն օգտագործելու թույլտվություն</translation>
@@ -3591,6 +3591,7 @@
 <translation id="6989763994942163495">Ցույց տալ լրացուցիչ կարգավորումները…</translation>
 <translation id="6991376411634620997">Մուտքի բանալի • Windows Hello</translation>
 <translation id="6997288673234694149">Բեյսբոլի և սոֆթբոլի պարագաներ</translation>
+<translation id="6998512609912910179">Ավելի արագ լրացրեք ձևերը</translation>
 <translation id="6999480632062519056">Ֆիթնես և անհատական մարզումներ</translation>
 <translation id="7003278537452757231">Գորգեր և կարպետներ</translation>
 <translation id="7003322000677139268">Մեքենաների պահեստամասեր և աքսեսուարներ</translation>
@@ -4758,7 +4759,6 @@
 <translation id="9005998258318286617">Չհաջողվեց բեռնել PDF փաստաթուղթը։</translation>
 <translation id="9008201768610948239">Անտեսել</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Կայքեր չկան}=1{1 կայքից}one{# կայքից}other{# կայքից}}</translation>
-<translation id="9012194306129927220">Այժմ Affirm-ի կամ Zip-ի օգնությամբ կարող եք տարաժամկետ վճարումներ կատարել</translation>
 <translation id="9014705027639070815">Կայքերը, որոնք այցելում եք, կարող են տեղեկություններ խնդրել Chrome-ից՝ օգնելու գնահատել իրենց գովազդի արդյունավետությունը։ Chrome-ը կայքերին թույլատրում է հավաքել որոշակի տվյալներ, օրինակ՝ արդյոք դուք գնում եք կատարել կայք այցելելուց հետո։</translation>
 <translation id="9018120810758822233">Մուտքագրեք <ph name="CREDIT_CARD" /> քարտի ձեր անվտանգության կոդը</translation>
 <translation id="901834265349196618">էլփոստ</translation>

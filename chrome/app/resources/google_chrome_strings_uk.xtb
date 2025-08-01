@@ -82,6 +82,7 @@
 <translation id="2091012649849228750">Щоб отримувати майбутні оновлення Google Chrome, потрібна операційна система Windows 10 або новішої версії. На цьому комп’ютері встановлено Windows 8.</translation>
 <translation id="2094648590148273905">Умови використання ОС Chrome Flex</translation>
 <translation id="2094919256425865063">Усе одно вийти з Chrome?</translation>
+<translation id="2096213354152647998">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував дозвіл "<ph name="PERMISSION" />".</translation>
 <translation id="2106831557840787829">ОС Chrome Flex і <ph name="BEGIN_LINK_LINUX_OSS" />середовище для розробки Linux<ph name="END_LINK_LINUX_OSS" /> працюють завдяки додатковому <ph name="BEGIN_LINK_CROS_OSS" />програмному забезпеченню з відкритим кодом<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="2108778574543343055">Вимкнути фоновий режим Chrome для додатків</translation>
 <translation id="2120620239521071941">З цього пристрою буде видалено стільки елементів: <ph name="ITEMS_COUNT" />. Щоб відновити дані пізніше, увійдіть в обліковий запис Chrome як <ph name="USER_EMAIL" />.</translation>
@@ -455,6 +456,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="6696915334902295848">Веб-переглядачу Chrome потрібен доступ до мікрофона для цього сайту</translation>
 <translation id="6712881677154121168">Помилка завантаження: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Пришвидшіть роботу Chrome</translation>
+<translation id="6734827584173583205">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і ще <ph name="COUNT" />.</translation>
 <translation id="6735387454586646204">Операційна система Chrome Flex</translation>
 <translation id="6750954913813541382">Щоб виправляти орфографічні помилки, Chrome надсилає в Google текст, який ви вводите у веб-переглядачі</translation>
 <translation id="6760235774835597023">Прискорює роботу сайтів за допомогою системи V8 для Chrome, проте робить вебпереглядач трохи менш стійким до атак. Це налаштування ввімкнено.</translation>
@@ -480,6 +482,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="7024536598735240744">Помилка розпакування: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">Встановлення зупинено.</translation>
 <translation id="7025800014283535195">Тут можна перемикати профілі Chrome</translation>
+<translation id="7051685429025310665">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: "<ph name="PERMISSION_1" />", "<ph name="PERMISSION_2" />" і "<ph name="PERMISSION_3" />".</translation>
 <translation id="7059914902409643750">Персоналізуйте Chrome</translation>
 <translation id="7060643578009939353">Знайти це відео за допомогою Google Об’єктива</translation>
 <translation id="7071827361006050863">Незабаром Chrome видалить дані веб-перегляду</translation>
@@ -541,6 +544,7 @@ Google Chrome потрібен доступ до Bluetooth. <ph name="IDS_SERIAL
 <translation id="77283119132245232">Сервіс трасування системи для <ph name="BROWSER_NAME" />. Якщо цей сервіс вимкнути, дані про трасування ефективності, створені вебпереглядачем, не включатимуть події на рівні системи, як-от перемикання контексту й події готових потоків.</translation>
 <translation id="7736869414036750079">За вимогами вашої організації, ви повинні ввійти в обліковий запис Chrome</translation>
 <translation id="7747138024166251722">Програмі встановлення не вдалося створити тимчасовий каталог. Перевірте наявність вільного простору на диску та дозволу на встановлення програмного забезпечення.</translation>
+<translation id="7748969056734910029">Останнім часом ви не відвідували цей сайт. Вебпереглядач Chrome скасував такі дозволи: "<ph name="PERMISSION_1" />" і "<ph name="PERMISSION_2" />".</translation>
 <translation id="7761834446675418963">Натисніть своє ім’я, щоб відкрити Chrome і розпочати перегляд сайтів.</translation>
 <translation id="7777080907402804672">Якщо зображення не має корисного опису, Chrome спробує додати його. Для цього зображення надсилаються в Google. Ви можете будь-коли вимкнути це в налаштуваннях.</translation>
 <translation id="778331955594035129">Веб-переглядачу Chrome потрібен дозвіл на доступ до геоданих для цього сайту</translation>

@@ -6081,7 +6081,6 @@ Kichiklashtirish uchun Ctrl+Alt+Yorqinlikni pasaytirish tugmalarini bosing.</tra
 <translation id="5235050375939235066">Ilova o‘chirib tashlansinmi?</translation>
 <translation id="523505283826916779">Qulayliklar sozlamalari</translation>
 <translation id="5235750401727657667">Yangi varaqda chiqadigan sahifani almashtirish</translation>
-<translation id="5236054983756407518">Chromedan uy manzili olib tashlansinmi?</translation>
 <translation id="5237124927415201087"><ph name="DEVICE_TYPE" /> qurilmangizni telefoningiz bilan osongina sozlang. Wi-Fi va Google hisobini parol kiritmasdan qoʻshish mumkin.
     <ph name="BR" />
     <ph name="BR" />
@@ -7213,7 +7212,6 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="606449270532897041">Sayt maʼlumotlarini boshqarish</translation>
 <translation id="6064764629679333574">Bluetooth mikrofoningizdagi ovoz sifatini yaxshilang. Ovoz sozlamalarini pastdan yuqoriga aniqlikka oʻzgartiring.</translation>
 <translation id="6065289257230303064">Sertifikat subyekti katalogi atributlari</translation>
-<translation id="6065690209261668796">Chromedan ishxona manzili olib tashlansinmi?</translation>
 <translation id="6066794465984119824">Rasm heshi belgilanmagan</translation>
 <translation id="6069464830445383022">Chromebook qurilmangizga Google hisobingizdan kirasiz</translation>
 <translation id="6071181508177083058">parolni tasdiqlang</translation>
@@ -7538,6 +7536,7 @@ Ochiq eksponenta (<ph name="PUBLIC_EXPONENT_NUM_BITS" /> bit):
 <translation id="628726841779494414">Printerlarni sozlamalar orqali boshqaring</translation>
 <translation id="6287288864483377583">Faqat bitta sertifikatni import qilish mumkin</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google AI rejimida soʻrash</translation>
 <translation id="6290613030083731160">Atrofda hech qanday qurilma topilmadi. <ph name="LINK_BEGIN" />Batafsil<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Tiklash uchun xotirada joy yetarli emas.</translation>
 <translation id="6291741848715722067">Tasdiqlash kodi</translation>
@@ -9207,6 +9206,7 @@ Yana # ta oshkor qilingan parollaringiz bor. Google Parollar menejeri ularni hoz
 <translation id="7481312909269577407">Oldinga</translation>
 <translation id="7481358317100446445">Tayyor</translation>
 <translation id="748138892655239008">Sertifikatga asosiy cheklovlar</translation>
+<translation id="7482823403440483089">Yaxshilangan avtomatik kiritish</translation>
 <translation id="7483732342458943943">Bu havola yaroqsiz</translation>
 <translation id="7484645889979462775">Bu saytda hech qachon</translation>
 <translation id="7484943269191249363">Bu qurilmada Google Parollar menejerida saqlangan barcha kirish kalitlarini ishlatish mumkin. Bu faqat bir marta bajariladi.</translation>

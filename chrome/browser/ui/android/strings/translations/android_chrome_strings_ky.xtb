@@ -715,6 +715,7 @@ Chrome'дун ишин жакшыртуу үчүн маалыматтарды к
 <translation id="4380055775103003110">Эгер бул маселе кайталана берсе, <ph name="SITE_ETLD_PLUS_ONE" /> аркылуу башка жолдор менен улантып көрүңүз.</translation>
 <translation id="4384468725000734951">Издөө үчүн Sogou колдонулууда</translation>
 <translation id="4387647248986092471">Унаа профилинин кулпусун түзүү</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{1 же андан көбүрөөк күн колдонулбаган өтмөктөр же топтор}other{# же андан көбүрөөк күн колдонулбаган өтмөктөр же топтор}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Жүктөлүп алынууда…</translation>
 <translation id="4404568932422911380">Кыстармалар жок</translation>
 <translation id="4405224443901389797">Төмөнкүгө жылдыруу…</translation>

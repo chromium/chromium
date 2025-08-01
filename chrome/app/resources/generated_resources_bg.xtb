@@ -6074,7 +6074,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="5235050375939235066">Да се деинсталира ли приложението?</translation>
 <translation id="523505283826916779">Настройки за достъпност</translation>
 <translation id="5235750401727657667">Замяна на страницата, която виждате, при отваряне на нов раздел</translation>
-<translation id="5236054983756407518">Да се премахне ли домашният ви адрес от Chrome?</translation>
 <translation id="5237124927415201087">Лесно настройте устройството си <ph name="DEVICE_TYPE" /> чрез телефона си. Можете да добавите Wi-Fi мрежата и профила си в Google, без да въвеждате ръчно паролите си.
     <ph name="BR" />
     <ph name="BR" />
@@ -7206,7 +7205,6 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="606449270532897041">Управление на данните за сайтовете</translation>
 <translation id="6064764629679333574">Подобрете качеството на звука от микрофона с Bluetooth, като увеличите разделителната способност на звука.</translation>
 <translation id="6065289257230303064">Атрибути за директорията на субекта на сертификата</translation>
-<translation id="6065690209261668796">Да се премахне ли служебният ви адрес от Chrome?</translation>
 <translation id="6066794465984119824">Хеш стойността на изображението не е зададена</translation>
 <translation id="6069464830445383022">Влизате в Chromebook с профила си в Google</translation>
 <translation id="6071181508177083058">потвърждаване на паролата</translation>
@@ -7530,6 +7528,7 @@ Chrome Root Program има доверие, и постоянно се подла
 <translation id="628726841779494414">Управлявайте принтерите си от съответните настройки</translation>
 <translation id="6287288864483377583">Импортирането се поддържа само за единичен сертификат</translation>
 <translation id="6287828400772161253">Телефон с Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Попитайте режима с AI на Google</translation>
 <translation id="6290613030083731160">В близост няма налични споделящи устройства. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Възстановяването не е възможно поради липса на място в хранилището.</translation>
 <translation id="6291741848715722067">Код за потвърждение</translation>

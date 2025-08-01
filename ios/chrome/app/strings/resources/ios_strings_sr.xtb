@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Активан је данас</translation>
 <translation id="1523567067736644845">Откључајте да би се приказала лозинка</translation>
 <translation id="1524563461097350801">Не, хвала</translation>
+<translation id="1528290585275339320">Укључите дељење садржаја странице</translation>
 <translation id="1531038290222364269">Прикажите картице</translation>
 <translation id="1536390784834419204">Преведи страницу</translation>
 <translation id="1540800554400757039">1. ред за адресу</translation>
@@ -194,6 +195,7 @@
 <translation id="1741219894094057085">Паметан сат</translation>
 <translation id="1743244221910283364">Одбаци промене</translation>
 <translation id="1748975028205587434">Изаберите фајл</translation>
+<translation id="1749733017156547309">Лозинка је обавезна</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} опција за адресу је доступна изнад тастатуре.}one{{count} опција за адресу је доступна изнад тастатуре.}few{{count} опције за адресу су доступне изнад тастатуре.}other{{count} опција за адресу је доступно изнад тастатуре.}}</translation>
 <translation id="1750238553597293878">Наставите да користите лозинке на Google налогу</translation>
 <translation id="17513872634828108">Отворене картице</translation>
@@ -510,6 +512,7 @@
 <translation id="2952278131021475699">Претрага помоћу камере Објектива</translation>
 <translation id="2962516096219646456">Погледајте све податке Аутоматског попуњавања</translation>
 <translation id="2969979262385602596">Пријављивање није успело. Пробајте поново касније.</translation>
+<translation id="2975761176769946178">URL је обавезан</translation>
 <translation id="297667759942911166">Сарађујте у групама картица</translation>
 <translation id="2987670534697681860">Потврдите идентитет да бисте приступили свим лозинкама на овом уређају.</translation>
 <translation id="2989523299700148168">Недавно посећено</translation>
@@ -573,6 +576,7 @@
 <translation id="3224075676564434205">Картице ће остати отворене на овом уређају, али ће се група избрисати са свих уређаја пријављених на <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Да бисте извозили лозинке, прво морате да подесите шифру на уређају.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3234251228180563751">Корисничко име премашује 1000 знакова</translation>
 <translation id="3235063766008841141">Унесен је на обмањујућем сајту и пронађен при упаду у податке</translation>
 <translation id="3235242129752692527">Измените детаље догађаја и додирните Сачувај.</translation>
 <translation id="323863549127671026">Тренутно отворене картице и групе картица</translation>
@@ -1031,6 +1035,7 @@
 <translation id="5079950360618752063">Користите предложену лозинку</translation>
 <translation id="5083464117946352670">Није могуће утврдити величину датотеке.</translation>
 <translation id="5085558938118581974">Претражујте картице на синхронизованим уређајима</translation>
+<translation id="508645147179720015">Напомена премашује 1000 знакова</translation>
 <translation id="5087098519049306025">Праћење цена</translation>
 <translation id="5090832849094901128">Брисањем ове лозинке нећете избрисати налог на <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Додај налог…</translation>
@@ -1922,6 +1927,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8434837876193928924">Детаљи групе картица</translation>
 <translation id="8438566539970814960">Побољшај претраге и прегледање</translation>
 <translation id="8439758443371991593">Сакриј опцију Додај на листу за читање</translation>
+<translation id="8443986842926457191">URL има више од 2048 знакова</translation>
 <translation id="8449869326050867919">Лозинка се дели</translation>
 <translation id="8473863474539038330">Адресе и друго</translation>
 <translation id="8474378002946546633">Дозволи обавештења</translation>
@@ -1972,6 +1978,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8637431369725868556">Заштитите се од опасних сајтова.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Нема угрожених лозинки}=1{{COUNT} угрожена лозинка}one{{COUNT} угрожена лозинка}few{{COUNT} угрожене лозинке}other{{COUNT} угрожених лозинки}}</translation>
 <translation id="8643403533759285912">Избриши групу</translation>
+<translation id="8645245178269185266">Делите садржај странице са Gemini-јем да бисте добијали релевантније одговоре</translation>
 <translation id="8647280737650867362">Отказивање праћења цене није успело.</translation>
 <translation id="8654802032646794042">Откажи</translation>
 <translation id="8660600697590740984">Слика коју је копирао Објектив</translation>
@@ -1986,6 +1993,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="8680786875305615692">Побољшајте безбедност на вебу за свакога</translation>
 <translation id="8680787084697685621">Детаљи за пријављивање на налог су застарели.</translation>
 <translation id="8690752723634292147">Потврда брисања</translation>
+<translation id="8692107307702113268">Лозинка премашује 1000 знакова</translation>
 <translation id="8692689525339542358">Добијте заштиту од опасних сајтова, преузимања и додатака.</translation>
 <translation id="8692897097252418799">Одаберите податке које желите да извезете</translation>
 <translation id="8694281486652655615">Приказује ову ставку</translation>
@@ -2068,6 +2076,7 @@ Handoff треба да се омогући у одељку General (Опште)
 <translation id="895541991026785598">Пријавите проблем</translation>
 <translation id="8960979149015305">Затворите преузимање</translation>
 <translation id="8961092256396236619">Побољшана заштита је искључена</translation>
+<translation id="8962863356073277855">Формат URL-а треба да буде https://www.example.com</translation>
 <translation id="8968766641738584599">Сачувај картицу</translation>
 <translation id="8974714402877957201">1. Отворите подешавања iPad-а</translation>
 <translation id="8975015774710126284">Подаци прегледања су избрисани</translation>

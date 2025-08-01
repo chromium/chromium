@@ -216,6 +216,7 @@
 <translation id="1142713751288681188">Τύπος χαρτιού</translation>
 <translation id="1143142264369994168">Υπηρεσία υπογραφής πιστοποιητικού</translation>
 <translation id="1145593918056169051">Ο εκτυπωτής σταμάτησε να λειτουργεί</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Επεκτάσεις}=1{Επεκτάσεις ({SELECTED_ITEMS})}other{Επεκτάσεις ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Δείκτης κεφαλιού</translation>
 <translation id="114721135501989771">Έξυπνες λειτουργίες Google στο Chrome</translation>
 <translation id="1147322039136785890">Τώρα είναι η σειρά του χρήστη <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -734,6 +735,7 @@
 <translation id="150411034776756821">Κατάργηση ιστοτόπου <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Οι κοινόχρηστοι φάκελοι είναι διαθέσιμοι στα Windows στη θέση <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">εξαγωγή κωδικών πρόσβασης</translation>
+<translation id="1505654899813338756">Μπορείτε να ομαδοποιήσετε τις καρτέλες για να συγκεντρώσετε τις σχετικές σελίδες και να τις αποθηκεύσετε σε όλες τις συσκευές σας</translation>
 <translation id="1506061864768559482">Μηχανή αναζήτησης</translation>
 <translation id="1506187449813838456">Αύξηση τόνου</translation>
 <translation id="1507170440449692343">Αυτή η σελίδα δεν έχει πρόσβαση στην κάμερά σας.</translation>
@@ -5307,6 +5309,7 @@
 <translation id="4681930562518940301">Άνοιγμα αρχικής εικόνας σε νέα καρτέλα</translation>
 <translation id="4682481611456523884">Το ενσωματωμένο περιεχόμενο σε αυτόν τον ιστότοπο δεν μπορεί να χρησιμοποιεί πληροφορίες που έχει αποθηκεύσει σχετικά με εσάς</translation>
 <translation id="4682807230647698604">Όταν χρησιμοποιείτε αυτές τις λειτουργίες, τα σχετικά δεδομένα αποστέλλονται στην Google για τη δημιουργία εμπειριών AI</translation>
+<translation id="4683143253481759090">Το Chrome ενημερώθηκε</translation>
 <translation id="4683629100208651599">Μετατροπή σε πεζά γράμματα</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (προεπιλογή)</translation>
 <translation id="4684427112815847243">Συγχρονισμός όλων</translation>
@@ -6077,7 +6080,6 @@
 <translation id="5235050375939235066">Απεγκατάσταση εφαρμογής;</translation>
 <translation id="523505283826916779">Ρυθμίσεις προσβασιμότητας</translation>
 <translation id="5235750401727657667">Αντικατάσταση της σελίδας που βλέπετε κατά το άνοιγμα νέας καρτέλας</translation>
-<translation id="5236054983756407518">Να καταργηθεί η διεύθυνση σπιτιού από το Chrome;</translation>
 <translation id="5237124927415201087">Ρυθμίστε εύκολα τη συσκευή <ph name="DEVICE_TYPE" /> με το τηλέφωνό σας. Μπορείτε να προσθέσετε το Wi-Fi και τον Λογαριασμό σας Google χωρίς να εισαγάγετε με μη αυτόματο τρόπο τους κωδικούς πρόσβασής σας.
     <ph name="BR" />
     <ph name="BR" />
@@ -7209,7 +7211,6 @@
 <translation id="606449270532897041">Διαχείριση δεδομένων ιστοτόπου</translation>
 <translation id="6064764629679333574">Βελτιώστε την ποιότητα ήχου του μικροφώνου Bluetooth αναβαθμίζοντας τον ήχο από χαμηλή ανάλυση σε υψηλή ανάλυση.</translation>
 <translation id="6065289257230303064">Χαρακτηριστικά καταλόγου υποκειμένου πιστοποιητικού</translation>
-<translation id="6065690209261668796">Να καταργηθεί η διεύθυνση εργασίας από το Chrome;</translation>
 <translation id="6066794465984119824">Δεν έχει οριστεί ο κατακερματισμός εικόνας.</translation>
 <translation id="6069464830445383022">Συνδεθείτε στο Chromebook με τον Λογαριασμό σας Google</translation>
 <translation id="6071181508177083058">επιβεβαίωση κωδικού πρόσβασης</translation>
@@ -7533,6 +7534,7 @@
 <translation id="628726841779494414">Διαχείριση των εκτυπωτών σας στις ρυθμίσεις εκτυπωτών</translation>
 <translation id="6287288864483377583">Η εισαγωγή υποστηρίζεται μόνο για ένα πιστοποιητικό</translation>
 <translation id="6287828400772161253">Τηλέφωνο Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Ερώτηση στη Λειτουργία AI της Google</translation>
 <translation id="6290613030083731160">Δεν υπάρχουν διαθέσιμες συσκευές για κοινή χρήση περιεχομένου σε κοντινή απόσταση. <ph name="LINK_BEGIN" />Μάθετε περισσότερα<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Η επαναφορά δεν είναι δυνατή λόγω έλλειψης αποθηκευτικού χώρου.</translation>
 <translation id="6291741848715722067">Κωδικός επιβεβαίωσης</translation>

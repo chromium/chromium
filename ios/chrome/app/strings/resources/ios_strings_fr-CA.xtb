@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Actif aujourd'hui</translation>
 <translation id="1523567067736644845">Déverrouiller pour afficher le mot de passe</translation>
 <translation id="1524563461097350801">Non, merci</translation>
+<translation id="1528290585275339320">Activez le partage du contenu de la page</translation>
 <translation id="1531038290222364269">Afficher les onglets</translation>
 <translation id="1536390784834419204">Traduire la page</translation>
 <translation id="1540800554400757039">Ligne adresse 1</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">Votre Navigation sécurisée est actuellement désactivée. Profitez d'une protection contre les sites, les extensions et les téléchargements dangereux.</translation>
 <translation id="1620510694547887537">Caméra</translation>
 <translation id="1622717322707146952">Sélectionnez « Ajouter à Google Agenda » ou « Ajouter à Calendrier Apple ».</translation>
+<translation id="1625502944725673937">Impossible d'importer le fichier</translation>
 <translation id="1629162218487290695">Confirmer votre identité…</translation>
 <translation id="1636234353664774105">Obtenez des indications pour vous rendre à votre destination avec un itinéraire détaillé à l'aide de la fonctionnalité de navigation</translation>
 <translation id="1641113438599504367">Navigation sécurisée</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">Montre intelligente</translation>
 <translation id="1743244221910283364">Supprimer les modifications</translation>
 <translation id="1748975028205587434">Sélectionner votre fichier</translation>
+<translation id="1749733017156547309">Veuillez entrer un mot de passe</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} option d'adresse accessible au-dessus de votre clavier.}one{{count} option d'adresse accessible au-dessus de votre clavier.}other{{count} options d'adresse accessibles au-dessus de votre clavier.}}</translation>
 <translation id="1750238553597293878">Continuer à utiliser les mots de passe de votre compte Google</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
@@ -509,6 +512,7 @@ Vous utilisez <ph name="DSE_NAME" /> comme moteur de recherche. Consultez les in
 <translation id="2952278131021475699">Recherche avec Lentille Google au moyen de l'appareil photo</translation>
 <translation id="2962516096219646456">Voir toutes les données de remplissage automatique</translation>
 <translation id="2969979262385602596">Échec de connexion. Veuillez réessayer plus tard.</translation>
+<translation id="2975761176769946178">Veuillez entrer une URL</translation>
 <translation id="297667759942911166">Collaborer dans des groupes d'onglets</translation>
 <translation id="2987670534697681860">Confirmez qu'il s'agit bien de vous pour accéder à tous vos mots de passe sur cet appareil.</translation>
 <translation id="2989523299700148168">Visites récentes</translation>
@@ -572,6 +576,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="3224075676564434205">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Pour exporter vos mots de passe, vous devez d'abord définir un mot de passe sur votre appareil.</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3234251228180563751">Le nom d'utilisateur comprend plus de 1 000 caractères</translation>
 <translation id="3235063766008841141">Entré sur un site trompeur et trouvé dans une violation de données</translation>
 <translation id="3235242129752692527">Modifiez les détails de l'événement et touchez « Enregistrer ».</translation>
 <translation id="323863549127671026">Les onglets et les groupes d'onglets actuellement ouverts</translation>
@@ -1030,6 +1035,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="5083464117946352670">Imposs. déterm. taille fichier</translation>
 <translation id="5085558938118581974">Rechercher des onglets sur les appareils synchronisés</translation>
+<translation id="508645147179720015">La note contient plus de 1 000 caractères</translation>
 <translation id="5087098519049306025">Suivi des prix</translation>
 <translation id="5090832849094901128">Supprimer ce mot de passe ne supprimera pas également votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Ajouter un compte…</translation>
@@ -1041,6 +1047,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="5128788795241319992">Explorer le nouveau menu</translation>
 <translation id="5132942445612118989">Synchronisez vos mots de passe, votre historique et plus encore sur tous vos appareils</translation>
 <translation id="5141363746588976328">Masquer la carte Baisse de prix sur vos onglets</translation>
+<translation id="514154868070499296">Police : <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Quitter le Gestionnaire d'onglets</translation>
 <translation id="5148717509369231739">Importation Safari</translation>
 <translation id="5157638238828697074">Un problème est survenu. L'application n'a pas pu être ouverte.</translation>
@@ -1558,6 +1565,7 @@ Lorsque vous êtes en mode de navigation privée, les sites ne peuvent pas utili
 <translation id="7015418667643980944">Affichage partagé</translation>
 <translation id="7016070607649558507">Vous avez 1 mot de passe faible. Réglez ce problème maintenant pour rester en sécurité.</translation>
 <translation id="7016958933495968912">Options pour Découvertes</translation>
+<translation id="7017863468226238797">Ce fichier est vide ou contient des données dans un format incorrect</translation>
 <translation id="7029809446516969842">Mots de passe</translation>
 <translation id="7035825883570480307">Activer les notifications?</translation>
 <translation id="7039345315346323556">Récents</translation>
@@ -1919,6 +1927,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
 <translation id="8438566539970814960">Amélioration des recherches et de la navigation</translation>
 <translation id="8439758443371991593">Masquer Ajouter à la Liste de lecture</translation>
+<translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8473863474539038330">Adresses et plus</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
@@ -1969,6 +1978,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8637431369725868556">Protégez-vous contre les sites Web dangereux.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Aucun mot de passe compromis}=1{{COUNT} mot de passe compromis}one{{COUNT} mot de passe compromis}other{{COUNT} mots de passe compromis}}</translation>
 <translation id="8643403533759285912">Supprimer le groupe</translation>
+<translation id="8645245178269185266">Partagez le contenu de la page avec Gemini pour obtenir des réponses plus pertinentes</translation>
 <translation id="8647280737650867362">Impossible d'annuler le suivi du prix.</translation>
 <translation id="8654802032646794042">Annuler</translation>
 <translation id="8660600697590740984">Image copiée de Lentille</translation>
@@ -1983,6 +1993,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="8680786875305615692">Contribuer à l'amélioration de la sécurité sur le Web pour tous</translation>
 <translation id="8680787084697685621">L'information de connexion au compte n'est plus à jour.</translation>
 <translation id="8690752723634292147">Confirmer la suppression</translation>
+<translation id="8692107307702113268">Le mot de passe comprend plus de 1 000 caractères</translation>
 <translation id="8692689525339542358">Protégez-vous contre les sites dangereux, les téléchargements et les extensions.</translation>
 <translation id="8692897097252418799">Choisissez les données que vous souhaitez exporter</translation>
 <translation id="8694281486652655615">Affiche cet élément</translation>
@@ -2065,6 +2076,7 @@ Les sites peuvent utiliser des témoins afin de voir votre activité de navigati
 <translation id="895541991026785598">Signaler un problème</translation>
 <translation id="8960979149015305">Fermer le téléchargement</translation>
 <translation id="8961092256396236619">La protection renforcée est désactivée</translation>
+<translation id="8962863356073277855">L'URL doit respecter le format https://www.example.com</translation>
 <translation id="8968766641738584599">Enregistrer la carte</translation>
 <translation id="8974714402877957201">1. Ouvrez Réglages de l'iPad</translation>
 <translation id="8975015774710126284">Les données de navigation ont été supprimées</translation>

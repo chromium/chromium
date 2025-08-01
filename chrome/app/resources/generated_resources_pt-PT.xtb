@@ -6083,7 +6083,6 @@ Use Ctrl + Alt + Diminuir o brilho para diminuir o zoom.</translation>
 <translation id="5235050375939235066">Quer desinstalar a aplicação?</translation>
 <translation id="523505283826916779">Definições de acessibilidade</translation>
 <translation id="5235750401727657667">Substituir a página visualizada ao abrir um novo separador</translation>
-<translation id="5236054983756407518">Remover a sua morada de casa do Chrome?</translation>
 <translation id="5237124927415201087">Configure facilmente o dispositivo <ph name="DEVICE_TYPE" /> com o telemóvel. Pode adicionar a sua Conta Google e Wi-Fi sem introduzir manualmente as palavras-passe.
     <ph name="BR" />
     <ph name="BR" />
@@ -7216,7 +7215,6 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="606449270532897041">Faça a gestão dos dados de sites</translation>
 <translation id="6064764629679333574">Para melhorar a qualidade do som do microfone Bluetooth, altere o áudio de baixa resolução para alta resolução.</translation>
 <translation id="6065289257230303064">Atributos de directório do requerente do certificado</translation>
-<translation id="6065690209261668796">Remover a sua morada do trabalho do Chrome?</translation>
 <translation id="6066794465984119824">O hash da imagem não está definido</translation>
 <translation id="6069464830445383022">A sua Conta Google é o início de sessão do Chromebook</translation>
 <translation id="6071181508177083058">confirmar palavra-passe</translation>
@@ -7541,6 +7539,7 @@ Certifique-se de que não revela informações confidenciais.</translation>
 <translation id="628726841779494414">Faça a gestão das suas impressoras nas definições da impressora</translation>
 <translation id="6287288864483377583">Só é possível importar 1 certificado</translation>
 <translation id="6287828400772161253">Telemóvel Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Pedir ao Modo de IA da Google</translation>
 <translation id="6290613030083731160">Nenhum dispositivo disponível a partilhar nas proximidades. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Não é possível restaurar devido à falta de espaço de armazenamento.</translation>
 <translation id="6291741848715722067">Código de validação</translation>
@@ -9211,6 +9210,7 @@ Tem mais # palavras-passe comprometidas. O Gestor de Palavras-passe da Google re
 <translation id="7481312909269577407">Avançar</translation>
 <translation id="7481358317100446445">Pronta</translation>
 <translation id="748138892655239008">Restrições básicas do certificado</translation>
+<translation id="7482823403440483089">Preenchimento automático melhorado</translation>
 <translation id="7483732342458943943">Este link não funciona</translation>
 <translation id="7484645889979462775">Nunca para este site</translation>
 <translation id="7484943269191249363">Pode usar todas as chaves de acesso guardadas no Gestor de Palavras-passe da Google neste dispositivo. Apenas tem de o fazer uma vez.</translation>

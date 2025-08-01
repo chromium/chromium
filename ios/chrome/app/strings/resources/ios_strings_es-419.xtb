@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Reloj inteligente</translation>
 <translation id="1743244221910283364">Descartar cambios</translation>
 <translation id="1748975028205587434">Seleccionar el archivo</translation>
+<translation id="1749733017156547309">Debes ingresar una contraseña</translation>
 <translation id="174998178145075354">{count,plural, =1{Hay {count} opción de dirección disponible arriba del teclado.}other{Hay {count} opciones de dirección disponibles arriba del teclado.}}</translation>
 <translation id="1750238553597293878">Sigue usando las contraseñas en tu Cuenta de Google</translation>
 <translation id="17513872634828108">Pestañas abiertas</translation>
@@ -509,6 +510,7 @@ Tu motor de búsqueda es <ph name="DSE_NAME" />. Consulta las instrucciones para
 <translation id="2952278131021475699">Búsqueda con cámara de Lens</translation>
 <translation id="2962516096219646456">Ver todos los datos de autocompletar</translation>
 <translation id="2969979262385602596">Error al iniciar la sesión. Inténtalo más tarde.</translation>
+<translation id="2975761176769946178">Debes proporcionar una URL</translation>
 <translation id="297667759942911166">Colabora en grupos de pestañas</translation>
 <translation id="2987670534697681860">Verifica tu identidad para acceder a todas tus contraseñas en este dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recientemente</translation>
@@ -572,6 +574,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3224075676564434205">Las pestañas permanecerán abiertas en este dispositivo, pero se borrará el grupo de todos los dispositivos en los que accediste a <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar las contraseñas, primero debes establecer una en tu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
+<translation id="3234251228180563751">El nombre de usuario tiene más de 1,000 caracteres</translation>
 <translation id="3235063766008841141">Se ingresó en un sitio engañoso y se produjo una violación de la seguridad de los datos.</translation>
 <translation id="3235242129752692527">Edita los detalles del evento y presiona "Guardar".</translation>
 <translation id="323863549127671026">Pestañas y grupos de pestañas abiertos actualmente</translation>
@@ -1030,6 +1033,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="5079950360618752063">Usar la contraseña sugerida</translation>
 <translation id="5083464117946352670">Tamaño de archivo desconocido</translation>
 <translation id="5085558938118581974">Busca en las pestañas de los dispositivos sincronizados</translation>
+<translation id="508645147179720015">La nota tiene más de 1,000 caracteres</translation>
 <translation id="5087098519049306025">Seguimiento de precios</translation>
 <translation id="5090832849094901128">Si borras esta contraseña, no se quitará tu cuenta de <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Agregar cuenta…</translation>
@@ -1919,6 +1923,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8434837876193928924">Detalles del grupo de pestañas</translation>
 <translation id="8438566539970814960">Mejorar las búsquedas y la navegación</translation>
 <translation id="8439758443371991593">Ocultar la opción Agregar a la Lista de lectura</translation>
+<translation id="8443986842926457191">La URL tiene más de 2048 caracteres.</translation>
 <translation id="8449869326050867919">Se compartió la contraseña</translation>
 <translation id="8473863474539038330">Direcciones y más</translation>
 <translation id="8474378002946546633">Permitir notificaciones</translation>
@@ -1983,6 +1988,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8680786875305615692">Ayuda a mejorar la seguridad en la Web para todo el mundo</translation>
 <translation id="8680787084697685621">Los datos de inicio de cuenta están desactualizados</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
+<translation id="8692107307702113268">La contraseña tiene más de 1,000 caracteres</translation>
 <translation id="8692689525339542358">Obtén protección contra sitios, descargas y extensiones peligrosos.</translation>
 <translation id="8692897097252418799">Selecciona los datos que deseas exportar</translation>
 <translation id="8694281486652655615">Se mostrará este elemento</translation>
@@ -2065,6 +2071,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="895541991026785598">Informar un problema</translation>
 <translation id="8960979149015305">Cerrar descarga</translation>
 <translation id="8961092256396236619">Se desactivó la Protección mejorada</translation>
+<translation id="8962863356073277855">El formato de la URL debe ser https://www.example.com</translation>
 <translation id="8968766641738584599">Guardar la tarjeta</translation>
 <translation id="8974714402877957201">1. Abre Configuración en el iPad.</translation>
 <translation id="8975015774710126284">Se borraron los datos de navegación</translation>

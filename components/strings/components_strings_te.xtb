@@ -614,7 +614,6 @@
 <translation id="2040894699575719559">లొకేషన్ బ్లాక్ చేయబడింది</translation>
 <translation id="2041788246978549610">అందుబాటులో ఉన్న మైక్రోఫోన్‌లను (<ph name="MICS_COUNT" />) ఉపయోగించండి</translation>
 <translation id="2042213636306070719">ట్రే 7</translation>
-<translation id="2043896419861982462">కాలక్రమేణా పేమెంట్ చేసే ఆప్షన్‌లను దాచడానికి, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />‌కు వెళ్లండి</translation>
 <translation id="2045871135676061132">ఎన్వలప్ పర్సనల్</translation>
 <translation id="2046951263634619614">పుస్తకాల రిటైలర్‌లు</translation>
 <translation id="2048261947532620704">పేజీని అనువదిస్తోంది</translation>
@@ -1369,7 +1368,6 @@
 <translation id="33073482541490531">మీరు ఇప్పుడే ఉపయోగించిన పాస్‌వర్డ్, డేటా ఉల్లంఘనలో కనగొనబడింది. ఈ పాస్‌వర్డ్‌ను ఇప్పుడే మార్చమని పాస్‌వర్డ్ మేనేజర్ సిఫార్సు చేస్తోంది.</translation>
 <translation id="3307649904964670439">'Chromeను అనుకూలంగా మార్చండి' బటన్, మీ బ్రౌజర్ లుక్‌ను అనుకూలంగా మార్చడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
 <translation id="3308006649705061278">ఆర్గనైజేషనల్ యూనిట్ (OU)</translation>
-<translation id="3317077846337994567">కాలక్రమేణా పేమెంట్ చేసే ఆప్షన్ ప్రస్తుతం అందుబాటులో లేదు. తర్వాత మళ్లీ ట్రై చేయండి.</translation>
 <translation id="3318016344440038475">టీవీ కామెడీలు</translation>
 <translation id="3324687287337751929">4 x6 అంగుళాలు</translation>
 <translation id="3324983252691184275">ముదురు ఎరుపు రంగు</translation>
@@ -1524,6 +1522,7 @@
 <translation id="3570079787344939099">స్క్రోల్ చేయడం, జూమ్ చేయడం</translation>
 <translation id="357244642999988503">నిలువు వరుసను తీసివేయండి</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">అడ్రస్‌కు కొత్త సమాచారాన్ని జోడించండి</translation>
 <translation id="3575121482199441727">ఈ సైట్‌కు అనుమతించండి</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">వీధి పేరు ఆప్షన్‌ను ఎంచుకున్నారు</translation>
@@ -1546,7 +1545,6 @@
 <translation id="3600106876108433070">టేబుల్స్‌ను కంపార్ చేయడం గురించి తెలుసుకోండి</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">'Google గోప్యతా సెట్టింగ్‌లను మేనేజ్ చేయండి' బటన్, మీ Google ఖాతాకు సంబంధించిన గోప్యతా సెట్టింగ్‌లకు వెళ్లడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
-<translation id="3602695245205338770">కాలక్రమేణా పేమెంట్ చేసే ఆప్షన్ సంబంధించిన ప్రొవైడర్‌ను ఎంచుకోండి</translation>
 <translation id="3603507503523709">మీ నిర్వాహకుడు యాప్‌ను బ్లాక్ చేశారు</translation>
 <translation id="3605899229568538311">5 x 5 అంగుళాలు</translation>
 <translation id="3606917451836803637">టీవీ షోలు &amp; ప్రోగ్రామ్‌లు</translation>
@@ -3175,7 +3173,6 @@
 <translation id="6327065120806001832">లోకల్ నెట్‌వర్క్ యాక్సెస్</translation>
 <translation id="6328639280570009161">నెట్‌వర్క్ సూచనను నిలిపివేసి ప్రయత్నించండి</translation>
 <translation id="6329815962353376655">&lt;ప్రశ్నను టైప్ చేయండి&gt;</translation>
-<translation id="6334834493885103305">ఇప్పుడు మీరు Affirm, Zip, లేదా Klarnaను ఉపయోగించి వాయిదాల్లో పేమెంట్ చేయవచ్చు</translation>
 <translation id="6335029926534404762">క్రీడాకారుల షూస్</translation>
 <translation id="6336948221660696475">VRకు అనుమతి లేదు</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> కంటే తక్కువ స్థలాన్ని ఖాళీ చేస్తుంది. మీ తదుపరి సందర్శనలో కొన్ని సైట్‌లు మరింత నెమ్మదిగా లోడ్ కావచ్చు.</translation>
@@ -4127,6 +4124,7 @@
 <translation id="7908648876066812348">వర్చువల్ కార్డ్ ఆన్ అవుతోంది</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, Tabను నొక్కి, తర్వాత Enterను నొక్కి సెట్టింగ్‌లలో Chrome సేఫ్టీ చెక్ పేజీకి వెళ్లండి</translation>
 <translation id="791107458486222637">ఫలితాన్ని మళ్లీ జెనరేట్ చేస్తోంది</translation>
+<translation id="7912924955815015552">Safari నుండి దిగుమతి చేయబడింది</translation>
 <translation id="791551905239004656">డ్రాయింగ్ &amp; కలరింగ్</translation>
 <translation id="7916162853251942238">ఫ్లెక్సో బేస్</translation>
 <translation id="791698251820376781">సైన్ ఇన్ చేయడానికి మీ సంస్థ మిమ్మల్ని అనుమతించదు</translation>
@@ -4746,7 +4744,6 @@
 <translation id="9005998258318286617">PDF డాక్యుమెంట్‌ను లోడ్ చేయడం విఫలమైంది.</translation>
 <translation id="9008201768610948239">విస్మరించు</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{ఏవీ లేవు}=1{1 సైట్ నుండి}other{# సైట్‌ల నుండి}}</translation>
-<translation id="9012194306129927220">ఇప్పుడు మీరు Affirm లేదా Zipను ఉపయోగించి వాయిదాలలో పేమెంట్ చేయవచ్చు</translation>
 <translation id="9014705027639070815">సైట్‌లు, వాటి యాడ్‌ల పనితీరును అంచనా వేయడంలో సహాయపడటానికి, మీరు వాటిని చూసినప్పుడు, సమాచారం కోసం అవి Chromeను అడగవచ్చు. మీరు సైట్‌ను చూసిన తర్వాత కొనుగోలు చేసినా లేదా అనే పరిమిత రకాల డేటాను కలెక్ట్ చేయడానికి సైట్‌లను Chrome అనుమతిస్తుంది.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> కార్డ్‌కు సంబంధించి సెక్యూరిటీ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="901834265349196618">ఈమెయిల్‌</translation>

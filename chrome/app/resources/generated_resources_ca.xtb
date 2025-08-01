@@ -6076,7 +6076,6 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5235050375939235066">Vols desinstal·lar l'aplicació?</translation>
 <translation id="523505283826916779">Configuració d'accessibilitat</translation>
 <translation id="5235750401727657667">Substituir la pàgina que veus en obrir una pestanya nova</translation>
-<translation id="5236054983756407518">Vols suprimir de Chrome l'adreça de casa?</translation>
 <translation id="5237124927415201087">Configura fàcilment el teu <ph name="DEVICE_TYPE" /> amb el telèfon. Pots afegir la Wi‐Fi i el Compte de Google sense haver d'introduir les contrasenyes manualment.
     <ph name="BR" />
     <ph name="BR" />
@@ -7205,7 +7204,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="606449270532897041">Gestiona les dades del lloc web</translation>
 <translation id="6064764629679333574">Millora la qualitat del so del micròfon Bluetooth augmentant a alta resolució l'àudio de baixa resolució.</translation>
 <translation id="6065289257230303064">Atributs del directori del subjecte del certificat</translation>
-<translation id="6065690209261668796">Vols suprimir de Chrome l'adreça de la feina?</translation>
 <translation id="6066794465984119824">La funció resum de la imatge no està definida</translation>
 <translation id="6069464830445383022">El Compte de Google és el teu inici de sessió al Chromebook</translation>
 <translation id="6071181508177083058">confirmeu la contrasenya</translation>
@@ -7530,6 +7528,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="628726841779494414">Gestiona les teves impressores a la configuració de la impressora</translation>
 <translation id="6287288864483377583">Només s'admet la importació d'un sol certificat</translation>
 <translation id="6287828400772161253">Telèfon Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Fes preguntes al mode IA de Google</translation>
 <translation id="6290613030083731160">No hi ha cap dispositiu disponible a prop per compartir contingut. <ph name="LINK_BEGIN" />Més informació<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">No es pot dur a terme la restauració perquè no hi ha prou espai d'emmagatzematge.</translation>
 <translation id="6291741848715722067">Codi de confirmació</translation>

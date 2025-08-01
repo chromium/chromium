@@ -620,7 +620,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="2040894699575719559">Lokasi diblokir</translation>
 <translation id="2041788246978549610">Menggunakan mikrofon yang tersedia (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Baki 7</translation>
-<translation id="2043896419861982462">Untuk menyembunyikan opsi pembayaran dengan cicilan, buka <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Retailer Buku</translation>
 <translation id="2048261947532620704">Menerjemahkan halaman</translation>
@@ -1375,7 +1374,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="33073482541490531">Sandi yang baru saja Anda gunakan terekspos dalam pelanggaran data. Pengelola Sandi merekomendasikan untuk mengubah sandi ini sekarang.</translation>
 <translation id="3307649904964670439">Tombol Sesuaikan Chrome, aktifkan untuk menyesuaikan tampilan browser Anda</translation>
 <translation id="3308006649705061278">Unit Organisasi (OU)</translation>
-<translation id="3317077846337994567">Pembayaran dengan cicilan tidak tersedia untuk saat ini. Coba lagi nanti.</translation>
 <translation id="3318016344440038475">Komedi TV</translation>
 <translation id="3324687287337751929">4 x 6 inci (10 x 15 cm)</translation>
 <translation id="3324983252691184275">Merah Lembayung</translation>
@@ -1551,7 +1549,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="3600106876108433070">Pelajari tabel perbandingan</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Tombol Kelola setelan Privasi Google, aktifkan untuk membuka setelan privasi Akun Google Anda</translation>
-<translation id="3602695245205338770">Pilih penyedia untuk pembayaran dengan cicilan</translation>
 <translation id="3603507503523709">Aplikasi diblokir oleh administrator Anda</translation>
 <translation id="3605899229568538311">5 x 5 inci (12 x 12 cm)</translation>
 <translation id="3606917451836803637">Program &amp; Acara TV</translation>
@@ -3180,7 +3177,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6327065120806001832">akses jaringan lokal</translation>
 <translation id="6328639280570009161">Coba nonaktifkan prediksi jaringan</translation>
 <translation id="6329815962353376655">&lt;Ketik pertanyaan&gt;</translation>
-<translation id="6334834493885103305">Anda kini dapat melakukan pembayaran dengan cicilan menggunakan Affirm, Zip, atau Klarna</translation>
 <translation id="6335029926534404762">Sepatu Atletik</translation>
 <translation id="6336948221660696475">VR tidak diizinkan</translation>
 <translation id="6337133576188860026">Sediakan ruang kurang dari <ph name="SIZE" />. Beberapa situs mungkin dimuat lebih lambat saat dibuka lagi.</translation>
@@ -3582,6 +3578,7 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="6989763994942163495">Tampilkan setelan lanjutan...</translation>
 <translation id="6991376411634620997">Kunci sandi • Windows Hello</translation>
 <translation id="6997288673234694149">Perlengkapan Bisbol &amp; Sofbol</translation>
+<translation id="6998512609912910179">Isi formulir dengan lebih cepat</translation>
 <translation id="6999480632062519056">Instruksi Kebugaran &amp; Pelatihan Pribadi</translation>
 <translation id="7003278537452757231">Permadani &amp; Karpet</translation>
 <translation id="7003322000677139268">Suku Cadang &amp; Aksesori Kendaraan</translation>
@@ -4746,7 +4743,6 @@ disusupi oleh penyerang. Hanya buka <ph name="BEGIN_LINK" />situs yang tidak ama
 <translation id="9005998258318286617">Gagal memuat dokumen PDF.</translation>
 <translation id="9008201768610948239">Abaikan</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Tidak ada}=1{Dari 1 situs}other{Dari # situs}}</translation>
-<translation id="9012194306129927220">Anda kini dapat melakukan pembayaran dengan cicilan menggunakan Affirm atau Zip</translation>
 <translation id="9014705027639070815">Situs yang Anda buka dapat meminta informasi kepada Chrome untuk membantunya mengukur performa iklan. Chrome memungkinkan situs mengumpulkan jenis data tertentu, seperti apakah Anda melakukan pembelian setelah mengunjungi situs.</translation>
 <translation id="9018120810758822233">Masukkan kode keamanan untuk <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>

@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">ผลิตภัณฑ์ดูแลเส้นผม</translation>
 <translation id="1935353813610900265">ส่งความคิดเห็นสำหรับการค้นหาประวัติการเข้าชมซึ่งทำงานด้วย AI</translation>
 <translation id="1935995810530254458">คัดลอกเลย</translation>
+<translation id="1938580037092872316">เพิ่มข้อมูลใหม่ลงในที่อยู่ที่บันทึกไว้</translation>
 <translation id="1939059826036755332">การแสดงภาพซ้อนภาพอัตโนมัติ</translation>
 <translation id="1939175642807587452">สามารถขอส่งการแจ้งเตือนได้</translation>
 <translation id="1940441167050915935">ลบรหัสความปลอดภัยที่บันทึกไว้</translation>
@@ -619,7 +620,6 @@
 <translation id="2040894699575719559">ตำแหน่งถูกบล็อก</translation>
 <translation id="2041788246978549610">ใช้ไมโครโฟนที่พร้อมใช้งาน (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ถาด 7</translation>
-<translation id="2043896419861982462">หากต้องการซ่อนตัวเลือกการชําระเงินเป็นงวด ให้ไปที่ <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">ร้านหนังสือ</translation>
 <translation id="2048261947532620704">กำลังแปลหน้าเว็บ</translation>
@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">แอป Android</translation>
 <translation id="2102519472192754194">เว็บเบราว์เซอร์</translation>
 <translation id="2103210856015238101">บัตรสะสมคะแนนที่พร้อมใช้งานสำหรับการกรอกเมื่อแตะเปิดอยู่ที่ระดับความสูงเต็มหน้าจอ</translation>
+<translation id="2104739941682874393">ฟีเจอร์การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นเข้าใจแบบฟอร์มได้ดีขึ้นและสามารถป้อนข้อความอัตโนมัติให้คุณได้เร็วขึ้น</translation>
 <translation id="2105838220373099643">เกมสวมบทบาท</translation>
 <translation id="2107021941795971877">การรองรับการพิมพ์</translation>
 <translation id="2108755909498034140">รีสตาร์ทคอมพิวเตอร์</translation>
@@ -1374,7 +1375,6 @@
 <translation id="33073482541490531">ระบบพบว่ารหัสผ่านที่คุณเพิ่งใช้มีการรั่วไหลในการละเมิดข้อมูลครั้งหนึ่ง เครื่องมือจัดการรหัสผ่านแนะนำให้เปลี่ยนรหัสผ่านนี้ทันที</translation>
 <translation id="3307649904964670439">ปุ่มปรับแต่ง Chrome เปิดใช้งานเพื่อปรับแต่งรูปลักษณ์ของเบราว์เซอร์</translation>
 <translation id="3308006649705061278">หน่วยองค์กร (OU)</translation>
-<translation id="3317077846337994567">การจ่ายแบบผ่อนชำระยังไม่พร้อมให้บริการในขณะนี้ โปรดลองอีกครั้งในภายหลัง</translation>
 <translation id="3318016344440038475">รายการตลกทางทีวี</translation>
 <translation id="3324687287337751929">4 x 6 นิ้ว</translation>
 <translation id="3324983252691184275">แดงเข้ม</translation>
@@ -1528,6 +1528,7 @@
 <translation id="3570079787344939099">การเลื่อนและการซูม</translation>
 <translation id="357244642999988503">นำคอลัมน์ออก</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">เพิ่มข้อมูลใหม่ลงในที่อยู่</translation>
 <translation id="3575121482199441727">อนุญาตสำหรับเว็บไซต์นี้</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">เลือกตัวเลือกชื่อถนนแล้ว</translation>
@@ -1550,7 +1551,6 @@
 <translation id="3600106876108433070">ดูข้อมูลเกี่ยวกับตารางเปรียบเทียบ</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">ปุ่มจัดการการตั้งค่าความเป็นส่วนตัวของ Google เปิดใช้งานเพื่อไปที่การตั้งค่าความเป็นส่วนตัวของบัญชี Google</translation>
-<translation id="3602695245205338770">เลือกผู้ให้บริการการชําระเงินเป็นงวด</translation>
 <translation id="3603507503523709">ผู้ดูแลระบบบล็อกแอปพลิเคชันไว้</translation>
 <translation id="3605899229568538311">5 x 5 นิ้ว</translation>
 <translation id="3606917451836803637">รายการทีวี</translation>
@@ -2428,6 +2428,7 @@
 <translation id="5052517576853118371">หัวข้อที่ใช้งานอยู่</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{หากต้องการส่งไฟล์นี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}other{หากต้องการส่งไฟล์เหล่านี้โดยใช้การแชร์ใกล้เคียง ให้เพิ่มพื้นที่ว่าง (<ph name="DISK_SPACE_SIZE" />) ในอุปกรณ์}}</translation>
 <translation id="505757197798929356">ระบุเหตุผลในการเปิด (ต้องระบุ)</translation>
+<translation id="5058282932481719070">ดูข้อมูลเพิ่มเติมเกี่ยวกับฟีเจอร์การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นในการตั้งค่า</translation>
 <translation id="5060419232449737386">การตั้งค่าคำบรรยาย</translation>
 <translation id="5060483733937416656">คุณเลือกยืนยันด้วย Windows Hello ในเว็บไซต์ที่ใช้ <ph name="PROVIDER_ORIGIN" /> ผู้ให้บริการนี้อาจจัดเก็บข้อมูลเกี่ยวกับวิธีการชำระเงินของคุณไว้แล้ว โดยคุณ<ph name="LINK_TEXT" />ได้</translation>
 <translation id="5061227663725596739">หรือคุณหมายถึง <ph name="LOOKALIKE_DOMAIN" /></translation>
@@ -3029,6 +3030,7 @@
 <translation id="6062937464449575061">ยกเลิกการติดตามราคา</translation>
 <translation id="6063415549109819824">สินเชื่อบ้าน</translation>
 <translation id="6070432475334343308">ไม่ได้อัปโหลดไฟล์อย่างน้อย 1 รายการไปยัง <ph name="FOLDER_NAME" /> ใน <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">บริการโปรแกรมแยกวิเคราะห์บุ๊กมาร์กเนื้อหา</translation>
 <translation id="6078069862923723141">เขียวแกมน้ำเงิน 2</translation>
 <translation id="6085149458302186532">ป้าย (มีสี)</translation>
 <translation id="6087312102907839798">การค้นหาที่เกี่ยวข้อง</translation>
@@ -3179,7 +3181,6 @@
 <translation id="6327065120806001832">การเข้าถึงเครือข่ายภายใน</translation>
 <translation id="6328639280570009161">ลองปิดการคาดคะเนเครือข่าย</translation>
 <translation id="6329815962353376655">&lt;พิมพ์คำถาม&gt;</translation>
-<translation id="6334834493885103305">ตอนนี้คุณจะชำระเงินเป็นงวดได้โดยใช้ Affirm, Zip หรือ Klarna</translation>
 <translation id="6335029926534404762">รองเท้ากีฬา</translation>
 <translation id="6336948221660696475">ไม่อนุญาต VR</translation>
 <translation id="6337133576188860026">หากเพิ่มพื้นที่ว่างไม่ถึง <ph name="SIZE" /> ไซต์บางแห่งอาจโหลดช้าลงเมื่อคุณเข้าชมครั้งถัดไป</translation>
@@ -3541,6 +3542,7 @@
 <translation id="6935082727755903526">งานบัญชีและการเงิน</translation>
 <translation id="6935179587384421592"><ph name="SIZE" /> บางเว็บไซต์อาจโหลดช้ากว่าเดิมเมื่อคุณเข้าชมครั้งถัดไป</translation>
 <translation id="6936976777388162184">อุปกรณ์นี้เป็นส่วนหนึ่งของแพ็กเกจและไม่สามารถลงทะเบียนกับ Kiosk &amp; Signage Upgrade ได้</translation>
+<translation id="6942444979237658241">ความคิดเห็น - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">เกมยุทธศาสตร์</translation>
 <translation id="6944692733090228304">คุณป้อนรหัสผ่านในเว็บไซต์ที่ <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> ไม่ได้จัดการ เพื่อปกป้องบัญชี โปรดอย่าใช้รหัสผ่านซ้ำในแอปและเว็บไซต์อื่นๆ</translation>
 <translation id="6946949206576443118">ค้นหาเว็บใน Chrome</translation>
@@ -3553,6 +3555,7 @@
 <translation id="695140971690006676">รีเซ็ตทั้งหมด</translation>
 <translation id="6954049078461159956">ฮอกกี้</translation>
 <translation id="695582302419398462">กระดาษแข็ง (5 ชั้น)</translation>
+<translation id="6957153644870901611">เปิดฟีเจอร์การป้อนข้อความอัตโนมัติที่ดียิ่งขึ้นเพื่อป้อนข้อมูลในช่องอื่นๆ เพิ่มเติมโดยอัตโนมัติ</translation>
 <translation id="6957887021205513506">ใบรับรองของเซิร์ฟเวอร์น่าจะเป็นของปลอม</translation>
 <translation id="6958564499836457428">จัดการการตั้งค่าความเป็นส่วนตัวของ Google ในบัญชี Google</translation>
 <translation id="6961844873822989059">สามารถขอใช้แบบอักษรที่ติดตั้งอยู่ในอุปกรณ์ได้</translation>
@@ -3999,6 +4002,7 @@
 <translation id="7668654391829183341">อุปกรณ์ที่ไม่รู้จัก</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" /> <ph name="ITEM_POSITION" /> จาก <ph name="ITEMS_TOTAL" /> รายการ</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{การดำเนินการกับข้อมูลที่แจ้งว่าเป็นความลับ (มีการดำเนินการ 1 ครั้งตั้งแต่เข้าสู่ระบบ) <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />}other{การดำเนินการกับข้อมูลที่แจ้งว่าเป็นความลับ (มีการดำเนินการ # ครั้งตั้งแต่เข้าสู่ระบบ) <ph name="BEGIN_LINK" />ดูข้อมูลเพิ่มเติม<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">ข้อมูลจากบัญชี Google <ph name="USER_EMAIL" /> จะช่วยให้คุณกรอกแบบฟอร์มใน Chrome ได้เร็วขึ้น</translation>
 <translation id="7673278391011283842">กล่องจดหมาย 6</translation>
 <translation id="7675325315208090829">จัดการวิธีการชำระเงิน...</translation>
 <translation id="767550629621587224">แท็บแบบตัดล่วงหน้า</translation>
@@ -4131,6 +4135,7 @@
 <translation id="7908648876066812348">กำลังเปิดบัตรเสมือน (Virtual Card)</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" /> กด Tab ตามด้วย Enter เพื่อไปที่หน้าการตรวจสอบความปลอดภัยของ Chrome ในการตั้งค่า</translation>
 <translation id="791107458486222637">กำลังทำซ้ำผลลัพธ์</translation>
+<translation id="7912924955815015552">นำเข้าจาก Safari แล้ว</translation>
 <translation id="791551905239004656">การวาดภาพและระบายสี</translation>
 <translation id="7916162853251942238">เฟล็กโซเบส</translation>
 <translation id="791698251820376781">องค์กรของคุณไม่อนุญาตให้ลงชื่อเข้าใช้</translation>
@@ -4265,6 +4270,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{สร้างเมื่อ 1 เดือนที่ผ่านมา}other{สร้างเมื่อ {NUM_MONTHS} เดือนที่ผ่านมา}}</translation>
 <translation id="8148608574971654810">เวอร์ชัน PDF:</translation>
 <translation id="8149426793427495338">คอมพิวเตอร์ของคุณเข้าสู่โหมดสลีปแล้ว</translation>
+<translation id="815036624016370447">ข้อมูลจากบัญชี Google <ph name="ACCOUNT" /> จะช่วยให้คุณกรอกแบบฟอร์มใน Chrome ได้เร็วขึ้น</translation>
 <translation id="8150722005171944719">ไฟล์ที่ <ph name="URL" /> ไม่สามารถอ่านได้ เนื่องจากอาจถูกลบ ย้ายไปแล้ว หรือการอนุญาตของไฟล์อาจป้องกันการเข้าถึง</translation>
 <translation id="8151185429379586178">เครื่องมือสำหรับนักพัฒนาซอฟต์แวร์</translation>
 <translation id="8153865548451212769">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์นี้ไปยัง <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้ดาวน์โหลดไฟล์เหล่านี้ไปยัง <ph name="DESTINATION_NAME" />}}</translation>
@@ -4751,7 +4757,6 @@
 <translation id="9005998258318286617">ไม่สามารถโหลดเอกสาร PDF</translation>
 <translation id="9008201768610948239">ไม่สนใจ</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{ไม่มี}=1{จากเว็บไซต์ 1 แห่ง}other{จากเว็บไซต์ # แห่ง}}</translation>
-<translation id="9012194306129927220">ตอนนี้คุณจะชำระเงินเป็นงวดได้โดยใช้ Affirm หรือ Zip</translation>
 <translation id="9014705027639070815">เว็บไซต์ที่คุณเข้าชมสามารถขอข้อมูลจาก Chrome เพื่อช่วยวัดประสิทธิภาพของโฆษณา Chrome อนุญาตให้เว็บไซต์รวบรวมข้อมูลบางประเภทได้ เช่น คุณซื้อสินค้าหลังจากเข้าชมเว็บไซต์หรือไม่</translation>
 <translation id="9018120810758822233">ป้อนรหัสความปลอดภัยสำหรับ <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">อีเมล</translation>

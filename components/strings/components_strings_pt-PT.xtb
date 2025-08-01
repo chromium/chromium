@@ -620,7 +620,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2040894699575719559">Localização bloqueada</translation>
 <translation id="2041788246978549610">Usar microfones disponíveis (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tabuleiro 7</translation>
-<translation id="2043896419861982462">Para ocultar as opções de pagamento em prestações, aceda às <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Retalhistas de livros</translation>
 <translation id="2048261947532620704">A traduzir a página</translation>
@@ -659,6 +658,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2102495993840063010">Apps Android</translation>
 <translation id="2102519472192754194">Navegadores de Internet</translation>
 <translation id="2103210856015238101">Cartões de fidelidade disponíveis para preenchimento com o toque abertos à altura total.</translation>
+<translation id="2104739941682874393">O preenchimento automático melhorado compreende melhor os formulários e pode preenchê-los automaticamente de forma mais rápida</translation>
 <translation id="2105838220373099643">Jogos RPG</translation>
 <translation id="2107021941795971877">Suportes de impressão</translation>
 <translation id="2108755909498034140">Reiniciar o computador</translation>
@@ -1375,7 +1375,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="33073482541490531">A palavra-passe que acabou de usar foi encontrada numa violação de dados. O Gestor de Palavras-passe recomenda que altere esta palavra-passe agora.</translation>
 <translation id="3307649904964670439">Botão Personalizar o Chrome; ative para personalizar o aspeto do navegador</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
-<translation id="3317077846337994567">De momento, a opção de pagar em prestações não está disponível. Tente mais tarde.</translation>
 <translation id="3318016344440038475">Comédias de televisão</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmesim</translation>
@@ -1553,7 +1552,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3600106876108433070">Saiba mais sobre as tabelas de comparação</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botão Gerir definições de privacidade no Google; ative para aceder às definições de privacidade da sua Conta Google</translation>
-<translation id="3602695245205338770">Escolha um fornecedor de pagamento em prestações</translation>
 <translation id="3603507503523709">App bloqueada pelo seu administrador</translation>
 <translation id="3605899229568538311">5 x 5 pol.</translation>
 <translation id="3606917451836803637">Espetáculos e programas de TV</translation>
@@ -2431,6 +2429,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5052517576853118371">Tópicos ativos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este ficheiro através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}other{Para enviar estes ficheiros através da funcionalidade Partilhar na proximidade, liberte espaço (<ph name="DISK_SPACE_SIZE" />) no seu dispositivo}}</translation>
 <translation id="505757197798929356">Indique o motivo para a abertura (obrigatório)</translation>
+<translation id="5058282932481719070">saiba mais sobre o preenchimento automático melhorado nas definições</translation>
 <translation id="5060419232449737386">Definições das legendas</translation>
 <translation id="5060483733937416656">Optou por validar com o Windows Hello em Websites que usam o fornecedor <ph name="PROVIDER_ORIGIN" />. Este fornecedor pode ter armazenado informações sobre o seu método de pagamento, que pode <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Será que quis dizer <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3032,6 +3031,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6062937464449575061">Desativar acompanhamento de preços</translation>
 <translation id="6063415549109819824">Financiamento de imóveis residenciais</translation>
 <translation id="6070432475334343308">Um ou mais ficheiros não foram carregados para <ph name="FOLDER_NAME" /> no <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Serviço do analisador de marcadores de conteúdo</translation>
 <translation id="6078069862923723141">Ciano 2</translation>
 <translation id="6085149458302186532">Etiquetas (colorido)</translation>
 <translation id="6087312102907839798">Pesquisas relacionadas</translation>
@@ -3182,7 +3182,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6327065120806001832">acesso à rede local</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
 <translation id="6329815962353376655">&lt;Escreva uma pergunta&gt;</translation>
-<translation id="6334834493885103305">Já pode pagar em prestações com a Affirm, a Zip ou a Klarna</translation>
 <translation id="6335029926534404762">Calçado desportivo</translation>
 <translation id="6336948221660696475">RV não permitida</translation>
 <translation id="6337133576188860026">Liberta menos de <ph name="SIZE" />. É possível que alguns sites sejam carregados mais lentamente na sua próxima visita.</translation>
@@ -3557,6 +3556,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="695140971690006676">Repor tudo</translation>
 <translation id="6954049078461159956">Hóquei</translation>
 <translation id="695582302419398462">Cartão (parede dupla)</translation>
+<translation id="6957153644870901611">Ative o preenchimento automático melhorado para preencher automaticamente mais campos</translation>
 <translation id="6957887021205513506">O certificado do servidor parece ser uma falsificação.</translation>
 <translation id="6958564499836457428">Faça a gestão das definições de privacidade do Google na sua Conta Google</translation>
 <translation id="6961844873822989059">Pode solicitar a utilização de tipos de letra instalados no seu dispositivo</translation>
@@ -3585,6 +3585,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6989763994942163495">Mostrar definições avançadas...</translation>
 <translation id="6991376411634620997">Chave de acesso • Windows Hello</translation>
 <translation id="6997288673234694149">Equipamento de basebol e softbol</translation>
+<translation id="6998512609912910179">Preencha formulários mais rapidamente</translation>
 <translation id="6999480632062519056">Ensino de fitness e treino pessoal</translation>
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
 <translation id="7003322000677139268">Peças e acessórios para veículos</translation>
@@ -4756,7 +4757,6 @@ Detalhes adicionais:
 <translation id="9005998258318286617">Falha ao carregar o documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Nenhum}=1{De 1 site}other{De # sites}}</translation>
-<translation id="9012194306129927220">Já pode pagar em prestações com a Affirm ou a Zip</translation>
 <translation id="9014705027639070815">Os sites que visitar podem pedir ao Chrome informações para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome permite que os sites recolham tipos de dados limitados, por exemplo, se fez uma compra depois de visitar um site.</translation>
 <translation id="9018120810758822233">Introduza o código de segurança do cartão <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>

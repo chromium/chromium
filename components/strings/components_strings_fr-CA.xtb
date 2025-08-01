@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">Soins des cheveux</translation>
 <translation id="1935353813610900265">Envoyez des commentaires pour la recherche dans l'historique propulsée par l'IA</translation>
 <translation id="1935995810530254458">Copier quand même</translation>
+<translation id="1938580037092872316">Ajouter de nouvelles informations à l'adresse enregistrée</translation>
 <translation id="1939059826036755332">Incrustation d'image automatique</translation>
 <translation id="1939175642807587452">Les sites peuvent demander à envoyer des notifications</translation>
 <translation id="1940441167050915935">Supprimer les codes de sécurité enregistrés</translation>
@@ -619,7 +620,6 @@
 <translation id="2040894699575719559">Lieu bloqué</translation>
 <translation id="2041788246978549610">Utiliser les microphones accessibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bac 7</translation>
-<translation id="2043896419861982462">Pour masquer les options de paiement au fil du temps, accédez à <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Enveloppe Personal</translation>
 <translation id="2046951263634619614">Librairies</translation>
 <translation id="2048261947532620704">Traduction de la page en cours…</translation>
@@ -658,6 +658,7 @@
 <translation id="2102495993840063010">Applications Android</translation>
 <translation id="2102519472192754194">Navigateurs Web</translation>
 <translation id="2103210856015238101">Cartes de fidélité qui peuvent être remplies d'un toucher, ouvertes à pleine hauteur.</translation>
+<translation id="2104739941682874393">Le remplissage automatique amélioré comprend mieux les formulaires et peut les remplir automatiquement pour vous plus rapidement</translation>
 <translation id="2105838220373099643">Jeux de rôles</translation>
 <translation id="2107021941795971877">Supports d'impression</translation>
 <translation id="2108755909498034140">Redémarrer l'ordinateur</translation>
@@ -1374,7 +1375,6 @@
 <translation id="33073482541490531">Le mot de passe que vous venez d'utiliser a été trouvé dans un cas de violation de données. Le Gestionnaire de mots de passe vous recommande de modifier ce mot de passe maintenant.</translation>
 <translation id="3307649904964670439">Bouton Personnaliser Chrome, activez-le pour personnaliser l'apparence de votre navigateur</translation>
 <translation id="3308006649705061278">Unité organisationnelle (« OU »)</translation>
-<translation id="3317077846337994567">Le paiement au fil du temps n'est pas offert pour le moment. Réessayez plus tard.</translation>
 <translation id="3318016344440038475">Séries télévisées comiques</translation>
 <translation id="3324687287337751929">4 po x 6 po</translation>
 <translation id="3324983252691184275">Cramoisi</translation>
@@ -1551,7 +1551,6 @@
 <translation id="3600106876108433070">En savoir plus sur les tableaux de comparaison</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Bouton Gérer les paramètres de confidentialité de Google, activez-le pour accéder aux paramètres de confidentialité de votre compte Google</translation>
-<translation id="3602695245205338770">Choisir un fournisseur de paiement au fil du temps</translation>
 <translation id="3603507503523709">Application bloquée par votre administrateur</translation>
 <translation id="3605899229568538311">5 po x 5 po</translation>
 <translation id="3606917451836803637">Séries télévisées</translation>
@@ -2429,6 +2428,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="5052517576853118371">Sujets actifs</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}one{Pour envoyer ce fichier au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}other{Pour envoyer ces fichiers au moyen du partage à proximité, libérez de l'espace de stockage (<ph name="DISK_SPACE_SIZE" />) sur votre appareil}}</translation>
 <translation id="505757197798929356">Fournir la raison de l'ouverture (obligatoire)</translation>
+<translation id="5058282932481719070">en savoir plus sur le remplissage automatique amélioré dans les paramètres</translation>
 <translation id="5060419232449737386">Paramètres des sous-titres</translation>
 <translation id="5060483733937416656">Vous avez choisi de valider avec Windows Hello sur des sites Web qui utilisent <ph name="PROVIDER_ORIGIN" />. Ce fournisseur peut avoir stocké de l'information sur votre mode de paiement, dont vous pouvez <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">Vouliez-vous dire <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3030,6 +3030,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6062937464449575061">Annuler le suivi du prix</translation>
 <translation id="6063415549109819824">Crédit immobilier</translation>
 <translation id="6070432475334343308">Un ou plusieurs fichiers n'ont pas été téléversés dans le dossier <ph name="FOLDER_NAME" /> sur <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Service d'analyseur de signets de contenu</translation>
 <translation id="6078069862923723141">Cyan 2</translation>
 <translation id="6085149458302186532">Étiquettes (colorées)</translation>
 <translation id="6087312102907839798">Recherches connexes</translation>
@@ -3180,7 +3181,6 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6327065120806001832">accès au réseau local</translation>
 <translation id="6328639280570009161">Essayez de désactiver la prédiction du réseau</translation>
 <translation id="6329815962353376655">&lt;Tapez une question&gt;</translation>
-<translation id="6334834493885103305">Vous pouvez maintenant payer au fil du temps avec Affirm, Zip ou Klarna</translation>
 <translation id="6335029926534404762">Chaussures de sport</translation>
 <translation id="6336948221660696475">RV non autorisée</translation>
 <translation id="6337133576188860026">Libère moins de <ph name="SIZE" />. Certains sites peuvent être plus longs à charger lors de votre prochaine visite.</translation>
@@ -3542,6 +3542,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="6935082727755903526">Emplois dans le domaine de la finance ou de la comptabilité</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Certains sites peuvent prendre plus de temps à charger lors de votre prochaine visite.</translation>
 <translation id="6936976777388162184">Il s'agit d'un appareil lié, il ne peut donc pas être inscrit avec la mise à niveau de Kiosk et Signage.</translation>
+<translation id="6942444979237658241">Commentaires : <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Jeux de stratégie</translation>
 <translation id="6944692733090228304">Vous avez entré votre mot de passe sur un site non géré par <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Pour protéger votre compte, ne réutilisez pas votre mot de passe dans d'autres applications ni sur d'autres sites.</translation>
 <translation id="6946949206576443118">Faites des recherches sur le Web dans Chrome</translation>
@@ -3554,6 +3555,7 @@ Vous pouvez également communiquer avec le propriétaire du site et lui suggére
 <translation id="695140971690006676">Tout réinitialiser</translation>
 <translation id="6954049078461159956">Hockey</translation>
 <translation id="695582302419398462">Carton (paroi double)</translation>
+<translation id="6957153644870901611">Activez le remplissage automatique amélioré pour remplir automatiquement plus de champs</translation>
 <translation id="6957887021205513506">Le certificat du serveur semble être contrefait.</translation>
 <translation id="6958564499836457428">Gérez les paramètres de confidentialité de Google dans votre compte Google</translation>
 <translation id="6961844873822989059">Les sites peuvent demander à utiliser les polices installées sur votre appareil</translation>
@@ -3999,6 +4001,7 @@ Détails supplémentaires :
 <translation id="7668654391829183341">Appareil inconnu</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Actions effectuées au moyen de données signalées comme étant confidentielles (1 action depuis la connexion). <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />}one{Actions effectuées au moyen de données signalées comme étant confidentielles (# action depuis la connexion). <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />}other{Actions effectuées au moyen de données signalées comme étant confidentielles (# actions depuis la connexion). <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">Les informations de votre compte Google <ph name="USER_EMAIL" /> peuvent vous aider à remplir les formulaires plus rapidement dans Chrome</translation>
 <translation id="7673278391011283842">Boîte aux lettres 6</translation>
 <translation id="7675325315208090829">Gérer vos modes de paiement…</translation>
 <translation id="767550629621587224">Onglets prédécoupés</translation>
@@ -4265,6 +4268,7 @@ Détails supplémentaires :
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Créé il y a 1 mois}one{Créé il y a {NUM_MONTHS} mois}other{Créé il y a {NUM_MONTHS} mois}}</translation>
 <translation id="8148608574971654810">Version PDF :</translation>
 <translation id="8149426793427495338">Votre ordinateur s'est mis en veille.</translation>
+<translation id="815036624016370447">Les informations de votre compte Google <ph name="ACCOUNT" /> peuvent vous aider à remplir les formulaires plus rapidement dans Chrome</translation>
 <translation id="8150722005171944719">Le fichier à l'adresse <ph name="URL" /> n'est pas lisible. Il est possible qu'il ait été supprimé ou déplacé, ou que les autorisations associées à ce fichier empêchent d'y accéder.</translation>
 <translation id="8151185429379586178">Outils de développement</translation>
 <translation id="8153865548451212769">{0,plural, =1{La politique de l'administrateur ne recommande pas de télécharger ce fichier sur <ph name="DESTINATION_NAME" />}one{La politique de l'administrateur ne recommande pas de télécharger ce fichier sur <ph name="DESTINATION_NAME" />}other{La politique de l'administrateur ne recommande pas de télécharger ces fichiers sur <ph name="DESTINATION_NAME" />}}</translation>
@@ -4750,7 +4754,6 @@ Détails supplémentaires :
 <translation id="9005998258318286617">Échec du chargement du document PDF.</translation>
 <translation id="9008201768610948239">OK</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Aucun}=1{À partir de 1 site}one{À partir de # site}other{À partir de # sites}}</translation>
-<translation id="9012194306129927220">Vous pouvez maintenant payer au fil du temps avec Affirm ou Zip</translation>
 <translation id="9014705027639070815">Les sites que vous visitez peuvent demander à Chrome des renseignements pour les aider à mesurer la performance de leurs annonces. Chrome permet aux sites de recueillir des types de données restreints, par exemple si vous avez effectué un achat après avoir visité un site.</translation>
 <translation id="9018120810758822233">Entrer votre code de sécurité pour <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">courriel</translation>

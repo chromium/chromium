@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Änderungen verwerfen</translation>
 <translation id="1748975028205587434">Datei auswählen</translation>
+<translation id="1749733017156547309">Es ist ein Passwort erforderlich</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} Adresse oben auf der Tastatur verfügbar.}other{{count} verschiedene Adressen oben auf der Tastatur verfügbar.}}</translation>
 <translation id="1750238553597293878">Passwörter in deinem Google-Konto weiterhin verwenden</translation>
 <translation id="17513872634828108">Geöffnete Tabs</translation>
@@ -509,6 +510,7 @@ Du hast <ph name="DSE_NAME" /> als Suchmaschine festgelegt. Informationen zum L�
 <translation id="2952278131021475699">Lens-Kamerasuche</translation>
 <translation id="2962516096219646456">Alle Autofill-Daten ansehen</translation>
 <translation id="2969979262385602596">Anmeldefehler, bitte später erneut versuchen</translation>
+<translation id="2975761176769946178">Es ist eine URL erforderlich</translation>
 <translation id="297667759942911166">In Tabgruppen gemeinsam arbeiten</translation>
 <translation id="2987670534697681860">Bestätige deine Identität, damit du auf alle deine Passwörter auf diesem Gerät zugreifen kannst.</translation>
 <translation id="2989523299700148168">Kürzlich besucht</translation>
@@ -572,6 +574,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="3224075676564434205">Die Tabs bleiben auf diesem Gerät geöffnet, aber die Gruppe wird von allen Geräten gelöscht, die im Konto <ph name="USER_EMAIL" /> angemeldet sind.</translation>
 <translation id="3224641773458703735">Um Passwörter zu exportieren, musst du zuerst einen Passcode auf deinem Gerät einrichten.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3234251228180563751">Der Nutzername enthält mehr als 1.000 Zeichen</translation>
 <translation id="3235063766008841141">Auf einer verdächtigen Website eingegeben und in einer Datenpanne gefunden</translation>
 <translation id="3235242129752692527">Bearbeite die Termindetails und tippe auf „Speichern“.</translation>
 <translation id="323863549127671026">Derzeit geöffnete Tabs und Tabgruppen</translation>
@@ -953,7 +956,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4803185665210547709">Von deiner Organisation verwaltet.
 <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4803728135431112209">Zeichne, markiere oder tippe, um etwas auszuwählen, nach dem du suchen möchtest – du erhältst Ergebnisse, ohne den Tab zu verlassen</translation>
-<translation id="4807098396393229769">Name auf Karte</translation>
+<translation id="4807098396393229769">Name auf der Karte</translation>
 <translation id="4808744395915275922">Updates</translation>
 <translation id="4813345808229079766">Verbindung</translation>
 <translation id="4821595350501541683">Tabs wurden geschlossen und Browserdaten gelöscht</translation>
@@ -1030,6 +1033,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="5079950360618752063">Vorgeschlagenes Passwort verwenden</translation>
 <translation id="5083464117946352670">Fehler bei Bestimmung der Dateigröße</translation>
 <translation id="5085558938118581974">In Tabs auf synchronisierten Geräten suchen</translation>
+<translation id="508645147179720015">Hinweis enthält mehr als 1.000 Zeichen</translation>
 <translation id="5087098519049306025">Preis-Tracking</translation>
 <translation id="5090832849094901128">Durch das Entfernen dieses Passworts wird dein <ph name="WEBSITE" />-Konto nicht gelöscht.</translation>
 <translation id="5118462200606189584">Konto hinzufügen…</translation>
@@ -1919,6 +1923,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8434837876193928924">Details zur Tabgruppe</translation>
 <translation id="8438566539970814960">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8439758443371991593">„Zur Leseliste hinzufügen“ ausblenden</translation>
+<translation id="8443986842926457191">Die URL ist länger als 2048 Zeichen.</translation>
 <translation id="8449869326050867919">Passwort geteilt</translation>
 <translation id="8473863474539038330">Adressen und andere Daten</translation>
 <translation id="8474378002946546633">Benachrichtigungen zulassen</translation>
@@ -1983,6 +1988,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8680786875305615692">Dazu beitragen, das Web für alle sicherer zu machen</translation>
 <translation id="8680787084697685621">Die Anmeldeinformationen für dieses Konto sind veraltet.</translation>
 <translation id="8690752723634292147">Löschen bestätigen</translation>
+<translation id="8692107307702113268">Das Passwort enthält mehr als 1.000 Zeichen</translation>
 <translation id="8692689525339542358">Schütze dich bestmöglich vor schädlichen Websites, Downloads und Erweiterungen.</translation>
 <translation id="8692897097252418799">Wähle die Informationen aus, die du exportieren möchtest</translation>
 <translation id="8694281486652655615">Dieses Element wird angezeigt</translation>
@@ -2007,6 +2013,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8741995161408053644">Möglicherweise sind in deinem Google-Konto noch andere Formen des Browserverlaufs unter <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> vorhanden.</translation>
 <translation id="874599634440689554">Link erstellen</translation>
 <translation id="8746155870861185046">Markierung teilen</translation>
+<translation id="8748678031495824833">KI-Tools auf der Seite öffnen</translation>
 <translation id="8750037785291841318">Hier werden deine Tabs angezeigt</translation>
 <translation id="8756969031206844760">Passwort aktualisieren?</translation>
 <translation id="8764015330924122850"><ph name="DOMAIN_NAME" /> nicht mehr folgen</translation>
@@ -2064,6 +2071,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="895541991026785598">Problem melden</translation>
 <translation id="8960979149015305">Download schließen</translation>
 <translation id="8961092256396236619">Erweiterter Schutz ist deaktiviert</translation>
+<translation id="8962863356073277855">Die URL muss das Format „https://www.beispiel.de“ haben</translation>
 <translation id="8968766641738584599">Karte speichern</translation>
 <translation id="8974714402877957201">1. Öffne die iPad-Einstellungen</translation>
 <translation id="8975015774710126284">Browserdaten wurden gelöscht</translation>

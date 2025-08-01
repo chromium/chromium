@@ -6079,7 +6079,6 @@ Defnyddiwch Ctrl + Alt + Lleihau disgleirdeb i bellhau.</translation>
 <translation id="5235050375939235066">Dadosod yr ap?</translation>
 <translation id="523505283826916779">Gosodiadau hygyrchedd</translation>
 <translation id="5235750401727657667">Disodli'r dudalen a welwch wrth agor tab newydd</translation>
-<translation id="5236054983756407518">Tynnu eich cyfeiriad cartref o Chrome?</translation>
 <translation id="5237124927415201087">Gosod eich <ph name="DEVICE_TYPE" /> yn hawdd gyda'ch ffôn. Gallwch ychwanegu'ch Wi-Fi a'ch Cyfrif Google heb nodi'ch cyfrineiriau yn bwrpasol.
     <ph name="BR" />
     <ph name="BR" />
@@ -7210,7 +7209,6 @@ Gallwch aseinio sawl switsh i'r weithred hon.</translation>
 <translation id="606449270532897041">Rheoli data gwefan</translation>
 <translation id="6064764629679333574">Gwella ansawdd sain meic Bluetooth trwy uwchraddio sain cydraniad isel i gydraniad uchel.</translation>
 <translation id="6065289257230303064">Priodweddau Cyfeiriadur Pwnc Tystysgrif</translation>
-<translation id="6065690209261668796">Tynnu eich cyfeiriad gwaith o Chrome?</translation>
 <translation id="6066794465984119824">Ni yw hash y llun wedi'i osod</translation>
 <translation id="6069464830445383022">Manylion mewngofnodi eich Cyfrif Google yw eich manylion mewngofnodi Chromebook</translation>
 <translation id="6071181508177083058">cadarnhewch eich cyfrinair</translation>
@@ -7534,6 +7532,7 @@ Mae <ph name="DOMAIN" /> yn gofyn i chi gadw'ch cerdyn smart wedi'i fewnosod.</t
 <translation id="628726841779494414">Rheoli eich argraffwyr yng ngosodiadau'r argraffydd</translation>
 <translation id="6287288864483377583">Dim ond ar gyfer un dystysgrif y cefnogir mewnforio</translation>
 <translation id="6287828400772161253">Ffôn Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Gofyn i Ddull AI Google</translation>
 <translation id="6290613030083731160">Nid oes unrhyw ddyfeisiau sy'n rhannu gerllaw ar gael. <ph name="LINK_BEGIN" />Dysgu rhagor<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Ni ellir adfer oherwydd diffyg lle storio.</translation>
 <translation id="6291741848715722067">Cod cadarnhad</translation>

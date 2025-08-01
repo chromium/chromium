@@ -404,7 +404,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="1656489000284462475">Retiro</translation>
 <translation id="1658111267661135323">TV y video</translation>
 <translation id="1658918301167915956">dispositivos Bluetooth</translation>
-<translation id="1662550410081243962">Guardar y completar formas de pago.</translation>
+<translation id="1662550410081243962">Guardar y completar formas de pago</translation>
 <translation id="1662980953334786797">Mismo orden</translation>
 <translation id="1663943134801823270">Las tarjetas y direcciones provienen de Chrome. Puedes administrarlas en <ph name="BEGIN_LINK" />Configuración<ph name="END_LINK" />.</translation>
 <translation id="1664389769577564606">Fotopolímero flexográfico</translation>
@@ -619,7 +619,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2040894699575719559">Ubicación bloqueada</translation>
 <translation id="2041788246978549610">Usar los micrófonos disponibles (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
-<translation id="2043896419861982462">Para ocultar las opciones de pago en cuotas, ve a <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Sobre Personal</translation>
 <translation id="2046951263634619614">Librerías</translation>
 <translation id="2048261947532620704">Traduciendo página</translation>
@@ -658,6 +657,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="2102495993840063010">Apps de Android</translation>
 <translation id="2102519472192754194">Navegadores web</translation>
 <translation id="2103210856015238101">La lista de tarjetas de lealtad disponibles que se debe tocar para completar está totalmente abierta.</translation>
+<translation id="2104739941682874393">El autocompletado mejorado comprende mejor los formularios y puede autocompletarlos más rápido</translation>
 <translation id="2105838220373099643">Juegos de rol</translation>
 <translation id="2107021941795971877">Compatibilidades de la impresora</translation>
 <translation id="2108755909498034140">Reinicia la computadora.</translation>
@@ -1375,7 +1375,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="33073482541490531">La contraseña que acabas de usar se encontró en una violación de la seguridad de los datos. El Administrador de contraseñas te recomienda cambiar la contraseña ahora.</translation>
 <translation id="3307649904964670439">Botón Personalizar Chrome: actívalo para personalizar el estilo del navegador</translation>
 <translation id="3308006649705061278">Unidad organizativa (OU)</translation>
-<translation id="3317077846337994567">La opción de pago en cuotas no está disponible en este momento. Vuelve a intentarlo más tarde.</translation>
 <translation id="3318016344440038475">Comedias de TV</translation>
 <translation id="3324687287337751929">10.2 × 15.2 cm (4 × 6 in)</translation>
 <translation id="3324983252691184275">Carmesí</translation>
@@ -1552,7 +1551,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3600106876108433070">Obtén más información sobre las tablas de comparación</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botón Administrar la configuración de privacidad de Google: actívalo para visitar la configuración de privacidad de tu Cuenta de Google</translation>
-<translation id="3602695245205338770">Elige un proveedor de pago a plazos</translation>
 <translation id="3603507503523709">El administrador bloqueó la aplicación</translation>
 <translation id="3605899229568538311">12.7 × 12.7 cm (5 × 5 in)</translation>
 <translation id="3606917451836803637">Programas de TV</translation>
@@ -2099,7 +2097,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="4480760608050410381">Video MP4</translation>
 <translation id="448363931695049633">Pizzerías</translation>
 <translation id="4489023393592172404">Sobre Kaku n.º 4</translation>
-<translation id="4489977488133295402">Verifica tu identidad para autocompletar las formas de pago</translation>
+<translation id="4489977488133295402">Verificar tu identidad para autocompletar las formas de pago</translation>
 <translation id="4490717597759821841">A7</translation>
 <translation id="449126573531210296">Encriptar las contraseñas sincronizadas con tu Cuenta de Google</translation>
 <translation id="4493480324863638523">La URL no es válida. Debe ser una URL con un esquema estándar, p. ej., http://ejemplo.com o https://ejemplo.com.</translation>
@@ -2430,6 +2428,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="5052517576853118371">Temas activos</translation>
 <translation id="5056425809654826431">{NUM_FILES,plural, =1{Para enviar este archivo mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}other{Para enviar estos archivos mediante Compartir con Nearby, libera espacio (<ph name="DISK_SPACE_SIZE" />) en el dispositivo.}}</translation>
 <translation id="505757197798929356">Proporciona el motivo de la apertura (obligatorio)</translation>
+<translation id="5058282932481719070">obtén más información sobre la función de autocompletado mejorado en la configuración</translation>
 <translation id="5060419232449737386">Configuración de subtítulos</translation>
 <translation id="5060483733937416656">Elegiste realizar la verificación con Windows Hello en sitios web que usan <ph name="PROVIDER_ORIGIN" />. Es posible que este proveedor haya almacenado información sobre tu forma de pago, la que puedes <ph name="LINK_TEXT" />.</translation>
 <translation id="5061227663725596739">¿Quisiste decir <ph name="LOOKALIKE_DOMAIN" />?</translation>
@@ -3031,6 +3030,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6062937464449575061">Dejar de realizar el seguimiento de precios</translation>
 <translation id="6063415549109819824">Financiación de la vivienda</translation>
 <translation id="6070432475334343308">No se subieron uno o más archivos a <ph name="FOLDER_NAME" /> en <ph name="CLOUD_PROVIDER" /></translation>
+<translation id="6071503852498277813">Servicio del analizador de contenido de favoritos</translation>
 <translation id="6078069862923723141">Cian 2</translation>
 <translation id="6085149458302186532">Etiquetas (de color)</translation>
 <translation id="6087312102907839798">Búsquedas relacionadas</translation>
@@ -3181,7 +3181,6 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6327065120806001832">acceso a la red local</translation>
 <translation id="6328639280570009161">Intenta inhabilitar la predicción de red.</translation>
 <translation id="6329815962353376655">&lt;Escribe una pregunta&gt;</translation>
-<translation id="6334834493885103305">Ahora puedes pagar en cuotas con Affirm, Zip o Klarna</translation>
 <translation id="6335029926534404762">Calzado deportivo</translation>
 <translation id="6336948221660696475">No se permite la RV</translation>
 <translation id="6337133576188860026">Esta acción libera menos de <ph name="SIZE" />. Es posible que algunos sitios se carguen más lento en tu próxima visita.</translation>
@@ -3555,6 +3554,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="695140971690006676">Restablecer todos los valores</translation>
 <translation id="6954049078461159956">Hockey</translation>
 <translation id="695582302419398462">Cartón (corrugado doble)</translation>
+<translation id="6957153644870901611">Activa la función de autocompletado mejorado para completar automáticamente más campos</translation>
 <translation id="6957887021205513506">El certificado del servidor parece falso.</translation>
 <translation id="6958564499836457428">Administra la configuración de privacidad de Google en tu Cuenta de Google</translation>
 <translation id="6961844873822989059">Puede solicitar permiso para usar las fuentes instaladas en el dispositivo</translation>
@@ -4753,7 +4753,6 @@ Detalles adicionales:
 <translation id="9005998258318286617">No se pudo cargar el documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Ninguno}=1{De 1 sitio}other{De # sitios}}</translation>
-<translation id="9012194306129927220">Ahora puedes pagar en cuotas con Affirm o Zip</translation>
 <translation id="9014705027639070815">Los sitios que visitas pueden solicitar información a Chrome para medir el rendimiento de sus anuncios. Chrome permite que los sitios recopilen tipos limitados de datos, por ejemplo, si realizaste una compra después de visitar un sitio.</translation>
 <translation id="9018120810758822233">Ingresa el código de seguridad de <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">Correo electrónico</translation>

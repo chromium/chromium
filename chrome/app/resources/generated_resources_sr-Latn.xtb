@@ -6080,7 +6080,6 @@ Koristite Ctrl + Alt + taster za smanjivanje osvetljenosti da biste umanjili pri
 <translation id="5235050375939235066">Želite li da deinstalirate aplikaciju?</translation>
 <translation id="523505283826916779">Podešavanja pristupačnosti</translation>
 <translation id="5235750401727657667">Zamenite stranicu koja se prikaže kad otvorite novu karticu</translation>
-<translation id="5236054983756407518">Želite da uklonite kućnu adresu iz Chrome-a?</translation>
 <translation id="5237124927415201087">Lako podesite <ph name="DEVICE_TYPE" /> pomoću telefona. Možete da dodate WiFi i Google nalog bez ručnog unošenja lozinki.
     <ph name="BR" />
     <ph name="BR" />
@@ -7211,7 +7210,6 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="606449270532897041">Upravljaj podacima o sajtovima</translation>
 <translation id="6064764629679333574">Poboljšajte kvalitet zvuka Bluetooth mikrofona tako što ćete povećati zvuk niske rezolucije na visoku rezoluciju.</translation>
 <translation id="6065289257230303064">Atributi kataloga subjekata sertifikata</translation>
-<translation id="6065690209261668796">Želite da uklonite adresu na poslu iz Chrome-a?</translation>
 <translation id="6066794465984119824">Heš za slike nije podešen</translation>
 <translation id="6069464830445383022">Na Chromebook se prijavljujete pomoću Google naloga</translation>
 <translation id="6071181508177083058">potvrdite lozinku</translation>
@@ -7536,6 +7534,7 @@ Vodite računa da ne otkrijete nikakve osetljive informacije.</translation>
 <translation id="628726841779494414">Upravljajte štampačima u podešavanjima štampača</translation>
 <translation id="6287288864483377583">Uvoz je podržan samo za jedan sertifikat</translation>
 <translation id="6287828400772161253">Android telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Pitajte režim Google veštačke inteligencije</translation>
 <translation id="6290613030083731160">Nema dostupnih uređaja koji dele u blizini. <ph name="LINK_BEGIN" />Saznajte više<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Vraćanje nije uspelo zbog nedostatka memorijskog prostora.</translation>
 <translation id="6291741848715722067">Kôd za potvrdu</translation>
@@ -9210,6 +9209,7 @@ Imate još # ugroženih lozinki. Google menadžer lozinki preporučuje da odmah 
 <translation id="7481312909269577407">Napred</translation>
 <translation id="7481358317100446445">Spremno</translation>
 <translation id="748138892655239008">Osnovna ograničenja sertifikata</translation>
+<translation id="7482823403440483089">Poboljšano automatsko popunjavanje</translation>
 <translation id="7483732342458943943">Ovaj link ne radi</translation>
 <translation id="7484645889979462775">Nikad za ovaj sajt</translation>
 <translation id="7484943269191249363">Možete da koristite sve pristupne ključeve sačuvane u Google menadžeru lozinki na ovom uređaju. To treba da uradite samo jedanput.</translation>

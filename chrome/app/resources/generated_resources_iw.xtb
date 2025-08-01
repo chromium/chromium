@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">‏קבלת חשבון באופן אוטומטי מטלפון Android</translation>
 <translation id="1069814191880976658">בחירת מסך אחר</translation>
 <translation id="107022587824771715">אין כרגע הצעות לקבוצות של כרטיסיות. אפשר <ph name="BEGIN_LINK" />לרענן עכשיו<ph name="END_LINK" /> או לנסות שוב מאוחר יותר</translation>
+<translation id="1070357312245925724">קיצור דרך לניווט</translation>
 <translation id="1070377999570795893">‏תוכנה אחרת במחשב הוסיפה תוסף שעשוי לשנות את אופן הפעולה של Chrome.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@
 <translation id="1122913801042512795">פרטי הכניסה של החשבון שלך לא מעודכנים. עליך לצאת מהחשבון ולהיכנס מחדש.</translation>
 <translation id="1122960773616686544">שם סימנייה</translation>
 <translation id="1124772482545689468">משתמש</translation>
+<translation id="1125371304736839151">‏הצגת Gemini בחלק העליון של הדפדפן</translation>
 <translation id="1125550662859510761">‏נראה כמו <ph name="WIDTH" /> x <ph name="HEIGHT" /> (במקור)</translation>
 <translation id="1125921926864945797">טפט וסגנון</translation>
 <translation id="1128090040635299943">‏מתבצעת עכשיו הגדרה של Linux. תהליך ההגדרה יימשך כמה דקות.</translation>
@@ -989,6 +991,7 @@
 <translation id="1660763353352708040">בעיה במתאם המתח</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{תיקון הכרטיסייה שמאטה את הדפדפן}one{תיקון הכרטיסיות שמאטות את הדפדפן}two{תיקון הכרטיסיות שמאטות את הדפדפן}other{תיקון הכרטיסיות שמאטות את הדפדפן}}</translation>
 <translation id="16620462294541761">מצטערים, לא ניתן לאמת את הסיסמה שלך. יש לנסות שוב.</translation>
+<translation id="1662572015199460525">אפשר לדבר בקול או לכתוב הודעות טקסט כדי לקבל תשובות, מסקנות עיקריות ועוד במהלך הגלישה</translation>
 <translation id="166278006618318542">אלגוריתם מפתח ציבורי של נושא</translation>
 <translation id="1662801900924515589">האפליקציה <ph name="APP" /> הותקנה</translation>
 <translation id="1663698992894057019">‏כדאי לשדרג למכשיר Chromebook חדש כדי לקבל את גרסאות התוכנה והאבטחה העדכניות</translation>
@@ -1099,6 +1102,7 @@
 <translation id="174123615272205933">בהתאמה אישית</translation>
 <translation id="1741314857973421784">המשך</translation>
 <translation id="1744108098763830590">דף רקע</translation>
+<translation id="174516937379651657">‏כשמשתפים דף עם Gemini, התוכן המלא של הדף וכתובת ה-URL שלו נשלחים אל Google.</translation>
 <translation id="1745732479023874451">ניהול אנשי קשר</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}one{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}two{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}other{לפתוח ולערוך # קבצים באפליקציית האינטרנט הזו?}}</translation>
 <translation id="1748329107062243374">שימוש במפתח גישה מ-<ph name="DEVICE_NAME" /> כדי להיכנס אל <ph name="WEBSITE" /></translation>
@@ -1411,6 +1415,7 @@
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{תוסף אחד נבדק}one{{NUM_EXTENSIONS} תוספים נבדקו}two{{NUM_EXTENSIONS} תוספים נבדקו}other{{NUM_EXTENSIONS} תוספים נבדקו}}</translation>
 <translation id="1959421829481337178">עליך להזין את קוד ההפעלה שקיבלת מהספק.</translation>
 <translation id="1960211333621141174">צוק</translation>
+<translation id="1962356719152496092">כאן אפשר להתאים אישית את מקשי הקיצור</translation>
 <translation id="1963976881984600709">הגנה רגילה</translation>
 <translation id="1964009877615282740">עוד</translation>
 <translation id="1965578266762387357">‏כשמקבלים עזרה בכתיבה, כתובת ה-URL של הדף, התוכן והטקסט נשלחים אל Google. אין להזין מידע אישי (כמו פרטים רפואיים או פיננסיים)</translation>
@@ -1578,6 +1583,7 @@
 <translation id="2079053412993822885">מחיקה של אחד מהאישורים שלך תמנע ממך את האפשרות להמשיך ולהשתמש בו כדי לזהות את עצמך.</translation>
 <translation id="2079495302726689071">פתיחת הקישור בכרטיסייה חדשה של <ph name="APP" /></translation>
 <translation id="2079545284768500474">ביטול הפעולה</translation>
+<translation id="2079553700504470326">‏שימוש במיקום המדויק במקום במיקום משוער על סמך כתובת ה-IP, כדי לקבל את התוצאות הכי מדויקות מ-Gemini.</translation>
 <translation id="2080070583977670716">הגדרות נוספות</translation>
 <translation id="2081816110395725788">מעבר למצב שינה בזמן שימוש בסוללה</translation>
 <translation id="2082187087049518845">קיבוץ כרטיסיות</translation>
@@ -2209,6 +2215,7 @@
 <translation id="2496180316473517155">היסטוריית גלישה</translation>
 <translation id="2496616243169085015">צילום</translation>
 <translation id="2497229222757901769">מהירות העכבר</translation>
+<translation id="24977856422126200">‏‫<ph name="WINDOW_TITLE" /> – הכרטיסייה הזו משותפת עם Gemini למשך השיחה</translation>
 <translation id="2497852260688568942">מנהל המערכת שלך השבית את הסנכרון</translation>
 <translation id="2498539833203011245">מזעור</translation>
 <translation id="2498765460639677199">ענק</translation>
@@ -2533,6 +2540,7 @@
 <translation id="2729661575355442512">‏<ph name="BEGIN_PARAGRAPH1" />כשההגדרה 'קביעת מיקום יותר מדויקת' מופעלת, המידע על אותות אלחוטיים, כמו נקודות גישה ל-Wi-Fi ואנטנות סלולריות, וגם נתוני חיישנים מהמכשיר, כמו מד התאוצה והג'ירוסקופ, משמשים כדי לקבוע את המיקום של המכשיר בצורה יותר מדויקת. אפליקציות ושירותים של Android משתמשים במידע הזה כדי לספק תכונות שמבוססות על המיקום. כדי לעשות את זה, Google אוספת מדי פעם נתונים על חיישני מכשיר ואותות אלחוטיים בקרבת המכשיר כדי לתמוך במיקור המונים של מיקומי אותות אלחוטיים.<ph name="END_PARAGRAPH1" />
     ‫<ph name="BEGIN_PARAGRAPH2" />Google משתמשת במידע שנאסף מהמכשיר הזה כדי: לשפר את הדיוק של קביעת המיקום ואת השירותים מבוססי-המיקום, וגם כדי לשפר, לספק ולתחזק באופן כללי את שירותי Google. אנחנו מעבדים את המידע הזה על סמך האינטרסים הלגיטימיים של Google ושל צדדים שלישיים כדי לשרת את צורכי המשתמשים. המידע הזה לא משמש לזיהוי של אנשים פרטיים.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />אפשר להשבית את ההגדרה 'קביעת מיקום יותר מדויקת' בכל שלב בהגדרות המיקום של המכשיר הזה בקטע 'הגדרות' &gt; 'פרטיות ואבטחה' &gt; 'אמצעי בקרה על פרטיות' &gt; 'גישה למיקום' &gt; 'הגדרות מיקום מתקדמות'. אם ההגדרה 'קביעת מיקום יותר מדויקת' מושבתת, לא יאספו נתונים לקביעת מיקום יותר מדויקת. באפליקציות ובשירותים של Android, נעשה שימוש בכתובת ה-IP בלבד, אם היא זמינה, כדי לקבוע את המיקום של המכשיר הזה. הדבר עשוי להשפיע על הזמינות ועל הדיוק של המיקומים באפליקציות ובשירותים של Android, כמו מפות Google.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">‏הצגה ועריכה של הפעילות בממשקי Gemini</translation>
 <translation id="2730029791981212295">‏גיבוי אפליקציות וקובצי Linux</translation>
 <translation id="2730550884708194161">מידע על פרופילי עבודה</translation>
 <translation id="2730596696987224099">בחירת סיסמה משלך</translation>
@@ -3403,6 +3411,7 @@
 <translation id="3360306038446926262">חלונות</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}one{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}two{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}other{<ph name="DEVICE_NAME" /> משתף איתך <ph name="ATTACHMENTS" />.}}</translation>
 <translation id="3361954577771524115">מהאפליקציה</translation>
+<translation id="3362651095484543782">‏כדי לצאת מ-Gemini או לחזור אליו, אפשר להשתמש במקש קיצור.</translation>
 <translation id="3362915550009543917">ציור שמן שליו של כר דשא בגוון צהוב, שמשרה תחושת שלווה והרהור אינטלקטואלי.</translation>
 <translation id="3363202073972776113">הפרופיל החדש ינוהל על ידי הארגון שלך. <ph name="BEGIN_LINK" />מידע נוסף<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">‏‫Alt + העברת העכבר מעל</translation>
@@ -3626,6 +3635,7 @@
 <translation id="3511358375261756531">הרחבה של <ph name="HEADER" /></translation>
 <translation id="351152300840026870">גופן ברוחב קבוע</translation>
 <translation id="3511528412952710609">קצרה</translation>
+<translation id="3512465804715993309">הדגשה דינמית</translation>
 <translation id="3513019849832307207">הצטרפות ופתיחה</translation>
 <translation id="3513563267917474897">פס הזזה של גוון הצבע מ-<ph name="MIN_VALUE" /> עד <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">בקרת משחקים</translation>
@@ -4972,6 +4982,7 @@
 <translation id="443031431654216610">יש להשתמש בספרות בלבד</translation>
 <translation id="4430369329743628066">הסימנייה נוספה</translation>
 <translation id="4430422687972614133">הפעלת הכרטיס הווירטואלי</translation>
+<translation id="443196770280837407">‏אפשר לפתוח את Gemini באמצעות מקש קיצור.</translation>
 <translation id="4432621511648257259">הסיסמה שגויה</translation>
 <translation id="4434611816075088065">אין עוד משהו שדורש התייחסות כרגע</translation>
 <translation id="443475966875174318">עדכון או הסרה של אפליקציות לא תואמות</translation>
@@ -4987,6 +4998,7 @@
 <translation id="4442863809158514979">הצגת הרשאות האינטרנט</translation>
 <translation id="4442937638623063085">לא נמצאו פרופילים. עליך להזין את קוד ההפעלה שקיבלת מהספק.</translation>
 <translation id="4443536555189480885">&amp;עזרה</translation>
+<translation id="4444191890945732856">‏שיתפת את הדף הזה עם Gemini</translation>
 <translation id="4444304522807523469">‏גישה לסורקי מסמכים המחוברים באמצעות USB או ברשת המקומית</translation>
 <translation id="4444512841222467874">אם לא מפנים נפח אחסון, ייתכן שמשתמשים ונתונים יוסרו באופן אוטומטי.</translation>
 <translation id="4445446646109808714">הסכם רישיון למשתמש קצה: <ph name="EULA_LINK" /></translation>
@@ -5319,6 +5331,7 @@
 <translation id="4687718960473379118">מודעות שאתרים מציעים</translation>
 <translation id="4688036121858134881">מזהה יומן מקומי: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761">המכשיר הזה מועבר לגרסה קודמת (<ph name="PROGRESS_PERCENT" />) על ידי <ph name="MANAGER" /></translation>
+<translation id="4688870304423708920">‏כדאי לבדוק את החיבור לאינטרנט ולנסות להשתמש ב-Gemini שוב</translation>
 <translation id="4689235506267737042">בחירת העדפות ההדגמה</translation>
 <translation id="4689421377817139245">‏סנכרון הסימנייה עם ה-iPhone</translation>
 <translation id="4690091457710545971">‏&lt;קושחת ה-Wi-Fi של Intel יצרה ארבעה קבצים: csr.lst‏, fh_regs.lst‏, radio_reg.lst‏, monitor.lst.sysmon. שלושת הקבצים הראשונים הם קובצי Dump בינאריים של הרישום, והמערכת של Intel מטפלת בהם מתוך הנחה שהם לא מכילים מידע שמאפשר זיהוי אישי או זיהוי של המכשיר. הקובץ האחרון הוא מעקב ביצוע מהקושחה של Intel. נמחק ממנו מידע שמאפשר זיהוי אישי או זיהוי של המכשיר, אבל הוא גדול מדי מכדי להציג אותו כאן. הקבצים האלה נוצרו בתגובה לבעיות שאירעו לאחרונה בחיבור ה-Wi-Fi של המכשיר שלך, והם ישותפו עם Intel בניסיון לפתור את הבעיות האלה.&gt;</translation>
@@ -5604,6 +5617,7 @@
 <translation id="4884937942297374058">ההגנה המשופרת מושבתת</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">לתוסף הזה אין הרשאות גישה נוספות לאתרים</translation>
+<translation id="4887391901725877182">כתוביות</translation>
 <translation id="4887424188275796356">פתיחה באמצעות מציג המערכת</translation>
 <translation id="488785315393301722">הצגת פרטים</translation>
 <translation id="488862352499217187">יצירת תיקייה חדשה</translation>
@@ -5754,6 +5768,7 @@
 <translation id="5001526427543320409">‏קובצי cookie של צד שלישי</translation>
 <translation id="5003070249435823986">משתמשים בתנועה כדי להיכנס למצב גלילה, ואז מזיזים את הראש לכיוון שאליו רוצים לגלול. כדי לצאת ממצב הגלילה, צריך להשתמש בתנועה שוב.</translation>
 <translation id="5003993274120026347">המשפט הבא</translation>
+<translation id="5005113238422129109">‏אפשר לדבר עם Gemini באמצעות המיקרופון. כשמדברים אל Gemini, האודיו נשמר בפעילות בממשקי Gemini (אם האפשרות מופעלת)</translation>
 <translation id="5005311809885666699">‏נשמרו דרך Chrome</translation>
 <translation id="5005498671520578047">העתקת הסיסמה</translation>
 <translation id="5006218871145547804">‏ADB עבור אפליקציות ל-Android ב-Crostini</translation>
@@ -6080,7 +6095,6 @@
 <translation id="5235050375939235066">להסיר את התקנת האפליקציה?</translation>
 <translation id="523505283826916779">הגדרות נגישות</translation>
 <translation id="5235750401727657667">החלפת הדף שמוצג בפתיחה של כרטיסייה חדשה</translation>
-<translation id="5236054983756407518">‏להסיר את כתובת המגורים מ-Chrome?</translation>
 <translation id="5237124927415201087">‏אפשר להגדיר בקלות את מכשיר <ph name="DEVICE_TYPE" /> באמצעות הטלפון. ניתן להוסיף את ה-Wi-Fi ואת החשבון שלך ב-Google בלי להזין את הסיסמאות באופן ידני.
     <ph name="BR" />
     <ph name="BR" />
@@ -6725,6 +6739,7 @@
 <translation id="5705005699929844214">להציג תמיד אפשרויות נגישוּת</translation>
 <translation id="5705882733397021510">חזרה</translation>
 <translation id="5707185214361380026">נכשלה טעינת תוסף מ:</translation>
+<translation id="5707674184620508665">הארגון שלך, <ph name="ACCOUNT_MANAGER" />, לא יוכל לראות או לנהל את הנתונים הקיימים שלך. הם יישארו בפרופיל הקיים.</translation>
 <translation id="5708171344853220004">‏שם ראשי של Microsoft</translation>
 <translation id="5711010025974903573">יומני שירות</translation>
 <translation id="5711983031544731014">לא ניתן לבטל את הנעילה. יש להזין את הסיסמה שלך.</translation>
@@ -7211,7 +7226,6 @@
 <translation id="606449270532897041">ניהול הנתונים מאתרים</translation>
 <translation id="6064764629679333574">‏אפשר לשפר את איכות הצליל של מיקרופון ה-Bluetooth באמצעות שינוי הרזולוציה מנמוכה לגבוהה.</translation>
 <translation id="6065289257230303064">תכונות ספרייה של נושא אישור</translation>
-<translation id="6065690209261668796">‏להסיר את הכתובת בעבודה שלך מ-Chrome?</translation>
 <translation id="6066794465984119824">‏לא הוגדר גיבוב (hash) של תמונה</translation>
 <translation id="6069464830445383022">‏הכניסה ל-Chromebook תתבצע באמצעות חשבון Google</translation>
 <translation id="6071181508177083058">אישור סיסמה</translation>
@@ -7436,6 +7450,7 @@
 <translation id="622484624075952240">למטה</translation>
 <translation id="622537739776246443">הפרופיל יימחק</translation>
 <translation id="6225475702458870625">יש חיבור נתונים זמין ב-<ph name="PHONE_NAME" /></translation>
+<translation id="622568138962270592">‏הפעילות בממשקי Gemini</translation>
 <translation id="6226777517901268232">קובץ מפתח פרטי (אופציונלי)</translation>
 <translation id="6227280783235722609">תוסף</translation>
 <translation id="622902691730729894">ביטול ההצמדה של הקבוצה לסרגל הסימניות</translation>
@@ -7535,6 +7550,7 @@
 <translation id="628726841779494414">ניתן לנהל את המדפסות בהגדרות המדפסת</translation>
 <translation id="6287288864483377583">אפשר לייבא רק אישור אחד</translation>
 <translation id="6287828400772161253">‏טלפון Android ‏(<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">‏מצב Google AI: רוצה לשאול משהו?</translation>
 <translation id="6290613030083731160">אין מכשירים זמינים שמשתפים בקרבת מקום. <ph name="LINK_BEGIN" />מידע נוסף<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">לא ניתן לשחזר מפני שאין מספיק מקום אחסון.</translation>
 <translation id="6291741848715722067">קוד אישור</translation>
@@ -7738,6 +7754,7 @@
 <translation id="6451861213630784801">לא נכנסת לחשבון</translation>
 <translation id="6452181791372256707">דחייה</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> הושלמו</translation>
+<translation id="6452268285438583507">התקנת תוספים</translation>
 <translation id="6452961788130242735">בעיית רשת או תחום לא תקין</translation>
 <translation id="6453191633103419909">איכות הקרנה של כרטיסייה/מסך</translation>
 <translation id="6453921811609336127">‏כדי לעבור לשיטת הקלט הבאה, יש להקיש על <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl‏<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />רווח<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -8168,6 +8185,7 @@
 <translation id="6759193508432371551">איפוס להגדרות היצרן</translation>
 <translation id="6760354150216532978">אזהרה: לאתר הזה יש הרשאה לראות את העריכות שלך</translation>
 <translation id="6761209758867628753">כלי: עזרה בכתיבה</translation>
+<translation id="6761459308170527362">‏אפשר לשאול את Gemini שאלה בקול או בטקסט לגבי תוכן הדף ששיתפת</translation>
 <translation id="676158322851696513">"<ph name="EXTENSION_NAME" />"</translation>
 <translation id="6761623907967804682">אין הרשאה לשמירת נתונים מאתרים במכשיר</translation>
 <translation id="6762833852331690540">מופעל</translation>
@@ -8827,6 +8845,7 @@
 <translation id="7223952304612664117">האישור מאפשר לשירותי המערכת להשתמש בהגדרה 'קביעת מיקום יותר מדויקת' כדי לקבוע את המיקום שלך. ההגדרה 'קביעת מיקום יותר מדויקת' משתמשת במידע על אותות אלחוטיים וחיישנים כדי לקבוע את המיקום של המכשיר.</translation>
 <translation id="7225082563376899794">‏שימוש ב-Windows Hello בזמן מילוי סיסמאות</translation>
 <translation id="7225179976675429563">חסר סוג רשת</translation>
+<translation id="7226163413959353072">‏עוזר אישי מבוסס-AI שמספק מסקנות עיקריות, מסביר מושגים, מוצא תשובות ועוד</translation>
 <translation id="7227235818314667565">ניהול השיתוף</translation>
 <translation id="7227458944009118910">האפליקציות המפורטות בהמשך גם יכולות לטפל בקישורים מסוג פרוטוקול. אפליקציות אחרות יבקשו הרשאה.</translation>
 <translation id="7228056665272655255">כדי להגדיר טביעת אצבע, על הילד או הילדה לגעת בחיישן טביעות האצבע שבפינה הימנית העליונה של המקלדת. נתוני טביעות האצבע של הילד או הילדה נשמרים באופן מאובטח ואף פעם לא נשלחים ממכשיר <ph name="DEVICE_TYPE" /> הזה.</translation>
@@ -8896,6 +8915,7 @@
 <translation id="727595954130325265">לקנייה</translation>
 <translation id="727952162645687754">שגיאה בהורדה</translation>
 <translation id="7280649757394340890">הגדרות קול של המרת טקסט לדיבור</translation>
+<translation id="7280683802406059877">התאמה אישית של מקש הקיצור</translation>
 <translation id="7280877790564589615">התבקשה הרשאה</translation>
 <translation id="7281166215790160128">מצב</translation>
 <translation id="7282056103720203738">קריאת נתונים ומידע מהמכשירים המחוברים שלך</translation>
@@ -8954,6 +8974,7 @@
 <translation id="7320213904474460808">הגדרת הרשת כברירת המחדל</translation>
 <translation id="7321545336522791733">השרת אינו נגיש</translation>
 <translation id="7322515217754205362">הרשאות לאתרים</translation>
+<translation id="7322919329844967709">התשובות שיתקבלו יהיו רלוונטיות יותר לתוכן הדף ששיתפת</translation>
 <translation id="7323315405936922211">גודל אזור הסמן</translation>
 <translation id="7324020307732396723">פתיחת הגדרות השפה</translation>
 <translation id="7324297612904500502">פורום ביטא</translation>
@@ -9952,6 +9973,7 @@
 <translation id="7991296728590311172">הגדרות גישה באמצעות מתג</translation>
 <translation id="7992080146463834191">מסכמים תכנים, מפשטים שפה מורכבת או שואלים שאלות.</translation>
 <translation id="7992203134935383159">סינתזת דיבור</translation>
+<translation id="7993332993977106257">‏גישה נוחה לשימוש ב-Gemini בכל המכשיר, גם כש-Chrome ממוזער.</translation>
 <translation id="7997826902155442747">עדיפות תהליך</translation>
 <translation id="7997828719430450286">הפעולה הצליחה.</translation>
 <translation id="7998701048266085837">‏כתובות URL</translation>
@@ -10005,6 +10027,7 @@
 <translation id="8028060951694135607">‏שחזור מפתח של Microsoft</translation>
 <translation id="8028803902702117856">הקובץ <ph name="FILE_NAME" /> בהורדה, <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">גודל</translation>
+<translation id="8029349782735515147">‏הצגת כתוביות כשמשתמשים ב-Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{רשימת קריאה}=1{רשימת קריאה ({SELECTED_ITEMS})}one{Reading list ({SELECTED_ITEMS})}two{רשימת קריאה ({SELECTED_ITEMS})}other{רשימת קריאה ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" /> – נשלחה בקשה להרשאה, יש ללחוץ על ⌘ + אפשרות + חץ למעלה כדי להשיב</translation>
 <translation id="8030169304546394654">מנותק</translation>
@@ -10125,6 +10148,7 @@
 <translation id="8102139037507939978">‏הסרה של פרטים אישיים מזהים מהקובץ system_logs.txt.</translation>
 <translation id="810362914482827094">חיפוש מפתחות גישה</translation>
 <translation id="8104088837833760645">‏הורדת פרופיל eSIM</translation>
+<translation id="8105050970626643057">‏אפשר לפתוח את Gemini במהירות בכל פעם שצריך</translation>
 <translation id="8105273883928376822">צריך להיכנס לחשבון כדי להמשיך.</translation>
 <translation id="8106114112474206597">‏משתמשים במקש I כדי ללחוץ על כפתור העכבר</translation>
 <translation id="8107015733319732394">‏ההתקנה של חנות Google Play במכשיר <ph name="DEVICE_TYPE" /> מתבצעת. ייתכן שההתקנה תימשך כמה דקות.</translation>
@@ -10281,6 +10305,7 @@
 <translation id="8222112516148944758">קבוצות הכרטיסיות נשמרות אוטומטית ומתעדכנות בכל המכשירים</translation>
 <translation id="8222674561049363989">הקובץ הוא לא מסמך תקין</translation>
 <translation id="822347941086490485">‏מתבצע חיפוש של מכשירי HID...</translation>
+<translation id="8224209912580158729">‏כדי לקבל תשובות רלוונטיות יותר, אפשר לשתף את תוכן הדף עם Gemini.</translation>
 <translation id="8224427620313426549">החשבון שלך ב-<ph name="DOMAIN_LINK" /> לא יימחק</translation>
 <translation id="8225046344534779393">צריך לבדוק את החיבור לאינטרנט</translation>
 <translation id="8225265270453771718">שיתוף חלון של אפליקציה</translation>
@@ -10424,6 +10449,7 @@
 <translation id="8314835274931377415">להתחיל בהגדרה של גישה באמצעות מתג?</translation>
 <translation id="8315018673856831477">האפשרויות של מצב החיסכון בזיכרון</translation>
 <translation id="8315514906653279104">מתבצעת הפעלה…</translation>
+<translation id="8316480109537174997">‏הצגת Gemini במגש המערכת והפעלת מקשי הקיצור</translation>
 <translation id="8317671367883557781">הוספת חיבור רשת</translation>
 <translation id="8317965619823678157">להעתיק את הסיסמאות</translation>
 <translation id="8318266828739827371">‏שימוש בתצוגת מסך מפוצל כדי לראות את האזור המוגדל במסך. כדי להפעיל או להשבית את התכונה 'זכוכית מגדלת במצב מעוגן', מקישים על מקש החיפוש + Ctrl‏ + D.</translation>
@@ -10824,6 +10850,7 @@
 <translation id="8607661817136110841">קבוצות הכרטיסיות שלך</translation>
 <translation id="8607828412110648570">‏צריך לוודא שמכשיר ה-Bluetooth נמצא במצב התאמה ובקרבת מקום. חשוב לבצע התאמה רק עם מכשירים מהימנים. המכשירים המותאמים גלויים לכל החשבונות ב-Chromebook הזה. <ph name="BEGIN_LINK_LEARN_MORE" />מידע נוסף<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">‏הוספת כרטיס Kerberos</translation>
+<translation id="860907040896565281">התאמה אישית של מקש הקיצור…</translation>
 <translation id="8609465669617005112">הזזה למעלה</translation>
 <translation id="8611922158252451755">צריך לשים לב עם מי משתפים את הכרטיסיות כי כל מי שיש לו את הקישור יכול לערוך את כל הכרטיסיות. תוקף הקישור יפוג בעוד 48 שעות.</translation>
 <translation id="8612252270453580753">חיפוש פריים באמצעות <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -11226,6 +11253,7 @@
 <translation id="8868838761037459823">פרטי הרשת הסלולרית</translation>
 <translation id="8870413625673593573">נסגרו לאחרונה</translation>
 <translation id="8871043459130124414">התוסף פועל רק אחרי שלוחצים עליו</translation>
+<translation id="8871126140396172266">‏‫<ph name="WINDOW_TITLE" /> – שיתפת את הדף הזה עם Gemini</translation>
 <translation id="8871551568777368300">הוצמד על ידי מנהל המערכת</translation>
 <translation id="8871696467337989339">השתמשת בסימון שורת פקודה שאינו נתמך: <ph name="BAD_FLAG" />. היציבות והאבטחה ייפגעו.</translation>
 <translation id="8871974300055371298">הגדרות תוכן</translation>
@@ -11438,6 +11466,7 @@
 <translation id="9011163749350026987">הצגה תמיד של הסמל</translation>
 <translation id="9011262023858991985">הכרטיסייה הזו מועברת</translation>
 <translation id="9011393886518328654">נתוני גרסה</translation>
+<translation id="9012013036616593083">‏אין גישה אל Gemini כרגע. אפשר לנסות שוב אחר כך.</translation>
 <translation id="9012122671773859802">הזזת המסך ברצף כשהעכבר זז</translation>
 <translation id="9012585441087414258">‏הגנה מפני אתרים, הורדות ותוספים שידועים כמסוכנים. אם בדף כלשהו מתבצעת פעולה חשודה, כתובות URL וקטעים מהתוכן בדף נשלחים אל הגלישה הבטוחה של Google.</translation>
 <translation id="9013037634206938463">‏נדרש שטח אחסון פנוי של <ph name="INSTALL_SIZE" /> כדי להתקין את Linux. כדי לפנות שטח אחסון, יש למחוק קבצים מהמכשיר.</translation>
@@ -11463,6 +11492,7 @@
 <translation id="9024127637873500333">&amp;פתיחה בכרטיסייה חדשה</translation>
 <translation id="9024158959543687197">קרתה שגיאה בטעינת התקן הרשת לשיתוף קבצים. יש לבדוק את כתובת האתר של ההתקן ולנסות שוב.</translation>
 <translation id="9024692527554990034">יש לך אפשרות להשתמש בקיצורי הדרך בסרגל הכתובות כדי לחפש במהירות באתר ספציפי, או כדי להשתמש במנוע חיפוש אחר.</translation>
+<translation id="9024975946059881308">‏הצגת Gemini בסרגל התפריטים של Mac והפעלת מקשי הקיצור</translation>
 <translation id="9025222334598338152">אפשר להשתמש בטבלאות ההשוואה כדי לשמור על מעקב בזמן שבודקים את האפשרויות.</translation>
 <translation id="902638246363752736">הגדרות מקלדת</translation>
 <translation id="9026393603776578602">הכתבה</translation>

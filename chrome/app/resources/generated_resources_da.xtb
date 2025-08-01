@@ -6079,7 +6079,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="5235050375939235066">Vil du afinstallere appen?</translation>
 <translation id="523505283826916779">Indstillinger for hjælpefunktioner</translation>
 <translation id="5235750401727657667">Skift den side, du får vist, når du åbner en ny fane</translation>
-<translation id="5236054983756407518">Vil du fjerne din hjemmeadresse fra Chrome?</translation>
 <translation id="5237124927415201087">Konfigurer nemt din <ph name="DEVICE_TYPE" /> ved hjælp af din telefon. Du kan tilføje dit Wi-Fi-netværk og din Google-konto uden at indtaste dine adgangskoder manuelt.
     <ph name="BR" />
     <ph name="BR" />
@@ -7210,7 +7209,6 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="606449270532897041">Administrer websitedata</translation>
 <translation id="6064764629679333574">Optimer kvaliteten af Bluetooth-mikrofonlyden ved at opskalere lyd i lav opløsning til høj opløsning.</translation>
 <translation id="6065289257230303064">Indeksattributter for certifikatets emne</translation>
-<translation id="6065690209261668796">Vil du fjerne din arbejdsadresse fra Chrome?</translation>
 <translation id="6066794465984119824">Systembilledets hash-værdi er ikke angivet</translation>
 <translation id="6069464830445383022">Brug din Google-konto, når du logger ind på din Chromebook</translation>
 <translation id="6071181508177083058">bekræft adgangskode</translation>
@@ -7534,6 +7532,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="628726841779494414">Administrer dine printere i printerindstillingerne</translation>
 <translation id="6287288864483377583">Import understøttes kun for et enkelt certifikat</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Spørg Google AI-tilstand</translation>
 <translation id="6290613030083731160">Der er ingen enheder, som deler i nærheden. <ph name="LINK_BEGIN" />Få flere oplysninger<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Gendannelsen mislykkedes på grund af manglende lagerplads.</translation>
 <translation id="6291741848715722067">Bekræftelseskode</translation>
@@ -7885,7 +7884,7 @@ Flere kontakter kan tildeles denne handling.</translation>
 <translation id="6555432686520421228">Fjern alle brugerkonti, og nulstil din <ph name="IDS_SHORT_PRODUCT_NAME" />-enhed, så den er som ny.</translation>
 <translation id="6555604601707417276">Din Linux-sikkerhedskopi er gendannet</translation>
 <translation id="6555744145993174510">fra: <ph name="APP_ORIGIN" /></translation>
-<translation id="6556866813142980365">Gør det igen</translation>
+<translation id="6556866813142980365">Annuller fortryd</translation>
 <translation id="6556903358015358733">Tema og baggrund</translation>
 <translation id="6557199166823345360">Tilføj flere oplysninger, eller stil et spørgsmål om dit valg for at finjustere din søgning</translation>
 <translation id="6557290421156335491">Mine genveje</translation>

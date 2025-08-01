@@ -619,7 +619,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2040894699575719559">Lokacija je blokirana</translation>
 <translation id="2041788246978549610">koristiti dostupne mikrofone (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Ladica 7</translation>
-<translation id="2043896419861982462">Da sakrijete opcije plaćanja u ratama, idite u <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Koverta Personal</translation>
 <translation id="2046951263634619614">Maloprodavci knjiga</translation>
 <translation id="2048261947532620704">Stranica se prevodi</translation>
@@ -1374,7 +1373,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="33073482541490531">Lozinka koju ste upravo koristili pronađena je prilikom narušavanja podataka. Upravitelj lozinki preporučuje da odmah promijenite lozinku.</translation>
 <translation id="3307649904964670439">Dugme Prilagodi Chrome, aktivirajte da prilagodite izgled preglednika</translation>
 <translation id="3308006649705061278">Organizaciona jedinica (OU)</translation>
-<translation id="3317077846337994567">Plaćanje na rate trenutno nije dostupno. Pokušajte ponovo kasnije.</translation>
 <translation id="3318016344440038475">TV komedije</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Grimizna</translation>
@@ -1529,6 +1527,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3570079787344939099">Klizanje i zumiranje</translation>
 <translation id="357244642999988503">Ukloni kolonu</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Dodajte nove podatke na adresu</translation>
 <translation id="3575121482199441727">Omogući za ovu web lokaciju</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Odabrana je opcija naziva ulice</translation>
@@ -1551,7 +1550,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3600106876108433070">Više informacija o tabelama poređenja</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Dugme Upravljaj postavkama privatnosti, aktivirajte da otvorite postavke privatnosti Google računa</translation>
-<translation id="3602695245205338770">Odaberite pružaoca usluge plaćanja u ratama</translation>
 <translation id="3603507503523709">Aplikaciju je blokirao vaš administrator</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">TV emisije i programi</translation>
@@ -3180,7 +3178,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6327065120806001832">pristup lokalnoj mreži</translation>
 <translation id="6328639280570009161">Pokušajte onemogućiti predviđanje mreže</translation>
 <translation id="6329815962353376655">&lt;Upišite pitanje&gt;</translation>
-<translation id="6334834493885103305">Sada možete plaćati u ratama putem Affirma, Zipa ili Klarne</translation>
 <translation id="6335029926534404762">Sportska obuća</translation>
 <translation id="6336948221660696475">VR nije dozvoljen</translation>
 <translation id="6337133576188860026">Oslobodit će se manje od <ph name="SIZE" />. Neke web lokacije će se prilikom sljedeće posjete možda sporije učitavati.</translation>
@@ -3582,7 +3579,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6989763994942163495">Prikaži napredne postavke...</translation>
 <translation id="6991376411634620997">Pristupni ključ • Windows Hello</translation>
 <translation id="6997288673234694149">Oprema za bejzbol i softbol</translation>
-<translation id="6998512609912910179">Brže ispunjavajte obrasce</translation>
+<translation id="6998512609912910179">Brže popunjavajte obrasce</translation>
 <translation id="6999480632062519056">Fitnes instrukcije i lični trening</translation>
 <translation id="7003278537452757231">Staze i tepisi</translation>
 <translation id="7003322000677139268">Dijelovi i dodatna oprema za vozila</translation>
@@ -4132,6 +4129,7 @@ Dodatni detalji:
 <translation id="7908648876066812348">Uključivanje virtuelne kartice</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pritisnite Tab, a zatim Enter da odete na stranicu sigurnosne provjere Chromea u postavkama</translation>
 <translation id="791107458486222637">Ponavljanje rezultata</translation>
+<translation id="7912924955815015552">Uvezeno iz preglednika Safari</translation>
 <translation id="791551905239004656">Crtanje i bojenje</translation>
 <translation id="7916162853251942238">Fleksografska podloga</translation>
 <translation id="791698251820376781">Vaša organizacija vam ne dozvoljava da se prijavite</translation>
@@ -4751,7 +4749,6 @@ Dodatni detalji:
 <translation id="9005998258318286617">Učitavanje PDF dokumenta nije uspjelo.</translation>
 <translation id="9008201768610948239">Zanemari</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Ništa}=1{S 1 web lokacije}one{Sa # web lokacije}few{Sa # web lokacije}other{Sa # web lokacija}}</translation>
-<translation id="9012194306129927220">Sada možete plaćati u ratama putem Affirma ili Zipa</translation>
 <translation id="9014705027639070815">Web lokacije koje posjetite mogu od Chromea zatražiti informacije koje im pomažu da izmjere performanse svojih oglasa. Chrome dozvoljava web lokacijama da prikupljaju ograničene vrste podataka, npr. jeste li izvršili kupovinu nakon što ste posjetili web lokaciju.</translation>
 <translation id="9018120810758822233">Unesite sigurnosni kôd za <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-pošta</translation>

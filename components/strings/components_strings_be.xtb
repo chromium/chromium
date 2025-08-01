@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">Доступ да месцазнаходжання заблакіраваны</translation>
 <translation id="2041788246978549610">Выкарыстоўваць даступныя мікрафоны (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Латок 7</translation>
-<translation id="2043896419861982462">Каб схаваць варыянты з аплатай па частках, перайдзіце ў <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Канверт Personal</translation>
 <translation id="2046951263634619614">Кнігарні</translation>
 <translation id="2048261947532620704">Ідзе пераклад старонкі</translation>
@@ -1375,7 +1374,6 @@
 <translation id="33073482541490531">Выкарыстаны вамі пароль трапіў у спіс узламаных даных. Рэкамендуем змяніць яго зараз жа ў Менеджары пароляў.</translation>
 <translation id="3307649904964670439">Кнопка "Наладзіць Chrome". Каб наладзіць выгляд браўзера, націсніце яе.</translation>
 <translation id="3308006649705061278">Арганізацыйная адзінка (АА)</translation>
-<translation id="3317077846337994567">Аплата па частках пакуль што не даступная. Паўтарыце спробу пазней.</translation>
 <translation id="3318016344440038475">Камедыйныя праграмы</translation>
 <translation id="3324687287337751929">4 x 6 цаляў</translation>
 <translation id="3324983252691184275">Цёмна-чырвоны</translation>
@@ -1529,6 +1527,7 @@
 <translation id="3570079787344939099">Змяненне маштабу і прагортванне</translation>
 <translation id="357244642999988503">Выдаліць слупок</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" />, <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Дадайце новую інфармацыю да адраса</translation>
 <translation id="3575121482199441727">Дазволіць для гэтага сайта</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Выбраны варыянт "Вуліца"</translation>
@@ -1551,7 +1550,6 @@
 <translation id="3600106876108433070">Даведацца пра табліцы параўнання</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Кіраваць наладамі прыватнасці Google". Каб адкрыць налады прыватнасці Уліковага запісу Google, націсніце яе.</translation>
-<translation id="3602695245205338770">Выберыце пастаўшчыка, які прапаноўвае куплю ў растэрміноўку</translation>
 <translation id="3603507503523709">Праграма заблакіравана адміністратарам</translation>
 <translation id="3605899229568538311">5 x 5 цаляў</translation>
 <translation id="3606917451836803637">Тэлешоу і тэлепраграмы</translation>
@@ -3179,7 +3177,6 @@
 <translation id="6327065120806001832">доступ да лакальнай сеткі</translation>
 <translation id="6328639280570009161">Паспрабуйце выключыць прагназаванне сеткі</translation>
 <translation id="6329815962353376655">&lt;Увядзіце пытанне&gt;</translation>
-<translation id="6334834493885103305">Цяпер можна ўносіць аплату па частках з дапамогай Affirm, Zip або Klarna</translation>
 <translation id="6335029926534404762">Спартыўны абутак</translation>
 <translation id="6336948221660696475">Доступ да VR не дазволены</translation>
 <translation id="6337133576188860026">Вызваліцца да <ph name="SIZE" />. Некаторыя сайты могуць загружацца павальней пры наступным наведванні.</translation>
@@ -3581,6 +3578,7 @@
 <translation id="6989763994942163495">Паказаць пашыраныя налады...</translation>
 <translation id="6991376411634620997">Ключ доступу • Windows Hello</translation>
 <translation id="6997288673234694149">Рыштунак для бейсбола і сафтбола</translation>
+<translation id="6998512609912910179">Больш хуткае запаўненне форм</translation>
 <translation id="6999480632062519056">Фітнес і персанальныя трэніроўкі</translation>
 <translation id="7003278537452757231">Дываны і палавікі</translation>
 <translation id="7003322000677139268">Аўтазапчасткі і аксесуары</translation>
@@ -4130,6 +4128,7 @@
 <translation id="7908648876066812348">Віртуальная картка падключаецца</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Каб перайсці на старонку праверкі бяспекі Chrome у наладах, націсніце Tab, затым Увод.</translation>
 <translation id="791107458486222637">Вынік будзе атрыманы паўторна</translation>
+<translation id="7912924955815015552">Імпартаваныя з Safari</translation>
 <translation id="791551905239004656">Рысаванне і размалёўванне</translation>
 <translation id="7916162853251942238">Аснова для флексаграфічнага друку</translation>
 <translation id="791698251820376781">Палітыка вашай арганізацыі не дазваляе вам выканаць уваход</translation>
@@ -4749,7 +4748,6 @@
 <translation id="9005998258318286617">Не ўдалося загрузіць дакумент PDF.</translation>
 <translation id="9008201768610948239">Ігнараваць</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Няма}=1{З 1 сайта}one{З # сайта}few{З # сайтаў}many{З # сайтаў}other{З # сайта}}</translation>
-<translation id="9012194306129927220">Цяпер можна ўносіць аплату па частках з дапамогай Affirm ці Zip</translation>
 <translation id="9014705027639070815">Сайты, якія вы наведваеце, могуць запытваць у Chrome інфармацыю, каб з яе дапамогай вымяраць эфектыўнасць рэкламы. Chrome дазваляе сайтам збіраць асобныя тыпы даных (напрыклад, пра тое, ці зрабілі вы куплю пасля наведвання сайта).</translation>
 <translation id="9018120810758822233">Увядзіце код бяспекі для карткі <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">электронная пошта</translation>

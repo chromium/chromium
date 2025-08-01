@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Montre connectée</translation>
 <translation id="1743244221910283364">Supprimer les modifications</translation>
 <translation id="1748975028205587434">Sélectionner votre fichier</translation>
+<translation id="1749733017156547309">Veuillez saisir votre mot de passe</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} option d'adresse disponible au-dessus de votre clavier.}one{{count} option d'adresse disponible au-dessus de votre clavier.}other{{count} options d'adresse disponibles au-dessus de votre clavier.}}</translation>
 <translation id="1750238553597293878">Continuez d'utiliser les mots de passe de votre compte Google</translation>
 <translation id="17513872634828108">Onglets ouverts</translation>
@@ -509,6 +510,7 @@ Votre moteur de recherche est <ph name="DSE_NAME" />. Lisez les instructions pou
 <translation id="2952278131021475699">Recherche Lens avec l'appareil photo</translation>
 <translation id="2962516096219646456">Voir toutes les données de saisie automatique</translation>
 <translation id="2969979262385602596">Échec de la connexion. Veuillez réessayer plus tard.</translation>
+<translation id="2975761176769946178">Veuillez saisir une URL</translation>
 <translation id="297667759942911166">Collaborez dans des groupes d'onglets</translation>
 <translation id="2987670534697681860">Confirmez votre identité pour accéder à tous vos mots de passe sur cet appareil.</translation>
 <translation id="2989523299700148168">Consultations récentes</translation>
@@ -572,6 +574,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="3224075676564434205">Les onglets resteront ouverts sur cet appareil, mais le groupe sera supprimé de tous les appareils connectés à <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Pour exporter les mots de passe, vous devez d'abord définir un code secret sur votre appareil.</translation>
 <translation id="3227137524299004712">Micro</translation>
+<translation id="3234251228180563751">Le nom d'utilisateur contient plus de 1 000 caractères</translation>
 <translation id="3235063766008841141">Identifiant saisi sur un site trompeur et détecté lors d'une violation des données</translation>
 <translation id="3235242129752692527">Modifiez les détails de l'événement, puis appuyez sur "Enregistrer".</translation>
 <translation id="323863549127671026">Onglets et groupes d'onglets actuellement ouverts</translation>
@@ -1030,6 +1033,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="5079950360618752063">Utiliser le mot de passe suggéré</translation>
 <translation id="5083464117946352670">Impos. déterm. taille fichier.</translation>
 <translation id="5085558938118581974">Rechercher dans les onglets sur les appareils synchronisés</translation>
+<translation id="508645147179720015">La note contient plus de 1 000 caractères</translation>
 <translation id="5087098519049306025">Suivi des prix</translation>
 <translation id="5090832849094901128">La suppression de ce mot de passe n'entraînera pas celle de votre compte sur <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Ajouter un compte…</translation>
@@ -1871,7 +1875,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8263809106706527890">Les paramètres de votre navigateur par défaut ont peut-être été modifiés. Vous pouvez vérifier cela dans les paramètres.</translation>
 <translation id="8264966119170358612">Certains de vos mots de passe enregistrés ont été divulgués à la suite d'une violation de données non-Google. <ph name="BEGIN_LINK" />En savoir plus<ph name="END_LINK" /></translation>
 <translation id="826614135184049678">Vous avez été déconnecté de votre compte <ph name="USER_NAME" /> lors de la réinitialisation de votre iPad. Pour vous reconnecter, appuyez sur "Continuer" ci-dessous.</translation>
-<translation id="8273982424131314219">Vous saisirez des informations sur <ph name="URL" /></translation>
+<translation id="8273982424131314219">Les informations saisies seront partagées avec <ph name="URL" /></translation>
 <translation id="8275068909952022340">Plus…</translation>
 <translation id="8277328362018795342">Le contenu de vos pages est partagé pour vous offrir des réponses plus pertinentes</translation>
 <translation id="8278488584187265939">Personnaliser la page d'accueil</translation>
@@ -1919,6 +1923,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8434837876193928924">Détails du groupe d'onglets</translation>
 <translation id="8438566539970814960">Améliorer les recherches et la navigation</translation>
 <translation id="8439758443371991593">Masquer "Ajouter à la liste de lecture"</translation>
+<translation id="8443986842926457191">L'URL contient plus de 2 048 caractères</translation>
 <translation id="8449869326050867919">Mot de passe partagé</translation>
 <translation id="8473863474539038330">Adresses et autres</translation>
 <translation id="8474378002946546633">Autoriser les notifications</translation>
@@ -1983,6 +1988,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8680786875305615692">Contribuer à renforcer la sécurité sur le Web pour tous</translation>
 <translation id="8680787084697685621">Les informations de connexion au compte sont obsolètes.</translation>
 <translation id="8690752723634292147">Confirmer la suppression</translation>
+<translation id="8692107307702113268">Le mot de passe contient plus de 1 000 caractères</translation>
 <translation id="8692689525339542358">Protégez-vous contre les sites, extensions et téléchargements dangereux.</translation>
 <translation id="8692897097252418799">Choisissez les données que vous souhaitez exporter</translation>
 <translation id="8694281486652655615">Affiche cet élément</translation>
@@ -2007,6 +2013,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8741995161408053644">Votre compte Google conserve peut-être d'autres formes d'historique de navigation sur la page <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Créer un lien</translation>
 <translation id="8746155870861185046">Partager le texte en surbrillance</translation>
+<translation id="8748678031495824833">Ouvrir les outils IA sur la page</translation>
 <translation id="8750037785291841318">Vos onglets s'afficheront ici</translation>
 <translation id="8756969031206844760">Mettre à jour le mot de passe ?</translation>
 <translation id="8764015330924122850">Ne plus suivre <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="895541991026785598">Signaler un problème</translation>
 <translation id="8960979149015305">Fermer la barre de téléchargement</translation>
 <translation id="8961092256396236619">La protection renforcée est désactivée</translation>
+<translation id="8962863356073277855">L'URL doit être au format https://www.example.com</translation>
 <translation id="8968766641738584599">Enregistrer la carte</translation>
 <translation id="8974714402877957201">1. Ouvrez les réglages de l'iPad</translation>
 <translation id="8975015774710126284">Les données de navigation ont été supprimées</translation>

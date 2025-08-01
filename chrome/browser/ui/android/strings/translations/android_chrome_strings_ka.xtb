@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">თუ პრობლემა არ გვარდება, <ph name="SITE_ETLD_PLUS_ONE" />-თან მუშაობის გაგრძელების სხვა ხერხების ცდა შეგიძლიათ.</translation>
 <translation id="4384468725000734951">ძიებისთვის Sogou გამოიყენება</translation>
 <translation id="4387647248986092471">მანქანის პროფილის ჩაკეტვის მეთოდის შექმნა</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{ჩანართები და ჯგუფები, რომლებიც 1 ან მეტი დღის განმავლობაში არ გამოყენებულა}other{ჩანართები და ჯგუფები, რომლებიც # ან მეტი დღის განმავლობაში არ გამოყენებულა}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> — იტვირთება…</translation>
 <translation id="4404568932422911380">სანიშნეები არ არის</translation>
 <translation id="4405224443901389797">გადატანა…</translation>

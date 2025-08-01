@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">ساعت هوشمند</translation>
 <translation id="1743244221910283364">صرف‌نظر کردن از تغییرات</translation>
 <translation id="1748975028205587434">انتخاب فایل</translation>
+<translation id="1749733017156547309">گذرواژه الزامی است</translation>
 <translation id="174998178145075354">{count,plural, =1{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}one{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}other{‫{count} گزینه برای نشانی در بالای صفحه‌کلید وجود دارد.}}</translation>
 <translation id="1750238553597293878">‏همچنان از گذرواژه‌های ذخیره‌شده در «حساب Google» خود استفاده کنید</translation>
 <translation id="17513872634828108">بازکردن برگه‌ها</translation>
@@ -509,6 +510,7 @@
 <translation id="2952278131021475699">جستجوی دوربینی با «لنز»</translation>
 <translation id="2962516096219646456">دیدن همه داده‌های تکمیل خودکار</translation>
 <translation id="2969979262385602596">ورود به سیستم انجام نشد. بعداً دوباره امتحان کنید.</translation>
+<translation id="2975761176769946178">نشانی وب الزامی است</translation>
 <translation id="297667759942911166">در گروه‌های برگه مشارکت کنید</translation>
 <translation id="2987670534697681860">هویتتان را درستی‌سنجی کنید تا به همه گذرواژه‌هایتان در این دستگاه دسترسی داشته باشید.</translation>
 <translation id="2989523299700148168">اخیراً دیده‌شده</translation>
@@ -572,6 +574,7 @@
 <translation id="3224075676564434205">برگه‌ها در این دستگاه باز می‌ماند اما گروه از همه دستگاه‌های واردشده به سیستم <ph name="USER_EMAIL" /> حذف خواهد شد.</translation>
 <translation id="3224641773458703735">برای صادر کردن گذرواژه‌ها، ابتدا باید گذرنویسه‌ای برای دستگاه تنظیم کنید.</translation>
 <translation id="3227137524299004712">میکروفن</translation>
+<translation id="3234251228180563751">نام کاربری بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="3235063766008841141">به سایت فریب‌دهنده‌ای وارد شد و درمعرض نقض داده قرار گرفت</translation>
 <translation id="3235242129752692527">جزئیات رویداد را ویرایش کنید و روی «ذخیره» تک‌ضرب بزنید.</translation>
 <translation id="323863549127671026">زبانه‌ها و گروه‌های زبانه باز فعلی</translation>
@@ -1030,6 +1033,7 @@
 <translation id="5079950360618752063">استفاده از گذرواژه پیشنهادی</translation>
 <translation id="5083464117946352670">تعیین اندازه فایل ممکن نیست.</translation>
 <translation id="5085558938118581974">جستجوی برگه‌ها از همه دستگاه‌های همگام‌سازی‌شده</translation>
+<translation id="508645147179720015">یادداشت بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="5087098519049306025">پیگیری قیمت</translation>
 <translation id="5090832849094901128">حذف این گذرواژه باعث حذف شدن حساب شما در <ph name="WEBSITE" /> نمی‌شود.</translation>
 <translation id="5118462200606189584">افزودن حساب…</translation>
@@ -1919,6 +1923,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8434837876193928924">جزئیات گروه برگه</translation>
 <translation id="8438566539970814960">بهبود جستجوها و مرور</translation>
 <translation id="8439758443371991593">پنهان کردن «افزودن به فهرست خواندن»</translation>
+<translation id="8443986842926457191">نشانی وب بیش‌از ۲۰۴۸ نویسه دارد</translation>
 <translation id="8449869326050867919">گذرواژه هم‌رسانی شد</translation>
 <translation id="8473863474539038330">نشانی‌ها و موارد دیگر</translation>
 <translation id="8474378002946546633">مجاز بودن اعلان‌ها</translation>
@@ -1983,6 +1988,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8680786875305615692">کمک به بهبود امنیت برای همه کاربران وب</translation>
 <translation id="8680787084697685621">جزئیات ورود به سیستم حساب قدیمی است.</translation>
 <translation id="8690752723634292147">تأیید حذف</translation>
+<translation id="8692107307702113268">گذرواژه بیش‌از ۱۰۰۰ نویسه دارد</translation>
 <translation id="8692689525339542358">از خودتان دربرابر سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک محافظت کنید.</translation>
 <translation id="8692897097252418799">داده‌های موردنظرتان را برای صادر کردن انتخاب کنید</translation>
 <translation id="8694281486652655615">این مورد را نشان می‌دهد</translation>
@@ -2007,6 +2013,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="8741995161408053644">‏ممکن است حساب Google شما اشکال سابقه مرور دیگری در <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> داشته باشد.</translation>
 <translation id="874599634440689554">ایجاد کردن پیوند</translation>
 <translation id="8746155870861185046">هم‌رسانی مورد برجسته</translation>
+<translation id="8748678031495824833">باز کردن ابزارهای هوش مصنوعی در صفحه</translation>
 <translation id="8750037785291841318">برگه‌ها را اینجا خواهید دید</translation>
 <translation id="8756969031206844760">گذرواژه به‌روز شود؟</translation>
 <translation id="8764015330924122850">لغو دنبال کردن <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Handoff باید در بخش عمومی تنظیمات نیز فعال شود و
 <translation id="895541991026785598">گزارش یک مسئله</translation>
 <translation id="8960979149015305">بستن بارگیری</translation>
 <translation id="8961092256396236619">«محافظت بهبودیافته» خاموش است</translation>
+<translation id="8962863356073277855">‏قالب نشانی وب باید به این صورت باشد: https://www.example.com</translation>
 <translation id="8968766641738584599">ذخیره کارت</translation>
 <translation id="8974714402877957201">‏۱. iPad Settings (تنظیمات iPad) را باز کنید</translation>
 <translation id="8975015774710126284">داده‌های مرور حذف شد</translation>

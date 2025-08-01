@@ -715,6 +715,7 @@ Vetëm dikush me frazën tënde të kalimit mund të lexojë të dhënat e tua t
 <translation id="4380055775103003110">Nëse ky problem vazhdon të ndodhë, mund të provosh mënyra të tjera për të vazhduar në <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Po përdor Sogou për kërkimin</translation>
 <translation id="4387647248986092471">Krijo një kyçje të profilit të makinës</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Skedat dhe grupet që nuk janë përdorur për 1 ose më shumë ditë}other{Skedat dhe grupet që nuk janë përdorur për # ose më shumë ditë}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Po shkarkohet…</translation>
 <translation id="4404568932422911380">Nuk ka faqeshënues</translation>
 <translation id="4405224443901389797">Zhvendos te…</translation>

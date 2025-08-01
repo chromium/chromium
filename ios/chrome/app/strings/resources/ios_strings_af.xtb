@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Slimhorlosie</translation>
 <translation id="1743244221910283364">Gooi veranderinge weg</translation>
 <translation id="1748975028205587434">Kies jou lêer</translation>
+<translation id="1749733017156547309">’n Wagwoord word vereis</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opsie vir adres is bo jou sleutelbord beskikbaar.}other{{count} opsies vir adres is bo jou sleutelbord beskikbaar.}}</translation>
 <translation id="1750238553597293878">Hou aan om die wagwoorde in jou Google-rekening te gebruik</translation>
 <translation id="17513872634828108">Oop oortjies</translation>
@@ -509,6 +510,7 @@ Jou soekenjin is <ph name="DSE_NAME" />. Sien hul instruksies om jou soekgeskied
 <translation id="2952278131021475699">Lens-kamerasoektog</translation>
 <translation id="2962516096219646456">Sien alle outovuldata</translation>
 <translation id="2969979262385602596">Kon nie aanmeld nie. Probeer asseblief later weer.</translation>
+<translation id="2975761176769946178">’n URL word vereis</translation>
 <translation id="297667759942911166">Werk saam in oortjiegroepe</translation>
 <translation id="2987670534697681860">Verifieer dat dit jy is om toegang tot al jou wagwoorde op hierdie toestel te kry.</translation>
 <translation id="2989523299700148168">Onlangs besoek</translation>
@@ -572,6 +574,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="3224075676564434205">Die oortjies sal oop bly op hierdie toestel, maar die groep sal uitgevee word van alle toestelle wat by <ph name="USER_EMAIL" /> aangemeld is.</translation>
 <translation id="3224641773458703735">Om wagwoorde uit te voer, moet jy eers 'n wagkode op jou toestel stel.</translation>
 <translation id="3227137524299004712">Mikrofoon</translation>
+<translation id="3234251228180563751">Gebruikernaam is meer as 1 000 karakters</translation>
 <translation id="3235063766008841141">Is op 'n misleidende werf ingevoer en 'n dataskending is gevind</translation>
 <translation id="3235242129752692527">Wysig die geleentheidbesonderhede en tik op “Stoor”.</translation>
 <translation id="323863549127671026">Oortjies en oortjiegroepe wat huidiglik oop is</translation>
@@ -1030,6 +1033,7 @@ Sien jou soekenjin se instruksies om jou soekgeskiedenis uit te vee, indien nodi
 <translation id="5079950360618752063">Gebruik voorgestelde wagwoord</translation>
 <translation id="5083464117946352670">Kan nie lêergrootte bepaal nie.</translation>
 <translation id="5085558938118581974">Soek oortjies op gesinkroniseerde toestelle</translation>
+<translation id="508645147179720015">Nota is langer as 1 000 karakters</translation>
 <translation id="5087098519049306025">Prysnasporing</translation>
 <translation id="5090832849094901128">As hierdie wagwoord uitgevee word, sal jou rekening op <ph name="WEBSITE" /> nie uitgevee word nie.</translation>
 <translation id="5118462200606189584">Voeg rekening by …</translation>
@@ -1919,6 +1923,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8434837876193928924">Besonderhede van oortjiegroep</translation>
 <translation id="8438566539970814960">Maak soektogte en blaai-ervaring beter</translation>
 <translation id="8439758443371991593">Versteek Voeg by leeslys</translation>
+<translation id="8443986842926457191">URL is meer as 2 048 karakters.</translation>
 <translation id="8449869326050867919">Wagwoord is gedeel</translation>
 <translation id="8473863474539038330">Adresse en meer</translation>
 <translation id="8474378002946546633">Laat kennisgewings toe</translation>
@@ -1983,6 +1988,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8680786875305615692">Help om sekuriteit op die web vir almal beter te maak</translation>
 <translation id="8680787084697685621">Rekening se aanmeldbesonderhede is verouderd.</translation>
 <translation id="8690752723634292147">Bevestig uitvee</translation>
+<translation id="8692107307702113268">Wagwoord is meer as 1 000 karakters</translation>
 <translation id="8692689525339542358">Kry beskerming teen gevaarlike werwe, aflaaie en uitbreidings.</translation>
 <translation id="8692897097252418799">Kies die data wat jy wil uitvoer</translation>
 <translation id="8694281486652655615">Wys hierdie item</translation>
@@ -2007,6 +2013,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="8741995161408053644">Jou Google-rekening kan dalk ander vorme van blaaigeskiedenis hê by <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Skep skakel</translation>
 <translation id="8746155870861185046">Deel hoogtepunt</translation>
+<translation id="8748678031495824833">Maak KI-nutsgoed op die bladsy oop</translation>
 <translation id="8750037785291841318">Jy sal jou oortjies hier kry</translation>
 <translation id="8756969031206844760">Dateer wagwoord op?</translation>
 <translation id="8764015330924122850">Ontvolg <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Werwe kan webkoekies gebruik om jou blaai-aktiwiteit op verskillende werwe te si
 <translation id="895541991026785598">Gee 'n kwessie aan</translation>
 <translation id="8960979149015305">Maak aflaai toe</translation>
 <translation id="8961092256396236619">Verbeterde Beskerming is af</translation>
+<translation id="8962863356073277855">URL-formaat moet https://www.example.com wees</translation>
 <translation id="8968766641738584599">Stoor kaart</translation>
 <translation id="8974714402877957201">1. Maak iPad Settings oop</translation>
 <translation id="8975015774710126284">Blaaierdata is uitgevee</translation>

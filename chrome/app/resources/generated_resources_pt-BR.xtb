@@ -216,6 +216,7 @@ Verifique suas senhas a qualquer momento no <ph name="GOOGLE_PASSWORD_MANAGER" /
 <translation id="1142713751288681188">Tipo de papel</translation>
 <translation id="1143142264369994168">Signatário do certificado</translation>
 <translation id="1145593918056169051">A impressora parou</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Extensões}=1{Extensões ({SELECTED_ITEMS})}one{Extensões ({SELECTED_ITEMS})}other{Extensões ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Ponteiro com a cabeça</translation>
 <translation id="114721135501989771">A tecnologia Google no Chrome</translation>
 <translation id="1147322039136785890">Agora, entregue o dispositivo para <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -735,6 +736,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="150411034776756821">Remover <ph name="SITE" /></translation>
 <translation id="1504551620756424144">As pastas compartilhadas estão disponíveis no Windows em <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exportar as senhas</translation>
+<translation id="1505654899813338756">Você pode agrupar guias para manter páginas relacionadas juntas e salvas em todos os seus dispositivos</translation>
 <translation id="1506061864768559482">Mecanismo de pesquisa</translation>
 <translation id="1506187449813838456">Aumentar tom de voz</translation>
 <translation id="1507170440449692343">Esta página foi impedida de acessar sua câmera.</translation>
@@ -5308,6 +5310,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4681930562518940301">Abrir &amp;imagem original em uma nova guia</translation>
 <translation id="4682481611456523884">O conteúdo incorporado neste site não pode usar as informações salvas sobre você</translation>
 <translation id="4682807230647698604">Quando você usa esses recursos, dados relevantes são enviados ao Google para criar experiências de IA</translation>
+<translation id="4683143253481759090">O Chrome foi atualizado</translation>
 <translation id="4683629100208651599">Letra minúscula</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (padrão)</translation>
 <translation id="4684427112815847243">Sincronizar tudo</translation>
@@ -6078,7 +6081,6 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="5235050375939235066">Desinstalar app?</translation>
 <translation id="523505283826916779">Configurações de acessibilidade</translation>
 <translation id="5235750401727657667">Substituir a página que você vê ao abrir uma nova guia</translation>
-<translation id="5236054983756407518">Remover seu endereço de casa do Chrome?</translation>
 <translation id="5237124927415201087">Configure o <ph name="DEVICE_TYPE" /> de forma simples com o smartphone. É possível adicionar o Wi-Fi e a Conta do Google sem precisar inserir senhas manualmente.
     <ph name="BR" />
     <ph name="BR" />
@@ -7210,7 +7212,6 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="606449270532897041">Gerenciar dados do site</translation>
 <translation id="6064764629679333574">Melhore a qualidade do som do microfone Bluetooth aumentando a qualidade do áudio de baixa para alta resolução.</translation>
 <translation id="6065289257230303064">Atributos do diretório do requerente do certificado</translation>
-<translation id="6065690209261668796">Remover seu endereço de trabalho do Chrome?</translation>
 <translation id="6066794465984119824">O hash da imagem não está definido</translation>
 <translation id="6069464830445383022">Sua Conta do Google é o login do seu Chromebook</translation>
 <translation id="6071181508177083058">confirmar senha</translation>
@@ -7534,6 +7535,7 @@ Não exponha nenhuma informação confidencial.</translation>
 <translation id="628726841779494414">Gerencie suas impressoras nas configurações de impressora</translation>
 <translation id="6287288864483377583">A importação só permite um único certificado</translation>
 <translation id="6287828400772161253">Smartphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Perguntar ao Modo IA do Google</translation>
 <translation id="6290613030083731160">Não há dispositivos disponíveis por perto. <ph name="LINK_BEGIN" />Saiba mais<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Não é possível restaurar devido à falta de espaço de armazenamento.</translation>
 <translation id="6291741848715722067">Código de confirmação</translation>

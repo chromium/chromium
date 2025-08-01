@@ -6063,7 +6063,6 @@ Folosește Ctrl + Alt + tasta de reducere a luminozității pentru a micșora.</
 <translation id="5235050375939235066">Dezinstalezi aplicația?</translation>
 <translation id="523505283826916779">Setări de accesibilitate</translation>
 <translation id="5235750401727657667">Înlocuiește pagina pe care o vezi la deschiderea unei file noi</translation>
-<translation id="5236054983756407518">Elimini adresa de acasă din Chrome?</translation>
 <translation id="5237124927415201087">Configurează cu ușurință dispozitivul <ph name="DEVICE_TYPE" /> cu telefonul. Poți adăuga rețeaua Wi-Fi și Contul Google fără să introduci manual parolele.
     <ph name="BR" />
     <ph name="BR" />
@@ -7193,7 +7192,6 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="606449270532897041">Gestionează datele privind site-urile</translation>
 <translation id="6064764629679333574">Îmbunătățește calitatea sunetului microfonului prin Bluetooth prin optimizarea sunetului de la rezoluție joasă la rezoluție înaltă.</translation>
 <translation id="6065289257230303064">Atribute director pentru subiectul certificatului</translation>
-<translation id="6065690209261668796">Elimini adresa de serviciu din Chrome?</translation>
 <translation id="6066794465984119824">Valoarea hash a imaginii nu este setată</translation>
 <translation id="6069464830445383022">Contul tău Google reprezintă informațiile de conectare pentru Chromebook</translation>
 <translation id="6071181508177083058">confirmă parola</translation>
@@ -7517,6 +7515,7 @@ Poți atribui mai multe comutatoare acestei acțiuni.</translation>
 <translation id="628726841779494414">Gestionează imprimantele din setările pentru imprimantă</translation>
 <translation id="6287288864483377583">Importul este acceptat numai pentru un singur certificat</translation>
 <translation id="6287828400772161253">Telefonul Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Întreabă modul Google AI</translation>
 <translation id="6290613030083731160">Nu sunt disponibile dispozitive care trimit fișiere în apropiere. <ph name="LINK_BEGIN" />Află mai multe<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Nu se poate restabili din cauza spațiului de stocare insuficient.</translation>
 <translation id="6291741848715722067">Cod de confirmare</translation>

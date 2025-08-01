@@ -6078,7 +6078,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5235050375939235066">앱을 제거하시겠습니까?</translation>
 <translation id="523505283826916779">접근성 설정</translation>
 <translation id="5235750401727657667">새 탭을 열 때 표시되는 페이지 변경</translation>
-<translation id="5236054983756407518">Chrome에서 집 주소를 삭제하시겠습니까?</translation>
 <translation id="5237124927415201087">휴대전화로 <ph name="DEVICE_TYPE" /> 기기를 간편하게 설정하세요. 비밀번호를 직접 입력하지 않고도 Wi-Fi와 Google 계정을 추가할 수 있습니다
     <ph name="BR" />
     <ph name="BR" />
@@ -7209,7 +7208,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="606449270532897041">사이트 데이터 관리</translation>
 <translation id="6064764629679333574">저해상도 오디오를 고해상도로 업스케일링하여 블루투스 마이크 사운드의 품질을 개선합니다.</translation>
 <translation id="6065289257230303064">인증서 대상 디렉터리 속성</translation>
-<translation id="6065690209261668796">Chrome에서 직장 주소를 삭제하시겠습니까?</translation>
 <translation id="6066794465984119824">이미지 해시가 설정되지 않았습니다.</translation>
 <translation id="6069464830445383022">Google 계정으로 Chromebook 로그인하기</translation>
 <translation id="6071181508177083058">비밀번호 확인</translation>
@@ -7533,6 +7531,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="628726841779494414">프린터 설정에서 프린터 관리</translation>
 <translation id="6287288864483377583">가져오기는 단일 인증서에만 지원됩니다.</translation>
 <translation id="6287828400772161253">Android 휴대전화(<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google AI 모드에 질문하기</translation>
 <translation id="6290613030083731160">근처에 공유 가능한 기기가 없습니다. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">저장공간이 부족하여 복원할 수 없습니다.</translation>
 <translation id="6291741848715722067">확인 코드</translation>

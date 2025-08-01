@@ -6066,7 +6066,6 @@ Se queres afastala, usa Control + Alt + Reducir brillo.</translation>
 <translation id="5235050375939235066">Queres desinstalar a aplicación?</translation>
 <translation id="523505283826916779">Configuración de accesibilidade</translation>
 <translation id="5235750401727657667">Substituír a páxina que ves ao abrir unha nova pestana</translation>
-<translation id="5236054983756407518">Queres quitar o teu enderezo particular de Chrome?</translation>
 <translation id="5237124927415201087">Configura facilmente o teu dispositivo <ph name="DEVICE_TYPE" /> co teléfono. Podes engadir a túa wifi e a túa Conta de Google sen meter manualmente os contrasinais.
     <ph name="BR" />
     <ph name="BR" />
@@ -7194,7 +7193,6 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="606449270532897041">Xestionar os datos dos sitios</translation>
 <translation id="6064764629679333574">Mellora a calidade do son do micrófono Bluetooth cambiando o audio de baixa resolución a alta.</translation>
 <translation id="6065289257230303064">Atributos de directorio da entidade do certificado</translation>
-<translation id="6065690209261668796">Queres quitar o teu enderezo do traballo de Chrome?</translation>
 <translation id="6066794465984119824">Non se configurou o hash da imaxe</translation>
 <translation id="6069464830445383022">A túa Conta de Google permite iniciar sesión no Chromebook</translation>
 <translation id="6071181508177083058">confirma o contrasinal</translation>
@@ -7518,6 +7516,7 @@ Podes asignarlles esta acción a varios interruptores.</translation>
 <translation id="628726841779494414">Xestiona as túas impresoras na configuración de impresoras</translation>
 <translation id="6287288864483377583">A importación só se admite para un único certificado</translation>
 <translation id="6287828400772161253">Teléfono Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Facer preguntas ao modo IA de Google</translation>
 <translation id="6290613030083731160">Non hai dispositivos próximos dispoñibles para compartir ficheiros. <ph name="LINK_BEGIN" />Máis información<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Non se puido restaurar o contido porque non hai suficiente espazo de almacenamento.</translation>
 <translation id="6291741848715722067">Código de confirmación</translation>

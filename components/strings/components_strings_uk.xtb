@@ -45,7 +45,7 @@
 <translation id="1070901266639972381">Ніч</translation>
 <translation id="1073690811593784042">Скло (кольорове)</translation>
 <translation id="1074287282535157335">Виберіть варіант погашення: щомісяця або 4 платежі на виплат (за умови відповідності вимогам)</translation>
-<translation id="1074497978438210769">Не конфіденційний</translation>
+<translation id="1074497978438210769">Не захищено</translation>
 <translation id="1074779248866616641">Результат</translation>
 <translation id="1075364221219156102">Використовувати ключ доступу</translation>
 <translation id="1080116354587839789">За шириною сторінки</translation>
@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">Доступ до геоданих заблоковано</translation>
 <translation id="2041788246978549610">Використовувати доступні мікрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Лоток 7</translation>
-<translation id="2043896419861982462">Щоб приховати варіанти купівлі на виплат, перейдіть на сторінку <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Конверт особистий</translation>
 <translation id="2046951263634619614">Книжкові крамниці</translation>
 <translation id="2048261947532620704">Переклад сторінки</translation>
@@ -1374,7 +1373,6 @@
 <translation id="33073482541490531">Введений пароль розкрито через порушення безпеки даних. Менеджер паролів радить негайно його змінити.</translation>
 <translation id="3307649904964670439">Кнопка "Налаштувати Chrome"; активуйте, щоб налаштувати вигляд веб-переглядача</translation>
 <translation id="3308006649705061278">Організаційний підрозділ (OU)</translation>
-<translation id="3317077846337994567">Функція "Оплата частинами" зараз недоступна. Спробуйте пізніше.</translation>
 <translation id="3318016344440038475">Телевізійні комедії</translation>
 <translation id="3324687287337751929">4 x 6 дюйм.</translation>
 <translation id="3324983252691184275">Малиновий</translation>
@@ -1529,6 +1527,7 @@
 <translation id="3570079787344939099">Зміна масштабу й прокручування</translation>
 <translation id="357244642999988503">Вилучити стовпець</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Додайте нову інформацію до адреси</translation>
 <translation id="3575121482199441727">Дозволити для цього сайту</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Вибрано опцію "Назва вулиці"</translation>
@@ -1551,7 +1550,6 @@
 <translation id="3600106876108433070">Докладніше про порівняльні таблиці</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Керувати налаштуваннями конфіденційності Google"; активуйте, щоб перейти в налаштування конфіденційності облікового запису Google</translation>
-<translation id="3602695245205338770">Виберіть постачальника, який пропонує купівлю на виплат</translation>
 <translation id="3603507503523709">Додаток заблоковано адміністратором</translation>
 <translation id="3605899229568538311">5 x 5 дюйм.</translation>
 <translation id="3606917451836803637">Телевізійні шоу й передачі</translation>
@@ -2018,7 +2016,7 @@
 <translation id="4329871760342656885">Помилка синтаксичного аналізу правила: <ph name="ERROR" /></translation>
 <translation id="433013776994920042">Веб-хостинг і реєстрація доменів</translation>
 <translation id="4331519897422864041">Накопичувач 5</translation>
-<translation id="4331708818696583467">Ненадійне</translation>
+<translation id="4331708818696583467">Не захищено</translation>
 <translation id="4332872603299969513">Дитяча література</translation>
 <translation id="4333295216031073611">Список покупок</translation>
 <translation id="4333561522337981382">керувати вікнами на всіх ваших екранах</translation>
@@ -3180,7 +3178,6 @@
 <translation id="6327065120806001832">доступ до локальної мережі</translation>
 <translation id="6328639280570009161">Спробуйте вимкнути прогнозування мережі.</translation>
 <translation id="6329815962353376655">&lt;Введіть запитання&gt;</translation>
-<translation id="6334834493885103305">Тепер ви можете сплачувати частинами за допомогою сервісів Affirm, Zip і Klarna</translation>
 <translation id="6335029926534404762">Спортивне взуття</translation>
 <translation id="6336948221660696475">Заборонено використовувати віртуальну реальність</translation>
 <translation id="6337133576188860026">Звільняє менше <ph name="SIZE" />. Деякі сайти можуть завантажуватися повільніше під час наступного відвідування.</translation>
@@ -4132,6 +4129,7 @@
 <translation id="7908648876066812348">Увімкнення віртуальної картки</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, натисніть клавішу Tab, а потім – Enter, щоб перейти на сторінку "Перевірка безпеки Chrome" у налаштуваннях</translation>
 <translation id="791107458486222637">Повторний запит результату</translation>
+<translation id="7912924955815015552">Імпортовано із Safari</translation>
 <translation id="791551905239004656">Малювання й розмальовки</translation>
 <translation id="7916162853251942238">Флексографічна основа</translation>
 <translation id="791698251820376781">За вимогами вашої організації, вам заборонено входити в обліковий запис</translation>
@@ -4752,7 +4750,6 @@
 <translation id="9005998258318286617">Не вдалося завантажити документ PDF.</translation>
 <translation id="9008201768610948239">Ігнорувати</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Немає}=1{З 1 сайту}one{З # сайту}few{З # сайтів}many{З # сайтів}other{З # сайту}}</translation>
-<translation id="9012194306129927220">Тепер ви можете розраховуватися частинами за допомогою рішення Affirm або Zip</translation>
 <translation id="9014705027639070815">Сайти, які ви відвідуєте, можуть запитувати в Chrome інформацію, яка допоможе їм оцінювати ефективність їх оголошень. Chrome дозволяє сайтам збирати лише певні типи даних, наприклад про те, чи здійснили ви покупку після відвідування ресурсу.</translation>
 <translation id="9018120810758822233">Введіть код безпеки для кредитної картки <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">електронна адреса</translation>

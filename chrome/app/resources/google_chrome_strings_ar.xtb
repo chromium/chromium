@@ -84,6 +84,7 @@
 <translation id="2091012649849228750">‏للحصول على تحديثات Google Chrome في المستقبل، يجب استخدام كمبيوتر يعمل بنظام التشغيل Windows 10 أو إصدار أحدث. يعمل هذا الكمبيوتر بنظام التشغيل Windows 8.</translation>
 <translation id="2094648590148273905">‏أحكام نظام التشغيل ChromeOS Flex</translation>
 <translation id="2094919256425865063">‏هل تريد الخروج من Chrome على أي حال؟</translation>
+<translation id="2096213354152647998">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذن <ph name="PERMISSION" />.</translation>
 <translation id="2106831557840787829">‏أصبح نظام التشغيل ChromeOS Flex متاحًا من خلال <ph name="BEGIN_LINK_CROS_OSS" />برنامج إضافي مفتوح المصدر<ph name="END_LINK_CROS_OSS" />، كما هو الحال في <ph name="BEGIN_LINK_LINUX_OSS" />بيئة تطوير نظام التشغيل Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2108778574543343055">‏إيقاف تشغيل Chrome في الخلفية أثناء عمل التطبيقات</translation>
 <translation id="2120620239521071941">‏سيعمل هذا على حذف <ph name="ITEMS_COUNT" /> من العناصر من هذا الجهاز. لاسترداد بياناتك لاحقًا، سجّل الدخول إلى Chrome كـ <ph name="USER_EMAIL" />.</translation>
@@ -459,6 +460,7 @@
 <translation id="6696915334902295848">‏يحتاج Chrome إلى إذن للوصول إلى الميكروفون من أجل هذا الموقع الإلكتروني.</translation>
 <translation id="6712881677154121168">حدث خطأ في عملية التنزيل: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">‏زيادة سرعة متصفِّح Chrome</translation>
+<translation id="6734827584173583205">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> وأذونات أخرى (<ph name="COUNT" />).</translation>
 <translation id="6735387454586646204">‏نظام التشغيل ChromeOS Flex</translation>
 <translation id="6750954913813541382">‏لإصلاح الأخطاء الإملائية، يرسِل Chrome النص الذي تكتبه في المتصفّح إلى Google.</translation>
 <translation id="6760235774835597023">‏يعمل هذا الإعداد على زيادة سرعة المواقع الإلكترونية باستخدام محرّك V8 في Chrome، مع تقليل قدرة Chrome على مقاومة الهجمات قليلاً. هذا الإعداد مفعَّل.</translation>
@@ -484,6 +486,7 @@
 <translation id="7024536598735240744">حدث خطأ في فك ضغط الحزمة: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">تم إيقاف التثبيت.</translation>
 <translation id="7025800014283535195">‏يمكنك من هنا التبديل بين الملفات الشخصية على Chrome.</translation>
+<translation id="7051685429025310665">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome أذونات <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" /> و<ph name="PERMISSION_3" />.</translation>
 <translation id="7059914902409643750">‏اجعل Chrome متصفِّحك الدائم</translation>
 <translation id="7060643578009939353">‏البحث عن هذا الفيديو باستخدام "عدسة Google"</translation>
 <translation id="7071827361006050863">‏سيحذف Chrome بيانات التصفُّح قريبًا</translation>
@@ -545,6 +548,7 @@
 <translation id="77283119132245232">تقدِّم هذه الخدمة خدمات تتبُّع النظام لـ <ph name="BROWSER_NAME" />. وفي حال إيقاف هذه الخدمة، لن تتضمّن بيانات تتبُّع الأداء التي ينشئها المتصفّح الأحداث على مستوى النظام، مثل أحداث تبديل السياق وأحداث سلسلة التعليمات الجاهزة.</translation>
 <translation id="7736869414036750079">‏تطلُب المؤسسة منك تسجيل الدخول إلى Chrome</translation>
 <translation id="7747138024166251722">تعذر على أداة المثبِّت إنشاء دليل مؤقت. يُرجى التحقق من وجود مساحة خالية على القرص وتوفر الإذن اللازم لتثبيت البرنامج.</translation>
+<translation id="7748969056734910029">‏لم تتم زيارة هذا الموقع الإلكتروني مؤخرًا، لذلك أزال Chrome إذنَي <ph name="PERMISSION_1" /> و<ph name="PERMISSION_2" />.</translation>
 <translation id="7761834446675418963">‏انقر على اسمك لفتح Chrome وبدء التصفح.</translation>
 <translation id="7777080907402804672">‏في حال لم تتضمن صورة  ما وصفًا مفيدًا، سيحاول Chrome توفير وصف لك. لإنشاء الأوصاف، سيتم إرسال الصور إلى Google. ويمكنك إيقاف هذه الميزة في الإعدادات في أي وقت.</translation>
 <translation id="778331955594035129">‏يحتاج Chrome إلى إذن تحديد الموقع الجغرافي من أجل هذا الموقع الإلكتروني.</translation>

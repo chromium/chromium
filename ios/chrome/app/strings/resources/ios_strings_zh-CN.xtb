@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">今天曾有活动</translation>
 <translation id="1523567067736644845">解锁即可显示密码</translation>
 <translation id="1524563461097350801">不用了</translation>
+<translation id="1528290585275339320">开启网页内容分享功能</translation>
 <translation id="1531038290222364269">显示标签页</translation>
 <translation id="1536390784834419204">翻译网页</translation>
 <translation id="1540800554400757039">地址第1行</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">安全浏览功能目前处于关闭状态。该功能可保护您免受危险网站、下载内容和扩展程序的侵害。</translation>
 <translation id="1620510694547887537">摄像头</translation>
 <translation id="1622717322707146952">选择“添加到 Google 日历”或“添加到 Apple 日历”。</translation>
+<translation id="1625502944725673937">无法导入文件</translation>
 <translation id="1629162218487290695">验证身份…</translation>
 <translation id="1636234353664774105">使用导航功能查询前往目的地的精细路线指导</translation>
 <translation id="1641113438599504367">安全浏览</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">智能手表</translation>
 <translation id="1743244221910283364">舍弃更改</translation>
 <translation id="1748975028205587434">选择文件</translation>
+<translation id="1749733017156547309">必须输入密码</translation>
 <translation id="174998178145075354">{count,plural, =1{键盘上方显示了 {count} 个地址选项。}other{键盘上方显示了 {count} 个地址选项。}}</translation>
 <translation id="1750238553597293878">请继续使用您的 Google 账号的密码</translation>
 <translation id="17513872634828108">目前打开的标签页</translation>
@@ -509,6 +512,7 @@
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2962516096219646456">查看所有自动填充数据</translation>
 <translation id="2969979262385602596">登录失败，请稍后重试。</translation>
+<translation id="2975761176769946178">必须提供网址</translation>
 <translation id="297667759942911166">在标签页分组中协作</translation>
 <translation id="2987670534697681860">请验证身份，以便在此设备上访问您的所有密码。</translation>
 <translation id="2989523299700148168">最近用过的搜索引擎</translation>
@@ -572,6 +576,7 @@
 <translation id="3224075676564434205">相应标签页将在此设备上保持打开状态，但该分组会从所有已登录 <ph name="USER_EMAIL" /> 的设备中删除。</translation>
 <translation id="3224641773458703735">要想导出密码，您必须先在设备上设置屏幕锁定。</translation>
 <translation id="3227137524299004712">麦克风</translation>
+<translation id="3234251228180563751">用户名长度超过了 1,000 个字符</translation>
 <translation id="3235063766008841141">曾在诈骗网站上输入过，并且遭遇了数据泄露</translation>
 <translation id="3235242129752692527">修改活动详细信息，然后点按“保存”。</translation>
 <translation id="323863549127671026">当前打开的标签页和标签页分组</translation>
@@ -1030,6 +1035,7 @@
 <translation id="5079950360618752063">使用建议的密码</translation>
 <translation id="5083464117946352670">无法确定文件大小。</translation>
 <translation id="5085558938118581974">在已同步的设备上搜索标签页</translation>
+<translation id="508645147179720015">备注长度超过了 1000 个字符</translation>
 <translation id="5087098519049306025">价格跟踪</translation>
 <translation id="5090832849094901128">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的账号。</translation>
 <translation id="5118462200606189584">添加账号…</translation>
@@ -1041,6 +1047,7 @@
 <translation id="5128788795241319992">探索新菜单</translation>
 <translation id="5132942445612118989">将您的密码、历史记录等信息同步到所有设备上</translation>
 <translation id="5141363746588976328">隐藏“您打开的标签页中有降价”卡片</translation>
+<translation id="514154868070499296">字体：<ph name="FONT" /></translation>
 <translation id="5145331760738811130">离开标签页切换器</translation>
 <translation id="5148717509369231739">Safari 导入</translation>
 <translation id="5157638238828697074">出了点问题。无法打开该应用。</translation>
@@ -1558,6 +1565,7 @@
 <translation id="7015418667643980944">拆分视图</translation>
 <translation id="7016070607649558507">您有 1 个安全系数低的密码。请立即修正它以确保安全。</translation>
 <translation id="7016958933495968912">“探索”选项</translation>
+<translation id="7017863468226238797">此文件为空或包含格式错误的数据</translation>
 <translation id="7029809446516969842">密码</translation>
 <translation id="7035825883570480307">开启通知？</translation>
 <translation id="7039345315346323556">最近用过</translation>
@@ -1919,6 +1927,7 @@
 <translation id="8434837876193928924">标签页分组详情</translation>
 <translation id="8438566539970814960">改善搜索和浏览体验</translation>
 <translation id="8439758443371991593">隐藏“添加到阅读清单”</translation>
+<translation id="8443986842926457191">网址长度超出了 2048 个字符（上限）</translation>
 <translation id="8449869326050867919">已分享密码</translation>
 <translation id="8473863474539038330">地址和其他信息</translation>
 <translation id="8474378002946546633">允许通知</translation>
@@ -1969,6 +1978,7 @@
 <translation id="8637431369725868556">保护您免受危险网站的侵害。</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{没有任何已泄露的密码}=1{有 {COUNT} 个已泄露的密码}other{有 {COUNT} 个已泄露的密码}}</translation>
 <translation id="8643403533759285912">删除分组</translation>
+<translation id="8645245178269185266">与 Gemini 分享网页内容，获得更符合需求的回答</translation>
 <translation id="8647280737650867362">无法取消跟踪价格。</translation>
 <translation id="8654802032646794042">取消</translation>
 <translation id="8660600697590740984">使用智能镜头搜索复制的图片</translation>
@@ -1983,6 +1993,7 @@
 <translation id="8680786875305615692">帮助我们为所有人改善网络安全环境</translation>
 <translation id="8680787084697685621">账号登录详细信息已过期。</translation>
 <translation id="8690752723634292147">确认删除</translation>
+<translation id="8692107307702113268">密码长度超过了 1,000 个字符</translation>
 <translation id="8692689525339542358">保护您免受危险的网站、下载内容和扩展程序的侵害。</translation>
 <translation id="8692897097252418799">选择要导出的数据</translation>
 <translation id="8694281486652655615">显示此内容</translation>
@@ -2065,6 +2076,7 @@
 <translation id="895541991026785598">报告问题</translation>
 <translation id="8960979149015305">关闭下载栏</translation>
 <translation id="8961092256396236619">已关闭增强型保护</translation>
+<translation id="8962863356073277855">网址格式应为 https://www.example.com</translation>
 <translation id="8968766641738584599">保存银行卡</translation>
 <translation id="8974714402877957201">1. 打开 iPad 设置</translation>
 <translation id="8975015774710126284">浏览数据已被删除</translation>

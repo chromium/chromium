@@ -216,6 +216,7 @@ Controlla le password in qualsiasi momento in <ph name="GOOGLE_PASSWORD_MANAGER"
 <translation id="1142713751288681188">Tipo di carta</translation>
 <translation id="1143142264369994168">Firmatario del certificato</translation>
 <translation id="1145593918056169051">La stampante si è interrotta</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Estensioni}=1{Estensioni ({SELECTED_ITEMS})}other{Estensioni ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Puntatore da testa</translation>
 <translation id="114721135501989771">Tutta l'intelligenza Google in Chrome</translation>
 <translation id="1147322039136785890">È il turno di <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -733,6 +734,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse all
 <translation id="150411034776756821">Rimuovi <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Le cartelle condivise sono disponibili su Windows al percorso <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">esportare le password</translation>
+<translation id="1505654899813338756">Puoi raggruppare le schede per tenere insieme le pagine correlate e salvarle su tutti i tuoi dispositivi</translation>
 <translation id="1506061864768559482">Motore di ricerca</translation>
 <translation id="1506187449813838456">Aumenta tono</translation>
 <translation id="1507170440449692343">A questa pagina è stato impedito l'accesso alla webcam.</translation>
@@ -5294,6 +5296,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="4681930562518940301">Apri &amp;originale in nuova scheda</translation>
 <translation id="4682481611456523884">Per i contenuti incorporati in questo sito non è possibile usare le informazioni su di te che sono state salvate</translation>
 <translation id="4682807230647698604">Quando utilizzi queste funzionalità, i dati pertinenti vengono inviati a Google per creare esperienze AI</translation>
+<translation id="4683143253481759090">Chrome è stato aggiornato</translation>
 <translation id="4683629100208651599">Usa lettere minuscole</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (valore predefinito)</translation>
 <translation id="4684427112815847243">Sincronizza tutto</translation>
@@ -6063,7 +6066,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="5235050375939235066">Disinstallare l'app?</translation>
 <translation id="523505283826916779">Impostazioni di accessibilità</translation>
 <translation id="5235750401727657667">Sostituzione della pagina visualizzata quando viene aperta una nuova scheda</translation>
-<translation id="5236054983756407518">Rimuovere l'indirizzo di casa da Chrome?</translation>
 <translation id="5237124927415201087">Configura facilmente <ph name="DEVICE_TYPE" /> con lo smartphone. Puoi aggiungere la tua rete Wi-Fi e il tuo Account Google senza inserire manualmente le password.
     <ph name="BR" />
     <ph name="BR" />
@@ -7191,7 +7193,6 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="606449270532897041">Gestisci i dati dei siti</translation>
 <translation id="6064764629679333574">Migliora la qualità del suono del microfono Bluetooth aumentando la risoluzione dell'audio da bassa risoluzione ad alta risoluzione.</translation>
 <translation id="6065289257230303064">Attributi directory soggetto certificato</translation>
-<translation id="6065690209261668796">Rimuovere l'indirizzo di lavoro da Chrome?</translation>
 <translation id="6066794465984119824">L'hash dell'immagine non è impostato</translation>
 <translation id="6069464830445383022">Accedi al Chromebook con il tuo Account Google</translation>
 <translation id="6071181508177083058">conferma password</translation>
@@ -7515,6 +7516,7 @@ Puoi assegnare più sensori a questa azione.</translation>
 <translation id="628726841779494414">Gestisci le stampanti nelle impostazioni delle stampanti</translation>
 <translation id="6287288864483377583">L'importazione è supportata solo per un singolo certificato</translation>
 <translation id="6287828400772161253">Smartphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Chiedi a Google AI Mode</translation>
 <translation id="6290613030083731160">Non sono disponibili dispositivi per condividere contenuti nelle vicinanze. <ph name="LINK_BEGIN" />Scopri di più<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Impossibile eseguire il ripristino a causa di spazio di archiviazione insufficiente.</translation>
 <translation id="6291741848715722067">Codice di conferma</translation>
@@ -9180,6 +9182,7 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7481312909269577407">Avanti</translation>
 <translation id="7481358317100446445">Pronta</translation>
 <translation id="748138892655239008">Limitazioni di base certificato</translation>
+<translation id="7482823403440483089">Compilazione automatica avanzata</translation>
 <translation id="7483732342458943943">Questo link non funziona</translation>
 <translation id="7484645889979462775">Mai per questo sito</translation>
 <translation id="7484943269191249363">Puoi usare tutte le passkey salvate nel Gestore delle password di Google su questo dispositivo. Dovrai farlo solo una volta.</translation>
@@ -9571,7 +9574,7 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="7758143121000533418">Family Link</translation>
 <translation id="7758884017823246335">Aggiungi ricerca su sito</translation>
 <translation id="7759443981285558794">Visualizza i certificati importati da ChromeOS</translation>
-<translation id="7759809451544302770">Facoltative</translation>
+<translation id="7759809451544302770">Facoltativo</translation>
 <translation id="7760176388948986635">Consenti alle app, ai siti web e ai servizi ChromeOS e per Android che dispongono dell'autorizzazione di accesso alla posizione di usare la posizione di questo dispositivo. La precisione della posizione fornisce una posizione più precisa per app e servizi. A questo scopo, Google tratta periodicamente informazioni relative a sensori dei dispositivi e segnali wireless provenienti da questo dispositivo per raccogliere le posizioni dei segnali wireless mediante crowdsourcing. Queste vengono usate senza identificare nessuna persona per migliorare la precisione della posizione e i servizi basati sulla posizione geografica, nonché per migliorare, fornire e mantenere i servizi di Google basati sugli interessi legittimi di Google e di terze parti al fine di soddisfare le esigenze degli utenti.</translation>
 <translation id="7762024824096060040">Impossibile usare questo account</translation>
 <translation id="7764225426217299476">Aggiungi indirizzo</translation>

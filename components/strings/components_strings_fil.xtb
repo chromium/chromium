@@ -619,7 +619,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="2040894699575719559">Na-block ang lokasyon</translation>
 <translation id="2041788246978549610">Gamitin ang mga available na mikropono (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Tray 7</translation>
-<translation id="2043896419861982462">Para itago ang mga opsyon sa pagbabayad sa paglipas ng panahon, pumunta sa <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">Mga Retailer ng Libro</translation>
 <translation id="2048261947532620704">Isinasalin ang page</translation>
@@ -1374,7 +1373,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="33073482541490531">Nakita sa isang data breach ang password na kakagamit mo lang. Inirerekomenda ng Password Manager na palitan na ngayon ang password na ito.</translation>
 <translation id="3307649904964670439">Button na I-customize ang Chrome, i-activate para ma-customize ang hitsura ng iyong browser</translation>
 <translation id="3308006649705061278">Organizational Unit (OU)</translation>
-<translation id="3317077846337994567">Hindi available sa ngayon ang pagbabayad sa paglipas ng panahon. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="3318016344440038475">Mga Comedy sa TV</translation>
 <translation id="3324687287337751929">4 x 6 in</translation>
 <translation id="3324983252691184275">Crimson</translation>
@@ -1529,6 +1527,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3570079787344939099">Pag-scroll at pag-zoom</translation>
 <translation id="357244642999988503">Alisin ang column</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Magdagdag ng Bagong Impormasyon sa Address</translation>
 <translation id="3575121482199441727">Payagan para sa site na ito</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Napili ang opsyong pangalan ng kalye</translation>
@@ -1551,7 +1550,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3600106876108433070">Matuto tungkol sa mga talahanayan sa paghahambing</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Button na Pamahalaan ang mga setting ng Privacy ng Google, i-activate para mabisita ang mga setting ng privacy ng Google Account mo</translation>
-<translation id="3602695245205338770">Pumili ng provider ng pagbabayad sa paglipas ng panahon</translation>
 <translation id="3603507503523709">Na-block ng iyong administrator ang application</translation>
 <translation id="3605899229568538311">5 x 5 in</translation>
 <translation id="3606917451836803637">Mga Palabas at Programa sa TV</translation>
@@ -3180,7 +3178,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6327065120806001832">access sa lokal na network</translation>
 <translation id="6328639280570009161">Subukang i-disable ang paghula ng network</translation>
 <translation id="6329815962353376655">&lt;Mag-type ng tanong&gt;</translation>
-<translation id="6334834493885103305">Ngayon, puwede kang magbayad sa paglipas ng panahon gamit ang Affirm, Zip, o Klarna</translation>
 <translation id="6335029926534404762">Mga Sapatos na Pang-atleta</translation>
 <translation id="6336948221660696475">Hindi pinapayagan ang VR</translation>
 <translation id="6337133576188860026">Magbabakante ng wala pang <ph name="SIZE" />. Maaaring mag-load nang mas mabagal ang ilang site sa iyong susunod na pagbisita.</translation>
@@ -3582,6 +3579,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6989763994942163495">Ipakita ang mga advanced na setting...</translation>
 <translation id="6991376411634620997">Passkey • Windows Hello</translation>
 <translation id="6997288673234694149">Kagamitan sa Baseball at Softball</translation>
+<translation id="6998512609912910179">Punan ang mga form nang mas mabilis</translation>
 <translation id="6999480632062519056">Pagtuturo ng Fitness at Personal na Pagsasanay</translation>
 <translation id="7003278537452757231">Mga Basahan at Karpet</translation>
 <translation id="7003322000677139268">Mga Piyesa at Accessory ng Sasakyan</translation>
@@ -4131,6 +4129,7 @@ Mga karagdagang detalye:
 <translation id="7908648876066812348">Ino-on ang virtual card</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />, pindutin ang Tab at pagkatapos ay ang Enter para pumunta sa page ng pag-check sa kaligtasan ng Chrome sa mga setting</translation>
 <translation id="791107458486222637">Nire-redo ang resulta</translation>
+<translation id="7912924955815015552">Na-import mula sa Safari</translation>
 <translation id="791551905239004656">Pagguhit at Pagkukulay</translation>
 <translation id="7916162853251942238">Flexo Base</translation>
 <translation id="791698251820376781">Hindi ka pinapayagan ng iyong organisasyon na mag-sign in</translation>
@@ -4750,7 +4749,6 @@ Mga karagdagang detalye:
 <translation id="9005998258318286617">Hindi na-load ang PDF document.</translation>
 <translation id="9008201768610948239">Balewalain</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Wala}=1{Mula sa 1 site}one{Mula sa # site}other{Mula sa # na site}}</translation>
-<translation id="9012194306129927220">Puwede ka na ngayong magbayad nang installment gamit ang Affirm o Zip</translation>
 <translation id="9014705027639070815">Puwedeng humingi ang mga site na binibisita mo ng impormasyon mula sa Chrome para matulungan silang sukatin ang performance ng kanilang mga ad. Pinapayagan ng Chrome ang mga site na mangolekta ng mga limitadong uri ng data, gaya kung bumili ka pagkatapos mong bumisita sa isang site.</translation>
 <translation id="9018120810758822233">Ilagay ang iyong panseguridad na code para sa <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">email</translation>

@@ -715,6 +715,7 @@ Kun personer med din adgangssætning kan læse dine krypterede data. Adgangssæt
 <translation id="4380055775103003110">Hvis problemet fortsætter, kan du prøve at fortsætte på andre måder på <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Søgning via Sogou</translation>
 <translation id="4387647248986092471">Opret en lås for din bilprofil</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Faner og fanegrupper, der ikke har været brugt i mindst 1 dag}one{Faner og fanegrupper, der ikke har været brugt i mindst # dag}other{Faner og fanegrupper, der ikke har været brugt i # dage}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Downloader…</translation>
 <translation id="4404568932422911380">Der er ingen bogmærker</translation>
 <translation id="4405224443901389797">Flyt til…</translation>

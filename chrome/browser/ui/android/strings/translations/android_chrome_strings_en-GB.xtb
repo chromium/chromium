@@ -715,6 +715,7 @@ Only someone with your passphrase can read your encrypted data. The passphrase i
 <translation id="4380055775103003110">If this issue keeps happening, you can try other ways to continue on <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Using Sogou for search</translation>
 <translation id="4387647248986092471">Create a car profile lock</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Tabs and groups not used for 1 day or more}other{Tabs and groups not used for # days or more}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Downloading…</translation>
 <translation id="4404568932422911380">No bookmarks</translation>
 <translation id="4405224443901389797">Move to…</translation>

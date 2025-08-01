@@ -6077,7 +6077,6 @@ Zooma ut med Ctrl + Alt + Minska ljusstyrkan.</translation>
 <translation id="5235050375939235066">Vill du avinstallera appen?</translation>
 <translation id="523505283826916779">Inställningar för tillgänglighet</translation>
 <translation id="5235750401727657667">Ersätt den aktuella sidan när du öppnar en ny flik</translation>
-<translation id="5236054983756407518">Vill du ta bort din hemadress från Chrome?</translation>
 <translation id="5237124927415201087">Konfigurera enkelt <ph name="DEVICE_TYPE" /> med telefonen. Du kan lägga till ditt wifi och ditt Google-konto utan att ange lösenorden manuellt.
     <ph name="BR" />
     <ph name="BR" />
@@ -7208,7 +7207,6 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="606449270532897041">Hantera webbplatsdata</translation>
 <translation id="6064764629679333574">Förbättra kvaliteten på Bluetooth-mikrofonljudet genom att skala upp lågupplöst ljud till hög upplösning.</translation>
 <translation id="6065289257230303064">Attribut för certifikatämneskatalog</translation>
-<translation id="6065690209261668796">Vill du ta bort din jobbadress från Chrome?</translation>
 <translation id="6066794465984119824">Avbildningens hashvärde har inte angetts</translation>
 <translation id="6069464830445383022">Du loggar in på Chromebook med ditt Google-konto.</translation>
 <translation id="6071181508177083058">bekräfta lösenord</translation>
@@ -7532,6 +7530,7 @@ Du kan tilldela flera brytare denna åtgärd.</translation>
 <translation id="628726841779494414">Hantera dina skrivare i skrivarinställningarna</translation>
 <translation id="6287288864483377583">Det finns bara stöd för import av enstaka certifikat</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Fråga Googles AI-läge</translation>
 <translation id="6290613030083731160">Det finns inga enheter i närheten som delar. <ph name="LINK_BEGIN" />Läs mer<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Återställningen misslyckades eftersom det inte finns tillräckligt med lagringsutrymme.</translation>
 <translation id="6291741848715722067">Bekräftelsekod</translation>

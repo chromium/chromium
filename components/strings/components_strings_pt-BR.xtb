@@ -557,6 +557,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="1927439846988093361">Cuidados com os cabelos</translation>
 <translation id="1935353813610900265">Enviar feedback sobre a pesquisa de histórico com tecnologia de IA</translation>
 <translation id="1935995810530254458">Copiar mesmo assim</translation>
+<translation id="1938580037092872316">Adicionar novas informações ao endereço salvo</translation>
 <translation id="1939059826036755332">Picture-in-picture automático</translation>
 <translation id="1939175642807587452">Pode pedir para enviar notificações</translation>
 <translation id="1940441167050915935">Excluir códigos de segurança salvos</translation>
@@ -619,7 +620,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="2040894699575719559">Acesso ao local bloqueado</translation>
 <translation id="2041788246978549610">Usar os microfones disponíveis (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Bandeja 7</translation>
-<translation id="2043896419861982462">Para ocultar as opções de pagamento parcelado, acesse as <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope pessoal</translation>
 <translation id="2046951263634619614">Lojas de livros</translation>
 <translation id="2048261947532620704">Traduzindo página</translation>
@@ -1374,7 +1374,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="33073482541490531">A senha que você usou foi encontrada em uma violação de dados. O Gerenciador de senhas recomenda que você a mude imediatamente.</translation>
 <translation id="3307649904964670439">Botão "Personalizar o Chrome". Ative para personalizar a aparência do navegador</translation>
 <translation id="3308006649705061278">Unidade organizacional (OU)</translation>
-<translation id="3317077846337994567">A opção de pagar em parcelas não está disponível no momento. Tente novamente mais tarde.</translation>
 <translation id="3318016344440038475">Programas de TV de comédia</translation>
 <translation id="3324687287337751929">4 x 6 pol.</translation>
 <translation id="3324983252691184275">Carmim</translation>
@@ -1551,7 +1550,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3600106876108433070">Saiba mais sobre as tabelas de comparação</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Botão "Gerenciar configurações de privacidade da Conta do Google". Ative para acessar as configurações de privacidade da sua Conta do Google</translation>
-<translation id="3602695245205338770">Escolha um provedor de pagamento parcelado</translation>
 <translation id="3603507503523709">Aplicativo bloqueado pelo administrador</translation>
 <translation id="3605899229568538311">5 x 5 pol.</translation>
 <translation id="3606917451836803637">Programas de TV</translation>
@@ -3180,7 +3178,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6327065120806001832">acesso à rede local</translation>
 <translation id="6328639280570009161">Tente desativar a previsão de rede</translation>
 <translation id="6329815962353376655">&lt;Digite uma pergunta&gt;</translation>
-<translation id="6334834493885103305">Agora você pode parcelar compras usando Affirm, Zip ou Klarna</translation>
 <translation id="6335029926534404762">Calçados esportivos</translation>
 <translation id="6336948221660696475">RV não permitida</translation>
 <translation id="6337133576188860026">Libera menos de <ph name="SIZE" />. Alguns sites podem carregar mais lentamente no próximo acesso.</translation>
@@ -3522,7 +3519,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6898699227549475383">O (Organização)</translation>
 <translation id="6900702165119149418">Você não fez login</translation>
 <translation id="6903907808598579934">Ativar a sincronização</translation>
-<translation id="6905163627763043954">Experimente</translation>
+<translation id="6905163627763043954">Testar</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="691024665142758461">Fazer o download de vários arquivos</translation>
 <translation id="6915804003454593391">Usuário:</translation>
@@ -3542,6 +3539,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6935082727755903526">Vagas de emprego nas áreas contábil e financeira</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />. Alguns sites podem carregar mais lentamente no próximo acesso.</translation>
 <translation id="6936976777388162184">Este é um dispositivo com pacote e não pode ser registrado com o Upgrade de quiosque e sinalização.</translation>
+<translation id="6942444979237658241">Comentários – <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">Jogos de estratégia</translation>
 <translation id="6944692733090228304">Você inseriu sua senha em um site que não é gerenciado por <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" />. Para proteger sua conta, não reutilize sua senha em outros apps e sites.</translation>
 <translation id="6946949206576443118">Pesquise na Web usando o Chrome</translation>
@@ -3582,6 +3580,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6989763994942163495">Mostrar configurações avançadas...</translation>
 <translation id="6991376411634620997">Chave de acesso • Windows Hello</translation>
 <translation id="6997288673234694149">Equipamentos de beisebol e softbol</translation>
+<translation id="6998512609912910179">Preencha formulários mais rápido</translation>
 <translation id="6999480632062519056">Instrução para atividades físicas e personal trainers</translation>
 <translation id="7003278537452757231">Tapetes e carpetes</translation>
 <translation id="7003322000677139268">Peças e acessórios de veículos</translation>
@@ -3999,6 +3998,7 @@ Mais detalhes:
 <translation id="7668654391829183341">Dispositivo desconhecido</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />, <ph name="ITEM_POSITION" /> de <ph name="ITEMS_TOTAL" />.</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{Ações realizadas em dados marcados como confidenciais (1 ação desde o login). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}one{Ações realizadas em dados marcados como confidenciais (# ação desde o login). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}other{Ações realizadas em dados marcados como confidenciais (# ações desde o login). <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">As informações da sua Conta do Google <ph name="USER_EMAIL" /> podem te ajudar a preencher formulários mais rápido no Chrome</translation>
 <translation id="7673278391011283842">Caixa de e-mails 6</translation>
 <translation id="7675325315208090829">Gerenciar formas de pagamento…</translation>
 <translation id="767550629621587224">Abas pré-cortadas</translation>
@@ -4265,6 +4265,7 @@ Mais detalhes:
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{Criado há 1 mês}one{Criado há {NUM_MONTHS} mês}other{Criado há {NUM_MONTHS} meses}}</translation>
 <translation id="8148608574971654810">Versão do PDF:</translation>
 <translation id="8149426793427495338">Seu computador entrou em modo de suspensão.</translation>
+<translation id="815036624016370447">As informações da sua Conta do Google <ph name="ACCOUNT" /> podem te ajudar a preencher formulários mais rápido no Chrome</translation>
 <translation id="8150722005171944719">O arquivo em <ph name="URL" /> não está legível. Ele pode ter sido removido ou movido, ou as permissões do arquivo podem estar impedindo o acesso.</translation>
 <translation id="8151185429379586178">Ferramentas para desenvolvedores</translation>
 <translation id="8153865548451212769">{0,plural, =1{A política do administrador não recomenda o download do arquivo para este local: <ph name="DESTINATION_NAME" />}one{A política do administrador não recomenda o download do arquivo para este local: <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda o download desses arquivos para este local: <ph name="DESTINATION_NAME" />}}</translation>
@@ -4751,7 +4752,6 @@ Mais detalhes:
 <translation id="9005998258318286617">Falha ao carregar documento PDF.</translation>
 <translation id="9008201768610948239">Ignorar</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Nenhum}=1{De 1 site}one{De # site}other{De # sites}}</translation>
-<translation id="9012194306129927220">Agora é possível parcelar suas compras usando o Affirm ou o Zip</translation>
 <translation id="9014705027639070815">Os sites que você visita podem pedir informações ao Chrome para medir a performance dos anúncios. O Chrome permite que os sites coletem tipos limitados de dados, por exemplo, se você fez uma compra depois de visitar um site.</translation>
 <translation id="9018120810758822233">Digite o código de segurança do cartão <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-mail</translation>

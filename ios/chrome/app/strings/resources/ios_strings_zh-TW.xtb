@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">智慧手錶</translation>
 <translation id="1743244221910283364">捨棄變更</translation>
 <translation id="1748975028205587434">選取檔案</translation>
+<translation id="1749733017156547309">必須輸入密碼</translation>
 <translation id="174998178145075354">{count,plural, =1{鍵盤上方顯示 {count} 個地址選項。}other{鍵盤上方顯示 {count} 個地址選項。}}</translation>
 <translation id="1750238553597293878">請繼續使用 Google 帳戶中的密碼</translation>
 <translation id="17513872634828108">開啟的分頁</translation>
@@ -509,6 +510,7 @@
 <translation id="2952278131021475699">智慧鏡頭相機搜尋功能</translation>
 <translation id="2962516096219646456">查看所有自動填入資料</translation>
 <translation id="2969979262385602596">無法登入，請稍後再試。</translation>
+<translation id="2975761176769946178">必須輸入網址</translation>
 <translation id="297667759942911166">在分頁群組中協作</translation>
 <translation id="2987670534697681860">請先通過身分驗證，才能在這部裝置上存取所有密碼。</translation>
 <translation id="2989523299700148168">最近造訪過</translation>
@@ -572,6 +574,7 @@
 <translation id="3224075676564434205">分頁會在這部裝置上保持開啟，但群組會從所有已登入 <ph name="USER_EMAIL" /> 的裝置刪除。</translation>
 <translation id="3224641773458703735">你必須先在裝置上設定螢幕解鎖密碼才能匯出密碼。</translation>
 <translation id="3227137524299004712">麥克風</translation>
+<translation id="3234251228180563751">使用者名稱長度超過 1000 個半形字元</translation>
 <translation id="3235063766008841141">曾在詐騙網站上輸入，並發生資料侵害事件</translation>
 <translation id="3235242129752692527">編輯活動詳細資料，然後輕觸「儲存」。</translation>
 <translation id="323863549127671026">目前開啟的分頁和分頁群組</translation>
@@ -1030,6 +1033,7 @@
 <translation id="5079950360618752063">使用建議的密碼</translation>
 <translation id="5083464117946352670">無法確定檔案大小。</translation>
 <translation id="5085558938118581974">搜尋所有已同步裝置的分頁</translation>
+<translation id="508645147179720015">記事超過 1000 個半形字元</translation>
 <translation id="5087098519049306025">價格追蹤</translation>
 <translation id="5090832849094901128">刪除這組密碼並不會刪除你的 <ph name="WEBSITE" /> 帳戶。</translation>
 <translation id="5118462200606189584">新增帳戶…</translation>
@@ -1919,6 +1923,7 @@
 <translation id="8434837876193928924">分頁群組詳細資料</translation>
 <translation id="8438566539970814960">改善搜尋和瀏覽體驗</translation>
 <translation id="8439758443371991593">隱藏「加入閱讀清單」</translation>
+<translation id="8443986842926457191">網址包含的字元數超過 2048 個</translation>
 <translation id="8449869326050867919">已分享密碼</translation>
 <translation id="8473863474539038330">地址和其他資訊</translation>
 <translation id="8474378002946546633">允許通知</translation>
@@ -1983,6 +1988,7 @@
 <translation id="8680786875305615692">協助我們為所有人改善網路安全性</translation>
 <translation id="8680787084697685621">帳戶登入詳細資料已過期。</translation>
 <translation id="8690752723634292147">確認刪除</translation>
+<translation id="8692107307702113268">密碼長度超過 1000 個半形字元</translation>
 <translation id="8692689525339542358">守護網頁瀏覽安全，有效防堵危險網站、下載內容和擴充功能。</translation>
 <translation id="8692897097252418799">選擇要匯出的資料</translation>
 <translation id="8694281486652655615">顯示這個項目</translation>
@@ -2007,6 +2013,7 @@
 <translation id="8741995161408053644">您仍可前往 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 存取 Google 帳戶中保存的各種瀏覽記錄。</translation>
 <translation id="874599634440689554">建立連結</translation>
 <translation id="8746155870861185046">分享醒目顯示內容</translation>
+<translation id="8748678031495824833">開啟網頁內 AI 工具</translation>
 <translation id="8750037785291841318">這裡會顯示你的分頁</translation>
 <translation id="8756969031206844760">要更新密碼嗎？</translation>
 <translation id="8764015330924122850">取消追蹤 <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@
 <translation id="895541991026785598">回報問題</translation>
 <translation id="8960979149015305">關閉下載列</translation>
 <translation id="8961092256396236619">強化防護功能已關閉</translation>
+<translation id="8962863356073277855">網址格式必須是 https://www.example.com</translation>
 <translation id="8968766641738584599">儲存卡片</translation>
 <translation id="8974714402877957201">1. 開啟 iPad 的 [設定]</translation>
 <translation id="8975015774710126284">瀏覽資料已刪除</translation>

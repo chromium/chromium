@@ -6071,7 +6071,6 @@
 <translation id="5235050375939235066">መተግበሪያ ይራገፍ?</translation>
 <translation id="523505283826916779">የተደራሽነት ቅንብሮች</translation>
 <translation id="5235750401727657667">አዲስ ትር በሚከፈትበት ጊዜ የሚመለከቱትን ገፅ ይተኩ</translation>
-<translation id="5236054983756407518">የቤት አድራሻዎ ከChrome ላይ ይወገድ?</translation>
 <translation id="5237124927415201087">የእርስዎን <ph name="DEVICE_TYPE" /> በቀላሉ በስልክዎ ያቀናብሩ። የይለፍ ቃላትዎን ሳያስገቡ የእርስዎን Wi-Fi እና የGoogle መለያ ማከል ይችላሉ።
     <ph name="BR" />
     <ph name="BR" />
@@ -7202,7 +7201,6 @@
 <translation id="606449270532897041">የጣቢያ ውሂብ አስተዳድር</translation>
 <translation id="6064764629679333574">ዝቅተኛ ጥራት ያለው ኦዲዮ ወደ ከፍተኛ ጥራት በማሳደግ የብሉቱዝ ማይክሮፎን ድምጽ ጥራትን ያሻሽሉ።</translation>
 <translation id="6065289257230303064">የሰርቲፊኬት ርዕስ የማውጫ አይነታዎች</translation>
-<translation id="6065690209261668796">የሥራ አድራሻዎ ከChrome ላይ ይወገድ?</translation>
 <translation id="6066794465984119824">የምስል ሃሽ አልተዘጋጀም</translation>
 <translation id="6069464830445383022">የእርስዎ Google መለያ የእርስዎ Chromebook መግቢያ ነው</translation>
 <translation id="6071181508177083058">የይለፍ ቃል ያረጋግጡ</translation>
@@ -7526,6 +7524,7 @@
 <translation id="628726841779494414">በአታሚ ቅንብሮች ውስጥ የእርስዎን አታሚዎች ያስተዳድሩ</translation>
 <translation id="6287288864483377583">ማምጣት የሚደገፈው ለነጠላ የዕውቅና ማረጋገጫ ብቻ ነው</translation>
 <translation id="6287828400772161253">Android ስልክ (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google ሰው ሠራሽ አስተውሎት ሁነታን ጠይቅ</translation>
 <translation id="6290613030083731160">በአቅራቢያ የሚጋሩ መሣሪያዎች የሉም። <ph name="LINK_BEGIN" />የበለጠ ለመረዳት<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">በማከማቻ ቦታ እጥረት ምክንያት ወደነበረበት መመለስ አልተቻለም።</translation>
 <translation id="6291741848715722067">የማረጋገጫ ኮድ</translation>

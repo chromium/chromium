@@ -715,6 +715,7 @@ Jūsu šifrētos datus var lasīt tikai personas, kurām ir jūsu ieejas frāze.
 <translation id="4380055775103003110">Ja šī problēma atkārtojas, varat izmēģināt citus veidus, kā turpināt darbu vietnē <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Tiek izmantota meklētājprogramma Sogou</translation>
 <translation id="4387647248986092471">Iestatīt automašīnas profila bloķēšanu</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Cilnes un grupas, kas nav izmantotas vismaz 1 dienu}zero{Cilnes un grupas, kas nav izmantotas vismaz # dienas}one{Cilnes un grupas, kas nav izmantotas vismaz # dienu}other{Cilnes un grupas, kas nav izmantotas vismaz # dienas}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> — notiek lejupielāde…</translation>
 <translation id="4404568932422911380">Nav grāmatzīmju</translation>
 <translation id="4405224443901389797">Pārvietot uz…</translation>

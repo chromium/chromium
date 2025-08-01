@@ -715,6 +715,7 @@ Numai un utilizator care deține expresia ta de acces îți poate citi datele cr
 <translation id="4380055775103003110">Dacă problema persistă, poți încerca alte metode pentru a accesa <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Pentru căutare se folosește Sogou</translation>
 <translation id="4387647248986092471">Creează o blocare a profilului mașinii</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Filele și grupurile care nu au fost folosite de cel puțin o zi}few{Filele și grupurile care nu au fost folosite de cel puțin # zile}other{Filele și grupurile care nu au fost folosite de cel puțin # de zile}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> – Se descarcă…</translation>
 <translation id="4404568932422911380">Niciun marcaj</translation>
 <translation id="4405224443901389797">Mută în…</translation>

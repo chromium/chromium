@@ -216,6 +216,7 @@
 <translation id="1142713751288681188">ປະເພດເຈ້ຍ</translation>
 <translation id="1143142264369994168">ຜູ້ເຊັນໃບຢັ້ງຢືນ</translation>
 <translation id="1145593918056169051">ເຄື່ອງພິມໄດ້ຢຸດແລ້ວ</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{ສ່ວນຂະຫຍາຍ}=1{ສ່ວນຂະຫຍາຍ ({SELECTED_ITEMS})}other{ສ່ວນຂະຫຍາຍ ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">ຕົວຊີ້ສ່ວນຫົວ</translation>
 <translation id="114721135501989771">ມີ Google ອັດສະລິຍະໃນ Chrome</translation>
 <translation id="1147322039136785890">ດຽວນີ້ມັນເປັນຜຽນຂອງ <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -734,6 +735,7 @@
 <translation id="150411034776756821">ລຶບ <ph name="SITE" /> ອອກ</translation>
 <translation id="1504551620756424144">ໂຟນເດີທີ່ໃຊ້ຮ່ວມກັນສາມາດໃຊ້ໄດ້ໃນ Windows ທີ່ <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">ສົ່ງລະຫັດຜ່ານອອກ</translation>
+<translation id="1505654899813338756">ທ່ານສາມາດຈັດກຸ່ມແຖບເພື່ອເກັບຮັກສາໜ້າທີ່ກ່ຽວຂ້ອງກັນໄວ້ນຳກັນ ແລະ ບັນທຶກໄວ້ໃນອຸປະກອນຕ່າງໆຂອງທ່ານໄດ້</translation>
 <translation id="1506061864768559482">ເຄື່ອງ​ຈັກ​ຄົ້ນ​ຫາ</translation>
 <translation id="1506187449813838456">ເພີ່ມ​ລະດັບສຽງ</translation>
 <translation id="1507170440449692343">ໜ້ານີ້ຖືກບລັອກຈາກການເຂົ້າໃຊ້ກ້ອງຖ່າຍຮູບຂອງທ່ານ.</translation>
@@ -5306,6 +5308,7 @@
 <translation id="4681930562518940301">ເປີດຮູບ&amp;ເດີມຢູ່ໃນແຖບໃໝ່</translation>
 <translation id="4682481611456523884">ເນື້ອຫາທີ່ຝັງໄວ້ຢູ່ເວັບໄຊນີ້ບໍ່ສາມາດໃຊ້ຂໍ້ມູນທີ່ພວກມັນບັນທຶກໄວ້ກ່ຽວກັບທ່ານ</translation>
 <translation id="4682807230647698604">ເມື່ອທ່ານໃຊ້ຄຸນສົມບັດເຫຼົ່ານີ້, ລະບົບຈະສົ່ງຂໍ້ມູນທີ່ກ່ຽວຂ້ອງໄປຫາ Google ເພື່ອສ້າງປະສົບການ AI</translation>
+<translation id="4683143253481759090">Chrome ອັບເດດແລ້ວ</translation>
 <translation id="4683629100208651599">ເຮັດໃຫ້ເປັນຕົວພິມນ້ອຍ</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ຄ່າເລີ່ມຕົ້ນ)</translation>
 <translation id="4684427112815847243">ຊິງຄ໌​ທຸກ​ຢ່າງ</translation>
@@ -6076,7 +6079,6 @@
 <translation id="5235050375939235066">ຖອນຕິດຕັ້ງແອັບບໍ?</translation>
 <translation id="523505283826916779">ການ​ຕັ້ງຄ່າ​ການ​ເຂົ້າ​ເຖິງ</translation>
 <translation id="5235750401727657667">ປ່ຽນແທນໜ້າເວັບທີ່ທ່ານເຫັນໃນເວລາທີ່ເປີດແຖບໃໝ່</translation>
-<translation id="5236054983756407518">ລຶບທີ່ຢູ່ເຮືອນຂອງທ່ານອອກຈາກ Chrome ບໍ?</translation>
 <translation id="5237124927415201087">ຕັ້ງຄ່າ <ph name="DEVICE_TYPE" /> ຂອງທ່ານໄດ້ຢ່າງງ່າຍດາຍດ້ວຍໂທລະສັບຂອງທ່ານ. ທ່ານສາມາດເພີ່ມ Wi-Fi ແລະ ບັນຊີ Google ຂອງທ່ານໄດ້ໂດຍບໍ່ຕ້ອງລະບຸລະຫັດຜ່ານຂອງທ່ານດ້ວຍຕົນເອງ.
     <ph name="BR" />
     <ph name="BR" />
@@ -7206,7 +7208,6 @@
 <translation id="606449270532897041">ຈັດການຂໍ້ມູນເວັບໄຊ</translation>
 <translation id="6064764629679333574">ປັບປຸງຄຸນນະພາບສຽງໄມ Bluetooth ໂດຍເພີ່ມລະດັບສຽງຄຸນນະພາບຕ່ຳເປັນຄຸນນະພາບສູງ.</translation>
 <translation id="6065289257230303064">ຄຸນລັກສະນະໄດເຣັກຕໍຣີຫົວຂໍ້ໃບຢັ້ງຢືນ</translation>
-<translation id="6065690209261668796">ລຶບທີ່ຢູ່ບ່ອນເຮັດວຽກຂອງທ່ານອອກຈາກ Chrome ບໍ?</translation>
 <translation id="6066794465984119824">ບໍ່ໄດ້ຕັ້ງແຮຊຮູບ</translation>
 <translation id="6069464830445383022">ໃຊ້ບັນຊີ Google ຂອງທ່ານເພື່ອເຂົ້າສູ່ລະບົບ Chromebook ຂອງທ່ານ</translation>
 <translation id="6071181508177083058">ຢືນ​ຢັນ​ລະ​ຫັດ​ຜ່ານ​</translation>
@@ -7530,6 +7531,7 @@
 <translation id="628726841779494414">ຈັດການເຄື່ອງພິມຂອງທ່ານໃນການຕັ້ງຄ່າເຄື່ອງພິມ</translation>
 <translation id="6287288864483377583">ຮອງຮັບການນຳເຂົ້າໃບຮັບຮອງສະບັບດຽວເທົ່ານັ້ນ</translation>
 <translation id="6287828400772161253">ໂທລະສັບ Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">ຖາມໂໝດ Google AI</translation>
 <translation id="6290613030083731160">ບໍ່ມີອຸປະກອນທີ່ກຳລັງແບ່ງປັນຢູ່ໃກ້ຄຽງ. <ph name="LINK_BEGIN" />ສຶກສາເພີ່ມເຕີມ<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ບໍ່ສາມາດກູ້ຄືນໄດ້ເນື່ອງຈາກບໍ່ມີພື້ນທີ່ຈັດເກັບຂໍ້ມູນ.</translation>
 <translation id="6291741848715722067">ລະຫັດຢືນຢັນ</translation>

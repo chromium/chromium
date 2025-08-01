@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Умные часы</translation>
 <translation id="1743244221910283364">Отменить изменения</translation>
 <translation id="1748975028205587434">Выбрать файл</translation>
+<translation id="1749733017156547309">Необходимо указать пароль.</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} вариант адреса показан над клавиатурой.}one{{count} вариант адреса показан над клавиатурой.}few{{count} варианта адреса показаны над клавиатурой.}many{{count} вариантов адреса показаны над клавиатурой.}other{{count} варианта адреса показано над клавиатурой.}}</translation>
 <translation id="1750238553597293878">Продолжайте использовать пароли в аккаунте Google.</translation>
 <translation id="17513872634828108">Открытые вкладки</translation>
@@ -509,6 +510,7 @@
 <translation id="2952278131021475699">Поиск через Объектив</translation>
 <translation id="2962516096219646456">Показать все данные автозаполнения</translation>
 <translation id="2969979262385602596">Не удалось войти в аккаунт. Повторите попытку.</translation>
+<translation id="2975761176769946178">Необходимо указать URL.</translation>
 <translation id="297667759942911166">Совместная работа в группах вкладок</translation>
 <translation id="2987670534697681860">Чтобы получить доступ ко всем паролям на этом устройстве, подтвердите личность.</translation>
 <translation id="2989523299700148168">Недавние</translation>
@@ -572,6 +574,7 @@
 <translation id="3224075676564434205">Хотя здесь вкладки останутся открытыми, группа будет удалена со всех устройств, на которых выполнен вход в <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Чтобы экспортировать пароли, настройте на устройстве код доступа.</translation>
 <translation id="3227137524299004712">Микрофон</translation>
+<translation id="3234251228180563751">В имени пользователя более 1000 символов.</translation>
 <translation id="3235063766008841141">Введен на обманном сайте и использовался для кражи данных.</translation>
 <translation id="3235242129752692527">Измените информацию о событии и нажмите "Сохранить".</translation>
 <translation id="323863549127671026">Открытые вкладки и группы вкладок</translation>
@@ -1030,6 +1033,7 @@
 <translation id="5079950360618752063">Использовать предложенный пароль</translation>
 <translation id="5083464117946352670">Не установлен размер файла</translation>
 <translation id="5085558938118581974">Поиск вкладок на синхронизированных устройствах</translation>
+<translation id="508645147179720015">Примечание не должно быть длиннее 1000 символов</translation>
 <translation id="5087098519049306025">Отслеживание цен</translation>
 <translation id="5090832849094901128">Это действие не приведет к удалению вашего аккаунта на сайте <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Добавить аккаунт…</translation>
@@ -1919,6 +1923,7 @@
 <translation id="8434837876193928924">Сведения о группе вкладок</translation>
 <translation id="8438566539970814960">Помогать улучшать просмотр страниц и поиск</translation>
 <translation id="8439758443371991593">Скрыть действие "Добавить в список для чтения"</translation>
+<translation id="8443986842926457191">URL должен быть не длиннее 2048 символов.</translation>
 <translation id="8449869326050867919">Доступ к паролю предоставлен</translation>
 <translation id="8473863474539038330">Адреса и другие данные</translation>
 <translation id="8474378002946546633">Разрешить оповещения</translation>
@@ -1983,6 +1988,7 @@
 <translation id="8680786875305615692">Помочь сделать интернет безопасным для всех</translation>
 <translation id="8680787084697685621">Данные для входа в аккаунт устарели.</translation>
 <translation id="8690752723634292147">Подтвердите удаление</translation>
+<translation id="8692107307702113268">В пароле более 1000 символов.</translation>
 <translation id="8692689525339542358">Защититесь от опасных сайтов, расширений и скачанных файлов.</translation>
 <translation id="8692897097252418799">Выберите данные, которые хотите экспортировать.</translation>
 <translation id="8694281486652655615">Элемент будет показываться</translation>
@@ -2007,6 +2013,7 @@
 <translation id="8741995161408053644">История просмотра также может храниться в вашем аккаунте Google: <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Создать ссылку</translation>
 <translation id="8746155870861185046">Поделиться выделенным</translation>
+<translation id="8748678031495824833">Открыть ИИ-инструменты</translation>
 <translation id="8750037785291841318">Здесь вы найдете свои вкладки</translation>
 <translation id="8756969031206844760">Обновить пароль?</translation>
 <translation id="8764015330924122850">Отменить подписку на <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@
 <translation id="895541991026785598">Сообщить о проблеме</translation>
 <translation id="8960979149015305">Закрыть панель скачивания</translation>
 <translation id="8961092256396236619">Улучшенная защита отключена</translation>
+<translation id="8962863356073277855">URL необходимо указать в формате https://www.example.com.</translation>
 <translation id="8968766641738584599">Сохранить карту</translation>
 <translation id="8974714402877957201">1. Откройте настройки устройства iPad.</translation>
 <translation id="8975015774710126284">Данные о работе в браузере были удалены.</translation>

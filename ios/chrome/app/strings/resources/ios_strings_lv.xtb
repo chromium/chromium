@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Viedpulkstenis</translation>
 <translation id="1743244221910283364">Atmest izmaiņas</translation>
 <translation id="1748975028205587434">Atlasīt failu</translation>
+<translation id="1749733017156547309">Jānorāda parole.</translation>
 <translation id="174998178145075354">{count,plural, =1{Virs tastatūras ir pieejams {count} adreses variants.}zero{Virs tastatūras ir pieejami {count} adreses varianti.}one{Virs tastatūras ir pieejams {count} adreses variants.}other{Virs tastatūras ir pieejami {count} adreses varianti.}}</translation>
 <translation id="1750238553597293878">Turpiniet izmantot Google kontā saglabātās paroles</translation>
 <translation id="17513872634828108">Atvērt cilnes</translation>
@@ -509,6 +510,7 @@ Jūsu meklētājprogramma ir <ph name="DSE_NAME" />. Skatiet tās norādījumus 
 <translation id="2952278131021475699">Meklēšana ar Lens kameru</translation>
 <translation id="2962516096219646456">Skatīt visus automātiskās aizpildes datus</translation>
 <translation id="2969979262385602596">Neizdevās pierakstīties. Vēlāk mēģiniet vēlreiz.</translation>
+<translation id="2975761176769946178">Jānorāda URL.</translation>
 <translation id="297667759942911166">Sadarbība ciļņu grupās</translation>
 <translation id="2987670534697681860">Apstipriniet savu identitāti, lai varētu piekļūt visām savām parolēm šajā ierīcē.</translation>
 <translation id="2989523299700148168">Nesen apmeklētās</translation>
@@ -572,6 +574,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="3224075676564434205">Cilnes paliks atvērtas šajā ierīcē, taču grupa tiks izdzēsta no visām ierīcēm, kurās esat pierakstījies ar kontu <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Lai eksportētu paroles, vispirms ierīcei ir jāiestata piekļuves kods.</translation>
 <translation id="3227137524299004712">Mikrofons</translation>
+<translation id="3234251228180563751">Lietotājvārda garums pārsniedz 1000 rakstzīmes.</translation>
 <translation id="3235063766008841141">Ievadīta maldinošā vietnē un atklāta datu aizsardzības dēļ</translation>
 <translation id="3235242129752692527">Rediģējiet pasākuma informāciju un pieskarieties pogai Saglabāt.</translation>
 <translation id="323863549127671026">Pašlaik atvērtās cilnes un ciļņu grupas</translation>
@@ -1030,6 +1033,7 @@ Skatiet savas meklētājprogrammas norādījumus par meklēšanas vēstures dzē
 <translation id="5079950360618752063">Izmantojiet ieteikto paroli</translation>
 <translation id="5083464117946352670">Nevar noteikt faila lielumu.</translation>
 <translation id="5085558938118581974">Ciļņu meklēšana sinhronizētās ierīcēs</translation>
+<translation id="508645147179720015">Piezīmes garums pārsniedz 1000 rakstzīmes.</translation>
 <translation id="5087098519049306025">Cenu izsekošana</translation>
 <translation id="5090832849094901128">Izdzēšot šo paroli, netiks dzēsts jūsu konts vietnē <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Pievienot kontu…</translation>
@@ -1919,6 +1923,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8434837876193928924">Informācija par ciļņu grupu</translation>
 <translation id="8438566539970814960">Uzlabot meklēšanu un pārlūkošanu</translation>
 <translation id="8439758443371991593">Paslēpt vienumu “Pievienot lasīšanas sarakstam”</translation>
+<translation id="8443986842926457191">URL garums pārsniedz 2048 rakstzīmes</translation>
 <translation id="8449869326050867919">Parole ir kopīgota</translation>
 <translation id="8473863474539038330">Adreses un citi dati</translation>
 <translation id="8474378002946546633">Atļaut paziņojumus</translation>
@@ -1983,6 +1988,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8680786875305615692">Palīdziet uzlabot drošību tīmeklī visiem lietotājiem</translation>
 <translation id="8680787084697685621">Konta pierakstīšanās informācija ir novecojusi.</translation>
 <translation id="8690752723634292147">Apstipriniet dzēšanu</translation>
+<translation id="8692107307702113268">Paroles garums pārsniedz 1000 rakstzīmes.</translation>
 <translation id="8692689525339542358">Iegūstiet aizsardzību pret bīstamām vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="8692897097252418799">Izvēlieties datus, ko vēlaties eksportēt.</translation>
 <translation id="8694281486652655615">Tiks rādīts šis vienums</translation>
@@ -2007,6 +2013,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8741995161408053644">Jūsu Google kontam var būt cita veida pārlūkošanas vēstures dati vietnē <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Izveidot saiti</translation>
 <translation id="8746155870861185046">Kopīgot atzīmēto tekstu</translation>
+<translation id="8748678031495824833">Atvērt lapā ietvertos MI rīkus</translation>
 <translation id="8750037785291841318">Šeit varēsiet skatīt savas cilnes</translation>
 <translation id="8756969031206844760">Vai atjaunināt paroli?</translation>
 <translation id="8764015330924122850">Nesekot domēnam <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="895541991026785598">Ziņot par problēmu</translation>
 <translation id="8960979149015305">Aizvērt lejupielādi</translation>
 <translation id="8961092256396236619">Uzlabota aizsardzība ir izslēgta</translation>
+<translation id="8962863356073277855">URL formātam jābūt šādam: https://www.example.com.</translation>
 <translation id="8968766641738584599">Saglabāt karti</translation>
 <translation id="8974714402877957201">1. iPad planšetdatorā atveriet sadaļu Settings (Iestatījumi).</translation>
 <translation id="8975015774710126284">Pārlūkošanas dati tika dzēsti</translation>

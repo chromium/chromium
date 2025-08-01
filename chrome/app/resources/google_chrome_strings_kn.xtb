@@ -84,6 +84,7 @@
 <translation id="2091012649849228750">ಭವಿಷ್ಯದ Google Chrome ಅಪ್‌ಡೇಟ್‌ಗಳನ್ನು ಪಡೆಯಲು, ನಿಮಗೆ Windows 10 ಅಥವಾ ನಂತರದ ಅಗತ್ಯವಿದೆ. ಈ ಕಂಪ್ಯೂಟರ್ ಪ್ರಸ್ತುತ Windows 8 ಅನ್ನು ಬಳಸುತ್ತಿದೆ.</translation>
 <translation id="2094648590148273905">ChromeOS Flex ನಿಯಮಗಳು</translation>
 <translation id="2094919256425865063">ಹೇಗಿದ್ದರೂ Chrome ಅನ್ನು ಮುಚ್ಚುವುದೇ?</translation>
+<translation id="2096213354152647998">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="2106831557840787829">ಹೆಚ್ಚುವರಿ <ph name="BEGIN_LINK_CROS_OSS" />ಓಪನ್ ಸೋರ್ಸ್ ಸಾಫ್ಟ್‌ವೇರ್‌<ph name="END_LINK_CROS_OSS" /> ನಿಂದ ChromeOS Flex ರಚನೆ ಸಾಧ್ಯವಾಯಿತು, ಹಾಗೆಯೇ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ಡೆವಲಪ್‌ಮೆಂಟ್ ಎನ್ವಿರಾನ್‌ಮೆಂಟ್‌ನ<ph name="END_LINK_LINUX_OSS" /> ರಚನೆಯೂ ಅದರಿಂದಲೇ ಸಾಧ್ಯವಾಯಿತು.</translation>
 <translation id="2108778574543343055">ಆ್ಯಪ್‌ಗಳಿಗೆ ಹಿನ್ನೆಲೆಯಲ್ಲಿ ರನ್ ಆಗುತ್ತಿರುವ Chrome ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿ</translation>
 <translation id="2120620239521071941">ಈ ಸಾಧನದಿಂದ <ph name="ITEMS_COUNT" /> ಐಟಂಗಳನ್ನು ಇದು ಅಳಿಸುತ್ತದೆ. ನಂತರ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ಮರುಪಡೆಯಲು, <ph name="USER_EMAIL" /> ನಂತೆ Chrome ಗೆ ಸೈನ್‌‌ ಇನ್ ಮಾಡಿ.</translation>
@@ -457,6 +458,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="6696915334902295848">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ Chrome ಗೆ ಮೈಕ್ರೊಫೋನ್ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="6712881677154121168">ಡೌನ್‌ಲೋಡ್ ದೋಷ: <ph name="DOWNLOAD_ERROR" />.</translation>
 <translation id="6718739135284199302">Chrome ಅನ್ನು ವೇಗಗೊಳಿಸಿ</translation>
+<translation id="6734827584173583205">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ಮತ್ತು ಇನ್ನೂ <ph name="COUNT" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="6735387454586646204">ChromeOS Flex ಸಿಸ್ಟಂ</translation>
 <translation id="6750954913813541382">ಕಾಗುಣಿತ ದೋಷಗಳನ್ನು ಸರಿಪಡಿಸಲು, Chrome, ನೀವು ಬ್ರೌಸರ್‌ನಲ್ಲಿ ಟೈಪ್ ಮಾಡುವ ಪಠ್ಯವನ್ನು Google ಗೆ ಕಳುಹಿಸುತ್ತದೆ</translation>
 <translation id="6760235774835597023">Chrome ನ V8 ಇಂಜಿನ್‌ ಮೂಲಕ ಸೈಟ್‌ಗಳನ್ನು ವೇಗಗೊಳಿಸುತ್ತದೆ, ಆದರೆ Chrome ದಾಳಿಗಳ ವಿರುದ್ದ ಸ್ವಲ್ಪ ಕಡಿಮೆ ಪ್ರತಿರಕ್ಷಣೆ ಮಾಡುತ್ತದೆ. ಈ ಸೆಟ್ಟಿಂಗ್ ಆನ್ ಆಗಿದೆ.</translation>
@@ -482,6 +484,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="7024536598735240744">ಅನ್‌ಪ್ಯಾಕ್ ದೋಷ: <ph name="UNPACK_ERROR" />.</translation>
 <translation id="7025789849649390912">ಇನ್‌ಸ್ಟಾಲೇಶನ್ ಅನ್ನು ನಿಲ್ಲಿಸಲಾಗಿದೆ.</translation>
 <translation id="7025800014283535195">ನೀವು ಇಲ್ಲಿ Chrome ಪ್ರೊಫೈಲ್‌ಗಳನ್ನು ಬದಲಾಯಿಸಬಹುದು</translation>
+<translation id="7051685429025310665">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="7059914902409643750">ನಿಮ್ಮ ಸ್ವಂತ Chrome ಅನ್ನು ರಚಿಸಿ</translation>
 <translation id="7060643578009939353">Google Lens ಬಳಸಿಕೊಂಡು ಈ ವೀಡಿಯೊವನ್ನು ಹುಡುಕಿ</translation>
 <translation id="7071827361006050863">Chrome ಶೀಘ್ರದಲ್ಲೇ ಬ್ರೌಸಿಂಗ್ ಡೇಟಾವನ್ನು ಅಳಿಸುತ್ತದೆ</translation>
@@ -543,6 +546,7 @@ Google Chrome ಗೆ ಬ್ಲೂಟೂತ್ ಆ್ಯಕ್ಸೆಸ್‌ನ 
 <translation id="77283119132245232"><ph name="BROWSER_NAME" /> ಗಾಗಿ ಸಿಸ್ಟಮ್‌ ಟ್ರೇಸಿಂಗ್‌ ಸೇವೆಗಳನ್ನು ಒದಗಿಸುತ್ತದೆ. ಈ ಸೇವೆಯನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದರೆ, ಬ್ರೌಸರ್‌ನಿಂದ ರಚಿಸಲಾದ ಪರ್ಫಾರ್ಮೆನ್ಸ್‌ ಟ್ರೇಸ್‌ಗಳು ಕಂಟೆಕ್ಸ್‌ಟ್‌ ಸ್ವಿಚ್‌ ಮತ್ತು ಸಿದ್ಧ ಥ್ರೆಡ್ ಈವೆಂಟ್‌ಗಳಂತಹ ಸಿಸ್ಟಮ್-ವೈಡ್‌ ಈವೆಂಟ್‌ಗಳನ್ನು ಒಳಗೊಂಡಿರುವುದಿಲ್ಲ.</translation>
 <translation id="7736869414036750079">ನೀವು Chrome ಗೆ ಸೈನ್ ಇನ್ ಮಾಡುವುದು ನಿಮ್ಮ ಸಂಸ್ಥೆಗೆ ಅಗತ್ಯವಿದೆ</translation>
 <translation id="7747138024166251722">ಇನ್‌ಸ್ಟಾಲರ್‌‌‌ಗೆ ತಾತ್ಕಾಲಿಕ ಡೈರೆಕ್ಟರಿಯನ್ನು ರಚಿಸಲಾಗಲಿಲ್ಲ. ಸಾಫ್ಟ್‌ವೇರ್ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಮುಕ್ತ ಡಿಸ್ಕ್ ಜಾಗ ಮತ್ತು ಅನುಮತಿಗಾಗಿ ದಯವಿಟ್ಟು ಪರಿಶೀಲಿಸಿ.</translation>
+<translation id="7748969056734910029">ನೀವು ಇತ್ತೀಚೆಗೆ ಭೇಟಿ ನೀಡಿಲ್ಲ. <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ಅನ್ನು Chrome ತೆಗೆದುಹಾಕಿದೆ.</translation>
 <translation id="7761834446675418963">Chrome ತೆರೆಯಲು ಮತ್ತು ಬ್ರೌಸ್ ಮಾಡುವುದನ್ನು ಪ್ರಾರಂಭಿಸಲು ನಿಮ್ಮ ಹೆಸರನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ.</translation>
 <translation id="7777080907402804672">ಚಿತ್ರದಲ್ಲಿ ಉಪಯುಕ್ತ ವಿವರಣೆಯು ಇಲ್ಲದಿದ್ದರೆ, Chrome ನಿಮಗಾಗಿ ಒಂದು ವಿವರಣೆಯನ್ನು ಒದಗಿಸಲು ಪ್ರಯತ್ನಿಸುತ್ತದೆ. ವಿವರಣೆಗಳನ್ನು ರಚಿಸಲು, ಚಿತ್ರಗಳನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ. ಇದನ್ನು ನೀವು ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ಯಾವಾಗ ಬೇಕಾದರೂ ಆಫ್ ಮಾಡಬಹುದು.</translation>
 <translation id="778331955594035129">ಈ ಸೈಟ್‌ಗೆ ಸಂಬಂಧಿಸಿದಂತೆ Chrome ಗೆ ಸ್ಥಳ ಅನುಮತಿಯ ಅಗತ್ಯವಿದೆ</translation>

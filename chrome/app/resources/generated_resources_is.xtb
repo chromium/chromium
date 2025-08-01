@@ -6078,7 +6078,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="5235050375939235066">Á að fjarlægja forrit?</translation>
 <translation id="523505283826916779">Aðgengisstillingar</translation>
 <translation id="5235750401727657667">Skipta út síðunni sem þú sérð þegar nýr flipi er opnaður</translation>
-<translation id="5236054983756407518">Fjarlægja heimilisfang úr Chrome?</translation>
 <translation id="5237124927415201087">Settu <ph name="DEVICE_TYPE" /> upp með símanum þínum á einfaldan hátt. Þú getur bætt Wi-Fi og Google-reikningnum þínum við án þess að slá aðgangsorðin þín handvirkt inn.
     <ph name="BR" />
     <ph name="BR" />
@@ -7209,7 +7208,6 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="606449270532897041">Stjórna vefsvæðagögnum</translation>
 <translation id="6064764629679333574">Auktu hljómgæði Bluetooth-hljóðnemans með því að skipta úr lágri upplausn í háa upplausn.</translation>
 <translation id="6065289257230303064">Skráasafnseigindir vottorðsviðfangs</translation>
-<translation id="6065690209261668796">Fjarlægja heimilisfang vinnu úr Chrome?</translation>
 <translation id="6066794465984119824">Tæti myndar er ekki stillt</translation>
 <translation id="6069464830445383022">Google reikningurinn þinn er notaður fyrir innskráningu á Chromebook</translation>
 <translation id="6071181508177083058">staðfestu aðgangsorð</translation>
@@ -7533,6 +7531,7 @@ Notaðu Ctrl + Alt + minnka birtustig til að minnka aðdrátt.</translation>
 <translation id="628726841779494414">Stjórnaðu prenturunum í prentarastillingunum</translation>
 <translation id="6287288864483377583">Innflutningur er aðeins studdur fyrir stakt vottorð</translation>
 <translation id="6287828400772161253">Android-sími (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Spyrja gervigreindarstillingu Google</translation>
 <translation id="6290613030083731160">Engin tæki eru að deila nálægt. <ph name="LINK_BEGIN" />Frekari upplýsingar<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Ekki er nægt geymslurými til að endurheimta.</translation>
 <translation id="6291741848715722067">Staðfestingarkóði</translation>

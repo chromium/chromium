@@ -295,6 +295,7 @@
 <translation id="4724676981607797757">ଏକ ଅସମର୍ଥିତ ପ୍ରୋଟୋକଲ ତ୍ରୁଟି ଯୋଗୁଁ ଇନଷ୍ଟଲେସନ ବିଫଳ ହୋଇଛି।</translation>
 <translation id="4746050847053251315">ଯେକୌଣସିମତେ Chromium ଛାଡିବେ?</translation>
 <translation id="4748217263233248895">Chromium ପାଇଁ ଏକ ବିଶେଷ ସୁରକ୍ଷା ଅପ୍‍‍ଡେଟ୍ ଏବେ ଲାଗୁ କରାଯାଇଛି। ବର୍ତ୍ତମାନ ରିଷ୍ଟାର୍ଟ କରନ୍ତୁ ଏବଂ ଆମେ ଆପଣଙ୍କର ଟାବ୍‍ଗୁଡ଼ିକ ପୁନଃସ୍ଥାପନ କରିବୁ।</translation>
+<translation id="4771701986670315895">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> ଏବଂ <ph name="COUNT" /> ଅଧିକକୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="4788777615168560705">Chromium ଆପଣଙ୍କ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ ନାହିଁ। 24 ଘଣ୍ଟା ପରେ ପୁଣି ଚେଷ୍ଟା କରନ୍ତୁ କିମ୍ବା <ph name="BEGIN_LINK" />ଆପଣଙ୍କ Google ଆକାଉଣ୍ଟରେ ପାସୱାର୍ଡଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରନ୍ତୁ<ph name="END_LINK" />।</translation>
 <translation id="479167709087336770">ଏହା Google ସନ୍ଧାନରେ ବ୍ୟବହୃତ ହେଉଥିବା ସମାନବନାନ ଯାଞ୍ଚକାରୀ ବ୍ୟବହାର କରେ। ବ୍ରାଉଜର୍‌ରେ ଆପଣ ଟାଇପ୍ କରିଥିବା ଟେକ୍ସଟ୍ Googleକୁ ପଠାଯାଏ। ଆପଣ ସର୍ବଦା ସେଟିଂସ୍‌ରେ ଏହି ଆଚରଣ ପରିବର୍ତ୍ତନ କରିପାରିବେ।</translation>
 <translation id="4814736265800133385">ଏକ ଆକାଉଣ୍ଟ ବିନା Chromium ବ୍ୟବହାର କରନ୍ତୁ</translation>
@@ -307,6 +308,7 @@
 <translation id="4987820182225656817">କିଛି ପଛରେ ନଛାଡ଼ି ଅତିଥି Chromium ବ୍ୟବହାର କରିପାରିବେ।</translation>
 <translation id="4994636714258228724">Chromium ସହ ନିଜକୁ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="5123973130450702873">ଆପଣଙ୍କ ହାତକୁ ଟ୍ରାକ କରିବା ପାଇଁ Chromium ଅନୁମତି ଆବଶ୍ୟକ କରେ</translation>
+<translation id="5141988424377517949">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="5174969993834422967">ଆପଣ ସାଧାରଣତଃ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତି। ଆପଣଙ୍କୁ ସୂଚିତ କରିବା ପାଇଁ ଏହି ସାଇଟକୁ ଅନୁମତି ଦେବାକୁ ଆପଣଙ୍କ ଲୋକେସନ ବାରର ଡାହାଣ କୋଣରେ ଥିବା ବିଜ୍ଞପ୍ତି ଆଇକନରେ କ୍ଲିକ କରନ୍ତୁ।</translation>
 <translation id="5187123684706427865">Chromium ଆକାଉଣ୍ଟ ପାଇଁ ପୁଣି-ପ୍ରମାଣୀକରଣ ଆବଶ୍ୟକ</translation>
 <translation id="5224391634244552924">ସେଭ୍ କରାଯାଇଥିବା କୌଣସି ପାସୱାର୍ଡ ନାହିଁ। ଆପଣ ପାସୱାର୍ଡଗୁଡ଼ିକ ସେଭ୍ କଲେ Chromium ସେଗୁଡ଼ିକୁ ଯାଞ୍ଚ କରିପାରିବ।</translation>
@@ -492,6 +494,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="734373864078049451">ଆପଣଙ୍କର ୱେବ୍, ବୁକ୍‍ମାର୍କ ଓ ଅନ୍ୟାନ୍ୟ Chromium ଷ୍ଟଫ୍ ଏଠାରେ ଅଛି।</translation>
 <translation id="7349591376906416160"><ph name="TARGET_URL_HOSTNAME" /> ଆକ୍ସେସ କରିବା ପାଇଁ <ph name="ALTERNATIVE_BROWSER_NAME" />ଖୋଲିବାକୁ ଆପଣଙ୍କର ସିଷ୍ଟମ୍ ଆଡ୍‌ମିନିଷ୍ଟ୍ରେଟର୍ Chromium କନ୍‌ଫିଗର୍ କରିଛନ୍ତି।</translation>
 <translation id="7352651011704765696">କିଛି ଭୁଲ୍ ହୋଇଛି</translation>
+<translation id="7376384068949534168">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="7384121030444253939">ଏହି ଏକ୍ସଟେନସନ ଆଉ ସପୋର୍ଟ କରୁନାହିଁ। ଏହା ପରିବର୍ତ୍ତେ ଆପଣ ଏହାକୁ କାଢ଼ି ଦେବା ପାଇଁ Chromium ସୁପାରିଶ କରେ।</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium ଡେଭ୍‌ଲପର୍‌</translation>
 <translation id="7450541714075000668">ଟେକ୍ସଟ୍ କପି କରାଯାଇଛି</translation>
@@ -556,6 +559,7 @@ Chromium ଆପଣଙ୍କ ସେଟିଂସ୍‌କୁ ପୁନରୁଦ୍
 <translation id="8248265253516264921">ଯଦି ଗୋଟିଏ ଛବିରେ ବ୍ୟବହାରଯୋଗ୍ୟ ବିବରଣୀ ନାହିଁ, ତେବେ Chromium ଆପଣଙ୍କ ପାଇଁ ଏକ ବିବରଣୀ ପ୍ରଦାନ କରିବାକୁ ଚେଷ୍ଟା କରିବ। ବିବରଣୀ ତିଆରି କରିବାକୁ, ଛବିଗୁଡ଼ିକ Googleକୁ ପଠାଇ ଦିଆଯାଇଛି। ଆପଣ ଯେକୌଣସି ସମୟରେ ସେଟିଂସ୍‌ରେ ଏହାକୁ ବନ୍ଦ କରିପାରିବେ।</translation>
 <translation id="8254601181414348851">ଏକ ନୂଆ ପ୍ରୋଫାଇଲରେ Chromiumରେ ସାଇନ ଇନ କରିବେ?</translation>
 <translation id="8286943863733751221">ଅସୁରକ୍ଷିତ ସାଇଟ ଏବଂ ଡାଉନଲୋଡଗୁଡ଼ିକ ବିଷୟରେ <ph name="BEGIN_LINK" />Chromium ଆପଣଙ୍କୁ ଚେତାବନୀ ଦିଏ<ph name="END_LINK" /></translation>
+<translation id="8295827201165805317">ଆପଣ ବର୍ତ୍ତମାନ ଭିଜିଟ କରିନାହାଁନ୍ତି। Chromium <ph name="PERMISSION" />କୁ କାଢ଼ି ଦେଇଛି।</translation>
 <translation id="8313851650939857356">ଷ୍ଟାର୍ଟଅପ ତ୍ରୁଟି: <ph name="STARTUP_ERROR" />।</translation>
 <translation id="8318772038038596122"><ph name="TIMEOUT_DURATION" /> ପାଇଁ Chromiumକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ଏହାକୁ ବନ୍ଦ କରିଦିଏ।</translation>
 <translation id="8321888067342493336">ଇମେଜ ଭାବେ ସେଭ କରନ୍ତୁ</translation>

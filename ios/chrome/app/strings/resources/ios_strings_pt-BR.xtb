@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">Ativo hoje</translation>
 <translation id="1523567067736644845">Desbloqueie para mostrar a senha</translation>
 <translation id="1524563461097350801">Agora não</translation>
+<translation id="1528290585275339320">Ative o compartilhamento do conteúdo da página</translation>
 <translation id="1531038290222364269">Mostrar guias</translation>
 <translation id="1536390784834419204">Traduzir página</translation>
 <translation id="1540800554400757039">Endereço 1</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">A Navegação segura está desativada. Ative para se proteger contra sites, extensões e downloads perigosos.</translation>
 <translation id="1620510694547887537">Câmera</translation>
 <translation id="1622717322707146952">Selecione "Adicionar ao Google Agenda" ou "Adicionar ao Calendário Apple".</translation>
+<translation id="1625502944725673937">Não foi possível importar o arquivo</translation>
 <translation id="1629162218487290695">Confirme que é você…</translation>
 <translation id="1636234353664774105">Confira rotas para seu destino usando o recurso de navegação guiada</translation>
 <translation id="1641113438599504367">Navegação Segura</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Descartar mudanças</translation>
 <translation id="1748975028205587434">Selecione o arquivo</translation>
+<translation id="1749733017156547309">É obrigatório informar uma senha</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opção de endereço disponível acima do teclado.}one{{count} opção de endereço disponível acima do teclado.}other{{count} opções de endereço disponíveis acima do teclado.}}</translation>
 <translation id="1750238553597293878">Continue usando as senhas na sua Conta do Google</translation>
 <translation id="17513872634828108">Guias abertas</translation>
@@ -509,6 +512,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2962516096219646456">Mostrar todos os dados de preenchimento automático</translation>
 <translation id="2969979262385602596">Falha durante o login. Tente novamente mais tarde.</translation>
+<translation id="2975761176769946178">É obrigatório informar um URL</translation>
 <translation id="297667759942911166">Colaborar em grupos de guias</translation>
 <translation id="2987670534697681860">Confirme sua identidade para ter acesso a todas as suas senhas neste dispositivo</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
@@ -572,6 +576,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="3224075676564434205">As guias continuarão abertas neste dispositivo, mas o grupo será excluído de todos os dispositivos conectados à conta <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Para exportar senhas, defina uma no dispositivo primeiro.</translation>
 <translation id="3227137524299004712">Microfone</translation>
+<translation id="3234251228180563751">O nome de usuário tem mais de 1.000 caracteres</translation>
 <translation id="3235063766008841141">Utilizada em um fraudulento e encontrada em uma violação de dados</translation>
 <translation id="3235242129752692527">Edite os detalhes do evento e toque em "Salvar".</translation>
 <translation id="323863549127671026">Guias e grupos de guias abertos</translation>
@@ -1030,6 +1035,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5079950360618752063">Usar senha sugerida</translation>
 <translation id="5083464117946352670">Não é possível saber o tamanho do arquivo.</translation>
 <translation id="5085558938118581974">Pesquisar guias em dispositivos sincronizados</translation>
+<translation id="508645147179720015">A observação tem mais de 1.000 caracteres</translation>
 <translation id="5087098519049306025">Monitoramento de preços</translation>
 <translation id="5090832849094901128">Remover a senha não excluirá a conta em <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Adicionar conta…</translation>
@@ -1041,6 +1047,7 @@ Veja as instruções do seu mecanismo de pesquisa para excluir o histórico de p
 <translation id="5128788795241319992">Conhecer o novo menu</translation>
 <translation id="5132942445612118989">Sincronize suas senhas, seu histórico e muito mais em todos os dispositivos</translation>
 <translation id="5141363746588976328">Ocultar o card "Redução dos preços mostrados nas suas guias"</translation>
+<translation id="514154868070499296">Fonte: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">Sair do seletor guias</translation>
 <translation id="5148717509369231739">Importação do Safari</translation>
 <translation id="5157638238828697074">Ocorreu um erro. Não foi possível abrir o aplicativo.</translation>
@@ -1558,6 +1565,7 @@ Na navegação anônima, eles não podem usar cookies para ver suas atividades d
 <translation id="7015418667643980944">Visualização dividida</translation>
 <translation id="7016070607649558507">Você tem uma senha fraca. Corrija o problema agora para se proteger.</translation>
 <translation id="7016958933495968912">Opções do Discover</translation>
+<translation id="7017863468226238797">Este arquivo está vazio ou tem dados no formato incorreto</translation>
 <translation id="7029809446516969842">Senhas</translation>
 <translation id="7035825883570480307">Ativar notificações?</translation>
 <translation id="7039345315346323556">Recentes</translation>
@@ -1919,6 +1927,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8434837876193928924">Detalhes do grupo de guias</translation>
 <translation id="8438566539970814960">Melhorar as pesquisas e a navegação</translation>
 <translation id="8439758443371991593">Ocultar "Adicionar à Lista de leitura"</translation>
+<translation id="8443986842926457191">O URL tem mais de 2.048 caracteres</translation>
 <translation id="8449869326050867919">Senha compartilhada</translation>
 <translation id="8473863474539038330">Endereços e mais</translation>
 <translation id="8474378002946546633">Permitir notificações</translation>
@@ -1969,6 +1978,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8637431369725868556">Proteja-se contra sites perigosos.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{Nenhuma senha comprometida}=1{{COUNT} senha comprometida}one{{COUNT} senha comprometida}other{{COUNT} senhas comprometidas}}</translation>
 <translation id="8643403533759285912">Excluir grupo</translation>
+<translation id="8645245178269185266">Compartilhe o conteúdo da página com o Gemini para receber respostas mais relevantes</translation>
 <translation id="8647280737650867362">Não foi possível remover o monitoramento do preço.</translation>
 <translation id="8654802032646794042">Cancelar</translation>
 <translation id="8660600697590740984">Imagem copiada no Lens</translation>
@@ -1983,6 +1993,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="8680786875305615692">Ajude a melhorar a segurança para todos na Web</translation>
 <translation id="8680787084697685621">Os detalhes de login da conta estão desatualizados.</translation>
 <translation id="8690752723634292147">Confirmar exclusão</translation>
+<translation id="8692107307702113268">A senha tem mais de 1.000 caracteres</translation>
 <translation id="8692689525339542358">Proteja-se contra sites, extensões e downloads perigosos.</translation>
 <translation id="8692897097252418799">Escolha os dados que você quer exportar</translation>
 <translation id="8694281486652655615">Mostra este item</translation>
@@ -2065,6 +2076,7 @@ Eles também podem usar cookies para ver sua atividade de navegação em diferen
 <translation id="895541991026785598">Informar um problema</translation>
 <translation id="8960979149015305">Fechar o download</translation>
 <translation id="8961092256396236619">A proteção reforçada está desativada</translation>
+<translation id="8962863356073277855">O formato do URL precisa ser https://www.example.com</translation>
 <translation id="8968766641738584599">Salvar cartão</translation>
 <translation id="8974714402877957201">1. Abra o app Ajustes do iPad</translation>
 <translation id="8975015774710126284">Os dados de navegação foram excluídos</translation>

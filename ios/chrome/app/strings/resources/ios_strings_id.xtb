@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Hapus perubahan</translation>
 <translation id="1748975028205587434">Pilih file Anda</translation>
+<translation id="1749733017156547309">Sandi wajib diisi</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opsi alamat tersedia di atas keyboard Anda.}other{{count} opsi alamat tersedia di atas keyboard Anda.}}</translation>
 <translation id="1750238553597293878">Tetap gunakan sandi yang tersimpan di Akun Google Anda</translation>
 <translation id="17513872634828108">Tab terbuka</translation>
@@ -509,6 +510,7 @@ Mesin telusur Anda adalah <ph name="DSE_NAME" />. Lihat petunjuknya untuk mengha
 <translation id="2952278131021475699">Penelusuran Kamera Lens</translation>
 <translation id="2962516096219646456">Lihat semua data isi otomatis</translation>
 <translation id="2969979262385602596">Gagal masuk. Coba lagi nanti.</translation>
+<translation id="2975761176769946178">URL wajib diisi</translation>
 <translation id="297667759942911166">Berkolaborasi dalam grup tab</translation>
 <translation id="2987670534697681860">Verifikasi diri Anda untuk mengakses semua sandi di perangkat ini.</translation>
 <translation id="2989523299700148168">Baru saja dikunjungi</translation>
@@ -572,6 +574,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="3224075676564434205">Tab akan tetap terbuka di perangkat ini, tetapi grup akan dihapus dari semua perangkat yang digunakan untuk login ke <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Untuk mengekspor sandi, Anda harus menyetel kode sandi di perangkat terlebih dahulu.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
+<translation id="3234251228180563751">Nama pengguna berisi lebih dari 1.000 karakter</translation>
 <translation id="3235063766008841141">Dimasukkan di sebuah situs yang menipu dan ditemukan dalam pelanggaran data</translation>
 <translation id="3235242129752692527">Edit detail acara dan ketuk “Simpan”.</translation>
 <translation id="323863549127671026">Tab dan grup tab yang saat ini terbuka</translation>
@@ -1030,6 +1033,7 @@ Lihat petunjuk mesin telusur untuk menghapus histori penelusuran Anda, jika memu
 <translation id="5079950360618752063">Gunakan sandi yang disarankan</translation>
 <translation id="5083464117946352670">Tidak dapat menentukan ukuran file.</translation>
 <translation id="5085558938118581974">Telusuri tab di seluruh perangkat yang disinkronkan</translation>
+<translation id="508645147179720015">Catatan berisi lebih dari 1.000 karakter</translation>
 <translation id="5087098519049306025">Pemantauan Harga</translation>
 <translation id="5090832849094901128">Menghapus sandi ini tidak akan menghapus akun Anda di <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Tambahkan akun…</translation>
@@ -1919,6 +1923,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8434837876193928924">Detail grup tab</translation>
 <translation id="8438566539970814960">Jadikan penelusuran dan penjelajahan lebih baik</translation>
 <translation id="8439758443371991593">Sembunyikan Tambahkan ke Daftar Bacaan</translation>
+<translation id="8443986842926457191">URL berisi lebih dari 2048 karakter</translation>
 <translation id="8449869326050867919">Sandi dibagikan</translation>
 <translation id="8473863474539038330">Alamat dan lain-lain</translation>
 <translation id="8474378002946546633">Izinkan pemberitahuan</translation>
@@ -1983,6 +1988,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8680786875305615692">Bantu tingkatkan keamanan di Web untuk semuanya</translation>
 <translation id="8680787084697685621">Detail proses masuk akun sudah usang.</translation>
 <translation id="8690752723634292147">Konfirmasi penghapusan</translation>
+<translation id="8692107307702113268">Sandi berisi lebih dari 1.000 karakter</translation>
 <translation id="8692689525339542358">Dapatkan perlindungan dari situs, download, dan ekstensi berbahaya.</translation>
 <translation id="8692897097252418799">Pilih data yang ingin diekspor</translation>
 <translation id="8694281486652655615">Menampilkan item ini</translation>
@@ -2007,6 +2013,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="8741995161408053644">Akun Google Anda mungkin memiliki bentuk histori penjelajahan lainnya di <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Buat link</translation>
 <translation id="8746155870861185046">Bagikan sorotan</translation>
+<translation id="8748678031495824833">Buka alat AI di halaman</translation>
 <translation id="8750037785291841318">Tab Anda akan ditampilkan di sini</translation>
 <translation id="8756969031206844760">Perbarui sandi?</translation>
 <translation id="8764015330924122850">Berhenti mengikuti <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Situs dapat menggunakan cookie untuk melihat aktivitas penjelajahan Anda di berb
 <translation id="895541991026785598">Laporkan Masalah</translation>
 <translation id="8960979149015305">Tutup download</translation>
 <translation id="8961092256396236619">Perlindungan yang Ditingkatkan nonaktif</translation>
+<translation id="8962863356073277855">Format URL harus berupa https://www.example.com</translation>
 <translation id="8968766641738584599">Simpan kartu</translation>
 <translation id="8974714402877957201">1. Buka Settings di iPad</translation>
 <translation id="8975015774710126284">Data penjelajahan dihapus</translation>

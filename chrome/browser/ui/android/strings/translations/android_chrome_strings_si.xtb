@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">මෙම ගැටලුව දිගටම සිදු වන්නේ නම්, <ph name="SITE_ETLD_PLUS_ONE" /> මත ඉදිරියට යාමට ඔබට වෙනත් ක්‍රම උත්සාහ කළ හැක.</translation>
 <translation id="4384468725000734951">සෙවීම සඳහා Sogou භාවිත කරමින්</translation>
 <translation id="4387647248986092471">මෝටර් රථයේ පැතිකඩ අගුලක් තනන්න</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{1 දිනයක් හෝ ඊට වැඩි කාලයක් භාවිත නොකළ පටිති සහ සමූහ}one{දින #ක් හෝ ඊට වැඩි කාලයක් භාවිත නොකළ පටිති සහ සමූහ}other{දින #ක් හෝ ඊට වැඩි කාලයක් භාවිත නොකළ පටිති සහ සමූහ}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - බාගනිමින්…</translation>
 <translation id="4404568932422911380">පිටුසන් නැත</translation>
 <translation id="4405224443901389797">වෙත ගෙන යන්න…</translation>

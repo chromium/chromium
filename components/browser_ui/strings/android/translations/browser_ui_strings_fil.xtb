@@ -278,6 +278,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="4031179711345676612">Pinapayagan ang mikropono</translation>
 <translation id="4046123991198612571">Susunod na track</translation>
 <translation id="4077310749977440510">Karaniwang binabasa ng mga site ang iyong clipboard para sa mga feature gaya ng pagpapanatili ng pag-format ng text na nakopya mo</translation>
+<translation id="4082080074595021446">Hindi pinapayagan ang mga exception para sa mga partikular na website dahil walang sapat na RAM ang Android device.</translation>
 <translation id="4149890623864272035">Sigurado ka bang gusto mong i-delete ang lahat ng lokal na data, kabilang ang cookies, at i-reset ang lahat ng pahintulot para sa website na ito?</translation>
 <translation id="4149994727733219643">Pinasimpleng view para sa mga web page</translation>
 <translation id="4151930093518524179">Default na pag-zoom</translation>
@@ -448,6 +449,7 @@ Kinokontrol ng Advanced na Proteksyon ang mga setting ng Chrome na ito:
 <translation id="6064125863973209585">Mga nakumpletong download</translation>
 <translation id="6071501408666570960">Posibleng ma-sign out ka sa site na ito</translation>
 <translation id="6085954183010297841">I-delete ang pahintulot sa pag-edit ng file? <ph name="FILE" /></translation>
+<translation id="6104860901391833523">Kapag naka-on, puwedeng awtomatikong makapasok sa picture-in-picture ang mga site. Kapag naka-off, hindi puwedeng awtomatikong makapasok sa picture-in-picture ang mga site.</translation>
 <translation id="6120483543004435978">Kapag naka-on, puwedeng hilingin ng mga site na malaman kung kailan mo aktibong ginagamit ang iyong device. Kapag naka-off, hindi malalaman ng mga site kung kailan mo aktibong ginagamit ang iyong device.</translation>
 <translation id="615886654739818377">Huwag payagan ang mga site na pamahalaan ang mga window sa lahat ng iyong screen</translation>
 <translation id="6165508094623778733">Matuto pa</translation>

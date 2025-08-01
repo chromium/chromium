@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smart watch</translation>
 <translation id="1743244221910283364">Discard changes</translation>
 <translation id="1748975028205587434">Select your file</translation>
+<translation id="1749733017156547309">A password is required</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} option for address available above your keyboard.}other{{count} options for address available above your keyboard.}}</translation>
 <translation id="1750238553597293878">Keep using the passwords in your Google Account</translation>
 <translation id="17513872634828108">Open tabs</translation>
@@ -509,6 +510,7 @@ Your search engine is <ph name="DSE_NAME" />. See their instructions for deletin
 <translation id="2952278131021475699">Lens Camera Search</translation>
 <translation id="2962516096219646456">See all autofill data</translation>
 <translation id="2969979262385602596">Failed to sign in. Please try again later.</translation>
+<translation id="2975761176769946178">A URL is required</translation>
 <translation id="297667759942911166">Collaborate in tab groups</translation>
 <translation id="2987670534697681860">Verify that it's you to access all your passwords on this device.</translation>
 <translation id="2989523299700148168">Recently Visited</translation>
@@ -572,6 +574,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="3224075676564434205">The tabs will remain open on this device but the group will be deleted from all devices signed in to <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">To export passwords, you must first set a passcode on your device.</translation>
 <translation id="3227137524299004712">Microphone</translation>
+<translation id="3234251228180563751">Username is more than 1,000 characters</translation>
 <translation id="3235063766008841141">Entered on a deceptive site and found in a data breach</translation>
 <translation id="3235242129752692527">Edit the event details and press “Save.“</translation>
 <translation id="323863549127671026">Currently open tabs and tab groups</translation>
@@ -1030,6 +1033,7 @@ See your search engine’s instructions for deleting your search history, if app
 <translation id="5079950360618752063">Use suggested password</translation>
 <translation id="5083464117946352670">Cannot determine file size.</translation>
 <translation id="5085558938118581974">Search tabs across synced devices</translation>
+<translation id="508645147179720015">Note is more than 1,000 characters</translation>
 <translation id="5087098519049306025">Price tracking</translation>
 <translation id="5090832849094901128">Deleting this password will not delete your account on <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Add account…</translation>
@@ -1919,6 +1923,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8434837876193928924">Tab group details</translation>
 <translation id="8438566539970814960">Make searches and browsing better</translation>
 <translation id="8439758443371991593">Hide Add to reading list</translation>
+<translation id="8443986842926457191">URL is more than 2048 characters</translation>
 <translation id="8449869326050867919">Password shared</translation>
 <translation id="8473863474539038330">Addresses and more</translation>
 <translation id="8474378002946546633">Allow notifications</translation>
@@ -1983,6 +1988,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8680786875305615692">Help improve security on the web for everyone</translation>
 <translation id="8680787084697685621">Account sign-in details are out of date.</translation>
 <translation id="8690752723634292147">Confirm deletion</translation>
+<translation id="8692107307702113268">Password is more than 1,000 characters</translation>
 <translation id="8692689525339542358">Get protection from dangerous sites, downloads and extensions.</translation>
 <translation id="8692897097252418799">Choose the data that you want to export</translation>
 <translation id="8694281486652655615">Shows this item</translation>
@@ -2007,6 +2013,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8741995161408053644">Your Google Account may have other forms of browsing history at <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Create link</translation>
 <translation id="8746155870861185046">Share highlight</translation>
+<translation id="8748678031495824833">Open on-page AI tools</translation>
 <translation id="8750037785291841318">You'll find your tabs here</translation>
 <translation id="8756969031206844760">Update password?</translation>
 <translation id="8764015330924122850">Unfollow <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="895541991026785598">Report an Issue</translation>
 <translation id="8960979149015305">Close download</translation>
 <translation id="8961092256396236619">Enhanced protection is off</translation>
+<translation id="8962863356073277855">URL format should be https://www.example.com</translation>
 <translation id="8968766641738584599">Save card</translation>
 <translation id="8974714402877957201">1. Open iPad settings</translation>
 <translation id="8975015774710126284">Browsing data was deleted</translation>

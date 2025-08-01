@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smart Watch</translation>
 <translation id="1743244221910283364">I-discard ang mga pagbabago</translation>
 <translation id="1748975028205587434">Piliin ang iyong file</translation>
+<translation id="1749733017156547309">Kinakailangan ng password</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opsyon sa address ang available sa itaas ng iyong keyboard.}one{{count} opsyon sa address ang available sa itaas ng iyong keyboard.}other{{count} na opsyon sa address ang available sa itaas ng iyong keyboard.}}</translation>
 <translation id="1750238553597293878">Patuloy na gamitin ang mga password sa iyong Google Account</translation>
 <translation id="17513872634828108">Mga bukas na tab</translation>
@@ -509,6 +510,7 @@ Hindi magagamit ng mga site ang cookies para makita ang iyong aktibidad sa pag-b
 <translation id="2952278131021475699">Paghahanap Gamit ang Camera ng Lens</translation>
 <translation id="2962516096219646456">Tingnan ang lahat ng data ng autofill</translation>
 <translation id="2969979262385602596">Hindi nakapag-sign in. Pakisubukang muli mamaya.</translation>
+<translation id="2975761176769946178">Kinakailangan ng URL</translation>
 <translation id="297667759942911166">Makipag-collaborate sa mga grupo ng tab</translation>
 <translation id="2987670534697681860">I-verify na ikaw ito para ma-access ang lahat ng iyong password sa device na ito.</translation>
 <translation id="2989523299700148168">Mga kamakailang binisita</translation>
@@ -572,6 +574,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="3224075676564434205">Mananatiling nakabukas ang mga tab sa device na ito pero made-delete ang grupo sa lahat ng device na naka-sign in sa <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Upang makapag-export ng mga password, kinakailangan mo munang magtakda ng passcode sa iyong device.</translation>
 <translation id="3227137524299004712">Mikropono</translation>
+<translation id="3234251228180563751">Mahigit sa 1000 character ang username</translation>
 <translation id="3235063766008841141">Nailagay sa isang mapanlinlang na site at nakita sa paglabag sa data</translation>
 <translation id="3235242129752692527">I-edit ang mga detalye ng event at i-tap ang “I-save.“</translation>
 <translation id="323863549127671026">Mga kasalukuyang nakabukas na tab at grupo ng tab</translation>
@@ -1030,6 +1033,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="5079950360618752063">Gamitin ang iminumungkahing password</translation>
 <translation id="5083464117946352670">Hindi matukoy ang file size.</translation>
 <translation id="5085558938118581974">Maghanap sa mga tab sa lahat ng naka-sync na device</translation>
+<translation id="508645147179720015">Mahigit sa 1000 character ang tala</translation>
 <translation id="5087098519049306025">Pagsubaybay sa Presyo</translation>
 <translation id="5090832849094901128">Kapag na-delete ang password na ito, hindi ide-delete ang iyong account sa <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Magdagdag ng account…</translation>
@@ -1919,6 +1923,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8434837876193928924">Mga detalye ng grupo ng tab</translation>
 <translation id="8438566539970814960">Mas pahusayin ang mga paghahanap at pag-browse</translation>
 <translation id="8439758443371991593">I-hide ang Idagdag sa Listahan ng Babasahin</translation>
+<translation id="8443986842926457191">Mahigit 2048 character ang URL</translation>
 <translation id="8449869326050867919">Na-share ang password</translation>
 <translation id="8473863474539038330">Mga address at higit pa</translation>
 <translation id="8474378002946546633">Payagan ang mga notification</translation>
@@ -1983,6 +1988,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8680786875305615692">Tumulong na pahusayin ang seguridad sa Web para sa lahat</translation>
 <translation id="8680787084697685621">Wala sa panahon ang mga detalye sa pag-sign-in sa account.</translation>
 <translation id="8690752723634292147">Kumpirmahin ang pag-delete</translation>
+<translation id="8692107307702113268">Mahigit sa 1000 character ang password</translation>
 <translation id="8692689525339542358">Makakuha ng proteksyon laban sa mga mapanganib na site, download, at extension.</translation>
 <translation id="8692897097252418799">Piliin ang data na gusto mong i-export</translation>
 <translation id="8694281486652655615">Ipapakita ang item na ito</translation>
@@ -2007,6 +2013,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="8741995161408053644">Maaaring may iba pang mga uri ng history ng pag-browse ang iyong Google Account sa <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Gumawa ng link</translation>
 <translation id="8746155870861185046">Ibahagi ang naka-highlight</translation>
+<translation id="8748678031495824833">Buksan ang mga AI tool sa page</translation>
 <translation id="8750037785291841318">Makikita mo rito ang iyong mga tab</translation>
 <translation id="8756969031206844760">I-update ang password?</translation>
 <translation id="8764015330924122850">Huwag nang subaybayan ang <ph name="DOMAIN_NAME" /></translation>
@@ -2065,6 +2072,7 @@ Puwedeng gumamit ng cookies ang mga site para makita ang iyong aktibidad sa pag-
 <translation id="895541991026785598">Mag-ulat ng Isyu</translation>
 <translation id="8960979149015305">Isara ang download</translation>
 <translation id="8961092256396236619">Naka-off ang Pinaigting na Proteksyon</translation>
+<translation id="8962863356073277855">Ang dapat na format ng URL ay https://www.example.com</translation>
 <translation id="8968766641738584599">I-save ang card</translation>
 <translation id="8974714402877957201">1. Buksan ang Mga Setting ng iPad</translation>
 <translation id="8975015774710126284">Na-delete ang data mula sa pag-browse</translation>

@@ -404,7 +404,7 @@
 <translation id="1656489000284462475">受け取り</translation>
 <translation id="1658111267661135323">テレビ＆動画</translation>
 <translation id="1658918301167915956">Bluetooth デバイス</translation>
-<translation id="1662550410081243962">お支払い方法の保存と入力</translation>
+<translation id="1662550410081243962">お支払い方法を保存、入力する</translation>
 <translation id="1662980953334786797">先頭ページから印刷</translation>
 <translation id="1663943134801823270">Chrome に保存されているクレジット カードと住所です。[<ph name="BEGIN_LINK" />設定<ph name="END_LINK" />] で管理できます。</translation>
 <translation id="1664389769577564606">フレキソ フォトポリマー</translation>
@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">位置情報がブロックされています</translation>
 <translation id="2041788246978549610">利用可能なマイクの使用（<ph name="MICS_COUNT" />）</translation>
 <translation id="2042213636306070719">トレイ 7</translation>
-<translation id="2043896419861982462">分割払いオプションを非表示にするには、<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> に移動してください</translation>
 <translation id="2045871135676061132">6 3/4 封筒</translation>
 <translation id="2046951263634619614">書籍販売</translation>
 <translation id="2048261947532620704">ページを翻訳しています</translation>
@@ -1374,7 +1373,6 @@
 <translation id="33073482541490531">たった今使用したパスワードがデータ侵害で検出されました。パスワード マネージャーでは、このパスワードを今すぐ変更することをおすすめします。</translation>
 <translation id="3307649904964670439">[Chrome をカスタマイズ] ボタンです。実行すると、ブラウザのデザインをカスタマイズできます</translation>
 <translation id="3308006649705061278">組織単位（OU）</translation>
-<translation id="3317077846337994567">分割払いは現在ご利用いただけません。しばらくしてからもう一度お試しください。</translation>
 <translation id="3318016344440038475">お笑い番組</translation>
 <translation id="3324687287337751929">4x6 インチ</translation>
 <translation id="3324983252691184275">クリムゾン</translation>
@@ -1551,7 +1549,6 @@
 <translation id="3600106876108433070">比較表の詳細</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />、<ph name="DOMAIN" />、<ph name="TIME" /></translation>
 <translation id="3600492954573979888">[Google のプライバシー設定を管理] ボタンです。実行すると Google アカウントのプライバシー設定に移動できます</translation>
-<translation id="3602695245205338770">分割払いプロバイダを選択</translation>
 <translation id="3603507503523709">アプリケーションは管理者によってブロックされています</translation>
 <translation id="3605899229568538311">5x5 インチ</translation>
 <translation id="3606917451836803637">テレビ番組</translation>
@@ -2706,7 +2703,7 @@
 <translation id="5518352028556756716">ほとんどのサイトは、サードパーティ Cookie を使用してブラウジング中のユーザーをトラッキングできません。またシークレット モードでは、サイトはサードパーティ Cookie を使用できません。</translation>
 <translation id="5519516356611866228">変更後のバージョン</translation>
 <translation id="5519696598216267194">紙（穴開き）</translation>
-<translation id="5520105693415771152">現在の情報が表示されていない場合は、カード発行会社に連絡して更新してください。</translation>
+<translation id="5520105693415771152">最新の情報が表示されていない場合は、カード発行会社に連絡して更新してください。</translation>
 <translation id="5521782189689806907">キャビネット</translation>
 <translation id="5523118979700054094">ポリシー名</translation>
 <translation id="5523588073846127669">販売者がこの仮想カードに対応していません</translation>
@@ -3180,7 +3177,6 @@
 <translation id="6327065120806001832">ローカル ネットワークへのアクセス</translation>
 <translation id="6328639280570009161">ネットワーク予測を無効にしてみてください</translation>
 <translation id="6329815962353376655">&lt;質問を入力&gt;</translation>
-<translation id="6334834493885103305">Affirm、Zip、または Klarna の分割払いを使用できます</translation>
 <translation id="6335029926534404762">スポーツ シューズ</translation>
 <translation id="6336948221660696475">VR は許可されていません</translation>
 <translation id="6337133576188860026">最大で <ph name="SIZE" /> を解放します。サイトによっては、次回アクセスする際に読み込みに時間がかかる可能性があります。</translation>
@@ -4753,7 +4749,6 @@
 <translation id="9005998258318286617">PDF ドキュメントを読み込めませんでした。</translation>
 <translation id="9008201768610948239">無視する</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{なし}=1{1 件のサイト}other{# 件のサイト}}</translation>
-<translation id="9012194306129927220">Affirm または Zip の分割払いを使用できます</translation>
 <translation id="9014705027639070815">アクセスしたサイトが Chrome に、広告のパフォーマンスを測定するための情報を要求することがあります。Chrome では、限定的な種類のデータ（サイトにアクセスした後に購入したかどうかなど）をサイトが収集することを許可しています。</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> のセキュリティ コードを入力してください</translation>
 <translation id="901834265349196618">メール</translation>

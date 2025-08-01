@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">কাগজৰ প্ৰকাৰ</translation>
 <translation id="1143142264369994168">প্ৰমাণপত্ৰ স্বাক্ষৰ কৰোঁতা</translation>
 <translation id="1145593918056169051">প্ৰিণ্টাৰটো বন্ধ হৈছে</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{এক্সটেনশ্বন}=1{এক্সটেনশ্বন ({SELECTED_ITEMS} টা)}one{এক্সটেনশ্বন ({SELECTED_ITEMS} টা)}other{এক্সটেনশ্বন ({SELECTED_ITEMS} টা)}}</translation>
 <translation id="114715166554490743">মূৰ পইণ্টাৰ</translation>
 <translation id="114721135501989771">Chromeত Googleৰ সেৱা পাওক</translation>
 <translation id="1147322039136785890">এতিয়া <ph name="SUPERVISED_USER_NAME" />ৰ পাল</translation>
@@ -737,6 +738,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> আঁতৰাওক</translation>
 <translation id="1504551620756424144">শ্বেয়াৰ কৰা ফ’ল্ডাৰসমূহ Windowsৰ <ph name="BASE_DIR" />ত উপলব্ধ।</translation>
 <translation id="1505494256539862015">পাছৱৰ্ড ৰপ্তানি কৰক</translation>
+<translation id="1505654899813338756">আপুনি প্ৰাসংগিক পৃষ্ঠাসমূহ একেলগে ৰাখিবলৈ আৰু সেইসমূহ আপোনাৰ সমগ্ৰ ডিভাইচত ছেভ কৰিবলৈ টেবসমূহৰ গোট সৃষ্টি কৰিব পাৰে</translation>
 <translation id="1506061864768559482">সন্ধান ইঞ্জিন</translation>
 <translation id="1506187449813838456">তীব্ৰতা বৃদ্ধি কৰক</translation>
 <translation id="1507170440449692343">এই পৃষ্ঠাটোৰ আপোনাৰ কেমেৰাৰ এক্সেছ অৱৰোধ কৰি ৰখা হৈছিল।</translation>
@@ -5316,6 +5318,7 @@
 <translation id="4681930562518940301">মূল &amp;প্ৰতিচ্ছবি নতুন টেবত খোলক</translation>
 <translation id="4682481611456523884">এই ছাইটত এম্বেড কৰা সমলে আপোনাৰ বিষয়ে ছেভ কৰা তথ্য ব্যৱহাৰ কৰিব নোৱাৰে</translation>
 <translation id="4682807230647698604">আপুনি এই সুবিধাসমূহ ব্যৱহাৰ কৰাৰ সময়ত, AIৰ অভিজ্ঞতা সৃষ্টি কৰিবলৈ প্ৰাসংগিক ডেটা Googleলৈ পঠিওৱা হয়</translation>
+<translation id="4683143253481759090">Chrome আপডে’ট কৰা হৈছে</translation>
 <translation id="4683629100208651599">সৰুফলা কৰক</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ডিফ’ল্ট)</translation>
 <translation id="4684427112815847243">সকলো ছিংক কৰক</translation>
@@ -6089,7 +6092,6 @@
 <translation id="5235050375939235066">এপ্ আনইনষ্টল কৰিবনে?</translation>
 <translation id="523505283826916779">সাধ্য সুবিধাৰ ছেটিংসমূহ</translation>
 <translation id="5235750401727657667">আপুনি এটা নতুন টেব খুলোঁতে দেখা পোৱা পৃষ্ঠাটো সলনি কৰক</translation>
-<translation id="5236054983756407518">আপোনাৰ ঘৰৰ ঠিকনা Chromeৰ পৰা আঁতৰাবনে?</translation>
 <translation id="5237124927415201087">আপোনাৰ ফ’নৰ জৰিয়তে সহজে নিজৰ <ph name="DEVICE_TYPE" /> ছেট আপ কৰক। আপুনি মেনুৱেলী নিজৰ পাছৱৰ্ড নিদিয়াকৈয়ে নিজৰ ৱাই-ফাই আৰু Google একাউণ্ট যোগ দিব পাৰে।
     <ph name="BR" />
     <ph name="BR" />
@@ -7221,7 +7223,6 @@
 <translation id="606449270532897041">ছাইটৰ ডেটা পৰিচালনা কৰক</translation>
 <translation id="6064764629679333574">নিম্ন-ৰিজ’লিউশ্বনৰ অডিঅ’ক উচ্চ-ৰিজ’লিউশ্বনলৈ আপস্কে’ল কৰি ব্লুটুথ মাইকৰ ধ্বনিৰ গুণগত মান উন্নত কৰক।</translation>
 <translation id="6065289257230303064">প্ৰমাণপত্ৰৰ বিষয় নির্দেশক বৈশিষ্ট্য</translation>
-<translation id="6065690209261668796">আপোনাৰ কৰ্মস্থানৰ ঠিকনা Chromeৰ পৰা আঁতৰাবনে?</translation>
 <translation id="6066794465984119824">প্ৰতিচ্ছবিৰ হেশ্ব ছেট কৰা হোৱা নাই</translation>
 <translation id="6069464830445383022">আপোনাৰ Chromebookত আপোনাৰ Google একাউণ্টৰ জৰিয়তে ছাইন ইন কৰিব লাগিব</translation>
 <translation id="6071181508177083058">পাছৱৰ্ড নিশ্চিত কৰক</translation>
@@ -7546,6 +7547,7 @@
 <translation id="628726841779494414">প্ৰিণ্টাৰৰ ছেটিঙত আপোনাৰ প্ৰিণ্টাৰ পৰিচালনা কৰক</translation>
 <translation id="6287288864483377583">আমদানিটো কেৱল এখন একক প্ৰমাণপত্ৰৰ বাবে সমৰ্থত হয়</translation>
 <translation id="6287828400772161253">Android ফ’ন (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google AI ম'ড বিচাৰক</translation>
 <translation id="6290613030083731160">কোনো উপলব্ধ ডিভাইচে ওচৰত শ্বেয়াৰ কৰি থকা নাই। <ph name="LINK_BEGIN" />অধিক জানক<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">ষ্ট’ৰেজত ঠাই নোহোৱাৰ বাবে পুনঃস্থাপন কৰিব নোৱাৰি।</translation>
 <translation id="6291741848715722067">নিশ্চিতকৰণ ক’ড</translation>

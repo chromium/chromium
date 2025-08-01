@@ -557,6 +557,7 @@
 <translation id="1927439846988093361">بالوں کی نگہداشت</translation>
 <translation id="1935353813610900265">‏‫AI کے ذریعے تقویت یافتہ سرگزشت کی تلاش کے لیے تاثرات بھیجیں</translation>
 <translation id="1935995810530254458">بہر حال کاپی کریں</translation>
+<translation id="1938580037092872316">محفوظ کردہ پتے میں نئی معلومات شامل کریں</translation>
 <translation id="1939059826036755332">خودکار تصویر میں تصویر</translation>
 <translation id="1939175642807587452">سائٹ اطلاعات بھیجنے کیلئے پوچھ سکتی ہے</translation>
 <translation id="1940441167050915935">محفوظ کردہ سیکیورٹی کوڈز حذف کریں</translation>
@@ -619,7 +620,6 @@
 <translation id="2040894699575719559">مقام مسدود کر دیا گیا ہے</translation>
 <translation id="2041788246978549610">دستیاب مائیکروفونز استعمال کریں (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">ٹرے 7</translation>
-<translation id="2043896419861982462">قسطوں میں ادائیگی کرنے کے اختیارات کو چھپانے کیلئے <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> پر جائیں</translation>
 <translation id="2045871135676061132">ذاتی لفافہ</translation>
 <translation id="2046951263634619614">کتاب کے ریٹیلرز</translation>
 <translation id="2048261947532620704">صفحہ کا ترجمہ کیا جا رہا ہے</translation>
@@ -1375,7 +1375,6 @@
 <translation id="33073482541490531">آپ نے ابھی جو پاس ورڈ استعمال کیا وہ ڈیٹا کی خلاف ورزی میں پایا گیا۔ پاس ورڈ مینیجر اس پاس ورڈ کو ابھی تبدیل کرنے کی تجویز کرتا ہے۔</translation>
 <translation id="3307649904964670439">‏Chrome کو حسب ضرورت بنائیں بٹن، اپنے براؤزر کی شکل کو حسب ضرورت بنانے کے لیے فعال کریں</translation>
 <translation id="3308006649705061278">‏تنظیمی اکائی (OU)</translation>
-<translation id="3317077846337994567">فی الوقت 'وقت کے ساتھ ادائیگی کریں' کی سہولت دستیاب نہیں ہے۔ بعد میں دوبارہ کوشش کریں۔</translation>
 <translation id="3318016344440038475">‏TV کامیڈیز</translation>
 <translation id="3324687287337751929">‏‎4 x 6 انچ</translation>
 <translation id="3324983252691184275">قرمزی</translation>
@@ -1530,6 +1529,7 @@
 <translation id="3570079787344939099">اسکرولنگ اور زومنگ</translation>
 <translation id="357244642999988503">کالم ہٹائیں</translation>
 <translation id="3574305903863751447"><ph name="CITY" />، <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">پتہ میں نئی معلومات شامل کریں</translation>
 <translation id="3575121482199441727">اس سائٹ کے لیے اجازت دیں</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">گلی کا نام اختیار منتخب کیا گیا</translation>
@@ -1552,7 +1552,6 @@
 <translation id="3600106876108433070">موازنہ ٹیبلز کے بارے میں جانیں</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />، <ph name="DOMAIN" />، <ph name="TIME" /></translation>
 <translation id="3600492954573979888">‏Google کی رازداری کی ترتیبات کا نظم کریں بٹن، اپنی Google اکاؤنٹ کی رازداری کی ترتیبات ملاحظہ کرنے کیلئے فعال کریں</translation>
-<translation id="3602695245205338770">قسطوں میں ادائیگی کرنے کی سہولت دینے والے فراہم کنندہ کا انتخاب کریں</translation>
 <translation id="3603507503523709">ایپلیکیشن کو آپ کے منتظم کے ذریعے مسدود کیا گیا</translation>
 <translation id="3605899229568538311">‏‎5 x 5 انچ</translation>
 <translation id="3606917451836803637">‏TV شوز اور پروگرامز</translation>
@@ -3182,7 +3181,6 @@
 <translation id="6327065120806001832">مقامی نیٹ ورک تک رسائی</translation>
 <translation id="6328639280570009161">نیٹ ورک کی پیشین گوئی غیر فعال کرنے کی کوشش کریں</translation>
 <translation id="6329815962353376655">&lt;سوال ٹائپ کریں&gt;</translation>
-<translation id="6334834493885103305">‏اب آپ Affirm, Zip یا Klarna کا استعمال کر کے وقت کے ساتھ ادائیگی کر سکتے ہیں</translation>
 <translation id="6335029926534404762">ایتھلیٹک جوتے</translation>
 <translation id="6336948221660696475">‏‫VR کی اجازت نہیں دی گئی</translation>
 <translation id="6337133576188860026"><ph name="SIZE" /> سے کم بچت ہوتی ہے۔ آپ کے اگلے ملاحظہ پر کچھ سائٹس مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
@@ -3544,6 +3542,7 @@
 <translation id="6935082727755903526">اکاؤنٹنگ اور فائنانس والی جابز</translation>
 <translation id="6935179587384421592"><ph name="SIZE" />۔ آپ کے اگلے ملاحظہ پر کچھ سائٹیں مزید آہستہ سے لوڈ ہو سکتی ہیں۔</translation>
 <translation id="6936976777388162184">‏یہ ایک بنڈل کردہ آلہ ہے اور اس کا Kiosk اور Signage Upgrade کے ساتھ اندراج نہیں کیا جا سکتا۔</translation>
+<translation id="6942444979237658241">تبصرے - <ph name="GROUP_NAME" /></translation>
 <translation id="6944557544071529399">حکمت عملی والی گیمز</translation>
 <translation id="6944692733090228304">آپ نے اپنا پاس ورڈ ایک ایسی سائٹ پر درج کیا ہے جو <ph name="BEGIN_BOLD" /><ph name="ORG_NAME" /><ph name="END_BOLD" /> کے زیر انتظام نہیں ہے۔ اپنے اکاؤنٹ کے تحفظ کے لیے، دیگر ایپس اور سائٹس پر اپنا پاس ورڈ دوبارہ استعمال نہ کریں۔</translation>
 <translation id="6946949206576443118">‏Chrome میں ویب تلاش کریں</translation>
@@ -4001,6 +4000,7 @@
 <translation id="7668654391829183341">نامعلوم آلہ</translation>
 <translation id="7669320311687290322"><ph name="ITEM_LABEL" />، <ph name="ITEM_POSITION" /> از <ph name="ITEMS_TOTAL" />۔</translation>
 <translation id="7669907849388166732">{COUNT,plural, =1{رازدارانہ کے بطور پرچم لگائے گئے ڈیٹا کے متعلق کی گئی کاروائیاں (لاگ ان کے بعد سے 1 کارروائی)۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />}other{رازدارانہ کے بطور پرچم لگائے گئے ڈیٹا کے متعلق کی گئی کاروائیاں (لاگ ان کے بعد سے # کارروائیاں)۔ <ph name="BEGIN_LINK" />مزید جانیں<ph name="END_LINK" />}}</translation>
+<translation id="7672684333490246092">‏آپ کے Google اکاؤنٹ <ph name="USER_EMAIL" /> کی معلومات آپ کو Chrome میں تیزی سے فارمز بھرنے میں مدد کر سکتی ہیں</translation>
 <translation id="7673278391011283842">میل باکس 6</translation>
 <translation id="7675325315208090829">ادائیگی کے طریقوں کا نظم کریں...</translation>
 <translation id="767550629621587224">پری کٹ ٹیبز</translation>
@@ -4133,6 +4133,7 @@
 <translation id="7908648876066812348">ورچوئل کارڈ آن کیا جا رہا ہے</translation>
 <translation id="7909498058929404306">‏<ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />، ترتیبات میں Chrome سیفٹی چیک صفحہ پر جانے کے لیے Tab پھر Enter دبائیں</translation>
 <translation id="791107458486222637">نتیجے کو دوبارہ تخلیق کیا جا رہا ہے</translation>
+<translation id="7912924955815015552">‏‫Safari سے درآمد کردہ</translation>
 <translation id="791551905239004656">نقاشی اور رنگ آمیزی</translation>
 <translation id="7916162853251942238">فلیکسو بیس</translation>
 <translation id="791698251820376781">آپ کی تنظیم آپ کو سائن ان کرنے کی اجازت نہیں دیتی ہے</translation>
@@ -4267,6 +4268,7 @@
 <translation id="814432316791813431">{NUM_MONTHS,plural, =1{‫1 ماہ پہلے تخلیق کیا گیا}other{‫{NUM_MONTHS} ماہ پہلے تخلیق کیا گیا}}</translation>
 <translation id="8148608574971654810">‏PDF ورژن:</translation>
 <translation id="8149426793427495338">آپ کا کمپیوٹر سلیپ وضع میں چلا گیا۔</translation>
+<translation id="815036624016370447">‏آپ کے Google اکاؤنٹ <ph name="ACCOUNT" /> کی معلومات آپ کو Chrome میں تیزی سے فارمز بھرنے میں مدد کر سکتی ہیں</translation>
 <translation id="8150722005171944719"><ph name="URL" /> پر موجود فائل پڑھنے لائق نہیں ہے۔ ممکن ہے اسے ہٹا دیا گیا ہو، منتقل کر دیا گیا ہو یا ممکن ہے فائل کی اجازتیں رسائی روک رہی ہوں۔</translation>
 <translation id="8151185429379586178">ڈویلپر ٹولز</translation>
 <translation id="8153865548451212769">{0,plural, =1{منتظم کی پالیسی اس فائل کو <ph name="DESTINATION_NAME" /> میں ڈاؤن لوڈ کرنے کی تجویز نہیں کرتی ہے}other{منتظم کی پالیسی ان فائلز کو <ph name="DESTINATION_NAME" /> میں ڈاؤن لوڈ کرنے کی تجویز نہیں کرتی ہے}}</translation>
@@ -4752,7 +4754,6 @@
 <translation id="9005998258318286617">‏PDF دستاویز لوڈ نہیں ہو سکی۔</translation>
 <translation id="9008201768610948239">نظر انداز کریں</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{کوئی نہیں}=1{‫1 سائٹ سے}other{‫# سائٹس سے}}</translation>
-<translation id="9012194306129927220">‏اب آپ Affirm یا Zip کا استعمال کر کے وقت کے ساتھ ادائیگی کر سکتے ہیں</translation>
 <translation id="9014705027639070815">‏آپ کی ملاحظہ کی جانے والی سائٹس اپنے اشتہارات کی کارکردگی کی پیمائش میں مدد کے لیے Chrome سے معلومات طلب کر سکتی ہیں۔ Chrome سائٹس کو ڈیٹا کی محدود اقسام جمع کرنے کی اجازت دیتا ہے، جیسے کہ آیا آپ نے کسی سائٹ پر جانے کے بعد کوئی خریداری کی ہے۔</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> کے لئے اپنا سیکیورٹی کوڈ درج کریں</translation>
 <translation id="901834265349196618">ای میل</translation>

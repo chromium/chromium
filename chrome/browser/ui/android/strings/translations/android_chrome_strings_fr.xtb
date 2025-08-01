@@ -693,7 +693,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4285498937028063278">Retirer</translation>
 <translation id="4285846616383034558">Cookies, cache et autres données des sites</translation>
 <translation id="4291407919474070700"><ph name="BEGIN_LINK" />Activez le verrouillage de l'écran dans les paramètres Android<ph name="END_LINK" /></translation>
-<translation id="4296252229500326964">Nouvel onglet nav. privée</translation>
+<translation id="4296252229500326964">Nouv. onglet nav. privée</translation>
 <translation id="4298388696830689168">Sites associés</translation>
 <translation id="4300632303535881174">Accéder à la page précédente</translation>
 <translation id="4303044213806199882">chrome_screenshot_<ph name="CURRENT_TIMESTAMP_MS" /></translation>
@@ -715,6 +715,7 @@ Seule une personne connaissant votre phrase secrète peut lire vos données chif
 <translation id="4380055775103003110">Si le problème persiste, vous pouvez essayer d'autres méthodes afin de poursuivre sur <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Utilisation de Sogou pour les recherches</translation>
 <translation id="4387647248986092471">Créer un verrouillage du profil de voiture</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Onglets et groupes inutilisés depuis au moins 1 jour}one{Onglets et groupes inutilisés depuis au moins # jour}other{Onglets et groupes inutilisés depuis au moins # jours}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Téléchargement…</translation>
 <translation id="4404568932422911380">Aucun favori</translation>
 <translation id="4405224443901389797">Déplacer vers…</translation>

@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">Местоположението е блокирано</translation>
 <translation id="2041788246978549610">Използване на наличните микрофони (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Тава 7</translation>
-<translation id="2043896419861982462">За да скриете опциите за разсрочено плащане, отворете <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Плик за лична кореспонденция</translation>
 <translation id="2046951263634619614">Книжарници</translation>
 <translation id="2048261947532620704">Страницата се превежда</translation>
@@ -1374,7 +1373,6 @@
 <translation id="33073482541490531">Паролата, която току-що използвахте, е разкрита при нарушение на сигурността на данните. Мениджърът на паролите ви препоръчва да я промените сега.</translation>
 <translation id="3307649904964670439">Бутон за персонализиране на Chrome. Активирайте, за да персонализирате облика на браузъра си</translation>
 <translation id="3308006649705061278">Организационна единица (OU)</translation>
-<translation id="3317077846337994567">В момента плащането на вноски не е налице. Опитайте отново по-късно.</translation>
 <translation id="3318016344440038475">Телевизионни комедии</translation>
 <translation id="3324687287337751929">4 x 6 инча</translation>
 <translation id="3324983252691184275">пурпурно</translation>
@@ -1551,7 +1549,6 @@
 <translation id="3600106876108433070">Научете за таблиците за сравняване</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Бутон за управление на настройките за поверителност в Google. Активирайте, за да отворите настройките за поверителност за профила си в Google.</translation>
-<translation id="3602695245205338770">Изберете доставчик на разсрочено плащане</translation>
 <translation id="3603507503523709">Приложението е блокирано от администратора ви</translation>
 <translation id="3605899229568538311">5 x 5 инча</translation>
 <translation id="3606917451836803637">Телевизионни предавания и програми</translation>
@@ -3180,7 +3177,6 @@
 <translation id="6327065120806001832">достъп в локалната мрежа</translation>
 <translation id="6328639280570009161">Опитайте да деактивирате предвижданията за мрежата</translation>
 <translation id="6329815962353376655">&lt;Въведете въпрос&gt;</translation>
-<translation id="6334834493885103305">Вече можете да плащате на вноски чрез Affirm, Zip или Klarna</translation>
 <translation id="6335029926534404762">Спортни обувки</translation>
 <translation id="6336948221660696475">Не е разрешено използването на VR</translation>
 <translation id="6337133576188860026">Ще освободите по-малко от <ph name="SIZE" />. Някои сайтове може да се заредят по-бавно при следващото ви посещение.</translation>
@@ -4751,7 +4747,6 @@
 <translation id="9005998258318286617">Зареждането на PDF документа не бе успешно.</translation>
 <translation id="9008201768610948239">Пренебрегване</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Няма}=1{От 1 сайт}other{От # сайта}}</translation>
-<translation id="9012194306129927220">Вече можете да плащате на вноски чрез Affirm или Zip</translation>
 <translation id="9014705027639070815">Сайтовете, които посещавате, могат да поискат от Chrome информация, с чиято помощ да измерват ефективността на рекламите си. Браузърът дава възможност на сайтовете да събират ограничени типове данни, като например дали сте направили покупка, след като сте посетили даден сайт.</translation>
 <translation id="9018120810758822233">Въведете кода си за сигурност за <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">имейл</translation>

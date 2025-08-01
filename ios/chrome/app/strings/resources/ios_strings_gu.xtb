@@ -143,6 +143,7 @@
 <translation id="1521774566618522728">આજે સક્રિય છે</translation>
 <translation id="1523567067736644845">પાસવર્ડ બતાવવા માટે અનલૉક કરો</translation>
 <translation id="1524563461097350801">ના, આભાર</translation>
+<translation id="1528290585275339320">પેજ પરનું કન્ટેન્ટ શેર કરવાની સુવિધા ચાલુ કરો</translation>
 <translation id="1531038290222364269">ટૅબ બતાવો</translation>
 <translation id="1536390784834419204">પેજનો અનુવાદ કરો</translation>
 <translation id="1540800554400757039">સરનામું 1</translation>
@@ -164,6 +165,7 @@
 <translation id="1612754831519568745">તમારું Safe Browsing હાલમાં બંધ છે. જોખમી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શનથી રક્ષણ મેળવો.</translation>
 <translation id="1620510694547887537">કૅમેરા</translation>
 <translation id="1622717322707146952">“Google Calendarમાં ઉમેરો“ અથવા “Apple Calendar પર ઉમેરો“ પસંદ કરો.</translation>
+<translation id="1625502944725673937">ફાઇલની આયાત કરી શકાઈ નથી</translation>
 <translation id="1629162218487290695">આ તમે જ છો તેની ચકાસણી કરો…</translation>
 <translation id="1636234353664774105">નૅવિગેશન સુવિધાનો ઉપયોગ કરીને વારા ફરતી માર્ગદર્શન સાથે તમારા નિર્ધારિત સ્થાન માટે દિશાનિર્દેશો મેળવો</translation>
 <translation id="1641113438599504367">સલામત બ્રાઉઝિંગ</translation>
@@ -193,6 +195,7 @@
 <translation id="1741219894094057085">સ્માર્ટ વૉચ</translation>
 <translation id="1743244221910283364">ફેરફારો કાઢી નાખો</translation>
 <translation id="1748975028205587434">તમારી ફાઇલ પસંદ કરો</translation>
+<translation id="1749733017156547309">પાસવર્ડ જરૂરી છે</translation>
 <translation id="174998178145075354">{count,plural, =1{તમારા કીબોર્ડ પર સરનામા માટે {count} વિકલ્પ ઉપલબ્ધ છે.}one{તમારા કીબોર્ડ પર સરનામા માટે {count} વિકલ્પ ઉપલબ્ધ છે.}other{તમારા કીબોર્ડ પર સરનામા માટે {count} વિકલ્પ ઉપલબ્ધ છે.}}</translation>
 <translation id="1750238553597293878">તમારા Google એકાઉન્ટમાં પાસવર્ડનો ઉપયોગ કરવાનું ચાલુ રાખો</translation>
 <translation id="17513872634828108">ટેબ્સ ખોલો</translation>
@@ -509,6 +512,7 @@
 <translation id="2952278131021475699">Lens કૅમેરા વડે શોધની સુવિધા</translation>
 <translation id="2962516096219646456">ઑટોમૅટિક રીતે ભરવાની સુવિધાનો બધો ડેટા જુઓ</translation>
 <translation id="2969979262385602596">સાઇન ઇન કરવામાં નિષ્ફળ. કૃપા કરીને પછીથી ફરી પ્રયાસ કરો.</translation>
+<translation id="2975761176769946178">URL જરૂરી છે</translation>
 <translation id="297667759942911166">ટૅબના ગ્રૂપમાં સહયોગ કરો</translation>
 <translation id="2987670534697681860">આ ડિવાઇસ પર તમારા બધા પાસવર્ડ ઍક્સેસ કરવા માટે ખાતરી કરો કે તે તમે જ છો.</translation>
 <translation id="2989523299700148168">તાજેતરમાં મુલાકાત લીધેલ</translation>
@@ -572,6 +576,7 @@
 <translation id="3224075676564434205">આ ડિવાઇસ પર ટૅબ ખુલ્લા રહેશે, પરંતુ <ph name="USER_EMAIL" />માં સાઇન ઇન કરેલા બધા ડિવાઇસમાંથી આ ગ્રૂપ ડિલીટ કરવામાં આવશે.</translation>
 <translation id="3224641773458703735">પાસવર્ડના નિકાસ માટે, તમારે સૌથી પહેલા તમારા ઉપકરણ પર એક પાસકોડ સેટ કરવો આવશ્યક છે.</translation>
 <translation id="3227137524299004712">માઇક્રોફોન</translation>
+<translation id="3234251228180563751">વપરાશકર્તાનું નામ 1000 કરતાં વધુ અક્ષર ધરાવે છે</translation>
 <translation id="3235063766008841141">કોઈ છેતરામણી સાઇટ પર દાખલ કરાયો હતો અને ડેટા ઉલ્લંઘનમાં જાણ થઈ હતી</translation>
 <translation id="3235242129752692527">ઇવેન્ટની વિગતોમાં ફેરફાર કરો અને "સાચવો" પર ટૅપ કરો.</translation>
 <translation id="323863549127671026">હાલમાં ખુલ્લા ટૅબ અને ટૅબના ગ્રૂપ</translation>
@@ -1030,6 +1035,7 @@
 <translation id="5079950360618752063">સૂચવેલ પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="5083464117946352670">ફાઇલ કદ નિર્ધારિત કરી શકાતું નથી.</translation>
 <translation id="5085558938118581974">સિંક કરેલા તમામ ડિવાઇસ પર ટૅબમાં શોધો</translation>
+<translation id="508645147179720015">નોંધમાં 1,000થી વધુ અક્ષર છે</translation>
 <translation id="5087098519049306025">કિંમતને ટ્રૅક કરવું</translation>
 <translation id="5090832849094901128">આ પાસવર્ડ ડિલીટ કરવાથી <ph name="WEBSITE" />નું તમારું એકાઉન્ટ ડિલીટ થશે નહીં.</translation>
 <translation id="5118462200606189584">એકાઉન્ટ ઉમેરો…</translation>
@@ -1041,6 +1047,7 @@
 <translation id="5128788795241319992">નવા મેનૂ વિશે શોધખોળ કરો</translation>
 <translation id="5132942445612118989">બધા ડિવાઇસ પર તમારા પાસવર્ડ, ઇતિહાસ અને વધુ સિંક કરો</translation>
 <translation id="5141363746588976328">તમારા ટૅબ કાર્ડ પર કિંમતમાં ઘટાડાની સૂચનાઓ છુપાવો</translation>
+<translation id="514154868070499296">ફૉન્ટ: <ph name="FONT" /></translation>
 <translation id="5145331760738811130">ટૅબ સ્વિચર છોડી દો</translation>
 <translation id="5148717509369231739">Safari સંબંધિત આયાત</translation>
 <translation id="5157638238828697074">કંઈક ખોટું થયું. ઍપ્લિકેશન ખોલી શકાઈ નથી.</translation>
@@ -1558,6 +1565,7 @@
 <translation id="7015418667643980944">વિભાજિત વ્યૂ</translation>
 <translation id="7016070607649558507">તમારી પાસે 1 નબળો પાસવર્ડ છે. સલામત રહેવા માટે હમણાં જ તેને ઠીક કરો.</translation>
 <translation id="7016958933495968912">Discover માટેના વિકલ્પો</translation>
+<translation id="7017863468226238797">આ ફાઇલ ખાલી છે અથવા તેમાં ખોટા ફૉર્મેટમાં ડેટા શામેલ છે</translation>
 <translation id="7029809446516969842">પાસવર્ડ</translation>
 <translation id="7035825883570480307">નોટિફિકેશન ચાલુ કરીએ?</translation>
 <translation id="7039345315346323556">તાજેતરમાં</translation>
@@ -1919,6 +1927,7 @@
 <translation id="8434837876193928924">ટૅબના ગ્રૂપની વિગતો</translation>
 <translation id="8438566539970814960">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8439758443371991593">'વાંચન સૂચિમાં ઉમેરો' છુપાવો</translation>
+<translation id="8443986842926457191">URLમાં 2048થી વધુ અક્ષર છે</translation>
 <translation id="8449869326050867919">પાસવર્ડ શેર કરવામાં આવ્યો</translation>
 <translation id="8473863474539038330">સરનામા અને વધુ</translation>
 <translation id="8474378002946546633">સૂચનાઓને અનુમતિ આપો</translation>
@@ -1969,6 +1978,7 @@
 <translation id="8637431369725868556">જોખમી સાઇટથી સુરક્ષા મેળવો.</translation>
 <translation id="8638151046944329622">{COUNT,plural, =0{ચેડાં કરાયેલો કોઈ પાસવર્ડ નથી}=1{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}one{ચેડાં કરાયેલો {COUNT} પાસવર્ડ}other{ચેડાં કરાયેલા {COUNT} પાસવર્ડ}}</translation>
 <translation id="8643403533759285912">ગ્રૂપ ડિલીટ કરો</translation>
+<translation id="8645245178269185266">વધુ સંબંધિત જવાબો મેળવવા માટે Gemini સાથે પેજનું કન્ટેન્ટ શેર કરો</translation>
 <translation id="8647280737650867362">કિંમતને ટ્રૅક કરવાનું બંધ કરી શક્યા નથી.</translation>
 <translation id="8654802032646794042">રદ કરો</translation>
 <translation id="8660600697590740984">કૉપિ કરેલી Lens માટેની છબી</translation>
@@ -1983,6 +1993,7 @@
 <translation id="8680786875305615692">વેબ પર દરેક જણ માટે સુરક્ષાને બહેતર બનાવવામાં સહાય કરો</translation>
 <translation id="8680787084697685621">એકાઉન્ટ સાઇન ઇન વિગતો જૂની થઈ ગઈ છે.</translation>
 <translation id="8690752723634292147">ડિલીટ કરવાનું કન્ફર્મ કરો</translation>
+<translation id="8692107307702113268">પાસવર્ડ 1000 કરતાં વધુ અક્ષર ધરાવે છે</translation>
 <translation id="8692689525339542358">જોખમી સાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શનથી સુરક્ષા મેળવો.</translation>
 <translation id="8692897097252418799">તમે જે ડેટા નિકાસ કરવા માગો છો તે પસંદ કરો</translation>
 <translation id="8694281486652655615">આ આઇટમ બતાવે છે</translation>
@@ -2065,6 +2076,7 @@
 <translation id="895541991026785598">સમસ્યાની જાણ કરો</translation>
 <translation id="8960979149015305">ડાઉનલોડ બંધ કરો</translation>
 <translation id="8961092256396236619">વધારેલા સંરક્ષણનું સેટિંગ બંધ છે</translation>
+<translation id="8962863356073277855">URLનું ફૉર્મેટ https://www.example.com હોવું જોઈએ</translation>
 <translation id="8968766641738584599">કાર્ડ સાચવો</translation>
 <translation id="8974714402877957201">1. iPad સેટિંગ ખોલો</translation>
 <translation id="8975015774710126284">બ્રાઉઝિંગ ડેટા ડિલીટ કરવામાં આવ્યો</translation>

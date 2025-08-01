@@ -618,7 +618,6 @@
 <translation id="2040894699575719559">禁止取得位置資訊</translation>
 <translation id="2041788246978549610">使用可存取的麥克風 (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">紙匣 7</translation>
-<translation id="2043896419861982462">如要隱藏分期付款選項，請前往<ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /></translation>
 <translation id="2045871135676061132">Envelope Personal</translation>
 <translation id="2046951263634619614">零售書店</translation>
 <translation id="2048261947532620704">正在翻譯頁面</translation>
@@ -1372,7 +1371,6 @@
 <translation id="33073482541490531">系統發現你剛才使用的密碼因為資料侵害事件而遭到外洩。密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="3307649904964670439">「自訂 Chrome」按鈕，啟動後即可自訂瀏覽器外觀</translation>
 <translation id="3308006649705061278">組織單位 (OU)</translation>
-<translation id="3317077846337994567">目前無法使用分期付款，請稍後再試。</translation>
 <translation id="3318016344440038475">電視喜劇</translation>
 <translation id="3324687287337751929">4 x 6 吋</translation>
 <translation id="3324983252691184275">深紅色</translation>
@@ -1549,7 +1547,6 @@
 <translation id="3600106876108433070">瞭解比較表格</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />，<ph name="DOMAIN" />，<ph name="TIME" /></translation>
 <translation id="3600492954573979888">「管理 Google 隱私權設定」按鈕，啟動後即可前往 Google 帳戶隱私權設定</translation>
-<translation id="3602695245205338770">選擇分期付款服務供應商</translation>
 <translation id="3603507503523709">已遭系統管理員封鎖的應用程式</translation>
 <translation id="3605899229568538311">5 x 5 吋</translation>
 <translation id="3606917451836803637">電視表演與節目</translation>
@@ -3178,7 +3175,6 @@
 <translation id="6327065120806001832">區域網路存取權</translation>
 <translation id="6328639280570009161">建議停用網路預測功能</translation>
 <translation id="6329815962353376655">&lt;輸入問題&gt;</translation>
-<translation id="6334834493885103305">現在可以使用 Affirm、Zip 或 Klarna 分期付款</translation>
 <translation id="6335029926534404762">運動鞋</translation>
 <translation id="6336948221660696475">不允許使用 VR</translation>
 <translation id="6337133576188860026">釋出不到 <ph name="SIZE" />。下次造訪部分網站時，載入速度可能會變慢。</translation>
@@ -3580,6 +3576,7 @@
 <translation id="6989763994942163495">顯示進階設定...</translation>
 <translation id="6991376411634620997">密碼金鑰 • Windows Hello</translation>
 <translation id="6997288673234694149">棒球與壘球裝備</translation>
+<translation id="6998512609912910179">更快填妥表單</translation>
 <translation id="6999480632062519056">健身指導與個人訓練課程</translation>
 <translation id="7003278537452757231">地墊與地毯</translation>
 <translation id="7003322000677139268">汽車零件與配件</translation>
@@ -4748,7 +4745,6 @@
 <translation id="9005998258318286617">無法載入 PDF 文件。</translation>
 <translation id="9008201768610948239">略過</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{無}=1{來自 1 個網站}other{來自 # 個網站}}</translation>
-<translation id="9012194306129927220">現在可以使用 Affirm 或 Zip 分期付款</translation>
 <translation id="9014705027639070815">使用者造訪的網站可以要求 Chrome 提供資訊，以便評估廣告成效。Chrome 允許網站收集某些特定資料，例如使用者是否在造訪網站後購物。</translation>
 <translation id="9018120810758822233">請輸入 <ph name="CREDIT_CARD" /> 的安全碼</translation>
 <translation id="901834265349196618">電子郵件</translation>

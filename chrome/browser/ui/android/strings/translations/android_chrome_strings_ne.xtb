@@ -715,6 +715,7 @@ Chrome मा तपाईंलाई अझ राम्रो ब्राउ
 <translation id="4380055775103003110">यो समस्या अझै पनि देखिएको खण्डमा तपाईं <ph name="SITE_ETLD_PLUS_ONE" /> मा जाने अन्य तरिका अपनाई हेर्न सक्नुहुन्छ।</translation>
 <translation id="4384468725000734951">खोजीका लागि Sogou प्रयोग गर्दै</translation>
 <translation id="4387647248986092471">कार प्रोफाइल लक बनाउनुहोस्</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{१ दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरिएका ट्याब तथा समूहहरू}other{# दिन वा सोभन्दा बढी समयदेखि प्रयोग नगरिएका ट्याब तथा समूहहरू}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - डाउनलोड गरिँदै छ…</translation>
 <translation id="4404568932422911380">कुनै पनि पुस्तक चिन्ह छैन</translation>
 <translation id="4405224443901389797">यहाँ सार्नुहोस्…</translation>

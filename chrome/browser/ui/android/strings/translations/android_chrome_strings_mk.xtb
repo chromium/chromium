@@ -715,6 +715,7 @@
 <translation id="4380055775103003110">Ако и натаму се соочувате со проблемов, може да испробате други начини да продолжите на <ph name="SITE_ETLD_PLUS_ONE" />.</translation>
 <translation id="4384468725000734951">Се користи Sogou за пребарување</translation>
 <translation id="4387647248986092471">Создајте „Заклучување на профилот“ во автомобилот</translation>
+<translation id="4401432223274567153">{INACTIVE_TIME_DAYS,plural, =1{Картички и групи што не се користени 1 или повеќе дена}one{Картички и групи што не се користени # или повеќе дена}other{Картички и групи што не се користени # или повеќе дена}}</translation>
 <translation id="4402611456429872546"><ph name="LANG" /> - Се презема…</translation>
 <translation id="4404568932422911380">Нема обележувачи</translation>
 <translation id="4405224443901389797">Премести во…</translation>

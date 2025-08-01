@@ -112,6 +112,7 @@
 <translation id="1069778954840159202">Account automatisch overzetten vanaf Android-telefoon</translation>
 <translation id="1069814191880976658">Ander scherm kiezen</translation>
 <translation id="107022587824771715">Suggesties voor tabbladgroepen zijn op dit moment niet beschikbaar. Je kunt <ph name="BEGIN_LINK" />nu vernieuwen<ph name="END_LINK" /> of het later opnieuw proberen.</translation>
+<translation id="1070357312245925724">Sneltoets voor navigatie</translation>
 <translation id="1070377999570795893">Een ander programma op je computer heeft een extensie toegevoegd die de manier kan wijzigen waarop Chrome werkt.
 
 <ph name="EXTENSION_NAME" /></translation>
@@ -189,6 +190,7 @@ Je kunt je wachtwoorden altijd checken in <ph name="GOOGLE_PASSWORD_MANAGER" />.
 <translation id="1122913801042512795">De inloggegevens van je account zijn verouderd. Log uit en weer in.</translation>
 <translation id="1122960773616686544">Naam van bookmark</translation>
 <translation id="1124772482545689468">Gebruiker</translation>
+<translation id="1125371304736839151">Gemini bovenaan de browser tonen</translation>
 <translation id="1125550662859510761">Ziet eruit als <ph name="WIDTH" /> x <ph name="HEIGHT" /> (systeemeigen resolutie)</translation>
 <translation id="1125921926864945797">Achtergrond en stijl</translation>
 <translation id="1128090040635299943">Linux wordt momenteel ingesteld. De configuratie neemt een paar minuten in beslag.</translation>
@@ -987,6 +989,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1660763353352708040">Probleem met voedingsadapter</translation>
 <translation id="1661996889489595105">{NUM_TABS,plural, =1{Het tabblad corrigeren dat je browser vertraagt}other{De tabbladen corrigeren die je browser vertragen}}</translation>
 <translation id="16620462294541761">Je wachtwoord kan niet worden geverifieerd. Probeer het opnieuw.</translation>
+<translation id="1662572015199460525">Chat met je stem of via tekst om onder meer antwoorden en belangrijke conclusies te krijgen terwijl je browst</translation>
 <translation id="166278006618318542">Algoritme van openbare sleutel van entiteit</translation>
 <translation id="1662801900924515589"><ph name="APP" /> is geïnstalleerd</translation>
 <translation id="1663698992894057019">Upgrade naar een nieuwe Chromebook voor de nieuwste beveiliging en software</translation>
@@ -1089,6 +1092,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="174123615272205933">Aangepast</translation>
 <translation id="1741314857973421784">Doorgaan</translation>
 <translation id="1744108098763830590">achtergrondpagina</translation>
+<translation id="174516937379651657">Als je een pagina deelt met Gemini, worden de volledige content en URL van de pagina naar Google gestuurd.</translation>
 <translation id="1745732479023874451">Contacten beheren</translation>
 <translation id="1748283190377208783">{0,plural, =1{unused plural form}other{# bestanden openen en bewerken in deze web-app?}}</translation>
 <translation id="1748329107062243374">Gebruik een toegangssleutel van <ph name="DEVICE_NAME" /> om in te loggen bij <ph name="WEBSITE" /></translation>
@@ -1400,6 +1404,7 @@ Rechten die je al hebt gegeven aan apps, kunnen van toepassing zijn op dit accou
 <translation id="1956890443345590119">{NUM_EXTENSIONS,plural, =1{1 extensie beoordeeld}other{{NUM_EXTENSIONS} extensies beoordeeld}}</translation>
 <translation id="1959421829481337178">Voer de activatiecode in die je van je provider hebt gekregen.</translation>
 <translation id="1960211333621141174">Klif</translation>
+<translation id="1962356719152496092">Pas hier de sneltoets aan</translation>
 <translation id="1963976881984600709">Standaardbeveiliging</translation>
 <translation id="1964009877615282740">Meer tonen</translation>
 <translation id="1965578266762387357">Als je hulp krijgt bij het schrijven, worden de URL en content van de pagina en je tekst naar Google gestuurd. Voer geen persoonlijke informatie in (zoals medische of financiële gegevens)</translation>
@@ -1567,6 +1572,7 @@ Je kunt de instellingen van dit account beheren door de Family Link-app op je ap
 <translation id="2079053412993822885">Als je een van je eigen certificaten verwijdert, kun je deze niet langer gebruiken om jezelf te identificeren.</translation>
 <translation id="2079495302726689071">Link openen in een nieuw tabblad van <ph name="APP" /></translation>
 <translation id="2079545284768500474">Ongedaan maken</translation>
+<translation id="2079553700504470326">Gebruik je exacte locatie voor de nauwkeurigste Gemini-resultaten in plaats van een geschatte locatie op basis van je IP-adres.</translation>
 <translation id="2080070583977670716">Meer instellingen</translation>
 <translation id="2081816110395725788">Inactieve stand bij batterijvoeding</translation>
 <translation id="2082187087049518845">Tabblad toevoegen aan groep</translation>
@@ -2195,6 +2201,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2496180316473517155">Browsegeschiedenis</translation>
 <translation id="2496616243169085015">Fotografie</translation>
 <translation id="2497229222757901769">Snelheid muis</translation>
+<translation id="24977856422126200"><ph name="WINDOW_TITLE" /> - Je deelt dit tabblad met Gemini voor de duur van dit gesprek</translation>
 <translation id="2497852260688568942">Synchronisatie is uitgezet door je beheerder</translation>
 <translation id="2498539833203011245">Minimaliseren</translation>
 <translation id="2498765460639677199">Heel groot</translation>
@@ -2519,6 +2526,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="2729661575355442512"><ph name="BEGIN_PARAGRAPH1" />Als Locatienauwkeurigheid aanstaat, worden gegevens over draadloze signalen, zoals wifi-toegangspunten en mobiele-netwerktorens, samen met de gegevens van apparaatsensoren, zoals de versnellingsmeter en gyroscoop, gebruikt om een nauwkeurigere apparaatlocatie te schatten, die Android-apps en -services gebruiken om locatiegebaseerde functies te bieden. Hiervoor verzamelt Google periodiek gegevens over apparaatsensoren en draadloze signalen in de buurt van dit apparaat om bij te dragen aan draadloze signaallocaties op basis van crowdsourcing.<ph name="END_PARAGRAPH1" />
     <ph name="BEGIN_PARAGRAPH2" />Google gebruikt deze gegevens die zijn verzameld op dit apparaat om de locatienauwkeurigheid en services op een fysieke locatie te verbeteren en om de services van Google in het algemeen te verbeteren, aan te bieden en te onderhouden. We verwerken deze gegevens op basis van de gerechtvaardigde belangen van Google en derden om aan de behoeften van gebruikers te voldoen. Deze gegevens worden niet gebruikt om een bepaalde persoon te identificeren.<ph name="END_PARAGRAPH2" />
     <ph name="BEGIN_PARAGRAPH3" />Je kunt Locatietoegankelijkheid op elk moment uitzetten in de locatie-instellingen van dit apparaat via Instellingen &gt; Privacy en beveiliging &gt; Privacyopties &gt; Locatietoegang &gt; Geavanceerde locatie-instellingen. Als Locatienauwkeurigheid uitstaat, worden er geen gegevens voor locatienauwkeurigheid verzameld. Voor Android-apps en -services wordt alleen het IP-adres gebruikt (indien beschikbaar) om de locatie van dit apparaat te bepalen. Dit kan van invloed zijn op de beschikbaarheid en nauwkeurigheid van locaties voor Android-apps en -services zoals Google Maps.<ph name="END_PARAGRAPH3" /></translation>
+<translation id="2729940704980595903">Bekijk en beheer je Gemini Apps-activiteit</translation>
 <translation id="2730029791981212295">Een back-up maken van Linux-apps en -bestanden</translation>
 <translation id="2730550884708194161">Over werkprofielen</translation>
 <translation id="2730596696987224099">Zelf een wachtwoord kiezen</translation>
@@ -3387,6 +3395,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3360306038446926262">Vensters</translation>
 <translation id="3361421571228286637">{COUNT,plural, =1{<ph name="DEVICE_NAME" /> deelt <ph name="ATTACHMENTS" /> met jou.}other{<ph name="DEVICE_NAME" /> deelt <ph name="ATTACHMENTS" /> met jou.}}</translation>
 <translation id="3361954577771524115">Uit de app</translation>
+<translation id="3362651095484543782">Gebruik de sneltoets om Gemini te verlaten of terug te keren.</translation>
 <translation id="3362915550009543917">Een sereen olieverfschilderij van een weide met een gele tint, dat een gevoel van rust en intellectuele reflectie oproept.</translation>
 <translation id="3363202073972776113">Dit nieuwe profiel wordt beheerd door je organisatie. <ph name="BEGIN_LINK" />Meer informatie<ph name="END_LINK" /></translation>
 <translation id="3364159059299045452">Alt+cursor plaatsen</translation>
@@ -3610,6 +3619,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="3511358375261756531"><ph name="HEADER" /> uitvouwen</translation>
 <translation id="351152300840026870">Lettertype met vaste breedte</translation>
 <translation id="3511528412952710609">Kort</translation>
+<translation id="3512465804715993309">Aanpasbaar markeren</translation>
 <translation id="3513019849832307207">Deelnemen en openen</translation>
 <translation id="3513563267917474897">Schuifregelaar voor kleurtinten van <ph name="MIN_VALUE" /> tot <ph name="MAX_VALUE" /></translation>
 <translation id="3514335087372914653">Gamebesturing</translation>
@@ -4954,6 +4964,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="443031431654216610">Gebruik alleen cijfers</translation>
 <translation id="4430369329743628066">Bookmark toegevoegd</translation>
 <translation id="4430422687972614133">Virtuele kaart aanzetten</translation>
+<translation id="443196770280837407">Open Gemini met een sneltoets.</translation>
 <translation id="4432621511648257259">Onjuist wachtwoord</translation>
 <translation id="4434611816075088065">Er is op dit moment niets anders dat je aandacht vereist</translation>
 <translation id="443475966875174318">Ongeschikte apps updaten en verwijderen</translation>
@@ -4969,6 +4980,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4442863809158514979">Webrechten bekijken</translation>
 <translation id="4442937638623063085">Geen profielen gevonden. Voer de activatiecode in die je van je provider hebt gekregen.</translation>
 <translation id="4443536555189480885">&amp;Help</translation>
+<translation id="4444191890945732856">Je deelt deze pagina met Gemini</translation>
 <translation id="4444304522807523469">Toegang tot documentscanners die zijn aangesloten via USB of die zich op het lokale netwerk bevinden</translation>
 <translation id="4444512841222467874">Als er geen ruimte beschikbaar wordt gemaakt, kunnen gebruikers en gegevens automatisch worden verwijderd.</translation>
 <translation id="4445446646109808714">Licentieovereenkomst voor eindgebruikers: <ph name="EULA_LINK" /></translation>
@@ -5300,6 +5312,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="4687718960473379118">Door sites voorgestelde advertenties</translation>
 <translation id="4688036121858134881">ID van lokaal logboek: <ph name="WEBRTC_EVENT_LOG_LOCAL_ID" />.</translation>
 <translation id="4688176403504673761"><ph name="MANAGER" /> zet dit apparaat terug naar een oudere versie (<ph name="PROGRESS_PERCENT" />)</translation>
+<translation id="4688870304423708920">Check je internetverbinding en probeer Gemini opnieuw te gebruiken</translation>
 <translation id="4689235506267737042">Je demovoorkeuren kiezen</translation>
 <translation id="4689421377817139245">Deze bookmark synchroniseren met je iPhone</translation>
 <translation id="4690091457710545971">&lt;Vier bestanden gegenereerd door wifi-firmware van Intel: csr.lst, fh_regs.lst, radio_reg.lst, monitor.lst.sysmon. De eerste drie zijn binaire bestanden met registerdumps. Hiervan wordt door Intel verzekerd dat deze geen persoonlijke of apparaatidentificerende gegevens bevatten. Het laatste bestand is een bestand waarin uitvoering wordt bijgehouden. Alle persoonlijke of apparaatidentificerende gegevens zijn uit dit bestand verwijderd, maar het is te groot om hier weer te geven. Deze bestanden zijn gegenereerd als reactie op recente wifi-problemen met je apparaat en worden gedeeld met Intel om deze problemen op te lossen.&gt;</translation>
@@ -5584,6 +5597,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="4884937942297374058">Geoptimaliseerde beveiliging staat uit</translation>
 <translation id="4884987973312178454">6x</translation>
 <translation id="4885692421645694729">Deze extensie heeft geen aanvullende sitetoegang</translation>
+<translation id="4887391901725877182">Ondertiteling</translation>
 <translation id="4887424188275796356">Openen met Systeemviewer</translation>
 <translation id="488785315393301722">Details bekijken</translation>
 <translation id="488862352499217187">Nieuwe map maken</translation>
@@ -5734,6 +5748,7 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5001526427543320409">Cookies van derden</translation>
 <translation id="5003070249435823986">Gebruik het gebaar om de scrollmodus te openen en beweeg dan je hoofd in de richting waarin je wilt scrollen. Gebruik het gebaar opnieuw om de scrollmodus te sluiten.</translation>
 <translation id="5003993274120026347">Volgende zin</translation>
+<translation id="5005113238422129109">Gebruik je microfoon om te chatten met Gemini. Als je met Gemini praat, wordt audio opgeslagen in Gemini Apps-activiteit (als dit aanstaat)</translation>
 <translation id="5005311809885666699">Opgeslagen vanuit Chrome</translation>
 <translation id="5005498671520578047">Wachtwoord kopiëren</translation>
 <translation id="5006218871145547804">Android-app-ADB voor Crostini</translation>
@@ -6060,7 +6075,6 @@ Gebruik Ctrl + Alt + Helderheid omlaag om uit te zoomen.</translation>
 <translation id="5235050375939235066">App verwijderen?</translation>
 <translation id="523505283826916779">Toegankelijkheidsinstellingen</translation>
 <translation id="5235750401727657667">De pagina vervangen die je ziet als je een nieuw tabblad opent</translation>
-<translation id="5236054983756407518">Je woonadres verwijderen uit Chrome?</translation>
 <translation id="5237124927415201087">Je kunt je <ph name="DEVICE_TYPE" /> makkelijk instellen met je telefoon. Je kunt je wifi- en Google-account toevoegen zonder je wachtwoorden handmatig in te voeren.
     <ph name="BR" />
 <ph name="BR" />
@@ -6702,6 +6716,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="5705005699929844214">Toegankelijkheidsopties altijd tonen</translation>
 <translation id="5705882733397021510">Terug</translation>
 <translation id="5707185214361380026">Laden van extensie mislukt vanuit:</translation>
+<translation id="5707674184620508665">Je organisatie, <ph name="ACCOUNT_MANAGER" />, kan je bestaande gegevens niet bekijken of beheren. Ze blijven in het bestaande profiel staan.</translation>
 <translation id="5708171344853220004">Principal-naam van Microsoft</translation>
 <translation id="5711010025974903573">Servicelogboeken</translation>
 <translation id="5711983031544731014">Kan niet ontgrendelen. Geef je wachtwoord op.</translation>
@@ -7187,7 +7202,6 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="606449270532897041">Sitegegevens beheren</translation>
 <translation id="6064764629679333574">Verbeter de kwaliteit van het geluid van de bluetooth-microfoon door audio met lage resolutie op te schalen naar hoge resolutie.</translation>
 <translation id="6065289257230303064">Directorykenmerken van certificaatonderwerp</translation>
-<translation id="6065690209261668796">Je werkadres verwijderen uit Chrome?</translation>
 <translation id="6066794465984119824">Image-hash is niet ingesteld</translation>
 <translation id="6069464830445383022">Je Google-account is je Chromebook-login</translation>
 <translation id="6071181508177083058">wachtwoord bevestigen</translation>
@@ -7412,6 +7426,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="622484624075952240">Omlaag</translation>
 <translation id="622537739776246443">Profiel wordt verwijderd</translation>
 <translation id="6225475702458870625">Gegevensverbinding beschikbaar via je <ph name="PHONE_NAME" /></translation>
+<translation id="622568138962270592">Gemini Apps-activiteit</translation>
 <translation id="6226777517901268232">Privésleutelbestand (optioneel)</translation>
 <translation id="6227280783235722609">extensie</translation>
 <translation id="622902691730729894">Groep losmaken van bookmarkbalk</translation>
@@ -7511,6 +7526,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="628726841779494414">Beheer je printers in de printerinstellingen</translation>
 <translation id="6287288864483377583">Importeren wordt alleen ondersteund voor één certificaat</translation>
 <translation id="6287828400772161253">Android-telefoon (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Vragen aan Google AI-modus</translation>
 <translation id="6290613030083731160">Geen beschikbare apparaten die delen in de buurt. <ph name="LINK_BEGIN" />Meer informatie<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Herstellen is niet mogelijk vanwege onvoldoende opslagruimte.</translation>
 <translation id="6291741848715722067">Bevestigingscode</translation>
@@ -7714,6 +7730,7 @@ Je kunt meerdere schakelaars toewijzen aan deze actie.</translation>
 <translation id="6451861213630784801">Je bent uitgelogd</translation>
 <translation id="6452181791372256707">Weigeren</translation>
 <translation id="6452251728599530347"><ph name="PERCENT" /> voltooid</translation>
+<translation id="6452268285438583507">Extensies toevoegen</translation>
 <translation id="6452961788130242735">Netwerkprobleem of onjuist domein</translation>
 <translation id="6453191633103419909">Weergavekwaliteit van tabblad/scherm</translation>
 <translation id="6453921811609336127">Als je wilt overschakelen naar de volgende invoermethode, druk je op <ph name="BEGIN_SHORTCUT" /><ph name="BEGIN_CTRL" />Ctrl<ph name="END_CTRL" /><ph name="SEPARATOR1" /><ph name="BEGIN_SHIFT" />Shift<ph name="END_SHIFT" /><ph name="SEPARATOR2" /><ph name="BEGIN_SPACE" />spatiebalk<ph name="END_SPACE" /><ph name="END_SHORTCUT" /></translation>
@@ -8140,6 +8157,7 @@ Als <ph name="SUPERVISED_USER_NAME" /> hulp nodig heeft bij het lezen, laat je k
 <translation id="6759193508432371551">Terugzetten op fabrieksinstellingen</translation>
 <translation id="6760354150216532978">Waarschuwing: Deze site kan bewerkingen zien die je aanbrengt</translation>
 <translation id="6761209758867628753">Tool: Help me met schrijven</translation>
+<translation id="6761459308170527362">Je kunt spraak- of tekstchat gebruiken om Gemini een vraag te stellen over de paginacontent die je deelt</translation>
 <translation id="676158322851696513"><ph name="EXTENSION_NAME" /></translation>
 <translation id="6761623907967804682">Sitegegevens op het apparaat niet toegestaan</translation>
 <translation id="6762833852331690540">Aan</translation>
@@ -8799,6 +8817,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7223952304612664117">Hiermee kunnen systeemservices Locatienauwkeurigheid gebruiken om je locatie te bepalen. Locatienauwkeurigheid gebruikt informatie over draadloze signalen en sensoren om de apparaatlocatie te schatten.</translation>
 <translation id="7225082563376899794">Windows Hello gebruiken bij het invullen van wachtwoorden</translation>
 <translation id="7225179976675429563">Type netwerk ontbreekt</translation>
+<translation id="7226163413959353072">AI-assistent die onder andere belangrijke conclusies geeft, concepten verduidelijkt en antwoorden vindt</translation>
 <translation id="7227235818314667565">Delen beheren</translation>
 <translation id="7227458944009118910">Hieronder vermelde apps kunnen ook protocollinks verwerken. Andere apps vragen om toestemming.</translation>
 <translation id="7228056665272655255">Als je een vingerafdruk wilt instellen, laat je je kind de vingerafdruksensor rechtsboven op het toetsenbord aanraken. De vingerafdrukgegevens van je kind worden beveiligd opgeslagen en blijven uitsluitend op deze <ph name="DEVICE_TYPE" /> staan.</translation>
@@ -8868,6 +8887,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="727595954130325265">Nu winkelen</translation>
 <translation id="727952162645687754">Downloadfout</translation>
 <translation id="7280649757394340890">Spraakinstellingen voor tekst-naar-spraak</translation>
+<translation id="7280683802406059877">Sneltoets aanpassen</translation>
 <translation id="7280877790564589615">Rechten gevraagd</translation>
 <translation id="7281166215790160128">Modus</translation>
 <translation id="7282056103720203738">Bijgevoegde apparaatgegevens en gegevens lezen</translation>
@@ -8926,6 +8946,7 @@ Je kunt instellingen beheren via het kaartmenu of meer opties bekijken in het ge
 <translation id="7320213904474460808">Standaardnetwerk gebruiken</translation>
 <translation id="7321545336522791733">Server niet bereikbaar</translation>
 <translation id="7322515217754205362">Siterechten</translation>
+<translation id="7322919329844967709">Je krijgt relevantere antwoorden over de paginacontent die je deelt</translation>
 <translation id="7323315405936922211">Grootte van cursorgebied</translation>
 <translation id="7324020307732396723">Taalinstellingen openen</translation>
 <translation id="7324297612904500502">Bètaforum</translation>
@@ -9923,6 +9944,7 @@ Zichtbaar voor apparaten in de buurt als <ph name="QUICK_START_DEVICE_DISPLAY_NA
 <translation id="7991296728590311172">Instellingen voor Toegang via schakelaar</translation>
 <translation id="7992080146463834191">Vat content samen, vereenvoudig complexe taal of stel vragen.</translation>
 <translation id="7992203134935383159">Spraaksynthese</translation>
+<translation id="7993332993977106257">Makkelijke toegang om Gemini te gebruiken op je apparaat, zelfs als Chrome is geminimaliseerd.</translation>
 <translation id="7997826902155442747">Procesprioriteit</translation>
 <translation id="7997828719430450286">Geslaagd.</translation>
 <translation id="7998701048266085837">URL's</translation>
@@ -9976,6 +9998,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8028060951694135607">Microsoft-sleutelherstel</translation>
 <translation id="8028803902702117856"><ph name="FILE_NAME" /> downloaden, <ph name="SIZE" /></translation>
 <translation id="8028993641010258682">Grootte</translation>
+<translation id="8029349782735515147">Toon ondertiteling bij gebruik van Gemini Live</translation>
 <translation id="8029412171914613589">{SELECTED_ITEMS,plural, =0{Leeslijst}=1{Leeslijst ({SELECTED_ITEMS})}other{Leeslijst ({SELECTED_ITEMS})}}</translation>
 <translation id="8029492516535178472"><ph name="WINDOW_TITLE" />: rechten gevraagd, druk op ⌘ + Option + pijl-omhoog om te reageren</translation>
 <translation id="8030169304546394654">Verbinding verbroken</translation>
@@ -10094,6 +10117,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8102139037507939978">Persoonlijk identificeerbare informatie verwijderen uit system_logs.txt.</translation>
 <translation id="810362914482827094">Toegangscodes zoeken</translation>
 <translation id="8104088837833760645">E-simkaartprofiel downloaden</translation>
+<translation id="8105050970626643057">Open Gemini snel wanneer je het nodig hebt</translation>
 <translation id="8105273883928376822">Log in om door te gaan.</translation>
 <translation id="8106114112474206597">Gebruik i om op een muisknop te drukken</translation>
 <translation id="8107015733319732394">De Google Play Store wordt geïnstalleerd op je <ph name="DEVICE_TYPE" />. Dit kan enkele minuten duren.</translation>
@@ -10250,6 +10274,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8222112516148944758">Je tabbladgroepen worden automatisch opgeslagen en geüpdatet op al je apparaten</translation>
 <translation id="8222674561049363989">Bestand is geen geldig document</translation>
 <translation id="822347941086490485">Zoeken naar HID-apparaten...</translation>
+<translation id="8224209912580158729">Deel paginacontent met Gemini om relevantere antwoorden te krijgen.</translation>
 <translation id="8224427620313426549">Je account voor <ph name="DOMAIN_LINK" /> wordt niet verwijderd</translation>
 <translation id="8225046344534779393">Check de internetverbinding</translation>
 <translation id="8225265270453771718">Een app-venster delen</translation>
@@ -10393,6 +10418,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8314835274931377415">Instellen van Toegang via schakelaar starten?</translation>
 <translation id="8315018673856831477">Opties voor geheugenbesparing</translation>
 <translation id="8315514906653279104">Aanzetten…</translation>
+<translation id="8316480109537174997">Gemini tonen in systeemvak en sneltoets aanzetten</translation>
 <translation id="8317671367883557781">Netwerkverbinding toevoegen</translation>
 <translation id="8317965619823678157">wachtwoorden kopiëren</translation>
 <translation id="8318266828739827371">Gebruik een gesplitste schermweergave om het vergrote gedeelte van je scherm te bekijken. Gebruik Zoeken + Ctrl + D om het vastgezette vergrootglas aan en uit te zetten.</translation>
@@ -10793,6 +10819,7 @@ Bewaar je sleutelbestand op een veilige plaats. Je hebt het bestand nodig om nie
 <translation id="8607661817136110841">Je tabbladgroepen</translation>
 <translation id="8607828412110648570">Zorg dat je bluetooth-apparaat in de koppelingsstand staat en in de buurt is. Koppel alleen met apparaten die je vertrouwt. Gekoppelde apparaten zijn zichtbaar voor alle accounts op deze Chromebook. <ph name="BEGIN_LINK_LEARN_MORE" />Meer informatie<ph name="END_LINK_LEARN_MORE" /></translation>
 <translation id="8608618451198398104">Een Kerberos-ticket toevoegen</translation>
+<translation id="860907040896565281">Sneltoets aanpassen...</translation>
 <translation id="8609465669617005112">Omhoog</translation>
 <translation id="8611922158252451755">Iedereen met de link kan alle tabbladen bewerken. Wees dus voorzichtig met delen. De link verloopt over 48 uur.</translation>
 <translation id="8612252270453580753">Videoframe &amp;doorzoeken met <ph name="VISUAL_SEARCH_PROVIDER" /></translation>
@@ -11194,6 +11221,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="8868838761037459823">Gegevens van mobiel netwerk</translation>
 <translation id="8870413625673593573">Recent gesloten</translation>
 <translation id="8871043459130124414">Wordt pas uitgevoerd nadat je op de extensie hebt geklikt</translation>
+<translation id="8871126140396172266"><ph name="WINDOW_TITLE" /> - Je deelt deze pagina met Gemini</translation>
 <translation id="8871551568777368300">Vastgezet door beheerder</translation>
 <translation id="8871696467337989339">Je gebruikt een niet-ondersteunde opdrachtregelmarkering: <ph name="BAD_FLAG" />. De stabiliteit en beveiliging zullen hieronder lijden.</translation>
 <translation id="8871974300055371298">Instellingen voor content</translation>
@@ -11406,6 +11434,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="9011163749350026987">Icoon altijd bekijken</translation>
 <translation id="9011262023858991985">Dit tabblad casten</translation>
 <translation id="9011393886518328654">Release-opmerkingen</translation>
+<translation id="9012013036616593083">Gemini is op dit moment niet beschikbaar. Probeer het later opnieuw.</translation>
 <translation id="9012122671773859802">Scherm meebewegen met de muis</translation>
 <translation id="9012585441087414258">Beschermt tegen sites, downloads en extensies die als gevaarlijk zijn bestempeld. Als een pagina iets verdachts doet, worden URL's en delen van de paginacontent naar Google Safe Browsing gestuurd.</translation>
 <translation id="9013037634206938463">Er is <ph name="INSTALL_SIZE" /> vrije opslagruimte vereist om Linux te installeren. Verwijder bestanden op het apparaat om opslagruimte vrij te maken.</translation>
@@ -11431,6 +11460,7 @@ Dit kan informatie zijn over de geïnstalleerde software, bestanden, je browser,
 <translation id="9024127637873500333">&amp;Openen op nieuw tabblad</translation>
 <translation id="9024158959543687197">Fout bij het activeren van de fileshare. Controleer de fileshare-URL en probeer het opnieuw.</translation>
 <translation id="9024692527554990034">Met snelkoppelingen in de adresbalk kun je snel zoeken op een specifieke site of een andere zoekmachine gebruiken.</translation>
+<translation id="9024975946059881308">Gemini tonen in Mac-menubalk en sneltoets aanzetten</translation>
 <translation id="9025222334598338152">Je kunt je vergelijkingstabellen gebruiken om overzicht te houden terwijl je je opties steeds verder verfijnt.</translation>
 <translation id="902638246363752736">Toetsenbordinstellingen</translation>
 <translation id="9026393603776578602">dicteren</translation>

@@ -619,7 +619,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="2040894699575719559">Ligging is geblokkeer</translation>
 <translation id="2041788246978549610">Gebruik beskikbare mikrofone (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Laai 7</translation>
-<translation id="2043896419861982462">Gaan na <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> om afbetaalopsies te versteek</translation>
 <translation id="2045871135676061132">Koevert Persoonlik</translation>
 <translation id="2046951263634619614">Boekwinkels</translation>
 <translation id="2048261947532620704">Vertaal tans bladsy</translation>
@@ -1374,7 +1373,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="33073482541490531">Die wagwoord wat jy sopas gebruik het, is in ’n dataskending gekry. Wagwoordbestuurder beveel aan dat jy hierdie wagwoord nou verander.</translation>
 <translation id="3307649904964670439">Knoppie om Chrome te pasmaak; aktiveer om jou blaaier se voorkoms te pasmaak</translation>
 <translation id="3308006649705061278">Organisatoriese eenheid (OU)</translation>
-<translation id="3317077846337994567">Betaal mettertyd is nie nou beskikbaar nie. Probeer later weer.</translation>
 <translation id="3318016344440038475">TV-komedies</translation>
 <translation id="3324687287337751929">4x6 dm.</translation>
 <translation id="3324983252691184275">Karmosyn</translation>
@@ -1551,7 +1549,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="3600106876108433070">Kry inligting oor vergelykingtabelle</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Knoppie om Google se privaatheidinstellings te bestuur; aktiveer om na jou Google-rekening se privaatheidinstellings toe te gaan</translation>
-<translation id="3602695245205338770">Kies afbetaalverskaffer</translation>
 <translation id="3603507503523709">Jou administrateur blokkeer die app</translation>
 <translation id="3605899229568538311">5x5 dm.</translation>
 <translation id="3606917451836803637">TV-programme</translation>
@@ -3180,7 +3177,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6327065120806001832">plaaslike netwerktoegang</translation>
 <translation id="6328639280570009161">Probeer om netwerkvoorspelling te deaktiveer</translation>
 <translation id="6329815962353376655">&lt;Tik ’n vraag in&gt;</translation>
-<translation id="6334834493885103305">Jy kan nou met Affirm, Zip of Klarna oor ’n tydperk betaal</translation>
 <translation id="6335029926534404762">Sportskoene</translation>
 <translation id="6336948221660696475">VR word nie toegelaat nie</translation>
 <translation id="6337133576188860026">Maak minder as <ph name="SIZE" /> beskikbaar. Sommige werwe sal dalk op jou volgende besoek stadiger laai.</translation>
@@ -3582,6 +3578,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6989763994942163495">Wys gevorderde instellings …</translation>
 <translation id="6991376411634620997">Toegangsleutel • Windows Hello</translation>
 <translation id="6997288673234694149">Bofbal- en sagtebaltoerusting</translation>
+<translation id="6998512609912910179">Vul vorms vinniger in</translation>
 <translation id="6999480632062519056">Fiksheid- en persoonlike afrigting</translation>
 <translation id="7003278537452757231">Matte en tapyte</translation>
 <translation id="7003322000677139268">Voertuigonderdele en -bykomstighede</translation>
@@ -4749,7 +4746,6 @@ Bykomende besonderhede:
 <translation id="9005998258318286617">Kon nie 'n PDF-dokument laai nie.</translation>
 <translation id="9008201768610948239">Ignoreer</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Geen}=1{Van 1 werf af}other{Van # werwe af}}</translation>
-<translation id="9012194306129927220">Jy kan nou met Affirm of Zip oor ’n tydperk betaal</translation>
 <translation id="9014705027639070815">Werwe wat jy besoek, kan Chrome vra vir inligting wat hulle help om die werkverrigting van hul advertensies te meet. Chrome laat werwe toe om beperkte tipes data in te samel, soos of jy ’n aankoop gedoen het nadat jy ’n werf besoek het.</translation>
 <translation id="9018120810758822233">Voer jou sekuriteitkode in vir <ph name="CREDIT_CARD" /></translation>
 <translation id="901834265349196618">e-pos</translation>

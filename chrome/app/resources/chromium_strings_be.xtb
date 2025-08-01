@@ -295,6 +295,7 @@
 <translation id="4724676981607797757">Выканаць усталяванне не ўдалося з-за памылкі: пратакол не падтрымліваецца.</translation>
 <translation id="4746050847053251315">Усё роўна закрыць Chromium?</translation>
 <translation id="4748217263233248895">Толькі што было прыменена спецыяльнае абнаўленне бяспекі для Chromium. Перазапусціце браўзер, і вашы ўкладкі будуць адноўлены.</translation>
+<translation id="4771701986670315895">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і яшчэ <ph name="COUNT" />.</translation>
 <translation id="4788777615168560705">Браўзеру Chromium не ўдаецца праверыць паролі. Паўтарыце спробу праз 24 гадзіны або <ph name="BEGIN_LINK" />праверце паролі ва Уліковым запісе Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Гэта функцыя выкарыстоўвае тую ж праверку правапісу, што ў Google Пошуку. Уведзены ў браўзер тэкст адпраўляецца ў Google. Гэта можна змяніць у наладах.</translation>
 <translation id="4814736265800133385">Выкарыстоўваць Chromium без уліковага запісу</translation>
@@ -307,6 +308,7 @@
 <translation id="4987820182225656817">Госці могуць выкарыстоўваць Chromium, не пакідаючы нічога пасля сябе.</translation>
 <translation id="4994636714258228724">Дадаць мяне ў Chromium</translation>
 <translation id="5123973130450702873">Chromium запытвае дазвол на адсочванне рухаў рук</translation>
+<translation id="5141988424377517949">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> і <ph name="PERMISSION_3" />.</translation>
 <translation id="5174969993834422967">Звычайна вы блакіруеце апавяшчэнні. Каб даць дазвол гэтаму сайту на паказ апавяшчэнняў, націсніце значок апавяшчэнняў у правым вугле панэлі месцазнаходжання.</translation>
 <translation id="5187123684706427865">Патрабуецца паўторная аўтэнтыфікацыя ўліковага запісу Chromium</translation>
 <translation id="5224391634244552924">Няма захаваных пароляў. Chromium можа правяраць толькі захаваныя паролі.</translation>
@@ -492,6 +494,7 @@
 <translation id="734373864078049451">Тут знаходзяцца вашы вэб-старонкі, закладкі і іншыя даныя браўзера Chromium.</translation>
 <translation id="7349591376906416160">Ваш сістэмны адміністратар наладзіў Chromium так, каб для доступу да <ph name="TARGET_URL_HOSTNAME" /> адкрываўся браўзер <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
 <translation id="7352651011704765696">Нешта пайшло не так</translation>
+<translation id="7376384068949534168">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступныя дазволы: <ph name="PERMISSION_1" /> і <ph name="PERMISSION_2" />.</translation>
 <translation id="7384121030444253939">Пашырэнне больш не падтрымліваецца. Chromium рэкамендуе выдаліць яго.</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – Chromium Dev</translation>
 <translation id="7450541714075000668">Тэкст скапіраваны</translation>
@@ -556,6 +559,7 @@
 <translation id="8248265253516264921">Калі відарыс не мае прыдатнага апісання, Chromium паспрабуе дадаць яго для вас. Каб стварыць апісанні, відарысы адпраўляюцца ў Google. Гэты параметр можна адключыць у наладах у любы час.</translation>
 <translation id="8254601181414348851">Увайсці ў Chromium праз новы профіль?</translation>
 <translation id="8286943863733751221"><ph name="BEGIN_LINK" />Chromium папярэджвае<ph name="END_LINK" /> пра небяспечныя сайты і спампоўкі</translation>
+<translation id="8295827201165805317">Вы даўно не наведвалі сайт. Браўзер Chromium адклікаў наступны дазвол: <ph name="PERMISSION" />.</translation>
 <translation id="8313851650939857356">Памылка запуску: <ph name="STARTUP_ERROR" />.</translation>
 <translation id="8318772038038596122">Ваша арганізацыя закрывае Chromium, калі ім не карысталіся на працягу <ph name="TIMEOUT_DURATION" />.</translation>
 <translation id="8321888067342493336">Захаваць як відарыс</translation>

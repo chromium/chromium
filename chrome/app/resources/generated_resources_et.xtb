@@ -6068,7 +6068,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="5235050375939235066">Kas desinstallida rakendus?</translation>
 <translation id="523505283826916779">Juurdepääsuseaded</translation>
 <translation id="5235750401727657667">Asendatakse leht, mida uue vahelehe avamisel näete</translation>
-<translation id="5236054983756407518">Kas soovite oma koduse aadressi Chrome'ist eemaldada?</translation>
 <translation id="5237124927415201087">Seadistage seade <ph name="DEVICE_TYPE" /> hõlpsalt oma telefoniga. Saate lisada WiFi ja Google'i konto ilma paroole käsitsi sisestamata.
     <ph name="BR" />
     <ph name="BR" />
@@ -7199,7 +7198,6 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="606449270532897041">Saidi andmete haldamine</translation>
 <translation id="6064764629679333574">Parandage Bluetoothi mikrofoni heli kvaliteeti, skaleerides madala eraldusvõimega heli kõrge eraldusvõimega.</translation>
 <translation id="6065289257230303064">Sertifikaadi subjekti kataloogi atribuudid</translation>
-<translation id="6065690209261668796">Kas soovite oma töökoha aadressi Chrome'ist eemaldada?</translation>
 <translation id="6066794465984119824">Kujutise räsiväärtust pole määratud</translation>
 <translation id="6069464830445383022">Chromebooki saate sisse logida oma Google'i kontoga</translation>
 <translation id="6071181508177083058">parooli kinnitamine</translation>
@@ -7523,6 +7521,7 @@ Saate sellele toimingule määrata mitu lülitit.</translation>
 <translation id="628726841779494414">Hallake oma printereid printeri seadetes</translation>
 <translation id="6287288864483377583">Importimist toetatakse ainult ühe sertifikaadi puhul</translation>
 <translation id="6287828400772161253">Android-telefon (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Küsi Google'i AI-režiimilt</translation>
 <translation id="6290613030083731160">Mitte ükski saadaolev seade ei jaga läheduses. <ph name="LINK_BEGIN" />Lisateave<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Taastamine ei ole võimalik, kuna salvestusruumi on liiga vähe.</translation>
 <translation id="6291741848715722067">Kinnituskood</translation>
@@ -9188,6 +9187,7 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7481312909269577407">Edasta</translation>
 <translation id="7481358317100446445">Valmis</translation>
 <translation id="748138892655239008">Sertifikaadi põhipiirangud</translation>
+<translation id="7482823403440483089">Täiustatud automaattäide</translation>
 <translation id="7483732342458943943">See link ei toimi</translation>
 <translation id="7484645889979462775">Selle saidi puhul mitte kunagi</translation>
 <translation id="7484943269191249363">Saate selles seadmes kasutada kõiki Google’i paroolihaldurisse salvestatud pääsuvõtmeid. Peate seda tegema ainult ühe korra.</translation>

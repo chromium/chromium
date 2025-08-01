@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Smartwatch</translation>
 <translation id="1743244221910283364">Renunță la modificări</translation>
 <translation id="1748975028205587434">Selectează fișierul</translation>
+<translation id="1749733017156547309">Este necesară o parolă</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opțiune pentru adresă disponibilă deasupra tastaturii.}few{{count} opțiuni pentru adresă disponibile deasupra tastaturii.}other{{count} de opțiuni pentru adresă disponibile deasupra tastaturii.}}</translation>
 <translation id="1750238553597293878">Folosește în continuare parolele din Contul Google</translation>
 <translation id="17513872634828108">File deschise</translation>
@@ -509,6 +510,7 @@ Motorul tău de căutare este <ph name="DSE_NAME" />. Vezi instrucțiunile pentr
 <translation id="2952278131021475699">Căutare cu camera Lens</translation>
 <translation id="2962516096219646456">Vezi toate datele de completare automată</translation>
 <translation id="2969979262385602596">Nu te-ai conectat. Încearcă din nou mai târziu.</translation>
+<translation id="2975761176769946178">Este necesară o adresă URL</translation>
 <translation id="297667759942911166">Colaborează la grupuri de file</translation>
 <translation id="2987670534697681860">Confirmă-ți identitatea pentru a accesa toate parolele de pe acest dispozitiv.</translation>
 <translation id="2989523299700148168">Accesate recent</translation>
@@ -572,6 +574,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="3224075676564434205">Filele vor rămâne deschise pe acest dispozitiv, dar grupul va fi șters de pe toate dispozitivele conectate la <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Pentru a exporta parolele, trebuie mai întâi să setezi o parolă pe dispozitiv.</translation>
 <translation id="3227137524299004712">Microfon</translation>
+<translation id="3234251228180563751">Numele de utilizator are peste 1.000 de caractere</translation>
 <translation id="3235063766008841141">A fost introdusă pe un site înșelător și folosită pentru încălcarea securității datelor</translation>
 <translation id="3235242129752692527">Editează detaliile evenimentului și atinge Salvează.</translation>
 <translation id="323863549127671026">Filele și grupurile de file deschise</translation>
@@ -1030,6 +1033,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="5079950360618752063">Folosește parola sugerată</translation>
 <translation id="5083464117946352670">Dimensiune fișier necunoscută.</translation>
 <translation id="5085558938118581974">Caută în filele de pe toate dispozitivele sincronizate</translation>
+<translation id="508645147179720015">Nota are peste 1.000 de caractere.</translation>
 <translation id="5087098519049306025">Urmărirea prețurilor</translation>
 <translation id="5090832849094901128">Ștergerea acestei parole nu îți va șterge contul de pe <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Adaugă un cont…</translation>
@@ -1919,6 +1923,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8434837876193928924">Detaliile grupului de file</translation>
 <translation id="8438566539970814960">Îmbunătățește căutările și navigarea</translation>
 <translation id="8439758443371991593">Ascunde opțiunea Adaugă în lista de lecturi</translation>
+<translation id="8443986842926457191">Adresa URL are peste 2.048 de caractere.</translation>
 <translation id="8449869326050867919">S-a permis accesul la parolă</translation>
 <translation id="8473863474539038330">Adrese și altele</translation>
 <translation id="8474378002946546633">Permiteți notificări</translation>
@@ -1983,6 +1988,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8680786875305615692">Contribuie la îmbunătățirea securității pe web pentru toată lumea</translation>
 <translation id="8680787084697685621">Datele de conectare la cont au expirat.</translation>
 <translation id="8690752723634292147">Confirmă ștergerea</translation>
+<translation id="8692107307702113268">Parola are peste 1.000 de caractere</translation>
 <translation id="8692689525339542358">Protejează-te împotriva site-urilor, a descărcărilor și a extensiilor periculoase.</translation>
 <translation id="8692897097252418799">Alege datele pe care vrei să le exporți</translation>
 <translation id="8694281486652655615">Afișează acest element</translation>
@@ -2007,6 +2013,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8741995161408053644">Contul Google poate să ofere alte forme ale istoricului de navigare la <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Creează un link</translation>
 <translation id="8746155870861185046">Distribuie selecția</translation>
+<translation id="8748678031495824833">Deschide instrumentele AI din pagină</translation>
 <translation id="8750037785291841318">Aici vei vedea filele</translation>
 <translation id="8756969031206844760">Actualizezi parola?</translation>
 <translation id="8764015330924122850">Nu mai urmări <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="895541991026785598">Semnalează o problemă</translation>
 <translation id="8960979149015305">Închide descărcarea</translation>
 <translation id="8961092256396236619">Protecția îmbunătățită este dezactivată</translation>
+<translation id="8962863356073277855">Formatul adresei URL trebuie să fie https://www.example.com</translation>
 <translation id="8968766641738584599">Salvează cardul</translation>
 <translation id="8974714402877957201">1. Deschide Setările dispozitivului iPad.</translation>
 <translation id="8975015774710126284">Datele de navigare au fost șterse</translation>

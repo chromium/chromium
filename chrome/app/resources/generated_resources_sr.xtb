@@ -6080,7 +6080,6 @@
 <translation id="5235050375939235066">Желите ли да деинсталирате апликацију?</translation>
 <translation id="523505283826916779">Подешавања приступачности</translation>
 <translation id="5235750401727657667">Замените страницу која се прикаже кад отворите нову картицу</translation>
-<translation id="5236054983756407518">Желите да уклоните кућну адресу из Chrome-а?</translation>
 <translation id="5237124927415201087">Лако подесите <ph name="DEVICE_TYPE" /> помоћу телефона. Можете да додате WiFi и Google налог без ручног уношења лозинки.
     <ph name="BR" />
     <ph name="BR" />
@@ -7211,7 +7210,6 @@
 <translation id="606449270532897041">Управљај подацима о сајтовима</translation>
 <translation id="6064764629679333574">Побољшајте квалитет звука Bluetooth микрофона тако што ћете повећати звук ниске резолуције на високу резолуцију.</translation>
 <translation id="6065289257230303064">Атрибути каталога субјеката сертификата</translation>
-<translation id="6065690209261668796">Желите да уклоните адресу на послу из Chrome-а?</translation>
 <translation id="6066794465984119824">Хеш за слике није подешен</translation>
 <translation id="6069464830445383022">На Chromebook се пријављујете помоћу Google налога</translation>
 <translation id="6071181508177083058">потврдите лозинку</translation>
@@ -7536,6 +7534,7 @@
 <translation id="628726841779494414">Управљајте штампачима у подешавањима штампача</translation>
 <translation id="6287288864483377583">Увоз је подржан само за један сертификат</translation>
 <translation id="6287828400772161253">Android телефон (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Питајте режим Google вештачке интелигенције</translation>
 <translation id="6290613030083731160">Нема доступних уређаја који деле у близини. <ph name="LINK_BEGIN" />Сазнајте више<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Враћање није успело због недостатка меморијског простора.</translation>
 <translation id="6291741848715722067">Кôд за потврду</translation>
@@ -9210,6 +9209,7 @@
 <translation id="7481312909269577407">Напред</translation>
 <translation id="7481358317100446445">Спремно</translation>
 <translation id="748138892655239008">Основна ограничења сертификата</translation>
+<translation id="7482823403440483089">Побољшано аутоматско попуњавање</translation>
 <translation id="7483732342458943943">Овај линк не ради</translation>
 <translation id="7484645889979462775">Никад за овај сајт</translation>
 <translation id="7484943269191249363">Можете да користите све приступне кључеве сачуване у Google менаџеру лозинки на овом уређају. То треба да урадите само једанпут.</translation>

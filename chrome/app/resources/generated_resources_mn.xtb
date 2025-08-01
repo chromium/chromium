@@ -6072,7 +6072,6 @@
 <translation id="5235050375939235066">Апп-г устгах уу?</translation>
 <translation id="523505283826916779">Нэвтрэх боломжит байдлын тохиргоо</translation>
 <translation id="5235750401727657667">Шинэ таб нээхдээ харж буй хуудсаар орлуулах</translation>
-<translation id="5236054983756407518">Гэрийн хаягаа Chrome-с хасах уу?</translation>
 <translation id="5237124927415201087">Өөрийн <ph name="DEVICE_TYPE" />-г утсаараа хялбархан тохируулна уу. Та нууц үгнүүдээ гар аргаар оруулалгүйгээр Wi-Fi болон Google Бүртгэлээ нэмэх боломжтой.
     <ph name="BR" />
     <ph name="BR" />
@@ -7203,7 +7202,6 @@
 <translation id="606449270532897041">Сайтын өгөгдлийг удирдах</translation>
 <translation id="6064764629679333574">Бага нягтралтай аудиог өндөр нягтралтай аудио болгож нэмэгдүүлснээр Bluetooth-н микрофоны дууны чанарыг сайжруулна уу.</translation>
 <translation id="6065289257230303064">Certificate Subject Directory Attributes</translation>
-<translation id="6065690209261668796">Ажлын хаягаа Chrome-с хасах уу?</translation>
 <translation id="6066794465984119824">Зургийн хэшийг тохируулаагүй байна</translation>
 <translation id="6069464830445383022">Та Google Бүртгэлээрээ Chromebook-тээ нэвтэрнэ</translation>
 <translation id="6071181508177083058">нууц үгийг баталгаажуулах</translation>
@@ -7527,6 +7525,7 @@
 <translation id="628726841779494414">Хэвлэгчийн тохиргоонд хэвлэгчдээ удирдана уу</translation>
 <translation id="6287288864483377583">Импортлохыг зөвхөн нэг сертификатад дэмждэг</translation>
 <translation id="6287828400772161253">Android утас (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google-н ХОУ-ы горимоос асуух</translation>
 <translation id="6290613030083731160">Ойролцоо хуваалцаж буй боломжтой төхөөрөмж алга. <ph name="LINK_BEGIN" />Нэмэлт мэдээлэл авах<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Хадгалах сангийн зай хангалтгүй байгаа тул сэргээх боломжгүй.</translation>
 <translation id="6291741848715722067">Баталгаажуулах код</translation>
@@ -9191,6 +9190,7 @@
 <translation id="7481312909269577407">Forward</translation>
 <translation id="7481358317100446445">Бэлэн</translation>
 <translation id="748138892655239008">Сертификатын үндсэн хязгаар</translation>
+<translation id="7482823403440483089">Сайжруулсан автоматаар бөглөх хэсэг</translation>
 <translation id="7483732342458943943">Энэ холбоос ажиллахгүй байна</translation>
 <translation id="7484645889979462775">Энэ сайтанд хэзээ ч битгий хадгал</translation>
 <translation id="7484943269191249363">Та Google Нууц үгний менежерт хадгалсан бүх нэвтрэх түлхүүрээ энэ төхөөрөмж дээр ашиглах боломжтой. Та үүнийг зөвхөн нэг удаа хийх хэрэгтэй.</translation>

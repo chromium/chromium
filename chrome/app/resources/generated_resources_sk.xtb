@@ -6065,7 +6065,6 @@ Ak chcete zobrazenie oddialiť, stlačte Ctrl + Alt + zníženie jasu.</translat
 <translation id="5235050375939235066">Odinštalovať aplikáciu?</translation>
 <translation id="523505283826916779">Nastavenia zjednodušenia prístupu</translation>
 <translation id="5235750401727657667">Nahradiť stránku, ktorá sa zobrazí pri otvorení novej karty</translation>
-<translation id="5236054983756407518">Chcete odstrániť svoju adresu domova z Chromu?</translation>
 <translation id="5237124927415201087">Ľahko nastavte zariadenie <ph name="DEVICE_TYPE" /> pomocou svojho telefónu. Wi-Fi a účet Google môžete pridať bez manuálneho zadávania hesiel.
     <ph name="BR" />
     <ph name="BR" />
@@ -7195,7 +7194,6 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="606449270532897041">Spravovať dáta webov</translation>
 <translation id="6064764629679333574">Zlepšite kvalitu zvuku mikrofónu s rozhraním Bluetooth tým, že zvýšite rozlíšenie zvuku z nízkeho na vysoké.</translation>
 <translation id="6065289257230303064">Atribúty adresára subjektu certifikátu</translation>
-<translation id="6065690209261668796">Chcete odstrániť svoju adresu práce z Chromu?</translation>
 <translation id="6066794465984119824">Hodnota hash obrázka nie je nastavená</translation>
 <translation id="6069464830445383022">Do Chromebooku sa prihlasujete svojím účtom Google</translation>
 <translation id="6071181508177083058">potvrdenie hesla</translation>
@@ -7519,6 +7517,7 @@ Tejto akcii môžete prideliť viacero prepínačov.</translation>
 <translation id="628726841779494414">Spravujte tlačiarne v ich nastaveniach</translation>
 <translation id="6287288864483377583">Import je podporovaný iba pre jeden certifikát</translation>
 <translation id="6287828400772161253">Telefón s Androidom (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Položiť otázku v režime umelej inteligencie od Googlu</translation>
 <translation id="6290613030083731160">Nablízku nie sú žiadne dostupné zdieľajúce zariadenia. <ph name="LINK_BEGIN" />Ďalšie informácie<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Nedá sa obnoviť pre nedostatok ukladacieho priestoru.</translation>
 <translation id="6291741848715722067">Potvrdzovací kód</translation>
@@ -9187,6 +9186,7 @@ Máte ešte # ďalších. Správca hesiel Google odporúča okamžite dané hes
 <translation id="7481312909269577407">Dopredu</translation>
 <translation id="7481358317100446445">Pripravené</translation>
 <translation id="748138892655239008">Základné obmedzenia certifikátu</translation>
+<translation id="7482823403440483089">Vylepšené automatické dopĺňanie</translation>
 <translation id="7483732342458943943">Tento odkaz nefunguje</translation>
 <translation id="7484645889979462775">Nikdy pre tieto stránky</translation>
 <translation id="7484943269191249363">V tomto zariadení môžete používať všetky svoje prístupové kľúče uložené v Správcovi hesiel Google. Budete to musieť urobiť iba raz.</translation>

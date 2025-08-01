@@ -218,6 +218,7 @@
 <translation id="1142713751288681188">പേപ്പർ തരം</translation>
 <translation id="1143142264369994168">സര്‍‌ട്ടിഫിക്കറ്റ് സൈന്‍‌ ചെയ്‌തയാള്‍‌</translation>
 <translation id="1145593918056169051">പ്രിന്റർ പ്രവർത്തനം നിർത്തി</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{വിപുലീകരണങ്ങൾ}=1{വിപുലീകരണങ്ങൾ ({SELECTED_ITEMS})}other{വിപുലീകരണങ്ങൾ ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">ഹെഡ് പോയിന്റർ</translation>
 <translation id="114721135501989771">Chrome-ൽ Google സ്‌മാർട്‌സ് നേടുക</translation>
 <translation id="1147322039136785890">ഇനി <ph name="SUPERVISED_USER_NAME" />' എന്ന കുട്ടിയുടെ ഊഴമാണ്</translation>
@@ -735,6 +736,7 @@
 <translation id="150411034776756821"><ph name="SITE" /> നീക്കംചെയ്യുക</translation>
 <translation id="1504551620756424144">പങ്കിട്ട ഫോൾഡറുകൾ Windows-ലെ <ph name="BASE_DIR" /> എന്നതിൽ ലഭ്യമാണ്.</translation>
 <translation id="1505494256539862015">പാസ്‌വേഡുകൾ എക്‌സ്‌പോർട്ട് ചെയ്യുക</translation>
+<translation id="1505654899813338756">നിങ്ങളുടെ ഉപകരണങ്ങളിൽ ഉടനീളം, പരസ്പര ബന്ധമുള്ള പേജുകൾ ഒരുമിച്ച് സൂക്ഷിക്കാനും സംരക്ഷിക്കാനും ടാബുകൾ ഗ്രൂപ്പ് ചെയ്യാം</translation>
 <translation id="1506061864768559482">തിരയൽ യന്ത്രം</translation>
 <translation id="1506187449813838456">പിച്ച് വർദ്ധിപ്പിക്കുക</translation>
 <translation id="1507170440449692343">നിങ്ങളുടെ ക്യാമറ ആക്‌സസ്സുചെയ്യുന്നതിൽ നിന്ന് ഈ പേജിനെ തടഞ്ഞു.</translation>
@@ -5302,6 +5304,7 @@
 <translation id="4681930562518940301">ഒറിജിനൽ ചിത്രം പുതിയ ടാബിൽ തുറക്കുക</translation>
 <translation id="4682481611456523884">ഈ സൈറ്റിൽ ഉൾച്ചേർത്തിരിക്കുന്ന ഉള്ളടക്കത്തിന്, അത് നിങ്ങളെ കുറിച്ച് സംരക്ഷിച്ചിരിക്കുന്ന വിവരങ്ങൾ ഉപയോഗിക്കാനാകില്ല</translation>
 <translation id="4682807230647698604">നിങ്ങൾ ഈ ഫീച്ചറുകൾ ഉപയോഗിക്കുമ്പോൾ, AI അനുഭവങ്ങൾ സൃഷ്ടിക്കാനായി പ്രസക്തമായ ഡാറ്റ Google-ലേക്ക് അയയ്ക്കുന്നു</translation>
+<translation id="4683143253481759090">Chrome അപ്ഡേറ്റ് ചെയ്തു</translation>
 <translation id="4683629100208651599">ചെറിയക്ഷരമാക്കുക</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (ഡിഫോൾട്ട്)</translation>
 <translation id="4684427112815847243">എല്ലാം സമന്വയിപ്പിക്കുക</translation>
@@ -6075,7 +6078,6 @@
 <translation id="5235050375939235066">ആപ്പ് അൺഇൻസ്റ്റാൾ ചെയ്യണോ?</translation>
 <translation id="523505283826916779">ഉപയോഗസഹായി ക്രമീകരണങ്ങൾ</translation>
 <translation id="5235750401727657667">പുതിയ ടാബ് തുറക്കുമ്പോൾ കാണിക്കേണ്ട പേജ് മാറ്റുക</translation>
-<translation id="5236054983756407518">Chrome-ൽ നിന്ന് നിങ്ങളുടെ വീട്ടുവിലാസം നീക്കം ചെയ്യണോ?</translation>
 <translation id="5237124927415201087">നിങ്ങളുടെ ഫോൺ ഉപയോഗിച്ച് <ph name="DEVICE_TYPE" /> എളുപ്പത്തിൽ സജ്ജീകരിക്കുക. നിങ്ങളുടെ പാസ്‌വേഡുകൾ നേരിട്ട് നൽകാതെ തന്നെ നിങ്ങൾക്ക് വൈഫൈ, Google Account എന്നിവ ചേർക്കാനാകും.
     <ph name="BR" />
     <ph name="BR" />
@@ -7207,7 +7209,6 @@
 <translation id="606449270532897041">സൈറ്റ് ഡാറ്റ മാനേജ് ചെയ്യുക</translation>
 <translation id="6064764629679333574">കുറഞ്ഞ റെസല്യൂഷൻ ഉള്ള ഓഡിയോ ഉയർന്ന റെസല്യൂഷനിലേക്ക് അപ്സ്കെയിൽ ചെയ്ത് Bluetooth മൈക്ക് ശബ്‌ദത്തിന്റെ നിലവാരം മെച്ചപ്പെടുത്തുക.</translation>
 <translation id="6065289257230303064">സര്‍‌ട്ടിഫിക്കറ്റ് സബ്‌ജക്റ്റ് ഡയറക്‌റ്ററി ആട്രിബ്യൂട്ട്</translation>
-<translation id="6065690209261668796">Chrome-ൽ നിന്ന് നിങ്ങളുടെ ജോലിസ്ഥല വിലാസം നീക്കം ചെയ്യണോ?</translation>
 <translation id="6066794465984119824">ഇമേജ് ഹാഷ് സജ്ജീകരിച്ചിട്ടില്ല</translation>
 <translation id="6069464830445383022">നിങ്ങളുടെ Chromebook-ലേക്ക് സെെൻ ഇൻ ചെയ്യാൻ നിങ്ങളുടെ Google അക്കൗണ്ടാണ് ഉപയോഗിക്കുന്നത്</translation>
 <translation id="6071181508177083058">പാസ്‌വേഡ് സ്ഥിരീകരിക്കുക</translation>
@@ -7532,6 +7533,7 @@
 <translation id="628726841779494414">പ്രിന്റർ ക്രമീകരണത്തിൽ നിങ്ങളുടെ പ്രിന്ററുകൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="6287288864483377583">ഒരു സർട്ടിഫിക്കറ്റിന് മാത്രമേ ഇമ്പോർട്ടിന്റെ പിന്തുണയുള്ളൂ</translation>
 <translation id="6287828400772161253">Android ഫോൺ (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Google AI മോഡിനോട് ചോദിക്കുക</translation>
 <translation id="6290613030083731160">പങ്കിടുന്ന ഉപകരണങ്ങളൊന്നും സമീപത്ത് ലഭ്യമല്ല. <ph name="LINK_BEGIN" />കൂടുതലറിയുക<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">സ്‌റ്റോറേജ് സ്‌പെയ്‌സ് ഇല്ലാത്തതിനാൽ പുനഃസ്ഥാപിക്കാനായില്ല.</translation>
 <translation id="6291741848715722067">സ്ഥിരീകരണ കോഡ്</translation>
@@ -9201,6 +9203,7 @@
 <translation id="7481312909269577407">മുന്നോട്ട്</translation>
 <translation id="7481358317100446445">തയ്യാര്‍‌</translation>
 <translation id="748138892655239008">സര്‍‌ട്ടിഫിക്കറ്റ് ബേസിക് നിയന്ത്രണങ്ങള്‍‌</translation>
+<translation id="7482823403440483089">മെച്ചപ്പെടുത്തിയ സ്വയമേവ പൂരിപ്പിക്കൽ</translation>
 <translation id="7483732342458943943">ഈ ലിങ്ക് പ്രവർത്തിക്കുന്നില്ല</translation>
 <translation id="7484645889979462775">ഈ സൈറ്റിന്‌ ഒരിക്കലും ആവശ്യമില്ല</translation>
 <translation id="7484943269191249363">ഈ ഉപകരണത്തിലെ Google Password Manager-ൽ സംരക്ഷിച്ചിരിക്കുന്ന നിങ്ങളുടെ എല്ലാ പാസ്‌കീകളും ഉപയോഗിക്കാം. നിങ്ങൾ ഇത് ഒരു തവണ മാത്രമേ ചെയ്യേണ്ടതുള്ളൂ.</translation>

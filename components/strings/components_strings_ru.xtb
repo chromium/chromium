@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">Доступ к местоположению закрыт</translation>
 <translation id="2041788246978549610">Использование доступных микрофонов (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">Лоток 7</translation>
-<translation id="2043896419861982462">Чтобы скрыть варианты рассрочки, перейдите в <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" />.</translation>
 <translation id="2045871135676061132">Конверт Personal</translation>
 <translation id="2046951263634619614">Книжные магазины</translation>
 <translation id="2048261947532620704">Перевод страницы…</translation>
@@ -1373,7 +1372,6 @@
 <translation id="33073482541490531">Пароль, который вы только что использовали, был раскрыт в результате утечки данных. Измените его прямо сейчас в Менеджере паролей.</translation>
 <translation id="3307649904964670439">Кнопка "Настроить Chrome". Нажмите ее, чтобы настроить внешний вид браузера.</translation>
 <translation id="3308006649705061278">Подразделение (OU)</translation>
-<translation id="3317077846337994567">Оплата в рассрочку сейчас недоступна. Повторите попытку позже.</translation>
 <translation id="3318016344440038475">Телекомедии</translation>
 <translation id="3324687287337751929">4 x 6 дюймов</translation>
 <translation id="3324983252691184275">Малиновый</translation>
@@ -1528,6 +1526,7 @@
 <translation id="3570079787344939099">Изменение масштаба и прокрутка</translation>
 <translation id="357244642999988503">Удалить столбец</translation>
 <translation id="3574305903863751447"><ph name="CITY" />, <ph name="STATE" /> <ph name="COUNTRY" /></translation>
+<translation id="3574520980813687946">Обновить адрес</translation>
 <translation id="3575121482199441727">Показывать уведомления с этого сайта</translation>
 <translation id="3575168918110434329">A4x7</translation>
 <translation id="3575589330755445706">Выбран вариант "Улица"</translation>
@@ -1550,7 +1549,6 @@
 <translation id="3600106876108433070">Подробнее о сравнительных таблицах…</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Кнопка "Открыть настройки конфиденциальности в аккаунте Google". Нажмите ее, чтобы открыть настройки конфиденциальности в аккаунте Google.</translation>
-<translation id="3602695245205338770">Выберите сервис оплаты в рассрочку</translation>
 <translation id="3603507503523709">Приложение заблокировано администратором</translation>
 <translation id="3605899229568538311">5 x 5 дюймов</translation>
 <translation id="3606917451836803637">Телевизионные шоу и программы</translation>
@@ -3179,7 +3177,6 @@
 <translation id="6327065120806001832">доступ к локальной сети</translation>
 <translation id="6328639280570009161">Отключите предсказание сетевых действий</translation>
 <translation id="6329815962353376655">&lt;Введите вопрос&gt;</translation>
-<translation id="6334834493885103305">Теперь платить в рассрочку можно с помощью сервисов Affirm, Zip и Klarna.</translation>
 <translation id="6335029926534404762">Спортивная обувь</translation>
 <translation id="6336948221660696475">Запрос на использование VR отклонен</translation>
 <translation id="6337133576188860026">Освободится менее <ph name="SIZE" /> пространства. При следующем вашем посещении некоторые сайты могут загружаться медленнее.</translation>
@@ -3581,6 +3578,7 @@
 <translation id="6989763994942163495">Показать дополнительные настройки</translation>
 <translation id="6991376411634620997">Ключ доступа • Windows Hello</translation>
 <translation id="6997288673234694149">Инвентарь для бейсбола и софтбола</translation>
+<translation id="6998512609912910179">Заполняйте формы быстрее</translation>
 <translation id="6999480632062519056">Фитнес и персональные тренировки</translation>
 <translation id="7003278537452757231">Ковры и коврики</translation>
 <translation id="7003322000677139268">Запчасти и аксессуары для транспортных средств</translation>
@@ -4130,6 +4128,7 @@
 <translation id="7908648876066812348">Подключается виртуальная карта</translation>
 <translation id="7909498058929404306"><ph name="RUN_CHROME_SAFETY_CHECK_FOCUSED_FRIENDLY_MATCH_TEXT" />. Нажмите Tab, а затем Ввод, чтобы перейти на страницу проверки безопасности Chrome в настройках.</translation>
 <translation id="791107458486222637">Повтор действия</translation>
+<translation id="7912924955815015552">Импортировано из Safari</translation>
 <translation id="791551905239004656">Рисование и раскраски</translation>
 <translation id="7916162853251942238">Основа для флексопечати</translation>
 <translation id="791698251820376781">Ваша организация запретила вход в Chrome</translation>
@@ -4196,7 +4195,7 @@
 <translation id="8028698320761417183"><ph name="CREATE_GOOGLE_FORM_FOCUSED_FRIENDLY_MATCH_TEXT" />. Чтобы быстро создать форму Google, нажмите Tab, а затем Ввод.</translation>
 <translation id="8028892419725165118">Казуальные игры</translation>
 <translation id="8028960012888758725">Подрезать после завершения задания</translation>
-<translation id="8028993641010258682">Размер</translation>
+<translation id="8028993641010258682">Толщина</translation>
 <translation id="8029829038322015001">Красный 1</translation>
 <translation id="8030729864112325446">Дополнительное образование и профессиональная подготовка</translation>
 <translation id="8032546467100845887">Прозрачность</translation>
@@ -4749,7 +4748,6 @@
 <translation id="9005998258318286617">Не удалось загрузить PDF-документ.</translation>
 <translation id="9008201768610948239">Пропустить</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{Нет сайтов.}=1{С одного сайта.}one{С # сайта.}few{С # сайтов.}many{С # сайтов.}other{С # сайта.}}</translation>
-<translation id="9012194306129927220">Теперь вы можете платить в рассрочку с помощью сервисов Affirm или Zip</translation>
 <translation id="9014705027639070815">Посещаемые вами сайты могут запрашивать у Chrome информацию, которая помогает им оценивать эффективность рекламы. Chrome разрешает сайтам собирать определенные данные, например сведения о том, совершили ли вы покупку после посещения сайта.</translation>
 <translation id="9018120810758822233">Введите защитный код для карты "<ph name="CREDIT_CARD" />"</translation>
 <translation id="901834265349196618">электронная почта</translation>

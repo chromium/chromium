@@ -218,6 +218,7 @@ Semak kata laluan anda pada bila-bila masa dalam <ph name="GOOGLE_PASSWORD_MANAG
 <translation id="1142713751288681188">Jenis kertas</translation>
 <translation id="1143142264369994168">Penandatangan Sijil</translation>
 <translation id="1145593918056169051">Pencetak telah dihentikan</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Sambungan}=1{Sambungan ({SELECTED_ITEMS})}other{Sambungan ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Penuding kepala</translation>
 <translation id="114721135501989771">Google pintar di Chrome</translation>
 <translation id="1147322039136785890">Kini giliran <ph name="SUPERVISED_USER_NAME" /> pula</translation>
@@ -736,6 +737,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="150411034776756821">Alih keluar <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Folder kongsi tersedia dalam Windows di <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">eksport kata laluan</translation>
+<translation id="1505654899813338756">Anda boleh mengumpulkan tab untuk menyimpan halaman yang berkaitan bersama-sama dan disimpan merentas peranti anda</translation>
 <translation id="1506061864768559482">Enjin carian</translation>
 <translation id="1506187449813838456">Tingkatkan nada</translation>
 <translation id="1507170440449692343">Halaman ini telah disekat daripada mengakses kamera anda.</translation>
@@ -5319,6 +5321,7 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="4681930562518940301">Buka &amp;imej asal dalam tab baharu</translation>
 <translation id="4682481611456523884">Kandungan terbenam pada laman ini tidak boleh menggunakan maklumat yang disimpan tentang anda</translation>
 <translation id="4682807230647698604">Apabila anda menggunakan ciri ini, data berkaitan akan dihantar kepada Google untuk membuat pengalaman AI</translation>
+<translation id="4683143253481759090">Chrome telah dikemaskinikan</translation>
 <translation id="4683629100208651599">Jadikan Huruf Kecil</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" />% (lalai)</translation>
 <translation id="4684427112815847243">Segerakkan semua</translation>
@@ -6092,7 +6095,6 @@ Gunakan Ctrl + Alt + Kurangkan kecerahan untuk zum keluar.</translation>
 <translation id="5235050375939235066">Nyahpasang apl?</translation>
 <translation id="523505283826916779">Tetapan kebolehcapaian</translation>
 <translation id="5235750401727657667">Gantikan halaman yang anda lihat semasa membuka tab baharu</translation>
-<translation id="5236054983756407518">Alih keluar alamat rumah anda daripada Chrome?</translation>
 <translation id="5237124927415201087">Sediakan <ph name="DEVICE_TYPE" /> anda dengan mudah dengan telefon anda. Anda boleh menambahkan Wi-Fi dan Google Account anda tanpa memasukkan kata laluan anda secara manual.
     <ph name="BR" />
     <ph name="BR" />
@@ -7224,7 +7226,6 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="606449270532897041">Urus data laman</translation>
 <translation id="6064764629679333574">Tingkatkan kualiti bunyi mikrofon Bluetooth dengan meningkatkan audio resolusi rendah kepada audio resolusi tinggi.</translation>
 <translation id="6065289257230303064">Atribut Direktori Subjek Sijil</translation>
-<translation id="6065690209261668796">Alih keluar alamat tempat kerja anda daripada Chrome?</translation>
 <translation id="6066794465984119824">Cincangan imej tidak ditetapkan</translation>
 <translation id="6069464830445383022">Google Account anda merupakan log masuk Chromebook anda</translation>
 <translation id="6071181508177083058">sahkan kata laluan</translation>
@@ -7549,6 +7550,7 @@ Anda boleh menetapkan berbilang suis kepada tindakan ini.</translation>
 <translation id="628726841779494414">Urus pencetak anda dalam tetapan pencetak</translation>
 <translation id="6287288864483377583">Pengimportan hanya disokong untuk sijil tunggal</translation>
 <translation id="6287828400772161253">Telefon Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Tanya Mod Google AI</translation>
 <translation id="6290613030083731160">Tiada peranti yang tersedia berkongsi berdekatan. <ph name="LINK_BEGIN" />Ketahui lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Tidak dapat dipulihkan kerana ruang storan tidak mencukupi.</translation>
 <translation id="6291741848715722067">Kod pengesahan</translation>
@@ -9219,6 +9221,7 @@ Anda mempunyai # lagi kata laluan yang terjejas. Google Password Manager mengesy
 <translation id="7481312909269577407">Majukan</translation>
 <translation id="7481358317100446445">Sedia</translation>
 <translation id="748138892655239008">Kekangan Asas Sijil</translation>
+<translation id="7482823403440483089">Autolengkap yang dipertingkatkan</translation>
 <translation id="7483732342458943943">Pautan Ini Tidak Berfungsi</translation>
 <translation id="7484645889979462775">Jangan sekali-kali untuk tapak ini</translation>
 <translation id="7484943269191249363">Anda boleh menggunakan semua kunci laluan yang telah disimpan pada Google Password Manager pada peranti ini. Anda hanya perlu melakukan tindakan ini sekali.</translation>

@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Reloxo intelixente</translation>
 <translation id="1743244221910283364">Descartar cambios</translation>
 <translation id="1748975028205587434">Seleccionar o teu ficheiro</translation>
+<translation id="1749733017156547309">Necesítase un contrasinal</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} opción de enderezo dispoñible sobre o teclado.}other{{count} opcións de enderezo dispoñibles sobre o teclado.}}</translation>
 <translation id="1750238553597293878">Sigue usando os contrasinais na túa Conta de Google</translation>
 <translation id="17513872634828108">Pestanas abertas</translation>
@@ -509,6 +510,7 @@ O teu motor de busca é <ph name="DSE_NAME" />. No caso de que queiras eliminar 
 <translation id="2952278131021475699">Busca mediante a cámara de Lens</translation>
 <translation id="2962516096219646456">Consultar todos os datos da función de autocompletar</translation>
 <translation id="2969979262385602596">Erro ao iniciar sesión. Téntao de novo máis tarde.</translation>
+<translation id="2975761176769946178">Necesítase un URL</translation>
 <translation id="297667759942911166">Colabora en grupos de pestanas</translation>
 <translation id="2987670534697681860">Verifica a túa identidade para acceder a todos os teus contrasinais neste dispositivo.</translation>
 <translation id="2989523299700148168">Visitados recentemente</translation>
@@ -572,6 +574,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="3224075676564434205">As pestanas permanecerán abertas neste dispositivo, pero o grupo eliminarase de todos os dispositivos nos que teñas a sesión iniciada en <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Para exportar os contrasinais, en primeiro lugar debes definir un código de desbloqueo no teu dispositivo.</translation>
 <translation id="3227137524299004712">Micrófono</translation>
+<translation id="3234251228180563751">O nome de usuario ten máis de 1000 caracteres</translation>
 <translation id="3235063766008841141">A credencial escribiuse nun sitio enganoso e viuse afectada por unha violación da seguranza dos datos</translation>
 <translation id="3235242129752692527">Edita os detalles do evento e toca Gardar.</translation>
 <translation id="323863549127671026">Actualmente abre pestanas e grupos de pestanas</translation>
@@ -1030,6 +1033,7 @@ En caso aplicable, consulta as instrucións do teu motor de busca para eliminar 
 <translation id="5079950360618752063">Utilizar contrasinal suxerido</translation>
 <translation id="5083464117946352670">Imposible determinar tamaño.</translation>
 <translation id="5085558938118581974">Busca pestanas nos diferentes dispositivos sincronizados</translation>
+<translation id="508645147179720015">A nota ten máis de 1000 caracteres</translation>
 <translation id="5087098519049306025">Seguimento de prezos</translation>
 <translation id="5090832849094901128">Ao eliminar este contrasinal non se eliminará a túa conta de <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Engadir conta…</translation>
@@ -1919,6 +1923,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8434837876193928924">Detalles do grupo de pestanas</translation>
 <translation id="8438566539970814960">Mellorar as buscas e a navegación</translation>
 <translation id="8439758443371991593">Ocultar Engadir á lista de lectura</translation>
+<translation id="8443986842926457191">O URL contén máis de 2048 caracteres</translation>
 <translation id="8449869326050867919">Compartiuse o contrasinal</translation>
 <translation id="8473863474539038330">Enderezos e moito máis</translation>
 <translation id="8474378002946546633">Permitir notificacións</translation>
@@ -1983,6 +1988,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8680786875305615692">Axudar a mellorar a seguranza na Web para todos</translation>
 <translation id="8680787084697685621">Os detalles de inicio de sesión da conta están caducados.</translation>
 <translation id="8690752723634292147">Confirmar eliminación</translation>
+<translation id="8692107307702113268">O contrasinal ten máis de 1000 caracteres</translation>
 <translation id="8692689525339542358">Protéxete contra as extensións, descargas e sitios perigosos.</translation>
 <translation id="8692897097252418799">Escolle os datos que queiras exportar</translation>
 <translation id="8694281486652655615">Mostra este elemento</translation>
@@ -2007,6 +2013,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="8741995161408053644">É posible que a túa conta de Google teña outras formas do historial de navegación en <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Crear ligazón</translation>
 <translation id="8746155870861185046">Compartir texto destacado</translation>
+<translation id="8748678031495824833">Abrir as ferramentas de IA na páxina</translation>
 <translation id="8750037785291841318">Aquí atoparás as túas pestanas</translation>
 <translation id="8756969031206844760">Queres actualizar o contrasinal?</translation>
 <translation id="8764015330924122850">Deixar de seguir: <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Tamén poden utilizalas para ver a túa actividade de navegación en varios siti
 <translation id="895541991026785598">Informar dun problema</translation>
 <translation id="8960979149015305">Pechar a barra de descargas</translation>
 <translation id="8961092256396236619">A protección mellorada está desactivada</translation>
+<translation id="8962863356073277855">O URL debería ter o seguinte formato: https://www.example.com</translation>
 <translation id="8968766641738584599">Gardar tarxeta</translation>
 <translation id="8974714402877957201">1. Abre a configuración do iPad</translation>
 <translation id="8975015774710126284">Elimináronse os datos de navegación</translation>

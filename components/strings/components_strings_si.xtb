@@ -619,7 +619,6 @@
 <translation id="2040894699575719559">ස්ථානය අවහිර කර ඇත</translation>
 <translation id="2041788246978549610">පවතින මයික්‍රෆෝන භාවිතා කරන්න (<ph name="MICS_COUNT" />)</translation>
 <translation id="2042213636306070719">බඳුන 7</translation>
-<translation id="2043896419861982462">කාලයත් සමග ගෙවීම් විකල්ප සැඟවීමට, <ph name="IDS_AUTOFILL_CARD_BNPL_SELECT_PROVIDER_FOOTNOTE_HIDE_OPTION_PAYMENT_SETTINGS_LINK_TEXT" /> වෙත යන්න</translation>
 <translation id="2045871135676061132">ලියුම් කවරය පුද්ගලික</translation>
 <translation id="2046951263634619614">පොත් විකුණන්නන්</translation>
 <translation id="2048261947532620704">පිටුව පරිවර්තනය කරමින්</translation>
@@ -1374,7 +1373,6 @@
 <translation id="33073482541490531">ඔබ මේ දැන් භාවිත කළ මුරපදය දත්ත කඩ කිරීමකින් සොයා ගන්නා ලදී. මුරපද කළමනාකරු මෙම මුරපදය දැන් වෙනස් කිරීම නිර්දේශ කරයි.</translation>
 <translation id="3307649904964670439">Chrome අභිරුචිකරණය කරන්න බොත්තම, ඔබේ බ්‍රව්සරයෙහි පෙනුම අභිරුචිකරණය කිරීමට සක්‍රිය කරන්න</translation>
 <translation id="3308006649705061278">සංවිධාන එ්කකය (OU)</translation>
-<translation id="3317077846337994567">කාලයත් සමග ගෙවීම දැන් ලබා ගත නොහැක. පසුව නැවත උත්සාහ කරන්න.</translation>
 <translation id="3318016344440038475">රූපවාහිනී විකට කතා</translation>
 <translation id="3324687287337751929">අඟ 4 x 6</translation>
 <translation id="3324983252691184275">ක්‍රිම්සන්</translation>
@@ -1551,7 +1549,6 @@
 <translation id="3600106876108433070">සංසන්දනාත්මක වගු ගැන දැන ගන්න</translation>
 <translation id="3600246354004376029"><ph name="TITLE" />, <ph name="DOMAIN" />, <ph name="TIME" /></translation>
 <translation id="3600492954573979888">Google පෞද්ගලිකත්ව සැකසීම් කළමනාකරණය කරන්න බොත්තම, ඔබේ Google ගිණුම් පෞද්ගලිකත්ව සැකසීම් වෙත පිවිසීමට සක්‍රිය කරන්න</translation>
-<translation id="3602695245205338770">කාලයෙන් කාලයට ගෙවීම් සපයන සැපයුම්කරුවෙකු තෝරා ගන්න</translation>
 <translation id="3603507503523709">ඔබේ පරිපාලකයා යෙදුම අවහිර කර ඇත</translation>
 <translation id="3605899229568538311">අඟ 5 x 5</translation>
 <translation id="3606917451836803637">රූපවාහිනී සංදර්ශන සහ වැඩසටහන්</translation>
@@ -3180,7 +3177,6 @@
 <translation id="6327065120806001832">දේශීය ජාල ප්‍රවේශය</translation>
 <translation id="6328639280570009161">ජාල අනාවැකි අක්‍රීය කිරීමට උත්සහ ගන්න</translation>
 <translation id="6329815962353376655">&lt;ප්‍රශ්නයක් ටයිප් කරන්න&gt;</translation>
-<translation id="6334834493885103305">දැන් ඔබට Affirm, Zip, හෝ Klarna භාවිතයෙන් කාලයත් සමග ගෙවිය හැක</translation>
 <translation id="6335029926534404762">මලල ක්‍රීඩා සපත්තු</translation>
 <translation id="6336948221660696475">VR ඉඩ දී නැත</translation>
 <translation id="6337133576188860026"><ph name="SIZE" />ට වඩා අඩුවෙන් හිස් කරයි. ඔබගේ ඊළඟ පිවිසීමේදී සමහර අඩවි වඩාත් සෙමින් පූරණය විය හැකිය.</translation>
@@ -3582,6 +3578,7 @@
 <translation id="6989763994942163495">උසස් සැකසුම් පෙන්වන්න...</translation>
 <translation id="6991376411634620997">මුරයතුර • Windows Hello</translation>
 <translation id="6997288673234694149">බේස්බෝල් සහ සැහැල්ලු පන්දු උපකරණ</translation>
+<translation id="6998512609912910179">පෝරම වේගයෙන් පුරවන්න</translation>
 <translation id="6999480632062519056">ශරීර සුවතා උපදෙස් සහ පුද්ගලික පුහුණුව</translation>
 <translation id="7003278537452757231">ඇතිරිලි සහ බුමුතුරුණු</translation>
 <translation id="7003322000677139268">වාහන කොටස් සහ ආයිත්තම්</translation>
@@ -4749,7 +4746,6 @@
 <translation id="9005998258318286617">PDF ගොනුව පූරණය කිරීමට අසමත් විය.</translation>
 <translation id="9008201768610948239">මඟහරින්න</translation>
 <translation id="9011281744469077577">{COUNT,plural, =0{කිසිවක් නැත}=1{1 අඩවියකින්}one{අඩවි #කින්}other{අඩවි #කින්}}</translation>
-<translation id="9012194306129927220">දැන් ඔබට Affirm හෝ Zip භාවිතයෙන් කාලයත් සමග ගෙවිය හැක</translation>
 <translation id="9014705027639070815">ඔබ පිවිසෙන අඩවි ඒවායේ දැන්වීම්වල කාර්යසාධන මැනීමට උදවු කිරීමට තොරතුරු සඳහා Chrome වෙතින් විමසා සිටිය හැක. ඔබ වෙබ් අඩවියකට පිවිසීමෙන් පසු මිලදී ගැනීමක් සිදු කළේද යන්න වැනි සීමිත දත්ත වර්ග එකතු කිරීමට Chrome ඉඩ දෙයි.</translation>
 <translation id="9018120810758822233"><ph name="CREDIT_CARD" /> සඳහා ඔබේ ආරක්ෂක කේතය ඇතුළු කරන්න</translation>
 <translation id="901834265349196618">ඊතැපෑල</translation>

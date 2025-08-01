@@ -216,6 +216,7 @@ Vous pouvez vérifier vos mots de passe en tout temps dans le menu <ph name="GOO
 <translation id="1142713751288681188">Type de papier</translation>
 <translation id="1143142264369994168">Signataire du certificat</translation>
 <translation id="1145593918056169051">L'imprimante s'est arrêtée</translation>
+<translation id="1147098843963878839">{SELECTED_ITEMS,plural, =0{Extension}=1{Extension ({SELECTED_ITEMS})}one{Extension ({SELECTED_ITEMS})}other{Extensions ({SELECTED_ITEMS})}}</translation>
 <translation id="114715166554490743">Pointeur au moyen de la tête</translation>
 <translation id="114721135501989771">Fonctionnalités intelligentes Google dans Chrome</translation>
 <translation id="1147322039136785890">C'est maintenant au tour de <ph name="SUPERVISED_USER_NAME" /></translation>
@@ -734,6 +735,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="150411034776756821">Supprimer <ph name="SITE" /></translation>
 <translation id="1504551620756424144">Sous Windows, les dossiers partagés sont accessibles ici : <ph name="BASE_DIR" />.</translation>
 <translation id="1505494256539862015">exporter les mots de passe</translation>
+<translation id="1505654899813338756">Vous pouvez regrouper des onglets pour garder les pages connexes ensemble et les enregistrer sur l'ensemble de vos appareils</translation>
 <translation id="1506061864768559482">Moteur de recherche</translation>
 <translation id="1506187449813838456">Augmenter la hauteur de la voix</translation>
 <translation id="1507170440449692343">L'accès à votre caméra est bloqué pour cette page.</translation>
@@ -5297,6 +5299,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4681930562518940301">Ouvrir l'&amp;image d'origine dans un nouvel onglet</translation>
 <translation id="4682481611456523884">Le contenu intégré de ce site ne peut pas utiliser les informations qu'ils ont enregistrées à votre sujet</translation>
 <translation id="4682807230647698604">Lorsque vous utilisez ces fonctionnalités, des données pertinentes sont envoyées à Google afin de créer des expériences d'IA</translation>
+<translation id="4683143253481759090">Chrome a été mis à jour</translation>
 <translation id="4683629100208651599">Mettre en minuscules</translation>
 <translation id="4683947955326903992"><ph name="PERCENTAGE" /> % (par défaut)</translation>
 <translation id="4684427112815847243">Tout synchroniser</translation>
@@ -6066,7 +6069,6 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="5235050375939235066">Désinstaller l'application?</translation>
 <translation id="523505283826916779">Paramètres d'accessibilité</translation>
 <translation id="5235750401727657667">Remplacer la page qui s'affiche lors de l'ouverture d'un nouvel onglet</translation>
-<translation id="5236054983756407518">Retirer votre adresse personnelle de Chrome?</translation>
 <translation id="5237124927415201087">Configurez facilement votre appareil <ph name="DEVICE_TYPE" /> avec votre téléphone. Vous pouvez ajouter votre compte Wi-Fi et Google sans entrer manuellement vos mots de passe.
     <ph name="BR" />
     <ph name="BR" />
@@ -7196,7 +7198,6 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="606449270532897041">Gérer les données relatives aux sites</translation>
 <translation id="6064764629679333574">Améliorez la qualité du son du microphone Bluetooth en convertissant l'audio basse résolution en audio haute résolution.</translation>
 <translation id="6065289257230303064">Attributs du répertoire de l'objet du certificat</translation>
-<translation id="6065690209261668796">Retirer votre adresse professionnelle de Chrome?</translation>
 <translation id="6066794465984119824">Le hachage de l'image n'est pas défini</translation>
 <translation id="6069464830445383022">Pour vous connecter à votre Chromebook, servez-vous de votre compte Google</translation>
 <translation id="6071181508177083058">confirmer le mot de passe</translation>
@@ -7520,6 +7521,7 @@ Vous pouvez attribuer plusieurs commutateurs à cette action.</translation>
 <translation id="628726841779494414">Gérez vos imprimantes dans les paramètres d'impression</translation>
 <translation id="6287288864483377583">L'importation est seulement prise en charge pour un seul certificat</translation>
 <translation id="6287828400772161253">Téléphone Android (<ph name="HOST_DEVICE_NAME" />)</translation>
+<translation id="6288559570252410796">Demander au mode IA de Google</translation>
 <translation id="6290613030083731160">Aucun appareil à proximité avec qui partager du contenu. <ph name="LINK_BEGIN" />En savoir plus<ph name="LINK_END" /></translation>
 <translation id="6291580570300353047">Impossible d'effectuer la restauration en raison d'un manque d'espace de stockage.</translation>
 <translation id="6291741848715722067">Code de confirmation</translation>
@@ -9186,6 +9188,7 @@ Vous pouvez gérer les paramètres à partir du menu de la carte ou afficher plu
 <translation id="7481312909269577407">Suivant</translation>
 <translation id="7481358317100446445">Prêt</translation>
 <translation id="748138892655239008">Contraintes de base du certificat</translation>
+<translation id="7482823403440483089">Remplissage automatique amélioré</translation>
 <translation id="7483732342458943943">Ce lien ne fonctionne pas</translation>
 <translation id="7484645889979462775">Jamais pour ce site</translation>
 <translation id="7484943269191249363">Vous pouvez utiliser toutes vos clés d'accès enregistrées dans le gestionnaire de mots de passe Google sur cet appareil. Vous n'aurez à effectuer cette opération qu'une seule fois.</translation>

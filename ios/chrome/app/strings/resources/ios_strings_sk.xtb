@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Inteligentné hodinky</translation>
 <translation id="1743244221910283364">Zahodiť zmeny</translation>
 <translation id="1748975028205587434">Vybrať súbor</translation>
+<translation id="1749733017156547309">Heslo je povinné</translation>
 <translation id="174998178145075354">{count,plural, =1{Nad klávesnicou je k dispozícii {count} možnosť adresy.}few{Nad klávesnicou sú k dispozícii {count} možnosti adresy.}many{{count} options for address available above your keyboard.}other{Nad klávesnicou je k dispozícii {count} možností adresy.}}</translation>
 <translation id="1750238553597293878">Naďalej používajte heslá vo svojom účte Google</translation>
 <translation id="17513872634828108">Otvorené karty</translation>
@@ -509,6 +510,7 @@ Používate vyhľadávač <ph name="DSE_NAME" />. Prečítajte si jeho pokyny, a
 <translation id="2952278131021475699">Vyhľadávanie kamerou pomocou funkcie Lens</translation>
 <translation id="2962516096219646456">Zobraziť všetky údaje automatického dopĺňania</translation>
 <translation id="2969979262385602596">Prihlásenie zlyhalo. Skúste to neskôr.</translation>
+<translation id="2975761176769946178">Vyžaduje sa webová adresa</translation>
 <translation id="297667759942911166">Spolupracujte na skupinách kariet</translation>
 <translation id="2987670534697681860">Overte svoju totožnosť a budete mať v tomto zariadení prístup k všetkým svojim heslám.</translation>
 <translation id="2989523299700148168">Nedávno navštívené</translation>
@@ -572,6 +574,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3224075676564434205">Karty zostanú v tomto zariadení otvorené, ale skupina bude odstránená zo všetkých zariadení prihlásených do účtu <ph name="USER_EMAIL" /></translation>
 <translation id="3224641773458703735">Ak chcete exportovať heslá, najprv musíte v zariadení nastaviť vstupný kód.</translation>
 <translation id="3227137524299004712">Mikrofón</translation>
+<translation id="3234251228180563751">Používateľské meno má viac ako 1 000 znakov</translation>
 <translation id="3235063766008841141">Zadané na podvodnom webe a nájdené v rámci porušenia ochrany údajov</translation>
 <translation id="3235242129752692527">Upravte podrobnosti o udalosti a klepnite na Uložiť.</translation>
 <translation id="323863549127671026">Aktuálne otvorené karty a skupiny kariet</translation>
@@ -1030,6 +1033,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="5079950360618752063">Použiť navrhované heslo</translation>
 <translation id="5083464117946352670">Nedá sa zistiť veľkosť súboru.</translation>
 <translation id="5085558938118581974">Vyhľadávanie kariet v synchronizovaných zariadeniach</translation>
+<translation id="508645147179720015">Poznámka má viac než 1 000 znakov</translation>
 <translation id="5087098519049306025">Sledovanie cien</translation>
 <translation id="5090832849094901128">Odstránením tohto hesla nevymažete svoj účet na <ph name="WEBSITE" />.</translation>
 <translation id="5118462200606189584">Pridať účet…</translation>
@@ -1919,6 +1923,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8434837876193928924">Podrobnosti skupiny kariet</translation>
 <translation id="8438566539970814960">Zlepšovať vyhľadávanie a prehliadanie</translation>
 <translation id="8439758443371991593">Skryť položku Pridať do čitateľského zoznamu</translation>
+<translation id="8443986842926457191">Webová adresa obsahuje viac ako 2 048 znakov.</translation>
 <translation id="8449869326050867919">Heslo bolo zdieľané</translation>
 <translation id="8473863474539038330">Adresy a ďalšie údaje</translation>
 <translation id="8474378002946546633">Povoliť upozornenia</translation>
@@ -1983,6 +1988,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8680786875305615692">Pomôžte zlepšiť zabezpečenie na internete pre všetkých</translation>
 <translation id="8680787084697685621">Informácie o prihlásení do účtu sú neaktuálne.</translation>
 <translation id="8690752723634292147">Potvrdenie odstránenia</translation>
+<translation id="8692107307702113268">Heslo má viac ako 1 000 znakov</translation>
 <translation id="8692689525339542358">Získajte ochranu pred nebezpečnými webmi, súbormi na stiahnutie a rozšíreniami.</translation>
 <translation id="8692897097252418799">Vyberte údaje, ktoré chcete exportovať</translation>
 <translation id="8694281486652655615">Zobrazí túto položku</translation>
@@ -2007,6 +2013,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="8741995161408053644">Váš účet Google môže mať ďalšie formy histórie prehliadania na adrese <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" />.</translation>
 <translation id="874599634440689554">Vytvoriť odkaz</translation>
 <translation id="8746155870861185046">Zdieľať zvýraznenie</translation>
+<translation id="8748678031495824833">Otvoriť nástroje umelej inteligencie na stránke</translation>
 <translation id="8750037785291841318">Tu nájdete svoje karty</translation>
 <translation id="8756969031206844760">Aktualizovať heslo?</translation>
 <translation id="8764015330924122850">Prestať sledovať doménu <ph name="DOMAIN_NAME" /></translation>
@@ -2064,6 +2071,7 @@ Na základe súborov cookie si môžu zobraziť vašu históriu prehliadania v 
 <translation id="895541991026785598">Nahlásiť problém</translation>
 <translation id="8960979149015305">Zavrieť sťahovanie</translation>
 <translation id="8961092256396236619">Rozšírená ochrana je vypnutá</translation>
+<translation id="8962863356073277855">Webová adresa musí mať formát https://www.example.com</translation>
 <translation id="8968766641738584599">Uložiť kartu</translation>
 <translation id="8974714402877957201">1. Otvorte nastavenia iPadu</translation>
 <translation id="8975015774710126284">Dáta prehliadania boli odstránené</translation>

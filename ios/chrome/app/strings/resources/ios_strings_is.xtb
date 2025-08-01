@@ -193,6 +193,7 @@
 <translation id="1741219894094057085">Snjallúr</translation>
 <translation id="1743244221910283364">Fleygja breytingum</translation>
 <translation id="1748975028205587434">Veldu skrána þína</translation>
+<translation id="1749733017156547309">Aðgangsorðs er krafist</translation>
 <translation id="174998178145075354">{count,plural, =1{{count} heimilisfang tiltækt fyrir ofan lyklaborðið.}one{{count} heimilisfang tiltækt fyrir ofan lyklaborðið.}other{{count} heimilisföng tiltæk fyrir ofan lyklaborðið.}}</translation>
 <translation id="1750238553597293878">Haltu áfram að nota aðgangsorðin á Google-reikningnum þínum</translation>
 <translation id="17513872634828108">Opnir flipar</translation>
@@ -509,6 +510,7 @@ Vefsvæði geta ekki notað fótsporin þín til að sjá vafranotkun þína á 
 <translation id="2952278131021475699">Myndavélarleit Linsu</translation>
 <translation id="2962516096219646456">Sjá öll gögn sjálfvirkrar útfyllingar</translation>
 <translation id="2969979262385602596">Innskráning mistókst. Reyndu aftur síðar.</translation>
+<translation id="2975761176769946178">Vefslóð er áskilin</translation>
 <translation id="297667759942911166">Notaðu flipahópa fyrir samvinnuna</translation>
 <translation id="2987670534697681860">Staðfestu hver þú ert til að fá aðgang að öllum aðgangsorðunum þínum í þessu tæki.</translation>
 <translation id="2989523299700148168">Nýlega heimsótt</translation>
@@ -572,6 +574,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="3224075676564434205">Fliparnir verða opnir í þessu tæki en hópnum verður eytt úr öllum tækjum sem eru skráð inn á <ph name="USER_EMAIL" />.</translation>
 <translation id="3224641773458703735">Til að flytja út aðgangsorð þarftu fyrst að stilla aðgangskóða í tækinu þínu.</translation>
 <translation id="3227137524299004712">Hljóðnemi</translation>
+<translation id="3234251228180563751">Notandanafn er lengra en 1000 stafir</translation>
 <translation id="3235063766008841141">Fært inn á villandi vefsvæði og fannst við öryggisbrot</translation>
 <translation id="3235242129752692527">Breyttu upplýsingum viðburðarins og ýtti á „Vista“.</translation>
 <translation id="323863549127671026">Núverandi opnir flipar og flipahópar</translation>
@@ -1030,6 +1033,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="5079950360618752063">Nota tillögu að aðgangsorði</translation>
 <translation id="5083464117946352670">Ekki var hægt að ákvarða skráarstærð.</translation>
 <translation id="5085558938118581974">Leitaðu á flipum í öllum samstilltum tækjum</translation>
+<translation id="508645147179720015">Glósa er lengri en 1000 stafir</translation>
 <translation id="5087098519049306025">Verðrakning</translation>
 <translation id="5090832849094901128">Reikningnum þínum á <ph name="WEBSITE" /> verður ekki eytt þótt þessu aðgangsorði verði eytt.</translation>
 <translation id="5118462200606189584">Bæta reikningi við…</translation>
@@ -1919,6 +1923,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8434837876193928924">Upplýsingar um flipahóp</translation>
 <translation id="8438566539970814960">Bæta leit og vafra</translation>
 <translation id="8439758443371991593">Fela „Bæta við leslista“</translation>
+<translation id="8443986842926457191">Vefslóð er lengri en 2048 stafir</translation>
 <translation id="8449869326050867919">Aðgangsorði deilt</translation>
 <translation id="8473863474539038330">Heimilisföng og fleira</translation>
 <translation id="8474378002946546633">Leyfa tilkynningar</translation>
@@ -1983,6 +1988,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8680786875305615692">Hjálpaðu til við að auka öryggi allra á vefnum</translation>
 <translation id="8680787084697685621">Innskráningarupplýsingar reikningsins eru úreltar.</translation>
 <translation id="8690752723634292147">Staðfesta eyðingu</translation>
+<translation id="8692107307702113268">Aðgangsorð er lengra en 1000 stafir</translation>
 <translation id="8692689525339542358">Verðu þig gegn hættulegum vefsvæðum, niðurhali og viðbótum.</translation>
 <translation id="8692897097252418799">Veldu hvaða gögn þú vilt flytja út</translation>
 <translation id="8694281486652655615">Sýnir þetta atriði</translation>
@@ -2065,6 +2071,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="895541991026785598">Tilkynna um vandamál</translation>
 <translation id="8960979149015305">Loka niðurhali</translation>
 <translation id="8961092256396236619">Slökkt er á aukinni vörn</translation>
+<translation id="8962863356073277855">Vefslóð þarf að vera á sniðinu https://www.example.com</translation>
 <translation id="8968766641738584599">Viltu vista kort?</translation>
 <translation id="8974714402877957201">1. Opnaðu stillingar iPad</translation>
 <translation id="8975015774710126284">Vefskoðunargögnum var eytt</translation>
