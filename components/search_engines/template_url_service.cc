@@ -65,9 +65,9 @@
 #include "components/sync/base/features.h"
 #include "components/sync/model/sync_change.h"
 #include "components/sync/model/sync_change_processor.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
-#include "components/sync/protocol/entity_data.h"
 #include "components/url_formatter/url_fixer.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
@@ -169,9 +169,9 @@ bool Contains(TemplateURLService::OwnedTemplateURLVector* template_urls,
   return FindTemplateURL(template_urls, turl) != template_urls->end();
 }
 
-bool IsCreatedByExtension(const TemplateURL* template_url) {
-  return template_url->type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
-         template_url->type() == TemplateURL::OMNIBOX_API_EXTENSION;
+bool IsCreatedByExtension(const TemplateURL& template_url) {
+  return template_url.type() == TemplateURL::NORMAL_CONTROLLED_BY_EXTENSION ||
+         template_url.type() == TemplateURL::OMNIBOX_API_EXTENSION;
 }
 
 // Check if `is_active` status should be merged.  This is true if the
@@ -760,7 +760,7 @@ const TemplateURL* TemplateURLService::GetTemplateURLForHost(
 TemplateURL* TemplateURLService::Add(
     std::unique_ptr<TemplateURL> template_url) {
   DCHECK(template_url);
-  DCHECK(!IsCreatedByExtension(template_url.get()) ||
+  DCHECK(!IsCreatedByExtension(*template_url.get()) ||
          (!FindTemplateURLForExtension(
               template_url->GetExtensionInfo()->extension_id,
               template_url->type()) &&
@@ -1000,7 +1000,7 @@ void TemplateURLService::ResetTemplateURL(TemplateURL* url,
                                           const std::u16string& title,
                                           const std::u16string& keyword,
                                           const std::string& search_url) {
-  DCHECK(!IsCreatedByExtension(url));
+  DCHECK(!IsCreatedByExtension(*url));
   DCHECK(!keyword.empty());
   DCHECK(!search_url.empty());
 
@@ -1207,7 +1207,7 @@ void TemplateURLService::UpdateProviderFavicons(
 
   Scoper scoper(this);
   for (TemplateURL* turl : urls_for_host_copy) {
-    if (!IsCreatedByExtension(turl) &&
+    if (!IsCreatedByExtension(*turl) &&
         turl->policy_origin() !=
             TemplateURLData::PolicyOrigin::kSearchAggregator &&
         turl->IsSearchURL(potential_search_url, search_terms_data()) &&
@@ -1238,7 +1238,7 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
   // Omnibox keywords cannot be made default. Extension-controlled search
   // engines can be made default only by the extension itself because they
   // aren't persisted.
-  DCHECK(!url || !IsCreatedByExtension(url));
+  DCHECK(!url || !IsCreatedByExtension(*url));
   if (url) {
     url->set_is_active(TemplateURLData::ActiveStatus::kTrue);
   }
@@ -2467,11 +2467,11 @@ void TemplateURLService::Init() {
   }
 
   pref_change_registrar_.Init(&prefs_.get());
-    pref_change_registrar_.Add(
-        prefs::kDefaultSearchProviderGUID,
-        base::BindRepeating(
-            &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
-            base::Unretained(this)));
+  pref_change_registrar_.Add(
+      prefs::kDefaultSearchProviderGUID,
+      base::BindRepeating(
+          &TemplateURLService::OnDefaultSearchProviderGUIDChanged,
+          base::Unretained(this)));
 
   DefaultSearchManager::Source source = DefaultSearchManager::FROM_USER;
   const TemplateURLData* dse =
@@ -2745,7 +2745,7 @@ void TemplateURLService::UpdateKeywordSearchTermsForURL(
       // later after iteration.
       // Note: Update() will replace the entry from the container of this
       // iterator, so update here directly will cause an error about it.
-      if (!IsCreatedByExtension(*i)) {
+      if (!IsCreatedByExtension(**i)) {
         visited_url = *i;
       }
     }

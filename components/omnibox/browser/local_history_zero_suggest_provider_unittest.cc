@@ -20,6 +20,7 @@
 #include "build/build_config.h"
 #include "components/bookmarks/test/test_bookmark_client.h"
 #include "components/history/core/browser/history_service.h"
+#include "components/history/core/browser/history_types.h"
 #include "components/history/core/browser/keyword_search_term.h"
 #include "components/history/core/browser/keyword_search_term_util.h"
 #include "components/history/core/browser/url_database.h"
@@ -488,7 +489,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, Deletion) {
 
   // Make sure all the search terms for the default search provider that would
   // produce the deleted match are deleted.
-  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> visits;
+  history::KeywordSearchTermVisitList visits;
   auto enumerator_1 = url_db->CreateKeywordSearchTermVisitEnumerator(
       default_search_provider()->id());
   ASSERT_TRUE(enumerator_1);
@@ -605,7 +606,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, DeletionWithNonNormalizedTerms) {
 
   // Make sure all the search terms for the default search provider that would
   // produce the deleted match are deleted.
-  std::vector<std::unique_ptr<history::KeywordSearchTermVisit>> visits;
+  history::KeywordSearchTermVisitList visits;
   auto enumerator_1 = url_db->CreateKeywordSearchTermVisitEnumerator(
       default_search_provider()->id());
   ASSERT_TRUE(enumerator_1);

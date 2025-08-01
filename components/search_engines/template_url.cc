@@ -626,11 +626,11 @@ bool TemplateURLRef::ExtractSearchTermsFromURL(
 
   // We need a search term in the template URL to extract something.
   if (search_term_key_.empty() &&
-      (search_term_key_location_ != url::Parsed::PATH))
+      search_term_key_location_ != url::Parsed::PATH)
     return false;
 
   // Host, port, and path must match.
-  if ((url.host() != host_) || (url.port() != port_) ||
+  if (url.host() != host_ || url.port() != port_ ||
       (!PathIsEqual(url) && (search_term_key_location_ != url::Parsed::PATH))) {
     return false;
   }
@@ -1808,7 +1808,7 @@ std::optional<std::string_view> TemplateURL::GetBaseBuiltinResourceId() const {
                 // It would be useful to disambiguate between regional variants
                 // of some engines that could be using different icons. It is
                 // not a use case we have for now, so that's unnecessary.
-                /*regional_prepopulated_engines=*/ {});
+                /*regional_prepopulated_engines=*/{});
 
     if (reference_builtin_engine &&
         reference_builtin_engine->base_builtin_resource_id) {

@@ -559,7 +559,6 @@ struct Opener {
 using MostVisitedURLList = std::vector<MostVisitedURL>;
 using KeywordSearchTermVisitList =
     std::vector<std::unique_ptr<KeywordSearchTermVisit>>;
-using FilteredURLList = std::vector<FilteredURL>;
 
 struct MostVisitedURLWithRank {
   MostVisitedURL url;
