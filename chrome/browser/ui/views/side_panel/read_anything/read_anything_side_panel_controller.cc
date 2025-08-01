@@ -167,10 +167,12 @@ ReadAnythingSidePanelController::CreateContainerView(
 }
 
 int ReadAnythingSidePanelController::GetPreferredDefaultWidth() {
-  // Use the max width allowed.
-  // BrowserViewLayout::CalculateContentsContainerLayout will clamp the
-  // value to the max allowed.
-  return SHRT_MAX;
+  // Use 50% of the current WebView width
+  return tab_->GetBrowserWindowInterface()
+             ->GetWebView()
+             ->GetContentsBounds()
+             .width() /
+         2;
 }
 
 bool ReadAnythingSidePanelController::IsActivePageDistillable() const {
