@@ -345,6 +345,11 @@ BackendImpl::CanCreate() {
     return base::unexpected(
         on_device_model::ServiceDisconnectReason::kFailedToLoadLibrary);
   }
+  if (!on_device_model::IsCpuCapable() &&
+      ml::IsGpuBlocked(chrome_ml_->api(), /*log_histogram=*/false)) {
+    return base::unexpected(
+        on_device_model::ServiceDisconnectReason::kGpuBlocked);
+  }
   return base::ok();
 }
 
