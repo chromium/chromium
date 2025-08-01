@@ -36,6 +36,14 @@ def main():
 
   print("Checking GN build arg configuration ...")
   try:
+    dcheck_cmd = [
+        "gn", "args", "-C", build_dir, "--short", "--list=dcheck_always_on"
+    ]
+    dcheck = subprocess.check_output(dcheck_cmd, text=True)
+    if "true" not in dcheck:
+      print("Set GN arg dcheck_always_on = true", file=sys.stderr)
+      sys.exit(1)
+
     diag_cmd = [
         "gn", "args", "-C", build_dir, "--short",
         "--list=diagnostics_print_source_range_info"
@@ -79,7 +87,7 @@ def main():
     print("Files containing unsafe pragmas:")
     print("\n".join(source_files), "\n")
 
-  iffy_cmd = ["grep", "-c", "^#if"] + source_files
+  iffy_cmd = ["grep", "-Pc", "^#if(?! DCHECK_IS_ON\\(\\))"] + source_files
   iffy = subprocess.check_output(iffy_cmd, text=True).strip()
   iffy_lines = iffy.splitlines() if iffy else []
   iffy_files = [x.split(":")[0] for x in iffy_lines if x.split(":")[1] != "1"]
@@ -94,7 +102,7 @@ def main():
     sys.exit(1)
 
   if verbose:
-    print("Remaing files:")
+    print("Remaining files after excluding #ifdefs:")
     print("\n".join(source_files), "\n")
 
   # Starting with all files in the directory, find the ones that are
@@ -110,7 +118,7 @@ def main():
     ]
 
   if verbose:
-    print("Remaing files:")
+    print("Remaining files after excluding unbuildable:")
     print("\n".join(source_files), "\n")
 
   subprocess.run(
