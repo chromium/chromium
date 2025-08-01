@@ -134,6 +134,7 @@ void InfoBarContainer::AddInfoBar(InfoBar* infobar,
   // Record the infobar being displayed.
   DCHECK_NE(InfoBarDelegate::INVALID, infobar->GetIdentifier());
   base::UmaHistogramSparse("InfoBar.Shown", infobar->GetIdentifier());
+  base::UmaHistogramExactLinear("InfoBar.CountAtShow", infobars_.size(), 10);
 }
 
 }  // namespace infobars

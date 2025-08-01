@@ -1861,6 +1861,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="InfoBar.CountAtShow" units="InfoBars" expires_after="never">
+<!-- expires-never: Required as long as infobars exist. -->
+
+  <owner>koretadaniel@chromium.org</owner>
+  <owner>top-chrome-desktop-ui@google.com</owner>
+  <summary>
+    Records how many infobars were visible at the moment a new infobar was
+    shown. This is recorded any time a new infobar is shown. The maximum bucket
+    for this metric is set to 10. It is less plausible to have 10 infobars at
+    the same time, so this maximum value will help to capture all the lower
+    buckets distinctly.
+  </summary>
+</histogram>
+
 <histogram name="InfoBar.Shown" enum="InfoBarIdentifier" expires_after="never">
 <!-- expires-never: Required as long as infobars exist. -->
 
