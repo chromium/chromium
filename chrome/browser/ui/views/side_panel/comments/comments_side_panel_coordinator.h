@@ -10,7 +10,7 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
-class BrowserView;
+class BrowserWindowInterface;
 class SidePanelEntryScope;
 class SidePanelRegistry;
 
@@ -32,7 +32,7 @@ class CommentsSidePanelCoordinator : public TabStripModelObserver {
  public:
   // TODO(crbug.com/434203413): Remove dependency on BrowserView by implementing
   // a PinnedToolbarActionsController.
-  explicit CommentsSidePanelCoordinator(BrowserView* browser_view);
+  explicit CommentsSidePanelCoordinator(BrowserWindowInterface* browser);
   ~CommentsSidePanelCoordinator() override;
 
   // TabStripModelObserver
@@ -80,8 +80,8 @@ class CommentsSidePanelCoordinator : public TabStripModelObserver {
   // restore the side panel.
   bool side_panel_should_be_resumed_ = false;
 
-  raw_ptr<BrowserView> browser_view_;
-  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_;
+  raw_ptr<BrowserWindowInterface> browser_ = nullptr;
+  raw_ptr<tab_groups::TabGroupSyncService> tab_group_sync_service_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_COMMENTS_COMMENTS_SIDE_PANEL_COORDINATOR_H_

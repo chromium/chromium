@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_registry.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_container.h"
+#include "chrome/browser/ui/views/toolbar/pinned_toolbar_actions_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
 #include "chrome/browser/ui/webui/side_panel/comments/comments_side_panel_ui.h"
 #include "chrome/common/webui_url_constants.h"
@@ -24,8 +25,8 @@
 #include "components/saved_tab_groups/public/tab_group_sync_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/tab_groups/tab_group_id.h"
-#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 
 using SidePanelWebUIViewT_CommentsSidePanelUI =
     SidePanelWebUIViewT<CommentsSidePanelUI>;
@@ -34,12 +35,12 @@ BEGIN_TEMPLATE_METADATA(SidePanelWebUIViewT_CommentsSidePanelUI,
 END_METADATA
 
 CommentsSidePanelCoordinator::CommentsSidePanelCoordinator(
-    BrowserView* browser_view)
-    : browser_view_(browser_view),
+    BrowserWindowInterface* browser)
+    : browser_(browser),
       tab_group_sync_service_(
           tab_groups::SavedTabGroupUtils::GetServiceForProfile(
-              browser_view->browser()->profile())) {
-  browser_view->browser()->GetTabStripModel()->AddObserver(this);
+              browser_->GetProfile())) {
+  browser_->GetTabStripModel()->AddObserver(this);
 }
 
 CommentsSidePanelCoordinator::~CommentsSidePanelCoordinator() = default;
@@ -83,24 +84,24 @@ bool CommentsSidePanelCoordinator::ShouldShowCommentsAction(
 
 void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
     bool should_show_comments_action) {
-  PinnedToolbarActionsContainer* container =
-      browser_view_->toolbar()->pinned_toolbar_actions_container();
-  if (!container) {
+  PinnedToolbarActionsController* controller =
+      browser_->GetFeatures().pinned_toolbar_actions_controller();
+  if (!controller) {
     return;
   }
 
   if (should_show_comments_action ==
-      container->IsActionPoppedOut(kActionSidePanelShowComments)) {
+      controller->IsActionPoppedOut(kActionSidePanelShowComments)) {
     // Do nothing if the action is already in the correct state.
     return;
   }
 
-  container->ShowActionEphemerallyInToolbar(kActionSidePanelShowComments,
-                                            should_show_comments_action);
+  controller->ShowActionEphemerallyInToolbar(kActionSidePanelShowComments,
+                                             should_show_comments_action);
 
   if (should_show_comments_action) {
     PinnedActionToolbarButton* button =
-        container->GetButtonFor(kActionSidePanelShowComments);
+        controller->GetButtonFor(kActionSidePanelShowComments);
     CHECK(button);
 
     button->SetProperty(views::kElementIdentifierKey,
@@ -111,7 +112,7 @@ void CommentsSidePanelCoordinator::UpdateCommentsActionVisibility(
 void CommentsSidePanelCoordinator::UpdateCommentsSidePanelVisibility(
     bool should_show_comments_action) {
   SidePanelCoordinator* side_panel_coordinator =
-      browser_view_->browser()->GetFeatures().side_panel_coordinator();
+      browser_->GetFeatures().side_panel_coordinator();
 
   // TODO(crbug.com/430352059): This should also handle when a different side
   // panel is open.
@@ -171,7 +172,7 @@ void CommentsSidePanelCoordinator::UpdateSidePanelTitle(
                 IDS_COLLABORATION_SHARED_TAB_GROUPS_COMMENTS_TITLE);
 
   SidePanelCoordinator* side_panel =
-      browser_view_->browser()->GetFeatures().side_panel_coordinator();
+      browser_->GetFeatures().side_panel_coordinator();
   actions::ActionItem* action_item = side_panel->GetActionItem(
       SidePanelEntry::Key(SidePanelEntry::Id::kComments));
 
