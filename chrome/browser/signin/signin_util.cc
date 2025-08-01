@@ -38,6 +38,7 @@
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/account_managed_status_finder.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
+#include "components/signin/public/identity_manager/tribool.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_service.h"
 #include "components/sync/service/sync_user_settings.h"
@@ -410,24 +411,23 @@ bool ShouldShowAvatarSyncPromo(Profile* profile) {
     return false;
   }
 
-  // A profile signed in with a managed account should not see this promo.
-  if (enterprise_util::UserAcceptedAccountManagement(profile)) {
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(profile);
+  CHECK(identity_manager->AreRefreshTokensLoaded());
+  AccountInfo account_info = identity_manager->FindExtendedAccountInfo(
+      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin));
+  // Do not show the promo for non signed in accounts, or managed accounts.
+  if (account_info.IsEmpty() ||
+      account_info.IsManaged() != signin::Tribool::kFalse) {
     return false;
   }
 
   // Do not show the promo if there was a previously syncing account that does
   // not match the currently signed in one.
-  signin::IdentityManager* identity_manager =
-      IdentityManagerFactory::GetForProfile(profile);
-  CoreAccountInfo core_account_info =
-      identity_manager->GetPrimaryAccountInfo(signin::ConsentLevel::kSignin);
-  if (core_account_info.IsEmpty()) {
-    return false;
-  }
   PrefService* pref_service = profile->GetPrefs();
   GaiaId previously_syncing_gaia_id =
       GaiaId(pref_service->GetString(prefs::kGoogleServicesLastSyncingGaiaId));
-  if (IsCrossAccountError(profile, core_account_info.gaia)) {
+  if (IsCrossAccountError(profile, account_info.gaia)) {
     return false;
   }
 

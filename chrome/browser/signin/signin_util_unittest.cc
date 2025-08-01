@@ -23,6 +23,7 @@
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/identity_test_environment.h"
+#include "components/signin/public/identity_manager/signin_constants.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/service/sync_prefs.h"
 #include "components/sync/test/test_sync_service.h"
@@ -379,20 +380,26 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
         SyncServiceFactory::GetForProfile(profile()));
   }
 
-  void Signin() {
+  void Signin(bool managed_account = false) {
     CHECK(profile());
     signin::IdentityManager* identity_manager =
         IdentityManagerFactory::GetForProfile(profile());
     CHECK(identity_manager);
-    signin::MakeAccountAvailable(identity_manager,
-                                 signin::AccountAvailabilityOptionsBuilder()
-                                     .AsPrimary(signin::ConsentLevel::kSignin)
-                                     .WithGaiaId(kSignedInGaiaId)
-                                     .Build("test@gmail.com"));
+    AccountInfo account_info = signin::MakeAccountAvailable(
+        identity_manager,
+        signin::AccountAvailabilityOptionsBuilder()
+            .AsPrimary(signin::ConsentLevel::kSignin)
+            .WithGaiaId(kSignedInGaiaId)
+            .Build(managed_account ? "test@managed.com" : "test@gmail.com"));
+
+    account_info.hosted_domain = managed_account
+                                     ? "managed.com"
+                                     : signin::constants::kNoHostedDomainFound;
+    signin::UpdateAccountInfoForAccount(identity_manager, account_info);
   }
 
-  void SignInAndSetUpSyncService() {
-    Signin();
+  void SignInAndSetUpSyncService(bool managed_account = false) {
+    Signin(managed_account);
     SyncServiceFactory::GetInstance()->SetTestingFactory(
         profile(), base::BindRepeating([](content::BrowserContext* context)
                                            -> std::unique_ptr<KeyedService> {
@@ -406,8 +413,8 @@ class SigninUtilHistorySyncOptinTest : public SigninUtilTest {
         /*sync_everything=*/false, syncer::UserSelectableTypeSet());
   }
 
-  void SetupForAvatarSyncPromo() {
-    SignInAndSetUpSyncService();
+  void SetupForAvatarSyncPromo(bool managed_account = false) {
+    SignInAndSetUpSyncService(managed_account);
     DisableAllSyncedDataTypes();
 
     // Simulate setting enough time passing for the cookie change.
@@ -530,11 +537,8 @@ TEST_F(SigninUtilHistorySyncOptinTest, ShouldShowAvatarSyncPromo) {
 }
 
 TEST_F(SigninUtilHistorySyncOptinTest,
-       ShouldNotShowAvatarSyncPromoManagedProfile) {
-  SetupForAvatarSyncPromo();
-  ASSERT_TRUE(signin_util::ShouldShowAvatarSyncPromo(profile()));
-
-  enterprise_util::SetUserAcceptedAccountManagement(profile(), true);
+       ShouldNotShowAvatarSyncPromoManagedAccounts) {
+  SetupForAvatarSyncPromo(/*managed_account*/ true);
   EXPECT_FALSE(signin_util::ShouldShowAvatarSyncPromo(profile()));
 }
 
