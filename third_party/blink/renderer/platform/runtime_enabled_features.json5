@@ -4223,6 +4223,10 @@
       status: "stable",
     },
     {
+      name: "ScriptRunIteratorCombiningMarks",
+      status: "stable",
+    },
+    {
       name: "ScriptTools",
       status: "test",
     },

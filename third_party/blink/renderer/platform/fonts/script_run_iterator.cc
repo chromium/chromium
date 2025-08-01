@@ -471,7 +471,9 @@ bool ScriptRunIterator::Fetch(wtf_size_t* pos, UChar32* ch) {
 
   UNSAFE_TODO(U16_NEXT(text_, ahead_pos_, length_, ahead_character_));
 
-  if (Character::IsGcMark(ahead_character_)) [[unlikely]] {
+  if (Character::IsGcMark(ahead_character_) &&
+      RuntimeEnabledFeatures::ScriptRunIteratorCombiningMarksEnabled())
+      [[unlikely]] {
     // A combining mark--whatever its Script property value--should inherit the
     // script property value of its base character.
     // https://www.unicode.org/reports/tr24/#Nonspacing_Marks
