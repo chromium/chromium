@@ -1365,6 +1365,16 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigrationDialog.NotShownReason"
+    enum="DiceMigrationDialogNotShownReason" expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the reason why the DICe migration dialog was not shown. This is
+    recorded once per profile load for all users.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigrationDialog.PreviouslyShownCount" units="count"
     expires_after="2026-07-30">
   <owner>ankushkush@google.com</owner>

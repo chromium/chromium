@@ -48,6 +48,8 @@ constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
 constexpr char kAccountManagedStatusHistogram[] =
     "Signin.DiceMigrationDialog.AccountManagedStatus";
 constexpr char kUserMigratedHistogram[] = "Signin.DiceMigrationDialog.Migrated";
+constexpr char kDialogNotShownReasonHistogram[] =
+    "Signin.DiceMigrationDialog.NotShownReason";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
@@ -135,6 +137,9 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, NotSignedIn) {
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kNotEligible, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_Syncing) {
@@ -152,6 +157,9 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, Syncing) {
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kNotEligible, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -172,6 +180,9 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ExplicitlySignedIn) {
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   histogram_tester_.ExpectUniqueSample(kDialogTimerStartedHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kNotEligible, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -197,6 +208,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, ImplicitlySignedIn) {
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   histogram_tester_.ExpectUniqueSample(kDialogShownHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kDialogNotShownReasonHistogram, 0);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -221,6 +233,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 
   histogram_tester_.ExpectUniqueSample(kDialogShownHistogram, false, 1);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kNotEligible, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, MigrateUser) {
@@ -442,6 +457,11 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
        base::Days(1))
           .InDays(),
       1);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::
+          kMinTimeBetweenDialogsNotPassed,
+      1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -475,6 +495,7 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
        base::Days(1))
           .InDays(),
       1);
+  histogram_tester_.ExpectTotalCount(kDialogNotShownReasonHistogram, 0);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
@@ -496,6 +517,9 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
 
   // The dialog is shown.
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(kDialogShownHistogram, true, 1);
+  histogram_tester_.ExpectTotalCount(kDialogNotShownReasonHistogram, 0);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, PRE_EnterpriseAccount) {
@@ -522,6 +546,11 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, EnterpriseAccount) {
 
   // The dialog is not shown.
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectTotalCount(kDialogShownHistogram, 0);
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kManagedAccount, 1);
 }
 
 IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
@@ -600,6 +629,10 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kPrimaryAccountCleared, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
@@ -663,6 +696,10 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, StopTimerUponSignout) {
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kPrimaryAccountCleared, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, CloseDialogUponSignout) {
@@ -696,6 +733,10 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   EXPECT_FALSE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
   ASSERT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
+
+  histogram_tester_.ExpectUniqueSample(
+      kDialogNotShownReasonHistogram,
+      DiceMigrationService::DialogNotShownReason::kPrimaryAccountChanged, 1);
 }
 
 DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,

@@ -55,9 +55,16 @@ constexpr char kAccountManagedStatusHistogram[] =
 constexpr char kUserMigratedHistogram[] = "Signin.DiceMigrationDialog.Migrated";
 constexpr char kToastTriggeredHistogram[] =
     "Signin.DiceMigrationDialog.ToastTriggered";
+constexpr char kDialogNotShownReasonHistogram[] =
+    "Signin.DiceMigrationDialog.NotShownReason";
 
 void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
   base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
+}
+
+void LogDialogNotShownReason(
+    DiceMigrationService::DialogNotShownReason reason) {
+  base::UmaHistogramEnumeration(kDialogNotShownReasonHistogram, reason);
 }
 
 void OnHelpCenterLinkClicked(Browser* browser) {
@@ -179,11 +186,12 @@ DiceMigrationService::DiceMigrationService(
     Profile* profile,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner_for_testing)
     : profile_(profile) {
-  const bool should_start_dialog_trigger_timer =
+  const std::optional<DialogNotShownReason> not_shown_reason =
       ShouldStartDialogTriggerTimer();
   base::UmaHistogramBoolean(kDialogTimerStartedHistogram,
-                            should_start_dialog_trigger_timer);
-  if (!should_start_dialog_trigger_timer) {
+                            !not_shown_reason.has_value());
+  if (not_shown_reason.has_value()) {
+    LogDialogNotShownReason(not_shown_reason.value());
     return;
   }
 
@@ -227,16 +235,17 @@ void DiceMigrationService::RegisterProfilePrefs(
   registry->RegisterTimePref(kDiceMigrationDialogLastShownTime, base::Time());
 }
 
-bool DiceMigrationService::ShouldStartDialogTriggerTimer() {
+std::optional<DiceMigrationService::DialogNotShownReason>
+DiceMigrationService::ShouldStartDialogTriggerTimer() {
   if (!IsUserEligibleForDiceMigration(profile_)) {
-    return false;
+    return DiceMigrationService::DialogNotShownReason::kNotEligible;
   }
   const int dialog_shown_count = GetDialogShownCount();
   base::UmaHistogramExactLinear(kDialogPreviouslyShownCountHistogram,
                                 dialog_shown_count, kMaxDialogShownCount + 1);
   // Show the dialog at most `kMaxDialogShownCount` times.
   if (dialog_shown_count >= kMaxDialogShownCount) {
-    return false;
+    return DiceMigrationService::DialogNotShownReason::kMaxShownCountReached;
   }
 
   if (const base::Time last_shown_time = GetDialogLastShownTime();
@@ -248,13 +257,15 @@ bool DiceMigrationService::ShouldStartDialogTriggerTimer() {
     // Show the dialog at least one week after the last time it was shown.
     if (duration_since_last_shown <
         switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get()) {
-      return false;
+      return DiceMigrationService::DialogNotShownReason::
+          kMinTimeBetweenDialogsNotPassed;
     }
   }
-  return true;
+  return std::nullopt;
 }
 
-bool DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
+std::optional<DiceMigrationService::DialogNotShownReason>
+DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   CHECK(!dialog_trigger_timer_.IsRunning());
   CHECK(!dialog_widget_);
   CHECK_LT(GetDialogShownCount(), kMaxDialogShownCount);
@@ -263,12 +274,13 @@ bool DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
                switches::kOfferMigrationToDiceUsersMinTimeBetweenDialogs.Get());
 
   if (!IsUserEligibleForDiceMigration(profile_)) {
-    return false;
+    return DiceMigrationService::DialogNotShownReason::kNotEligible;
   }
 
   Browser* browser = chrome::FindBrowserWithProfile(profile_);
   if (!browser || !browser->window()) {
-    return false;
+    return DiceMigrationService::DialogNotShownReason::
+        kBrowserInstanceUnavailable;
   }
 
   ui::DialogModelLabel::TextReplacement learn_more_link =
@@ -312,7 +324,7 @@ bool DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
           ->GetAvatarToolbarButton();
   if (!avatar_button) {
     // Skip showing the dialog if the avatar button is not available.
-    return false;
+    return DiceMigrationService::DialogNotShownReason::kAvatarButtonUnavailable;
   }
 
   auto bubble = std::make_unique<views::BubbleDialogModelHost>(
@@ -326,7 +338,7 @@ bool DiceMigrationService::ShowDiceMigrationOfferDialogIfUserEligible() {
   avatar_button_observer_ =
       std::make_unique<AvatarButtonObserver>(avatar_button, this);
 
-  return true;
+  return std::nullopt;
 }
 
 views::Widget* DiceMigrationService::GetDialogWidgetForTesting() {
@@ -410,19 +422,29 @@ void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
                                 account_managed_status_finder_outcome);
   switch (account_managed_status_finder_outcome) {
     case signin::AccountManagedStatusFinderOutcome::kPending:
+      return;
     case signin::AccountManagedStatusFinderOutcome::kError:
     case signin::AccountManagedStatusFinderOutcome::kTimeout:
+      LogDialogNotShownReason(DiceMigrationService::DialogNotShownReason::
+                                  kErrorFetchingAccountManagedStatus);
       return;
     // Consumer accounts.
     case signin::AccountManagedStatusFinderOutcome::kConsumerGmail:
     case signin::AccountManagedStatusFinderOutcome::kConsumerWellKnown:
     case signin::AccountManagedStatusFinderOutcome::kConsumerNotWellKnown: {
-      const bool shown = ShowDiceMigrationOfferDialogIfUserEligible();
-      base::UmaHistogramBoolean(kDialogShownHistogram, shown);
+      const std::optional<DialogNotShownReason> not_shown_reason =
+          ShowDiceMigrationOfferDialogIfUserEligible();
+      base::UmaHistogramBoolean(kDialogShownHistogram,
+                                !not_shown_reason.has_value());
+      if (not_shown_reason.has_value()) {
+        LogDialogNotShownReason(not_shown_reason.value());
+      }
     } break;
     // Managed accounts are not shown the migration dialog.
     case signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom:
     case signin::AccountManagedStatusFinderOutcome::kEnterprise:
+      LogDialogNotShownReason(
+          DiceMigrationService::DialogNotShownReason::kManagedAccount);
       return;
   }
 }
@@ -436,6 +458,22 @@ void DiceMigrationService::StopTimerOrCloseDialog(
     dialog_widget_->CloseWithReason(views::Widget::ClosedReason::kUnspecified);
   } else if (dialog_trigger_timer_.IsRunning()) {
     dialog_trigger_timer_.Stop();
+    switch (reason) {
+      case DialogCloseReason::kPrimaryAccountChanged:
+        LogDialogNotShownReason(
+            DiceMigrationService::DialogNotShownReason::kPrimaryAccountChanged);
+        break;
+      case DialogCloseReason::kPrimaryAccountCleared:
+        LogDialogNotShownReason(
+            DiceMigrationService::DialogNotShownReason::kPrimaryAccountCleared);
+        break;
+      case DialogCloseReason::kServiceDestroyed:
+        LogDialogNotShownReason(
+            DiceMigrationService::DialogNotShownReason::kServiceDestroyed);
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 }
 

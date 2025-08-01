@@ -70,6 +70,25 @@ class DiceMigrationService : public KeyedService,
   };
   // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceMigrationDialogCloseReason)
 
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
+  //
+  // LINT.IfChange(DialogNotShownReason)
+  enum class DialogNotShownReason {
+    kNotEligible = 0,
+    kMaxShownCountReached = 1,
+    kMinTimeBetweenDialogsNotPassed = 2,
+    kManagedAccount = 3,
+    kErrorFetchingAccountManagedStatus = 4,
+    kPrimaryAccountChanged = 5,
+    kPrimaryAccountCleared = 6,
+    kBrowserInstanceUnavailable = 7,
+    kAvatarButtonUnavailable = 8,
+    kServiceDestroyed = 9,
+    kMaxValue = kServiceDestroyed,
+  };
+  // LINT.ThenChange(//tools/metrics/histograms/metadata/signin/enums.xml:DiceMigrationDialogNotShownReason)
+
   // `task_runner` is used to schedule the dialog trigger timer during testing.
   explicit DiceMigrationService(Profile* profile,
                                 scoped_refptr<base::SingleThreadTaskRunner>
@@ -98,10 +117,11 @@ class DiceMigrationService : public KeyedService,
 
   void StopTimerOrCloseDialog(DialogCloseReason reason);
 
-  bool ShouldStartDialogTriggerTimer();
+  std::optional<DialogNotShownReason> ShouldStartDialogTriggerTimer();
 
   // Shows the Dice migration offer dialog if the user is eligible for it.
-  bool ShowDiceMigrationOfferDialogIfUserEligible();
+  std::optional<DialogNotShownReason>
+  ShowDiceMigrationOfferDialogIfUserEligible();
 
   // Getters/setter for the dialog shown count and last shown time prefs.
   int GetDialogShownCount() const;
