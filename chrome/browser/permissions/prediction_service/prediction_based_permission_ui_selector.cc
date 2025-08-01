@@ -285,6 +285,17 @@ void PredictionBasedPermissionUiSelector::SelectUiToUse(
   cpss_v1_model_holdback_probability_ = std::nullopt;
   was_decision_held_back_ = std::nullopt;
 
+  bool is_tflite_available = true;
+  // BUILD_WITH_TFLITE_LIB should be enabled for most of the devices on all
+  // platforms. However, it is still useful to measure the percentage of
+  // disabled devices.
+#if !BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+  is_tflite_available = false;
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+  base::UmaHistogramBoolean("Permissions.PredictionService.TFLiteLibAvailable",
+                            is_tflite_available);
+
   const PredictionSource prediction_source =
       GetPredictionTypeToUse(request->request_type());
   if (prediction_source == PredictionSource::kNoCpssModel) {
