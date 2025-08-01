@@ -1044,7 +1044,7 @@
     "args": [
       "--enable-features=FedCmLightweightMode"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Aug 1, 2026"
   },
   {
     "prefix": "fedcm-alternative-identifiers",
@@ -1064,7 +1064,7 @@
     "args": [
       "--enable-features=FedCmAlternativeIdentifiers"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Aug 1, 2026"
   },
   {
     "prefix": "fedcm-register",
@@ -1085,7 +1085,7 @@
       "cbiesinger@chromium.org",
       "goto@chromium.org"
     ],
-    "expires": "Aug 1, 2025"
+    "expires": "Aug 1, 2026"
   },
   {
     "prefix": "fenced-frame-mparch",
