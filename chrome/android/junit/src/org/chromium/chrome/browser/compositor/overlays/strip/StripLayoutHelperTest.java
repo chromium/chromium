@@ -178,6 +178,7 @@ import java.util.stream.IntStream;
     ChromeFeatureList.DATA_SHARING,
     ChromeFeatureList.TAB_STRIP_MOUSE_CLOSE_RESIZE_DELAY
 })
+@EnableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
 public class StripLayoutHelperTest {
     private static final Token TAB_GROUP_ID_1 = new Token(1L, 1L);
     private static final Token TAB_GROUP_ID_2 = new Token(1L, 2L);
@@ -3848,6 +3849,37 @@ public class StripLayoutHelperTest {
         assertNotNull(
                 "Resize animation should be running.",
                 mStripLayoutHelper.getRunningAnimatorForTesting());
+    }
+
+    @Test
+    @DisableFeatures(ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
+    public void testSelectedTabClose_AutoSelect() {
+        // Initialize and select the tab at index 2.
+        initializeTest(2);
+        when(mTab.getId()).thenReturn(2);
+        when(mModel.getTabAt(2)).thenReturn(mTab);
+
+        // Fake a close button click on the tab at index 2
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseTab(tabs[2], /* allowUndo= */ true);
+
+        // Verify the tab to the left was selected.
+        verify(mModel).setIndex(eq(1), anyInt());
+    }
+
+    @Test
+    public void testSelectedTabClose_AutoSelectOnCloseChange() {
+        // Initialize and select the tab at index 2.
+        initializeTest(2);
+        when(mTab.getId()).thenReturn(2);
+        when(mModel.getTabAt(2)).thenReturn(mTab);
+
+        // Fake a close button click on the tab at index 2
+        StripLayoutTab[] tabs = mStripLayoutHelper.getStripLayoutTabsForTesting();
+        mStripLayoutHelper.handleCloseTab(tabs[2], /* allowUndo= */ true);
+
+        // Verify the tab to the right was selected.
+        verify(mModel).setIndex(eq(3), anyInt());
     }
 
     @Test

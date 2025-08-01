@@ -9,7 +9,6 @@ import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutU
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MAX_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.MIN_TAB_WIDTH_DP;
 import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.TAB_OVERLAP_WIDTH_DP;
-import static org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils.findGroupTitle;
 import static org.chromium.chrome.browser.tasks.tab_management.TabUiThemeUtil.FOLIO_FOOT_LENGTH_DP;
 
 import android.animation.Animator;
@@ -2769,7 +2768,8 @@ public class StripLayoutHelper
      * @param allowUndo whether to allow undo of tab closure, such as showing the "undo" snackbar.
      * @see #finishAnimationsAndCloseDyingTabs(boolean)
      */
-    private void handleCloseTab(StripLayoutTab tab, boolean allowUndo) {
+    @VisibleForTesting
+    void handleCloseTab(StripLayoutTab tab, boolean allowUndo) {
         mMultiStepTabCloseAnimRunning = false;
         finishAnimationsAndCloseDyingTabs(allowUndo);
 
@@ -2810,11 +2810,13 @@ public class StripLayoutHelper
         // 3. If we're closing the selected tab, attempt to select the next expanded tab now. If
         // none exists, we'll default to the normal auto-selection behavior (i.e. selecting the
         // closest collapsed tab, or opening the GTS if none exist).
-        if (getSelectedTabId() == tab.getTabId()) {
-            int nextIndex = getNearbyExpandedTabIndex();
-            if (nextIndex != TabModel.INVALID_TAB_INDEX && mModel != null) {
-                TabModelUtils.setIndex(mModel, nextIndex);
-            }
+        if (mModel != null && getSelectedTabId() == tab.getTabId()) {
+            int nextIndex =
+                    ChromeFeatureList.isEnabled(
+                                    ChromeFeatureList.TAB_STRIP_AUTO_SELECT_ON_CLOSE_CHANGE)
+                            ? getNearbyExpandedTabIndexPreferAfter()
+                            : getNearbyExpandedTabIndexPreferBefore();
+            if (nextIndex != TabModel.INVALID_TAB_INDEX) TabModelUtils.setIndex(mModel, nextIndex);
         }
     }
 
@@ -3716,7 +3718,7 @@ public class StripLayoutHelper
             Tab selectedTab = getTabById(getSelectedTabId());
             if (selectedTab != null
                     && groupTitle.getTabGroupId().equals(selectedTab.getTabGroupId())) {
-                int nextIndex = getNearbyExpandedTabIndex();
+                int nextIndex = getNearbyExpandedTabIndexPreferBefore();
                 if (nextIndex != TabModel.INVALID_TAB_INDEX && mModel != null) {
                     TabModelUtils.setIndex(mModel, nextIndex);
                 } else if (mTabCreator != null) {
@@ -3748,17 +3750,49 @@ public class StripLayoutHelper
      * @return The index of the nearby expanded tab to the selected tab. Prioritizes tabs before the
      *     selected tab. If none are found, return an invalid index.
      */
-    private int getNearbyExpandedTabIndex() {
+    private int getNearbyExpandedTabIndexPreferBefore() {
         int index = getSelectedStripTabIndex();
 
-        for (int i = index - 1; i >= 0; --i) {
+        int expandedIndexBefore = getExpandedIndexBeforeSelectedTab(index);
+        if (expandedIndexBefore != TabModel.INVALID_TAB_INDEX) return expandedIndexBefore;
+
+        return getExpandedIndexAfterSelectedTab(index);
+    }
+
+    /**
+     * @return The index of an expanded tab that is "near" the selected tab. Unlike other tab
+     *     closures, this prioritizes tabs after the selected tab, to make repeated mouse closures
+     *     easier, since the next tab to hover the cursor will likely be selected. If none are
+     *     found, return an invalid index.
+     */
+    private int getNearbyExpandedTabIndexPreferAfter() {
+        int index = getSelectedStripTabIndex();
+
+        int expandedIndexAfter = getExpandedIndexAfterSelectedTab(index);
+        if (expandedIndexAfter != TabModel.INVALID_TAB_INDEX) return expandedIndexAfter;
+
+        return getExpandedIndexBeforeSelectedTab(index);
+    }
+
+    /**
+     * Returns the index of an expanded tab before the selected tab, or {@link
+     * TabModel#INVALID_TAB_INDEX} if none are found.
+     */
+    private int getExpandedIndexBeforeSelectedTab(int selectedTabIndex) {
+        for (int i = selectedTabIndex - 1; i >= 0; --i) {
             if (!mStripTabs[i].isCollapsed()) return i;
         }
+        return TabModel.INVALID_TAB_INDEX;
+    }
 
-        for (int i = index + 1; i < mStripTabs.length; ++i) {
+    /**
+     * Returns the index of an expanded tab after the selected tab, or {@link
+     * TabModel#INVALID_TAB_INDEX} if none are found.
+     */
+    private int getExpandedIndexAfterSelectedTab(int selectedTabIndex) {
+        for (int i = selectedTabIndex + 1; i < mStripTabs.length; ++i) {
             if (!mStripTabs[i].isCollapsed()) return i;
         }
-
         return TabModel.INVALID_TAB_INDEX;
     }
 

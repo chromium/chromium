@@ -12950,6 +12950,7 @@ from previous Chrome versions.
   <int value="-426815606" label="HomepageTile:enabled"/>
   <int value="-426514080" label="EnableBuiltInAIAPI:enabled"/>
   <int value="-425754211" label="FirstPartyVietnameseInput:disabled"/>
+  <int value="-425406751" label="TabStripAutoSelectOnCloseChange:enabled"/>
   <int value="-424701311" label="SignedHTTPExchange:disabled"/>
   <int value="-424689493" label="HistoryClustersHideVisits:enabled"/>
   <int value="-424584720" label="ClipboardFilenames:enabled"/>
@@ -15062,6 +15063,7 @@ from previous Chrome versions.
   <int value="347577245" label="WebBluetoothConfirmPairingSupport:enabled"/>
   <int value="347948074" label="WebFeedSort:disabled"/>
   <int value="347981012" label="TabToGTSAnimation:disabled"/>
+  <int value="348358095" label="TabStripAutoSelectOnCloseChange:disabled"/>
   <int value="348449023"
       label="DesktopPWAsLocalUpdatingThrottlePersistence:enabled"/>
   <int value="348854923" label="v8-cache-strategies-for-cache-storage"/>

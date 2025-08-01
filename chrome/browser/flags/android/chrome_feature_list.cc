@@ -403,6 +403,7 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &kTabGroupParityBottomSheetAndroid,
     &kTabModelInitFixes,
     &kTabStorageSqlitePrototype,
+    &kTabStripAutoSelectOnCloseChange,
     &kTabStripDensityChangeAndroid,
     &kTabStripGroupDragDropAndroid,
     &kTabStripIncognitoMigration,
@@ -1324,6 +1325,10 @@ BASE_FEATURE(kTabModelInitFixes,
 BASE_FEATURE(kTabStorageSqlitePrototype,
              "TabStorageSqlitePrototype",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabStripAutoSelectOnCloseChange,
+             "TabStripAutoSelectOnCloseChange",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kTabStripDensityChangeAndroid,
              "TabStripDensityChangeAndroid",
