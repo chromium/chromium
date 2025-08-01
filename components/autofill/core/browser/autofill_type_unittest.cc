@@ -483,6 +483,28 @@ TEST(AutofillTypeTest, GetPasswordManagerType) {
 
 // Tests that almost all FieldTypes are covered by some getter
 // AutofillType::Get{Address,AutofillAi,CreditCard,...}Type().
+//
+// WHAT TO DO WHEN THIS TEST FAILS:
+//
+// If the test fails, that's probably due to a newly added FieldType.
+// - Does the new FieldType logically belong to one of the getters in
+//   AutofillType that return a single FieldType (e.g.,
+//   AutofillType::GetAddressType())?
+//
+//   If yes:
+//   Check the definition of the getter. Most likely, you need to update the
+//   FieldTypeSet defined in autofill_type.cc (e.g., `kAddressFieldTypes`).
+//
+//   If no:
+//   - Do you want a new getter in AutofillType? That probably means you're
+//     creating a new Autofill integrator (something like Plus Addresses).
+//
+//     If yes:
+//     Add the getter and update AutofillType::TestConstraints().
+//     Also update this unit test.
+//
+//     If no:
+//     Add the type to the `kNotCovered` set below.
 TEST(AutofillTypeTest, AlmostAllFieldTypesAreCovered) {
   // These are the FieldTypes that are not covered by any getter.
   FieldTypeSet kNotCovered{NO_SERVER_DATA,      UNKNOWN_TYPE,
