@@ -1321,6 +1321,17 @@ prefs when the profile is loaded.  -->
   </summary>
 </histogram>
 
+<histogram name="Signin.DiceMigrationDialog.AccountManagedStatus"
+    enum="AccountManagedStatusFinderOutcome" expires_after="2026-07-30">
+  <owner>ankushkush@google.com</owner>
+  <owner>droger@chromium.org</owner>
+  <summary>
+    Records the outcome of the account managed status finder. This is recorded
+    once per profile load, only for eligible users, after the dialog trigger
+    timer has finished.
+  </summary>
+</histogram>
+
 <histogram name="Signin.DiceMigrationDialog.CloseReason"
     enum="DiceMigrationDialogCloseReason" expires_after="2026-07-30">
   <owner>ankushkush@google.com</owner>

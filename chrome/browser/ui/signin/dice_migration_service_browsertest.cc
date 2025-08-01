@@ -45,6 +45,8 @@ constexpr char kDialogPreviouslyShownCountHistogram[] =
 constexpr char kDialogDaysSinceLastShownHistogram[] =
     "Signin.DiceMigrationDialog.DaysSinceLastShown";
 constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
+constexpr char kAccountManagedStatusHistogram[] =
+    "Signin.DiceMigrationDialog.AccountManagedStatus";
 
 // Utility macro to implicitly sign in the user in a PRE test.
 // NOTE: `test_suite` must be a subclass of `DiceMigrationServiceBrowserTest`.
@@ -483,6 +485,10 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest, ConsumerAccount) {
   // Simulate the timer firing.
   FireDialogTriggerTimer();
 
+  histogram_tester_.ExpectUniqueSample(
+      kAccountManagedStatusHistogram,
+      signin::AccountManagedStatusFinderOutcome::kConsumerGmail, 1);
+
   // The dialog is shown.
   EXPECT_TRUE(GetDiceMigrationService()->GetDialogWidgetForTesting());
 }
@@ -504,6 +510,10 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest, EnterpriseAccount) {
 
   // Simulate the timer firing.
   FireDialogTriggerTimer();
+
+  histogram_tester_.ExpectUniqueSample(
+      kAccountManagedStatusHistogram,
+      signin::AccountManagedStatusFinderOutcome::kEnterpriseGoogleDotCom, 1);
 
   // The dialog is not shown.
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
@@ -527,6 +537,10 @@ IN_PROC_BROWSER_TEST_F(DiceMigrationServiceBrowserTest,
             signin::AccountManagedStatusFinderOutcome::kPending);
 
   FireDialogTriggerTimer();
+
+  histogram_tester_.ExpectUniqueSample(
+      kAccountManagedStatusHistogram,
+      signin::AccountManagedStatusFinderOutcome::kPending, 1);
 
   // The dialog is not shown.
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());
@@ -555,6 +569,8 @@ DICE_MIGRATION_TEST_F(DiceMigrationServiceBrowserTest,
   // The dialog trigger timer is running.
   ASSERT_TRUE(
       GetDiceMigrationService()->GetDialogTriggerTimerForTesting().IsRunning());
+
+  histogram_tester_.ExpectTotalCount(kAccountManagedStatusHistogram, 0);
 
   // The dialog is not shown.
   EXPECT_FALSE(GetDiceMigrationService()->GetDialogWidgetForTesting());

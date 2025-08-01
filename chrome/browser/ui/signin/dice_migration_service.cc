@@ -50,6 +50,8 @@ constexpr char kDialogPreviouslyShownCountHistogram[] =
 constexpr char kDialogDaysSinceLastShownHistogram[] =
     "Signin.DiceMigrationDialog.DaysSinceLastShown";
 constexpr char kDialogShownHistogram[] = "Signin.DiceMigrationDialog.Shown";
+constexpr char kAccountManagedStatusHistogram[] =
+    "Signin.DiceMigrationDialog.AccountManagedStatus";
 
 void LogDialogCloseReason(DiceMigrationService::DialogCloseReason reason) {
   base::UmaHistogramEnumeration(kDialogCloseReasonHistogram, reason);
@@ -394,7 +396,12 @@ void DiceMigrationService::OnTimerFinishOrAccountManagedStatusKnown() {
   if (dialog_trigger_timer_.IsRunning()) {
     return;
   }
-  switch (account_managed_status_finder_->GetOutcome()) {
+  signin::AccountManagedStatusFinderOutcome
+      account_managed_status_finder_outcome =
+          account_managed_status_finder_->GetOutcome();
+  base::UmaHistogramEnumeration(kAccountManagedStatusHistogram,
+                                account_managed_status_finder_outcome);
+  switch (account_managed_status_finder_outcome) {
     case signin::AccountManagedStatusFinderOutcome::kPending:
     case signin::AccountManagedStatusFinderOutcome::kError:
     case signin::AccountManagedStatusFinderOutcome::kTimeout:
