@@ -137,13 +137,6 @@
 
 namespace {
 
-// Deprecated 08/2024.
-const char kTrialPrefName[] = "trending_queries.trial_version";
-
-// Deprecated 08/2024.
-constexpr char kSafeBrowsingEsbOptInWithFriendlierSettings[] =
-    "safebrowsing.esb_opt_in_with_friendlier_settings";
-
 // Deprecated 09/2024.
 constexpr char kContentSettingsWindowLastTabIndex[] =
     "content_settings_window.last_tab_index";
@@ -569,11 +562,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   // `kIOSDockingPromoForEligibleUsersOnly` is enabled).
   registry->RegisterBooleanPref(prefs::kIosDockingPromoEligibilityMet, false);
 
-  // Pref related to the Enhanced Safe Browsing Opt-in with new friendlier
-  // settings UI on chrome://settings/security.
-  registry->RegisterBooleanPref(kSafeBrowsingEsbOptInWithFriendlierSettings,
-                                false);
-
   registry->RegisterTimePref(prefs::kLensLastOpened, base::Time());
 
   // Register pref used to determine if OS Lockdown Mode is enabled.
@@ -628,9 +616,6 @@ void RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kMultiProfileForcedMigrationDone, false);
 
   registry->RegisterTimePref(prefs::kNextSSORecallTime, base::Time());
-
-  // Deprecated 08/2024.
-  registry->RegisterIntegerPref(kTrialPrefName, 0);
 
   // Deprecated 09/2024.
   registry->RegisterBooleanPref(kBrowsingDataMigrationHasBeenPossible, false);
@@ -1131,12 +1116,6 @@ void MigrateObsoleteLocalStatePrefs(PrefService* prefs) {
   // This function is not allowed to block.
   base::ScopedDisallowBlocking disallow_blocking;
 
-  // Added 08/2024.
-  prefs->ClearPref(kTrialPrefName);
-
-  // Added 08/2024.
-  prefs->ClearPref(kSafeBrowsingEsbOptInWithFriendlierSettings);
-
   // Added 09/2024.
   prefs->ClearPref(kBrowsingDataMigrationHasBeenPossible);
 
@@ -1337,9 +1316,6 @@ void MigrateObsoleteProfilePrefs(PrefService* prefs) {
 
 void MigrateObsoleteUserDefault() {
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
-
-  // Added 08/2024.
-  [defaults removeObjectForKey:@"userHasInteractedWithWhatsNew"];
 
   // Added 11/2024.
   [defaults removeObjectForKey:@"DisplaySwitchProfile"];
