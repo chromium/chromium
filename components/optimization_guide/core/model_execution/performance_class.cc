@@ -169,12 +169,6 @@ PerformanceClassifier::~PerformanceClassifier() = default;
 void PerformanceClassifier::Init() {
   CHECK_EQ(performance_class_state_, PerformanceClassState::kNotStarted);
   CHECK(performance_class_callbacks_.empty());
-  // TODO: crbug.com/432041523 - Update integration tests to force performance
-  // class explicitly.
-  if (switches::GetOnDeviceValidationWriteToFile()) {
-    UpdatePerformanceClassPref(local_state_,
-                               OnDeviceModelPerformanceClass::kVeryHigh);
-  }
   OnDeviceModelPerformanceClass override_class = GetPerformanceClassSwitch();
   if (override_class != OnDeviceModelPerformanceClass::kUnknown) {
     UpdatePerformanceClassPref(local_state_, override_class);
