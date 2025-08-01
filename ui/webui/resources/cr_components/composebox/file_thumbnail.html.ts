@@ -4,8 +4,7 @@
 
 import {html} from '//resources/lit/v3_0/lit.rollup.js';
 
-import {FileUploadStatus} from '../composebox_query.mojom-webui.js';
-
+import {FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ComposeboxFileThumbnailElement} from './file_thumbnail.js';
 
 export function getHtml(this: ComposeboxFileThumbnailElement) {

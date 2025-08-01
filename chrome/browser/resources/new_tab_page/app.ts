@@ -2,16 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import './composebox/composebox.js';
 import './iframe.js';
 import './logo.js';
 import '/strings.m.js';
 import 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import 'chrome://resources/cr_components/searchbox/searchbox.js';
 import 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import 'chrome://resources/cr_components/composebox/composebox.js';
 
 import type {CustomizeButtonsElement} from 'chrome://new-tab-page/shared/customize_buttons/customize_buttons.js';
 import {ColorChangeUpdater} from 'chrome://resources/cr_components/color_change_listener/colors_css_updater.js';
+import type {ComposeboxElement} from 'chrome://resources/cr_components/composebox/composebox.js';
+import {ComposeboxProxyImpl} from 'chrome://resources/cr_components/composebox/composebox_proxy.js';
 import {HelpBubbleMixinLit} from 'chrome://resources/cr_components/help_bubble/help_bubble_mixin_lit.js';
 import type {SearchboxElement} from 'chrome://resources/cr_components/searchbox/searchbox.js';
 import type {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
@@ -30,8 +32,6 @@ import type {SkColor} from 'chrome://resources/mojo/skia/public/mojom/skcolor.mo
 import {getCss} from './app.css.js';
 import {getHtml} from './app.html.js';
 import {BackgroundManager} from './background_manager.js';
-import type {ComposeboxElement} from './composebox/composebox.js';
-import {ComposeboxProxyImpl} from './composebox/composebox_proxy.js';
 import type {CustomizeButtonsDocumentCallbackRouter, CustomizeButtonsHandlerRemote} from './customize_buttons.mojom-webui.js';
 import {CustomizeChromeSection, SidePanelOpenTrigger} from './customize_buttons.mojom-webui.js';
 import {CustomizeButtonsProxy} from './customize_buttons_proxy.js';
@@ -256,6 +256,11 @@ export class AppElement extends AppElementBase {
       wallpaperSearchButtonEnabled_: {type: Boolean},
 
       showWallpaperSearchButton_: {type: Boolean},
+
+      /**
+       * Whether the composebox has been opened at least once.
+       */
+      wasComposeboxOpened_: {type: Boolean},
     };
   }
 
@@ -278,6 +283,7 @@ export class AppElement extends AppElementBase {
   accessor realboxCanShowSecondarySide: boolean = false;
   accessor realboxHadSecondarySide: boolean = false;
   protected accessor realboxShown_: boolean = false;
+  protected accessor wasComposeboxOpened_: boolean = false;
   protected accessor showLensUploadDialog_: boolean = false;
   protected accessor showComposebox_: boolean = false;
   protected accessor logoEnabled_: boolean =
@@ -664,6 +670,12 @@ export class AppElement extends AppElementBase {
 
   protected toggleComposebox_() {
     this.showComposebox_ = !this.showComposebox_;
+    if (!this.wasComposeboxOpened_) {
+      recordLoadDuration(
+          'NewTabPage.Composebox.FromNTPLoadToSessionStart',
+          WindowProxy.getInstance().now());
+      this.wasComposeboxOpened_ = true;
+    }
   }
 
   protected onComposeboxClickOutside_() {

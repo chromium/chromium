@@ -12,7 +12,6 @@ source_set("composebox") {
     "composebox_handler.h",
   ]
   deps = [
-    ":mojo_bindings",
     "//base",
     "//chrome/app:generated_resources",
     "//chrome/browser:browser_process",
@@ -22,20 +21,12 @@ source_set("composebox") {
     "//components/application_locale_storage",
     "//components/omnibox/common",
     "//components/omnibox/composebox",
+    "//components/omnibox/composebox:mojo_bindings",
     "//components/search",
     "//components/variations/service",
     "//content/public/browser",
     "//third_party/omnibox_proto",
     "//ui/base",
-  ]
-}
-
-mojom("mojo_bindings") {
-  sources = [ "composebox.mojom" ]
-  webui_module_path = "/"
-  public_deps = [
-    "//components/omnibox/browser:mojo_bindings",
-    "//components/omnibox/composebox:mojo_bindings",
-    "//mojo/public//mojom/base",
+    "//ui/webui/resources/cr_components/composebox:mojo_bindings",
   ]
 }

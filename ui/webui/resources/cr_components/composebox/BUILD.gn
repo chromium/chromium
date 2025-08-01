@@ -1,0 +1,63 @@
+# Copyright 2025 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+import("//ui/webui/resources/tools/build_webui.gni")
+
+assert(!is_android && !is_ios)
+
+mojom("mojo_bindings") {
+  sources = [ "composebox.mojom" ]
+  webui_module_path = "/"
+
+  public_deps = [
+    "//components/omnibox/composebox:mojo_bindings",
+    "//components/omnibox/browser:mojo_bindings",
+    "//mojo/public//mojom/base",
+  ]
+}
+
+build_webui("build") {
+  grd_prefix = "cr_components_composebox"
+  ts_files = [
+    "common.ts",
+    "composebox.html.ts",
+    "composebox.ts",
+    "file_carousel.html.ts",
+    "file_carousel.ts",
+    "file_thumbnail.ts",
+    "file_thumbnail.html.ts",
+    "composebox_proxy.ts",
+    "icons.html.ts",
+  ]
+  css_files = [
+    "composebox.css",
+    "file_carousel.css",
+    "file_thumbnail.css",
+  ]
+
+  mojo_files_deps = [
+    ":mojo_bindings_ts__generator",
+    "//components/omnibox/browser:mojo_bindings_ts__generator",
+    "//components/omnibox/composebox:mojo_bindings_ts__generator",
+  ]
+  mojo_files = [
+    "$root_gen_dir/components/omnibox/composebox/composebox_query.mojom-webui.ts",
+    "$root_gen_dir/ui/webui/resources/cr_components/composebox/composebox.mojom-webui.ts",
+  ]
+
+  ts_out_dir = "$root_gen_dir/ui/webui/resources/tsc/cr_components/composebox"
+  ts_composite = true
+  ts_definitions = [ "//tools/typescript/definitions/metrics_private.d.ts" ]
+  ts_deps = [
+    "//third_party/lit/v3_0:build_ts",
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources/cr_elements:build_ts",
+    "//ui/webui/resources/js:build_ts",
+    "//ui/webui/resources/mojo:build_ts",
+  ]
+  webui_context_type = "relative"
+  generate_grdp = true
+  grd_resource_path_prefix = rebase_path(".", "//ui/webui/resources")
+}

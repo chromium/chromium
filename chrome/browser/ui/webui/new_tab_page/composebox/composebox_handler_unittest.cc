@@ -20,7 +20,6 @@
 #include "base/unguessable_token.h"
 #include "base/version_info/channel.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
 #include "chrome/browser/ui/webui/new_tab_page/composebox/variations/composebox_fieldtrial.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_test_utils.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
@@ -40,6 +39,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 
 namespace {
 constexpr int kImageCompressionQuality = 30;
@@ -239,8 +239,7 @@ class ComposeboxHandlerTest : public ChromeRenderViewHostTestHarness {
     result_url = net::AppendOrReplaceQueryParameter(
         result_url, kQuerySubmissionTimeQueryParameter, std::nullopt);
     result_url = net::AppendOrReplaceQueryParameter(
-        result_url, kClientUploadDurationQueryParameter,
-        std::nullopt);
+        result_url, kClientUploadDurationQueryParameter, std::nullopt);
     return result_url;
   }
 

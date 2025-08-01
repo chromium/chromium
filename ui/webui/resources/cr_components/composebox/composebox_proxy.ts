@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 import {PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 
-import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from '../composebox.mojom-webui.js';
+import {PageCallbackRouter, PageHandlerFactory, PageHandlerRemote} from './composebox.mojom-webui.js';
 
 export interface ComposeboxProxy {
   handler: PageHandlerRemote;

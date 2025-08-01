@@ -5,28 +5,25 @@ import './file_carousel.js';
 import './icons.html.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import type {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
+import {I18nMixinLit} from '//resources/cr_elements/i18n_mixin_lit.js';
 import {assert} from '//resources/js/assert.js';
+import {EventTracker} from '//resources/js/event_tracker.js';
 import {loadTimeData} from '//resources/js/load_time_data.js';
+import {stringToMojoString16} from '//resources/js/mojo_type_util.js';
 import type {PropertyValues} from '//resources/lit/v3_0/lit.rollup.js';
 import {CrLitElement} from '//resources/lit/v3_0/lit.rollup.js';
+import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from '//resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
 import type {BigBuffer} from '//resources/mojo/mojo/public/mojom/base/big_buffer.mojom-webui.js';
 import type {UnguessableToken} from '//resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-webui.js';
-import {getInstance as getAnnouncerInstance} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
-import {I18nMixinLit} from 'chrome://resources/cr_elements/i18n_mixin_lit.js';
-import {EventTracker} from 'chrome://resources/js/event_tracker.js';
-import {stringToMojoString16} from 'chrome://resources/js/mojo_type_util.js';
-import type {AutocompleteResult, PageCallbackRouter as SearchboxPageCallbackRouter, PageHandlerRemote as SearchboxPageHandlerRemote} from 'chrome://resources/mojo/components/omnibox/browser/searchbox.mojom-webui.js';
-
-import type {PageCallbackRouter, PageHandlerRemote} from '../composebox.mojom-webui.js';
-import {FileUploadErrorType, FileUploadStatus} from '../composebox_query.mojom-webui.js';
-import {recordLoadDuration} from '../metrics_utils.js';
-import {WindowProxy} from '../window_proxy.js';
 
 import type {ComposeboxFile} from './common.js';
 import {getCss} from './composebox.css.js';
 import {getHtml} from './composebox.html.js';
+import type {PageCallbackRouter, PageHandlerRemote} from './composebox.mojom-webui.js';
 import {ComposeboxProxyImpl} from './composebox_proxy.js';
+import {FileUploadErrorType, FileUploadStatus} from './composebox_query.mojom-webui.js';
 import type {ComposeboxFileCarouselElement} from './file_carousel.js';
 
 export interface ComposeboxElement {
@@ -150,9 +147,6 @@ export class ComposeboxElement extends I18nMixinLit
         ComposeboxProxyImpl.getInstance().searchboxCallbackRouter;
     this.searchboxHandler_ = ComposeboxProxyImpl.getInstance().searchboxHandler;
     this.pageHandler_.notifySessionStarted();
-    recordLoadDuration(
-        'NewTabPage.Composebox.FromNTPLoadToSessionStart',
-        WindowProxy.getInstance().now());
   }
 
   override connectedCallback() {

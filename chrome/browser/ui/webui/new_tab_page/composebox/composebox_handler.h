@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
-#include "chrome/browser/ui/webui/new_tab_page/composebox/composebox.mojom.h"
 #include "chrome/browser/ui/webui/searchbox/searchbox_handler.h"
 #include "components/omnibox/browser/searchbox.mojom.h"
 #include "components/omnibox/composebox/composebox_metrics_recorder.h"
@@ -21,6 +20,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "ui/base/window_open_disposition_utils.h"
+#include "ui/webui/resources/cr_components/composebox/composebox.mojom.h"
 #include "url/gurl.h"
 
 class MetricsReporter;
