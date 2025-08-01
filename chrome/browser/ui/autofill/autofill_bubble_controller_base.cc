@@ -22,11 +22,6 @@ AutofillBubbleControllerBase::AutofillBubbleControllerBase(
 AutofillBubbleControllerBase::~AutofillBubbleControllerBase() {
   HideBubble();
 }
-void AutofillBubbleControllerBase::Show() {
-  UpdatePageActionIcon();
-  DoShowBubble();
-  UpdatePageActionIcon();
-}
 
 void AutofillBubbleControllerBase::OnVisibilityChanged(
     content::Visibility visibility) {
@@ -47,6 +42,12 @@ void AutofillBubbleControllerBase::UpdatePageActionIcon() {
     browser->window()->UpdatePageActionIcon(GetPageActionIconType());
   }
 #endif  // !BUILDFLAG(IS_ANDROID)
+}
+
+void AutofillBubbleControllerBase::ShowBubble() {
+  UpdatePageActionIcon();
+  DoShowBubble();
+  UpdatePageActionIcon();
 }
 
 void AutofillBubbleControllerBase::HideBubble() {

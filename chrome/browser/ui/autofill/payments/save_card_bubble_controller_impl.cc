@@ -787,7 +787,7 @@ void SaveCardBubbleControllerImpl::SetupAndShowBubble() {
         (current_bubble_type_ != BubbleType::LOCAL_SAVE &&
          current_bubble_type_ != BubbleType::LOCAL_CVC_SAVE));
   CHECK(!bubble_view());
-  Show();
+  ShowBubble();
 }
 
 void SaveCardBubbleControllerImpl::ShowIconOnly() {

@@ -157,7 +157,7 @@ void AddressBubblesController::OnUserDecision(
   if (decision == AutofillClient::AddressPromptUserDecision::kEditDeclined) {
     // Reopen this bubble if the user canceled editing.
     shown_by_user_gesture_ = false;
-    Show();
+    ShowBubble();
     return;
   }
   if (address_profile_save_prompt_callback_) {
@@ -191,7 +191,7 @@ void AddressBubblesController::OnIconClicked() {
     return;
   }
   shown_by_user_gesture_ = true;
-  Show();
+  ShowBubble();
 }
 
 bool AddressBubblesController::IsBubbleActive() const {
@@ -267,7 +267,7 @@ void AddressBubblesController::SetUpAndShowBubble(
   is_migration_to_account_ = is_migration_to_account;
   user_has_any_profile_saved_ = user_has_any_profile_saved;
 
-  Show();
+  ShowBubble();
 }
 
 void AddressBubblesController::MaybeShowIOSDektopAddressPromo() {

@@ -59,7 +59,7 @@ void VirtualCardEnrollBubbleControllerImpl::SetupAndShowBubble(
   decline_virtual_card_callback_ = std::move(decline_virtual_card_callback);
 
   is_user_gesture_ = false;
-  Show();
+  ShowBubble();
 
   VirtualCardEnrollMetricsLogger::OnCardArtAvailable(
       ui_model_->enrollment_fields().card_art_image,
@@ -74,7 +74,7 @@ void VirtualCardEnrollBubbleControllerImpl::ReshowBubble() {
   }
 
   is_user_gesture_ = true;
-  Show();
+  ShowBubble();
 }
 
 void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
@@ -98,7 +98,7 @@ void VirtualCardEnrollBubbleControllerImpl::ShowConfirmationBubbleView(
                     /*card_label=*/ui_model_->enrollment_fields()
                         .credit_card.NetworkAndLastFourDigits());
   // Show enrollment confirmation bubble.
-  Show();
+  ShowBubble();
 #endif
 }
 
@@ -288,7 +288,7 @@ void VirtualCardEnrollBubbleControllerImpl::OnVisibilityChanged(
 #if !BUILDFLAG(IS_ANDROID)
   if (visibility == content::Visibility::VISIBLE && !bubble_view() &&
       bubble_state_ == BubbleState::kShowingIconAndBubble) {
-    Show();
+    ShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubble();
     if (bubble_state_ != BubbleState::kShowingIcon) {

@@ -64,7 +64,7 @@ void MandatoryReauthBubbleControllerImpl::SetupAndShowBubble(
       autofill_metrics::MandatoryReauthOptInBubbleOffer::kShown,
       /*is_reshow=*/false);
 
-  Show();
+  ShowBubble();
 }
 
 void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
@@ -91,7 +91,7 @@ void MandatoryReauthBubbleControllerImpl::ReshowBubble() {
         autofill_metrics::MandatoryReauthOptInConfirmationBubbleMetric::kShown);
   }
 
-  Show();
+  ShowBubble();
 }
 
 std::u16string MandatoryReauthBubbleControllerImpl::GetWindowTitle() const {

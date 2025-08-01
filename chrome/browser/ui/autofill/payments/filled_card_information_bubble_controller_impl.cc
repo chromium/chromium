@@ -75,7 +75,7 @@ void FilledCardInformationBubbleControllerImpl::SetupAndShowBubble(
   // the same time.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
-      base::BindOnce(&FilledCardInformationBubbleControllerImpl::Show,
+      base::BindOnce(&FilledCardInformationBubbleControllerImpl::ShowBubble,
                      weak_ptr_factory_.GetWeakPtr()),
       kFilledCardInformationBubbleDelay);
 }
@@ -88,7 +88,7 @@ void FilledCardInformationBubbleControllerImpl::ReshowBubble() {
 
   is_user_gesture_ = true;
   should_icon_be_visible_ = true;
-  Show();
+  ShowBubble();
 }
 
 AutofillBubbleBase* FilledCardInformationBubbleControllerImpl::GetBubble()
@@ -353,7 +353,7 @@ void FilledCardInformationBubbleControllerImpl::OnVisibilityChanged(
   // to the tab.
   if (visibility == content::Visibility::VISIBLE && !bubble_has_been_shown_ &&
       should_icon_be_visible_) {
-    Show();
+    ShowBubble();
   } else if (visibility == content::Visibility::HIDDEN) {
     HideBubble();
   }
