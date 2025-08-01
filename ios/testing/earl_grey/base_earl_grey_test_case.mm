@@ -61,6 +61,9 @@ bool g_needs_set_up_for_test_case = true;
 - (void)setUp {
   [super setUp];
 
+  // No need to continue after failure. The app is re-launched between tests.
+  self.continueAfterFailure = NO;
+
   // Before starting a new test, relaunch the app and wipe the profile.
   AppLaunchConfiguration config = [self appConfigurationForTestCase];
   if ([BaseEarlGreyTestCase forceRestartAndWipe]) {
