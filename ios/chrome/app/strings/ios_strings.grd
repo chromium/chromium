@@ -5459,13 +5459,13 @@ While in Incognito, sites can't use cookies to see your browsing activity across
         Select your file
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_DESCRIPTION" desc="Description in the alert message informing the user that the currently selected file could not be imported to Chrome. [iOS only]">
-        This file is empty or contains data in the wrong format
+        This file can't be imported
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_OK_BUTTON" desc="Button at the bottom of the alert message to dismiss it. The alert informs the user that the currently selected file could not be imported to Chrome. [iOS only]">
         OK
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_FAILURE_MESSAGE_TITLE" desc="Title of the alert message informing the user that the currently selected file could not be imported to Chrome. [iOS only]">
-        Couldn't import file
+        Something went wrong
       </message>
       <message name="IDS_IOS_SAFARI_IMPORT_IMPORT_INSTRUCTIONS_ONE" desc="Instructions view to teach users how to import data from Safari - step 1. [iOS only]">
         Tap <ph name="BEGIN_BOLD">BEGIN_BOLD</ph>Select your file<ph name="END_BOLD">END_BOLD</ph>
