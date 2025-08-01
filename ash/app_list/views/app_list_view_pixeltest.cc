@@ -187,7 +187,7 @@ TEST_P(AppListViewPixelRTLTest, AnswerCardSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_answer_card_search_results", /*revision_number=*/16,
+      "bubble_launcher_answer_card_search_results", /*revision_number=*/17,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -209,7 +209,7 @@ TEST_P(AppListViewPixelRTLTest, URLSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_url_search_results", /*revision_number=*/15,
+      "bubble_launcher_url_search_results", /*revision_number=*/16,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -231,7 +231,7 @@ TEST_P(AppListViewPixelRTLTest, KeyboardShortcutSearchResult) {
 
   UseFixedPlaceholderTextAndHideCursor(test_helper->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_ks_search_results", /*revision_number=*/6,
+      "bubble_launcher_ks_search_results", /*revision_number=*/7,
       GetAppListTestHelper()->GetBubbleView()));
 }
 
@@ -244,7 +244,7 @@ TEST_P(AppListViewPixelRTLTest, Basics) {
   UseFixedPlaceholderTextAndHideCursor(
       GetAppListTestHelper()->GetSearchBoxView());
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_basics", /*revision_number=*/18,
+      "bubble_launcher_basics", /*revision_number=*/19,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -266,7 +266,7 @@ TEST_P(AppListViewPixelRTLTest, GradientZone) {
                                 /*position=*/20);
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gradient_zone", /*revision_number=*/18,
+      "bubble_launcher_gradient_zone", /*revision_number=*/19,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }
@@ -281,7 +281,7 @@ TEST_P(AppListViewPixelRTLTest, GeminiButton) {
       GetAppListTestHelper()->GetSearchBoxView());
 
   EXPECT_TRUE(GetPixelDiffer()->CompareUiComponentsOnPrimaryScreen(
-      "bubble_launcher_gemini_button", /*revision_number=*/1,
+      "bubble_launcher_gemini_button", /*revision_number=*/2,
       GetAppListTestHelper()->GetBubbleView(),
       GetPrimaryShelf()->navigation_widget()));
 }

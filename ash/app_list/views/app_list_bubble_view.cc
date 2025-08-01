@@ -68,6 +68,7 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/animation/animation_builder.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/focus/focus_manager.h"
@@ -163,8 +164,8 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
     : view_delegate_(view_delegate) {
   DCHECK(view_delegate);
   SetProperty(views::kElementIdentifierKey, kAppListBubbleViewElementId);
+
   // Set up rounded corners and background blur, similar to TrayBubbleView.
-  // Layer background is set in OnThemeChanged().
   SetPaintToLayer();
   layer()->SetRoundedCornerRadius(gfx::RoundedCornersF{kBubbleCornerRadius});
   layer()->SetIsFastRoundedCorner(true);
@@ -178,8 +179,7 @@ AppListBubbleView::AppListBubbleView(AppListViewDelegate* view_delegate)
       chromeos::features::IsSystemBlurEnabled()
           ? cros_tokens::kCrosSysSystemBaseElevated
           : cros_tokens::kCrosSysSystemBaseElevatedOpaque;
-  SetBackground(views::CreateRoundedRectBackground(background_color_id,
-                                                   kBubbleCornerRadius));
+  SetBackground(views::CreateSolidBackground(background_color_id));
 
   SetBorder(std::make_unique<views::HighlightBorder>(
       kBubbleCornerRadius,
