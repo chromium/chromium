@@ -322,50 +322,61 @@ void FormStructureRationalizer::RationalizeCreditCardFieldPredictions(
   size_t num_months_found = 0;
   size_t num_other_fields_found = 0;
   for (const auto& field : *fields_) {
-    FieldType current_field_type = field->ComputedType().GetStorableType();
-    switch (current_field_type) {
-      case CREDIT_CARD_NAME_FIRST:
-        cc_first_name_found = true;
-        break;
-      case CREDIT_CARD_NAME_LAST:
-        cc_last_name_found = true;
-        break;
-      case CREDIT_CARD_NAME_FULL:
-        cc_first_name_found = true;
-        cc_last_name_found = true;
-        break;
-      case CREDIT_CARD_NUMBER:
-        cc_num_found = true;
-        break;
-      case CREDIT_CARD_EXP_MONTH:
-        cc_month_found = true;
-        ++num_months_found;
-        break;
-      case CREDIT_CARD_EXP_2_DIGIT_YEAR:
-      case CREDIT_CARD_EXP_4_DIGIT_YEAR:
-        cc_year_found = true;
-        break;
-      case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
-      case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
-        cc_month_found = true;
-        cc_year_found = true;
-        ++num_months_found;
-        break;
-      case CREDIT_CARD_TYPE:
-        cc_type_found = true;
-        break;
-      case CREDIT_CARD_VERIFICATION_CODE:
-        cc_cvc_found = true;
-        break;
-      case ADDRESS_HOME_ZIP:
-        // Zip/Postal code often appears as part of a Credit Card form. Do
-        // not count it as a non-cc-related field.
-        break;
-      case EMAIL_ADDRESS:
-        email_address_found = true;
-        [[fallthrough]];
-      default:
-        ++num_other_fields_found;
+    bool is_other_field = false;
+    for (FieldType current_field_type : field->ComputedType().GetTypes()) {
+      switch (current_field_type) {
+        case CREDIT_CARD_NAME_FIRST:
+          cc_first_name_found = true;
+          break;
+        case CREDIT_CARD_NAME_LAST:
+          cc_last_name_found = true;
+          break;
+        case CREDIT_CARD_NAME_FULL:
+          cc_first_name_found = true;
+          cc_last_name_found = true;
+          break;
+        case CREDIT_CARD_NUMBER:
+          cc_num_found = true;
+          break;
+        case CREDIT_CARD_EXP_MONTH:
+          cc_month_found = true;
+          ++num_months_found;
+          break;
+        case CREDIT_CARD_EXP_2_DIGIT_YEAR:
+        case CREDIT_CARD_EXP_4_DIGIT_YEAR:
+          cc_year_found = true;
+          break;
+        case CREDIT_CARD_EXP_DATE_2_DIGIT_YEAR:
+        case CREDIT_CARD_EXP_DATE_4_DIGIT_YEAR:
+          cc_month_found = true;
+          cc_year_found = true;
+          ++num_months_found;
+          break;
+        case CREDIT_CARD_TYPE:
+          cc_type_found = true;
+          break;
+        case CREDIT_CARD_VERIFICATION_CODE:
+          cc_cvc_found = true;
+          break;
+        case ADDRESS_HOME_ZIP:
+          // Zip/Postal code often appears as part of a Credit Card form. Do
+          // not count it as a non-cc-related field.
+          break;
+        case EMAIL_ADDRESS:
+          email_address_found = true;
+          [[fallthrough]];
+        case CREDIT_CARD_STANDALONE_VERIFICATION_CODE:
+          // We do not count standalone CVCs as credit card fields.
+          // Whether that's a bug (crbug.com/434916381) or a feature is not
+          // obvious.
+          [[fallthrough]];
+        default:
+          is_other_field = true;
+          break;
+      }
+    }
+    if (is_other_field) {
+      ++num_other_fields_found;
     }
   }
 
