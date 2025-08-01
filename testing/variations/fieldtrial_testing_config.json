@@ -7516,12 +7516,14 @@
             ],
             "experiments": [
                 {
-                    "name": "Enabled_20260624_Dogfood",
+                    "name": "EnabledWithFullPrewarmPage",
                     "params": {
-                        "url": "https://www.google.com/",
+                        "reuse_search_host": "true",
+                        "url": "https://www.google.com/warmup.html",
                         "zero_suggest_trigger": "true"
                     },
                     "enable_features": [
+                        "Prerender2ReuseHost",
                         "Prewarm"
                     ]
                 }
@@ -18471,14 +18473,10 @@
             ]
         }
     ],
-    "Prerender2ReuseSearchResultHost": [
+    "Prerender2ReuseSearchResultHostAndroid": [
         {
             "platforms": [
-                "android",
-                "chromeos",
-                "linux",
-                "mac",
-                "windows"
+                "android"
             ],
             "experiments": [
                 {
