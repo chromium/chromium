@@ -787,12 +787,7 @@ class ClipboardHistoryControllerShowSourceTest
     : public ClipboardHistoryControllerTest,
       public testing::WithParamInterface<ClipboardHistoryControllerShowSource> {
  public:
-  ClipboardHistoryControllerShowSourceTest() {
-    scoped_feature_list_.InitWithFeatureState(
-        features::kClipboardHistoryLongpress,
-        GetSource() ==
-            ClipboardHistoryControllerShowSource::kControlVLongpress);
-  }
+  ClipboardHistoryControllerShowSourceTest() = default;
 
   ClipboardHistoryControllerShowSource GetSource() const { return GetParam(); }
 
@@ -806,6 +801,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 // Tests that `ShowMenu()` returns whether the menu was shown successfully.
 TEST_P(ClipboardHistoryControllerShowSourceTest, ShowMenuReturnsSuccess) {
+  if (GetSource() == ClipboardHistoryControllerShowSource::kControlVLongpress) {
+    GTEST_SKIP();
+  }
+
   base::HistogramTester histogram_tester;
 
   // Try to show the menu without populating the clipboard. The menu should not

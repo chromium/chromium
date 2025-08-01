@@ -471,9 +471,6 @@ BASE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper,
 // When enabled alongside the keyboard auto-repeat setting, holding down Ctrl+V
 // will cause the clipboard history menu to show. From there, the user can
 // select a clipboard history item to replace the initially pasted content.
-BASE_FEATURE(kClipboardHistoryLongpress,
-             "ClipboardHistoryLongpress",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls enabling/disabling conch.
 BASE_FEATURE(kConch, "Conch", base::FEATURE_DISABLED_BY_DEFAULT);
@@ -3462,10 +3459,6 @@ bool IsCaptureModeOnDeviceOcrEnabled() {
 
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled() {
   return base::FeatureList::IsEnabled(kCheckPasswordsAgainstCryptohomeHelper);
-}
-
-bool IsClipboardHistoryLongpressEnabled() {
-  return base::FeatureList::IsEnabled(kClipboardHistoryLongpress);
 }
 
 bool IsContinuousOverviewScrollAnimationEnabled() {

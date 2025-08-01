@@ -232,11 +232,7 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
           /*time_since_nudge_shown=*/std::optional<base::TimeDelta>>> {
  public:
   ClipboardHistoryMenuModelAdapterMenuItemTest()
-      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
-    scoped_feature_list_.InitWithFeatureStates(
-        {{features::kClipboardHistoryLongpress,
-          IsClipboardHistoryLongpressEnabled()}});
-  }
+      : AshTestBase(base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
 
   // AshTestBase:
   void SetUp() override {
@@ -279,14 +275,6 @@ class ClipboardHistoryMenuModelAdapterMenuItemTest
   const std::optional<base::TimeDelta>& GetTimeSinceNudgeShown() const {
     return std::get<2>(GetParam());
   }
-
-  bool IsClipboardHistoryLongpressEnabled() const {
-    return GetSource() ==
-           ClipboardHistoryControllerShowSource::kControlVLongpress;
-  }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -303,6 +291,10 @@ INSTANTIATE_TEST_SUITE_P(All,
 
 TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
        HeaderAndFooterConditionallyPresent) {
+  if (GetSource() == ClipboardHistoryControllerShowSource::kControlVLongpress) {
+    GTEST_SKIP();
+  }
+
   // Write items to clipboard history so that the menu can show.
   WriteTextToClipboardAndFlushMessageLoop(u"A");
   WriteTextToClipboardAndFlushMessageLoop(u"B");
@@ -321,8 +313,7 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       GetTimeSinceNudgeShown().value_or(base::TimeDelta::Max());
 
   const bool has_header = true;
-  const bool has_footer = IsClipboardHistoryLongpressEnabled() ||
-                          ((time_since_menu_shown >= base::Days(60)) ||
+  const bool has_footer = ((time_since_menu_shown >= base::Days(60)) ||
                            (time_since_nudge_shown <= base::Seconds(60)));
 
   // Verify the number of items in the menu model.
@@ -364,15 +355,10 @@ TEST_P(ClipboardHistoryMenuModelAdapterMenuItemTest,
       footer->GetViewByID(clipboard_history_util::kFooterContentV2ViewID),
       GetViewById<views::StyledLabel>(
           clipboard_history_util::kFooterContentV2LabelID,
-          Property(
-              &views::StyledLabel::GetText,
-              Conditional(
-                  IsClipboardHistoryLongpressEnabled(),
-                  l10n_util::GetStringUTF16(
-                      IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER),
-                  l10n_util::GetStringFUTF16(
-                      IDS_ASH_CLIPBOARD_HISTORY_FOOTER,
-                      clipboard_history_util::GetShortcutKeyName())))));
+          Property(&views::StyledLabel::GetText,
+                   l10n_util::GetStringFUTF16(
+                       IDS_ASH_CLIPBOARD_HISTORY_FOOTER,
+                       clipboard_history_util::GetShortcutKeyName()))));
 }
 
 }  // namespace ash

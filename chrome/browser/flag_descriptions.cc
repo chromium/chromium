@@ -6513,13 +6513,6 @@ const char kCellularUseSecondEuiccDescription[] =
     "When enabled Cellular Setup and Settings UI will use the second available "
     "eUICC that's exposed by Hermes.";
 
-const char kClipboardHistoryLongpressName[] =
-    "Hold Ctrl+V to paste an item from clipboard history";
-const char kClipboardHistoryLongpressDescription[] =
-    "Enables an experimental behavior change where long-pressing Ctrl+V shows "
-    "the clipboard history menu. If an item is selected to paste, it replaces "
-    "the content initially pasted by Ctrl+V.";
-
 const char kCloudGamingDeviceName[] = "Enable cloud game search";
 const char kCloudGamingDeviceDescription[] =
     "Enables cloud game search results in the launcher.";

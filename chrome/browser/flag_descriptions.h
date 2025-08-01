@@ -3768,9 +3768,6 @@ extern const char kCellularBypassESimInstallationConnectivityCheckDescription[];
 extern const char kCellularUseSecondEuiccName[];
 extern const char kCellularUseSecondEuiccDescription[];
 
-extern const char kClipboardHistoryLongpressName[];
-extern const char kClipboardHistoryLongpressDescription[];
-
 extern const char kCloudGamingDeviceName[];
 extern const char kCloudGamingDeviceDescription[];
 

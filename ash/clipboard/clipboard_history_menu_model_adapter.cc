@@ -74,9 +74,6 @@ bool IsFooterRequired(
     const std::optional<base::Time>& nudge_last_time_shown) {
   // A footer is always required when the menu is shown via Ctrl+V long press.
   using crosapi::mojom::ClipboardHistoryControllerShowSource;
-  if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {
-    return true;
-  }
 
   // A footer is required if the menu hasn't been shown in the past 60 days.
   if (TimeSince(menu_last_time_shown.value_or(base::Time())) >=
@@ -125,17 +122,6 @@ void InsertFooterContentV2LabelStyledText(
   views::StyledLabel::RangeStyleInfo text_style;
   text_style.custom_font = Resolve(TypographyToken::kCrosAnnotation1);
   text_style.override_color_id = cros_tokens::kCrosSysOnSurfaceVariant;
-
-  // When the clipboard history menu is shown from a Ctrl+V long press event, a
-  // specific educational text is used which does not require inline icons.
-  using crosapi::mojom::ClipboardHistoryControllerShowSource;
-  if (show_source == ClipboardHistoryControllerShowSource::kControlVLongpress) {
-    styled_label->SetText(l10n_util::GetStringUTF16(
-        IDS_ASH_CLIPBOARD_HISTORY_CONTROL_V_LONGPRESS_FOOTER));
-    styled_label->AddStyleRange(gfx::Range(0u, styled_label->GetText().size()),
-                                std::move(text_style));
-    return;
-  }
 
   // When the clipboard history menu is *not* shown from a Ctrl+V long press
   // event, set text based on keyboard layout, caching the offset where an

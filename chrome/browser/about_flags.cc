@@ -3326,8 +3326,6 @@ constexpr char kBorealisProvisionInternalName[] = "borealis-provision";
 constexpr char kBorealisScaleClientByDPIInternalName[] =
     "borealis-scale-client-by-dpi";
 constexpr char kBorealisZinkGlDriverInternalName[] = "borealis-zink-gl-driver";
-constexpr char kClipboardHistoryLongpressInternalName[] =
-    "clipboard-history-longpress";
 constexpr char kBluetoothUseFlossInternalName[] = "bluetooth-use-floss";
 constexpr char kBluetoothUseLLPrivacyInternalName[] = "bluetooth-use-llprivacy";
 constexpr char kAssistantIphInternalName[] = "assistant-iph";
@@ -9011,10 +9009,7 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(content_settings::features::kTrackingProtection3pcd)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {kClipboardHistoryLongpressInternalName,
-     flag_descriptions::kClipboardHistoryLongpressName,
-     flag_descriptions::kClipboardHistoryLongpressDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kClipboardHistoryLongpress)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_WIN)
@@ -13329,15 +13324,6 @@ bool ShouldSkipConditionalFeatureEntry(const flags_ui::FlagsStorage* storage,
     return (channel != version_info::Channel::DEV &&
             channel != version_info::Channel::CANARY &&
             channel != version_info::Channel::UNKNOWN);
-  }
-
-  // Only show clipboard history longpress flag if channel is one of
-  // Beta/Dev/Canary/Unknown.
-  if (!strcmp(kClipboardHistoryLongpressInternalName, entry.internal_name)) {
-    return channel != version_info::Channel::BETA &&
-           channel != version_info::Channel::DEV &&
-           channel != version_info::Channel::CANARY &&
-           channel != version_info::Channel::UNKNOWN;
   }
 
   // Disable and prevent users from enabling LL privacy on boards that were

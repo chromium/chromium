@@ -157,7 +157,6 @@ BASE_DECLARE_FEATURE(kChangePasswordFactorSetup);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 BASE_DECLARE_FEATURE(kCheckPasswordsAgainstCryptohomeHelper);
 COMPONENT_EXPORT(ASH_CONSTANTS)
-BASE_DECLARE_FEATURE(kClipboardHistoryLongpress);
 COMPONENT_EXPORT(ASH_CONSTANTS)
 COMPONENT_EXPORT(ASH_CONSTANTS) BASE_DECLARE_FEATURE(kConch);
 COMPONENT_EXPORT(ASH_CONSTANTS)
@@ -1098,7 +1097,6 @@ bool IsCaptureModeEducationBypassLimitsEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCaptureModeOnDeviceOcrEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsCheckPasswordsAgainstCryptohomeHelperEnabled();
-COMPONENT_EXPORT(ASH_CONSTANTS) bool IsClipboardHistoryLongpressEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS)
 bool IsContinuousOverviewScrollAnimationEnabled();
 COMPONENT_EXPORT(ASH_CONSTANTS) bool IsCoralFeatureEnabled();

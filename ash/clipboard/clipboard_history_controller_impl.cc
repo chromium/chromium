@@ -227,21 +227,6 @@ void SyntheticPaste(
       display::Screen::GetScreen()->GetDisplayForNewWindows().id());
   CHECK(host);
 
-  // Because we do not require the user to release Ctrl+V before selecting a
-  // clipboard history item to paste, the Ctrl+V event we synthesize below may
-  // be discarded as a perceived continuation of the long press. Preempt this
-  // scenario by issuing a Ctrl+V release to ensure that the press and release
-  // below are handled as an independent paste.
-  // TODO(http://b/283533126): Replace this workaround with a long-term fix.
-  if (paste_source == crosapi::mojom::ClipboardHistoryControllerShowSource::
-                          kControlVLongpress) {
-    ui::KeyEvent v_release = SyntheticCtrlV(ui::EventType::kKeyReleased);
-    host->DeliverEventToSink(&v_release);
-
-    ui::KeyEvent ctrl_release = SyntheticCtrl(ui::EventType::kKeyReleased);
-    host->DeliverEventToSink(&ctrl_release);
-  }
-
   ui::KeyEvent ctrl_press = SyntheticCtrl(ui::EventType::kKeyPressed);
   host->DeliverEventToSink(&ctrl_press);
 

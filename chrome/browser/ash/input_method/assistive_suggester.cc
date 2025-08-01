@@ -45,10 +45,6 @@ using ime::AssistiveSuggestionMode;
 using ime::AssistiveSuggestionType;
 using ime::SuggestionsTextContext;
 
-constexpr int kModifierKeysMask = ui::EF_SHIFT_DOWN | ui::EF_CONTROL_DOWN |
-                                  ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN |
-                                  ui::EF_FUNCTION_DOWN | ui::EF_ALTGR_DOWN;
-
 const char kMaxTextBeforeCursorLength = 50;
 
 constexpr base::TimeDelta kLongpressActivationDelay = base::Milliseconds(500);
@@ -158,34 +154,6 @@ void RecordTextInputStateMetric(AssistiveTextInputState state) {
                                 state);
 }
 
-// Returns whether Ctrl+V is pressed with Ctrl+V long-press behavior enabled.
-bool IsLongpressEnabledControlV(const ui::KeyEvent& event) {
-  if (!features::IsClipboardHistoryLongpressEnabled()) {
-    return false;
-  }
-
-  return event.key_code() == ui::VKEY_V &&
-         (event.flags() & kModifierKeysMask) == ui::EF_CONTROL_DOWN;
-}
-
-// Returns the location to which the clipboard history menu should anchor. When
-// possible, this anchor is where a clipboard history item would be pasted if
-// the user made a selection; otherwise, this function returns a point at (0,0).
-gfx::Rect GetClipboardHistoryMenuAnchor() {
-  TextInputTarget* input_context = IMEBridge::Get()->GetInputContextHandler();
-  if (!input_context) {
-    return gfx::Rect();
-  }
-
-  ui::TextInputClient* input_client =
-      input_context->GetInputMethod()->GetTextInputClient();
-  if (!input_client) {
-    return gfx::Rect();
-  }
-
-  return input_client->GetCaretBounds();
-}
-
 void RecordMultiWordTextInputState(
     PrefService* pref_service,
     const std::string& engine_id,
@@ -231,8 +199,7 @@ AssistiveSuggester::~AssistiveSuggester() = default;
 
 bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
   return IsEmojiSuggestAdditionEnabled() || IsMultiWordSuggestEnabled() ||
-         IsDiacriticsOnPhysicalKeyboardLongpressEnabled() ||
-         features::IsClipboardHistoryLongpressEnabled();
+         IsDiacriticsOnPhysicalKeyboardLongpressEnabled();
 }
 
 void AssistiveSuggester::FetchEnabledSuggestionsFromBrowserContextThen(
@@ -421,7 +388,7 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
       enabled_suggestions_from_last_onfocus_ &&
       enabled_suggestions_from_last_onfocus_->diacritic_suggestions &&
       kDefaultLongpressEnabledKeys.contains(event.GetCharacter());
-  if (!is_enabled_diacritic_long_press && !IsLongpressEnabledControlV(event)) {
+  if (!is_enabled_diacritic_long_press) {
     return AssistiveSuggesterKeyResult::kNotHandled;
   }
 
@@ -434,8 +401,7 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
     // be emitted once per Press->Release cycle.
     if (!auto_repeat_suppress_metric_emitted_ &&
         !longpress_diacritics_suggester_.HasDiacriticSuggestions(
-            event.GetCharacter()) &&
-        !IsLongpressEnabledControlV(event)) {
+            event.GetCharacter())) {
       auto_repeat_suppress_metric_emitted_ = true;
       RecordLongPressDiacriticAutoRepeatSuppressedMetric();
     }
@@ -446,10 +412,6 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
   if (current_longpress_keydown_ == std::nullopt &&
       event.type() == ui::EventType::kKeyPressed) {
     current_longpress_keydown_ = event;
-
-    if (IsLongpressEnabledControlV(event)) {
-      longpress_control_v_suggester_.CachePastedTextStart();
-    }
 
     longpress_timer_.Start(
         FROM_HERE, kLongpressActivationDelay,
@@ -470,24 +432,12 @@ AssistiveSuggesterKeyResult AssistiveSuggester::HandleLongpressEnabledKeyEvent(
 }
 
 void AssistiveSuggester::OnLongpressDetected() {
-  if (!(current_longpress_keydown_.has_value() ||
-        IsLongpressEnabledControlV(current_longpress_keydown_.value()))) {
+  if (!current_longpress_keydown_.has_value()) {
     return;
   }
 
-  if (IsLongpressEnabledControlV(current_longpress_keydown_.value())) {
-    if (Shell::Get()->clipboard_history_controller()->ShowMenu(
-            GetClipboardHistoryMenuAnchor(),
-            ui::mojom::MenuSourceType::kKeyboard,
-            crosapi::mojom::ClipboardHistoryControllerShowSource::
-                kControlVLongpress,
-            base::BindOnce(&AssistiveSuggester::OnClipboardHistoryMenuClosing,
-                           weak_ptr_factory_.GetWeakPtr()))) {
-      // Only set `current_suggester_` if the clipboard history menu was shown.
-      current_suggester_ = &longpress_control_v_suggester_;
-    }
-  } else if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
-                 current_longpress_keydown_->GetCharacter())) {
+  if (longpress_diacritics_suggester_.TrySuggestOnLongpress(
+          current_longpress_keydown_->GetCharacter())) {
     current_suggester_ = &longpress_diacritics_suggester_;
   }
   current_longpress_keydown_ = std::nullopt;
