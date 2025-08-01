@@ -1047,6 +1047,49 @@ IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
             EXPECT_EQ(kLang, info->language);
           })));
 }
+
+IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest,
+                       OnUpdateLanguageStatus_IncognitoProfile) {
+  const char kLang[] = "en-au";
+  Profile* profile1 = GetProfile();
+  Profile* profile2 =
+      InProcessBrowserTest::CreateIncognitoBrowser()->GetProfile();
+  // Assign the incognito contents to be the contents for this handler.
+  web_contents_.reset();
+  web_contents_ = content::WebContents::Create(
+      content::WebContents::CreateParams(profile2));
+  test_web_ui_->set_web_contents(web_contents_.get());
+  ReadAnythingSidePanelControllerGlue::CreateForWebContents(
+      web_contents_.get(), browser()
+                               ->GetActiveTabInterface()
+                               ->GetTabFeatures()
+                               ->read_anything_side_panel_controller());
+  content::TtsController::GetInstance()->SetTtsEngineDelegate(
+      &engine_delegate_);
+  handler_ = std::make_unique<TestReadAnythingUntrustedPageHandler>(
+      page_.BindAndGetRemote(), test_web_ui_.get());
+
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile1, kLang, content::LanguageInstallStatus::NOT_INSTALLED, "");
+  content::TtsController::GetInstance()->UpdateLanguageStatus(
+      profile2, kLang, content::LanguageInstallStatus::INSTALLED, "");
+
+  // Forward both statuses since this handler is for an incognito profile.
+  EXPECT_CALL(page_, OnGetVoicePackInfo(_))
+      .Times(2)
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kNotInstalled,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })))
+      .WillOnce(testing::WithArg<0>(
+          testing::Invoke([&](read_anything::mojom::VoicePackInfoPtr info) {
+            EXPECT_EQ(read_anything::mojom::InstallationState::kInstalled,
+                      info->pack_state->get_installation_state());
+            EXPECT_EQ(kLang, info->language);
+          })));
+}
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 IN_PROC_BROWSER_TEST_F(ReadAnythingUntrustedPageHandlerTest, OnTabWillDetach) {
