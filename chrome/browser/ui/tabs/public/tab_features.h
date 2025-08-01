@@ -24,6 +24,7 @@ class Profile;
 class PwaInstallPageActionController;
 class ReadAnythingSidePanelController;
 class SidePanelRegistry;
+class TabCaptureContentsBorderHelper;
 class TabResourceUsageTabHelper;
 class TabUIHelper;
 class TranslatePageActionController;
@@ -409,6 +410,9 @@ class TabFeatures {
 
   std::unique_ptr<TabCreationMetricsController>
       tab_creation_metrics_controller_;
+
+  std::unique_ptr<TabCaptureContentsBorderHelper>
+      tab_capture_contents_border_helper_;
 
   // Must be the last member.
   base::WeakPtrFactory<TabFeatures> weak_factory_{this};
