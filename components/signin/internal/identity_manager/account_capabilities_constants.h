@@ -8,9 +8,15 @@
 // `inline` is important here: this ensures that even though the definition is
 // in a header which can be included in multiple translation units, the linker
 // will deduplicate them into a single definition.
+#if BUILDFLAG(IS_IOS)
+#define ACCOUNT_CAPABILITY_TEMPORARY_NOT_IOS(cpp_label, java_label, name)
+#else
+#define ACCOUNT_CAPABILITY_TEMPORARY_NOT_IOS ACCOUNT_CAPABILITY
+#endif
 #define ACCOUNT_CAPABILITY(cpp_label, java_label, name) \
   inline constexpr char cpp_label[] = name;
 #include "components/signin/internal/identity_manager/account_capabilities_list.h"
+#undef ACCOUNT_CAPABILITY_TEMPORARY_NOT_IOS
 #undef ACCOUNT_CAPABILITY
 
 #endif  // COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_CAPABILITIES_CONSTANTS_H_

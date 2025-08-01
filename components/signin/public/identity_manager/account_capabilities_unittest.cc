@@ -211,6 +211,9 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToAccountLevelEnterprisePolicies) {
   EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
             signin::Tribool::kUnknown);
 
+#if !BUILDFLAG(IS_IOS)
+  // TODO(crbug.com/435151047): Remove this once the capability is fully rolled
+  // out.
   AccountCapabilitiesTestMutator mutator(&capabilities);
   mutator.set_is_subject_to_account_level_enterprise_policies(true);
   EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
@@ -219,6 +222,7 @@ TEST_F(AccountCapabilitiesTest, IsSubjectToAccountLevelEnterprisePolicies) {
   mutator.set_is_subject_to_account_level_enterprise_policies(false);
   EXPECT_EQ(capabilities.is_subject_to_account_level_enterprise_policies(),
             signin::Tribool::kFalse);
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 TEST_F(AccountCapabilitiesTest, IsSubjectToEnterpriseFeatures) {

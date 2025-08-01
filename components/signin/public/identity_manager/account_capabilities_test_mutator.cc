@@ -121,8 +121,10 @@ void AccountCapabilitiesTestMutator::set_is_opted_in_to_parental_supervision(
 
 void AccountCapabilitiesTestMutator::
     set_is_subject_to_account_level_enterprise_policies(bool value) {
+#if !BUILDFLAG(IS_IOS)
   capabilities_->capabilities_map_
       [kIsSubjectToAccountLevelEnterprisePoliciesCapabilityName] = value;
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 void AccountCapabilitiesTestMutator::
