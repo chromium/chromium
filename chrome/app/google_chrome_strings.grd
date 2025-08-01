@@ -2043,6 +2043,12 @@ Google Chrome is unable to recover your settings.
           help me with this
         </message>
 
+        <!-- AI Mode Strings -->
+        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT"
+          desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a follow up question.">
+          Ask a follow up
+        </message>
+
         <!-- On Sign-in Avatar Button Label Desktop -->
         <!-- TODO(crbug.com/417928515): Finalize the string and make it translateable. -->
         <message translateable="false" name="IDS_AVATAR_BUTTON_MAKING_CHROME_YOURS" desc="">

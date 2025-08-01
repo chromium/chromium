@@ -2031,6 +2031,12 @@ Chromium is unable to recover your settings.
           desc="Default query for Lens searchbox to request help with the current page context.">
           help me with this
         </message>
+
+        <!-- AI Mode Strings -->
+        <message name="IDS_LENS_COMPOSEBOX_HINT_TEXT"
+          desc="The hint text of the AI mode searchbox in the Lens side panel. This text is shown in the searchbox when the user has not yet typed any text, and prompts the user to ask a follow up question.">
+          Ask a follow up
+        </message>
       </if>
 
       <!-- OOBE -->
