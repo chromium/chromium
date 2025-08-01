@@ -157,6 +157,12 @@ void AggregatedJournalSerializer::WillAddJournalEntry(
                               entry.jpg_screenshot->size());
   }
 
+  if (!entry.url.empty()) {
+    annotation = track_event->add_debug_annotations();
+    annotation->set_name("url");
+    annotation->set_string_value(entry.url);
+  }
+
   WriteTracePacket(msg.SerializeAsArray());
 }
 
