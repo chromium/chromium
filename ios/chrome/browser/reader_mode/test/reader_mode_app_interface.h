@@ -10,8 +10,14 @@
 // Test app interface for the reader mode feature.
 @interface ReaderModeAppInterface : NSObject
 
-// Waits until the reader mode web state is available for the current web state.
-+ (bool)waitUntilReaderModeWebStateIsReady;
+// Returns whether the Reader mode WebState is ready in the current tab.
++ (bool)readerModeWebStateIsReady;
+
+// Shows Reader mode in the current tab.
++ (void)showReaderMode;
+
+// Hides Reader mode in the current tab.
++ (void)hideReaderMode;
 
 @end
 

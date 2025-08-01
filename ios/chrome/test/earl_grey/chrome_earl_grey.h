@@ -1005,6 +1005,17 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration);
 // Waits for the MessagingBackendService to be initialized.
 - (NSError*)waitForMessagingBackendServiceInitialized;
 
+#pragma mark - Reader mode Utilities
+
+// Shows Reader mode in the current tab.
+- (void)showReaderMode;
+
+// Waits until the Reader mode WebState is ready in the current tab.
+- (BOOL)waitUntilReaderModeWebStateIsReady;
+
+// Hides Reader mode in the current tab.
+- (void)hideReaderMode;
+
 @end
 
 #endif  // IOS_CHROME_TEST_EARL_GREY_CHROME_EARL_GREY_H_

@@ -20,6 +20,7 @@
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_modal_constants.h"
 #import "ios/chrome/browser/infobars/ui_bundled/modals/infobar_translate_modal_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/popup_menu_constants.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/reader_mode/ui/constants.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/translate/model/translate_app_interface.h"
@@ -1279,36 +1280,18 @@ void TestResponseProvider::GetLanguageResponse(
   // Load URL.
   [ChromeEarlGrey loadURL:URL];
 
-  // Open Reader Mode from tools menu.
-  [ChromeEarlGreyUI openToolsMenu];
-  id<GREYMatcher> tableViewMatcher =
-      [ChromeEarlGrey isNewOverflowMenuEnabled]
-          ? grey_accessibilityID(kPopupMenuToolsMenuActionListId)
-          : grey_accessibilityID(kPopupMenuToolsMenuTableViewId);
-  [[[[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                       kToolsMenuReaderMode),
-                                                   grey_interactable(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
-      onElementWithMatcher:tableViewMatcher]
-      assertWithMatcher:grey_not(grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled))]
-      performAction:grey_tap()];
+  // Open Reader Mode.
+  [ChromeEarlGrey showReaderMode];
+  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
+                 @"Reader mode content could not be loaded.");
 
   // Verify Reader Mode is active.
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:
           grey_accessibilityID(kReaderModeViewAccessibilityIdentifier)];
 
-  // Close Reader Mode from tools menu.
-  [ChromeEarlGreyUI openToolsMenu];
-  [[[[EarlGrey selectElementWithMatcher:grey_allOf(grey_accessibilityID(
-                                                       kToolsMenuReaderMode),
-                                                   grey_interactable(), nil)]
-         usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 250)
-      onElementWithMatcher:tableViewMatcher]
-      assertWithMatcher:grey_not(grey_accessibilityTrait(
-                            UIAccessibilityTraitNotEnabled))]
-      performAction:grey_tap()];
+  // Close Reader Mode.
+  [ChromeEarlGrey hideReaderMode];
 
   // Verify Reader Mode is closed.
   [ChromeEarlGrey

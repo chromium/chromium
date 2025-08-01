@@ -359,6 +359,7 @@ source_set("eg_test_support+eg2") {
     "//ios/chrome/browser/partial_translate/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/policy/model:eg_test_support+eg2",
     "//ios/chrome/browser/popup_menu/ui_bundled:constants",
+    "//ios/chrome/browser/reader_mode/test:eg_test_support+eg2",
     "//ios/chrome/browser/recent_tabs/ui_bundled:ui_constants",
     "//ios/chrome/browser/safe_mode/ui_bundled:eg_test_support+eg2",
     "//ios/chrome/browser/settings/ui_bundled:settings_root_constants",

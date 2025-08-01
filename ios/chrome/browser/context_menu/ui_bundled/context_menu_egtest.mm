@@ -984,7 +984,7 @@ void RelaunchApp() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
-  GREYAssertTrue([ReaderModeAppInterface waitUntilReaderModeWebStateIsReady],
+  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
                  @"Reader mode content could not be loaded");
 
   [ChromeEarlGreyUI longPressElementOnWebView:ElementSelectorToLongPressLink()];
@@ -1025,7 +1025,7 @@ void RelaunchApp() {
   [ChromeEarlGreyUI openToolsMenu];
   [ChromeEarlGreyUI
       tapToolsMenuAction:grey_accessibilityID(kToolsMenuReaderMode)];
-  GREYAssertTrue([ReaderModeAppInterface waitUntilReaderModeWebStateIsReady],
+  GREYAssertTrue([ChromeEarlGrey waitUntilReaderModeWebStateIsReady],
                  @"Reader mode content could not be loaded");
 
   [ChromeEarlGreyUI
