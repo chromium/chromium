@@ -762,7 +762,7 @@ OverflowMenuFooter* CreateOverflowMenuManagedFooter(
 - (OverflowMenuAction*)toggleReaderModeAction {
   ReaderModeTabHelper* tabHelper =
       ReaderModeTabHelper::FromWebState(self.webState);
-  BOOL isReaderModeActive = tabHelper->IsActive();
+  BOOL isReaderModeActive = tabHelper && tabHelper->IsActive();
   int nameID = isReaderModeActive ? IDS_IOS_TOOLS_MENU_HIDE_READER_MODE
                                   : IDS_IOS_TOOLS_MENU_READER_MODE;
   __weak __typeof(self) weakSelf = self;

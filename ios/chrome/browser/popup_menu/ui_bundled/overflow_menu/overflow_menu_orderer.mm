@@ -18,6 +18,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_metrics.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_backed_boolean.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
@@ -601,6 +602,12 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
       if (actionsSet.contains(*actionType)) {
         continue;
       }
+      if (*actionType == overflow_menu::ActionType::ReaderMode &&
+          !IsReaderModeAvailable()) {
+        // Reader mode may have been disabled since the last update, if so do
+        // not add it to `actionsSet`.
+        continue;
+      }
 
       actionsSet.insert(*actionType);
       actionOrderData.shownActions.push_back(*actionType);
@@ -620,6 +627,12 @@ base::Value::Dict DictFromBadgeData(const BadgeData badgeData) {
         continue;
       }
       if (actionsSet.contains(*actionType)) {
+        continue;
+      }
+      if (*actionType == overflow_menu::ActionType::ReaderMode &&
+          !IsReaderModeAvailable()) {
+        // Reader mode may have been disabled since the last update, if so do
+        // not add it to `actionsSet`.
         continue;
       }
 

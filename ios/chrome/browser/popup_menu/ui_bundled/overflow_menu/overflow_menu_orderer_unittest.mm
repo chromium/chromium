@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_action_provider.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_constants.h"
 #import "ios/chrome/browser/popup_menu/ui_bundled/overflow_menu/overflow_menu_swift.h"
+#import "ios/chrome/browser/reader_mode/model/features.h"
 #import "ios/chrome/browser/shared/model/prefs/pref_names.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -2284,6 +2285,40 @@ TEST_F(OverflowMenuOrdererTest, LoadActionsFromPrefsWithInvalidStrings) {
   EXPECT_EQ(
       static_cast<overflow_menu::ActionType>(model.hiddenActions[1].actionType),
       clearDataAction);
+}
+
+// Tests that if prefs contain a stale Reading mode state, the state is
+// discarded when loaded.
+TEST_F(OverflowMenuOrdererTest,
+       LoadActionsFromPrefsWithInvalidReadingModeState) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(kEnableReaderMode);
+  CreatePrefs();
+
+  // Add Reading mode to the previous list of shown and hidden actions.
+  base::Value::List shown_actions_list =
+      base::Value::List().Append(overflow_menu::StringNameForActionType(
+          overflow_menu::ActionType::ReaderMode));
+
+  base::Value::List hidden_actions_list =
+      base::Value::List().Append(overflow_menu::StringNameForActionType(
+          overflow_menu::ActionType::ReaderMode));
+
+  base::Value::Dict actions_order_dict;
+  actions_order_dict.Set("shown", std::move(shown_actions_list));
+  actions_order_dict.Set("hidden", std::move(hidden_actions_list));
+
+  prefs_->SetDict(prefs::kOverflowMenuActionsOrder,
+                  std::move(actions_order_dict));
+
+  InitializeOverflowMenuOrderer(NO);
+
+  ActionCustomizationModel* model =
+      overflow_menu_orderer_.actionCustomizationModel;
+
+  // Reading mode should be filtered since the feature is disabled.
+  ASSERT_EQ(model.shownActions.count, 0u);
+  ASSERT_EQ(model.hiddenActions.count, 0u);
 }
 
 // Tests that if `basePageActions` from the provider is not sorted by
