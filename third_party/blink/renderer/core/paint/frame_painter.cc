@@ -23,6 +23,11 @@ namespace blink {
 bool FramePainter::in_paint_contents_ = false;
 
 void FramePainter::Paint(GraphicsContext& context, PaintFlags paint_flags) {
+  if ((paint_flags & PaintFlag::kPrivacyPreserving) &&
+      !GetFrameView().GetFrame().IsSameOrigin()) {
+    return;
+  }
+
   Document* document = GetFrameView().GetFrame().GetDocument();
 
   if (GetFrameView().ShouldThrottleRendering() || !document->IsActive())
