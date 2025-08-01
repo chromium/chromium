@@ -198,6 +198,35 @@ TEST_F(ActorUiTabControllerTest,
   Debounce();
 }
 
+TEST_F(ActorUiTabControllerTest,
+       UpdateButtonVisibility_ButtonStaysVisibleWhenClientIsInControl) {
+  HandoffButtonState handoff_button_state(
+      true, HandoffButtonState::ControlOwnership::kActor);
+  UiTabState ui_tab_state(ActorOverlayState(), handoff_button_state);
+  tab_controller()->OnUiTabStateChange(ui_tab_state, base::DoNothing());
+  tab_controller()->OnTabActiveStatusChanged(true, &mock_tab());
+  Debounce();
+
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
+              UpdateState(_, true));
+
+  tab_controller()->SetOverlayHoverStatus(true);
+  Debounce();
+  testing::Mock::VerifyAndClearExpectations(
+      tab_controller_factory()->handoff_button_controller());
+
+  EXPECT_CALL(*tab_controller_factory()->handoff_button_controller(),
+              UpdateState(_, /*is_visible=*/true));
+
+  // Simulate user in control.
+  tab_controller()->SetOverlayHoverStatus(false);
+  HandoffButtonState client_control_state(
+      true, HandoffButtonState::ControlOwnership::kClient);
+  UiTabState new_ui_tab_state(ActorOverlayState(), client_control_state);
+  tab_controller()->OnUiTabStateChange(new_ui_tab_state, base::DoNothing());
+  Debounce();
+}
+
 TEST_F(
     ActorUiTabControllerTest,
     UpdateButtonVisibility_ButtonStaysVisibleWhenHoverMovesFromOverlayToButton) {

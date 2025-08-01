@@ -17,6 +17,7 @@
 namespace actor::ui {
 namespace {
 using ::tabs::TabInterface;
+using enum actor::ui::HandoffButtonState::ControlOwnership;
 
 void LogAndIgnoreCallbackError(const std::string_view source_name,
                                bool result) {
@@ -153,11 +154,16 @@ bool ActorUiTabController::ComputeActorOverlayVisibility() {
 }
 
 bool ActorUiTabController::ComputeHandoffButtonVisibility() {
-  // Only visible when its state and the associated tab is active and the mouse
-  // is hovering over the overlay or the button.
-  return current_tab_active_status_ &&
-         current_ui_tab_state_.handoff_button.is_active &&
-         (is_hovering_overlay_ || is_hovering_button_);
+  bool is_button_active = current_ui_tab_state_.handoff_button.is_active;
+  bool is_client_control =
+      current_ui_tab_state_.handoff_button.controller == kClient;
+
+  // Only visible when:
+  // 1. Its state and the associated tab is active and the mouse is hovering
+  //    over the overlay or the button.
+  // 2. Its state and the associated tab is active and the client is in control.
+  return current_tab_active_status_ && is_button_active &&
+         (is_hovering_overlay_ || is_hovering_button_ || is_client_control);
 }
 
 void ActorUiTabController::SetActiveTaskId(TaskId task_id) {
