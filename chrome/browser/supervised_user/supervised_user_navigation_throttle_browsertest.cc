@@ -38,7 +38,6 @@
 #include "components/supervised_user/core/browser/supervised_user_url_filter.h"
 #include "components/supervised_user/core/browser/supervised_user_utils.h"
 #include "components/supervised_user/core/common/features.h"
-#include "components/supervised_user/core/common/features_testutils.h"
 #include "components/supervised_user/core/common/supervised_user_constants.h"
 #include "components/supervised_user/test_support/kids_management_api_server_mock.h"
 #include "content/public/browser/navigation_controller.h"
@@ -405,9 +404,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserNavigationThrottleTest,
 }
 
 class SupervisedUserIframeFilterTest
-    : public SupervisedUserNavigationThrottleTestBase,
-      public testing::WithParamInterface<
-          supervised_user::testing::LocalWebApprovalsTestCase> {
+    : public SupervisedUserNavigationThrottleTestBase {
  protected:
   SupervisedUserIframeFilterTest()
       : SupervisedUserNavigationThrottleTestBase(
@@ -442,23 +439,12 @@ class SupervisedUserIframeFilterTest
   RenderFrameTracker* tracker() { return tracker_.get(); }
 
  private:
-  static supervised_user::testing::LocalWebApprovalsTestCase
-  GetLocalWebApprovalsSupportTestParam() {
-    return GetParam();
-  }
-
- private:
   bool RunCommandAndGetBooleanFromFrame(content::FrameTreeNodeId frame_id,
                                         const std::string& command);
 
   std::unique_ptr<RenderFrameTracker> tracker_;
   raw_ptr<supervised_user::PermissionRequestCreatorMock, DanglingUntriaged>
       permission_creator_;
-
-  // Each feature is enabled within its own feature list.
-  std::unique_ptr<base::test::ScopedFeatureList>
-      local_web_approvals_test_support_{
-          GetLocalWebApprovalsSupportTestParam().MakeFeatureList()};
 };
 
 void SupervisedUserIframeFilterTest::SetUpOnMainThread() {
@@ -624,17 +610,7 @@ bool SupervisedUserIframeFilterTest::IsLocalWebApprovalsEnabled() const {
   return supervised_user::IsLocalWebApprovalsEnabled();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    LocalWebApprovalsEnabled,
-    SupervisedUserIframeFilterTest,
-    supervised_user::testing::LocalWebApprovalsTestCase::Values(),
-    [](const testing::TestParamInfo<
-        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
-      return base::StrCat({"WithLocalWebApprovalsTestCase",
-                           static_cast<std::string>(info.param)});
-    });
-
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockSubFrame) {
   base::HistogramTester histogram_tester;
 
   BlockHost(kIframeHost2);
@@ -681,7 +657,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockSubFrame) {
       1);
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
   BlockHost(kIframeHost1);
   BlockHost(kIframeHost2);
 
@@ -729,7 +705,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, BlockMultipleSubFrames) {
   DCHECK_EQ(GetBlockedFrames().size(), 0u);
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest, TestBackButton) {
   BlockHost(kIframeHost1);
 
   GURL allowed_url_with_iframes = embedded_test_server()->GetURL(
@@ -758,7 +734,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest, TestBackButton) {
                                   content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
                        TestBackButtonMainFrame) {
   BlockHost(kExampleHost);
 
@@ -793,7 +769,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
 // Tests that the trivial www-subdomain stripping is applied on the url
 // of the interstitial. Blocked urls without further conflicts will be
 // unblocked by a remote approval.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromClassifyUrlForUnstripedHostIsStrippedInRemoteApproval) {
   // Classify url blocks the navigation to the target url.
@@ -830,7 +806,7 @@ IN_PROC_BROWSER_TEST_P(
 
 // Tests that the url stripping is applied on the url on the interstitial, when
 // there is no unstriped host entry in the blocklist.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromBlockListIsStrippedInRemoteApproval) {
   // Manual parental blocklist entry blocks the navigation to the target url.
@@ -862,7 +838,7 @@ IN_PROC_BROWSER_TEST_P(
 // Tests that the url stripping is skipped on the url on the interstitial, when
 // there is a unstriped host entry in the blocklist. Blocked urls without
 // further conflicts will be unblocked by a remote approval.
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     SupervisedUserIframeFilterTest,
     BlockedMainFrameFromBlockListForUnstripedHostSkipsStrippingInRemoteApproval) {
   // Manual parental blocklist entry for the unstriped url blocks the
@@ -895,7 +871,7 @@ IN_PROC_BROWSER_TEST_P(
   EXPECT_FALSE(IsInterstitialBeingShownInFrame(blocked_frame_id));
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
                        AllowlistedMainFrameDenylistedIframe) {
   AllowlistHost(kExampleHost);
   BlockHost(kIframeHost1);
@@ -912,7 +888,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   EXPECT_EQ(kIframeHost1, GetBlockedFrameURL(blocked[0]).host());
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
                        RememberAlreadyRequestedHosts) {
   BlockHost(kExampleHost);
 
@@ -929,8 +905,12 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   // Expect that the local approvals button is shown if the flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsButtonBeingShown(blocked_frames[0]));
-  // Expect that the "Block reason" is shown.
-  EXPECT_TRUE(IsBlockReasonBeingShown(blocked_frames[0]));
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedUserBlockInterstitialV3)) {
+    // Expect that the "Block reason" is shown if we are in interstitial
+    // version 2. The field does not exist in interstitial version 3.
+    EXPECT_TRUE(IsBlockReasonBeingShown(blocked_frames[0]));
+  }
 
   // Delay approval/denial by parent.
   permission_creator()->SetPermissionResult(true);
@@ -958,8 +938,12 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   // flag is enabled.
   EXPECT_EQ(IsLocalWebApprovalsEnabled(),
             IsLocalApprovalsInsteadButtonBeingShown(blocked_frames[0]));
-  // Expect that the "Block reason" is not shown.
-  EXPECT_FALSE(IsBlockReasonBeingShown(blocked_frames[0]));
+  if (!base::FeatureList::IsEnabled(
+          supervised_user::kSupervisedUserBlockInterstitialV3)) {
+    // Expect that the "Block reason" is not shown if we are in interstitial
+    // version 2. The field does not exist in interstitial version 3.
+    EXPECT_FALSE(IsBlockReasonBeingShown(blocked_frames[0]));
+  }
 
   content::WebContents* active_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -983,7 +967,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
   EXPECT_FALSE(IsInterstitialBeingShownInMainFrame(browser()));
 }
 
-IN_PROC_BROWSER_TEST_P(SupervisedUserIframeFilterTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserIframeFilterTest,
                        IFramesWithSameDomainAsMainFrameAllowed) {
   supervised_user_test_util::SetWebFilterType(
       browser()->profile(), supervised_user::WebFilterType::kCertainSites);
@@ -1025,17 +1009,7 @@ void SupervisedUserNarrowWidthIframeFilterTest::SetUp() {
   SupervisedUserIframeFilterTest::SetUp();
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    LocalWebApprovalsEnabledNarrowWidth,
-    SupervisedUserNarrowWidthIframeFilterTest,
-    supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
-    [](const testing::TestParamInfo<
-        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
-      return base::StrCat({"WithLocalWebApprovalsTestCase",
-                           static_cast<std::string>(info.param)});
-    });
-
-IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
+IN_PROC_BROWSER_TEST_F(SupervisedUserNarrowWidthIframeFilterTest,
                        NarrowWidthWindow) {
   BlockHost(kExampleHost);
 
@@ -1110,18 +1084,7 @@ IN_PROC_BROWSER_TEST_P(SupervisedUserNarrowWidthIframeFilterTest,
 // Tests Chrome OS local web approvals flow.
 using ChromeOSLocalWebApprovalsTest = SupervisedUserIframeFilterTest;
 
-// Only test for the local web approvals feature enabled.
-INSTANTIATE_TEST_SUITE_P(
-    ,
-    ChromeOSLocalWebApprovalsTest,
-    supervised_user::testing::LocalWebApprovalsTestCase::OnlySupported(),
-    [](const testing::TestParamInfo<
-        supervised_user::testing::LocalWebApprovalsTestCase>& info) {
-      return base::StrCat({"WithLocalWebApprovalsTestCase",
-                           static_cast<std::string>(info.param)});
-    });
-
-IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
+IN_PROC_BROWSER_TEST_F(ChromeOSLocalWebApprovalsTest,
                        StartLocalWebApprovalsFromMainFrame) {
   base::HistogramTester histogram_tester;
   BlockHost(kExampleHost);
@@ -1167,7 +1130,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
+IN_PROC_BROWSER_TEST_F(ChromeOSLocalWebApprovalsTest,
                        StartLocalWebApprovalsFromIframe) {
   base::HistogramTester histogram_tester;
   BlockHost(kIframeHost1);
@@ -1218,7 +1181,7 @@ IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
       1);
 }
 
-IN_PROC_BROWSER_TEST_P(ChromeOSLocalWebApprovalsTest,
+IN_PROC_BROWSER_TEST_F(ChromeOSLocalWebApprovalsTest,
                        UpdateUIAfterRemoteRequestSent) {
   BlockHost(kExampleHost);
 

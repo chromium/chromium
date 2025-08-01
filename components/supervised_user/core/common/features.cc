@@ -22,11 +22,7 @@ namespace supervised_user {
 // user's device.
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#else
-             base::FEATURE_DISABLED_BY_DEFAULT);
-#endif
 
 // TODO(crbug.com/391799078): Support local web approval for subframes on
 // Desktop.
@@ -58,13 +54,16 @@ BASE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload,
              "PacpWidgetSupportsUrlPayload",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// TODO(crbug.com/435635774): Release the interstitial v3 in all platforms.
 BASE_FEATURE(kSupervisedUserBlockInterstitialV3,
              "SupervisedUserBlockInterstitialV3",
-#if BUILDFLAG(IS_IOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
-#endif  //  BUILDFLAG(IS_IOS)
+#endif  // BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) ||
+        // BUILDFLAG(IS_IOS)
 
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
