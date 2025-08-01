@@ -69,18 +69,6 @@ class AIManager : public base::SupportsUserData::Data,
     return model_download_progress_manager_.GetNumberOfReporters();
   }
 
-  // Returns if all of the language codes in `languages` are supported.
-  static bool IsLanguagesSupported(
-      const std::vector<AILanguageCodePtr>& languages,
-      const base::flat_set<std::string_view>& allowed_languages);
-
-  // Returns if `output` and all of the language codes in `input` and `context`
-  // are supported.
-  static bool IsLanguagesSupported(
-      const std::vector<AILanguageCodePtr>& input,
-      const std::vector<AILanguageCodePtr>& context,
-      const AILanguageCodePtr& output,
-      const base::flat_set<std::string_view>& allowed_languages);
   // Return the default and max sampling params for the LanguageModel API.
   blink::mojom::AILanguageModelParamsPtr GetLanguageModelParams();
 
@@ -126,6 +114,13 @@ class AIManager : public base::SupportsUserData::Data,
 
   bool IsBuiltInAIAPIsEnabledByPolicy();
 
+  // Returns true if `options` uses only `supported` languages, false otherwise.
+  // Logs errors and warnings and initializes empty output languages as needed.
+  template <typename OptionsPtrType>
+  bool CheckAndFixLanguages(OptionsPtrType& options,
+                            std::string_view api_name,
+                            const base::flat_set<std::string_view>& supported);
+
  private:
   void OnModelPathValidationComplete(const base::FilePath& model_path,
                                      bool is_valid_path);
@@ -150,9 +145,12 @@ class AIManager : public base::SupportsUserData::Data,
       CanCreateLanguageModelCallback callback,
       optimization_guide::OnDeviceModelEligibilityReason eligibility);
 
-  void AddMessageToConsoleForUnexpectedLanguage(
-      blink::mojom::ConsoleMessageLevel level,
-      std::string message);
+  void MaybeLogMissingOutputLanguageWarning(
+      const std::string_view api_name,
+      const base::flat_set<std::string_view>& supported_languages);
+  void MaybeLogUnsupportedLanguageError(
+      const std::string_view api_name,
+      const base::flat_set<std::string_view>& supported_languages);
 
   mojo::ReceiverSet<blink::mojom::AIManager> receivers_;
 
@@ -170,8 +168,8 @@ class AIManager : public base::SupportsUserData::Data,
 
   content::WeakDocumentPtr rfh_;
 
-  bool did_add_warning_console_message_for_unexpected_language_ = false;
-  bool did_add_error_console_message_for_unexpected_language_ = false;
+  bool did_log_missing_output_language_warning_ = false;
+  bool did_log_unsupported_language_error_ = false;
 
   base::WeakPtrFactory<AIManager> weak_factory_{this};
 };

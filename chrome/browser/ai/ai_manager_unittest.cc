@@ -38,6 +38,17 @@ using testing::AtMost;
 using testing::Invoke;
 using testing::NiceMock;
 
+namespace {
+
+std::vector<blink::mojom::AILanguageCodePtr> MakeLanguageCodeVector(
+    const std::vector<std::string>& languages) {
+  std::vector<blink::mojom::AILanguageCodePtr> result;
+  for (const auto& language : languages) {
+    result.push_back(blink::mojom::AILanguageCode::New(language));
+  }
+  return result;
+}
+
 class AIManagerTest : public AITestUtils::AITestBase {
  protected:
   AIManagerTest()
@@ -265,65 +276,92 @@ TEST_F(AIManagerTest, CanCreateEnterprisePolicyDisabled) {
   SetBuildInAIAPIsEnterprisePolicy(true);
 }
 
-class AIManagerIsLanguagesSupportedTest : public AITestUtils::AITestBase {
- protected:
-  static constexpr char kSupportedLanguageCode[] = "en";
-  static constexpr char kUnsupportedLanguageCode[] = "fr";
+// Test CheckAndFixLanguages templates for LanguageModel.
+TEST_F(AIManagerTest, CheckAndFixLanguagesLanguageModel) {
+  base::flat_set<std::string_view> supported = {"en", "es", "ja"};
+  auto make_expected = [](const base::flat_set<std::string>& languages) {
+    auto expected = blink::mojom::AILanguageModelExpected::New();
+    expected->languages.emplace();
+    for (const auto& language : languages) {
+      expected->languages->push_back(
+          blink::mojom::AILanguageCode::New(language));
+    }
+    return expected;
+  };
 
-  base::flat_set<std::string_view> DefaultSupportedBaseLanguages() {
-    static constexpr auto kDefaultSupportedBaseLanguages =
-        base::MakeFixedFlatSet<std::string_view>({"en"});
-    return base::MakeFlatSet<std::string_view>(kDefaultSupportedBaseLanguages);
-  }
+  auto make_options = [&](const base::flat_set<std::string>& inputs,
+                          const base::flat_set<std::string>& outputs) {
+    auto options = blink::mojom::AILanguageModelCreateOptions::New();
+    options->expected_inputs.emplace();
+    options->expected_inputs->push_back(make_expected(inputs));
+    options->expected_outputs.emplace();
+    options->expected_outputs->push_back(make_expected(outputs));
+    return options;
+  };
 
-  std::vector<blink::mojom::AILanguageCodePtr> valid_language_codes() {
-    std::vector<blink::mojom::AILanguageCodePtr> languages;
-    languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kSupportedLanguageCode));
-    return languages;
-  }
-
-  std::vector<blink::mojom::AILanguageCodePtr> invalid_language_codes() {
-    std::vector<blink::mojom::AILanguageCodePtr> languages;
-    languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kUnsupportedLanguageCode));
-    return languages;
-  }
-
-  std::vector<blink::mojom::AILanguageCodePtr> mixed_language_codes() {
-    std::vector<blink::mojom::AILanguageCodePtr> languages;
-    languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kSupportedLanguageCode));
-    languages.emplace_back(
-        blink::mojom::AILanguageCode::New(kUnsupportedLanguageCode));
-    return languages;
-  }
-};
-
-TEST_F(AIManagerIsLanguagesSupportedTest, OneVector) {
-  EXPECT_TRUE(AIManager::IsLanguagesSupported(valid_language_codes(),
-                                              DefaultSupportedBaseLanguages()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(
-      invalid_language_codes(), DefaultSupportedBaseLanguages()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(
-      mixed_language_codes(), DefaultSupportedBaseLanguages()));
+  auto options = blink::mojom::AILanguageModelCreateOptions::New();
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({"en", "es-MX"}, {});
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({}, {"en-UK", "es-SP", "ja-JP"});
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({"en", "fr"}, {});
+  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({"en"}, {"hi"});
+  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
 }
 
-TEST_F(AIManagerIsLanguagesSupportedTest, TwoVectorsAndOneCode) {
-  EXPECT_TRUE(AIManager::IsLanguagesSupported(
-      valid_language_codes(), valid_language_codes(),
-      blink::mojom::AILanguageCode::New(kSupportedLanguageCode),
-      DefaultSupportedBaseLanguages()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(
-      valid_language_codes(), invalid_language_codes(),
-      blink::mojom::AILanguageCode::New(kSupportedLanguageCode),
-      DefaultSupportedBaseLanguages()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(
-      invalid_language_codes(), mixed_language_codes(),
-      blink::mojom::AILanguageCode::New(kSupportedLanguageCode),
-      DefaultSupportedBaseLanguages()));
-  EXPECT_FALSE(AIManager::IsLanguagesSupported(
-      valid_language_codes(), valid_language_codes(),
-      blink::mojom::AILanguageCode::New(kUnsupportedLanguageCode),
-      DefaultSupportedBaseLanguages()));
+// Test CheckAndFixLanguages templates for Summarizer, Writer, and Rewriter.
+TEST_F(AIManagerTest, CheckAndFixLanguagesWritingAssistance) {
+  base::flat_set<std::string_view> supported = {"en", "es", "ja"};
+  auto make_options = [](const std::vector<std::string>& input,
+                         const std::vector<std::string>& context,
+                         const std::string& output) {
+    auto options = blink::mojom::AISummarizerCreateOptions::New();
+    options->expected_input_languages = MakeLanguageCodeVector(input);
+    options->expected_context_languages = MakeLanguageCodeVector(context);
+    options->output_language = blink::mojom::AILanguageCode::New(output);
+    return options;
+  };
+
+  auto options = blink::mojom::AISummarizerCreateOptions::New();
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({}, {}, "");
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(options->output_language->code.empty());
+  options = make_options({"en", "es-MX"}, {"ja"}, "en-US");
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({"en-UK", "en-US"}, {"en"}, "");
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_EQ(options->output_language->code, "en-UK");
+  options = make_options({"en", "fr"}, {}, "hi");
+  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
 }
+
+// Test CheckAndFixLanguages templates for Proofreader.
+TEST_F(AIManagerTest, CheckAndFixLanguagesProofreader) {
+  base::flat_set<std::string_view> supported = {"en", "es", "ja"};
+  auto make_options = [](const std::vector<std::string>& input,
+                         const std::string& correction_explanation) {
+    auto options = blink::mojom::AIProofreaderCreateOptions::New();
+    options->expected_input_languages = MakeLanguageCodeVector(input);
+    options->correction_explanation_language =
+        blink::mojom::AILanguageCode::New(correction_explanation);
+    return options;
+  };
+
+  auto options = blink::mojom::AIProofreaderCreateOptions::New();
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({}, "");
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_TRUE(options->correction_explanation_language->code.empty());
+  options = make_options({"en", "es-MX", "ja"}, "en-US");
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  options = make_options({"en-UK", "en-US", "en"}, "");
+  EXPECT_TRUE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+  EXPECT_EQ(options->correction_explanation_language->code, "en-UK");
+  options = make_options({"en", "fr"}, "hi");
+  EXPECT_FALSE(ai_manager_->CheckAndFixLanguages(options, "API", supported));
+}
+
+}  // namespace
