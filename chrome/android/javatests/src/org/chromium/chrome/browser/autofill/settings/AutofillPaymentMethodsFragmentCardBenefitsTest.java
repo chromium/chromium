@@ -27,6 +27,7 @@ import org.chromium.base.test.params.ParameterSet;
 import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.Features.DisableFeatures;
+import org.chromium.base.test.util.Features.EnableFeatures;
 import org.chromium.chrome.browser.autofill.AutofillTestHelper;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.settings.SettingsActivity;
@@ -53,22 +54,31 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
 
     private AutofillTestHelper mAutofillTestHelper;
 
-    /** Provides parameters for testing card benefit preference with different flag combinations. */
+    /** Provides parameters for testing card benefit preference with all flag combinations. */
     public static class CardBenefitsPreferenceTestParams implements ParameterProvider {
         private static final List<ParameterSet> sCardBenefitsPreferenceTestParams =
                 Arrays.asList(
                         new ParameterSet()
-                                .value(true, true)
-                                .name("AmexFlagIsEnabledAndBmoFlagIsEnabled"),
+                                .value(true, true, true)
+                                .name("AmexFlagIsEnabled_BmoFlagIsEnabled_CurinosFlagIsEnabled"),
                         new ParameterSet()
-                                .value(true, false)
-                                .name("AmexFlagIsEnabledAndBmoFlagIsDisabled"),
+                                .value(true, true, false)
+                                .name("AmexFlagIsEnabled_BmoFlagIsEnabled_CurinosFlagIsDisabled"),
                         new ParameterSet()
-                                .value(false, true)
-                                .name("AmexFlagIsDisabledAndBmoFlagIsEnabled"),
+                                .value(true, false, true)
+                                .name("AmexFlagIsEnabled_BmoFlagIsDisabled_CurinosFlagIsEnabled"),
                         new ParameterSet()
-                                .value(false, false)
-                                .name("AmexFlagIsDisabledAndBmoFlagIsDisabled"));
+                                .value(true, false, false)
+                                .name("AmexFlagIsEnabled_BmoFlagIsDisabled_CurinosFlagIsDisabled"),
+                        new ParameterSet()
+                                .value(false, true, true)
+                                .name("AmexFlagIsDisabled_BmoFlagIsEnabled_CurinosFlagIsEnabled"),
+                        new ParameterSet()
+                                .value(false, true, false)
+                                .name("AmexFlagIsDisabled_BmoFlagIsEnabled_CurinosFlagIsDisabled"),
+                        new ParameterSet()
+                                .value(false, false, true)
+                                .name("AmexFlagIsDisabled_BmoFlagIsDisabled_CurinosFlagIsEnabled"));
 
         @Override
         public List<ParameterSet> getParameters() {
@@ -83,6 +93,7 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
 
     @After
     public void tearDown() throws TimeoutException {
+        mSettingsActivityTestRule.getActivity().finish();
         mAutofillTestHelper.clearAllDataForTesting();
     }
 
@@ -90,7 +101,8 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     @MediumTest
     @DisableFeatures({
         ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
-        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO
+        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
+        ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS
     })
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
     public void testCardBenefitsPref_whenFlagsAreOffAndAutofillIsEnabled_notShown()
@@ -104,17 +116,18 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     }
 
     // Test to verify that the card benefit preference is not displayed when autofill credit
-    // card is disabled, across various combinations of the flags
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO.
-    // i.e. (True, True), (True, False), (False, True), (False, False)
+    // card is disabled, across all combinations of the flags
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO, and
+    // AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS.
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "false")})
     public void testCardBenefitsPref_whenAutofillIsDisabled_notShown(
-            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled);
+            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled, boolean isCurinosFlagEnabled)
+            throws Exception {
+        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled, isCurinosFlagEnabled);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
@@ -124,52 +137,48 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
     }
 
     // Test to verify that the card benefit preference is displayed when autofill credit
-    // card is enabled, across various combinations of the flags
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO.
-    // i.e. (True, True), (True, False), (False, True), (False, False)
+    // card is enabled, across all combinations of the flags
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO, and
+    // AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS.
     @Test
     @MediumTest
     @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
     @Policies.Add({@Policies.Item(key = "AutofillCreditCardEnabled", string = "true")})
     public void testCardBenefitsPref_whenAutofillIsEnabled_shown(
-            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) throws Exception {
-        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled);
+            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled, boolean isCurinosFlagEnabled)
+            throws Exception {
+        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled, isCurinosFlagEnabled);
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
 
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
-        if (!isAmexFlagEnabled && !isBmoFlagEnabled) {
-            assertThat(cardBenefitsPref).isNull();
-        } else {
-            assertEquals(
-                    cardBenefitsPref.getTitle(),
-                    activity.getString(R.string.autofill_settings_page_card_benefits_label));
-            assertEquals(
-                    cardBenefitsPref.getSummary(),
-                    activity.getString(
-                            R.string.autofill_settings_page_card_benefits_preference_summary));
-        }
+
+        assertEquals(
+                cardBenefitsPref.getTitle(),
+                activity.getString(R.string.autofill_settings_page_card_benefits_label));
+        assertEquals(
+                cardBenefitsPref.getSummary(),
+                activity.getString(
+                        R.string.autofill_settings_page_card_benefits_preference_summary));
     }
 
     // Test to verify that clicking the card benefit preference opens the credit card benefits
-    // fragment, across various combinations of the flags
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS and
-    // AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO.
-    // i.e. (True, True), (True, False), (False, True), (False, False)
+    // fragment, when all benefit flags are enabled.
     @Test
     @MediumTest
-    @ParameterAnnotations.UseMethodParameter(CardBenefitsPreferenceTestParams.class)
-    public void testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment(
-            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) throws Exception {
-        // If both flags are disabled then card benefits preference will be null. In this case we
-        // can't test if the credit card benefits fragment opens.
-        if (!isAmexFlagEnabled && !isBmoFlagEnabled) {
-            return;
-        }
-        setCardBenefitsFlags(isAmexFlagEnabled, isBmoFlagEnabled);
+    @EnableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
+        ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS
+    })
+    // TODO(crbug.com/435263284): Use parameterized tests with all flag combinations. Currently,
+    // using parameterized tests results in flaky test failures only on android-x64-rel targets.
+    public void testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment_allFlagsEnabled()
+            throws Exception {
         SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
         Preference cardBenefitsPref =
                 getPreferenceScreen(activity)
                         .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
@@ -177,15 +186,45 @@ public class AutofillPaymentMethodsFragmentCardBenefitsTest {
         ThreadUtils.runOnUiThreadBlocking(cardBenefitsPref::performClick);
         mRule.waitForFragmentToBeShown();
 
+        // Verify that the card benefits fragment is opened.
         assertTrue(mRule.getLastestShownFragment() instanceof AutofillCardBenefitsFragment);
     }
 
-    private static void setCardBenefitsFlags(boolean isAmexFlagEnabled, boolean isBmoFlagEnabled) {
+    // Test to verify that clicking the card benefit preference opens the credit card benefits
+    // fragment, when all benefit flags are disabled.
+    @Test
+    @MediumTest
+    @DisableFeatures({
+        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
+        ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO,
+        ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS
+    })
+    // TODO(crbug.com/435263284): Use parameterized tests with all flag combinations. Currently,
+    // using parameterized tests results in flaky test failures only on android-x64-rel targets.
+    public void
+            testCardBenefitsPref_whenClicked_opensAutofillCardBenefitsFragment_allFlagsDisabled()
+                    throws Exception {
+        SettingsActivity activity = mSettingsActivityTestRule.startSettingsActivity();
+
+        Preference cardBenefitsPref =
+                getPreferenceScreen(activity)
+                        .findPreference(AutofillPaymentMethodsFragment.PREF_CARD_BENEFITS);
+
+        // If all flags are disabled then the card benefits preference will not be displayed and we
+        // cannot get to the the card benefits fragment.
+        assertThat(cardBenefitsPref).isNull();
+    }
+
+    private static void setCardBenefitsFlags(
+            boolean isAmexFlagEnabled, boolean isBmoFlagEnabled, boolean isCurinosFlagEnabled) {
         FeatureOverrides.newBuilder()
                 .flag(
                         ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS,
                         isAmexFlagEnabled)
                 .flag(ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO, isBmoFlagEnabled)
+                .flag(
+                        ChromeFeatureList.AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS,
+                        isCurinosFlagEnabled)
                 .apply();
     }
 

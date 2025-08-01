@@ -313,7 +313,10 @@ public class AutofillPaymentMethodsFragment extends ChromeBaseSettingsFragment
                                 ChromeFeatureList
                                         .AUTOFILL_ENABLE_CARD_BENEFITS_FOR_AMERICAN_EXPRESS)
                         || ChromeFeatureList.isEnabled(
-                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO))) {
+                                ChromeFeatureList.AUTOFILL_ENABLE_CARD_BENEFITS_FOR_BMO)
+                        || ChromeFeatureList.isEnabled(
+                                ChromeFeatureList
+                                        .AUTOFILL_ENABLE_FLAT_RATE_CARD_BENEFITS_FROM_CURINOS))) {
             Preference cardBenefitsPref = new Preference(getStyledContext());
             cardBenefitsPref.setTitle(R.string.autofill_settings_page_card_benefits_label);
             cardBenefitsPref.setSummary(
