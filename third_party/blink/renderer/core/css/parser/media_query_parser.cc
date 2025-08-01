@@ -226,17 +226,15 @@ std::optional<MediaQueryExpValue> ConsumeUnparsed(
     }
   }
   wtf_size_t end = stream.Offset();
-  String value_string(stream.StringRangeAt(start, end - start).ToString());
+  StringView value_string(stream.StringRangeAt(start, end - start));
   if (value_string.empty()) {
     return std::nullopt;
   }
-
-  CSSVariableData* data =
-      CSSVariableData::Create(value_string, /* is_animation_tainted= */ false,
-                              /* is_attr_tainted= */ false,
-                              /*needs_variable_resolution=*/true);
-  const CSSValue* value =
-      MakeGarbageCollected<CSSUnparsedDeclarationValue>(data, &context);
+  const CSSValue* value = CSSVariableParser::ParseDeclarationValue(
+      value_string, /* is_animation_tainted = */ false, context);
+  if (!value) {
+    return std::nullopt;
+  }
   return MediaQueryExpValue(*value);
 }
 
