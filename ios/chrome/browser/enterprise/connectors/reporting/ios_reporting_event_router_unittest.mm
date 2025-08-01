@@ -578,6 +578,7 @@ TEST_P(IOSReportingEventRouterTest,
 
 // Tests that interstitial reporting events are warned as expected.
 TEST_P(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
@@ -598,12 +599,14 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
         chrome::cros::reporting::proto::EVENT_RESULT_WARNED);
     expected_event.set_clicked_through(false);
     expected_event.set_net_error_code(0);
+    expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
 
     validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
   } else {
-    validator.ExpectSecurityInterstitialEvent(
+    validator.ExpectSecurityInterstitialEventWithReferrers(
         "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
-        GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0);
+        GetProfileIdentifier(), "EVENT_RESULT_WARNED", false, 0,
+        test::MakeUrlInfoReferrer());
   }
 
   ReferrerChain referrer_chain;
@@ -615,6 +618,7 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownWarned) {
 
 // Tests that interstitial reporting events blocked as expected.
 TEST_P(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
@@ -635,12 +639,14 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
         chrome::cros::reporting::proto::EVENT_RESULT_BLOCKED);
     expected_event.set_clicked_through(false);
     expected_event.set_net_error_code(0);
+    expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
 
     validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
   } else {
-    validator.ExpectSecurityInterstitialEvent(
+    validator.ExpectSecurityInterstitialEventWithReferrers(
         "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
-        GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0);
+        GetProfileIdentifier(), "EVENT_RESULT_BLOCKED", false, 0,
+        test::MakeUrlInfoReferrer());
   }
 
   ReferrerChain referrer_chain;
@@ -652,6 +658,7 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialShownBlocked) {
 
 // Tests that interstitial reporting events bypassed as expected.
 TEST_P(IOSReportingEventRouterTest, TestInterstitialProceeded) {
+  EnableEnhancedFieldsForSecOps();
   test::SetOnSecurityEventReporting(
       profile_->GetTestingPrefService(), /*enabled=*/true,
       /*enabled_event_names=*/{kKeyInterstitialEvent},
@@ -672,12 +679,14 @@ TEST_P(IOSReportingEventRouterTest, TestInterstitialProceeded) {
         chrome::cros::reporting::proto::EVENT_RESULT_BYPASSED);
     expected_event.set_clicked_through(true);
     expected_event.set_net_error_code(0);
+    expected_event.mutable_referrers()->Add(test::MakeUrlInfoReferrer());
 
     validator.ExpectSecurityInterstitialEvent(std::move(expected_event));
   } else {
-    validator.ExpectSecurityInterstitialEvent(
+    validator.ExpectSecurityInterstitialEventWithReferrers(
         "https://phishing.com/", "PHISHING", profile_->GetProfileName(),
-        GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0);
+        GetProfileIdentifier(), "EVENT_RESULT_BYPASSED", true, 0,
+        test::MakeUrlInfoReferrer());
   }
 
   ReferrerChain referrer_chain;
