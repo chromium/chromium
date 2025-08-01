@@ -142,11 +142,11 @@ TouchToFillDelegateAndroidImpl::DryRun(FormGlobalId form_id,
     return {TriggerOutcome::kCannotShowAutofillUi, {}};
   }
 
-  if (field->Type().group() == FieldTypeGroup::kIban) {
+  if (field->Type().GetGroups().contains(FieldTypeGroup::kIban)) {
     return DryRunForIban();
-  } else if (field->Type().group() == FieldTypeGroup::kCreditCard) {
+  } else if (field->Type().GetGroups().contains(FieldTypeGroup::kCreditCard)) {
     return DryRunForCreditCard(*field, *form);
-  } else if (field->Type().group() == FieldTypeGroup::kLoyaltyCard ||
+  } else if (field->Type().GetGroups().contains(FieldTypeGroup::kLoyaltyCard) ||
              field->Type().GetLoyaltyCardType() ==
                  EMAIL_OR_LOYALTY_MEMBERSHIP_ID) {
     return DryRunForLoyaltyCard();
@@ -421,11 +421,11 @@ void TouchToFillDelegateAndroidImpl::LogTriggerOutcomeMetrics(
   }
   const FormStructure* form = manager_->FindCachedFormById(form_id);
   const AutofillField* field = form ? form->GetFieldById(field_id) : nullptr;
-  FieldTypeGroup group =
-      field ? field->Type().group() : FieldTypeGroup::kNoGroup;
-  if (group == FieldTypeGroup::kIban) {
+  const FieldTypeGroupSet groups =
+      field ? field->Type().GetGroups() : FieldTypeGroupSet{};
+  if (groups.contains(FieldTypeGroup::kIban)) {
     base::UmaHistogramEnumeration(kUmaTouchToFillIbanTriggerOutcome, outcome);
-  } else if (group == FieldTypeGroup::kLoyaltyCard) {
+  } else if (groups.contains(FieldTypeGroup::kLoyaltyCard)) {
     base::UmaHistogramEnumeration(kUmaTouchToFillLoyaltyCardTriggerOutcome,
                                   outcome);
   } else {

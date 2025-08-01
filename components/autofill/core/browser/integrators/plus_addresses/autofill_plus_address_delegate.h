@@ -102,7 +102,7 @@ class AutofillPlusAddressDelegate {
       bool is_off_the_record,
       const FormData& focused_form,
       const FormFieldData& focused_field,
-      const base::flat_map<FieldGlobalId, FieldTypeGroup>& form_field_types,
+      const base::flat_map<FieldGlobalId, FieldTypeGroupSet>& form_field_types,
       const PasswordFormClassification& focused_form_classification,
       AutofillSuggestionTriggerSource trigger_source) = 0;
 

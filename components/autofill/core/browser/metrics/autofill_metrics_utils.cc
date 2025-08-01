@@ -57,7 +57,7 @@ bool IsEmailOnlyForm(const FormStructure& form) {
 bool IsPostalAddressForm(const FormStructure& form) {
   FieldTypeSet postal_address_field_types;
   for (const auto& field : form.fields()) {
-    if (field->Type().group() == FieldTypeGroup::kAddress &&
+    if (field->Type().GetGroups().contains(FieldTypeGroup::kAddress) &&
         field->Type().GetAddressType() != ADDRESS_HOME_COUNTRY) {
       postal_address_field_types.insert(field->Type().GetAddressType());
     }

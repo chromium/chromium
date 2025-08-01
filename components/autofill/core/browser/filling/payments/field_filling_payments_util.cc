@@ -483,9 +483,8 @@ std::u16string GetFillingValueForCreditCard(
     mojom::ActionPersistence action_persistence,
     const AutofillField& field,
     std::string* failure_to_fill) {
-  CHECK(FieldTypeGroupSet(
-            {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField})
-            .contains(field.Type().group()));
+  CHECK(field.Type().GetGroups().contains_any(
+      {FieldTypeGroup::kCreditCard, FieldTypeGroup::kStandaloneCvcField}));
   std::u16string value =
       credit_card.record_type() == CreditCard::RecordType::kVirtualCard &&
               action_persistence == mojom::ActionPersistence::kPreview

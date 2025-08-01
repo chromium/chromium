@@ -223,7 +223,7 @@ void AutofillOptimizationGuide::OnDidParseForm(
   }
   const bool has_credit_card_field =
       std::ranges::any_of(form_structure, [](const auto& field) {
-        return field->Type().group() == FieldTypeGroup::kCreditCard;
+        return field->Type().GetGroups().contains(FieldTypeGroup::kCreditCard);
       });
 
   if (has_credit_card_field) {

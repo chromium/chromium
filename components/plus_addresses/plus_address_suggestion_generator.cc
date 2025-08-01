@@ -58,7 +58,7 @@ bool IsPasswordFieldVisible(
 // whether we offer plus address creation depends on the form type.
 bool ShouldOfferPlusAddressCreationOnForm(
     const autofill::FormData& focused_form,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
         form_field_type_groups,
     const PasswordFormClassification& form_classification,
     autofill::FieldGlobalId focused_field_id) {
@@ -102,7 +102,7 @@ bool ShouldOfferPlusAddressCreationOnForm(
           }
           auto it = form_field_type_groups.find(field.global_id());
           return it != form_field_type_groups.end() &&
-                 kUnexpectedFieldTypeGroupsInLoginForm.contains(it->second);
+                 it->second.contains_any(kUnexpectedFieldTypeGroupsInLoginForm);
         });
   };
 
@@ -177,7 +177,7 @@ PlusAddressSuggestionGenerator::GetSuggestions(
     bool is_creation_enabled,
     const autofill::FormData& focused_form,
     const autofill::FormFieldData& focused_field,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
     autofill::AutofillSuggestionTriggerSource trigger_source) {

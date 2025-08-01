@@ -290,10 +290,10 @@ bool PlusAddressServiceImpl::IsPlusAddressFillingEnabled(
 
 bool PlusAddressServiceImpl::IsFieldEligibleForPlusAddress(
     const autofill::AutofillField& field) const {
-  autofill::FillingProduct filling_product =
-      autofill::GetFillingProductFromFieldTypeGroup(field.Type().group());
+  auto filling_products = autofill::DenseSet<autofill::FillingProduct>(
+      field.Type().GetGroups(), &autofill::GetFillingProductFromFieldTypeGroup);
 
-  if (filling_product == autofill::FillingProduct::kAddress) {
+  if (filling_products.contains(autofill::FillingProduct::kAddress)) {
     return true;
   }
 
@@ -325,7 +325,7 @@ std::vector<Suggestion> PlusAddressServiceImpl::GetSuggestionsFromPlusAddresses(
     bool is_off_the_record,
     const autofill::FormData& focused_form,
     const autofill::FormFieldData& focused_field,
-    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
+    const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroupSet>&
         form_field_type_groups,
     const autofill::PasswordFormClassification& focused_form_classification,
     AutofillSuggestionTriggerSource trigger_source) {

@@ -1050,7 +1050,8 @@ FormDataImporter::ExtractCreditCardFromForm(const FormStructure& form) {
 
     // If we don't know the type of the field, or the user hasn't entered any
     // information into the field, then skip it.
-    if (value.empty() || field.Type().group() != FieldTypeGroup::kCreditCard) {
+    if (value.empty() ||
+        !field.Type().GetGroups().contains(FieldTypeGroup::kCreditCard)) {
       return;
     }
     std::u16string old_value = result.card.GetInfo(field.Type(), app_locale);

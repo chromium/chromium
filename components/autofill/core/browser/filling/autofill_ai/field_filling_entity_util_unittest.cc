@@ -78,8 +78,8 @@ std::u16string GetFillValueForEntity(
   // For a name field fake that there are other fields that dynamically
   // propagate to the name field.
   for (AutofillFieldWithAttributeType& field_and_type : fields_and_types) {
-    if (GroupTypeOfFieldType(field_and_type.field->Type().GetStorableType()) ==
-            FieldTypeGroup::kName &&
+    if (field_and_type.field->Type().GetGroups().contains(
+            FieldTypeGroup::kName) &&
         base::FeatureList::IsEnabled(features::kAutofillAiNoTagTypes)) {
       auto attribute_type = [&entity]() -> std::optional<AttributeType> {
         switch (entity.type().name()) {

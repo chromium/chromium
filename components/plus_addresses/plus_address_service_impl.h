@@ -84,8 +84,8 @@ class PlusAddressServiceImpl : public PlusAddressService,
       bool is_off_the_record,
       const autofill::FormData& focused_form,
       const autofill::FormFieldData& focused_field,
-      const base::flat_map<autofill::FieldGlobalId, autofill::FieldTypeGroup>&
-          form_field_type_groups,
+      const base::flat_map<autofill::FieldGlobalId,
+                           autofill::FieldTypeGroupSet>& form_field_type_groups,
       const autofill::PasswordFormClassification& focused_form_classification,
       autofill::AutofillSuggestionTriggerSource trigger_source) override;
   autofill::Suggestion GetManagePlusAddressSuggestion() const override;

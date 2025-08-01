@@ -1260,7 +1260,8 @@ void AutofillExternalDelegate::DidAcceptAddressSuggestion(
         const AutofillField* autofill_trigger_field = GetQueriedAutofillField();
         const bool triggered_on_email_field =
             autofill_trigger_field &&
-            autofill_trigger_field->Type().group() == FieldTypeGroup::kEmail;
+            autofill_trigger_field->Type().GetGroups().contains(
+                FieldTypeGroup::kEmail);
         // Email suggestions don't have a separate suggestion type. Check that
         // the suggestions are triggered on an email field and that the popup
         // contains a plus address filling suggestion as well.

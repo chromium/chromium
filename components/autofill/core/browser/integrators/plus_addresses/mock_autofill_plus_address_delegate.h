@@ -43,7 +43,7 @@ class MockAutofillPlusAddressDelegate : public AutofillPlusAddressDelegate {
                bool,
                const FormData&,
                const FormFieldData&,
-               (const base::flat_map<FieldGlobalId, FieldTypeGroup>&),
+               (const base::flat_map<FieldGlobalId, FieldTypeGroupSet>&),
                const PasswordFormClassification&,
                AutofillSuggestionTriggerSource),
               (override));

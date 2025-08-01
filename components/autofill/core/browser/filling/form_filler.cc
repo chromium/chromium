@@ -854,8 +854,8 @@ void FormFiller::FillOrPreviewForm(
     }
 
     if (could_attempt_refill) {
-      refill_context->type_groups_originally_filled.insert(
-          autofill_field.Type().group());
+      refill_context->type_groups_originally_filled.insert_all(
+          autofill_field.Type().GetGroups());
     }
     std::string failure_to_fill;  // Reason for failing to fill.
     const std::map<FieldGlobalId, std::u16string>& forced_fill_values =
