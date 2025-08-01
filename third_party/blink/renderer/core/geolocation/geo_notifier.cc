@@ -2,13 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
+#include "third_party/blink/renderer/core/geolocation/geo_notifier.h"
 
 #include "third_party/blink/public/platform/task_type.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_position_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_position_options.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation_position_error.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_position_error.h"
 
 namespace blink {
 

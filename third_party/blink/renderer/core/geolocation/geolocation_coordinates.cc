@@ -23,7 +23,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_object_builder.h"
 

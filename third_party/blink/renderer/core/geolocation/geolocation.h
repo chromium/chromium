@@ -24,23 +24,23 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_H_
 
 #include "base/dcheck_is_on.h"
 #include "services/device/public/mojom/geolocation.mojom-blink.h"
 #include "third_party/blink/public/mojom/geolocation/geolocation_service.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/active_script_wrappable.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_position_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_position_error_callback.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_position_options.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_position_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_position_error_callback.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_position_options.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context_lifecycle_observer.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
-#include "third_party/blink/renderer/modules/geolocation/geo_notifier.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation_position_error.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation_watchers.h"
-#include "third_party/blink/renderer/modules/geolocation/geoposition.h"
-#include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/core/geolocation/geo_notifier.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_position_error.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_watchers.h"
+#include "third_party/blink/renderer/core/geolocation/geoposition.h"
+#include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
@@ -57,7 +57,7 @@ enum class PermissionStatus;
 class LocalFrame;
 class Navigator;
 
-class MODULES_EXPORT Geolocation final
+class CORE_EXPORT Geolocation final
     : public ScriptWrappable,
       public ActiveScriptWrappable<Geolocation>,
       public Supplement<Navigator>,
@@ -236,4 +236,4 @@ class MODULES_EXPORT Geolocation final
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_H_

@@ -23,18 +23,17 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_COORDINATES_H_
-#define THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_COORDINATES_H_
+#ifndef THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_COORDINATES_H_
+#define THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_COORDINATES_H_
 
 #include <optional>
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/modules/event_modules.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 
 namespace blink {
 
-class GeolocationCoordinates : public ScriptWrappable {
+class CORE_EXPORT GeolocationCoordinates : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -74,4 +73,4 @@ class GeolocationCoordinates : public ScriptWrappable {
 
 }  // namespace blink
 
-#endif  // THIRD_PARTY_BLINK_RENDERER_MODULES_GEOLOCATION_GEOLOCATION_COORDINATES_H_
+#endif  // THIRD_PARTY_BLINK_RENDERER_CORE_GEOLOCATION_GEOLOCATION_COORDINATES_H_

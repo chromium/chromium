@@ -2,9 +2,18 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// https://github.com/WICG/PEPC/blob/main/geolocation_explainer.md
+
 [RuntimeEnabled=GeolocationElement, Exposed=Window]
 interface HTMLGeolocationElement : HTMLPermissionElement {
   [HTMLConstructor] constructor();
 
   attribute EventHandler onlocation;
+
+  readonly attribute GeolocationPosition position;
+  readonly attribute GeolocationPositionError error;
+
+  [CEReactions] attribute boolean precise;
+  [CEReactions] attribute boolean autolocate;
+  [CEReactions] attribute boolean watch;
 };

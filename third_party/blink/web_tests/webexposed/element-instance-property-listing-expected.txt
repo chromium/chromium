@@ -683,6 +683,8 @@ html element frameset
     property onunload
     property rows
 html element geolocation
+    property autolocate
+    property error
     property initialPermissionStatus
     property invalidReason
     property isValid
@@ -693,7 +695,10 @@ html element geolocation
     property onresolve
     property onvalidationstatuschange
     property permissionStatus
+    property position
+    property precise
     property type
+    property watch
 html element h1
     property align
 html element h2

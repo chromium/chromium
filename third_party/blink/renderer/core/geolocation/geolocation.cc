@@ -25,7 +25,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include "third_party/blink/renderer/modules/geolocation/geolocation.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation.h"
 
 #include <optional>
 
@@ -44,8 +44,8 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/timing/epoch_time_stamp.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation_coordinates.h"
-#include "third_party/blink/renderer/modules/geolocation/geolocation_error.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_coordinates.h"
+#include "third_party/blink/renderer/core/geolocation/geolocation_error.h"
 #include "third_party/blink/renderer/platform/bindings/source_location.h"
 
 namespace blink {
@@ -522,10 +522,10 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
   geolocation_service_->CreateGeolocation(
       geolocation_.BindNewPipeAndPassReceiver(std::move(task_runner)),
       LocalFrame::HasTransientUserActivation(GetFrame()),
-      WTF::BindOnce(&Geolocation::OnGeolocationPermissionStatusUpdated,
-                    WrapWeakPersistent(this), WrapWeakPersistent(notifier)));
+      blink::BindOnce(&Geolocation::OnGeolocationPermissionStatusUpdated,
+                      WrapWeakPersistent(this), WrapWeakPersistent(notifier)));
 
-  geolocation_.set_disconnect_handler(WTF::BindOnce(
+  geolocation_.set_disconnect_handler(blink::BindOnce(
       &Geolocation::OnGeolocationConnectionError, WrapWeakPersistent(this)));
   if (enable_high_accuracy_) {
     geolocation_->SetHighAccuracyHint(/*high_accuracy=*/true);
@@ -535,7 +535,7 @@ void Geolocation::UpdateGeolocationConnection(GeoNotifier* notifier) {
 
 void Geolocation::QueryNextPosition() {
   geolocation_->QueryNextPosition(
-      WTF::BindOnce(&Geolocation::OnPositionUpdated, WrapPersistent(this)));
+      blink::BindOnce(&Geolocation::OnPositionUpdated, WrapPersistent(this)));
 }
 
 void Geolocation::OnPositionUpdated(
