@@ -19,7 +19,6 @@
 
 class AmbientClientImpl;
 class AssistantBrowserDelegateImpl;
-class AssistantStateClient;
 class ChromeKeyboardControllerClient;
 class ImageDownloaderImpl;
 class LobsterClientFactoryImpl;
@@ -216,8 +215,6 @@ class ChromeBrowserMainPartsAsh : public ChromeBrowserMainPartsLinux {
   std::unique_ptr<arc::ArcServiceLauncher> arc_service_launcher_;
 
   std::unique_ptr<ImageDownloaderImpl> image_downloader_;
-
-  std::unique_ptr<AssistantStateClient> assistant_state_client_;
 
   std::unique_ptr<AssistantBrowserDelegateImpl> assistant_delegate_;
 

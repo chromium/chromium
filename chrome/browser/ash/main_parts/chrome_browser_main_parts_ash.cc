@@ -181,7 +181,6 @@
 #include "chrome/browser/task_manager/task_manager_interface.h"
 #include "chrome/browser/tracing/chrome_tracing_delegate.h"
 #include "chrome/browser/ui/ash/assistant/assistant_browser_delegate_impl.h"
-#include "chrome/browser/ui/ash/assistant/assistant_state_client.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/session/session_controller_client_impl.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
@@ -979,13 +978,6 @@ void ChromeBrowserMainPartsAsh::PreProfileInit() {
   // Has to be initialized before |assistant_delegate_|;
   image_downloader_ = std::make_unique<ImageDownloaderImpl>();
 
-  // Requires UserManager.
-  assistant_state_client_ = std::make_unique<AssistantStateClient>();
-
-  // Assistant has to be initialized before
-  // ChromeBrowserMainExtraPartsAsh::session_controller_client_ to avoid race of
-  // SessionChanged event and assistant_client initialization. It must come
-  // after AssistantStateClient.
   assistant_delegate_ = std::make_unique<AssistantBrowserDelegateImpl>();
 
   quick_pair_delegate_ =
@@ -1594,8 +1586,6 @@ void ChromeBrowserMainPartsAsh::PostMainMessageLoopRun() {
   // Assistant has to shut down before voice interaction controller client to
   // correctly remove the observer.
   assistant_delegate_.reset();
-
-  assistant_state_client_.reset();
 
   if (pre_profile_init_called_) {
     Shell::Get()->RemovePreTargetHandler(MagnificationManager::Get());
