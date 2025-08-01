@@ -2,4 +2,5 @@ include_rules = [
   "+ios/chrome/browser/dom_distiller/model/distiller_service_factory.h",
   "+ios/chrome/browser/lens_overlay/coordinator/lens_overlay_availability.h",
   "+ios/chrome/browser/reader_mode",
+  "+ios/chrome/browser/search_engines/model/template_url_service_factory.h",
 ]

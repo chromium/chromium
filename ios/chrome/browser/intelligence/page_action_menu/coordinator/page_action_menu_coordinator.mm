@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/intelligence/page_action_menu/coordinator/page_action_menu_coordinator.h"
 
+#import "components/search/search.h"
+#import "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/dom_distiller/model/distiller_service_factory.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service.h"
 #import "ios/chrome/browser/intelligence/bwg/model/bwg_service_factory.h"
@@ -18,6 +20,7 @@
 #import "ios/chrome/browser/reader_mode/model/reader_mode_tab_helper.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_controls_view.h"
 #import "ios/chrome/browser/reader_mode/ui/reader_mode_options_view_controller.h"
+#import "ios/chrome/browser/search_engines/model/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/profile/profile_ios.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -92,7 +95,9 @@ const CGFloat kMenuCornerRadius = 20;
         HandlerForProtocol(self.browser->GetCommandDispatcher(), BWGCommands);
   }
 
-  if (IsLensOverlayAvailable(self.profile->GetPrefs())) {
+  if (IsLensOverlayAvailable(self.profile->GetPrefs()) &&
+      search::DefaultSearchProviderIsGoogle(
+          ios::TemplateURLServiceFactory::GetForProfile(self.profile))) {
     _viewController.lensOverlayHandler = HandlerForProtocol(
         self.browser->GetCommandDispatcher(), LensOverlayCommands);
   }

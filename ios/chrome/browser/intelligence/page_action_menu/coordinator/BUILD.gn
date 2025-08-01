@@ -11,6 +11,8 @@ source_set("coordinator") {
   ]
   deps = [
     "//components/prefs",
+    "//components/search",
+    "//components/search_engines",
     "//components/signin/public/identity_manager",
     "//ios/chrome/browser/dom_distiller/model",
     "//ios/chrome/browser/intelligence/bwg/coordinator",
@@ -25,6 +27,7 @@ source_set("coordinator") {
     "//ios/chrome/browser/reader_mode/model",
     "//ios/chrome/browser/reader_mode/model:features",
     "//ios/chrome/browser/reader_mode/ui:options",
+    "//ios/chrome/browser/search_engines/model:template_url_service_factory",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
     "//ios/chrome/browser/shared/model/browser",
     "//ios/chrome/browser/shared/model/prefs:pref_names",

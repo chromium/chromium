@@ -500,7 +500,7 @@ const CGFloat kReaderModeContentStackVerticalPadding = 10;
   UIBackgroundConfiguration* backgroundConfig =
       [UIBackgroundConfiguration clearConfiguration];
   backgroundConfig.backgroundColor =
-      [[UIColor colorNamed:kPrimaryBackgroundColor]
+      [[UIColor colorNamed:kGroupedSecondaryBackgroundColor]
           colorWithAlphaComponent:kSmallButtonOpacity];
   backgroundConfig.cornerRadius = kButtonsCornerRadius;
 
