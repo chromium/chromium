@@ -23393,21 +23393,6 @@
             ]
         }
     ],
-    "SkiaGraphitePrecompilation": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkiaGraphitePrecompilation"
-                    ]
-                }
-            ]
-        }
-    ],
     "SkipModerateMemoryPressureLevelMac": [
         {
             "platforms": [
