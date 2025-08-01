@@ -24,6 +24,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
+#include "components/viz/common/resources/shared_image_format.h"
 #include "content/browser/renderer_host/media/video_capture_controller.h"
 #include "media/base/video_frame.h"
 #include "media/capture/video/video_capture_buffer_pool_impl.h"
@@ -457,8 +458,8 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPoolExternalWin) {
 namespace {
 
 gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {
-  return gfx::GpuMemoryBufferHandle(
-      gfx::CreateIOSurface(kDefaultTextureSize, gfx::BufferFormat::BGRA_8888));
+  return gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(
+      kDefaultTextureSize, viz::SinglePlaneFormat::kBGRA_8888));
 }
 
 }  // namespace

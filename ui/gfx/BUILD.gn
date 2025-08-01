@@ -669,7 +669,10 @@ source_set("memory_buffer_sources") {
       "mac/io_surface.h",
     ]
 
-    public_deps += [ "//ui/gfx:color_space" ]
+    public_deps += [
+      "//components/viz/common:shared_image_format",
+      "//ui/gfx:color_space",
+    ]
   }
 
   if (is_win) {

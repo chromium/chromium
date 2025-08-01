@@ -239,7 +239,6 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
   gfx::ScopedIOSurface io_surface;
   {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
-    const gfx::BufferFormat buffer_format = ToBufferFormat(format);
     const bool should_clear = true;
     const bool override_rgba_to_bgra =
 #if BUILDFLAG(IS_IOS)
@@ -247,8 +246,8 @@ IOSurfaceImageBackingFactory::CreateSharedImage(
 #else
         gr_context_type_ == GrContextType::kGL;
 #endif
-    io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
-                                      override_rgba_to_bgra);
+    io_surface =
+        gfx::CreateIOSurface(size, format, should_clear, override_rgba_to_bgra);
     if (!io_surface) {
       LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
       return nullptr;
@@ -350,7 +349,6 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
   gfx::ScopedIOSurface io_surface;
   {
     gl::ScopedProgressReporter scoped_progress_reporter(progress_reporter_);
-    const gfx::BufferFormat buffer_format = ToBufferFormat(format);
     const bool should_clear = false;
     const bool override_rgba_to_bgra =
 #if BUILDFLAG(IS_IOS)
@@ -358,8 +356,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
 #else
         gr_context_type_ == GrContextType::kGL;
 #endif
-    io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
-                                      override_rgba_to_bgra);
+    io_surface =
+        gfx::CreateIOSurface(size, format, should_clear, override_rgba_to_bgra);
     if (!io_surface) {
       LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
       return nullptr;

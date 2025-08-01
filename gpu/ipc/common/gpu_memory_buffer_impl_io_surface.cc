@@ -11,6 +11,7 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notimplemented.h"
+#include "components/viz/common/resources/shared_image_format_utils.h"
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/mac/io_surface.h"
 
@@ -71,7 +72,8 @@ base::OnceClosure GpuMemoryBufferImplIOSurface::AllocateForTesting(
     gfx::BufferFormat format,
     gfx::BufferUsage usage,
     gfx::GpuMemoryBufferHandle* handle) {
-  *handle = gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(size, format));
+  viz::SharedImageFormat si_format = viz::GetSharedImageFormat(format);
+  *handle = gfx::GpuMemoryBufferHandle(gfx::CreateIOSurface(size, si_format));
   return base::DoNothing();
 }
 

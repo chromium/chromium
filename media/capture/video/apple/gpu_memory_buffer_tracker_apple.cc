@@ -24,9 +24,8 @@ bool GpuMemoryBufferTrackerApple::Init(const gfx::Size& dimensions,
     NOTREACHED() << "Unsupported VideoPixelFormat "
                  << VideoPixelFormatToString(format);
   }
-  if ((io_surface_ =
-           CreateIOSurface(dimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-                           /*should_clear=*/false))) {
+  if ((io_surface_ = CreateIOSurface(dimensions, viz::MultiPlaneFormat::kNV12,
+                                     /*should_clear=*/false))) {
     DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_.get());
     return true;
   } else {
