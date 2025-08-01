@@ -22,7 +22,7 @@ namespace supervised_user {
 // user's device.
 BASE_FEATURE(kLocalWebApprovals,
              "LocalWebApprovals",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_IOS)
              base::FEATURE_ENABLED_BY_DEFAULT);
 #else
              base::FEATURE_DISABLED_BY_DEFAULT);
@@ -60,7 +60,11 @@ BASE_FEATURE(kLocalWebApprovalsWidgetSupportsUrlPayload,
 
 BASE_FEATURE(kSupervisedUserBlockInterstitialV3,
              "SupervisedUserBlockInterstitialV3",
+#if BUILDFLAG(IS_IOS)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
              base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  //  BUILDFLAG(IS_IOS)
 
 bool IsGoogleBrandedBuild() {
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
