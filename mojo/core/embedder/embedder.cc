@@ -49,7 +49,7 @@ namespace {
 #if BUILDFLAG(MOJO_SUPPORT_LEGACY_CORE)
 #if BUILDFLAG(IS_CHROMEOS) && !defined(ENABLE_IPCZ_ON_CHROMEOS)
 std::atomic<bool> g_mojo_ipcz_enabled{false};
-#elif !BUILDFLAG(IS_ANDROID)
+#else
 // Default to enabled even if InitFeatures() is never called.
 std::atomic<bool> g_mojo_ipcz_enabled{true};
 #endif
