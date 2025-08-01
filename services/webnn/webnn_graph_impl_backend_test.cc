@@ -472,10 +472,10 @@ void WebNNGraphImplBackendTest::SetUp() {
       "BuildAndComputeGraphWithTwoTranspose",
       "BuildAndComputeMultipleOperatorGemm",
       // "BuildAndComputeReluWithOnlyConstantInput",
-      // "BuildAndComputeReshapeConcatAndClamp",
+      "BuildAndComputeReshapeConcatAndClamp",
       "BuildAndComputeSingleOperatorClamp",
-      // "BuildAndComputeSingleOperatorGruCell",
-      // "BuildAndComputeSingleOperatorGru",
+      "BuildAndComputeSingleOperatorGruCell",
+      "BuildAndComputeSingleOperatorGru",
       "BuildAndComputeSingleOperatorHardSigmoid",
       "BuildAndComputeSingleOperatorHardSwish",
       // "BuildAndComputeSingleOperatorLstmCell",
@@ -494,7 +494,7 @@ void WebNNGraphImplBackendTest::SetUp() {
       "FuseStandaloneActivationIntoGemm",
       // "FuseStandaloneActivationIntoInstanceNormalization",
       "FuseStandaloneActivationIntoLayerNormalization",
-      // "FuseStandaloneOperationsIntoMatmul",
+      "FuseStandaloneOperationsIntoMatmul",
       // "MultipleOutputsCanNotFuseStandaloneActivation",
   });
   if (!kSupportedTests.contains(current_test_name)) {

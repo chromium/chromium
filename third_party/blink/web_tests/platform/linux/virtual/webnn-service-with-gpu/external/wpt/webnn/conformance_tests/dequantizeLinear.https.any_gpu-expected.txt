@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+[FAIL] dequantizeLinear int8 0D tensor with float32 0D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual 134.5 should be close enough to expected 134.43296813964844 by ULP distance: expected a number less than or equal to 1n but got 4393n
+[FAIL] dequantizeLinear int8 0D constant tensor with float32 0D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual 134.375 should be close enough to expected 134.43296813964844 by ULP distance: expected a number less than or equal to 1n but got 3799n
+[FAIL] dequantizeLinear uint8 1D constant tensor with float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -1084 should be close enough to expected -1083.798828125 by ULP distance: expected a number less than or equal to 1n but got 1648n
+[FAIL] dequantizeLinear uint8 1D constant tensor with negative float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -1084 should be close enough to expected -1083.798828125 by ULP distance: expected a number less than or equal to 1n but got 1648n
+[FAIL] dequantizeLinear uint8 1D constant tensor with float32 1D scale, implicit block_size = 2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
+[FAIL] dequantizeLinear int8 4D constant tensor broadcasting float32 4D scale and int8 4D zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -38.09375 should be close enough to expected -38.08934783935547 by ULP distance: expected a number less than or equal to 1n but got 1154n
+[FAIL] dequantizeLinear int8 2D constant tensor with float32 2D scale, block_size = [3, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
+[FAIL] dequantizeLinear uint4 1D tensor of even size with float32 1D scale
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear uint4 1D tensor of odd size with float32 1D scale
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear uint4 4D constant tensor with broadcasting float32 4D scale and uint4 4D zeroPoint
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear uint4 3D input with float32 3D scale, block_size = [1, 1, 2]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear int4 1D tensor of even size with float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -8.9609375 should be close enough to expected -8.962198257446289 by ULP distance: expected a number less than or equal to 1n but got 1322n
+[FAIL] dequantizeLinear int4 1D tensor of odd size with float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual 2.240234375 should be close enough to expected 2.2405495643615723 by ULP distance: expected a number less than or equal to 1n but got 1322n
+[FAIL] per-tensor dequantizeLinear for int4 4D constant with float32 4D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -2.240234375 should be close enough to expected -2.2405495643615723 by ULP distance: expected a number less than or equal to 1n but got 1322n
+[FAIL] dequantizeLinear int32 1D tensor with float32 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float32 actual -22400 should be close enough to expected -22405.495643615723 by ULP distance: expected a number less than or equal to 1n but got 2814n
+[FAIL] quantizeLinear then dequantizeLinear with different float32 scale and int8 zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear float32 actual -35.84375 should be close enough to expected -35.848793029785156 by ULP distance: expected a number less than or equal to 1n but got 1322n
+[FAIL] dequantizeLinear uint8 1D constant tensor with float16 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual -972 should be close enough to expected -29.125 by ULP distance: expected a number less than or equal to 1 but got 5200
+[FAIL] dequantizeLinear uint8 1D constant tensor with negative float16 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual -972 should be close enough to expected -29.125 by ULP distance: expected a number less than or equal to 1 but got 5200
+[FAIL] dequantizeLinear uint8 1D constant tensor with float16 1D scale, implicit block_size = 2
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
+[FAIL] dequantizeLinear int8 2D constant tensor with float16 2D scale, block_size = [3, 2]
+  promise_test: Unhandled rejection with value: object "NotSupportedError: Failed to execute 'build' on 'MLGraphBuilder': DequantizeLinear can't support block-wise."
+[FAIL] dequantizeLinear uint4 1D tensor of even size with float16 1D scale
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear uint4 1D tensor of odd size with float16 1D scale
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear uint4 4D constant tensor with broadcasting float16 4D scale and uint4 4D zeroPoint
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear uint4 3D input with float16 3D scale, block_size = [1, 1, 2]
+  promise_test: Unhandled rejection with value: object "TypeError: Failed to execute 'constant' on 'MLGraphBuilder': Unsupported data type uint4 for constant, must be one of [float32, float16, int32, uint32, int64, uint64, int8, uint8, int4]."
+[FAIL] dequantizeLinear int32 1D tensor with float16 1D scale
+  assert_less_than_equal: assert_array_approx_equals_ulp: test dequantizeLinear float16 actual Infinity should be close enough to expected 18336 by ULP distance: expected a number less than or equal to 1 but got 1926
+[FAIL] quantizeLinear then dequantizeLinear with different float16 scale and int8 zeroPoint
+  assert_less_than_equal: assert_array_approx_equals_ulp: test quantizeLinear dequantizeLinear float16 actual 14.5625 should be close enough to expected 3.640625 by ULP distance: expected a number less than or equal to 1 but got 2048
+Harness: the test ran to completion.
+
