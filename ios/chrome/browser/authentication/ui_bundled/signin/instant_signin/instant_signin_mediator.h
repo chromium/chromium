@@ -28,6 +28,10 @@ enum class AccessPoint;
 // Called when the sign-in will be done in another profile.
 - (void)instantSigninMediatorWillSwitchProfile:(InstantSigninMediator*)mediator;
 
+// Called when sign-in is not available anymore.
+- (void)instantSigninMediatorSigninIsImpossible:
+    (InstantSigninMediator*)mediator;
+
 @end
 
 @interface InstantSigninMediator : NSObject

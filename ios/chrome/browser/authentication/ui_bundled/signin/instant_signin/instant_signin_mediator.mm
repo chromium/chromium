@@ -63,8 +63,10 @@ using signin_metrics::PromoAction;
 }
 
 - (void)disconnect {
+  _authenticationService = nullptr;
   _authServiceObserverBridge.reset();
   [_authenticationFlow interrupt];
+  _authenticationFlow = nil;
 }
 
 #pragma mark - AuthenticationFlowDelegate
@@ -88,10 +90,7 @@ using signin_metrics::PromoAction;
   if (!_authenticationService->SigninEnabled()) {
     // Signin is now disabled, so the consistency default account must be
     // stopped.
-    [self.delegate
-        instantSigninMediator:self
-          didSigninWithResult:SigninCoordinatorResult::
-                                  SigninCoordinatorResultInterrupted];
+    [self.delegate instantSigninMediatorSigninIsImpossible:self];
   }
 }
 

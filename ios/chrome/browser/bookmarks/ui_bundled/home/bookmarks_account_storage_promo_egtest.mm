@@ -33,7 +33,6 @@ using chrome_test_util::BookmarksHomeDoneButton;
 using chrome_test_util::BookmarksNavigationBarBackButton;
 using chrome_test_util::IdentityCellMatcherForEmail;
 using chrome_test_util::PrimarySignInButton;
-using chrome_test_util::SecondarySignInButton;
 
 // Bookmark promo integration tests.
 @interface BookmarksAccountStoragePromoTestCase : WebHttpServerChromeTestCase

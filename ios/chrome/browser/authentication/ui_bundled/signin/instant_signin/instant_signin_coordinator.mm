@@ -251,6 +251,13 @@
                    completionIdentity:_identity];
 }
 
+- (void)instantSigninMediatorSigninIsImpossible:
+    (InstantSigninMediator*)mediator {
+  CHECK_EQ(mediator, _mediator, base::NotFatalUntil::M144);
+  [self runCompletionWithSigninResult:SigninCoordinatorResultInterrupted
+                   completionIdentity:nil];
+}
+
 #pragma mark - Private
 
 // Starts the sign-in flow.
