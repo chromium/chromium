@@ -8,6 +8,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/glic/browser_ui/theme_util.h"
 #include "chrome/browser/glic/host/context/glic_tab_data.h"
@@ -166,6 +167,12 @@ class GlicTabUnderlineView::UnderlineViewUpdater
 
     // Observe changes in the floaty state.
     glic_service->window_controller().AddStateObserver(this);
+
+    // Subscribe to when new requests are made by glic.
+    user_input_submitted_subscription_ =
+        glic_service->AddUserInputSubmittedCallback(base::BindRepeating(
+            &GlicTabUnderlineView::UnderlineViewUpdater::OnUserInputSubmitted,
+            base::Unretained(this)));
   }
   UnderlineViewUpdater(const UnderlineViewUpdater&) = delete;
   UnderlineViewUpdater& operator=(const UnderlineViewUpdater&) = delete;
@@ -271,6 +278,10 @@ class GlicTabUnderlineView::UnderlineViewUpdater
             : UpdateUnderlineReason::kPanelStateChanged_PanelShowing);
   }
 
+  void OnUserInputSubmitted() {
+    UpdateUnderlineView(UpdateUnderlineReason::kUserInputSubmitted);
+  }
+
  private:
   // Types of updates to the tab underline UI effect given changes in relevant
   // triggering signals, including tab focus, glic sharing controls, pinned tabs
@@ -296,6 +307,8 @@ class GlicTabUnderlineView::UnderlineViewUpdater
     // Events related to the glic panel's state.
     kPanelStateChanged_PanelShowing,
     kPanelStateChanged_PanelHidden,
+
+    kUserInputSubmitted,
   };
 
   GlicKeyedService* GetGlicKeyedService() {
@@ -448,6 +461,11 @@ class GlicTabUnderlineView::UnderlineViewUpdater
           HideUnderline();
         }
         break;
+      case UpdateUnderlineReason::kUserInputSubmitted:
+        if (underline_view_->IsShowing()) {
+          AnimateUnderline();
+        }
+        break;
     }
   }
 
@@ -513,6 +531,8 @@ class GlicTabUnderlineView::UnderlineViewUpdater
         return "PanelShowing";
       case UpdateUnderlineReason::kPanelStateChanged_PanelHidden:
         return "PanelHidden";
+      case UpdateUnderlineReason::kUserInputSubmitted:
+        return "UserInputSubmitted";
     }
   }
 
@@ -543,6 +563,7 @@ class GlicTabUnderlineView::UnderlineViewUpdater
   bool context_access_indicator_enabled_ = false;
   base::CallbackListSubscription indicator_change_subscription_;
   base::CallbackListSubscription pinned_tabs_change_subscription_;
+  base::CallbackListSubscription user_input_submitted_subscription_;
 
   static constexpr size_t kNumReasonsToKeep = 10u;
   std::list<std::string> underline_update_reasons_;

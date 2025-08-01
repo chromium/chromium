@@ -10,6 +10,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
+#include "base/functional/callback_forward.h"
 #include "base/location.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -443,6 +444,14 @@ void GlicKeyedService::ResumeActorTask(
   actor_controller_->ResumeTask(task_id, context_options, std::move(callback));
 }
 
+void GlicKeyedService::OnUserInputSubmitted(glic::mojom::WebClientMode mode) {
+  user_input_submitted_callback_list_.Notify();
+}
+
+base::CallbackListSubscription GlicKeyedService::AddUserInputSubmittedCallback(
+    base::RepeatingClosure callback) {
+  return user_input_submitted_callback_list_.Add(std::move(callback));
+}
 void GlicKeyedService::CaptureScreenshot(
     mojom::WebClientHandler::CaptureScreenshotCallback callback) {
   screenshot_capturer_->CaptureScreenshot(

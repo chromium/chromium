@@ -1052,6 +1052,7 @@ class GlicWebClientHandler : public glic::mojom::WebClientHandler,
   }
 
   void OnUserInputSubmitted(glic::mojom::WebClientMode mode) override {
+    glic_service_->OnUserInputSubmitted(mode);
     glic_service_->metrics()->OnUserInputSubmitted(mode);
   }
 

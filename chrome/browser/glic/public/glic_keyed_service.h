@@ -167,6 +167,14 @@ class GlicKeyedService : public KeyedService {
       const mojom::GetTabContextOptions& context_options,
       glic::mojom::WebClientHandler::ResumeActorTaskCallback callback);
 
+  void OnUserInputSubmitted(glic::mojom::WebClientMode mode);
+
+  // Registers a callback to be called any time user input is submitted in the
+  // client. This is used to update UI effects on tabs that are being shared
+  // with glic.
+  base::CallbackListSubscription AddUserInputSubmittedCallback(
+      base::RepeatingClosure callback);
+
   void CaptureScreenshot(
       glic::mojom::WebClientHandler::CaptureScreenshotCallback callback);
 
@@ -220,6 +228,9 @@ class GlicKeyedService : public KeyedService {
       context_access_indicator_callback_list_;
   // The state of the context access indicator as set by the client.
   bool is_context_access_indicator_enabled_ = false;
+
+  // List of callbacks to be notified when user input has been submitted.
+  base::RepeatingClosureList user_input_submitted_callback_list_;
 
   raw_ptr<Profile> profile_;
 
