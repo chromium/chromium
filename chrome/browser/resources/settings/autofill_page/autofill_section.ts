@@ -405,11 +405,23 @@ export class SettingsAutofillSectionElement extends
 
   /**
    * @returns the title for the More Actions button corresponding to the address
-   *     which is described by `label` and `sublabel`.
    */
-  private moreActionsTitle_(label: string, sublabel: string) {
-    return this.i18n(
-        'moreActionsForAddress', label + (sublabel ? sublabel : ''));
+  private moreActionsTitle_(address: chrome.autofillPrivate.AddressEntry):
+      string {
+    const label = address.metadata?.summaryLabel;
+    const subLabel = address.metadata?.summarySublabel;
+    const fullLabel = label + (subLabel ?? '');
+
+    let messageKey: string;
+    if (this.isAccountHomeAddress_(address)) {
+      messageKey = 'moreOptionsForHomeAddress';
+    } else if (this.isAccountWorkAddress_(address)) {
+      messageKey = 'moreOptionsForWorkAddress';
+    } else {
+      messageKey = 'moreActionsForAddress';
+    }
+
+    return this.i18n(messageKey, fullLabel);
   }
 
   private isAutofillSyncToggleVisible_(accountInfo:
