@@ -155,6 +155,16 @@ chromium-metrics-reviews@google.com.
   <int value="2" label="Import with section union"/>
 </enum>
 
+<!-- LINT.IfChange(AutofillAiDecryptStatus) -->
+
+<enum name="AutofillAiDecryptStatus">
+  <int value="0" label="Succeeded"/>
+  <int value="1" label="Failed temporarily"/>
+  <int value="2" label="Failed permanently"/>
+</enum>
+
+<!-- LINT.ThenChange(//components/autofill/core/browser/webdata/autofill_ai/entity_table.cc:DecryptionStatus) -->
+
 <!-- LINT.IfChange(AutofillAiEntityType) -->
 
 <enum name="AutofillAiEntityType">
