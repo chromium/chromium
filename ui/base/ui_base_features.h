@@ -49,12 +49,19 @@ BASE_DECLARE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest);
 COMPONENT_EXPORT(UI_BASE_FEATURES)
 extern const base::FeatureParam<std::string>
     kApplyNativeOcclusionToCompositorType;
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeRelease[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeThrottle[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[];
+
+// When the WindowTreeHost is occluded or hidden, resources are released and
+// the compositor is hidden. See WindowTreeHost for specifics on what this
+// does.
+inline constexpr char kApplyNativeOcclusionToCompositorTypeRelease[] =
+    "release";
+// When the WindowTreeHost is occluded the frame rate is throttled.
+inline constexpr char kApplyNativeOcclusionToCompositorTypeThrottle[] =
+    "throttle";
+// Release when hidden, throttle when occluded.
+inline constexpr char
+    kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[] =
+        "throttle_and_release";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -144,15 +151,12 @@ bool IsSynchronousPageFlipTestingEnabled();
 // The type of predictor to use for the resampling events. These values are
 // used as the 'predictor' feature param for
 // |blink::features::kResamplingScrollEvents|.
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameLsq[];
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameKalman[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictorNameLinearFirst[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictorNameLinearSecond[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictorNameLinearResampling[];
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kPredictorNameEmpty[];
+inline constexpr char kPredictorNameLsq[] = "lsq";
+inline constexpr char kPredictorNameKalman[] = "kalman";
+inline constexpr char kPredictorNameLinearFirst[] = "linear_first";
+inline constexpr char kPredictorNameLinearSecond[] = "linear_second";
+inline constexpr char kPredictorNameLinearResampling[] = "linear_resampling";
+inline constexpr char kPredictorNameEmpty[] = "empty";
 
 // Enables resampling of scroll events using an experimental latency of +3.3ms
 // instead of the original -5ms.
@@ -161,19 +165,15 @@ BASE_DECLARE_FEATURE(kResamplingScrollEventsExperimentalPrediction);
 
 // Uses a ratio of the vsync refresh rate. The timing/ratio can be changed on
 // the command line through a `latency` param.
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictionTypeFramesBased[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictionTypeDefaultFramesVariation1[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictionTypeDefaultFramesVariation2[];
-COMPONENT_EXPORT(UI_BASE_FEATURES)
-extern const char kPredictionTypeDefaultFramesVariation3[];
+inline constexpr char kPredictionTypeFramesBased[] = "frames";
+inline constexpr char kPredictionTypeDefaultFramesVariation1[] = "0.25";
+inline constexpr char kPredictionTypeDefaultFramesVariation2[] = "0.375";
+inline constexpr char kPredictionTypeDefaultFramesVariation3[] = "0.5";
 
 // The type of filter to use for filtering events. These values are used as the
 // 'filter' feature param for |blink::features::kFilteringScrollPrediction|.
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kFilterNameEmpty[];
-COMPONENT_EXPORT(UI_BASE_FEATURES) extern const char kFilterNameOneEuro[];
+inline constexpr char kFilterNameEmpty[] = "empty_filter";
+inline constexpr char kFilterNameOneEuro[] = "one_euro_filter";
 
 // Android only feature, for swipe to move cursor.
 COMPONENT_EXPORT(UI_BASE_FEATURES) BASE_DECLARE_FEATURE(kSwipeToMoveCursor);

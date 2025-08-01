@@ -42,16 +42,6 @@ BASE_FEATURE(kAlwaysTrackNativeWindowOcclusionForTest,
 // Field trial param name for `kApplyNativeOcclusionToCompositor`.
 const base::FeatureParam<std::string> kApplyNativeOcclusionToCompositorType{
     &kApplyNativeOcclusionToCompositor, "type", /*default=*/""};
-
-// When the WindowTreeHost is occluded or hidden, resources are released and
-// the compositor is hidden. See WindowTreeHost for specifics on what this
-// does.
-const char kApplyNativeOcclusionToCompositorTypeRelease[] = "release";
-// When the WindowTreeHost is occluded the frame rate is throttled.
-const char kApplyNativeOcclusionToCompositorTypeThrottle[] = "throttle";
-// Release when hidden, throttle when occluded.
-const char kApplyNativeOcclusionToCompositorTypeThrottleAndRelease[] =
-    "throttle_and_release";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -338,21 +328,6 @@ bool IsSynchronousPageFlipTestingEnabled() {
 BASE_FEATURE(kResamplingScrollEventsExperimentalPrediction,
              "ResamplingScrollEventsExperimentalPrediction",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-const char kPredictorNameLsq[] = "lsq";
-const char kPredictorNameKalman[] = "kalman";
-const char kPredictorNameLinearFirst[] = "linear_first";
-const char kPredictorNameLinearSecond[] = "linear_second";
-const char kPredictorNameLinearResampling[] = "linear_resampling";
-const char kPredictorNameEmpty[] = "empty";
-
-const char kFilterNameEmpty[] = "empty_filter";
-const char kFilterNameOneEuro[] = "one_euro_filter";
-
-const char kPredictionTypeFramesBased[] = "frames";
-const char kPredictionTypeDefaultFramesVariation1[] = "0.25";
-const char kPredictionTypeDefaultFramesVariation2[] = "0.375";
-const char kPredictionTypeDefaultFramesVariation3[] = "0.5";
 
 BASE_FEATURE(kSwipeToMoveCursor,
              "SwipeToMoveCursor",

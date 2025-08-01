@@ -33,19 +33,6 @@
 
 namespace ui {
 
-// Window property on the source window and message used by the XDS protocol.
-// This atom name intentionally includes the XDS protocol version (0).
-// After the source sends the XdndDrop message, this property stores the
-// (path-less) name of the file to be saved, and has the type text/plain, with
-// an optional charset attribute.
-// When receiving an XdndDrop event, the target needs to check for the
-// XdndDirectSave property on the source window. The target then modifies the
-// XdndDirectSave on the source window, and sends an XdndDirectSave message to
-// the source.
-// After the target sends the XdndDirectSave message, this property stores an
-// URL indicating the location where the source should save the file.
-const char kXdndDirectSave0[] = "XdndDirectSave0";
-
 namespace {
 
 using mojom::DragOperation;
@@ -66,47 +53,47 @@ constexpr int kMinXdndVersion = 3;
 constexpr int kMaxXdndVersion = 5;
 
 // Window property that tells other applications the window understands XDND.
-const char kXdndAware[] = "XdndAware";
+constexpr char kXdndAware[] = "XdndAware";
 
 // Window property that holds the supported drag and drop data types.
 // This property is set on the XDND source window when the drag and drop data
 // can be converted to more than 3 types.
-const char kXdndTypeList[] = "XdndTypeList";
+constexpr char kXdndTypeList[] = "XdndTypeList";
 
 // These actions have the same meaning as in the W3C Drag and Drop spec.
-const char kXdndActionCopy[] = "XdndActionCopy";
-const char kXdndActionMove[] = "XdndActionMove";
-const char kXdndActionLink[] = "XdndActionLink";
+constexpr char kXdndActionCopy[] = "XdndActionCopy";
+constexpr char kXdndActionMove[] = "XdndActionMove";
+constexpr char kXdndActionLink[] = "XdndActionLink";
 
 // Triggers the XDS protocol.
-const char kXdndActionDirectSave[] = "XdndActionDirectSave";
+constexpr char kXdndActionDirectSave[] = "XdndActionDirectSave";
 
 // Window property that contains the possible actions that will be presented to
 // the user when the drag and drop action is kXdndActionAsk.
-const char kXdndActionList[] = "XdndActionList";
+constexpr char kXdndActionList[] = "XdndActionList";
 
 // Window property pointing to a proxy window to receive XDND target messages.
 // The XDND source must check the proxy window must for the XdndAware property,
 // and must send all XDND messages to the proxy instead of the target. However,
 // the target field in the messages must still represent the original target
 // window (the window pointed to by the cursor).
-const char kXdndProxy[] = "XdndProxy";
+constexpr char kXdndProxy[] = "XdndProxy";
 
 // Message sent from an XDND source to the target when the user confirms the
 // drag and drop operation.
-const char kXdndDrop[] = "XdndDrop";
+constexpr char kXdndDrop[] = "XdndDrop";
 
 // Message sent from an XDND source to the target to start the XDND protocol.
 // The target must wait for an XDndPosition event before querying the data.
-const char kXdndEnter[] = "XdndEnter";
+constexpr char kXdndEnter[] = "XdndEnter";
 
 // Message sent from an XDND target to the source in response to an XdndDrop.
 // The message must be sent whether the target acceepts the drop or not.
-const char kXdndFinished[] = "XdndFinished";
+constexpr char kXdndFinished[] = "XdndFinished";
 
 // Message sent from an XDND source to the target when the user cancels the drag
 // and drop operation.
-const char kXdndLeave[] = "XdndLeave";
+constexpr char kXdndLeave[] = "XdndLeave";
 
 // Message sent by the XDND source when the cursor position changes.
 // The source will also send an XdndPosition event right after the XdndEnter
@@ -116,12 +103,12 @@ const char kXdndLeave[] = "XdndLeave";
 // information.
 // After the target optionally acquires selection information, it must tell the
 // source if it can accept the drop via an XdndStatus message.
-const char kXdndPosition[] = "XdndPosition";
+constexpr char kXdndPosition[] = "XdndPosition";
 
 // Message sent by the XDND target in response to an XdndPosition message.
 // The message informs the source if the target will accept the drop, and what
 // action will be taken if the drop is accepted.
-const char kXdndStatus[] = "XdndStatus";
+constexpr char kXdndStatus[] = "XdndStatus";
 
 std::map<x11::Window, XDragDropClient*>& GetLiveClientMap() {
   static base::NoDestructor<std::map<x11::Window, XDragDropClient*>> map;

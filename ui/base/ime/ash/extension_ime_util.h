@@ -9,34 +9,48 @@
 
 #include "base/auto_reset.h"
 #include "base/component_export.h"
-
-namespace ash {
+#include "build/branding_buildflags.h"
 
 // Extension IME related utilities.
-namespace extension_ime_util {
+namespace ash::extension_ime_util {
 
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kXkbExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kM17nExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kHangulExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kMozcExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kT13nExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH)
-extern const char kChinesePinyinExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH)
-extern const char kChineseZhuyinExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH)
-extern const char kChineseCangjieExtensionId[];
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+inline constexpr char kXkbExtensionId[] = "jkghodnilhceideoidjikpgommlajknk";
+inline constexpr char kM17nExtensionId[] = "jkghodnilhceideoidjikpgommlajknk";
+inline constexpr char kHangulExtensionId[] = "bdgdidmhaijohebebipajioienkglgfo";
+inline constexpr char kMozcExtensionId[] = "jkghodnilhceideoidjikpgommlajknk";
+inline constexpr char kT13nExtensionId[] = "jkghodnilhceideoidjikpgommlajknk";
+inline constexpr char kChinesePinyinExtensionId[] =
+    "jkghodnilhceideoidjikpgommlajknk";
+inline constexpr char kChineseZhuyinExtensionId[] =
+    "jkghodnilhceideoidjikpgommlajknk";
+inline constexpr char kChineseCangjieExtensionId[] =
+    "jkghodnilhceideoidjikpgommlajknk";
+#else
+inline constexpr char kXkbExtensionId[] = "fgoepimhcoialccpbmpnnblemnepkkao";
+inline constexpr char kM17nExtensionId[] = "jhffeifommiaekmbkkjlpmilogcfdohp";
+inline constexpr char kHangulExtensionId[] = "bdgdidmhaijohebebipajioienkglgfo";
+inline constexpr char kMozcExtensionId[] = "bbaiamgfapehflhememkfglaehiobjnk";
+inline constexpr char kT13nExtensionId[] = "gjaehgfemfahhmlgpdfknkhdnemmolop";
+inline constexpr char kChinesePinyinExtensionId[] =
+    "cpgalbafkoofkjmaeonnfijgpfennjjn";
+inline constexpr char kChineseZhuyinExtensionId[] =
+    "ekbifjdfhkmdeeajnolmgdlmkllopefi";
+inline constexpr char kChineseCangjieExtensionId[] =
+    "aeebooiibjahgpgmhkeocbeekccfknbj";
+#endif
 
 // Extension id, path (relative to |chrome::DIR_RESOURCES|) and IME engine
 // id for the builtin-in Braille IME extension.
-COMPONENT_EXPORT(UI_BASE_IME_ASH)
-extern const char kBrailleImeExtensionId[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH)
-extern const char kBrailleImeExtensionPath[];
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kBrailleImeEngineId[];
+inline constexpr char kBrailleImeExtensionId[] =
+    "jddehjeebkoimngcbdkaahpobgicbffp";
+inline constexpr char kBrailleImeExtensionPath[] =
+    "chromeos/accessibility/braille_ime";
+inline constexpr char kBrailleImeEngineId[] =
+    "_comp_ime_jddehjeebkoimngcbdkaahpobgicbffpbraille";
 
 // The fake language name used for ARC IMEs.
-COMPONENT_EXPORT(UI_BASE_IME_ASH) extern const char kArcImeLanguage[];
+inline constexpr char kArcImeLanguage[] = "_arc_ime_language_";
 
 // Returns InputMethodID for |engine_id| in |extension_id| of extension IME.
 // This function does not check |extension_id| is installed extension IME nor
@@ -102,7 +116,6 @@ std::string COMPONENT_EXPORT(UI_BASE_IME_ASH)
 bool COMPONENT_EXPORT(UI_BASE_IME_ASH)
     IsCros1pKorean(const std::string& input_method_id);
 
-}  // namespace extension_ime_util
-}  // namespace ash
+}  // namespace ash::extension_ime_util
 
 #endif  // UI_BASE_IME_ASH_EXTENSION_IME_UTIL_H_
