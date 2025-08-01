@@ -175,6 +175,15 @@ BASE_FEATURE_PARAM(bool,
                    "AcceptCHOffloadWithRedirect",
                    false);
 
+// Enable offloading the network layer to check enabled client hints for
+// subframe requests.
+// See crbug.com/406407746 for details.
+BASE_FEATURE_PARAM(bool,
+                   kAcceptCHOffloadForSubframe,
+                   &kOffloadAcceptCHFrameCheck,
+                   "AcceptCHOffloadForSubframe",
+                   false);
+
 // https://fetch.spec.whatwg.org/#cors-non-wildcard-request-header-name
 BASE_FEATURE(kCorsNonWildcardRequestHeadersSupport,
              "CorsNonWildcardRequestHeadersSupport",

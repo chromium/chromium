@@ -149,11 +149,21 @@ bool AcceptCHFrameInterceptor::NeedsObserverCheckForTesting(
 bool AcceptCHFrameInterceptor::NeedsObserverCheck(
     const url::Origin& origin,
     const std::vector<mojom::WebClientHintsType>& hints) {
-  if (!enabled_client_hints_.has_value() ||
-      !enabled_client_hints_->is_outermost_main_frame ||
+  if (!enabled_client_hints_.has_value()) {
+    return true;
+  }
+
+  // For main frames, the origin must match to use the cached hints.
+  if (enabled_client_hints_->is_outermost_main_frame &&
       !enabled_client_hints_->origin.IsSameOriginWith(origin)) {
     return true;
   }
+  // For subframes, the optimization is only allowed if the feature is enabled.
+  if (!enabled_client_hints_->is_outermost_main_frame &&
+      !features::kAcceptCHOffloadForSubframe.Get()) {
+    return true;
+  }
+
   CHECK(base::FeatureList::IsEnabled(features::kOffloadAcceptCHFrameCheck));
   return !std::all_of(hints.cbegin(), hints.cend(), [&](const auto& h) {
     return base::Contains(enabled_client_hints_->hints, h);
