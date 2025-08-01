@@ -13,7 +13,7 @@ const KeyType = {
   __proto__: null,
   public: 'public',
   private: 'private',
-  secret: 'secret'
+  secret: 'secret',
 };
 
 /**

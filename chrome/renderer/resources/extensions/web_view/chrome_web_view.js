@@ -179,7 +179,7 @@ ChromeWebViewImpl.prototype.setupContextMenus = function() {
         utils.lookup(ChromeWebViewSchema.events, 'name', 'onShow');
     const eventOptions = {
       supportsListeners: true,
-      supportsLazyListeners: false
+      supportsLazyListeners: false,
     };
     // TODO(crbug.com/429599984): Move this member to the context menus
     // instance.
