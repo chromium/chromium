@@ -10,6 +10,7 @@
 #include <limits>
 
 #include "base/check_op.h"
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/checked_math.h"
 #include "base/numerics/safe_conversions.h"
@@ -17,7 +18,6 @@
 #include "build/build_config.h"
 #include "components/variations/client_filterable_state.h"
 #include "components/variations/limited_layer_entropy_cost_tracker.h"
-#include "components/variations/service/variations_field_trial_creator_base.h"
 #include "components/variations/study_filtering.h"
 #include "components/variations/variations_layers.h"
 #include "components/variations/variations_seed_processor.h"
