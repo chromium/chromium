@@ -319,7 +319,6 @@ TEST_F(DownloadBubbleSecurityViewTest,
             static_cast<int>(ui::mojom::DialogButton::kOk));
 
   // Two buttons, none prominent
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting(
       {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
@@ -335,7 +334,6 @@ TEST_F(DownloadBubbleSecurityViewTest,
             static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // One button, none prominent
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting(
       {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
@@ -348,7 +346,6 @@ TEST_F(DownloadBubbleSecurityViewTest,
             static_cast<int>(ui::mojom::DialogButton::kNone));
 
   // No buttons, none prominent
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting({});
   UpdateView();
@@ -542,7 +539,6 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
   int short_width =
       bubble_delegate_->GetDialogClientView()->GetMinimumSize().width();
 
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting({SubpageButton(
       DownloadCommands::Command::DISCARD,
@@ -555,7 +551,6 @@ TEST_F(DownloadBubbleSecurityViewTest, ResizesOnUpdate) {
 
   ASSERT_LT(short_width, medium_width);
 
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row1_model_);
   security_view_info_->SetSubpageButtonsForTesting(
       {SubpageButton(DownloadCommands::Command::DISCARD, std::u16string(),
@@ -583,7 +578,6 @@ TEST_F(DownloadBubbleSecurityViewTest, InitializeAndReset) {
             OfflineItemUtils::GetContentIdForDownload(&download_item1_));
 
   // Reset and initialize with the other download.
-  security_view_->Reset();
   security_view_info_->InitializeForDownload(*row2_model_);
   EXPECT_TRUE(security_view_->IsInitialized());
   EXPECT_EQ(security_view_->content_id(),

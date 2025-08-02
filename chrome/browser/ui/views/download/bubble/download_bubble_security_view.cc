@@ -269,7 +269,6 @@ void DownloadBubbleSecurityView::BackButtonPressed() {
         kSubpageActionHistogram,
         DownloadBubbleSubpageAction::kPressedBackButton);
   }
-  Reset();
   navigation_handler_->OpenPrimaryDialog();
 }
 
@@ -535,7 +534,6 @@ bool DownloadBubbleSecurityView::ProcessButtonClick(
   }
 
   // Record metrics only if we are actually processing the command.
-  RecordWarningActionTime(is_secondary_button);
   base::UmaHistogramEnumeration(
       kSubpageActionHistogram,
       is_secondary_button ? DownloadBubbleSubpageAction::kPressedSecondaryButton
@@ -674,23 +672,6 @@ void DownloadBubbleSecurityView::ClearWideFields() {
   title_->SetText(std::u16string());
 }
 
-void DownloadBubbleSecurityView::RecordWarningActionTime(
-    bool is_secondary_button) {
-  DCHECK(warning_time_.has_value());
-  // Example Histogram
-  // Download.Bubble.Subpage.DangerousFile.SecondaryButtonActionTime
-  std::string histogram = base::StrCat(
-      {"Download.Bubble.Subpage.",
-       download::GetDownloadDangerTypeString(info_->danger_type()), ".",
-       is_secondary_button ? "Secondary" : "Primary", "ButtonActionTime"});
-  base::UmaHistogramMediumTimes(histogram,
-                                base::Time::Now() - (*warning_time_));
-}
-
-void DownloadBubbleSecurityView::Reset() {
-  warning_time_ = std::nullopt;
-}
-
 void DownloadBubbleSecurityView::UpdateViews() {
   CHECK(IsInitialized());
   CHECK(info_->HasSubpage());
@@ -808,7 +789,6 @@ bool DownloadBubbleSecurityView::ProcessLocalPasswordDecryptionClick() {
 }
 
 void DownloadBubbleSecurityView::OnInfoChanged() {
-  warning_time_ = base::Time::Now();
   // If this represents a "terminal" state of a deep scan, or if the download
   // is otherwise no longer dangerous, we return to the primary dialog. Note
   // that we want this behavior even if this is a different download, e.g.
@@ -825,7 +805,6 @@ void DownloadBubbleSecurityView::OnInfoChanged() {
 }
 
 void DownloadBubbleSecurityView::OnContentIdChanged() {
-  Reset();
   // Reset this to false because now this represents a different instance of
   // the security dialog. This should not be reset anywhere else. We only want
   // to consider it a different instance of the dialog (and potentially log a

@@ -102,7 +102,6 @@ DownloadBubbleContentsView::~DownloadBubbleContentsView() {
   if (VisiblePage() == Page::kSecurity) {
     security_view_->MaybeLogDismiss();
   }
-  security_view_->Reset();
   // In order to ensure that `info_` is valid for the entire lifetime of the
   // child views, we delete the child views here rather than in `~View()`.
   primary_view_ = nullptr;
@@ -119,7 +118,6 @@ DownloadBubbleRowView* DownloadBubbleContentsView::ShowPrimaryPage(
     std::optional<offline_items_collection::ContentId> id) {
   CHECK(!id || *id != ContentId());
   security_view_->SetVisible(false);
-  security_view_->Reset();
   info_->ResetSecurityView();
   // Reset fixed width, which could be previously set by the security
   // view.

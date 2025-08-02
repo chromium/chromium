@@ -227,27 +227,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="Download.Bubble.Subpage.{DownloadDangerTypeString}.{ButtonType}ButtonActionTime"
-    units="ms" expires_after="2025-09-08">
-  <owner>chlily@chromium.org</owner>
-  <owner>chrome-counter-abuse-alerts@google.com</owner>
-  <summary>
-    Measures the time (in ms) between the Download bubble warning subpage being
-    shown, and one of the buttons being acted upon. The warning subpage is shown
-    when the user sees a download warning on the full or the partial view, and
-    navigates to the subpage for more actions. Recorded only for Desktop
-    platforms, where Download Bubble is enabled. In M105, FirstButtonActionTime
-    is replaced with SecondaryButtonActionTime, SecondButtonActionTime is
-    replaced with PrimaryButtonActionTime.
-  </summary>
-  <token key="ButtonType">
-    <variant name="Primary"/>
-    <variant name="Secondary"/>
-  </token>
-  <token key="DownloadDangerTypeString" variants="DownloadDangerTypeString"/>
-</histogram>
-
 <histogram name="Download.Bubble.SubpageAction"
     enum="DownloadBubbleSubpageAction" expires_after="2026-01-18">
   <owner>chlily@chromium.org</owner>
