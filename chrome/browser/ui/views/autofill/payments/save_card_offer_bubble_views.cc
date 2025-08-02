@@ -169,10 +169,25 @@ bool SaveCardOfferBubbleViews::IsDialogButtonEnabled(
 
 void SaveCardOfferBubbleViews::AddedToWidget() {
   SaveCardBubbleViews::AddedToWidget();
+  int lottie_resource_id;
+  switch (controller()->GetBubbleType()) {
+    case BubbleType::UPLOAD_SAVE:
+    case BubbleType::UPLOAD_IN_PROGRESS:
+    case BubbleType::UPLOAD_COMPLETED:
+      lottie_resource_id = IDR_AUTOFILL_SAVE_CARD_SECURE_LOTTIE;
+      break;
+    case BubbleType::LOCAL_CVC_SAVE:
+    case BubbleType::UPLOAD_CVC_SAVE:
+      lottie_resource_id = IDR_AUTOFILL_SAVE_SECURITY_CODE_LOTTIE;
+      break;
+    default:
+      lottie_resource_id = IDR_AUTOFILL_SAVE_CARD_LOCAL_LOTTIE;
+  }
+
   // Set the header image.
   ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
   auto image_view = std::make_unique<views::ImageView>(
-      bundle.GetThemedLottieImageNamed(IDR_AUTOFILL_SAVE_CARD_LOTTIE));
+      bundle.GetThemedLottieImageNamed(lottie_resource_id));
   image_view->GetViewAccessibility().SetIsInvisible(true);
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
