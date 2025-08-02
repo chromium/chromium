@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/default_promo/ui_bundled/default_browser_instructions_view_controller.h"
 
+#import "base/check.h"
 #import "base/i18n/rtl.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -35,6 +36,7 @@ NSString* const kDefaultBrowserDefaultAppsAnimationRtlDarkmode =
     @"default_browser_default_apps_animation_rtl_darkmode";
 
 // Keys in the lottie assets.
+NSString* const kBrowserAppKeypath = @"IDS_BROWSER_APP";
 NSString* const kDefaultBrowserAppKeypath = @"IDS_DEFAULT_BROWSER_APP";
 NSString* const kChromeKeypath = @"IDS_CHROME";
 
@@ -77,6 +79,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     [self addVideoSection:useDefaultAppsDestination];
     [self addInformationSectionWithDismissButton:hasDismissButton
                                 hasRemindMeLater:hasRemindMeLater
+                       useDefaultAppsDestination:useDefaultAppsDestination
                                         hasSteps:hasSteps
                                    actionHandler:actionHandler
                                        titleText:titleText];
@@ -141,6 +144,8 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
   // Set the text localization.
   NSDictionary* textProvider = @{
+    kBrowserAppKeypath :
+        l10n_util::GetNSString(IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_BROWSER_APP),
     kDefaultBrowserAppKeypath : l10n_util::GetNSString(
         IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_BROWSER_APP),
     kChromeKeypath : l10n_util::GetNSString(IDS_IOS_SHORT_PRODUCT_NAME)
@@ -214,6 +219,7 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 // If `titleText` is nil, default title will be used.
 - (void)addInformationSectionWithDismissButton:(BOOL)hasDismissButton
                               hasRemindMeLater:(BOOL)hasRemindMeLater
+                     useDefaultAppsDestination:(BOOL)useDefaultAppsDestination
                                       hasSteps:(BOOL)hasSteps
                                  actionHandler:
                                      (id<ConfirmationAlertActionHandler>)
@@ -244,6 +250,10 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
 
   // The view can have either instruction steps or subtitles.
   if (hasSteps) {
+    // TODO(crbug.com/435722549): Add strings for steps for the new Default Apps
+    // destination, and use thme heere if useDefaultAppsDestination is YES.
+    // Remove the CHECK when done.
+    CHECK(!useDefaultAppsDestination);
     NSArray* defaultBrowserSteps = @[
       l10n_util::GetNSString(
           IDS_IOS_FIRST_RUN_DEFAULT_BROWSER_SCREEN_FIRST_STEP),
@@ -260,8 +270,13 @@ NSString* const kDefaultBrowserInstructionsViewDarkAnimationViewId =
     alertScreen.underTitleView = instructionView;
     alertScreen.shouldFillInformationStack = YES;
   } else {
-    alertScreen.subtitleString = l10n_util::GetNSString(
-        IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT);
+    if (useDefaultAppsDestination) {
+      alertScreen.subtitleString = l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_DEFAULT_APPS_SUBTITLE_TEXT);
+    } else {
+      alertScreen.subtitleString = l10n_util::GetNSString(
+          IDS_IOS_DEFAULT_BROWSER_VIDEO_PROMO_SUBTITLE_TEXT);
+    }
   }
 
   if (hasDismissButton) {
