@@ -2593,6 +2593,7 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
 
   DCHECK(candidate_prerender_frame_tree_node_id.has_value());
   DCHECK(!prerender_frame_tree_node_id_.has_value());
+  DCHECK(!reserved_prerender_host_info_.has_value());
 
   // Attempt to reserve the potential PrerenderHost.
   //
@@ -2600,9 +2601,13 @@ void NavigationRequest::OnPrerenderingActivationChecksComplete(
   // CommitDeferringConditions, ReserveHostToActivate() returns an invalid
   // FrameTreeNodeId, and then NavigationRequest continues as regular
   // navigation.
-  prerender_frame_tree_node_id_ =
+  reserved_prerender_host_info_ =
       GetPrerenderHostRegistry().ReserveHostToActivate(
           *this, candidate_prerender_frame_tree_node_id.value());
+  prerender_frame_tree_node_id_ =
+      reserved_prerender_host_info_.has_value()
+          ? reserved_prerender_host_info_->frame_tree_node_id
+          : FrameTreeNodeId();
   if (prerender_frame_tree_node_id_.value().is_null()) {
     // If we ran commit deferring conditions for a potential pre-render which
     // eventually wasn't activated, abort the ViewTransition. The state was
@@ -6896,25 +6901,12 @@ void NavigationRequest::CommitPageActivation() {
     frame_tree_node_->render_manager()->RestorePage(
         activated_entry->TakeStoredPage());
   } else {
-    // Copy the prerender trigger type before PrerenderHost is destroyed in
-    // ActivateReservedHost().
-    PreloadingTriggerType trigger_type =
-        GetPrerenderHostRegistry().GetPrerenderTriggerType(
-            prerender_frame_tree_node_id());
-    const std::string embedder_histogram_suffix =
-        GetPrerenderHostRegistry().GetPrerenderEmbedderHistogramSuffix(
-            prerender_frame_tree_node_id());
-
     std::unique_ptr<StoredPage> stored_page =
         GetPrerenderHostRegistry().ActivateReservedHost(
             prerender_frame_tree_node_id_.value(), *this);
     CHECK(stored_page);
 
     RenderFrameHostImpl* rfh = stored_page->render_frame_host();
-
-    // Set the prerender trigger type and embedder histogram suffix for metrics.
-    set_prerender_trigger_type(trigger_type);
-    set_prerender_embedder_histogram_suffix(embedder_histogram_suffix);
 
     // The prerender page might have navigated. Update the URL and the redirect
     // chain, as the prerendered page might have been redirected or performed
@@ -10982,12 +10974,13 @@ NavigationRequest::ScopedCrashKeys::ScopedCrashKeys(
 NavigationRequest::ScopedCrashKeys::~ScopedCrashKeys() = default;
 
 PreloadingTriggerType NavigationRequest::GetPrerenderTriggerType() {
-  DCHECK(prerender_trigger_type_.has_value());
-  return prerender_trigger_type_.value();
+  DCHECK(reserved_prerender_host_info_.has_value());
+  return reserved_prerender_host_info_->trigger_type;
 }
 
 std::string NavigationRequest::GetPrerenderEmbedderHistogramSuffix() {
-  return prerender_embedder_histogram_suffix_;
+  DCHECK(reserved_prerender_host_info_.has_value());
+  return reserved_prerender_host_info_->embedder_histogram_suffix;
 }
 
 #if BUILDFLAG(IS_ANDROID)

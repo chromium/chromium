@@ -21,6 +21,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/preloading/preloading_confidence.h"
 #include "content/browser/preloading/prerender/prerender_final_status.h"
+#include "content/browser/preloading/prerender/reserved_prerender_host_info.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/common/content_export.h"
 #include "content/common/frame.mojom-forward.h"
@@ -183,17 +184,16 @@ class CONTENT_EXPORT PrerenderHostRegistry : public WebContentsObserver {
       NavigationRequest& navigation_request);
 
   // For activators. Reserves the host to activate for a navigation for the
-  // given NavigationRequest. Returns the root frame tree node id of the
-  // prerendered page, which can be used as the id of the host. Returns an
-  // invalid FrameTreeNodeId if it's not found or not ready for activation yet.
+  // given NavigationRequest.
+  // Returns a valid ReservedPrerenderHostInfo, which has the valid root frame
+  // tree node if of the prerendered page. Returns nullopt if it's not found
+  // or not ready for activation yet.
   // The caller is responsible for calling OnActivationFinished() with the id to
   // release the reserved host. This also cancels all the prerender hosts except
   // the one to be activated.
-  //
-  // TODO(crbug.com/40177514): Consider returning the ownership of the reserved
-  // host and letting NavigationRequest own it instead of PrerenderHostRegistry.
-  FrameTreeNodeId ReserveHostToActivate(NavigationRequest& navigation_request,
-                                        FrameTreeNodeId expected_host_id);
+  std::optional<ReservedPrerenderHostInfo> ReserveHostToActivate(
+      NavigationRequest& navigation_request,
+      FrameTreeNodeId expected_host_id);
 
   // For activators.
   // Activates the host reserved by ReserveHostToActivate() and returns the

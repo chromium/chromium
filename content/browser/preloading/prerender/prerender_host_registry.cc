@@ -1234,7 +1234,8 @@ FrameTreeNodeId PrerenderHostRegistry::FindPotentialHostToActivate(
              : FrameTreeNodeId();
 }
 
-FrameTreeNodeId PrerenderHostRegistry::ReserveHostToActivate(
+std::optional<ReservedPrerenderHostInfo>
+PrerenderHostRegistry::ReserveHostToActivate(
     NavigationRequest& navigation_request,
     FrameTreeNodeId expected_host_id) {
   RenderFrameHostImpl* render_frame_host =
@@ -1254,7 +1255,7 @@ FrameTreeNodeId PrerenderHostRegistry::ReserveHostToActivate(
   // matched pages may not be ready for activation yet.
   auto it = prerender_host_by_frame_tree_node_id_.find(expected_host_id);
   if (it == prerender_host_by_frame_tree_node_id_.end()) {
-    return FrameTreeNodeId();
+    return std::nullopt;
   }
 
   PrerenderHost& host_ref = *it->second;
@@ -1265,11 +1266,11 @@ FrameTreeNodeId PrerenderHostRegistry::ReserveHostToActivate(
   std::optional<UrlMatchType> match_type =
       host_ref.IsUrlMatch(navigation_request.GetURL());
   if (!match_type.has_value()) {
-    return FrameTreeNodeId();
+    return std::nullopt;
   }
 
   if (!CanNavigationActivateHost(navigation_request, host_ref)) {
-    return FrameTreeNodeId();
+    return std::nullopt;
   }
 
   FrameTreeNodeId host_id = host_ref.frame_tree_node_id();
@@ -1281,7 +1282,7 @@ FrameTreeNodeId PrerenderHostRegistry::ReserveHostToActivate(
   if (prerender_frame_tree.root()->HasNavigation()) {
     CancelHost(host_id,
                PrerenderFinalStatus::kActivatedDuringMainFrameNavigation);
-    return FrameTreeNodeId();
+    return std::nullopt;
   }
 
   // Remove the host from the map of non-reserved hosts.
@@ -1301,7 +1302,9 @@ FrameTreeNodeId PrerenderHostRegistry::ReserveHostToActivate(
   CHECK(!reserved_prerender_host_);
   reserved_prerender_host_ = std::move(host);
 
-  return host_id;
+  return ReservedPrerenderHostInfo(
+      host_id, reserved_prerender_host_->trigger_type(),
+      reserved_prerender_host_->embedder_histogram_suffix());
 }
 
 RenderFrameHostImpl* PrerenderHostRegistry::GetRenderFrameHostForReservedHost(

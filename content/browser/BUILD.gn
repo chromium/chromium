@@ -1692,6 +1692,8 @@ source_set("browser") {
     "preloading/prerender/prerender_subframe_navigation_throttle.h",
     "preloading/prerender/prerender_url_loader_throttle.cc",
     "preloading/prerender/prerender_url_loader_throttle.h",
+    "preloading/prerender/reserved_prerender_host_info.cc",
+    "preloading/prerender/reserved_prerender_host_info.h",
     "preloading/prerenderer.h",
     "preloading/prerenderer_impl.cc",
     "preloading/prerenderer_impl.h",
