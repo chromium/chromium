@@ -28,13 +28,9 @@ namespace {
 std::u16string GetTitle(
     const std::vector<extensions::ReloadPageDialogController::ExtensionInfo>&
         extensions_info) {
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kExtensionsMenuAccessControl)) {
-    return l10n_util::GetStringUTF16(
-        IDS_EXTENSION_RELOAD_PAGE_BUBBLE_ALLOW_MULTIPLE_EXTENSIONS_TITLE);
-  }
-
-  if (extensions_info.size() == 0) {
+  if (!base::FeatureList::IsEnabled(
+          extensions_features::kExtensionsMenuAccessControl) ||
+      extensions_info.empty()) {
     return l10n_util::GetStringUTF16(
         IDS_EXTENSION_SITE_RELOAD_PAGE_BUBBLE_HEADING);
   }
