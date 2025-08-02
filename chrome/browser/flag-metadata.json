@@ -4048,8 +4048,8 @@
   },
   {
     "name": "enable-oop-print-drivers",
-    "owners": [ "awscreen@chromium.org", "thestig@chromium.org" ],
-    "expiry_milestone": 140
+    "owners": [ "thestig@chromium.org" ],
+    "expiry_milestone": 146
   },
   {
     "name": "enable-openxr-android",
@@ -8057,12 +8057,12 @@
   {
     "name": "print-with-postscript-type42-fonts",
     "owners": [ "thestig@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 146
   },
   {
     "name": "print-with-reduced-rasterization",
     "owners": [ "thestig@chromium.org" ],
-    "expiry_milestone": 140
+    "expiry_milestone": 146
   },
   {
     "name": "printing-ppd-channel",
