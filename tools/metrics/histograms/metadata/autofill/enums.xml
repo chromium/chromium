@@ -172,6 +172,7 @@ chromium-metrics-reviews@google.com.
   <int value="1" label="Driver's License"/>
   <int value="2" label="Vehicle Information"/>
   <int value="3" label="National ID Card"/>
+  <int value="4" label="Known Traveler Number"/>
 </enum>
 
 <!-- LINT.ThenChange(//components/autofill/core/browser/data_model/autofill_ai/entity_type.cc:EntityType) -->

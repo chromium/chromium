@@ -793,7 +793,7 @@
     Delete redress number
   </message>
 
-    <!-- Attributes of the driver's license entity -->
+  <!-- Attributes of the driver's license entity -->
   <message name="IDS_AUTOFILL_AI_DRIVERS_LICENSE_NAME_ATTRIBUTE_NAME" desc="Used as a general label for the driver's license name attribute.">
     Name
   </message>
@@ -837,7 +837,6 @@
   <message name="IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME" desc="Used as a general label for the known traveler number expiration date attribute.">
     Expiration date
   </message>
-
 
   <!-- Attributes of redress number entity -->
   <message name="IDS_AUTOFILL_AI_REDRESS_NUMBER_NAME_ATTRIBUTE_NAME" translateable="false">

@@ -971,6 +971,30 @@ EntityInstance GetDriversLicenseEntityInstance(DriversLicenseOptions options) {
       /*use_date=*/base::Time::FromTimeT(0));
 }
 
+EntityInstance GetKnownTravelerNumberInstance(
+    KnownTravelerNumberOptions options) {
+  using enum AttributeTypeName;
+  std::vector<AttributeInstance> attributes;
+  if (options.number) {
+    attributes.emplace_back(AttributeType(kKnownTravelerNumberNumber));
+    attributes.back().SetInfo(
+        KNOWN_TRAVELER_NUMBER, options.number, std::string(options.app_locale),
+        /*format_string=*/u"", VerificationStatus::kNoStatus);
+  }
+  if (options.expiration_date) {
+    attributes.emplace_back(AttributeType(kKnownTravelerNumberNumber));
+    attributes.back().SetInfo(
+        DRIVERS_LICENSE_EXPIRATION_DATE, options.expiration_date,
+        std::string(options.app_locale), /*format_string=*/u"YYYY-MM-DD",
+        VerificationStatus::kNoStatus);
+  }
+  return EntityInstance(
+      EntityType(EntityTypeName::kKnownTravelerNumber), std::move(attributes),
+      base::Uuid::ParseLowercase(options.guid), std::string(options.nickname),
+      base::Time::FromTimeT(kJune2017.ToTimeT()), /*use_count=*/0,
+      /*use_date=*/base::Time::FromTimeT(0));
+}
+
 EntityInstance GetVehicleEntityInstance(VehicleOptions options) {
   using enum AttributeTypeName;
   std::vector<AttributeInstance> attributes;

@@ -37,6 +37,9 @@ optimization_guide::proto::AutofillAiEntityType GetEntityType(
       return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_PASSPORT;
     case EntityTypeName::kDriversLicense:
       return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_DRIVERS_LICENSE;
+    case EntityTypeName::kKnownTravelerNumber:
+      return optimization_guide::proto::
+          AUTOFILL_AI_ENTITY_TYPE_KNOWN_TRAVELER_NUMBER;
     case EntityTypeName::kVehicle:
       return optimization_guide::proto::AUTOFILL_AI_ENTITY_TYPE_VEHICLE;
     case EntityTypeName::kNationalIdCard:

@@ -399,6 +399,19 @@ using NationalIdCardOptions = NationalIdCardOptionsT<>;
 EntityInstance GetNationalIdCardEntityInstance(
     NationalIdCardOptions options = {});
 
+template <typename = void>
+struct KnownTravelerNumberOptionsT {
+  const char16_t* number = u"987654321";
+  const char16_t* expiration_date = u"01/12/2030";
+  std::string_view guid = "00000000-0000-4000-8000-200000000000";
+  std::string_view nickname = "Known Traveler Number";
+  std::string_view app_locale = "en-US";
+};
+using KnownTravelerNumberOptions = KnownTravelerNumberOptionsT<>;
+
+EntityInstance GetKnownTravelerNumberInstance(
+    KnownTravelerNumberOptions options = {});
+
 // Adds `possible_types` at the end of `possible_field_types`.
 void InitializePossibleTypes(std::vector<FieldTypeSet>& possible_field_types,
                              const std::vector<FieldType>& possible_types);

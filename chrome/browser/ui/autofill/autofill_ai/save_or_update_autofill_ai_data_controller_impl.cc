@@ -61,6 +61,8 @@ void EmitBubbleFunnelMetrics(
     switch (entity_type.name()) {
       case EntityTypeName::kDriversLicense:
         return "DriversLicense";
+      case EntityTypeName::kKnownTravelerNumber:
+        return "KnownTravelerNumber";
       case EntityTypeName::kNationalIdCard:
         return "NationalIdCard";
       case EntityTypeName::kVehicle:
@@ -204,6 +206,9 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case EntityTypeName::kDriversLicense:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+      case EntityTypeName::kKnownTravelerNumber:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_SAVE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kNationalIdCard:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_SAVE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
@@ -219,6 +224,9 @@ std::u16string SaveOrUpdateAutofillAiDataControllerImpl::GetDialogTitle()
       case EntityTypeName::kDriversLicense:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_DRIVERS_LICENSE_ENTITY_DIALOG_TITLE);
+      case EntityTypeName::kKnownTravelerNumber:
+        return l10n_util::GetStringUTF16(
+            IDS_AUTOFILL_AI_UPDATE_KNOWN_TRAVELER_NUMBER_ENTITY_DIALOG_TITLE);
       case EntityTypeName::kNationalIdCard:
         return l10n_util::GetStringUTF16(
             IDS_AUTOFILL_AI_UPDATE_NATIONAL_ID_CARD_ENTITY_DIALOG_TITLE);
@@ -274,6 +282,8 @@ int SaveOrUpdateAutofillAiDataControllerImpl::GetTitleImagesResourceId() const {
   switch (new_entity_->type().name()) {
     case EntityTypeName::kDriversLicense:
       return IDR_AUTOFILL_SAVE_DRIVERS_LICENSE_LOTTIE;
+    case EntityTypeName::kKnownTravelerNumber:
+      return IDR_AUTOFILL_SAVE_KNOWN_TRAVELER_NUMBER_AND_REDRESS_NUMBER_LOTTIE;
     case EntityTypeName::kNationalIdCard:
       return IDR_AUTOFILL_SAVE_PASSPORT_AND_NATIONAL_ID_CARD_LOTTIE;
     case EntityTypeName::kPassport:

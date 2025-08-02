@@ -266,8 +266,11 @@ FieldTypeSet AutofillType::GetAutofillAiTypes() const {
     }();
     return Intersection(GetTypes(), kFieldTypesWithoutTagTypes);
   } else {
+    // Some entities (e.g. National Id Card) use NAME_FULL instead of a tag
+    // type.
     static constexpr FieldTypeSet kFieldTypes =
-        FieldTypesOfGroup(FieldTypeGroup::kAutofillAi);
+        Union(FieldTypesOfGroup(FieldTypeGroup::kAutofillAi),
+              FieldTypeSet{NAME_FULL});
     return Intersection(GetTypes(), kFieldTypes);
   }
 

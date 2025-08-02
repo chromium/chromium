@@ -43,6 +43,12 @@ std::u16string AttributeType::GetNameForI18n() const {
         return IDS_AUTOFILL_AI_DRIVERS_LICENSE_EXPIRATION_DATE_ATTRIBUTE_NAME;
       case AttributeTypeName::kDriversLicenseIssueDate:
         return IDS_AUTOFILL_AI_DRIVERS_LICENSE_ISSUE_DATE_ATTRIBUTE_NAME;
+      case AttributeTypeName::kKnownTravelerNumberName:
+        return IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_NAME_ATTRIBUTE_NAME;
+      case AttributeTypeName::kKnownTravelerNumberNumber:
+        return IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ATTRIBUTE_NAME;
+      case AttributeTypeName::kKnownTravelerNumberExpirationDate:
+        return IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE_ATTRIBUTE_NAME;
       case AttributeTypeName::kNationalIdCardName:
         return IDS_AUTOFILL_AI_NATIONAL_ID_CARD_NAME_ATTRIBUTE_NAME;
       case AttributeTypeName::kNationalIdCardCountry:
@@ -89,6 +95,8 @@ bool EntityType::ImportOrder(const EntityType& lhs, const EntityType& rhs) {
     switch (t.name()) {
       case EntityTypeName::kDriversLicense:
         return 4;
+      case EntityTypeName::kKnownTravelerNumber:
+        return 5;
       case EntityTypeName::kNationalIdCard:
         return 2;
       case EntityTypeName::kPassport:
@@ -113,6 +121,9 @@ std::u16string EntityType::GetNameForI18n() const {
     case EntityTypeName::kDriversLicense:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_DRIVERS_LICENSE_ENTITY_NAME);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetStringUTF16(
+          IDS_AUTOFILL_AI_KNOWN_TRAVELER_NUMBER_ENTITY_NAME);
     case EntityTypeName::kNationalIdCard:
       return l10n_util::GetStringUTF16(
           IDS_AUTOFILL_AI_NATIONAL_ID_CARD_ENTITY_NAME);

@@ -97,6 +97,9 @@ std::string GetAddEntityTypeStringForI18n(EntityType entity_type) {
     case EntityTypeName::kDriversLicense:
       return l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_ADD_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_ADD_KNOWN_TRAVELER_NUMBER_ENTITY);
     case EntityTypeName::kNationalIdCard:
       return l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_ADD_NATIONAL_ID_CARD_ENTITY);
@@ -113,6 +116,9 @@ std::string GetEditEntityTypeStringForI18n(EntityType entity_type) {
     case EntityTypeName::kDriversLicense:
       return l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_EDIT_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_EDIT_KNOWN_TRAVELER_NUMBER_ENTITY);
     case EntityTypeName::kNationalIdCard:
       return l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_EDIT_NATIONAL_ID_CARD_ENTITY);
@@ -129,6 +135,9 @@ std::string GetDeleteEntityTypeStringForI18n(EntityType entity_type) {
     case EntityTypeName::kDriversLicense:
       return l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_DELETE_DRIVERS_LICENSE_ENTITY);
+    case EntityTypeName::kKnownTravelerNumber:
+      return l10n_util::GetStringUTF8(
+          IDS_AUTOFILL_AI_DELETE_KNOWN_TRAVELER_NUMBER_ENTITY);
     case EntityTypeName::kNationalIdCard:
       return l10n_util::GetStringUTF8(
           IDS_AUTOFILL_AI_DELETE_NATIONAL_ID_CARD_ENTITY);

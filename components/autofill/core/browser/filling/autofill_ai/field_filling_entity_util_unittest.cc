@@ -85,6 +85,8 @@ std::u16string GetFillValueForEntity(
         switch (entity.type().name()) {
           case EntityTypeName::kDriversLicense:
             return AttributeType(AttributeTypeName::kDriversLicenseName);
+          case EntityTypeName::kKnownTravelerNumber:
+            return AttributeType(AttributeTypeName::kKnownTravelerNumberNumber);
           case EntityTypeName::kPassport:
             return AttributeType(AttributeTypeName::kPassportName);
           case EntityTypeName::kNationalIdCard:

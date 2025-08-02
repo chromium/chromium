@@ -47,6 +47,8 @@ chromium-metrics-reviews@google.com.
 <variants name="Autofill.Ai.EntityType">
   <variant name="DriversLicense"
       summary="Emitted for driver's license forms only."/>
+  <variant name="KnownTravelerNumber"
+      summary="Emitted for Known Traveler Number forms only."/>
   <variant name="NationalIdCard"
       summary="Emitted for national id card forms only."/>
   <variant name="Passport" summary="Emitted for passport forms only."/>
@@ -1409,6 +1411,8 @@ Called by update_autofill_enums.py. This is a manual comment.-->
   <token key="PromptType" variants="Autofill.Ai.PromptTypes"/>
   <token key="EntityType">
     <variant name=".DriversLicense" summary="Driver license entity"/>
+    <variant name=".KnownTravelerNumber"
+        summary="Known traveler number entity"/>
     <variant name=".NationalIdCard" summary="National ID card entity"/>
     <variant name=".Passport" summary="Passport entity"/>
     <variant name=".Vehicle" summary="Vehicle entity"/>

@@ -77,7 +77,9 @@ class AttributeType final {
   // There are three kinds of AttributeType / FieldType associations:
   // - `field_type()` is the one that best describes the full attribute.
   //   If kAutofillAiNoTagTypes is disabled:
-  //   The `field_type()` uniquely identifies the AttributeType.
+  //   The `field_type()` uniquely identifies the AttributeType except for
+  //   the name attributes of National Id Card, Known Traveler Number, and
+  //   Redress Number.
   //   If kAutofillAiNoTagTypes is enabled:
   //   Except for name types, the `field_type()` uniquely identifies the
   //   AttributeType.
@@ -124,6 +126,7 @@ class AttributeType final {
 constexpr AttributeType::DataType AttributeType::data_type() const {
   switch (name_) {
     case AttributeTypeName::kDriversLicenseName:
+    case AttributeTypeName::kKnownTravelerNumberName:
     case AttributeTypeName::kNationalIdCardName:
     case AttributeTypeName::kPassportName:
     case AttributeTypeName::kVehicleOwner:
@@ -133,6 +136,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
       return DataType::kCountry;
     case AttributeTypeName::kDriversLicenseExpirationDate:
     case AttributeTypeName::kDriversLicenseIssueDate:
+    case AttributeTypeName::kKnownTravelerNumberExpirationDate:
     case AttributeTypeName::kNationalIdCardIssueDate:
     case AttributeTypeName::kNationalIdCardExpirationDate:
     case AttributeTypeName::kPassportExpirationDate:
@@ -142,6 +146,7 @@ constexpr AttributeType::DataType AttributeType::data_type() const {
     case AttributeTypeName::kVehiclePlateState:
       return DataType::kState;
     case AttributeTypeName::kDriversLicenseNumber:
+    case AttributeTypeName::kKnownTravelerNumberNumber:
     case AttributeTypeName::kNationalIdCardNumber:
     case AttributeTypeName::kPassportNumber:
     case AttributeTypeName::kVehiclePlateNumber:
@@ -168,8 +173,15 @@ constexpr FieldType AttributeType::field_type_with_tag_types() const {
     case AttributeTypeName::kDriversLicenseIssueDate:
       return DRIVERS_LICENSE_ISSUE_DATE;
 
+    case AttributeTypeName::kKnownTravelerNumberNumber:
+      return KNOWN_TRAVELER_NUMBER;
+    case AttributeTypeName::kKnownTravelerNumberExpirationDate:
+      return KNOWN_TRAVELER_NUMBER_EXPIRATION_DATE;
+    case AttributeTypeName::kKnownTravelerNumberName:
+      return NAME_FULL;
+
     case AttributeTypeName::kNationalIdCardName:
-      return NO_SERVER_DATA;
+      return NAME_FULL;
     case AttributeTypeName::kNationalIdCardCountry:
       return NATIONAL_ID_CARD_ISSUING_COUNTRY;
     case AttributeTypeName::kNationalIdCardNumber:

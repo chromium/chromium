@@ -55,5 +55,19 @@
     "disambiguation order": [ "Name", "Country" ],
     "syncable": false,
     "experiment feature": "AutofillAiNationalIdCard"
+  },
+  {
+    "name": "Known Traveler Number",
+    "attributes": ["Name", "Number", "Expiration date" ],
+    "obfuscated attributes": [ "Number" ],
+    "required fields": "any",
+    "import constraints": [
+      [ "Number" ]
+    ],
+    "merge constraints": "import constraints",
+    "strike keys": "import constraints",
+    "disambiguation order": [ "Name" ],
+    "syncable": false,
+    "experiment feature": "AutofillAiKnownTravelerNumber"
   }
 ]

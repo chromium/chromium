@@ -35,6 +35,8 @@ std::string_view HistogramSuffixForEntityType(EntityType type) {
   switch (type.name()) {
     case EntityTypeName::kDriversLicense:
       return "DriversLicense";
+    case EntityTypeName::kKnownTravelerNumber:
+      return "KnownTravelerNumber";
     case EntityTypeName::kNationalIdCard:
       return "NationalIdCard";
     case EntityTypeName::kPassport:
