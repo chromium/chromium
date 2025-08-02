@@ -73,7 +73,6 @@ bool AddCommandLineArgsFromConfig(const base::Value::Dict& config,
   }
 
   static const std::string_view kAllowedArgs[] = {
-      blink::switches::kSharedArrayBufferAllowedOrigins,
       blink::switches::kGpuRasterizationMSAASampleCount,
       blink::switches::kMinHeightForGpuRasterTile,
       blink::switches::kForceGpuMemAvailableMb,

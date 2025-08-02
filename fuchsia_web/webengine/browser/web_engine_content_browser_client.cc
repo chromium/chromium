@@ -46,7 +46,6 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
-#include "third_party/blink/public/common/switches.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -117,7 +116,6 @@ std::vector<std::string> GetCorsExemptHeaders() {
 }
 
 static constexpr char const* kRendererSwitchesToCopy[] = {
-    blink::switches::kSharedArrayBufferAllowedOrigins,
     switches::kCorsExemptHeaders,
     switches::kEnableCastStreamingReceiver,
     switches::kEnableProtectedVideoBuffers,

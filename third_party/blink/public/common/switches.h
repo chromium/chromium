@@ -48,7 +48,6 @@ BLINK_COMMON_EXPORT extern const char kDisableBlobUrlPartitioning[];
 BLINK_COMMON_EXPORT extern const char kCSSCustomStateDeprecatedSyntaxEnabled[];
 BLINK_COMMON_EXPORT extern const char kMinHeightForGpuRasterTile[];
 BLINK_COMMON_EXPORT extern const char kNetworkQuietTimeout[];
-BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];
 BLINK_COMMON_EXPORT extern const char kShowLayoutShiftRegions[];
 BLINK_COMMON_EXPORT extern const char kShowPaintRects[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy[];

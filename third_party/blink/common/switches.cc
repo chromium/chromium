@@ -147,11 +147,6 @@ const char kTouchTextSelectionStrategy_Direction[] = "direction";
 const char kDisableStandardizedBrowserZoom[] =
     "disable-standardized-browser-zoom";
 
-// Comma-separated list of origins that can use SharedArrayBuffer without
-// enabling cross-origin isolation.
-const char kSharedArrayBufferAllowedOrigins[] =
-    "shared-array-buffer-allowed-origins";
-
 // Specifies the flags passed to JS engine.
 const char kJavaScriptFlags[] = "js-flags";
 

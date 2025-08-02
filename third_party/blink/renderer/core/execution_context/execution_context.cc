@@ -228,9 +228,6 @@ bool ExecutionContext::SharedArrayBufferTransferAllowed() const {
 
   CHECK(origin);
 
-  if (SecurityPolicy::IsSharedArrayBufferAlwaysAllowedForOrigin(origin))
-    return true;
-
 #if BUILDFLAG(IS_ANDROID)
   return false;
 #else
