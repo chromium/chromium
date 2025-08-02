@@ -89,15 +89,6 @@ public class AutomotiveBackButtonToolbarCoordinatorUnitTest {
 
     @Test
     @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
-    public void testAutomotiveBackButtonBarStreamline_onAppStart() {
-        Assert.assertEquals(
-                "Back button toolbar should be gone when the app opens.",
-                View.GONE,
-                mAutomotiveToolbar.getVisibility());
-    }
-
-    @Test
-    @EnableFeatures({ChromeFeatureList.AUTOMOTIVE_BACK_BUTTON_BAR_STREAMLINE})
     public void testAutomotiveBackButtonBarStreamline_onEnterAndExitFullScreen() {
         mFullscreenObserver =
                 mAutomotiveBackButtonToolbarCoordinator.getFullscreenObserverForTesting();

@@ -34,6 +34,7 @@ public final class DeviceInfo {
     private static final String TAG = "DeviceInfo";
 
     private static @Nullable String sGmsVersionCodeForTesting;
+    private static @Nullable Boolean sIsAutomotiveForTesting;
     private static boolean sInitialized;
     private final IDeviceInfo mIDeviceInfo;
 
@@ -77,6 +78,11 @@ public final class DeviceInfo {
         // Every time we call getInstance in a test we reconstruct the mIDeviceInfo object, so we
         // don't need to set mIDeviceInfo's copy here as it'll just get reconstructed.
         ResettersForTesting.register(() -> sGmsVersionCodeForTesting = null);
+    }
+
+    public static void setIsAutomotiveForTesting(boolean isAutomotive) {
+        sIsAutomotiveForTesting = isAutomotive;
+        ResettersForTesting.register(() -> sIsAutomotiveForTesting = null);
     }
 
     public static boolean isTV() {
@@ -163,6 +169,10 @@ public final class DeviceInfo {
             isAutomotive = false;
         }
         mIDeviceInfo.isAutomotive = isAutomotive;
+
+        if (sIsAutomotiveForTesting != null) {
+            mIDeviceInfo.isAutomotive = sIsAutomotiveForTesting;
+        }
 
         // Detect whether device is foldable.
         mIDeviceInfo.isFoldable =

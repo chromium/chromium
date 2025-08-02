@@ -48,6 +48,7 @@ import org.chromium.base.supplier.OneshotSupplierImpl;
 import org.chromium.build.annotations.NullMarked;
 import org.chromium.build.annotations.Nullable;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.automotivetoolbar.AutomotiveBackButtonToolbarCoordinator;
 import org.chromium.chrome.browser.base.ServiceTracingProxyProvider;
 import org.chromium.chrome.browser.base.SplitChromeApplication;
 import org.chromium.chrome.browser.compositor.overlays.strip.StripLayoutUtils;
@@ -754,5 +755,6 @@ public class ChromeBaseAppCompatActivity extends AppCompatActivity
                         getOnBackPressedDispatcher().onBackPressed();
                     });
         }
+        AutomotiveBackButtonToolbarCoordinator.hideBackButtonToolbar(this);
     }
 }

@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.automotivetoolbar;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Handler;
 import android.view.View;
@@ -146,10 +147,6 @@ public class AutomotiveBackButtonToolbarCoordinator {
         mFullscreenManager.addObserver(mFullscreenObserver);
         mBackButtonToolbarForAutomotive =
                 automotiveBaseFrameLayout.findViewById(R.id.back_button_toolbar);
-        // The back button bar does not show when not in full-screen.
-        if (isAutomotiveBackButtonBarStreamlineSupported(mContext)) {
-            mBackButtonToolbarForAutomotive.setVisibility(View.GONE);
-        }
         // Check if back button toolbar is vertical
         mIsVerticalToolbar = AutomotiveUtils.useVerticalAutomotiveBackButtonToolbar(context);
         setOnSwipeBackButtonToolbar(
@@ -234,5 +231,16 @@ public class AutomotiveBackButtonToolbarCoordinator {
     public static boolean isAutomotiveBackButtonBarStreamlineSupported(Context context) {
         return DisplayUtil.doesDeviceHaveCarmaPhase1Version2Compliance(context)
                 && ChromeFeatureList.sAutomotiveBackButtonBarStreamline.isEnabled();
+    }
+
+    // Streamlines the back button toolbar in Android Automotive if
+    // automotive-back-button-bar-streamline is enabled.
+    public static void hideBackButtonToolbar(Activity activity) {
+        if (isAutomotiveBackButtonBarStreamlineSupported(activity)) {
+            View backbuttonToolbar = activity.findViewById(R.id.back_button_toolbar);
+            if (backbuttonToolbar != null) {
+                backbuttonToolbar.setVisibility(View.GONE);
+            }
+        }
     }
 }
