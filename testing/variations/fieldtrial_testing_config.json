@@ -8769,6 +8769,25 @@
             ]
         }
     ],
+    "DnsOverHttpsQuad9Secure": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "DohProviderQuad9Secure"
+                    ]
+                }
+            ]
+        }
+    ],
     "DoNotEvictOnAXLocationChange": [
         {
             "platforms": [
